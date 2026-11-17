@@ -61,6 +61,20 @@ enum class PassWork : std::uint8_t
 	ReflectionTrace = 17,
 	ReflectionComposite = 18,
 	ReflectionRadiance = 19,
+	VolumeInject = 20,
+	VolumeLight = 21,
+	VolumeTemporal = 22,
+	VolumeIntegrate = 23,
+	VolumeComposite = 24,
+	ForwardCopy = 25,
+	Transparency = 26,
+	VolumePrepare = 27,
+};
+
+struct ForwardEffects
+{
+	bool bVolume = false;
+	bool bTransparency = false;
 };
 
 struct RenderPipeline
@@ -86,6 +100,14 @@ struct RenderPipeline
 	ResourceId nEnvironmentSpecular = INVALID_RESOURCE;
 	ResourceId nReflection = INVALID_RESOURCE;
 	ResourceId nReflectedHdr = INVALID_RESOURCE;
+	ResourceId nVolumeMedium = INVALID_RESOURCE;
+	ResourceId nVolumeEmission = INVALID_RESOURCE;
+	ResourceId nVolumeSource = INVALID_RESOURCE;
+	ResourceId nVolumeHistoryRead = INVALID_RESOURCE;
+	ResourceId nVolumeHistoryWrite = INVALID_RESOURCE;
+	ResourceId nVolumeIntegral = INVALID_RESOURCE;
+	ResourceId nForwardHdr = INVALID_RESOURCE;
+	ResourceId nReactiveMask = INVALID_RESOURCE;
 	// Additional reflection color levels 1..N-1. Before tracing, level zero is
 	// nReflectedHdr containing full lighting without screen-space reflections.
 	std::vector<ResourceId> arrReflectionMips;
@@ -107,10 +129,16 @@ struct RenderPipeline
 // The last downsample is the last upsample input, so arrBloomUp has mips minus one
 // entries. Exposure readback remains CopyDestination. Other post-process imported
 // resources finish in Common for reuse.
-// Reflection color levels include nHdr and must be in [1,6] when enabled.
+// Reflection color levels include their full-lighting base and are [1,6] when enabled.
 // Zero disables reflections. Fixed-mesh mode ignores valid reflection options.
+// Volume history is independent of scene TAA. VolumePrepare initializes the
+// imported read history when required. ForwardCopy preserves opaque HDR before
+// transparency when volume compositing is disabled. Transparency loads its HDR
+// target and clears the reactive mask before its draws. All forward resources
+// finish in Common. Fixed-mesh mode ignores these optional forward effects.
 // Failure preserves the previous output and reports the graph diagnostic.
-[[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0, bool bTemporal = true,
-									   bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0);
+[[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
+									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
+									   ForwardEffects stForwardEffects = {});
 
 } // namespace EngineNext::Rendering

@@ -592,7 +592,7 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 							  Assets::Diagnostics &out_arrDiagnostics)
 {
 	const Serialization::JsonValue::Object *pRoot = Assets::Object(stValue, "$", out_arrDiagnostics);
-	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "light_animation", "reflections" }, "$", out_arrDiagnostics))
+	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "light_animation", "reflections", "volumetric_fog", "particles" }, "$", out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -683,6 +683,16 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 	}
 	const Serialization::JsonValue::Object::const_iterator itReflections = pRoot->find("reflections");
 	if (itReflections != pRoot->end() && !ParseReflections(itReflections->second, stConfiguration.stReflections, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itVolume = pRoot->find("volumetric_fog");
+	if (itVolume != pRoot->end() && !ParseVolumeSettings(itVolume->second, stConfiguration.stVolume, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itParticles = pRoot->find("particles");
+	if (itParticles != pRoot->end() && !ParseParticleEmitters(itParticles->second, stConfiguration.arrParticles, out_arrDiagnostics))
 	{
 		return false;
 	}

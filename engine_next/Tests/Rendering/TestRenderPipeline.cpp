@@ -148,8 +148,10 @@ ENGINE_NEXT_TEST("RenderPipeline separates deferred HDR lighting from tone mappi
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nComputePassCount, 1U);
 	ENGINE_NEXT_CHECK(stPipeline.nHdr != stPipeline.nColor);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources[stPipeline.nHdr].stDescription.strName, "HdrColor");
-	const std::array<PassWork, 8> arrWork{ PassWork::ComputeTint, PassWork::DirectionalShadow, PassWork::LocalShadow, PassWork::GBuffer, PassWork::DeferredLighting, PassWork::ToneMap, PassWork::CopyToBackbuffer, PassWork::Present };
-	const std::array<const char *, 8> arrNames{ "ComputeTint", "DirectionalShadow", "LocalShadow", "GBuffer", "DeferredLighting", "ToneMap", "CopyToBackbuffer", "Present" };
+	const std::array<PassWork, 8> arrWork{ PassWork::ComputeTint, PassWork::DirectionalShadow, PassWork::LocalShadow, PassWork::GBuffer,
+										   PassWork::DeferredLighting, PassWork::ToneMap, PassWork::CopyToBackbuffer, PassWork::Present };
+	const std::array<const char *, 8> arrNames{ "ComputeTint", "DirectionalShadow", "LocalShadow", "GBuffer",
+												"DeferredLighting", "ToneMap", "CopyToBackbuffer", "Present" };
 	for (std::size_t nIndex = 0; nIndex < arrWork.size(); ++nIndex)
 	{
 		const CompiledPass &stPass = stPipeline.stGraph.arrPasses[nIndex];
@@ -225,7 +227,8 @@ ENGINE_NEXT_TEST("RenderPipeline bounds local shadow slices and preserves the fi
 	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic, 28));
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nLocalShadow, EngineNext::Rendering::INVALID_RESOURCE);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 4U);
-	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass, (std::vector<PassWork>{ PassWork::ComputeTint, PassWork::FixedMesh, PassWork::CopyToBackbuffer, PassWork::Present }));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrWorkByPass,
+						 (std::vector<PassWork>{ PassWork::ComputeTint, PassWork::FixedMesh, PassWork::CopyToBackbuffer, PassWork::Present }));
 	CheckReusableStates(stPipeline);
 }
 
@@ -240,7 +243,8 @@ ENGINE_NEXT_TEST("RenderPipeline enables temporal history by default with graphi
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nGraphicsPassCount, 8U);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nComputePassCount, 1U);
 	const std::array<PassWork, 9> arrWork{ PassWork::ComputeTint, PassWork::DirectionalShadow, PassWork::LocalShadow,
-										   PassWork::GBuffer, PassWork::DeferredLighting, PassWork::TemporalResolve, PassWork::ToneMap, PassWork::CopyToBackbuffer, PassWork::Present };
+										   PassWork::GBuffer, PassWork::DeferredLighting, PassWork::TemporalResolve,
+										   PassWork::ToneMap, PassWork::CopyToBackbuffer, PassWork::Present };
 	for (std::size_t nIndex = 0; nIndex < arrWork.size(); ++nIndex)
 	{
 		const CompiledPass &stPass = stPipeline.stGraph.arrPasses[nIndex];
@@ -383,7 +387,8 @@ ENGINE_NEXT_TEST("RenderPipeline prepares exposure before geometry and meters re
 		bool bHistogramOrdering = false;
 		for (const ResourceBarrier &stBarrier : pBuild->arrBeforeBarriers)
 		{
-			bHistogramOrdering = bHistogramOrdering || (stBarrier.nResource == stPipeline.nHistogram && stBarrier.eKind == EngineNext::Rendering::BarrierKind::Uav);
+			bHistogramOrdering =
+					bHistogramOrdering || (stBarrier.nResource == stPipeline.nHistogram && stBarrier.eKind == EngineNext::Rendering::BarrierKind::Uav);
 		}
 		ENGINE_NEXT_CHECK(bHistogramOrdering);
 		ENGINE_NEXT_CHECK(HasTransition(*pAdapt, stPipeline.nHistogram, ResourceState::UnorderedAccess, ResourceState::NonPixelShaderRead));
@@ -588,7 +593,8 @@ ENGINE_NEXT_TEST("RenderPipeline separates reflection lighting and composes befo
 			}
 			ENGINE_NEXT_CHECK(HasAccess(*pLight, stPipeline.nHdr, ResourceState::RenderTarget, true));
 			ENGINE_NEXT_CHECK(HasAccess(*pLight, stPipeline.nEnvironmentSpecular, ResourceState::RenderTarget, true));
-			ENGINE_NEXT_CHECK(pLight->nPass < pRadiance->nPass && pRadiance->nPass < pTrace->nPass && pTrace->nPass < pComposite->nPass && pComposite->nPass < pNext->nPass);
+			ENGINE_NEXT_CHECK(pLight->nPass < pRadiance->nPass && pRadiance->nPass < pTrace->nPass && pTrace->nPass < pComposite->nPass &&
+							  pComposite->nPass < pNext->nPass);
 			ENGINE_NEXT_CHECK(HasAccess(*pRadiance, stPipeline.nHdr, ResourceState::NonPixelShaderRead, false));
 			ENGINE_NEXT_CHECK(HasAccess(*pRadiance, stPipeline.nEnvironmentSpecular, ResourceState::NonPixelShaderRead, false));
 			ENGINE_NEXT_CHECK(HasAccess(*pRadiance, stPipeline.nReflectedHdr, ResourceState::UnorderedAccess, true));
@@ -643,5 +649,122 @@ ENGINE_NEXT_TEST("RenderPipeline bounds reflections and preserves disabled and f
 	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 4U);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 4U);
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nReflectedHdr, EngineNext::Rendering::INVALID_RESOURCE);
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline volume passes own their temporal history with TAA disabled")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 7, false, true, 0, 0, { true, false }));
+	const CompiledPass *pPrepare = FindWork(stPipeline, PassWork::VolumePrepare);
+	const CompiledPass *pInject = FindWork(stPipeline, PassWork::VolumeInject);
+	const CompiledPass *pLight = FindWork(stPipeline, PassWork::VolumeLight);
+	const CompiledPass *pTemporal = FindWork(stPipeline, PassWork::VolumeTemporal);
+	const CompiledPass *pIntegrate = FindWork(stPipeline, PassWork::VolumeIntegrate);
+	const CompiledPass *pComposite = FindWork(stPipeline, PassWork::VolumeComposite);
+	const CompiledPass *pToneMap = FindWork(stPipeline, PassWork::ToneMap);
+	ENGINE_NEXT_CHECK(pPrepare && pInject && pLight && pTemporal && pIntegrate && pComposite && pToneMap);
+	if (!pPrepare || !pInject || !pLight || !pTemporal || !pIntegrate || !pComposite || !pToneMap)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::TemporalResolve) == nullptr);
+	ENGINE_NEXT_CHECK(HasAccess(*pPrepare, stPipeline.nVolumeHistoryRead, ResourceState::UnorderedAccess, true));
+	ENGINE_NEXT_CHECK(pPrepare->arrAccesses[0].bReadBeforeWrite);
+	ENGINE_NEXT_CHECK(HasAccess(*pInject, stPipeline.nVolumeMedium, ResourceState::UnorderedAccess, true));
+	ENGINE_NEXT_CHECK(HasAccess(*pLight, stPipeline.nVolumeEmission, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pLight, stPipeline.nExposureRead, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pTemporal, stPipeline.nExposureRead, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pTemporal, stPipeline.nVolumeHistoryRead, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pTemporal, stPipeline.nVolumeHistoryWrite, ResourceState::UnorderedAccess, true));
+	ENGINE_NEXT_CHECK(HasAccess(*pIntegrate, stPipeline.nVolumeHistoryWrite, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pComposite, stPipeline.nVolumeIntegral, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pComposite, stPipeline.nHdr, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pToneMap, stPipeline.nForwardHdr, ResourceState::ShaderRead, false));
+	ENGINE_NEXT_CHECK(stPipeline.nVolumeHistoryRead != stPipeline.nVolumeHistoryWrite);
+	ENGINE_NEXT_CHECK(stPipeline.stGraph.arrResources[stPipeline.nVolumeHistoryRead].stDescription.bImported);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources[stPipeline.nVolumeMedium].stDescription.nSubresourceCount, 1U);
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline transparency copies opaque HDR and preserves it during blending")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, { false, true }));
+	const CompiledPass *pCopy = FindWork(stPipeline, PassWork::ForwardCopy);
+	const CompiledPass *pTransparency = FindWork(stPipeline, PassWork::Transparency);
+	const CompiledPass *pTemporal = FindWork(stPipeline, PassWork::TemporalResolve);
+	ENGINE_NEXT_CHECK(pCopy && pTransparency && pTemporal);
+	if (!pCopy || !pTransparency || !pTemporal)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(HasAccess(*pCopy, stPipeline.nHdr, ResourceState::CopySource, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pCopy, stPipeline.nForwardHdr, ResourceState::CopyDestination, true));
+	ENGINE_NEXT_CHECK(HasAccess(*pTransparency, stPipeline.nForwardHdr, ResourceState::RenderTarget, true));
+	ENGINE_NEXT_CHECK(pTransparency->arrAccesses[0].bReadBeforeWrite);
+	ENGINE_NEXT_CHECK(HasAccess(*pTransparency, stPipeline.nDepth, ResourceState::DepthRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pTransparency, stPipeline.nReactiveMask, ResourceState::RenderTarget, true));
+	ENGINE_NEXT_CHECK(HasAccess(*pTransparency, stPipeline.nExposureRead, ResourceState::ShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pTemporal, stPipeline.nReactiveMask, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pTemporal, stPipeline.nForwardHdr, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::VolumeInject) == nullptr);
+	ENGINE_NEXT_CHECK(HasTransition(*pTransparency, stPipeline.nForwardHdr, ResourceState::CopyDestination, ResourceState::RenderTarget));
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline composes reflections fog and transparency before temporal resolve")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 28, true, true, 6, 6, { true, true }));
+	const CompiledPass *pReflection = FindWork(stPipeline, PassWork::ReflectionComposite);
+	const CompiledPass *pVolume = FindWork(stPipeline, PassWork::VolumeComposite);
+	const CompiledPass *pTransparency = FindWork(stPipeline, PassWork::Transparency);
+	const CompiledPass *pTemporal = FindWork(stPipeline, PassWork::TemporalResolve);
+	ENGINE_NEXT_CHECK(pReflection && pVolume && pTransparency && pTemporal);
+	if (!pReflection || !pVolume || !pTransparency || !pTemporal)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(pReflection->nPass < pVolume->nPass);
+	ENGINE_NEXT_CHECK(pVolume->nPass < pTransparency->nPass);
+	ENGINE_NEXT_CHECK(pTransparency->nPass < pTemporal->nPass);
+	ENGINE_NEXT_CHECK(HasAccess(*pVolume, stPipeline.nReflectedHdr, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pTransparency, stPipeline.nVolumeHistoryWrite, ResourceState::ShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pTransparency, stPipeline.nVolumeIntegral, ResourceState::ShaderRead, false));
+	ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::ForwardCopy) == nullptr);
+	ENGINE_NEXT_CHECK(stPipeline.stGraph.arrPasses.size() < 64);
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline forward feature combinations remain reusable and fixed mode compatible")
+{
+	for (bool bVolume : { false, true })
+	{
+		for (bool bTransparency : { false, true })
+		{
+			for (bool bTemporal : { false, true })
+			{
+				for (bool bExposure : { false, true })
+				{
+					RenderPipeline stPipeline;
+					GraphDiagnostic stDiagnostic;
+					ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, bTemporal, bExposure, 0, 0, { bVolume, bTransparency }));
+					ENGINE_NEXT_CHECK_EQ(FindWork(stPipeline, PassWork::VolumeTemporal) != nullptr, bVolume);
+					ENGINE_NEXT_CHECK_EQ(FindWork(stPipeline, PassWork::Transparency) != nullptr, bTransparency);
+					ENGINE_NEXT_CHECK_EQ(FindWork(stPipeline, PassWork::TemporalResolve) != nullptr, bTemporal);
+					CheckReusableStates(stPipeline);
+				}
+			}
+		}
+	}
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic, 0, true, false, 0, 0, { true, true }));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 4U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrResources.size(), 4U);
 	CheckReusableStates(stPipeline);
 }

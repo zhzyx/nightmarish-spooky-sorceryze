@@ -1,0 +1,348 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T15:06:08.361277+00:00",
+  "status": "passed",
+  "complete_acceptance": true,
+  "scope": "R7 two-client loopback acceptance through Windows Computer Use, with volumetric fog and one particle emitter attached to scene entity 1.",
+  "candidate": {
+    "native_key": "157c09cb9379153c86183e096aa4d1be309c55d6dbf319f362a675d4d13f1f12",
+    "executable": {
+      "path": "build/engine_next/volume-r7/next_visual_client.exe",
+      "size_bytes": 3161088,
+      "sha256": "55de295bb435cf9eec88ffa17f101144161c8df050c23c3b7201362ec06f7821"
+    },
+    "build_report": {
+      "path": "build/engine_next/volume-r7/VisualBuildReport.json",
+      "size_bytes": 1994601,
+      "sha256": "5b9397337ce2a64f190f2765f91e2957c5e57f16f72deaf2dcbf46aa0dc7fbe0"
+    },
+    "server": {
+      "path": "build/engine_next/volume-network-r7/Dependencies/next_server.exe",
+      "size_bytes": 788992,
+      "sha256": "03097759e5aced39db68007897ff27adeadf2d8597cd2da2d9a8c8766f1092da"
+    },
+    "server_fix": {
+      "pull_request": 1393,
+      "signed_head": "bc0f99ed0d70948f62f34a1b93040d9f58e250ec",
+      "merged_commit": "f39bc9028958e5395d8ec38c6bbcc0bc577a480e"
+    }
+  },
+  "checks": {
+    "A": {
+      "frames": 1919,
+      "validation_errors": 0,
+      "network_input_frames": 8,
+      "network_reconnect_requests": 1,
+      "local_shadow_views": 6,
+      "input_key_events": 19,
+      "resizes": 1,
+      "draw_position_max_error": 1.1920928910669204e-08,
+      "largest_sample_gap_msec": 72946,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "13566",
+          "entity_id": "1",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            -0.48799991607666016,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "9524",
+          "entity_id": "2",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            2.0240001678466797,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "temporal_epoch_starts": [
+        {
+          "frame_id": 0,
+          "epoch": 1
+        },
+        {
+          "frame_id": 4,
+          "epoch": 2
+        },
+        {
+          "frame_id": 1031,
+          "epoch": 5
+        },
+        {
+          "frame_id": 1450,
+          "epoch": 6
+        },
+        {
+          "frame_id": 1454,
+          "epoch": 7
+        }
+      ],
+      "temporal_resets": 6
+    },
+    "B": {
+      "frames": 1956,
+      "validation_errors": 0,
+      "network_input_frames": 32,
+      "network_reconnect_requests": 0,
+      "local_shadow_views": 6,
+      "input_key_events": 66,
+      "resizes": 0,
+      "draw_position_max_error": 1.1920928910669204e-08,
+      "largest_sample_gap_msec": 16069,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "9556",
+          "entity_id": "2",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            2.0240001678466797,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "13619",
+          "entity_id": "1",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            -0.48799991607666016,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "temporal_epoch_starts": [
+        {
+          "frame_id": 0,
+          "epoch": 1
+        },
+        {
+          "frame_id": 4,
+          "epoch": 2
+        }
+      ],
+      "temporal_resets": 1
+    }
+  },
+  "minimized_evidence": [
+    {
+      "client": "A",
+      "ui_minimized_msec": 73533,
+      "sample_gap_msec": 72946,
+      "rendered_frame_delta": 30,
+      "confirmed_before": "4873",
+      "confirmed_after": "9419",
+      "peer_samples": 64,
+      "peer_input_samples": 32
+    }
+  ],
+  "volume_and_particles": {
+    "A": {
+      "particle_emitters": 1,
+      "peak_particles": 40,
+      "grid": [
+        60,
+        40,
+        64
+      ],
+      "volume_payload_bytes": 30720000,
+      "volume_resource_bytes": 37158912,
+      "volume_history_invalidated_frames": [
+        0,
+        4,
+        1031,
+        1450,
+        1454
+      ]
+    },
+    "B": {
+      "particle_emitters": 1,
+      "peak_particles": 40,
+      "grid": [
+        60,
+        40,
+        64
+      ],
+      "volume_payload_bytes": 30720000,
+      "volume_resource_bytes": 37158912,
+      "volume_history_invalidated_frames": [
+        0,
+        4
+      ]
+    }
+  },
+  "configuration": {
+    "path": "build/engine_next/volume-network-r7/Configuration.json",
+    "size_bytes": 2218,
+    "sha256": "58702c7707bec9b4db9960c486df9f0818abb919f7d874d7652ba8d9d60dddbc"
+  },
+  "scene": {
+    "source_package_digest": "3310d4d94529a0c0ea139bd7054f4b4a14b2d9c29a87a592f8195181f4890369",
+    "description": "Self-authored F derivative with original two player meshes and static mirror floor entity 100. The package is unchanged from the reflection test; the separate render configuration enables fog and the attached emitter.",
+    "provenance": {
+      "path": "build/engine_next/volume-network-r7/Dependencies/MirrorProvenance.json",
+      "size_bytes": 1902,
+      "sha256": "f40937183fd33b12562da832869551adc225b78e13f61fde06e2327a443797b1"
+    }
+  },
+  "successful_run": {
+    "directory": "build/engine_next/volume-network-r7/Run2",
+    "return_codes": [
+      0,
+      0,
+      0
+    ],
+    "graceful_drain": {
+      "notified": 2,
+      "acknowledged": 2,
+      "forced": 0,
+      "resumed": 1
+    },
+    "artifacts": [
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/A.json",
+        "size_bytes": 4389810,
+        "sha256": "7dc254f54aff0964450fe045a7654ff91c17a583979e972d0c821f8e63e10d25"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/A.log",
+        "size_bytes": 9796,
+        "sha256": "d0fd0c7753dbead7bd8fab5b7a9c05a4de3f9348c7001c5f6081451c253322f8"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/A.ppm",
+        "size_bytes": 1843215,
+        "sha256": "19be25f90b7e0dc0083c5c3cd1df80a86f4386756e4ea56cb40dce5ee408ee68"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/B.json",
+        "size_bytes": 4495363,
+        "sha256": "02105617d13df5730d12880371eb201d06af6cdfc9e305b0df5633d7a8ff8df6"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/B.log",
+        "size_bytes": 33409,
+        "sha256": "78aa7d7d33ff9a54070f2a2aed01f95e1ffbd266dbafa2ed87830b0ac937fff8"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/B.ppm",
+        "size_bytes": 1843215,
+        "sha256": "4eb145e7f73205f4a51f51de9a08a630e3f9e84492b076070b6d32f1a89c99cb"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/Completion.json",
+        "size_bytes": 5954,
+        "sha256": "6ddad1f871c509d7bf28a7bd295da49bd81b2d446c32fafd09d4418d95761991"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/Live.json",
+        "size_bytes": 5826,
+        "sha256": "7a975a51de3f29b0f21bdca4b22b1cc3082eba3dd8853bdb46a491b1da975b3c"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/RenderConfiguration.json",
+        "size_bytes": 2359,
+        "sha256": "db87933cf9d18598033224cb91e1c5d273f1a25b57e74b894bf06051092b51ba"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/server.jsonl",
+        "size_bytes": 1176446,
+        "sha256": "a5190616e6c4afd8f50c2e43ab945c88b1d920e38852af31ba40ce316e43acdc"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/server.log",
+        "size_bytes": 1155,
+        "sha256": "17b7da7cea88664e6adeaa72d4c64bd07be43ab48e3ac343c5a5032056f50659"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/UIActions.json",
+        "size_bytes": 5186,
+        "sha256": "80a846c8e990cbef67748a91d54ab6d82a4142bc585d5e0a0e77803b493e6a9f"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run2/VerificationFinal.json",
+        "size_bytes": 4558,
+        "sha256": "fa1a1eddfbeb5761c47d5d466a8e977fcb111310668e0d3908728c50e0252902"
+      }
+    ]
+  },
+  "initial_attempt": {
+    "status": "private readiness deadline exceeded",
+    "description": "With concurrent initialization A joined, while B stayed before its first scene log for the 120-second private deadline. The harness terminated its own processes; no keyboard input was sent. Root cause remains undetermined.",
+    "artifacts": [
+      {
+        "path": "build/engine_next/volume-network-r7/Run1/A.log",
+        "size_bytes": 482,
+        "sha256": "5f54cd6523696bd37113d69318c3d0d7c075421d85d1fb68d8d80a476913b17b"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run1/A.ppm",
+        "size_bytes": 1843215,
+        "sha256": "353ac920cd65f5927aecee75c47e934831f8b6e1b418143c67f60e2f3a4ec946"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run1/B.log",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run1/Failure.json",
+        "size_bytes": 398,
+        "sha256": "eadd84b6bf4c857dbf6d143b4c41892fd3b5d84d79188f02d99b7c099ab04287"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run1/RenderConfiguration.json",
+        "size_bytes": 2359,
+        "sha256": "db87933cf9d18598033224cb91e1c5d273f1a25b57e74b894bf06051092b51ba"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run1/server.jsonl",
+        "size_bytes": 125463,
+        "sha256": "5523bdde62f04c3d866121b2393afd5e0a772ca8f06a7027ce83588e1e4d2086"
+      },
+      {
+        "path": "build/engine_next/volume-network-r7/Run1/server.log",
+        "size_bytes": 376,
+        "sha256": "492ffe289f61525f18cc85dcfb3990384c53bdd8afcaa65c971c884c0a39b075"
+      }
+    ]
+  },
+  "startup_adjustment": {
+    "description": "The private second-run harness starts B after A reaches welcome. Both reached welcome in about 33.2 seconds from server launch. Production timeouts and protocol were preserved.",
+    "harness": {
+      "path": "build/engine_next/volume-network-r7/RunSequentialNetwork.py",
+      "size_bytes": 8758,
+      "sha256": "0c122c24f1256b52277d1468551ffff53c4893d39b0348c6823c645124eacae6"
+    },
+    "verifier": {
+      "path": "build/engine_next/volume-network-r7/Dependencies/VerifyLiveNetworkFinal.py",
+      "size_bytes": 7270,
+      "sha256": "f5575b58c0ae597b521da22836fb156a47fd815c4381a69c5f3010186ab58b7d"
+    }
+  },
+  "live_resource_observation": {
+    "gpu_used_mib": 2589,
+    "gpu_total_mib": 12282,
+    "gpu_utilization_percent": 100,
+    "client_a_working_set_bytes": 463773696,
+    "client_b_working_set_bytes": 5168066560,
+    "client_b_private_bytes": 6009556992,
+    "interpretation": "Single live observation during second-run startup. These values do not establish the cause of the first-run delay."
+  },
+  "ui_scope": "The returned target client windows were inspected before input. No security prompt controls were operated. WASD and R were exercised. Jumping has no binding in this runtime.",
+  "visual_observation": "Live client captures showed the attached orange particle quads following the blue player after movement, with both player reflections on the floor. No recording was created for this R7 session.",
+  "no_live_owned_network_processes": true
+}

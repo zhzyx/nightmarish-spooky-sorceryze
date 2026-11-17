@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "m43-volume-final-verified-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "step",
+  "occurred_at": "2026-11-17T15:17:11.560485+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-7d0a8a52",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116"
+  ],
+  "payload": {
+    "scope": "M4.3 volumetric fog, sorted transparent geometry, deterministic visual particles and reactive temporal coverage",
+    "native_key": "157c09cb9379153c86183e096aa4d1be309c55d6dbf319f362a675d4d13f1f12",
+    "binary_sha256": "55de295bb435cf9eec88ffa17f101144161c8df050c23c3b7201362ec06f7821",
+    "tests": "MSVC and clang-cl C++17 each pass 312 rendering tests and 175852 checks. Current AINative regression passes 445 tests with 36 recorded skips. Tool tests pass 15 tests; build-contract tests pass 31 with one recorded skip. Nine final static checks pass with zero source mutations.",
+    "gpu": "R7 normal entry passes 25 D3D12 cases and 1138 frames with zero GPU validation errors. Tests exercise actual 3840x2160 hidden targets, 4096 particles, exact replay, zero medium, weak light, one-shot boundaries and resize. R3 volume readback and transparent PixelHistory retain their actual candidate identities; all 27 shader binaries match R7.",
+    "network": "Final R7 two-client real-keyboard acceptance passes movement, reconnect, minimized networking and restoration. Both clients finish with identical entity positions and zero GPU validation errors. The first concurrent startup timeout remains recorded with undetermined cause.",
+    "build_placement": "Three clean builds verify VolumeLight shader native-key invalidation and restoration. One unchanged executable produces changed pixels after shader replacement and exact rollback pixels; malformed shader fails before first frame.",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-volume-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-volume-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-3-volume-network.json",
+      "data-collection/engine-next-visual-runtime-m4-3-volume-source-review.json",
+      "data-collection/engine-next-visual-runtime-m4-3-volume-final-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-volume-numerical-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-volume-transparency-gpu.json"
+    ],
+    "remaining": "Full M4 dynamic GI, advanced materials, virtual geometry and streaming, deformation, high-detail shadow equivalent, UE A-F comparisons and physical-native-4K performance/stability remain in progress. Exact signed-candidate CI and main readback follow this local verification."
+  },
+  "sha256": "f1ea553598333cc8e8415b1150177be54f384b9a310cae33448bc2de2c7bd1bc"
+}

@@ -83,6 +83,9 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	stConfiguration.stLightAnimation.arrKeyframes = { { 0, 2 }, { 1, 3 } };
 	stConfiguration.stReflections.bEnabled = true;
 	stConfiguration.stReflections.dMaxDistance = 321;
+	stConfiguration.stVolume.dDistance = 456;
+	stConfiguration.arrParticles = { EngineNext::Rendering::ParticleSettings{} };
+	stConfiguration.arrParticles[0].nEmitterId = 123;
 	stConfiguration.arrPointLights.front().nId = 4321;
 	stConfiguration.arrSpotLights.push_back(EngineNext::Rendering::SpotLightSettings{});
 	EngineNext::Assets::Diagnostics arrDiagnostics;
@@ -106,6 +109,9 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stLightAnimation.arrKeyframes.back().dMultiplier, 3);
 	ENGINE_NEXT_CHECK(stConfiguration.stReflections.bEnabled);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stReflections.dMaxDistance, 321);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stVolume.dDistance, 456);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrParticles.size(), 1U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrParticles[0].nEmitterId, 123U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrPointLights.front().nId, 4321U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrSpotLights.size(), 1U);
 }
@@ -1087,4 +1093,46 @@ ENGINE_NEXT_TEST("Render configuration rejects malformed reflection fields trans
 	}
 	(*stValue.GetObject())["reflections"] = JsonValue::Object{ { "enabled", false }, { "normal_bias", -1.0 } };
 	CheckRejected(stValue);
+}
+
+ENGINE_NEXT_TEST("Render configuration accepts optional fog and particle emitters")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stConfiguration.stVolume.bEnabled);
+	ENGINE_NEXT_CHECK(stConfiguration.arrParticles.empty());
+	(*stValue.GetObject())["volumetric_fog"] = JsonValue::Object{
+		{ "enabled", true }, { "density", .03 }, { "local_volumes", JsonValue::List{ JsonValue::Object{ { "shape", "sphere" }, { "entity_id", std::int64_t{ 7 } } } } }
+	};
+	(*stValue.GetObject())["particles"] =
+			JsonValue::List{ JsonValue::Object{ { "emitter_id", std::int64_t{ 9 } }, { "entity_id", std::int64_t{ 7 } }, { "enabled", true } } };
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stVolume.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stVolume.dDensity, .03);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stVolume.nLocalVolumeCount, 1U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stVolume.arrLocalVolumes[0].nEntityId.value_or(0), 7ULL);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrParticles.size(), 1U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrParticles[0].nEmitterId, 9U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrParticles[0].nSourceEntityId.value_or(0), 7ULL);
+}
+
+ENGINE_NEXT_TEST("Render configuration rejects invalid fog and particle inputs transactionally")
+{
+	for (const JsonValue &stFog :
+		 { JsonValue{}, JsonValue(JsonValue::Object{ { "unknown", true } }), JsonValue(JsonValue::Object{ { "enabled", false }, { "density", -1.0 } }) })
+	{
+		JsonValue stValue = ValidConfiguration();
+		(*stValue.GetObject())["volumetric_fog"] = stFog;
+		CheckRejected(stValue);
+	}
+	for (const JsonValue &stParticles :
+		 { JsonValue{}, JsonValue(JsonValue::List{ JsonValue::Object{} }),
+		   JsonValue(JsonValue::List{ JsonValue::Object{ { "emitter_id", std::int64_t{ 1 } } }, JsonValue::Object{ { "emitter_id", std::int64_t{ 1 } } } }) })
+	{
+		JsonValue stValue = ValidConfiguration();
+		(*stValue.GetObject())["particles"] = stParticles;
+		CheckRejected(stValue);
+	}
 }

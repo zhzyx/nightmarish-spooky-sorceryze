@@ -1,0 +1,582 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T15:08:02.086739+00:00",
+  "scope": "Independent aggregate review of the R7 volume, transparency and particle implementation, incorporating earlier read-only reviews and reproduced regressions.",
+  "review_role": "Reviewer reproduced CPU tests, examined source and resource lifetimes, independently checked captured texture data, and performed the recorded loopback keyboard acceptance. Product code changes were made by the feature owners.",
+  "candidate": {
+    "name": "volume-r7",
+    "native_key": "157c09cb9379153c86183e096aa4d1be309c55d6dbf319f362a675d4d13f1f12",
+    "executable": {
+      "path": "build/engine_next/volume-r7/next_visual_client.exe",
+      "size_bytes": 3161088,
+      "sha256": "55de295bb435cf9eec88ffa17f101144161c8df050c23c3b7201362ec06f7821"
+    },
+    "build_report": {
+      "path": "build/engine_next/volume-r7/VisualBuildReport.json",
+      "size_bytes": 1994601,
+      "sha256": "5b9397337ce2a64f190f2765f91e2957c5e57f16f72deaf2dcbf46aa0dc7fbe0"
+    },
+    "native_input_count": 267,
+    "current_input_mismatches": [],
+    "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=312 checks=175852 failures=0",
+    "test_execution": "Full build and rendering tests were executed by the root agent; this reviewer independently rechecked report contents and all source hashes."
+  },
+  "reviewed_current_sources": [
+    {
+      "path": "engine_next/Assets/Types.cpp",
+      "size_bytes": 3812,
+      "sha256": "3686528bab39526527c5eccc0e46146b3f07dadcd6720f68b320c09155be578a"
+    },
+    {
+      "path": "engine_next/Platform/Windows/Window.cpp",
+      "size_bytes": 19368,
+      "sha256": "7f3294e73822dfafb2197cbc5b7a41fb100f4aeed65152db8d68b4bc5732c2a9"
+    },
+    {
+      "path": "engine_next/Rendering/LightTimeline.cpp",
+      "size_bytes": 6202,
+      "sha256": "b33135caf1c12b116a5679a4b2002253461eb96aa676b92e9970d28f2b29cd98"
+    },
+    {
+      "path": "engine_next/Rendering/ParticleSettings.cpp",
+      "size_bytes": 12012,
+      "sha256": "07f91bc73ff76ac4127c7d2d786d946f35e3004df5b8131f25cf45b392be50e8"
+    },
+    {
+      "path": "engine_next/Rendering/ParticleState.cpp",
+      "size_bytes": 10261,
+      "sha256": "47ef63740f1d628909bdd1bfca45fe5ffdd8027ca0cbd3273c0d67b7d614acec"
+    },
+    {
+      "path": "engine_next/Rendering/PostProcessSettings.cpp",
+      "size_bytes": 10249,
+      "sha256": "a872c712b08bea9e0870df35f2605aa3e5648d80e07d7cd2225528565d4db832"
+    },
+    {
+      "path": "engine_next/Rendering/ReflectionSettings.cpp",
+      "size_bytes": 3299,
+      "sha256": "04f8afc0935e30364a647710c4011824180cbb13650216ec5d923e9d812d5ba8"
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "size_bytes": 33371,
+      "sha256": "6aa9f088825924bdc375a5655990d5fc3327bed1af1328afe8a8ac02b79839ec"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "size_bytes": 26832,
+      "sha256": "b9533713b7e38bc71c7514472ad540133522ec15024fe4f3cefb1c6832805102"
+    },
+    {
+      "path": "engine_next/Rendering/RenderScene.cpp",
+      "size_bytes": 12157,
+      "sha256": "f38b305bd9d598d0e2e38e2d29cfb1f2aee72c50631dfa9eb80ebbddd6f76127"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/TemporalAA.hlsl",
+      "size_bytes": 5923,
+      "sha256": "b4f6b723a392dfd035db202c1553e6aa642fd507100b5e24297f2717cae9b69c"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Transparent.hlsl",
+      "size_bytes": 11775,
+      "sha256": "de7b23805bf0a7a30c59a7c0c502fb11ae70cb6466e312e4a99164bac3e21507"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/TransparentMath.hlsli",
+      "size_bytes": 1654,
+      "sha256": "e43b410cc75a4831eecdd013eb68bafc67c278b439945a0eac365be2659584da"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Volume.hlsl",
+      "size_bytes": 7951,
+      "sha256": "f50ea13d6c965a031acbbbad1fb5d6646ee1b8308a8dae54177c9b1526d4521d"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeColor.hlsli",
+      "size_bytes": 558,
+      "sha256": "8dee5693da669d587401ce905fdaa8c190f6658e43a92ca4e8d4eb3760301690"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeCommon.hlsli",
+      "size_bytes": 2050,
+      "sha256": "0dc5fa434aa95297b4f881b46c94cd4640a689b58b74267a1bc7369560e8a0c2"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeComposite.hlsl",
+      "size_bytes": 1076,
+      "sha256": "c00fd02ac27c23bab733c8a4f5a190ed87b0cad2ffe79e5a608d886680f1a72c"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeMath.hlsli",
+      "size_bytes": 7085,
+      "sha256": "aa553436af96a070153e7a2c91ea970cb40c6d26001d5f4cedb20a95eaae6030"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeSampling.hlsli",
+      "size_bytes": 3223,
+      "sha256": "b927e93d2daf3350f40d88ff2e18230f848ce7cebd6b5dca492256d642993e7b"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeTemporal.hlsl",
+      "size_bytes": 4327,
+      "sha256": "1f3bc55cbc256e69fcc1d58d3103ea008fa2cccc28f33809d83f966ed3c69f42"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeTemporalMath.hlsli",
+      "size_bytes": 1776,
+      "sha256": "15fbd9a9780f43e97629e6c420cc6e1d20d569e787b80a5b7065d5375043281b"
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "size_bytes": 259615,
+      "sha256": "d570b7744460ef26c0e6e26216f01fd04f3a2739a3f2db2abd3b76c6e01aed77"
+    },
+    {
+      "path": "engine_next/Rendering/VolumeGrid.cpp",
+      "size_bytes": 5556,
+      "sha256": "0a4e794889efcc11a28529e2b4f81505ebe54af8e8389442c6052ea696526914"
+    },
+    {
+      "path": "engine_next/Rendering/VolumeSettings.cpp",
+      "size_bytes": 13755,
+      "sha256": "5b0a46273d0255c5c68df0fb744196cc68288bbc9b0b594b8e10ab79136b94d0"
+    },
+    {
+      "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+      "size_bytes": 21504,
+      "sha256": "53b13e0883e8665f60d13f602d483e3363f184bb7d4e644d88bcc4f57995b26c"
+    },
+    {
+      "path": "engine_next/Serialization/Json.cpp",
+      "size_bytes": 20468,
+      "sha256": "bd5378c0e98935cc4adc7d535c2a6b733480f3a4e537e70fed77cc0b9bd3368c"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestParticles.cpp",
+      "size_bytes": 33017,
+      "sha256": "16e38d946b6c037320b1325658d7ca840d6b8b12ef8d22fa10a3d1c0ff7a0e7c"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "size_bytes": 59470,
+      "sha256": "23d1de27c1c1d7950886af6b1396ce90f437f6264003099c2ec955c9c544b10b"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestSceneEntityTransforms.cpp",
+      "size_bytes": 6729,
+      "sha256": "648ef1878cf594918ede1a25c3837667eae9ea93ca5255e936dc6b98b5289ea1"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestVolumeMath.cpp",
+      "size_bytes": 17692,
+      "sha256": "1da43d1383eb210200ba7ad181c20dc023762859663910c094844cc53669feb7"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestVolumeParse.cpp",
+      "size_bytes": 11127,
+      "sha256": "77bb8c18ca99450fdb0098ebc496fb4c7759ed7c813665b366069a402bc672d6"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestVolumeSettings.cpp",
+      "size_bytes": 12749,
+      "sha256": "1a2f7b31d9dba0d895911ed0bf26eea2a54f1c83fe6aae06d127df7c003c2d73"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestVolumeTemporalMath.cpp",
+      "size_bytes": 6692,
+      "sha256": "3b34b06e574fad95389ef0836efee70614d387eb9704c55b05d8d0c272ee59c4"
+    },
+    {
+      "path": "engine_next/Tests/RenderingTestMain.cpp",
+      "size_bytes": 2717,
+      "sha256": "1b7ab6ddbcb35e0830776ef176f07ae1e07c80d2cffa9d6d3d77ca0051cb0172"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/ParticleSettings.h",
+      "size_bytes": 4753,
+      "sha256": "7b4c7428006707e0c762648b450200d63030cff950af2775db99de66e9935930"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/ParticleState.h",
+      "size_bytes": 4949,
+      "sha256": "da1bd6d4d033b608d7b49243fd6414a36192df263164ac8c05c8e8686c771c94"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "size_bytes": 7616,
+      "sha256": "00eb822d6861932179ee0c771a0957d3853e362ef7ab6f88b3a9197156633a5c"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/VolumeGrid.h",
+      "size_bytes": 3791,
+      "sha256": "4f76f3053b82abcf741ee677b821e6eee228e20293f72bf4a18506ae64595753"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/VolumeSettings.h",
+      "size_bytes": 5096,
+      "sha256": "b29ffc4897526783940bebd84e1d92ee340820df5dd1aef51a47a154f997cb1b"
+    }
+  ],
+  "r6_to_r7": {
+    "changes": [
+      {
+        "path": "engine_next/Rendering/VisualRuntime.cpp",
+        "r6_sha256": "088a709320caf58c5fe1fbf19717fd5f0088890be1d343754970e4b88fd384ad",
+        "r7_sha256": "d570b7744460ef26c0e6e26216f01fd04f3a2739a3f2db2abd3b76c6e01aed77",
+        "change": "Local descriptor-array identifier only",
+        "exact_substitution_verified": true,
+        "r6_source_copy": {
+          "path": "build/engine_next/volume-impact-r6/Source/engine_next/Rendering/VisualRuntime.cpp",
+          "size_bytes": 259585,
+          "sha256": "088a709320caf58c5fe1fbf19717fd5f0088890be1d343754970e4b88fd384ad"
+        }
+      },
+      {
+        "path": "engine_next/Tests/Rendering/TestSceneEntityTransforms.cpp",
+        "r6_sha256": "388b8a0832a9d209854b2d5b2e96f8fe409832e1cfc1474899726b8689d28cab",
+        "r7_sha256": "648ef1878cf594918ede1a25c3837667eae9ea93ca5255e936dc6b98b5289ea1",
+        "change": "Copyright title padding only",
+        "exact_substitution_verified": true,
+        "r6_source_copy": {
+          "path": "build/engine_next/volume-impact-r6/Source/engine_next/Tests/Rendering/TestSceneEntityTransforms.cpp",
+          "size_bytes": 6736,
+          "sha256": "388b8a0832a9d209854b2d5b2e96f8fe409832e1cfc1474899726b8689d28cab"
+        }
+      },
+      {
+        "path": "engine_next/Tests/Rendering/TestVolumeMath.cpp",
+        "r6_sha256": "b9e7ab5a57b3167976e0b365fe7a3b858722891ea8d8b71b2d84466fa690e3bd",
+        "r7_sha256": "1da43d1383eb210200ba7ad181c20dc023762859663910c094844cc53669feb7",
+        "change": "Local depth-range identifier only",
+        "exact_substitution_verified": true,
+        "r6_source_copy": {
+          "path": "build/engine_next/volume-impact-r6/Source/engine_next/Tests/Rendering/TestVolumeMath.cpp",
+          "size_bytes": 17657,
+          "sha256": "b9e7ab5a57b3167976e0b365fe7a3b858722891ea8d8b71b2d84466fa690e3bd"
+        }
+      }
+    ],
+    "all_other_native_inputs_equal": true,
+    "r6_build": {
+      "path": "build/engine_next/volume-r6/VisualBuildReport.json",
+      "size_bytes": 1994601,
+      "sha256": "02a2d8477aa3bdae829373c2ae29fcc20e59fd1e61001ccb5f4e723f076523fe"
+    }
+  },
+  "shader_identity": {
+    "r3_r6_r7_all_equal": true,
+    "count": 27,
+    "files": [
+      {
+        "name": "BloomDown.cs.cso",
+        "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+      },
+      {
+        "name": "BloomUp.cs.cso",
+        "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+      },
+      {
+        "name": "Deferred.ps.cso",
+        "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+      },
+      {
+        "name": "Deferred.vs.cso",
+        "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+      },
+      {
+        "name": "Exposure.cs.cso",
+        "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+      },
+      {
+        "name": "FixedMesh.cs.cso",
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+      },
+      {
+        "name": "FixedMesh.ps.cso",
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+      },
+      {
+        "name": "FixedMesh.vs.cso",
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+      },
+      {
+        "name": "Histogram.cs.cso",
+        "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+      },
+      {
+        "name": "Lighting.ps.cso",
+        "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+      },
+      {
+        "name": "Lighting.vs.cso",
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+      },
+      {
+        "name": "ReflectionColor.cs.cso",
+        "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+      },
+      {
+        "name": "ReflectionComposite.cs.cso",
+        "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+      },
+      {
+        "name": "ReflectionLighting.ps.cso",
+        "sha256": "f2590dd8cc22dfbd00aa5030b1169cf234bf465a802e3a4372083323d2f0c0cb"
+      },
+      {
+        "name": "ReflectionRadiance.cs.cso",
+        "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+      },
+      {
+        "name": "ReflectionTrace.cs.cso",
+        "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+      },
+      {
+        "name": "Shadow.ps.cso",
+        "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+      },
+      {
+        "name": "Shadow.vs.cso",
+        "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+      },
+      {
+        "name": "Temporal.cs.cso",
+        "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+      },
+      {
+        "name": "ToneMap.ps.cso",
+        "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+      },
+      {
+        "name": "Transparent.ps.cso",
+        "sha256": "9ad499be7c6e46be2aba6c17ed07cae1955057fd31e9ed7764886f5ab9705e2a"
+      },
+      {
+        "name": "Transparent.vs.cso",
+        "sha256": "343de3273f95c54fc4462e8ed9c886aef2445e8a8fc24f38b69aaf09a7629daa"
+      },
+      {
+        "name": "VolumeComposite.cs.cso",
+        "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+      },
+      {
+        "name": "VolumeInject.cs.cso",
+        "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+      },
+      {
+        "name": "VolumeIntegrate.cs.cso",
+        "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+      },
+      {
+        "name": "VolumeLight.cs.cso",
+        "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+      },
+      {
+        "name": "VolumeTemporal.cs.cso",
+        "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+      }
+    ]
+  },
+  "historical_reviews": [
+    {
+      "path": "build/engine_next/volume-independent-review/CpuReview.json",
+      "size_bytes": 5185,
+      "sha256": "d32582bff9ac9eddac589db57217d852bf354929cd124d4e51e7aee315fecf64"
+    },
+    {
+      "path": "build/engine_next/volume-independent-review/RuntimeReviewR3.json",
+      "size_bytes": 8471,
+      "sha256": "6e0cf15666fe61131b6f56f68d4e593aa626bed54b6fb0198b7b4c7a250884ac"
+    }
+  ],
+  "resolved_r3_findings": [
+    {
+      "id": "particle_lifetime_boundary_overlap",
+      "original": "At rate 20 and lifetime 2 the R3 normal-entry 240-frame run reached 41 live particles.",
+      "resolution": "Represented birth/death intervals are half-open and bounded by the validated capacity. Duration boundaries, collapsed positive lifetimes and indistinguishable adjacent births have explicit handling. Every precision rejection preserves the prior output.",
+      "independent_validation": {
+        "formal_tests_each": 29,
+        "formal_checks_each": 36783,
+        "compilers": [
+          "MSVC",
+          "clang-cl"
+        ],
+        "oracle_valid_queries_each": 79701,
+        "oracle_invalid_queries_each": 10,
+        "differences": 0,
+        "capacity_violations": 0,
+        "evidence": {
+          "path": "build/engine_next/particle-independent-review/ParticleReviewPostFormat.json",
+          "size_bytes": 3284,
+          "sha256": "ab280ca9a5bc668fb5e8a4e8b48de058f32a22f922e331359776bd19c95fef99"
+        }
+      },
+      "normal_entry_r6": {
+        "frames": 240,
+        "peak_particles": 40,
+        "validation_errors": 0,
+        "report": {
+          "path": "build/engine_next/forward-gpu-r6/CombinedDynamic.json",
+          "size_bytes": 389452,
+          "sha256": "e85afcb46a6d3692d40b9892b52ade4f79a7514021f8ad714f6bb8987a056933"
+        }
+      },
+      "normal_entry_r7": "The R7 keyboard loopback reports one emitter and a peak of 40 for each client."
+    },
+    {
+      "id": "window_oversize_client_clipped",
+      "original": "R3 requested 3840x2160 but Windows maximum tracking limits produced 2564x1421.",
+      "resolution": "WM_GETMINMAXINFO provides DPI-adjusted track limits before window state attachment; Initialize rejects an unexpected client size.",
+      "independent_validation": {
+        "source_matches_current": true,
+        "checks_each": 74,
+        "compilers": [
+          "MSVC",
+          "clang-cl"
+        ],
+        "evidence": {
+          "path": "build/engine_next/window-sizing-independent/Results.json",
+          "size_bytes": 5890,
+          "sha256": "279eed5ba8c4a245572a3b3ecfc53e66a40ed13cf6cf2fd67fcabb713666378b"
+        }
+      },
+      "normal_entry_r6": {
+        "path": "build/engine_next/volume-4k-r6/ResolutionCheck.json",
+        "size_bytes": 692,
+        "sha256": "fa2a71f21a508f4acba473a13475fe8a690265a1beeead33af5ccca97001fa0e"
+      },
+      "display_scope": "The verified size is a hidden 3840x2160 render target. The physical desktop remains 2560x1440."
+    }
+  ],
+  "earlier_resolved_findings": [
+    {
+      "name": "Resolved center validation precedes float packing",
+      "resolution": "The complete resolved VolumeSettings candidate is validated before any world-center float conversion."
+    },
+    {
+      "name": "Large-coordinate height cancellation",
+      "resolution": "Finite world-height subtraction precedes multiplication; overflow uses the distributed fallback."
+    },
+    {
+      "name": "Thin-medium incident-light clipping",
+      "resolution": "Incoming light stays in binary32 through medium multiplication; final source receives explicit saturation."
+    },
+    {
+      "name": "Positive overflow lost as black",
+      "resolution": "Per-component VolumeColor preserves +infinity saturation while mapping NaN to zero."
+    }
+  ],
+  "reviewed_invariants": [
+    "RGBA32F medium, emission, source and double-buffered history preserve small coefficients; RGBA16F integral is the terminal scatter/transmittance representation.",
+    "Frame-owned upload regions have history bytes 0..175, global bytes 240..287 and local bytes 512..1535. Structured strides are 48 and 64 bytes.",
+    "Per-frame descriptors and particle buffers are rewritten only after both frame fences retire. Shared volume history executes in graphics-queue order, toggles after successful submission and invalidates on reset/resize.",
+    "VolumeLight and VolumeTemporal read exposure t4. History source is rescaled by current/previous pre-exposure; extinction remains unscaled.",
+    "Network local positions are applied before hierarchical world transformation. Configured effect offsets and axis-aligned extents follow the documented origin-only attachment semantics.",
+    "Forward HDR follows SSR and feeds TAA, histogram, bloom and tone mapping. Transparency uses reverse-Z read-only depth, premultiplied blending and deterministic far-to-near ordering.",
+    "Reactive coverage clears before transparent draws and combines alpha with MAX; TAA reads the populated mask and rejects covered history.",
+    "Particle seed/index evaluation and per-frame upload ownership agree with the CPU contracts. Shared four-column volume sampling evaluates partial integrals before spatial interpolation."
+  ],
+  "cpu_contract_review": {
+    "evidence": {
+      "path": "build/engine_next/volume-independent-review/CpuReview.json",
+      "size_bytes": 5185,
+      "sha256": "d32582bff9ac9eddac589db57217d852bf354929cd124d4e51e7aee315fecf64"
+    },
+    "historical_tests_each": 89,
+    "historical_checks_each": 130451,
+    "scope": "Strict configuration, finite bounds, volume grid and mathematical helpers were reviewed and reproduced at their recorded source snapshots. Current functional particle corrections have their separate final tests above."
+  },
+  "texture_validation": {
+    "public_evidence": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-volume-numerical-gpu.json",
+      "size_bytes": 97298,
+      "sha256": "97cd805de331c6bbffaed98b1c876280e6ad43c0d952a98eacf1b2e94bfb04e9"
+    },
+    "r3_capture_identity_preserved": true,
+    "precision": {
+      "far_boundary_max_unrounded_half_ulp": 0.9996750738714582,
+      "all_layers_max_unrounded_half_ulp": 1.0068651265733024,
+      "channels_above_one_unrounded_half_ulp_per_frame": 151,
+      "channels_per_frame": 307200,
+      "rounded_half_reference_encoding_distance_max": 1
+    },
+    "independent_transparency": {
+      "path": "build/engine_next/transparency-independent-r3.json",
+      "size_bytes": 13653,
+      "sha256": "ea13636f6f11808d6dd0e4d4dda4e64995f1256099c4665b0270ebe4c61b842a"
+    }
+  },
+  "r7_keyboard_network": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-volume-network.json",
+    "size_bytes": 11606,
+    "sha256": "af46b62c69fea2259f6d3cedcf9127ccbc17295a6f62502e8f797228fbe16e01"
+  },
+  "static_checks": {
+    "passed": true,
+    "mutated_files": [],
+    "scope_file_count": 59,
+    "scope_cpp_count": 31,
+    "scope_python_count": 4,
+    "check_logs": [
+      {
+        "path": "build/engine_next/volume-static-final-r7/Check0.log",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/engine_next/volume-static-final-r7/Check1.log",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/engine_next/volume-static-final-r7/Check2.log",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/engine_next/volume-static-final-r7/Check3.log",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/engine_next/volume-static-final-r7/Check4.log",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/engine_next/volume-static-final-r7/Check5.log",
+        "size_bytes": 19,
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      },
+      {
+        "path": "build/engine_next/volume-static-final-r7/Check6.log",
+        "size_bytes": 26,
+        "sha256": "177f260a5645724013185e4b140c7045cc39e56c0c97b120f5cb23599f85f0de"
+      },
+      {
+        "path": "build/engine_next/volume-static-final-r7/Check7.log",
+        "size_bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "path": "build/engine_next/volume-static-final-r7/Check8.log",
+        "size_bytes": 44,
+        "sha256": "d9a5631f7d87a741fbecc3236286d1792d22d349ff13846d71cdc9217307bb76"
+      }
+    ],
+    "metadata_maintenance": "Root refreshed final static-check log references after publication path normalization. The complete final file-hash manifest is bound by the aggregate verification."
+  },
+  "open_source_findings": [],
+  "remaining_observations": [
+    "The first concurrent R7 keyboard setup hit its private 120-second readiness deadline before B logged scene initialization. The serialized second setup completed and all acceptance checks passed. The initial delay cause remains undetermined."
+  ],
+  "production_files_modified_by_reviewer": false,
+  "final_automated_gpu": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-volume-final-gpu.json",
+    "size_bytes": 137385,
+    "sha256": "e95f3b9ce635106911e4c9873c91765be50afe650c6b85ee3d8bb933e7b121a2"
+  }
+}

@@ -51,6 +51,8 @@
 #include "engine_next/include/EngineNext/Rendering/LocalShadowData.h"
 #include "engine_next/include/EngineNext/Rendering/TemporalState.h"
 #include "engine_next/include/EngineNext/Rendering/LightTimeline.h"
+#include "engine_next/include/EngineNext/Rendering/VolumeGrid.h"
+#include "engine_next/include/EngineNext/Rendering/ParticleState.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -77,7 +79,10 @@
 #include <iostream>
 #include <limits>
 #include <map>
+#include <memory>
+#include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -87,7 +92,19 @@ namespace
 {
 
 constexpr std::uint32_t FRAME_COUNT = 3;
-constexpr std::uint32_t FRAME_VIEW_COUNT = 120;
+constexpr std::uint32_t FRAME_VIEW_COUNT = 152;
+constexpr std::uint32_t VOLUME_MEDIUM_VIEW = 120;
+constexpr std::uint32_t VOLUME_EMISSION_VIEW = 122;
+constexpr std::uint32_t VOLUME_SOURCE_VIEW = 124;
+constexpr std::uint32_t VOLUME_INTEGRAL_VIEW = 126;
+constexpr std::uint32_t VOLUME_HISTORY_READ_VIEW = 128;
+constexpr std::uint32_t VOLUME_HISTORY_WRITE_VIEW = 130;
+constexpr std::uint32_t VOLUME_GLOBAL_VIEW = 132;
+constexpr std::uint64_t VOLUME_GLOBAL_BYTE_OFFSET = 240;
+constexpr std::uint64_t VOLUME_LOCAL_BYTE_OFFSET = 512;
+constexpr std::uint32_t VOLUME_LOCAL_VIEW = 133;
+constexpr std::uint32_t FORWARD_HDR_VIEW = 134;
+constexpr std::uint32_t REACTIVE_MASK_VIEW = 136;
 constexpr std::uint32_t REFLECTION_MIP_COUNT = 6;
 constexpr std::uint32_t REFLECTION_MIP_VIEW = 104;
 constexpr std::uint32_t REFLECTION_ENV_VIEW = 114;
@@ -258,6 +275,10 @@ struct FrameContext
 	ComOwner<ID3D12Resource> stEnvironmentSpecular;
 	ComOwner<ID3D12Resource> stReflection;
 	ComOwner<ID3D12Resource> stReflectedHdr;
+	std::array<ComOwner<ID3D12Resource>, 4> arrVolume;
+	ComOwner<ID3D12Resource> stVolumeParameters;
+	ComOwner<ID3D12Resource> stForwardHdr;
+	ComOwner<ID3D12Resource> stReactiveMask;
 	std::array<ComOwner<ID3D12Resource>, REFLECTION_MIP_COUNT - 1> arrReflectionMips;
 	ComOwner<ID3D12Resource> stDepth;
 	ComOwner<ID3D12Resource> stTint;
@@ -297,6 +318,9 @@ struct FrameTiming
 	double dLightingSeconds = 0;
 	double dDirectionalIlluminance = 0;
 	bool bTemporalHistoryValid = false;
+	bool bVolumeHistoryValid = false;
+	std::uint32_t nVolumeHistoryRead = 0;
+	std::uint32_t nParticles = 0;
 	double dCpuMsec = 0.0;
 	double dGraphicsMsec = 0.0;
 	double dComputeMsec = 0.0;
@@ -372,6 +396,35 @@ struct FrameConstants
 	std::array<float, 16> arrUnjitteredViewProjection{};
 	std::array<float, 16> arrPreviousViewProjection{};
 };
+
+struct VolumeHistoryConstants
+{
+	std::array<float, 16> arrPreviousView{};
+	std::array<float, 16> arrPreviousViewProjection{};
+	std::array<float, 4> arrPreviousGrid{};
+	std::array<float, 4> arrPreviousDepth{};
+	std::array<float, 4> arrSettings{};
+};
+
+struct GlobalVolumeConstants
+{
+	std::array<float, 4> arrDensityHeightFalloff{};
+	std::array<float, 4> arrAlbedo{};
+	std::array<float, 4> arrEmission{};
+};
+
+struct LocalVolumeConstants
+{
+	std::array<float, 4> arrCenterShape{};
+	std::array<float, 4> arrExtentEdge{};
+	std::array<float, 4> arrAlbedoDensity{};
+	std::array<float, 4> arrEmission{};
+};
+
+static_assert(sizeof(VolumeHistoryConstants) == 176);
+static_assert(sizeof(GlobalVolumeConstants) == 48);
+static_assert(sizeof(LocalVolumeConstants) == 64);
+static_assert(REACTIVE_MASK_VIEW < FRAME_VIEW_COUNT);
 
 static_assert(sizeof(DrawConstants) == 272);
 static_assert(offsetof(DrawConstants, arrPreviousWorld) == 192);
@@ -605,9 +658,44 @@ private:
 	bool CreatePostProcessTargets();
 	bool PreparePostProcess(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
 	void DrawPostProcess(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork, std::uint32_t nMip, double dSeconds);
+	bool CreateTransparencyPipeline();
+	void DrawTransparency(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
+	bool CreateParticleMesh();
+	bool UpdateParticleBuffers(std::uint32_t nFrame, double dSeconds);
+	ComOwner<ID3D12RootSignature> stTransparencyRoot;
+	std::array<ComOwner<ID3D12PipelineState>, 4> arrTransparencyPipelines;
+	std::vector<std::array<double, 3>> arrTransparentCenters;
+	std::vector<std::size_t> arrTransparentOrder;
+	struct ForwardDrawItem
+	{
+		bool bParticle = false;
+		std::size_t nIndex = 0;
+		double dDepth = 0;
+	};
+	std::vector<ForwardDrawItem> arrForwardDraws;
+	std::vector<BillboardInstance> arrParticleInstances;
+	std::unique_ptr<ParticleFrame> pParticleScratch;
+	std::array<ComOwner<ID3D12Resource>, FRAME_COUNT> arrParticleVertices;
+	std::array<ComOwner<ID3D12Resource>, FRAME_COUNT> arrParticleConstants;
+	std::array<D3D12_VERTEX_BUFFER_VIEW, FRAME_COUNT> arrParticleVertexViews{};
+	ComOwner<ID3D12Resource> stParticleIndices;
+	D3D12_INDEX_BUFFER_VIEW stParticleIndexView{};
+	std::uint32_t nParticleMaterial = 0;
+	std::uint64_t nParticleUploadBytes = 0;
+	std::uint32_t nPeakParticles = 0;
 	bool CreateReflectionTargets();
 	bool CreateReflectionPipeline();
 	void DrawReflections(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork, std::uint32_t nMip);
+	bool CreateForwardTargets();
+	bool CreateVolumeTargets();
+	bool CreateVolumePipeline();
+	bool UpdateVolumeParameters(std::uint32_t nFrame);
+	std::array<float, 16> BuildVolumeConstants() const;
+	void DrawVolume(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork);
+	ID3D12Resource *CurrentHdrResource(std::uint32_t nFrame) const;
+	std::uint32_t CurrentHdrView() const;
+	bool UpdateEffectTransforms();
+	bool ResolveEffectOrigin(const std::optional<std::uint64_t> &nEntity, std::array<double, 3> &out_arrOrigin);
 	bool CreateTemporalPipeline();
 	bool CreateHistoryTargets();
 	bool ResetTemporalHistory();
@@ -680,6 +768,18 @@ private:
 	ComOwner<ID3D12RootSignature> stReflectionRoot;
 	std::array<ComOwner<ID3D12PipelineState>, 4> arrReflectionPipelines;
 	std::uint64_t nReflectionBytes = 0;
+	ForwardEffects stForwardEffects;
+	VolumeGrid stVolumeGrid;
+	ComOwner<ID3D12RootSignature> stVolumeRoot;
+	std::array<ComOwner<ID3D12PipelineState>, 5> arrVolumePipelines;
+	std::array<ComOwner<ID3D12Resource>, 2> arrVolumeHistory;
+	ComOwner<ID3D12DescriptorHeap> stVolumeClearHeap;
+	CameraMatrices stPreviousVolumeCamera;
+	std::map<std::uint64_t, std::array<double, 16>> mapEffectTransforms;
+	std::uint32_t nVolumeRead = 0;
+	bool bVolumeHistoryReady = false;
+	std::uint64_t nVolumeBytes = 0;
+	std::uint64_t nForwardBytes = 0;
 	std::array<ComOwner<ID3D12Resource>, 2> arrExposure;
 	std::uint32_t nExposureRead = 0;
 	bool bExposureReady = false;
@@ -898,13 +998,13 @@ bool VisualRuntime::Initialize()
 	(void)stSwapchain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709);
 	D3D12_DESCRIPTOR_HEAP_DESC stHeap{};
 	stHeap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	stHeap.NumDescriptors = FRAME_COUNT * 10;
+	stHeap.NumDescriptors = FRAME_COUNT * 12;
 	if (FAILED(stDevice->CreateDescriptorHeap(&stHeap, IID_PPV_ARGS(stRtvHeap.Put()))))
 	{
 		return Fail("Create RTV heap");
 	}
 	stHeap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-	stHeap.NumDescriptors = FRAME_COUNT * (5 + MAX_LOCAL_SHADOW_VIEWS);
+	stHeap.NumDescriptors = FRAME_COUNT * (6 + MAX_LOCAL_SHADOW_VIEWS);
 	if (FAILED(stDevice->CreateDescriptorHeap(&stHeap, IID_PPV_ARGS(stDsvHeap.Put()))))
 	{
 		return Fail("Create DSV heap");
@@ -920,7 +1020,7 @@ bool VisualRuntime::Initialize()
 	nDsvStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	nViewStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	return LoadScene() && BuildGraph() && CreateFrameContexts() && CreateTargets() && CreatePipeline() &&
-			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline() && CreateReflectionPipeline())) && (bSceneMode ? CreateSceneMesh() : CreateMesh()) && CreateConstantBuffers();
+			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline() && CreateReflectionPipeline() && CreateVolumePipeline())) && (bSceneMode ? (CreateSceneMesh() && CreateParticleMesh() && (!stForwardEffects.bTransparency || CreateTransparencyPipeline())) : CreateMesh()) && CreateConstantBuffers();
 }
 
 bool VisualRuntime::CreateFrameContexts()
@@ -1018,6 +1118,8 @@ bool VisualRuntime::CreateTargets()
 		stDsv.Format = DXGI_FORMAT_D32_FLOAT;
 		stDsv.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 		stDevice->CreateDepthStencilView(stFrame.stDepth.Get(), &stDsv, Dsv(nIndex));
+		stDsv.Flags = D3D12_DSV_FLAG_READ_ONLY_DEPTH;
+		stDevice->CreateDepthStencilView(stFrame.stDepth.Get(), &stDsv, Dsv(FRAME_COUNT * (5 + MAX_LOCAL_SHADOW_VIEWS) + nIndex));
 		if (bSceneMode)
 		{
 			D3D12_RESOURCE_DESC stHdrDescription = stTexture;
@@ -1142,7 +1244,7 @@ bool VisualRuntime::CreateTargets()
 	{
 		return false;
 	}
-	if (!CreatePostProcessTargets() || !CreateReflectionTargets())
+	if (!CreatePostProcessTargets() || !CreateReflectionTargets() || !CreateForwardTargets() || !CreateVolumeTargets())
 	{
 		return false;
 	}
@@ -1354,7 +1456,7 @@ bool VisualRuntime::LoadScene()
 		return Fail(arrDiagnostics.empty() ? "Build local shadow views" : arrDiagnostics.back().strMessage);
 	}
 	bSceneMode = true;
-	if (stConfig.bConnect)
+	if (stConfig.bConnect || stRenderConfiguration.stVolume.bEnabled || !stRenderConfiguration.arrParticles.empty())
 	{
 		Assets::PackageData stPackage;
 		if (!Assets::LoadPackage(stConfig.strAssetPackagePath, stPackage, arrDiagnostics))
@@ -1687,10 +1789,6 @@ bool VisualRuntime::CreateSceneMesh()
 		}
 		for (const MaterialData &stMaterial : stAsset.stMesh.arrMaterials)
 		{
-			if (stMaterial.eAlphaMode == AlphaMode::Blend)
-			{
-				return Fail("Alpha blend awaits transparent render pass");
-			}
 			const std::uint32_t nMaterial = static_cast<std::uint32_t>(arrMaterials.size());
 			const std::uint32_t nSourceMaterial = nMaterial - nMaterialBase;
 			const std::uint32_t nViewStart = MATERIAL_VIEW_START + nMaterial * MATERIAL_TEXTURE_COUNT;
@@ -2094,6 +2192,856 @@ bool VisualRuntime::CreateDeferredPipeline()
 	return SUCCEEDED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(stToneMapPipeline.Put()))) || Fail("Create tone mapping PSO");
 }
 
+ID3D12Resource *VisualRuntime::CurrentHdrResource(std::uint32_t nFrame) const
+{
+	if (stForwardEffects.bVolume || stForwardEffects.bTransparency)
+	{
+		return arrFrames[nFrame].stForwardHdr.Get();
+	}
+	return stRenderConfiguration.stReflections.bEnabled ? arrFrames[nFrame].stReflectedHdr.Get() : arrFrames[nFrame].stHdr.Get();
+}
+
+std::uint32_t VisualRuntime::CurrentHdrView() const
+{
+	if (stForwardEffects.bVolume || stForwardEffects.bTransparency)
+	{
+		return FORWARD_HDR_VIEW;
+	}
+	return stRenderConfiguration.stReflections.bEnabled ? REFLECTION_OUTPUT_VIEW : 7U;
+}
+
+bool VisualRuntime::CreateForwardTargets()
+{
+	nForwardBytes = 0;
+	if (!bSceneMode || (!stForwardEffects.bVolume && !stForwardEffects.bTransparency))
+	{
+		return true;
+	}
+	const D3D12_HEAP_PROPERTIES stHeap = HeapProperties(D3D12_HEAP_TYPE_DEFAULT);
+	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
+	{
+		if (!stForwardEffects.bVolume)
+		{
+			D3D12_SHADER_RESOURCE_VIEW_DESC stNullVolume{};
+			stNullVolume.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+			stNullVolume.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
+			stNullVolume.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			stNullVolume.Texture3D.MipLevels = 1;
+			stDevice->CreateShaderResourceView(nullptr, &stNullVolume, View(nFrame * FRAME_VIEW_COUNT + VOLUME_INTEGRAL_VIEW));
+			stDevice->CreateShaderResourceView(nullptr, &stNullVolume, View(nFrame * FRAME_VIEW_COUNT + VOLUME_HISTORY_WRITE_VIEW));
+		}
+		for (std::uint32_t nTarget = 0; nTarget < (stForwardEffects.bTransparency ? 2U : 1U); ++nTarget)
+		{
+			D3D12_RESOURCE_DESC stDescription{};
+			stDescription.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+			stDescription.Width = nWidth;
+			stDescription.Height = nHeight;
+			stDescription.DepthOrArraySize = 1;
+			stDescription.MipLevels = 1;
+			stDescription.SampleDesc.Count = 1;
+			stDescription.Format = nTarget == 0 ? HDR_FORMAT : DXGI_FORMAT_R8_UNORM;
+			stDescription.Flags = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
+			if (nTarget == 0)
+			{
+				stDescription.Flags |= D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+			}
+			ComOwner<ID3D12Resource> &stTarget = nTarget == 0 ? arrFrames[nFrame].stForwardHdr : arrFrames[nFrame].stReactiveMask;
+			D3D12_CLEAR_VALUE stClear{};
+			stClear.Format = stDescription.Format;
+			if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stDescription, D3D12_RESOURCE_STATE_COMMON, &stClear, IID_PPV_ARGS(stTarget.Put()))))
+			{
+				return Fail("Create forward HDR or reactive target");
+			}
+			nForwardBytes += stDevice->GetResourceAllocationInfo(0, 1, &stDescription).SizeInBytes;
+			const std::wstring strName = (nTarget == 0 ? L"EngineNext.ForwardHdr." : L"EngineNext.ReactiveMask.") + std::to_wstring(nFrame);
+			(void)stTarget->SetName(strName.c_str());
+			stDevice->CreateRenderTargetView(stTarget.Get(), nullptr, Rtv(FRAME_COUNT * (10 + nTarget) + nFrame));
+			D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
+			stSrv.Format = stDescription.Format;
+			stSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			stSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			stSrv.Texture2D.MipLevels = 1;
+			const std::uint32_t nView = nFrame * FRAME_VIEW_COUNT + (nTarget == 0 ? FORWARD_HDR_VIEW : REACTIVE_MASK_VIEW);
+			stDevice->CreateShaderResourceView(stTarget.Get(), &stSrv, View(nView));
+			if (nTarget == 0)
+			{
+				D3D12_UNORDERED_ACCESS_VIEW_DESC stUav{};
+				stUav.Format = stDescription.Format;
+				stUav.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+				stDevice->CreateUnorderedAccessView(stTarget.Get(), nullptr, &stUav, View(nView + 1));
+			}
+		}
+	}
+	return true;
+}
+
+bool VisualRuntime::CreateVolumeTargets()
+{
+	nVolumeBytes = 0;
+	if (!bSceneMode || !stForwardEffects.bVolume)
+	{
+		return true;
+	}
+	Assets::Diagnostics arrDiagnostics;
+	if (!BuildVolumeGrid(stRenderConfiguration.stCamera, nWidth, nHeight, stRenderConfiguration.stVolume, stVolumeGrid, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Build volume grid" : arrDiagnostics.back().strMessage);
+	}
+	const D3D12_HEAP_PROPERTIES stHeap = HeapProperties(D3D12_HEAP_TYPE_DEFAULT);
+	D3D12_RESOURCE_DESC stDescription{};
+	stDescription.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+	stDescription.Width = stVolumeGrid.nWidth;
+	stDescription.Height = stVolumeGrid.nHeight;
+	stDescription.DepthOrArraySize = static_cast<UINT16>(stVolumeGrid.nDepth);
+	stDescription.MipLevels = 1;
+	stDescription.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	stDescription.SampleDesc.Count = 1;
+	stDescription.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
+	stSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
+	stSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	stSrv.Texture3D.MipLevels = 1;
+	D3D12_UNORDERED_ACCESS_VIEW_DESC stUav{};
+	stUav.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE3D;
+	stUav.Texture3D.WSize = stVolumeGrid.nDepth;
+	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
+	{
+		for (std::uint32_t nTarget = 0; nTarget < 4; ++nTarget)
+		{
+			stDescription.Format = nTarget == 3 ? HDR_FORMAT : DXGI_FORMAT_R32G32B32A32_FLOAT;
+			ComOwner<ID3D12Resource> &stTarget = arrFrames[nFrame].arrVolume[nTarget];
+			if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stDescription, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(stTarget.Put()))))
+			{
+				return Fail("Create froxel texture");
+			}
+			nVolumeBytes += stDevice->GetResourceAllocationInfo(0, 1, &stDescription).SizeInBytes;
+			const std::wstring strName = L"EngineNext.Volume." + std::to_wstring(nFrame) + L"." + std::to_wstring(nTarget);
+			(void)stTarget->SetName(strName.c_str());
+			stSrv.Format = stDescription.Format;
+			stUav.Format = stDescription.Format;
+			const std::uint32_t nView = nFrame * FRAME_VIEW_COUNT + VOLUME_MEDIUM_VIEW + nTarget * 2;
+			stDevice->CreateShaderResourceView(stTarget.Get(), &stSrv, View(nView));
+			stDevice->CreateUnorderedAccessView(stTarget.Get(), nullptr, &stUav, View(nView + 1));
+		}
+	}
+	D3D12_DESCRIPTOR_HEAP_DESC stClearDescription{};
+	stClearDescription.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	stClearDescription.NumDescriptors = 2;
+	if (FAILED(stDevice->CreateDescriptorHeap(&stClearDescription, IID_PPV_ARGS(stVolumeClearHeap.Put()))))
+	{
+		return Fail("Create volume history clear views");
+	}
+	stDescription.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	stUav.Format = stDescription.Format;
+	for (std::uint32_t nHistory = 0; nHistory < 2; ++nHistory)
+	{
+		if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stDescription, D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(arrVolumeHistory[nHistory].Put()))))
+		{
+			return Fail("Create froxel history texture");
+		}
+		nVolumeBytes += stDevice->GetResourceAllocationInfo(0, 1, &stDescription).SizeInBytes;
+		const std::wstring strName = L"EngineNext.VolumeHistory." + std::to_wstring(nHistory);
+		(void)arrVolumeHistory[nHistory]->SetName(strName.c_str());
+		D3D12_CPU_DESCRIPTOR_HANDLE stHandle = stVolumeClearHeap->GetCPUDescriptorHandleForHeapStart();
+		stHandle.ptr += static_cast<SIZE_T>(nHistory) * nViewStride;
+		stDevice->CreateUnorderedAccessView(arrVolumeHistory[nHistory].Get(), nullptr, &stUav, stHandle);
+	}
+	nVolumeRead = 0;
+	bVolumeHistoryReady = false;
+	return true;
+}
+
+bool VisualRuntime::CreateVolumePipeline()
+{
+	if (!stForwardEffects.bVolume)
+	{
+		return true;
+	}
+	std::array<D3D12_DESCRIPTOR_RANGE, 7> arrDescriptorRanges{};
+	std::array<D3D12_ROOT_PARAMETER, 10> arrParameters{};
+	arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	arrParameters[0].Constants.Num32BitValues = 16;
+	for (std::uint32_t nBuffer = 1; nBuffer < 3; ++nBuffer)
+	{
+		arrParameters[nBuffer].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		arrParameters[nBuffer].Descriptor.ShaderRegister = nBuffer;
+	}
+	for (std::uint32_t nRange = 0; nRange < arrDescriptorRanges.size(); ++nRange)
+	{
+		D3D12_DESCRIPTOR_RANGE &stRange = arrDescriptorRanges[nRange];
+		stRange.RangeType = nRange < 5 ? D3D12_DESCRIPTOR_RANGE_TYPE_SRV : D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
+		stRange.NumDescriptors = 1;
+		stRange.BaseShaderRegister = nRange < 5 ? nRange : nRange - 5;
+		arrParameters[nRange + 3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		arrParameters[nRange + 3].DescriptorTable.NumDescriptorRanges = 1;
+		arrParameters[nRange + 3].DescriptorTable.pDescriptorRanges = &stRange;
+	}
+	D3D12_STATIC_SAMPLER_DESC stSampler{};
+	stSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	stSampler.AddressU = stSampler.AddressV = stSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	stSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+	stSampler.MaxLOD = D3D12_FLOAT32_MAX;
+	D3D12_ROOT_SIGNATURE_DESC stDescription{};
+	stDescription.NumParameters = static_cast<UINT>(arrParameters.size());
+	stDescription.pParameters = arrParameters.data();
+	stDescription.NumStaticSamplers = 1;
+	stDescription.pStaticSamplers = &stSampler;
+	ComOwner<ID3DBlob> stSerialized;
+	ComOwner<ID3DBlob> stErrors;
+	if (FAILED(D3D12SerializeRootSignature(&stDescription, D3D_ROOT_SIGNATURE_VERSION_1, stSerialized.Put(), stErrors.Put())) ||
+		FAILED(stDevice->CreateRootSignature(0, stSerialized->GetBufferPointer(), stSerialized->GetBufferSize(), IID_PPV_ARGS(stVolumeRoot.Put()))))
+	{
+		return Fail("Create volume root signature");
+	}
+	const std::array<const char *, 5> arrNames{ "VolumeInject.cs.cso", "VolumeLight.cs.cso", "VolumeTemporal.cs.cso", "VolumeIntegrate.cs.cso", "VolumeComposite.cs.cso" };
+	for (std::size_t nPipeline = 0; nPipeline < arrNames.size(); ++nPipeline)
+	{
+		const std::vector<std::uint8_t> arrShader = ReadShader(stConfig.strShaderDirectory, arrNames[nPipeline]);
+		if (arrShader.empty())
+		{
+			return Fail("Missing volume shader");
+		}
+		D3D12_COMPUTE_PIPELINE_STATE_DESC stPipeline{};
+		stPipeline.pRootSignature = stVolumeRoot.Get();
+		stPipeline.CS = { arrShader.data(), arrShader.size() };
+		if (FAILED(stDevice->CreateComputePipelineState(&stPipeline, IID_PPV_ARGS(arrVolumePipelines[nPipeline].Put()))))
+		{
+			return Fail("Create volume compute pipeline");
+		}
+	}
+	return true;
+}
+
+bool VisualRuntime::UpdateEffectTransforms()
+{
+	if (!stForwardEffects.bVolume && stRenderConfiguration.arrParticles.empty())
+	{
+		return true;
+	}
+	Assets::SceneDocument stScene = stNetworkScene;
+	for (Assets::SceneEntity &stEntity : stScene.arrEntities)
+	{
+		for (const Runtime::ClientEntitySnapshot &stSnapshot : stClientSnapshot.arrEntities)
+		{
+			if (stSnapshot.stEntityId.nValue == static_cast<std::uint64_t>(stEntity.nEntityId))
+			{
+				stEntity.stTransform.arrTranslation = { stSnapshot.stState.vPosition.fX, stSnapshot.stState.vPosition.fY, stSnapshot.stState.vPosition.fZ };
+				break;
+			}
+		}
+	}
+	Assets::Diagnostics arrDiagnostics;
+	return BuildSceneEntityTransforms(stScene, mapEffectTransforms, arrDiagnostics) ||
+			Fail(arrDiagnostics.empty() ? "Resolve effect entity transforms" : arrDiagnostics.back().strMessage);
+}
+
+bool VisualRuntime::ResolveEffectOrigin(const std::optional<std::uint64_t> &nEntity, std::array<double, 3> &out_arrOrigin)
+{
+	out_arrOrigin = {};
+	if (!nEntity.has_value())
+	{
+		return true;
+	}
+	const std::map<std::uint64_t, std::array<double, 16>>::const_iterator itTransform = mapEffectTransforms.find(*nEntity);
+	if (itTransform == mapEffectTransforms.end())
+	{
+		return Fail("Effect references an entity absent from the scene");
+	}
+	const std::array<double, 16> &arrWorld = itTransform->second;
+	out_arrOrigin = { arrWorld[12], arrWorld[13], arrWorld[14] };
+	return true;
+}
+
+bool VisualRuntime::UpdateVolumeParameters(std::uint32_t nFrame)
+{
+	if (!stForwardEffects.bVolume)
+	{
+		return true;
+	}
+	FrameContext &stFrame = arrFrames[nFrame];
+	const VolumeSettings &stSettings = stRenderConfiguration.stVolume;
+	VolumeSettings stResolved = stSettings;
+	std::array<LocalVolumeConstants, MAX_LOCAL_VOLUMES> arrLocal{};
+	for (std::uint32_t nLocal = 0; nLocal < stSettings.nLocalVolumeCount; ++nLocal)
+	{
+		LocalVolumeSettings &stVolume = stResolved.arrLocalVolumes[nLocal];
+		std::array<double, 3> arrOrigin{};
+		if (!ResolveEffectOrigin(stVolume.nEntityId, arrOrigin))
+		{
+			return false;
+		}
+		for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+		{
+			stVolume.arrCenter[nAxis] += arrOrigin[nAxis];
+		}
+	}
+	Assets::Diagnostics arrDiagnostics;
+	if (!ValidateVolumeSettings(stResolved, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Resolved volume bounds exceed GPU precision" : arrDiagnostics.back().strMessage);
+	}
+	for (std::uint32_t nLocal = 0; nLocal < stResolved.nLocalVolumeCount; ++nLocal)
+	{
+		const LocalVolumeSettings &stVolume = stResolved.arrLocalVolumes[nLocal];
+		LocalVolumeConstants &stLocal = arrLocal[nLocal];
+		for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+		{
+			stLocal.arrCenterShape[nAxis] = static_cast<float>(stVolume.arrCenter[nAxis]);
+			stLocal.arrExtentEdge[nAxis] = static_cast<float>(stVolume.arrExtent[nAxis]);
+			stLocal.arrAlbedoDensity[nAxis] = static_cast<float>(stVolume.arrAlbedo[nAxis]);
+			stLocal.arrEmission[nAxis] = static_cast<float>(stVolume.arrEmission[nAxis]);
+		}
+		stLocal.arrCenterShape[3] = static_cast<float>(stVolume.eShape);
+		stLocal.arrExtentEdge[3] = static_cast<float>(stVolume.dEdgeFraction);
+		stLocal.arrAlbedoDensity[3] = static_cast<float>(stVolume.dDensity);
+	}
+	VolumeHistoryConstants stHistory;
+	for (std::size_t nElement = 0; nElement < 16; ++nElement)
+	{
+		stHistory.arrPreviousView[nElement] = static_cast<float>(stPreviousVolumeCamera.arrView[nElement]);
+		stHistory.arrPreviousViewProjection[nElement] = static_cast<float>(stPreviousVolumeCamera.arrViewProjection[nElement]);
+	}
+	stHistory.arrPreviousGrid = { static_cast<float>(stVolumeGrid.nWidth), static_cast<float>(stVolumeGrid.nHeight), static_cast<float>(stVolumeGrid.nDepth), 0 };
+	stHistory.arrPreviousDepth = { static_cast<float>(stVolumeGrid.dNear), static_cast<float>(stVolumeGrid.dFar), 0, 0 };
+	stHistory.arrSettings = { static_cast<float>(stSettings.dHistoryWeight), 1, bVolumeHistoryReady && stTemporalFrame.bHistoryValid ? 1.0F : 0.0F, 0.1F };
+	GlobalVolumeConstants stGlobal;
+	stGlobal.arrDensityHeightFalloff = { static_cast<float>(stSettings.dDensity), static_cast<float>(stSettings.dHeight), static_cast<float>(stSettings.dHeightFalloff), 0 };
+	for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+	{
+		stGlobal.arrAlbedo[nAxis] = static_cast<float>(stSettings.arrAlbedo[nAxis]);
+		stGlobal.arrEmission[nAxis] = static_cast<float>(stSettings.arrEmission[nAxis]);
+	}
+	void *pMapped = nullptr;
+	const D3D12_RANGE stNoRead{ 0, 0 };
+	if (FAILED(stFrame.stVolumeParameters->Map(0, &stNoRead, &pMapped)))
+	{
+		return Fail("Map retired volume parameters");
+	}
+	std::uint8_t *pBytes = static_cast<std::uint8_t *>(pMapped);
+	std::memcpy(pBytes, &stHistory, sizeof(stHistory));
+	std::memcpy(pBytes + VOLUME_GLOBAL_BYTE_OFFSET, &stGlobal, sizeof(stGlobal));
+	std::memcpy(pBytes + VOLUME_LOCAL_BYTE_OFFSET, arrLocal.data(), sizeof(arrLocal));
+	stFrame.stVolumeParameters->Unmap(0, nullptr);
+	D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
+	stSrv.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+	stSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
+	stSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	stSrv.Texture3D.MipLevels = 1;
+	D3D12_UNORDERED_ACCESS_VIEW_DESC stUav{};
+	stUav.Format = stSrv.Format;
+	stUav.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE3D;
+	stUav.Texture3D.WSize = stVolumeGrid.nDepth;
+	for (std::uint32_t nHistory = 0; nHistory < 2; ++nHistory)
+	{
+		ID3D12Resource *pHistory = arrVolumeHistory[nHistory == 0 ? nVolumeRead : 1 - nVolumeRead].Get();
+		const std::uint32_t nView = nFrame * FRAME_VIEW_COUNT + VOLUME_HISTORY_READ_VIEW + nHistory * 2;
+		stDevice->CreateShaderResourceView(pHistory, &stSrv, View(nView));
+		stDevice->CreateUnorderedAccessView(pHistory, nullptr, &stUav, View(nView + 1));
+	}
+	return true;
+}
+
+std::array<float, 16> VisualRuntime::BuildVolumeConstants() const
+{
+	return {
+		static_cast<float>(stVolumeGrid.nWidth), static_cast<float>(stVolumeGrid.nHeight), static_cast<float>(stVolumeGrid.nDepth), static_cast<float>(stRenderConfiguration.stVolume.nLocalVolumeCount),
+		static_cast<float>(stVolumeGrid.dNear), static_cast<float>(stVolumeGrid.dFar), static_cast<float>(stVolumeGrid.dLogDepthRatio), static_cast<float>(stVolumeGrid.dInverseLogDepthRatio),
+		static_cast<float>(nWidth), static_cast<float>(nHeight), 1.0F / nWidth, 1.0F / nHeight,
+		static_cast<float>(stRenderConfiguration.stVolume.dPhaseG), 1, 0, stForwardEffects.bVolume ? 1.0F : 0.0F
+	};
+}
+
+void VisualRuntime::DrawVolume(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork)
+{
+	const std::uint32_t nStart = nFrame * FRAME_VIEW_COUNT;
+	if (eWork == PassWork::VolumePrepare)
+	{
+		if (!bVolumeHistoryReady)
+		{
+			D3D12_CPU_DESCRIPTOR_HANDLE stHandle = stVolumeClearHeap->GetCPUDescriptorHandleForHeapStart();
+			stHandle.ptr += static_cast<SIZE_T>(nVolumeRead) * nViewStride;
+			const std::array<float, 4> arrZero{};
+			pList->ClearUnorderedAccessViewFloat(GpuView(nStart + VOLUME_HISTORY_READ_VIEW + 1), stHandle, arrVolumeHistory[nVolumeRead].Get(), arrZero.data(), 0, nullptr);
+		}
+		return;
+	}
+	const std::array<float, 16> arrConstants = BuildVolumeConstants();
+	pList->SetComputeRootSignature(stVolumeRoot.Get());
+	pList->SetComputeRoot32BitConstants(0, 16, arrConstants.data(), 0);
+	pList->SetComputeRootConstantBufferView(1, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
+	pList->SetComputeRootConstantBufferView(2, arrFrames[nFrame].stVolumeParameters->GetGPUVirtualAddress());
+	std::array<std::uint32_t, 5> arrSources{ VOLUME_SOURCE_VIEW, VOLUME_HISTORY_READ_VIEW, VOLUME_INTEGRAL_VIEW, VOLUME_HISTORY_WRITE_VIEW, 26 };
+	std::uint32_t nDestination = VOLUME_HISTORY_WRITE_VIEW + 1;
+	std::uint32_t nPipeline = 2;
+	UINT nGroupsX = (stVolumeGrid.nWidth + 3) / 4;
+	UINT nGroupsY = (stVolumeGrid.nHeight + 3) / 4;
+	UINT nGroupsZ = (stVolumeGrid.nDepth + 3) / 4;
+	if (eWork == PassWork::VolumeInject)
+	{
+		nPipeline = 0;
+		arrSources[0] = VOLUME_GLOBAL_VIEW;
+		arrSources[1] = VOLUME_LOCAL_VIEW;
+		nDestination = VOLUME_MEDIUM_VIEW + 1;
+		pList->SetComputeRootDescriptorTable(9, GpuView(nStart + VOLUME_EMISSION_VIEW + 1));
+	}
+	else if (eWork == PassWork::VolumeLight)
+	{
+		nPipeline = 1;
+		arrSources = { VOLUME_MEDIUM_VIEW, VOLUME_EMISSION_VIEW, 8, 9, 26 };
+		nDestination = VOLUME_SOURCE_VIEW + 1;
+	}
+	else if (eWork == PassWork::VolumeIntegrate)
+	{
+		nPipeline = 3;
+		arrSources[0] = VOLUME_HISTORY_WRITE_VIEW;
+		nDestination = VOLUME_INTEGRAL_VIEW + 1;
+		nGroupsX = (stVolumeGrid.nWidth + 7) / 8;
+		nGroupsY = (stVolumeGrid.nHeight + 7) / 8;
+		nGroupsZ = 1;
+	}
+	else if (eWork == PassWork::VolumeComposite)
+	{
+		nPipeline = 4;
+		arrSources[0] = stRenderConfiguration.stReflections.bEnabled ? REFLECTION_OUTPUT_VIEW : 7U;
+		arrSources[1] = 6;
+		nDestination = FORWARD_HDR_VIEW + 1;
+		nGroupsX = (nWidth + 7) / 8;
+		nGroupsY = (nHeight + 7) / 8;
+		nGroupsZ = 1;
+	}
+	pList->SetPipelineState(arrVolumePipelines[nPipeline].Get());
+	for (std::uint32_t nSource = 0; nSource < arrSources.size(); ++nSource)
+	{
+		pList->SetComputeRootDescriptorTable(nSource + 3, GpuView(nStart + arrSources[nSource]));
+	}
+	pList->SetComputeRootDescriptorTable(8, GpuView(nStart + nDestination));
+	pList->Dispatch(nGroupsX, nGroupsY, nGroupsZ);
+}
+
+bool VisualRuntime::CreateTransparencyPipeline()
+{
+	const std::vector<std::uint8_t> arrVertex = ReadShader(stConfig.strShaderDirectory, "Transparent.vs.cso");
+	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, "Transparent.ps.cso");
+	if (arrVertex.empty() || arrPixel.empty())
+	{
+		return Fail("Missing transparent shader bundle");
+	}
+	std::array<D3D12_DESCRIPTOR_RANGE, 9> arrDescriptorRanges{};
+	arrDescriptorRanges[0] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 0, 0, 0 };
+	arrDescriptorRanges[1] = { D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 5, 0, 0, 0 };
+	arrDescriptorRanges[2] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5, 0, 0 };
+	arrDescriptorRanges[3] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 6, 0, 0 };
+	arrDescriptorRanges[4] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 9, 0, 0 };
+	arrDescriptorRanges[5] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 11, 0, 0 };
+	arrDescriptorRanges[6] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 12, 0, 0 };
+	arrDescriptorRanges[7] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 13, 0, 0 };
+	arrDescriptorRanges[8] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 14, 0, 0 };
+	std::array<D3D12_ROOT_PARAMETER, 13> arrParameters{};
+	for (std::uint32_t nIndex = 0; nIndex < 2; ++nIndex)
+	{
+		arrParameters[nIndex].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		arrParameters[nIndex].Descriptor.ShaderRegister = nIndex;
+		arrParameters[nIndex].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	}
+	arrParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	arrParameters[2].Constants.ShaderRegister = 2;
+	arrParameters[2].Constants.Num32BitValues = 4;
+	arrParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	arrParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	arrParameters[3].Constants.ShaderRegister = 3;
+	arrParameters[3].Constants.Num32BitValues = 16;
+	arrParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	for (std::uint32_t nIndex = 0; nIndex < arrDescriptorRanges.size(); ++nIndex)
+	{
+		arrParameters[nIndex + 4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		arrParameters[nIndex + 4].DescriptorTable.NumDescriptorRanges = 1;
+		arrParameters[nIndex + 4].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[nIndex];
+		arrParameters[nIndex + 4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	}
+	D3D12_STATIC_SAMPLER_DESC stEnvironmentSampler{};
+	stEnvironmentSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	stEnvironmentSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	stEnvironmentSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	stEnvironmentSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	stEnvironmentSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+	stEnvironmentSampler.MaxLOD = D3D12_FLOAT32_MAX;
+	stEnvironmentSampler.ShaderRegister = 5;
+	stEnvironmentSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	D3D12_ROOT_SIGNATURE_DESC stRoot{};
+	stRoot.NumParameters = static_cast<UINT>(arrParameters.size());
+	stRoot.pParameters = arrParameters.data();
+	stRoot.NumStaticSamplers = 1;
+	stRoot.pStaticSamplers = &stEnvironmentSampler;
+	stRoot.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
+	ComOwner<ID3DBlob> stSerialized;
+	ComOwner<ID3DBlob> stErrors;
+	if (FAILED(D3D12SerializeRootSignature(&stRoot, D3D_ROOT_SIGNATURE_VERSION_1, stSerialized.Put(), stErrors.Put())) ||
+		FAILED(stDevice->CreateRootSignature(0, stSerialized->GetBufferPointer(), stSerialized->GetBufferSize(), IID_PPV_ARGS(stTransparencyRoot.Put()))))
+	{
+		return Fail("Create transparent root signature");
+	}
+	const std::array<D3D12_INPUT_ELEMENT_DESC, 4> arrLayout{ {
+			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+	} };
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC stPipeline{};
+	stPipeline.pRootSignature = stTransparencyRoot.Get();
+	stPipeline.VS = { arrVertex.data(), arrVertex.size() };
+	stPipeline.PS = { arrPixel.data(), arrPixel.size() };
+	stPipeline.InputLayout = { arrLayout.data(), static_cast<UINT>(arrLayout.size()) };
+	stPipeline.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
+	stPipeline.RasterizerState.DepthClipEnable = TRUE;
+	stPipeline.DepthStencilState.DepthEnable = TRUE;
+	stPipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ZERO;
+	stPipeline.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+	stPipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	stPipeline.SampleMask = UINT_MAX;
+	stPipeline.SampleDesc.Count = 1;
+	stPipeline.NumRenderTargets = 2;
+	stPipeline.RTVFormats[0] = HDR_FORMAT;
+	stPipeline.RTVFormats[1] = DXGI_FORMAT_R8_UNORM;
+	stPipeline.DSVFormat = DXGI_FORMAT_D32_FLOAT;
+	stPipeline.BlendState.IndependentBlendEnable = TRUE;
+	D3D12_RENDER_TARGET_BLEND_DESC &stColorBlend = stPipeline.BlendState.RenderTarget[0];
+	stColorBlend.BlendEnable = TRUE;
+	stColorBlend.SrcBlend = D3D12_BLEND_ONE;
+	stColorBlend.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
+	stColorBlend.BlendOp = D3D12_BLEND_OP_ADD;
+	stColorBlend.SrcBlendAlpha = D3D12_BLEND_ONE;
+	stColorBlend.DestBlendAlpha = D3D12_BLEND_INV_SRC_ALPHA;
+	stColorBlend.BlendOpAlpha = D3D12_BLEND_OP_ADD;
+	stColorBlend.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+	D3D12_RENDER_TARGET_BLEND_DESC &stReactiveBlend = stPipeline.BlendState.RenderTarget[1];
+	stReactiveBlend.BlendEnable = TRUE;
+	stReactiveBlend.SrcBlend = D3D12_BLEND_ONE;
+	stReactiveBlend.DestBlend = D3D12_BLEND_ONE;
+	stReactiveBlend.BlendOp = D3D12_BLEND_OP_MAX;
+	stReactiveBlend.SrcBlendAlpha = D3D12_BLEND_ONE;
+	stReactiveBlend.DestBlendAlpha = D3D12_BLEND_ONE;
+	stReactiveBlend.BlendOpAlpha = D3D12_BLEND_OP_MAX;
+	stReactiveBlend.RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_RED;
+	for (std::uint32_t nIndex = 0; nIndex < arrTransparencyPipelines.size(); ++nIndex)
+	{
+		stPipeline.RasterizerState.FrontCounterClockwise = (nIndex & 1U) == 0;
+		stPipeline.RasterizerState.CullMode = (nIndex & 2U) != 0 ? D3D12_CULL_MODE_NONE : D3D12_CULL_MODE_BACK;
+		if (FAILED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(arrTransparencyPipelines[nIndex].Put()))))
+		{
+			return Fail("Create transparent PSO");
+		}
+	}
+	arrTransparentCenters.assign(arrDraws.size(), {});
+	arrTransparentOrder.clear();
+	for (std::size_t nDraw = 0; nDraw < arrDraws.size(); ++nDraw)
+	{
+		const GpuDraw &stDraw = arrDraws[nDraw];
+		if (arrMaterials[stDraw.stPrimitive.nMaterial].stData.eAlphaMode != AlphaMode::Blend)
+		{
+			continue;
+		}
+		const MeshPrimitive &stPrimitive = stRenderScene.arrAssets[stDraw.nSourceAsset].stMesh.arrPrimitives[stDraw.nSourcePrimitive];
+		if (stPrimitive.arrVertices.empty())
+		{
+			return Fail("Transparent primitive has no vertices");
+		}
+		std::array<double, 3> arrMinimum{ stPrimitive.arrVertices[0].arrPosition[0], stPrimitive.arrVertices[0].arrPosition[1], stPrimitive.arrVertices[0].arrPosition[2] };
+		std::array<double, 3> arrMaximum = arrMinimum;
+		for (const MeshVertex &stVertex : stPrimitive.arrVertices)
+		{
+			for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+			{
+				arrMinimum[nAxis] = (std::min)(arrMinimum[nAxis], static_cast<double>(stVertex.arrPosition[nAxis]));
+				arrMaximum[nAxis] = (std::max)(arrMaximum[nAxis], static_cast<double>(stVertex.arrPosition[nAxis]));
+			}
+		}
+		for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+		{
+			arrTransparentCenters[nDraw][nAxis] = arrMinimum[nAxis] * 0.5 + arrMaximum[nAxis] * 0.5;
+		}
+		arrTransparentOrder.push_back(nDraw);
+	}
+	return true;
+}
+
+bool VisualRuntime::CreateParticleMesh()
+{
+	if (stRenderConfiguration.arrParticles.empty())
+	{
+		return true;
+	}
+	if (arrMaterials.size() >= MAX_MATERIALS)
+	{
+		return Fail("Particle fallback material exceeds material descriptor budget");
+	}
+	FrameContext &stFrame = arrFrames[0];
+	if (FAILED(stFrame.stGraphicsAllocator->Reset()) || FAILED(stFrame.stGraphicsList->Reset(stFrame.stGraphicsAllocator.Get(), nullptr)))
+	{
+		return Fail("Reset particle upload list");
+	}
+	nParticleMaterial = static_cast<std::uint32_t>(arrMaterials.size());
+	const std::uint32_t nViewStart = MATERIAL_VIEW_START + nParticleMaterial * MATERIAL_TEXTURE_COUNT;
+	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+	for (std::uint32_t nSlot = 0; nSlot < MATERIAL_TEXTURE_COUNT; ++nSlot)
+	{
+		DecodedImage stPixel;
+		stPixel.nWidth = 1;
+		stPixel.nHeight = 1;
+		stPixel.arrRgba8 = nSlot == 2 ? std::vector<std::uint8_t>{ 128, 128, 255, 255 } : std::vector<std::uint8_t>{ 255, 255, 255, 255 };
+		const std::vector<MipLevel> arrLevels{ stPixel };
+		if (!UploadTexture(arrLevels, nSlot == 0 || nSlot == 4, nViewStart + nSlot))
+		{
+			return false;
+		}
+		D3D12_SAMPLER_DESC stSampler{};
+		stSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+		stSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		stSampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		stSampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+		stSampler.MaxLOD = D3D12_FLOAT32_MAX;
+		stSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
+		D3D12_CPU_DESCRIPTOR_HANDLE stHandle = stSamplerHeap->GetCPUDescriptorHandleForHeapStart();
+		stHandle.ptr += static_cast<SIZE_T>(nSamplerStride) * (nParticleMaterial * MATERIAL_TEXTURE_COUNT + nSlot);
+		stDevice->CreateSampler(&stSampler, stHandle);
+	}
+	MaterialData stMaterial;
+	stMaterial.eAlphaMode = AlphaMode::Blend;
+	stMaterial.bDoubleSided = true;
+	stMaterial.fMetallic = 0;
+	stMaterial.fRoughness = 1;
+	arrMaterials.push_back({ stMaterial, nViewStart });
+	if (FAILED(stFrame.stGraphicsList->Close()))
+	{
+		return Fail("Close particle upload list");
+	}
+	ID3D12CommandList *pUploadList = stFrame.stGraphicsList.Get();
+	stGraphics.stQueue->ExecuteCommandLists(1, &pUploadList);
+	if (!stGraphics.Flush())
+	{
+		return Fail("Wait particle texture upload");
+	}
+	arrTextureUploads.clear();
+	const D3D12_HEAP_PROPERTIES stUpload = HeapProperties(D3D12_HEAP_TYPE_UPLOAD);
+	const std::array<std::uint16_t, 6> arrIndices{ 0, 1, 2, 0, 2, 3 };
+	const D3D12_RESOURCE_DESC stIndexDescription = BufferDescription(sizeof(arrIndices));
+	if (FAILED(stDevice->CreateCommittedResource(&stUpload, D3D12_HEAP_FLAG_NONE, &stIndexDescription,
+												 D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stParticleIndices.Put()))))
+	{
+		return Fail("Create particle index buffer");
+	}
+	void *pMapped = nullptr;
+	const D3D12_RANGE stNoRead{ 0, 0 };
+	if (FAILED(stParticleIndices->Map(0, &stNoRead, &pMapped)))
+	{
+		return Fail("Map particle index buffer");
+	}
+	std::memcpy(pMapped, arrIndices.data(), sizeof(arrIndices));
+	stParticleIndices->Unmap(0, nullptr);
+	stParticleIndexView = { stParticleIndices->GetGPUVirtualAddress(), sizeof(arrIndices), DXGI_FORMAT_R16_UINT };
+	const D3D12_RESOURCE_DESC stVertexDescription = BufferDescription(static_cast<std::uint64_t>(MAX_PARTICLES) * 4 * sizeof(MeshVertex));
+	const D3D12_RESOURCE_DESC stConstantDescription = BufferDescription(static_cast<std::uint64_t>(MAX_PARTICLES) * DRAW_CONSTANT_BYTES);
+	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
+	{
+		if (FAILED(stDevice->CreateCommittedResource(&stUpload, D3D12_HEAP_FLAG_NONE, &stVertexDescription,
+													 D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(arrParticleVertices[nFrame].Put()))) ||
+			FAILED(stDevice->CreateCommittedResource(&stUpload, D3D12_HEAP_FLAG_NONE, &stConstantDescription,
+													 D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(arrParticleConstants[nFrame].Put()))))
+		{
+			return Fail("Create retired-frame particle upload buffers");
+		}
+		arrParticleVertexViews[nFrame] = { arrParticleVertices[nFrame]->GetGPUVirtualAddress(), static_cast<UINT>(stVertexDescription.Width), sizeof(MeshVertex) };
+		nParticleUploadBytes += stDevice->GetResourceAllocationInfo(0, 1, &stVertexDescription).SizeInBytes;
+		nParticleUploadBytes += stDevice->GetResourceAllocationInfo(0, 1, &stConstantDescription).SizeInBytes;
+	}
+	nParticleUploadBytes += stDevice->GetResourceAllocationInfo(0, 1, &stIndexDescription).SizeInBytes;
+	arrParticleInstances.reserve(MAX_PARTICLES);
+	pParticleScratch = std::make_unique<ParticleFrame>();
+	return true;
+}
+
+bool VisualRuntime::UpdateParticleBuffers(std::uint32_t nFrame, double dSeconds)
+{
+	arrParticleInstances.clear();
+	Assets::Diagnostics arrDiagnostics;
+	for (const ParticleSettings &stEmitter : stRenderConfiguration.arrParticles)
+	{
+		std::array<double, 3> arrOrigin{};
+		if (!ResolveEffectOrigin(stEmitter.nSourceEntityId, arrOrigin) || !EvaluateParticles(stEmitter, dSeconds, arrOrigin, *pParticleScratch, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Resolve particle emitter origin" : arrDiagnostics.front().strMessage);
+		}
+		if (pParticleScratch->nCount > MAX_PARTICLES - arrParticleInstances.size())
+		{
+			return Fail("Combined particle frame exceeds shared 4096-instance budget");
+		}
+		arrParticleInstances.insert(arrParticleInstances.end(), pParticleScratch->arrInstances.begin(), pParticleScratch->arrInstances.begin() + pParticleScratch->nCount);
+	}
+	if (arrParticleInstances.empty())
+	{
+		return true;
+	}
+	nPeakParticles = (std::max)(nPeakParticles, static_cast<std::uint32_t>(arrParticleInstances.size()));
+	void *pVertexBytes = nullptr;
+	void *pConstantBytes = nullptr;
+	const D3D12_RANGE stNoRead{ 0, 0 };
+	if (FAILED(arrParticleVertices[nFrame]->Map(0, &stNoRead, &pVertexBytes)))
+	{
+		return Fail("Map retired particle vertices");
+	}
+	if (FAILED(arrParticleConstants[nFrame]->Map(0, &stNoRead, &pConstantBytes)))
+	{
+		arrParticleVertices[nFrame]->Unmap(0, nullptr);
+		return Fail("Map retired particle constants");
+	}
+	const std::array<double, 16> &arrView = stCameraMatrices.arrView;
+	const std::array<float, 3> arrRight{ static_cast<float>(arrView[0]), static_cast<float>(arrView[4]), static_cast<float>(arrView[8]) };
+	const std::array<float, 3> arrUp{ static_cast<float>(arrView[1]), static_cast<float>(arrView[5]), static_cast<float>(arrView[9]) };
+	const std::array<float, 3> arrNormal{ static_cast<float>(arrView[2]), static_cast<float>(arrView[6]), static_cast<float>(arrView[10]) };
+	const std::array<std::array<float, 2>, 4> arrCorners{ { { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } } };
+	MeshVertex *pVertices = static_cast<MeshVertex *>(pVertexBytes);
+	for (std::size_t nIndex = 0; nIndex < arrParticleInstances.size(); ++nIndex)
+	{
+		const BillboardInstance &stInstance = arrParticleInstances[nIndex];
+		const float fHalfSize = static_cast<float>(stInstance.dSize * 0.5);
+		for (std::size_t nCorner = 0; nCorner < 4; ++nCorner)
+		{
+			MeshVertex &stVertex = pVertices[nIndex * 4 + nCorner];
+			for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+			{
+				stVertex.arrPosition[nAxis] = static_cast<float>(stInstance.arrCenter[nAxis]) +
+						fHalfSize * (arrRight[nAxis] * arrCorners[nCorner][0] + arrUp[nAxis] * arrCorners[nCorner][1]);
+			}
+			stVertex.arrNormal = arrNormal;
+			stVertex.arrTangent = { arrRight[0], arrRight[1], arrRight[2], 1 };
+			stVertex.arrTexcoord = { arrCorners[nCorner][0] * 0.5F + 0.5F, 0.5F - arrCorners[nCorner][1] * 0.5F };
+		}
+		DrawConstants stConstants;
+		for (std::size_t nDiagonal = 0; nDiagonal < 4; ++nDiagonal)
+		{
+			stConstants.arrWorld[nDiagonal * 5] = 1;
+			stConstants.arrNormal[nDiagonal * 5] = 1;
+			stConstants.arrPreviousWorld[nDiagonal * 5] = 1;
+			stConstants.arrBaseColor[nDiagonal] = static_cast<float>(stInstance.arrColor[nDiagonal]);
+		}
+		stConstants.arrSurface = { 1, 1, 1, 0 };
+		stConstants.arrFlags = { 0, 1, 0, 0 };
+		std::memcpy(static_cast<std::uint8_t *>(pConstantBytes) + nIndex * DRAW_CONSTANT_BYTES, &stConstants, sizeof(stConstants));
+	}
+	arrParticleVertices[nFrame]->Unmap(0, nullptr);
+	arrParticleConstants[nFrame]->Unmap(0, nullptr);
+	return true;
+}
+
+void VisualRuntime::DrawTransparency(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
+{
+	const auto fnDepth = [this](const std::array<double, 3> &arrPosition)
+	{
+		const std::array<double, 16> &arrView = stCameraMatrices.arrView;
+		return -(arrView[2] * arrPosition[0] + arrView[6] * arrPosition[1] + arrView[10] * arrPosition[2] + arrView[14]);
+	};
+	arrForwardDraws.clear();
+	arrForwardDraws.reserve(arrTransparentOrder.size() + arrParticleInstances.size());
+	for (std::size_t nDraw : arrTransparentOrder)
+	{
+		const std::array<double, 16> &arrWorld = stTemporalFrame.arrDraws[nDraw].arrCurrentWorld;
+		const std::array<double, 3> &arrCenter = arrTransparentCenters[nDraw];
+		std::array<double, 3> arrPosition{};
+		for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+		{
+			arrPosition[nAxis] = arrWorld[nAxis] * arrCenter[0] + arrWorld[4 + nAxis] * arrCenter[1] + arrWorld[8 + nAxis] * arrCenter[2] + arrWorld[12 + nAxis];
+		}
+		arrForwardDraws.push_back({ false, nDraw, fnDepth(arrPosition) });
+	}
+	for (std::size_t nParticle = 0; nParticle < arrParticleInstances.size(); ++nParticle)
+	{
+		arrForwardDraws.push_back({ true, nParticle, fnDepth(arrParticleInstances[nParticle].arrCenter) });
+	}
+	std::sort(arrForwardDraws.begin(), arrForwardDraws.end(), [this](const ForwardDrawItem &stLeft, const ForwardDrawItem &stRight)
+			  {
+		if (stLeft.dDepth != stRight.dDepth)
+		{
+			return stLeft.dDepth > stRight.dDepth;
+		}
+		if (stLeft.bParticle != stRight.bParticle)
+		{
+			return !stLeft.bParticle;
+		}
+		if (stLeft.bParticle)
+		{
+			const ParticleId &stLeftId = arrParticleInstances[stLeft.nIndex].stId;
+			const ParticleId &stRightId = arrParticleInstances[stRight.nIndex].stId;
+			return std::tie(stLeftId.nEmitterId, stLeftId.nSeed, stLeftId.nSpawnIndex) < std::tie(stRightId.nEmitterId, stRightId.nSeed, stRightId.nSpawnIndex);
+		}
+		const GpuDraw &stLeftDraw = arrDraws[stLeft.nIndex];
+		const GpuDraw &stRightDraw = arrDraws[stRight.nIndex];
+		return std::tie(stLeftDraw.nEntityId, stLeftDraw.nSourceAsset, stLeftDraw.nSourcePrimitive, stLeftDraw.nSourceNode) <
+			std::tie(stRightDraw.nEntityId, stRightDraw.nSourceAsset, stRightDraw.nSourcePrimitive, stRightDraw.nSourceNode); });
+	if (arrForwardDraws.empty())
+	{
+		return;
+	}
+	const D3D12_VIEWPORT stViewport{ 0, 0, static_cast<float>(nWidth), static_cast<float>(nHeight), 0, 1 };
+	const D3D12_RECT stScissor{ 0, 0, static_cast<LONG>(nWidth), static_cast<LONG>(nHeight) };
+	pList->RSSetViewports(1, &stViewport);
+	pList->RSSetScissorRects(1, &stScissor);
+	const std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 2> arrTargets{ Rtv(FRAME_COUNT * 10 + nFrame), Rtv(FRAME_COUNT * 11 + nFrame) };
+	const D3D12_CPU_DESCRIPTOR_HANDLE stDepth = Dsv(FRAME_COUNT * (5 + MAX_LOCAL_SHADOW_VIEWS) + nFrame);
+	pList->OMSetRenderTargets(2, arrTargets.data(), FALSE, &stDepth);
+	pList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	ID3D12DescriptorHeap *arrHeaps[]{ stViewHeap.Get(), stSamplerHeap.Get() };
+	pList->SetDescriptorHeaps(2, arrHeaps);
+	pList->SetGraphicsRootSignature(stTransparencyRoot.Get());
+	pList->SetGraphicsRootConstantBufferView(1, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
+	const std::array<float, 16> arrFogConstants = BuildVolumeConstants();
+	pList->SetGraphicsRoot32BitConstants(3, 16, arrFogConstants.data(), 0);
+	pList->SetGraphicsRootDescriptorTable(6, GpuView(nFrame * FRAME_VIEW_COUNT + 6));
+	pList->SetGraphicsRootDescriptorTable(7, GpuView(ENVIRONMENT_VIEW_START));
+	pList->SetGraphicsRootDescriptorTable(8, GpuView(nFrame * FRAME_VIEW_COUNT + 8));
+	pList->SetGraphicsRootDescriptorTable(9, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
+	pList->SetGraphicsRootDescriptorTable(10, GpuView(nFrame * FRAME_VIEW_COUNT));
+	pList->SetGraphicsRootDescriptorTable(11, GpuView(nFrame * FRAME_VIEW_COUNT + VOLUME_INTEGRAL_VIEW));
+	pList->SetGraphicsRootDescriptorTable(12, GpuView(nFrame * FRAME_VIEW_COUNT + VOLUME_HISTORY_WRITE_VIEW));
+	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+	for (const ForwardDrawItem &stItem : arrForwardDraws)
+	{
+		std::uint32_t nMaterial = nParticleMaterial;
+		std::uint32_t nPipeline = 2;
+		D3D12_GPU_VIRTUAL_ADDRESS nConstants = 0;
+		if (stItem.bParticle)
+		{
+			pList->IASetVertexBuffers(0, 1, &arrParticleVertexViews[nFrame]);
+			pList->IASetIndexBuffer(&stParticleIndexView);
+			nConstants = arrParticleConstants[nFrame]->GetGPUVirtualAddress() + stItem.nIndex * DRAW_CONSTANT_BYTES;
+		}
+		else
+		{
+			const GpuDraw &stDraw = arrDraws[stItem.nIndex];
+			nMaterial = stDraw.stPrimitive.nMaterial;
+			nPipeline = (stDraw.bMirrored ? 1U : 0U) + (arrMaterials[nMaterial].stData.bDoubleSided ? 2U : 0U);
+			pList->IASetVertexBuffers(0, 1, &stVertexView);
+			pList->IASetIndexBuffer(&stIndexView);
+			nConstants = arrFrames[nFrame].stConstants->GetGPUVirtualAddress() + FRAME_CONSTANT_BYTES + stItem.nIndex * DRAW_CONSTANT_BYTES;
+		}
+		const std::array<float, 4> arrSoft{ static_cast<float>(stRenderConfiguration.stCamera.dNearPlane), static_cast<float>(stRenderConfiguration.stCamera.dFarPlane), stItem.bParticle ? 0.1F : 0.0F, stItem.bParticle ? 1.0F : 0.0F };
+		pList->SetGraphicsRoot32BitConstants(2, 4, arrSoft.data(), 0);
+		pList->SetPipelineState(arrTransparencyPipelines[nPipeline].Get());
+		pList->SetGraphicsRootConstantBufferView(0, nConstants);
+		pList->SetGraphicsRootDescriptorTable(4, GpuView(arrMaterials[nMaterial].nViewStart));
+		D3D12_GPU_DESCRIPTOR_HANDLE stSampler = stSamplerHeap->GetGPUDescriptorHandleForHeapStart();
+		stSampler.ptr += static_cast<UINT64>(nSamplerStride) * nMaterial * MATERIAL_TEXTURE_COUNT;
+		pList->SetGraphicsRootDescriptorTable(5, stSampler);
+		if (stItem.bParticle)
+		{
+			pList->DrawIndexedInstanced(6, 1, 0, static_cast<INT>(stItem.nIndex * 4), 0);
+		}
+		else
+		{
+			const GpuPrimitive &stPrimitive = arrDraws[stItem.nIndex].stPrimitive;
+			pList->DrawIndexedInstanced(stPrimitive.nIndexCount, 1, stPrimitive.nFirstIndex, stPrimitive.nBaseVertex, 0);
+		}
+	}
+}
+
 bool VisualRuntime::CreateReflectionTargets()
 {
 	nReflectionBytes = 0;
@@ -2244,6 +3192,7 @@ bool VisualRuntime::ResetTemporalHistory()
 	}
 	bHistoryReady = false;
 	bExposureReady = false;
+	bVolumeHistoryReady = false;
 	++nHistoryResets;
 	return true;
 }
@@ -2525,7 +3474,7 @@ bool VisualRuntime::PreparePostProcess(ID3D12GraphicsCommandList *pList, std::ui
 		stDevice->CreateShaderResourceView(stFrame.arrBloomUp[nMip].Get(), &stTextureSrv, View(nStart + 60 + 2 * nMip));
 		stDevice->CreateUnorderedAccessView(stFrame.arrBloomUp[nMip].Get(), nullptr, &stTextureUav, View(nStart + 61 + 2 * nMip));
 	}
-	ID3D12Resource *pCurrentHdr = stRenderConfiguration.stReflections.bEnabled ? stFrame.stReflectedHdr.Get() : stFrame.stHdr.Get();
+	ID3D12Resource *pCurrentHdr = CurrentHdrResource(nFrame);
 	ID3D12Resource *pBloom = stRenderConfiguration.stTemporal.bEnabled ? arrHistory[1 - nHistoryRead][0].Get() : pCurrentHdr;
 	if (!stRenderPipeline.arrBloomDown.empty())
 	{
@@ -2581,16 +3530,19 @@ bool VisualRuntime::CreateTemporalPipeline()
 	{
 		return Fail("Missing temporal resolve shader");
 	}
-	std::array<D3D12_DESCRIPTOR_RANGE, 2> arrTemporalRanges{};
+	std::array<D3D12_DESCRIPTOR_RANGE, 3> arrTemporalRanges{};
 	arrTemporalRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	arrTemporalRanges[0].NumDescriptors = 10;
 	arrTemporalRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_UAV;
 	arrTemporalRanges[1].NumDescriptors = 4;
-	std::array<D3D12_ROOT_PARAMETER, 3> arrParameters{};
+	arrTemporalRanges[2].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	arrTemporalRanges[2].NumDescriptors = 1;
+	arrTemporalRanges[2].BaseShaderRegister = 10;
+	std::array<D3D12_ROOT_PARAMETER, 4> arrParameters{};
 	arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	arrParameters[0].Constants.Num32BitValues = 16;
 	arrParameters[0].Constants.ShaderRegister = 0;
-	for (std::uint32_t nIndex = 0; nIndex < 2; ++nIndex)
+	for (std::uint32_t nIndex = 0; nIndex < arrTemporalRanges.size(); ++nIndex)
 	{
 		arrParameters[nIndex + 1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 		arrParameters[nIndex + 1].DescriptorTable.NumDescriptorRanges = 1;
@@ -2617,7 +3569,7 @@ void VisualRuntime::ResolveTemporal(ID3D12GraphicsCommandList *pList, std::uint3
 	const std::uint32_t nStart = nFrame * FRAME_VIEW_COUNT;
 	FrameContext &stFrame = arrFrames[nFrame];
 	const std::array<DXGI_FORMAT, 4> arrHistoryFormats{ HDR_FORMAT, DXGI_FORMAT_R32_FLOAT, HDR_FORMAT, DXGI_FORMAT_R32_UINT };
-	ID3D12Resource *pCurrentHdr = stRenderConfiguration.stReflections.bEnabled ? stFrame.stReflectedHdr.Get() : stFrame.stHdr.Get();
+	ID3D12Resource *pCurrentHdr = CurrentHdrResource(nFrame);
 	const std::array<ID3D12Resource *, 5> arrCurrent{ pCurrentHdr, stFrame.stDepth.Get(), stFrame.arrGbuffer[1].Get(), stFrame.stMotion.Get(), stFrame.stObjectId.Get() };
 	const std::array<DXGI_FORMAT, 5> arrCurrentFormats{ HDR_FORMAT, DXGI_FORMAT_R32_FLOAT, HDR_FORMAT, DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32_UINT };
 	D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
@@ -2646,6 +3598,8 @@ void VisualRuntime::ResolveTemporal(ID3D12GraphicsCommandList *pList, std::uint3
 	stExposureSrv.Buffer.NumElements = 1;
 	stExposureSrv.Buffer.StructureByteStride = 16;
 	stDevice->CreateShaderResourceView(arrExposure[nExposureRead].Get(), &stExposureSrv, View(nStart + 41));
+	stSrv.Format = DXGI_FORMAT_R8_UNORM;
+	stDevice->CreateShaderResourceView(stFrame.stReactiveMask.Get(), &stSrv, View(nStart + REACTIVE_MASK_VIEW));
 	if (!bHistoryReady)
 	{
 		// Every resource is initialized before the first possible history read.
@@ -2678,13 +3632,14 @@ void VisualRuntime::ResolveTemporal(ID3D12GraphicsCommandList *pList, std::uint3
 	}
 	const std::array<float, 16> arrConstants{ static_cast<float>(nWidth), static_cast<float>(nHeight), 1.0F / nWidth, 1.0F / nHeight,
 											  static_cast<float>(stTemporalFrame.arrJitterPixels[0]), static_cast<float>(stTemporalFrame.arrJitterPixels[1]), 0, 0,
-											  bHistoryReady && stTemporalFrame.bHistoryValid ? 1.0F : 0.0F, static_cast<float>(stRenderConfiguration.stTemporal.dHistoryWeight), static_cast<float>(stRenderConfiguration.stTemporal.dDepthThreshold), 0,
+											  bHistoryReady && stTemporalFrame.bHistoryValid ? 1.0F : 0.0F, static_cast<float>(stRenderConfiguration.stTemporal.dHistoryWeight), static_cast<float>(stRenderConfiguration.stTemporal.dDepthThreshold), stForwardEffects.bTransparency ? 1.0F : 0.0F,
 											  static_cast<float>(stRenderConfiguration.stCamera.dNearPlane), static_cast<float>(stRenderConfiguration.stCamera.dFarPlane), 0, 0 };
 	pList->SetPipelineState(stTemporalPipeline.Get());
 	pList->SetComputeRootSignature(stTemporalRoot.Get());
 	pList->SetComputeRoot32BitConstants(0, 16, arrConstants.data(), 0);
 	pList->SetComputeRootDescriptorTable(1, GpuView(nStart + 32));
 	pList->SetComputeRootDescriptorTable(2, GpuView(nStart + 42));
+	pList->SetComputeRootDescriptorTable(3, GpuView(nStart + REACTIVE_MASK_VIEW));
 	pList->Dispatch((nWidth + 7) / 8, (nHeight + 7) / 8, 1);
 }
 
@@ -2784,6 +3739,10 @@ void VisualRuntime::DrawShadows(ID3D12GraphicsCommandList *pList, std::uint32_t 
 		{
 			const GpuDraw &stDraw = arrDraws[nDraw];
 			const GpuMaterial &stMaterial = arrMaterials[stDraw.stPrimitive.nMaterial];
+			if (stMaterial.stData.eAlphaMode == AlphaMode::Blend)
+			{
+				continue;
+			}
 			const std::size_t nPipeline = (stDraw.bMirrored ? 1 : 0) + (stMaterial.stData.bDoubleSided ? 2 : 0);
 			pList->SetPipelineState(arrShadowPipelines[nPipeline].Get());
 			pList->SetGraphicsRootConstantBufferView(0, arrFrames[nFrame].stConstants->GetGPUVirtualAddress() + FRAME_CONSTANT_BYTES + nDraw * DRAW_CONSTANT_BYTES);
@@ -2812,6 +3771,26 @@ bool VisualRuntime::CreateConstantBuffers()
 			return Fail("Create frame-owned constant upload buffer");
 		}
 		(void)stFrame.stConstants->SetName(L"EngineNext.FrameConstants");
+		if (stForwardEffects.bVolume)
+		{
+			const D3D12_RESOURCE_DESC stVolumeDescription = BufferDescription(512 + MAX_LOCAL_VOLUMES * sizeof(LocalVolumeConstants));
+			if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stVolumeDescription, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stFrame.stVolumeParameters.Put()))))
+			{
+				return Fail("Create frame-owned volume parameter upload");
+			}
+			const std::uint32_t nFrame = static_cast<std::uint32_t>(&stFrame - arrFrames.data());
+			D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
+			stSrv.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+			stSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			stSrv.Buffer.FirstElement = VOLUME_GLOBAL_BYTE_OFFSET / sizeof(GlobalVolumeConstants);
+			stSrv.Buffer.NumElements = 1;
+			stSrv.Buffer.StructureByteStride = sizeof(GlobalVolumeConstants);
+			stDevice->CreateShaderResourceView(stFrame.stVolumeParameters.Get(), &stSrv, View(nFrame * FRAME_VIEW_COUNT + VOLUME_GLOBAL_VIEW));
+			stSrv.Buffer.FirstElement = VOLUME_LOCAL_BYTE_OFFSET / sizeof(LocalVolumeConstants);
+			stSrv.Buffer.NumElements = MAX_LOCAL_VOLUMES;
+			stSrv.Buffer.StructureByteStride = sizeof(LocalVolumeConstants);
+			stDevice->CreateShaderResourceView(stFrame.stVolumeParameters.Get(), &stSrv, View(nFrame * FRAME_VIEW_COUNT + VOLUME_LOCAL_VIEW));
+		}
 		const D3D12_RESOURCE_DESC stShadowDescription = BufferDescription((4 + MAX_LOCAL_SHADOW_VIEWS) * CONSTANT_BUFFER_ALIGNMENT);
 		if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stShadowDescription, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stFrame.stShadowConstants.Put()))))
 		{
@@ -2877,6 +3856,10 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 		for (std::size_t nDraw = 0; nDraw < arrDraws.size(); ++nDraw)
 		{
 			const GpuDraw &stDraw = arrDraws[nDraw];
+			if (arrMaterials[stDraw.stPrimitive.nMaterial].stData.eAlphaMode == AlphaMode::Blend)
+			{
+				continue;
+			}
 			const std::array<double, 16> &arrWorld = stTemporalFrame.arrDraws[nDraw].arrCurrentWorld;
 			WorldBounds stBounds;
 			if (!TransformShadowBounds(stRenderScene.arrAssets[stDraw.nSourceAsset].stMesh.arrPrimitives[stDraw.nSourcePrimitive], arrWorld, stBounds, arrDiagnostics))
@@ -3095,6 +4078,10 @@ void VisualRuntime::DrawScene(ID3D12GraphicsCommandList *pList, std::uint32_t nF
 	{
 		const GpuDraw &stDraw = arrDraws[nDraw];
 		const GpuMaterial &stMaterial = arrMaterials[stDraw.stPrimitive.nMaterial];
+		if (stMaterial.stData.eAlphaMode == AlphaMode::Blend)
+		{
+			continue;
+		}
 		ID3D12PipelineState *pPipeline = stDraw.bMirrored ? stMirroredPipeline.Get() : stDeferredPipeline.Get();
 		if (stMaterial.stData.bDoubleSided)
 		{
@@ -3142,7 +4129,7 @@ void VisualRuntime::DrawPostProcess(ID3D12GraphicsCommandList *pList, std::uint3
 			static_cast<float>(stExposure.eMode), static_cast<float>(dManualExposure), static_cast<float>(stExposure.dCompensationEv), 1
 		};
 		const bool bHistogram = eWork == PassWork::HistogramBuild;
-		const std::uint32_t nSource = bHistogram ? (stRenderConfiguration.stTemporal.bEnabled ? 46U : (stRenderConfiguration.stReflections.bEnabled ? REFLECTION_OUTPUT_VIEW : 7U)) : 28U;
+		const std::uint32_t nSource = bHistogram ? (stRenderConfiguration.stTemporal.bEnabled ? 46U : CurrentHdrView()) : 28U;
 		pList->SetPipelineState(bHistogram ? stHistogramPipeline.Get() : stExposurePipeline.Get());
 		pList->SetComputeRootSignature(stExposureRoot.Get());
 		pList->SetComputeRoot32BitConstants(0, 16, arrConstants.data(), 0);
@@ -3155,7 +4142,7 @@ void VisualRuntime::DrawPostProcess(ID3D12GraphicsCommandList *pList, std::uint3
 	const bool bDownsample = eWork == PassWork::BloomDownsample;
 	FrameContext &stFrame = arrFrames[nFrame];
 	ID3D12Resource *pDestination = bDownsample ? stFrame.arrBloomDown[nMip].Get() : stFrame.arrBloomUp[nMip].Get();
-	ID3D12Resource *pCurrentHdr = stRenderConfiguration.stReflections.bEnabled ? stFrame.stReflectedHdr.Get() : stFrame.stHdr.Get();
+	ID3D12Resource *pCurrentHdr = CurrentHdrResource(nFrame);
 	ID3D12Resource *pSource = bDownsample ? (nMip == 0 ? (stRenderConfiguration.stTemporal.bEnabled ? arrHistory[1 - nHistoryRead][0].Get() : pCurrentHdr) : stFrame.arrBloomDown[nMip - 1].Get()) : stFrame.arrBloomDown[nMip].Get();
 	const D3D12_RESOURCE_DESC stDestination = pDestination->GetDesc();
 	const D3D12_RESOURCE_DESC stSource = pSource->GetDesc();
@@ -3170,7 +4157,7 @@ void VisualRuntime::DrawPostProcess(ID3D12GraphicsCommandList *pList, std::uint3
 		static_cast<float>(stBloom.dIntensity), static_cast<float>(stBloom.dThreshold), static_cast<float>(stBloom.dSoftKnee), 0.5F,
 		bDownsample && nMip == 0 ? 1.0F : 0.0F, 0, 0, 0
 	};
-	const std::uint32_t nSourceView = bDownsample ? (nMip == 0 ? (stRenderConfiguration.stTemporal.bEnabled ? 46U : (stRenderConfiguration.stReflections.bEnabled ? REFLECTION_OUTPUT_VIEW : 7U)) : 48U + 2 * (nMip - 1)) : 48U + 2 * nMip;
+	const std::uint32_t nSourceView = bDownsample ? (nMip == 0 ? (stRenderConfiguration.stTemporal.bEnabled ? 46U : CurrentHdrView()) : 48U + 2 * (nMip - 1)) : 48U + 2 * nMip;
 	std::uint32_t nLowerView = nSourceView;
 	if (!bDownsample)
 	{
@@ -3196,7 +4183,7 @@ void VisualRuntime::DrawToneMap(ID3D12GraphicsCommandList *pList, std::uint32_t 
 	pList->SetPipelineState(stToneMapPipeline.Get());
 	pList->SetGraphicsRootSignature(stToneMapRoot.Get());
 	pList->SetGraphicsRootConstantBufferView(0, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
-	pList->SetGraphicsRootDescriptorTable(1, GpuView(nFrame * FRAME_VIEW_COUNT + (stRenderConfiguration.stTemporal.bEnabled ? 46 : (stRenderConfiguration.stReflections.bEnabled ? REFLECTION_OUTPUT_VIEW : 7))));
+	pList->SetGraphicsRootDescriptorTable(1, GpuView(nFrame * FRAME_VIEW_COUNT + (stRenderConfiguration.stTemporal.bEnabled ? 46 : CurrentHdrView())));
 	pList->SetGraphicsRootDescriptorTable(2, GpuView(nFrame * FRAME_VIEW_COUNT + 96));
 	pList->SetGraphicsRootDescriptorTable(3, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
 	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 27));
@@ -3283,9 +4270,18 @@ std::uint32_t VisualRuntime::TotalQueryCount() const noexcept
 
 bool VisualRuntime::BuildGraph()
 {
+	stForwardEffects.bVolume = bSceneMode && stRenderConfiguration.stVolume.bEnabled;
+	stForwardEffects.bTransparency = bSceneMode && !stRenderConfiguration.arrParticles.empty();
+	for (const RenderAsset &stAsset : stRenderScene.arrAssets)
+	{
+		for (const MaterialData &stMaterial : stAsset.stMesh.arrMaterials)
+		{
+			stForwardEffects.bTransparency = stForwardEffects.bTransparency || stMaterial.eAlphaMode == AlphaMode::Blend;
+		}
+	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -3476,6 +4472,23 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 				arrResources[stRenderPipeline.arrReflectionMips[nMip]] = stFrame.arrReflectionMips[nMip].Get();
 			}
 		}
+		if (stForwardEffects.bVolume || stForwardEffects.bTransparency)
+		{
+			arrResources[stRenderPipeline.nForwardHdr] = stFrame.stForwardHdr.Get();
+		}
+		if (stForwardEffects.bTransparency)
+		{
+			arrResources[stRenderPipeline.nReactiveMask] = stFrame.stReactiveMask.Get();
+		}
+		if (stForwardEffects.bVolume)
+		{
+			arrResources[stRenderPipeline.nVolumeMedium] = stFrame.arrVolume[0].Get();
+			arrResources[stRenderPipeline.nVolumeEmission] = stFrame.arrVolume[1].Get();
+			arrResources[stRenderPipeline.nVolumeSource] = stFrame.arrVolume[2].Get();
+			arrResources[stRenderPipeline.nVolumeIntegral] = stFrame.arrVolume[3].Get();
+			arrResources[stRenderPipeline.nVolumeHistoryRead] = arrVolumeHistory[nVolumeRead].Get();
+			arrResources[stRenderPipeline.nVolumeHistoryWrite] = arrVolumeHistory[1 - nVolumeRead].Get();
+		}
 		arrResources[stRenderPipeline.nDirectionalShadow] = stFrame.stDirectionalShadow.Get();
 		arrResources[stRenderPipeline.nLocalShadow] = stFrame.stLocalShadow.Get();
 		arrResources[stRenderPipeline.nMotion] = stFrame.stMotion.Get();
@@ -3513,7 +4526,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		}
 		stTiming.dLightingSeconds = dSeconds;
 		stTiming.dDirectionalIlluminance = stFrameLight.dIlluminance;
-		if (!UpdateConstantBuffer(stFrame))
+		if (!UpdateEffectTransforms() || !UpdateConstantBuffer(stFrame) || !UpdateVolumeParameters(nIndex) || !UpdateParticleBuffers(nIndex, dSeconds))
 		{
 			return false;
 		}
@@ -3522,6 +4535,9 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		stTiming.nTemporalRead = nHistoryRead;
 		stTiming.arrTemporalJitter = stRenderConfiguration.stTemporal.bEnabled ? stTemporalFrame.arrJitterPixels : std::array<double, 2>{ 0, 0 };
 		stTiming.bTemporalHistoryValid = stRenderConfiguration.stTemporal.bEnabled && bHistoryReady && stTemporalFrame.bHistoryValid;
+		stTiming.bVolumeHistoryValid = stForwardEffects.bVolume && bVolumeHistoryReady && stTemporalFrame.bHistoryValid;
+		stTiming.nVolumeHistoryRead = nVolumeRead;
+		stTiming.nParticles = static_cast<std::uint32_t>(arrParticleInstances.size());
 	}
 	const std::array<float, 4> arrConstants{ static_cast<float>(dSeconds), static_cast<float>(nWidth) / static_cast<float>(nHeight), fCameraX, fCameraY };
 	ID3D12DescriptorHeap *pHeap = stViewHeap.Get();
@@ -3592,6 +4608,21 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		else if (eWork == PassWork::ReflectionRadiance || eWork == PassWork::ReflectionColorMip || eWork == PassWork::ReflectionTrace || eWork == PassWork::ReflectionComposite)
 		{
 			DrawReflections(pList, nIndex, eWork, stRenderPipeline.arrPassMipIndex[stPass.nPass]);
+		}
+		else if (eWork == PassWork::VolumePrepare || eWork == PassWork::VolumeInject || eWork == PassWork::VolumeLight ||
+				 eWork == PassWork::VolumeTemporal || eWork == PassWork::VolumeIntegrate || eWork == PassWork::VolumeComposite)
+		{
+			DrawVolume(pList, nIndex, eWork);
+		}
+		else if (eWork == PassWork::ForwardCopy)
+		{
+			pList->CopyResource(stFrame.stForwardHdr.Get(), stRenderConfiguration.stReflections.bEnabled ? stFrame.stReflectedHdr.Get() : stFrame.stHdr.Get());
+		}
+		else if (eWork == PassWork::Transparency)
+		{
+			const std::array<float, 4> arrClear{};
+			pList->ClearRenderTargetView(Rtv(FRAME_COUNT * 11 + nIndex), arrClear.data(), 0, nullptr);
+			DrawTransparency(pList, nIndex);
 		}
 		else if (eWork == PassWork::DirectionalShadow)
 		{
@@ -3687,6 +4718,12 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			nHistoryRead = 1 - nHistoryRead;
 			bHistoryReady = true;
 		}
+		if (stForwardEffects.bVolume)
+		{
+			nVolumeRead = 1 - nVolumeRead;
+			bVolumeHistoryReady = true;
+			stPreviousVolumeCamera = stCameraMatrices;
+		}
 		nExposureRead = 1 - nExposureRead;
 		bExposureReady = true;
 		dLastPostSeconds = dSeconds;
@@ -3730,6 +4767,12 @@ bool VisualRuntime::Resize()
 		arrFrames[nIndex].stEnvironmentSpecular.Reset();
 		arrFrames[nIndex].stReflection.Reset();
 		arrFrames[nIndex].stReflectedHdr.Reset();
+		arrFrames[nIndex].stForwardHdr.Reset();
+		arrFrames[nIndex].stReactiveMask.Reset();
+		for (ComOwner<ID3D12Resource> &stTarget : arrFrames[nIndex].arrVolume)
+		{
+			stTarget.Reset();
+		}
 		for (ComOwner<ID3D12Resource> &stTarget : arrFrames[nIndex].arrReflectionMips)
 		{
 			stTarget.Reset();
@@ -4266,6 +5309,20 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["dedicated_video_memory"] = JsonValue(static_cast<std::int64_t>(stAdapterDescription.DedicatedVideoMemory));
 	mapReport["peak_local_memory"] = JsonValue(static_cast<std::int64_t>(nPeakLocalMemory));
 	mapReport["screen_space_reflections"] = JsonValue(bSceneMode && stRenderConfiguration.stReflections.bEnabled);
+	mapReport["volumetric_fog"] = JsonValue(stForwardEffects.bVolume);
+	mapReport["volume_grid_width"] = JsonValue(static_cast<std::int64_t>(stVolumeGrid.nWidth));
+	mapReport["volume_grid_height"] = JsonValue(static_cast<std::int64_t>(stVolumeGrid.nHeight));
+	mapReport["volume_grid_depth"] = JsonValue(static_cast<std::int64_t>(stVolumeGrid.nDepth));
+	mapReport["volume_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nVolumeBytes));
+	mapReport["volume_payload_bytes"] = JsonValue(static_cast<std::int64_t>(stVolumeGrid.nResidentVolumeBytes));
+	mapReport["volume_coefficients_format"] = JsonValue("RGBA32_FLOAT");
+	mapReport["volume_integral_format"] = JsonValue("RGBA16_FLOAT");
+	mapReport["transparency"] = JsonValue(stForwardEffects.bTransparency);
+	mapReport["particle_emitters"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.arrParticles.size()));
+	mapReport["peak_particles"] = JsonValue(static_cast<std::int64_t>(nPeakParticles));
+	mapReport["particle_upload_bytes"] = JsonValue(static_cast<std::int64_t>(nParticleUploadBytes));
+	mapReport["transparent_mesh_draws"] = JsonValue(static_cast<std::int64_t>(arrTransparentOrder.size()));
+	mapReport["forward_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nForwardBytes));
 	mapReport["reflection_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nReflectionBytes));
 	mapReport["reflection_color_mips"] = JsonValue(static_cast<std::int64_t>(bSceneMode && stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0));
 	mapReport["vsync"] = JsonValue(stConfig.bVsync);
@@ -4307,6 +5364,9 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 		mapTiming["temporal_history_valid"] = JsonValue(stTiming.bTemporalHistoryValid);
 		mapTiming["temporal_jitter"] = JsonValue::List{ stTiming.arrTemporalJitter[0], stTiming.arrTemporalJitter[1] };
 		mapTiming["postprocess_ready"] = JsonValue(stTiming.bPostReady);
+		mapTiming["volume_history_valid"] = JsonValue(stTiming.bVolumeHistoryValid);
+		mapTiming["volume_history_read_index"] = JsonValue(static_cast<std::int64_t>(stTiming.nVolumeHistoryRead));
+		mapTiming["particles"] = JsonValue(static_cast<std::int64_t>(stTiming.nParticles));
 		mapTiming["lighting_seconds"] = JsonValue(stTiming.dLightingSeconds);
 		mapTiming["directional_illuminance"] = JsonValue(stTiming.dDirectionalIlluminance);
 		if (stTiming.bPostReady)

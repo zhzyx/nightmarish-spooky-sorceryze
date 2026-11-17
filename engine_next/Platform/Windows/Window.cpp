@@ -51,6 +51,7 @@ namespace
 
 constexpr wchar_t WINDOW_CLASS_NAME[] = L"EngineNextVisualWindow";
 constexpr std::uint32_t MAX_MESSAGES_PER_PUMP = 4096;
+constexpr std::uint32_t MAX_CLIENT_SIZE = 32767;
 
 std::uint64_t ReadQpc() noexcept
 {
@@ -294,6 +295,23 @@ struct Window::State
 
 	static LRESULT CALLBACK WindowProcedure(HWND hTarget, UINT nMessage, WPARAM nWordParameter, LPARAM nLongParameter)
 	{
+		// Windows requests tracking limits before WM_NCCREATE installs State.
+		// Client dimensions may exceed the desktop without changing display mode.
+		if (nMessage == WM_GETMINMAXINFO)
+		{
+			RECT stMinimum{ 0, 0, 1, 1 };
+			RECT stMaximum{ 0, 0, MAX_CLIENT_SIZE, MAX_CLIENT_SIZE };
+			const UINT nWindowDpi = GetDpiForWindow(hTarget);
+			const UINT nDpi = nWindowDpi != 0 ? nWindowDpi : GetDpiForSystem();
+			if (AdjustWindowRectExForDpi(&stMinimum, WS_OVERLAPPEDWINDOW, FALSE, 0, nDpi) &&
+				AdjustWindowRectExForDpi(&stMaximum, WS_OVERLAPPEDWINDOW, FALSE, 0, nDpi))
+			{
+				MINMAXINFO *pLimits = reinterpret_cast<MINMAXINFO *>(nLongParameter);
+				pLimits->ptMinTrackSize = { stMinimum.right - stMinimum.left, stMinimum.bottom - stMinimum.top };
+				pLimits->ptMaxTrackSize = { stMaximum.right - stMaximum.left, stMaximum.bottom - stMaximum.top };
+				return 0;
+			}
+		}
 		State *pState = reinterpret_cast<State *>(GetWindowLongPtrW(hTarget, GWLP_USERDATA));
 		if (nMessage == WM_NCCREATE)
 		{
@@ -382,7 +400,7 @@ bool Window::Initialize(const wchar_t *pTitle, std::uint32_t nWidth, std::uint32
 		out_strError = "Window is already initialized.";
 		return false;
 	}
-	if (pTitle == nullptr || pTitle[0] == L'\0' || nWidth == 0 || nHeight == 0 || nWidth > 32767 || nHeight > 32767)
+	if (pTitle == nullptr || pTitle[0] == L'\0' || nWidth == 0 || nHeight == 0 || nWidth > MAX_CLIENT_SIZE || nHeight > MAX_CLIENT_SIZE)
 	{
 		out_strError = "Window title and client dimensions (1..32767 pixels) are required.";
 		return false;
@@ -456,6 +474,12 @@ bool Window::Initialize(const wchar_t *pTitle, std::uint32_t nWidth, std::uint32
 	}
 	ptrNewState->bCloseRequested = false;
 	ptrNewState->UpdateSize(ptrNewState->hWindow);
+	if (ptrNewState->nWidth != nWidth || ptrNewState->nHeight != nHeight)
+	{
+		DestroyWindow(ptrNewState->hWindow);
+		out_strError = "Windows did not preserve the requested client dimensions.";
+		return false;
+	}
 	ptrNewState->bResized = false;
 	ptrState = std::move(ptrNewState);
 	if (!bHidden)

@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T15:41:04.660217+00:00",
+  "base_commit": "3c15e9c155d9e1923128c4a9f0446844e30a9485",
+  "status": "local_validation_passed",
+  "candidate": "volume-r7",
+  "native_key": "157c09cb9379153c86183e096aa4d1be309c55d6dbf319f362a675d4d13f1f12",
+  "input_count": 267,
+  "input_mismatches": [],
+  "build": {
+    "path": "build/engine_next/volume-r7/VisualBuildReport.json",
+    "sha256": "5b9397337ce2a64f190f2765f91e2957c5e57f16f72deaf2dcbf46aa0dc7fbe0",
+    "size_bytes": 1994601
+  },
+  "executable": {
+    "path": "build/engine_next/volume-r7/next_visual_client.exe",
+    "sha256": "55de295bb435cf9eec88ffa17f101144161c8df050c23c3b7201362ec06f7821",
+    "size_bytes": 3161088
+  },
+  "package": {
+    "path": "build/engine_next/volume-r7/Release/VisualPackage.json",
+    "sha256": "69b688aebed2e7c3651367383c74597f7beeb2885932541b5ccdc13569329bdd",
+    "size_bytes": 9111
+  },
+  "shader_count": 27,
+  "cpu_test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=312 checks=175852 failures=0",
+  "clang_cl_regression": {
+    "path": "build/engine_next/volume-clang-cl-r7/Result.json",
+    "sha256": "60407c2cc68ea720a85a5c7a6d2ecaccf5a37bc46219de0814e8870d18ece107",
+    "size_bytes": 2148959
+  },
+  "static_checks": {
+    "path": "build/engine_next/volume-static-final-r7/Result.json",
+    "sha256": "610ca181c4589cbb76f0a9a2aada34cae20527d25e6f6c27b83bcd2376a7e0ae",
+    "size_bytes": 29610
+  },
+  "tool_tests": {
+    "path": "build/engine_next/volume-build-tools-r7.log",
+    "sha256": "565eb9e67e8e3dccc6e0c381dc0079417106e509f27300af9eda39c623b7b70b",
+    "size_bytes": 2326
+  },
+  "contract_tests": {
+    "path": "build/engine_next/volume-contract-tests-r7.log",
+    "sha256": "c96d9a621b8fdf37897e7167098db899d139bbf60c02cea8c7a42c64723826b2",
+    "size_bytes": 5422
+  },
+  "ai_regression": {
+    "path": "build/engine_next/volume-ainative-r7.log",
+    "sha256": "0c4c375a7b50032f86b0f0e6598e90f15b21e0fd9780c681d4d3205ceeac481b",
+    "size_bytes": 72378,
+    "tests": 445,
+    "seconds": 294.939
+  },
+  "particle_independent_review": {
+    "path": "build/engine_next/particle-independent-review/ParticleReviewPostFormat.json",
+    "sha256": "ab280ca9a5bc668fb5e8a4e8b48de058f32a22f922e331359776bd19c95fef99",
+    "size_bytes": 3284
+  },
+  "window_independent_review": {
+    "path": "build/engine_next/window-sizing-independent/Results.json",
+    "sha256": "279eed5ba8c4a245572a3b3ecfc53e66a40ed13cf6cf2fd67fcabb713666378b",
+    "size_bytes": 5890
+  },
+  "evidence": {
+    "build-impact": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-volume-build-impact.json",
+      "sha256": "7814e55f59386b1817deff16c26b43a208f12ebdcdfaa742e69c60935a908780",
+      "size_bytes": 61275
+    },
+    "transparency-gpu": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-volume-transparency-gpu.json",
+      "sha256": "b40b748cac56833c88b769d8737bb64121a144107e76016a42824e53be35d72a",
+      "size_bytes": 23140
+    },
+    "numerical-gpu": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-volume-numerical-gpu.json",
+      "sha256": "97cd805de331c6bbffaed98b1c876280e6ad43c0d952a98eacf1b2e94bfb04e9",
+      "size_bytes": 97298
+    },
+    "final-gpu": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-volume-final-gpu.json",
+      "sha256": "e95f3b9ce635106911e4c9873c91765be50afe650c6b85ee3d8bb933e7b121a2",
+      "size_bytes": 137385
+    },
+    "network": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-volume-network.json",
+      "sha256": "af46b62c69fea2259f6d3cedcf9127ccbc17295a6f62502e8f797228fbe16e01",
+      "size_bytes": 11606
+    },
+    "source-review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-volume-source-review.json",
+      "sha256": "e3c7d65bf0401365c32c738d36feea22e8968ae3602581b84f95a531a1f0b41d",
+      "size_bytes": 24403
+    }
+  },
+  "scope": "Height and local volumetric fog, shadowed single scattering, temporal volume integration, sorted transparent meshes, deterministic visual particles and reactive TAA coverage.",
+  "implementation_decisions": [
+    "Local volume attachment uses the entity world origin plus configured offsets and axis-aligned extents.",
+    "Particle soft-depth fade uses a 0.1 world-unit interval.",
+    "Particle birth and lifetime arithmetic uses represented birth times and bounded canonical slot deadlines, with transactional precision failures.",
+    "Volume passes execute on the existing direct queue. Frame-owned resources retire with their fences and shared history swaps after successful submission."
+  ],
+  "remaining_parent_acceptance": [
+    "Dynamic multi-bounce GI and traced indirect specular lighting.",
+    "GPU-driven geometry, LOD selection and streaming for the 1000-instance, 10-million-triangle scene.",
+    "Clearcoat, anisotropy, transmission, decals, rectangular area lights and skeletal deformation.",
+    "High-detail virtual shadow equivalent, concurrent command recording and actual asynchronous compute.",
+    "UE 5.8.3 A-F comparison and native 4K performance, input latency and 30-minute stability measurements."
+  ],
+  "delivery_followup": "Signed-candidate CI, main merge and main readback are recorded by the delivery workflow."
+}

@@ -1,0 +1,2132 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T15:13:47.874121+00:00",
+  "status": "passed_r3_capture_verification",
+  "scope": "R3 RenderDoc full-volume numerical readback, with exact R3/R7 shader binary comparison and explicit native input deltas.",
+  "original_verification": {
+    "path": "build/engine_next/VolumeTextureVerificationR3.json",
+    "size_bytes": 6127,
+    "sha256": "7d2625466ccf42a8a69fb83c7d78a029fc2118625953899def00e27c90f87f7c"
+  },
+  "original_build": {
+    "path": "build/engine_next/volume-r3/VisualBuildReport.json",
+    "size_bytes": 1994601,
+    "sha256": "d7d4d4bce8db2df72f6357e20888b7f9df29e7ac370fe1b312e49dfc651f2ff4"
+  },
+  "final_build": {
+    "path": "build/engine_next/volume-r7/VisualBuildReport.json",
+    "size_bytes": 1994601,
+    "sha256": "5b9397337ce2a64f190f2765f91e2957c5e57f16f72deaf2dcbf46aa0dc7fbe0"
+  },
+  "r3_native_key": "af76cef0083b293b95a9222a88c123f68f85cc93b0eeae2d8e44e40369be2a68",
+  "r7_native_key": "157c09cb9379153c86183e096aa4d1be309c55d6dbf319f362a675d4d13f1f12",
+  "summary": {
+    "captured_frames": 12,
+    "runtime_runs": 4,
+    "runtime_frames_each": 1200,
+    "gpu_validation_errors_each": 0,
+    "volume_dimensions": [
+      40,
+      30,
+      64
+    ],
+    "coefficient_format": "R32G32B32A32_FLOAT",
+    "integral_format": "R16G16B16A16_FLOAT",
+    "zero_integral": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "zero_composite_rgb_exact": true,
+    "weak_source_maximum_relative_error": 0.00011903889309699095,
+    "zero_lumen_local_source_bit_exact": true,
+    "emission_maximum_rounded_half_code_distance": 1,
+    "emission_maximum_far_unrounded_reference_ulp": 0.9996750738714582,
+    "emission_maximum_all_slices_unrounded_reference_ulp": 1.0068651265733024,
+    "emission_all_slices_channels_over_one_unrounded_ulp_per_frame": 151,
+    "emission_total_channels_per_frame": 307200
+  },
+  "runs": [
+    {
+      "manifest": {
+        "path": "build/engine_next/volume-textures-r3-emission-r2/CaptureManifest.json",
+        "size_bytes": 3528,
+        "sha256": "34539f13c200fb9fc798f6ce9b80b62321558cf237a28a25a4c1f447ffa967b2"
+      },
+      "inspection": {
+        "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Inspection.json",
+        "size_bytes": 53117,
+        "sha256": "15a82c90b73f3f76c46019a8ccbc9a8918b094e5c004cb4da2bae191b59a2c96"
+      },
+      "numerical_checks": {
+        "path": "build/engine_next/volume-textures-r3-emission-r2/NumericalChecks.json",
+        "size_bytes": 3106,
+        "sha256": "934c3c101cc257d3555e2a578e50153fe996aa19965b36e6d879f0d703379efa"
+      },
+      "native_key": "af76cef0083b293b95a9222a88c123f68f85cc93b0eeae2d8e44e40369be2a68",
+      "executable": {
+        "path": "build/engine_next/volume-r3/next_visual_client.exe",
+        "size_bytes": 3161088,
+        "sha256": "aa4828586d81235aabc06ac76ac948dcee3c3aa2f889c4f5318cf683805fc41a"
+      },
+      "captured_frames": 3,
+      "passed": true,
+      "runtime_reports": [
+        {
+          "path": "build/engine_next/volume-textures-r3-emission-r2/Emission/Runtime.json",
+          "size_bytes": 1659048,
+          "sha256": "5dc28d6d7370bfe7ee134299a67e0a68f19e0fa6f3463e0423c90721893a9446"
+        }
+      ]
+    },
+    {
+      "manifest": {
+        "path": "build/engine_next/volume-textures-r3-zero-weak/CaptureManifest.json",
+        "size_bytes": 8620,
+        "sha256": "ca63831ba8980f3aee7e2d85df4413e5b01845a43cccb21b2029dbe1673f9761"
+      },
+      "inspection": {
+        "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Inspection.json",
+        "size_bytes": 161216,
+        "sha256": "b4b26fec3b1fc6518fb98aeb5dcf55fbcb4056da44f1ae7344a17886f6a3ef75"
+      },
+      "numerical_checks": {
+        "path": "build/engine_next/volume-textures-r3-zero-weak/NumericalChecks.json",
+        "size_bytes": 6236,
+        "sha256": "5efd173614bb8d0a37ef50720775d3c961a668306005a4c797e308e23fd7cfc6"
+      },
+      "native_key": "af76cef0083b293b95a9222a88c123f68f85cc93b0eeae2d8e44e40369be2a68",
+      "executable": {
+        "path": "build/engine_next/volume-r3/next_visual_client.exe",
+        "size_bytes": 3161088,
+        "sha256": "aa4828586d81235aabc06ac76ac948dcee3c3aa2f889c4f5318cf683805fc41a"
+      },
+      "captured_frames": 9,
+      "passed": true,
+      "runtime_reports": [
+        {
+          "path": "build/engine_next/volume-textures-r3-zero-weak/Zero/Runtime.json",
+          "size_bytes": 1659897,
+          "sha256": "aa7c383450f2a9028bf4f05afa8cb9ecd6f068d11759a5b058aba77fbea7af40"
+        },
+        {
+          "path": "build/engine_next/volume-textures-r3-zero-weak/WeakHighLight/Runtime.json",
+          "size_bytes": 1659470,
+          "sha256": "f2ea0a59c87422fb8c916d8a8a5bbeb0324221a1039b2d64eadd0fecdc9d54ff"
+        },
+        {
+          "path": "build/engine_next/volume-textures-r3-zero-weak/WeakZeroLocal/Runtime.json",
+          "size_bytes": 1659527,
+          "sha256": "82a7389976afbc90782b124134fd2864d23e42830e0cbeb6771570e86cb5ad70"
+        }
+      ]
+    }
+  ],
+  "precision_note": "Far-boundary values remain within one unrounded-reference binary16 ULP. Across all slices, 151 of 307200 channels per frame slightly exceed one ULP, with maximum 1.0068651265733024. Every output differs by at most one binary16 encoding step from the rounded analytical reference. These separate metrics are retained without imposing an M4-wide tolerance.",
+  "unrounded_reference_audit": {
+    "path": "build/engine_next/volume-textures-r3-emission-r2/AbsoluteUlpChecks.json",
+    "size_bytes": 3173,
+    "sha256": "89559afb22d27eec9cc501ad705eb4c2ffbdb2786d5aecc20a14e19bc0910e6c"
+  },
+  "script_corrections": [
+    {
+      "attempt": "volume-textures-r3-emission",
+      "detail": "The private launcher initially treated the positive RenderDoc target-control ID as an error. The runtime completed successfully with 1200 frames and zero validation errors; this attempt produced no captures."
+    },
+    {
+      "attempt": "volume-textures-r3-zero-weak initial replay",
+      "detail": "Readback file names initially lacked case directories. The checker detected changed hashes caused by equal capture stems across cases. The inspector was corrected to isolate case directories and the same nine original captures were replayed. Inspection-flat-collision.json preserves the superseded metadata."
+    }
+  ],
+  "checked_artifact_references": [
+    {
+      "path": "build/engine_next/volume-evidence-inputs/ee1fffe092058b22e460f2d0fdf1c45c5a4b9da64325e54b85024e40cdc179b3-CaptureBurst.dll",
+      "size_bytes": 100864,
+      "sha256": "ee1fffe092058b22e460f2d0fdf1c45c5a4b9da64325e54b85024e40cdc179b3"
+    },
+    {
+      "path": "build/engine_next/volume-r3/VisualBuildReport.json",
+      "size_bytes": 1994601,
+      "sha256": "d7d4d4bce8db2df72f6357e20888b7f9df29e7ac370fe1b312e49dfc651f2ff4"
+    },
+    {
+      "path": "build/engine_next/volume-r3/next_visual_client.exe",
+      "size_bytes": 3161088,
+      "sha256": "aa4828586d81235aabc06ac76ac948dcee3c3aa2f889c4f5318cf683805fc41a"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/AbsoluteUlpChecks.json",
+      "size_bytes": 3173,
+      "sha256": "89559afb22d27eec9cc501ad705eb4c2ffbdb2786d5aecc20a14e19bc0910e6c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/CaptureManifest.json",
+      "size_bytes": 3528,
+      "sha256": "34539f13c200fb9fc798f6ce9b80b62321558cf237a28a25a4c1f447ffa967b2"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Emission/Configuration.json",
+      "size_bytes": 1292,
+      "sha256": "c986cc81ef49bca30adc9018663ec9effb597209e2ea5ed1a83acef415178254"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Emission/Runtime.json",
+      "size_bytes": 1659048,
+      "sha256": "5dc28d6d7370bfe7ee134299a67e0a68f19e0fa6f3463e0423c90721893a9446"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Emission/Volume_frame63.rdc",
+      "size_bytes": 9057442,
+      "sha256": "60537d43acb858474e473c096099934debf95380b2a6d0d948fde3d3c184f75e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Emission/Volume_frame64.rdc",
+      "size_bytes": 9117606,
+      "sha256": "74b8f53f5e3518870f5c491456e279817d4755bace8a3095d660b880d9b8ce54"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Emission/Volume_frame65.rdc",
+      "size_bytes": 9069857,
+      "sha256": "1d82ea9657ea6dc84f3f935273b9bc152da16d243105a3e9b013c6221e1b0c8c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/NumericalChecks.json",
+      "size_bytes": 3106,
+      "sha256": "934c3c101cc257d3555e2a578e50153fe996aa19965b36e6d879f0d703379efa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Inspection.json",
+      "size_bytes": 53117,
+      "sha256": "15a82c90b73f3f76c46019a8ccbc9a8918b094e5c004cb4da2bae191b59a2c96"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "7a5f2c74a81f2f6c5300c5a16db5bc61d832c3a4131cb0581f32d8b49f32de59"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "7056cf16ea8a04d0b2ec37575baafdede3e5210651824f765bd0bd83db44478a"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "c4c807fadd6849a84bdf5f8f1ed8312d430925635759d7cd85c1e01264867305"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "bfd571c735d6b7a07feedc7f8b33f68bd595f8d983569276c31617f017f80c36"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "cb8c115d911a7309da1aa8f19a11af2eae2f43b1deb34d89ccecf44ea9d0f027"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "7056cf16ea8a04d0b2ec37575baafdede3e5210651824f765bd0bd83db44478a"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "bfd571c735d6b7a07feedc7f8b33f68bd595f8d983569276c31617f017f80c36"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "cb8c115d911a7309da1aa8f19a11af2eae2f43b1deb34d89ccecf44ea9d0f027"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "c67491ad0856d3d3ea969a59dc5dc20c8f9c3650e9a0c4a3086eab06eebb3d2e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame63-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "751f5f2a113bdb3121639a6cdca5c4c29893c8d22d3b1a7d91640e60a59fdc0e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "7056cf16ea8a04d0b2ec37575baafdede3e5210651824f765bd0bd83db44478a"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "c2913444b6735fb3b98aba987a2d1b58b3ed7f356850c62f580afa08eeb4fb26"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "bfd571c735d6b7a07feedc7f8b33f68bd595f8d983569276c31617f017f80c36"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "cb8c115d911a7309da1aa8f19a11af2eae2f43b1deb34d89ccecf44ea9d0f027"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "7056cf16ea8a04d0b2ec37575baafdede3e5210651824f765bd0bd83db44478a"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "bfd571c735d6b7a07feedc7f8b33f68bd595f8d983569276c31617f017f80c36"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "cb8c115d911a7309da1aa8f19a11af2eae2f43b1deb34d89ccecf44ea9d0f027"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "c67491ad0856d3d3ea969a59dc5dc20c8f9c3650e9a0c4a3086eab06eebb3d2e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame64-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "2627cb061b3a3afbba4779b9ba6f07d74c52caddb2d72c42bdc75e373489c22d"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "7056cf16ea8a04d0b2ec37575baafdede3e5210651824f765bd0bd83db44478a"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "b6ac9ec6366b6c84174100e925e3463208f437550f462892febab86135772f37"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "bfd571c735d6b7a07feedc7f8b33f68bd595f8d983569276c31617f017f80c36"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "cb8c115d911a7309da1aa8f19a11af2eae2f43b1deb34d89ccecf44ea9d0f027"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "7056cf16ea8a04d0b2ec37575baafdede3e5210651824f765bd0bd83db44478a"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "bfd571c735d6b7a07feedc7f8b33f68bd595f8d983569276c31617f017f80c36"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "cb8c115d911a7309da1aa8f19a11af2eae2f43b1deb34d89ccecf44ea9d0f027"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "c67491ad0856d3d3ea969a59dc5dc20c8f9c3650e9a0c4a3086eab06eebb3d2e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-emission-r2/Readback/Volume_frame65-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "5d9e75ce08e3dfed456d26456bba1761bc45b6134d83d696e3fbfcc6e4c56da6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/CaptureManifest.json",
+      "size_bytes": 8620,
+      "sha256": "ca63831ba8980f3aee7e2d85df4413e5b01845a43cccb21b2029dbe1673f9761"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/NumericalChecks.json",
+      "size_bytes": 6236,
+      "sha256": "5efd173614bb8d0a37ef50720775d3c961a668306005a4c797e308e23fd7cfc6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Inspection.json",
+      "size_bytes": 161216,
+      "sha256": "b4b26fec3b1fc6518fb98aeb5dcf55fbcb4056da44f1ae7344a17886f6a3ef75"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "3a60f310bd0abdd2f033a4e2dde3734ec012729d72e4479d9e4cd33b6edcd425"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "947ba4087a9de4ee32930ea1819fe10e7161c0bf2159dc9ebc350a5a1fb65ace"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame48-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "3a60f310bd0abdd2f033a4e2dde3734ec012729d72e4479d9e4cd33b6edcd425"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "947ba4087a9de4ee32930ea1819fe10e7161c0bf2159dc9ebc350a5a1fb65ace"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame49-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "3a60f310bd0abdd2f033a4e2dde3734ec012729d72e4479d9e4cd33b6edcd425"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "947ba4087a9de4ee32930ea1819fe10e7161c0bf2159dc9ebc350a5a1fb65ace"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "42e72322ef6b40952eef3ad1e8df6ade3218f310a61529750e5f4df0cd90e9d6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakHighLight/Volume_frame50-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "3a60f310bd0abdd2f033a4e2dde3734ec012729d72e4479d9e4cd33b6edcd425"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "947ba4087a9de4ee32930ea1819fe10e7161c0bf2159dc9ebc350a5a1fb65ace"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame1-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "3a60f310bd0abdd2f033a4e2dde3734ec012729d72e4479d9e4cd33b6edcd425"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "947ba4087a9de4ee32930ea1819fe10e7161c0bf2159dc9ebc350a5a1fb65ace"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame2-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "3a60f310bd0abdd2f033a4e2dde3734ec012729d72e4479d9e4cd33b6edcd425"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "947ba4087a9de4ee32930ea1819fe10e7161c0bf2159dc9ebc350a5a1fb65ace"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "e010b7d322d059d958a07d9b706de52025043254348463ca82aae46bdfd534ab"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "cafaa1bdc7e86818eab4df8a6f2029b8ab31b99bb5a26c2cdb7d7332263a73a6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "f9eaf261265b7b0dd292c31fd5f09f2cdd7671094da8e329ad2a265741e2cf1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/WeakZeroLocal/Volume_frame3-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "27c04cad3721f4676473e074e1f68b893c114b6d82e4257d6d9ea6e83995f302"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "dee926abeebb66473b0999465a370af08c3c5fc3b8628a2e7399807833cee155"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "8474de5f560adf4a17cd1c57d4701b09ef6f3cebc97bb772f08976d41d51f874"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "dee926abeebb66473b0999465a370af08c3c5fc3b8628a2e7399807833cee155"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "8474de5f560adf4a17cd1c57d4701b09ef6f3cebc97bb772f08976d41d51f874"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "c67491ad0856d3d3ea969a59dc5dc20c8f9c3650e9a0c4a3086eab06eebb3d2e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame1-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "5f3aa1a7c37cd987806fb589113da55cb6406c79701ca4e794c3e2b865116244"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "8474de5f560adf4a17cd1c57d4701b09ef6f3cebc97bb772f08976d41d51f874"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "5f3aa1a7c37cd987806fb589113da55cb6406c79701ca4e794c3e2b865116244"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "8474de5f560adf4a17cd1c57d4701b09ef6f3cebc97bb772f08976d41d51f874"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "c67491ad0856d3d3ea969a59dc5dc20c8f9c3650e9a0c4a3086eab06eebb3d2e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame2-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeComposite-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeComposite-t0.bin",
+      "size_bytes": 2457600,
+      "sha256": "9e5d2681b66dd57b9a6a97f66145f48aa1d2c3def5ce5d37ca17bb50eed48b37"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeComposite-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "f6829cd4545712acacf14c465d41c9743b25346f240c8cd17a00a1a925e816f3"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeComposite-t2.bin",
+      "size_bytes": 614400,
+      "sha256": "8474de5f560adf4a17cd1c57d4701b09ef6f3cebc97bb772f08976d41d51f874"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeComposite-t3.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeComposite-u0.bin",
+      "size_bytes": 2457600,
+      "sha256": "9e5d2681b66dd57b9a6a97f66145f48aa1d2c3def5ce5d37ca17bb50eed48b37"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeInject-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeInject-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeInject-u1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeIntegrate-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeIntegrate-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeIntegrate-u0.bin",
+      "size_bytes": 614400,
+      "sha256": "8474de5f560adf4a17cd1c57d4701b09ef6f3cebc97bb772f08976d41d51f874"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeLight-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeLight-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeLight-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeLight-t2.bin",
+      "size_bytes": 4194304,
+      "sha256": "c67491ad0856d3d3ea969a59dc5dc20c8f9c3650e9a0c4a3086eab06eebb3d2e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeLight-t3.bin",
+      "size_bytes": 4194304,
+      "sha256": "bb9f8df61474d25e71fa00722318cd387396ca1736605e1248821cc0de3d3af8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeLight-t4.bin",
+      "size_bytes": 16,
+      "sha256": "5ff8718e4d90b23ac46dbca5a129b9fb043bafb60fce0809ed95e3829ebcfaaa"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeLight-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeTemporal-Frame.bin",
+      "size_bytes": 3120,
+      "sha256": "389cf2a31797a5cc6047394481789afbf48eb4b4804a9606ab7c87a376bd3798"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeTemporal-t0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeTemporal-t1.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Readback/Zero/Volume_frame3-VolumeTemporal-u0.bin",
+      "size_bytes": 1228800,
+      "sha256": "3630e065eb7b4540fbab11dbfd2619e8500f211b9c404380a1867fdc44b77c0c"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/WeakHighLight/Configuration.json",
+      "size_bytes": 1313,
+      "sha256": "4dd2905ed4d71bb6c66aed3037de6a32c12c648a7abf9c4cfbcf5d6e706e218e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/WeakHighLight/Runtime.json",
+      "size_bytes": 1659470,
+      "sha256": "f2ea0a59c87422fb8c916d8a8a5bbeb0324221a1039b2d64eadd0fecdc9d54ff"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/WeakHighLight/Volume_frame48.rdc",
+      "size_bytes": 11219179,
+      "sha256": "bb812cd05127bb8e63d12bc42e280342c2221ee1bb554722fb08399aaf7e7243"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/WeakHighLight/Volume_frame49.rdc",
+      "size_bytes": 11220004,
+      "sha256": "e9b4f79e99dbea054125c666181883ecb5e087d71d739d1ec4798c8403f882a0"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/WeakHighLight/Volume_frame50.rdc",
+      "size_bytes": 11224666,
+      "sha256": "411532dfa88614a381f2d86009ed68c8f27d4c3052a2e4916825dee7225069e6"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/WeakZeroLocal/Configuration.json",
+      "size_bytes": 1528,
+      "sha256": "0371815a24284416d5a0743663180dfaa7ed2c23b52946a48bb4f86b329f672f"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/WeakZeroLocal/Runtime.json",
+      "size_bytes": 1659527,
+      "sha256": "82a7389976afbc90782b124134fd2864d23e42830e0cbeb6771570e86cb5ad70"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/WeakZeroLocal/Volume_frame1.rdc",
+      "size_bytes": 4336094,
+      "sha256": "3a6448bef930267dd84e12bdb1e040f44b3142ca7f985bbd962a9c4efac1c507"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/WeakZeroLocal/Volume_frame2.rdc",
+      "size_bytes": 4956622,
+      "sha256": "8f7337c99f1c100314bada284bf2379eb58791988b1009c2ee4953e2a8a3128b"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/WeakZeroLocal/Volume_frame3.rdc",
+      "size_bytes": 8482148,
+      "sha256": "785a84d2d884ff3ab27d447fb4cdf8e8f2cf731fe67e6bd27a79f0cea9a2cdb8"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Zero/Configuration.json",
+      "size_bytes": 1281,
+      "sha256": "06c830104d69aabe40a57b637fd2ca11ffba4d8f8acf171021aefe2d16257d1e"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Zero/Runtime.json",
+      "size_bytes": 1659897,
+      "sha256": "aa7c383450f2a9028bf4f05afa8cb9ecd6f068d11759a5b058aba77fbea7af40"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Zero/Volume_frame1.rdc",
+      "size_bytes": 3723882,
+      "sha256": "69dc44684669e3ead8ee9bd82a3a325a5409d4539ec651b2d5e900430845d8ca"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Zero/Volume_frame2.rdc",
+      "size_bytes": 3726231,
+      "sha256": "25b95b18362d0aa715de747646a6542a806f7dc856bf7f06c02d8c1526fcaf64"
+    },
+    {
+      "path": "build/engine_next/volume-textures-r3-zero-weak/Zero/Volume_frame3.rdc",
+      "size_bytes": 5701724,
+      "sha256": "de7d597f109ac5e2045c337c6b2f28f5930549bcd4afa008a92a7f1c84f6a0bb"
+    }
+  ],
+  "shader_pairs": [
+    {
+      "name": "FixedMesh.vs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/FixedMesh.vs.cso",
+        "size_bytes": 4316,
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/FixedMesh.vs.cso",
+        "size_bytes": 4316,
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+      }
+    },
+    {
+      "name": "FixedMesh.ps.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/FixedMesh.ps.cso",
+        "size_bytes": 4132,
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/FixedMesh.ps.cso",
+        "size_bytes": 4132,
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+      }
+    },
+    {
+      "name": "FixedMesh.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/FixedMesh.cs.cso",
+        "size_bytes": 3300,
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/FixedMesh.cs.cso",
+        "size_bytes": 3300,
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+      }
+    },
+    {
+      "name": "Deferred.vs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Deferred.vs.cso",
+        "size_bytes": 8236,
+        "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Deferred.vs.cso",
+        "size_bytes": 8236,
+        "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+      }
+    },
+    {
+      "name": "Deferred.ps.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Deferred.ps.cso",
+        "size_bytes": 9760,
+        "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Deferred.ps.cso",
+        "size_bytes": 9760,
+        "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+      }
+    },
+    {
+      "name": "Lighting.vs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Lighting.vs.cso",
+        "size_bytes": 3052,
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Lighting.vs.cso",
+        "size_bytes": 3052,
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+      }
+    },
+    {
+      "name": "Lighting.ps.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Lighting.ps.cso",
+        "size_bytes": 77096,
+        "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Lighting.ps.cso",
+        "size_bytes": 77096,
+        "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+      }
+    },
+    {
+      "name": "ToneMap.ps.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/ToneMap.ps.cso",
+        "size_bytes": 6376,
+        "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/ToneMap.ps.cso",
+        "size_bytes": 6376,
+        "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+      }
+    },
+    {
+      "name": "Shadow.vs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Shadow.vs.cso",
+        "size_bytes": 4648,
+        "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Shadow.vs.cso",
+        "size_bytes": 4648,
+        "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+      }
+    },
+    {
+      "name": "Shadow.ps.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Shadow.ps.cso",
+        "size_bytes": 4236,
+        "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Shadow.ps.cso",
+        "size_bytes": 4236,
+        "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+      }
+    },
+    {
+      "name": "Temporal.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Temporal.cs.cso",
+        "size_bytes": 19880,
+        "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Temporal.cs.cso",
+        "size_bytes": 19880,
+        "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+      }
+    },
+    {
+      "name": "Histogram.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Histogram.cs.cso",
+        "size_bytes": 5648,
+        "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Histogram.cs.cso",
+        "size_bytes": 5648,
+        "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+      }
+    },
+    {
+      "name": "Exposure.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Exposure.cs.cso",
+        "size_bytes": 5804,
+        "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Exposure.cs.cso",
+        "size_bytes": 5804,
+        "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+      }
+    },
+    {
+      "name": "BloomDown.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/BloomDown.cs.cso",
+        "size_bytes": 43620,
+        "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/BloomDown.cs.cso",
+        "size_bytes": 43620,
+        "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+      }
+    },
+    {
+      "name": "BloomUp.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/BloomUp.cs.cso",
+        "size_bytes": 14672,
+        "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/BloomUp.cs.cso",
+        "size_bytes": 14672,
+        "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+      }
+    },
+    {
+      "name": "ReflectionLighting.ps.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/ReflectionLighting.ps.cso",
+        "size_bytes": 77608,
+        "sha256": "f2590dd8cc22dfbd00aa5030b1169cf234bf465a802e3a4372083323d2f0c0cb"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/ReflectionLighting.ps.cso",
+        "size_bytes": 77608,
+        "sha256": "f2590dd8cc22dfbd00aa5030b1169cf234bf465a802e3a4372083323d2f0c0cb"
+      }
+    },
+    {
+      "name": "ReflectionColor.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/ReflectionColor.cs.cso",
+        "size_bytes": 4928,
+        "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/ReflectionColor.cs.cso",
+        "size_bytes": 4928,
+        "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+      }
+    },
+    {
+      "name": "ReflectionTrace.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/ReflectionTrace.cs.cso",
+        "size_bytes": 31880,
+        "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/ReflectionTrace.cs.cso",
+        "size_bytes": 31880,
+        "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+      }
+    },
+    {
+      "name": "ReflectionComposite.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/ReflectionComposite.cs.cso",
+        "size_bytes": 5100,
+        "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/ReflectionComposite.cs.cso",
+        "size_bytes": 5100,
+        "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+      }
+    },
+    {
+      "name": "ReflectionRadiance.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/ReflectionRadiance.cs.cso",
+        "size_bytes": 4304,
+        "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/ReflectionRadiance.cs.cso",
+        "size_bytes": 4304,
+        "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+      }
+    },
+    {
+      "name": "VolumeInject.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/VolumeInject.cs.cso",
+        "size_bytes": 8836,
+        "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/VolumeInject.cs.cso",
+        "size_bytes": 8836,
+        "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+      }
+    },
+    {
+      "name": "VolumeLight.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/VolumeLight.cs.cso",
+        "size_bytes": 66432,
+        "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/VolumeLight.cs.cso",
+        "size_bytes": 66432,
+        "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+      }
+    },
+    {
+      "name": "VolumeTemporal.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/VolumeTemporal.cs.cso",
+        "size_bytes": 16000,
+        "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/VolumeTemporal.cs.cso",
+        "size_bytes": 16000,
+        "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+      }
+    },
+    {
+      "name": "VolumeIntegrate.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/VolumeIntegrate.cs.cso",
+        "size_bytes": 7508,
+        "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/VolumeIntegrate.cs.cso",
+        "size_bytes": 7508,
+        "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+      }
+    },
+    {
+      "name": "VolumeComposite.cs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/VolumeComposite.cs.cso",
+        "size_bytes": 19948,
+        "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/VolumeComposite.cs.cso",
+        "size_bytes": 19948,
+        "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+      }
+    },
+    {
+      "name": "Transparent.vs.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Transparent.vs.cso",
+        "size_bytes": 7188,
+        "sha256": "343de3273f95c54fc4462e8ed9c886aef2445e8a8fc24f38b69aaf09a7629daa"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Transparent.vs.cso",
+        "size_bytes": 7188,
+        "sha256": "343de3273f95c54fc4462e8ed9c886aef2445e8a8fc24f38b69aaf09a7629daa"
+      }
+    },
+    {
+      "name": "Transparent.ps.cso",
+      "r3": {
+        "path": "build/engine_next/volume-r3/Transparent.ps.cso",
+        "size_bytes": 96540,
+        "sha256": "9ad499be7c6e46be2aba6c17ed07cae1955057fd31e9ed7764886f5ab9705e2a"
+      },
+      "r7": {
+        "path": "build/engine_next/volume-r7/Transparent.ps.cso",
+        "size_bytes": 96540,
+        "sha256": "9ad499be7c6e46be2aba6c17ed07cae1955057fd31e9ed7764886f5ab9705e2a"
+      }
+    }
+  ],
+  "native_input_deltas": [
+    {
+      "path": "engine_next/Platform/Windows/Window.cpp",
+      "r3_sha256": "16c56933a4e1812e45af0a3918f3a018344b26eabaa1d7c462403212d56afdbc",
+      "r7_sha256": "7f3294e73822dfafb2197cbc5b7a41fb100f4aeed65152db8d68b4bc5732c2a9"
+    },
+    {
+      "path": "engine_next/Rendering/ParticleSettings.cpp",
+      "r3_sha256": "2a4e544bb56096428832abf7d355e8d56dbcd33ea1ba674c4898ef723aeccf27",
+      "r7_sha256": "07f91bc73ff76ac4127c7d2d786d946f35e3004df5b8131f25cf45b392be50e8"
+    },
+    {
+      "path": "engine_next/Rendering/ParticleState.cpp",
+      "r3_sha256": "0e6683eaa50ebc0c4c98f05f427b8c737ced6154c3a7fca196460ad1a6e002d3",
+      "r7_sha256": "47ef63740f1d628909bdd1bfca45fe5ffdd8027ca0cbd3273c0d67b7d614acec"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "r3_sha256": "86b0dfa7e10da9597aa5c52c1278f281b074002830695e418d9d173f4dd11abb",
+      "r7_sha256": "b9533713b7e38bc71c7514472ad540133522ec15024fe4f3cefb1c6832805102"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "r3_sha256": "734bd22325b964f5ed22dd0c99950f7b3b9094523ba70438845a3ef3b892a2f3",
+      "r7_sha256": "6e268070cc284d8873582c80af0257fb68a36d5980db5c2b12cfe9f77e0e80e5"
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "r3_sha256": "088a709320caf58c5fe1fbf19717fd5f0088890be1d343754970e4b88fd384ad",
+      "r7_sha256": "d570b7744460ef26c0e6e26216f01fd04f3a2739a3f2db2abd3b76c6e01aed77"
+    },
+    {
+      "path": "engine_next/Rendering/VolumeGrid.cpp",
+      "r3_sha256": "c656c4e384269034d5944be0c7ebb20627fbc9c5a6456aa1aa3e21f5c6682edb",
+      "r7_sha256": "0a4e794889efcc11a28529e2b4f81505ebe54af8e8389442c6052ea696526914"
+    },
+    {
+      "path": "engine_next/Rendering/VolumeSettings.cpp",
+      "r3_sha256": "f397de5535666892395b72790c13058c862ea2a3ffd3f788da438ef130d3a03e",
+      "r7_sha256": "5b0a46273d0255c5c68df0fb744196cc68288bbc9b0b594b8e10ab79136b94d0"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestParticles.cpp",
+      "r3_sha256": "6a1a5c68cd97bef30b88d923e497a5f6e978bba5e9b9603365ca0f2f0146a075",
+      "r7_sha256": "16e38d946b6c037320b1325658d7ca840d6b8b12ef8d22fa10a3d1c0ff7a0e7c"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "r3_sha256": "ac59ddf55ac124d70a7fa3c24ff93fb7af120e94251b5fbd52cbd6ac48ab05c8",
+      "r7_sha256": "23d1de27c1c1d7950886af6b1396ce90f437f6264003099c2ec955c9c544b10b"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
+      "r3_sha256": "b89bb26f12f1d225640a8721fbab48b0aa5fdce4692c9361171ba2a9bffeb42f",
+      "r7_sha256": "f864a32afe5823f7c022397d2c759692d7f9a501ad479aa767c7a785fc5b2a4a"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestSceneEntityTransforms.cpp",
+      "r3_sha256": "fa77183748203eabc26ed17ed9c5f34a5b5eeb56ce26bf3edcad423bd5ba9ceb",
+      "r7_sha256": "648ef1878cf594918ede1a25c3837667eae9ea93ca5255e936dc6b98b5289ea1"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestVolumeMath.cpp",
+      "r3_sha256": "68de1a6655f2fefd61437de4eca64954ceccb1634803f43253de101ce4a55a68",
+      "r7_sha256": "1da43d1383eb210200ba7ad181c20dc023762859663910c094844cc53669feb7"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestVolumeParse.cpp",
+      "r3_sha256": "cc8b7b47e324834e3c05b7695ad5aee2e4376b65791bee1969f36e11f21caf3e",
+      "r7_sha256": "77bb8c18ca99450fdb0098ebc496fb4c7759ed7c813665b366069a402bc672d6"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestVolumeSettings.cpp",
+      "r3_sha256": "8bdd6543fabee404caef6ffe706a14515084e206cb42ea71a1abe31dfd50e9a1",
+      "r7_sha256": "1a2f7b31d9dba0d895911ed0bf26eea2a54f1c83fe6aae06d127df7c003c2d73"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestVolumeTemporalMath.cpp",
+      "r3_sha256": "2f59b6405b33683fffb1a5c6117702a9193ca265db72dadcc1736babe71a373b",
+      "r7_sha256": "3b34b06e574fad95389ef0836efee70614d387eb9704c55b05d8d0c272ee59c4"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/ParticleSettings.h",
+      "r3_sha256": "d03fef7a7eb9aba6c92ffa3980791958f86f5f627ff7f5cb526d47ab32aa07aa",
+      "r7_sha256": "7b4c7428006707e0c762648b450200d63030cff950af2775db99de66e9935930"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/ParticleState.h",
+      "r3_sha256": "6232b1a649caedffab9b6d6e7ac17809e93a1c8f0c7f93a614a45fbee5519d7c",
+      "r7_sha256": "da1bd6d4d033b608d7b49243fd6414a36192df263164ac8c05c8e8686c771c94"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/VolumeSettings.h",
+      "r3_sha256": "886ebac3e230e84aa43604f00efbebab275fcbcaaf965d57e919893cc067b40b",
+      "r7_sha256": "b29ffc4897526783940bebd84e1d92ee340820df5dd1aef51a47a154f997cb1b"
+    }
+  ],
+  "evidence_scope": [
+    "R3 supplied the actual captured resource contents and PixelHistory inputs.",
+    "All 27 shader binaries have equal verified bytes in R3 and R7. The native input changes are listed individually.",
+    "R7 normal-entry GPU, window sizing, particle lifecycle and network results are recorded in their own candidate-bound reports.",
+    "The full M4 quality, physical 4K output and performance targets require their remaining acceptance runs."
+  ]
+}

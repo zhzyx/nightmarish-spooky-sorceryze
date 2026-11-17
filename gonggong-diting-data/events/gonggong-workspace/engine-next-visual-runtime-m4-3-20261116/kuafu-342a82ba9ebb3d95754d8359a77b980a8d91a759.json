@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-342a82ba9ebb3d95754d8359a77b980a8d91a759",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c655058fa43eeab49c71ebb439ea683f42025bad693bde3c53af3367d6d85357",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1349",
+    "action": "validation",
+    "detection_head": "3c15e9c155d9e1923128c4a9f0446844e30a9485",
+    "context_sha256": "b2c7c3cd6d5ee096ad18879a01d12b89260f393a2a644f5c6568cefc723849d6",
+    "operator": "kaiyunxue",
+    "worker": "codex-m4-capture-delivery",
+    "authority_ref": "Parent issue 1343 delegated Volume R7 verification and tested PR/main delivery in this session",
+    "evidence": "build/engine_next/volume-formal-gate-main3c15e9c1.log",
+    "diagnosis": "The exact-candidate guard observed content or Issue drift during validation. The final gate does not distinguish those two causes. A reflection delivery comment was posted to the same parent Issue during this handoff. The current R7 verification bytes and 845 artifact references match; no production edit is required. The current stage is rechecked before a fresh gate.",
+    "next_action": "Keep the staged candidate stable, complete the fresh formal gate, then submit the tested Volume R7 slice and verify its exact CI and main merge.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T15:41:26.900807+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T15:45:36.262122+00:00",
+  "sha256": "8c3b91db5c646dc4d693250d035376381a3d07987ce5be14da8519c925e4793c"
+}
