@@ -1,0 +1,15 @@
+{
+  "issue": 1434,
+  "bug": 1438,
+  "state": "independent product, cleanup correction and metadata review passed; replacement CI/main pending",
+  "metadata_review": {
+    "path": "data-collection/native-host-inputs-metadata-review-1434.json",
+    "sha256": "4b33a20d8349c74f72c1af48c56b7537f9bb0869377f219792029ae2569049b3"
+  },
+  "raw_evidence": "Original cleanup stdout is immutable; codespell skips this single reviewed evidence path only. No broader skip or runtime change.",
+  "prior_reviews": [
+    "data-collection/native-host-inputs-review-1434.json",
+    "data-collection/native-host-inputs-cleanup-review-1434.json"
+  ],
+  "prior_final": "data-collection/native-host-inputs-final-1434.json"
+}

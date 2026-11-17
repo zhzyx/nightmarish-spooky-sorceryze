@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "event_id": "dispatch-5d2fe3f3b8514fbd9e43cefba1d44afa",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-host-inputs-20261117",
+  "kind": "step",
+  "occurred_at": "2026-11-17T13:10:21.011795+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1434",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "record": {
+      "ticket": "github:zhzyx/nightmarish-spooky-sorceryze#1434",
+      "reservation_key": "0c1a2844f210b8d8a735477383f4a6bdefda143060704998d12c48770d2db814",
+      "state": "terminal_verified",
+      "stage": null,
+      "record_sha256": "155fedbcf19084c1b7048e908b6930ac3e6a8803620bc0a79f6ddcaa366a6028",
+      "source_revision": "02d22afcbf684329ca7fc5adde4d7582f14f5b210105c76af1dd0c63eaa03106",
+      "planned_model": "codex-current-host",
+      "requested_model": null,
+      "worker_id": "/root/sinan_1b65771fd804088b",
+      "receipt_reference": "agent:/root/sinan_1b65771fd804088b",
+      "setup_pending": false,
+      "observed_model": null
+    },
+    "usage": null,
+    "usage_unknown_reason": "native tool usage not exposed"
+  },
+  "evidence_refs": [],
+  "sha256": "d6000e92397900239d91def4bded7dcf1a12cc2fbca912e79fda8bc1de875c2f"
+}

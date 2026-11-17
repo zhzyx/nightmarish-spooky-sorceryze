@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5360cfa28cd32130d1d99b25106fc5ce7cfbef87",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-host-inputs-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1434",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b8f5fa90f4d7a3c70893fb04c310556a02f9c7dd0d8de7f8551e8d5a4ef90930",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1434",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1438",
+    "action": "validation",
+    "detection_head": "26baf6c2921fbf4aa2cfe8c34bb9ea6fa2d6968e",
+    "context_sha256": "0fac923152ff4ada4b40c5debc99ca18cb149c72f90aa6b8f2738d6f9584efec",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44092431708/job/134070976103",
+    "diagnosis": "Same existing image cancellation assertion failed across1435 and1437. Controlled real Windows handle denied deletion:directory present after2.2s then removed at2.86s after release by unchanged cleanup listener. Two-second fixture bound is shorter than supported30 retries/100ms linear backoff. Specific hosted lock/scheduling cause remains unknown.",
+    "next_action": "Root owns test-only deadline correction to cover existing cleanup retry budget, preserve deletion assertion and all production behavior. Run full bridge suite and controlled lock reproduction; independent delta review and exact candidate CI before delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T13:42:37.181007+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T13:51:27.167577+00:00",
+  "sha256": "4dbf2697765a5c2cd360b35a53d6e8e687d70d07fdf9eea05eb49247a192d460"
+}

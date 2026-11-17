@@ -444,7 +444,10 @@ test('cancelling a pending image request removes private attachments', async () 
         await closed;
         // Windows closes the pipe on forced termination. The independent listener
         // can finish removing private files after the process handle signals.
-        for (let i = 0; i < 200 && fs.existsSync(path.dirname(file)); i++) await new Promise(resolve => setTimeout(resolve, 10));
+        // Busy-file cleanup allows 30 retries with 100 ms linear backoff (46.5 s).
+        // A shorter fixture deadline can reject successful supported cleanup.
+        const cleanupDeadline = Date.now() + 60_000;
+        while (fs.existsSync(path.dirname(file)) && Date.now() < cleanupDeadline) await new Promise(resolve => setTimeout(resolve, 20));
         assert(!fs.existsSync(path.dirname(file)));
     } finally {
         if (child && child.exitCode === null) child.kill();

@@ -1,0 +1,15 @@
+{
+  "issue": 1434,
+  "bug": 1438,
+  "prior_pr": 1437,
+  "inventory": "Original exact17 additions and24-test independent review unchanged. Runtime and CI decision algorithms unchanged.",
+  "test_correction": "Existing image cancellation fixture now observes actual disappearance for at most60s, covering nominal46.5s busy-file retry delay. Assertion unchanged; immediate disappearance still exits immediately.",
+  "proof": "Real Windows lock kept directory beyond2s, then existing cleanup removed it at2.86s;21fullbridge tests pass. Independent extracted-loop cases pass immediate/2.86s/46.5s and reject persistent files at60s.",
+  "limits": "Specific external actor or scheduling on hostedCI remains unknown. Observation budget is not a production latency claim; fullOS tests not independently rerun in delta review.",
+  "review": {
+    "path": "data-collection/native-host-inputs-cleanup-review-1434.json",
+    "sha256": "dd8d71ef2e921fde1efbf8df262a957775dbb463790884c1b932bc539e59154b"
+  },
+  "state": "Independent delta approved; candidateCI/main verification pending",
+  "cleanup": "Controlled lock/fixture directories removed; local copied native addon and active worktree retained until finalCI investigation/delivery ends."
+}

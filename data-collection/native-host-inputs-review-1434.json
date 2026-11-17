@@ -1,0 +1,234 @@
+{
+  "schema_version": 1,
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1434",
+  "request_id": "native-host-inputs-20261117",
+  "reviewer": "codex-native-independent-review-agent",
+  "recorded_at": "2026-11-17T13:21:44.570633+00:00",
+  "source_root": "D:\\GongGong-work\\native-host-inputs-20261117",
+  "path_base": "source_root unless absolute",
+  "scope": "Read-only review of exact 17 host-input additions, design, immutable proof and unchanged native-consumer/base-policy enforcement. No implementation edits or delivery authority.",
+  "verdict": "pass",
+  "findings": [],
+  "reviewed_file_sha256": {
+    "tools/native_host_inputs.json": "d6287a31aa2e3803b52f0e69e5e806a8a2fe5e0e86ba69a316b5015335cd19ae",
+    "design-docs/native-host-inputs-20261117.md": "c6cec04318b4b0dc89dd8ae4896f4067308943c9b2313325e3dcc64fc2ea64a1",
+    "data-collection/native-host-inputs-1434.json": "07dbb92dc6f2b6561474cd3de25906383b3247aa4f7001a54e4b3d69d9eb58ab",
+    "tools/editor_native_cache.py": "12756789e5157b27a1d97a756670850a0ee23e0f6ba947a5e2ab5e97b2c35573",
+    "tools/build_engine_modules.py": "558c21d1d69094135dcfb8bff7279e0315db013f5e641b8467045513f0bdf8cc",
+    "tools/test_build_engine_modules.py": "ddbbbba4607c923140f6e2aa5779934b19a31a8e3925b3d4128c026f2ba68ecc",
+    ".github/scripts/windows_editor_artifact.py": "2cd7169dd56e8149aa78768c45f013f1f47488387d5fcf7ebf1e4cc911779654",
+    "customizations/components/issue-workorders/writer_submit.py": "761fefd9695f5a280f3c6aa8863f4d65d7effcb319bdbeabb3ee7a20b57e133a",
+    "tests/editor/test_native_host_inputs.py": "3b77664b4277dbd091f522b14d2ce81d86bedb5f5fd8659b7b7ac38616f21ace",
+    "tests/editor/test_editor_native_cache.py": "736a6025d40721158806ef7f91600a02582cb833feaf0f3dd5c3758e2d1274f4"
+  },
+  "trusted_main": {
+    "sha": "75eef9a901e782d69546b3eef00382bdc4eabf47",
+    "independent_command": "gh api repos/zhzyx/nightmarish-spooky-sorceryze/git/ref/heads/main --jq .object.sha",
+    "exit_code": 0,
+    "actual_remote_main": "75eef9a901e782d69546b3eef00382bdc4eabf47",
+    "note": "Shared origin/main is stale a409f21; no fetch or ref mutation performed. Initial git ls-remote produced no response and was cancelled; GitHub API readback succeeded."
+  },
+  "exact_inventory": {
+    "before": 117,
+    "after": 134,
+    "added": 17,
+    "removed": 0,
+    "duplicates": 0,
+    "all_added_paths_equal_evidence": true,
+    "each_added_current_sha256_and_trusted_main_blob_verified": true,
+    "added_inputs": [
+      {
+        "path": "customizations/components/tianxuan/duobao/native_store.py",
+        "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+        "trusted_main_blob": "1503687c9add396cd2ff7a9902f21f263431e997",
+        "binding": "NativeStore + native_cli.py; unittest and multi-process CLI verification",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/native_cli.py",
+        "sha256": "e7db40a12ca5b18d753a182f7d8a853c76d8f96bb9c3893a27bd842049a9613a",
+        "trusted_main_blob": "256eb5d7da079952754c958ffcab1593cc395d0c",
+        "binding": "NativeStore + native_cli.py; unittest and multi-process CLI verification",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/test_native_store.py",
+        "sha256": "cb7df0539fc42cd5cb2dc0bcb31f681994ace28041c782f32a5b7a894446a743",
+        "trusted_main_blob": "35f834dfa6f416ea57182fd7a87ed9340263fe99",
+        "binding": "NativeStore + native_cli.py; unittest and multi-process CLI verification",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/verify_native_processes.py",
+        "sha256": "f5f03eaef371c7d007b4c88003e16a75a20c43bfb9938a30f71614a91d449120",
+        "trusted_main_blob": "168593590093c1d73f10e2cd65a112e5113712f7",
+        "binding": "NativeStore + native_cli.py; unittest and multi-process CLI verification",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/native_evidence.py",
+        "sha256": "779a6f9162874c2f2a24349c3dca2193cad31fec04c950749f851fcaf9f3216f",
+        "trusted_main_blob": "9586dbf0dd4e830d0ddfe0217fea056ee2ad3e87",
+        "binding": "EvidenceCache Python host library; unittest and host contract documentation",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/native_evidence.md",
+        "sha256": "49e4e6415c29ecb8f5183fde2f72f69a0b44285f1ceda0b981a9f416ab2da21d",
+        "trusted_main_blob": "1b1691b3a7ebe868c429981615c12c01ad99805c",
+        "binding": "EvidenceCache Python host library; unittest and host contract documentation",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/test_native_evidence.py",
+        "sha256": "054ede06d298edcb71488a76879afb12bc67d4938d731cf7daa77f523d71c304",
+        "trusted_main_blob": "ec2711580cd266076d038cc89d43361a8a47a7bd",
+        "binding": "EvidenceCache Python host library; unittest and host contract documentation",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/native_release.py",
+        "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+        "trusted_main_blob": "1f508962cf22644995856cb2a50a5e4f1c5c28f9",
+        "binding": "NativeRelease Python host library; unittest and host contract documentation",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/native_release.md",
+        "sha256": "6ffd0dbf8afd527fab485a73096eb737506e5912c804b29882fc78a707aff5aa",
+        "trusted_main_blob": "f7d06c28f14cc98ecff6ed175eaf07c71836fecf",
+        "binding": "NativeRelease Python host library; unittest and host contract documentation",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/test_native_release.py",
+        "sha256": "dd22e2ef946264ae23a7ced27c0b2205911f1a8237ca86d0cf75705aaace531c",
+        "trusted_main_blob": "7abd2ec52beb595620a17cdd0d68f764b2202790",
+        "binding": "NativeRelease Python host library; unittest and host contract documentation",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/native_workspace.py",
+        "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+        "trusted_main_blob": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+        "binding": "NativeWorkspace + native_workspace_cli.py; unittest and host contract documentation",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/native_workspace_cli.py",
+        "sha256": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+        "trusted_main_blob": "829c35b6d182e1fb1a03961ba680f6bfb00c498e",
+        "binding": "NativeWorkspace + native_workspace_cli.py; unittest and host contract documentation",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/native_workspace.md",
+        "sha256": "9e88d81dacd6e8b44d2209b481413a265648699dc143629aa787aab8cc1da6a8",
+        "trusted_main_blob": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6",
+        "binding": "NativeWorkspace + native_workspace_cli.py; unittest and host contract documentation",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/test_native_workspace.py",
+        "sha256": "e2492c64842db53a5c89748276f00f6af9ce5629f6be8d506368e7f90efa4d56",
+        "trusted_main_blob": "6884801db58a40db44956d5a185e0356833f8971",
+        "binding": "NativeWorkspace + native_workspace_cli.py; unittest and host contract documentation",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/server/native_api.py",
+        "sha256": "576113892d7d0d84d4259ec19cafeebce30e095416ec362e2fe97236ed8dbb48",
+        "trusted_main_blob": "08f03e25468f458fa0e87c3cb4cb440a7d99eec8",
+        "binding": "FastAPI create_native_router via server/api.py; authenticated API and platform pytest suites",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/server/test_native_api.py",
+        "sha256": "4a85726e458399def6555fb94e5259815b37ca7f21eea2fc11f721037083ce1e",
+        "trusted_main_blob": "6034e91b6278a6691a4251be677d3032cd12263b",
+        "binding": "FastAPI create_native_router via server/api.py; authenticated API and platform pytest suites",
+        "placement": "host_tool"
+      },
+      {
+        "path": "customizations/components/tianxuan/server/test_native_platform.py",
+        "sha256": "b40695e79772b9296a35178fbc0898772893b61239d89fbae7b22c56b7f24abc",
+        "trusted_main_blob": "f1734930fdfedfa74e439197472289ec23fb6d81",
+        "binding": "FastAPI create_native_router via server/api.py; authenticated API and platform pytest suites",
+        "placement": "host_tool"
+      }
+    ],
+    "embedded_owned_process_excluded": true
+  },
+  "consumer_graph": {
+    "independently_reproduced": true,
+    "options": {
+      "platform": "windows",
+      "target": "editor",
+      "dev_mode": "yes",
+      "debug_symbols": "no",
+      "accesskit": "no",
+      "angle": "no",
+      "d3d12": "no"
+    },
+    "native_sources_count": 9378,
+    "complete_inventory_overlap": [],
+    "added_overlap": [],
+    "sorted_native_sources_sha256": "dfb6b5682b67b27ff69097cee7b95745cfe8fd2617d27afda93ab4045683ff72",
+    "hash_serialization": "UTF-8 sorted paths joined with LF, including final LF",
+    "compilation_performed": false
+  },
+  "independent_checks": [
+    {
+      "command": "py -B -X utf8 tests/editor/test_native_host_inputs.py -v",
+      "passed": 3,
+      "skipped": 0,
+      "elapsed_seconds": 7.666,
+      "result": "OK; actual SCons generator consumption overrides host exemption; committed Git identity ignores uncommitted policy; invalid/missing graph and malformed policy use full-tree fallback; repository graph has no inventory overlap"
+    },
+    {
+      "command": "py -B -X utf8 tests/editor/test_editor_native_cache.py -v",
+      "passed": 14,
+      "skipped": 0,
+      "elapsed_seconds": 15.711,
+      "result": "OK; listed-host reuse, unknown/new input, consumer and policy invalidation, malformed-policy no-publication, corruption, cancellation, locking, restored-artifact rebuild and platform fallback verified"
+    },
+    {
+      "command": "py -B -X utf8 tools/test_build_engine_modules.py -v",
+      "passed": 7,
+      "skipped": 0,
+      "elapsed_seconds": 0.752,
+      "result": "OK; inventory change still requires full integration; mixed native changes retain coverage"
+    },
+    {
+      "check": "Independent in-memory assertions",
+      "result": "17 additions exactly match immutable evidence; current SHA256 and git hash-object match trusted-main blob for all paths; policy SHA256 matches evidence; graph hash matches supplied evidence"
+    },
+    {
+      "check": "Consumer and policy source inspection",
+      "result": "NativeStore/CLI, EvidenceCache, NativeRelease, NativeWorkspace/CLI and FastAPI adapter have Python host consumers; source tests/docs belong to those consumers. editor_native_cache.is_external_data tests native_sources first. build_engine_modules.reviewed_host_inputs reads comparison base; writer_submit.handoff passes _base_reviewed_host_inputs into submission classification. These algorithms are unchanged."
+    }
+  ],
+  "method_recall": {
+    "command": "py -B -X utf8 framework/tools/method_learning.py --tenant gonggong-workspace recall godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 19,
+    "head": "d306043838773c972591351c230cd9898d946cce1639f2d04a179e3bd849f18f",
+    "state": "verified",
+    "unavailable": [],
+    "application": "Actual consumer graph and generator counterexample used; no suffix exemption. Parent already appended applied event."
+  },
+  "proof_assessment": "Proof supports exact inventory addition and preserves conservative invalidation. No compiled-editor speed, token saving, deployment or cross-platform coverage claim is made. Design explicitly retains full applicable gates/CI before policy activation.",
+  "limits": [
+    "Windows editor options shown only; no full editor compilation or measured compile-speed claim.",
+    "Formal intake, candidate index gate, CI, main merge, post-merge acceptance, Issue closure and source-index consistency remain parent delivery responsibilities.",
+    "Review applies only to the exact recorded file hashes; changed candidates require appropriate re-review."
+  ],
+  "cleanup": {
+    "implementation_edits": false,
+    "commit_push_models_deploy": false,
+    "temporary_tests": "unittest TemporaryDirectory/addCleanup fixtures removed by successful suites; bytecode writes disabled via PYTHONDONTWRITEBYTECODE=1 and -B",
+    "temporary_script_files_created": false,
+    "blocked_ls_remote": "Cancelled own exec session 94379 after successful GitHub API readback; terminal exit_code 1 observed",
+    "persistent_output": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\host-inputs-review.json"
+  }
+}

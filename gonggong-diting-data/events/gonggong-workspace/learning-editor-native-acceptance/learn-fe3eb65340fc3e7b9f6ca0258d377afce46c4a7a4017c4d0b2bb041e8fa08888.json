@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-fe3eb65340fc3e7b9f6ca0258d377afce46c4a7a4017c4d0b2bb041e8fa08888",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1434",
+  "occurred_at": "2026-11-17T13:59:41.268912+00:00",
+  "evidence_refs": [
+    "codex-intake-1434-20261117"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "bound-observation-by-cleanup-contract",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "After verifying actual worker start, observe asynchronous resource cleanup until a finite deadline that covers the implementation retry budget; keep the required final absence assertion. Reproduce short-deadline failures with a controlled OS file lock before changing a fixture.",
+      "when": "Windows forced process cancellation is followed by an independent cleanup process with explicitly bounded busy-file retries.",
+      "counterexample": "Longer waiting cannot establish correct process ownership or repair a leaked cleanup worker; persistent files after the supported retry budget still fail. A controlled lock does not identify the actual external actor on hosted CI.",
+      "trial_plan": "On future adoption hold a real attachment handle beyond the old fixture deadline then release it; require eventual removal within the supported budget. Also keep the handle past that budget and require failure, without relaxing production retries or the deletion assertion."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-host-inputs-cleanup-1434.json",
+        "sha256": "c20c2ca014c33535bdd9a86d37f0d034e3419873c24cc1c2fda9635b2d420e7c"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-host-inputs-20261117/codex-intake-1434-20261117.json",
+      "sha256": "33879249c3a3b2bac6d2718cdd630107f888d051c1aec0f686ea090dfd6506dd"
+    }
+  },
+  "sha256": "6d76a28eca951df6115d83b9d633ade8769bc965734851d6d85348fb0a51f494"
+}
