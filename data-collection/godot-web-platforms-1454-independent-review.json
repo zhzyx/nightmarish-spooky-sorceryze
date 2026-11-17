@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1454",
+  "request_id": "godot-web-platforms-20261118",
+  "reviewer": "codex-independent-reviewer",
+  "authorization": "codex:user-request-20261118-godot-only",
+  "created_at": "2026-11-17T17:52:09.981380+00:00",
+  "worktree": "repository root",
+  "path_resolution_base": "repository root",
+  "candidate_head": "23d4e05bac6d469250327c8eaa1149021cff7ba0",
+  "review_kind": "independent_read_only_source_review",
+  "result": "changes_requested",
+  "overall_issue_complete": false,
+  "reviewed_files": [
+    {
+      "path": "editor/docks/WebPlatformNative.h",
+      "sha256": "532844f83e8a43f1a8229228e95b586d4e7dc48fe4c23d956814b33478ac22fa",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformNative.cpp",
+      "sha256": "9d6b461afe7b5d03928d2c52956426eeeefc70f66e010b94d267d6f7930997db",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformMacOS.mm",
+      "sha256": "ec8038a94195343eedac9fffcb0eaac40615c0a4d2f9943b5dd52c9e8bf4a7cd",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformDock.h",
+      "sha256": "d30d09d83f1beeae581ed73ae45abf70213f5136a2c2f046e91558cabe9ccad5",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformDock.cpp",
+      "sha256": "2e4515336ba29a95586e092b64c62e67fc62b3bb09a9edd9664a3b785a25477a",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/SCsub",
+      "sha256": "672be3ecd471462b3b580f93dddad6e05acc831f46bb9b5490dcb8264daab4b7",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "sha256": "fbde302092b036434847e8fb98e17cd6bd85275b269232aece1f8f5e56868b68",
+      "scope": "candidate integration diff and relevant surrounding context"
+    },
+    {
+      "path": "editor/register_editor_types.cpp",
+      "sha256": "fb3dc1bc6ae620d40304dfc8641e8aae80d888a225dc4a8b706222ac6f226b14",
+      "scope": "candidate integration diff and relevant surrounding context"
+    },
+    {
+      "path": "platform/macos/detect.py",
+      "sha256": "9cecf7c6a676e10245082cc9c522efcbbbe8a95c33fc6b816a98c457e0effd35",
+      "scope": "candidate integration diff and relevant surrounding context"
+    }
+  ],
+  "conventions_read": [
+    "AGENTS.md",
+    "Markdown/code-style/README.md",
+    "Markdown/code-style/cpp/README.md",
+    "CPP_CODING_STANDARD.md",
+    "Markdown/testing/README.md",
+    "design-docs/godot-web-platforms-20261118.md"
+  ],
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P1",
+      "title": "Guard download APIs on the supported macOS 11.0 target",
+      "file": "editor/docks/WebPlatformMacOS.mm",
+      "line_start": 44,
+      "line_end": 54,
+      "related_locations": [
+        {
+          "file": "platform/macos/detect.py",
+          "line_start": 113,
+          "line_end": 116
+        }
+      ],
+      "trigger": "Run the x86_64 editor on macOS 11.0–11.2 and connect to a valid workbench URL; the first navigation enters decidePolicyForNavigationAction.",
+      "evidence": "The delegate reads pAction.shouldPerformDownload unconditionally both before and after origin validation. The x86_64 deployment target is 11.0. Upstream WebKit declares this property and the download navigation policies available starting macOS 11.3.",
+      "impact": "On the declared supported older runtime, the property selector is unavailable; the first navigation can terminate the editor instead of showing a supported-view diagnostic. The 11.3-only download policy/protocol path also needs a consistent availability boundary.",
+      "recommendation": "Add a runtime availability guard around the 11.3 download facilities and a visible older-runtime fallback, or make an explicitly approved and tested platform minimum change. Do not silently raise the entire editor minimum as an incidental fix.",
+      "verification": "Source data-flow and upstream availability annotations verified; actual old-OS crash not executed.",
+      "sources": [
+        "https://github.com/WebKit/webkit/blob/main/Source/WebKit/UIProcess/API/Cocoa/WKNavigationAction.h",
+        "https://github.com/WebKit/webkit/blob/main/Source/WebKit/UIProcess/API/Cocoa/WKNavigationDelegate.h"
+      ]
+    },
+    {
+      "id": "R2",
+      "priority": "P2",
+      "title": "Keep invalid-address diagnostics visible while the old connection remains active",
+      "file": "editor/docks/WebPlatformDock.cpp",
+      "line_start": 25,
+      "line_end": 30,
+      "related_locations": [
+        {
+          "file": "editor/docks/WebPlatformDock.cpp",
+          "line_start": 113,
+          "line_end": 126
+        }
+      ],
+      "trigger": "Connect successfully, replace the address with file:///tmp/a or a URL containing query/login parameters, then press Connect or Enter.",
+      "evidence": "ConnectSite writes the validation error and returns without destroying the existing pNative. Every NOTIFICATION_PROCESS then calls UpdateSurface, which unconditionally sets pStatus from the existing pNative at line 115.",
+      "impact": "Within the next process frame the useful rejection message disappears and the old page reports its connected status under the newly entered invalid address. The user cannot reliably tell why the requested address was refused.",
+      "recommendation": "Keep a separate validation-error state until the address is corrected/retried, or otherwise ensure native load-status polling cannot overwrite an active address validation error.",
+      "verification": "Deterministic source control-flow verification; no GUI reproduction claimed."
+    }
+  ],
+  "coverage": {
+    "lifetime": "Inspected strong native ownership, weak WebView delegate reference, shutdown active flag, sheet completion captures, download cancellation, delegate detachment, exit-tree and destructor cleanup. No additional definite lifetime defect established from authorized source scope.",
+    "security": "Inspected scheme/origin parsing, userinfo rejection, loopback-only HTTP, action/response/download origin checks, blocked off-origin popup handling, lack of injected host bridge and default WebKit TLS handling. No demonstrated origin bypass established. Navigation policy is not a subresource network sandbox.",
+    "focus": "Inspected native first-responder restoration when hidden and popup visibility suppression. Actual WebView keyboard, IME, Escape and Godot shortcut interaction remain unverified.",
+    "layout": "Inspected viewport transform, native-parent scaling/flipped coordinates, rectangle intersection, visibility polling and main-screen-only dock placement. No proven additional source defect; native layering and pixel alignment remain unverified.",
+    "integration": "Inspected dock registration, .mm source registration, editor-only WebKit link framework, ARC flags and platform minimums; R1 is actionable. Unsupported non-macOS factory intentionally returns null."
+  },
+  "evidence_boundaries": {
+    "source_review": "completed for the exact file hashes above",
+    "engine_build": "not run by reviewer; parent stated platform .mm compilation passed and full build was running, not independently adopted as pass",
+    "runtime_tests": "none; no desktop operation, native view launch, authentication, upload/download or production-service call performed",
+    "product_edits": "none",
+    "commit_push_merge": "none",
+    "temporary_resources": "none created; only authorized review JSON written"
+  },
+  "remaining_acceptance": [
+    "Retest R1 on the supported old macOS boundary or verify safe capability fallback; current arm64 compilation does not cover this runtime.",
+    "Verify R2 with an established connection followed by invalid and corrected addresses.",
+    "Verify destruction while navigation, JavaScript alert/confirm, file picker and download destination callbacks are pending.",
+    "Verify native keyboard/IME focus, Escape, switching scene/workbench, popup occlusion, resize, Retina scaling, fullscreen and window close.",
+    "Verify first-load failure retry and browser-process termination recovery in the actual editor.",
+    "Verify real workbench document/requirements/issues/Duobao/search/settings flows, authentication persistence and logout in the actual intended user profile.",
+    "Verify off-origin redirects, target=_blank, rejected credential URLs, uploads and both ordinary and blob downloads in actual WKWebView.",
+    "Windows WebView2 implementation, SDK/loader architecture and hashes, runtime diagnostics, Windows build and runtime acceptance remain outstanding; non-macOS unsupported fallback is not completion.",
+    "Full engine build, required tests, formal gates, CI, main readback and issue lifecycle belong to parent delivery and are not established by this report."
+  ],
+  "files_changed_after_review_snapshot": [],
+  "original_private_report_sha256": "8ecb2452bb2e189bd54e58d2d90aebafe6597487c62cc23031f3c009b5030eaa",
+  "public_copy_note": "Only absolute worktree paths normalized; findings and reviewed source hashes preserved."
+}

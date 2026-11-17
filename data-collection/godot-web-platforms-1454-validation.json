@@ -1,0 +1,189 @@
+{
+  "schema_version": 1,
+  "request_id": "godot-web-platforms-20261118",
+  "issue": 1454,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "path_resolution_base": "repository root",
+  "base_commit": "cefa69ea2ee415c0b65d88506c85582f626fc673",
+  "scope": "Godot editor only; macOS native implementation; Engine Next unchanged",
+  "candidate_sources": [
+    {
+      "path": "editor/docks/WebPlatformNative.h",
+      "sha256": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformNative.cpp",
+      "sha256": "aa3fb2f34190722db1342e35d4c83844994f49765cb08098485cf4cb787ddbb3",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformMacOS.mm",
+      "sha256": "9dec1826e7bc80d363c92f363bba7aa4baa3c2b6c45a87b556a7fb6929204adb",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformDock.h",
+      "sha256": "60be9161d297dd498456970ff23c007c2302a481c57a12fb3d634df6caa3e6d7",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformDock.cpp",
+      "sha256": "7a38af2ff068ee2164d4256397b6da81a2f80ff313b5cb1ff8e761746338dae5",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/SCsub",
+      "sha256": "672be3ecd471462b3b580f93dddad6e05acc831f46bb9b5490dcb8264daab4b7",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "sha256": "f92782c7b23b84e00e29e2e67a3b093b8af06355f7d028f014a1c4ca42802c1e",
+      "scope": "candidate integration diff and relevant surrounding context"
+    },
+    {
+      "path": "editor/register_editor_types.cpp",
+      "sha256": "b5b511244d3102e988655bcf394a5cafada5e11c501f2fd72ba44247aa17b14e",
+      "scope": "candidate integration diff and relevant surrounding context"
+    },
+    {
+      "path": "platform/macos/detect.py",
+      "sha256": "9cecf7c6a676e10245082cc9c522efcbbbe8a95c33fc6b816a98c457e0effd35",
+      "scope": "candidate integration diff and relevant surrounding context"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "sha256": "5e8a084a74d3d7cf7904dd98511540a89c8c49e135d2df8697d3a1c153264a72",
+      "scope": "candidate integration diff and relevant surrounding context"
+    },
+    {
+      "path": "tests/editor/TestWebPlatformMacOS.mm",
+      "sha256": "e97e13750a2d53b752f377b481051c391e53703e26255db4f91e98f295151c67",
+      "scope": "full file"
+    },
+    {
+      "path": "tests/editor/TestWebPlatformPolicy.cc",
+      "sha256": "2f1ebfcf91ced3565940d2e8ddeb57d1f965a3cc592e71d6cb8c8ce36f4e10a6",
+      "scope": "full file"
+    },
+    {
+      "path": "tests/editor/web_platform_dock.gd",
+      "sha256": "01b6bac91d5f61be80f6cf0c0b2e8b59d165953106d562c3593c8a10ba395996",
+      "scope": "full file"
+    }
+  ],
+  "independent_review": {
+    "state": "no_new_actionable_findings",
+    "worker_id": "/root/sinan_154f50533c58a66f",
+    "report": "data-collection/godot-web-platforms-1454-independent-review-fixed.json",
+    "original_report_sha256": "81d8f2d4cfd15ed8fb58b3c24a645fab4483336d06fbbeeacc1f199188c72da8",
+    "worker_completion_verified": true
+  },
+  "checks": [
+    {
+      "name": "macOS arm64 Godot full editor compile and link",
+      "exit_code": 0,
+      "command": "scons platform=macos arch=arm64 target=editor dev_build=yes tests=yes debug_symbols=no optimize=none vulkan=no opengl3=yes metal=no accesskit=no -j8",
+      "log": "build-main-aligned.log"
+    },
+    {
+      "name": "macOS 11.0 deployment API compile",
+      "exit_code": 0,
+      "command": "clang++ -std=c++17 -fobjc-arc -DMACOS_ENABLED -mmacosx-version-min=11.0 -Wall -Wextra -Werror -Wno-unused-parameter -I. tests/editor/TestWebPlatformMacOS.mm editor/docks/WebPlatformMacOS.mm editor/docks/WebPlatformNative.cpp -framework Cocoa -framework WebKit -o PRIVATE_TEST_APP",
+      "limitation": "Compile on current SDK; no macOS 11.0 runtime"
+    },
+    {
+      "name": "Origin policy",
+      "exit_code": 0,
+      "result": "WEB_PLATFORM_POLICY_OK"
+    },
+    {
+      "name": "Headless EditorPlugin",
+      "exit_code": 0,
+      "result": "WEB_PLATFORM_DOCK_OK; no ERROR or leak output",
+      "log": "headless-main.log"
+    },
+    {
+      "name": "Hidden WKWebView with actual Tianxuan production build and isolated real API/database",
+      "exit_code": 0,
+      "log": "native-tianxuan-production.log",
+      "output": [
+        "PAGE_OK /docs",
+        "PAGE_OK /issues",
+        "PAGE_OK /requirements",
+        "PAGE_OK /repos",
+        "PAGE_OK /search",
+        "PAGE_OK /settings",
+        "PAGE_OK /accounts",
+        "PAGE_OK /login",
+        "WEB_PLATFORM_MACOS_OK hidden_native=true"
+      ],
+      "scope": [
+        "8 real page paths and headings, no application/404 error",
+        "seeded live document is visible",
+        "native view geometry and hide/detach",
+        "WebKit Cookie/localStorage restored after view recreation",
+        "cross-origin navigation rejected",
+        "destroy while loading completes without crash"
+      ],
+      "auth_mode": "explicit nonproduction X-Actor in isolated service only; no production key/auth claim"
+    },
+    {
+      "name": "Tianxuan production build",
+      "exit_code": 0,
+      "log": "next-build.log"
+    },
+    {
+      "name": "Existing production access-control regression",
+      "exit_code": 0,
+      "result": "9 passed",
+      "log": "access-control-main.log"
+    },
+    {
+      "name": "Static checks",
+      "result": "ruff check/format; clang-format scoped policy; include/header/copyright/file-format; git diff --check passed"
+    }
+  ],
+  "raw_private_logs": {
+    "build-main-aligned.log": {
+      "sha256": "62e5e3b204846c9175f0d696d4eaac6fd46e8b67c3d3c834315e53944725090e",
+      "bytes": 1030
+    },
+    "headless-main.log": {
+      "sha256": "9186cf1c9d1420ae3441a19f51e77019cff79dcb64061f63af78ea18ed8a6bf5",
+      "bytes": 1475
+    },
+    "native-tianxuan-production.log": {
+      "sha256": "cb6fb6a3b666fab47b285015bc29355dd38b2e39cd731d82a9760e92c7646e1b",
+      "bytes": 175
+    },
+    "next-build.log": {
+      "sha256": "9abf80534d74f2dab3b9035ed6dca27889c628b62c71695565bd498de7dcec64",
+      "bytes": 1468
+    },
+    "access-control-main.log": {
+      "sha256": "c551be16c2676d302aa0a12035130fd575519a63f0b306e66900b3151d2ca944",
+      "bytes": 775
+    }
+  },
+  "remaining_acceptance": [
+    "Windows/Linux native backends",
+    "real display keyboard/IME/Escape, focus and editor shortcut isolation",
+    "real native upload/download and pending dialog lifecycle",
+    "production HTTPS login/logout and persistence across full app restart",
+    "old macOS runtime capability verification"
+  ],
+  "overall_acceptance": "partial; keep parent Issue open",
+  "diagnostics_resolved": [
+    "macOS 11.3 download availability guarded after independent review",
+    "validation error retained during existing native connection polling",
+    "missing icon replaced with existing WorldEnvironment",
+    "standalone policy test excluded from Godot test-glob by .cc suffix",
+    "SceneTree override test replaced by isolated EditorPlugin; clean shutdown verified",
+    "hardened ChatGPT helper refused SWC; existing Cursor Node loaded exact installed dependency without modifying signing",
+    "Next dev HMR interfered with path assertion; actual production build passed"
+  ],
+  "deployment": "No effective app installation or production service/database changed",
+  "cleanup": "Pending after delivery: task-owned test servers, test databases, native test bundle/profile, dependencies and obsolete build logs; retain undelivered candidate and evidence until verified delivery."
+}

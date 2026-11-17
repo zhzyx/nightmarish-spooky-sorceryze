@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-19b7fd3670b4a6f47569c0a7a9009c6356618b17",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-web-platforms-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a4e0e07d6a6c5b46c4d9bcd4bc25f87b0d71df52142e0e9770ba061b2a46fb4c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1455",
+    "action": "intake",
+    "detection_head": "23d4e05bac6d469250327c8eaa1149021cff7ba0",
+    "context_sha256": "72e9b2ddb6d561dccbca785b292c3db969867a1f401afc578a7a8531199d4de2",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-only",
+    "evidence": "issue1454:intake-only-tenant-gonggong-workspace-success",
+    "diagnosis": "首次调用遗漏必需的tenant参数；显式传入work-items.json的gonggong-workspace后同工单同候选intake成功。框架校验另使用已有宿主Node路径成功；未修改门禁。",
+    "next_action": "继续Godot候选开发和独立验证；原业务验收与工具参数恢复分别记录。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T17:41:47.360933+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T17:47:46.869563+00:00",
+  "sha256": "3e6dbd13f1e33a17c4096919e9f7ed825432f7c381beb044b92043c3eebf3530"
+}

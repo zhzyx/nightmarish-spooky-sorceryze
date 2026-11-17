@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-42bd2c635546b6ca6ddc591b0648a71b5ce1686f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-web-platforms-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "be496ab0538453464e4b7c4d20ae2c1252dc9f95727a50171c5ee2ba0f35400b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1455",
+    "action": "validation",
+    "detection_head": "9af92c7a8221f6a422627262acf856e449b2742a",
+    "context_sha256": "72e9b2ddb6d561dccbca785b292c3db969867a1f401afc578a7a8531199d4de2",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-only",
+    "evidence": "CI run 44146944713: only clang-format-web-platform failed; all other hooks passed. Installed pinned 22.1.5, applied include ordering/whitespace to three files, then validate-includes and pinned format dry-run passed. No hook disabled. Independent addendum requested.",
+    "diagnosis": "Local formatter 23.1.5 produced output differing from repository pinned 22.1.5; include validation also reordered one header after formatting.",
+    "next_action": "Bind final hashes with independent review, recompile affected sources, append evidence and resubmit signed candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T18:24:39.755094+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root",
+    "continuable": "Remaining work is executable in current authorized worktree."
+  },
+  "occurred_at": "2026-11-17T18:26:31.923308+00:00",
+  "sha256": "bcac48f642fafd8301dc3f1237d0fdefa202c0375ac0d26d778fa35bcb5a5fa4"
+}
