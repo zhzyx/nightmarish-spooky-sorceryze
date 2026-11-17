@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-direction-shorthand-20261117",
+  "issue_number": 1392,
+  "date": "2026-11-17",
+  "state": "validated_integrated_candidate",
+  "evidence_scope": "Append-only latest-main integration and native validation; no credentials, private URLs or raw generation logs.",
+  "integrated_main_base": "7ca0653fb5e4229df6bb0fa49e6da0286b4ad19b",
+  "integrated_upstream_request": "maliang-mesh-multi-image-input-20261117",
+  "rebase_conflicts": false,
+  "editor_sha256": "e1a30b64678aea9cc3278d13e40bad7eeb0e58091469661a4224eb79389d74bf",
+  "local_validation": {
+    "multi_image_provider_and_host_tests": {"run": 21, "passed": 21, "failed": 0},
+    "full_ainative_suite": {"run": 437, "failed": 0, "skipped_by_platform_or_condition": 62},
+    "native_build": {"platform": "macos", "architecture": "arm64", "passed": true},
+    "native_scenarios": {
+      "passed": ["mesh-and-rig", "independent-project", "sample-addon-compatibility", "relocated-runtime"],
+      "installed_bundle_matches_source": true,
+      "report": ".kimi-output/native-bundle.json"
+    }
+  },
+  "previous_ci_failure": {
+    "pr": 1395,
+    "job": "Windows / Editor (target=editor)",
+    "error": "Native confirmation recovery did not finish: Fixture did not reach cold never-started C",
+    "image_prompt_code_implicated": false,
+    "requires_exact_candidate_retest": true
+  },
+  "independent_code_review": "pending; no self-review is presented as independent approval"
+}

@@ -44,13 +44,13 @@
 - [x] 用户原话自动规划为 `正面、背面、左侧面、右侧面、俯视、面部正面特写、面部左侧特写、面部右侧特写`，共 8 张。
 - [x] `角色前、后视角` 规划为 `正面、背面`，完整词与简写不重复。
 - [x] 实际 Provider 请求断言左右方向、相机位置及相反鼻子朝向，左右派生图引用同一主图。
-- [x] 多图相关测试 19 项通过；完整 AINative 回归 435 项运行、0 失败、62 项按条件跳过。
-- [x] macOS arm64 编辑器构建和 4 个原生场景回归通过；增强提示词候选编辑器 SHA-256 为 `150ebdadc95974dee161b4e67cf8241d97f95b3a563858de23a46b642acf0a91`，内嵌包与源码一致。
+- [x] 多图相关测试 19 项通过；整合 `main` 的多图输入改动后 21 项通过；完整 AINative 回归 437 项运行、0 失败、62 项按条件跳过。
+- [x] macOS arm64 编辑器构建和 4 个原生场景回归通过；最新整合候选编辑器 SHA-256 为 `e1a30b64678aea9cc3278d13e40bad7eeb0e58091469661a4224eb79389d74bf`，内嵌包与源码一致。
 - [ ] 正式门禁、候选提交、PR 检查、必要审查、合入及远端 `main` 回读完成。
 
 ## 验证与采集证据
 
 - 复现与自动规划断言：`tools/ainative/test_multi_image_provider.py`。
-- 本地验证记录：`data-collection/maliang-direction-shorthand-20261117-validation.json`；增强提示词的追加验证：`data-collection/maliang-direction-shorthand-20261117-direction-prompt-validation.json`。
+- 本地验证记录：`data-collection/maliang-direction-shorthand-20261117-validation.json`；增强提示词的追加验证：`data-collection/maliang-direction-shorthand-20261117-direction-prompt-validation.json`；最新主线整合验证：`data-collection/maliang-direction-shorthand-20261117-main-integration.json`。
 - 请求事件：`gonggong-diting-data/events/gonggong-workspace/maliang-direction-shorthand-20261117/maliang-direction-shorthand-20261117-request.json`。
 - 不把 Fake Provider 结果写成真实模型出图验收；真实视觉验收待更新后的编辑器中重新运行。
