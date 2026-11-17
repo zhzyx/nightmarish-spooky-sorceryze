@@ -1,0 +1,47 @@
+{
+  "issue": 1453,
+  "request_id": "native-git-test-portability-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1453",
+  "command": "Actual file_format.py on full staged candidate blobs filtered by exact file-format exclusion expression",
+  "selected": [
+    ".gitattributes",
+    ".pre-commit-config.yaml",
+    "customizations/components/tianxuan/duobao/test_admin_paths.py",
+    "customizations/components/tianxuan/duobao/test_git_service_repo_root.py",
+    "data-collection/git-test-portability-attributes-review-1453.json",
+    "data-collection/git-test-portability-linux-1453.json",
+    "data-collection/git-test-portability-review-1453.json",
+    "data-collection/requests/native-git-test-portability-20261118/f167516f-7d09-4896-8eee-540e084869a6.json",
+    "design-docs/native-git-test-portability-20261118.md",
+    "gonggong-diting-data/events/gonggong-workspace/learning-build-validation/learn-75ad1c99cf4122464cf1e20c9d77324c3d1e0c8e6f04c25a40443aa8d9251703.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-git-test-portability-20261118/dispatch-59914eb5bfe847d5a7badad232bc6694.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-git-test-portability-20261118/dispatch-902f387f00af457b92e1d0f276718261.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-git-test-portability-20261118/dispatch-92d574e78ea444849679fb7c53a1ba8b.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-git-test-portability-20261118/dispatch-9d395f0949e3401c8269c089ca5e0a32.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-git-test-portability-20261118/dispatch-c44166b2d07b4d73a0b59ec307422cbd.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-git-test-portability-20261118/dispatch-f41a07df0669492bb5ac531f214233f2.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-git-test-portability-20261118/kuafu-eae13dbdcbf235f58fd1ec3c68bdcd28c222104a.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-git-test-portability-20261118/request-1453-git-test-portability.json"
+  ],
+  "skipped": [
+    "data-collection/git-test-portability-1453.json"
+  ],
+  "unrelated_paths_remain_included": true,
+  "source_sha256": {
+    ".pre-commit-config.yaml": "b1dc7ba967cdac2826820cbec0397cebf6f8385e9ee410e50400fc4dc0aae84a",
+    ".gitattributes": "765a731832beb8c48621c6cca697e714414a7d71d99f16107e41e0481942a76e",
+    "misc/scripts/file_format.py": "29a890753b9007285f2030b8194ea787d33d3973f73e0f21be7d5f089b4efa25"
+  },
+  "exit_code": 0,
+  "stdout": "",
+  "stderr": "",
+  "changed": [],
+  "passed": true,
+  "temporary_directory_removed": true,
+  "original_ci": {
+    "pr": 1457,
+    "run": 44146478471,
+    "failed_hook": "file-format",
+    "facts": "Only immutable report CRLF normalization and trailing blank design line; original full log retained privately."
+  }
+}
