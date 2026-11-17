@@ -241,7 +241,7 @@ class NativeStore:
                 if item["base"] is None:
                     if current is not None:
                         raise Conflict(f"Module already exists: {module}")
-                    base = {"objects": {}, "dependencies": {}}
+                    base: dict[str, Any] = {"objects": {}, "dependencies": {}}
                 else:
                     base = self._revision(db, tenant, module, item["base"])
                     if current is None:

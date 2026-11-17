@@ -1,0 +1,59 @@
+{
+  "issue": 1451,
+  "request_id": "native-candidate-intake-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1451",
+  "change": "One local variable annotation only; runtime AST equal after stripping AnnAssign",
+  "path": "customizations/components/tianxuan/duobao/native_store.py",
+  "before_git_blob_sha256": "6f38e1ecfa52c71242fca1399f30e126258f3775e668b0ab667da4a1d2835e36",
+  "after_sha256": "fd390d3aad3deb4b861cb5e0ff2111bc74cdb6eaf70107f5bbc357ee7da50cf2",
+  "runtime_ast_equivalent": true,
+  "results": [
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "mypy",
+        "customizations/components/tianxuan/duobao/native_store.py",
+        "customizations/components/tianxuan/duobao/native_candidates.py",
+        "customizations/components/tianxuan/duobao/native_candidates_cli.py",
+        "customizations/components/tianxuan/duobao/test_native_candidates.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Success: no issues found in 4 source files\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "customizations/components/tianxuan/duobao/native_store.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "customizations/components/tianxuan/duobao/native_store.py"
+      ],
+      "exit_code": 0,
+      "stdout": "1 file already formatted\n",
+      "stderr": ""
+    }
+  ],
+  "original_failed_ci": "PR1468 run44158439724 mypy base var-annotated",
+  "limits": "Existing behavior tests and review remain applicable; exact annotation review and replacementCI required"
+}
