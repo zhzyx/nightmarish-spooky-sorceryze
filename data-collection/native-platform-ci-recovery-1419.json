@@ -1,0 +1,18 @@
+{
+  "issue": 1419,
+  "bug": 1421,
+  "supersedes_pr": 1426,
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44076661131/job/134016332085",
+  "change": "Only native_api._compose return alias gains local dict[str,Any] type; runtime returned object and checks unchanged.",
+  "review": {
+    "path": "data-collection/native-platform-ci-review-1419.json",
+    "sha256": "703093d3b9a77ddecd4d42b30a0b13e03c1325bd5cfa671db09f7be46e96f8fd"
+  },
+  "checks": [
+    "mypy without MYPYPATH passed",
+    "ruff check and format passed",
+    "29 native API/platform tests passed10.22s"
+  ],
+  "evidence_reuse": "Original141Linux tests44subtests and250capacity sources predate this typing-only delta. Independent normalized AST comparison and13 unchanged source bindings justify reuse, not rerun on new bytes. Original receipts untouched.",
+  "state": "formal replacement delivery pending"
+}

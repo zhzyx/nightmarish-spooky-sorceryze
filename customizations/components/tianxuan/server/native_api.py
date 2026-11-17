@@ -149,7 +149,8 @@ def _compose(store: NativeStore, domain: Any, tenant: str, actor: str, selected:
         state = store.revision(tenant, module, revision)
         seen[module] = revision
         pending.extend(state["dependencies"].items())
-    return store.compose(tenant, selected)
+    result: dict[str, Any] = store.compose(tenant, selected)
+    return result
 
 
 def _composition(store: NativeStore, domain: Any, tenant: str, actor: str, candidate: str) -> dict[str, Any]:
