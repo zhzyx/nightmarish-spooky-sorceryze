@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-content-storage-integrity",
+  "event_id": "learn-ff4ac4cdc3890bf96411e4e1f742af77b939c8b752c765ae22b5f2b68da5afe9",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-duobao-1382",
+    "version": "not-reported-by-host",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "explicit-github-issue-event-intake"
+  },
+  "source_ref": "github:zhzyx/nightmarish-spooky-sorceryze:issue:1386:event:36314169186",
+  "occurred_at": "2026-11-17T06:51:45.305119+00:00",
+  "evidence_refs": [
+    "github-9c2f1f27f5121e63a710d5fd0ce93efeb6e3a5b1d4351983640fdb4e3cf8af34"
+  ],
+  "payload": {
+    "scope": "content-storage-integrity",
+    "lesson": "validate-dedup-existing-bytes",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Before acknowledging a new content-addressed reference, validate existing deduplicated bytes or retain a verified immutable storage guarantee; mismatch rejects the entire transaction.",
+      "when": "Content-addressed persistence reuses an existing digest row and durable success implies new references are readable.",
+      "counterexample": "A claimed digest does not establish healthy stored bytes. Full byte verification may be too expensive for streaming assets; equivalent immutable-object validation needs its own evidence.",
+      "trial_plan": "In a future consumer integration, corrupt an existing object, submit a multi-object batch that reuses it, assert no new heads or receipts, recover explicitly, then replay the same request and read every object."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/duobao-native-review-original-1386.json",
+        "sha256": "51d8efe80b1f896ff480e964781fc0b5c1ecdc6bcb85affe6905879b0adb0f13"
+      },
+      {
+        "path": "data-collection/duobao-native-review-fixed-1386.json",
+        "sha256": "d9ca72645204112f299f0eb160d5bf412c4731fa99385b0ba08328d489189a84"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/duobao-native-store-20261117/github-9c2f1f27f5121e63a710d5fd0ce93efeb6e3a5b1d4351983640fdb4e3cf8af34.json",
+      "sha256": "9e0beffe82f58aaa2728c4502e3d668170e96d7763175fc5f8a20f53d49d058d"
+    }
+  },
+  "sha256": "9e921d5114da8d3d938f380a43f3d4cab5bd3cb11f77419c26cc065b893c4d25"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-181754d8ed1c558ac7fda36e37a8bfa3743f21ed",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-store-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5c32afc3300eac9f1135f090a412b74fa6163ffafbcafb0bba8493430f214a2e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1399",
+    "action": "delivery",
+    "detection_head": "7ca0653fb5e4229df6bb0fa49e6da0286b4ad19b",
+    "context_sha256": "8c494414c011651db40762d191941899fd6dc4fde135ae94ce176c9f04f9486d",
+    "operator": "Sail-Li",
+    "worker": "codex-1382-current",
+    "authority_ref": "codex:user-start-execution-20261117",
+    "evidence": "git-check:tracked-9328-records-9207",
+    "diagnosis": "Sparse checkout excluded olympus-hermes-data required by immutable history validation. Materialized that existing history without source edits; trusted git-check now passes 9328 files and 9207 records. Auto integration advanced own base to 7ca0653f without product conflicts.",
+    "next_action": "Stage new assessment and resume writer submission for the same candidate; independently verified native input hashes remain fixed.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T06:55:52.733183+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T06:57:48.665505+00:00",
+  "sha256": "75c60976e51e8492748a37014f38e129bc166cf3e61b1dbad0b57bb047dcee7f"
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "issue": 1386,
+  "request_id": "duobao-native-store-20261117",
+  "observed_at": "2026-11-17T06:45:24.615886+00:00",
+  "platform": "win32",
+  "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "requests": 250,
+  "maximum_concurrent_cli_processes": 16,
+  "producer_retries": 0,
+  "child_PATH": "",
+  "checks": {
+    "250_old_base_disjoint_writes_preserved_without_producer_retry": true,
+    "history_read_in_new_process": true,
+    "receipt_replay_in_new_process": true,
+    "changed_read_rejected": true,
+    "immutable_composition": true,
+    "working_directory_has_no_git_metadata": true
+  },
+  "timings": {
+    "wall_seconds": 2.2175847999969847,
+    "cli_seconds_p50": 0.10976120000123046,
+    "cli_seconds_p95": 0.2642612999989069,
+    "cli_seconds_p99": 0.4606414000008954,
+    "cli_seconds_max": 1.2387290999977267
+  },
+  "temporary_database_removed": true,
+  "source_sha256": {
+    "native_store.py": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a",
+    "native_cli.py": "e7db40a12ca5b18d753a182f7d8a853c76d8f96bb9c3893a27bd842049a9613a",
+    "verify_native_processes.py": "f5f03eaef371c7d007b4c88003e16a75a20c43bfb9938a30f71614a91d449120"
+  },
+  "limits": [
+    "Local CLI process and SQLite semantics only; not server capacity or token savings.",
+    "250 requests share an old base; at most 16 child processes execute concurrently.",
+    "Empty PATH removes executable discovery; API unit tests separately forbid process/network calls.",
+    "Caller read declarations require trusted host completeness enforcement."
+  ]
+}

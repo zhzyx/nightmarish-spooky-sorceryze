@@ -1,0 +1,127 @@
+{
+  "schema_version": 1,
+  "issue": 1386,
+  "reviewer": "independent-native-fixed-review-subagent",
+  "observed_at": "2026-11-17T06:48:29.465434+00:00",
+  "host_descriptor": "Codex native subagent; exact observed host model identity unknown",
+  "verdict": "approved_with_documented_limits",
+  "scope": "Frozen native module API/CLI, unit tests, process verifier and native README claims only; no production or business acceptance",
+  "frozen_manifest": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-review-fixed-inputs.json",
+  "frozen_manifest_sha256": "7ece2c5976e6517ba90d2199155a5f15cf8885f62344f18896a84fcbcd0831c9",
+  "source_sha256": {
+    "customizations\\components\\tianxuan\\duobao\\native_store.py": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a",
+    "customizations\\components\\tianxuan\\duobao\\native_cli.py": "e7db40a12ca5b18d753a182f7d8a853c76d8f96bb9c3893a27bd842049a9613a",
+    "customizations\\components\\tianxuan\\duobao\\test_native_store.py": "cb7df0539fc42cd5cb2dc0bcb31f681994ace28041c782f32a5b7a894446a743",
+    "customizations\\components\\tianxuan\\duobao\\verify_native_processes.py": "f5f03eaef371c7d007b4c88003e16a75a20c43bfb9938a30f71614a91d449120",
+    "customizations\\components\\tianxuan\\duobao\\README.md": "72d847bf7d593ae84cfbb2654c15d52acb2df192d499c1d42621adfc57e44dac"
+  },
+  "source_sha256_after": {
+    "customizations\\components\\tianxuan\\duobao\\native_store.py": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a",
+    "customizations\\components\\tianxuan\\duobao\\native_cli.py": "e7db40a12ca5b18d753a182f7d8a853c76d8f96bb9c3893a27bd842049a9613a",
+    "customizations\\components\\tianxuan\\duobao\\test_native_store.py": "cb7df0539fc42cd5cb2dc0bcb31f681994ace28041c782f32a5b7a894446a743",
+    "customizations\\components\\tianxuan\\duobao\\verify_native_processes.py": "f5f03eaef371c7d007b4c88003e16a75a20c43bfb9938a30f71614a91d449120",
+    "customizations\\components\\tianxuan\\duobao\\README.md": "72d847bf7d593ae84cfbb2654c15d52acb2df192d499c1d42621adfc57e44dac"
+  },
+  "frozen_hashes_match_before_and_after_independent_repro": true,
+  "unit_and_process_test_hash_binding": "Process verifier records matching store/CLI/verifier hashes; subsequent independent pre/post hash checks match all five frozen inputs.",
+  "findings": [],
+  "resolved_findings": [
+    {
+      "id": "NATIVE-REVIEW-001",
+      "status": "fixed_verified",
+      "evidence": "Deduplication compares existing bytes with submitted bytes within BEGIN IMMEDIATE; mismatch raises NativeStoreError and connection context rolls back.",
+      "independent_repro": {
+        "rejection": "Object integrity failure on deduplication",
+        "all_five_table_snapshots_unchanged": true,
+        "existing_head_unchanged": true,
+        "new_module_absent": true,
+        "fresh_blob_rolled_back": true,
+        "no_failure_receipt": true,
+        "same_key_succeeds_after_explicit_fixture_repair": true
+      }
+    }
+  ],
+  "validation": {
+    "unit_tests": {
+      "command": "D:/GongGong/project/runtime/python/python.exe -B -X utf8 -m unittest test_native_store -v",
+      "cwd": "D:\\GongGong-work\\duobao-native-modules-20261117\\customizations\\components\\tianxuan\\duobao",
+      "exit_code": 0,
+      "passed": 18,
+      "raw_output": "test_250_independent_connections_no_global_revision_retries (test_native_store.NativeStoreTests.test_250_independent_connections_no_global_revision_retries) ... ok\r\ntest_batch_atomicity_on_late_missing_dependency (test_native_store.NativeStoreTests.test_batch_atomicity_on_late_missing_dependency) ... ok\r\ntest_batch_cycle_and_missing_batch_member_reject_atomically (test_native_store.NativeStoreTests.test_batch_cycle_and_missing_batch_member_reject_atomically) ... ok\r\ntest_batch_dependencies_and_immutable_composition (test_native_store.NativeStoreTests.test_batch_dependencies_and_immutable_composition) ... ok\r\ntest_changed_read_and_unknown_read_reject_with_unchanged_state (test_native_store.NativeStoreTests.test_changed_read_and_unknown_read_reject_with_unchanged_state) ... ok\r\ntest_cli_actual_json_boundary_and_invalid_base64 (test_native_store.NativeStoreTests.test_cli_actual_json_boundary_and_invalid_base64) ... ok\r\ntest_competing_writers_one_wins_without_silent_overwrite (test_native_store.NativeStoreTests.test_competing_writers_one_wins_without_silent_overwrite) ... ok\r\ntest_corrupt_dedup_hit_rejects_entire_batch_without_receipt (test_native_store.NativeStoreTests.test_corrupt_dedup_hit_rejects_entire_batch_without_receipt) ... ok\r\ntest_corruption_is_not_returned_as_valid_content (test_native_store.NativeStoreTests.test_corruption_is_not_returned_as_valid_content) ... ok\r\ntest_delete_prefix_conflict_and_invalid_input (test_native_store.NativeStoreTests.test_delete_prefix_conflict_and_invalid_input) ... ok\r\ntest_idempotency_after_restart_and_conflicting_reuse (test_native_store.NativeStoreTests.test_idempotency_after_restart_and_conflicting_reuse) ... ok\r\ntest_missing_read_detects_concurrent_creation (test_native_store.NativeStoreTests.test_missing_read_detects_concurrent_creation) ... ok\r\ntest_no_git_network_or_process_is_required (test_native_store.NativeStoreTests.test_no_git_network_or_process_is_required) ... ok\r\ntest_same_module_disjoint_old_base_changes_preserve_both (test_native_store.NativeStoreTests.test_same_module_disjoint_old_base_changes_preserve_both) ... ok\r\ntest_same_request_concurrency_returns_one_durable_result (test_native_store.NativeStoreTests.test_same_request_concurrency_returns_one_durable_result) ... ok\r\ntest_tenant_and_module_revision_isolation (test_native_store.NativeStoreTests.test_tenant_and_module_revision_isolation) ... ok\r\ntest_transaction_storage_failure_rolls_back_and_retry_succeeds (test_native_store.NativeStoreTests.test_transaction_storage_failure_rolls_back_and_retry_succeeds) ... ok\r\ntest_unrelated_module_drift_never_invalidates_fixed_work (test_native_store.NativeStoreTests.test_unrelated_module_drift_never_invalidates_fixed_work) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 18 tests in 3.124s\r\n\r\nOK\r\n"
+    },
+    "process_verification": {
+      "command": "D:/GongGong/project/runtime/python/python.exe -B -X utf8 customizations/components/tianxuan/duobao/verify_native_processes.py",
+      "cwd": "D:\\GongGong-work\\duobao-native-modules-20261117",
+      "exit_code": 0,
+      "result": {
+        "schema_version": 1,
+        "issue": 1386,
+        "request_id": "duobao-native-store-20261117",
+        "observed_at": "2026-11-17T06:47:18.152484+00:00",
+        "platform": "win32",
+        "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+        "requests": 250,
+        "maximum_concurrent_cli_processes": 16,
+        "producer_retries": 0,
+        "child_PATH": "",
+        "checks": {
+          "250_old_base_disjoint_writes_preserved_without_producer_retry": true,
+          "history_read_in_new_process": true,
+          "receipt_replay_in_new_process": true,
+          "changed_read_rejected": true,
+          "immutable_composition": true,
+          "working_directory_has_no_git_metadata": true
+        },
+        "timings": {
+          "wall_seconds": 1.8131645999965258,
+          "cli_seconds_p50": 0.07749920000060229,
+          "cli_seconds_p95": 0.21455129999958444,
+          "cli_seconds_p99": 0.9793304999984684,
+          "cli_seconds_max": 1.6430600999956368
+        },
+        "temporary_database_removed": true,
+        "source_sha256": {
+          "native_store.py": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a",
+          "native_cli.py": "e7db40a12ca5b18d753a182f7d8a853c76d8f96bb9c3893a27bd842049a9613a",
+          "verify_native_processes.py": "f5f03eaef371c7d007b4c88003e16a75a20c43bfb9938a30f71614a91d449120"
+        },
+        "limits": [
+          "Local CLI process and SQLite semantics only; not server capacity or token savings.",
+          "250 requests share an old base; at most 16 child processes execute concurrently.",
+          "Empty PATH removes executable discovery; API unit tests separately forbid process/network calls.",
+          "Caller read declarations require trusted host completeness enforcement."
+        ]
+      }
+    }
+  },
+  "review_coverage": [
+    "Read complete native store/CLI/test/process source and native README section; compare against original finding.",
+    "Reviewed transaction boundaries, tenant/module predicates, input validation, base/read/write conflict detection, dependency resolution and request replay.",
+    "Independent repro inserts a fresh blob before hitting corrupted existing blob, targets both existing and new module heads, compares all five database tables, then repairs owned fixture and retries identical request key.",
+    "README accurately limits SQLite concurrency, trusted host identity/read declarations, candidate versus approval, and downstream service integration. Existing Git implementation claims were not re-audited."
+  ],
+  "coverage_limits": [
+    "Host must authenticate and authorize tenant/actor; CLI strings are not authentication.",
+    "Caller-provided read sets need trusted completeness enforcement; empty reads are a claim, not proof.",
+    "Digest comparisons do not guarantee detection of arbitrary ABA mutation history.",
+    "Local SQLite writer serialization and 30-second lock timeout remain; 250 requests at at most 16 simultaneous CLI processes do not prove 250 concurrent workers or multi-host capacity.",
+    "Composition checks revision/dependency metadata, not every blob; successful idempotent receipt replay is not a new integrity audit.",
+    "No production activation, server capacity, token savings, GPU performance, network filesystem, multi-replica, Linux, disk exhaustion, forced termination or power-loss claims.",
+    "No claim of absence of defects beyond this frozen scope and exercised cases."
+  ],
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "recalled": "bind-consumer-release revision 15, verified",
+    "application": "Bound conclusions to actual frozen file bytes and rechecked at completion; previous review hashes do not admit changed candidate.",
+    "counterexample": "Transport success or stale source hashes alone cannot release downstream acceptance."
+  },
+  "cleanup": {
+    "product_source_modified": false,
+    "commits_created": false,
+    "published": false,
+    "owned_repro_directory_removed": true,
+    "process_test_temporary_database_removed": true,
+    "unit_temp_directories": "TemporaryDirectory cleanup registered by each passing test",
+    "retained": "Only requested independent review receipt; frozen input and earlier review preserved"
+  }
+}

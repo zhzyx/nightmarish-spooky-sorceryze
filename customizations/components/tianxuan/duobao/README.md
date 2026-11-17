@@ -1,6 +1,31 @@
-# 多宝（代码仓库）
+# 多宝（原生版本与 Git 兼容接入）
 
-复用开源 Git 实现，不重写协议；多宝负责合入编排、保护分支策略、权限边界与运维工具。
+原生方向由 [#1382](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1382) 定义：多宝自主保存版本、变更与组合，Git 仅作可选接入。以下原生入口与已有线上 Git 服务分别说明；当前服务尚未切换到原生存储。
+
+## 原生模块修订（#1386）
+
+`native_store.py` 是 Python 标准库宿主工具。每个组织拥有独立模块头、不可变修订、内容摘要与请求回执。任务引用精确模块基线和已读对象；无关模块变化不要求重新生产，同模块不相交对象可合成。改变已读或已写对象、未知读取依赖下的模块漂移以及不兼容依赖会拒绝接收。调用方必须由可信宿主提供认证身份及完整读取集合；CLI 参数本身不证明身份或依赖完整性。
+
+`submit` 的跨模块变更和回执在同一个短事务中提交。`dependencies` 可固定精确修订，或用 `@batch` 引用本次请求内的另一模块；`compose` 校验整个依赖闭包并保存候选。`received` 和 `candidate` 都不是验收或发布批准。SQLite 写入会短暂串行，不能将本地语义试验解释为无物理等待或多副本容量承诺。大文件流式存储、服务认证、可信读集合采集、证据缓存和发布接线仍由后续子项实现。
+
+路径以仓库根解析；`--db` 必须是宿主明确指定的绝对路径，父目录须预先存在。编辑内容采用 Base64，删除采用 `null`，对象名只作逻辑标识。示例输入：
+
+```json
+[{"module":"gameplay","base":null,"reads":[],"edits":{"rules.json":"e30="}}]
+```
+
+```text
+py customizations/components/tianxuan/duobao/native_cli.py --db D:/authorized-data/native.sqlite --tenant team-a submit --actor worker-a --request-key request-1 --input change.json
+py customizations/components/tianxuan/duobao/native_cli.py --db D:/authorized-data/native.sqlite --tenant team-a head --module gameplay
+py -X utf8 -m unittest discover -s customizations/components/tianxuan/duobao -p test_native_store.py -v
+py -X utf8 customizations/components/tianxuan/duobao/verify_native_processes.py
+```
+
+实际证据见 `data-collection/duobao-native-processes-1386.json`（路径基准仓库根）：250 次旧基线提交、最多 16 个 CLI 子进程，空 PATH、无 Git 工作目录、重启重放、历史读取和冲突反例。测试创建并清理自己的临时数据库，不访问线上数据库。该证据仅支持记录的本机环境。回退为停用新增入口并保留数据库，不修改或删除旧 Git 服务数据。
+
+## 既有 Git 服务
+
+以下实现保留用于现有安装与可选 Git 接入；它的队列和分支机制不作为原生多宝的协作协议。
 
 ## 选型
 
