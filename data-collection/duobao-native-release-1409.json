@@ -1,0 +1,160 @@
+{
+  "issue_number": 1409,
+  "request_id": "duobao-native-release-20261117",
+  "state": "independently_reviewed_pending_delivery",
+  "initial_implementation": {
+    "issue": 1409,
+    "recorded_at": "2026-11-17T08:47:16.424016+00:00",
+    "state": "implementation_validated_pending_independent_review",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+    "commands": [
+      {
+        "command": [
+          "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "customizations/components/tianxuan/duobao/",
+          "-p",
+          "test_native*.py",
+          "-v"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": "test_corrupt_request_reference_does_not_replay_another_run (test_native_evidence.EvidenceTests.test_corrupt_request_reference_does_not_replay_another_run) ... ok\ntest_dependency_content_corruption_rejects_cached_fact (test_native_evidence.EvidenceTests.test_dependency_content_corruption_rejects_cached_fact) ... ok\ntest_disjoint_object_and_unrelated_module_reuse_original_fact (test_native_evidence.EvidenceTests.test_disjoint_object_and_unrelated_module_reuse_original_fact) ... ok\ntest_durable_replay_and_conflicting_reuse (test_native_evidence.EvidenceTests.test_durable_replay_and_conflicting_reuse) ... ok\ntest_exact_dependency_change_invalidates (test_native_evidence.EvidenceTests.test_exact_dependency_change_invalidates) ... ok\ntest_expiry_future_clock_and_runner_revocation_are_checked_on_lookup (test_native_evidence.EvidenceTests.test_expiry_future_clock_and_runner_revocation_are_checked_on_lookup) ... ok\ntest_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass (test_native_evidence.EvidenceTests.test_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass) ... ok\ntest_host_scope_is_copied_and_caller_cannot_install_unknown_check (test_native_evidence.EvidenceTests.test_host_scope_is_copied_and_caller_cannot_install_unknown_check) ... ok\ntest_input_and_evidence_corruption_never_return_pass (test_native_evidence.EvidenceTests.test_input_and_evidence_corruption_never_return_pass) ... ok\ntest_invalid_policy_log_context_and_revoker_rejected (test_native_evidence.EvidenceTests.test_invalid_policy_log_context_and_revoker_rejected) ... ok\ntest_read_change_delete_and_missing_creation_invalidate (test_native_evidence.EvidenceTests.test_read_change_delete_and_missing_creation_invalidate) ... ok\ntest_rule_toolchain_environment_and_parameters_invalidate (test_native_evidence.EvidenceTests.test_rule_toolchain_environment_and_parameters_invalidate) ... ok\ntest_same_request_parallel_records_have_one_identity (test_native_evidence.EvidenceTests.test_same_request_parallel_records_have_one_identity) ... ok\ntest_storage_failure_rolls_back_evidence_and_retry_succeeds (test_native_evidence.EvidenceTests.test_storage_failure_rolls_back_evidence_and_retry_succeeds) ... ok\ntest_tenants_do_not_share_cached_evidence (test_native_evidence.EvidenceTests.test_tenants_do_not_share_cached_evidence) ... ok\ntest_unknown_and_whole_module_scopes_are_conservative (test_native_evidence.EvidenceTests.test_unknown_and_whole_module_scopes_are_conservative) ... ok\ntest_channels_and_same_channel_competitors (test_native_release.ReleaseTests.test_channels_and_same_channel_competitors) ... ok\ntest_check_policy_drift_and_evidence_expiry (test_native_release.ReleaseTests.test_check_policy_drift_and_evidence_expiry) ... ok\ntest_corruption_rejected (test_native_release.ReleaseTests.test_corruption_rejected) ... ok\ntest_event_failure_rolls_back_pointer_receipt_and_manifest (test_native_release.ReleaseTests.test_event_failure_rolls_back_pointer_receipt_and_manifest) ... ok\ntest_expiry_authority_policy_and_source_rechecked (test_native_release.ReleaseTests.test_expiry_authority_policy_and_source_rechecked) ... ok\ntest_full_flow_restart_and_rollback (test_native_release.ReleaseTests.test_full_flow_restart_and_rollback) ... ok\ntest_idempotent_receipts_events_and_revocation_no_resurrection (test_native_release.ReleaseTests.test_idempotent_receipts_events_and_revocation_no_resurrection) ... ok\ntest_identity_source_and_required_policy_rejections (test_native_release.ReleaseTests.test_identity_source_and_required_policy_rejections) ... ok\ntest_latest_failed_unknown_or_changed_evidence_rejects_prior_review (test_native_release.ReleaseTests.test_latest_failed_unknown_or_changed_evidence_rejects_prior_review) ... ok\ntest_publish_before_revocation_has_historical_event_but_invalid_selection (test_native_release.ReleaseTests.test_publish_before_revocation_has_historical_event_but_invalid_selection) ... ok\ntest_record_and_blob_corruption_rejected_on_consumer_read (test_native_release.ReleaseTests.test_record_and_blob_corruption_rejected_on_consumer_read) ... ok\ntest_release_flow_without_network_process_or_git (test_native_release.ReleaseTests.test_release_flow_without_network_process_or_git) ... ok\ntest_review_revocation_before_publish_and_reapproved_rollback (test_native_release.ReleaseTests.test_review_revocation_before_publish_and_reapproved_rollback) ... ok\ntest_revocation_commits_before_blocked_publish (test_native_release.ReleaseTests.test_revocation_commits_before_blocked_publish) ... ok\ntest_revoked_evidence_rejects_publish_and_current_read (test_native_release.ReleaseTests.test_revoked_evidence_rejects_publish_and_current_read) ... ok\ntest_tenant_product_isolation (test_native_release.ReleaseTests.test_tenant_product_isolation) ... ok\ntest_unknown_composition_context_and_missing_atomic_event (test_native_release.ReleaseTests.test_unknown_composition_context_and_missing_atomic_event) ... ok\ntest_250_independent_connections_no_global_revision_retries (test_native_store.NativeStoreTests.test_250_independent_connections_no_global_revision_retries) ... ok\ntest_batch_atomicity_on_late_missing_dependency (test_native_store.NativeStoreTests.test_batch_atomicity_on_late_missing_dependency) ... ok\ntest_batch_cycle_and_missing_batch_member_reject_atomically (test_native_store.NativeStoreTests.test_batch_cycle_and_missing_batch_member_reject_atomically) ... ok\ntest_batch_dependencies_and_immutable_composition (test_native_store.NativeStoreTests.test_batch_dependencies_and_immutable_composition) ... ok\ntest_changed_read_and_unknown_read_reject_with_unchanged_state (test_native_store.NativeStoreTests.test_changed_read_and_unknown_read_reject_with_unchanged_state) ... ok\ntest_cli_actual_json_boundary_and_invalid_base64 (test_native_store.NativeStoreTests.test_cli_actual_json_boundary_and_invalid_base64) ... ok\ntest_competing_writers_one_wins_without_silent_overwrite (test_native_store.NativeStoreTests.test_competing_writers_one_wins_without_silent_overwrite) ... ok\ntest_corrupt_dedup_hit_rejects_entire_batch_without_receipt (test_native_store.NativeStoreTests.test_corrupt_dedup_hit_rejects_entire_batch_without_receipt) ... ok\ntest_corruption_is_not_returned_as_valid_content (test_native_store.NativeStoreTests.test_corruption_is_not_returned_as_valid_content) ... ok\ntest_delete_prefix_conflict_and_invalid_input (test_native_store.NativeStoreTests.test_delete_prefix_conflict_and_invalid_input) ... ok\ntest_idempotency_after_restart_and_conflicting_reuse (test_native_store.NativeStoreTests.test_idempotency_after_restart_and_conflicting_reuse) ... ok\ntest_missing_read_detects_concurrent_creation (test_native_store.NativeStoreTests.test_missing_read_detects_concurrent_creation) ... ok\ntest_no_git_network_or_process_is_required (test_native_store.NativeStoreTests.test_no_git_network_or_process_is_required) ... ok\ntest_same_module_disjoint_old_base_changes_preserve_both (test_native_store.NativeStoreTests.test_same_module_disjoint_old_base_changes_preserve_both) ... ok\ntest_same_request_concurrency_returns_one_durable_result (test_native_store.NativeStoreTests.test_same_request_concurrency_returns_one_durable_result) ... ok\ntest_tenant_and_module_revision_isolation (test_native_store.NativeStoreTests.test_tenant_and_module_revision_isolation) ... ok\ntest_transaction_storage_failure_rolls_back_and_retry_succeeds (test_native_store.NativeStoreTests.test_transaction_storage_failure_rolls_back_and_retry_succeeds) ... ok\ntest_unrelated_module_drift_never_invalidates_fixed_work (test_native_store.NativeStoreTests.test_unrelated_module_drift_never_invalidates_fixed_work) ... ok\n\n----------------------------------------------------------------------\nRan 51 tests in 7.641s\n\nOK\n"
+      },
+      {
+        "command": [
+          "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "ruff",
+          "check",
+          "--no-fix",
+          "customizations/components/tianxuan/duobao/native_release.py",
+          "customizations/components/tianxuan/duobao/test_native_release.py"
+        ],
+        "exit_code": 0,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "mypy",
+          "--follow-imports=silent",
+          "customizations/components/tianxuan/duobao/native_release.py",
+          "customizations/components/tianxuan/duobao/test_native_release.py"
+        ],
+        "exit_code": 0,
+        "stdout": "Success: no issues found in 2 source files\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-m",
+          "ruff",
+          "format",
+          "--check",
+          "customizations/components/tianxuan/duobao/native_release.py",
+          "customizations/components/tianxuan/duobao/test_native_release.py"
+        ],
+        "exit_code": 0,
+        "stdout": "2 files already formatted\n",
+        "stderr": ""
+      }
+    ],
+    "files": {
+      "customizations/components/tianxuan/duobao/native_release.py": "d2bf8d3ed19ac3c26376f010180c896bec00f83625941c1800f4de7dfdb8816e",
+      "customizations/components/tianxuan/duobao/test_native_release.py": "77b9a824a61897c19367a99bde657253bc3bdc284da4222dd2495f98037e3c61",
+      "customizations/components/tianxuan/duobao/native_release.md": "fafdcf8c921920827196509932b941aa4fa3278ea3f4ca223185e78f4a9adea7"
+    },
+    "acceptance": {
+      "1": "test_release_flow_without_network_process_or_git; test_full_flow_restart_and_rollback",
+      "2": "test_identity_source_and_required_policy_rejections; test_latest_failed_unknown_or_changed_evidence_rejects_prior_review; corruption, expiry and unknown-composition tests",
+      "3": "test_revocation_commits_before_blocked_publish; test_publish_before_revocation_has_historical_event_but_invalid_selection; test_expiry_authority_policy_and_source_rechecked",
+      "4": "test_channels_and_same_channel_competitors; test_full_flow_restart_and_rollback verifies complete app/core dependency closure",
+      "5": "test_idempotent_receipts_events_and_revocation_no_resurrection; test_event_failure_rolls_back_pointer_receipt_and_manifest; restart and tenant tests",
+      "6": "test_review_revocation_before_publish_and_reapproved_rollback; historical events and content_selected state"
+    },
+    "limits": [
+      "Trusted authenticated host callbacks required; mutable authority and verified source state must use provided SQLite transaction.",
+      "No atomic guarantee for unimported external identity changes or concurrent Python policy object mutation.",
+      "Selection receipt does not assert installation or external consumption.",
+      "Independent review, delivery and parent acceptance remain parent responsibility."
+    ],
+    "learning": {
+      "scope": "editor-dependency-handoff",
+      "reused": "bind-consumer-release",
+      "application": "Bind handoff to exact file hashes and command receipts; parent independently verifies current candidate.",
+      "correction": "Initial mypy no-any-return at configure digest corrected with explicit str; final command passes.",
+      "navigation": "Root AGENTS points to missing Markdown/testing/README.md; followed existing component documentation and supplied design."
+    },
+    "cleanup": {
+      "temporary_databases": "unittest TemporaryDirectory cleanup callbacks completed",
+      "production": "No installation or production database touched",
+      "retained": "Source and evidence retained for parent review; worktree owned by parent"
+    }
+  },
+  "final_source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/duobao/native_release.py",
+      "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+      "git_blob": "1f508962cf22644995856cb2a50a5e4f1c5c28f9"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_release.py",
+      "sha256": "dd22e2ef946264ae23a7ced27c0b2205911f1a8237ca86d0cf75705aaace531c",
+      "git_blob": "7abd2ec52beb595620a17cdd0d68f764b2202790"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_release.md",
+      "sha256": "6ffd0dbf8afd527fab485a73096eb737506e5912c804b29882fc78a707aff5aa",
+      "git_blob": "f7d06c28f14cc98ecff6ed175eaf07c71836fecf"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_store.py",
+      "sha256": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a",
+      "git_blob": "985a31e14bf3d1a15fc20bccac419250321f34ad"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_evidence.py",
+      "sha256": "779a6f9162874c2f2a24349c3dca2193cad31fec04c950749f851fcaf9f3216f",
+      "git_blob": "9586dbf0dd4e830d0ddfe0217fea056ee2ad3e87"
+    },
+    {
+      "path": "design-docs/duobao-native-release-20261117.md",
+      "sha256": "4b01fcf7cf2ee3b159f0051485ce34831295041f4e3c510c04a6bfcc68394035",
+      "git_blob": "952b1e499eb0bf4a9ab6ae4b5ccf2f0bc0872ca9"
+    }
+  ],
+  "final_verification": {
+    "python": "3.12",
+    "native_tests": 54,
+    "exit_code": 0,
+    "log": "test_corrupt_request_reference_does_not_replay_another_run (test_native_evidence.EvidenceTests.test_corrupt_request_reference_does_not_replay_another_run) ... ok\ntest_dependency_content_corruption_rejects_cached_fact (test_native_evidence.EvidenceTests.test_dependency_content_corruption_rejects_cached_fact) ... ok\ntest_disjoint_object_and_unrelated_module_reuse_original_fact (test_native_evidence.EvidenceTests.test_disjoint_object_and_unrelated_module_reuse_original_fact) ... ok\ntest_durable_replay_and_conflicting_reuse (test_native_evidence.EvidenceTests.test_durable_replay_and_conflicting_reuse) ... ok\ntest_exact_dependency_change_invalidates (test_native_evidence.EvidenceTests.test_exact_dependency_change_invalidates) ... ok\ntest_expiry_future_clock_and_runner_revocation_are_checked_on_lookup (test_native_evidence.EvidenceTests.test_expiry_future_clock_and_runner_revocation_are_checked_on_lookup) ... ok\ntest_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass (test_native_evidence.EvidenceTests.test_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass) ... ok\ntest_host_scope_is_copied_and_caller_cannot_install_unknown_check (test_native_evidence.EvidenceTests.test_host_scope_is_copied_and_caller_cannot_install_unknown_check) ... ok\ntest_input_and_evidence_corruption_never_return_pass (test_native_evidence.EvidenceTests.test_input_and_evidence_corruption_never_return_pass) ... ok\ntest_invalid_policy_log_context_and_revoker_rejected (test_native_evidence.EvidenceTests.test_invalid_policy_log_context_and_revoker_rejected) ... ok\ntest_read_change_delete_and_missing_creation_invalidate (test_native_evidence.EvidenceTests.test_read_change_delete_and_missing_creation_invalidate) ... ok\ntest_rule_toolchain_environment_and_parameters_invalidate (test_native_evidence.EvidenceTests.test_rule_toolchain_environment_and_parameters_invalidate) ... ok\ntest_same_request_parallel_records_have_one_identity (test_native_evidence.EvidenceTests.test_same_request_parallel_records_have_one_identity) ... ok\ntest_storage_failure_rolls_back_evidence_and_retry_succeeds (test_native_evidence.EvidenceTests.test_storage_failure_rolls_back_evidence_and_retry_succeeds) ... ok\ntest_tenants_do_not_share_cached_evidence (test_native_evidence.EvidenceTests.test_tenants_do_not_share_cached_evidence) ... ok\ntest_unknown_and_whole_module_scopes_are_conservative (test_native_evidence.EvidenceTests.test_unknown_and_whole_module_scopes_are_conservative) ... ok\ntest_channels_and_same_channel_competitors (test_native_release.ReleaseTests.test_channels_and_same_channel_competitors) ... ok\ntest_check_policy_drift_and_evidence_expiry (test_native_release.ReleaseTests.test_check_policy_drift_and_evidence_expiry) ... ok\ntest_corruption_rejected (test_native_release.ReleaseTests.test_corruption_rejected) ... ok\ntest_event_cursor_is_bounded_and_product_scoped (test_native_release.ReleaseTests.test_event_cursor_is_bounded_and_product_scoped) ... ok\ntest_event_failure_rolls_back_pointer_receipt_and_manifest (test_native_release.ReleaseTests.test_event_failure_rolls_back_pointer_receipt_and_manifest) ... ok\ntest_event_product_corruption_rejects_current_selection (test_native_release.ReleaseTests.test_event_product_corruption_rejects_current_selection) ... ok\ntest_expiry_authority_policy_and_source_rechecked (test_native_release.ReleaseTests.test_expiry_authority_policy_and_source_rechecked) ... ok\ntest_full_flow_restart_and_rollback (test_native_release.ReleaseTests.test_full_flow_restart_and_rollback) ... ok\ntest_idempotent_receipts_events_and_revocation_no_resurrection (test_native_release.ReleaseTests.test_idempotent_receipts_events_and_revocation_no_resurrection) ... ok\ntest_identity_source_and_required_policy_rejections (test_native_release.ReleaseTests.test_identity_source_and_required_policy_rejections) ... ok\ntest_latest_failed_unknown_or_changed_evidence_rejects_prior_review (test_native_release.ReleaseTests.test_latest_failed_unknown_or_changed_evidence_rejects_prior_review) ... ok\ntest_publish_before_revocation_has_historical_event_but_invalid_selection (test_native_release.ReleaseTests.test_publish_before_revocation_has_historical_event_but_invalid_selection) ... ok\ntest_reader_snapshot_does_not_block_unrelated_publication (test_native_release.ReleaseTests.test_reader_snapshot_does_not_block_unrelated_publication) ... ok\ntest_record_and_blob_corruption_rejected_on_consumer_read (test_native_release.ReleaseTests.test_record_and_blob_corruption_rejected_on_consumer_read) ... ok\ntest_release_flow_without_network_process_or_git (test_native_release.ReleaseTests.test_release_flow_without_network_process_or_git) ... ok\ntest_review_revocation_before_publish_and_reapproved_rollback (test_native_release.ReleaseTests.test_review_revocation_before_publish_and_reapproved_rollback) ... ok\ntest_revocation_commits_before_blocked_publish (test_native_release.ReleaseTests.test_revocation_commits_before_blocked_publish) ... ok\ntest_revoked_evidence_rejects_publish_and_current_read (test_native_release.ReleaseTests.test_revoked_evidence_rejects_publish_and_current_read) ... ok\ntest_tenant_product_isolation (test_native_release.ReleaseTests.test_tenant_product_isolation) ... ok\ntest_unknown_composition_context_and_missing_atomic_event (test_native_release.ReleaseTests.test_unknown_composition_context_and_missing_atomic_event) ... ok\ntest_250_independent_connections_no_global_revision_retries (test_native_store.NativeStoreTests.test_250_independent_connections_no_global_revision_retries) ... ok\ntest_batch_atomicity_on_late_missing_dependency (test_native_store.NativeStoreTests.test_batch_atomicity_on_late_missing_dependency) ... ok\ntest_batch_cycle_and_missing_batch_member_reject_atomically (test_native_store.NativeStoreTests.test_batch_cycle_and_missing_batch_member_reject_atomically) ... ok\ntest_batch_dependencies_and_immutable_composition (test_native_store.NativeStoreTests.test_batch_dependencies_and_immutable_composition) ... ok\ntest_changed_read_and_unknown_read_reject_with_unchanged_state (test_native_store.NativeStoreTests.test_changed_read_and_unknown_read_reject_with_unchanged_state) ... ok\ntest_cli_actual_json_boundary_and_invalid_base64 (test_native_store.NativeStoreTests.test_cli_actual_json_boundary_and_invalid_base64) ... ok\ntest_competing_writers_one_wins_without_silent_overwrite (test_native_store.NativeStoreTests.test_competing_writers_one_wins_without_silent_overwrite) ... ok\ntest_corrupt_dedup_hit_rejects_entire_batch_without_receipt (test_native_store.NativeStoreTests.test_corrupt_dedup_hit_rejects_entire_batch_without_receipt) ... ok\ntest_corruption_is_not_returned_as_valid_content (test_native_store.NativeStoreTests.test_corruption_is_not_returned_as_valid_content) ... ok\ntest_delete_prefix_conflict_and_invalid_input (test_native_store.NativeStoreTests.test_delete_prefix_conflict_and_invalid_input) ... ok\ntest_idempotency_after_restart_and_conflicting_reuse (test_native_store.NativeStoreTests.test_idempotency_after_restart_and_conflicting_reuse) ... ok\ntest_missing_read_detects_concurrent_creation (test_native_store.NativeStoreTests.test_missing_read_detects_concurrent_creation) ... ok\ntest_no_git_network_or_process_is_required (test_native_store.NativeStoreTests.test_no_git_network_or_process_is_required) ... ok\ntest_same_module_disjoint_old_base_changes_preserve_both (test_native_store.NativeStoreTests.test_same_module_disjoint_old_base_changes_preserve_both) ... ok\ntest_same_request_concurrency_returns_one_durable_result (test_native_store.NativeStoreTests.test_same_request_concurrency_returns_one_durable_result) ... ok\ntest_tenant_and_module_revision_isolation (test_native_store.NativeStoreTests.test_tenant_and_module_revision_isolation) ... ok\ntest_transaction_storage_failure_rolls_back_and_retry_succeeds (test_native_store.NativeStoreTests.test_transaction_storage_failure_rolls_back_and_retry_succeeds) ... ok\ntest_unrelated_module_drift_never_invalidates_fixed_work (test_native_store.NativeStoreTests.test_unrelated_module_drift_never_invalidates_fixed_work) ... ok\n\n----------------------------------------------------------------------\nRan 54 tests in 8.006s\n\nOK\n",
+    "independent_extra_tests": 6,
+    "server_release_tests": 20,
+    "review": "data-collection/duobao-native-release-review-1409.json",
+    "server": "data-collection/duobao-native-release-server-1409.json",
+    "reader_fix": "data-collection/duobao-native-release-reader-1409.json"
+  },
+  "limits": [
+    "Trusted authenticated host callbacks required; mutable authority and verified source state must use provided SQLite transaction.",
+    "No atomic guarantee for unimported external identity changes or concurrent Python policy object mutation.",
+    "Selection receipt does not assert installation or external consumption.",
+    "Native host library only; online API, authenticated provenance ingestion and consumers remain P0-D.",
+    "WAL read snapshots avoid writer reservation; write transactions still serialize briefly.",
+    "Historical idempotent receipts do not reactivate a channel or establish current validity."
+  ],
+  "cleanup": {
+    "temporary_databases": "unittest TemporaryDirectory cleanup callbacks completed",
+    "production": "No installation or production database touched",
+    "retained": "Source and evidence retained for parent review; worktree owned by parent"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-edae71d2b232191bb79aa5eea983f700b334662d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-release-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1409",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2c1b5d3a0500a08700e3e5a274f57e3144c672c7a820de5bc3478616f1335995",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1409",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1411",
+    "action": "validation",
+    "detection_head": "c472447b739d5530e832c2089cef8652b751f998",
+    "context_sha256": "9064455797954df5f5ac2964da76f22c462bdf6b08bdd896cfbc0688ce0a8f01",
+    "operator": "Sail-Li",
+    "worker": "current-codex-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "D:/GongGong/data-collection/receipts/duobao-1382/release-server-proof.json",
+    "diagnosis": "Reproduced selected() holding BEGIN IMMEDIATE and blocking an unrelated channel publication until reader exit. Changed selected/events to explicit query-only read snapshot; writes retain atomic validation. Added deterministic overlapping reader/writer test, product cursor pagination and event-product corruption rejection. 20 release tests pass locally and same source passes on Linux server. Source independent review ongoing.",
+    "next_action": "Complete independent review and exact main delivery, then close defect; do not claim online release identity or production throughput.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T08:50:19.444486+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T08:55:25.897314+00:00",
+  "sha256": "c2d73cbd6eee0a9ddde59c995cc0046f7bc19fc8b52e52daaa674a9bef018f8b"
+}
