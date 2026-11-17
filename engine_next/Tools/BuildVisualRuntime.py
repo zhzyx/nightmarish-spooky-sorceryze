@@ -29,6 +29,7 @@ CORE_SOURCES = [
     "engine_next/Rendering/VolumeGrid.cpp",
     "engine_next/Rendering/ParticleSettings.cpp",
     "engine_next/Rendering/ParticleState.cpp",
+    "engine_next/Rendering/MaterialSettings.cpp",
     "engine_next/Rendering/ShadowBounds.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
@@ -83,6 +84,9 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestVolumeColor.cpp",
     "engine_next/Tests/Rendering/TestVolumeTemporalMath.cpp",
     "engine_next/Tests/Rendering/TestParticles.cpp",
+    "engine_next/Tests/Rendering/TestMaterialSettings.cpp",
+    "engine_next/Tests/Rendering/TestMaterialLobes.cpp",
+    "engine_next/Tests/Rendering/TestMaterialEnvironment.cpp",
     "engine_next/Tests/Rendering/TestTransparentMath.cpp",
     "engine_next/Tests/Rendering/TestSceneEntityTransforms.cpp",
     "engine_next/Tests/Rendering/TestReflectionTrace.cpp",
@@ -114,6 +118,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/VolumeGrid.h",
     "EngineNext/Rendering/ParticleSettings.h",
     "EngineNext/Rendering/ParticleState.h",
+    "EngineNext/Rendering/MaterialSettings.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
@@ -124,8 +129,10 @@ SHADERS = [
     ("CSMain", "cs_6_0", "FixedMesh.cs.cso", ["-D", "COMPUTE_STAGE=1"]),
     ("VSMain", "vs_6_0", "Deferred.vs.cso", ["-D", "GEOMETRY_STAGE=1"]),
     ("PSMain", "ps_6_0", "Deferred.ps.cso", ["-D", "GEOMETRY_STAGE=1"]),
+    ("PSMain", "ps_6_0", "MaterialDeferred.ps.cso", ["-D", "GEOMETRY_STAGE=1", "-D", "MATERIAL_EXTENSION_STAGE=1"]),
     ("FullscreenVS", "vs_6_0", "Lighting.vs.cso", []),
     ("LightingPS", "ps_6_0", "Lighting.ps.cso", []),
+    ("LightingPS", "ps_6_0", "MaterialLighting.ps.cso", ["-D", "MATERIAL_EXTENSION_STAGE=1"]),
     ("ToneMapPS", "ps_6_0", "ToneMap.ps.cso", ["-D", "TONEMAP_STAGE=1"]),
     ("ShadowVS", "vs_6_0", "Shadow.vs.cso", []),
     ("ShadowPS", "ps_6_0", "Shadow.ps.cso", []),
@@ -135,8 +142,20 @@ SHADERS = [
     ("DownsampleCS", "cs_6_0", "BloomDown.cs.cso", []),
     ("UpsampleCS", "cs_6_0", "BloomUp.cs.cso", []),
     ("LightingPS", "ps_6_0", "ReflectionLighting.ps.cso", ["-D", "REFLECTION_STAGE=1"]),
+    (
+        "LightingPS",
+        "ps_6_0",
+        "MaterialReflectionLighting.ps.cso",
+        ["-D", "REFLECTION_STAGE=1", "-D", "MATERIAL_EXTENSION_STAGE=1"],
+    ),
     ("ColorMipCS", "cs_6_0", "ReflectionColor.cs.cso", ["-D", "COLOR_MIP_STAGE=1"]),
     ("TraceCS", "cs_6_0", "ReflectionTrace.cs.cso", ["-D", "REFLECTION_TRACE_STAGE=1"]),
+    (
+        "TraceCS",
+        "cs_6_0",
+        "MaterialReflectionTrace.cs.cso",
+        ["-D", "REFLECTION_TRACE_STAGE=1", "-D", "MATERIAL_EXTENSION_STAGE=1"],
+    ),
     ("CompositeCS", "cs_6_0", "ReflectionComposite.cs.cso", ["-D", "COMPOSITE_STAGE=1"]),
     ("RadianceCS", "cs_6_0", "ReflectionRadiance.cs.cso", ["-D", "RADIANCE_STAGE=1"]),
     ("InjectCS", "cs_6_0", "VolumeInject.cs.cso", ["-D", "VOLUME_INJECT_STAGE=1"]),
@@ -146,6 +165,7 @@ SHADERS = [
     ("CompositeCS", "cs_6_0", "VolumeComposite.cs.cso", []),
     ("VSMain", "vs_6_0", "Transparent.vs.cso", []),
     ("PSMain", "ps_6_0", "Transparent.ps.cso", []),
+    ("PSMain", "ps_6_0", "MaterialTransparent.ps.cso", ["-D", "MATERIAL_EXTENSION_STAGE=1"]),
 ]
 
 
@@ -488,7 +508,7 @@ def compile_shaders(args, commands):
                 "FixedMesh.hlsl"
                 if name.startswith("FixedMesh")
                 else "Transparent.hlsl"
-                if name.startswith("Transparent")
+                if name.startswith(("Transparent", "MaterialTransparent"))
                 else "VolumeTemporal.hlsl"
                 if name == "VolumeTemporal.cs.cso"
                 else "VolumeComposite.hlsl"
@@ -496,7 +516,8 @@ def compile_shaders(args, commands):
                 else "Volume.hlsl"
                 if name.startswith("Volume")
                 else "Reflection.hlsl"
-                if name.startswith("Reflection") and name != "ReflectionLighting.ps.cso"
+                if (name.startswith("Reflection") and name != "ReflectionLighting.ps.cso")
+                or name == "MaterialReflectionTrace.cs.cso"
                 else "Shadow.hlsl"
                 if name.startswith("Shadow")
                 else "Exposure.hlsl"
@@ -620,6 +641,9 @@ def build(args):
                 "engine_next/Rendering/Shaders/VolumeComposite.hlsl",
                 "engine_next/Rendering/Shaders/VolumeSampling.hlsli",
                 "engine_next/Rendering/Shaders/TransparentMath.hlsli",
+                "engine_next/Rendering/Shaders/MaterialLobes.hlsli",
+                "engine_next/Rendering/Shaders/MaterialEnvironment.hlsli",
+                "engine_next/Rendering/Shaders/MaterialEnvironmentLighting.hlsli",
                 "engine_next/Rendering/Shaders/Transparent.hlsl",
             ]
         ),

@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T17:12:47.212063+00:00",
+  "base_commit": "4c45067171c8201eb0386cb99472ae49cdd73917",
+  "candidate": "materials-r6",
+  "native_key": "636e9a1fc5e83160c6e22a4aa50a2b98a68ff6cd3184b8c599e5a7bcfbf7e9d8",
+  "native_input_count": 275,
+  "input_mismatches": [],
+  "build": {
+    "path": "build/engine_next/materials-r6/VisualBuildReport.json",
+    "sha256": "90ab30c205da1c163dcd9bdfeed5f4e71780755a7e6cc7fdae3bea2431e7b20d",
+    "bytes": 2091230
+  },
+  "executable": {
+    "path": "build/engine_next/materials-r6/next_visual_client.exe",
+    "sha256": "675b22b5af587b1b9cb48efef53226b5938e15cbf644b3082d8fe2256cc74b9b",
+    "bytes": 3200512
+  },
+  "package": {
+    "path": "build/engine_next/materials-r6/Release/VisualPackage.json",
+    "sha256": "01868525544c65c8dbee097e4bb75f7bc8f003557a68fafce6977c1802d97803",
+    "bytes": 9973
+  },
+  "shader_count": 32,
+  "cpu_test_summary": "MATERIAL_HEMISPHERE cases=72 minimum=0.184115 maximum=0.991663\r\nMATERIAL_ENVIRONMENT_FURNACE cases=72 minimum=0.184124 maximum=0.998307\r\nENGINE_NEXT_RENDERING_TEST_SUMMARY tests=341 checks=206466 failures=0",
+  "clang_cl_regression": {
+    "path": "build/engine_next/materials-clang-cl-r6/Result.json",
+    "sha256": "546d47e79c6715161a07bf960ffef874f08aae9e2343391ff3c471c9f87fbd92",
+    "bytes": 2292538
+  },
+  "static_checks": {
+    "path": "build/engine_next/material-static-final-r6/Result.json",
+    "sha256": "3796c136220c7c2c8c6b5b8628f9f5fef1baea6681ea352a0a3bd4001544d42b",
+    "bytes": 16782
+  },
+  "tool_tests": {
+    "path": "build/engine_next/material-tools-r6.log",
+    "sha256": "e10f915557b53ff60cfbf5a2a3e187d419d5fb47aa6833d51aded6bcbfc3f286",
+    "bytes": 139
+  },
+  "contract_tests": {
+    "path": "build/engine_next/material-contract-r6.log",
+    "sha256": "e6c572dc1b4d26f722eb67bb67f3d638db6215f102b571dbf9ce69a48a55ec4c",
+    "bytes": 147
+  },
+  "ai_regression": {
+    "path": "build/engine_next/material-ainative-r6.log",
+    "sha256": "f63e7ebce04f6bc7a187ba090628571878fafc9c6084f7b068884deafe3b0f88",
+    "bytes": 565,
+    "tests": 445,
+    "skipped": 36,
+    "failures": 0,
+    "errors": 0
+  },
+  "evidence": {
+    "network": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-materials-network.json",
+      "sha256": "945760132b301185b645439d43337f90e200686df8a978d7460c74c3f61f19f5",
+      "bytes": 17917
+    },
+    "source-review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-materials-source-review.json",
+      "sha256": "d989ef56851613997f16fbac89e5493e7b78cd536269447bb7cbcd81e2a4bcee",
+      "bytes": 17256
+    },
+    "gpu-readback": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-materials-gpu-readback.json",
+      "sha256": "dffc6d40a06ee8e158ddccc8b5f8739fad54af18b401e260c00e1fd1a7b39bb5",
+      "bytes": 84400
+    },
+    "build-impact": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-materials-build-impact.json",
+      "sha256": "7e31079cf87b2b5915ae5a03e0766a1c3dae01e7391ed59ea622ebc1ca1ffc3d",
+      "bytes": 70465
+    },
+    "final-gpu": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-materials-final-gpu.json",
+      "sha256": "b3a611681c87957b7dd4eb008bf22221d7b92a1d69d3566dcea646822d5181cc",
+      "bytes": 19762
+    }
+  },
+  "scope": "Source-bound material overrides, clearcoat and anisotropic direct/IBL/SSR/transparent shading, mixed native/offline-shader placement and a verified 4K hidden render target.",
+  "quality_boundary": "The 32/16/8 environment NDF sample budget produces confirmed bright sampling artifacts in a high-contrast environment. A same-binary 512/256/128 reference reduces those artifacts. Importance-sampling work continues under the open parent request.",
+  "identity_boundary": "Actual readback captures retain R3/R4 identity. Actual interactive networking retains R5 identity. The final R6 runtime text and shader equivalence are recorded in MaterialCandidateDelta.json and R6 normal-entry tests are separate.",
+  "remaining_parent_acceptance": [
+    "Environment sampling quality and full UE comparison",
+    "Dynamic GI, geometry/streaming, deformation and remaining material/light features",
+    "Physical native-4K output, performance and long-duration stability"
+  ],
+  "delivery_followup": "Exact signed-candidate CI and main readback follow this local verification. Parent Issues 1343 and 1323 remain open."
+}

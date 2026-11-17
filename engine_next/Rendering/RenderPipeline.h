@@ -114,6 +114,7 @@ struct RenderPipeline
 	std::vector<ResourceId> arrBloomDown;
 	std::vector<ResourceId> arrBloomUp;
 	std::array<ResourceId, 4> arrGbuffer{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
+	std::array<ResourceId, 2> arrMaterialBuffers{ INVALID_RESOURCE, INVALID_RESOURCE };
 	// Color, linear depth, world normal, and object ID in matching read/write slots.
 	std::array<ResourceId, 4> arrHistoryRead{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	std::array<ResourceId, 4> arrHistoryWrite{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
@@ -136,9 +137,11 @@ struct RenderPipeline
 // transparency when volume compositing is disabled. Transparency loads its HDR
 // target and clears the reactive mask before its draws. All forward resources
 // finish in Common. Fixed-mesh mode ignores these optional forward effects.
+// Optional material attributes add two geometry targets used by lighting and
+// reflection tracing, then returned to Common. Fixed-mesh mode ignores them.
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {});
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false);
 
 } // namespace EngineNext::Rendering

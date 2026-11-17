@@ -1,0 +1,566 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T17:11:01.945714+00:00",
+  "status": "passed",
+  "scope": "Final R6 serial offline normal-entry validation. Sampling-quality limitations are recorded separately in the material readback evidence.",
+  "candidate": "materials-r6",
+  "native_key": "636e9a1fc5e83160c6e22a4aa50a2b98a68ff6cd3184b8c599e5a7bcfbf7e9d8",
+  "native_input_count": 275,
+  "all_native_inputs_match": true,
+  "executable": {
+    "path": "build/engine_next/materials-r6/next_visual_client.exe",
+    "sha256": "675b22b5af587b1b9cb48efef53226b5938e15cbf644b3082d8fe2256cc74b9b",
+    "bytes": 3200512
+  },
+  "build_report": {
+    "path": "build/engine_next/materials-r6/VisualBuildReport.json",
+    "sha256": "90ab30c205da1c163dcd9bdfeed5f4e71780755a7e6cc7fdae3bea2431e7b20d",
+    "bytes": 2091230
+  },
+  "shader_files": [
+    {
+      "path": "build/engine_next/materials-r6/FixedMesh.vs.cso",
+      "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+      "bytes": 4316
+    },
+    {
+      "path": "build/engine_next/materials-r6/FixedMesh.ps.cso",
+      "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+      "bytes": 4132
+    },
+    {
+      "path": "build/engine_next/materials-r6/FixedMesh.cs.cso",
+      "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+      "bytes": 3300
+    },
+    {
+      "path": "build/engine_next/materials-r6/Deferred.vs.cso",
+      "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225",
+      "bytes": 8272
+    },
+    {
+      "path": "build/engine_next/materials-r6/Deferred.ps.cso",
+      "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0",
+      "bytes": 9796
+    },
+    {
+      "path": "build/engine_next/materials-r6/MaterialDeferred.ps.cso",
+      "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb",
+      "bytes": 10172
+    },
+    {
+      "path": "build/engine_next/materials-r6/Lighting.vs.cso",
+      "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+      "bytes": 3052
+    },
+    {
+      "path": "build/engine_next/materials-r6/Lighting.ps.cso",
+      "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8",
+      "bytes": 77096
+    },
+    {
+      "path": "build/engine_next/materials-r6/MaterialLighting.ps.cso",
+      "sha256": "5dbcfcbe06cc234ab31a5da519acbacdafa2ee910b1a0a808e7c35979cdb4e91",
+      "bytes": 97040
+    },
+    {
+      "path": "build/engine_next/materials-r6/ToneMap.ps.cso",
+      "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f",
+      "bytes": 6376
+    },
+    {
+      "path": "build/engine_next/materials-r6/Shadow.vs.cso",
+      "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4",
+      "bytes": 4648
+    },
+    {
+      "path": "build/engine_next/materials-r6/Shadow.ps.cso",
+      "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24",
+      "bytes": 4236
+    },
+    {
+      "path": "build/engine_next/materials-r6/Temporal.cs.cso",
+      "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f",
+      "bytes": 19880
+    },
+    {
+      "path": "build/engine_next/materials-r6/Histogram.cs.cso",
+      "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1",
+      "bytes": 5648
+    },
+    {
+      "path": "build/engine_next/materials-r6/Exposure.cs.cso",
+      "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c",
+      "bytes": 5804
+    },
+    {
+      "path": "build/engine_next/materials-r6/BloomDown.cs.cso",
+      "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7",
+      "bytes": 43620
+    },
+    {
+      "path": "build/engine_next/materials-r6/BloomUp.cs.cso",
+      "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c",
+      "bytes": 14672
+    },
+    {
+      "path": "build/engine_next/materials-r6/ReflectionLighting.ps.cso",
+      "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8",
+      "bytes": 77608
+    },
+    {
+      "path": "build/engine_next/materials-r6/MaterialReflectionLighting.ps.cso",
+      "sha256": "df73574f8636404517734ddd0bd6d8bd04b95b510f8d1fa3d55a52c0d65fa9b6",
+      "bytes": 97540
+    },
+    {
+      "path": "build/engine_next/materials-r6/ReflectionColor.cs.cso",
+      "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7",
+      "bytes": 4928
+    },
+    {
+      "path": "build/engine_next/materials-r6/ReflectionTrace.cs.cso",
+      "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051",
+      "bytes": 31880
+    },
+    {
+      "path": "build/engine_next/materials-r6/MaterialReflectionTrace.cs.cso",
+      "sha256": "792f2a28a1409213e42fc690bd33fe15e814600b9f6241de617a198b975d8829",
+      "bytes": 58292
+    },
+    {
+      "path": "build/engine_next/materials-r6/ReflectionComposite.cs.cso",
+      "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4",
+      "bytes": 5100
+    },
+    {
+      "path": "build/engine_next/materials-r6/ReflectionRadiance.cs.cso",
+      "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88",
+      "bytes": 4304
+    },
+    {
+      "path": "build/engine_next/materials-r6/VolumeInject.cs.cso",
+      "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f",
+      "bytes": 8836
+    },
+    {
+      "path": "build/engine_next/materials-r6/VolumeLight.cs.cso",
+      "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada",
+      "bytes": 66432
+    },
+    {
+      "path": "build/engine_next/materials-r6/VolumeTemporal.cs.cso",
+      "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057",
+      "bytes": 16000
+    },
+    {
+      "path": "build/engine_next/materials-r6/VolumeIntegrate.cs.cso",
+      "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c",
+      "bytes": 7508
+    },
+    {
+      "path": "build/engine_next/materials-r6/VolumeComposite.cs.cso",
+      "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523",
+      "bytes": 19948
+    },
+    {
+      "path": "build/engine_next/materials-r6/Transparent.vs.cso",
+      "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24",
+      "bytes": 7224
+    },
+    {
+      "path": "build/engine_next/materials-r6/Transparent.ps.cso",
+      "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f",
+      "bytes": 96584
+    },
+    {
+      "path": "build/engine_next/materials-r6/MaterialTransparent.ps.cso",
+      "sha256": "b70b9c538d82d068d9f3161804f9d38e965f496a5a615897501f27620bb6699c",
+      "bytes": 116380
+    }
+  ],
+  "cases": [
+    {
+      "name": "Default",
+      "frames": 16,
+      "validation_errors": 0,
+      "device_removed_reason": 0,
+      "requested_dimensions": [
+        640,
+        480
+      ],
+      "actual_dimensions": [
+        640,
+        480
+      ],
+      "configuration": {
+        "path": "build/engine_next/material-benchmark-r1/Configurations/Default.json",
+        "sha256": "d61ed4369defef1fa6daacbe1ec37f067a6095663b3fdc4ee96da2bcb3df9194",
+        "bytes": 1094
+      },
+      "runtime": {
+        "path": "build/engine_next/material-gpu-r6-serial/Default.json",
+        "sha256": "f244892a0f379d19fef761d4109aa3ab559b93161d8c8749a2f962184594cb05",
+        "bytes": 45334
+      },
+      "capture": {
+        "path": "build/engine_next/material-gpu-r6-serial/Default.ppm",
+        "sha256": "1f2e7be45a470c7f996db13f0578b1d637cd45f7706926a1eeb0bc46b543908f",
+        "bytes": 921615
+      },
+      "log": {
+        "path": "build/engine_next/material-gpu-r6-serial/Default.log",
+        "sha256": "352225a030cd8b6fbdb0c05ac0be876a7a1732313ed5fbccdc964ef9f323e3bb",
+        "bytes": 60
+      }
+    },
+    {
+      "name": "ZeroOverrides",
+      "frames": 16,
+      "validation_errors": 0,
+      "device_removed_reason": 0,
+      "requested_dimensions": [
+        640,
+        480
+      ],
+      "actual_dimensions": [
+        640,
+        480
+      ],
+      "configuration": {
+        "path": "build/engine_next/material-benchmark-r1/Configurations/ZeroOverrides.json",
+        "sha256": "ca1293a1fc654f1480bc38f35f3cd796dc30fc1eb6c277dbb9134453c6e641dc",
+        "bytes": 3524
+      },
+      "runtime": {
+        "path": "build/engine_next/material-gpu-r6-serial/ZeroOverrides.json",
+        "sha256": "69d6e8612faa3af057cf8c395d86c026eb7bbfb7ffb710bf89f6064ad1d05fd3",
+        "bytes": 45323
+      },
+      "capture": {
+        "path": "build/engine_next/material-gpu-r6-serial/ZeroOverrides.ppm",
+        "sha256": "1f2e7be45a470c7f996db13f0578b1d637cd45f7706926a1eeb0bc46b543908f",
+        "bytes": 921615
+      },
+      "log": {
+        "path": "build/engine_next/material-gpu-r6-serial/ZeroOverrides.log",
+        "sha256": "352225a030cd8b6fbdb0c05ac0be876a7a1732313ed5fbccdc964ef9f323e3bb",
+        "bytes": 60
+      }
+    },
+    {
+      "name": "Clearcoat",
+      "frames": 16,
+      "validation_errors": 0,
+      "device_removed_reason": 0,
+      "requested_dimensions": [
+        640,
+        480
+      ],
+      "actual_dimensions": [
+        640,
+        480
+      ],
+      "configuration": {
+        "path": "build/engine_next/material-benchmark-r1/Configurations/Clearcoat.json",
+        "sha256": "8a4f6040fca4b3467324c885312ecd6bb2a4fd2590a6fedadb79b4b404d4e67d",
+        "bytes": 2324
+      },
+      "runtime": {
+        "path": "build/engine_next/material-gpu-r6-serial/Clearcoat.json",
+        "sha256": "fd13046d4c49334d4472e18e6195a881d83141796b18ad4f4c196bdef7704da1",
+        "bytes": 47239
+      },
+      "capture": {
+        "path": "build/engine_next/material-gpu-r6-serial/Clearcoat.ppm",
+        "sha256": "11b0043f2c289b003df582a7ada5374d6e65c00304d1bd326a03b37fb1a2e5b7",
+        "bytes": 921615
+      },
+      "log": {
+        "path": "build/engine_next/material-gpu-r6-serial/Clearcoat.log",
+        "sha256": "352225a030cd8b6fbdb0c05ac0be876a7a1732313ed5fbccdc964ef9f323e3bb",
+        "bytes": 60
+      }
+    },
+    {
+      "name": "Anisotropy",
+      "frames": 16,
+      "validation_errors": 0,
+      "device_removed_reason": 0,
+      "requested_dimensions": [
+        640,
+        480
+      ],
+      "actual_dimensions": [
+        640,
+        480
+      ],
+      "configuration": {
+        "path": "build/engine_next/material-benchmark-r1/Configurations/Anisotropy.json",
+        "sha256": "432df7c10c339e666e50bfbf8843d4fed6e4764f1b9b9610f648908ae49368cc",
+        "bytes": 2600
+      },
+      "runtime": {
+        "path": "build/engine_next/material-gpu-r6-serial/Anisotropy.json",
+        "sha256": "303ca722439878652e191cdb39a836cd1d9dbd8e2479ecb59faf914b902c3588",
+        "bytes": 47230
+      },
+      "capture": {
+        "path": "build/engine_next/material-gpu-r6-serial/Anisotropy.ppm",
+        "sha256": "9b2cd8c2f7987032a64010a2b9922656279aa1e98da80d43ff9e6533ba515a89",
+        "bytes": 921615
+      },
+      "log": {
+        "path": "build/engine_next/material-gpu-r6-serial/Anisotropy.log",
+        "sha256": "352225a030cd8b6fbdb0c05ac0be876a7a1732313ed5fbccdc964ef9f323e3bb",
+        "bytes": 60
+      }
+    },
+    {
+      "name": "AnisotropyRotated",
+      "frames": 16,
+      "validation_errors": 0,
+      "device_removed_reason": 0,
+      "requested_dimensions": [
+        640,
+        480
+      ],
+      "actual_dimensions": [
+        640,
+        480
+      ],
+      "configuration": {
+        "path": "build/engine_next/material-benchmark-r1/Configurations/AnisotropyRotated.json",
+        "sha256": "6bb1b94996e48660284492a484ef09cbacf04807e6b064df1fec22ca5556389c",
+        "bytes": 2684
+      },
+      "runtime": {
+        "path": "build/engine_next/material-gpu-r6-serial/AnisotropyRotated.json",
+        "sha256": "a9d2cbc0d4d2359a602af04586e5439d822659d817e95db6632b6cd3425d42a1",
+        "bytes": 47227
+      },
+      "capture": {
+        "path": "build/engine_next/material-gpu-r6-serial/AnisotropyRotated.ppm",
+        "sha256": "4164237dd598f30a670553f3846908c22ff48b1bd46169533c37a152ce13c500",
+        "bytes": 921615
+      },
+      "log": {
+        "path": "build/engine_next/material-gpu-r6-serial/AnisotropyRotated.log",
+        "sha256": "352225a030cd8b6fbdb0c05ac0be876a7a1732313ed5fbccdc964ef9f323e3bb",
+        "bytes": 60
+      }
+    },
+    {
+      "name": "Combined",
+      "frames": 16,
+      "validation_errors": 0,
+      "device_removed_reason": 0,
+      "requested_dimensions": [
+        640,
+        480
+      ],
+      "actual_dimensions": [
+        640,
+        480
+      ],
+      "configuration": {
+        "path": "build/engine_next/material-benchmark-r1/Configurations/Combined.json",
+        "sha256": "8a7c33e2d530fb6b69e1707b91272567802251cac56eef23c8bfee612b0a36fd",
+        "bytes": 3080
+      },
+      "runtime": {
+        "path": "build/engine_next/material-gpu-r6-serial/Combined.json",
+        "sha256": "97b1cb79cfd9775fb5f391232fec5f42d93d05ae4eef2680fbd1820d35fb3bfc",
+        "bytes": 47224
+      },
+      "capture": {
+        "path": "build/engine_next/material-gpu-r6-serial/Combined.ppm",
+        "sha256": "01525a147325699c9860ad0aaebdb562965bbe6e130fe8b61321ca2a18c1c6ca",
+        "bytes": 921615
+      },
+      "log": {
+        "path": "build/engine_next/material-gpu-r6-serial/Combined.log",
+        "sha256": "352225a030cd8b6fbdb0c05ac0be876a7a1732313ed5fbccdc964ef9f323e3bb",
+        "bytes": 60
+      }
+    },
+    {
+      "name": "EnvironmentOnly",
+      "frames": 16,
+      "validation_errors": 0,
+      "device_removed_reason": 0,
+      "requested_dimensions": [
+        640,
+        480
+      ],
+      "actual_dimensions": [
+        640,
+        480
+      ],
+      "configuration": {
+        "path": "build/engine_next/material-benchmark-r1/Configurations/EnvironmentOnly.json",
+        "sha256": "23488f3df4d501c9e846c8e5fe826b8ab10cb0d1188e66d24eb451e01a8b9eb7",
+        "bytes": 3080
+      },
+      "runtime": {
+        "path": "build/engine_next/material-gpu-r6-serial/EnvironmentOnly.json",
+        "sha256": "59b8f418bd00796c839b4bdf2f0e47f7474e062c3d39aa14e5a695be5ab6b85f",
+        "bytes": 47232
+      },
+      "capture": {
+        "path": "build/engine_next/material-gpu-r6-serial/EnvironmentOnly.ppm",
+        "sha256": "5422f796e12a6451841c1921ff660dcf4a29242d9114f4bbdb12b0667790c1e6",
+        "bytes": 921615
+      },
+      "log": {
+        "path": "build/engine_next/material-gpu-r6-serial/EnvironmentOnly.log",
+        "sha256": "352225a030cd8b6fbdb0c05ac0be876a7a1732313ed5fbccdc964ef9f323e3bb",
+        "bytes": 60
+      }
+    },
+    {
+      "name": "SSRCombined",
+      "frames": 16,
+      "validation_errors": 0,
+      "device_removed_reason": 0,
+      "requested_dimensions": [
+        640,
+        480
+      ],
+      "actual_dimensions": [
+        640,
+        480
+      ],
+      "configuration": {
+        "path": "build/engine_next/material-benchmark-r1/Configurations/SSRCombined.json",
+        "sha256": "c511434ff5162c70de2f4b572a2853ffdef8a3835a41dd442d9c88a1f0e0a74d",
+        "bytes": 3198
+      },
+      "runtime": {
+        "path": "build/engine_next/material-gpu-r6-serial/SSRCombined.json",
+        "sha256": "e608de63f46f4794a3efc1ad80d9b69aca0cf61764810e9675187a2980d80143",
+        "bytes": 64136
+      },
+      "capture": {
+        "path": "build/engine_next/material-gpu-r6-serial/SSRCombined.ppm",
+        "sha256": "eaa56c7bf455e570747b26d3850bd201f5070de78dc0776efd878bdfccb6367a",
+        "bytes": 921615
+      },
+      "log": {
+        "path": "build/engine_next/material-gpu-r6-serial/SSRCombined.log",
+        "sha256": "352225a030cd8b6fbdb0c05ac0be876a7a1732313ed5fbccdc964ef9f323e3bb",
+        "bytes": 60
+      }
+    },
+    {
+      "name": "TAABloomCombined",
+      "frames": 40,
+      "validation_errors": 0,
+      "device_removed_reason": 0,
+      "requested_dimensions": [
+        640,
+        480
+      ],
+      "actual_dimensions": [
+        640,
+        480
+      ],
+      "configuration": {
+        "path": "build/engine_next/material-benchmark-r1/Configurations/TAABloomCombined.json",
+        "sha256": "f0ed2692e97493fafaf1d863d45c5ebc41476258a781d857a9abce44960f29e8",
+        "bytes": 3238
+      },
+      "runtime": {
+        "path": "build/engine_next/material-gpu-r6-serial/TAABloomCombined.json",
+        "sha256": "ae918ff0521963f8fd649d7fee6f350ae690e03c3477beca2b5248d1acfabb5e",
+        "bytes": 138643
+      },
+      "capture": {
+        "path": "build/engine_next/material-gpu-r6-serial/TAABloomCombined.ppm",
+        "sha256": "30217ac89fe6c0be33b0953308dca8442b4a701983a6a1a6d95a8aa59be2e964",
+        "bytes": 921615
+      },
+      "log": {
+        "path": "build/engine_next/material-gpu-r6-serial/TAABloomCombined.log",
+        "sha256": "d511c2b39116589dffa319e9bc48b8fb4d2deb31b3487150032b2dcb0227c9d1",
+        "bytes": 60
+      }
+    },
+    {
+      "name": "Composite4K",
+      "frames": 12,
+      "validation_errors": 0,
+      "device_removed_reason": 0,
+      "requested_dimensions": [
+        3840,
+        2160
+      ],
+      "actual_dimensions": [
+        3840,
+        2160
+      ],
+      "configuration": {
+        "path": "build/engine_next/material-gpu-r6-serial/Composite4K/Configuration.json",
+        "sha256": "fd54acd0d79e032dd459ba4e1ed076ec45c26e289f007a7ef6270cecbf82e00b",
+        "bytes": 4055
+      },
+      "runtime": {
+        "path": "build/engine_next/material-gpu-r6-serial/Composite4K/Runtime.json",
+        "sha256": "cd70799947d7623722521696083c331f4ffce4dc5a970e8cd34d839f88ab5b34",
+        "bytes": 94469
+      },
+      "capture": {
+        "path": "build/engine_next/material-gpu-r6-serial/Composite4K/Frame.ppm",
+        "sha256": "5a3b8a049994bd74a0b02b51c8986f222a8841fba3814293e9b7ec57d3e8a26c",
+        "bytes": 24883217
+      },
+      "log": {
+        "path": "build/engine_next/material-gpu-r6-serial/Composite4K/Run.log",
+        "sha256": "b534ffdd3148ed3d84ba175d75ef2d7279ba1412a7631ecd0fa2f6132a2f8128",
+        "bytes": 60
+      },
+      "enabled_effects": {
+        "material_extensions": true,
+        "screen_space_reflections": true,
+        "temporal_aa": true,
+        "bloom_enabled": true,
+        "volumetric_fog": true,
+        "particle_emitters": 1,
+        "peak_particles": 4
+      }
+    }
+  ],
+  "case_count": 10,
+  "frames": 180,
+  "physical_display": {
+    "width": 2560,
+    "height": 1440,
+    "refresh_hz": 180
+  },
+  "four_k_scope": "The exact 3840x2160 hidden client render target is verified. Physical 4K output, performance targets and long-duration stability remain in the parent acceptance.",
+  "interrupted_attempt": {
+    "reason": "An earlier 4K launch overlapped the initial R6 matrix. That 4K process was terminated and both the complete matrix and 4K case were rerun serially in the final directory.",
+    "initial_matrix": {
+      "path": "build/engine_next/material-gpu-r6/Results.json",
+      "sha256": "7961f43c9c99373d94f392f862c47b7db87b9235bf96982863c901af99a2ea33",
+      "bytes": 9589
+    },
+    "initial_4k_configuration": {
+      "path": "build/engine_next/material-gpu-r6/Composite4K/Configuration.json",
+      "sha256": "fd54acd0d79e032dd459ba4e1ed076ec45c26e289f007a7ef6270cecbf82e00b",
+      "bytes": 4055
+    },
+    "initial_4k_log": {
+      "path": "build/engine_next/material-gpu-r6/Composite4K/Run.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "runner": {
+    "path": "build/engine_next/RunMaterialGpu.py",
+    "sha256": "88e8a87d60313668c48eea7768da40f6086d60905a6f42d55509f0307be369b3",
+    "bytes": 2972
+  }
+}

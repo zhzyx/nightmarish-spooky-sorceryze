@@ -6,6 +6,9 @@ float3 UnitDirection(float3 Direction, float3 Fallback)
     return Maximum > 0 ? Scaled * rsqrt(max(dot(Scaled, Scaled), 1.0e-38)) : Fallback;
 }
 #include "ShadowSampling.hlsli"
+#if defined(MATERIAL_EXTENSION_STAGE)
+#include "MaterialEnvironmentLighting.hlsli"
+#endif
 struct LocalLightConstants
 {
     float4 PositionRange;
@@ -44,6 +47,7 @@ cbuffer DrawConstants : register(b0)
     float4 Flags;
     column_major float4x4 PreviousWorld;
     uint4 TemporalMetadata;
+    float4 MaterialParameters;
 };
 Texture2D<float4> BaseTexture : register(t0);
 Texture2D<float4> MrTexture : register(t1);
@@ -91,6 +95,10 @@ struct GBufferOutput
     float4 Emissive : SV_TARGET3;
     float4 Motion : SV_TARGET4;
     uint ObjectId : SV_TARGET5;
+#if defined(MATERIAL_EXTENSION_STAGE)
+    float4 Material : SV_TARGET6;
+    float4 Tangent : SV_TARGET7;
+#endif
 };
 GBufferOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
 {
@@ -122,6 +130,10 @@ GBufferOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
         Output.Motion = float4(PreviousUv - CurrentUv, Input.PreviousClip.w, 1);
     }
     Output.ObjectId = TemporalMetadata.x;
+#if defined(MATERIAL_EXTENSION_STAGE)
+    Output.Material = MaterialParameters;
+    Output.Tangent = Input.Tangent;
+#endif
     Output.Base = Color;
     Output.Normal = float4(Normal, 1);
     Output.Surface = float4(saturate(Mr.g * Surface.x), saturate(Mr.b * EmissiveMetallic.w), saturate(Ao), 1);
@@ -148,6 +160,10 @@ TextureCube<float4> PrefilteredEnvironment : register(t7);
 Texture2D<float4> BrdfLut : register(t8);
 Texture2DArray<float> DirectionalShadow : register(t9);
 Texture2DArray<float> LocalShadow : register(t10);
+#if defined(MATERIAL_EXTENSION_STAGE)
+Texture2D<float4> MaterialBuffer : register(t12);
+Texture2D<float4> TangentBuffer : register(t13);
+#endif
 SamplerState EnvironmentSampler : register(s0);
 #endif
 struct FullscreenOutput
@@ -306,7 +322,15 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
     float3 Emissive = EmissiveBuffer.Load(int3(Pixel, 0)).rgb;
     float3 GeometricNormal = UnitDirection(PlaneNormal, N);
     float3 V = SafeDirection(Camera.xyz - Position);
+#if defined(MATERIAL_EXTENSION_STAGE)
+    float4 Extension = MaterialBuffer.Load(int3(Pixel, 0));
+    float4 Tangent = TangentBuffer.Load(int3(Pixel, 0));
+    MaterialFrame Frame = MaterialBuildFrame(N, Tangent.xyz, Tangent.w, Extension.w);
+    float3 Color = MaterialShadeLight(Base, Material.y, Material.x, Extension.z, Extension.x, Extension.y,
+        true, Frame, V, LightDirection.xyz, LightColor.rgb * Tint[0].rgb) * DirectionalVisibility(Position, N);
+#else
     float3 Color = EvaluateLight(Base, Material.y, Material.x, N, V, LightDirection.xyz, LightColor.rgb * Tint[0].rgb) * DirectionalVisibility(Position, N);
+#endif
     [loop] for (uint LightIndex = 0; LightIndex < (uint)LocalCounts.x; ++LightIndex)
     {
         LocalLightConstants Light = LocalLights[LightIndex];
@@ -327,7 +351,12 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
         }
         float Visibility = LocalVisibility(Light, Position, N, GeometricNormal);
         float3 Radiance = min(Light.ColorIntensity.rgb, 1.0e20) * Attenuation;
+#if defined(MATERIAL_EXTENSION_STAGE)
+        Color += MaterialShadeLight(Base, Material.y, Material.x, Extension.z, Extension.x, Extension.y,
+            true, Frame, V, Direction, Radiance) * Visibility;
+#else
         Color += EvaluateLight(Base, Material.y, Material.x, N, V, Direction, Radiance) * Visibility;
+#endif
     }
     float NoV = saturate(dot(N, V));
     float3 F0 = lerp(0.04, Base, Material.y);
@@ -336,16 +365,27 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
     float3 Reflection = reflect(-V, N);
     float3 Prefiltered = PrefilteredEnvironment.SampleLevel(EnvironmentSampler, Reflection, Material.x * Lighting.y).rgb;
     float2 Brdf = BrdfLut.SampleLevel(EnvironmentSampler, float2(NoV, Material.x), 0).rg;
+    float3 DiffuseEnvironment = (1 - F) * (1 - Material.y) * Diffuse;
+    float3 SpecularEnvironment = Prefiltered * (F0 * Brdf.x + Brdf.y);
+#if defined(MATERIAL_EXTENSION_STAGE)
+    [branch] if (!MaterialEnvironmentUsesLegacy(true, Extension.z, Extension.x))
+    {
+        MaterialEnvironmentLighting Environment = SampleMaterialEnvironment(PrefilteredEnvironment, EnvironmentSampler,
+            Base, Material.y, Material.x, Extension, Frame, V);
+        DiffuseEnvironment = Environment.Diffuse;
+        SpecularEnvironment = Environment.BaseSpecular + Environment.CoatSpecular;
+    }
+#endif
 #if defined(REFLECTION_STAGE)
-    Color += (1 - F) * (1 - Material.y) * Diffuse * Material.z;
-    float3 EnvironmentSpecular = Prefiltered * (F0 * Brdf.x + Brdf.y) * Material.z * ExposureState[0].x;
+    Color += DiffuseEnvironment * Material.z;
+    float3 EnvironmentSpecular = SpecularEnvironment * Material.z * ExposureState[0].x;
     Color = Color * ExposureState[0].x + Emissive;
     LightingOutput Output;
     Output.Base = float4(all(isfinite(Color)) ? clamp(Color, 0, 65504) : float3(0, 0, 0), 1);
     Output.EnvironmentSpecular = float4(all(isfinite(EnvironmentSpecular)) ? clamp(EnvironmentSpecular, 0, 65504) : float3(0, 0, 0), 1);
     return Output;
 #else
-    Color += ((1 - F) * (1 - Material.y) * Diffuse + Prefiltered * (F0 * Brdf.x + Brdf.y)) * Material.z;
+    Color += (DiffuseEnvironment + SpecularEnvironment) * Material.z;
     Color = Color * ExposureState[0].x + Emissive;
     return float4(all(isfinite(Color)) ? clamp(Color, 0, 65504) : float3(0, 0, 0), 1);
 #endif

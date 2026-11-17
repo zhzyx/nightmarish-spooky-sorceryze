@@ -1,0 +1,514 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T16:51:30.401279+00:00",
+  "status": "passed",
+  "complete_acceptance": true,
+  "candidate": {
+    "name": "materials-r5",
+    "native_key": "866d7a6054aad50bc761ba1dffa5475c3e1f102d665efc964f357e4cbd6ccd63",
+    "executable": {
+      "path": "build/engine_next/materials-r5/next_visual_client.exe",
+      "size_bytes": 3200512,
+      "sha256": "b4d6c5acda79203d15c5ded995a27418ccab0d018fee343b7dc9fc2dbbef1d45"
+    },
+    "build_report": {
+      "path": "build/engine_next/materials-r5/VisualBuildReport.json",
+      "size_bytes": 2091230,
+      "sha256": "02f8ee58ca8ada0cf9d0d430d709aeb21b2395d039f6aa7cae90b2d75275f530"
+    }
+  },
+  "final_candidate_relationship": {
+    "name": "materials-r6",
+    "executable": {
+      "path": "build/engine_next/materials-r6/next_visual_client.exe",
+      "size_bytes": 3200512,
+      "sha256": "675b22b5af587b1b9cb48efef53226b5938e15cbf644b3082d8fe2256cc74b9b"
+    },
+    "native_key": "636e9a1fc5e83160c6e22a4aa50a2b98a68ff6cd3184b8c599e5a7bcfbf7e9d8",
+    "evidence": {
+      "path": "build/engine_next/MaterialCandidateDelta.json",
+      "size_bytes": 3938,
+      "sha256": "eb4ac38557802f50a8cb977332479d37a2fa5b2169888315a0ca5b2d674ff3cf"
+    },
+    "independently_checked_equal_text_sha256": "5b01a050e6029652d34edd4b5da3b3231356e3efb41e85093ec1233f1b31eb69",
+    "independently_checked_equal_shaders": [
+      {
+        "name": "BloomDown.cs.cso",
+        "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+      },
+      {
+        "name": "BloomUp.cs.cso",
+        "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+      },
+      {
+        "name": "Deferred.ps.cso",
+        "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0"
+      },
+      {
+        "name": "Deferred.vs.cso",
+        "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225"
+      },
+      {
+        "name": "Exposure.cs.cso",
+        "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+      },
+      {
+        "name": "FixedMesh.cs.cso",
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+      },
+      {
+        "name": "FixedMesh.ps.cso",
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+      },
+      {
+        "name": "FixedMesh.vs.cso",
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+      },
+      {
+        "name": "Histogram.cs.cso",
+        "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+      },
+      {
+        "name": "Lighting.ps.cso",
+        "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+      },
+      {
+        "name": "Lighting.vs.cso",
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+      },
+      {
+        "name": "MaterialDeferred.ps.cso",
+        "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb"
+      },
+      {
+        "name": "MaterialLighting.ps.cso",
+        "sha256": "5dbcfcbe06cc234ab31a5da519acbacdafa2ee910b1a0a808e7c35979cdb4e91"
+      },
+      {
+        "name": "MaterialReflectionLighting.ps.cso",
+        "sha256": "df73574f8636404517734ddd0bd6d8bd04b95b510f8d1fa3d55a52c0d65fa9b6"
+      },
+      {
+        "name": "MaterialReflectionTrace.cs.cso",
+        "sha256": "792f2a28a1409213e42fc690bd33fe15e814600b9f6241de617a198b975d8829"
+      },
+      {
+        "name": "MaterialTransparent.ps.cso",
+        "sha256": "b70b9c538d82d068d9f3161804f9d38e965f496a5a615897501f27620bb6699c"
+      },
+      {
+        "name": "ReflectionColor.cs.cso",
+        "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+      },
+      {
+        "name": "ReflectionComposite.cs.cso",
+        "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+      },
+      {
+        "name": "ReflectionLighting.ps.cso",
+        "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8"
+      },
+      {
+        "name": "ReflectionRadiance.cs.cso",
+        "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+      },
+      {
+        "name": "ReflectionTrace.cs.cso",
+        "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+      },
+      {
+        "name": "Shadow.ps.cso",
+        "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+      },
+      {
+        "name": "Shadow.vs.cso",
+        "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+      },
+      {
+        "name": "Temporal.cs.cso",
+        "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+      },
+      {
+        "name": "ToneMap.ps.cso",
+        "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+      },
+      {
+        "name": "Transparent.ps.cso",
+        "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f"
+      },
+      {
+        "name": "Transparent.vs.cso",
+        "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24"
+      },
+      {
+        "name": "VolumeComposite.cs.cso",
+        "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+      },
+      {
+        "name": "VolumeInject.cs.cso",
+        "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+      },
+      {
+        "name": "VolumeIntegrate.cs.cso",
+        "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+      },
+      {
+        "name": "VolumeLight.cs.cso",
+        "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+      },
+      {
+        "name": "VolumeTemporal.cs.cso",
+        "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+      }
+    ],
+    "description": "The actual keyboard session used R5. R6 changes a test fixture initializer; the executable text and all 32 shader files are byte-identical."
+  },
+  "scene": {
+    "id": "m4.bench.f",
+    "source_package_digest": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+    "identity": "Original frozen M3 F scene and both original player meshes. Material changes are supplied only through the render configuration.",
+    "package_files": [
+      {
+        "path": "build/engine_next/material-network-r4/Scene.enpak/AssetManifest.json",
+        "size_bytes": 793,
+        "sha256": "8911b44acd26da7a5e956305fda273bea5eb9f5575c03373627097cab12173ff"
+      },
+      {
+        "path": "build/engine_next/material-network-r4/Scene.enpak/blobs/44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66",
+        "size_bytes": 73932,
+        "sha256": "44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66"
+      },
+      {
+        "path": "build/engine_next/material-network-r4/Scene.enpak/blobs/fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f",
+        "size_bytes": 73924,
+        "sha256": "fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f"
+      },
+      {
+        "path": "build/engine_next/material-network-r4/Scene.enpak/Scene.json",
+        "size_bytes": 884,
+        "sha256": "2389697f70a88cda302cdd5374785d23864d9aa6fe4a79b2a2b22df6ca08fb19"
+      }
+    ],
+    "material_targets": [
+      {
+        "asset_id": "m4.bench.f.blue",
+        "material_indices": [
+          0,
+          2
+        ],
+        "material_role": "Body and facing marker"
+      },
+      {
+        "asset_id": "m4.bench.f.orange",
+        "material_indices": [
+          0,
+          2
+        ],
+        "material_role": "Body and facing marker"
+      }
+    ]
+  },
+  "input_driver": "Windows Computer Use keyboard events and target-window minimize/restore",
+  "checks": {
+    "A": {
+      "frames": 6349,
+      "validation_errors": 0,
+      "network_input_frames": 8,
+      "network_reconnect_requests": 1,
+      "local_shadow_views": 6,
+      "input_key_events": 19,
+      "resizes": 1,
+      "draw_position_max_error": 1.1920928910669204e-08,
+      "largest_sample_gap_msec": 105889,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "16339",
+          "entity_id": "1",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            -0.48799991607666016,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "13900",
+          "entity_id": "2",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            2.0240001678466797,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "temporal_epoch_starts": [
+        {
+          "frame_id": 0,
+          "epoch": 1
+        },
+        {
+          "frame_id": 4,
+          "epoch": 2
+        },
+        {
+          "frame_id": 3208,
+          "epoch": 5
+        },
+        {
+          "frame_id": 5118,
+          "epoch": 6
+        },
+        {
+          "frame_id": 5127,
+          "epoch": 7
+        }
+      ],
+      "temporal_resets": 6
+    },
+    "B": {
+      "frames": 14381,
+      "validation_errors": 0,
+      "network_input_frames": 32,
+      "network_reconnect_requests": 0,
+      "local_shadow_views": 6,
+      "input_key_events": 66,
+      "resizes": 0,
+      "draw_position_max_error": 1.1920928910669204e-08,
+      "largest_sample_gap_msec": 1129,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "13937",
+          "entity_id": "2",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            2.0240001678466797,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "16328",
+          "entity_id": "1",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            -0.48799991607666016,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "temporal_epoch_starts": [
+        {
+          "frame_id": 0,
+          "epoch": 1
+        },
+        {
+          "frame_id": 4,
+          "epoch": 2
+        }
+      ],
+      "temporal_resets": 1
+    }
+  },
+  "minimized_evidence": [
+    {
+      "client": "A",
+      "ui_minimized_msec": 107953,
+      "sample_gap_msec": 105889,
+      "rendered_frame_delta": 30,
+      "confirmed_before": "6179",
+      "confirmed_after": "12797",
+      "peer_samples": 282,
+      "peer_input_samples": 32
+    }
+  ],
+  "material_state": {
+    "A": {
+      "material_extensions": true,
+      "material_overrides": 4,
+      "material_parameter_format": "R32G32B32A32_FLOAT",
+      "material_resource_bytes": 44236800
+    },
+    "B": {
+      "material_extensions": true,
+      "material_overrides": 4,
+      "material_parameter_format": "R32G32B32A32_FLOAT",
+      "material_resource_bytes": 44236800
+    }
+  },
+  "graceful_drain": {
+    "notified": 2,
+    "acknowledged": 2,
+    "forced": 0,
+    "resumed": 1
+  },
+  "server": {
+    "path": "build/engine_next/material-network-r5/Dependencies/next_server.exe",
+    "size_bytes": 788992,
+    "sha256": "03097759e5aced39db68007897ff27adeadf2d8597cd2da2d9a8c8766f1092da"
+  },
+  "success_artifacts": [
+    {
+      "path": "build/engine_next/material-network-r5/Run2/A.json",
+      "size_bytes": 12771031,
+      "sha256": "2d8cbb826d924db7eeee49dd98b9919cab6f27ecccc73490e8860349d45a2722"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/A.log",
+      "size_bytes": 3536,
+      "sha256": "d7be2011b06b01705dd29a65531e48979e81c34dc97fef6a759b828de98a752a"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/A.ppm",
+      "size_bytes": 1843215,
+      "sha256": "629122a8bad5eb5be0090edb21fbcd52be0214bad0e53526639e67402bfae50b"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/B.json",
+      "size_bytes": 28865445,
+      "sha256": "fb730dc97ce0b62f802353761c42fe5560ad65cb6b97e5700c0e8353083ae2ee"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/B.log",
+      "size_bytes": 4668,
+      "sha256": "5cec4d5e1a3a9135a3e442e68fa2e1790b8546b44582bb1359ec979fe9d7d75c"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/B.ppm",
+      "size_bytes": 1843215,
+      "sha256": "234f532cb3c031c20e2ad7c748f6356809d86e1ba9b18101f6c43e1f4809141c"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/Completion.json",
+      "size_bytes": 6485,
+      "sha256": "d18e3c8f6d9c7e4613a647f91746b5f6bf3798ba5d87d34615ca0777ac37afb1"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/Live.json",
+      "size_bytes": 6357,
+      "sha256": "1155cb82e766fdab7e9a0bceaf30f92a1e491bb3cfd2cfef4fe29a29831072dc"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/RenderConfiguration.json",
+      "size_bytes": 2598,
+      "sha256": "aba179111251578030ef18879b5afe63d79125fbd548381d8d6dcd69e692b999"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/server.jsonl",
+      "size_bytes": 1250628,
+      "sha256": "f355c849b8b3c1ccc9bc89a20ad564f737b136ef138d5615d2ac91e3067e63ea"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/server.log",
+      "size_bytes": 1142,
+      "sha256": "bb44bcf18bc255bf96cf7f92fcaa94816e944acfe1655a408fd02fa48420bc02"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/UIActions.json",
+      "size_bytes": 5187,
+      "sha256": "9c33307263ddfab537d07fcd173e010bfe470d14adc60b679589da45ccc9a237"
+    },
+    {
+      "path": "build/engine_next/material-network-r5/Run2/VerificationFinal.json",
+      "size_bytes": 4558,
+      "sha256": "738d55696dc7e63e5fc1b4af60dca52ad8e0e48c0657dcaee70a0f82d28b9e51"
+    }
+  ],
+  "verifier": {
+    "path": "build/engine_next/material-network-r5/VerifyNetwork.py",
+    "size_bytes": 7869,
+    "sha256": "69c6c8eadd874e9a3b9682e6aa17b0ef98ba38fd95932b12846831ca4beb6b2c"
+  },
+  "harness": {
+    "path": "build/engine_next/material-network-r5/RunNetwork.py",
+    "size_bytes": 8212,
+    "sha256": "d2edeeca0df82e3cc85b334ae892a8034f177fe8210e6d1d9e6b22259b2c0d3f"
+  },
+  "earlier_session": {
+    "name": "Run1",
+    "complete_acceptance": false,
+    "description": "Both clients completed rendering and graceful shutdown with zero keyboard input. Computer Use activation failed twice after refreshed selection, and captured state showed black content then desktop wallpaper. The user later confirmed the application was in the foreground; Run2 completed the input sequence.",
+    "artifacts": [
+      {
+        "path": "build/engine_next/material-network-r5/Run1/A.json",
+        "size_bytes": 26780975,
+        "sha256": "6d683db0b5c481aa685f1868b64bdbd6626cd66815efb1709d980e886f9ede26"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/A.log",
+        "size_bytes": 692,
+        "sha256": "029ba9d49459fd2cd2e4f648c48de80c9850bde4e948b4ade49b89eb92dc9bd5"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/A.ppm",
+        "size_bytes": 1843215,
+        "sha256": "f42d7be5778eb77e0dc65df4343c467df9e147bb9920558c419bdfc6ff817615"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/B.json",
+        "size_bytes": 13918834,
+        "sha256": "5dadef41c5cbf7af4b3c25299830e1034f85c9f49d9a715434e4013e4bf85f02"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/B.log",
+        "size_bytes": 691,
+        "sha256": "d8c1f15196e0f0d4ea671b946af602f7d3133b62a027ea881c47e1fd4646ec4d"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/B.ppm",
+        "size_bytes": 1843215,
+        "sha256": "6dcb9ea0b4788ebc428d281248fbb4cb75e980ded62732b520c1c1b4e04f61fe"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/Completion.json",
+        "size_bytes": 6486,
+        "sha256": "749ead0cce668616029d32220db5e4aef4e15843b8e131edea703da7dbc37d8a"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/Live.json",
+        "size_bytes": 6358,
+        "sha256": "93e5f5907e2adf8deac1402b21e4bc0ea1e5260a588fd867b3e86d9667bbadf1"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/RenderConfiguration.json",
+        "size_bytes": 2598,
+        "sha256": "aba179111251578030ef18879b5afe63d79125fbd548381d8d6dcd69e692b999"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/server.jsonl",
+        "size_bytes": 989914,
+        "sha256": "0cd4f2d84d9e94fa41212c08f37875ee6887fa466a73c23922fa0d8d308f7429"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/server.log",
+        "size_bytes": 957,
+        "sha256": "fbd0204553b1d2b8a5ecff4c954831ce469831e82ea2cb15c3a17401be7eda75"
+      },
+      {
+        "path": "build/engine_next/material-network-r5/Run1/UIActions.json",
+        "size_bytes": 505,
+        "sha256": "ffe5e26529a8ae67e42ae4dcc9d8b2bf6960a293af37a7a06c813a2266c2ccb8"
+      }
+    ]
+  },
+  "python_regression": {
+    "path": "build/engine_next/MaterialPythonRegression.json",
+    "size_bytes": 11516,
+    "sha256": "4fc994f7e2c9d879ec46a4469d0741a00fe1fdb732af06097d280953ad3ca2a9"
+  },
+  "boundaries": [
+    "This scene validates connected material rendering and input/reset state at 960x640. It contains no mirror floor. Detailed SSR and material image comparisons use the separate self-authored material benchmark.",
+    "No video was recorded for this session. The application state captures, keyboard action log and renderer/network reports support this result.",
+    "Window input and screenshots did not identify a security prompt in these two sessions; no security controls were operated."
+  ],
+  "no_live_owned_network_processes": true
+}

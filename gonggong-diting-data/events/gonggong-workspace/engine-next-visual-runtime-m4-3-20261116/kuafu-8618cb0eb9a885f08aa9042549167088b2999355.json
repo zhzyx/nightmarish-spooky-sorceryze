@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8618cb0eb9a885f08aa9042549167088b2999355",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "128ffe784b80192d808d60485d58200f7e74b7c9eb7eb950b394cd2d7c8f3672",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1349",
+    "action": "validation",
+    "detection_head": "4c45067171c8201eb0386cb99472ae49cdd73917",
+    "context_sha256": "2166de63a866b4c6a6755a12b0de1507cec63540d6e243b11c44cddac4eb2aef",
+    "operator": "kaiyunxue",
+    "worker": "codex-m4-capture-delivery",
+    "authority_ref": "Parent issue 1343 delegated Material R6 validation and tested PR/main delivery in this session",
+    "evidence": "build/engine_next/material-ibl-reference-r1/Comparison.json",
+    "diagnosis": "With the identical R4 executable, configuration, frame constants and GBuffer, increasing only environment NDF samples from 32/16/8 to 512/256/128 reduces isolated bright pixels from 24 to zero over 31052 interior pixels. Mean luminance stays near 0.222. The finite low-sample estimator has visible high-contrast environment artifacts. MRT float32 storage and binding verification pass independently.",
+    "next_action": "Keep this quality limitation explicit in the current capability slice and leave parent Issues 1343 and 1323 open. Continue the separately assigned environment importance-sampling prototype and verify its image quality before full M4 acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T17:08:49.767670+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T17:09:58.099353+00:00",
+  "sha256": "f842ffb50081d0df397459297fd07d5f74098c4eac613d60b65de7052981bbde"
+}

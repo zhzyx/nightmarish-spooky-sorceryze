@@ -6,6 +6,9 @@ float3 UnitDirection(float3 Direction, float3 Fallback)
     return Maximum > 0 ? Scaled * rsqrt(max(dot(Scaled, Scaled), 1.0e-38)) : Fallback;
 }
 #include "ShadowSampling.hlsli"
+#if defined(MATERIAL_EXTENSION_STAGE)
+#include "MaterialEnvironmentLighting.hlsli"
+#endif
 struct LocalLightConstants
 {
     float4 PositionRange;
@@ -43,6 +46,7 @@ cbuffer DrawConstants : register(b0)
     float4 Flags;
     column_major float4x4 PreviousWorld;
     uint4 TemporalMetadata;
+    float4 MaterialParameters;
 };
 Texture2D<float4> BaseTexture : register(t0);
 Texture2D<float4> MrTexture : register(t1);
@@ -239,7 +243,13 @@ TransparentOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
     float Metallic = saturate(Mr.b * EmissiveMetallic.w);
     float Ao = saturate(lerp(1, AoTexture.Sample(AoSampler, Input.Texcoord).r, Surface.z));
     float3 V = SafeDirection(Camera.xyz - Input.WorldPosition);
+#if defined(MATERIAL_EXTENSION_STAGE)
+    MaterialFrame Frame = MaterialBuildFrame(N, Input.Tangent.xyz, Input.Tangent.w, MaterialParameters.w);
+    float3 Color = MaterialShadeLight(Base.rgb, Metallic, Roughness, MaterialParameters.z, MaterialParameters.x, MaterialParameters.y,
+        true, Frame, V, LightDirection.xyz, LightColor.rgb * Tint[0].rgb) * DirectionalVisibility(Input.WorldPosition, N);
+#else
     float3 Color = EvaluateLight(Base.rgb, Metallic, Roughness, N, V, LightDirection.xyz, LightColor.rgb * Tint[0].rgb) * DirectionalVisibility(Input.WorldPosition, N);
+#endif
     for (uint Index = 0; Index < min(uint(LocalCounts.x), 8u); ++Index)
     {
         LocalLightConstants Light = LocalLights[Index];
@@ -257,7 +267,12 @@ TransparentOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
             float3 ConeOffset = -ToLight - Light.DirectionType.xyz;
             Attenuation *= 1 - smoothstep(Light.ConeShadow.x, Light.ConeShadow.y, dot(ConeOffset, ConeOffset));
         }
+#if defined(MATERIAL_EXTENSION_STAGE)
+        Color += MaterialShadeLight(Base.rgb, Metallic, Roughness, MaterialParameters.z, MaterialParameters.x, MaterialParameters.y,
+            true, Frame, V, ToLight, min(Light.ColorIntensity.rgb, 1.0e20) * Attenuation) * LocalVisibility(Light, Input.WorldPosition, N, PlaneNormal);
+#else
         Color += EvaluateLight(Base.rgb, Metallic, Roughness, N, V, ToLight, min(Light.ColorIntensity.rgb, 1.0e20) * Attenuation) * LocalVisibility(Light, Input.WorldPosition, N, PlaneNormal);
+#endif
     }
     float NoV = saturate(dot(N, V));
     float3 F0 = lerp(0.04, Base.rgb, Metallic);
@@ -265,7 +280,16 @@ TransparentOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
     float3 Diffuse = Irradiance.SampleLevel(EnvironmentSampler, N, 0).rgb * Base.rgb / 3.14159265;
     float3 Prefiltered = PrefilteredEnvironment.SampleLevel(EnvironmentSampler, reflect(-V, N), Roughness * Lighting.y).rgb;
     float2 Brdf = BrdfLut.SampleLevel(EnvironmentSampler, float2(NoV, Roughness), 0).rg;
-    Color += ((1 - F) * (1 - Metallic) * Diffuse + Prefiltered * (F0 * Brdf.x + Brdf.y)) * Ao;
+    float3 EnvironmentLighting = (1 - F) * (1 - Metallic) * Diffuse + Prefiltered * (F0 * Brdf.x + Brdf.y);
+#if defined(MATERIAL_EXTENSION_STAGE)
+    [branch] if (!MaterialEnvironmentUsesLegacy(true, MaterialParameters.z, MaterialParameters.x))
+    {
+        MaterialEnvironmentLighting Environment = SampleMaterialEnvironment(PrefilteredEnvironment, EnvironmentSampler,
+            Base.rgb, Metallic, Roughness, MaterialParameters, Frame, V);
+        EnvironmentLighting = Environment.Diffuse + Environment.BaseSpecular + Environment.CoatSpecular;
+    }
+#endif
+    Color += EnvironmentLighting * Ao;
     Color = (Color + EmissiveTexture.Sample(EmissiveSampler, Input.Texcoord).rgb * EmissiveMetallic.xyz) * ExposureState[0].x;
     Color = all(isfinite(Color)) ? clamp(Color, 0, 65504) : float3(0, 0, 0);
     if (FogParameters.w > 0.5f)

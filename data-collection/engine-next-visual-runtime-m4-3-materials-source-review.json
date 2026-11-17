@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T16:56:52.652416+00:00",
+  "scope": "Final material CPU, shader and runtime source review at the R6 candidate, with preserved R3/R4 findings and actual R5 network identity.",
+  "review_roles": {
+    "runtime_and_integration": "This reviewer independently examined root-authored configuration integration, FrameGraph, D3D12 runtime, material/SSR shader callers, build and package registration.",
+    "shared_math_and_cpu_contract": "This reviewer authored MaterialSettings, MaterialLobes and MaterialEnvironment. Their independent source review was performed by m42_cook_review; numerical tests were executed by this reviewer.",
+    "peer_review": {
+      "path": "build/engine_next/material-cpu-frozen/PeerReview.json",
+      "size_bytes": 520,
+      "sha256": "2cb4fa73b17ccbc7ce1698415271b2b2b3a941c9759abb5f20914fcd9f50d1b4"
+    }
+  },
+  "candidate": {
+    "name": "materials-r6",
+    "native_key": "636e9a1fc5e83160c6e22a4aa50a2b98a68ff6cd3184b8c599e5a7bcfbf7e9d8",
+    "binary": {
+      "path": "build/engine_next/materials-r6/next_visual_client.exe",
+      "size_bytes": 3200512,
+      "sha256": "675b22b5af587b1b9cb48efef53226b5938e15cbf644b3082d8fe2256cc74b9b"
+    },
+    "build_report": {
+      "path": "build/engine_next/materials-r6/VisualBuildReport.json",
+      "size_bytes": 2091230,
+      "sha256": "90ab30c205da1c163dcd9bdfeed5f4e71780755a7e6cc7fdae3bea2431e7b20d"
+    },
+    "native_inputs_checked": 275,
+    "input_mismatches": [],
+    "msvc_summary": "MATERIAL_HEMISPHERE cases=72 minimum=0.184115 maximum=0.991663\r\nMATERIAL_ENVIRONMENT_FURNACE cases=72 minimum=0.184124 maximum=0.998307\r\nENGINE_NEXT_RENDERING_TEST_SUMMARY tests=341 checks=206466 failures=0",
+    "clang_report": {
+      "path": "build/engine_next/materials-clang-cl-r6/Result.json",
+      "size_bytes": 2292538,
+      "sha256": "546d47e79c6715161a07bf960ffef874f08aae9e2343391ff3c471c9f87fbd92"
+    },
+    "clang_summary": "MATERIAL_HEMISPHERE cases=72 minimum=0.184115 maximum=0.991663\r\nMATERIAL_ENVIRONMENT_FURNACE cases=72 minimum=0.184124 maximum=0.998307\r\nENGINE_NEXT_RENDERING_TEST_SUMMARY tests=341 checks=206466 failures=0\r\n"
+  },
+  "reviewed_sources": [
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "size_bytes": 265212,
+      "sha256": "b58ba91de882295f2c4f953210c4040a8c5793fb5033ae5fd5d274db9e6aba63"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "size_bytes": 27895,
+      "sha256": "a01dc7c157197ef59eefec84a4ae620562a181d57870f33cacbb5322cda54464"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "size_bytes": 7185,
+      "sha256": "a686b7aceb538b84d2b684f1fc0065ca2af820b7daf5a4ed8d44714d18215354"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "size_bytes": 16660,
+      "sha256": "6d38ce614528fdbf8b1d88aaa46d72c8d5416ef079e517682f85aecf941e230d"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Transparent.hlsl",
+      "size_bytes": 13156,
+      "sha256": "efc0f2c643c03e49215381e9679e5ba09a2c7ff6b75cbcf1cb35f32deef2e417"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Reflection.hlsl",
+      "size_bytes": 10665,
+      "sha256": "c033a5a175af29bdd54a944a2c706d9959d5e39eb9ba96b1fd6c0a3474c0453a"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/MaterialEnvironmentLighting.hlsli",
+      "size_bytes": 1971,
+      "sha256": "ccd16614521683f62b2bb21b926ce216911208febcaa6134b76f35a00c6d7661"
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "size_bytes": 33650,
+      "sha256": "81a05e12593517d11a6d594d896564d84c0779d2305f983aeb307784a975f18c"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "size_bytes": 7876,
+      "sha256": "5e622742f72716f2ca6d88b89053af1f7ca9081e0e3bfeff442207cab29c770f"
+    },
+    {
+      "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+      "size_bytes": 22926,
+      "sha256": "ca2c65ec48600f435cb978066d298717700b35e27228cceec31be5396978b6e9"
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "size_bytes": 32566,
+      "sha256": "3aff76a31be74bfc855b23a68cc502b5d6e4b8d56f650f51a164f640391dcf50"
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "size_bytes": 7365,
+      "sha256": "d095ebe262f5d609231d078895649dcdf34ae877bbff0dc4ab34fab5ab3546ad"
+    },
+    {
+      "path": "engine_next/Rendering/MaterialSettings.cpp",
+      "size_bytes": 11657,
+      "sha256": "220ace4afd646678e2f9b9cb7c2d3c39faf745da0ac6bdfa6bbfd40bc364efed"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/MaterialSettings.h",
+      "size_bytes": 4451,
+      "sha256": "70bb4d411c3ccd34080e0ce367a9a0bb31bec3eeecc63b3230b03aaec4fda31b"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/MaterialLobes.hlsli",
+      "size_bytes": 9295,
+      "sha256": "0423b27e9d0b199dc5871ed5ef18e6d578595c45388635f37ef9530a1d838c92"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/MaterialEnvironment.hlsli",
+      "size_bytes": 7294,
+      "sha256": "b790be5ee54da820dd9e69b409d46fc850dbb4aef6161b4e1214d1c4cae72854"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestMaterialSettings.cpp",
+      "size_bytes": 18567,
+      "sha256": "f51e90e3cb1a4f2d67364a3e66d8642ae9153a2d08e8ea5e10a7378cd29eebf6"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestMaterialLobes.cpp",
+      "size_bytes": 15964,
+      "sha256": "13c8677b104600f19d760d03f2af219d12dea12c627e137ebf8178b8e3832739"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestMaterialEnvironment.cpp",
+      "size_bytes": 13528,
+      "sha256": "39580b5807001c8c6a52945a1fd08ded32ba04bc31d10853d4890dbe400c8dad"
+    }
+  ],
+  "historical_reviews": [
+    {
+      "path": "build/engine_next/MaterialIntegrationReviewR3.json",
+      "size_bytes": 6251,
+      "sha256": "798506a8922f76e3114970ec623a3b80e02bfff8d975a6ba6c5d32ad50fc0b63"
+    },
+    {
+      "path": "build/engine_next/MaterialIntegrationReviewR4.json",
+      "size_bytes": 3323,
+      "sha256": "75fc11abd314e33eb4fba3cf84c117e7704619e57e1059d6d92fa59840f0e494"
+    }
+  ],
+  "historical_binding_note": "The R3 review recorded one schema source mismatch. R4 and current R6 input hashes were independently checked at their respective review times.",
+  "closed_findings": [
+    {
+      "id": "parameter_storage_loses_extension_routing",
+      "original_candidate": "R3",
+      "description": "RGBA16F material storage rounded legal tiny extension strengths to zero while forward constants retained them.",
+      "resolution": "R4 changes the parameter target, SRV and RTV6 to RGBA32F. Tangent storage remains RGBA16F.",
+      "actual_validation": {
+        "path": "build/engine_next/material-capture-r4-live/NumericalChecks.json",
+        "size_bytes": 51735,
+        "sha256": "69652f69ba71de6764bbf2458b861755c535a7c7d2c9a955c1630350de69aac9"
+      },
+      "reviewer_numeric_check": "The recorded R4 tiny-case opaque constant vectors exactly equal stored parameter vectors; R3 records retain their zeroed half values."
+    },
+    {
+      "id": "default_transparency_loads_extended_shader",
+      "original_candidate": "R3",
+      "description": "The default path selected the transparent shader containing dynamic extended-material sampling code. A long cold initialization was observed, while its exact driver phase remained unknown.",
+      "resolution": "R4 introduces a separate MaterialTransparent pixel shader and preprocessor-gates extended direct/IBL calls. Default and explicit-zero scenes use the legacy transparency shader.",
+      "actual_validation": {
+        "default_report": {
+          "path": "build/engine_next/material-gpu-r4/Default.json",
+          "size_bytes": 45351,
+          "sha256": "73061234120798a48159863af431098be3d640e2aaee44b97056cb6278534b88"
+        },
+        "zero_report": {
+          "path": "build/engine_next/material-gpu-r4/ZeroOverrides.json",
+          "size_bytes": 45352,
+          "sha256": "ef0749c1740fd052b1640e9b8bdcd901ef5dcd72ce0daa178a7432295bf6196b"
+        },
+        "images_byte_identical": true
+      }
+    }
+  ],
+  "checked_invariants": [
+    "DrawConstants is 288 bytes with material parameters at byte 272 and a 512-byte aligned draw stride.",
+    "Material views 138 and 139 fit the 152-entry frame view range; six added RTVs occupy slots 36 through 41 in the 42-entry heap.",
+    "Material targets are owned by retired frame contexts; resize flushes both queues before releasing and recreating them.",
+    "Resolve preserves complete MaterialData source fields, validates target existence and ambiguity transactionally, and normalizes runtime subnormal parameters while preserving original double settings.",
+    "FrameGraph records GBuffer writes, lighting and trace reads, exposure dependencies and final Common state for each new target.",
+    "Reflection registers t11 through t14 match root tables 14 through 17. Environment resources permit pixel and nonpixel reads.",
+    "The material environment wrapper averages all 32 base, 16 coat and 8 diffuse samples, including zero contributions.",
+    "Extended reflection tracing replaces the full environment specular term. Its fallback environment is pre-exposed once, hit radiance already carries the same frame exposure, and receiver AO is applied once.",
+    "Default and explicit-zero material settings select the legacy six-target opaque path and the legacy transparent permutation.",
+    "Build and package metadata include all five material shader permutations and all shared material shader inputs."
+  ],
+  "cpu_math": {
+    "evidence": {
+      "path": "build/engine_next/material-cpu-frozen/Verification.json",
+      "size_bytes": 20015,
+      "sha256": "0b8ea9f7b05e93fd5f1d93d4791f34fff43f0c6105eb83c3fbd8f125faa8a4eb"
+    },
+    "tests_each": 25,
+    "checks_each": 28863,
+    "compilers": [
+      "MSVC",
+      "clang-cl"
+    ],
+    "direct_white_furnace_cases": 72,
+    "direct_energy_range": [
+      0.184115,
+      0.991663
+    ],
+    "environment_white_furnace_cases": 72,
+    "environment_samples_per_case": 8192,
+    "environment_energy_range": [
+      0.184124,
+      0.998307
+    ],
+    "actual_dxc_entries": 2
+  },
+  "candidate_deltas": {
+    "evidence": {
+      "path": "build/engine_next/MaterialCandidateDelta.json",
+      "size_bytes": 3938,
+      "sha256": "eb4ac38557802f50a8cb977332479d37a2fa5b2169888315a0ca5b2d674ff3cf"
+    },
+    "deltas": {
+      "r4_r5": [
+        {
+          "path": "engine_next/Tools/BuildVisualRuntime.py",
+          "before_sha256": "83da6ee9ecf4488964298dcbd4626b604db5172d25f1bfccebb9c5dbc726c7e7",
+          "after_sha256": "3aff76a31be74bfc855b23a68cc502b5d6e4b8d56f650f51a164f640391dcf50"
+        }
+      ],
+      "r5_r6": [
+        {
+          "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+          "before_sha256": "93195023d5d9c5e2aeb25a5728cb1fc9be4cee93679de1e3e0c1648d6d2b4ebb",
+          "after_sha256": "e59f8a751a695454a80e0b5884fb269e7122aaa18020b3dea4dd802dfa550f84"
+        }
+      ]
+    },
+    "r4_to_r5": "Only AST-equivalent Ruff layout in BuildVisualRuntime.py.",
+    "r5_to_r6": "Only the test sentinel aggregate explicitly initializes the two trailing members with empty initializers.",
+    "runtime_source_inputs_equal": true,
+    "pe_text_equal": true,
+    "pe_text_sha256": "5b01a050e6029652d34edd4b5da3b3231356e3efb41e85093ec1233f1b31eb69",
+    "equal_shader_count": 32,
+    "equal_shaders": [
+      {
+        "name": "BloomDown.cs.cso",
+        "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+      },
+      {
+        "name": "BloomUp.cs.cso",
+        "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+      },
+      {
+        "name": "Deferred.ps.cso",
+        "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0"
+      },
+      {
+        "name": "Deferred.vs.cso",
+        "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225"
+      },
+      {
+        "name": "Exposure.cs.cso",
+        "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+      },
+      {
+        "name": "FixedMesh.cs.cso",
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+      },
+      {
+        "name": "FixedMesh.ps.cso",
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+      },
+      {
+        "name": "FixedMesh.vs.cso",
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+      },
+      {
+        "name": "Histogram.cs.cso",
+        "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+      },
+      {
+        "name": "Lighting.ps.cso",
+        "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+      },
+      {
+        "name": "Lighting.vs.cso",
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+      },
+      {
+        "name": "MaterialDeferred.ps.cso",
+        "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb"
+      },
+      {
+        "name": "MaterialLighting.ps.cso",
+        "sha256": "5dbcfcbe06cc234ab31a5da519acbacdafa2ee910b1a0a808e7c35979cdb4e91"
+      },
+      {
+        "name": "MaterialReflectionLighting.ps.cso",
+        "sha256": "df73574f8636404517734ddd0bd6d8bd04b95b510f8d1fa3d55a52c0d65fa9b6"
+      },
+      {
+        "name": "MaterialReflectionTrace.cs.cso",
+        "sha256": "792f2a28a1409213e42fc690bd33fe15e814600b9f6241de617a198b975d8829"
+      },
+      {
+        "name": "MaterialTransparent.ps.cso",
+        "sha256": "b70b9c538d82d068d9f3161804f9d38e965f496a5a615897501f27620bb6699c"
+      },
+      {
+        "name": "ReflectionColor.cs.cso",
+        "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+      },
+      {
+        "name": "ReflectionComposite.cs.cso",
+        "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+      },
+      {
+        "name": "ReflectionLighting.ps.cso",
+        "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8"
+      },
+      {
+        "name": "ReflectionRadiance.cs.cso",
+        "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+      },
+      {
+        "name": "ReflectionTrace.cs.cso",
+        "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+      },
+      {
+        "name": "Shadow.ps.cso",
+        "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+      },
+      {
+        "name": "Shadow.vs.cso",
+        "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+      },
+      {
+        "name": "Temporal.cs.cso",
+        "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+      },
+      {
+        "name": "ToneMap.ps.cso",
+        "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+      },
+      {
+        "name": "Transparent.ps.cso",
+        "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f"
+      },
+      {
+        "name": "Transparent.vs.cso",
+        "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24"
+      },
+      {
+        "name": "VolumeComposite.cs.cso",
+        "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+      },
+      {
+        "name": "VolumeInject.cs.cso",
+        "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+      },
+      {
+        "name": "VolumeIntegrate.cs.cso",
+        "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+      },
+      {
+        "name": "VolumeLight.cs.cso",
+        "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+      },
+      {
+        "name": "VolumeTemporal.cs.cso",
+        "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+      }
+    ]
+  },
+  "actual_keyboard_network": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-materials-network.json",
+    "size_bytes": 17917,
+    "sha256": "945760132b301185b645439d43337f90e200686df8a978d7460c74c3f61f19f5"
+  },
+  "python_regression": {
+    "path": "build/engine_next/MaterialPythonRegression.json",
+    "size_bytes": 11516,
+    "sha256": "4fc994f7e2c9d879ec46a4469d0741a00fe1fdb732af06097d280953ad3ca2a9"
+  },
+  "remaining_validation": [
+    "High-contrast environment lighting retains finite-sample variance at the current 32/16/8 budget. The separate low/high-sample comparison is a quality observation, and the CPU white-furnace checks do not establish complete rendered-image quality.",
+    "Full 4K performance and physical output, the complete M4 scene matrix and measured UE comparison remain part of the parent milestone.",
+    "Further environment sampling efficiency work is a separate quality change and requires its own source, GPU and image evidence."
+  ],
+  "open_confirmed_source_findings": [],
+  "production_files_modified_during_review": false
+}

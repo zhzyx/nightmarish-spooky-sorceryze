@@ -86,6 +86,7 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	stConfiguration.stVolume.dDistance = 456;
 	stConfiguration.arrParticles = { EngineNext::Rendering::ParticleSettings{} };
 	stConfiguration.arrParticles[0].nEmitterId = 123;
+	stConfiguration.stMaterials.arrOverrides = { { "retained.asset", 7, {}, {} } };
 	stConfiguration.arrPointLights.front().nId = 4321;
 	stConfiguration.arrSpotLights.push_back(EngineNext::Rendering::SpotLightSettings{});
 	EngineNext::Assets::Diagnostics arrDiagnostics;
@@ -112,6 +113,9 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stVolume.dDistance, 456);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrParticles.size(), 1U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrParticles[0].nEmitterId, 123U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stMaterials.arrOverrides.size(), 1U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stMaterials.arrOverrides[0].strAssetId, "retained.asset");
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stMaterials.arrOverrides[0].nMaterialIndex, 7U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrPointLights.front().nId, 4321U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrSpotLights.size(), 1U);
 }
@@ -1133,6 +1137,46 @@ ENGINE_NEXT_TEST("Render configuration rejects invalid fog and particle inputs t
 	{
 		JsonValue stValue = ValidConfiguration();
 		(*stValue.GetObject())["particles"] = stParticles;
+		CheckRejected(stValue);
+	}
+}
+
+ENGINE_NEXT_TEST("Render configuration parses source-bound optional material overrides")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stMaterials.arrOverrides.empty());
+	(*stValue.GetObject())["material_overrides"] = JsonValue::List{
+		JsonValue::Object{
+				{ "asset_id", "material.asset" }, { "material_index", std::int64_t{ 2 } }, { "clearcoat", JsonValue::Object{ { "factor", 0.7 }, { "roughness", 0.2 } } }, { "anisotropy", JsonValue::Object{ { "strength", -0.5 }, { "rotation_radians", 1.2 } } } }
+	};
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stMaterials.arrOverrides.size(), 1U);
+	const EngineNext::Rendering::MaterialOverride &stOverride = stConfiguration.stMaterials.arrOverrides[0];
+	ENGINE_NEXT_CHECK_EQ(stOverride.strAssetId, "material.asset");
+	ENGINE_NEXT_CHECK_EQ(stOverride.nMaterialIndex, 2U);
+	ENGINE_NEXT_CHECK_EQ(stOverride.stClearcoat.dFactor, 0.7);
+	ENGINE_NEXT_CHECK_EQ(stOverride.stClearcoat.dRoughness, 0.2);
+	ENGINE_NEXT_CHECK_EQ(stOverride.stAnisotropy.dStrength, -0.5);
+	ENGINE_NEXT_CHECK_EQ(stOverride.stAnisotropy.dRotationRadians, 1.2);
+	CheckRejected(stValue, std::string(64, 'b'));
+	stValue.GetObject()->erase("material_overrides");
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stMaterials.arrOverrides.empty());
+}
+
+ENGINE_NEXT_TEST("Render configuration rejects malformed material overrides transactionally")
+{
+	for (const JsonValue &stBad : {
+				 JsonValue{}, JsonValue(true), JsonValue(JsonValue::Object{}),
+				 JsonValue(JsonValue::List{ JsonValue::Object{} }),
+				 JsonValue(JsonValue::List{ JsonValue::Object{ { "asset_id", "a" }, { "material_index", std::int64_t{ 0 } }, { "clearcoat", JsonValue::Object{ { "factor", 1.1 } } } } }),
+				 JsonValue(JsonValue::List{ JsonValue::Object{ { "asset_id", "a" }, { "material_index", std::int64_t{ 0 } }, { "anisotropy", JsonValue::Object{ { "strength", -1.1 } } } } }) })
+	{
+		JsonValue stValue = ValidConfiguration();
+		(*stValue.GetObject())["material_overrides"] = stBad;
 		CheckRejected(stValue);
 	}
 }

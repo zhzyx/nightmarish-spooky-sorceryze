@@ -105,6 +105,7 @@ constexpr std::uint64_t VOLUME_LOCAL_BYTE_OFFSET = 512;
 constexpr std::uint32_t VOLUME_LOCAL_VIEW = 133;
 constexpr std::uint32_t FORWARD_HDR_VIEW = 134;
 constexpr std::uint32_t REACTIVE_MASK_VIEW = 136;
+constexpr std::uint32_t MATERIAL_PARAMETERS_VIEW = 138;
 constexpr std::uint32_t REFLECTION_MIP_COUNT = 6;
 constexpr std::uint32_t REFLECTION_MIP_VIEW = 104;
 constexpr std::uint32_t REFLECTION_ENV_VIEW = 114;
@@ -283,6 +284,7 @@ struct FrameContext
 	ComOwner<ID3D12Resource> stDepth;
 	ComOwner<ID3D12Resource> stTint;
 	std::array<ComOwner<ID3D12Resource>, 4> arrGbuffer;
+	std::array<ComOwner<ID3D12Resource>, 2> arrMaterialBuffers;
 	ComOwner<ID3D12Resource> stMotion;
 	ComOwner<ID3D12Resource> stObjectId;
 	ComOwner<ID3D12Resource> stHistogram;
@@ -355,6 +357,7 @@ struct GpuMaterial
 {
 	MaterialData stData;
 	std::uint32_t nViewStart = 0;
+	std::array<float, 4> arrLobes{ 0, 0.1F, 0, 0 };
 };
 
 struct DrawConstants
@@ -367,6 +370,7 @@ struct DrawConstants
 	std::array<float, 4> arrFlags{};
 	std::array<float, 16> arrPreviousWorld{};
 	std::array<std::uint32_t, 4> arrTemporal{};
+	std::array<float, 4> arrMaterialLobes{};
 };
 
 struct LocalLightConstants
@@ -425,8 +429,10 @@ static_assert(sizeof(VolumeHistoryConstants) == 176);
 static_assert(sizeof(GlobalVolumeConstants) == 48);
 static_assert(sizeof(LocalVolumeConstants) == 64);
 static_assert(REACTIVE_MASK_VIEW < FRAME_VIEW_COUNT);
+static_assert(MATERIAL_PARAMETERS_VIEW + 1 < FRAME_VIEW_COUNT);
 
-static_assert(sizeof(DrawConstants) == 272);
+static_assert(sizeof(DrawConstants) == 288);
+static_assert(offsetof(DrawConstants, arrMaterialLobes) == 272);
 static_assert(offsetof(DrawConstants, arrPreviousWorld) == 192);
 static_assert(offsetof(DrawConstants, arrTemporal) == 256);
 static_assert(sizeof(LocalLightConstants) == 80);
@@ -804,6 +810,9 @@ private:
 	std::vector<ComOwner<ID3D12Resource>> arrTextureUploads;
 	std::vector<GpuDraw> arrDraws;
 	std::vector<GpuMaterial> arrMaterials;
+	std::vector<RuntimeMaterialAsset> arrResolvedMaterials;
+	bool bMaterialExtensions = false;
+	std::uint64_t nMaterialBytes = 0;
 	RenderScene stRenderScene;
 	RenderConfiguration stRenderConfiguration;
 	CameraMatrices stCameraMatrices;
@@ -998,7 +1007,7 @@ bool VisualRuntime::Initialize()
 	(void)stSwapchain->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709);
 	D3D12_DESCRIPTOR_HEAP_DESC stHeap{};
 	stHeap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-	stHeap.NumDescriptors = FRAME_COUNT * 12;
+	stHeap.NumDescriptors = FRAME_COUNT * 14;
 	if (FAILED(stDevice->CreateDescriptorHeap(&stHeap, IID_PPV_ARGS(stRtvHeap.Put()))))
 	{
 		return Fail("Create RTV heap");
@@ -1078,6 +1087,7 @@ bool VisualRuntime::CreateFrameContexts()
 
 bool VisualRuntime::CreateTargets()
 {
+	nMaterialBytes = 0;
 	const D3D12_HEAP_PROPERTIES stHeap = HeapProperties(D3D12_HEAP_TYPE_DEFAULT);
 	D3D12_RESOURCE_DESC stTexture{};
 	stTexture.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
@@ -1206,6 +1216,30 @@ bool VisualRuntime::CreateTargets()
 				stSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 				stSrv.Texture2D.MipLevels = 1;
 				stDevice->CreateShaderResourceView(stFrame.arrGbuffer[nTarget].Get(), &stSrv, View(nIndex * FRAME_VIEW_COUNT + 2 + nTarget));
+			}
+			if (bMaterialExtensions)
+			{
+				for (std::uint32_t nTarget = 0; nTarget < stFrame.arrMaterialBuffers.size(); ++nTarget)
+				{
+					D3D12_RESOURCE_DESC stMaterial = stTexture;
+					stMaterial.Format = nTarget == 0 ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_R16G16B16A16_FLOAT;
+					D3D12_CLEAR_VALUE stMaterialClear{};
+					stMaterialClear.Format = stMaterial.Format;
+					if (FAILED(stDevice->CreateCommittedResource(&stHeap, D3D12_HEAP_FLAG_NONE, &stMaterial, D3D12_RESOURCE_STATE_COMMON, &stMaterialClear, IID_PPV_ARGS(stFrame.arrMaterialBuffers[nTarget].Put()))))
+					{
+						return Fail("Create material extension targets");
+					}
+					const std::wstring strName = L"EngineNext.Material." + std::to_wstring(nIndex) + L"." + std::to_wstring(nTarget);
+					nMaterialBytes += stDevice->GetResourceAllocationInfo(0, 1, &stMaterial).SizeInBytes;
+					(void)stFrame.arrMaterialBuffers[nTarget]->SetName(strName.c_str());
+					stDevice->CreateRenderTargetView(stFrame.arrMaterialBuffers[nTarget].Get(), nullptr, Rtv(FRAME_COUNT * 12 + nIndex * 2 + nTarget));
+					D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
+					stSrv.Format = stMaterial.Format;
+					stSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+					stSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+					stSrv.Texture2D.MipLevels = 1;
+					stDevice->CreateShaderResourceView(stFrame.arrMaterialBuffers[nTarget].Get(), &stSrv, View(nIndex * FRAME_VIEW_COUNT + MATERIAL_PARAMETERS_VIEW + nTarget));
+				}
 			}
 			const std::array<DXGI_FORMAT, 2> arrTemporalFormats{ DXGI_FORMAT_R32G32B32A32_FLOAT, DXGI_FORMAT_R32_UINT };
 			for (std::uint32_t nTarget = 0; nTarget < 2; ++nTarget)
@@ -1445,6 +1479,17 @@ bool VisualRuntime::LoadScene()
 	if (!stConfig.strRenderConfigPath.empty() && !LoadRenderConfiguration(std::filesystem::u8path(stConfig.strRenderConfigPath), stRenderScene.strPackageDigest, stRenderConfiguration, arrDiagnostics))
 	{
 		return Fail(arrDiagnostics.empty() ? "Load rendering configuration" : arrDiagnostics.front().strMessage);
+	}
+	if (!ResolveMaterialSettings(stRenderConfiguration.stMaterials, stRenderScene, arrResolvedMaterials, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Resolve rendering materials" : arrDiagnostics.front().strMessage);
+	}
+	for (const RuntimeMaterialAsset &stAsset : arrResolvedMaterials)
+	{
+		for (const RuntimeMaterial &stMaterial : stAsset.arrMaterials)
+		{
+			bMaterialExtensions = bMaterialExtensions || stMaterial.fClearcoatFactor > 0 || stMaterial.fAnisotropyStrength != 0;
+		}
 	}
 	if (stRenderConfiguration.stExposure.eMode != ExposureMode::Automatic &&
 		!ComputeExposureMultiplier(stRenderConfiguration.stExposure, stRenderConfiguration.dExposure, 0, dManualExposure, arrDiagnostics))
@@ -1776,8 +1821,9 @@ bool VisualRuntime::CreateSceneMesh()
 		return Fail("Create material sampler heap");
 	}
 	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-	for (const RenderAsset &stAsset : stRenderScene.arrAssets)
+	for (std::size_t nAssetIndex = 0; nAssetIndex < stRenderScene.arrAssets.size(); ++nAssetIndex)
 	{
+		const RenderAsset &stAsset = stRenderScene.arrAssets[nAssetIndex];
 		const std::uint32_t nMaterialBase = static_cast<std::uint32_t>(arrMaterials.size());
 		if (stRenderScene.nGpuFormatVersion == 2 && stAsset.stTextureCook.arrMaterials.size() != stAsset.stMesh.arrMaterials.size())
 		{
@@ -1874,7 +1920,8 @@ bool VisualRuntime::CreateSceneMesh()
 				stHandle.ptr += static_cast<SIZE_T>(nSamplerStride) * (nMaterial * MATERIAL_TEXTURE_COUNT + nSlot);
 				stDevice->CreateSampler(&stSampler, stHandle);
 			}
-			arrMaterials.push_back({ stMaterial, nViewStart });
+			const RuntimeMaterial &stResolved = arrResolvedMaterials[nAssetIndex].arrMaterials[nSourceMaterial];
+			arrMaterials.push_back({ stMaterial, nViewStart, { stResolved.fClearcoatFactor, stResolved.fClearcoatRoughness, stResolved.fAnisotropyStrength, stResolved.fAnisotropyRotationRadians } });
 		}
 		std::vector<GpuPrimitive> arrPrimitives;
 		for (const MeshPrimitive &stPrimitive : stAsset.stMesh.arrPrimitives)
@@ -1992,9 +2039,14 @@ bool VisualRuntime::CreateSceneMesh()
 bool VisualRuntime::CreateDeferredPipeline()
 {
 	const std::vector<std::uint8_t> arrVertex = ReadShader(stConfig.strShaderDirectory, "Deferred.vs.cso");
-	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, "Deferred.ps.cso");
+	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, bMaterialExtensions ? "MaterialDeferred.ps.cso" : "Deferred.ps.cso");
 	const std::vector<std::uint8_t> arrFullscreen = ReadShader(stConfig.strShaderDirectory, "Lighting.vs.cso");
-	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, stRenderConfiguration.stReflections.bEnabled ? "ReflectionLighting.ps.cso" : "Lighting.ps.cso");
+	const char *pLightingShader = stRenderConfiguration.stReflections.bEnabled ? "ReflectionLighting.ps.cso" : "Lighting.ps.cso";
+	if (bMaterialExtensions)
+	{
+		pLightingShader = stRenderConfiguration.stReflections.bEnabled ? "MaterialReflectionLighting.ps.cso" : "MaterialLighting.ps.cso";
+	}
+	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, pLightingShader);
 	const std::vector<std::uint8_t> arrToneMap = ReadShader(stConfig.strShaderDirectory, "ToneMap.ps.cso");
 	if (arrVertex.empty() || arrPixel.empty() || arrFullscreen.empty() || arrLighting.empty() || arrToneMap.empty())
 	{
@@ -2002,7 +2054,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	}
 	for (std::uint32_t nPipeline = 0; nPipeline < 2; ++nPipeline)
 	{
-		std::array<D3D12_DESCRIPTOR_RANGE, 6> arrDescriptorRanges{};
+		std::array<D3D12_DESCRIPTOR_RANGE, 7> arrDescriptorRanges{};
 		arrDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrDescriptorRanges[0].NumDescriptors = 5;
 		arrDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
@@ -2019,7 +2071,10 @@ bool VisualRuntime::CreateDeferredPipeline()
 		arrDescriptorRanges[5].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrDescriptorRanges[5].NumDescriptors = 1;
 		arrDescriptorRanges[5].BaseShaderRegister = 11;
-		std::array<D3D12_ROOT_PARAMETER, 6> arrParameters{};
+		arrDescriptorRanges[6].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		arrDescriptorRanges[6].NumDescriptors = 2;
+		arrDescriptorRanges[6].BaseShaderRegister = 12;
+		std::array<D3D12_ROOT_PARAMETER, 7> arrParameters{};
 		arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 		arrParameters[0].Descriptor.ShaderRegister = nPipeline == 0 ? 0 : 1;
 		arrParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -2042,6 +2097,12 @@ bool VisualRuntime::CreateDeferredPipeline()
 			arrParameters[5] = arrParameters[2];
 			arrParameters[5].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[5];
 			stRoot.NumParameters = 6;
+			if (bMaterialExtensions)
+			{
+				arrParameters[6] = arrParameters[2];
+				arrParameters[6].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[6];
+				stRoot.NumParameters = 7;
+			}
 		}
 		else
 		{
@@ -2100,14 +2161,16 @@ bool VisualRuntime::CreateDeferredPipeline()
 	stPipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
 	stPipeline.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
 	stPipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
-	stPipeline.NumRenderTargets = 6;
+	stPipeline.NumRenderTargets = bMaterialExtensions ? 8U : 6U;
 	stPipeline.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	stPipeline.RTVFormats[1] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	stPipeline.RTVFormats[2] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	stPipeline.RTVFormats[3] = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	stPipeline.RTVFormats[4] = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	stPipeline.RTVFormats[5] = DXGI_FORMAT_R32_UINT;
-	for (std::uint32_t nTarget = 0; nTarget < 6; ++nTarget)
+	stPipeline.RTVFormats[6] = bMaterialExtensions ? DXGI_FORMAT_R32G32B32A32_FLOAT : DXGI_FORMAT_UNKNOWN;
+	stPipeline.RTVFormats[7] = bMaterialExtensions ? DXGI_FORMAT_R16G16B16A16_FLOAT : DXGI_FORMAT_UNKNOWN;
+	for (std::uint32_t nTarget = 0; nTarget < stPipeline.NumRenderTargets; ++nTarget)
 	{
 		stPipeline.BlendState.RenderTarget[nTarget].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
 	}
@@ -2147,6 +2210,8 @@ bool VisualRuntime::CreateDeferredPipeline()
 	stPipeline.RTVFormats[3] = DXGI_FORMAT_UNKNOWN;
 	stPipeline.RTVFormats[4] = DXGI_FORMAT_UNKNOWN;
 	stPipeline.RTVFormats[5] = DXGI_FORMAT_UNKNOWN;
+	stPipeline.RTVFormats[6] = DXGI_FORMAT_UNKNOWN;
+	stPipeline.RTVFormats[7] = DXGI_FORMAT_UNKNOWN;
 	stPipeline.DSVFormat = DXGI_FORMAT_UNKNOWN;
 	if (FAILED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(stLightingPipeline.Put()))))
 	{
@@ -2621,7 +2686,7 @@ void VisualRuntime::DrawVolume(ID3D12GraphicsCommandList *pList, std::uint32_t n
 bool VisualRuntime::CreateTransparencyPipeline()
 {
 	const std::vector<std::uint8_t> arrVertex = ReadShader(stConfig.strShaderDirectory, "Transparent.vs.cso");
-	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, "Transparent.ps.cso");
+	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, bMaterialExtensions ? "MaterialTransparent.ps.cso" : "Transparent.ps.cso");
 	if (arrVertex.empty() || arrPixel.empty())
 	{
 		return Fail("Missing transparent shader bundle");
@@ -3128,25 +3193,26 @@ bool VisualRuntime::CreateReflectionPipeline()
 	{
 		return true;
 	}
-	std::array<D3D12_DESCRIPTOR_RANGE, 12> arrDescriptorRanges{};
-	std::array<D3D12_ROOT_PARAMETER, 14> arrParameters{};
+	std::array<D3D12_DESCRIPTOR_RANGE, 16> arrDescriptorRanges{};
+	std::array<D3D12_ROOT_PARAMETER, 18> arrParameters{};
 	arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	arrParameters[0].Constants.Num32BitValues = 16;
 	arrParameters[0].Constants.ShaderRegister = 0;
 	arrParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	arrParameters[1].Descriptor.ShaderRegister = 1;
-	for (std::uint32_t nRange = 0; nRange < arrDescriptorRanges.size(); ++nRange)
+	const std::uint32_t nRangeCount = bMaterialExtensions ? 16U : 12U;
+	for (std::uint32_t nRange = 0; nRange < nRangeCount; ++nRange)
 	{
 		D3D12_DESCRIPTOR_RANGE &stRange = arrDescriptorRanges[nRange];
 		stRange.RangeType = nRange == 11 ? D3D12_DESCRIPTOR_RANGE_TYPE_UAV : D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		stRange.NumDescriptors = 1;
-		stRange.BaseShaderRegister = nRange == 11 ? 0 : nRange;
+		stRange.BaseShaderRegister = nRange == 11 ? 0 : (nRange > 11 ? nRange - 1 : nRange);
 		arrParameters[nRange + 2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
 		arrParameters[nRange + 2].DescriptorTable.NumDescriptorRanges = 1;
 		arrParameters[nRange + 2].DescriptorTable.pDescriptorRanges = &stRange;
 	}
 	D3D12_ROOT_SIGNATURE_DESC stRoot{};
-	stRoot.NumParameters = static_cast<UINT>(arrParameters.size());
+	stRoot.NumParameters = nRangeCount + 2;
 	stRoot.pParameters = arrParameters.data();
 	D3D12_STATIC_SAMPLER_DESC stSampler{};
 	stSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
@@ -3164,7 +3230,7 @@ bool VisualRuntime::CreateReflectionPipeline()
 	{
 		return Fail("Create reflection root signature");
 	}
-	const std::array<const char *, 4> arrNames{ "ReflectionColor.cs.cso", "ReflectionTrace.cs.cso", "ReflectionComposite.cs.cso", "ReflectionRadiance.cs.cso" };
+	const std::array<const char *, 4> arrNames{ "ReflectionColor.cs.cso", bMaterialExtensions ? "MaterialReflectionTrace.cs.cso" : "ReflectionTrace.cs.cso", "ReflectionComposite.cs.cso", "ReflectionRadiance.cs.cso" };
 	for (std::size_t nShader = 0; nShader < arrNames.size(); ++nShader)
 	{
 		const std::vector<std::uint8_t> arrShader = ReadShader(stConfig.strShaderDirectory, arrNames[nShader]);
@@ -4012,6 +4078,7 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 		stDrawConstants.arrEmissiveMetallic = { stMaterial.arrEmissive[0], stMaterial.arrEmissive[1], stMaterial.arrEmissive[2], stMaterial.fMetallic };
 		stDrawConstants.arrSurface = { stMaterial.fRoughness, stMaterial.fNormalScale, stMaterial.fOcclusionStrength, stMaterial.fAlphaCutoff };
 		stDrawConstants.arrFlags = { stMaterial.eAlphaMode == AlphaMode::Mask ? 1.0F : 0.0F, stDraw.bMirrored ? -1.0F : 1.0F, stMaterial.nNormalTexture >= 0 ? 1.0F : 0.0F, 0 };
+		stDrawConstants.arrMaterialLobes = arrMaterials[stDraw.stPrimitive.nMaterial].arrLobes;
 		std::memcpy(pBytes + FRAME_CONSTANT_BYTES + nDraw * DRAW_CONSTANT_BYTES, &stDrawConstants, sizeof(stDrawConstants));
 	}
 	stFrame.stConstants->Unmap(0, nullptr);
@@ -4109,6 +4176,10 @@ void VisualRuntime::DrawLighting(ID3D12GraphicsCommandList *pList, std::uint32_t
 	pList->SetGraphicsRootDescriptorTable(3, GpuView(ENVIRONMENT_VIEW_START));
 	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 8));
 	pList->SetGraphicsRootDescriptorTable(5, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
+	if (bMaterialExtensions)
+	{
+		pList->SetGraphicsRootDescriptorTable(6, GpuView(nFrame * FRAME_VIEW_COUNT + MATERIAL_PARAMETERS_VIEW));
+	}
 	pList->DrawInstanced(3, 1, 0, 0);
 }
 
@@ -4245,6 +4316,13 @@ void VisualRuntime::DrawReflections(ID3D12GraphicsCommandList *pList, std::uint3
 		}
 		pList->SetComputeRootDescriptorTable(12, GpuView(ENVIRONMENT_VIEW_START + 2));
 		pList->SetComputeRootDescriptorTable(13, GpuView(nStart + REFLECTION_RESULT_VIEW + 1));
+		if (bMaterialExtensions)
+		{
+			pList->SetComputeRootDescriptorTable(14, GpuView(nStart + MATERIAL_PARAMETERS_VIEW));
+			pList->SetComputeRootDescriptorTable(15, GpuView(nStart + MATERIAL_PARAMETERS_VIEW + 1));
+			pList->SetComputeRootDescriptorTable(16, GpuView(ENVIRONMENT_VIEW_START + 1));
+			pList->SetComputeRootDescriptorTable(17, GpuView(nStart + 26));
+		}
 	}
 	else
 	{
@@ -4281,7 +4359,7 @@ bool VisualRuntime::BuildGraph()
 	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -4517,6 +4595,13 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		{
 			arrResources[stRenderPipeline.arrGbuffer[nTarget]] = stFrame.arrGbuffer[nTarget].Get();
 		}
+		if (bMaterialExtensions)
+		{
+			for (std::size_t nTarget = 0; nTarget < stFrame.arrMaterialBuffers.size(); ++nTarget)
+			{
+				arrResources[stRenderPipeline.arrMaterialBuffers[nTarget]] = stFrame.arrMaterialBuffers[nTarget].Get();
+			}
+		}
 		stFrameLight = stRenderConfiguration.stDirectionalLight;
 		Assets::Diagnostics arrLightDiagnostics;
 		if (!EvaluateLightAnimation(stRenderConfiguration.stLightAnimation, stRenderConfiguration.stDirectionalLight.dIlluminance,
@@ -4651,16 +4736,28 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		}
 		else if (eWork == PassWork::GBuffer)
 		{
-			std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 6> arrTargets{};
+			std::array<D3D12_CPU_DESCRIPTOR_HANDLE, 8> arrTargets{};
+			const std::uint32_t nTargetCount = bMaterialExtensions ? 8U : 6U;
 			const std::array<float, 4> arrClear{};
-			for (std::uint32_t nTarget = 0; nTarget < arrTargets.size(); ++nTarget)
+			for (std::uint32_t nTarget = 0; nTarget < nTargetCount; ++nTarget)
 			{
-				arrTargets[nTarget] = nTarget < 4 ? Rtv(FRAME_COUNT * 2 + nIndex * 4 + nTarget) : Rtv(FRAME_COUNT * (7 + nTarget - 4) + nIndex);
+				if (nTarget < 4)
+				{
+					arrTargets[nTarget] = Rtv(FRAME_COUNT * 2 + nIndex * 4 + nTarget);
+				}
+				else if (nTarget < 6)
+				{
+					arrTargets[nTarget] = Rtv(FRAME_COUNT * (7 + nTarget - 4) + nIndex);
+				}
+				else
+				{
+					arrTargets[nTarget] = Rtv(FRAME_COUNT * 12 + nIndex * 2 + nTarget - 6);
+				}
 				pList->ClearRenderTargetView(arrTargets[nTarget], arrClear.data(), 0, nullptr);
 			}
 			const D3D12_CPU_DESCRIPTOR_HANDLE stDepthHandle = Dsv(nIndex);
 			pList->ClearDepthStencilView(stDepthHandle, D3D12_CLEAR_FLAG_DEPTH, 0.0F, 0, 0, nullptr);
-			pList->OMSetRenderTargets(6, arrTargets.data(), FALSE, &stDepthHandle);
+			pList->OMSetRenderTargets(nTargetCount, arrTargets.data(), FALSE, &stDepthHandle);
 			DrawScene(pList, nIndex);
 		}
 		else if (eWork == PassWork::DeferredLighting)
@@ -4778,6 +4875,10 @@ bool VisualRuntime::Resize()
 			stTarget.Reset();
 		}
 		for (ComOwner<ID3D12Resource> &stTarget : arrFrames[nIndex].arrGbuffer)
+		{
+			stTarget.Reset();
+		}
+		for (ComOwner<ID3D12Resource> &stTarget : arrFrames[nIndex].arrMaterialBuffers)
 		{
 			stTarget.Reset();
 		}
@@ -5274,6 +5375,10 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["loaded_mesh_clusters"] = JsonValue(static_cast<std::int64_t>(nLoadedClusters));
 	mapReport["mesh_cluster_draw_path"] = JsonValue("indexed_primitive");
 	mapReport["materials"] = JsonValue(static_cast<std::int64_t>(arrMaterials.size()));
+	mapReport["material_extensions"] = JsonValue(bMaterialExtensions);
+	mapReport["material_overrides"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stMaterials.arrOverrides.size()));
+	mapReport["material_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nMaterialBytes));
+	mapReport["material_parameter_format"] = JsonValue(bMaterialExtensions ? "R32G32B32A32_FLOAT" : "disabled");
 	mapReport["material_textures"] = JsonValue(static_cast<std::int64_t>(arrMaterials.size() * MATERIAL_TEXTURE_COUNT));
 	mapReport["environment_source"] = JsonValue(bSceneMode ? "procedural_linear_hdr_sky" : "none");
 	mapReport["environment_dimensions"] = JsonValue(bSceneMode ? "64x64x6" : "none");
