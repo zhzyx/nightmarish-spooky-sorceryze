@@ -76,11 +76,10 @@ def test_foreign_websocket_update_rejected(scenario):
     tx, _, b, _, doc, *_ = scenario
     before = list(tx.db.iterdump())
     with TestClient(create_app(tx)) as client:
-        with client.websocket_connect(f"/api/v1/ws/docs/{doc['id']}?actor={b['user_id']}") as ws:
-            assert ws.receive_json()["type"] == "snapshot"
-            assert ws.receive_json()["type"] == "presence"
-            ws.send_json({"type": "update", "body_md": "changed", "expected_version": 1})
-            error = ws.receive_json()
-            assert error["type"] == "error"
-            assert error["code"] == "NotFound"
+        from starlette.websockets import WebSocketDisconnect
+
+        with pytest.raises(WebSocketDisconnect) as error:
+            with client.websocket_connect(f"/api/v1/ws/docs/{doc['id']}?actor={b['user_id']}"):
+                pass
+        assert error.value.code == 4404
     assert list(tx.db.iterdump()) == before

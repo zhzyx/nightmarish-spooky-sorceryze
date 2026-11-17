@@ -62,7 +62,7 @@ class ProductionAccess:
         if not actor:
             return await reject(401, "a valid personal access key is required")
         tenant = os.environ.get("TIANXUAN_TENANT_ID", "")
-        if not tenant or self.store._tenant_of(actor) != tenant:
+        if not tenant or self.store.actor_context(actor)["tenant"] != tenant:
             return await reject(403, "account is not admitted to this deployment")
         role = self.store.role_of(actor)
         method = scope.get("method", "GET")
@@ -139,7 +139,7 @@ def configure_access(app: FastAPI, store: Tianxuan) -> None:
         if not allow_identity_attempt("access-key", request.client.host if request.client else "unknown"):
             raise HTTPException(429, "too many login attempts")
         actor = store.user_for_access_key(payload.key)
-        if not actor or (strict and store._tenant_of(actor) != os.environ["TIANXUAN_TENANT_ID"]):
+        if not actor or (strict and store.actor_context(actor)["tenant"] != os.environ["TIANXUAN_TENANT_ID"]):
             raise HTTPException(401, "invalid or revoked key")
         response = JSONResponse({"user_id": actor, "role": store.role_of(actor)})
         response.set_cookie(COOKIE, payload.key, max_age=86400, secure=True, httponly=True, samesite="strict", path="/")

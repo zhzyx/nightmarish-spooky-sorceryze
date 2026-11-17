@@ -1,0 +1,142 @@
+{
+  "issue": 1419,
+  "bug": 1421,
+  "reviewer": "independent Codex native child /root/sinan_b3c9a76dd9549fd8",
+  "reviewed_at": "2026-11-17T11:00:35.472789+00:00",
+  "root": "D:\\GongGong-work\\native-platform-integration-20261117",
+  "base": "4b1ca40e3f48c0b766bd9768865412be0ee2d5d0",
+  "verdict": "changes_requested",
+  "source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/server/NATIVE_API.md",
+      "sha256": "3c89525c3abb172f6c82f28dd4e34e863603a30d662e472c16d0200a2713e343",
+      "git_blob": "adf14503fea0a407c510d6c58af5c92b430251b9"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/access_control.py",
+      "sha256": "4d1f5911bdf4e33aca95b6d73a166687202d0d36553c3d3e4d8082d4473b7ffd",
+      "git_blob": "97ef3718a85fd5824ec40009f32a9791103cce8b"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "e6b74d3069570f3da4f7f4f33e8e261950459cc20610ec3394d9ced7745d9e4e",
+      "git_blob": "83de6c0434be50a7694af1c4f508cdad124f0260"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/gateway.py",
+      "sha256": "7fb68bcd8d73e7e1377a4a69892f709eef39808bbacb332094ea4c0e4af99522",
+      "git_blob": "7138e272a9dc1fb8f043036ea12a5d15d751d55a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/main.py",
+      "sha256": "d8f211eb6dd27a126a59bf78489eef06a68f7b454ec4ab2b8a243a305ba76b14",
+      "git_blob": "92c26a6160b56422c5f331b771e3637d7a270754"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_api.py",
+      "sha256": "a16e59a9fc0e97fbabfbdd8fe4c0ab242bc4055eb28a5b8028c03362eda991a3",
+      "git_blob": "3412e38982b78e95e1eab72546bf0c41c2376705"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_api_gateway.py",
+      "sha256": "b4ea4125e23bf0c64278be68f2f2acd13cdd13cf8ddbf932b35915848dd11539",
+      "git_blob": "658d0550099d051d539adb36ba5982ea62047f82"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_api_tenant_mutations.py",
+      "sha256": "bf9404bbc51ed91962a5d7a61b165b7b24ebeb03e6461c6531fb9df7101e54bb",
+      "git_blob": "c560b9f23b6c5e9412d8a2d197d3f0f922c2590a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_gateway.py",
+      "sha256": "a4640d6cb6216e80d64eb602baac7358bc16198a4ea392956dc7a41172f00d48",
+      "git_blob": "7a156046986b850d92b9447a96b6d3e3d148383d"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_main_app.py",
+      "sha256": "989809fd05d49ec71d2acc50bfe899913e82669b912d171f3f98a6e1e79b4c1a",
+      "git_blob": "fbee05046e3f8385c09a1d30517f3b0cf5cf793f"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_tianxuan_boundary.py",
+      "sha256": "bb561f11373ae1580ed939ded7defb6813e72bbaa4ebe7810524b39dbf25dafe",
+      "git_blob": "d82da391049450052c72090e912042ff3148541a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianshu_bridge.py",
+      "sha256": "d2b6023adcbf47c1fd471fb89ec0007c735d792d8a1b8228de33c45432142da8",
+      "git_blob": "1e7ffc56547742e5699691944795dc573383f472"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianxuan_core.py",
+      "sha256": "bf9ca3b6cfecdd0631fa4cd6362f013e6e5f31377ba8756e6d840461881abe82",
+      "git_blob": "d8d13ac423cf3caf0c6e995a8d797f27155b812f"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_platform.py",
+      "sha256": "fc6b569b1759c944a802ea1d77a24719d7f8abfd5231789cec327d411a303100",
+      "git_blob": "004900bce090293bd58fe4268579adb4756b3716"
+    }
+  ],
+  "bindings_match_handoff": true,
+  "findings": [
+    {
+      "priority": "P1",
+      "file": "customizations/components/tianxuan/server/native_api.py",
+      "lines": [
+        244,
+        247
+      ],
+      "title": "Requirement snapshots bypass source document read ACL",
+      "observed": "Same-tenant viewer receives 403 for private document but 200 for deterministic requirement module head and snapshot.json containing PRIVATE SECRET. Source publication newly introduces private domain data into tenant-readable native storage.",
+      "reproduction": "Create requirement, set visibility private, owner submits snapshot. Add same-tenant viewer. Derive requirement- + SHA256(doc_id), get head revision, fetch snapshot.json using viewer session.",
+      "expected": "Current source read ACL must govern all native read/revision/head/composition paths exposing protected snapshot data; module/snapshot binding must not be forgeable through generic batch writes. ACL revocation and historical revisions must remain protected."
+    },
+    {
+      "priority": "P2",
+      "file": "customizations/components/tianxuan/server/native_api.py",
+      "lines": [
+        193,
+        195
+      ],
+      "title": "Invalid Unicode base escapes input validation and returns 500",
+      "observed": "Valid source_version with base containing lone surrogate, either string or nested mapping, raises UnicodeEncodeError at snapshot binding encoding; HTTP returns 500. Integer base=7 correctly returns422.",
+      "expected": "Validate base type/revision format before serialization and return422 for invalid Unicode, with no native write."
+    }
+  ],
+  "reproduction_python": "import sys,json,tempfile,hashlib\nfrom pathlib import Path\nroot=Path.cwd();sys.path[:0]=[str(root/'customizations/components/tianxuan/server'),str(root/'customizations/components/tianxuan/duobao')]\nfrom api import create_app\nfrom tianxuan_core import Tianxuan\nfrom native_store import NativeStore\nfrom fastapi.testclient import TestClient\nfrom test_native_api import account\nwith tempfile.TemporaryDirectory() as tmp:\n s=Tianxuan(':memory:');n=NativeStore(Path(tmp)/'n.db');c=TestClient(create_app(s,native_store=n,native_only=True),raise_server_exceptions=False)\n a,h=account(c,801);aid=a['user_id'];d=s.create_requirement(aid,'r','PRIVATE SECRET','o','s','a');s.set_visibility(aid,d['id'],'private');p='/api/v1/native/requirements/'+d['id'];v=c.get(p+'/source',headers=h).json()['source_version']\n for base in ['\\ud800', {'bad':'\\ud800'}]:\n  base=json.loads(json.dumps(base).replace('\\\\ud800','\\ud800'))\n  r=c.post(p+'/snapshots',headers=h,content=json.dumps(dict(request_key='bad-base',source_version=v,base=base)));print('invalid base:',r.status_code,'expected 422')\n saved=c.post(p+'/snapshots',headers=h,json=dict(request_key='valid',source_version=v,base=None)).json()\n member=s.add_member(aid,'v@example.invalid','password123',role='viewer')['user_id'];mh={'Authorization':'Bearer '+s.issue_session(member)}\n print('private doc:',c.get('/api/v1/docs/'+d['id'],headers=mh).status_code)\n module='requirement-'+hashlib.sha256(d['id'].encode()).hexdigest();head=c.get('/api/v1/native/modules/'+module+'/head',headers=mh)\n print('head:',head.status_code)\n obj=c.get('/api/v1/native/modules/'+module+'/revisions/'+head.json()['revision']+'/objects/snapshot.json',headers=mh)\n print('private snapshot:',obj.status_code,'PRIVATE SECRET' in obj.text,'expected denial')\n s.db.close()\n",
+  "reproduction_instructions": "Run script from root with D:/GongGong-work/tx-venv/Scripts/python.exe -B, with production-key environment disabled. Script creates only temporary databases.",
+  "tests": [
+    {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -m pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_native_platform.py customizations/components/tianxuan/server/test_native_api.py customizations/components/tianxuan/server/test_api_gateway.py customizations/components/tianxuan/server/test_tianxuan_boundary.py customizations/components/tianxuan/server/test_api_tenant_mutations.py",
+      "result": "86 passed, 44 subtests passed, 1 Starlette httpx deprecation warning in24.19s",
+      "coverage": "Final-source auth/model tenant isolation, strict production keys, source WAL coherent read, actor_context lock, native routes without Git, snapshot replay after source mutation, bounds and core tenant checks."
+    },
+    {
+      "test": "Independent adversarial ASGI script",
+      "result": "compat env enabled: forged actor HTTP401 and WS4401; cross-org admin private document denied; reserved snapshot- batch key422; eight concurrent identical snapshot submissions all200 and identical receipts."
+    },
+    {
+      "test": "Independent two-process persistence test",
+      "result": "First fresh Python process persisted snapshot and changed issue source, then exited. Second process reopened both actual SQLite files, verified current source differs, replayed original operation exactly. Temporary directories cleaned."
+    },
+    {
+      "test": "Independent invalid base and private ACL repro",
+      "result": "Two findings above reproduced on exact bound source; same-tenant viewer returned403/200/200 for document/head/object."
+    }
+  ],
+  "capacity_assessment": {
+    "evidence": "data-collection/native-platform-capacity-1419.json",
+    "observed": "Recorded Linux isolated160MiB candidate-reception workload:250/250 successes, peak40 concurrent submit calls,250 content and restart readbacks,10 replays and10 real conflicts; model_calls0. Initial failure evidence correctly retains shared SQLite private helper misuse.",
+    "source_delta": "Parent-supplied platform-capacity-source-delta.diff changes _source Unicode handling and _snapshot request-key handling. Native HTTP/WS legacy-actor restriction is also subsequent. Successful batch workload uses authenticated sessions, actor_context and generic native submit; these guards do not alter its exercised success path. Formatting changes prevent raw hash equivalence.",
+    "conclusion": "Capacity evidence remains historical scoped candidate-reception evidence, not an exact final-candidate capacity rerun, production deployment, full workflow, real model cost or token-benefit acceptance. No such broader claim approved."
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "applied": "bind-consumer-release: actual file hashes rechecked against handed-off final candidate; prior author/server receipts are scoped separately. Other worker terminal and automated asset review methods do not substitute for this code review."
+  },
+  "cleanup": "All independently created temp databases used TemporaryDirectory and closed before automatic removal. No product edit, commit, push or deployment. Parent-owned pytest outputs/configuration retained.",
+  "remaining": "Parent fixes both findings, obtains final source bindings and independent re-review, then handles delivery and business acceptance.",
+  "reproduction_verified": "Executed reproduction_python from this report: invalid bases500 twice; document403, module head200, private snapshot200 with secret confirmed."
+}

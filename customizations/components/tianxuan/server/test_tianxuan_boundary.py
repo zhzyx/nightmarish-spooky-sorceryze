@@ -3,6 +3,7 @@
 import sqlite3
 import threading
 import unittest
+from contextlib import closing
 from unittest.mock import patch
 
 import test_tianxuan_concurrency as concurrency
@@ -58,7 +59,7 @@ class CurrentBoundaryTests(unittest.TestCase):
                 threads[1].start()
                 self.assertTrue(started.wait(5))
                 self.assertFalse(finished.wait(0.1), "competing public call bypassed connection ownership")
-                with sqlite3.connect(self.path) as observer:
+                with closing(sqlite3.connect(self.path)) as observer:
                     self.assertEqual(
                         observer.execute(
                             "SELECT version, body_md FROM docs WHERE id = ?", (self.doc["id"],)
@@ -242,7 +243,7 @@ class CurrentBoundaryTests(unittest.TestCase):
                 )
                 self.tx.db.commit()
             self.assertIsNone(self.tx.user_for_token(token))
-            with sqlite3.connect(self.path) as observer:
+            with closing(sqlite3.connect(self.path)) as observer:
                 self.assertIsNone(
                     observer.execute("SELECT * FROM sessions WHERE token_hash = ?", (_token_hash(token),)).fetchone()
                 )

@@ -1,0 +1,131 @@
+{
+  "issue": 1419,
+  "bug": 1421,
+  "reviewer": "independent Codex native child /root/sinan_c65150c9e45e1a30",
+  "reviewed_at": "2026-11-17T11:22:19.153977+00:00",
+  "root": "D:\\GongGong-work\\native-platform-integration-20261117",
+  "base": "04fcdb5f1f0e301f179e0581944accee382a2496",
+  "verdict": "approved_for_reviewed_source",
+  "source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/server/NATIVE_API.md",
+      "sha256": "bee061adba6611912d6af25882ffd03e6c5e6b8eb914c493109720ad2b7987f4",
+      "git_blob": "d060ed4cee74592ae54354b1acb7e842d1bac1d2"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/access_control.py",
+      "sha256": "4d1f5911bdf4e33aca95b6d73a166687202d0d36553c3d3e4d8082d4473b7ffd",
+      "git_blob": "97ef3718a85fd5824ec40009f32a9791103cce8b"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "e6b74d3069570f3da4f7f4f33e8e261950459cc20610ec3394d9ced7745d9e4e",
+      "git_blob": "83de6c0434be50a7694af1c4f508cdad124f0260"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/gateway.py",
+      "sha256": "7fb68bcd8d73e7e1377a4a69892f709eef39808bbacb332094ea4c0e4af99522",
+      "git_blob": "7138e272a9dc1fb8f043036ea12a5d15d751d55a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/main.py",
+      "sha256": "d8f211eb6dd27a126a59bf78489eef06a68f7b454ec4ab2b8a243a305ba76b14",
+      "git_blob": "92c26a6160b56422c5f331b771e3637d7a270754"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_api.py",
+      "sha256": "833bcfca592aa985014f6c7edb6296686ca1b7a3d11cad79466fbfb5e9aa5cf4",
+      "git_blob": "9ff4af6d1a1777ba8e988cde617caad7101e4510"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_api_gateway.py",
+      "sha256": "b4ea4125e23bf0c64278be68f2f2acd13cdd13cf8ddbf932b35915848dd11539",
+      "git_blob": "658d0550099d051d539adb36ba5982ea62047f82"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_api_tenant_mutations.py",
+      "sha256": "bf9404bbc51ed91962a5d7a61b165b7b24ebeb03e6461c6531fb9df7101e54bb",
+      "git_blob": "c560b9f23b6c5e9412d8a2d197d3f0f922c2590a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_gateway.py",
+      "sha256": "a4640d6cb6216e80d64eb602baac7358bc16198a4ea392956dc7a41172f00d48",
+      "git_blob": "7a156046986b850d92b9447a96b6d3e3d148383d"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_main_app.py",
+      "sha256": "989809fd05d49ec71d2acc50bfe899913e82669b912d171f3f98a6e1e79b4c1a",
+      "git_blob": "fbee05046e3f8385c09a1d30517f3b0cf5cf793f"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_tianxuan_boundary.py",
+      "sha256": "bb561f11373ae1580ed939ded7defb6813e72bbaa4ebe7810524b39dbf25dafe",
+      "git_blob": "d82da391049450052c72090e912042ff3148541a"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianshu_bridge.py",
+      "sha256": "d2b6023adcbf47c1fd471fb89ec0007c735d792d8a1b8228de33c45432142da8",
+      "git_blob": "1e7ffc56547742e5699691944795dc573383f472"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/tianxuan_core.py",
+      "sha256": "99936b9f608077635fc95fa98f068fd6d7f24193c4a740747d1e1f1b8805f974",
+      "git_blob": "7f4b27b41bdcacba60530697ba57c17369fe8345"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_platform.py",
+      "sha256": "b40695e79772b9296a35178fbc0898772893b61239d89fbae7b22c56b7f24abc",
+      "git_blob": "f1734930fdfedfa74e439197472289ec23fb6d81"
+    }
+  ],
+  "bindings_match_handoff": true,
+  "findings": [],
+  "resolved_findings": [
+    {
+      "original": "P1 private source snapshot disclosure",
+      "resolution": "Trusted tenant/module/document mapping, reserved generic namespace, current source read ACL on head/revision/object and full composition closure; unknown bindings fail closed. Independently exercised deny/share/revoke/reopen and regression tests."
+    },
+    {
+      "original": "P2 invalid Unicode base500",
+      "resolution": "Base and source-version format validation precedes serialization/binding/native write. Independent malformed cases422 with zero receipts."
+    }
+  ],
+  "tests": [
+    {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -m pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_native_platform.py customizations/components/tianxuan/server/test_native_api.py customizations/components/tianxuan/server/test_api_gateway.py customizations/components/tianxuan/server/test_tianxuan_boundary.py customizations/components/tianxuan/server/test_api_tenant_mutations.py",
+      "result": "92 passed, 44 subtests passed in26.52s; one Starlette httpx deprecation warning",
+      "coverage": "Malformed input, complete composition closure, namespace spoof, unknown mapping, sharing/revocation/restart; HTTP workflow, verified model identity/org/role/key isolation, source coherent WAL transaction, actor lock, native API boundaries."
+    },
+    {
+      "test": "Independent original-attack and concurrency script",
+      "result": [
+        "Original P2: seven invalid bases return422, no native receipt created",
+        "Original P1: private document/head/revision/object/composition denied to same-tenant viewer and other-tenant admin with no secret",
+        "16 parallel identical snapshot submissions: all200 identical immutable receipts",
+        "Current sharing: all five reads200 on grant, all403 on revoke; revoked session401",
+        "Historical replay identical after source issue change and after reopening both domain/native databases",
+        "40 concurrent alternating owner/cross-tenant object reads preserve identity and confidentiality",
+        "Forged X-Actor rejected401 even with compatibility environment"
+      ]
+    }
+  ],
+  "inspection": {
+    "source_atomicity": "requirement_snapshot uses shared connection lock and one deferred read transaction; WAL cross-connection regression passed. Snapshot persists exact read instant, not a distributed transaction freezing live edits.",
+    "authorization": "Current ACL checked per operation; no claim that revocation retroactively cancels an in-flight read already authorized. No bypass found in reviewed endpoints.",
+    "namespace": "Generic requirement-* writes rejected before store submit; direct local NativeStore is a trusted host API outside HTTP authorization boundary.",
+    "identity_concurrency": "Locked actor_context plus authenticated identity and 40 interleaved tenant reads verified; no principal mix-up observed."
+  },
+  "capacity_assessment": {
+    "conclusion": "Earlier Linux160MiB/250 candidate-reception workload remains historical scoped evidence, not exact corrected-source capacity rerun or production/full-workflow/model/token-benefit acceptance. Parent owns final Linux exact-source tests. No cache performance or real-cost claims established by this review."
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "applied": "bind-consumer-release: independently verified all14 raw SHA256 and Git blob bindings; review applies only to these bytes. Other recalled terminal/automatic-asset-review methods not substitutes."
+  },
+  "cleanup": "Independent TemporaryDirectory databases closed and removed; no product changes, commits, pushes, deployments. Pytest owns ordinary temp test dirs; no explicit persistent review temp files created.",
+  "remaining": "Parent final Linux exact-source verification, delivery and full business acceptance are outside this review.",
+  "reproduction_python": "\nimport sys,json,tempfile,hashlib,subprocess,os\nfrom pathlib import Path\nfrom concurrent.futures import ThreadPoolExecutor\nroot=Path.cwd()\nsys.path[:0]=[str(root/'customizations/components/tianxuan/server'),str(root/'customizations/components/tianxuan/duobao')]\nfrom api import create_app\nfrom tianxuan_core import Tianxuan\nfrom native_store import NativeStore\nfrom fastapi.testclient import TestClient\nfrom test_native_api import account\ninputs=json.loads(Path('D:/GongGong/data-collection/receipts/duobao-1382/platform-fixed-review-inputs.json').read_text())\nfor b in inputs['source_bindings']:\n p=root/b['path']\n assert hashlib.sha256(p.read_bytes()).hexdigest()==b['sha256'],b\n assert subprocess.check_output(['git','hash-object',str(p)],text=True).strip()==b['git_blob'],b\nprint('exact_bindings: 14 verified')\nos.environ.pop('TIANXUAN_REQUIRE_KEYS',None)\nos.environ['TIANXUAN_ALLOW_LEGACY_ACTOR']='1'\nobservations=[]\nwith tempfile.TemporaryDirectory(prefix='independent1419-') as tmp:\n s=Tianxuan(str(Path(tmp)/'domain.db'));n=NativeStore(Path(tmp)/'n.db')\n with TestClient(create_app(s,native_store=n,native_only=True),raise_server_exceptions=False) as c:\n  a,h=account(c,801);other,oh=account(c,802);aid=a['user_id']\n  d=s.create_requirement(aid,'r','PRIVATE SECRET','o','s','a');s.set_visibility(aid,d['id'],'private')\n  p='/api/v1/native/requirements/'+d['id'];v=c.get(p+'/source',headers=h).json()['source_version']\n  for base in [chr(0xd800),{'bad':chr(0xd800)},[chr(0xd800)],7,False,'A'*64,'0'*63]:\n   r=c.post(p+'/snapshots',headers=h,content=json.dumps(dict(request_key='bad-base',source_version=v,base=base)))\n   assert r.status_code==422,(base,r.text)\n  with n._connection() as db: assert db.execute('SELECT count(*) FROM native_receipts').fetchone()[0]==0\n  payload=dict(request_key='valid',source_version=v,base=None)\n  with ThreadPoolExecutor(max_workers=8) as pool:\n   rs=list(pool.map(lambda _:c.post(p+'/snapshots',headers=h,json=payload),range(16)))\n  assert all(r.status_code==200 for r in rs),[(r.status_code,r.text) for r in rs]\n  saved=rs[0].json();assert all(r.json()==saved for r in rs)\n  member=s.add_member(aid,'v@example.invalid','password123',role='viewer')['user_id'];mh={'Authorization':'Bearer '+s.issue_session(member)}\n  mod=saved['module'];rev=saved['revision']\n  paths=['/api/v1/docs/'+d['id'],'/api/v1/native/modules/'+mod+'/head','/api/v1/native/modules/'+mod+'/revisions/'+rev,'/api/v1/native/modules/'+mod+'/revisions/'+rev+'/objects/snapshot.json','/api/v1/native/compositions/'+saved['composition']['id']]\n  for headers in [mh,oh]:\n   for target in paths:\n    r=c.get(target,headers=headers);assert r.status_code in (403,404,422),(target,r.status_code,r.text);assert 'PRIVATE SECRET' not in r.text\n  assert c.get(p+'/source',headers={'X-Actor':aid}).status_code==401\n  s.share_doc(aid,d['id'],member,'read')\n  assert all(c.get(target,headers=mh).status_code==200 for target in paths)\n  s.unshare_doc(aid,d['id'],member)\n  assert all(c.get(target,headers=mh).status_code==403 for target in paths)\n  s.plan_tickets(aid,d['id'],[{'title':'changed source'}])\n  assert c.get(p+'/source',headers=h).json()['source_version']!=v\n  assert c.post(p+'/snapshots',headers=h,json=payload).json()==saved\n  with ThreadPoolExecutor(max_workers=8) as pool:\n   outcomes=list(pool.map(lambda i:c.get(paths[3],headers=h if i%2==0 else oh),range(40)))\n  assert all(r.status_code==200 if i%2==0 else r.status_code in (403,404,422) for i,r in enumerate(outcomes))\n  assert all('PRIVATE SECRET' not in r.text for i,r in enumerate(outcomes) if i%2)\n  s.revoke_session(mh['Authorization'].split()[1])\n  assert c.get(paths[3],headers=mh).status_code==401\n s.db.close()\n s=Tianxuan(str(Path(tmp)/'domain.db'))\n with TestClient(create_app(s,native_store=n,native_only=True)) as c:\n  assert c.post(p+'/snapshots',headers=h,json=payload).json()==saved\n  assert c.get(paths[3],headers=oh).status_code==403\n s.db.close()\n observations=['Original P2: seven invalid bases return422, no native receipt created','Original P1: private document/head/revision/object/composition denied to same-tenant viewer and other-tenant admin with no secret','16 parallel identical snapshot submissions: all200 identical immutable receipts','Current sharing: all five reads200 on grant, all403 on revoke; revoked session401','Historical replay identical after source issue change and after reopening both domain/native databases','40 concurrent alternating owner/cross-tenant object reads preserve identity and confidentiality','Forged X-Actor rejected401 even with compatibility environment']\nfor x in observations:print(x)\n",
+  "reproduction_instructions": "Run from reviewed worktree using tx-venv python -B with no production keys; temp databases are closed and removed. All assertions must pass.",
+  "bindings_rechecked_after_tests": true
+}

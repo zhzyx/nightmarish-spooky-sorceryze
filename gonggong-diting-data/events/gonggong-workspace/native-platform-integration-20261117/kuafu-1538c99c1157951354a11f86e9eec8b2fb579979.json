@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1538c99c1157951354a11f86e9eec8b2fb579979",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-platform-integration-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1419",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fcd106201ecfc40870a57319f055f26e43e744d88b690ceef3812aed846b8458",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1419",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1421",
+    "action": "validation",
+    "detection_head": "4b1ca40e3f48c0b766bd9768865412be0ee2d5d0",
+    "context_sha256": "d2bbf1943fc949c8cf3fbe8f38fbee3a21a2a120794dd9208bbe8e7177dcadcf",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "data-collection/native-platform-capacity-failure-1419.json",
+    "diagnosis": "Actual Linux 50-member 250-inflight candidate API workload failed in native_api._identity: private _tenant_of used shared connection outside its synchronization boundary, sqlite InterfaceError. Source repair owned by native platform worker under #1419; not a resource timeout or capacity pass.",
+    "next_action": "Add atomic synchronized identity resolution, update native and gateway callers, reproduce original workload after targeted regression and independent review. Preserve current production services.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T10:40:55.948274+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T10:42:19.601347+00:00",
+  "sha256": "2357cee9647811da5a1854ac091edf8734adc07fc677ca334c76975cdc6ae6f0"
+}

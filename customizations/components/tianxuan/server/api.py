@@ -120,7 +120,7 @@ def _require_actor(
             return str(session_actor)
     header_actor = (x_actor or "").strip()
     if header_actor:
-        if not _actor_header_enabled():
+        if request.app.state.native_only or not _actor_header_enabled():
             raise HTTPException(
                 status_code=401,
                 detail="X-Actor is disabled; create a session with POST /api/v1/auth/session and send a Bearer token",
@@ -129,14 +129,14 @@ def _require_actor(
     raise HTTPException(status_code=400, detail="X-Actor header or Bearer token is required")
 
 
-def _websocket_actor(store: Tianxuan, query_params: Any) -> str | None:
+def _websocket_actor(store: Tianxuan, query_params: Any, *, allow_header: bool = True) -> str | None:
     """WebSocket 身份：优先 token 查询参数；X-Actor 仅在兼容模式开启时接受。"""
     token = (query_params.get("token") or "").strip()
     if token:
         actor = store.user_for_token(token)
         return str(actor) if actor else None
     actor = (query_params.get("actor") or "").strip()
-    if actor and _actor_header_enabled():
+    if actor and allow_header and _actor_header_enabled():
         return actor
     return None
 
@@ -309,6 +309,7 @@ def create_app(
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     app = FastAPI(title="Tianxuan API", version="0.1.0")
     app.state.store = store
+    app.state.native_only = native_only
     configure_access(app, store)
     if native_store is not None:
         from native_api import create_native_router
@@ -404,7 +405,7 @@ def create_app(
             checks["database"] = store.ping()
         except Exception:
             checks["database"] = False
-        repo_root = os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
+        repo_root = "" if native_only else os.environ.get("TIANXUAN_REPO_ROOT", "").strip()
         if repo_root:
             checks["repo_root"] = Path(repo_root).is_dir()
         else:
@@ -445,10 +446,8 @@ def create_app(
             raise HTTPException(status_code=400, detail="Bearer token is required")
         return {"revoked": store.revoke_session(token.strip())}
 
-    if native_only:
-        if native_store is None:
-            raise ValueError("native_only requires a native store")
-        return app
+    if native_only and native_store is None:
+        raise ValueError("native_only requires a native store")
 
     # ---------- 成员与角色 ----------
 
@@ -508,6 +507,7 @@ def create_app(
             ).strip()
             or "document"
         )
+        content: str | bytes
         if fmt in {"md", "markdown"}:
             content = body_md
             media_type = "text/markdown; charset=utf-8"
@@ -1625,7 +1625,9 @@ def create_app(
 
     @app.websocket("/api/v1/ws/merge-queue")
     async def merge_queue_room(websocket: WebSocket) -> None:
-        actor = getattr(websocket.state, "verified_actor", None) or _websocket_actor(store, websocket.query_params)
+        actor = getattr(websocket.state, "verified_actor", None) or _websocket_actor(
+            store, websocket.query_params, allow_header=not native_only
+        )
         if actor is None:
             await websocket.close(code=4401)
             return
@@ -1652,7 +1654,9 @@ def create_app(
 
     @app.websocket("/api/v1/ws/docs/{doc_id}")
     async def doc_room(websocket: WebSocket, doc_id: str) -> None:
-        actor = getattr(websocket.state, "verified_actor", None) or _websocket_actor(store, websocket.query_params)
+        actor = getattr(websocket.state, "verified_actor", None) or _websocket_actor(
+            store, websocket.query_params, allow_header=not native_only
+        )
         if actor is None:
             await websocket.close(code=4401)
             return
@@ -1707,5 +1711,35 @@ def create_app(
             rooms.leave(doc_id, websocket)
             if rooms.actors(doc_id):
                 await rooms.broadcast(doc_id, {"type": "presence", "actors": rooms.actors(doc_id)})
+
+    if native_only:
+        excluded = (
+            "/api/v1/git/",
+            "/api/v1/gitea/",
+            "/api/v1/repos",
+            "/api/v1/repo-links",
+            "/api/v1/webhooks/",
+            "/api/v1/merge-queue",
+            "/api/v1/ws/merge-queue",
+        )
+        app.router.routes[:] = [
+            route
+            for route in app.router.routes
+            if not getattr(route, "path", "").startswith(excluded)
+            and getattr(route, "path", "")
+            not in {"/api/v1/requirements/{request_id}/commit", "/api/v1/requirements/{request_id}/git-file"}
+        ]
+
+    @app.get("/api/v1/capabilities")
+    def capabilities() -> dict[str, Any]:
+        return {
+            "mode": "native" if native_only else "git",
+            "documents": True,
+            "requirements": True,
+            "issues": True,
+            "models": gateway is not None,
+            "native_candidates": native_store is not None,
+            "git": not native_only,
+        }
 
     return app

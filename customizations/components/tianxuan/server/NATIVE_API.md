@@ -18,3 +18,62 @@ This slice requires `reads: null`. HTTP consumers cannot yet prove read-set comp
 Limits: 8 MiB streamed JSON (Content-Length checked before streaming when present), 4 MiB decoded batch content, 1 MiB per object, 128 module changes or selected roots, and 1024 combined edits/dependency entries. Body overflow stops consumption at the first exceeding chunk. Store operations and native identity lookup run in worker threads. NativeStore's existing SQLite busy timeout remains 30 seconds; observed BUSY/LOCKED errors map to 503 and Retry-After: 1. Conflicts are 409, invalid/unavailable/corrupt native content is 422, oversized requests are 413, and other SQLite errors are generic 500. Error details omit local paths. Candidate acceptance is never approval, check success, release, or consumer receipt. This HTTP boundary exposes no such evidence endpoints.
 
 Regression: `python -m pytest customizations/components/tianxuan/server/test_native_api.py`. Production multi-organization admission, trusted producer provenance, read tracking and governance/consumer wiring remain outside this slice.
+
+## Native daily workflow and requirement snapshots (#1419)
+
+Native mode mounts the existing document, requirement, issue, comments, history,
+sharing, AI-view and progress APIs. `/api/v1/capabilities` reports the actual mode
+and mounted model/native capabilities; the TianShu status bridge reads it before
+requesting Git status. Git repository, import, webhook, merge queue and requirement
+commit/git-file routes are absent in native mode. Git-only configuration is not
+parsed or required at native startup. Native HTTP and WebSocket routes reject
+legacy actor headers/query parameters even when Git compatibility is enabled;
+valid sessions and production verified keys remain supported. Production access-key
+middleware keeps its strict admission policy.
+
+The mounted model gateway resolves tenant and actor from a valid session or the
+production middleware's verified identity. Actor/tenant headers that disagree are
+rejected, as are usage queries selecting another tenant. Viewers cannot invoke
+models, and production model routes remain administrator-only. Model calls and
+usage preserve the existing gateway/budget implementation.
+
+1. `GET /api/v1/native/requirements/{doc_id}/source` returns `source_version`
+   (SHA256 of canonical UTF-8 document plus associated issues) and `snapshot`.
+   A shared-connection lock and deferred SQLite read transaction make this a
+   coherent read even when another connection updates issues concurrently.
+2. `POST /api/v1/native/requirements/{doc_id}/snapshots` accepts exactly
+   `request_key`, `source_version`, `base`. Use null base only for a new module;
+   subsequent operations provide the exact prior native revision. The stable
+   operation key is scoped by authenticated tenant/actor. Changing its inputs is
+   a conflict. A new operation with a stale source hash or native base is rejected.
+3. The response contains the exact `module`, `revision`, source hash and candidate
+   `composition`. `snapshot.json` in that revision stores the exact source and
+   request binding. It is authoritative; historical retries read its existing
+   bytes before consulting current source content, while still checking current
+   document write permission. A failed composition call can be retried against
+   the already stored revision. Snapshot submission never approves, publishes or
+   completes issues. Unknown read dependencies remain conservative (`reads=null`).
+
+The source transaction ends before encoding and native database writes. This is
+an exact snapshot of the read instant, not a distributed transaction freezing the
+live editor. A later edit cannot change that immutable snapshot; it requires a
+new source hash and operation key. The `snapshot-` native receipt namespace is
+reserved by this adapter. Source bodies are bounded to 1 MiB. Persistent domain,
+native and gateway DB paths must be configured by the host; startup does not
+migrate deployment configuration or replace a running service.
+
+Requirement snapshots retain the source document's current read permissions.
+The domain database stores the trusted module-to-document binding; native object
+JSON cannot grant access. The `requirement-` module namespace is reserved and
+generic batches cannot write it. Head, revision, object and composition reads
+check the current source ACL; composition creation checks every exact dependency
+before writing a composition. Unknown source bindings fail closed, including old
+unbound objects. Sharing and revocation apply to historical snapshots as well.
+Dependency closure is limited to 128 modules at this HTTP boundary.
+
+The domain binding is committed before native content. A native write failure
+may leave an empty reservation, which does not mean a candidate was accepted.
+Retry uses the same binding and normal native idempotency. Backups must preserve
+both databases; restoring native content without its source binding cannot make
+private content public. This is application access control, not protection from
+an operator who can directly read either database or a trusted local host API.

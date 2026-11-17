@@ -18,11 +18,15 @@ from tianxuan_core import Tianxuan
 
 _DB_PATH = os.environ.get("TIANXUAN_DB", "tianxuan.db")
 _GATEWAY_DB = os.environ.get("TIANXUAN_GATEWAY_DB", ":memory:")
-_CHECKS = [shlex.split(part) for part in os.environ.get("TIANXUAN_MERGE_CHECKS", "").split(";") if part.strip()]
-try:
-    _PROTECTED_BRANCHES = parse_protected_branches(os.environ.get("TIANXUAN_PROTECTED_BRANCHES", ""))
-except PolicyError as error:
-    raise RuntimeError(f"invalid TIANXUAN_PROTECTED_BRANCHES: {error}") from error
+_MODE = os.environ.get("TIANXUAN_STORAGE_MODE", "git")
+_CHECKS = []
+_PROTECTED_BRANCHES: tuple[str, ...] = ()
+if _MODE == "git":
+    _CHECKS = [shlex.split(part) for part in os.environ.get("TIANXUAN_MERGE_CHECKS", "").split(";") if part.strip()]
+    try:
+        _PROTECTED_BRANCHES = parse_protected_branches(os.environ.get("TIANXUAN_PROTECTED_BRANCHES", ""))
+    except PolicyError as error:
+        raise RuntimeError(f"invalid TIANXUAN_PROTECTED_BRANCHES: {error}") from error
 
 
 def _required_approvals() -> int:
@@ -38,7 +42,7 @@ def _required_approvals() -> int:
     return value
 
 
-_REQUIRED_APPROVALS = _required_approvals()
+_REQUIRED_APPROVALS = _required_approvals() if _MODE == "git" else 0
 _REQUIRED_CHECKS = tuple(
     item.strip() for item in os.environ.get("TIANXUAN_REQUIRED_CHECKS", "").split(",") if item.strip()
 )
@@ -76,7 +80,7 @@ if os.environ.get("TIANXUAN_EVENT_RETENTION_DAYS"):
 
 app = create_app(
     _STORE,
-    gateway=ModelGateway(_GATEWAY_DB) if _MODE == "git" else None,
+    gateway=ModelGateway(_GATEWAY_DB),
     merge_queue=_MERGE_QUEUE,
     protected_branches=_PROTECTED_BRANCHES,
     required_approvals=_REQUIRED_APPROVALS,

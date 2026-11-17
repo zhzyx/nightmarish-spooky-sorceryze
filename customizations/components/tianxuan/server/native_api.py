@@ -6,6 +6,7 @@ import base64
 import binascii
 import hashlib
 import json
+import re
 import sqlite3
 from collections.abc import Callable
 from typing import Any
@@ -31,11 +32,12 @@ def _identity(request: Request) -> tuple[str, str]:
         actor = store.user_for_token(token.strip()) if scheme.lower() == "bearer" else None
     if not actor:
         raise HTTPException(401, "valid authenticated identity required")
-    if request.method != "GET" and store.role_of(actor) == "viewer":
+    context = store.actor_context(actor)
+    if request.method != "GET" and context["role"] == "viewer":
         raise HTTPException(403, "read-only account")
     if request.query_params:
         raise HTTPException(422, "query parameters are not supported")
-    return store._tenant_of(actor), str(actor)
+    return context["tenant"], str(actor)
 
 
 def _fields(value: Any, required: set[str], optional: set[str] | None = None) -> dict[str, Any]:
@@ -68,6 +70,8 @@ async def _body(request: Request) -> Any:
 
 def _changes(payload: Any) -> tuple[str, list[dict[str, Any]]]:
     payload = _fields(payload, {"request_key", "changes"})
+    if isinstance(payload["request_key"], str) and payload["request_key"].startswith("snapshot-"):
+        raise HTTPException(422, "reserved operation namespace")
     changes = payload["changes"]
     if not isinstance(changes, list) or not 1 <= len(changes) <= MAX_MODULES:
         raise HTTPException(422, "expected 1..128 module changes")
@@ -75,6 +79,8 @@ def _changes(payload: Any) -> tuple[str, list[dict[str, Any]]]:
     entries = 0
     for change in changes:
         _fields(change, {"module", "base", "reads", "edits"}, {"dependencies"})
+        if isinstance(change["module"], str) and change["module"].startswith("requirement-"):
+            raise HTTPException(422, "reserved source module namespace")
         # No trusted read-set completeness proof exists at this HTTP boundary.
         if change["reads"] is not None:
             raise HTTPException(422, "reads must be null until trusted read tracking is available")
@@ -122,7 +128,31 @@ async def _call(function: Callable[..., Any], *args: Any) -> Any:
         raise HTTPException(500, "native storage failure") from None
 
 
-def _composition(store: NativeStore, tenant: str, candidate: str) -> dict[str, Any]:
+def _module_read(domain: Any, actor: str, module: str) -> None:
+    if module.startswith("requirement-"):
+        domain.require_native_module_read(actor, module)
+
+
+def _compose(store: NativeStore, domain: Any, tenant: str, actor: str, selected: dict[str, str]) -> dict[str, Any]:
+    # Authorize the full immutable dependency closure before creating a record.
+    pending = list(selected.items())
+    seen: dict[str, str] = {}
+    while pending:
+        module, revision = pending.pop()
+        if module in seen:
+            if seen[module] != revision:
+                raise Conflict("incompatible dependency revisions")
+            continue
+        if len(seen) >= MAX_MODULES:
+            raise HTTPException(413, "too many dependency modules")
+        _module_read(domain, actor, module)
+        state = store.revision(tenant, module, revision)
+        seen[module] = revision
+        pending.extend(state["dependencies"].items())
+    return store.compose(tenant, selected)
+
+
+def _composition(store: NativeStore, domain: Any, tenant: str, actor: str, candidate: str) -> dict[str, Any]:
     # NativeStore has no composition lookup yet. This read-only adapter uses its
     # connection/revision primitives and verifies every pinned object's bytes.
     if len(candidate) != 64 or any(c not in "0123456789abcdef" for c in candidate):
@@ -135,6 +165,7 @@ def _composition(store: NativeStore, tenant: str, candidate: str) -> dict[str, A
         raise NativeStoreError("Composition unavailable or corrupt")
     payload = json.loads(row[0])
     for module, revision in payload["modules"].items():
+        _module_read(domain, actor, module)
         state = store.revision(tenant, module, revision)
         if any(payload["modules"].get(dep) != rev for dep, rev in state["dependencies"].items()):
             raise NativeStoreError("Composition dependency mismatch")
@@ -143,8 +174,89 @@ def _composition(store: NativeStore, tenant: str, candidate: str) -> dict[str, A
     return {"id": candidate, **payload}
 
 
+def _source(domain: Any, actor: str, doc_id: str) -> dict[str, Any]:
+    snapshot = domain.requirement_snapshot(actor, doc_id)
+    try:
+        encoded = json.dumps(snapshot, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode()
+    except UnicodeError:
+        raise HTTPException(422, "source must be valid Unicode") from None
+    if len(encoded) > MAX_OBJECT:
+        raise HTTPException(413, "requirement snapshot too large")
+    return {"source_version": hashlib.sha256(encoded).hexdigest(), "snapshot": snapshot}
+
+
+def _snapshot(
+    store: NativeStore, domain: Any, tenant: str, actor: str, doc_id: str, payload: dict[str, Any]
+) -> dict[str, Any]:
+    # Recheck current ACL even on historical replay; never rebuild historical bytes.
+    domain.get_doc_shared(actor, doc_id, write=True)
+    key = payload["request_key"]
+    if not isinstance(key, str) or not 1 <= len(key) <= 128:
+        raise HTTPException(422, "request_key must contain 1..128 characters")
+    if (
+        not isinstance(payload["source_version"], str)
+        or re.fullmatch(r"[0-9a-f]{64}", payload["source_version"]) is None
+    ):
+        raise HTTPException(422, "source_version must be a SHA256 digest")
+    base = payload["base"]
+    if base is not None and (not isinstance(base, str) or re.fullmatch(r"[0-9a-f]{64}", base) is None):
+        raise HTTPException(422, "base must be null or a SHA256 revision")
+    binding = {"doc_id": doc_id, **payload}
+    try:
+        native_key = "snapshot-" + hashlib.sha256(key.encode()).hexdigest()
+    except UnicodeError:
+        raise HTTPException(422, "request_key must be valid Unicode") from None
+    module = domain.bind_native_requirement(actor, doc_id)
+    with store._connection() as db:
+        receipt = db.execute(
+            "SELECT result FROM native_receipts WHERE tenant=? AND actor=? AND request_key=?",
+            (tenant, actor, native_key),
+        ).fetchone()
+    if receipt:
+        result = json.loads(receipt[0])
+        revision = result["revisions"].get(module)
+        if not revision:
+            raise Conflict("operation key reused for another requirement")
+        saved = json.loads(store.read(tenant, module, revision, "snapshot.json"))
+        if saved["binding"] != binding:
+            raise Conflict("operation key reused for different inputs")
+    else:
+        source = _source(domain, actor, doc_id)
+        if source["source_version"] != payload["source_version"]:
+            raise Conflict("source version changed")
+        content = json.dumps(
+            {"binding": binding, **source}, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+        ).encode()
+        result = store.submit(
+            tenant,
+            actor,
+            native_key,
+            [{"module": module, "base": payload["base"], "reads": None, "edits": {"snapshot.json": content}}],
+        )
+        revision = result["revisions"][module]
+    composition = store.compose(tenant, {module: revision})
+    return {
+        "source_version": payload["source_version"],
+        "module": module,
+        "revision": revision,
+        "composition": composition,
+        "state": "candidate",
+    }
+
+
 def create_native_router(store: NativeStore) -> APIRouter:
     router = APIRouter(prefix=PREFIX)
+
+    @router.get("/requirements/{doc_id}/source")
+    async def source(doc_id: str, request: Request) -> Any:
+        _, actor = await run_in_threadpool(_identity, request)
+        return await _call(_source, request.app.state.store, actor, doc_id)
+
+    @router.post("/requirements/{doc_id}/snapshots")
+    async def snapshot(doc_id: str, request: Request) -> Any:
+        tenant, actor = await run_in_threadpool(_identity, request)
+        payload = _fields(await _body(request), {"request_key", "source_version", "base"})
+        return await _call(_snapshot, store, request.app.state.store, tenant, actor, doc_id, payload)
 
     @router.post("/batches")
     async def submit(request: Request) -> Any:
@@ -154,32 +266,35 @@ def create_native_router(store: NativeStore) -> APIRouter:
 
     @router.get("/modules/{module}/head")
     async def head(module: str, request: Request) -> Any:
-        tenant, _ = await run_in_threadpool(_identity, request)
+        tenant, actor = await run_in_threadpool(_identity, request)
+        await _call(_module_read, request.app.state.store, actor, module)
         return {"revision": await _call(store.head, tenant, module)}
 
     @router.get("/modules/{module}/revisions/{revision}")
     async def revision(module: str, revision: str, request: Request) -> Any:
-        tenant, _ = await run_in_threadpool(_identity, request)
+        tenant, actor = await run_in_threadpool(_identity, request)
+        await _call(_module_read, request.app.state.store, actor, module)
         return await _call(store.revision, tenant, module, revision)
 
     @router.get("/modules/{module}/revisions/{revision}/objects/{name:path}")
     async def read(module: str, revision: str, name: str, request: Request) -> Response:
-        tenant, _ = await run_in_threadpool(_identity, request)
+        tenant, actor = await run_in_threadpool(_identity, request)
+        await _call(_module_read, request.app.state.store, actor, module)
         value = await _call(store.read, tenant, module, revision, name)
         return Response(value, media_type="application/octet-stream", headers={"Cache-Control": "no-store"})
 
     @router.post("/compositions")
     async def compose(request: Request) -> Any:
-        tenant, _ = await run_in_threadpool(_identity, request)
+        tenant, actor = await run_in_threadpool(_identity, request)
         payload = _fields(await _body(request), {"selected"})
         selected = payload["selected"]
         if not isinstance(selected, dict) or not 1 <= len(selected) <= MAX_MODULES:
             raise HTTPException(422, "expected 1..128 selected modules")
-        return await _call(store.compose, tenant, selected)
+        return await _call(_compose, store, request.app.state.store, tenant, actor, selected)
 
     @router.get("/compositions/{candidate}")
     async def composition(candidate: str, request: Request) -> Any:
-        tenant, _ = await run_in_threadpool(_identity, request)
-        return await _call(_composition, store, tenant, candidate)
+        tenant, actor = await run_in_threadpool(_identity, request)
+        return await _call(_composition, store, request.app.state.store, tenant, actor, candidate)
 
     return router
