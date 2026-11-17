@@ -32,6 +32,7 @@ cbuffer FrameConstants : register(b1)
     column_major float4x4 UnjitteredViewProjection;
     column_major float4x4 PreviousViewProjection;
 };
+StructuredBuffer<float4> ExposureState : register(t11);
 #if defined(GEOMETRY_STAGE)
 cbuffer DrawConstants : register(b0)
 {
@@ -124,12 +125,17 @@ GBufferOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
     Output.Base = Color;
     Output.Normal = float4(Normal, 1);
     Output.Surface = float4(saturate(Mr.g * Surface.x), saturate(Mr.b * EmissiveMetallic.w), saturate(Ao), 1);
-    Output.Emissive = float4(EmissiveTexture.Sample(EmissiveSampler, Input.Texcoord).rgb * EmissiveMetallic.xyz, 1);
+    float3 Emissive = EmissiveTexture.Sample(EmissiveSampler, Input.Texcoord).rgb * EmissiveMetallic.xyz * ExposureState[0].x;
+    Output.Emissive = float4(all(isfinite(Emissive)) ? clamp(Emissive, 0, 65504) : float3(0, 0, 0), 1);
     return Output;
 }
 #else
 #if defined(TONEMAP_STAGE)
 Texture2D<float4> HdrBuffer : register(t0);
+Texture2D<float4> BloomBuffer : register(t1);
+StructuredBuffer<float4> PreviousExposure : register(t2);
+StructuredBuffer<float4> CurrentExposure : register(t3);
+SamplerState BloomSampler : register(s0);
 #else
 Texture2D<float4> BaseBuffer : register(t0);
 Texture2D<float4> NormalBuffer : register(t1);
@@ -160,7 +166,12 @@ FullscreenOutput FullscreenVS(uint Id : SV_VertexID)
 float4 ToneMapPS(FullscreenOutput Input) : SV_TARGET
 {
     float3 Color = HdrBuffer.Load(int3(int2(Input.Position.xy), 0)).rgb;
-    Color = 1 - exp(-max(Color, 0) * Lighting.x);
+    [branch] if (Lighting.w > 0)
+    {
+        Color += BloomBuffer.SampleLevel(BloomSampler, Input.Texcoord, 0).rgb * Lighting.w;
+    }
+    float Ratio = CurrentExposure[0].x / max(PreviousExposure[0].x, 1.175494351e-38);
+    Color = 1 - exp(-max(Color, 0) * Ratio);
     return float4(pow(saturate(Color), 1.0 / 2.2), 1);
 }
 #else
@@ -270,7 +281,8 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
         float4 FarPosition = mul(InverseViewProjection, float4(Ndc, 0, 1));
         float3 Direction = normalize(FarPosition.xyz - Camera.xyz * FarPosition.w);
         float3 Sky = PrefilteredEnvironment.SampleLevel(EnvironmentSampler, Direction, 0).rgb;
-        return float4(max(Sky, 0), 1);
+        Sky *= ExposureState[0].x;
+        return float4(all(isfinite(Sky)) ? clamp(Sky, 0, 65504) : float3(0, 0, 0), 1);
     }
     float3 Base = BaseBuffer.Load(int3(Pixel, 0)).rgb;
     float3 N = normalize(NormalBuffer.Load(int3(Pixel, 0)).xyz);
@@ -309,8 +321,8 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
     float3 Prefiltered = PrefilteredEnvironment.SampleLevel(EnvironmentSampler, Reflection, Material.x * Lighting.y).rgb;
     float2 Brdf = BrdfLut.SampleLevel(EnvironmentSampler, float2(NoV, Material.x), 0).rg;
     Color += ((1 - F) * (1 - Material.y) * Diffuse + Prefiltered * (F0 * Brdf.x + Brdf.y)) * Material.z;
-    Color += Emissive;
-    return float4(clamp(Color, 0, 65504), 1);
+    Color = Color * ExposureState[0].x + Emissive;
+    return float4(all(isfinite(Color)) ? clamp(Color, 0, 65504) : float3(0, 0, 0), 1);
 }
 #endif
 

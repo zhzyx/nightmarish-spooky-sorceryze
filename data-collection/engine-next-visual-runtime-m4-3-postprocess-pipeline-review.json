@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "recorded_at": "2026-11-16T18:18:56.010865+00:00",
+  "scope": "Independent read-only review of post-process FrameGraph resource declarations, pass order, queue states and index mappings. Bloom shader implementation is authored by this reviewer and excluded.",
+  "findings": [],
+  "observations": [
+    "Exposure preparation is declared before the first exposure consumer. Exposure read/write resources are distinct and imported in Common.",
+    "Histogram clear precedes read-before-write histogram accumulation, with exposure adaptation reading the completed histogram.",
+    "Bloom downsample and reverse upsample each use separate inputs and output resources. The smallest downsample is reused as the lowest upsample input.",
+    "All post-process compute dispatches execute on the graphics queue and use NonPixelShaderRead resources. Tone mapping transitions needed inputs to pixel-readable states.",
+    "Present restores every exposure, bloom, temporal and frame-local resource to its declared initial state.",
+    "Invalid bloom/exposure combinations fail before replacing caller output. Fixed mode and legacy five-argument scene call remain represented by tests.",
+    "Readback pass explicitly transitions histogram and exposure output to CopySource after ToneMap. Imported staging resource remains CopyDestination. Present returns source resources to Common."
+  ],
+  "files": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\engine_next\\Rendering\\RenderPipeline.h",
+      "sha256": "01a168bd5e085f9eaa84c14aac5605cef313ab1042bdde43cceed59b413c1a9e"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\engine_next\\Rendering\\RenderPipeline.cpp",
+      "sha256": "1074b5ed7bf8e8311bdcf06be1c690e3c44a5bc112be68b2a3ccd3a9abf0f060"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\engine_next\\Tests\\Rendering\\TestRenderPipeline.cpp",
+      "sha256": "f92b88d934e3a334b75987b54f29aac27027bffba8ee86c3b0e2992ca725b7e1"
+    }
+  ],
+  "test": {
+    "command": "python build/engine_next/RunReadbackPipelineIndependent.py",
+    "tests": 12,
+    "checks": 2104,
+    "failures": 0,
+    "result": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\pipeline-readback-independent\\Result.json",
+      "sha256": "ffaa8e2a82485005159a69a850dbfa0c9a161f1c59fe8152cfdb59fa0762cdf8"
+    }
+  },
+  "issue_number": 1343
+}

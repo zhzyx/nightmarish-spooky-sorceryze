@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-16T19:14:14.342978+00:00",
+  "reviewer": "independent network acceptance agent",
+  "candidate": "postprocess-r3",
+  "scope": "Read-only C++ runtime, descriptor, GPU state and readback integration review",
+  "result": "no actionable findings",
+  "source_sha256": {
+    "engine_next/Rendering/VisualRuntime.cpp": "7e2447e87d3bbcae1a8a1ace6243c03381d2b729b608e608e6503f7bd012b8c8",
+    "engine_next/Rendering/RenderPipeline.cpp": "1074b5ed7bf8e8311bdcf06be1c690e3c44a5bc112be68b2a3ccd3a9abf0f060",
+    "engine_next/Rendering/RenderPipeline.h": "01a168bd5e085f9eaa84c14aac5605cef313ab1042bdde43cceed59b413c1a9e",
+    "engine_next/Rendering/Shaders/Deferred.hlsl": "c89bbdf511cf09f4fdd0638dc6ebffe839bc335e306823961d2e8d68eb0e5ff4",
+    "engine_next/Rendering/Shaders/TemporalAA.hlsl": "e59f0fd6f21968a7206a7a92be792cf44181375d81e8d0be9aa2f47525efd4a3",
+    "engine_next/Rendering/Shaders/TemporalSampling.hlsli": "4c7115f3ec45a44d29a4e1bc8fb1b031df1a6f529fc7df393464cdbe670d5b87",
+    "engine_next/Rendering/Shaders/Exposure.hlsl": "2870a6fdd17504baa73131bd4fa976ede3ba685cc0c7df8dbe0b4963d60f7766",
+    "engine_next/Rendering/Shaders/ExposureMath.hlsli": "ed72cb6d70f51b509dceb24a7ac13051287e712027bbc0263b138aa753b0f402",
+    "engine_next/Rendering/Shaders/Bloom.hlsl": "5c5e8a93bc2929a91cfb879a1bc1ea10632950a85e1cfdda2d4b4c0f21822eb9",
+    "engine_next/Rendering/Shaders/BloomSampling.hlsli": "642c7a51a93eb163254fbde23d345dc6fe6143a3c96ea2930a09be42d4f00182",
+    "engine_next/Tests/Rendering/TestRenderPipeline.cpp": "f92b88d934e3a334b75987b54f29aac27027bffba8ee86c3b0e2992ca725b7e1",
+    "engine_next/Tools/BuildVisualRuntime.py": "b1ffd637eeca0f6c8ea240533b6141a5d303c953b560b00c818dfb27441d6488",
+    "engine_next/Tools/PackageVisualRuntime.py": "abb5bdf0482369c0249f759f5813811a6ad3dec5891c2d7b25dd2f3d4daae998"
+  },
+  "build_report": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-r3\\VisualBuildReport.json",
+    "sha256": "3f27baa138e7b73c92a0aa8b1cbb0060340b3b3e42c75588e90122d1e9489bc4",
+    "bytes": 1620535
+  },
+  "native_key": "138d67a04981076b28bd0fcbc8ec6922e2e11ee704179489614fd11974a50cdd",
+  "native_input_count": 230,
+  "native_inputs_match": true,
+  "rendering_test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=191 checks=23772 failures=0",
+  "review_checks": [
+    "FrameContext owns histogram, Bloom chains and diagnostic readback. Its graphics fence retires before descriptor rewrites, resource reuse and Map. Resize flushes both queues before recreating size-dependent targets.",
+    "One persistent double-buffered float4 exposure record alternates after successful Present and Signal together with temporal commit. Resets invalidate both temporal and exposure readiness, forcing seed initialization.",
+    "Typed float4 clear alias initializes four distinct exposure channels. Structured SRV/UAV views match the shader record. The histogram uses a typed uint clear alias and 258-element structured dispatch views.",
+    "FrameGraph orders PrepareExposure, GBuffer/Lighting, TemporalResolve, HistogramBuild, ExposureAdapt, Bloom down/up, ToneMap and diagnostic CopySource readback. Same-queue transitions and UAV ordering cover clear/build dependencies; persistent records return to Common.",
+    "Lighting, emissive GBuffer and sky share prior exposure. Temporal history rescales previous color by prior display/pre-exposure ratio. Metering removes current pre-exposure before logarithmic binning. ToneMap applies current display/prior display ratio.",
+    "Bloom source and destination resources are distinct. Runtime derives each dispatch dimensions from its resource, handles odd dimensions using ceil-halving and maintains independent down/up chains.",
+    "Retired diagnostic copy checks all exposure components finite, positive multipliers and nonnegative meter. Histogram sum equals finite count, and finite plus invalid count equals that submitted frame viewport."
+  ],
+  "observed_telemetry": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-gpu-r3\\AutoBloom.json",
+      "sha256": "1e5ad67b2b2997d0379d84723f1aeb86f8171eb83c22a2db848cac625a101818",
+      "bytes": 81587
+    },
+    "frames": 24,
+    "gpu_validation_errors": 0,
+    "all_frames_ready": true,
+    "finite_pixels_each_frame": 307200,
+    "invalid_pixels_each_frame": 0,
+    "pre_exposure_equals_previous_display": true
+  },
+  "earlier_numerical_cross_check": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-probes\\R2NumericalReview.json",
+    "sha256": "cbb808b802b1d2f49831f5c9ddd8085811320fbafe7f1d067414dadada1f7d7b",
+    "bytes": 2517
+  },
+  "remaining_validation": "R3 multi-configuration and GPU resource numerical probes remain in progress with the capture owner. Time-varying scene illumination is a separate remaining acceptance item."
+}

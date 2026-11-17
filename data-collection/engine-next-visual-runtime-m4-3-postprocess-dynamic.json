@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-16T19:38:59.986280+00:00",
+  "candidate": "postprocess-r4",
+  "native_key": "34ec6d30b77359d20dcf6a0e85ff6ae6d73cf4cd17302fbea78e254261886de2",
+  "binary": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-r4\\next_visual_client.exe",
+    "bytes": 3026432,
+    "sha256": "131f70651f458b7f7c34311ad89f48f498422f2e5b7f9720987ccecbcdb5d106"
+  },
+  "source_identity": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\PreparedInputs.json",
+    "bytes": 222,
+    "sha256": "0d7176afb255a48f805361a58311941cab6720efac69a714a51691468f7bbcd2"
+  },
+  "configuration": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\DarkBrightDarkConfig.json",
+    "bytes": 1771,
+    "sha256": "e2be9420035ff3a366a315e25f00d54abb6b5687f94b304bad2a36595b579f5d"
+  },
+  "continuous_run": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Dynamic.json",
+    "bytes": 431716,
+    "sha256": "37d2aadcf4d136a516ee2950b79ae5e35e4fdf6cdf21229780a5f9ffd43e240f"
+  },
+  "continuous_command": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Command.json",
+    "bytes": 921,
+    "sha256": "075492ea2030ce918b6a4f7fc2dad30a6bd6a6fb8745349d964f1ee260c08eff"
+  },
+  "checks": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\DynamicChecks.json",
+    "bytes": 4192,
+    "sha256": "3a08b91aa154d697f6c91965a1a7cdc4dcfcb37698590fcee6d272c093a103fa"
+  },
+  "independent_numerical_review": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\data-collection\\engine-next-visual-runtime-m4-3-postprocess-dynamic-numerical-review.json",
+    "bytes": 3670,
+    "sha256": "57bbb8adc704a63c702080b373f18d73aa001d778bf66ecf1c81dcfa34122ccb"
+  },
+  "frames": 241,
+  "deterministic_time_seconds": [
+    0,
+    4
+  ],
+  "light_multiplier": [
+    1,
+    100,
+    1
+  ],
+  "directional_illuminance": [
+    200,
+    20000,
+    200
+  ],
+  "step_times_seconds": [
+    0.5,
+    1.5
+  ],
+  "validation_errors": 0,
+  "lighting_time_mismatches": 0,
+  "histogram_finite_pixels_per_frame": 307200,
+  "histogram_invalid_pixels_per_frame": 0,
+  "maximum_exposure_reference_error": 2.2674455285587314e-08,
+  "static_compatibility": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\StaticCompatibility.json",
+    "bytes": 3345,
+    "sha256": "5a71b4ae2683804abb049d49e69d140d0f75d3542fa00386a61a88ba2c217dbc"
+  },
+  "snapshots": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\SnapshotRuns.json",
+    "bytes": 15974,
+    "sha256": "6eba144ec0ddd1d7e85c47410062ac27ce98cf78f8a656f5d97097527352d10b"
+  },
+  "transition_image": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\ExposureTransition.png",
+    "bytes": 256206,
+    "sha256": "376bfc1083e303280d399b7eb8e5476b0558e601a870b6cb887214d14bd02bfa"
+  },
+  "snapshot_playback": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\ExposureSnapshots.mp4",
+    "bytes": 173015,
+    "sha256": "5529676ead151af316b5bace63ab148bb6f77ce7d3a7f38b7e2a3fea8481eced"
+  },
+  "playback_scope": "Sparse snapshots from independent deterministic runs terminating at each labeled frame. Video holds each snapshot until the next sample time. It visualizes the tested timeline and does not record continuous runtime presentation.",
+  "snapshot_images": [
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame0.png",
+      "bytes": 40540,
+      "sha256": "21e45c5656acec3d0d20fe44a98d161b5ae22311e5841ff538febe91d28c6536"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame29.png",
+      "bytes": 41840,
+      "sha256": "bf431624118aa379cdd0c1dbd66a48d629ed86590aa4f2f15ba279b3391eeb63"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame30.png",
+      "bytes": 48876,
+      "sha256": "874c65f4251f990700e902e9e9ce95f3a9861ccbb2719419487fc11adb7d19cd"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame31.png",
+      "bytes": 49398,
+      "sha256": "c4a7531778515d8abe41dc3a3c30f00e6b845c823394577457bdbeca236935be"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame44.png",
+      "bytes": 52074,
+      "sha256": "82e4857b50551204f937093b7f20bc83d184b25b0071c5f832303e8c7454e219"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame60.png",
+      "bytes": 51418,
+      "sha256": "6e8cfe4481e0b15a715c408303a6ca497bea4834303dc79d126ae2959e8946a5"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame89.png",
+      "bytes": 51223,
+      "sha256": "65090ade9c3f316816532f9afb8770968e0e57cd07e09dd94ef70b7b4b72a002"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame90.png",
+      "bytes": 25735,
+      "sha256": "457f768bd71d264a2bdffe6a2cfea42000667f7a1fd4ac2854b54444f6157e3a"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame91.png",
+      "bytes": 25976,
+      "sha256": "dc54add80bf56e298da95631c0f81293eca3abceee765bafb63ae6fdbb7e6c83"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame104.png",
+      "bytes": 28476,
+      "sha256": "03a2878b81f147fdda563c964c178b01d4e14abdc650ff47d6b6f1ee8e8cb830"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame120.png",
+      "bytes": 28543,
+      "sha256": "00a6b45097a623bedd6c20b2720266ae0ab6fecdf62bee2244b4095ab79357fb"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame150.png",
+      "bytes": 31075,
+      "sha256": "d644c94ea1dd4645eeeb7f7e1e1c5e31f3937785b6fd1909e7738c048bd3e9ac"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame180.png",
+      "bytes": 35166,
+      "sha256": "e48328cd76a275644dfb85f6e26d60e1d47c419166f4fe69f08f67f8af5eb39a"
+    },
+    {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Frame240.png",
+      "bytes": 37626,
+      "sha256": "c943d8621356154f7af1f3a4708102e35dd38eab275d6b021fafffaf23a0599c"
+    }
+  ],
+  "limitations": [
+    "The low-light phase includes existing environment lighting and 200 directional illuminance.",
+    "This is a deterministic four-second adaptation segment, not a measurement of steady-state convergence in the final dark phase.",
+    "Grey-card calibration and detailed Bloom validation are recorded separately."
+  ],
+  "continuous_window_video": {
+    "video": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Live2\\ExposureLiveTrimmed.mp4",
+      "bytes": 2388433,
+      "sha256": "5d512ba4aacea25544cfb4b2ec3664265b815fd9c6e998125ec010e6b24ccfe4"
+    },
+    "trim": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Live2\\Trim.json",
+      "bytes": 1192,
+      "sha256": "ecb9ea6bf9efa30c563336f04a970efc5b4754433bff1279c19290893da26b0f"
+    },
+    "raw_video": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Live2\\ExposureLive.mp4",
+      "bytes": 2882154,
+      "sha256": "ec102868fbd64d101c1ede7ab378afaeaba7624d64a8b2ad6310b70a74a6dd51"
+    },
+    "capture_report": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Live2\\ExposureLive.json",
+      "bytes": 15253,
+      "sha256": "ed2105f90b814ead9f96fc105da01d4fe595950c7a4e678cdb1bc03c3ffa0579"
+    },
+    "run_report": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Live2\\Run.json",
+      "bytes": 2818939,
+      "sha256": "366b53152af40988fdc6163945fc369eaca91ffba7c6131199afb999aab614cd"
+    },
+    "commands": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-dynamic-r4\\Live2\\Commands.json",
+      "bytes": 1465,
+      "sha256": "5fa6bf9a6affd2fdb54a3a5f14f28cf334b1d81baa50c7b54596795388661122"
+    },
+    "description": "Actual PID-selected client PrintWindow recording at 20fps. Raw 10-second recording contains 200 distinct frames. First second of initial window clear is trimmed, leaving nine seconds of continuous wall-clock light-animation playback. No interpolation or frame reordering."
+  }
+}

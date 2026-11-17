@@ -31,6 +31,8 @@
 #pragma once
 
 #include "engine_next/include/EngineNext/Assets/Types.h"
+#include "engine_next/include/EngineNext/Rendering/PostProcessSettings.h"
+#include "engine_next/include/EngineNext/Rendering/LightTimeline.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 
 #include <array>
@@ -115,6 +117,9 @@ struct RenderConfiguration
 	DirectionalLightSettings stDirectionalLight;
 	ShadowSettings stShadows;
 	TemporalSettings stTemporal;
+	ExposureSettings stExposure;
+	BloomSettings stBloom;
+	LightAnimationSettings stLightAnimation;
 	std::vector<PointLightSettings> arrPointLights{ PointLightSettings{} };
 	std::vector<SpotLightSettings> arrSpotLights;
 	double dExposure = 1;
@@ -140,6 +145,10 @@ struct RenderConfiguration
 // Spot angles satisfy 0 <= inner <= 85 and inner < outer <= 89 degrees.
 // Optional temporal_aa uses defaults when absent. Its history weight is [0, 0.99]
 // and relative depth threshold is [0.0001, 0.25], including when disabled.
+// Optional exposure_settings and bloom fields use PostProcessSettings defaults.
+// Numeric exposure remains required and supplies the legacy-mode multiplier.
+// Optional light_animation applies its timeline to directional illuminance.
+// Its omitted fields default to an empty, non-looping linear track.
 // Both functions append diagnostics and leave the output unchanged on failure.
 [[nodiscard]] bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std::string &strExpectedDigest, RenderConfiguration &out_stConfiguration,
 											Assets::Diagnostics &out_arrDiagnostics);

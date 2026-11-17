@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T02:18:35.757532+00:00",
+  "candidate": "postprocess-final",
+  "head": "61dc9db5cd4c5ebf30d74e835f6489fb1204c328",
+  "reviewer": "m42_cook_review",
+  "result": "no additional actionable source findings",
+  "findings": [],
+  "review_scope": {
+    "independent": [
+      "Root-authored runtime insertion points, descriptor/root-signature wiring, submission/reset/resize integration and per-frame telemetry",
+      "Deferred.hlsl and temporal pre-exposure modifications authored by root",
+      "Bloom.hlsl, BloomSampling.hlsli and TestBloomSampling.cpp authored by another agent"
+    ],
+    "self_review": [
+      "PostProcessSettings, LightTimeline, configuration extensions and their tests",
+      "Exposure.hlsl, ExposureMath.hlsli and TestExposureSampling.cpp",
+      "RenderPipeline extensions and TestRenderPipeline.cpp",
+      "The portions of VisualRuntime.cpp derived from this reviewer's PostProcessRuntime/DrawPostProcess/PostProcessReadback private insertion drafts"
+    ],
+    "boundary": "Independent review claims exclude reviewer-authored implementation. Existing peer reviews provide separate coverage for those portions."
+  },
+  "checks": [
+    "Each frame evaluates directional-light animation exactly once before constant upload. The same light snapshot feeds cascades and lighting; failed evaluation stops before temporal/exposure commit.",
+    "Emissive is multiplied by Pn before its half-float GBuffer store. Directional/local/IBL lighting and sky apply the same Pn. Finite nonnegative HDR contributions saturate at 65504 before half-float storage.",
+    "The previous exposure record stores E(n-1) and P(n-1). TAA multiplies history RGB by E(n-1)/P(n-1), preserving alpha coverage, before clipping into the current-frame neighborhood. Metadata remains geometric.",
+    "Histogram input is resolved HDR when temporal AA is active, otherwise current HDR. log2(luminance)-log2(Pn) restores physical luminance without a potentially overflowing division. Invalid or negative samples are counted separately.",
+    "Automatic exposure clamps its compensated target EV to configured bounds. Manual EV plus compensation is not additionally clamped. Supported settings produce positive normal binary32 multipliers; dt is finite and limited to 0.1 seconds.",
+    "Tone mapping combines stored scene and Bloom in the same Pn units, then applies En/Pn exactly once. Disabled or zero-intensity Bloom has a branch and a valid source-resource descriptor.",
+    "Typed clear aliases use float4 for the exposure seed and R32_UINT for histogram clearing. Structured SRV/UAV views remain distinct. CPU clear handles reference the non-shader-visible heap and match the GPU aliases.",
+    "Frame-local descriptor rewrites occur after that frame slot retires. Exposure read/write buffers are disjoint and flip only after successful graphics submit, Present, Signal and temporal commit. Their next-frame use remains ordered on one direct queue.",
+    "Bloom down/up outputs have independent allocations and immutable per-frame descriptor pairs. Ceil-halved dimensions come from actual destination resources, and source resources are never written by the same dispatch.",
+    "PostProcessReadback is an explicit graph pass. It reads histogram/exposure in CopySource state and writes its imported CopyDestination allocation. Present restores source resources to Common; map occurs after the corresponding frame fence.",
+    "Readback checks all four exposure values finite, the two multipliers positive normal, the meter nonnegative, bins sum equal finite count and finite plus invalid equal the recorded frame viewport. Readback is attached to the producing frame timing.",
+    "Resize retires graphics/compute queues before replacing sized resources, retains fixed-size exposure/histogram/readback allocations, and invalidates exposure/history readiness. Histogram and initial seed are rewritten before their next reads.",
+    "All 233 native input hashes in the final VisualBuildReport match current working-tree bytes. Existing no-exposure graph entry points and fixed-mesh mode retain their previous path."
+  ],
+  "source_snapshot": [
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "8a3b38ef0a9d4f8741d9d9cb360aa587ee04d30ceadef4b679f5326b2a11c7d5",
+      "bytes": 194895,
+      "git_blob": "3bc73af0e4407d11b9b5deb012502691c27f411e"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "sha256": "c89bbdf511cf09f4fdd0638dc6ebffe839bc335e306823961d2e8d68eb0e5ff4",
+      "bytes": 13976,
+      "git_blob": "1af93a0ab73dcba63f87f45c1c11756145222618"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/TemporalAA.hlsl",
+      "sha256": "e59f0fd6f21968a7206a7a92be792cf44181375d81e8d0be9aa2f47525efd4a3",
+      "bytes": 5277,
+      "git_blob": "b36ffd4955b2a8b5ea2350605b72bcbfd5b7a254"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/TemporalSampling.hlsli",
+      "sha256": "4c7115f3ec45a44d29a4e1bc8fb1b031df1a6f529fc7df393464cdbe670d5b87",
+      "bytes": 4680,
+      "git_blob": "73fe510099519ba29bcc4772ae0a9baa7e1fb1f1"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Exposure.hlsl",
+      "sha256": "2870a6fdd17504baa73131bd4fa976ede3ba685cc0c7df8dbe0b4963d60f7766",
+      "bytes": 2143,
+      "git_blob": "7095a05a88dfb0eb92b4cf070edcb23b4986a89d"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ExposureMath.hlsli",
+      "sha256": "ed72cb6d70f51b509dceb24a7ac13051287e712027bbc0263b138aa753b0f402",
+      "bytes": 5667,
+      "git_blob": "4bf2007dc18e4129bfc6ce1ea6eb12625747ee51"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Bloom.hlsl",
+      "sha256": "5c5e8a93bc2929a91cfb879a1bc1ea10632950a85e1cfdda2d4b4c0f21822eb9",
+      "bytes": 1096,
+      "git_blob": "76d0f0bbc71cc930563ced63598d8ba36f71a16b"
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/BloomSampling.hlsli",
+      "sha256": "642c7a51a93eb163254fbde23d345dc6fe6143a3c96ea2930a09be42d4f00182",
+      "bytes": 3442,
+      "git_blob": "f45936284adc8befb586e5d516bb664bc93d5794"
+    },
+    {
+      "path": "engine_next/Rendering/PostProcessSettings.cpp",
+      "sha256": "a872c712b08bea9e0870df35f2605aa3e5648d80e07d7cd2225528565d4db832",
+      "bytes": 10249,
+      "git_blob": "abe95d48f772e13969a5394644d66e41ef13a73f"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/PostProcessSettings.h",
+      "sha256": "55e6da34c8d9ee506ff8bcb4396af771a6b13c02b7d79496471230f66f90c03d",
+      "bytes": 5708,
+      "git_blob": "9d6280803d41ea5e782094c0eee447b71658f3d5"
+    },
+    {
+      "path": "engine_next/Rendering/LightTimeline.cpp",
+      "sha256": "b33135caf1c12b116a5679a4b2002253461eb96aa676b92e9970d28f2b29cd98",
+      "bytes": 6202,
+      "git_blob": "3adaa5e75f29fecf40ef753855be1b1564283028"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/LightTimeline.h",
+      "sha256": "8778c9d9caa340b9827ef04ae32a66823583c5390efb0125f205a809282c66d2",
+      "bytes": 3953,
+      "git_blob": "6be7477ac36453dccbfd5c6ada545b68464827c0"
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "sha256": "bc429ae92d9bf33c6fda19a06a83eb8d776394e3fb551309e2583479efd6864a",
+      "bytes": 30882,
+      "git_blob": "67952336ff2ca0d48a5c2d2f3f1d0c6589fa0630"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "sha256": "4f38c2d576d70e80a743285d872dacd46c0593bdb16d79220dc540c9a70c5804",
+      "bytes": 7015,
+      "git_blob": "9af02f3b584327bf73e0651589dc262c18e3c4bb"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "sha256": "1074b5ed7bf8e8311bdcf06be1c690e3c44a5bc112be68b2a3ccd3a9abf0f060",
+      "bytes": 16246,
+      "git_blob": "b948b1c7f5d37059c90e86999f607296ab3e685f"
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "sha256": "01a168bd5e085f9eaa84c14aac5605cef313ab1042bdde43cceed59b413c1a9e",
+      "bytes": 5177,
+      "git_blob": "973f8949359d6684fd4a05627f4c3b2cb1c3555f"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestPostProcessSettings.cpp",
+      "sha256": "df84f9044837a5f2c723bcac409681e88179fdf7c0da88d3428d0b8590bb7723",
+      "bytes": 13545,
+      "git_blob": "d5a337c3cbb168b06de0fba8bc38f0d21cc7c152"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestLightTimeline.cpp",
+      "sha256": "22ec05a5feb7b0e930ea2a1868be4feee887743485a875dae21ef04a24e1cf08",
+      "bytes": 7914,
+      "git_blob": "62215ab5d4868ed0c42571e5a971c091fbb4f2fe"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "sha256": "40c54e533c7d5c6dee049a29e13a93feefcb5a198a7c8f4a1e2be881bd5b7197",
+      "bytes": 53360,
+      "git_blob": "4d3790d1379dbcee82a250b95920460659dbd1b9"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
+      "sha256": "f92b88d934e3a334b75987b54f29aac27027bffba8ee86c3b0e2992ca725b7e1",
+      "bytes": 32591,
+      "git_blob": "c0764aaeedca4527352cc6ee28131e8e54efe1b4"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestExposureSampling.cpp",
+      "sha256": "958f6dc1b60aa7ce612d7b38389386ff5c993f2d786ae1d5d40f8fa84fe7a59e",
+      "bytes": 11855,
+      "git_blob": "f0ee844bf3898fe87ecab469a05402742445f30d"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestBloomSampling.cpp",
+      "sha256": "14ec8273d65b3fbacff2e5459f4db45bff7126a91ccede07b9449f1280765ea4",
+      "bytes": 12073,
+      "git_blob": "21db48f804ac9eaed1008a182080673874b5969b"
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestTemporalSampling.cpp",
+      "sha256": "ee190826fe18e455aadc949f1c46419cecbd94720c5bd31cadb5b124e8524287",
+      "bytes": 15890,
+      "git_blob": "2dc8686b05e6b7c4b4b17279055c95c668510f8c"
+    },
+    {
+      "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+      "sha256": "333e02981a7f9a12b3018bff9e3ac16693721a2339fabe2a146c8ee4eeec1548",
+      "bytes": 11067,
+      "git_blob": "87a5afa02a231410acc9fd88431c1c8d9d22f46c"
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "sha256": "978677897336aa840a3a89bf6d181fa742115e198c87cd1a685c0e7ad38d55f3",
+      "bytes": 27912,
+      "git_blob": "47fd9c16f8080ec7448ef741afeaa8a95d658ed2"
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "sha256": "abb5bdf0482369c0249f759f5813811a6ad3dec5891c2d7b25dd2f3d4daae998",
+      "bytes": 6836,
+      "git_blob": "aa123383e88b25ec686496529be97730f15f3481"
+    },
+    {
+      "path": "engine_next/Tools/GeneratePostProcessBenchmark.py",
+      "sha256": "b319fccdaa249d812db6ff842d994bd22b2c25bf54f2c3a265ba8adb274fc3d9",
+      "bytes": 6947,
+      "git_blob": "09f65ab33f6e68c84753e6d5b1c29c36d9605c83"
+    }
+  ],
+  "build_binding": {
+    "native_key": "ed839af22a155c8e8082dd0545ed67822b0ce91b6f444c244b4887e2d7695b68",
+    "native_input_count": 233,
+    "mismatches": [],
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-final\\VisualBuildReport.json",
+      "bytes": 1663254,
+      "sha256": "a683569a72bb712acf8c478950a3d614d624225f2fb0770b77649392b4cbfe4e"
+    },
+    "binary": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-final\\next_visual_client.exe",
+      "bytes": 3026432,
+      "sha256": "24e4bf9784ce790897f525a324811792cbad5916fa36d8e526a33d8b221d9303"
+    }
+  },
+  "observed_tests": [
+    {
+      "action": "Executed existing r4 next_rendering_tests.exe",
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=202 checks=25873 failures=0",
+      "source_recompiled_by_reviewer": false
+    },
+    {
+      "action": "Independently compiled and ran actual HLSLI Bloom CPU shim with MSVC C++17 /W4 /WX and exceptions disabled",
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=6 checks=1522 failures=0",
+      "record": {
+        "path": "build/engine_next/postprocess-final-source-review/Results.json",
+        "sha256": "7d9a2da71ffb78d4e945bf79c938f8930575a13beb2564fd2a171e017aac1d5f",
+        "bytes": 32379
+      }
+    },
+    {
+      "action": "Independently recompiled HistogramBuildCS, ExposureAdaptCS, DownsampleCS and UpsampleCS with DXC -Ges -WX -O3 cs_6_0",
+      "result": "all passed"
+    }
+  ],
+  "peer_evidence": [
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-postprocess-math-review.json",
+      "sha256": "da8ca4fcf61a2b984338495814b8142c3e4f59e3cf6167903e7fab7b68e1f0f7",
+      "bytes": 3943
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-postprocess-pipeline-review.json",
+      "sha256": "0e7bd755645f469f0b7f6c109319548b0bcc325e032b0cd19c30f90522aef521",
+      "bytes": 2528
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-light-timeline-review.json",
+      "sha256": "00e8bb834c47886b9640070d6aa18b947edc2ff27a3accf5682cebc1d2c86897",
+      "bytes": 2678
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-light-timeline-runtime-review.json",
+      "sha256": "c5216a95e04f33fbaf692dee78d26c7efe6d44720d9b435ff62c8c9e1d4ed965",
+      "bytes": 1347
+    },
+    {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-postprocess-dynamic-numerical-review.json",
+      "sha256": "57bbb8adc704a63c702080b373f18d73aa001d778bf66ecf1c81dcfa34122ccb",
+      "bytes": 3670
+    }
+  ],
+  "limitations": [
+    "RGBA16F saturation is explicit. It can discard physical HDR information outside the representable pre-exposed range; the record makes no promise of unsaturated output for every legal material/light combination.",
+    "Current telemetry records peak local video-memory usage and per-pass timings. It does not attribute allocation bytes to individual Bloom mip resources.",
+    "The reviewed dynamic numerical evidence recomputes exposure adaptation from recorded GPU metered luminance. It does not independently reconstruct every unrecorded dynamic per-pixel histogram.",
+    "GPU image quality, native-4K performance and UE comparison are separate acceptance results and are not certified by this source review."
+  ],
+  "prior_review": {
+    "recorded_at_utc": "2026-11-17T02:05:01.913828+00:00",
+    "candidate": "postprocess-r4",
+    "snapshot": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-probes\\SourceReviewR4.json",
+      "bytes": 14170,
+      "sha256": "cd314ee307a39e9238342e24c34eb1924a4bc942afea88fc64c6b864f6a04d21"
+    }
+  },
+  "final_binding_reviewer": "independent network acceptance agent",
+  "format_only_delta": {
+    "files": [
+      {
+        "path": "engine_next/Rendering/LightTimeline.cpp",
+        "prior_sha256": "4a809751913bb219a8e315ca99de93aef9c5e47e5ebb8a418c6b94746cccd610",
+        "current_sha256": "b33135caf1c12b116a5679a4b2002253461eb96aa676b92e9970d28f2b29cd98"
+      }
+    ],
+    "proof": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-probes\\FinalWhitespaceDelta.json",
+      "bytes": 448,
+      "sha256": "013306867ab761351ddf2857f02fec42b76f0a8b66c7c19c8f62dbad908d98f5"
+    },
+    "description": "The only native input change from r4 is indentation on three lines of the upper_bound lambda. Exact bytes match after whitespace removal. The r4 real network session retains its original executable identity."
+  },
+  "peer_evidence_history": "The r2/r3 peer documents retain their recorded source hashes and candidate scope. Later LightTimeline and final formatting are covered separately."
+}

@@ -1,0 +1,859 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at": "2026-11-17T02:21:32.812151+00:00",
+  "placement": "mixed",
+  "source_manifest": {
+    "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\SourceManifest.json",
+    "bytes": 49619,
+    "sha256": "5f049f94903619576d524ab7a0c038c497f36acec2a08677ae6f9f5a0483c9d2"
+  },
+  "builds": {
+    "Baseline": {
+      "native_key": "ed839af22a155c8e8082dd0545ed67822b0ce91b6f444c244b4887e2d7695b68",
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\VisualBuildReport.json",
+        "bytes": 1756377,
+        "sha256": "217a6179f53d6eb7462ed8217d413f5f172631663f708dbb66683b13ff694a1b"
+      },
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=202 checks=25873 failures=0",
+      "binary": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "bytes": 3026432,
+        "sha256": "19508c8d421bc05bb103279dec795855a9c281561ea57d2d05f69cc630c1a83b"
+      },
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Deferred.ps.cso",
+          "bytes": 9760,
+          "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Temporal.cs.cso",
+          "bytes": 19080,
+          "sha256": "44a4dc42b1b1b115e8bfa4a77cf2b710140a05089714a080ecd9e553683be46e"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\BloomDown.cs.cso",
+          "bytes": 43620,
+          "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        }
+      ],
+      "directory": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline"
+    },
+    "Changed": {
+      "native_key": "23aec11f6b174615d197b528dd63ff617fb5066e62c0cad7d85c45f24be775ec",
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\VisualBuildReport.json",
+        "bytes": 1755930,
+        "sha256": "165cc7e3b01a8194a43de8331d68894113756ed08de4e0fe9e9ef9767d12a934"
+      },
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=202 checks=25873 failures=0",
+      "binary": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\next_visual_client.exe",
+        "bytes": 3026432,
+        "sha256": "8cb1b656e443c1eb940cb3a5a0f018fc7862d3416e84a24c92bb9de7cb827eee"
+      },
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Deferred.ps.cso",
+          "bytes": 9760,
+          "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Temporal.cs.cso",
+          "bytes": 19080,
+          "sha256": "44a4dc42b1b1b115e8bfa4a77cf2b710140a05089714a080ecd9e553683be46e"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\BloomDown.cs.cso",
+          "bytes": 43632,
+          "sha256": "00de6aa7b4df52a9c7e264a9d88516efdac8992c9ce034904cd4f1fd84f6b782"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        }
+      ],
+      "directory": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed"
+    },
+    "Restored": {
+      "native_key": "ed839af22a155c8e8082dd0545ed67822b0ce91b6f444c244b4887e2d7695b68",
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\VisualBuildReport.json",
+        "bytes": 1756377,
+        "sha256": "4bbbf4064afaa3e4392757d60378242a484692a17e8f4875e30c03dd886ed3cb"
+      },
+      "summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=202 checks=25873 failures=0",
+      "binary": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\next_visual_client.exe",
+        "bytes": 3026432,
+        "sha256": "5836ab4e8971522810de545ed5481fda8a5feac9db96c9d2861c69bc0f5a275b"
+      },
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Deferred.ps.cso",
+          "bytes": 9760,
+          "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Temporal.cs.cso",
+          "bytes": 19080,
+          "sha256": "44a4dc42b1b1b115e8bfa4a77cf2b710140a05089714a080ecd9e553683be46e"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\BloomDown.cs.cso",
+          "bytes": 43620,
+          "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        }
+      ],
+      "directory": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored"
+    }
+  },
+  "same_binary_runs": [
+    {
+      "label": "Baseline",
+      "executable_sha256": "19508c8d421bc05bb103279dec795855a9c281561ea57d2d05f69cc630c1a83b",
+      "capture": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunBaseline\\Result.ppm",
+        "bytes": 921615,
+        "sha256": "165941851bb256dec3c3581649c151fccb846994dc644b0e806fde2bf4a2420a"
+      },
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunBaseline\\Run.json",
+        "bytes": 80988,
+        "sha256": "511776acfaa41b4e96c99fbe3ad9a5c30531f6bf7ee86ff01c22c90100732fa9"
+      },
+      "frames": 24,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Deferred.ps.cso",
+          "bytes": 9760,
+          "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Temporal.cs.cso",
+          "bytes": 19080,
+          "sha256": "44a4dc42b1b1b115e8bfa4a77cf2b710140a05089714a080ecd9e553683be46e"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\BloomDown.cs.cso",
+          "bytes": 43620,
+          "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        }
+      ]
+    },
+    {
+      "label": "Changed",
+      "executable_sha256": "19508c8d421bc05bb103279dec795855a9c281561ea57d2d05f69cc630c1a83b",
+      "capture": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunChanged\\Result.ppm",
+        "bytes": 921615,
+        "sha256": "a1db4449eb606116c852927a0626d4ea8bf3ef6aa0702e38933cdf4dc11d44f4"
+      },
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunChanged\\Run.json",
+        "bytes": 80979,
+        "sha256": "3608e9987d6f399bdf033a43b624de606a80c5865903fb59e84208306531ab77"
+      },
+      "frames": 24,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Deferred.ps.cso",
+          "bytes": 9760,
+          "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Temporal.cs.cso",
+          "bytes": 19080,
+          "sha256": "44a4dc42b1b1b115e8bfa4a77cf2b710140a05089714a080ecd9e553683be46e"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\BloomDown.cs.cso",
+          "bytes": 43632,
+          "sha256": "00de6aa7b4df52a9c7e264a9d88516efdac8992c9ce034904cd4f1fd84f6b782"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed\\BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        }
+      ]
+    },
+    {
+      "label": "Restored",
+      "executable_sha256": "19508c8d421bc05bb103279dec795855a9c281561ea57d2d05f69cc630c1a83b",
+      "capture": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunRestored\\Result.ppm",
+        "bytes": 921615,
+        "sha256": "165941851bb256dec3c3581649c151fccb846994dc644b0e806fde2bf4a2420a"
+      },
+      "report": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunRestored\\Run.json",
+        "bytes": 80956,
+        "sha256": "7fe872e133fdaa11c1446892e4999880178db627b01cdecae54471d4d63ad4c1"
+      },
+      "frames": 24,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Deferred.vs.cso",
+          "bytes": 8236,
+          "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Deferred.ps.cso",
+          "bytes": 9760,
+          "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Temporal.cs.cso",
+          "bytes": 19080,
+          "sha256": "44a4dc42b1b1b115e8bfa4a77cf2b710140a05089714a080ecd9e553683be46e"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\BloomDown.cs.cso",
+          "bytes": 43620,
+          "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+        },
+        {
+          "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored\\BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        }
+      ]
+    }
+  ],
+  "invalid_shader": {
+    "report": {
+      "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\InvalidRun.json",
+      "bytes": 43702,
+      "sha256": "561a0efa751025f203d8fca744e1ee8fdb53e43de861cc0263f4c959f4ece8c4"
+    },
+    "exit_code": 1,
+    "frames": 0,
+    "failure": "Create post-process PSO BloomDown.cs.cso (HRESULT -2147467259)"
+  },
+  "checks": {
+    "native_invalidation": {
+      "command": "python build/engine_next/RunPostprocessBuildImpact.py --root . --output build/engine_next/postprocess-impact-final --gpu-go build/engine_next/postprocess-impact-final/GpuGo.txt",
+      "observed": "Baseline and restored native keys are equal. Halving Bloom downsample output changes the native key. All three clean-export builds pass 202 tests and 25873 checks.",
+      "passed": true
+    },
+    "same_binary_update": {
+      "command": "One baseline executable selects each of three offline shader directories and renders 24 deterministic frames with GPU validation",
+      "observed": "The changed Bloom shader produces a different capture. All three runs complete 24 frames with zero GPU validation errors.",
+      "passed": true,
+      "before_executable": "19508c8d421bc05bb103279dec795855a9c281561ea57d2d05f69cc630c1a83b",
+      "after_executable": "19508c8d421bc05bb103279dec795855a9c281561ea57d2d05f69cc630c1a83b",
+      "before_package": "527af103048c8667835a84e57b2fd1d3aea551093c869452ead5aebee009ef93",
+      "after_package": "56655e1bb1a23b71930ea16b77ca3a6343416c14f64e4fca93aae17e885557a8"
+    },
+    "rollback": {
+      "command": "The same executable selects the restored shader directory",
+      "observed": "Restored native key and final capture match baseline exactly.",
+      "passed": true
+    },
+    "incompatible_rejection": {
+      "command": "The same executable selects a directory with an invalid BloomDown.cs.cso",
+      "observed": "{\"exit_code\": 1, \"failure\": \"Create post-process PSO BloomDown.cs.cso (HRESULT -2147467259)\", \"frames\": 0, \"report\": {\"bytes\": 43702, \"path\": \"D:\\\\Projects\\\\engine-next-m4-3-postprocess-20261117\\\\build\\\\engine_next\\\\postprocess-impact-final\\\\InvalidRun.json\", \"sha256\": \"561a0efa751025f203d8fca744e1ee8fdb53e43de861cc0263f4c959f4ece8c4\"}}",
+      "passed": true
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\engine_next\\Tools\\ExportCleanSource.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117",
+        "--output",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-postprocess-20261117",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Export.log",
+        "bytes": 303,
+        "sha256": "38f068385b30ba130db7788d20004cb43efdc2bd41d34ec5384edb6583454cb9"
+      }
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\engine_next\\Tools\\BuildVisualRuntime.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source",
+        "--build-dir",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-postprocess-20261117",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Baseline.log",
+        "bytes": 181,
+        "sha256": "a39b186e591c5f16c37af2acfcdfd5d5be942a17ece2a7f2d480986293d130ca"
+      }
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\engine_next\\Tools\\BuildVisualRuntime.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source",
+        "--build-dir",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-postprocess-20261117",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Changed.log",
+        "bytes": 180,
+        "sha256": "c8ff287a1ef7cde4a5e5745d00c0d7c1947f9994bbd1fa0af39e7d151cc4a700"
+      }
+    },
+    {
+      "command": [
+        "C:\\Users\\kaiyu\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\engine_next\\Tools\\BuildVisualRuntime.py",
+        "--repo",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source",
+        "--build-dir",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-postprocess-20261117",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Restored.log",
+        "bytes": 181,
+        "sha256": "a509724fce0878898a7b67d99675405750adef3a5cda99dc1ed0b283f7e8d0b4"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--validation",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene.enpak",
+        "--gpu-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-gpu-r2\\Bloom6Config.json",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunBaseline\\Run.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunBaseline\\Result.ppm"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunBaseline",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\BaselineRuntime.log",
+        "bytes": 60,
+        "sha256": "1253783642bc19c1af19a3ff4956b7faa917791004b00fb1544e897fe16f7428"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--validation",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene.enpak",
+        "--gpu-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-gpu-r2\\Bloom6Config.json",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Changed",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunChanged\\Run.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunChanged\\Result.ppm"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunChanged",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\ChangedRuntime.log",
+        "bytes": 60,
+        "sha256": "1253783642bc19c1af19a3ff4956b7faa917791004b00fb1544e897fe16f7428"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--validation",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene.enpak",
+        "--gpu-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-gpu-r2\\Bloom6Config.json",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Restored",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunRestored\\Run.json",
+        "--capture",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunRestored\\Result.ppm"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RunRestored",
+      "exit_code": 0,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\RestoredRuntime.log",
+        "bytes": 60,
+        "sha256": "1253783642bc19c1af19a3ff4956b7faa917791004b00fb1544e897fe16f7428"
+      }
+    },
+    {
+      "command": [
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\Source\\build\\engine_next\\Baseline\\next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--asset-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene.enpak",
+        "--gpu-package",
+        "D:/Projects/engine-next-m4-3-shadows-20261116/build/engine_next/shadow-gpu-final/Scene-v2.engpu",
+        "--render-config",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-gpu-r2\\Bloom6Config.json",
+        "--shader-directory",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\InvalidShaders",
+        "--report",
+        "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\InvalidRun.json"
+      ],
+      "cwd": "D:\\Projects\\engine-next-m4-3-postprocess-20261117",
+      "exit_code": 1,
+      "log": {
+        "path": "D:\\Projects\\engine-next-m4-3-postprocess-20261117\\build\\engine_next\\postprocess-impact-final\\InvalidRuntime.log",
+        "bytes": 123,
+        "sha256": "9ce028016a3236701cacc38554b508c7c2d9aa1bb56d6419d1be79934613c262"
+      }
+    }
+  ],
+  "input_blobs": {
+    "engine_next/Rendering/CameraMatrices.cpp": "6052df8be7d3650c5883b18f6f842128eb7eda63",
+    "engine_next/Rendering/Cook/EnvironmentLighting.cpp": "dc508c2de6b0360a3e27c16b34710fba4319d002",
+    "engine_next/Rendering/Cook/EnvironmentLighting.h": "5fae4c4fd0ed1665eb37aa5388504c1a96855042",
+    "engine_next/Rendering/Cook/GltfDecoder.cpp": "f6e95f3ed33f940353938f308807ddb3e69ab284",
+    "engine_next/Rendering/Cook/GltfDecoder.h": "247efc4fefeddcbcccfd2e603dce85d49cbbf65f",
+    "engine_next/Rendering/Cook/GpuPackage.cpp": "b5722c38fd7e4981456d9ab55b71315816382ee7",
+    "engine_next/Rendering/Cook/GpuPackage.h": "8e7a77f6be3037f4d60c46bf60e2afd04275d8ba",
+    "engine_next/Rendering/Cook/ImageDecoder.cpp": "578baabdb174822b33d97ac27fe7565c0ae5440c",
+    "engine_next/Rendering/Cook/ImageDecoder.h": "653978338509693a5a1e770aa321c2fb048aa95f",
+    "engine_next/Rendering/Cook/JpegValidation.c": "b9a56518347d89390f8dc05be4ade9111ae26046",
+    "engine_next/Rendering/Cook/JpegValidation.h": "a817925671d5d1beca1f90fd20a10d1589f25f43",
+    "engine_next/Rendering/Cook/MeshCluster.cpp": "52f27f2a04ca3296ee26d3f4e0577fee21a1e85a",
+    "engine_next/Rendering/Cook/MeshCluster.h": "8d67ca934fa1f2989937ca5aa136b2bb5eafa1b5",
+    "engine_next/Rendering/Cook/TextureCook.cpp": "fc6d3d3069767ce7387ca5ffd0568251684ee7b2",
+    "engine_next/Rendering/Cook/TextureCook.h": "f1277775865a0a8115635a417f1a78e0897d5645",
+    "engine_next/Rendering/FrameGraph.cpp": "29f4da4a5c2bcdd40ee927056e3f810cc997f9bb",
+    "engine_next/Rendering/LightTimeline.cpp": "3adaa5e75f29fecf40ef753855be1b1564283028",
+    "engine_next/Rendering/LocalShadowData.cpp": "36225bd7b393d52b3a06d772cba455f8d4bd748a",
+    "engine_next/Rendering/PostProcessSettings.cpp": "abe95d48f772e13969a5394644d66e41ef13a73f",
+    "engine_next/Rendering/RenderConfiguration.cpp": "67952336ff2ca0d48a5c2d2f3f1d0c6589fa0630",
+    "engine_next/Rendering/RenderPipeline.cpp": "b948b1c7f5d37059c90e86999f607296ab3e685f",
+    "engine_next/Rendering/RenderPipeline.h": "973f8949359d6684fd4a05627f4c3b2cb1c3555f",
+    "engine_next/Rendering/RenderScene.cpp": "36123d3eb1e461d9076b359d99e4cd9067e59f7b",
+    "engine_next/Rendering/Shaders/Bloom.hlsl": "76d0f0bbc71cc930563ced63598d8ba36f71a16b",
+    "engine_next/Rendering/Shaders/BloomSampling.hlsli": "f45936284adc8befb586e5d516bb664bc93d5794",
+    "engine_next/Rendering/Shaders/Deferred.hlsl": "1af93a0ab73dcba63f87f45c1c11756145222618",
+    "engine_next/Rendering/Shaders/Exposure.hlsl": "7095a05a88dfb0eb92b4cf070edcb23b4986a89d",
+    "engine_next/Rendering/Shaders/ExposureMath.hlsli": "4bf2007dc18e4129bfc6ce1ea6eb12625747ee51",
+    "engine_next/Rendering/Shaders/FixedMesh.hlsl": "0e32bb1b8f794bd6ef3b8ede41f29ebf618fd60a",
+    "engine_next/Rendering/Shaders/Shadow.hlsl": "626ef5e92768041e5fd96505c832670768d4de8a",
+    "engine_next/Rendering/Shaders/ShadowSampling.hlsli": "665209001be61d30bc7cc3108503f9aec52ce562",
+    "engine_next/Rendering/Shaders/TemporalAA.hlsl": "b36ffd4955b2a8b5ea2350605b72bcbfd5b7a254",
+    "engine_next/Rendering/Shaders/TemporalSampling.hlsli": "73fe510099519ba29bcc4772ae0a9baa7e1fb1f1",
+    "engine_next/Rendering/ShadowBounds.cpp": "8dd6c7dc95890506ed2996a3c10ddd30d15da6b9",
+    "engine_next/Rendering/ShadowBounds.h": "31a8703332f7c2fa172d1a16f7c08ece805abe2f",
+    "engine_next/Rendering/ShadowData.cpp": "c9772a4bf3cc51bee1f61314cd52232f0c6d1320",
+    "engine_next/Rendering/TemporalState.cpp": "0a3cd9520af76d8768108b3f0d8eb74d38f4d2d4",
+    "engine_next/Rendering/VisualRuntime.cpp": "3bc73af0e4407d11b9b5deb012502691c27f411e",
+    "engine_next/Tools/BuildVisualRuntime.py": "47fd9c16f8080ec7448ef741afeaa8a95d658ed2",
+    "engine_next/Tools/PackageVisualRuntime.py": "aa123383e88b25ec686496529be97730f15f3481",
+    "engine_next/Schemas/RenderConfiguration-v1.json": "87a5afa02a231410acc9fd88431c1c8d9d22f46c",
+    "engine_next/include/EngineNext/Rendering/RenderConfiguration.h": "9af02f3b584327bf73e0651589dc262c18e3c4bb",
+    "engine_next/include/EngineNext/Rendering/TemporalState.h": "e33205c340db68c5476bfe93a5c5c8931b8e1ddf",
+    "engine_next/include/EngineNext/Rendering/PostProcessSettings.h": "9d6280803d41ea5e782094c0eee447b71658f3d5",
+    "engine_next/include/EngineNext/Rendering/LightTimeline.h": "6be7477ac36453dccbfd5c6ada545b68464827c0",
+    "engine_next/Tools/GeneratePostProcessBenchmark.py": "09f65ab33f6e68c84753e6d5b1c29c36d9605c83"
+  }
+}

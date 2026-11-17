@@ -51,6 +51,12 @@ enum class PassWork : std::uint8_t
 	DirectionalShadow = 7,
 	LocalShadow = 8,
 	TemporalResolve = 9,
+	PrepareExposure = 10,
+	HistogramBuild = 11,
+	ExposureAdapt = 12,
+	BloomDownsample = 13,
+	BloomUpsample = 14,
+	PostProcessReadback = 15,
 };
 
 struct RenderPipeline
@@ -58,6 +64,8 @@ struct RenderPipeline
 	CompiledGraph stGraph;
 	// Indexed by the stable PassId, independently of the compiled execution order.
 	std::vector<PassWork> arrWorkByPass;
+	// Indexed by PassId. Only Bloom passes have a valid mip index.
+	std::vector<std::uint32_t> arrPassMipIndex;
 	ResourceId nTint = INVALID_RESOURCE;
 	ResourceId nColor = INVALID_RESOURCE;
 	ResourceId nDepth = INVALID_RESOURCE;
@@ -67,6 +75,12 @@ struct RenderPipeline
 	ResourceId nLocalShadow = INVALID_RESOURCE;
 	ResourceId nMotion = INVALID_RESOURCE;
 	ResourceId nObjectId = INVALID_RESOURCE;
+	ResourceId nHistogram = INVALID_RESOURCE;
+	ResourceId nExposureRead = INVALID_RESOURCE;
+	ResourceId nExposureWrite = INVALID_RESOURCE;
+	ResourceId nPostReadback = INVALID_RESOURCE;
+	std::vector<ResourceId> arrBloomDown;
+	std::vector<ResourceId> arrBloomUp;
 	std::array<ResourceId, 4> arrGbuffer{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	// Color, linear depth, world normal, and object ID in matching read/write slots.
 	std::array<ResourceId, 4> arrHistoryRead{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
@@ -78,7 +92,13 @@ struct RenderPipeline
 // Builds an owned fixed-mesh or HDR deferred plan on the caller's thread.
 // Temporal resolve applies to scene mode. History resources are imported in Common
 // and must be mapped to disjoint, initialized read and write allocations by the caller.
+// Exposure is optional. PrepareExposure clears its histogram each frame and seeds
+// the read record on its first use. Bloom requires exposure and supports 1..6 mips.
+// The last downsample is the last upsample input, so arrBloomUp has mips minus one
+// entries. Exposure readback remains CopyDestination. Other post-process imported
+// resources finish in Common for reuse.
 // Failure preserves the previous output and reports the graph diagnostic.
-[[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0, bool bTemporal = true);
+[[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0, bool bTemporal = true,
+									   bool bExposure = false, std::uint32_t nBloomMips = 0);
 
 } // namespace EngineNext::Rendering
