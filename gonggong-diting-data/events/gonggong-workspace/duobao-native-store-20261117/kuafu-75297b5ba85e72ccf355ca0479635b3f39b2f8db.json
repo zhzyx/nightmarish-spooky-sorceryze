@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-75297b5ba85e72ccf355ca0479635b3f39b2f8db",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-store-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "52c0c37334d85a7628436ff882d4b92bf767e9ef8c5fca1c800d8f19bd6ff210",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1399",
+    "action": "validation",
+    "detection_head": "0590179c01e42ccab6aa925ca097e9ee78cd116e",
+    "context_sha256": "8c494414c011651db40762d191941899fd6dc4fde135ae94ce176c9f04f9486d",
+    "operator": "Sail-Li",
+    "worker": "codex-1382-current",
+    "authority_ref": "codex:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44035550616/job/133877438887",
+    "diagnosis": "Only failing hook was codespell rewriting verbatim historical remote acknowledgement wording inside immutable #1387 audit evidence. Added the single exact receipt path to existing raw-evidence codespell exclusions; product code and evidence bytes remain unchanged.",
+    "next_action": "Run pinned codespell locally and submit corrected metadata candidate; require precise candidate CI success before merge.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T07:04:28.564507+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T07:05:32.430262+00:00",
+  "sha256": "03442ed8370415de5ad5cca7d7ec4e3879d9b36107b45feb70838074a4367734"
+}
