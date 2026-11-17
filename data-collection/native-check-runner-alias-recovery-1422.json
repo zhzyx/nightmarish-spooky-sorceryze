@@ -1,0 +1,16 @@
+{
+  "issue": 1422,
+  "bug": 1425,
+  "supersedes_pr": 1433,
+  "failure_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44082900271/job/134037764441",
+  "correction": "One test assertion now compares actual directory identity with Path.samefile. macOS /var alias and /private/var identify the same cwd; wrong directories still rejected. Production sources unchanged.",
+  "windows": "13 helper tests:10passed3platform-skipped16.044s; Ruff check/format passed.",
+  "linux": "13 helper tests:11passed2Darwin-skipped42.008s, plus actual alias cwd reproduction rejects lexical comparison and wrong directory, accepts same physical directory.",
+  "review": {
+    "path": "data-collection/native-check-runner-alias-review-1422.json",
+    "sha256": "bfc830c7bf58d274918fad4630d9f56f49aa142e96d0d54fcaf4c02a7307b873"
+  },
+  "prior_evidence": "Immutable prior reports remain. Only helper test fixture changed since prior CI correction; no full new 93-test run claimed. Actual macOS CI on new candidate still required.",
+  "state": "Independent review approved; formal CI/main acceptance pending.",
+  "cleanup": "Isolated Linux container and temporary input paths removed; production services unchanged. Active worktree retained."
+}

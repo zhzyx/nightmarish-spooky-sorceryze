@@ -67,7 +67,7 @@ class AdapterProcessTests(unittest.TestCase):
                     self.assertEqual(code, 0)
                     self.assertEqual(failures, [])
                     output.seek(0)
-                    self.assertEqual(Path(output.read().decode().strip()), expected)
+                    self.assertTrue(Path(output.read().decode().strip()).samefile(expected))
                     self.assertEqual(Path.cwd(), parent)
 
     def test_owned_helper_change_invalidates_generated_bundle(self):
