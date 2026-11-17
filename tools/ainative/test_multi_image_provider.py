@@ -442,6 +442,21 @@ class MultiImageTests(unittest.TestCase):
             ("同一角色多视角", ["正面", "右侧面", "背面", "左侧面"]),
             ("两张图：正面和面部细节", ["正面", "面部细节"]),
             ("角色三视图", ["正面", "侧面", "背面"]),
+            ("角色前、后视角", ["正面", "背面"]),
+            (
+                "生成魔兽世界风格人类牧师图，用于生成人物模型，tpose，190身高，脸要我发你的图；"
+                "要求前、后、左、右、俯视角，同时给出【多视角】脸部特写。",
+                [
+                    "正面",
+                    "背面",
+                    "左侧面",
+                    "右侧面",
+                    "俯视",
+                    "面部正面特写",
+                    "面部左侧特写",
+                    "面部右侧特写",
+                ],
+            ),
         ]
         for prompt, expected in cases:
             with self.subTest(prompt=prompt):
@@ -500,6 +515,30 @@ class MultiImageTests(unittest.TestCase):
         )
         self.assertEqual(second_image["payload"]["provenance"]["derived_from"], reference(primary))
         self.assertIn(reference(primary), second_image["dependencies"])
+
+    def test_left_and_right_views_have_explicit_opposite_camera_directions(self):
+        inner = FakeImageProvider("kimi_work_image")
+        provider = self.adapter(inner)
+        request = dict(
+            node="text_to_image",
+            version="4",
+            inputs={},
+            parameters={"prompt": "同一角色正面、左侧面、右侧面"},
+            context=[],
+        )
+        key = "a" * 64
+        receipt = provider.submit(request, {"schema_version": 1, "artifacts": []}, key)
+        for _ in range(4):
+            receipt = provider.poll(receipt["job_id"])
+            if receipt["state"] == "succeeded":
+                break
+        self.assertEqual(receipt["state"], "succeeded")
+        left, right = inner.requests[1:]
+        self.assertIn("anatomical LEFT", left["parameters"]["prompt"])
+        self.assertIn("nose toward the LEFT edge", left["parameters"]["prompt"])
+        self.assertIn("anatomical RIGHT", right["parameters"]["prompt"])
+        self.assertIn("nose toward the RIGHT edge", right["parameters"]["prompt"])
+        self.assertEqual(left["inputs"]["source"], right["inputs"]["source"])
 
     def test_automatic_single_image_runs_only_once(self):
         inner = FakeImageProvider("kimi_work_image")

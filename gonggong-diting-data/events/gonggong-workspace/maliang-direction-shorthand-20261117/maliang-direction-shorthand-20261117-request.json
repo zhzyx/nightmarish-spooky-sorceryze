@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-direction-shorthand-20261117-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-direction-shorthand-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T03:22:00Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261117",
+    "origin": "external-authorized-host",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5"
+  },
+  "payload": {
+    "intent": "Fix automatic Maliang planning for shorthand direction lists and expand multiview face close-ups into front, left and right detail outputs; the reported prompt must produce eight primary-derived outputs.",
+    "authorization_ref": "kimi-work:user:20261117:maliang-direction-shorthand",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "31fff2f7bd22c37a9e47670a9b65a055459266d3742128cf82084deb35823e72"
+}

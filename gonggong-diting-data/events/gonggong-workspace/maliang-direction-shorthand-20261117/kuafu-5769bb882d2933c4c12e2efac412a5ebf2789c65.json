@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5769bb882d2933c4c12e2efac412a5ebf2789c65",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-direction-shorthand-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "81fb167e11dacdaea005313116ec2961c41c6bbd57fc1f6e6878f047d8466b1e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+    "action": "delivery",
+    "detection_head": "83775e6c2ffb5b3a518c4ffebbe0f3777c7dce06",
+    "context_sha256": "03e1e3f40627014fc5171195d28e467f782c4fc99dd8bb3728c58916b70fc9a4",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-host",
+    "authority_ref": "kimi-work:user:20261117:maliang-direction-shorthand",
+    "evidence": "design-docs/maliang-direction-shorthand-20261117.md",
+    "diagnosis": "The installed Git merge-tree does not support the writer's --merge-base option; manual reproduction returned option error 129, not a content conflict. Upstream changes do not overlap candidate paths.",
+    "next_action": "Move the task branch base to the fetched main with a soft reset while preserving the staged candidate, update the recorded base, rerun affected tests, and submit without auto-integrate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T03:45:09.660655+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T03:46:15.997040+00:00",
+  "sha256": "15e13de22b8b76dadcfef9801f07a5e059348caa44db83e80c9af0b4490a14cf"
+}

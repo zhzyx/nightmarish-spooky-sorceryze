@@ -172,11 +172,11 @@ def output_specifications(parameters):
 
 _AUTOMATIC_VIEWS = [
     ("三分之四侧面", "view", ["三分之四侧面", "四分之三侧面", "3/4侧面", "three-quarter view"]),
-    ("正面", "view", ["正面", "前视图", "正面图", "front view"]),
-    ("左侧面", "view", ["左侧面", "左侧视图", "左视图", "left view"]),
-    ("右侧面", "view", ["右侧面", "右侧视图", "右视图", "right view"]),
+    ("正面", "view", ["正面", "前视角", "前视图", "正面图", "front view"]),
+    ("左侧面", "view", ["左侧面", "左视角", "左侧视图", "左视图", "left view"]),
+    ("右侧面", "view", ["右侧面", "右视角", "右侧视图", "右视图", "right view"]),
     ("侧面", "view", ["侧面", "侧视图", "side view"]),
-    ("背面", "view", ["背面", "后视图", "背面图", "back view", "rear view"]),
+    ("背面", "view", ["背面", "后视角", "后视图", "背面图", "back view", "rear view"]),
     ("俯视", "view", ["俯视", "俯视图", "顶视图", "top view"]),
     ("仰视", "view", ["仰视", "仰视图", "底视图", "bottom view"]),
     ("面部细节", "detail", ["面部细节", "脸部细节", "面部特写", "脸部特写", "face close-up"]),
@@ -196,6 +196,33 @@ _DEFAULT_VIEWS = [
     ("局部细节", "detail"),
     ("补充细节", "detail"),
 ]
+_DIRECTION_SHORTHANDS = {"前": "正面", "后": "背面", "左": "左侧面", "右": "右侧面", "俯": "俯视", "仰": "仰视"}
+_DIRECTION_LIST_PATTERN = r"[前后左右俯仰](?:\s*[、,，/]\s*[前后左右俯仰])+"
+_VIEW_INSTRUCTIONS = {
+    "正面": "front view; show the character's anatomical front, with the nose pointing toward the viewer",
+    "背面": "rear view; show the character's back, with the face pointing away from the viewer",
+    "左侧面": (
+        "strict 90-degree LEFT-side view; place the camera on the character's anatomical LEFT, "
+        "show the LEFT cheek and LEFT side of the body, and point the nose toward the LEFT edge of the image"
+    ),
+    "右侧面": (
+        "strict 90-degree RIGHT-side view; place the camera on the character's anatomical RIGHT, "
+        "show the RIGHT cheek and RIGHT side of the body, and point the nose toward the RIGHT edge of the image"
+    ),
+    "俯视": "top-down view; place the camera directly above the character and look downward",
+    "仰视": "bottom-up view; place the camera below the character and look upward",
+    "面部正面特写": (
+        "front-face close-up; face the camera directly, showing both eyes and the centered nose and mouth"
+    ),
+    "面部左侧特写": (
+        "close-up of the character's anatomical LEFT face; show the LEFT cheek and point the nose "
+        "toward the LEFT edge of the image"
+    ),
+    "面部右侧特写": (
+        "close-up of the character's anatomical RIGHT face; show the RIGHT cheek and point the nose "
+        "toward the RIGHT edge of the image"
+    ),
+}
 
 
 def automatic_output_specifications(prompt):
@@ -229,7 +256,20 @@ def automatic_output_specifications(prompt):
             start, end = min(candidates, key=lambda item: (item[0], -(item[1] - item[0])))
             occupied.append((start, end))
             found.append((start, label, mode))
-    found.sort()
+    multiview_face = re.search(r"(?:多视角|多角度|多视图)[\s【】\[\]（）()，、]*(?:面部|脸部)(?:细节|特写)", text)
+    if multiview_face:
+        found = [item for item in found if item[1] != "面部细节"]
+        found.extend(
+            (multiview_face.start(), label, "detail") for label in ("面部正面特写", "面部左侧特写", "面部右侧特写")
+        )
+    existing = {label for _, label, _ in found}
+    for match in re.finditer(_DIRECTION_LIST_PATTERN, text):
+        for offset, char in enumerate(match.group()):
+            label = _DIRECTION_SHORTHANDS.get(char)
+            if label and label not in existing:
+                found.append((match.start() + offset, label, "view"))
+                existing.add(label)
+    found.sort(key=lambda item: item[0])
     labels = [(label, mode) for _, label, mode in found]
     if (
         not labels
@@ -258,6 +298,7 @@ def _has_output_cue(text):
     return (
         any(term in lowered for _, _, terms in _AUTOMATIC_VIEWS for term in terms)
         or any(term in lowered for term in ["多视角", "多角度", "多视图", "multi-view", "multiview", "turnaround"])
+        or re.search(_DIRECTION_LIST_PATTERN, lowered) is not None
         or re.search(r"([0-9]+|[一二两三四五六七八九])\s*(?:张|幅|个视角|个视图|视图)", lowered) is not None
     )
 
@@ -573,7 +614,7 @@ class MultiImageProvider(CodexProvider):
         request["parameters"]["prompt"] = (
             "The attached primary image is the authoritative depiction of the same generated subject. "
             + action
-            + specification["label"]
+            + _VIEW_INSTRUCTIONS.get(specification["label"], specification["label"])
             + ". Preserve its identity, geometry, materials, colors, style and background. "
             + "Change only the camera/view or framing needed for this derived image; do not design a new subject. "
             + "The result must contain exactly one instance of the subject. "
