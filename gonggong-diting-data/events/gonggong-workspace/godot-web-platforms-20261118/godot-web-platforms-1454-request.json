@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-web-platforms-1454-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-web-platforms-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-17T17:59:41.728185+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1454,
+    "scope": "Godot only, per latest user scope correction; full Tianxuan web application inside editor",
+    "authority_ref": "codex:user-request-20261118-godot-only",
+    "base": "23d4e05bac6d469250327c8eaa1149021cff7ba0"
+  },
+  "evidence_refs": [],
+  "sha256": "f47f493f853779d01712eed3c4853fabf03519588e2c4b575cae2f5cc3a266ac"
+}

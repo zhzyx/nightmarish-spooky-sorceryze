@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-75af9230ce1555fcf94a0ac3eb9b818e2af7f3e7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-web-platforms-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "06f88b82fa01dae8fbd2d6d8a0c5c612d93d4b2d588b79119dd351f822b08701",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1455",
+    "action": "delivery",
+    "detection_head": "cefa69ea2ee415c0b65d88506c85582f626fc673",
+    "context_sha256": "72e9b2ddb6d561dccbca785b292c3db969867a1f401afc578a7a8531199d4de2",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-only",
+    "evidence": "writer_submit refused Linked collection paths; local scan identified task test venv under private receipts. Verified task servers stopped and moved only that venv to ignored .godot/web-platform-validation-1454; rescan found zero collection symlinks. Product candidate and gate unchanged.",
+    "diagnosis": "Test dependency placement violated collection no-link invariant, including ignored receipts; not a source defect or authorization gap.",
+    "next_action": "Collect new event, stage only task evidence, repeat writer_submit formal gate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T18:18:59.237702+00:00",
+    "attempted": null,
+    "repair_owner": "codex-root",
+    "continuable": "All code and runtime tests already passed; proceed with exact reviewed candidate."
+  },
+  "occurred_at": "2026-11-17T18:20:19.227534+00:00",
+  "sha256": "73ed14b127aad4c5fe865b643c3c07735f87468440bc0fdf6c7df1b134d9ce8d"
+}

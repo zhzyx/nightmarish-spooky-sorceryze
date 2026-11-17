@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1454",
+  "request_id": "godot-web-platforms-20261118",
+  "reviewer": "codex-independent-reviewer",
+  "authorization": "codex:user-request-20261118-godot-only",
+  "created_at": "2026-11-17T18:13:11.048459+00:00",
+  "worktree": "repository root",
+  "path_resolution_base": "repository root",
+  "candidate_head": "23d4e05bac6d469250327c8eaa1149021cff7ba0",
+  "review_kind": "independent_read_only_source_rereview",
+  "result": "no_actionable_findings_in_reviewed_scope",
+  "overall_issue_complete": false,
+  "reviewed_files": [
+    {
+      "path": "editor/docks/WebPlatformNative.h",
+      "sha256": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformNative.cpp",
+      "sha256": "aa3fb2f34190722db1342e35d4c83844994f49765cb08098485cf4cb787ddbb3",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformMacOS.mm",
+      "sha256": "9dec1826e7bc80d363c92f363bba7aa4baa3c2b6c45a87b556a7fb6929204adb",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformDock.h",
+      "sha256": "60be9161d297dd498456970ff23c007c2302a481c57a12fb3d634df6caa3e6d7",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/WebPlatformDock.cpp",
+      "sha256": "7a38af2ff068ee2164d4256397b6da81a2f80ff313b5cb1ff8e761746338dae5",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/docks/SCsub",
+      "sha256": "672be3ecd471462b3b580f93dddad6e05acc831f46bb9b5490dcb8264daab4b7",
+      "scope": "full file"
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "sha256": "f92782c7b23b84e00e29e2e67a3b093b8af06355f7d028f014a1c4ca42802c1e",
+      "scope": "candidate integration diff and relevant surrounding context"
+    },
+    {
+      "path": "editor/register_editor_types.cpp",
+      "sha256": "b5b511244d3102e988655bcf394a5cafada5e11c501f2fd72ba44247aa17b14e",
+      "scope": "candidate integration diff and relevant surrounding context"
+    },
+    {
+      "path": "platform/macos/detect.py",
+      "sha256": "9cecf7c6a676e10245082cc9c522efcbbbe8a95c33fc6b816a98c457e0effd35",
+      "scope": "candidate integration diff and relevant surrounding context"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "sha256": "5e8a084a74d3d7cf7904dd98511540a89c8c49e135d2df8697d3a1c153264a72",
+      "scope": "candidate integration diff and relevant surrounding context"
+    },
+    {
+      "path": "tests/editor/TestWebPlatformMacOS.mm",
+      "sha256": "e97e13750a2d53b752f377b481051c391e53703e26255db4f91e98f295151c67",
+      "scope": "full file"
+    },
+    {
+      "path": "tests/editor/TestWebPlatformPolicy.cc",
+      "sha256": "2f1ebfcf91ced3565940d2e8ddeb57d1f965a3cc592e71d6cb8c8ce36f4e10a6",
+      "scope": "full file"
+    },
+    {
+      "path": "tests/editor/web_platform_dock.gd",
+      "sha256": "01b6bac91d5f61be80f6cf0c0b2e8b59d165953106d562c3593c8a10ba395996",
+      "scope": "full file"
+    }
+  ],
+  "prior_review": "data-collection/receipts/godot-web-platforms-20261118/independent-review.json",
+  "prior_findings_resolution": [
+    {
+      "id": "R1",
+      "status": "resolved_in_source",
+      "file": "editor/docks/WebPlatformMacOS.mm",
+      "line_start": 66,
+      "line_end": 132,
+      "evidence": "Download cancellation, shouldPerformDownload and download policy values are within macOS 11.3 runtime availability checks. WKDownload callbacks at lines 246-300 are annotated API_AVAILABLE(macos(11.3)). Non-displayable responses on older systems cancel with a diagnostic. The x86_64 11.0 deployment minimum remains unchanged in platform/macos/detect.py.",
+      "verification_limit": "No execution on macOS 11.0-11.2 and no new compiler/build run by this reviewer."
+    },
+    {
+      "id": "R2",
+      "status": "resolved_in_source",
+      "file": "editor/docks/WebPlatformDock.cpp",
+      "line_start": 54,
+      "line_end": 70,
+      "related_locations": [
+        {
+          "file": "editor/docks/WebPlatformDock.cpp",
+          "line": 150
+        },
+        {
+          "file": "editor/docks/WebPlatformDock.h",
+          "line": 52
+        }
+      ],
+      "evidence": "Invalid address writes retained strInputError, valid ConnectSite clears it, and UpdateSurface prefers that error over native status while the old native connection remains. The original next-process-frame overwrite is removed.",
+      "verification_limit": "Source control-flow verified; headless probe cannot exercise the established-native-connection case."
+    }
+  ],
+  "findings": [],
+  "coverage": {
+    "prompt_handler": "WebPlatformMacOS.mm lines 223-243: inactive/hidden/detached view immediately completes with nil; visible prompt keeps text field in the alert and block capture, registers the sheet for shutdown, removes it at completion, and returns entered text only for active confirmation. Inspected together with shutdown and destructor. No definite new lifetime fault established; no sheet interaction was executed.",
+    "policy_tests": "TestWebPlatformPolicy.cc covers normalization, same-origin/default-port matching, off-origin and port changes, loopback HTTP, rejected credentials/control characters/non-web schemes, length and port boundaries, plus blob-download distinction. These are standalone assert-based tests; execution must retain assertions. Tests were read, not executed here.",
+    "native_tests": "TestWebPlatformMacOS.mm requires a validation bundle identifier, prohibits activation, never orders its native window, checks coordinate conversion/visibility, visits eight routes, checks body content, recreates the native view and checks localStorage/cookie retention, rejects an off-origin navigation, and destroys a pending navigation. Optional third argument adds route/content checks. It does not test upload/download/prompt/confirm interaction, back-forward/reload, production auth/logout, display input/IME or cross-process persistence.",
+    "headless_probe": "Final web_platform_dock.gd extends EditorPlugin and therefore uses the ordinary editor SceneTree. It checks headless mode, dock registration, invalid input, valid loopback setting, headless status, surface bounds across three sizes, hide/show and normal SceneTree quit. It writes EditorSettings, so its caller must provide the isolated settings/project environment. It cannot create a native view or prove visible layout/focus behavior.",
+    "formatting": "The default clang-format exclusion exactly matches the added clang-format-web-platform selector. Both are anchored to direct editor/docks/WebPlatform* or tests/editor/TestWebPlatform* files ending cpp/h/cc/mm. Independently tested the selector against all changed source files and negative upstream/nested/GDScript examples. The override inherits the parent style and changes brace/short-function/short-lambda settings; ordinary upstream integration files keep the default hook. No formatting tool was run by this reviewer.",
+    "integration": "Reviewed dock registration/class registration, macOS-only Objective-C++ source inclusion, editor-only WebKit framework linking, unchanged architecture deployment targets and ARC flag. Non-macOS factory still returns nullptr.",
+    "other_source_paths": "Re-read origin policy, native ownership/destruction, modal completion cleanup, native clipping/visibility, status and retry logic. No additional definite product defect established within the authorized source scope. Navigation restriction does not constitute a subresource network sandbox."
+  },
+  "evidence_boundaries": {
+    "source_review": "Independently completed for hashes listed here. No product edits.",
+    "engine_build": "Not run or independently verified by this reviewer. Parent reports full arm64 Godot link succeeded.",
+    "runtime_tests": "None executed by reviewer. Parent reports synthetic hidden-native fixture and final isolated EditorPlugin headless probe passed, with no errors/leaks in its final headless log. Those reports are attributed context, not reviewer runtime evidence. Actual Web app test was still pending at report time.",
+    "desktop": "No desktop, visible window, GUI automation or focus operation performed.",
+    "commit_push_merge": "None; parent owns delivery.",
+    "temporary_resources": "No temporary resources created; only this authorized review JSON written."
+  },
+  "remaining_acceptance": [
+    "Run or otherwise establish the old macOS 11.0-11.2 capability boundary; source guards do not equal old-OS runtime acceptance.",
+    "Exercise invalid and corrected addresses with an established native connection.",
+    "Exercise pending prompt/alert/confirm/upload/save-dialog/download shutdown and ordinary/blob-download behavior.",
+    "Verify native keyboard/IME/Escape, editor shortcuts and scene switching, native layering, popup occlusion, Retina/fullscreen and visible resize/window close.",
+    "Verify first-load failure/retry, history controls and web-content-process recovery.",
+    "Verify actual Tianxuan document/requirements/issues/Duobao/search/settings workflows, production authentication, permissions, persistence across app restart, and logout.",
+    "Windows and Linux native backends remain absent; unsupported fallback is not backend completion.",
+    "Formal gates, CI, exact-candidate delivery/main readback and linked-issue lifecycle remain with parent responsibility."
+  ],
+  "files_changed_after_review_snapshot": [],
+  "original_private_report_sha256": "81d8f2d4cfd15ed8fb58b3c24a645fab4483336d06fbbeeacc1f199188c72da8",
+  "public_copy_note": "Only absolute worktree paths normalized; findings and reviewed source hashes preserved."
+}

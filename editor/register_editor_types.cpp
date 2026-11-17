@@ -40,6 +40,7 @@
 #include "editor/audio/audio_stream_randomizer_editor_plugin.h"
 #include "editor/debugger/debug_adapter/debug_adapter_server.h"
 #include "editor/debugger/editor_debugger_plugin.h"
+#include "editor/docks/WebPlatformDock.h"
 #include "editor/docks/ai_chat_editor_control.h"
 #include "editor/docks/filesystem_dock.h"
 #include "editor/editor_interface.h"
@@ -227,6 +228,8 @@ void register_editor_types() {
 	GDREGISTER_CLASS(ResourceImporterTextureAtlas);
 	GDREGISTER_CLASS(ResourceImporterWAV);
 	GDREGISTER_CLASS(ResourceImporterStreamedTexture);
+
+	GDREGISTER_INTERNAL_CLASS(WebPlatformDock);
 
 	// This list is alphabetized, and plugins that depend on Node2D or Node3D are in their own section below.
 	GDREGISTER_INTERNAL_CLASS(AINativeEditorPlugin);

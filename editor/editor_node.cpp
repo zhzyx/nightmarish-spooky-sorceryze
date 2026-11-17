@@ -58,6 +58,7 @@
 #include "editor/debugger/editor_debugger_node.h"
 #include "editor/debugger/script_editor_debugger.h"
 #include "editor/doc/editor_help.h"
+#include "editor/docks/WebPlatformDock.h"
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/daqian_dock.h"
 #include "editor/docks/editor_dock_manager.h"
@@ -9622,6 +9623,7 @@ EditorNode::EditorNode() {
 	// AI Chat is registered first so it is the opening main-screen tab.
 	editor_dock_manager->add_dock(memnew(AIChatDock));
 	editor_dock_manager->add_dock(create_daqian_dock());
+	editor_dock_manager->add_dock(CreateWebPlatformDock());
 #ifdef MACOS_ENABLED
 	install_gonggong_startup_validation(this);
 #endif

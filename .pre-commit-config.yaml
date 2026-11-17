@@ -25,6 +25,13 @@ repos:
       - id: clang-format
         files: \.(c|h|cpp|hpp|cc|hh|cxx|hxx|m|mm|inc|java)$
         types_or: [text]
+        exclude: ^(editor/docks/WebPlatform[^/]*|tests/editor/TestWebPlatform[^/]*)\.(cpp|h|cc|mm)$
+      - id: clang-format
+        name: clang-format-web-platform
+        files: ^(editor/docks/WebPlatform[^/]*|tests/editor/TestWebPlatform[^/]*)\.(cpp|h|cc|mm)$
+        types_or: [text]
+        # New first-party code follows CPP_CODING_STANDARD.md without migrating upstream files.
+        args: ['-style={BasedOnStyle: InheritParentConfig, BreakBeforeBraces: Allman, AllowShortFunctionsOnASingleLine: Empty, AllowShortLambdasOnASingleLine: None}']
       - id: clang-format
         name: clang-format-glsl
         files: \.glsl$

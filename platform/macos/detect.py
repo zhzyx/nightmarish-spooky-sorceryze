@@ -303,6 +303,8 @@ def configure(env: "SConsEnvironment"):
     env.Append(LIBS=["pthread", "z"])
 
     extra_frameworks = set()
+    if env.editor_build:
+        extra_frameworks.add("WebKit")
 
     if env["opengl3"]:
         env.Append(CPPDEFINES=["GLES3_ENABLED"])
