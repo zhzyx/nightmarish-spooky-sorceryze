@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-f50fb6eeff40b36dfa2d5abd8878213b673eec1fc6363caf3e0625f61cb5b66a",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1434",
+  "occurred_at": "2026-11-17T13:11:58.641752+00:00",
+  "evidence_refs": [
+    "codex-intake-1434-20261117",
+    "learn-2aa62ec700bc2cec5aad4fbc08a2e0bb8895bbbc1df83f07e4c6a19a3eff0883"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 19,
+    "previous": "f833ebf45ab8b16d0b0a81d5b60c61a4b449634711d43a9a162b04834b958ffb",
+    "action": "applied",
+    "details": {
+      "task": "github:zhzyx/nightmarish-spooky-sorceryze#1434",
+      "observed": "17 trusted-main host paths were audited against 9378 real Windows native consumers; no overlaps. 3 host-input and 14 cache tests passed, including actual generator override, unknown input invalidation and malformed-inventory fallback."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-host-inputs-1434.json",
+        "sha256": "07dbb92dc6f2b6561474cd3de25906383b3247aa4f7001a54e4b3d69d9eb58ab"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-host-inputs-20261117/codex-intake-1434-20261117.json",
+      "sha256": "33879249c3a3b2bac6d2718cdd630107f888d051c1aec0f686ea090dfd6506dd"
+    }
+  },
+  "sha256": "d306043838773c972591351c230cd9898d946cce1639f2d04a179e3bd849f18f"
+}

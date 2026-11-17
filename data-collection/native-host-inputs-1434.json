@@ -1,0 +1,225 @@
+{
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1434",
+  "request_id": "native-host-inputs-20261117",
+  "path_base": "repository root",
+  "trusted_main": "75eef9a901e782d69546b3eef00382bdc4eabf47",
+  "recorded_at": "2026-11-17T21:06:26.448729+08:00",
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+    "scons": "4.11.1"
+  },
+  "added_inputs": [
+    {
+      "path": "customizations/components/tianxuan/duobao/native_store.py",
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "trusted_main_blob": "1503687c9add396cd2ff7a9902f21f263431e997",
+      "binding": "NativeStore + native_cli.py; unittest and multi-process CLI verification",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_cli.py",
+      "sha256": "e7db40a12ca5b18d753a182f7d8a853c76d8f96bb9c3893a27bd842049a9613a",
+      "trusted_main_blob": "256eb5d7da079952754c958ffcab1593cc395d0c",
+      "binding": "NativeStore + native_cli.py; unittest and multi-process CLI verification",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_store.py",
+      "sha256": "cb7df0539fc42cd5cb2dc0bcb31f681994ace28041c782f32a5b7a894446a743",
+      "trusted_main_blob": "35f834dfa6f416ea57182fd7a87ed9340263fe99",
+      "binding": "NativeStore + native_cli.py; unittest and multi-process CLI verification",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/verify_native_processes.py",
+      "sha256": "f5f03eaef371c7d007b4c88003e16a75a20c43bfb9938a30f71614a91d449120",
+      "trusted_main_blob": "168593590093c1d73f10e2cd65a112e5113712f7",
+      "binding": "NativeStore + native_cli.py; unittest and multi-process CLI verification",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_evidence.py",
+      "sha256": "779a6f9162874c2f2a24349c3dca2193cad31fec04c950749f851fcaf9f3216f",
+      "trusted_main_blob": "9586dbf0dd4e830d0ddfe0217fea056ee2ad3e87",
+      "binding": "EvidenceCache Python host library; unittest and host contract documentation",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_evidence.md",
+      "sha256": "49e4e6415c29ecb8f5183fde2f72f69a0b44285f1ceda0b981a9f416ab2da21d",
+      "trusted_main_blob": "1b1691b3a7ebe868c429981615c12c01ad99805c",
+      "binding": "EvidenceCache Python host library; unittest and host contract documentation",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_evidence.py",
+      "sha256": "054ede06d298edcb71488a76879afb12bc67d4938d731cf7daa77f523d71c304",
+      "trusted_main_blob": "ec2711580cd266076d038cc89d43361a8a47a7bd",
+      "binding": "EvidenceCache Python host library; unittest and host contract documentation",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_release.py",
+      "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+      "trusted_main_blob": "1f508962cf22644995856cb2a50a5e4f1c5c28f9",
+      "binding": "NativeRelease Python host library; unittest and host contract documentation",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_release.md",
+      "sha256": "6ffd0dbf8afd527fab485a73096eb737506e5912c804b29882fc78a707aff5aa",
+      "trusted_main_blob": "f7d06c28f14cc98ecff6ed175eaf07c71836fecf",
+      "binding": "NativeRelease Python host library; unittest and host contract documentation",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_release.py",
+      "sha256": "dd22e2ef946264ae23a7ced27c0b2205911f1a8237ca86d0cf75705aaace531c",
+      "trusted_main_blob": "7abd2ec52beb595620a17cdd0d68f764b2202790",
+      "binding": "NativeRelease Python host library; unittest and host contract documentation",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.py",
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "trusted_main_blob": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "binding": "NativeWorkspace + native_workspace_cli.py; unittest and host contract documentation",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace_cli.py",
+      "sha256": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+      "trusted_main_blob": "829c35b6d182e1fb1a03961ba680f6bfb00c498e",
+      "binding": "NativeWorkspace + native_workspace_cli.py; unittest and host contract documentation",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.md",
+      "sha256": "9e88d81dacd6e8b44d2209b481413a265648699dc143629aa787aab8cc1da6a8",
+      "trusted_main_blob": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6",
+      "binding": "NativeWorkspace + native_workspace_cli.py; unittest and host contract documentation",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_workspace.py",
+      "sha256": "e2492c64842db53a5c89748276f00f6af9ce5629f6be8d506368e7f90efa4d56",
+      "trusted_main_blob": "6884801db58a40db44956d5a185e0356833f8971",
+      "binding": "NativeWorkspace + native_workspace_cli.py; unittest and host contract documentation",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_api.py",
+      "sha256": "576113892d7d0d84d4259ec19cafeebce30e095416ec362e2fe97236ed8dbb48",
+      "trusted_main_blob": "08f03e25468f458fa0e87c3cb4cb440a7d99eec8",
+      "binding": "FastAPI create_native_router via server/api.py; authenticated API and platform pytest suites",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_api.py",
+      "sha256": "4a85726e458399def6555fb94e5259815b37ca7f21eea2fc11f721037083ce1e",
+      "trusted_main_blob": "6034e91b6278a6691a4251be677d3032cd12263b",
+      "binding": "FastAPI create_native_router via server/api.py; authenticated API and platform pytest suites",
+      "placement": "host_tool"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_platform.py",
+      "sha256": "b40695e79772b9296a35178fbc0898772893b61239d89fbae7b22c56b7f24abc",
+      "trusted_main_blob": "f1734930fdfedfa74e439197472289ec23fb6d81",
+      "binding": "FastAPI create_native_router via server/api.py; authenticated API and platform pytest suites",
+      "placement": "host_tool"
+    }
+  ],
+  "policy": {
+    "path": "tools/native_host_inputs.json",
+    "sha256": "d6287a31aa2e3803b52f0e69e5e806a8a2fe5e0e86ba69a316b5015335cd19ae",
+    "before_count": 117,
+    "after_count": 134
+  },
+  "consumer_graph": {
+    "command": "py -m SCons -n -Q gonggong_native_probe=<temporary>/selection.json accesskit=no angle=no d3d12=no debug_symbols=no dev_mode=yes platform=windows target=editor",
+    "options": {
+      "platform": "windows",
+      "target": "editor",
+      "dev_mode": "yes",
+      "debug_symbols": "no",
+      "accesskit": "no",
+      "angle": "no",
+      "d3d12": "no"
+    },
+    "native_sources_count": 9378,
+    "sorted_native_sources_sha256": "dfb6b5682b67b27ff69097cee7b95745cfe8fd2617d27afda93ab4045683ff72",
+    "added_overlap": [],
+    "complete_inventory_overlap": [],
+    "elapsed_seconds": 3.932,
+    "compilation_performed": false,
+    "graph_metadata": {
+      "generated": 3434,
+      "generated_values": "726818736358abd1e067ab59ae478a582c4e9a7d9f0e2804b3451767e54e45ae",
+      "git_info": {
+        "git_hash": "75eef9a901e782d69546b3eef00382bdc4eabf47",
+        "git_timestamp": "1794918114"
+      },
+      "msvc": true,
+      "roots": 23,
+      "sdk": 3,
+      "sources": 9430,
+      "tools": {
+        "AR": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.51.36231\\bin\\HostX64\\x64\\lib.EXE",
+        "CC": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.51.36231\\bin\\HostX64\\x64\\cl.EXE",
+        "CXX": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.51.36231\\bin\\HostX64\\x64\\cl.EXE",
+        "LINK": "C:\\Program Files\\Microsoft Visual Studio\\18\\Community\\VC\\Tools\\MSVC\\14.51.36231\\bin\\HostX64\\x64\\link.EXE",
+        "RC": "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\10.0.26100.0\\x64\\rc.EXE"
+      },
+      "unsupported": false
+    }
+  },
+  "limitations": [
+    "Windows editor options shown only; no cross-platform or full editor compilation claim.",
+    "No deployed service/runtime behavior changes or speed/token estimates.",
+    "Independent review, formal gates, CI and main delivery remain parent responsibilities."
+  ],
+  "method_recall": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 18,
+    "head": "f833ebf45ab8b16d0b0a81d5b60c61a4b449634711d43a9a162b04834b958ffb",
+    "applicability": "Classify exact paths from actual native consumers; embedded Python and generated headers are counterexamples to suffix-based exemptions."
+  },
+  "tests": [
+    {
+      "command": "py -X utf8 tests/editor/test_native_host_inputs.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 7.846,
+      "stdout": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: invalid host input inventory\nFull-tree identity required: invalid host input inventory\n",
+      "stderr": "test_actual_generator_consumption_overrides_host_inventory (__main__.HostInputTests.test_actual_generator_consumption_overrides_host_inventory) ... ok\ntest_hosted_identity_uses_policy_and_actual_consumers_with_full_fallback (__main__.HostInputTests.test_hosted_identity_uses_policy_and_actual_consumers_with_full_fallback) ... ok\ntest_repository_host_inventory_has_zero_overlap_with_actual_scons_graph (__main__.HostInputTests.test_repository_host_inventory_has_zero_overlap_with_actual_scons_graph) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 7.718s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tests/editor/test_editor_native_cache.py -v",
+      "exit_code": 0,
+      "elapsed_seconds": 16.094,
+      "stdout": "",
+      "stderr": "test_board_runtime_sources_are_external_until_embedded_consumer_claims_them (__main__.NativeCacheTests.test_board_runtime_sources_are_external_until_embedded_consumer_claims_them) ... ok\ntest_cache_publication_denied_preserves_successful_local_build (__main__.NativeCacheTests.test_cache_publication_denied_preserves_successful_local_build) ... ok\ntest_cancellation_drift_failed_producer_do_not_publish (__main__.NativeCacheTests.test_cancellation_drift_failed_producer_do_not_publish) ... ok\ntest_corruption_quarantines_and_rebuilds (__main__.NativeCacheTests.test_corruption_quarantines_and_rebuilds) ... ok\ntest_dead_process_releases_lock_and_waiter_can_cancel (__main__.NativeCacheTests.test_dead_process_releases_lock_and_waiter_can_cancel) ... ok\ntest_exact_host_edit_reuses_but_new_file_consumer_and_policy_invalidate (__main__.NativeCacheTests.test_exact_host_edit_reuses_but_new_file_consumer_and_policy_invalidate) ... ok\ntest_generator_inputs_ignored_headers_toolchain_sdk_and_options_invalidate (__main__.NativeCacheTests.test_generator_inputs_ignored_headers_toolchain_sdk_and_options_invalidate) ... ok\ntest_governance_and_external_package_edits_require_graph_evidence (__main__.NativeCacheTests.test_governance_and_external_package_edits_require_graph_evidence) ... ok\ntest_hit_across_heads_materializes_both_outputs_and_fresh_provenance (__main__.NativeCacheTests.test_hit_across_heads_materializes_both_outputs_and_fresh_provenance) ... ok\ntest_invalid_host_inventory_falls_back_without_publishing_cache (__main__.NativeCacheTests.test_invalid_host_inventory_falls_back_without_publishing_cache) ... ok\ntest_progress_file_changes_while_building (__main__.NativeCacheTests.test_progress_file_changes_while_building) ... ok\ntest_scons_rebuilds_local_b_after_shared_a_restore (__main__.NativeCacheTests.test_scons_rebuilds_local_b_after_shared_a_restore) ... ok\ntest_two_worktrees_contend_for_single_producer (__main__.NativeCacheTests.test_two_worktrees_contend_for_single_producer) ... ok\ntest_unknown_platform_falls_back_without_overriding_build_metadata (__main__.NativeCacheTests.test_unknown_platform_falls_back_without_overriding_build_metadata) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 15.976s\n\nOK\n"
+    }
+  ],
+  "verification_scope": {
+    "identity_reuse": "Hosted Git identity fixture verifies same policy host edit retains identity; actual consumer changes identity; empty graph and malformed inventory fall back to full tree.",
+    "real_generator": "Actual SCons env.Command consumes an inventoried fixture host file and native classification overrides it; probe creates no native.gen output.",
+    "unknown_inputs": "Native cache regression verifies unlisted adjacent new.py invalidates key; changing policy invalidates; malformed inventories produce uncached build and no published cache.",
+    "algorithm_changes": false
+  },
+  "cleanup": {
+    "temporary_fixtures": "Both successful suites and cache.probe use TemporaryDirectory context/addCleanup for temporary Git repositories, cache artifacts and SCons selection JSON; no temporary script file created by this task.",
+    "retained": "Worktree and candidate changes remain for parent independent review and delivery. Python __pycache__ directories exist after SCons import; no initial ignored-file inventory was captured, so ownership is not asserted and they are retained pending parent cleanup. Existing .gonggong-outbox is parent-owned.",
+    "branches_created": false,
+    "commit_push_deploy_performed": false
+  },
+  "method_applied_handoff": {
+    "action": "applied",
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "task": "github:zhzyx/nightmarish-spooky-sorceryze#1434",
+    "observed": "17 trusted-main host paths were audited against 9378 real Windows native consumers; no overlaps. 3 host-input and 14 cache tests passed, including actual generator override, unknown input invalidation and malformed-inventory fallback.",
+    "publication": "Parent must append applied through method_learning after actual intake origin is available and re-reading current lesson head; no cross-task learning revision written by worker."
+  }
+}
