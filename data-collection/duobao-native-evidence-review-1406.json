@@ -1,0 +1,110 @@
+{
+  "schema": "gonggong-independent-review/1",
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1406",
+  "reviewer": "independent Codex native sub-agent /root/sinan_e0ff9a339d69c32d",
+  "exact_model": "unknown; inherited host",
+  "recorded_at": "2026-11-17T07:52:18.142805+00:00",
+  "worktree": "D:\\GongGong-work\\duobao-native-evidence-20261117",
+  "scope": "Read-only product review; only designated review receipt written. No commit or release action.",
+  "verdict": "pass_with_explicit_integration_limits",
+  "findings": [],
+  "frozen_input_manifest_sha256": "1f506ec4918912590b98cc28dba9a2774c017f708c6637d964d2a1ba09f6a85f",
+  "reviewed_sha256": {
+    "customizations/components/tianxuan/duobao/native_evidence.py": "779a6f9162874c2f2a24349c3dca2193cad31fec04c950749f851fcaf9f3216f",
+    "customizations/components/tianxuan/duobao/test_native_evidence.py": "054ede06d298edcb71488a76879afb12bc67d4938d731cf7daa77f523d71c304",
+    "customizations/components/tianxuan/duobao/native_evidence.md": "49e4e6415c29ecb8f5183fde2f72f69a0b44285f1ceda0b981a9f416ab2da21d",
+    "customizations/components/tianxuan/duobao/native_store.py": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a"
+  },
+  "design_sha256": "240681aa59a69c2f8c3139f0145299e34af04350cf11c60b297f36a479c14da9",
+  "frozen_hashes_verified_before_and_after": true,
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 15,
+    "head": "ab9e806a01129ce1a13eb23e15fe9a223794c2e959e06c6e135decc3eb9a685b",
+    "application": "Verify exact product bytes before and after review; review completion does not release downstream or establish business acceptance. Applicable to parent consuming independent candidate review; transport-only completion is insufficient.",
+    "command": "py -B -X utf8 framework/tools/method_learning.py --tenant gonggong-workspace recall editor-dependency-handoff",
+    "exit_code": 0
+  },
+  "tests": [
+    {
+      "command": "py -B -X utf8 -m unittest discover -s customizations/components/tianxuan/duobao -p test_native_evidence.py -v",
+      "cwd": "D:\\GongGong-work\\duobao-native-evidence-20261117",
+      "exit_code": 0,
+      "passed": 16,
+      "failed": 0,
+      "duration_seconds": 1.39,
+      "observed": "Ran 16 tests in 1.390s; OK",
+      "coverage": [
+        "disjoint object and unrelated module reuse original evidence",
+        "read modification/deletion and missing object creation invalidate",
+        "whole-module and unknown scope conservative invalidation",
+        "exact dependency and policy/toolchain/environment/parameter invalidation",
+        "dependency content corruption and corrupt idempotency reference rejection",
+        "copied host scope and unauthorized/uninstalled runner rejection",
+        "latest failed/unknown/revoked suppress older pass",
+        "TTL exact boundary, future time and runner permission revocation",
+        "persistent reopen replay, conflicting request reuse rejection",
+        "24 parallel submissions across eight threads resolve to one evidence identity",
+        "receipt insertion failure atomically rolls back evidence",
+        "tenant isolation",
+        "input and evidence log corruption rejection",
+        "invalid policy/context/revoker/clock rejection"
+      ]
+    },
+    {
+      "command": "PowerShell literal here-string piped to py -B -X utf8 - (in-memory supplemental probes using EvidenceTests fixtures)",
+      "cwd": "D:\\GongGong-work\\duobao-native-evidence-20261117",
+      "exit_code": 0,
+      "passed": 5,
+      "failed": 0,
+      "checks": [
+        {
+          "name": "unknown_added_module_invalidates",
+          "steps": "Record unknown check, add unrelated noise module to composition, assert lookup returns None."
+        },
+        {
+          "name": "transitive_dependency_blob_corruption_rejected",
+          "steps": "Create shared -> dep -> leaf exact pins; record scoped pass; overwrite leaf blob content; assert lookup raises NativeStoreError."
+        },
+        {
+          "name": "cross_tenant_revocation_rejected",
+          "steps": "Record org evidence; attempt other-tenant revoke; assert NativeStoreError and original org evidence still hits."
+        },
+        {
+          "name": "evidence_payload_corruption_rejected",
+          "steps": "Record pass; SQL overwrite evidence payload with {}; assert lookup raises NativeStoreError."
+        },
+        {
+          "name": "missing_read_blob_rejected",
+          "steps": "Record pass; delete the blob for read object a; assert lookup raises NativeStoreError."
+        }
+      ]
+    }
+  ],
+  "runtime": "Python 3.14.3, MSC v.1944 64 bit AMD64, Windows",
+  "assessment": {
+    "cache_identity": "Explicit scopes bind selected content digests and missing states plus dependency pins; parent/module revision omitted for scoped objects. Whole-module scope includes immutable revision; unknown scope expands across all composition modules.",
+    "integrity": "Composition/revision hashes and selected/dependency blob hashes checked; evidence and raw log digests checked. Idempotent replay compares full bound request and receipt request_key.",
+    "authorization": "Host policy and callback are required. Exact True required for record/revoke; lookup rechecks runner record permission. Tenant partitions database operations. Host authenticates caller and tenant selection.",
+    "atomicity": "Evidence and request receipt share BEGIN IMMEDIATE transaction. Existing concurrent-idempotency and injected receipt-write failure tests pass.",
+    "claim_boundary": "Returns cached_check_fact preserving original candidate and requested candidate. No automatic approval or production release claimed."
+  },
+  "limits": [
+    "This verifies a local trusted-host Python library and SQLite behavior, not an online HTTP/authentication integration.",
+    "Caller authentication, tenant selection, check-policy provenance, actual execution and complete read scope remain trusted-host obligations; this cache does not prove runner log truth.",
+    "No actual production checker was executed: fixtures provide runner logs and authorization callbacks.",
+    "Reopening the cache and per-operation SQLite connections verifies persistence here; separate process crash recovery and production stress capacity were not exercised.",
+    "Database administrators are trusted; hash checks detect tested corruption, not coordinated malicious database rewriting/deletion.",
+    "No token savings, model costs, production capacity, release approval, or completion of parent #1382 is established."
+  ],
+  "cleanup": {
+    "temporary_fixture_databases": "All TemporaryDirectory instances cleaned via unittest cleanup and supplemental finally blocks.",
+    "product_files_modified": false,
+    "temporary_source_files_created": false,
+    "retained": "Only requested evidence-review.json receipt; frozen input manifest and product files retained unchanged."
+  },
+  "issue_number": 1406,
+  "request_id": "duobao-native-evidence-20261117"
+}
