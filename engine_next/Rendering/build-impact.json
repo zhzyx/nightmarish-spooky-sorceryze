@@ -1,7 +1,7 @@
 {
   "placement": "mixed",
-  "reason": "Independent C++ rendering resolves source-bound material overrides, allocates material GBuffer resources and selects offline shader permutations. Shared material shaders implement direct light, environment integration and screen-space reflection lobes.",
-  "host_contract": "Windows x86_64 D3D12 visual client with explicit frame-graph resource access and fence retirement. CPU material data preserves original M3 asset, texture and alpha identities. Public headers remain platform-independent.",
+  "reason": "Mixed native and offline-shader rendering. The native layer builds a luminance/solid-angle environment alias table, uploads the immutable structured buffer and binds it to material lighting and reflection. Shared shader functions sample that exact distribution with multiple importance sampling.",
+  "host_contract": "Windows x86_64 D3D12 visual client. The source cubemap, packed table and material shaders share one scene lifetime. Source M3 materials and textures retain their existing identities. The 16-byte alias ABI includes dimension and uniform-fallback metadata.",
   "rollback": "Restore the original source and shader bundle, rebuild, then verify the native identity and deterministic capture. Shader replacement is checked using one unchanged executable and a source-bound scene.",
-  "evidence": "data-collection/engine-next-visual-runtime-m4-3-materials-build-impact.json"
+  "evidence": "data-collection/engine-next-visual-runtime-m4-3-ibl-build-impact-r4.json"
 }

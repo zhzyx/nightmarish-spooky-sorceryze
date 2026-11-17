@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "event_id": "m43-ibl-final-verified-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-17T18:51:49.477960+00:00",
+  "agent": {
+    "id": "codex-environment-importance",
+    "version": "repository-instructions-23d4e05b",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116",
+    "m43-materials-final-verified-20261118"
+  ],
+  "payload": {
+    "scope": "Environment importance sampling and per-lobe MIS for the material runtime",
+    "native_key": "3863fbe241f4f95aa96f5f621210fccc982ffe124fb6108a01dd7602f32a8cc1",
+    "binary_sha256": "c621c2a1fd1fff28ef0778f2ed419807eb6e70c0ea796595b1c0f644ca9485c8",
+    "cpu": "Full MSVC and clang-cl rendering regression passes 351 tests and 454018 checks. Two independent reviewers confirm the production sampling math and the deterministic sequence regression.",
+    "gpu": "Nine R2 normal-entry material scenes pass 168 frames with zero validation errors; a separate hidden 3840x2160 target passes 12 frames. R3 differs by two comment spellings and has byte-identical runtime text and all 32 shaders.",
+    "quality": "Same-binary, same-input HDR readback reduces 24 isolated bright samples to zero across 31052 interior pixels. RMS to the 512/256/128 NDF reference falls from 0.09136585 to 0.03211194. The actual alias buffer and six source cube faces match CPU bytes.",
+    "correction": "The initial midpoint sequence produced an always-zero alias coin for a 24576-entry table. Deterministic stratified jitter fixes this production-sequence defect; original failure evidence is preserved.",
+    "build_placement": "Three clean R2 builds and one fixed executable verify input invalidation, shader update, exact rollback and malformed-shader rejection. Current index hashes and the R2/R3 comment-only delta remain explicit.",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-ibl-verification.json",
+      "data-collection/engine-next-visual-runtime-m4-3-ibl-gpu.json",
+      "data-collection/engine-next-visual-runtime-m4-3-ibl-source-review.json",
+      "data-collection/engine-next-visual-runtime-m4-3-ibl-build-impact.json"
+    ],
+    "remaining": "Signed-candidate CI and main readback follow. Parent Issue 1343 remains open for full M4 completion, GI, geometry, temporal quality, physical 4K output and Unreal Engine comparison."
+  },
+  "sha256": "b6a0d946acb4353a186ffdd2f2c4889b7c57e95b7ad0e2bccc0bfe1143c67ffa"
+}

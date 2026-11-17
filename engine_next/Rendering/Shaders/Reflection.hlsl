@@ -69,7 +69,11 @@ void CompositeCS(uint3 Thread : SV_DispatchThreadID)
 #elif defined(REFLECTION_TRACE_STAGE)
 #include "ReflectionTrace.hlsli"
 #if defined(MATERIAL_EXTENSION_STAGE)
+#if defined(ENVIRONMENT_IMPORTANCE_STAGE)
+#include "MaterialEnvironmentLighting.hlsli"
+#else
 #include "MaterialEnvironment.hlsli"
+#endif
 #endif
 
 struct LocalLightConstants
@@ -190,6 +194,35 @@ float4 TraceReflection(int2 Pixel)
 }
 
 #if defined(MATERIAL_EXTENSION_STAGE)
+#if defined(ENVIRONMENT_IMPORTANCE_STAGE)
+float3 TraceMaterialMisSample(float3 Position, float3 Normal, float3 Direction,
+    float3 BaseWeight, float3 CoatWeight, float BaseRoughness, float CoatRoughness, SsrTraceParameters Parameters)
+{
+    if (all(BaseWeight == 0) && all(CoatWeight == 0))
+    {
+        return 0;
+    }
+    float3 Environment = EnvironmentMap.SampleLevel(EnvironmentSampler, Direction, 0).rgb * ExposureState[0].x;
+    float3 Surface = Environment;
+    float HitConfidence = 0;
+    float BaseConfidence = ReflectionRoughnessConfidence(BaseRoughness, Settings.z);
+    float CoatConfidence = ReflectionRoughnessConfidence(CoatRoughness, Settings.z);
+    if (max(BaseConfidence, CoatConfidence) > 0)
+    {
+        float3 ViewDirection = ReflectionUnitDirection(mul((float3x3)View, Direction));
+        SsrTraceResult Hit = TraceScreenRay(DepthBuffer, Position + Normal * Settings.x, ViewDirection, Parameters);
+        if (Hit.Reason == SSR_HIT)
+        {
+            float3 HitNormal = mul((float3x3)View, NormalBuffer.Load(int3(Hit.Pixel, 0)).xyz);
+            HitConfidence = Hit.Confidence * ReflectionHitConfidence(HitNormal, ViewDirection);
+            Surface = SampleRadianceLevel(0, Hit.Uv);
+        }
+    }
+    return lerp(Environment, Surface, saturate(HitConfidence * BaseConfidence)) * BaseWeight +
+        lerp(Environment, Surface, saturate(HitConfidence * CoatConfidence)) * CoatWeight;
+}
+#endif
+
 float3 TraceMaterialSample(float3 Position, float3 Normal, MaterialEnvironmentSample Sample,
     float Roughness, SsrTraceParameters Parameters)
 {
@@ -249,6 +282,46 @@ float4 TraceMaterialReflection(int2 Pixel, float4 Extension)
     Parameters.EdgeFadePixels = 8;
     Parameters.MaxSteps = uint(clamp(Settings.y, 1, 256));
     float3 Color = 0;
+#if defined(ENVIRONMENT_IMPORTANCE_STAGE)
+    EnvironmentTableInfo Table = ReadEnvironmentTableInfo(EnvironmentAlias);
+    MaterialMisCounts Counts;
+    Counts.Base = 16;
+    Counts.Coat = Extension.x > 0 ? 8 : 0;
+    Counts.Diffuse = 0;
+    Counts.Environment = Table.Valid ? 24 : 0;
+    [loop] for (uint Index = 0; Index < Counts.Base; ++Index)
+    {
+        MaterialEnvironmentSample Sample = MaterialEnvironmentBaseSample(Base, Surface.y, Surface.x,
+            Extension.z, Extension.x, Extension.y, Frame, V, MaterialHammersley(Index, Counts.Base));
+        if (Sample.Pdf > 0)
+        {
+            float Pdf = EnvironmentDirectionPdf(EnvironmentAlias, Table.FaceSize, Table.UniformFallback, Sample.Direction);
+            MaterialMisWeights Weights = MaterialImportanceWeights(Base, Surface.y, Surface.x, Extension.z, Extension.x,
+                Extension.y, Frame, V, Sample.Direction, Pdf, Counts);
+            Color += TraceMaterialMisSample(Position, ViewNormal, Sample.Direction, Weights.Base, 0, Surface.x, Extension.y, Parameters);
+        }
+    }
+    [loop] for (uint Index = 0; Index < Counts.Coat; ++Index)
+    {
+        MaterialEnvironmentSample Sample = MaterialEnvironmentCoatSample(Base, Surface.y, Surface.x,
+            Extension.z, Extension.x, Extension.y, Frame, V, MaterialHammersley(Index, Counts.Coat));
+        if (Sample.Pdf > 0)
+        {
+            float Pdf = EnvironmentDirectionPdf(EnvironmentAlias, Table.FaceSize, Table.UniformFallback, Sample.Direction);
+            MaterialMisWeights Weights = MaterialImportanceWeights(Base, Surface.y, Surface.x, Extension.z, Extension.x,
+                Extension.y, Frame, V, Sample.Direction, Pdf, Counts);
+            Color += TraceMaterialMisSample(Position, ViewNormal, Sample.Direction, 0, Weights.Coat, Surface.x, Extension.y, Parameters);
+        }
+    }
+    [loop] for (uint Index = 0; Index < Counts.Environment; ++Index)
+    {
+        EnvironmentDirectionSample Sample = SampleEnvironmentDirection(EnvironmentAlias, Table.FaceSize, Table.UniformFallback,
+            MaterialEnvironmentCoordinates(Index, Counts.Environment));
+        MaterialMisWeights Weights = MaterialImportanceWeights(Base, Surface.y, Surface.x, Extension.z, Extension.x,
+            Extension.y, Frame, V, Sample.Direction, Sample.Pdf, Counts);
+        Color += TraceMaterialMisSample(Position, ViewNormal, Sample.Direction, Weights.Base, Weights.Coat, Surface.x, Extension.y, Parameters);
+    }
+#else
     [loop] for (uint Index = 0; Index < 32; ++Index)
     {
         MaterialEnvironmentSample Sample = MaterialEnvironmentBaseSample(Base, Surface.y, Surface.x,
@@ -264,6 +337,7 @@ float4 TraceMaterialReflection(int2 Pixel, float4 Extension)
             Color += TraceMaterialSample(Position, ViewNormal, Sample, Extension.y, Parameters) / 16;
         }
     }
+#endif
     return float4(ReflectionFiniteColor(Color * Surface.z), 1);
 }
 #endif
