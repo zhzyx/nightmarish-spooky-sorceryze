@@ -78,6 +78,8 @@ var preview_artifact: Dictionary = {}
 var preview_token = ""
 var preview_run = ""
 var preview_node = ""
+var preview_source_path = ""
+var save_picker: FileDialog
 var preview_resource: Resource
 var preview_scene: Node
 var staged = ""
@@ -594,6 +596,16 @@ func _ready():
 	content.add_child(publish_bar)
 	target_edit = line(publish_bar, "新文件绝对路径：图像用 .tres，网格用 .tscn", ProjectSettings.globalize_path("res://published.tres"))
 	button(publish_bar, "检查并发布", review_publish)
+	button(publish_bar, "保存生成物…", open_save_dialog)
+	save_picker = FileDialog.new()
+	save_picker.title = "保存生成物"
+	save_picker.ok_button_text = "保存"
+	save_picker.cancel_button_text = "取消"
+	save_picker.access = FileDialog.ACCESS_FILESYSTEM
+	save_picker.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+	save_picker.use_native_dialog = true
+	save_picker.file_selected.connect(save_preview_to)
+	add_child(save_picker)
 	dialog = ConfirmationDialog.new()
 	dialog.title = "确认发布"
 	dialog.ok_button_text = "发布新文件"
@@ -1320,6 +1332,7 @@ func clear_preview():
 	preview_token = ""
 	preview_run = ""
 	preview_node = ""
+	preview_source_path = ""
 	preview_resource = null
 	preview_artifact = {}
 	current_images = []
@@ -1368,6 +1381,7 @@ func load_preview(data: Dictionary, node_id: String, result_run: String = "", pr
 		mesh_container.show()
 		frame_mesh()
 	preview_token = data.token
+	preview_source_path = str(data.path)
 	# The primary result of an ordinary single-image node is not an explicit
 	# image_set selection. Only member entries carry an artifact override.
 	preview_artifact = data.get("artifact", {}).duplicate(true) if not current_images.is_empty() else {}
@@ -1431,6 +1445,29 @@ func set_owners(node: Node, root: Node):
 	for child in node.get_children():
 		child.owner = root
 		set_owners(child, root)
+
+func open_save_dialog():
+	if preview_source_path.is_empty() or not FileAccess.file_exists(preview_source_path):
+		status.text = "请先预览要保存的图像或网格"
+		return
+	var extension = preview_source_path.get_extension().to_lower()
+	if extension.is_empty(): extension = "png" if preview_resource != null else "glb"
+	save_picker.filters = ["*." + extension + " ; " + ("图像" if preview_resource != null else "网格") + "生成物"]
+	save_picker.current_dir = preview_source_path.get_base_dir()
+	save_picker.current_file = preview_source_path.get_file()
+	save_picker.popup_centered_ratio(0.7)
+
+func save_preview_to(path: String):
+	if preview_source_path.is_empty() or not FileAccess.file_exists(preview_source_path):
+		status.text = "生成物源文件已不可用，请重新预览后再保存"
+		return
+	var target = path
+	if target.get_extension().is_empty(): target += "." + preview_source_path.get_extension().to_lower()
+	var err = DirAccess.copy_absolute(preview_source_path, target)
+	if err != OK:
+		status.text = "保存生成物失败：" + error_string(err)
+		return
+	status.text = "已保存生成物：" + target
 
 func review_publish():
 	if preview_token == "" or preview_run != run_id:

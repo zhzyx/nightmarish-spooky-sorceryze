@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-save-artifact-20261117",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1427",
+  "issue_number": 1427,
+  "event_id": "maliang-save-artifact-20261117-validation",
+  "kind": "validation",
+  "occurred_at": "2026-11-17T11:50:00Z",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261117",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": [
+      "samples/ainative-workbench/addons/ainative/workbench.gd"
+    ],
+    "summary": "马良发布栏新增“保存生成物…”按钮：系统原生保存对话框选择任意路径，复制当前预览的原始图像或 GLB 网格；既有 .tres/.tscn 发布语义不变。",
+    "checks": [
+      {
+        "command": "python -m SCons platform=macos target=editor arch=arm64 use_volk=yes accesskit=no -j8",
+        "candidate": "a409f21b95c1a878c8022d7603b64251bfc2faf6 + workbench.gd save-artifact changes",
+        "environment": "macOS arm64, godot-build Python 3.12",
+        "result": "passed",
+        "evidence": "engine_builder_save_artifact.log (local working copy)"
+      },
+      {
+        "command": "byte check of bin/godot.macos.editor.arm64 and editor/ainative/bundle.gen.h for 保存生成物/open_save_dialog/save_preview_to",
+        "result": "passed",
+        "environment": "macOS arm64"
+      },
+      {
+        "command": "godot.macos.editor.arm64 --headless --path samples/ainative-workbench --check-only --script res://addons/ainative/workbench.gd",
+        "candidate": "PR candidate based on 04fcdb5f1f0e301f179e0581944accee382a2496",
+        "result": "passed"
+      }
+    ],
+    "not_verified": [
+      "真实编辑器中系统原生保存对话框的点击保存（图像与网格各一次），由用户稍后验收，Issue #1427 保持开放"
+    ]
+  },
+  "evidence_refs": [
+    "maliang-save-artifact-20261117-request"
+  ]
+}
