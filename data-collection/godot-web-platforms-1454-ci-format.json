@@ -1,0 +1,91 @@
+{
+  "schema_version": 1,
+  "request_id": "godot-web-platforms-20261118",
+  "issue": 1454,
+  "path_resolution_base": "repository root",
+  "predecessor_source_commit": "9af92c7a8221f6a422627262acf856e449b2742a",
+  "failed_ci": {
+    "run_id": 44146944713,
+    "head": "e9486c3043ab0cc2ff76c4f5b5464dd5574f78e4",
+    "failed_hook": "clang-format-web-platform",
+    "other_hooks": "passed"
+  },
+  "repair": "Pinned clang-format 22.1.5; three files changed only whitespace/include order, independently reviewed. No hook disabled.",
+  "final_review": "data-collection/godot-web-platforms-1454-independent-review-format.json",
+  "final_source_hashes": [
+    {
+      "path": "editor/docks/WebPlatformNative.h",
+      "sha256": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a"
+    },
+    {
+      "path": "editor/docks/WebPlatformNative.cpp",
+      "sha256": "928576b1dda13eb4e71c1e02a52449bf941fa92af2092a6b10c14223ae93c069"
+    },
+    {
+      "path": "editor/docks/WebPlatformMacOS.mm",
+      "sha256": "90dc4a139e5c9de2f9d0997ad3b3171cda5947b32cd39ca3d6a41af65a2c42cf"
+    },
+    {
+      "path": "editor/docks/WebPlatformDock.h",
+      "sha256": "60be9161d297dd498456970ff23c007c2302a481c57a12fb3d634df6caa3e6d7"
+    },
+    {
+      "path": "editor/docks/WebPlatformDock.cpp",
+      "sha256": "a6e85805cff026bbb3951af401fbe1a19d4bc4a81f2e7db9ceb6f4b576a0b993"
+    },
+    {
+      "path": "editor/docks/SCsub",
+      "sha256": "672be3ecd471462b3b580f93dddad6e05acc831f46bb9b5490dcb8264daab4b7"
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "sha256": "f92782c7b23b84e00e29e2e67a3b093b8af06355f7d028f014a1c4ca42802c1e"
+    },
+    {
+      "path": "editor/register_editor_types.cpp",
+      "sha256": "b5b511244d3102e988655bcf394a5cafada5e11c501f2fd72ba44247aa17b14e"
+    },
+    {
+      "path": "platform/macos/detect.py",
+      "sha256": "9cecf7c6a676e10245082cc9c522efcbbbe8a95c33fc6b816a98c457e0effd35"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "sha256": "5e8a084a74d3d7cf7904dd98511540a89c8c49e135d2df8697d3a1c153264a72"
+    },
+    {
+      "path": "tests/editor/TestWebPlatformMacOS.mm",
+      "sha256": "e97e13750a2d53b752f377b481051c391e53703e26255db4f91e98f295151c67"
+    },
+    {
+      "path": "tests/editor/TestWebPlatformPolicy.cc",
+      "sha256": "2f1ebfcf91ced3565940d2e8ddeb57d1f965a3cc592e71d6cb8c8ce36f4e10a6"
+    },
+    {
+      "path": "tests/editor/web_platform_dock.gd",
+      "sha256": "01b6bac91d5f61be80f6cf0c0b2e8b59d165953106d562c3593c8a10ba395996"
+    }
+  ],
+  "verification": {
+    "pinned_format_dry_run": {
+      "exit_code": 0,
+      "version": "22.1.5"
+    },
+    "validate_includes": {
+      "exit_code": 0
+    },
+    "git_diff_check": {
+      "exit_code": 0
+    },
+    "macos_arm64_full_editor_link": {
+      "exit_code": 0,
+      "log_sha256": "17c005b2ab75c0ecb5508975b51e27a30b474412730f877ac609ed2c865da592"
+    },
+    "origin_policy": {
+      "exit_code": 0,
+      "output": "WEB_PLATFORM_POLICY_OK"
+    },
+    "runtime_evidence": "data-collection/godot-web-platforms-1454-validation.json; runtime tests apply to unchanged behavior, not rerun for formatting"
+  },
+  "overall_issue_complete": false
+}

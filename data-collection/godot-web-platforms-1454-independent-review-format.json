@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1454",
+  "request_id": "godot-web-platforms-20261118",
+  "reviewer": "codex-independent-reviewer",
+  "authorization": "codex:user-request-20261118-godot-only",
+  "created_at": "2026-11-17T18:27:07.837076+00:00",
+  "worktree": "repository root",
+  "path_resolution_base": "repository root",
+  "review_kind": "independent_final_formatting_delta_addendum",
+  "base_source_commit": "9af92c7a8221f6a422627262acf856e449b2742a",
+  "candidate_head": "9af92c7a8221f6a422627262acf856e449b2742a",
+  "candidate_binding": "worktree source SHA-256 hashes below; formatting changes uncommitted at review time",
+  "result": "no_actionable_findings_in_reviewed_scope",
+  "overall_issue_complete": false,
+  "functional_delta": "No functional source change identified. Two implementation files change line-leading whitespace only; dock changes include ordering and one blank line only. No declarations, expressions, string literals, policy conditions, test assertions or runtime paths changed. Include-order equivalence is source-level review, not a new compile or runtime result.",
+  "findings": [],
+  "prior_review": "data-collection/receipts/godot-web-platforms-20261118/independent-review-fixed.json",
+  "prior_review_sha256": "81d8f2d4cfd15ed8fb58b3c24a645fab4483336d06fbbeeacc1f199188c72da8",
+  "prior_review_preserved": true,
+  "reviewed_files": [
+    {
+      "path": "editor/docks/WebPlatformNative.h",
+      "sha256": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a",
+      "prior_review_sha256": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": true,
+      "scope": "full file",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "editor/docks/WebPlatformNative.cpp",
+      "sha256": "928576b1dda13eb4e71c1e02a52449bf941fa92af2092a6b10c14223ae93c069",
+      "prior_review_sha256": "aa3fb2f34190722db1342e35d4c83844994f49765cb08098485cf4cb787ddbb3",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": false,
+      "scope": "full file",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "editor/docks/WebPlatformMacOS.mm",
+      "sha256": "90dc4a139e5c9de2f9d0997ad3b3171cda5947b32cd39ca3d6a41af65a2c42cf",
+      "prior_review_sha256": "9dec1826e7bc80d363c92f363bba7aa4baa3c2b6c45a87b556a7fb6929204adb",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": false,
+      "scope": "full file",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "editor/docks/WebPlatformDock.h",
+      "sha256": "60be9161d297dd498456970ff23c007c2302a481c57a12fb3d634df6caa3e6d7",
+      "prior_review_sha256": "60be9161d297dd498456970ff23c007c2302a481c57a12fb3d634df6caa3e6d7",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": true,
+      "scope": "full file",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "editor/docks/WebPlatformDock.cpp",
+      "sha256": "a6e85805cff026bbb3951af401fbe1a19d4bc4a81f2e7db9ceb6f4b576a0b993",
+      "prior_review_sha256": "7a38af2ff068ee2164d4256397b6da81a2f80ff313b5cb1ff8e761746338dae5",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": false,
+      "scope": "full file",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "editor/docks/SCsub",
+      "sha256": "672be3ecd471462b3b580f93dddad6e05acc831f46bb9b5490dcb8264daab4b7",
+      "prior_review_sha256": "672be3ecd471462b3b580f93dddad6e05acc831f46bb9b5490dcb8264daab4b7",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": true,
+      "scope": "full file",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "editor/editor_node.cpp",
+      "sha256": "f92782c7b23b84e00e29e2e67a3b093b8af06355f7d028f014a1c4ca42802c1e",
+      "prior_review_sha256": "f92782c7b23b84e00e29e2e67a3b093b8af06355f7d028f014a1c4ca42802c1e",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": true,
+      "scope": "candidate integration diff and relevant surrounding context",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "editor/register_editor_types.cpp",
+      "sha256": "b5b511244d3102e988655bcf394a5cafada5e11c501f2fd72ba44247aa17b14e",
+      "prior_review_sha256": "b5b511244d3102e988655bcf394a5cafada5e11c501f2fd72ba44247aa17b14e",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": true,
+      "scope": "candidate integration diff and relevant surrounding context",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "platform/macos/detect.py",
+      "sha256": "9cecf7c6a676e10245082cc9c522efcbbbe8a95c33fc6b816a98c457e0effd35",
+      "prior_review_sha256": "9cecf7c6a676e10245082cc9c522efcbbbe8a95c33fc6b816a98c457e0effd35",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": true,
+      "scope": "candidate integration diff and relevant surrounding context",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": ".pre-commit-config.yaml",
+      "sha256": "5e8a084a74d3d7cf7904dd98511540a89c8c49e135d2df8697d3a1c153264a72",
+      "prior_review_sha256": "5e8a084a74d3d7cf7904dd98511540a89c8c49e135d2df8697d3a1c153264a72",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": true,
+      "scope": "candidate integration diff and relevant surrounding context",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "tests/editor/TestWebPlatformMacOS.mm",
+      "sha256": "e97e13750a2d53b752f377b481051c391e53703e26255db4f91e98f295151c67",
+      "prior_review_sha256": "e97e13750a2d53b752f377b481051c391e53703e26255db4f91e98f295151c67",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": true,
+      "scope": "full file",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "tests/editor/TestWebPlatformPolicy.cc",
+      "sha256": "2f1ebfcf91ced3565940d2e8ddeb57d1f965a3cc592e71d6cb8c8ce36f4e10a6",
+      "prior_review_sha256": "2f1ebfcf91ced3565940d2e8ddeb57d1f965a3cc592e71d6cb8c8ce36f4e10a6",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": true,
+      "scope": "full file",
+      "addendum_scope": "final delta only; prior source review retained"
+    },
+    {
+      "path": "tests/editor/web_platform_dock.gd",
+      "sha256": "01b6bac91d5f61be80f6cf0c0b2e8b59d165953106d562c3593c8a10ba395996",
+      "prior_review_sha256": "01b6bac91d5f61be80f6cf0c0b2e8b59d165953106d562c3593c8a10ba395996",
+      "base_matches_prior_review": true,
+      "unchanged_from_base": true,
+      "scope": "full file",
+      "addendum_scope": "final delta only; prior source review retained"
+    }
+  ],
+  "formatting_deltas": [
+    {
+      "path": "editor/docks/WebPlatformDock.cpp",
+      "line_start": 33,
+      "line_end": 34,
+      "change": "Move core/object/callable_mp.h ahead of editor/docks/WebPlatformNative.h and remove intervening blank line. WebPlatformNative.h is unchanged, uses only std::string and has no conditional definitions or engine dependency."
+    },
+    {
+      "path": "editor/docks/WebPlatformNative.cpp",
+      "line_start": 56,
+      "line_end": 73,
+      "change": "Only line-leading indentation of the two std::transform lambda bodies changed; every line matches baseline after stripping leading whitespace."
+    },
+    {
+      "path": "editor/docks/WebPlatformMacOS.mm",
+      "line_start": 358,
+      "line_end": 359,
+      "change": "Only line-leading indentation of NSMakeRect arguments changed; every line matches baseline after stripping leading whitespace."
+    }
+  ],
+  "verification": {
+    "baseline_binding": "All 13 baseline file SHA-256 values exactly equal independent-review-fixed.json. Ten final files remain byte-identical. Three exact changes independently checked as described.",
+    "diff_check": "git diff --check passed (exit 0)",
+    "pinned_formatter": "Read .pre-commit-config.yaml lines 22-34: v22.1.5 and existing web-platform override unchanged. Formatter not executed by this reviewer.",
+    "ci_context": "Parent reports CI 44146944713 rejected clang-format-web-platform after version 23 formatting. Not independently fetched by this source reviewer."
+  },
+  "evidence_boundaries": {
+    "source_review": "Final delta independently inspected and asserted against base. Existing source review applies through matching base hashes and unchanged logic.",
+    "engine_build": "No new build run or independently verified by this reviewer.",
+    "runtime_tests": "No runtime tests executed by this reviewer. Parent reports prior native, headless and actual Tianxuan tests passed; that context does not extend this reviewer evidence or erase previous runtime limitations.",
+    "desktop": "No desktop interaction, visible window, focus or GUI automation.",
+    "commit_push_merge": "None. Delivery belongs to parent.",
+    "temporary_resources": "Only authorized addendum JSON created; no temporary resources."
+  },
+  "prior_review_evidence_boundaries": {
+    "source_review": "Independently completed for hashes listed here. No product edits.",
+    "engine_build": "Not run or independently verified by this reviewer. Parent reports full arm64 Godot link succeeded.",
+    "runtime_tests": "None executed by reviewer. Parent reports synthetic hidden-native fixture and final isolated EditorPlugin headless probe passed, with no errors/leaks in its final headless log. Those reports are attributed context, not reviewer runtime evidence. Actual Web app test was still pending at report time.",
+    "desktop": "No desktop, visible window, GUI automation or focus operation performed.",
+    "commit_push_merge": "None; parent owns delivery.",
+    "temporary_resources": "No temporary resources created; only this authorized review JSON written."
+  },
+  "prior_remaining_acceptance_preserved": [
+    "Run or otherwise establish the old macOS 11.0-11.2 capability boundary; source guards do not equal old-OS runtime acceptance.",
+    "Exercise invalid and corrected addresses with an established native connection.",
+    "Exercise pending prompt/alert/confirm/upload/save-dialog/download shutdown and ordinary/blob-download behavior.",
+    "Verify native keyboard/IME/Escape, editor shortcuts and scene switching, native layering, popup occlusion, Retina/fullscreen and visible resize/window close.",
+    "Verify first-load failure/retry, history controls and web-content-process recovery.",
+    "Verify actual Tianxuan document/requirements/issues/Duobao/search/settings workflows, production authentication, permissions, persistence across app restart, and logout.",
+    "Windows and Linux native backends remain absent; unsupported fallback is not backend completion.",
+    "Formal gates, CI, exact-candidate delivery/main readback and linked-issue lifecycle remain with parent responsibility."
+  ],
+  "remaining_acceptance_note": "Prior report is preserved verbatim. Any parent evidence resolving its then-pending items must be evaluated separately; this formatting addendum does not claim overall business acceptance.",
+  "original_private_report_sha256": "014d7405b757f3a3d37f61dce569b87c595c9f70155a0b38d177b0c3a7799feb",
+  "public_copy_note": "Absolute worktree paths normalized; reviewed hashes and findings preserved."
+}

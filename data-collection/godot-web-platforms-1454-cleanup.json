@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "request_id": "godot-web-platforms-20261118",
+  "issue": 1454,
+  "path_resolution_base": "repository root; ~/ resolves to executing user home",
+  "removed": [
+    "apps/tianxuan/node_modules",
+    "apps/tianxuan/.next",
+    "data-collection/receipts/godot-web-platforms-20261118/npm",
+    "data-collection/receipts/godot-web-platforms-20261118/npm.tgz",
+    "data-collection/receipts/godot-web-platforms-20261118/NativeTest.app",
+    "data-collection/receipts/godot-web-platforms-20261118/headless-project",
+    "data-collection/receipts/godot-web-platforms-20261118/headless-plugin",
+    "data-collection/receipts/godot-web-platforms-20261118/fixture_server.py",
+    "data-collection/receipts/godot-web-platforms-20261118/fixture_server.port",
+    "data-collection/receipts/godot-web-platforms-20261118/run_api.py",
+    "data-collection/receipts/godot-web-platforms-20261118/test-app.db",
+    "data-collection/receipts/godot-web-platforms-20261118/test-actor.txt",
+    "bin/editor_data",
+    "~/Library/WebKit/org.godotengine.webplatform.validation.issue1454",
+    "~/Library/Caches/org.godotengine.webplatform.validation.issue1454"
+  ],
+  "stopped_task_processes": [
+    "fixture server 48844",
+    "isolated API 50120",
+    "Next production server 50151"
+  ],
+  "preserved": {
+    "task_worktree_and_branch": "signed candidate is under CI; not yet merged",
+    "bin/godot.macos.editor.dev.arm64": "verified candidate editor retained for acceptance; no active installation replaced",
+    "bin/_sc_": "keeps candidate editor settings isolated",
+    "private logs and review/dispatch receipts": "necessary source, failure and runtime evidence",
+    ".godot/web-platform-validation-1454/venv": "pinned formatter and compiler tooling needed until final CI succeeds"
+  },
+  "other_tasks_touched": false,
+  "scheduled_cleanup_added": false
+}

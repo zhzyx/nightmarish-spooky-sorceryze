@@ -54,9 +54,9 @@ bool ParseWebPlatformOrigin(const std::string &strUrl, std::string &out_strOrigi
 	}
 	std::string strScheme = strUrl.substr(0, nSeparator);
 	std::transform(strScheme.begin(), strScheme.end(), strScheme.begin(), [](unsigned char nCharacter)
-			{
-				return static_cast<char>(nCharacter >= 'A' && nCharacter <= 'Z' ? nCharacter + 32 : nCharacter);
-			});
+				   {
+					   return static_cast<char>(nCharacter >= 'A' && nCharacter <= 'Z' ? nCharacter + 32 : nCharacter);
+				   });
 	if (strScheme != "https" && strScheme != "http")
 	{
 		return false;
@@ -68,9 +68,9 @@ bool ParseWebPlatformOrigin(const std::string &strUrl, std::string &out_strOrigi
 		return false;
 	}
 	std::transform(strHost.begin(), strHost.end(), strHost.begin(), [](unsigned char nCharacter)
-			{
-				return static_cast<char>(nCharacter >= 'A' && nCharacter <= 'Z' ? nCharacter + 32 : nCharacter);
-			});
+				   {
+					   return static_cast<char>(nCharacter >= 'A' && nCharacter <= 'Z' ? nCharacter + 32 : nCharacter);
+				   });
 	const std::size_t nPortPosition = strHost.front() == '[' ? strHost.find(':', strHost.find(']')) : strHost.find(':');
 	std::uint32_t nPort = strScheme == "https" ? 443 : 80;
 	if (nPortPosition != std::string::npos)

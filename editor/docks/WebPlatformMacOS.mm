@@ -355,8 +355,8 @@ public:
 		const double dScaleX = stParent.size.width / dParentWidth;
 		const double dScaleY = stParent.size.height / dParentHeight;
 		const NSRect stFrame = NSMakeRect(stParent.origin.x + dX * dScaleX,
-				stParent.origin.y + (pParent.isFlipped ? dY : dParentHeight - dY - dHeight) * dScaleY,
-				std::max(0.0, dWidth * dScaleX), std::max(0.0, dHeight * dScaleY));
+										  stParent.origin.y + (pParent.isFlipped ? dY : dParentHeight - dY - dHeight) * dScaleY,
+										  std::max(0.0, dWidth * dScaleX), std::max(0.0, dHeight * dScaleY));
 		pView.frame = NSIntersectionRect(stFrame, stParent);
 	}
 

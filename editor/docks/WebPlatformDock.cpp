@@ -30,9 +30,8 @@
 
 #include "WebPlatformDock.h"
 
-#include "editor/docks/WebPlatformNative.h"
-
 #include "core/object/callable_mp.h"
+#include "editor/docks/WebPlatformNative.h"
 #include "editor/docks/editor_dock.h"
 #include "editor/settings/editor_settings.h"
 #include "scene/gui/button.h"
