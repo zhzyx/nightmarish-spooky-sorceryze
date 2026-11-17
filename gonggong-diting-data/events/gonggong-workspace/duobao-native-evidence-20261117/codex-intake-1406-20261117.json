@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1406-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-evidence-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T07:59:13.639297+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1406",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1406,
+    "title": "多宝验证证据：按真实输入复用，避免无关变更触发重验",
+    "body": "<!-- gonggong-request:duobao-native-evidence-20261117 -->\r\n\r\n需求文档：`design-docs/duobao-native-evidence-20261117.md`\r\n\r\n[查看主线设计（合入后可用）](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/duobao-native-evidence-20261117.md)\r\n\r\n# 多宝输入定址的验证证据缓存\r\n\r\n需求 ID：duobao-native-evidence-20261117。父需求 #1382 的 P0-C 第一步，依赖 #1386 精确原生存储契约。\r\n\r\n以可信宿主提供的检查规范、工具链、环境、参数及真实输入内容形成验证键。明确对象范围的检查只绑定实际对象摘要/缺失状态及相关精确依赖；同模块不相交内容或无关模块变化不能作废其证据。未知读取范围则绑定整个模块/组合，拒绝把未知当独立。模块修订 SHA 本身不能无条件充当所有检查的缓存键，否则只是将 main 重验缩小到模块。\r\n\r\n实现新宿主文件与正常 CLI/API 库接口，复用原生数据库与精确组合。证据不可变，包含真实检查执行者、结果、原始证据摘要与规则/环境身份；持久存储、重启读取、幂等回执、租户隔离、损坏拒绝及显式撤回。可信宿主负责认证检查者与读取范围完备性，缓存不自授批准，不将提交者提供的 passed 布尔值当独立验收。未建立可信检查规范和执行者时拒绝接收证据。\r\n\r\n验收：在同一模块的对象 A 验证后提交不相交 B，A 的验证键不变且能命中原证据；修改 A、读取缺失对象的存在性、依赖、检查版本、工具链、参数、环境任一变化均不能误命中。失败/未知/撤回证据不能作为通过返回；其他租户不可读；重启与重复回执保持一致。缺少范围按完整模块或组合保守处理。测试输入/规则/真实运行命令留证，记录调用次数和命中，不估算 token 或模型费用。\r\n\r\n此子项只实现缓存和证据事实，不实现生产发布或自动签发；独立验收、发布清单和回退为后续 P0-C 子项，不缩减父目标。placement=host_tool，无 Git、网络、模型和引擎链接依赖；绝对数据库路径由宿主选择，停用入口保留证据作为回退。\r\n\r\n\r\n执行授权来源（由调用宿主核实，不代替候选准入）：Codex user 2026-11-17 explicitly started execution of #1382\r\n\r\n\r\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+    "updated_at": "2026-11-17T07:22:24Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "5b63830ec1be3ed3aaae128746011c16ff51da8523de6d2ca2564f17b233935b"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "issue_number": 1406,
+  "request_id": "duobao-native-evidence-20261117",
+  "observed_at": "2026-11-17T07:53:55.783491+00:00",
+  "environment": "existing tianxuan server isolated temporary directory",
+  "python": "3.12.3",
+  "platform": "Linux",
+  "source_sha256": {
+    "native_store.py": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a",
+    "native_evidence.py": "779a6f9162874c2f2a24349c3dca2193cad31fec04c950749f851fcaf9f3216f",
+    "test_native_evidence.py": "054ede06d298edcb71488a76879afb12bc67d4938d731cf7daa77f523d71c304"
+  },
+  "tests_run": 16,
+  "passed": true,
+  "seconds": 0.8862269159872085,
+  "temporary_directory_removed": true,
+  "server_services_changed": false,
+  "test_output": "test_corrupt_request_reference_does_not_replay_another_run (test_native_evidence.EvidenceTests.test_corrupt_request_reference_does_not_replay_another_run) ... ok\ntest_dependency_content_corruption_rejects_cached_fact (test_native_evidence.EvidenceTests.test_dependency_content_corruption_rejects_cached_fact) ... ok\ntest_disjoint_object_and_unrelated_module_reuse_original_fact (test_native_evidence.EvidenceTests.test_disjoint_object_and_unrelated_module_reuse_original_fact) ... ok\ntest_durable_replay_and_conflicting_reuse (test_native_evidence.EvidenceTests.test_durable_replay_and_conflicting_reuse) ... ok\ntest_exact_dependency_change_invalidates (test_native_evidence.EvidenceTests.test_exact_dependency_change_invalidates) ... ok\ntest_expiry_future_clock_and_runner_revocation_are_checked_on_lookup (test_native_evidence.EvidenceTests.test_expiry_future_clock_and_runner_revocation_are_checked_on_lookup) ... ok\ntest_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass (test_native_evidence.EvidenceTests.test_failed_unknown_and_revoked_latest_fact_never_fall_back_to_old_pass) ... ok\ntest_host_scope_is_copied_and_caller_cannot_install_unknown_check (test_native_evidence.EvidenceTests.test_host_scope_is_copied_and_caller_cannot_install_unknown_check) ... ok\ntest_input_and_evidence_corruption_never_return_pass (test_native_evidence.EvidenceTests.test_input_and_evidence_corruption_never_return_pass) ... ok\ntest_invalid_policy_log_context_and_revoker_rejected (test_native_evidence.EvidenceTests.test_invalid_policy_log_context_and_revoker_rejected) ... ok\ntest_read_change_delete_and_missing_creation_invalidate (test_native_evidence.EvidenceTests.test_read_change_delete_and_missing_creation_invalidate) ... ok\ntest_rule_toolchain_environment_and_parameters_invalidate (test_native_evidence.EvidenceTests.test_rule_toolchain_environment_and_parameters_invalidate) ... ok\ntest_same_request_parallel_records_have_one_identity (test_native_evidence.EvidenceTests.test_same_request_parallel_records_have_one_identity) ... ok\ntest_storage_failure_rolls_back_evidence_and_retry_succeeds (test_native_evidence.EvidenceTests.test_storage_failure_rolls_back_evidence_and_retry_succeeds) ... ok\ntest_tenants_do_not_share_cached_evidence (test_native_evidence.EvidenceTests.test_tenants_do_not_share_cached_evidence) ... ok\ntest_unknown_and_whole_module_scopes_are_conservative (test_native_evidence.EvidenceTests.test_unknown_and_whole_module_scopes_are_conservative) ... ok\n\n----------------------------------------------------------------------\nRan 16 tests in 0.886s\n\nOK\n",
+  "limits": "Evidence cache semantics only; no API identity wiring, real check runner, production throughput, token or GPU acceptance."
+}
