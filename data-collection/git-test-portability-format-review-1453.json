@@ -1,0 +1,146 @@
+{
+  "issue": 1453,
+  "reviewer": "independent native Codex subagent /root/sinan_102a7e18d5ba6f7a",
+  "occurred_at": "2026-11-17T18:34:55.987454+00:00",
+  "verdict": "pass",
+  "findings": [],
+  "head": "9084deae1058e7b370a6584f32c16da1bda1c6ba",
+  "pre_commit_config_sha256": "b1dc7ba967cdac2826820cbec0397cebf6f8385e9ee410e50400fc4dc0aae84a",
+  "pre_commit_config_staged_sha256": "b1dc7ba967cdac2826820cbec0397cebf6f8385e9ee410e50400fc4dc0aae84a",
+  "exact_added_exclusions": [
+    "data-collection/git-test-portability-1453.json",
+    "data-collection/native-candidate-intake-1451.json"
+  ],
+  "config_only_two_literal_alternatives_added": true,
+  "other_hooks_and_formatter_unchanged": true,
+  "design_only_one_trailing_blank_line_removed": true,
+  "working_and_staged_sha256": {
+    "customizations/components/tianxuan/duobao/test_admin_paths.py": "27a3a97a28593b20abb8ef5f8c83f981914fac50ea53daeb73623d2fc52983cb",
+    "customizations/components/tianxuan/duobao/test_git_service_repo_root.py": "34981062543c6c359702f5ce236f9e42a76f0eca88aa6aba726dc00d6793d2be",
+    "customizations/components/tianxuan/duobao/git_service.py": "55871785d6a4d9eaf32c2caf690e66e61b1a7e0ef9aa731c350104913773d10f",
+    "data-collection/git-test-portability-1453.json": "cb163864580e075e94668fb6af95c0e34a3fb6bb02872ff648addb02d6292f18",
+    "data-collection/git-test-portability-linux-1453.json": "6093eee81a457d9bd6fb95e82c4d170f021c7e32814ba95f2e37fe31a581dda7",
+    ".pre-commit-config.yaml": "b1dc7ba967cdac2826820cbec0397cebf6f8385e9ee410e50400fc4dc0aae84a",
+    ".gitattributes": "765a731832beb8c48621c6cca697e714414a7d71d99f16107e41e0481942a76e",
+    "misc/scripts/file_format.py": "29a890753b9007285f2030b8194ea787d33d3973f73e0f21be7d5f089b4efa25"
+  },
+  "prior_source_and_evidence_bytes_match": true,
+  "regex_probes": [
+    {
+      "path": "data-collection/git-test-portability-1453.json",
+      "old_excluded": false,
+      "new_excluded": true
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1451.json",
+      "old_excluded": false,
+      "new_excluded": true
+    },
+    {
+      "path": "data-collection/git-test-portability-linux-1453.json",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "data-collection/git-test-portability-format-1453.json",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1452.json",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "data-collection/other.json",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_admin_paths.py",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "data-collection/git-test-portability-1453.json.bak",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "prefix/data-collection/git-test-portability-1453.json",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "data-collection/git-test-portability-1453xjson",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "data-collection/git-test-portability-1453-extra.json",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "DATA-COLLECTION/GIT-TEST-PORTABILITY-1453.JSON",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1451.json.bak",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "prefix/data-collection/native-candidate-intake-1451.json",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1451xjson",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1451-extra.json",
+      "old_excluded": false,
+      "new_excluded": false
+    },
+    {
+      "path": "DATA-COLLECTION/NATIVE-CANDIDATE-INTAKE-1451.JSON",
+      "old_excluded": false,
+      "new_excluded": false
+    }
+  ],
+  "tracked_paths_checked": 29402,
+  "tracked_exclusion_changes": [
+    "data-collection/git-test-portability-1453.json"
+  ],
+  "formatter_report": {
+    "path": "data-collection/git-test-portability-format-1453.json",
+    "sha256": "aee80c983a581f5cf7c9632709632920b326a495c4a1b85880929ac9b07734db",
+    "selected_count": 18,
+    "exit_code": 0,
+    "changed": [],
+    "source_hashes_match_current_index": true
+  },
+  "original_ci_log_sha256": "6f737863024047891f508b06055e62bbf44e20b16b14966734a1f61f28fd3faa",
+  "method_recall": {
+    "scope": "build-validation",
+    "applicable": "validate-whole-signed-candidate revision 3: exact source and index hash continuity; hosted full PR CI still required",
+    "not_applicable": "match-ci-warning-policy revision 2: C++ compiler specific"
+  },
+  "reviewer_probe_correction": "Initial regex extraction retained YAML indentation before (?x); corrected to YAML-equivalent dedent. No repository writes or candidate failures resulted.",
+  "limits": [
+    "Formatter execution read back from parent staged-blob report, not rerun by reviewer.",
+    "1451 report absent from this candidate; exact regex checked, prior review2 evidence remains separate delivery.",
+    "Original hosted replacement CI and full candidate gate remain required.",
+    "No full suite, source edits, commit, push, model calls, deployment or issue closure."
+  ],
+  "cleanup": {
+    "temporary_files_created": false,
+    "source_edits": false,
+    "only_write": "[verified-local-path]/fixture-review3.json"
+  },
+  "private_original_sha256": "1b0a9cd6af24127457056a70857af7105267d4f6fe62d5e54926681b7ff3651c"
+}

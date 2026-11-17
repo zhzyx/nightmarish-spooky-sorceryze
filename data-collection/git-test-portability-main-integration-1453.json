@@ -1,0 +1,13 @@
+{
+  "issue": 1453,
+  "before_head": "a433380d7047f024671fc95fbbaec54f66757cdc",
+  "target_main": "bf72c2dd4e36bc057c64cbdd5e9a060163b16526",
+  "base": "cefa69ea2ee415c0b65d88506c85582f626fc673",
+  "merged_tree": "38a5fdf4052a01afde938702ebafbe96edc7b702",
+  "shared": [
+    ".pre-commit-config.yaml"
+  ],
+  "upstream_preserved": true,
+  "owned_paths_unchanged_except_proven_disjoint_config": true,
+  "policy": "Explicit owned-tree integration; new exact review and hosted CI required before publication"
+}

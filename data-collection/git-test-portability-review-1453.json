@@ -1,0 +1,366 @@
+{
+  "issue": 1453,
+  "reviewer": "independent native Codex subagent /root/sinan_f08a7c5000a822e0",
+  "occurred_at": "2026-11-17T17:53:53.146303+00:00",
+  "verdict": "pass",
+  "findings": [],
+  "base_sha": "4c45067171c8201eb0386cb99472ae49cdd73917",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/test_admin_paths.py": "27a3a97a28593b20abb8ef5f8c83f981914fac50ea53daeb73623d2fc52983cb",
+    "customizations/components/tianxuan/duobao/test_git_service_repo_root.py": "34981062543c6c359702f5ce236f9e42a76f0eca88aa6aba726dc00d6793d2be",
+    "customizations/components/tianxuan/duobao/git_service.py": "55871785d6a4d9eaf32c2caf690e66e61b1a7e0ef9aa731c350104913773d10f"
+  },
+  "evidence_sha256": {
+    "data-collection\\git-test-portability-1453.json": "cb163864580e075e94668fb6af95c0e34a3fb6bb02872ff648addb02d6292f18",
+    "data-collection\\git-test-portability-linux-1453.json": "6093eee81a457d9bd6fb95e82c4d170f021c7e32814ba95f2e37fe31a581dda7"
+  },
+  "evidence_source_hashes_match": true,
+  "product_service_unchanged": true,
+  "source_review": [
+    "All original assertions retained, including subprocess not called, original admin config unchanged, and safe.txt absent.",
+    "Actual Git root/child and before/after no-side-effect snapshots remain unchanged; no synthetic discovery ceiling added.",
+    "Relative status receives an actual relative string while cwd is the fixture root; finally restores prior cwd.",
+    "Skip limited to NotImplementedError, ENOSYS/ENOTSUP/EOPNOTSUPP and actual Windows 1314; ordinary permission and filesystem errors propagate.",
+    "Existing Windows CR/LF path skip unchanged."
+  ],
+  "probes": [
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "NotImplementedError",
+      "errno": null,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "OSError",
+      "errno": 40,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "OSError",
+      "errno": 129,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "OSError",
+      "errno": 10045,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "PermissionError",
+      "errno": 13,
+      "winerror": 1314,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "PermissionError",
+      "errno": 13,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "PermissionError",
+      "errno": 1,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "FileNotFoundError",
+      "errno": 2,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "FileExistsError",
+      "errno": 17,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "OSError",
+      "errno": 5,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_file",
+      "exception": "RuntimeError",
+      "errno": null,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "NotImplementedError",
+      "errno": null,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "OSError",
+      "errno": 40,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "OSError",
+      "errno": 129,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "OSError",
+      "errno": 10045,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "PermissionError",
+      "errno": 13,
+      "winerror": 1314,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "PermissionError",
+      "errno": 13,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "PermissionError",
+      "errno": 1,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "FileNotFoundError",
+      "errno": 2,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "FileExistsError",
+      "errno": 17,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "OSError",
+      "errno": 5,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "admin_directory",
+      "exception": "RuntimeError",
+      "errno": null,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "NotImplementedError",
+      "errno": null,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "OSError",
+      "errno": 40,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "OSError",
+      "errno": 129,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "OSError",
+      "errno": 10045,
+      "winerror": null,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "PermissionError",
+      "errno": 13,
+      "winerror": 1314,
+      "expected": "skip",
+      "observed": "skip"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "PermissionError",
+      "errno": 13,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "PermissionError",
+      "errno": 1,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "FileNotFoundError",
+      "errno": 2,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "FileExistsError",
+      "errno": 17,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "OSError",
+      "errno": 5,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "symlink_error_classification",
+      "entry": "repo_root",
+      "exception": "RuntimeError",
+      "errno": null,
+      "winerror": null,
+      "expected": "propagated",
+      "observed": "propagated"
+    },
+    {
+      "probe": "actual_git_relative_paths_and_cwd",
+      "injected_failure": false,
+      "relative_paths": [
+        "工作 tree",
+        "bare repository.git",
+        "linked worktree"
+      ],
+      "cwd_restored": true,
+      "git_fixture_kind": "actual worktree/bare/linked, private scratch"
+    },
+    {
+      "probe": "actual_git_relative_paths_and_cwd",
+      "injected_failure": true,
+      "relative_paths": [
+        "工作 tree"
+      ],
+      "cwd_restored": true,
+      "git_fixture_kind": "actual worktree/bare/linked, private scratch"
+    }
+  ],
+  "linux_evidence": {
+    "output": "uuuuuuuuuuuuu....uu.uuuuuuu.uuu.uuuuuuu..uuuuuuu.uuuuuuuuuu.uuuuuuuuuuuu [ 92%]\nuuuuuuuuuuuu..                                                           [100%]\n13 passed, 73 subtests passed in 2.23s\n",
+    "environment": "existing Linux server isolated160MiB/1CPU, no network, installed real /usr/bin/git; production services unchanged",
+    "all_recorded_cases_passed": true
+  },
+  "method_recall": {
+    "scope": "build-validation",
+    "lessons": [
+      "match-ci-warning-policy revision 2: compiler-specific, not applicable to Python fixtures",
+      "validate-whole-signed-candidate revision 3: preserve exact source hashes; final full-candidate gates/CI remain parent responsibility"
+    ]
+  },
+  "limits": [
+    "Independent probe runtime is Windows; Linux execution attested by read-back immutable server receipt, not rerun by this reviewer.",
+    "Windows 1314 skips do not establish Windows symlink security coverage.",
+    "Error injections verify classification and failure restoration only; actual security coverage comes from original Windows/Linux test receipts.",
+    "Only issue 1453 fixture review; no closure assertion for 1444 or 1445, no commit/push/deploy/full suite/model calls."
+  ],
+  "request_id": "native-git-test-portability-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1453",
+  "private_original_sha256": "2408b15543ab17333044d59e06e8f4838a6b9968d94b694db655b3224f364dd6"
+}

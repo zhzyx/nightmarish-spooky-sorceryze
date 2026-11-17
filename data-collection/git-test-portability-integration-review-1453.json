@@ -1,0 +1,215 @@
+{
+  "issue": 1453,
+  "reviewer": "independent native Codex subagent /root/sinan_007f4db86817b5ee",
+  "occurred_at": "2026-11-17T19:00:12.267593+00:00",
+  "verdict": "pass",
+  "findings": [],
+  "target_main": "bf72c2dd4e36bc057c64cbdd5e9a060163b16526",
+  "head": "bf72c2dd4e36bc057c64cbdd5e9a060163b16526",
+  "scope": "Narrow final integration review: three exact immutable evidence exclusions/attributes; trusted main WebPlatform hook preserved; unchanged original tests, service and proof bytes.",
+  "working_and_staged_sha256": {
+    "customizations/components/tianxuan/duobao/test_admin_paths.py": "27a3a97a28593b20abb8ef5f8c83f981914fac50ea53daeb73623d2fc52983cb",
+    "customizations/components/tianxuan/duobao/test_git_service_repo_root.py": "34981062543c6c359702f5ce236f9e42a76f0eca88aa6aba726dc00d6793d2be",
+    "customizations/components/tianxuan/duobao/git_service.py": "55871785d6a4d9eaf32c2caf690e66e61b1a7e0ef9aa731c350104913773d10f",
+    "data-collection/git-test-portability-1453.json": "cb163864580e075e94668fb6af95c0e34a3fb6bb02872ff648addb02d6292f18",
+    "data-collection/git-test-portability-linux-1453.json": "6093eee81a457d9bd6fb95e82c4d170f021c7e32814ba95f2e37fe31a581dda7",
+    "misc/scripts/file_format.py": "29a890753b9007285f2030b8194ea787d33d3973f73e0f21be7d5f089b4efa25",
+    ".gitattributes": "653575320bf219d3c9318b6cb7da216f4206d9897eb59d18e5141679aae224f4",
+    ".pre-commit-config.yaml": "2d5515a953adb387e6150aa06cd6572bc0e5e5c1a19b5d8f1a3f2e3e051d0686",
+    "data-collection/git-test-portability-main-integration-1453.json": "116645258f9558a4449c14e65e2090f3a9691b003ee92e7ff1e59e46eec4a06e",
+    "design-docs/native-git-test-portability-20261118.md": "0fa841a6b9bc47f422a62f3ab5c32dd2a14eddc2f518f8096c83a1f7cfa8ccfc"
+  },
+  "config_only_three_literal_alternatives_added": true,
+  "existing_webplatform_hook_and_all_other_config_unchanged_from_target_main": true,
+  "gitattributes_added_lines": [
+    "# Preserve the exact #1453 receipt referenced by immutable intake and learning events.",
+    "data-collection/git-test-portability-1453.json -text whitespace=cr-at-eol",
+    "# Preserve the concurrent #1451 intake receipt already bound to validation events.",
+    "data-collection/native-candidate-intake-1451.json -text whitespace=cr-at-eol",
+    "data-collection/native-workflow-revisions-1456.json -text whitespace=cr-at-eol"
+  ],
+  "cached_attributes": "data-collection/git-test-portability-1453.json: text: unset\ndata-collection/git-test-portability-1453.json: whitespace: cr-at-eol\ndata-collection/native-candidate-intake-1451.json: text: unset\ndata-collection/native-candidate-intake-1451.json: whitespace: cr-at-eol\ndata-collection/native-workflow-revisions-1456.json: text: unset\ndata-collection/native-workflow-revisions-1456.json: whitespace: cr-at-eol\n",
+  "regex_probes": [
+    {
+      "path": "data-collection/git-test-portability-1453.json",
+      "before": false,
+      "after": true
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1451.json",
+      "before": false,
+      "after": true
+    },
+    {
+      "path": "data-collection/native-workflow-revisions-1456.json",
+      "before": false,
+      "after": true
+    },
+    {
+      "path": "data-collection/git-test-portability-linux-1453.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/git-test-portability-format-integration-1453.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/other.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_admin_paths.py",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/git-test-portability-1453.json.bak",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "prefix/data-collection/git-test-portability-1453.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/git-test-portability-1453xjson",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/git-test-portability-1453-extra.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "DATA-COLLECTION/GIT-TEST-PORTABILITY-1453.JSON",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/git-test-portability-1463.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1451.json.bak",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "prefix/data-collection/native-candidate-intake-1451.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1451xjson",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1451-extra.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "DATA-COLLECTION/NATIVE-CANDIDATE-INTAKE-1451.JSON",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1461.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/native-workflow-revisions-1456.json.bak",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "prefix/data-collection/native-workflow-revisions-1456.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/native-workflow-revisions-1456xjson",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/native-workflow-revisions-1456-extra.json",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "DATA-COLLECTION/NATIVE-WORKFLOW-REVISIONS-1456.JSON",
+      "before": false,
+      "after": false
+    },
+    {
+      "path": "data-collection/native-workflow-revisions-1466.json",
+      "before": false,
+      "after": false
+    }
+  ],
+  "tracked_exclusion_changes": [
+    "data-collection/git-test-portability-1453.json"
+  ],
+  "external_evidence": [
+    {
+      "source_root": "[verified-local-path]",
+      "path": "data-collection/native-candidate-intake-1451.json",
+      "sha256": "e240df6eb296cb96578fd91333dd718f554e597534f29e11795564ca0a1aaa77",
+      "crlf_count": 84,
+      "raw_and_filtered_blob": "2fac10c5f875580066a66b65bcb2263fbfc99aad",
+      "separate_delivery": true
+    },
+    {
+      "source_root": "[verified-local-path]",
+      "path": "data-collection/native-workflow-revisions-1456.json",
+      "sha256": "faaf26799dcf72559f637dc09edd15a4bd2c51064cc67c3898155c839681d832",
+      "crlf_count": 44,
+      "raw_and_filtered_blob": "8316e50111cd615c9e9850e5c23c6192116dc2c1",
+      "separate_delivery": true
+    }
+  ],
+  "1456_method_binding": {
+    "path": "[verified-local-path]\\gonggong-diting-data\\events\\gonggong-workspace\\learning-editor-dependency-handoff\\learn-8afc936ec74f544cf9a074f9e38a54cea88e08047e1077ca9f33c2dd9a382628.json",
+    "sha256": "d86d3faf7a66422f455226ab9365fefa9c0a753fcec29848134fa14ec620bbb3",
+    "original_report_hash_reference_match": true
+  },
+  "formatter_report": {
+    "path": "data-collection/git-test-portability-format-integration-1453.json",
+    "sha256": "e16f8ffbefe4fc8a7e45ed6b7cf0208a8d3800e4721686de809e5d6ca531cba0",
+    "source_hashes_match_current_index": true,
+    "selected_matches_full_staged_diff": true,
+    "selected_count": 24,
+    "exit_code": 0,
+    "changed": []
+  },
+  "main_integration_report_sha256": "116645258f9558a4449c14e65e2090f3a9691b003ee92e7ff1e59e46eec4a06e",
+  "private_integration_report_sha256": "116645258f9558a4449c14e65e2090f3a9691b003ee92e7ff1e59e46eec4a06e",
+  "prior_review_sha256": "1b0a9cd6af24127457056a70857af7105267d4f6fe62d5e54926681b7ff3651c",
+  "method_recall": {
+    "build-validation": "validate-whole-signed-candidate revision 3 applies: exact candidate hashes and new whole-PR CI required; compiler warning method not applicable",
+    "editor-dependency-handoff": "bind-consumer-release revision 20 applies: exact bytes and explicit acceptance; successful transport alone insufficient"
+  },
+  "limits": [
+    "Original tests not rerun; source/proof continuity verified against prior independent review.",
+    "Formatter execution read back from parent report, not rerun independently.",
+    "1451 and 1456 originals are separate delivery worktrees; their raw bytes and filtering were independently verified.",
+    "New exact candidate hosted CI and formal gate still required; previous CI cannot approve this integrated candidate.",
+    "Issue scope expansion was read in design and received handoff; live GitHub issue and previous CI not independently queried.",
+    "Formatter integration report currently untracked; parent must stage/publish required evidence.",
+    "No full business completion, source edits, full suite, model calls, deployment, commit/push or issue closure."
+  ],
+  "cleanup": {
+    "temporary_files_created": false,
+    "only_write": "[verified-local-path]\\fixture-review4.json"
+  },
+  "private_original_sha256": "31f88c034784f6395466c2d4dfcdb87bf73935472ff47d4c2f5b44c3964d0bbe"
+}
