@@ -1,0 +1,90 @@
+{
+  "request_id": "native-candidate-intake-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1451",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/native_candidates.py": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b",
+    "customizations/components/tianxuan/duobao/native_candidates_cli.py": "152c6268aad889f69c9f8f965b151a6d25f49d96dc6690d128341dce91b45094",
+    "customizations/components/tianxuan/duobao/test_native_candidates.py": "27899fc71e233d820d67a98535ac5f054d33ce15b143bbed2b5399702e5fb9b2",
+    "customizations/components/tianxuan/duobao/native_store.py": "bee1c2af572fe3f891c77ad9dc46896511780f0123649c40dab25077548193bf"
+  },
+  "results": [
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "customizations/components/tianxuan/duobao/native_candidates.py",
+        "customizations/components/tianxuan/duobao/native_candidates_cli.py",
+        "customizations/components/tianxuan/duobao/test_native_candidates.py",
+        "customizations/components/tianxuan/duobao/native_store.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.14103360001172405,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "customizations/components/tianxuan/duobao/native_candidates.py",
+        "customizations/components/tianxuan/duobao/native_candidates_cli.py",
+        "customizations/components/tianxuan/duobao/test_native_candidates.py",
+        "customizations/components/tianxuan/duobao/native_store.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12700649999896996,
+      "stdout": "4 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "D:/GongGong-work/tx-venv/Scripts/python.exe",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "-q",
+        "customizations\\components\\tianxuan\\duobao\\test_native_candidates.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_check_inputs.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_check_runner.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_evidence.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_release.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_store.py",
+        "customizations\\components\\tianxuan\\duobao\\test_native_workspace.py"
+      ],
+      "exit_code": 0,
+      "seconds": 27.715123699992546,
+      "stdout": ".............................................................. [ 54%]\n..........................................ss..... [ 98%]\n..                                                                       [100%]\n111 passed, 2 skipped, 33 subtests passed in 27.33s\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "seconds": 0.04923889999918174,
+      "stdout": "",
+      "stderr": "warning: in the working copy of 'customizations/components/tianxuan/duobao/README.md', CRLF will be replaced by LF the next time Git touches it\nwarning: in the working copy of 'customizations/components/tianxuan/duobao/native_store.py', CRLF will be replaced by LF the next time Git touches it\n"
+    }
+  ],
+  "fixes": [
+    "Replay and receipt verify original input and final candidate closures with current authority",
+    "Stored receipt exact schema, canonical digest and namespace/request binding checked without mutation"
+  ],
+  "original_review": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-candidate-review.json",
+  "passed": true,
+  "model_calls": 0,
+  "tokens": null,
+  "limits": "Original independent Windows WinError5 materialization failure preserved; passing current run is not proof of its cause or permanent remediation. Old report and old Linux evidence remain unchanged."
+}

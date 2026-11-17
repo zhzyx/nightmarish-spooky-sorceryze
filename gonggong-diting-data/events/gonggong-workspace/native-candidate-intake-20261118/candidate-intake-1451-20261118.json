@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-candidate-intake-20261118",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1451",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "event_id": "candidate-intake-1451-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-17T17:39:20.736064+00:00",
+  "payload": {
+    "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1451",
+    "issue_number": 1451,
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "source_revision": "bdb5af76e04eac33edd5313858a337c2086c5a21c73e706efc9bc2e3cf758798",
+    "scope": "Immutable candidate intake only; parent1444 remains open",
+    "intake_readback": {
+      "status": "status:in-progress",
+      "updated_at": "2026-11-17T17:26:56Z"
+    },
+    "design_sha256": "5dfad2c97b161222242187b291bd517098808ac6534bfc7167c5e3c8343b6ec0"
+  },
+  "evidence_refs": [
+    "dispatch-29a1f3a0da294d2690816fc0bb235114"
+  ],
+  "sha256": "8c96477332ff3cb71e5dc27c3e2f392ff8b3f7d3aa5fe82953c66839bdb520c6"
+}
