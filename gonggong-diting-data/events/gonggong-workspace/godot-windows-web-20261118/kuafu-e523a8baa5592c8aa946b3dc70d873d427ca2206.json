@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e523a8baa5592c8aa946b3dc70d873d427ca2206",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "dfdff77147e44057599f3d27c7a5a03844c65204949727e4ae03493dd798a849",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1467",
+    "action": "validation",
+    "detection_head": "b6d45dbd66bbd5c3ebd4ca99386f824029c7fdda",
+    "context_sha256": "61ec3605973ea7a67cdb5ceb4d0c07f931bb77dece4b7c3e308278584afcec4d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-windows",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44158560670",
+    "diagnosis": "Windows native-cache audit enters real editor SCons graph without ignored WebView2 SDK. Scope regression creates another cold clone with same prerequisite. Added explicit SDK provisioning in Windows cache workflow and inside Windows scope-test clone; no graph-time download or browser implementation change. Independent delta review found no actionable issue and verified all 23 original source hashes unchanged.",
+    "next_action": "Sign revised candidate; rerun exact Windows cache/routing, hidden browser runtime and full editor CI before merge.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T19:29:25.220596+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T19:30:31.253145+00:00",
+  "sha256": "a316079d8e12a5cf91ba4d0d4093edd5f9b16b990a29096816b0d12383bf4b3f"
+}

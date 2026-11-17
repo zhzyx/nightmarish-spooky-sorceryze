@@ -128,11 +128,15 @@ void WebPlatformDock::UpdateSurface()
 			pStatus->set_text(U"后台模式：工作区已就绪，网页视图仅在图形编辑器中加载。");
 			return;
 		}
+#ifdef WINDOWS_ENABLED
+		const int64_t nView = pDisplay->window_get_native_handle(DisplayServerEnums::WINDOW_HANDLE, pWindow->get_window_id());
+#else
 		const int64_t nView = pDisplay->window_get_native_handle(DisplayServerEnums::WINDOW_VIEW, pWindow->get_window_id());
+#endif
 		pNative = WebPlatformNative::Create(reinterpret_cast<void *>(nView), strConnection.utf8().get_data());
 		if (pNative == nullptr)
 		{
-			pStatus->set_text(U"此构建尚不支持原生网页视图。当前支持 macOS 编辑器。");
+			pStatus->set_text(U"此构建尚不支持原生网页视图。请使用 macOS 或启用 WebView2 的 Windows 编辑器。");
 			return;
 		}
 	}

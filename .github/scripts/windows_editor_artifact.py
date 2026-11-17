@@ -73,6 +73,7 @@ def inputs(root, env):
     for label, folder in (
         ("workspace", root / "bin/build_deps"),
         ("host", Path(env["LOCALAPPDATA"]) / "Godot/build_deps"),
+        ("webview2", root / "thirdparty/webview2/sdk"),
     ):
         if folder.exists():
             for path in sorted(folder.rglob("*")):

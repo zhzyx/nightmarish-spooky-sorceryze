@@ -1,0 +1,29 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "source_candidate": "25b07ca60f471094049387198a969adf118b365e",
+  "signed_candidate": "705a2b5f64172d95fe1fb55249f598687d315de4",
+  "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44167274020",
+  "artifact_id": 14365364361,
+  "artifact_file_sha256": "eb13a357930eaee95b3ecf382a63538f98ce411624cdf11766c3694e0da796a4",
+  "result": {
+    "compile": "passed",
+    "runtime": "passed",
+    "returncode": 0,
+    "hidden_hwnd": true,
+    "external_requests": [
+      "/frame"
+    ],
+    "navigation_policy_limit": "WebView2 may speculatively issue GET before cancellation; document/script rejection is checked, not network isolation.",
+    "stdout": "WEB_PLATFORM_WINDOWS_OK hidden_native=true persistence=true navigation=true renderer_retry=true lifecycle=true\n",
+    "stderr": "",
+    "manual_not_run": [
+      "real editor input and IME",
+      "native upload/download dialogs",
+      "visual DPI/modal layout"
+    ]
+  },
+  "prior_failure": "data-collection/godot-windows-web-1462-runtime-first.json",
+  "prior_baseline": "data-collection/godot-windows-web-1462-runtime-1471.json",
+  "scope": "Pre-COM-fix standalone runtime passed; its compiler omitted the Godot Windows header wrapper. Full editor later failed, documented separately."
+}

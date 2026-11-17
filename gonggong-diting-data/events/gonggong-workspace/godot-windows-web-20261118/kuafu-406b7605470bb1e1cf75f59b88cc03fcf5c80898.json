@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-406b7605470bb1e1cf75f59b88cc03fcf5c80898",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b224db907b8a756f8dc98844f9218436198a0333c66d284b67ae39ee7695a600",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1467",
+    "action": "validation",
+    "detection_head": "e1e04081b421749b72de02a656273ee9d4ba0849",
+    "context_sha256": "61ec3605973ea7a67cdb5ceb4d0c07f931bb77dece4b7c3e308278584afcec4d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-windows",
+    "evidence": "data-collection/godot-windows-web-1462-link-build-failure.json",
+    "diagnosis": "SCons reproduces decorated uuid.windows.editor.x86_64.lib before the fix and exact uuid.lib after LINKFLAGS correction. Local native-cache 15 tests and changed Python static checks pass. Clean temporary integration of latest main succeeded using installed GitHub Desktop Git 2.56.0, then index refresh and normal merge abort/removal completed; no user work or stash was changed.",
+    "next_action": "Finish independent three-file review and submit corrected candidate; require actual expanded Windows graph, native runtime, complete editor link and regressions before main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T21:58:12.567436+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T22:06:42.990771+00:00",
+  "sha256": "afff8886a2a229899100966eced84dbe2164b4b59d857d5db2caccbc5ebd035e"
+}

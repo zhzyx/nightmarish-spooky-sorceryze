@@ -1,0 +1,25 @@
+{
+  "compile": "passed",
+  "runtime": "failed",
+  "returncode": 19,
+  "hidden_hwnd": true,
+  "external_requests": [
+    "/frame"
+  ],
+  "stdout": "",
+  "stderr": "SCRIPT_FAILURE expected=true actual=false\n",
+  "manual_not_run": [
+    "real editor input and IME",
+    "native upload/download dialogs",
+    "visual DPI/modal layout"
+  ],
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "candidate": "b6d45dbd66bbd5c3ebd4ca99386f824029c7fdda",
+  "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44158560586",
+  "diagnosis": [
+    "The combined persistence assertion failed, without identifying which storage component. Fixture incorrectly expected a session cookie to persist; new test uses max-age and split assertions. Actual cause and recovery require final runtime evidence.",
+    "Documented speculative GET does not prove frame committed; new fixture checks external document script never executes. Navigation boundary is not network isolation."
+  ],
+  "official_reference": "https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2navigationstartingeventargs?view=webview2-1.0.3650.58"
+}

@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "request_id": "godot-windows-web-20261118",
+  "reviewer": "codex-windows-link-review",
+  "native_worker": "/root/sinan_587be92a9af822e2",
+  "authority_ref": "codex:user-request-20261118-godot-windows",
+  "mode": "independent-read-only-three-file-delta-review",
+  "timestamp_utc": "2026-11-17T22:08:28.600251+00:00",
+  "base_commit": "e1e04081b421749b72de02a656273ee9d4ba0849",
+  "verdict": "no_actionable_source_findings_windows_retest_pending",
+  "reviewed_file_sha256": {
+    ".github/scripts/windows_editor_artifact.py": "0d290f507ad7c5c472062cae5e893070192f90257ff22fe700d014c87a74a2a8",
+    ".github/workflows/runner.yml": "26c6267a05cd568fabee686d2597bc08350f0825adc6f390bb68e7b9afd26c1d",
+    ".github/workflows/windows_builds.yml": "4ba3ff5434ecf1a9eaf9e72e2fd8753e732acbec6149f257dce1c20a135ae3cb",
+    "customizations/components/godot-host/web-workbench.md": "e5d6ffecf2653bbb41fa763eb95e00c0fb96e2741b0cb61b595f415cfeadd0a7",
+    "editor/docks/SCsub": "85da9ac28bd3d0a85aa8544d62831400046c6fc845a38ae599e1f4aa391640c8",
+    "editor/docks/WebPlatformDock.cpp": "669fa30caac188c50dac12d13f01a4b06764087f8a655b41c54b55b5092c96b9",
+    "editor/docks/WebPlatformNative.cpp": "3d1947ad2c94bc337ebfc4aafbf388c329c31840d60a040c2a2960dff17edb3d",
+    "editor/docks/WebPlatformNative.h": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a",
+    "editor/docks/WebPlatformWindows.cpp": "7dd791d227d7c19c90131900aba0b2315de32b8e66faf1f14fba203fb31e6085",
+    "editor/docks/WebPlatformWindows.h": "ad9f8913034d7b168624636d97bf6fd0bc712d45dfcfc8df2a20d94fcf5aea87",
+    "tests/editor/TestWebPlatformWindows.cc": "db40e578439b26705a386749160a709eaf90bd47469b769933e40256e4ac3587",
+    "tests/editor/test_editor_native_cache.py": "7644f81b462c18d7fdf32aa1389c47f266f1e058fb9a4e7e8c61a9fd2bf4f0af",
+    "thirdparty/webview2/.gitignore": "8d545223cd502221f7efc88db3e3ab047c564f1c4645cc40ac47d57549e632cd",
+    "thirdparty/webview2/LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+    "thirdparty/webview2/NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+    "thirdparty/webview2/README.md": "3e5aebaca63e79aec9436eb33d08bbc802f121f1cc9756cd8c34013a2be9a23d",
+    "thirdparty/webview2/manifest.json": "0d14ad4bcfe28f099b1f9ebfce8ef33812deabd70fcac6adf7905a3053ed57c6",
+    "tools/editor_native_cache.py": "dd158254b1cc444e04032a479c3fe522bff074250758dec708740b47400820e2",
+    "tools/install_webview2.py": "b46f93d205bf74dd2ef85945531997a3736904330bb363443fbfecc1c07380b1",
+    "tools/stage_installed_editor.py": "953cdde762dc2502b44612772d0f1412cc4beff32a49ff3df0b1e7e7eb1dcc30",
+    "tools/test_installed_editor.py": "fd5b6a0382bf1cc24e4e079b56c450e93f52d72e773e49449e3cba03a90876fd",
+    "tools/test_web_platform_windows.py": "7d4bbffad0a3b1b0f404a177083466c528542d18f82317519287ddb95daaf82e",
+    "tools/test_windows_editor_artifact.py": "5e3d0618666a8d08cbebe288efeda81db6ffa0b4329c51d4a651d1ec36bc0043",
+    ".github/workflows/native-cache.yml": "08391128a3b67b7b6b4ecd6fd9324f4ddcc992471c7acd5295b7bedb21ec6992",
+    "tests/python_build/check_engine_build_scope.py": "5c4f85affb87713d17a1dd162e063068142385e4b7b05f4080be20125a6f49bc"
+  },
+  "findings": [],
+  "baseline_verification": {
+    "receipt": "data-collection/godot-windows-web-1462-independent-review-com.json",
+    "receipt_sha256": "732859ddf4b2f203437f796e46297dc60b26a77dcce2809ce7e8cacbf9538bc8",
+    "file_count": 25,
+    "unchanged_count": 22,
+    "changed_files": [
+      "editor/docks/SCsub",
+      "tools/editor_native_cache.py",
+      "tools/test_web_platform_windows.py"
+    ]
+  },
+  "resolved_during_review": [
+    {
+      "severity": "blocking syntax error",
+      "files": [
+        "editor/docks/SCsub",
+        "tools/editor_native_cache.py",
+        "tools/test_web_platform_windows.py"
+      ],
+      "observed": "Concurrent C++ license-header insertion caused SyntaxError at SCsub line 1 and affected both Python files. Reviewer immediately notified source owner.",
+      "resolution": "Owner removed the accidental C++ headers; final three files parse successfully and their final hashes are recorded above. Reviewer made no source changes."
+    }
+  ],
+  "original_failure": {
+    "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44174460034",
+    "raw_receipt": "data-collection/receipts/godot-windows-web-20261118/com-full-failure.log",
+    "raw_receipt_sha256": "be773fbdc3082fe3cef86d44eb99b58cb9c8fbf0b79a4b4a3c25986dcd9f46f5",
+    "observed": "Inspected final linker command containing uuid.windows.editor.x86_64.lib and LNK1181 at log line 4287. Earlier hidden runtime result is separate from full editor validation."
+  },
+  "checks": [
+    {
+      "name": "Actual engine SCons graph and shared environment",
+      "result": "source_review_passed_windows_execution_pending",
+      "detail": "SConstruct sets custom LIBSUFFIX before editor/SCsub. editor/SCsub and docks/SCsub import the shared env without cloning it. platform/windows/SCsub later builds the editor with that env; methods.add_program forwards it to env.Program. write_probe executes after every SCsub and selected-platform program construction. Therefore the reported LINKFLAGS and _LIBFLAGS belong to the editor graph, not merely the standalone cl fixture. Console wrapper has its own clone but is not substituted for the editor env."
+    },
+    {
+      "name": "System library suffix policy",
+      "result": "passed",
+      "detail": "Explicit uuid.lib in LINKFLAGS follows platform/windows/detect.py system-library handling and platform/windows/SCsub version.lib handling. Bare LIBS receives the customized suffix; LIBSUFFIXES preserving .lib does not repair an unsuffixed uuid name. Existing Windows/MSVC/supported-architecture guard remains intact."
+    },
+    {
+      "name": "SCons MSVC tools expansion reproduction",
+      "result": "passed",
+      "environment": "macOS Python 3.14, SCons 4.10.1, in-memory Environment with mslink and mslib generators and MSVC_USE_SCRIPT=False; no compiler run",
+      "before": [
+        "/nologo",
+        "uuid.windows.editor.x86_64.lib"
+      ],
+      "after": [
+        "/nologo",
+        "uuid.lib"
+      ],
+      "detail": "Generated genuine SCons MSVC tools and applied the engine LIBSUFFIX mutation. Confirmed that actual LINKCOM consumes LINKFLAGS and _LIBFLAGS. This is a substitution test, not a Windows full graph or build pass."
+    },
+    {
+      "name": "Harness preflight and exact rejection predicate",
+      "result": "passed",
+      "detail": "Actual AST predicate tested in memory with five cases: correct MSVC uuid.lib accepted; mangled suffix rejected; missing uuid.lib rejected; non-MSVC rejected; correct and mangled names together rejected. Probe uses current Python -m SCons, platform=windows,target=editor and mapped architecture; SDK install occurs first. Real CI developer shell and SCons setup precede harness execution. No simulated probe replaces production behavior."
+    },
+    {
+      "name": "Existing harness behavior retained",
+      "result": "passed",
+      "detail": "AST against the assigned base is identical after removing only the new import and four new graph/preflight statements. All existing compiler settings, runtime invocation, fixture semantics, execution-proof rejection and report assertions remain intact."
+    },
+    {
+      "name": "AST parsing and git diff --check",
+      "result": "passed",
+      "files": [
+        "editor/docks/SCsub",
+        "tools/editor_native_cache.py",
+        "tools/test_web_platform_windows.py"
+      ]
+    },
+    {
+      "name": "All25 source hashes",
+      "result": "passed",
+      "detail": "Exactly the assigned three files differ from public COM review; all other 22 hashes match. Rehashed all25 after owner removed erroneous headers."
+    },
+    {
+      "name": "Full Windows validation on exact new candidate",
+      "result": "pending_not_run_by_reviewer"
+    }
+  ],
+  "limits": [
+    "No Windows compiler, actual full Windows SCons graph, WebView2 runtime or desktop action was executed by this reviewer. Corrected full Windows CI remains pending.",
+    "Local substitution used SCons 4.10.1; CI config installs 4.11.1. Exact CI execution is required to verify that environment.",
+    "Harness graph intentionally disables D3D12 and does not mirror every CI build option. It checks the system-library regression; it cannot substitute for the full editor build, runtime and packaging validation.",
+    "Review covers the three-file delta. Remaining22 source files were verified byte-identical to previous independent review; prior visible-editor, IME, native-dialog, visual-DPI, authentication and other-architecture limits remain.",
+    "No source edit, commit, push, Issue mutation or desktop interaction was performed. Only the authorized private receipt was written."
+  ],
+  "cleanup": {
+    "temporary_resources_created": [],
+    "retained": [
+      "Authorized private independent review receipt retained as evidence."
+    ]
+  },
+  "path_resolution_base": "repository root",
+  "native_receipt_sha256": "44a016639dba66034a45e75ac30c944f6042bb4180a051b4e5f8746fd4279c77",
+  "issue_number": 1462
+}

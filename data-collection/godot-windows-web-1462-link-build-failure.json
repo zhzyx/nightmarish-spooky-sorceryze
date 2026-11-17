@@ -1,0 +1,35 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "bug": 1467,
+  "incident": "b224db907b8a756f8dc98844f9218436198a0333c66d284b67ae39ee7695a600",
+  "source_candidate": "e1e04081b421749b72de02a656273ee9d4ba0849",
+  "signed_candidate": "4bec14d2d65e803c8e9f88786920aa06a5b0fe49",
+  "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44174460034/job/134362311187",
+  "observed": "Native runtime and all source compilation passed. Final linker LNK1181 cannot open uuid.windows.editor.x86_64.lib.",
+  "cause": "Bare uuid in LIBS is expanded through engine-specific LIBSUFFIX. Windows SDK system libraries use explicit .lib LINKFLAGS.",
+  "fix": [
+    "Use explicit uuid.lib LINKFLAGS under existing Windows MSVC editor guard.",
+    "Expose actual expanded SCons graph link flags and check them before the Windows native test."
+  ],
+  "local_validation": {
+    "scons_expansion_before": [
+      "/nologo",
+      "uuid.windows.editor.x86_64.lib"
+    ],
+    "scons_expansion_after": [
+      "/nologo",
+      "uuid.lib"
+    ],
+    "native_cache_tests": 15,
+    "ruff": "passed",
+    "mypy": "passed for two changed Python files"
+  },
+  "full_windows_retest": "pending",
+  "temporary_merge": {
+    "apple_git": "2.50.1: clean git merge failed at stash create",
+    "github_desktop_git": "2.56.0: same clean tree and exact candidate merged without conflicts",
+    "base": "faf5425b9bee9d51f7e8ce8c00de7c1608430b65",
+    "scope": "temporary verification only; no source candidate mutation or user stash deletion"
+  }
+}

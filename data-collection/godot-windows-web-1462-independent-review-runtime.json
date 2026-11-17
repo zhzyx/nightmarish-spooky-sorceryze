@@ -1,0 +1,142 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "request_id": "godot-windows-web-20261118",
+  "reviewer": "codex-windows-runtime-review",
+  "authority_ref": "codex:user-request-20261118-godot-windows",
+  "mode": "independent-read-only-source-and-fixture-semantics-review",
+  "timestamp_utc": "2026-11-17T19:41:47.355327+00:00",
+  "source_root": ".",
+  "base_commit": "b6d45dbd66bbd5c3ebd4ca99386f824029c7fdda",
+  "verdict": "no_actionable_source_findings_after_review_corrections",
+  "reviewed_file_sha256": {
+    ".github/scripts/windows_editor_artifact.py": "0d290f507ad7c5c472062cae5e893070192f90257ff22fe700d014c87a74a2a8",
+    ".github/workflows/runner.yml": "26c6267a05cd568fabee686d2597bc08350f0825adc6f390bb68e7b9afd26c1d",
+    ".github/workflows/windows_builds.yml": "4ba3ff5434ecf1a9eaf9e72e2fd8753e732acbec6149f257dce1c20a135ae3cb",
+    "customizations/components/godot-host/web-workbench.md": "e5d6ffecf2653bbb41fa763eb95e00c0fb96e2741b0cb61b595f415cfeadd0a7",
+    "editor/docks/SCsub": "5b267f163e77a31b002d3a8c7beb82763d4e7a5a5ca49c824c287cbee0994ded",
+    "editor/docks/WebPlatformDock.cpp": "669fa30caac188c50dac12d13f01a4b06764087f8a655b41c54b55b5092c96b9",
+    "editor/docks/WebPlatformNative.cpp": "3d1947ad2c94bc337ebfc4aafbf388c329c31840d60a040c2a2960dff17edb3d",
+    "editor/docks/WebPlatformNative.h": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a",
+    "editor/docks/WebPlatformWindows.cpp": "c00ce644f336bf768f6dbee65929c814971b9696af65e1ffb1fbf5d9de9d4ed4",
+    "editor/docks/WebPlatformWindows.h": "ad9f8913034d7b168624636d97bf6fd0bc712d45dfcfc8df2a20d94fcf5aea87",
+    "tests/editor/TestWebPlatformWindows.cc": "e8336680162c9b30b3c93dfad316d595592988d14960408dcdaca64e872fed70",
+    "tests/editor/test_editor_native_cache.py": "7644f81b462c18d7fdf32aa1389c47f266f1e058fb9a4e7e8c61a9fd2bf4f0af",
+    "thirdparty/webview2/.gitignore": "8d545223cd502221f7efc88db3e3ab047c564f1c4645cc40ac47d57549e632cd",
+    "thirdparty/webview2/LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+    "thirdparty/webview2/NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+    "thirdparty/webview2/README.md": "3e5aebaca63e79aec9436eb33d08bbc802f121f1cc9756cd8c34013a2be9a23d",
+    "thirdparty/webview2/manifest.json": "0d14ad4bcfe28f099b1f9ebfce8ef33812deabd70fcac6adf7905a3053ed57c6",
+    "tools/editor_native_cache.py": "59f8247e94497de5a888aecf67a2cc7964e1371091d0b57fe798b2efac517d0e",
+    "tools/install_webview2.py": "b46f93d205bf74dd2ef85945531997a3736904330bb363443fbfecc1c07380b1",
+    "tools/stage_installed_editor.py": "953cdde762dc2502b44612772d0f1412cc4beff32a49ff3df0b1e7e7eb1dcc30",
+    "tools/test_installed_editor.py": "fd5b6a0382bf1cc24e4e079b56c450e93f52d72e773e49449e3cba03a90876fd",
+    "tools/test_web_platform_windows.py": "429506e44e8f76b7e98f062da80e9bcb696fdc08848f7d0a11bc7bbe785ccb8c",
+    "tools/test_windows_editor_artifact.py": "5e3d0618666a8d08cbebe288efeda81db6ffa0b4329c51d4a651d1ec36bc0043",
+    ".github/workflows/native-cache.yml": "08391128a3b67b7b6b4ecd6fd9324f4ddcc992471c7acd5295b7bedb21ec6992",
+    "tests/python_build/check_engine_build_scope.py": "5c4f85affb87713d17a1dd162e063068142385e4b7b05f4080be20125a6f49bc"
+  },
+  "findings": [],
+  "baseline_verification": {
+    "receipt": "data-collection/receipts/godot-windows-web-20261118/independent-review-fixed.json",
+    "receipt_sha256": "de009653c737ebc47aae997a584edcaa39dc62cb6689e9705da5b7020158f601",
+    "file_count": 23,
+    "changed_files": [
+      "customizations/components/godot-host/web-workbench.md",
+      "tests/editor/TestWebPlatformWindows.cc",
+      "thirdparty/webview2/README.md",
+      "tools/test_web_platform_windows.py"
+    ],
+    "unchanged_count": 19,
+    "product_backend_unchanged": true,
+    "detail": "All 19 baseline files outside the four declared fixture/documentation deltas retain their approved SHA256, including WebPlatformWindows.cpp/.h, WebPlatformNative.cpp/.h, WebPlatformDock.cpp and SCsub."
+  },
+  "ci_prerequisite_verification": {
+    "receipt": "data-collection/receipts/godot-windows-web-20261118/independent-review-ci.json",
+    "receipt_sha256": "28d90f22c718415d53293e710b6321b383c2d9be3616af4ab6ab225ecb457cfd",
+    "all_two_files_unchanged": true,
+    "detail": "Pinned SDK setup remains explicit on the Windows worker before graph audit and inside the disposable Windows scope-test clone before graph verification; graph inspection itself does not acquire SDK."
+  },
+  "original_failure": {
+    "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44158560586",
+    "raw_receipt": "data-collection/receipts/godot-windows-web-20261118/ci-runtime-first/runtime.json",
+    "raw_receipt_sha256": "2e6a41f33f102461df7ef125dc7e9445fb1c6cc6e78ea137fd852892c466abe3",
+    "compile": "passed",
+    "runtime": "failed",
+    "returncode": 19,
+    "external_requests": [
+      "/frame"
+    ],
+    "interpretation": "The combined localStorage/cookie comparison returned false. This does not identify which component failed. The prior fixture did set a session cookie and incorrectly required persistence across browser recreation. A single /frame GET does not establish that the frame document committed or ran script. Corrected runtime must still demonstrate both storage assertions and confinement."
+  },
+  "addressed_during_review": [
+    {
+      "id": "RUNTIME-R1",
+      "status": "addressed_in_reviewed_source",
+      "detail": "After removing the zero-external-request assertion, a frame-only execution marker left popup execution without a runtime failure sentinel. Root extended markers to every external target document (/outside, /frame, /popup, /redirected), with parent/opener postMessage and an /execution-proof fetch. The proof endpoint is excluded from script injection. The wrapper requires no execution-proof request as well as exit code zero."
+    },
+    {
+      "id": "RUNTIME-R2",
+      "status": "addressed_in_reviewed_evidence",
+      "detail": "The normalized first-run receipt now explicitly states that the combined assertion cannot distinguish cookie from localStorage failure, and leaves actual root cause/recovery to final runtime evidence. No claim that product persistence is fixed is accepted."
+    }
+  ],
+  "checks": [
+    {
+      "name": "Official navigation cancellation contract",
+      "result": "confirmed",
+      "detail": "Microsoft documents that GET requests may occur while the host responds to NavigationStarting cancellation. Navigation confinement therefore cannot be validated by requiring no request. Source still cancels disallowed navigation and frame navigation and replaces disallowed document responses; no product policy was weakened."
+    },
+    {
+      "name": "Persistence fixture semantics",
+      "result": "sound_source_change_runtime_pending",
+      "detail": "The cookie now has max-age=3600 and path=/; localStorage and cookie reads are separate assertions after destruction and recreation using the same isolated profile. This tests persistent state without incorrectly requiring session-cookie survival."
+    },
+    {
+      "name": "Execution confinement fixture semantics",
+      "result": "sound_source_change_runtime_pending",
+      "detail": "A same-origin iframe positive control verifies that document script/message delivery can work. The external-frame check requires the message flag remain false; the server execution beacon independently catches external document scripts including popups and redirects. Top-level source checks and blocked status checks remain. Recorded external requests are retained as evidence instead of discarded."
+    },
+    {
+      "name": "Independent fixture HTTP response exercise",
+      "result": "passed",
+      "detail": "Executed the current Fixture class in memory with a temporary loopback server. /outside, /frame, /popup and /redirected each contained parent and opener messages plus the execution beacon. /execution-proof contained no script; same-origin /allowed-frame had its positive marker. Server/thread closed. This exercised response generation only, not browser execution."
+    },
+    {
+      "name": "Python AST parsing",
+      "result": "passed",
+      "files": [
+        "tools/test_web_platform_windows.py",
+        "tests/python_build/check_engine_build_scope.py"
+      ]
+    },
+    {
+      "name": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "api_references": [
+    "https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2navigationstartingeventargs?view=webview2-1.0.3650.58",
+    "https://learn.microsoft.com/en-us/microsoft-edge/webview2/reference/win32/icorewebview2cookie?view=webview2-1.0.3800.47"
+  ],
+  "supporting_evidence_sha256": {
+    "data-collection/godot-windows-web-1462-runtime-first.json": "ebd088261bc993e9e364e144e5edce51a0baa9e391cb06ba9ed45fc1012de432"
+  },
+  "limits": [
+    "No Windows compiler or WebView2 runtime was executed by this reviewer. The only inspected actual Windows runtime result failed. Final exact-candidate CI remains required; this report is not runtime acceptance.",
+    "The hidden harness covers finite observation windows (Drain uses two seconds) and specific routes; no claim of exhaustive timing, all navigation patterns, zero network leakage, or a network security sandbox is made.",
+    "The positive same-origin control and external execution beacons are source-reviewed and HTTP-response-tested here; their real browser behavior still requires final CI.",
+    "Previous review manual/runtime gaps remain: visible editor behavior, input/IME, native upload/download and script-dialog interaction, visual/DPI layout, production HTTPS/authentication, full production build and other architectures are not accepted by this source review.",
+    "No source edit, commit, push or desktop action was performed by this reviewer. Only this authorized review receipt was written. Further byte changes require matching review or re-review."
+  ],
+  "cleanup": {
+    "temporary_resources_created": [],
+    "closed": [
+      "Loopback fixture HTTP server and worker thread"
+    ],
+    "retained": [
+      "Authorized independent review receipt as necessary evidence."
+    ]
+  },
+  "issue_number": 1462
+}
