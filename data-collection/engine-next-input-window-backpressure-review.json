@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-input-window-backpressure-20261117",
+  "issue_number": 1391,
+  "recorded_at": "2026-11-17T03:23:51.965602+00:00",
+  "reviewer": "root parent agent, independent of m42_network_acceptance implementation",
+  "scope": "Five changed C++ files, input-window behavior, diagnostic contract and candidate-bound verification.",
+  "findings": [],
+  "reviewed_source_files": [
+    {
+      "path": "engine_next/Client/ClientSession.cpp",
+      "size_bytes": 34555,
+      "sha256": "e599ece9532636dc76cd8d6177275c82cc2655757dc5bd9af478f32b5a6bace9"
+    },
+    {
+      "path": "engine_next/Client/ClientSession.h",
+      "size_bytes": 4745,
+      "sha256": "46c237e3ffa8ab5361a01b8a48ef6e856f82fade7a76123d2fee0a7849978efb"
+    },
+    {
+      "path": "engine_next/Server/ServerRuntime.cpp",
+      "size_bytes": 24861,
+      "sha256": "91d3da2850d8465f3344900e9a25fd2c8679b0df8b347cf98fc0355322bf5bbd"
+    },
+    {
+      "path": "engine_next/include/EngineNext/Network/Protocol.h",
+      "size_bytes": 6107,
+      "sha256": "59ac79791f891e3e3753d6004858ecb63073be427c36d9179a4806a2a565c058"
+    },
+    {
+      "path": "engine_next/Tests/Runtime/TestClientSession.cpp",
+      "size_bytes": 17705,
+      "sha256": "65cb2cc01ecb7dc219962ae6a84be8eee5ec5fd29719e9999af889c5aae75f65"
+    }
+  ],
+  "checks": [
+    "The shared 32-input limit equals the existing server acceptance distance and changes no wire encoding.",
+    "The client checks window capacity before prediction and sequence allocation. It retains queued movement and continues acknowledgment and retransmission handling.",
+    "Resuming after a full window preserves consecutive sequence numbers. The existing bounded catch-up schedule avoids unbounded work.",
+    "The server subtraction follows rejection or handling of all sequence values at or below the confirmed sequence, so unsigned subtraction does not underflow.",
+    "The deterministic regression withholds the oldest input for more than 700 milliseconds, asserts the future-input window each frame, then confirms progress and one consumption of the queued pulse.",
+    "The original runtime library fails the new regression, while the final candidate passes normal, reconnect, remote interpolation and capacity checks.",
+    "The final full runtime report matches all 217 input files. Earlier soak evidence explicitly retains its earlier test-source formatting identity."
+  ],
+  "verification": {
+    "path": "data-collection\\engine-next-input-window-backpressure-verification.json",
+    "sha256": "b66539925c7c70136578b4edd16c17b0d468aac837c52fca17816a083e69c3b2"
+  },
+  "independently_executed": {
+    "command": [
+      "build/engine_next/input-window-runtime-final/EngineNextRuntimeTests.exe"
+    ],
+    "exit_code": 0,
+    "summary": "ENGINE_NEXT_TEST_SUMMARY tests=62 checks=7142 failures=0"
+  },
+  "runtime_input_count": 217,
+  "runtime_input_mismatches": [],
+  "limitations": [
+    "The exact transport or scheduling event that preceded reason 7 in the reflection UI run is unrecorded. The deterministic oldest-input-loss case establishes the corrected window mismatch.",
+    "The reflection GPU and keyboard acceptance remains under the parent M4.3 issue."
+  ]
+}

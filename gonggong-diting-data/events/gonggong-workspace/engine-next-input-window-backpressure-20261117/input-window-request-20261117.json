@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "input-window-request-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-input-window-backpressure-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T03:21:28.417974+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1391",
+  "agent": {
+    "id": "codex-m42-network-acceptance",
+    "version": "repository-instructions-83775e6c",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "scope": "Repair deterministic interactive client input window mismatch while preserving server protocol admission.",
+    "authority": "User requested Engine Next M4 implementation including working network clients. Parent delegated this isolated recovery after a live failed acceptance and deterministic reproduction.",
+    "baseline": "83775e6c2ffb5b3a518c4ffebbe0f3777c7dce06",
+    "finding": "A held oldest input causes the original interactive client to send sequence 33 at 512 ms while the server admits at most 32 ahead of confirmation.",
+    "design": "design-docs/engine-next-input-window-backpressure-20261117.md"
+  },
+  "sha256": "9a4bdad220bedcc58684d2a6832550a9498604110676324075ddbaca5fcaafd7"
+}

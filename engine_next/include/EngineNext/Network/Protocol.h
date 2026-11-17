@@ -44,6 +44,8 @@ namespace EngineNext::Network
 inline constexpr std::uint16_t PROTOCOL_VERSION = 1;
 inline constexpr std::size_t FRAME_HEADER_BYTES = 32;
 inline constexpr std::size_t MAX_PACKET_BYTES = 1200;
+// A client retains at most this many inputs beyond its last server confirmation.
+inline constexpr std::uint32_t MAX_INPUT_WINDOW = 32;
 using ReconnectToken = std::array<std::uint8_t, 16>;
 
 enum class MessageType : std::uint16_t

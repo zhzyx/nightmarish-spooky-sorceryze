@@ -377,7 +377,7 @@ RuntimeStatus RunServer(const RuntimeConfig &in_stConfig)
 				{
 					continue;
 				}
-				if (stCommand.stInput.nSequence > stQueue.nLastProcessedSequence + 32 ||
+				if (stCommand.stInput.nSequence - stQueue.nLastProcessedSequence > Network::MAX_INPUT_WINDOW ||
 					stQueue.arrInputs.size() >= 64 || stCommand.stInput.nStepMsec != stModel.GetFixedStepMsec())
 				{
 					Reject(*pTransport, stEvent.nPeerId, mapSequences, stHeader, 7);
