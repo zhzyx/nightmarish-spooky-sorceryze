@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cb0e4cdabe6e710f8bc436b5cff8d19029f50522",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-direction-shorthand-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "da4fa80bd84829ff2aa96ed5a68c359cf0caee1df3f58545f76e84f85bf03e08",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+    "action": "intake",
+    "detection_head": "e5d86bbc8d44259d510aa405bfe44de7846adc7f",
+    "context_sha256": "03e1e3f40627014fc5171195d28e467f782c4fc99dd8bb3728c58916b70fc9a4",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-host",
+    "authority_ref": "kimi-work:user:20261117:maliang-direction-shorthand",
+    "evidence": "work-items.json",
+    "diagnosis": "The tenant must be gonggong-workspace as recorded in work-items.json, not its shortened display name.",
+    "next_action": "Rerun intake-only with the exact configured tenant.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T04:11:37.362756+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T04:12:04.971991+00:00",
+  "sha256": "5f6cb8f92c0d23542ab3925fa040bb25deffc993d16204965c91d31ca3e8d2f5"
+}

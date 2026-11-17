@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4fd53fb61a74ca6b518e32ae15516dac5ad27d15",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-direction-shorthand-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "163430d5575d02461f5a03b341f0374949568a6681b0d8eb898968e4a69aa362",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1392",
+    "action": "intake",
+    "detection_head": "e5d86bbc8d44259d510aa405bfe44de7846adc7f",
+    "context_sha256": "03e1e3f40627014fc5171195d28e467f782c4fc99dd8bb3728c58916b70fc9a4",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-host",
+    "authority_ref": "kimi-work:user:20261117:maliang-direction-shorthand",
+    "evidence": "design-docs/maliang-direction-shorthand-20261117.md",
+    "diagnosis": "Intake omitted the repository's required explicit tenant argument.",
+    "next_action": "Rerun intake-only with tenant gonggong and continue the authorized prompt correction.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T04:11:11.525335+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T04:11:33.563302+00:00",
+  "sha256": "6b3b62b5acf7f52b845ad064c200734bd2f0663e41bb3d119f2bfe6f6f643881"
+}

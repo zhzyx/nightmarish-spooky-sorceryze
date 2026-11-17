@@ -173,6 +173,31 @@ _DEFAULT_VIEWS = [
 ]
 _DIRECTION_SHORTHANDS = {"前": "正面", "后": "背面", "左": "左侧面", "右": "右侧面", "俯": "俯视", "仰": "仰视"}
 _DIRECTION_LIST_PATTERN = r"[前后左右俯仰](?:\s*[、,，/]\s*[前后左右俯仰])+"
+_VIEW_INSTRUCTIONS = {
+    "正面": "front view; show the character's anatomical front, with the nose pointing toward the viewer",
+    "背面": "rear view; show the character's back, with the face pointing away from the viewer",
+    "左侧面": (
+        "strict 90-degree LEFT-side view; place the camera on the character's anatomical LEFT, "
+        "show the LEFT cheek and LEFT side of the body, and point the nose toward the LEFT edge of the image"
+    ),
+    "右侧面": (
+        "strict 90-degree RIGHT-side view; place the camera on the character's anatomical RIGHT, "
+        "show the RIGHT cheek and RIGHT side of the body, and point the nose toward the RIGHT edge of the image"
+    ),
+    "俯视": "top-down view; place the camera directly above the character and look downward",
+    "仰视": "bottom-up view; place the camera below the character and look upward",
+    "面部正面特写": (
+        "front-face close-up; face the camera directly, showing both eyes and the centered nose and mouth"
+    ),
+    "面部左侧特写": (
+        "close-up of the character's anatomical LEFT face; show the LEFT cheek and point the nose "
+        "toward the LEFT edge of the image"
+    ),
+    "面部右侧特写": (
+        "close-up of the character's anatomical RIGHT face; show the RIGHT cheek and point the nose "
+        "toward the RIGHT edge of the image"
+    ),
+}
 
 
 def automatic_output_specifications(prompt):
@@ -564,7 +589,7 @@ class MultiImageProvider(CodexProvider):
         request["parameters"]["prompt"] = (
             "The attached primary image is the authoritative depiction of the same generated subject. "
             + action
-            + specification["label"]
+            + _VIEW_INSTRUCTIONS.get(specification["label"], specification["label"])
             + ". Preserve its identity, geometry, materials, colors, style and background. "
             + "Change only the camera/view or framing needed for this derived image; do not design a new subject. "
             + "The result must contain exactly one instance of the subject. "

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-direction-shorthand-20261117",
+  "issue_number": 1392,
+  "date": "2026-11-17",
+  "state": "validated_candidate",
+  "evidence_scope": "Append-only correction for stronger direction prompts; sanitized local and observed real-run evidence without credentials, private URLs, absolute private paths or raw generation logs.",
+  "supplements": "data-collection/maliang-direction-shorthand-20261117-validation.json",
+  "integrated_main_base": "f39bc9028958e5395d8ec38c6bbcc0bc577a480e",
+  "editor_sha256": "150ebdadc95974dee161b4e67cf8241d97f95b3a563858de23a46b642acf0a91",
+  "local_validation": {
+    "multi_image_provider_and_host_tests": {"run": 19, "passed": 19, "failed": 0},
+    "full_ainative_suite": {"run": 435, "failed": 0, "skipped_by_platform_or_condition": 62},
+    "ruff_format": "passed",
+    "ruff_check": "passed",
+    "git_diff_check": "passed",
+    "native_build": {"platform": "macos", "architecture": "arm64", "passed": true},
+    "native_scenarios": {
+      "passed": ["mesh-and-rig", "independent-project", "sample-addon-compatibility", "relocated-runtime"],
+      "installed_bundle_matches_source": true,
+      "report": ".kimi-output/native-bundle.json"
+    },
+    "direction_prompts": {
+      "left": "anatomical LEFT camera and cheek; nose toward LEFT image edge",
+      "right": "anatomical RIGHT camera and cheek; nose toward RIGHT image edge",
+      "same_primary_reference_asserted": true
+    }
+  },
+  "observed_real_run_before_prompt_strengthening": {
+    "planned_count": 8,
+    "primary_succeeded": true,
+    "right_view_matched_left_view_direction": true,
+    "failed_child_label": "俯视",
+    "failed_child_service_error": "HTTP 424 Media generation is temporarily unavailable"
+  },
+  "real_model_inference_for_strengthened_prompts": false,
+  "visual_hit_rate_guarantee_claimed": false,
+  "independent_code_review": "pending; no self-review is presented as independent approval"
+}
