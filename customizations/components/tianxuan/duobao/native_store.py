@@ -240,6 +240,10 @@ class NativeStore:
                     base = self._revision(db, tenant, module, item["base"])
                     if current is None:
                         raise Conflict(f"Module head unavailable: {module}")
+                # Unknown reads cannot reuse any drifted head. Reject using the
+                # transaction's head identity before loading unneeded metadata.
+                if current != item["base"] and item["reads"] is None:
+                    raise Conflict(f"Unknown read dependencies after module drift: {module}")
                 if current == item["base"]:
                     latest = base
                 elif current is not None:
@@ -247,8 +251,6 @@ class NativeStore:
                 else:
                     raise Conflict(f"Module head unavailable: {module}")
                 if current != item["base"]:
-                    if item["reads"] is None:
-                        raise Conflict(f"Unknown read dependencies after module drift: {module}")
                     touched = set(item["reads"]) | set(item["edits"])
                     conflicts = sorted(
                         name for name in touched if base["objects"].get(name) != latest["objects"].get(name)

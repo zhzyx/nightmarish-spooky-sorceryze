@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e4e319cfa6a48400bd35059096c22dc15e61087a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-workspace-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "71ac880cf133028c6c07044135321390973c5092bfc189e35359086ddcf2c6f3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1416",
+    "action": "delivery",
+    "detection_head": "6221f7e823f9d5159e213e2b0e1e0dd83b8719ca",
+    "context_sha256": "dbad183496baf7c7791f6b61fc091989c7bf44f9f481423543b3b4c0f05179ea",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "data-collection/duobao-native-workspace-ci-recovery-1414.json",
+    "diagnosis": "Immutable collection guard correctly rejected re-encoding committed review bytes. Restored both committed files from HEAD, retained original private receipt, appended correction separately; exact review path spelling exclusion awaits independent review.",
+    "next_action": "Review precise config delta, validate full final candidate spelling, resubmit.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T10:23:32.109305+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T10:27:51.579146+00:00",
+  "sha256": "d3dea19d51db1dad051f2546963ab130c7c779916c06aada601c40da8659c396"
+}

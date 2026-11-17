@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "issue": 1414,
+  "reviewer": "independent native child agent /root/sinan_15d9bf8b6f68eb33",
+  "reviewed_at": "2026-11-17T10:33:32.719290+00:00",
+  "root": "D:\\GongGong-work\\duobao-native-workspace-20261117",
+  "head": "6221f7e823f9d5159e213e2b0e1e0dd83b8719ca",
+  "base": "154724525dff7fef718ff8c2f5afc3abb36bf238",
+  "scope": "Precise CI recovery review. No product test suite repeated.",
+  "prior_review_sha256": "dc4cec7cb87aac24cd28bb17e5d4e8d1f7df611a4cf490eb3a168fe723d0ccdb",
+  "source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.py",
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "git_blob_filtered": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "previous_git_blob_filtered": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "match": true
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace_cli.py",
+      "sha256": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+      "git_blob_filtered": "829c35b6d182e1fb1a03961ba680f6bfb00c498e",
+      "previous_git_blob_filtered": "829c35b6d182e1fb1a03961ba680f6bfb00c498e",
+      "match": true
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_workspace.py",
+      "sha256": "e2492c64842db53a5c89748276f00f6af9ce5629f6be8d506368e7f90efa4d56",
+      "git_blob_filtered": "6884801db58a40db44956d5a185e0356833f8971",
+      "previous_git_blob_filtered": "6884801db58a40db44956d5a185e0356833f8971",
+      "match": true
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.md",
+      "sha256": "9e88d81dacd6e8b44d2209b481413a265648699dc143629aa787aab8cc1da6a8",
+      "git_blob_filtered": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6",
+      "previous_git_blob_filtered": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6",
+      "match": true
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_store.py",
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "git_blob_filtered": "1503687c9add396cd2ff7a9902f21f263431e997",
+      "previous_git_blob_filtered": "1503687c9add396cd2ff7a9902f21f263431e997",
+      "match": true
+    }
+  ],
+  "preserved_records": [
+    {
+      "path": "data-collection/duobao-native-workspace-delivery-review-1414.json",
+      "sha256": "6680aca716845e515ea9364f07ca2f2c67d11e77403015fe46bc6dbe596e8eed",
+      "head_sha256": "6680aca716845e515ea9364f07ca2f2c67d11e77403015fe46bc6dbe596e8eed",
+      "bytes": 12100,
+      "head_bytes_equal": true
+    },
+    {
+      "path": "data-collection/duobao-native-workspace-1414.json",
+      "sha256": "07a1b59878418b827d1ca3acfdbca3158337746e5ac942a8ee1d189bdb1a1d05",
+      "head_sha256": "07a1b59878418b827d1ca3acfdbca3158337746e5ac942a8ee1d189bdb1a1d05",
+      "bytes": 18302,
+      "head_bytes_equal": true
+    }
+  ],
+  "configuration": {
+    "path": "pyproject.toml",
+    "sha256": "d6ab1367991846061a1ae3ab6d7447049f00907599201f0720874dbb5e1f1e8c",
+    "only_exact_review_exclusion_added": true,
+    "comment_changed": true,
+    "existing_learning_exclusion_unchanged": true
+  },
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 17,
+    "applied": "Check exact candidate and source bindings before accepting parent handoff.",
+    "counterexample": "A prior result cannot approve changed sources."
+  },
+  "findings": [],
+  "verdict": "approve",
+  "spelling": {
+    "mode": "Read only; parser write_changes forced false and interactive forced zero.",
+    "baseline": "154724525dff7fef718ff8c2f5afc3abb36bf238",
+    "candidate_paths": [
+      "customizations/components/tianxuan/duobao/native_store.py",
+      "customizations/components/tianxuan/duobao/native_workspace.md",
+      "customizations/components/tianxuan/duobao/native_workspace.py",
+      "customizations/components/tianxuan/duobao/native_workspace_cli.py",
+      "customizations/components/tianxuan/duobao/test_native_workspace.py",
+      "data-collection/duobao-native-workspace-1414.json",
+      "data-collection/duobao-native-workspace-ci-recovery-1414.json",
+      "data-collection/duobao-native-workspace-delivery-review-1414.json",
+      "data-collection/duobao-native-workspace-integrated-1414.json",
+      "data-collection/duobao-native-workspace-review-1414.json",
+      "data-collection/duobao-native-workspace-review-original-1414.json",
+      "data-collection/duobao-native-workspace-server-1414.json",
+      "data-collection/requests/duobao-native-workspace-20261117/f0690624-5f94-439d-83c7-378498335cf3.json",
+      "design-docs/duobao-native-workspace-20261117.md",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/codex-intake-1414-20261117.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-0a7086b8ab0a4889a7d5340215705efb.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-324f0255eb234e88abd86d2536ecb5e3.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-41c1a4bbaf5740d29d13060ea3adeca8.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-7d8f34d557654a5789ae2340aba2e833.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-8e7933633118449d9bb1d8201823a821.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-920b8a4ae659434b88861636cb9907ea.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-ac38ea98214a41a9ae0c93e88fbfe7f7.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-e2083e2b4cb24627b29a483ab41f316e.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-f71de5f9ffeb41c7bf9ec48c6446668f.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/kuafu-7e0ff7f8d99272fe434ebc018fd2ce716af9f0b1.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/kuafu-978eeb614d7fd1c316cc695fd143ce3348e39aa8.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/kuafu-de21df37ad8f289f64344df080a40e07b101148f.json",
+      "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/kuafu-e4e319cfa6a48400bd35059096c22dc15e61087a.json",
+      "gonggong-diting-data/events/gonggong-workspace/learning-native-storage-resource-boundary/learn-610996a7d6b4721252da94e26ce31edd5e72312911ad9aab5e8e9fc815bfb7fe.json",
+      "pyproject.toml"
+    ],
+    "private_report_included": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\workspace-ci-recovery-review.json",
+    "exit_code": 0,
+    "files_unchanged": true,
+    "output": ""
+  },
+  "limitations": [
+    "No remote CI completion, delivery, production acceptance or Issue closure claimed.",
+    "Approval applies to the exact bindings recorded here."
+  ],
+  "cleanup": {
+    "product_mutations": false,
+    "temporary_files_created": false,
+    "retained": "This review receipt only."
+  }
+}
