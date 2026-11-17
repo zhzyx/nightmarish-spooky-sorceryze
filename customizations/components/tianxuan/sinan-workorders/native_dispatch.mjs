@@ -17,26 +17,29 @@ export async function dispatchNative(event, requests, service, launch) {
   return dispatchEvent(event, requests, host);
 }
 
-export function httpService(base, token) {
+export function httpService(base, token, {executeTimeoutMs = 120000} = {}) {
   const url = new URL(base);
   if (url.protocol !== 'https:' && !(url.protocol === 'http:' && ['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname))) throw Error('TLS or loopback required');
   return async (operation, value) => {
     const response = await fetch(new URL(`/api/v1/native/workflow/${operation}`, url), {
       method: 'POST', headers: {'content-type': 'application/json', authorization: `Bearer ${token}`},
-      body: JSON.stringify(value), signal: AbortSignal.timeout(120000), redirect: 'error',
+      body: JSON.stringify(value), signal: AbortSignal.timeout(operation === 'await-terminal' ? 86500000 : operation === 'execute' ? executeTimeoutMs : 120000), redirect: 'error',
     });
-    if (!response.ok) throw Error(`Native service returned ${response.status}`);
     const chunks = []; let bytes = 0;
     for await (const chunk of response.body) {
       bytes += chunk.length;
       if (bytes > 8 * 1024 * 1024) throw Error('Native response exceeds limit');
       chunks.push(chunk);
     }
-    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+    const reply = JSON.parse(Buffer.concat(chunks).toString('utf8'));
+    if (!response.ok) throw Error(`Native service returned ${response.status}: ${reply.detail ?? 'operation failed'}`);
+    return reply;
   };
 }
 
 export async function driveNative(service, initial = {type: 'user.requested', reference: 'native-cli'}) {
+  const watched = new Set();
+  const checked = new Set(), integrated = new Set(), groupErrors = new Set();
   const attempted = new Set(), finished = new Set(), pending = new Set(), rejectedEvents = new Set();
   const result = {results: [], deliveries: [], deferred: [], errors: []};
   let coordinator = Promise.resolve();
@@ -46,14 +49,44 @@ export async function driveNative(service, initial = {type: 'user.requested', re
     pending.add(observed);
     observed.finally(() => pending.delete(observed));
   };
-  const delivery = async key => {
+  const observe = async key => {
+    // One reconnect after an ambiguous observer reply; never replay execute.
+    try {return await service('await-terminal', {key});}
+    catch {return service('await-terminal', {key});}
+  };
+  const delivery = async (key, contribution = false) => {
     if (finished.has(key) || delivering >= deliveryCapacity) return;
     finished.add(key);
     delivering++;
-    try {result.deliveries.push({key, ...await service('finish', {key})});}
+    try {
+      if (contribution) {
+        if (!checked.has(key)) {
+          checked.add(key);
+          await service('integration-contribution', {key});
+        }
+      } else result.deliveries.push({key, ...await service('finish', {key})});
+    }
     catch (error) {result.errors.push({key, stage: 'finish', reason: String(error.message ?? error)});}
     finally {delivering--;}
     await signal({type: 'execution.finished', reference: key});
+  };
+  const integrate = async original => {
+    integrated.add(original);
+    let key = original;
+    try {
+      const row = await service('integration-status', {key});
+      if (row.acceptance) return;
+      let merged = await service('integration-execute', {key});
+      if (merged.state === 'conflicts_pending') {
+        // Durable resolver intent prevents duplicate effects across restarts.
+        try {key = await service('integration-resolve', {key});}
+        catch {key = await service('integration-reconcile', {key});}
+        merged = await service('integration-execute', {key});
+      }
+      if (merged.state === 'conflicts_pending') throw Error('Integration remains conflicted');
+      result.deliveries.push({key, ...await service('integration-finish', {key})});
+    } catch (error) {result.errors.push({key, stage: 'integration', reason: String(error.message ?? error)});}
+    await signal({type: 'execution.finished', reference: original});
   };
   const signal = event => {
     // Serialize only event inspection/planning. Long workers/reviews remain outside.
@@ -67,7 +100,17 @@ export async function driveNative(service, initial = {type: 'user.requested', re
       } catch (error) {result.errors.push({stage: 'advance', reason: String(error.message ?? error)});}
       const board = await service('inspect', {});
       deliveryCapacity = Math.max(1, board.environment.capacity);
-      for (const key of board.produced ?? []) if (!finished.has(key)) track(delivery(key));
+      for (const active of board.environment.active ?? []) {
+        if (!active.terminalObservable || attempted.has(active.ticket) || watched.has(active.ticket)) continue;
+        watched.add(active.ticket);
+        track(observe(active.ticket).then(() => signal({type: 'execution.finished', reference: active.ticket})));
+      }
+      for (const error of board.integrations?.errors ?? []) {
+        const id = JSON.stringify(error);
+        if (!groupErrors.has(id)) {groupErrors.add(id); result.errors.push({stage: 'integration-discovery', ...error});}
+      }
+      for (const group of board.integrations?.ready ?? []) if (!integrated.has(group.key)) track(integrate(group.key));
+      for (const key of [...(board.produced ?? []), ...(board.contributions ?? [])]) if (!finished.has(key)) track(delivery(key, (board.contributions ?? []).includes(key)));
       const requests = board.requests.filter(request => !attempted.has(request.ticket));
       if (!requests.length) return;
       // dispatchEvent owns Sinan model selection and durable server reservations.
@@ -75,11 +118,13 @@ export async function driveNative(service, initial = {type: 'user.requested', re
       track(dispatchNative(event, requests, service, async assignment => {
         attempted.add(assignment.ticket);
         try {
-          const terminal = await service('execute', {key: assignment.ticket});
+          let terminal;
+          try {terminal = await service('execute', {key: assignment.ticket});}
+          catch {terminal = await observe(assignment.ticket);}
+          if (['reserved', 'running', 'held'].includes(terminal.state)) terminal = await observe(assignment.ticket);
           // The terminal frees production capacity before potentially slow review.
           await signal({type: 'execution.finished', reference: assignment.ticket});
           if (!['produced', 'accepted'].includes(terminal.state)) throw Error('Worker not successfully terminal');
-          await delivery(assignment.ticket);
           return {workerId: assignment.ticket, reference: assignment.ticket, model: assignment.model.id, target: assignment.target};
         } catch (error) {
           await signal({type: 'execution.failed', reference: assignment.ticket});

@@ -1,0 +1,89 @@
+{
+  "issue": 1466,
+  "request_id": "native-product-integration-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1466",
+  "scope": "Original six-item1466 integration acceptance, subject to exact CI/main readback; parent goal remains incomplete",
+  "acceptance": [
+    {
+      "item": 1,
+      "accepted": "Durable fixed plans bind original task/source/intake/criteria, product base and current authority; original output immutable.",
+      "evidence": [
+        "native_integration.py authorize/_load/_original",
+        "test_native_integration.py",
+        "native-integration-core-review-1466.json",
+        "native-integration-terminal-review-1466.json"
+      ]
+    },
+    {
+      "item": 2,
+      "accepted": "Deterministic object three-way merge, alias/dependency guards and real final subprocess checks outside locks; unsupported structural decisions fail closed.",
+      "evidence": [
+        "test_native_integration.py",
+        "test_native_joint_workflow.py",
+        "native-integration-linux-1466.json"
+      ]
+    },
+    {
+      "item": 3,
+      "accepted": "Explicit installed conflict resolver and successor plans; disjoint head changes preserve original contributions and producers. No automatic universal semantic resolution claim.",
+      "evidence": [
+        "test_native_integration.py",
+        "test_native_joint_workflow.py",
+        "native-joint-workflow-1466.json"
+      ]
+    },
+    {
+      "item": 4,
+      "accepted": "Checked contribution distinct from acceptance; reviewer excludes producers/resolver, unique product release, atomic original criteria fan-in/outbox and actual downstream.",
+      "evidence": [
+        "native-joint-workflow-1466.json",
+        "native-terminal-events-1466.json",
+        "native-integration-terminal-review-1466.json"
+      ]
+    },
+    {
+      "item": 5,
+      "accepted": "Durable exact intent/release recovery, source changes/current producer and original private-source ACL; owned physical closure settles capacity without approving unavailable content.",
+      "evidence": [
+        "native-physical-coordination-1466.json",
+        "native-integration-terminal-review-1466.json",
+        "native-terminal-credential-correction-1466.json",
+        "native-credential-linux-1466.json"
+      ]
+    },
+    {
+      "item": 6,
+      "accepted": "Real concurrent same-module producers through authenticated HTTP/Node reach one joint release and actual downstream. HTTP execute/observer lost replies continue in same driver, no producer replay.",
+      "evidence": [
+        "native-joint-workflow-1466.json",
+        "native-terminal-events-1466.json",
+        "native-integration-terminal-review-1466.json"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "df4d3944c5894980ae4f2f9fc7950b36e39809aeac3b8492a30fd2c871ce8b20",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.md": "07e2dd4233ff736c63ff099b624b475af0c989050d7fcba50995613e93c65714",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "dd86b8bbd643949bf091a4f28d21a678a1ac71d4b545d32f54dcb85205c87e06",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "06f5559778dd628376aedcf41f6dd47efde38536f220486b7b0daf7cb4be1320",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "849d6292c5bd26827710ae1e09426516a7428d9f914fa73e07c92764f525285d",
+    "customizations/components/tianxuan/server/native_api.py": "b234aaace839e2909674aa5d039809f5b3810acc44a9f295e71855c9b69efe43",
+    "customizations/components/tianxuan/server/access_control.py": "4d1f5911bdf4e33aca95b6d73a166687202d0d36553c3d3e4d8082d4473b7ffd",
+    "customizations/components/tianxuan/duobao/native_workspace.py": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66",
+    "customizations/components/tianxuan/duobao/native_check_inputs.py": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06",
+    "customizations/components/tianxuan/duobao/test_native_workspace.py": "b300fa1bdf2ea4b357fa4074e3f6dcbc30b7e27a8ce9ea5ad8b2ea66bf911602",
+    "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": "05ff5f956367de735cba27404897685e008ba38c635c210629eafa74fcc5ed00",
+    "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": "eadbdd767cffbfe4e84e22449f9c3c70d9599739536a19cb5c1cfc36cd3a4d83",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py": "4d4e1c35d2fb89f1dcc6b4680b2006f0fbaf71de883386eb9cef949dc90f2440",
+    "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": "224b4d3ac3fcadcac271d6b4707a5d4fd5ec4426b34d56d241a6f6674e6217b1",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "59c8a0f2afc5aaa40190a5fa2a90405ddbcf26d567e28d51e585169ddec26f1b"
+  },
+  "main_alignment": "data-collection/native-integration-main-alignment-1466.json",
+  "remaining": [
+    "Current coordinator instance only; remote server/node ownership tracked separately",
+    "Formal live model profile and observed model/token efficiency not tested",
+    "250 end-to-end in-flight throughput, production deployment/recovery, docs/UI and AA baseline remain parent scope",
+    "Explicit new installed group/plan required for CAS successor; automatic general replanning remains parent optimization",
+    "Reviewer temporary fixture deletion denied by host policy; retained and not claimed cleaned"
+  ]
+}
