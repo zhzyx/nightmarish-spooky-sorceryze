@@ -1,0 +1,178 @@
+{
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1480",
+  "reviewed_at": "2026-11-17T22:01:29.753403+00:00",
+  "reviewer": "independent Codex child /root/sinan_508b413753304b5f",
+  "scope": "Exact-source independent read-only review, deterministic local probes only. No live model, provider, network, source edits, commit, deploy or further agents.",
+  "candidate": {
+    "root": "D:\\GongGong-work\\native-model-proposal-20261118",
+    "head": "051f9af590dd3672a8885d2a64ce1f545a607e2a",
+    "files": [
+      {
+        "path": "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+        "sha256": "2c848a89c0db30dc6705dcf2a485be805ba4b8151b63df51ffc9045b7b997dd0"
+      },
+      {
+        "path": "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs",
+        "sha256": "be12a58ec33dfd87c157bd3d266340301944d9de38c48d93d8cddb1e27339fe2"
+      },
+      {
+        "path": "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md",
+        "sha256": "23ba0c424bb766aeb6273de923bb4db2e0ffb790ec7c325c2770d00ec8b782d2"
+      },
+      {
+        "path": "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+        "sha256": "ac55e250ef330aa95c9307ba3138ca78b9e1499802704293ee4e28a7cbda3502"
+      },
+      {
+        "path": "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs",
+        "sha256": "e918d8c845a1d6394e6a1ff2fccefbb0a2a69219511946fadcda1c236be84e6f"
+      },
+      {
+        "path": "tools/codex_cli/subscription_session.js",
+        "sha256": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2"
+      },
+      {
+        "path": "tools/ainative/owned_process.py",
+        "sha256": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78"
+      },
+      {
+        "path": "tools/editor_provenance_process.py",
+        "sha256": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1"
+      },
+      {
+        "path": "design-docs/native-model-proposal-20261118.md",
+        "sha256": "a4459b1bcce19964306bf3e61c7798c75117b53e4360dcecd8a8bed057caf7ca"
+      }
+    ]
+  },
+  "verdict": "changes_requested",
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P1",
+      "title": "Preserve independently observed usage when proposal validation or generation fails",
+      "locations": [
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs",
+          "lines": [
+            127,
+            129
+          ]
+        },
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+          "lines": [
+            204,
+            206
+          ]
+        }
+      ],
+      "reproduction": "usage-probes.cjs uses actual Subscription plus fake RPC. turn/start returns v1; valid usage for t1/v1 arrives; then either malformed proposal {} or turn/completed status failed. Both results retain t1/v1 and updates=1 but erase raw and replace observed status with unknown. Control success preserves identical raw. validate-probe.py reinstates that verified usage on an unknown proposal; Python rejects it as Unknown response has results.",
+      "impact": "Failed calls may consume tokens. Erasing their observed counters prevents faithful usage evidence and biases subsequent cost/benefit evaluation toward successful calls. Proposal trust and usage observation are independent.",
+      "required_change": "Retain observer snapshot on catch, including its own observed/invalid/unknown status, without returning a proposal or authority. Permit unknown proposal plus independently validated observed raw in Python. Keep missing or unbound turn evidence unknown; do not infer IDs, replay or promote a rejected proposal. Add regression tests for bound failure, malformed proposal, and turn/start rejection before ID acknowledgement.",
+      "negative_control": "unbound_failure emits a usage-shaped packet then rejects turn/start; current receipt correctly has null turn/thread and null raw. A correction must retain this fail-closed behavior.",
+      "evidence": [
+        "usage-results.json",
+        "validate-result.json"
+      ]
+    }
+  ],
+  "limitations_and_recommendations": [
+    {
+      "id": "L1",
+      "topic": "50ms late window",
+      "location": "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs:124",
+      "observed": "late_100ms schedules first valid update 100ms after completion; wrapper closes at about 61ms, returns proposed with raw=null/status=unknown, and close cancels pending local event. No replay occurs.",
+      "assessment": "A finite observation window cannot establish total/final provider usage. This is explicitly documented in native-model-proposal.md and the prior design permits unobserved late metrics to remain null, so this alone is not a blocking defect for the bounded one-turn capability trial. It cannot support complete metering or full savings claims. Increasing a timer would not prove completeness.",
+      "recommendation": "Record observation cutoff/window and completeness unknown in trial evidence. If complete metering becomes acceptance, use an actually documented terminal usage/flush condition or bounded separately persisted observation ledger, with unknown on deadline; never call the model again for metrics."
+    },
+    {
+      "id": "L2",
+      "topic": "raw ledger and multiple turns",
+      "assessment": "Current public receipt preserves the latest valid snapshot only. Hashes are internal and no timestamped full ledger is exported. Wrong-thread/turn and duplicate notifications invalidate raw conservatively rather than accumulating. No multi-turn accounting semantics accepted by this review. Design wording about bounded ledgers should not be read as delivered full historical ledger."
+    },
+    {
+      "id": "L3",
+      "topic": "timeouts and forced termination",
+      "assessment": "Python emits unknown with null usage when owned process does not yield a valid successful private response. No durable out-of-process usage side channel exists. This review proves R1 for completed local wrapper failure responses only, not preservation across killed producers. Do not claim preservation of all billable events on timeout or cancellation."
+    }
+  ],
+  "accepted_within_scope": [
+    "Request has exact fixed fields; env/executables/config cannot be selected by request. Installed paths, verification callback and owned process helper are trusted host inputs, not untrusted admission mechanisms.",
+    "Python binds installation/source/executable/helper digests before and after valid response. It does not write proposal files or give model output execution authority.",
+    "Actual Subscription retains native-tool/MCP/web/approval restrictions and forwards original notifications. Observer binds acknowledged thread/start and turn/start responses; early event buffers and per-turn hashes are bounded. Missing, malformed, duplicate and wrong-ID data fail closed; no token summing.",
+    "Requested model and observed thread/start model are separate fields. Subscription requires equality. Observed model means transport-reported model, not independent verification of backend routing.",
+    "No automatic replay found. Each deterministic probe made exactly one turn/start, including bound and unbound failure.",
+    "Owned process implementation uses a suspended Windows child assigned to a job before resume and validates active descendants have exited. Five actual local producer/descendant tests passed for success, fault, timeout, cancellation and response contract failure. This proves local tested closure, not remote service cancellation."
+  ],
+  "validation": {
+    "provider_calls": 0,
+    "live_capability_proven": false,
+    "ai_savings_proven": false,
+    "author_js_suite": {
+      "command": "node --test customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs",
+      "passed": 15,
+      "failed": 0
+    },
+    "author_python_suite": {
+      "command": "py -B -X utf8 -m unittest discover -s customizations/components/tianxuan/sinan-workorders -p test_native_model_host.py -v",
+      "passed": 5,
+      "failed": 0,
+      "temp_directory": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review-probes",
+      "bytecode_disabled": true
+    },
+    "independent_probes": {
+      "usage_cases": 5,
+      "python_contract_cases": 1,
+      "assertions_passed": true,
+      "results": [
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review-probes\\usage-probes.cjs",
+          "sha256": "c9176403a956b910250130df59a6922e298df33d085c7a4366606675f1e258ee"
+        },
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review-probes\\usage-results.json",
+          "sha256": "3ed3218bef0e8d9f49193970c4886aeb6140e4a20b104137e9fb157813eb480b"
+        },
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review-probes\\validate-probe.py",
+          "sha256": "ac5fa3ca0479bd93f3f84c68cb4901925ef9fac630a42ce1ff6e2bf1a48749a4"
+        },
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review-probes\\validate-result.json",
+          "sha256": "7bf7608c58429e67158aa27c6881fd34e239afef944633394a61931dfeef26f8"
+        }
+      ]
+    }
+  },
+  "method_recall": {
+    "source": "framework/specs/method-learning.md; current tenant gonggong-workspace",
+    "applicable": [
+      {
+        "scope": "editor-dependency-handoff",
+        "lesson": "bind-consumer-release",
+        "revision": 21,
+        "applied": "Bind review to exact bytes, not original author report or HEAD alone."
+      },
+      {
+        "scope": "editor-dependency-handoff",
+        "lesson": "await-terminal-observers",
+        "revision": 5,
+        "applied": "Require owned closure and distinguish observed evidence from complete terminal evidence; optional telemetry counterexample prevents treating timer expiry alone as failure."
+      }
+    ],
+    "other_recall": "native-http-input-boundary has no verified lessons. human-model-acceptance concerns 3D human geometry and is not applicable.",
+    "feedback_proposal": "Within the parent authorized learning workflow, add a regression lesson separating proposal acceptance from provider usage evidence; bound failed-call evidence is retained, unacknowledged turn identity stays unknown. This child did not write outside its permitted receipt paths."
+  },
+  "resources": {
+    "retained": [
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review-probes",
+      "native-model-proposal-review.json"
+    ],
+    "reason": "Necessary source-bound review and deterministic repro evidence. Author test TemporaryDirectory resources auto-cleaned; no live/background worker remains; no source/worktree changes made by reviewer."
+  },
+  "handoff": "Root should correct R1, rerun deterministic checks and obtain review of changed bytes before predeclared live trial. This is not production admission, delivery acceptance, or completion of #1480/#1444/#1382.",
+  "request_id": "native-model-proposal-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+  "original_sha256": "97d71deeef4b145e106aeec96f3b74a5ec38888134f0b4187c1caaa1754999d3"
+}

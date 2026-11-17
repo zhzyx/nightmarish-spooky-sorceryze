@@ -75,6 +75,17 @@ class HostInputTests(unittest.TestCase):
 
     @unittest.skipUnless(importlib.util.find_spec("SCons"), "SCons required for actual generator probe")
     def test_actual_generator_consumption_overrides_host_inventory(self):
+        self.assert_actual_generator_consumption()
+
+    @unittest.skipUnless(importlib.util.find_spec("SCons"), "SCons required for actual generator probe")
+    def test_commonjs_generator_consumption_overrides_host_inventory(self):
+        self.name = "customizations/components/tianxuan/server/service.cjs"
+        self.host = self.root / self.name
+        self.host.write_text("module.exports = {};")
+        self.policy.write_text(json.dumps({"schema_version": 1, "inputs": [self.name]}))
+        self.assert_actual_generator_consumption()
+
+    def assert_actual_generator_consumption(self):
         script = (
             "import sys\n"
             f"sys.path.insert(0, {str(ROOT / 'tools')!r})\n"

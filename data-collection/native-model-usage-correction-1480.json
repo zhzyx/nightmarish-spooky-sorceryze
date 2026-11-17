@@ -1,0 +1,29 @@
+{
+  "issue": 1480,
+  "request_id": "native-model-proposal-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+  "prior_review_sha256": "97d71deeef4b145e106aeec96f3b74a5ec38888134f0b4187c1caaa1754999d3",
+  "correction": "Keep exact observer usage independently of rejected proposal. Unknown proposal cannot return content; observed raw requires both acknowledged identities. No replay or native execution authority.",
+  "validation": {
+    "javascript": {
+      "passed": 17,
+      "failed": 0,
+      "milliseconds": 637.1259
+    },
+    "python": {
+      "passed": 8,
+      "failed": 0,
+      "seconds": 6.803
+    },
+    "ruff": "passed",
+    "provider_calls": 0
+  },
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "6ea10fa9593ff47ba51df6c96d7cf84cc523b26b801c1fabbae002e9c3e55bfc",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77e708992333bd8d8ff7a354da9791c948836442e9d3c3be1347e06c52ffb89f",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "12153a1f2388b5eb220f767652120fbaa446fb082a2b756415c341c9a5c6f655",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "190a973c76d5ad15fa69b46abfcf1218967c88543961285ad823e29735378b4f",
+    "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md": "9230b84c9088c4e52aa859fb012f329ab6c8a4fad27f1c19e76327895faeaf69"
+  },
+  "limits": "Latest observed snapshot only; 50ms late window, completeness unknown. Forced termination without valid response can lose usage; no claim of complete billing ledger."
+}

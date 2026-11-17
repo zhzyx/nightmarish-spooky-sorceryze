@@ -1,0 +1,59 @@
+{
+  "request_id": "native-product-integration-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1466",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "dd86b8bbd643949bf091a4f28d21a678a1ac71d4b545d32f54dcb85205c87e06",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "0e98e1322cac07e7a97c01b15c13818412a9bedaab6be9e417dfc79d270aeebd",
+    "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": "6a05ab4326d882651901280d2a00d0249a2b8aa2a10dccd2f4ad7b7bbb19be40",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.md": "361fbd9708608a866d7b3fcb9ff7f0272cf4cb95424d07b04fbcd0d395f1bc66",
+    "customizations/components/tianxuan/server/native_api.py": "f6fa87bab65c175075b286d6d3e06d07b9efa605872fdc45380c29aabe0250ad"
+  },
+  "validation": [
+    {
+      "command": "tx-venv Python3.12 pytest test_native_joint_workflow.py test_native_integration.py test_native_workflow.py -q -p no:cacheprovider",
+      "result": "49 passed, 1 warning in 51.87s; joint suite at initial two-test revision"
+    },
+    {
+      "command": "tx-venv Python3.12 pytest test_native_joint_workflow.py -q -p no:cacheprovider",
+      "result": "6 passed, 1 warning in 12.90s; final expanded suite"
+    },
+    {
+      "command": "py -m ruff check three changed Python files; py -m mypy --follow-imports=skip --ignore-missing-imports same files; node --check native_dispatch.mjs",
+      "result": "passed"
+    }
+  ],
+  "actual_evidence": [
+    "Physical overlapping producers, same module, authenticated Node/HTTP, unique joint release, actual downstream L|R, original progress 100%.",
+    "Restart from durable integrated candidate and completed-driver restart without producer/reviewer rerun.",
+    "Physical identical/different/no-op original terminals; genuine conflict held without installed resolver.",
+    "No SQL-injected production terminal in new tests."
+  ],
+  "remaining_gaps": [
+    "Production model provider benchmark and model quality remain parent-owned.",
+    "Linux, build boundary, independent review, full delivery and Issue closure remain parent-owned.",
+    "No claim of cross-process authority-revocation stress verification."
+  ],
+  "corrections": [
+    "Test installer must authorize producer reads of selected integration manifest.",
+    "Joint subprocess must explicitly decode UTF-8 manifest and read source.definition.title.",
+    "Installation changes after task authorization are correctly rejected; shape variants now install before authorization."
+  ],
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "applied": [
+      "await-terminal-observers revision5",
+      "bind-consumer-release revision20",
+      "review-context-and-source-evidence revision4"
+    ],
+    "scope_limit": "No learning event written outside delegated scope."
+  },
+  "cleanup": {
+    "removed": [],
+    "retained": [
+      "Pytest temporary databases retained for parent evidence review, including failed fixture-setup probes; no cleanup claimed."
+    ],
+    "services": "HTTP threads/listeners shut down by test finally blocks; all test subprocesses completed."
+  },
+  "business_acceptance": false
+}

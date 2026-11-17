@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1b1bbfb26779305cc8bf6c80690d2a5af7e500a0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-model-proposal-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "914093fffdf7972ece2000314ee0203aa0efd7e4ade0fcb8f28e619bcbfbc2d7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "dispatch",
+    "detection_head": "051f9af590dd3672a8885d2a64ce1f545a607e2a",
+    "context_sha256": "6eea53d454aec27595a2216fe37a701e4b9bbab1f386b11896f416eefe3dea0f",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+    "diagnosis": "Root supplied unsupported review.requested event; actual dispatchEvent allows decision.recorded. Failed before reservation/start. Exact supported event correction dispatched independent reviewer once with actual native receipt. No product repair or model-call replay.",
+    "next_action": "Complete independent1480review and source-bound capability evaluation; retain original failure.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T21:55:43.851675+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T21:58:20.931550+00:00",
+  "sha256": "2e95c81e1ac14c6752fcfb0e1f7033d4fab38a4a04267d1eda63781f90c6d534"
+}

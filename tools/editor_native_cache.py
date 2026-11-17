@@ -57,6 +57,7 @@ HOST_INPUT_PREFIXES = (
 HOST_INPUT_SUFFIXES = {
     "",
     ".api",
+    ".cjs",
     ".conf",
     ".css",
     ".dockerignore",

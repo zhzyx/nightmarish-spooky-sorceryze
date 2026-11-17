@@ -11,6 +11,7 @@ import sqlite3
 from collections.abc import Callable
 from typing import Any
 
+from access_control import COOKIE
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
 from native_store import Conflict, NativeStore, NativeStoreError
@@ -38,7 +39,15 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "status": {"key"},
             "reconcile": {"key"},
             "execute": {"key"},
+            "await-terminal": {"key"},
             "check": {"key"},
+            "integration-authorize": {"group"},
+            "integration-contribution": {"key"},
+            "integration-status": {"key"},
+            "integration-execute": {"key"},
+            "integration-resolve": {"key"},
+            "integration-reconcile": {"key"},
+            "integration-finish": {"key"},
             "authorize": {"issue"},
             "revise": {"issue", "expected"},
             "review": {"key"},
@@ -64,7 +73,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
             or not all(isinstance(key, str) and len(key) == 64 for key in payload.get("exclude", []))
         ):
             raise HTTPException(422, "invalid deferred event keys")
-        for key in {"key", "issue", "channel"} & payload.keys():
+        for key in {"key", "issue", "channel", "group"} & payload.keys():
             if not isinstance(payload[key], str) or not payload[key] or len(payload[key]) > 256:
                 raise HTTPException(422, "invalid workflow identifier")
         if operation == "revise" and (
@@ -83,8 +92,27 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 raise HTTPException(422, "invalid assignment contract")
 
         def call():
+            if operation.startswith("integration-"):
+                integration = getattr(workflow, "integration", None)
+                if integration is None:
+                    raise NativeStoreError("Admitted integration installation unavailable")
+                method = operation.removeprefix("integration-")
+                if method == "contribution":
+                    return integration.check_contribution(actor, payload["key"])
+                return getattr(integration, method)(actor, payload["group" if method == "authorize" else "key"])
             if operation == "inspect":
-                return workflow.inspect(actor)
+                board = workflow.inspect(actor)
+                integration = getattr(workflow, "integration", None)
+                if integration is not None:
+                    contributions = [
+                        key
+                        for key in board.get("produced", [])
+                        if json.loads(workflow.status(actor, key)["task"]).get("delivery_mode") == "contribution"
+                    ]
+                    board["contributions"] = contributions
+                    board["produced"] = [key for key in board.get("produced", []) if key not in contributions]
+                    board["integrations"] = integration.discover(actor)
+                return board
             if operation == "advance":
                 return workflow.advance(actor, isolate=True, exclude=payload.get("exclude", []))
             if operation in {"status", "execute", "check", "review", "reconcile", "finish"}:
@@ -109,6 +137,12 @@ def create_native_workflow_router(workflow) -> APIRouter:
             return {"state": row["state"]}
 
         try:
+            if operation == "await-terminal":
+                result = await workflow.await_terminal(actor, payload["key"])
+                # Sessions may have been revoked while the observer was asleep.
+                if _identity(request, refresh=True)[1] != actor:
+                    raise HTTPException(401, "terminal observer identity changed")
+                return result
             return await run_in_threadpool(call)
         except NativeStoreError as error:
             raise HTTPException(409, str(error)) from None
@@ -116,9 +150,14 @@ def create_native_workflow_router(workflow) -> APIRouter:
     return router
 
 
-def _identity(request: Request) -> tuple[str, str]:
+def _identity(request: Request, *, refresh: bool = False) -> tuple[str, str]:
     store = request.app.state.store
     actor = getattr(request.state, "verified_actor", None)
+    if actor and refresh:
+        scheme, _, bearer = request.headers.get("authorization", "").partition(" ")
+        token = bearer.strip() if scheme.lower() == "bearer" else request.cookies.get(COOKIE, "")
+        if store.user_for_access_key(token) != actor:
+            raise HTTPException(401, "terminal observer access key expired or revoked")
     if not actor:
         scheme, _, token = request.headers.get("authorization", "").partition(" ")
         actor = store.user_for_token(token.strip()) if scheme.lower() == "bearer" else None

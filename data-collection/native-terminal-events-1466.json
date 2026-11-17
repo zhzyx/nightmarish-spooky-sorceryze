@@ -1,0 +1,100 @@
+{
+  "format": "native-terminal-events/1",
+  "issue": 1466,
+  "business_acceptance": false,
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "849d6292c5bd26827710ae1e09426516a7428d9f914fa73e07c92764f525285d",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "df4d3944c5894980ae4f2f9fc7950b36e39809aeac3b8492a30fd2c871ce8b20",
+    "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": "e34f95c4290a27b0036b250690ab8d6bc449fac2dd770bd630d204e7457673fd",
+    "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": "eadbdd767cffbfe4e84e22449f9c3c70d9599739536a19cb5c1cfc36cd3a4d83",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.md": "07e2dd4233ff736c63ff099b624b475af0c989050d7fcba50995613e93c65714",
+    "customizations/components/tianxuan/server/native_api.py": "88e9bb54afc14a83a6b74274eeb4c70e7fad0382673794c27d81d422e6c946b4"
+  },
+  "validation": [
+    {
+      "command": [
+        "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+        "-m",
+        "pytest",
+        "customizations\\components\\tianxuan\\sinan-workorders\\test_native_terminal_events.py",
+        "customizations\\components\\tianxuan\\sinan-workorders\\test_native_joint_workflow.py",
+        "customizations\\components\\tianxuan\\sinan-workorders\\test_native_workflow.py",
+        "customizations\\components\\tianxuan\\sinan-workorders\\test_native_workflow_revisions.py",
+        "customizations\\components\\tianxuan\\sinan-workorders\\test_native_worker_coordination.py",
+        "customizations\\components\\tianxuan\\sinan-workorders\\test_native_worker_intake.py",
+        "customizations\\components\\tianxuan\\sinan-workorders\\test_native_integration.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "stdout": "........................................................................ [ 66%]\n.....................................                                    [100%]\n============================== warnings summary ===============================\ncustomizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py::test_real_joint_http_node_and_restart[False]\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n109 passed, 1 warning in 110.16s (0:01:50)\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "customizations\\components\\tianxuan\\sinan-workorders\\native_workflow.py",
+        "customizations\\components\\tianxuan\\sinan-workorders\\test_native_terminal_events.py",
+        "customizations\\components\\tianxuan\\sinan-workorders\\test_native_joint_workflow.py",
+        "customizations\\components\\tianxuan\\server\\native_api.py"
+      ],
+      "exit_code": 0,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "mypy",
+        "--follow-imports=skip",
+        "--ignore-missing-imports",
+        "customizations\\components\\tianxuan\\sinan-workorders\\native_workflow.py",
+        "customizations\\components\\tianxuan\\server\\native_api.py"
+      ],
+      "exit_code": 0,
+      "stdout": "Success: no issues found in 2 source files\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "node",
+        "--check",
+        "customizations\\components\\tianxuan\\sinan-workorders\\native_dispatch.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "prior_failure": {
+    "review": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-joint-review.json",
+    "sha256": "ddc4a214a0a7d88a29f671256428e5829e461a1e9f968093d40f6c01eab97fe0",
+    "probe": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-joint-review-probes\\node_probe.mjs",
+    "probe_sha256": "b245e61a4211663475c62f20f48853db72130ce8b9175f19d1b067f4022a4e04",
+    "observed": "Original deterministic probe returned before late produced state; delivery needed a second explicit drive. Prior Windows failures retained in original review."
+  },
+  "repair_iteration": {
+    "observed": "3 failed, 93 passed in 90.29s: exact hidden occupied-slot ACL dictionary gained terminalObservable:false",
+    "correction": "Omit event metadata entirely for hidden or reserved rows; rerun original revision tests and final suite"
+  },
+  "mechanism": "Exact installed coordinator Future registered under domain lock, settled after durable execution; async shielded observer, current source and identity readback, bounded deadline, one observer reconnect, no production replay",
+  "limits": [
+    "Live notifications only for exact owning coordinator instance",
+    "No distributed broker, remote owner takeover, or disconnected-client automatic restart",
+    "Unowned active or unknown physical state holds and reports unknown; durable terminal reconciles"
+  ],
+  "learning": {
+    "scope": "editor-dependency-handoff",
+    "recall": "Verified methods recalled; current source and consumer boundary checked",
+    "counterexample": "Process-local notification cannot observe another process writer",
+    "trial": "Real HTTP transport timeout during original producer and terminal reply loss; one drive accepts joint and downstream"
+  },
+  "cleanup": "No helper scripts or branches created. Pytest temporary state retained for independent review; parent owns final task-resource cleanup."
+}

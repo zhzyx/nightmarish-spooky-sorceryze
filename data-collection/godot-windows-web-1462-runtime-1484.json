@@ -1,0 +1,30 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "source_candidate": "6f3bb15bb2218ad1a248e206c9f4dad2e255c015",
+  "signed_candidate": "fe942a1837340dcc1bf94d45e680daa2ca7c69fd",
+  "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44187287754",
+  "artifact_id": 14375297697,
+  "artifact_file_sha256": "eb13a357930eaee95b3ecf382a63538f98ce411624cdf11766c3694e0da796a4",
+  "result": {
+    "compile": "passed",
+    "runtime": "passed",
+    "returncode": 0,
+    "hidden_hwnd": true,
+    "external_requests": [
+      "/frame"
+    ],
+    "navigation_policy_limit": "WebView2 may speculatively issue GET before cancellation; document/script rejection is checked, not network isolation.",
+    "stdout": "WEB_PLATFORM_WINDOWS_OK hidden_native=true persistence=true navigation=true renderer_retry=true lifecycle=true\n",
+    "stderr": "",
+    "manual_not_run": [
+      "real editor input and IME",
+      "native upload/download dialogs",
+      "visual DPI/modal layout"
+    ]
+  },
+  "compile_environment": "Actual Godot SCons link graph checked before fixture; Godot platform/windows header wrapper, strict MSVC warnings and no-exception setting",
+  "prior_failure": "data-collection/godot-windows-web-1462-link-build-failure.json",
+  "scope": "Actual Windows x64 WebView2 backend compiled and executed in hidden HWND; full editor build/regressions tracked separately.",
+  "handoff": "Exact PR1484 full Windows CI passed; latest-main integration requires new candidate verification. No effective installation."
+}
