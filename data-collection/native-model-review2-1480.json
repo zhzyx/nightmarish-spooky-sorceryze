@@ -1,0 +1,112 @@
+{
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1480",
+  "reviewed_at": "2026-11-17T22:08:16.559479+00:00",
+  "reviewer": "independent Codex child /root/sinan_335c79e7e0489328",
+  "scope": "R1 correction only. Deterministic local probes, exact-source review. No source edits, live provider, network, commit, production admission, or further agents.",
+  "candidate": {
+    "root": "D:\\GongGong-work\\native-model-proposal-20261118",
+    "head": "051f9af590dd3672a8885d2a64ce1f545a607e2a",
+    "source_sha256": {
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "6ea10fa9593ff47ba51df6c96d7cf84cc523b26b801c1fabbae002e9c3e55bfc",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77e708992333bd8d8ff7a354da9791c948836442e9d3c3be1347e06c52ffb89f",
+      "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md": "9230b84c9088c4e52aa859fb012f329ab6c8a4fad27f1c19e76327895faeaf69",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "12153a1f2388b5eb220f767652120fbaa446fb082a2b756415c341c9a5c6f655",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "190a973c76d5ad15fa69b46abfcf1218967c88543961285ad823e29735378b4f",
+      "tools/codex_cli/subscription_session.js": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2",
+      "tools/ainative/owned_process.py": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78",
+      "tools/editor_provenance_process.py": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+      "design-docs/native-model-proposal-20261118.md": "a4459b1bcce19964306bf3e61c7798c75117b53e4360dcecd8a8bed057caf7ca"
+    },
+    "changed_since_prior_review": [
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs",
+      "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs"
+    ],
+    "before_after_bytes_identical": true
+  },
+  "prior_review_sha256": "97d71deeef4b145e106aeec96f3b74a5ec38888134f0b4187c1caaa1754999d3",
+  "correction_receipt": {
+    "path": "data-collection/native-model-usage-correction-1480.json",
+    "sha256": "3fc0ca7b3f544332adebe9d2cd043467ae17e9ac4a6d76240ad6ec29485ac3a6",
+    "all_declared_source_hashes_match": true
+  },
+  "verdict": "scoped_acceptance_R1_corrected",
+  "findings": [],
+  "R1": {
+    "status": "resolved_for_completed_local_wrapper_responses",
+    "evidence": [
+      "malformed proposal and acknowledged failed turn preserve identical valid raw counters with observed status and acknowledged t1/v1",
+      "both retain status=unknown, proposal=null, output_digest=null, execution_authority=false",
+      "unbound turn/start failure returns null raw and turn identity, without replay",
+      "invalid failure retains invalid classification with raw=null",
+      "Python accepts actual wrapper unknown plus observed raw; rejects missing/null/empty identity, unknown content/output digest, execution authority, incompatible raw status, missing observed raw and malformed counters"
+    ]
+  },
+  "validation": {
+    "provider_calls": 0,
+    "independent_js_cases": 6,
+    "independent_python_contract_cases": 21,
+    "all_assertions_passed": true,
+    "every_js_case_exactly_one_turn_start_and_closed": true,
+    "author_suites": "Public correction reports 17 JS and 8 Python passing; inspected changed tests but did not rerun broad author suites in this scoped review. Independent probes executed actual current Subscription/propose and NativeModelHost._validate.",
+    "artifacts": [
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review2-probes\\source-before.json",
+        "sha256": "5a446589e6a2189ec122ad767662f3fc70f5524dc41d76da7b1c74cd0c118a20"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review2-probes\\usage-probes.cjs",
+        "sha256": "661e6b6eea002e1a883ecc1334112c9217aea44242e9ee24a20eec42b4a40d4b"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review2-probes\\usage-results.json",
+        "sha256": "227d628d63f290a89fe287e4f4add5d1444b8031c255be0307b60b16adbbab0d"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review2-probes\\validate-probe.py",
+        "sha256": "2898e58fcae247099fab0ac12fcc8fbd90bea31f03443e1619cc4be34d34bb1c"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review2-probes\\validate-result.json",
+        "sha256": "318dcd72813636af1ce20c456b6dd7da2b7faa35e62ccf0206b482eccc18cd90"
+      }
+    ]
+  },
+  "limits": [
+    "Acceptance supports only proceeding to one predeclared capability trial under existing authorization and exact candidate identity; it does not itself prove that live trial passed.",
+    "Python validates nonempty transport identities; acknowledgement provenance is established by the trusted bound JS observer, not independent backend attestation.",
+    "Latest snapshot only. Success path waits 50ms; unknown failure captures at catch without an additional late window. Completeness remains unknown; 100ms update probe still yields null raw without retry.",
+    "No durable out-of-process ledger; timeout/cancellation/forced termination without a valid private response may lose usage.",
+    "No complete billing, multi-turn accounting, remote cancellation, production acceptance, savings or whole-AI-goal claim. Prior review limitations L1-L3 remain applicable."
+  ],
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "source": "framework/specs/method-learning.md; method_learning.py recall editor-dependency-handoff",
+    "verified_applied": [
+      {
+        "lesson": "bind-consumer-release",
+        "revision": 21,
+        "application": "Hash all prior reviewed files and public correction before probes, recheck unchanged bytes after probes; retain immutable original repros."
+      },
+      {
+        "lesson": "await-terminal-observers",
+        "revision": 5,
+        "application": "Distinguish observed snapshot from complete usage; retain unknown beyond finite cutoff. Optional telemetry counterexample prevents treating missing complete usage as blocker to bounded capability trial."
+      }
+    ],
+    "feedback_to_parent": "R1 independent regression passes: preserve observed evidence separately from rejected proposal content; identity-less raw remains denied. Append learning feedback only through parent authorized workflow; reviewer writes only allowed evidence paths."
+  },
+  "resources": {
+    "retained": [
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-review2-probes",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-proposal-review2.json"
+    ],
+    "reason": "Necessary independent source-bound probes and review receipt. All local synchronous probes completed, no background worker/live provider created, no temporary or out-of-scope writes intended. Original review/probes unchanged."
+  },
+  "handoff": "R1 scoped correction accepted on these hashes. Root may proceed to the single predeclared capability trial under existing authorization and remaining admission requirements; no formal production or overall issue completion is asserted.",
+  "request_id": "native-model-proposal-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+  "original_sha256": "1f6878ffd981c7e7bb33164b4552714dd7ab2a622afd6386f84b54957ffaab7b"
+}

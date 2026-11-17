@@ -1,0 +1,111 @@
+{
+  "issue": 1480,
+  "request_id": "native-model-proposal-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+  "state": "bounded implementation/capability accepted locally; final cache-delta independent review and CI/main pending",
+  "criteria": [
+    {
+      "criterion": "bounded immutable proposal interface",
+      "evidence": [
+        {
+          "path": "data-collection/native-model-proposal-1480.json",
+          "sha256": "fedd8a7123f18bf769ee64b55aafac30897788b35121a0868df164fcdf066ea4"
+        },
+        {
+          "path": "data-collection/native-model-review-1480.json",
+          "sha256": "272dfc0cea20d53916c0575b4dd99de0e2e8ee1e355b3594c7ff0ec4342015a9"
+        }
+      ]
+    },
+    {
+      "criterion": "bound raw usage observer; missing or invalid stays unknown",
+      "evidence": [
+        {
+          "path": "data-collection/native-model-review2-1480.json",
+          "sha256": "d0fc3056310ea980c6b64e687330a07102e50eac5177d829b5dbbb9413684183"
+        },
+        {
+          "path": "data-collection/native-model-usage-correction-1480.json",
+          "sha256": "3fc0ca7b3f544332adebe9d2cd043467ae17e9ac4a6d76240ad6ec29485ac3a6"
+        }
+      ]
+    },
+    {
+      "criterion": "input/output/config/model provenance and no output authority",
+      "evidence": [
+        {
+          "path": "data-collection/native-model-live-capability-1480.json",
+          "sha256": "af5c7197bd23b03d98bf1deb6d96c8a9451870c134ed7493ac2ddd43ab2062b7"
+        },
+        {
+          "path": "data-collection/native-model-review2-1480.json",
+          "sha256": "d0fc3056310ea980c6b64e687330a07102e50eac5177d829b5dbbb9413684183"
+        }
+      ]
+    },
+    {
+      "criterion": "actual owned process closure and cancellation; production admission separate",
+      "evidence": [
+        {
+          "path": "data-collection/native-model-format-correction-1480.json",
+          "sha256": "4f901a5f6ac3401f6187400d732c473b8ea8bd342c629a122bb059a7367f5a17"
+        },
+        {
+          "path": "data-collection/native-model-linux-1480.json",
+          "sha256": "6bde5db8c8dfb7a5d670c0344f896271c8f83778946d74c3beac8e15934923ea"
+        },
+        {
+          "path": "data-collection/native-model-live-capability-1480.json",
+          "sha256": "af5c7197bd23b03d98bf1deb6d96c8a9451870c134ed7493ac2ddd43ab2062b7"
+        }
+      ]
+    },
+    {
+      "criterion": "deterministic protocol checks and one real capability trial",
+      "evidence": [
+        {
+          "path": "data-collection/native-model-usage-correction-1480.json",
+          "sha256": "3fc0ca7b3f544332adebe9d2cd043467ae17e9ac4a6d76240ad6ec29485ac3a6"
+        },
+        {
+          "path": "data-collection/native-model-live-capability-1480.json",
+          "sha256": "af5c7197bd23b03d98bf1deb6d96c8a9451870c134ed7493ac2ddd43ab2062b7"
+        }
+      ]
+    },
+    {
+      "criterion": "host-only integration boundary, no invented end-to-end savings",
+      "evidence": [
+        {
+          "path": "data-collection/native-model-host-boundary-1480.json",
+          "sha256": "8dd87ccf2d94295589d2526bd4275fb4e22db66aeaf414001e1d98c1aec620e5"
+        },
+        {
+          "path": "data-collection/native-model-main-alignment-1480.json",
+          "sha256": "6f88848867fa3b9ce20e7ed33343ae7e13cbb5fedd3c2d8a911db7ad8327c309"
+        }
+      ]
+    }
+  ],
+  "new_cache_delta": {
+    "reason": "Exact independently consumed .cjs host paths were rejected by suffix policy; original failed evidence preserved. Allowing the suffix does not exclude arbitrary files or override real native consumers.",
+    "sources": {
+      "tools/editor_native_cache.py": "7466bdfb9ffdd560fa09cf0279ad5550a4e547c7b6436fb4e8ee2cdcacdaa502",
+      "tests/editor/test_native_host_inputs.py": "2f1f1bc6e3c3c82780d31921c0fd5a999211f1beb5c279a61fa6a61b68b44589",
+      "tools/native_host_inputs.json": "387c61b57b99a82eb76620c5ca4065e6d16bf5c17f81c5315f1d88d12750bb04"
+    },
+    "original_failure": "data-collection/native-model-host-boundary-before-1480.json"
+  },
+  "remaining_parent": [
+    "actual native model producer integration with approved routing",
+    "equal-task Git/native token and elapsed-time comparison",
+    "real remote node deployment and250in-flight test",
+    "whole document/issue/engine integration andAA rendered baseline"
+  ],
+  "limits": [
+    "Raw last/total are provider observations with unknown completeness, not final invoice or inferred savings.",
+    "One real capability call took129.7s; not a latency performance promise.",
+    "No actual production configuration, renderer capability or user data changed."
+  ],
+  "retained_resources": "Current task tree/branch/private trial intent and original failures needed for delivery and next producer integration; verified test TemporaryDirectories removed by harness. Historical policy-blocked resources remain retained without retry."
+}

@@ -1,0 +1,103 @@
+{
+  "request_id": "native-model-proposal-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+  "source_revision": "051f9af590dd3672a8885d2a64ce1f545a607e2a",
+  "scope": "deterministic local wrapper and owned-process validation; no real model invocation",
+  "source_files": [
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md",
+      "sha256": "23ba0c424bb766aeb6273de923bb4db2e0ffb790ec7c325c2770d00ec8b782d2"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+      "sha256": "7ebfb1d7847c65ec7678628b053397f0ac72adbbe699572500d1584e1e7cf9fa"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs",
+      "sha256": "be12a58ec33dfd87c157bd3d266340301944d9de38c48d93d8cddb1e27339fe2"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+      "sha256": "2863c5a72f335cdca7cb0f2cdbcc215ef39a7687f67fa41d93e2d76fd5d2f3b5"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs",
+      "sha256": "e918d8c845a1d6394e6a1ff2fccefbb0a2a69219511946fadcda1c236be84e6f"
+    }
+  ],
+  "contract_reference": {
+    "path_base": "approved host-private evidence root D:/GongGong/data-collection/receipts/duobao-1382/codex-local-protocol-0169",
+    "path": "v2/ThreadTokenUsageUpdatedNotification.json",
+    "sha256": "aba4f6c7e4a19b2b842c08ee793b57000c07dafd57b922ad0d8e7c76609108c2",
+    "packaged": false
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "native-http-input-boundary",
+    "lessons": [],
+    "unavailable": []
+  },
+  "runtime": {
+    "platform": "Windows",
+    "node": "v24.22.1",
+    "python": "3.14.3"
+  },
+  "validation": [
+    {
+      "command": "node --test customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs",
+      "exit_code": 0,
+      "tests": 15,
+      "passed": 15,
+      "failed": 0,
+      "coverage": [
+        "actual Subscription early and late notifications",
+        "duplicate wrong-thread wrong-turn negative malformed overflow usage fails closed",
+        "missing usage unknown",
+        "disconnect no replay",
+        "strict output bindings and duplicate/outside paths",
+        "original notification callback and context compaction rebuild"
+      ]
+    },
+    {
+      "command": "py -X utf8 -m unittest discover -s customizations/components/tianxuan/sinan-workorders -p test_native_model_host.py -v",
+      "exit_code": 0,
+      "tests": 5,
+      "passed": 5,
+      "failed": 0,
+      "coverage": [
+        "actual owned-process descendant delayed write absent after success",
+        "timeout",
+        "cancellation",
+        "hostfault exit 7",
+        "private response duplicate path rejected"
+      ]
+    }
+  ],
+  "original_failures": [
+    {
+      "action": "initial read of tools/ainative/native_check_runner.py",
+      "observed": "path not found",
+      "resolution": "rg located actual customizations/components/tianxuan/duobao/native_check_runner.py; implementation uses owned_process directly",
+      "test_failure": false
+    }
+  ],
+  "limitations": [
+    "No production grant or actual model usage evidence",
+    "No end-to-end efficiency or parent #1444 acceptance claim",
+    "No native file producer integration",
+    "Late usage wait bounded at 50ms; missing remains unknown",
+    "Remote cancellation unknown",
+    "Linux and build-boundary verification assigned to root"
+  ],
+  "cleanup": {
+    "private_process_inputs_outputs": "TemporaryFile closed automatically",
+    "test_probe_directories": "TemporaryDirectory removed after descendant closure checks",
+    "persistent_artifacts": "only implementation tests documentation and receipt; retained for root delivery",
+    "other_task_resources": "untouched"
+  },
+  "delivery": {
+    "commit_push_merge": "parent responsibility; not performed",
+    "real_model_calls": 0,
+    "network_calls": 0
+  }
+}

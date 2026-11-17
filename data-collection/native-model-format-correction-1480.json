@@ -1,0 +1,21 @@
+{
+  "issue": 1480,
+  "request_id": "native-model-proposal-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+  "change": "Python formatting/import ordering and removal of unused json; no production AST behavior change. Original author report retained unchanged.",
+  "validation": {
+    "ruff": "All checks passed",
+    "mypy": "Success: no issues found in 1 source file",
+    "actual_owned_host_tests": {
+      "tests": 5,
+      "passed": 5,
+      "duration_seconds": 6.796,
+      "scope": "success, timeout, cancellation, host fault and malformed response with actual descendant closure; no provider calls"
+    }
+  },
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "2c848a89c0db30dc6705dcf2a485be805ba4b8151b63df51ffc9045b7b997dd0",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "ac55e250ef330aa95c9307ba3138ca78b9e1499802704293ee4e28a7cbda3502"
+  },
+  "prior_report_sha256": "fedd8a7123f18bf769ee64b55aafac30897788b35121a0868df164fcdf066ea4"
+}
