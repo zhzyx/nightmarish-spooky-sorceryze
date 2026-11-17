@@ -1,0 +1,30 @@
+{
+  "issue": 1480,
+  "request_id": "native-model-proposal-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+  "state": "predeclared capability/quality trial; no provider generation yet",
+  "authority": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+  "requested_model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "selection": "Existing local operator default read from config; capability evaluation only, not a new admitted Sinan production profile.",
+  "max_automatic_model_attempts": 1,
+  "timeout_seconds": 180,
+  "request": {
+    "request_id": "native-model-live-capability-1480-v1",
+    "task": "Implement select_versions(base, changes) as a pure Python function. Return one proposed module_map.py file. Do not mutate either input.",
+    "context": "base and changes are dictionaries from nonempty ASCII module IDs matching [a-z][a-z0-9_]* to lowercase 64-character hexadecimal revision strings. In changes, None removes a module. Unknown removals raise ValueError. Reject malformed IDs/digests and non-dictionaries with ValueError. A change may add or replace a valid module. Return a new dictionary with sorted keys. No imports beyond re, no I/O, no subprocess, no dynamic code execution.",
+    "write_allowlist": [
+      "module_map.py"
+    ],
+    "acceptance": "Independent deterministic checks: valid add/replace/remove; empty inputs; sorted output keys; inputs unchanged; malformed IDs/digests, non-dicts and unknown deletion reject. Exact function select_versions, plain Python standard library only."
+  },
+  "measurement": [
+    "raw provider usage or null",
+    "source/config/input/output digests",
+    "actual observed model from service metadata or null",
+    "host wall time",
+    "real owned process closure",
+    "independent accepted output quality"
+  ],
+  "limits": "Not an A/B comparison, formal production grant, remote executor or whole AI-efficiency acceptance. No automatic replay of unknown generation. Credentials stay local; public profile contains no environment/account identity."
+}

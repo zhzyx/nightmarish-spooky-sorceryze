@@ -1,0 +1,410 @@
+{
+  "issue": 1480,
+  "request_id": "native-model-proposal-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+  "kind": "single actual capability trial with independent output quality",
+  "terminal": {
+    "request_id": "native-model-live-capability-1480-v1",
+    "input_digest": "82efe197c346b10f9a64af05198c97714d34fdf2b1ccc267ecd048964f1a3ae4",
+    "config_digest": "1ce4cc2dc04f69171c4e82ca83bc907f074b49316de9c71cb5abe5f307e25066",
+    "requested_model": "gpt-6-astra",
+    "status": "proposed",
+    "proposal": {
+      "request_id": "native-model-live-capability-1480-v1",
+      "input_digest": "82efe197c346b10f9a64af05198c97714d34fdf2b1ccc267ecd048964f1a3ae4",
+      "summary": "Proposes a pure function that validates inputs, applies changes without mutation, and returns sorted keys.",
+      "files": [
+        {
+          "path": "module_map.py",
+          "content": "import re\n\n\ndef select_versions(base, changes):\n    \"\"\"Return a sorted module mapping without modifying either input.\n\n    Raise ValueError for invalid mappings, IDs, revisions, or removals.\n    \"\"\"\n    if not isinstance(base, dict) or not isinstance(changes, dict):\n        raise ValueError(\"base and changes must be dictionaries\")\n\n    def validate_id(module_id):\n        if not isinstance(module_id, str) or re.fullmatch(\n            r\"[a-z][a-z0-9_]*\", module_id\n        ) is None:\n            raise ValueError(\"Invalid module ID\")\n\n    def validate_revision(revision):\n        if not isinstance(revision, str) or re.fullmatch(\n            r\"[0-9a-f]{64}\", revision\n        ) is None:\n            raise ValueError(\"Invalid revision digest\")\n\n    result = {}\n    for module_id, revision in base.items():\n        validate_id(module_id)\n        validate_revision(revision)\n        result[module_id] = revision\n\n    for module_id, revision in changes.items():\n        validate_id(module_id)\n        if revision is None:\n            if module_id not in result:\n                raise ValueError(\"Cannot remove an unknown module\")\n            del result[module_id]\n        else:\n            validate_revision(revision)\n            result[module_id] = revision\n\n    return {module_id: result[module_id] for module_id in sorted(result)}\n"
+        }
+      ]
+    },
+    "output_digest": "db8d88791f8f65afd11d06ed3ed368c6b2523b88ecb586ec62c3bee8e092bbfc",
+    "usage": {
+      "thread_id": "01a1eb8e-3193-72b0-b7eb-ec0a37c16dc8",
+      "turn_id": "01a1eb8e-31da-7c91-a123-f7545e369e82",
+      "observed_model": "gpt-6-astra",
+      "raw": {
+        "total": {
+          "totalTokens": 6774,
+          "inputTokens": 6174,
+          "cachedInputTokens": 0,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 600,
+          "reasoningOutputTokens": 164
+        },
+        "last": {
+          "totalTokens": 6774,
+          "inputTokens": 6174,
+          "cachedInputTokens": 0,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 600,
+          "reasoningOutputTokens": 164
+        },
+        "modelContextWindow": 258400
+      },
+      "status": "observed",
+      "updates": 1,
+      "source": "thread/tokenUsage/updated",
+      "normalized_usage": null
+    },
+    "execution_authority": false,
+    "process_tree_closed": true,
+    "process_exit_code": 0,
+    "process_reasons": [],
+    "elapsed_ms": 129422,
+    "remote_cancellation": "unknown"
+  },
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "6ea10fa9593ff47ba51df6c96d7cf84cc523b26b801c1fabbae002e9c3e55bfc",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77e708992333bd8d8ff7a354da9791c948836442e9d3c3be1347e06c52ffb89f",
+    "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md": "9230b84c9088c4e52aa859fb012f329ab6c8a4fad27f1c19e76327895faeaf69",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "12153a1f2388b5eb220f767652120fbaa446fb082a2b756415c341c9a5c6f655",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "190a973c76d5ad15fa69b46abfcf1218967c88543961285ad823e29735378b4f",
+    "tools/codex_cli/subscription_session.js": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2",
+    "tools/ainative/owned_process.py": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78",
+    "tools/editor_provenance_process.py": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+    "design-docs/native-model-proposal-20261118.md": "a4459b1bcce19964306bf3e61c7798c75117b53e4360dcecd8a8bed057caf7ca"
+  },
+  "wall_seconds": 129.67825759999687,
+  "automatic_replays": 0,
+  "limits": "Not an A/B comparison, production model admission, accepted engine feature or whole AI-efficiency claim. Raw counters retain provider semantics; no inferred normalized token totals.",
+  "quality": {
+    "passed": true,
+    "checks": 80,
+    "cases": [
+      {
+        "case": "empty",
+        "passed": true
+      },
+      {
+        "case": "add replace remove",
+        "passed": true
+      },
+      {
+        "case": "stable sorted copy",
+        "passed": true
+      },
+      {
+        "case": "bad base 0",
+        "passed": true
+      },
+      {
+        "case": "bad changes 0",
+        "passed": true
+      },
+      {
+        "case": "bad base 1",
+        "passed": true
+      },
+      {
+        "case": "bad changes 1",
+        "passed": true
+      },
+      {
+        "case": "bad base 2",
+        "passed": true
+      },
+      {
+        "case": "bad changes 2",
+        "passed": true
+      },
+      {
+        "case": "bad base 3",
+        "passed": true
+      },
+      {
+        "case": "bad changes 3",
+        "passed": true
+      },
+      {
+        "case": "bad base 4",
+        "passed": true
+      },
+      {
+        "case": "bad changes 4",
+        "passed": true
+      },
+      {
+        "case": "bad base 5",
+        "passed": true
+      },
+      {
+        "case": "bad changes 5",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 0",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 0",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 1",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 1",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 2",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 2",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 3",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 3",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 4",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 4",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 5",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 5",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 6",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 6",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 7",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 7",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 8",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 8",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 9",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 9",
+        "passed": true
+      },
+      {
+        "case": "bad base ID 10",
+        "passed": true
+      },
+      {
+        "case": "bad changes ID 10",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 0",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 1",
+        "passed": true
+      },
+      {
+        "case": "bad change digest 1",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 2",
+        "passed": true
+      },
+      {
+        "case": "bad change digest 2",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 3",
+        "passed": true
+      },
+      {
+        "case": "bad change digest 3",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 4",
+        "passed": true
+      },
+      {
+        "case": "bad change digest 4",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 5",
+        "passed": true
+      },
+      {
+        "case": "bad change digest 5",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 6",
+        "passed": true
+      },
+      {
+        "case": "bad change digest 6",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 7",
+        "passed": true
+      },
+      {
+        "case": "bad change digest 7",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 8",
+        "passed": true
+      },
+      {
+        "case": "bad change digest 8",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 9",
+        "passed": true
+      },
+      {
+        "case": "bad change digest 9",
+        "passed": true
+      },
+      {
+        "case": "bad base digest 10",
+        "passed": true
+      },
+      {
+        "case": "bad change digest 10",
+        "passed": true
+      },
+      {
+        "case": "unknown remove",
+        "passed": true
+      },
+      {
+        "case": "valid changes before unknown remove preserve input",
+        "passed": true
+      },
+      {
+        "case": "permutation 0",
+        "passed": true
+      },
+      {
+        "case": "permutation 1",
+        "passed": true
+      },
+      {
+        "case": "permutation 2",
+        "passed": true
+      },
+      {
+        "case": "permutation 3",
+        "passed": true
+      },
+      {
+        "case": "permutation 4",
+        "passed": true
+      },
+      {
+        "case": "permutation 5",
+        "passed": true
+      },
+      {
+        "case": "permutation 6",
+        "passed": true
+      },
+      {
+        "case": "permutation 7",
+        "passed": true
+      },
+      {
+        "case": "permutation 8",
+        "passed": true
+      },
+      {
+        "case": "permutation 9",
+        "passed": true
+      },
+      {
+        "case": "permutation 10",
+        "passed": true
+      },
+      {
+        "case": "permutation 11",
+        "passed": true
+      },
+      {
+        "case": "permutation 12",
+        "passed": true
+      },
+      {
+        "case": "permutation 13",
+        "passed": true
+      },
+      {
+        "case": "permutation 14",
+        "passed": true
+      },
+      {
+        "case": "permutation 15",
+        "passed": true
+      },
+      {
+        "case": "permutation 16",
+        "passed": true
+      },
+      {
+        "case": "permutation 17",
+        "passed": true
+      },
+      {
+        "case": "permutation 18",
+        "passed": true
+      },
+      {
+        "case": "permutation 19",
+        "passed": true
+      }
+    ],
+    "source_sha256": "0cf53d6f1688caabd008679d587e23b025a78734fcb5685d300f21ebf76d427b",
+    "evaluator_sha256": "786d85405db27263df1e5d45ace1dfc96668841613491e4deae90fa32eae2440",
+    "review": "Root independently inspected generated AST/source and evaluated fixed predeclared pure-function contract. Output was not installed, published as engine content or granted execution authority."
+  },
+  "original_private_result_sha256": "2499ea52a54b5dfbe7c3fa715dcaff5634cb11b54a9615f05f01c936a7aefd39",
+  "metering": {
+    "source": "provider thread/tokenUsage/updated",
+    "observation_window_after_success_ms": 50,
+    "completeness": "unknown",
+    "normalization": null,
+    "warning": "Preserves raw last/total only. Not assumed additive or billing finality; no savings comparison from one trial."
+  }
+}

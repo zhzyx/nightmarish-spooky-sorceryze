@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-model-usage-evidence",
+  "event_id": "learn-188ff99a045c9f434a19616f3c1afc7d3ae7f92cfe275c1924fa12bcb26f6862",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480",
+  "occurred_at": "2026-11-17T22:06:32.763598+00:00",
+  "evidence_refs": [
+    "codex-intake-1480-20261117"
+  ],
+  "payload": {
+    "scope": "model-usage-evidence",
+    "lesson": "separate-usage-from-proposal-acceptance",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Preserve already identity-bound provider usage independently of proposal acceptance; reject output without discarding known costs, and keep missing/unacknowledged usage unknown rather than estimating or retrying.",
+      "when": "A trusted host observes provider usage with acknowledged thread/turn while a later proposal validation or terminal outcome fails.",
+      "counterexample": "Early unacknowledged turn events, forced termination without durable response and incomplete late-event windows cannot prove billable totals; success-only samples bias comparisons.",
+      "trial_plan": "At the next actual consumer integration, inject a bound failure and malformed output plus unacknowledged-turn negative control; assert durable failure receipt retains only known raw usage with no output authority and no new generation attempt. Verify exact consumer receipt, not observer-only unit output."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-model-review-1480.json",
+        "sha256": "272dfc0cea20d53916c0575b4dd99de0e2e8ee1e355b3594c7ff0ec4342015a9"
+      },
+      {
+        "path": "data-collection/native-model-usage-correction-1480.json",
+        "sha256": "3fc0ca7b3f544332adebe9d2cd043467ae17e9ac4a6d76240ad6ec29485ac3a6"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-model-proposal-20261118/codex-intake-1480-20261117.json",
+      "sha256": "65c18c802d9451655fe96de2e4a1883595751dd81cb516769629018d797beadd"
+    }
+  },
+  "sha256": "42cc9969a2d9c091e2f0df149301b171eb4018eea5927c71def0b6c8dd0aea1e"
+}

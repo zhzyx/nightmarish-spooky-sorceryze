@@ -1,0 +1,43 @@
+{
+  "issue": 1480,
+  "passed": false,
+  "native_sources": 9382,
+  "native_sources_sha256": "b0a22fa56b3b57595b5afe483066bc4f710a5362b092e10ebe02e90566d6a772",
+  "module_inputs": [
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs"
+  ],
+  "overlap": [],
+  "inventory_before": 150,
+  "inventory_after": 154,
+  "policy_sha256": "387c61b57b99a82eb76620c5ca4065e6d16bf5c17f81c5315f1d88d12750bb04",
+  "checks": [
+    {
+      "command": "py -X utf8 tests/editor/test_native_host_inputs.py",
+      "exit_code": 1,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: invalid host input inventory\nFull-tree identity required: invalid host input inventory\n..E\n======================================================================\nERROR: test_repository_host_inventory_has_zero_overlap_with_actual_scons_graph (__main__.HostInputTests.test_repository_host_inventory_has_zero_overlap_with_actual_scons_graph)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"D:\\GongGong-work\\native-model-proposal-20261118\\tools\\editor_native_cache.py\", line 137, in host_inputs\n    return validate_host_inventory(raw)\n  File \"D:\\GongGong-work\\native-model-proposal-20261118\\tools\\editor_native_cache.py\", line 111, in validate_host_inventory\n    raise ValueError(\"exact host input paths required\")\nValueError: exact host input paths required\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"D:\\GongGong-work\\native-model-proposal-20261118\\tests\\editor\\test_native_host_inputs.py\", line 100, in test_repository_host_inventory_has_zero_overlap_with_actual_scons_graph\n    configured = cache.host_inputs(ROOT)\n  File \"D:\\GongGong-work\\native-model-proposal-20261118\\tools\\editor_native_cache.py\", line 139, in host_inputs\n    raise CacheUnavailable(\"invalid host input inventory\") from error\neditor_native_cache.CacheUnavailable: invalid host input inventory\n\n----------------------------------------------------------------------\nRan 3 tests in 3.943s\n\nFAILED (errors=1)\n"
+    }
+  ],
+  "actual_scons_command": [
+    "py",
+    "-X",
+    "utf8",
+    "-m",
+    "SCons",
+    "-n",
+    "-Q",
+    "gonggong_native_probe=D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-scons-probe.json",
+    "accesskit=no",
+    "angle=no",
+    "d3d12=no",
+    "debug_symbols=no",
+    "dev_mode=yes",
+    "platform=windows",
+    "target=editor"
+  ],
+  "seconds": 9.346315400005551,
+  "compilation_performed": false,
+  "limits": "Windows actual SCons consumer graph and cache regression; no renderer performance or AA-quality acceptance."
+}
