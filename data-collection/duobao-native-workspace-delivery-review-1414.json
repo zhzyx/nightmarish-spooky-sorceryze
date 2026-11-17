@@ -1,0 +1,209 @@
+{
+  "schema": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1414",
+  "reviewer": "independent native child agent /root/sinan_10456eacc32aa763",
+  "reviewed_at": "2026-11-17T10:13:28.941934+00:00",
+  "verdict": "approve",
+  "scope": "Supplemental precise review after accepted #1409 integration; config-only adjustment preserving immutable learning event. Prior product approval retained only for exact bindings.",
+  "root": "D:\\GongGong-work\\duobao-native-workspace-20261117",
+  "head": "154724525dff7fef718ff8c2f5afc3abb36bf238",
+  "head_subject": "Merge pull request #1412 from zhzyx/codex/submit/Sail-Li/1409/6ed7fd3ec75b5ab2936d9f4b2624804319cd25cc",
+  "source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.py",
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "bytes": 15265,
+      "git_blob_raw": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "git_blob_filtered": "8e6334622cd69d6a710eed9786ce1c879588fff1",
+      "index_blob": "8e6334622cd69d6a710eed9786ce1c879588fff1"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace_cli.py",
+      "sha256": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+      "bytes": 2500,
+      "git_blob_raw": "829c35b6d182e1fb1a03961ba680f6bfb00c498e",
+      "git_blob_filtered": "829c35b6d182e1fb1a03961ba680f6bfb00c498e",
+      "index_blob": "829c35b6d182e1fb1a03961ba680f6bfb00c498e"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_workspace.py",
+      "sha256": "e2492c64842db53a5c89748276f00f6af9ce5629f6be8d506368e7f90efa4d56",
+      "bytes": 12049,
+      "git_blob_raw": "6884801db58a40db44956d5a185e0356833f8971",
+      "git_blob_filtered": "6884801db58a40db44956d5a185e0356833f8971",
+      "index_blob": "6884801db58a40db44956d5a185e0356833f8971"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_workspace.md",
+      "sha256": "9e88d81dacd6e8b44d2209b481413a265648699dc143629aa787aab8cc1da6a8",
+      "bytes": 6119,
+      "git_blob_raw": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6",
+      "git_blob_filtered": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6",
+      "index_blob": "3fc43aa50f0f835766e87b99aa73fec84e68e9c6"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_store.py",
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "bytes": 15645,
+      "git_blob_raw": "1503687c9add396cd2ff7a9902f21f263431e997",
+      "git_blob_filtered": "1503687c9add396cd2ff7a9902f21f263431e997",
+      "index_blob": "1503687c9add396cd2ff7a9902f21f263431e997"
+    }
+  ],
+  "configuration_binding": {
+    "path": "pyproject.toml",
+    "sha256": "914135a6346e063db7a1c7871910210b2f2919fa299e4b09aee1c13a99fe2ef5",
+    "bytes": 4854,
+    "git_blob_raw": "a590d6e2a331bd350759ce15c5baf8d3223cdff2",
+    "git_blob_filtered": "a590d6e2a331bd350759ce15c5baf8d3223cdff2",
+    "index_blob": "98258d91224c73765f56f859d43e3f15a44ca3ee"
+  },
+  "prior_review_bindings": [
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\workspace-fixed-review.json",
+      "sha256": "dc4cec7cb87aac24cd28bb17e5d4e8d1f7df611a4cf490eb3a168fe723d0ccdb",
+      "bytes": 9051,
+      "git_blob_raw": "135b46d23ba6cf4c783b96b64a336acebf703b29",
+      "git_blob_filtered": "b81d6675219ceb6d4a960f2bf3581489d85e68d0"
+    },
+    {
+      "path": "data-collection/duobao-native-workspace-review-1414.json",
+      "sha256": "d8bd775a26f57f89a6db6b5e35c6593765a93dfc686508d19e30c8a3cfa9eb50",
+      "bytes": 8917,
+      "git_blob_raw": "b81d6675219ceb6d4a960f2bf3581489d85e68d0",
+      "git_blob_filtered": "b81d6675219ceb6d4a960f2bf3581489d85e68d0",
+      "index_blob": "b81d6675219ceb6d4a960f2bf3581489d85e68d0"
+    }
+  ],
+  "learning_event_binding": {
+    "path": "gonggong-diting-data/events/gonggong-workspace/learning-native-storage-resource-boundary/learn-610996a7d6b4721252da94e26ce31edd5e72312911ad9aab5e8e9fc815bfb7fe.json",
+    "sha256": "1f3dd1d3b46b99086b5e0b0f991f7a626d7c78361678b8a4ee9d97f8f6ab9b5e",
+    "bytes": 2118,
+    "git_blob_raw": "bea2f4918eeaa0b53be148eedf942f701def46ef",
+    "git_blob_filtered": "bea2f4918eeaa0b53be148eedf942f701def46ef",
+    "index_blob": "bea2f4918eeaa0b53be148eedf942f701def46ef"
+  },
+  "integrated_log_binding": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\workspace-integrated-all.log",
+    "sha256": "ae2c7c56cd5f3b1df3b6628dae7ae768cc6cd8eccf885f0e933a1c69278b3262",
+    "bytes": 10081,
+    "git_blob_raw": "3085697d02a955d9f2e83a951e109e8aa465610b",
+    "git_blob_filtered": "4b8ae071acb48e0ee200aba355772717ae80bd65"
+  },
+  "findings": [],
+  "resolved_findings": [
+    {
+      "id": "S1",
+      "observed": "Initial nonmutating codespell failed on newly added pyproject.toml comment at line64: disjointness ==> disjointedness.",
+      "resolution": "Parent changed only comment to Preserve the exact recorded #1414 lesson and its checksum.",
+      "verification": "Same checker rerun with source writes disabled: exit0 and all checked bytes/Git bindings unchanged."
+    }
+  ],
+  "verification": {
+    "product_binding_match": true,
+    "product_index_match": true,
+    "config_semantics": "Relative to HEAD only one exact skip path was added; all other parsed TOML content identical. No wildcard or directory-wide exclusion.",
+    "exact_skip": "gonggong-diting-data/events/gonggong-workspace/learning-native-storage-resource-boundary/learn-610996a7d6b4721252da94e26ce31edd5e72312911ad9aab5e8e9fc815bfb7fe.json",
+    "event_worktree_equals_original_index_bytes": true,
+    "event_internal_checksum": "6e2ecef35de952535645b152b6de0efdf78fffff18058852e214f963dba3230b",
+    "learning_state": {
+      "reject-known-conflict-before-loading": {
+        "lesson": "reject-known-conflict-before-loading",
+        "revision": 1,
+        "head": "6e2ecef35de952535645b152b6de0efdf78fffff18058852e214f963dba3230b",
+        "state": "candidate",
+        "method": {
+          "method": "Reject conflicts determined solely by immutable/base and current-head identities before decoding an unneeded revision, while preserving the same atomic transaction.",
+          "when": "A bounded execution adapter delegates conservative unknown-read submissions to a broader native content store.",
+          "counterexample": "Known object read sets need the latest object map to test disjointness; an outside-transaction preflight alone cannot prevent concurrent drift.",
+          "trial_plan": "At future adoption use a small snapshot budget and a legitimately grown current head; spy on decoding, require conflict before grown metadata is loaded and unchanged database; retain known-read merge and idempotency regressions."
+        },
+        "evidence": [
+          {
+            "path": "data-collection/duobao-native-workspace-review-1414.json",
+            "sha256": "d8bd775a26f57f89a6db6b5e35c6593765a93dfc686508d19e30c8a3cfa9eb50"
+          }
+        ],
+        "origins": [
+          {
+            "path": "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/codex-intake-1414-20261117.json",
+            "sha256": "589e728904230712c08bba1cd8ec577075c77fcd010b011e7a203f2b76a7cfa3"
+          }
+        ]
+      }
+    },
+    "learning_evidence_and_origin_checksums_valid": true,
+    "codespell": {
+      "version": "2.4.2",
+      "module": "codespell_lib._codespell",
+      "module_path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\qa-tools\\codespell_lib\\_codespell.py",
+      "invocation": "main(--ignore-words-list=ENXT, all staged ACMR paths, pyproject.toml)",
+      "paths": [
+        "customizations/components/tianxuan/duobao/native_store.py",
+        "customizations/components/tianxuan/duobao/native_workspace.md",
+        "customizations/components/tianxuan/duobao/native_workspace.py",
+        "customizations/components/tianxuan/duobao/native_workspace_cli.py",
+        "customizations/components/tianxuan/duobao/test_native_workspace.py",
+        "data-collection/duobao-native-workspace-1414.json",
+        "data-collection/duobao-native-workspace-review-1414.json",
+        "data-collection/duobao-native-workspace-review-original-1414.json",
+        "data-collection/duobao-native-workspace-server-1414.json",
+        "data-collection/requests/duobao-native-workspace-20261117/f0690624-5f94-439d-83c7-378498335cf3.json",
+        "design-docs/duobao-native-workspace-20261117.md",
+        "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/codex-intake-1414-20261117.json",
+        "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-41c1a4bbaf5740d29d13060ea3adeca8.json",
+        "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-7d8f34d557654a5789ae2340aba2e833.json",
+        "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-8e7933633118449d9bb1d8201823a821.json",
+        "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-920b8a4ae659434b88861636cb9907ea.json",
+        "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-e2083e2b4cb24627b29a483ab41f316e.json",
+        "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/dispatch-f71de5f9ffeb41c7bf9ec48c6446668f.json",
+        "gonggong-diting-data/events/gonggong-workspace/duobao-native-workspace-20261117/kuafu-978eeb614d7fd1c316cc695fd143ce3348e39aa8.json",
+        "gonggong-diting-data/events/gonggong-workspace/learning-native-storage-resource-boundary/learn-610996a7d6b4721252da94e26ce31edd5e72312911ad9aab5e8e9fc815bfb7fe.json",
+        "pyproject.toml"
+      ],
+      "exit_code": 0,
+      "output": "",
+      "nonmutating_override": "unittest.mock.patch parse_options wrapper sets returned options.write_changes=False before invoking unchanged main checker; original config otherwise intact. Patch restored automatically.",
+      "override_observed": [
+        {
+          "configured_write_changes": true,
+          "effective_write_changes": false
+        }
+      ],
+      "all_checked_files_sha_and_git_bindings_unchanged": true
+    },
+    "integrated_suite": {
+      "source": "parent actual log inspected; tests not repeated",
+      "tests": 66,
+      "passed": 64,
+      "skipped": 2,
+      "summary": "OK (skipped=2)",
+      "skip_lines": [
+        "test_links_rejected (test_native_workspace.WorkspaceTests.test_links_rejected) ... skipped \"Host cannot create symlink: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\\\\\Users\\\\\\\\ROG\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmpwgdeom7t\\\\\\\\native.sqlite' -> 'C:\\\\\\\\Users\\\\\\\\ROG\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmpwgdeom7t\\\\\\\\work\\\\\\\\app\\\\\\\\link'\"",
+        "test_nonregular_file_rejected (test_native_workspace.WorkspaceTests.test_nonregular_file_rejected) ... skipped 'POSIX fifo test'"
+      ]
+    },
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "lesson": "bind-consumer-release",
+      "revision": 17,
+      "application": "Independently recomputed exact product, config, immutable event and evidence bindings; HEAD update does not replace exact file approval.",
+      "counterexample": "This supplemental review is not downstream business acceptance."
+    }
+  },
+  "limitations": [
+    "Approval binds pyproject working-tree bytes; pyproject index blob still differs and must be staged for delivery.",
+    "Two platform skips remain unexecuted cases.",
+    "No production integration, commit, push, deploy or issue closure claimed.",
+    "Learning event is candidate, not verified reusable method."
+  ],
+  "cleanup": {
+    "source_mutations": false,
+    "bytecode_disabled": true,
+    "in_memory_override_restored": true,
+    "temporary_files_created": false,
+    "retained": [
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\workspace-delivery-review.json"
+    ]
+  }
+}

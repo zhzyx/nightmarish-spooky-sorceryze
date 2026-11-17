@@ -61,6 +61,9 @@ check-hidden = true
 quiet-level = 3
 builtin = ["clear", "rare", "en-GB_to_en-US"]
 skip = [
+	# Preserve exact #1414 learning and review records with their checksums.
+	"data-collection/duobao-native-workspace-delivery-review-1414.json",
+	"gonggong-diting-data/events/gonggong-workspace/learning-native-storage-resource-boundary/learn-610996a7d6b4721252da94e26ce31edd5e72312911ad9aab5e8e9fc815bfb7fe.json",
 	".mailmap",
 	"*.desktop",
 	"*.gitignore",

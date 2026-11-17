@@ -1,0 +1,20 @@
+{
+  "issue_number": 1414,
+  "request_id": "duobao-native-workspace-20261117",
+  "environment": "existing Linux server temporary isolated directory",
+  "python": "3.12.3",
+  "source_sha256": {
+    "native_store.py": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+    "native_workspace.py": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+    "native_workspace_cli.py": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+    "test_native_workspace.py": "e2492c64842db53a5c89748276f00f6af9ce5629f6be8d506368e7f90efa4d56"
+  },
+  "tests": 12,
+  "passed": true,
+  "skipped": 1,
+  "output": "test_cli_empty_path_roundtrip_restart (test_native_workspace.WorkspaceTests.test_cli_empty_path_roundtrip_restart) ... ok\ntest_cross_module_atomic_success (test_native_workspace.WorkspaceTests.test_cross_module_atomic_success) ... ok\ntest_delta_pagination_binary_empty_binding_and_transfer (test_native_workspace.WorkspaceTests.test_delta_pagination_binary_empty_binding_and_transfer) ... ok\ntest_links_rejected (test_native_workspace.WorkspaceTests.test_links_rejected) ... ok\ntest_nonregular_file_rejected (test_native_workspace.WorkspaceTests.test_nonregular_file_rejected) ... ok\ntest_paths_aliases_and_existing_destination (test_native_workspace.WorkspaceTests.test_paths_aliases_and_existing_destination) ... ok\ntest_resource_limits (test_native_workspace.WorkspaceTests.test_resource_limits) ... ok\ntest_scan_unknown_module_and_directory_budget (test_native_workspace.WorkspaceTests.test_scan_unknown_module_and_directory_budget) ... ok\ntest_source_corruption_and_write_failure_unpublished (test_native_workspace.WorkspaceTests.test_source_corruption_and_write_failure_unpublished) ... ok\ntest_unknown_reads_reject_drift_before_decoding_new_head (test_native_workspace.WorkspaceTests.test_unknown_reads_reject_drift_before_decoding_new_head) ... ok\ntest_unrelated_drift_pins_and_atomic_conflict (test_native_workspace.WorkspaceTests.test_unrelated_drift_pins_and_atomic_conflict) ... ok\ntest_windows_junction_rejected (test_native_workspace.WorkspaceTests.test_windows_junction_rejected) ... skipped 'Windows junction test'\n\n----------------------------------------------------------------------\nRan 12 tests in 3.738s\n\nOK (skipped=1)\n",
+  "seconds": 4.003882657008944,
+  "temporary_directory_removed": true,
+  "server_services_changed": false,
+  "limits": "Filesystem and CLI semantics only; no model/token/production capacity claims"
+}

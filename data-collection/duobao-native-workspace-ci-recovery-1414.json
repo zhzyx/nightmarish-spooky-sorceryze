@@ -1,0 +1,8 @@
+{
+  "issue": 1414,
+  "bug": 1416,
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44063492232",
+  "recovery": "Retain original committed review and aggregate bytes. Exclude only the exact immutable review path from spelling rewrites, alongside the existing exact learning event exclusion. Product sources remain unchanged.",
+  "gate_observation": "Attempt to re-encode committed review was rejected by immutable collection guard; no submission occurred. Original bytes restored from current HEAD.",
+  "prior_review": "data-collection/duobao-native-workspace-delivery-review-1414.json"
+}
