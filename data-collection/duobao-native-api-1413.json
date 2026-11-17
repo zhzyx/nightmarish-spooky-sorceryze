@@ -1,0 +1,153 @@
+{
+  "issue_number": 1413,
+  "request_id": "duobao-native-api-20261117",
+  "state": "independently_reviewed_pending_delivery",
+  "initial_implementation": {
+    "issue": 1413,
+    "parent_issue": 1382,
+    "request_id": "duobao-native-api-20261117",
+    "authorization": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "worker_role": "implementation; independent review and delivery owned by parent",
+    "path_base": "repository root",
+    "placement": "host_tool",
+    "source_sha256": {
+      "customizations/components/tianxuan/server/api.py": "df63f6def69d551209a950cc9a8fc15b964bbca14f0695ee682cfe39f85b221d",
+      "customizations/components/tianxuan/server/main.py": "4d113d3ce735ea05b6f481e4021cb0d1b9f302ed0c1dd188f6a004b3679d0fde",
+      "customizations/components/tianxuan/server/native_api.py": "ec50b00c99c467657186ede0cbcebfacff6f57dc2da0491a0729ed2192ed3978",
+      "customizations/components/tianxuan/server/test_native_api.py": "f92da82ec88599b1b728a43a6fa79d8ddf4ba572356a7367c3f63c47ac3229fe",
+      "customizations/components/tianxuan/server/NATIVE_API.md": "665146d1118fc859d73d1dcb030ef1689c39ef42e0225f980db53a8917d1cdc0"
+    },
+    "method_recall": {
+      "tenant": "gonggong-workspace",
+      "scope": "content-storage-integrity",
+      "lessons": [],
+      "unavailable": []
+    },
+    "validation": {
+      "python": "D:/GongGong-work/tx-venv/Scripts/python.exe",
+      "python_version": "3.12.14",
+      "fastapi": "0.162.7",
+      "starlette": "1.10.0",
+      "selected_suite": "test_native_api.py test_api.py test_access_control.py test_api_session.py test_api_auth_mode.py and duobao/test_native_store.py",
+      "selected_result": "59 passed in 14.72s",
+      "final_native_rerun": "13 passed in 5.02s",
+      "warning": "Existing Starlette TestClient httpx deprecation warning",
+      "ruff": "check api.py main.py native_api.py test_native_api.py passed",
+      "mypy": "py -m mypy --follow-imports=silent customizations/components/tianxuan/server/native_api.py passed",
+      "diff_check": "passed"
+    },
+    "bindings": {
+      "identity": "existing verified production identity or valid Bearer session only; tenant derived by Tianxuan._tenant_of",
+      "production_admission": "existing REQUIRE_KEYS/TENANT_ID/HTTPS origin middleware remains enabled by existing configuration",
+      "storage": "NativeStore with explicit absolute TIANXUAN_NATIVE_DB",
+      "composition_read": "tenant-filtered private connection SELECT plus digest, pinned closure, revisions and all referenced blob integrity checks",
+      "startup": "explicit STORAGE_MODE=native constructs neither GitService nor MergeQueue nor merge worker; no Git routes registered; Git default fallback tested",
+      "reads": "only explicit null allowed; list including [] rejected; same-module drift conservatively 409; unrelated module changes accepted",
+      "candidate": "no approval/review/check/receipt defaults or evidence endpoints"
+    },
+    "coverage": [
+      "two registered organizations and authenticated sessions",
+      "cross-tenant exact revision/object/composition denial",
+      "X-Actor bypass denial with compatibility environment enabled",
+      "revoked and expired session denial",
+      "viewer writes denied",
+      "strict production rejects ordinary sessions and other-tenant keys",
+      "atomic @batch dependency closure and restart readback",
+      "atomic rollback on drift, conservative read semantics",
+      "parallel same-key replay yields identical result",
+      "same key different content 409",
+      "streaming limit stops after exceeding chunk; advertised oversized body rejected",
+      "batch/entry/decoded/per-object limits; invalid base64",
+      "corrupt blob/composition-read integrity rejection",
+      "actual SQLite lock 503 with Retry-After then successful retry",
+      "native startup with GitService/MergeQueue/subprocess constructors forbidden",
+      "Git mode fallback startup",
+      "blocked identity lookup does not block concurrent health ASGI request"
+    ],
+    "limitations": [
+      "No production installation/switch or commit/push performed by worker",
+      "No trusted read completeness or object-level rebase at HTTP boundary",
+      "Production multi-organization admission remains separate acceptance",
+      "Trusted producer provenance, approval wiring, execution snapshots/context and real consumer/efficiency evidence remain downstream",
+      "Native mode exposes identity/health/native slice; document/issue/model capability unification remains subsequent integration",
+      "Existing production access middleware behavior unchanged; native handler identity and store operations use worker threads",
+      "NativeStore busy timeout remains 30 seconds; lock regression shortens connection timeout in test only",
+      "Private NativeStore composition lookup adapter boundary documented"
+    ],
+    "cleanup": {
+      "pip_install": "Default py3.14 and bundled3.12 lacked pytest; private pip install stopped after discovering existing tx-venv. Process 43020 confirmed terminated via exec exit1; .test-deps never created. No production dependencies changed.",
+      "preserved": "Source, regression tests and evidence retained for independent review; shared task worktree/branch owned by parent; repository test caches outside worker write scope left for parent cleanup."
+    },
+    "acceptance_status": "implementation verified; independent review and full issue delivery pending parent"
+  },
+  "final_source_bindings": [
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "df63f6def69d551209a950cc9a8fc15b964bbca14f0695ee682cfe39f85b221d",
+      "sha256_lf": "1dfb26012ee20c422c800fea6c678aebd8c39095039b3e8f46c37975b0afc7b9",
+      "expected_sha256": "df63f6def69d551209a950cc9a8fc15b964bbca14f0695ee682cfe39f85b221d",
+      "matches": true,
+      "git_blob": "63e736246b54e86b09966cbe91c10338fa66e121"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/main.py",
+      "sha256": "4d113d3ce735ea05b6f481e4021cb0d1b9f302ed0c1dd188f6a004b3679d0fde",
+      "sha256_lf": "3bd80a5d90c8a3cd9859ce0b097a807eff1a9b69f31cbb5429bc92e61421b1c7",
+      "expected_sha256": "4d113d3ce735ea05b6f481e4021cb0d1b9f302ed0c1dd188f6a004b3679d0fde",
+      "matches": true,
+      "git_blob": "57a4d2d47de54c896cb1c370b93f652e475ec278"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_api.py",
+      "sha256": "f402f875e649b58448b67bd2510001c3dbac13becba46f628c9c53581ef56f07",
+      "sha256_lf": "c398ce08a48ef5232ee48d49dc31e972c8efdd5361e2ceaa2307b9cb98be6fce",
+      "expected_sha256": "f402f875e649b58448b67bd2510001c3dbac13becba46f628c9c53581ef56f07",
+      "matches": true,
+      "git_blob": "e5ac6f75d463a8ef6cec4c56ce380377e549529c"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_api.py",
+      "sha256": "e5ce8ce84daab67087c0235283cafc8fc45b41bf044b892a66f79bd94358b499",
+      "sha256_lf": "4a85726e458399def6555fb94e5259815b37ca7f21eea2fc11f721037083ce1e",
+      "expected_sha256": "e5ce8ce84daab67087c0235283cafc8fc45b41bf044b892a66f79bd94358b499",
+      "matches": true,
+      "git_blob": "6034e91b6278a6691a4251be677d3032cd12263b"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/NATIVE_API.md",
+      "sha256": "665146d1118fc859d73d1dcb030ef1689c39ef42e0225f980db53a8917d1cdc0",
+      "sha256_lf": "80daefe4b9e973cf1364bec2a9a2478f2ab6d10be023e3e32dcd8dff7161ca26",
+      "expected_sha256": "665146d1118fc859d73d1dcb030ef1689c39ef42e0225f980db53a8917d1cdc0",
+      "matches": true,
+      "git_blob": "d916af6569bdb944ee1b4347894f83dda8da0f0f"
+    }
+  ],
+  "final_validation": {
+    "native_tests": 17,
+    "independent": "69 tests and 2 subtests passed; six Unicode rejection probes and valid Unicode roundtrip",
+    "server": "63 selected tests passed in isolated network-disabled ephemeral Linux container",
+    "review": "data-collection/duobao-native-api-review-1413.json",
+    "server_receipt": "data-collection/duobao-native-api-server-1413.json"
+  },
+  "defect": {
+    "issue_number": 1415,
+    "observed": "Unpaired Unicode object name caused500; parent before test reproduced; one initial valid surrogate-pair negative was corrected to separated lone surrogates.",
+    "fix": "Validate UTF8 names before any storage call, including null deletions.",
+    "before_log_sha256": "39dd032d3331e14d9c347cf7e68df21a88adf857ae0e7918e4e57db872efd582",
+    "after_log": ".................                                                        [100%]\n============================== warnings summary ===============================\n..\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n17 passed, 1 warning in 6.75s\n"
+  },
+  "limits": [
+    "No production installation/switch or commit/push performed by worker",
+    "No trusted read completeness or object-level rebase at HTTP boundary",
+    "Production multi-organization admission remains separate acceptance",
+    "Trusted producer provenance, approval wiring, execution snapshots/context and real consumer/efficiency evidence remain downstream",
+    "Native mode exposes identity/health/native slice; document/issue/model capability unification remains subsequent integration",
+    "Existing production access middleware behavior unchanged; native handler identity and store operations use worker threads",
+    "NativeStore busy timeout remains 30 seconds; lock regression shortens connection timeout in test only",
+    "Private NativeStore composition lookup adapter boundary documented"
+  ],
+  "cleanup": {
+    "pip_install": "Default py3.14 and bundled3.12 lacked pytest; private pip install stopped after discovering existing tx-venv. Process 43020 confirmed terminated via exec exit1; .test-deps never created. No production dependencies changed.",
+    "preserved": "Source, regression tests and evidence retained for independent review; shared task worktree/branch owned by parent; repository test caches outside worker write scope left for parent cleanup."
+  }
+}

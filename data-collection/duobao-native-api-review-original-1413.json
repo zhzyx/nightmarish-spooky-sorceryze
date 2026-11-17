@@ -1,0 +1,125 @@
+{
+  "schema": "independent-native-api-review-v1",
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1413",
+  "reviewer": "independent-native-api-review-agent",
+  "reviewed_at": "2026-11-17T09:36:11.146521+00:00",
+  "worktree": "D:\\GongGong-work\\duobao-native-api-20261117",
+  "head": "704e179de4e44b277be46dafebda4e0cfa7f46f6",
+  "input_manifest_sha256": "209477e23de58470beb70ea006d95f7e4bb04233ce0c6384ca38fee1e9f7243f",
+  "bindings": [
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "df63f6def69d551209a950cc9a8fc15b964bbca14f0695ee682cfe39f85b221d",
+      "sha256_lf": "1dfb26012ee20c422c800fea6c678aebd8c39095039b3e8f46c37975b0afc7b9",
+      "expected_sha256": "df63f6def69d551209a950cc9a8fc15b964bbca14f0695ee682cfe39f85b221d",
+      "matches": true,
+      "git_blob": "63e736246b54e86b09966cbe91c10338fa66e121"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/main.py",
+      "sha256": "4d113d3ce735ea05b6f481e4021cb0d1b9f302ed0c1dd188f6a004b3679d0fde",
+      "sha256_lf": "3bd80a5d90c8a3cd9859ce0b097a807eff1a9b69f31cbb5429bc92e61421b1c7",
+      "expected_sha256": "4d113d3ce735ea05b6f481e4021cb0d1b9f302ed0c1dd188f6a004b3679d0fde",
+      "matches": true,
+      "git_blob": "57a4d2d47de54c896cb1c370b93f652e475ec278"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_api.py",
+      "sha256": "ec50b00c99c467657186ede0cbcebfacff6f57dc2da0491a0729ed2192ed3978",
+      "sha256_lf": "673dd929c913ca2fa769bedfc3b428dd110e8449c3360eda2e827fc232c54cde",
+      "expected_sha256": "ec50b00c99c467657186ede0cbcebfacff6f57dc2da0491a0729ed2192ed3978",
+      "matches": true,
+      "git_blob": "f8790675ee7d36e0d3c08aac27cf30ba92a091c1"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_api.py",
+      "sha256": "f92da82ec88599b1b728a43a6fa79d8ddf4ba572356a7367c3f63c47ac3229fe",
+      "sha256_lf": "e155d586a8199203525c99638b90b5754c50a39eab46863e1519d8f944092c7f",
+      "expected_sha256": "f92da82ec88599b1b728a43a6fa79d8ddf4ba572356a7367c3f63c47ac3229fe",
+      "matches": true,
+      "git_blob": "62954e2c87998779d2cd64aefd77a2eaaa98c0f3"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/NATIVE_API.md",
+      "sha256": "665146d1118fc859d73d1dcb030ef1689c39ef42e0225f980db53a8917d1cdc0",
+      "sha256_lf": "80daefe4b9e973cf1364bec2a9a2478f2ab6d10be023e3e32dcd8dff7161ca26",
+      "expected_sha256": "665146d1118fc859d73d1dcb030ef1689c39ef42e0225f980db53a8917d1cdc0",
+      "matches": true,
+      "git_blob": "d916af6569bdb944ee1b4347894f83dda8da0f0f"
+    }
+  ],
+  "verdict": "changes_requested",
+  "findings": [
+    {
+      "id": "R1",
+      "priority": "P2",
+      "file": "customizations/components/tianxuan/server/native_api.py",
+      "line": 92,
+      "title": "Reject lone surrogate Unicode object names as invalid input",
+      "reproduction": {
+        "method": "POST",
+        "path": "/api/v1/native/batches",
+        "identity": "valid registered Bearer session",
+        "body": {
+          "request_key": "badunicode",
+          "changes": [
+            {
+              "module": "m",
+              "base": null,
+              "reads": null,
+              "edits": {
+                "\ud800": "YQ=="
+              }
+            }
+          ]
+        },
+        "transport": "content=json.dumps(payload), which emits ASCII JSON escape for the surrogate",
+        "actual": "500 Internal Server Error",
+        "expected": "422 invalid request input",
+        "postcondition": "native.head(tenant, m) remains None"
+      },
+      "cause": "JSON accepts escaped lone surrogate. _changes passes object name unchanged; NativeStore object-name validation permits it, then canonical UTF-8 request hashing raises UnicodeEncodeError outside the mapped NativeStoreError/sqlite3 errors.",
+      "recommendation": "Validate Unicode scalar names before store invocation (or map UnicodeError narrowly to 422); add a real HTTP regression proving no stored candidate."
+    }
+  ],
+  "verification": [
+    {
+      "command": "python -B -m pytest -p no:cacheprovider customizations/components/tianxuan/server/test_native_api.py -q",
+      "result": "13 passed, 1 warning in 4.71s"
+    },
+    {
+      "command": "python -B -m pytest -p no:cacheprovider customizations/components/tianxuan/server/test_api_session.py customizations/components/tianxuan/server/test_api_auth_mode.py customizations/components/tianxuan/server/test_access_control.py customizations/components/tianxuan/server/test_tianxuan_concurrency.py customizations/components/tianxuan/server/test_main_app.py customizations/components/tianxuan/duobao/test_native_store.py -q",
+      "result": "52 passed, 2 subtests passed, 1 warning in 12.28s"
+    }
+  ],
+  "python": "D:/GongGong-work/tx-venv/Scripts/python.exe",
+  "adversarial_observations": {
+    "surrogate_object_name": "500; no head persisted",
+    "same_request_key_different_actors_same_tenant": "200 / 200 with different module submissions",
+    "same_request_key_other_tenant": "200",
+    "two_tenant_parallel_submit": "40/40 HTTP 200 with 8 worker threads",
+    "invalid_parameters": "base integer/list, dependency revision integer/list, module integer, selected revision integer all 422",
+    "forged_query_invalid_revision": "422 / 422"
+  },
+  "assessment": {
+    "authentication": "Native routes derive tenant/actor from verified strict identity or stored Bearer sessions, ignore X-Actor, reject viewers on writes; expiry/revocation and strict tenant controls covered. Existing shared identity connection methods use RLock transaction wrapper; new native lookups run in threadpool.",
+    "isolation_integrity": "Cross-tenant revision/object/composition reads reject; corrupt bytes reject on object/composition readback.",
+    "bounds": "Supplied tests verify Content-Length rejection, stream termination after crossing bound, decoded/object/entry/module bounds. Tests lower bounds for economy; full-limit memory profiling not performed.",
+    "concurrency_retry": "Supplied tests cover parallel identical request retry and exact 409 mismatch; independent actor/tenant scope tests pass; real SQLite lock maps 503 Retry-After then retry succeeds.",
+    "read_semantics": "Revised design only accepts reads=null. Explicit lists rejected, preserving conservative module-drift conflicts; unrelated module updates do not invalidate base.",
+    "startup": "Startup test forbids subprocess/GitService/MergeQueue construction in native mode; fallback Git mode starts with worker disabled.",
+    "authority": "Candidate APIs do not emit approvals, check success, releases or consumption receipts."
+  },
+  "limitations": [
+    "Native startup currently mounts identity, health and native candidate routes only; document/issue/model and broader platform integration remain later work.",
+    "No production service installation, switching, external network acceptance, release approval or parent-goal completion claimed.",
+    "This review binds the exact five files; source changes invalidate this verdict and require re-review.",
+    "Production access middleware retains existing synchronous identity checks; the event-loop responsiveness test specifically covers non-production native identity lookup.",
+    "No full tenant admission migration or trusted read tracking implementation included."
+  ],
+  "method_learning": {
+    "scope": "content-storage-integrity",
+    "recall": "No applicable verified lessons returned."
+  },
+  "cleanup": "No product source edits, commits or pushes. Adversarial scripts ran from stdin; TemporaryDirectory databases removed on context exit. pytest cache disabled and Python bytecode writing disabled."
+}
