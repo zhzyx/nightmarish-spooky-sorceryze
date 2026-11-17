@@ -16,6 +16,7 @@ Texture2D<float> HistoryDepth : register(t6);
 Texture2D<float4> HistoryNormal : register(t7);
 Texture2D<uint> HistoryObjectId : register(t8);
 StructuredBuffer<float4> ExposureState : register(t9);
+Texture2D<float> ReactiveMask : register(t10);
 RWTexture2D<float4> OutputColor : register(u0);
 RWTexture2D<float> OutputDepth : register(u1);
 RWTexture2D<float4> OutputNormal : register(u2);
@@ -71,9 +72,24 @@ void CSMain(uint3 Thread : SV_DispatchThreadID)
     OutputDepth[Pixel] = LinearDepth;
     OutputNormal[Pixel] = float4(Normal, 0);
     OutputObjectId[Pixel] = ObjectId;
+    float Reactive = 0;
+    if (Settings.w > 0.5f)
+    {
+        [unroll] for (int Y = -1; Y <= 1; ++Y)
+        {
+            [unroll] for (int X = -1; X <= 1; ++X)
+            {
+                int2 SamplePixel = clamp(CurrentPixel + int2(X, Y), int2(0, 0), MaximumPixel);
+                Reactive = max(Reactive, saturate(ReactiveMask.Load(int3(SamplePixel, 0))));
+            }
+        }
+    }
+    // Transparency has no matching opaque-object velocity or depth. Mark its
+    // footprint in history coverage so freshly uncovered surfaces reject it.
+    Coverage *= 1 - Reactive;
     OutputColor[Pixel] = float4(Color, Coverage);
     if (!GeometryValid || !isfinite(LinearDepth) || !all(isfinite(Settings.xyz)) || Settings.x < 0.5 ||
-        Settings.y <= 0 || Settings.z < 0 || !all(isfinite(Jitter.xy)))
+        Settings.y <= 0 || Settings.z < 0 || !all(isfinite(Jitter.xy)) || Reactive > 0)
     {
         return;
     }

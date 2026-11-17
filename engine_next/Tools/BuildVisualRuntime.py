@@ -25,6 +25,10 @@ CORE_SOURCES = [
     "engine_next/Rendering/PostProcessSettings.cpp",
     "engine_next/Rendering/LightTimeline.cpp",
     "engine_next/Rendering/ReflectionSettings.cpp",
+    "engine_next/Rendering/VolumeSettings.cpp",
+    "engine_next/Rendering/VolumeGrid.cpp",
+    "engine_next/Rendering/ParticleSettings.cpp",
+    "engine_next/Rendering/ParticleState.cpp",
     "engine_next/Rendering/ShadowBounds.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
@@ -73,6 +77,14 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestPostProcessSettings.cpp",
     "engine_next/Tests/Rendering/TestLightTimeline.cpp",
     "engine_next/Tests/Rendering/TestReflectionSettings.cpp",
+    "engine_next/Tests/Rendering/TestVolumeSettings.cpp",
+    "engine_next/Tests/Rendering/TestVolumeParse.cpp",
+    "engine_next/Tests/Rendering/TestVolumeMath.cpp",
+    "engine_next/Tests/Rendering/TestVolumeColor.cpp",
+    "engine_next/Tests/Rendering/TestVolumeTemporalMath.cpp",
+    "engine_next/Tests/Rendering/TestParticles.cpp",
+    "engine_next/Tests/Rendering/TestTransparentMath.cpp",
+    "engine_next/Tests/Rendering/TestSceneEntityTransforms.cpp",
     "engine_next/Tests/Rendering/TestReflectionTrace.cpp",
     "engine_next/Tests/Rendering/TestReflectionSampling.cpp",
     "engine_next/Tests/Rendering/TestExposureSampling.cpp",
@@ -98,6 +110,10 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/PostProcessSettings.h",
     "EngineNext/Rendering/LightTimeline.h",
     "EngineNext/Rendering/ReflectionSettings.h",
+    "EngineNext/Rendering/VolumeSettings.h",
+    "EngineNext/Rendering/VolumeGrid.h",
+    "EngineNext/Rendering/ParticleSettings.h",
+    "EngineNext/Rendering/ParticleState.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
@@ -123,6 +139,13 @@ SHADERS = [
     ("TraceCS", "cs_6_0", "ReflectionTrace.cs.cso", ["-D", "REFLECTION_TRACE_STAGE=1"]),
     ("CompositeCS", "cs_6_0", "ReflectionComposite.cs.cso", ["-D", "COMPOSITE_STAGE=1"]),
     ("RadianceCS", "cs_6_0", "ReflectionRadiance.cs.cso", ["-D", "RADIANCE_STAGE=1"]),
+    ("InjectCS", "cs_6_0", "VolumeInject.cs.cso", ["-D", "VOLUME_INJECT_STAGE=1"]),
+    ("LightCS", "cs_6_0", "VolumeLight.cs.cso", ["-D", "VOLUME_LIGHT_STAGE=1"]),
+    ("TemporalCS", "cs_6_0", "VolumeTemporal.cs.cso", []),
+    ("IntegrateCS", "cs_6_0", "VolumeIntegrate.cs.cso", ["-D", "VOLUME_INTEGRATE_STAGE=1"]),
+    ("CompositeCS", "cs_6_0", "VolumeComposite.cs.cso", []),
+    ("VSMain", "vs_6_0", "Transparent.vs.cso", []),
+    ("PSMain", "ps_6_0", "Transparent.ps.cso", []),
 ]
 
 
@@ -464,6 +487,14 @@ def compile_shaders(args, commands):
             / (
                 "FixedMesh.hlsl"
                 if name.startswith("FixedMesh")
+                else "Transparent.hlsl"
+                if name.startswith("Transparent")
+                else "VolumeTemporal.hlsl"
+                if name == "VolumeTemporal.cs.cso"
+                else "VolumeComposite.hlsl"
+                if name == "VolumeComposite.cs.cso"
+                else "Volume.hlsl"
+                if name.startswith("Volume")
                 else "Reflection.hlsl"
                 if name.startswith("Reflection") and name != "ReflectionLighting.ps.cso"
                 else "Shadow.hlsl"
@@ -580,6 +611,16 @@ def build(args):
                 "engine_next/Rendering/Shaders/Reflection.hlsl",
                 "engine_next/Rendering/Shaders/ReflectionTrace.hlsli",
                 "engine_next/Rendering/Shaders/ReflectionSampling.hlsli",
+                "engine_next/Rendering/Shaders/Volume.hlsl",
+                "engine_next/Rendering/Shaders/VolumeCommon.hlsli",
+                "engine_next/Rendering/Shaders/VolumeMath.hlsli",
+                "engine_next/Rendering/Shaders/VolumeColor.hlsli",
+                "engine_next/Rendering/Shaders/VolumeTemporal.hlsl",
+                "engine_next/Rendering/Shaders/VolumeTemporalMath.hlsli",
+                "engine_next/Rendering/Shaders/VolumeComposite.hlsl",
+                "engine_next/Rendering/Shaders/VolumeSampling.hlsli",
+                "engine_next/Rendering/Shaders/TransparentMath.hlsli",
+                "engine_next/Rendering/Shaders/Transparent.hlsl",
             ]
         ),
         *[

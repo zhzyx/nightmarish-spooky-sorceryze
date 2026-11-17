@@ -36,6 +36,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <map>
+#include <limits>
 #include <string>
 #include <utility>
 
@@ -117,6 +118,44 @@ bool WorldMatrix(std::int64_t nEntity, const std::map<std::int64_t, const Assets
 }
 
 } // namespace
+
+bool BuildSceneEntityTransforms(const Assets::SceneDocument &stScene, std::map<std::uint64_t, std::array<double, 16>> &out_mapTransforms,
+								Assets::Diagnostics &out_arrDiagnostics)
+{
+	Assets::Diagnostics arrValidation;
+	if (!Assets::ValidateSceneDocument(stScene, arrValidation))
+	{
+		out_arrDiagnostics.insert(out_arrDiagnostics.end(), arrValidation.begin(), arrValidation.end());
+		return false;
+	}
+	std::map<std::int64_t, const Assets::SceneEntity *> mapEntities;
+	std::map<std::int64_t, Matrix> mapWorld;
+	std::map<std::uint64_t, Matrix> mapCandidate;
+	for (const Assets::SceneEntity &stEntity : stScene.arrEntities)
+	{
+		mapEntities.emplace(stEntity.nEntityId, &stEntity);
+	}
+	for (const Assets::SceneEntity &stEntity : stScene.arrEntities)
+	{
+		if (!WorldMatrix(stEntity.nEntityId, mapEntities, mapWorld, 0))
+		{
+			Assets::AddDiagnostic(out_arrDiagnostics, "render_transform", stEntity.strName, "Invalid or overflowing entity world transform");
+			return false;
+		}
+		const Matrix &arrWorld = mapWorld.at(stEntity.nEntityId);
+		for (double dComponent : arrWorld)
+		{
+			if (!std::isfinite(dComponent) || std::abs(dComponent) > std::numeric_limits<float>::max())
+			{
+				Assets::AddDiagnostic(out_arrDiagnostics, "render_transform", stEntity.strName, "Entity world transform exceeds binary32 range");
+				return false;
+			}
+		}
+		mapCandidate.emplace(static_cast<std::uint64_t>(stEntity.nEntityId), arrWorld);
+	}
+	out_mapTransforms = std::move(mapCandidate);
+	return true;
+}
 
 bool BuildRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics)
 {

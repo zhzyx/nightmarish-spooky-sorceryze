@@ -1,0 +1,2520 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T15:11:49.707229+00:00",
+  "author": "m42_cook_review",
+  "status": "passed",
+  "scope": "R7 automated D3D12 normal-entry regressions for volumetric fog, transparency and particles.",
+  "candidate": "volume-r7",
+  "native_key": "157c09cb9379153c86183e096aa4d1be309c55d6dbf319f362a675d4d13f1f12",
+  "native_identity": {
+    "compiler": "msvc",
+    "compiler_sha256": "194ddf4aafcb74452218a982309a97de30e0adb33edf4af02904ee107213e782",
+    "dxc": {
+      "sha256": "7c6918a0e2d4e437629fa8549f5ce800970494780f363bbbe1e3d3034f435aee",
+      "version": "dxcompiler.dll: 1.8 - 1.8.2502.11 (239921522); dxil.dll: 1.8(1.8.2502.11)"
+    },
+    "inputs": {
+      "ai_core/Runtime.cpp": "b695e1e7826c168e5878b7d8e031ab072b4b98c96f9ff659da59113411959b41",
+      "ai_core/Runtime.h": "19a9614ac38ac79cacb312eed80ea45a319cdb6cac8acacb54e980f0c93e0420",
+      "engine_next/AI/ArtifactAdapter.cpp": "72b9e32aea8f6cdf22a1cbafe6966fcc3cc14cf0d6ff6220bb4f21af58bd1f6c",
+      "engine_next/AI/ProcessTransport.cpp": "0219b5ff9b2e2af2f46f9054737766bbdc73861afe911f6c04c253d64fd9be2d",
+      "engine_next/AI/WorkflowController.cpp": "40798ebee03bd156ff0fd0e6161732ce54e448319ab0c55b5d085f5b0fb99bf7",
+      "engine_next/AI/WorkflowSnapshot.cpp": "c56d4c03e036af017f017e44ebd991e70614bee92ebc88965338fad8068eefae",
+      "engine_next/Apps/NextVisualClientMain.cpp": "39a69794577dd9416cb8722939aca27a702d06e3c23110ab63620c9bad7a642b",
+      "engine_next/Assets/AssetCompiler.cpp": "e1c3fb9b3deae43ea70431f4a7bfdb34ebc1840a06ded192f87921bc57139b03",
+      "engine_next/Assets/AssetManifest.cpp": "832a9b2fe1e5f5959779d4a488fce4e4a309fdf0db50a4151e5b07b869429de1",
+      "engine_next/Assets/AssetPackage.cpp": "610f272b7d9a6460568b7d39e4a77d36595a1fc05556362a22f79ef464b9e1e0",
+      "engine_next/Assets/AssetValidation.h": "5e313988c3fd46001c6551229f4a24014b7b3c1ce1577781d0d2748632e53f89",
+      "engine_next/Assets/BlobValidator.cpp": "fc58ac897ef120435088c5f532d0921ce080b3a6fb6061b9df3d13feb38d1db9",
+      "engine_next/Assets/SceneDocument.cpp": "f06adc980d48cc48df4890644a7783875cf266d80ee1dc90bb60b6b3a6ce0cc5",
+      "engine_next/Assets/Types.cpp": "3686528bab39526527c5eccc0e46146b3f07dadcd6720f68b320c09155be578a",
+      "engine_next/Client/ClientRuntime.cpp": "9529c64f43140f7dbe247ba2f84a2e84be2baf061cf4907b51da51b565c272b8",
+      "engine_next/Client/ClientRuntime.h": "6e7f1a77ec8fd3bd1e9ae73af0a301ab261caecd7912b9c464123d88bb0f3a22",
+      "engine_next/Client/ClientSession.cpp": "e599ece9532636dc76cd8d6177275c82cc2655757dc5bd9af478f32b5a6bace9",
+      "engine_next/Client/ClientSession.h": "46c237e3ffa8ab5361a01b8a48ef6e856f82fade7a76123d2fee0a7849978efb",
+      "engine_next/Gameplay/InterpolationBuffer.cpp": "5a4fa95be8d42dab4cdb543952e719da062f57b589e634c033904ecfd3ba8a81",
+      "engine_next/Gameplay/PredictionModel.cpp": "67f9ffb1a1e7546bac157daf66b235ab91d2fc40c784568edfeefb501b758aae",
+      "engine_next/Gameplay/PredictionReconciler.cpp": "743ffb7fc7be192806793949cd831ef5638a79619fa6b88b283d2e320cef66c7",
+      "engine_next/Network/EnetTransport.cpp": "25129a66e46c7f613d9a795ca815988b1c216587de53d2ada74c0e28cb61df68",
+      "engine_next/Network/ImpairmentTransport.cpp": "f804863b29d97afbc52aaebae33f9e332ed8f6aaef5ed06444cb6ab7b20c425e",
+      "engine_next/Network/Protocol.cpp": "cd78261a0e8a3896755a78dfd6b2631cae893939403207054a8be9b331bc8f51",
+      "engine_next/Network/SessionManager.cpp": "f0bd8a9031e8d61c61e6235a7a78dd40e0cbc78ccd0eea6ae493cbb5dece05da",
+      "engine_next/Network/SessionManager.h": "43413f83f0eb110faf0584072a7e4dea0661d6782579ea5c1572f781f308338b",
+      "engine_next/Platform/Windows/Window.cpp": "7f3294e73822dfafb2197cbc5b7a41fb100f4aeed65152db8d68b4bc5732c2a9",
+      "engine_next/Platform/Windows/Window.h": "5f30501e5c608ad0605920ec6d53ad9a30d4daea055eb59dcd48e9883758730e",
+      "engine_next/Rendering/CameraMatrices.cpp": "80837337110df3fb7958948a356d679f616eebdde3e19d634f4a8847d3753959",
+      "engine_next/Rendering/Cook/EnvironmentLighting.cpp": "3b6d142dfd0d4b6ada50cfea44cba0ae7171d4713e050ddc9ff35ece4311a485",
+      "engine_next/Rendering/Cook/EnvironmentLighting.h": "483d0976d89024ceeb062f8f54b30ad3a875ea7b0ffd4b1f1406c29ed92a8ab8",
+      "engine_next/Rendering/Cook/GltfDecoder.cpp": "3ff391b09aea9fbe0e4f3e403e1146dd5efdf0914945b55655f1326bf5426d81",
+      "engine_next/Rendering/Cook/GltfDecoder.h": "137e4517003ee479e87442aff6540a574d6ac3fcd4554074fb0d042251c6b53b",
+      "engine_next/Rendering/Cook/GpuPackage.cpp": "7b4a658bbdeaab56adeba092a84bebfc09fb54422b3209504302338d681d21ba",
+      "engine_next/Rendering/Cook/GpuPackage.h": "bb57d58e460ff2abcc74fc537c3253b34851056b1d300b3a26b279f6ffb6e7e2",
+      "engine_next/Rendering/Cook/ImageDecoder.cpp": "82f16c93b4797d7ddd453da1b9f2e7958cd446c82ce336222b75b7352c216cf7",
+      "engine_next/Rendering/Cook/ImageDecoder.h": "53506f1e4747d1ef1e6d20ad5d4f584756a6cf975703a81f256babdd6afcc29f",
+      "engine_next/Rendering/Cook/JpegValidation.c": "0b335908bf2c52dc08c2a396a1bed43395b290da713800f0a3e16698effa9a7f",
+      "engine_next/Rendering/Cook/JpegValidation.h": "aafd9120f17566547a35d46c990e1f742a06272f1ac6490f981baa6dc9fc96fe",
+      "engine_next/Rendering/Cook/MeshCluster.cpp": "0bdf8708899278407df15a7047d0bd7bb6218d98c273f6b78a4bdac76b051a67",
+      "engine_next/Rendering/Cook/MeshCluster.h": "ebcb7a0c0d039bcfbb25a287398ee192f8442570fd074116b783dba837b32a58",
+      "engine_next/Rendering/Cook/TextureCook.cpp": "f19492a36053e01d1a7dfc80c52dd5fea68a0e3dabd6ff670a2d419fe5073fcf",
+      "engine_next/Rendering/Cook/TextureCook.h": "cbd38236181781ca607234c303538acf5156bc9d2d0375ee73d1869a7824ccd3",
+      "engine_next/Rendering/FrameGraph.cpp": "20e25f0d35ab1f4812a983fea3d24f7c7427ba78dfb2ef2fd3f3ec77f4437e1a",
+      "engine_next/Rendering/LightTimeline.cpp": "b33135caf1c12b116a5679a4b2002253461eb96aa676b92e9970d28f2b29cd98",
+      "engine_next/Rendering/LocalShadowData.cpp": "f995b49c1a54ba75725eb43630778ce6d8c26ddf16f4a7a06529b9721ab03b5d",
+      "engine_next/Rendering/ParticleSettings.cpp": "07f91bc73ff76ac4127c7d2d786d946f35e3004df5b8131f25cf45b392be50e8",
+      "engine_next/Rendering/ParticleState.cpp": "47ef63740f1d628909bdd1bfca45fe5ffdd8027ca0cbd3273c0d67b7d614acec",
+      "engine_next/Rendering/PostProcessSettings.cpp": "a872c712b08bea9e0870df35f2605aa3e5648d80e07d7cd2225528565d4db832",
+      "engine_next/Rendering/ReflectionSettings.cpp": "04f8afc0935e30364a647710c4011824180cbb13650216ec5d923e9d812d5ba8",
+      "engine_next/Rendering/RenderConfiguration.cpp": "6aa9f088825924bdc375a5655990d5fc3327bed1af1328afe8a8ac02b79839ec",
+      "engine_next/Rendering/RenderPipeline.cpp": "b9533713b7e38bc71c7514472ad540133522ec15024fe4f3cefb1c6832805102",
+      "engine_next/Rendering/RenderPipeline.h": "6e268070cc284d8873582c80af0257fb68a36d5980db5c2b12cfe9f77e0e80e5",
+      "engine_next/Rendering/RenderScene.cpp": "f38b305bd9d598d0e2e38e2d29cfb1f2aee72c50631dfa9eb80ebbddd6f76127",
+      "engine_next/Rendering/Shaders/Bloom.hlsl": "5c5e8a93bc2929a91cfb879a1bc1ea10632950a85e1cfdda2d4b4c0f21822eb9",
+      "engine_next/Rendering/Shaders/BloomSampling.hlsli": "642c7a51a93eb163254fbde23d345dc6fe6143a3c96ea2930a09be42d4f00182",
+      "engine_next/Rendering/Shaders/Deferred.hlsl": "d5a20ff3910f6f026c3f4bfaff52705f152adf6bc7c5a65f53516094b415546b",
+      "engine_next/Rendering/Shaders/Exposure.hlsl": "2870a6fdd17504baa73131bd4fa976ede3ba685cc0c7df8dbe0b4963d60f7766",
+      "engine_next/Rendering/Shaders/ExposureMath.hlsli": "ed72cb6d70f51b509dceb24a7ac13051287e712027bbc0263b138aa753b0f402",
+      "engine_next/Rendering/Shaders/FixedMesh.hlsl": "82ee60e24fd25c6ea3d0d02fa077b899852350ae8c18d2a9523f48d1b516bc1f",
+      "engine_next/Rendering/Shaders/Reflection.hlsl": "4d2fd0c7d9f2aed79ac41144cbc81307fc4516d57b55c33336e944ecbb39b985",
+      "engine_next/Rendering/Shaders/ReflectionSampling.hlsli": "494fd0332d6b07a2d1764fbf49b8b9ba32e97699bae86edccd1a85adc0889ab0",
+      "engine_next/Rendering/Shaders/ReflectionTrace.hlsli": "a0a9465d507d2cb09121454b083ba4cef96c6193fb1d26a5612d6197de845a8d",
+      "engine_next/Rendering/Shaders/Shadow.hlsl": "1347aab83aa23c69df4853a9671c9f72123895f1dcff920b57fad9befe782ddc",
+      "engine_next/Rendering/Shaders/ShadowSampling.hlsli": "1e1a731fee2e9d821bc752e7a4db76bfb304f643d575125fdb5b2e9a1b221387",
+      "engine_next/Rendering/Shaders/TemporalAA.hlsl": "b4f6b723a392dfd035db202c1553e6aa642fd507100b5e24297f2717cae9b69c",
+      "engine_next/Rendering/Shaders/TemporalSampling.hlsli": "4c7115f3ec45a44d29a4e1bc8fb1b031df1a6f529fc7df393464cdbe670d5b87",
+      "engine_next/Rendering/Shaders/Transparent.hlsl": "de7b23805bf0a7a30c59a7c0c502fb11ae70cb6466e312e4a99164bac3e21507",
+      "engine_next/Rendering/Shaders/TransparentMath.hlsli": "e43b410cc75a4831eecdd013eb68bafc67c278b439945a0eac365be2659584da",
+      "engine_next/Rendering/Shaders/Volume.hlsl": "f50ea13d6c965a031acbbbad1fb5d6646ee1b8308a8dae54177c9b1526d4521d",
+      "engine_next/Rendering/Shaders/VolumeColor.hlsli": "8dee5693da669d587401ce905fdaa8c190f6658e43a92ca4e8d4eb3760301690",
+      "engine_next/Rendering/Shaders/VolumeCommon.hlsli": "0dc5fa434aa95297b4f881b46c94cd4640a689b58b74267a1bc7369560e8a0c2",
+      "engine_next/Rendering/Shaders/VolumeComposite.hlsl": "c00fd02ac27c23bab733c8a4f5a190ed87b0cad2ffe79e5a608d886680f1a72c",
+      "engine_next/Rendering/Shaders/VolumeMath.hlsli": "aa553436af96a070153e7a2c91ea970cb40c6d26001d5f4cedb20a95eaae6030",
+      "engine_next/Rendering/Shaders/VolumeSampling.hlsli": "b927e93d2daf3350f40d88ff2e18230f848ce7cebd6b5dca492256d642993e7b",
+      "engine_next/Rendering/Shaders/VolumeTemporal.hlsl": "1f3bc55cbc256e69fcc1d58d3103ea008fa2cccc28f33809d83f966ed3c69f42",
+      "engine_next/Rendering/Shaders/VolumeTemporalMath.hlsli": "15fbd9a9780f43e97629e6c420cc6e1d20d569e787b80a5b7065d5375043281b",
+      "engine_next/Rendering/ShadowBounds.cpp": "3453b194ceff8da3a53954c0208de869aeb22d134175b10fc9e283d64c470dd6",
+      "engine_next/Rendering/ShadowBounds.h": "2cf031b674e2e03a95e037e23223cfd4a701fc478a13c6c174372d37dd16731d",
+      "engine_next/Rendering/ShadowData.cpp": "0b1594e46f52bb443868d7cf1d0b063c24cc6bc1da032fdbd318d63db527a10b",
+      "engine_next/Rendering/TemporalState.cpp": "f03c55580cf3556b06775384bdb3d5e78ef730cacf74f6ee5c34cca61c1bf1f7",
+      "engine_next/Rendering/VisualRuntime.cpp": "d570b7744460ef26c0e6e26216f01fd04f3a2739a3f2db2abd3b76c6e01aed77",
+      "engine_next/Rendering/VolumeGrid.cpp": "0a4e794889efcc11a28529e2b4f81505ebe54af8e8389442c6052ea696526914",
+      "engine_next/Rendering/VolumeSettings.cpp": "5b0a46273d0255c5c68df0fb744196cc68288bbc9b0b594b8e10ab79136b94d0",
+      "engine_next/Runtime/Clock.cpp": "c21ce5234742634a181e3ae575e6da308263932b7e1dd7254362faeb360d27f6",
+      "engine_next/Runtime/FixedStepLoop.cpp": "93b0bf0451b16e9cd71270b2b978d40f2cf1c8eedcbe34be8e0a1cc2aefcdc3c",
+      "engine_next/Runtime/RuntimeConfig.cpp": "fd90811c8d803ea0838e787eda9921daaa118696b5dba587108acf1d3729ce37",
+      "engine_next/Runtime/RuntimeHost.cpp": "37eaa0dd76f31c2fdd7f14b4408b0d2d276d37646863dad55d6876583dcf9c2b",
+      "engine_next/Runtime/SceneRuntime.cpp": "638c3c65f9517e71724b02ad5dd94b2f0ab15f6687853e4cb4d97950a4f5fa5b",
+      "engine_next/Runtime/Trace.cpp": "98e1b44934730125d157fcb2a5bcb6a51c66cbe7812e093009a84d8a6556661e",
+      "engine_next/Runtime/World.cpp": "8a635bcc32f3cf569b8ace921d31360a32c6397be70206a9c1a5af69a0197668",
+      "engine_next/Serialization/Json.cpp": "bd5378c0e98935cc4adc7d535c2a6b733480f3a4e537e70fed77cc0b9bd3368c",
+      "engine_next/Serialization/Sha256.cpp": "0c2c99e228e2b730cab8c2b36f7982fa9ac8d1ddcb89c972db4dbdf85035139a",
+      "engine_next/Server/ServerRuntime.cpp": "91d3da2850d8465f3344900e9a25fd2c8679b0df8b347cf98fc0355322bf5bbd",
+      "engine_next/Server/ServerRuntime.h": "f11426a22eb445e2eaef9a18eb4941b45d1018cc24a88748894cd9dbc792e9eb",
+      "engine_next/Tests/Assets/FixtureSupport.h": "16ee8ea150a829bff8a8951b77f0d24b6489bd807a079c116704d8c1f2e197c5",
+      "engine_next/Tests/Rendering/TestBloomSampling.cpp": "14ec8273d65b3fbacff2e5459f4db45bff7126a91ccede07b9449f1280765ea4",
+      "engine_next/Tests/Rendering/TestCameraMatrices.cpp": "791c394aa9f5892789d12de169e9f3eb64c127e5a902b1d3877e794b41ea78ae",
+      "engine_next/Tests/Rendering/TestEnvironmentLighting.cpp": "2268a9e08b7c202a1704b42ff237f4c05a22abe6d5a4003244ef90d2bdacbb64",
+      "engine_next/Tests/Rendering/TestExposureSampling.cpp": "958f6dc1b60aa7ce612d7b38389386ff5c993f2d786ae1d5d40f8fa84fe7a59e",
+      "engine_next/Tests/Rendering/TestFrameGraph.cpp": "1bd5dda2c38697b89927233fdc6c7f57c53e86c407d0eb8861a2c8956861e48c",
+      "engine_next/Tests/Rendering/TestGltfDecoder.cpp": "1ca35c2876ef956481a2fc692b2250b4be478715f09b74ea04f6c2b3536c3b07",
+      "engine_next/Tests/Rendering/TestGpuPackage.cpp": "6cf67d764fe344c731ab0921353089d4d220045431223d5551fcb8517dca3537",
+      "engine_next/Tests/Rendering/TestImageDecoder.cpp": "360f1dc8ba69617dadb3d9dcff49582a39e3c415da521d5775ef3215a8be026d",
+      "engine_next/Tests/Rendering/TestLightTimeline.cpp": "22ec05a5feb7b0e930ea2a1868be4feee887743485a875dae21ef04a24e1cf08",
+      "engine_next/Tests/Rendering/TestLocalShadowData.cpp": "70f7d25eea3ff982995106f1b0ba099b65be44c205a314bd51a4a9ff081bff98",
+      "engine_next/Tests/Rendering/TestMeshCluster.cpp": "9f36bf0a90bfb032afe9d1510e4b0c78de3c7700786bc5dfbf68bc78548a72cb",
+      "engine_next/Tests/Rendering/TestParticles.cpp": "16e38d946b6c037320b1325658d7ca840d6b8b12ef8d22fa10a3d1c0ff7a0e7c",
+      "engine_next/Tests/Rendering/TestPostProcessSettings.cpp": "df84f9044837a5f2c723bcac409681e88179fdf7c0da88d3428d0b8590bb7723",
+      "engine_next/Tests/Rendering/TestReflectionSampling.cpp": "e7f8a8a084c2a8824ed018ad3d06a584fd7481d086f719919885c1538abab936",
+      "engine_next/Tests/Rendering/TestReflectionSettings.cpp": "631881762cccbdf7503d0f5e361e6a524d2cf395fac7e55a5cd78ae3ca927296",
+      "engine_next/Tests/Rendering/TestReflectionTrace.cpp": "ed39341a9656fd5cdafdb2ce812d67d7d9e7c7bc21d52fbb94f677fe2a90c2fb",
+      "engine_next/Tests/Rendering/TestRenderConfiguration.cpp": "23d1de27c1c1d7950886af6b1396ce90f437f6264003099c2ec955c9c544b10b",
+      "engine_next/Tests/Rendering/TestRenderPipeline.cpp": "f864a32afe5823f7c022397d2c759692d7f9a501ad479aa767c7a785fc5b2a4a",
+      "engine_next/Tests/Rendering/TestSceneEntityTransforms.cpp": "648ef1878cf594918ede1a25c3837667eae9ea93ca5255e936dc6b98b5289ea1",
+      "engine_next/Tests/Rendering/TestShadowBounds.cpp": "a4670a6549fed3c05fb8b071fb01bdeef8d5d4f7bc532c748c81351dff1c17d7",
+      "engine_next/Tests/Rendering/TestShadowData.cpp": "6a8c5266e8366ef5cf6fc444d0a1d2bfed3cefb8a0330aea8b534b4ac3a2f838",
+      "engine_next/Tests/Rendering/TestShadowSampling.cpp": "b5d467a855a9a22b2f97db7a08668c30b8948d66ad3acb70b435ee9ca36aa2a7",
+      "engine_next/Tests/Rendering/TestTemporalSampling.cpp": "ee190826fe18e455aadc949f1c46419cecbd94720c5bd31cadb5b124e8524287",
+      "engine_next/Tests/Rendering/TestTemporalState.cpp": "b8bb35acc7f42d5af3df6a178d2b51fe3aea86ebdb8073d1c8b503968d381443",
+      "engine_next/Tests/Rendering/TestTextureCook.cpp": "0a7881edfb281c0ab8dedf4be7f470fb8b7c4379ed817482cf8d0139822ec846",
+      "engine_next/Tests/Rendering/TestTransparentMath.cpp": "e1870efcd91e85dd625b34a6845c3e2fd0225de4f6b2401815e7838a029ba903",
+      "engine_next/Tests/Rendering/TestVolumeColor.cpp": "dae08dc973f93de06dcfe44e422eadc7ec482f5f936136a1cba43f9c1b3b4cd6",
+      "engine_next/Tests/Rendering/TestVolumeMath.cpp": "1da43d1383eb210200ba7ad181c20dc023762859663910c094844cc53669feb7",
+      "engine_next/Tests/Rendering/TestVolumeParse.cpp": "77bb8c18ca99450fdb0098ebc496fb4c7759ed7c813665b366069a402bc672d6",
+      "engine_next/Tests/Rendering/TestVolumeSettings.cpp": "1a2f7b31d9dba0d895911ed0bf26eea2a54f1c83fe6aae06d127df7c003c2d73",
+      "engine_next/Tests/Rendering/TestVolumeTemporalMath.cpp": "3b34b06e574fad95389ef0836efee70614d387eb9704c55b05d8d0c272ee59c4",
+      "engine_next/Tests/RenderingTestMain.cpp": "1b7ab6ddbcb35e0830776ef176f07ae1e07c80d2cffa9d6d3d77ca0051cb0172",
+      "engine_next/Tests/TestFramework.h": "4baf615666b56f50307e51412c992cad43b02ce83ec331711c99ed154e34f039",
+      "engine_next/Tools/BuildGameplay.py": "3a92214a5dc1333d5424675b94b63dc3a175119a68b4ae4e0461d484dbb9b1a2",
+      "engine_next/Tools/BuildRuntime.py": "3ff83aefacf85e1b9e6c48118cf2bb78accbb4bb5cb61bb122c0656549d7d778",
+      "engine_next/Tools/BuildVisualRuntime.py": "3edd81468d6c015cd8b7f8821d26bf5494b96f7d5aad1ba19fe7befe25f1a71e",
+      "engine_next/Tools/PackageVisualRuntime.py": "cbd2454dfd594183702c7d4fcb6266de836d29215816bd04ac48e105e1a0b57a",
+      "engine_next/include/EngineNext/AI/ArtifactAdapter.h": "1f802093d529615d45d499172d16f48a3ea9f83a23aa9ce8865cffb175a2ea14",
+      "engine_next/include/EngineNext/AI/IProcessTransport.h": "560c24af1697565e11dea87e7dc96198384b60ff4d52754f6841489093dbbec8",
+      "engine_next/include/EngineNext/AI/ProcessTransport.h": "d1899f978c5571a5a6d349af59ef3339c4b343dd3dbbc9418909c64ea73c6254",
+      "engine_next/include/EngineNext/AI/WorkflowController.h": "7d99ec90608a14ab7d14520fd65f3c78d554137faa41a4dd6fdf7f2a4063488d",
+      "engine_next/include/EngineNext/AI/WorkflowSnapshot.h": "2216f8d747049cb27c1f0e5601cb10142e2e8ded08d13597be67998181fc48e8",
+      "engine_next/include/EngineNext/Assets/AssetCompiler.h": "6d0da91b2e1a8e4ba0ff6430b2adda9044722f4ae8f8e3154ba2768bba61fbaa",
+      "engine_next/include/EngineNext/Assets/AssetManifest.h": "4b86ce9719a5be2278cde4afe7edcc13ad45fd921c87d7b331bafe81d353193f",
+      "engine_next/include/EngineNext/Assets/AssetPackage.h": "d0028d8fcc729d7571432de49f3c65629f16defbf6296a8119d323b33b3a1bd7",
+      "engine_next/include/EngineNext/Assets/BlobValidator.h": "42b781c71a618b9f8ca0015cb09b1fe7e34ae1ccb7fca440c9908dd5b0535bb4",
+      "engine_next/include/EngineNext/Assets/SceneDocument.h": "7b1fac27a54f95d31ede6de5e9b7f68a9903377fc1a7ec05b0721c6355eda410",
+      "engine_next/include/EngineNext/Assets/Types.h": "7068d004d36798d76d5d2429f8f9c585cf64a01ab96bee4074c15bc07e5a3aa1",
+      "engine_next/include/EngineNext/Gameplay/InterpolationBuffer.h": "6f6126f2f17f3400b2c3004c1836c354db4dc9bd5477c71fc59e7dfaff6dc266",
+      "engine_next/include/EngineNext/Gameplay/PredictionModel.h": "052e15153e1b5c2a42319b016c227d560bd406359606c2740174e1c34d302c21",
+      "engine_next/include/EngineNext/Gameplay/PredictionReconciler.h": "a79cbb4453cb16d724b915be36e10466379c222ac9dbfa5c5ad38c04ad60f3ee",
+      "engine_next/include/EngineNext/Gameplay/PredictionTypes.h": "89b843b60666d13707c32c728c1952d885fe8bcd8122c575350bf138cb4b58c6",
+      "engine_next/include/EngineNext/Gameplay/Status.h": "1f0a64e657d685fb561e0369d53f8a47e7cf53711d99b70dcad49bf5d7a794bd",
+      "engine_next/include/EngineNext/Gameplay/Vector3.h": "c829b4664ce80507c7fced7cb721ed36b98871869ccf28550f51156a67293b64",
+      "engine_next/include/EngineNext/Network/ITransport.h": "6f65d04cc4e97dc988bcc5d697d29315b49c2b4756c2866e23575a8f5ba1522e",
+      "engine_next/include/EngineNext/Network/ImpairmentTransport.h": "ef1e93fa9ef081ff444eb9741b48558058d27b9943dad445b9fb0fe14eb0f3c6",
+      "engine_next/include/EngineNext/Network/Protocol.h": "59ac79791f891e3e3753d6004858ecb63073be427c36d9179a4806a2a565c058",
+      "engine_next/include/EngineNext/Rendering/CameraMatrices.h": "df4f42a5ac296fd43eb3ceaf7071733f7e99cb1e0004289ded7ad76ad6562552",
+      "engine_next/include/EngineNext/Rendering/FrameGraph.h": "b4ba3b3761f114d929f7ff584572f62614a7bf3f34fe5c2506d62b5b8a32c7dc",
+      "engine_next/include/EngineNext/Rendering/ImageData.h": "a15ec4c43b31809be74ef55b75d5bc514f0ec6ce7dbafaaaeba708a1a77caaf6",
+      "engine_next/include/EngineNext/Rendering/LightTimeline.h": "8778c9d9caa340b9827ef04ae32a66823583c5390efb0125f205a809282c66d2",
+      "engine_next/include/EngineNext/Rendering/LocalShadowData.h": "ff2e1bb675eb86e453f02579cbe53fb9dc2c1659e6e15f7bc3d3209d9c809e1d",
+      "engine_next/include/EngineNext/Rendering/MeshData.h": "0fc4d5369f76d612541e899ee7ad8e469f5972b12947cddf95aca667d4e3888a",
+      "engine_next/include/EngineNext/Rendering/ParticleSettings.h": "7b4c7428006707e0c762648b450200d63030cff950af2775db99de66e9935930",
+      "engine_next/include/EngineNext/Rendering/ParticleState.h": "da1bd6d4d033b608d7b49243fd6414a36192df263164ac8c05c8e8686c771c94",
+      "engine_next/include/EngineNext/Rendering/PostProcessSettings.h": "55e6da34c8d9ee506ff8bcb4396af771a6b13c02b7d79496471230f66f90c03d",
+      "engine_next/include/EngineNext/Rendering/ReflectionSettings.h": "ff7c2fe5ef1bc5c3fc369f45df90e8c5a62f29c07f8469dccec360be495cdf2c",
+      "engine_next/include/EngineNext/Rendering/RenderConfiguration.h": "00eb822d6861932179ee0c771a0957d3853e362ef7ab6f88b3a9197156633a5c",
+      "engine_next/include/EngineNext/Rendering/RenderScene.h": "b7527ac4d6428627d5898d90c37baff634ff88a9d3e49cb6dedb75cbdc2107ab",
+      "engine_next/include/EngineNext/Rendering/ShadowData.h": "c4e0245746d12b296f09375e6bcae1e72556e31dfdf21104c67bcfcc01908205",
+      "engine_next/include/EngineNext/Rendering/TemporalState.h": "6287ad9b429eaf294e0db821cb4c536e069bd6511212fdae604406fe136c2132",
+      "engine_next/include/EngineNext/Rendering/TextureData.h": "4b31acb9e896d75ee57fd749e1e786acb49c46f17ebe11dbcd647334f7cdb735",
+      "engine_next/include/EngineNext/Rendering/VisualRuntime.h": "582ed382207519621740a729d1794d0a80c40d294efc733d6561e11178ac4d48",
+      "engine_next/include/EngineNext/Rendering/VolumeGrid.h": "4f76f3053b82abcf741ee677b821e6eee228e20293f72bf4a18506ae64595753",
+      "engine_next/include/EngineNext/Rendering/VolumeSettings.h": "b29ffc4897526783940bebd84e1d92ee340820df5dd1aef51a47a154f997cb1b",
+      "engine_next/include/EngineNext/Runtime/Clock.h": "e547a6cf2ab3891bddf99eee7375fbb665e618f7f3a26320d8cffc19634445e3",
+      "engine_next/include/EngineNext/Runtime/FixedStepLoop.h": "87363d1895504296a8582c822fa9af2e88d4859e07f380369cba727c1e88b5d0",
+      "engine_next/include/EngineNext/Runtime/RuntimeConfig.h": "acb8774870f4ef8ad9d2a3d1af11ff6eafe43dffe5c7bebd1d29ae85530690a5",
+      "engine_next/include/EngineNext/Runtime/RuntimeHost.h": "5dc071f73103cf4b87258e154f8220f2bde3175ffeddd01c90aed6b227e8ab2d",
+      "engine_next/include/EngineNext/Runtime/SceneRuntime.h": "961d77383cd3513484077fdf85360c90ecf925b69638ad988941a88cc6a5df43",
+      "engine_next/include/EngineNext/Runtime/Trace.h": "01f8ad52c7f8d2dbac2acea538b874f4c84bc61bba32ec3d44472a0df79cd0dd",
+      "engine_next/include/EngineNext/Runtime/Types.h": "addaf43c64ffe275b74cc08b6225d60b2d9fb4bef6fc6f30c6a9b3080a32e940",
+      "engine_next/include/EngineNext/Runtime/World.h": "d87f1edc4358d7305a5b3a4d52216ac84047627efd336962b86291677118d826",
+      "engine_next/include/EngineNext/Serialization/Json.h": "7d20349f3d9b9f660aa0eaea13673e0d92b854fbb159878d48fbfacfa661f6b0",
+      "engine_next/include/EngineNext/Serialization/Sha256.h": "943af809ad934c6b2b23fef0012ea49a929f836a8dcbfb0b0077c9efbce66316",
+      "engine_next/thirdparty/enet/.gitattributes": "c44b28ea1bcdfc633775b25736f02ca93398520998cfddad683ad61b5694d946",
+      "engine_next/thirdparty/enet/LICENSE": "a29cd246638974da7c6edf423a0a69d4a6f7d759940b7cfa9a2bc3442ac3834c",
+      "engine_next/thirdparty/enet/PATCHES.json": "4ff1461bb9130baff619e7901618b5c9ac3e001da2e13dddc4eb732d30ab096c",
+      "engine_next/thirdparty/enet/README": "30355fcc7dba245ab2462f17cd7ef9ba5eb141ef055cea36972480b66cd879eb",
+      "engine_next/thirdparty/enet/UPSTREAM.json": "67de471ae8fced9f27c5fd7592eae1c9edb5cbd47424223efe6ddb1afea4f41b",
+      "engine_next/thirdparty/enet/callbacks.c": "0d42c2a191c7d22ed0da2b14617b958cce2efd2a185b3aef9fe51a0fb6704ba2",
+      "engine_next/thirdparty/enet/compress.c": "6af9da787bf5aaeb44befcf4e4a822d6e4d0972279bac73004f628bf06788774",
+      "engine_next/thirdparty/enet/host.c": "396e27689fe5ad6cc88d3a96fb93fa274f951663fe2f627391ab8f48a6d95830",
+      "engine_next/thirdparty/enet/include/enet/callbacks.h": "20b3d8834bd19b77d9e8b6bcef4cd6fccb9875a4c1cdb0e5f7881b1b285c8d16",
+      "engine_next/thirdparty/enet/include/enet/enet.h": "1780a6ecc27574a207438639869573f4e417bffc9c95f48a95837a887fad9acf",
+      "engine_next/thirdparty/enet/include/enet/list.h": "845120efb4ad1633eb2f61c8d8f5529b33de2170152779bc6046ac0453cab46b",
+      "engine_next/thirdparty/enet/include/enet/protocol.h": "32de2a7e94e7dcfdf1b9fae2e4cde44f2e44ef49e9a1c4a9dac2165289da281f",
+      "engine_next/thirdparty/enet/include/enet/time.h": "808d5c402c908c14afd0df385855a1b8713e5f69a04008c341a70928647d3e6e",
+      "engine_next/thirdparty/enet/include/enet/types.h": "543482db06a0086983641f550effec827e0ccf722667d4e1956cc92cb074dca6",
+      "engine_next/thirdparty/enet/include/enet/unix.h": "c37171b9f5f37e813059f6e37f247d32ae96037b6f2165d743fc757c6ea80c83",
+      "engine_next/thirdparty/enet/include/enet/utility.h": "5f9f3b9f5110d6a0e4be94bcf7950031985c278b49c922f637074e30784fc392",
+      "engine_next/thirdparty/enet/include/enet/win32.h": "4d16a2c8301570fc54264bfe7bfb4b8bdbf86e2a1d8a6e047633e6fd79d4964f",
+      "engine_next/thirdparty/enet/list.c": "c5350bfa7b7d3cc49fa4b2ebab92e359995e4b1ca47c2c17b0fa338dad87e5a4",
+      "engine_next/thirdparty/enet/packet.c": "cfa444c3bf8460a1a14909166b08efc2cf82112b4368011814396d6d09a3bce7",
+      "engine_next/thirdparty/enet/peer.c": "a967be4d6b03e8059838587f6f0e13fe092109121f51bec4ed039721ddc1a157",
+      "engine_next/thirdparty/enet/protocol.c": "ecea8558f1ce0b088a9aee0ea9f55524e9f10336b7f2a9d30fcdc244b2b527c2",
+      "engine_next/thirdparty/enet/unix.c": "eb901bc255150fdf867b4a71419b1b233e5bb0858abf298da282320a2fa02045",
+      "engine_next/thirdparty/enet/win32.c": "bf36d2239b6fe5c779d84605c44f0fbeb48330a0a8ea26006a1af0c7ee7cb6f0",
+      "engine_next/thirdparty/libjpeg-turbo/LICENSE.md": "2189dc45a8fe96204069f8124caa53a148dfdc193f50f584c6ca7849a6072872",
+      "engine_next/thirdparty/libjpeg-turbo/PATCHES.json": "21ee91b2cecc04189a7220bd623a4597ecc2483e22e0b169d8e671a7a7a12df2",
+      "engine_next/thirdparty/libjpeg-turbo/README.ijg": "75815e3bf6484201a3c3d17a1bbf10f2e8e3237f84df10a2357ea896db2a81d6",
+      "engine_next/thirdparty/libjpeg-turbo/UPSTREAM.json": "db228a55626f2a61589d86e04e0480302dfb7fad6aec96a71bb046fbbc640d9e",
+      "engine_next/thirdparty/libjpeg-turbo/src/jaricom.c": "fa144de494da46aa685379a8a0f6f59acaef7a2bb282cbf738a0a8070e1d527e",
+      "engine_next/thirdparty/libjpeg-turbo/src/jcomapi.c": "b70d463fb2a29b01995e6fa307baee756dd97f83f9ffe0a4dcb2e9220e9c51af",
+      "engine_next/thirdparty/libjpeg-turbo/src/jconfig.h": "9545992fbf367753dc1f8b54d60a6434ab956d12f327acecc12c4914af649695",
+      "engine_next/thirdparty/libjpeg-turbo/src/jconfigint.h": "c416360360bb9929b73c1e08d5461c951f7dfc02391f70996d790fe25bd4cc37",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdapimin.c": "03c7c476f4cfc19fc0b7f53c6bef9f3122e682cbfd37410743fed4a1ecaecbc1",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdarith.c": "a0291db89f2a057eefcf234ccf02ad1ea385c00759af13fddec914bab0cfe0d1",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdatasrc.c": "25b8689e08ec083106e13a9c5a599b7d79dcf1f182d4565b1600eac014b874d1",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdcoefct.c": "edfd068202a3e8350c1deab080800f285a12fbf1a5845c52baeb199be37b4450",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdcoefct.h": "a62860fa7914706e571ea12541bd235f1b320150df7c855a210afdc33047146a",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdhuff.c": "712ecd1b7e2b520ce0648cb742f1dad89f675ab8871dc054227cb28aed84b377",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdhuff.h": "59acd799211b415f821890e1947d7a7a4c9dfb7e15911cc8b413395d47881b43",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdinput.c": "b3c155ed22ce4b49431d4900392f09354275daa59602450fafc6b9cd7adfcc13",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdmarker.c": "1dd922aff8f92ece4f8f2b11eea08cd49b2e232de797ee98db9e331f6d0e3296",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdmaster.h": "2ad7689d61273e464866be6b6b9ad227e70706379fd7b725b5c4535285fa29a4",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdphuff.c": "fdaf536fed994d433b08a2f0bc39b85bc100d81f465e1164c78caabcfface7d3",
+      "engine_next/thirdparty/libjpeg-turbo/src/jdtrans.c": "b624447657d4f01737efc0b846285a19974f478a21418af1f6c1143c24bcf16c",
+      "engine_next/thirdparty/libjpeg-turbo/src/jerror.c": "1c3661997d30898f587a2765e934b23e706fabb7e4c316490348843f2003d0a0",
+      "engine_next/thirdparty/libjpeg-turbo/src/jerror.h": "35354d148ea6da234bacd5435155d0ec1de9c05833602232a67f1cf184c04925",
+      "engine_next/thirdparty/libjpeg-turbo/src/jinclude.h": "5b9f31bb7fb5bee3b7c8717ec801f2afe6e813272b502bc3bc96f6324fcfa3e2",
+      "engine_next/thirdparty/libjpeg-turbo/src/jmemmgr.c": "b98f08ee621c2882c0e2b584d38c5e614332c926285e5ce25958089a96c4f1b1",
+      "engine_next/thirdparty/libjpeg-turbo/src/jmemnobs.c": "328ff841f437fa7c2de846c4e295e9145cc628b9041aed718a06eb087c55786c",
+      "engine_next/thirdparty/libjpeg-turbo/src/jmemsys.h": "441fd978684f5bb8f4b1a512221def17948aab73c507b98b8602cc0bda360d96",
+      "engine_next/thirdparty/libjpeg-turbo/src/jmorecfg.h": "80a97f45ecb28d83310247eecec2a3865b5fd39ba0ecc490b48a36fac6318e26",
+      "engine_next/thirdparty/libjpeg-turbo/src/jpeg_nbits.c": "c8f32852eb9bece6e08beda55275773865ead5aa301c5f5baeb2fc3ade6253aa",
+      "engine_next/thirdparty/libjpeg-turbo/src/jpeg_nbits.h": "82ebb5a854c908d07bf77a03a9fb749f49561f7eb6cb6f80a2621a3d0f8d33f5",
+      "engine_next/thirdparty/libjpeg-turbo/src/jpegapicomp.h": "7ee0ac1b9307c03a6a715d46f89f611abd28c5795b9b9a410255df3a8d1db92d",
+      "engine_next/thirdparty/libjpeg-turbo/src/jpegint.h": "07a75eceaadf7fc986b3451a723c54e5193f3b4f6686b2fec2e93feeb1c9d509",
+      "engine_next/thirdparty/libjpeg-turbo/src/jpeglib.h": "dc3e8220f34b7e9f9e48620f5cb8dc070834feb3214bb12bbad78478ebb29e60",
+      "engine_next/thirdparty/libjpeg-turbo/src/jsamplecomp.h": "cbe390ba987549c89c7ac17ea4f8cea956d513f0b1e51efe3da83adfaaa85a03",
+      "engine_next/thirdparty/libjpeg-turbo/src/jstdhuff.c": "79e2cbf605326ce6349a60f58695b97d574510662f8b089474f30c07bf06be28",
+      "engine_next/thirdparty/libjpeg-turbo/src/jutils.c": "70c0ba2953ca8f4abd6858d8ed71aa3266f37d529313b8e0cdfa0d1a43e31b2e",
+      "engine_next/thirdparty/libjpeg-turbo/src/jversion.h": "9ef81aa06dba52bbf3b7f1ee0542a4652e78a65ec5ec9ddd3e86a8900239a31c",
+      "engine_next/thirdparty/libjpeg-turbo/src/wrapper/jdcoefct-12.c": "f198bc02042b61e682282bba855c5b599e6042b509e553ba8d1197dd58dba284",
+      "engine_next/thirdparty/libjpeg-turbo/src/wrapper/jdcoefct-8.c": "db42f048ef044fc7fa623bc6daadfee4a25b3739b6296d6f95f7f448f7c3d958",
+      "engine_next/thirdparty/libjpeg-turbo/src/wrapper/jutils-12.c": "ee9c47b293fff476e139faddf40c6e07acc93426f9fa5166d266b4b267b9683a",
+      "engine_next/thirdparty/libjpeg-turbo/src/wrapper/jutils-16.c": "b86afd43619d70b584fd78a2fe0a876ae1aea1613d93181e037d8e7d6a2a5c6f",
+      "engine_next/thirdparty/libjpeg-turbo/src/wrapper/jutils-8.c": "c455d2f2a626b1ead9bb47b8e5c2199df6125e4f0cf6026cbf369adde20a63cd",
+      "engine_next/thirdparty/zlib/LICENSE": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+      "engine_next/thirdparty/zlib/PATCHES.json": "2f5ed9449d06a465f8e37034b59699bc32c4d1193cbdde450e42249b8e6361a8",
+      "engine_next/thirdparty/zlib/UPSTREAM.json": "7b449ae4ff260ef50de5211d24a66eb1460f78137977b88f31ea2561995776ef",
+      "engine_next/thirdparty/zlib/adler32.c": "9cd1443a24ff2a3053961695bd432035c58347386a420d3388232376ebabe211",
+      "engine_next/thirdparty/zlib/contrib/crc32vx/README": "6bac5b0d17364abf205d83572948c0ce1e9cb9dac45bc4b63c4d1df05f80aa62",
+      "engine_next/thirdparty/zlib/contrib/crc32vx/crc32_vx_hooks.h": "733a86cdc24d8aad85cda37b775a79ab892bf6610374fabab197d3fb10654b8b",
+      "engine_next/thirdparty/zlib/crc32.c": "da37f3483e77c20f64c28cf55d62d7bed9d62af33eb401be906835d84539b9c9",
+      "engine_next/thirdparty/zlib/crc32.h": "9a2223575183ac2ee8a247f20bf3ac066e8bd0140369556bdbdffc777435749e",
+      "engine_next/thirdparty/zlib/gzguts.h": "db7690315cda93c0742701365d5218932ff0e2e6b8713c95019553502ada7d2b",
+      "engine_next/thirdparty/zlib/inffast.c": "f96787a11bb7131ffd2221fb40db27f6a5a1dfb12f59c0bc388807010749c34a",
+      "engine_next/thirdparty/zlib/inffast.h": "05cc5dc9ff1da7b8b52a4bd8bda0d8a5c236a2f39efe84b941516ea13857e6c5",
+      "engine_next/thirdparty/zlib/inffixed.h": "fd7c4b1dbdacb283421d0675744aaecda44e840e183b5131448bac94564f6adb",
+      "engine_next/thirdparty/zlib/inflate.c": "90221ea7d762e7044057f6ad5013e969086c6ba3d3051716b7aa786d7a6362ec",
+      "engine_next/thirdparty/zlib/inflate.h": "e6a43bd0e24ab2cf5fa1dca630859e9a2f6a721f033f75faf179f5c0299e4fe2",
+      "engine_next/thirdparty/zlib/inftrees.c": "f7ee9ce5925fc9d1579c76e574feed85f5ca4ccddc446a7795578854bbc65743",
+      "engine_next/thirdparty/zlib/inftrees.h": "d3a7ea301d8ec514823d052a2e42af4636bc81a0cf07052f526030f208068fb8",
+      "engine_next/thirdparty/zlib/zconf.h": "cb7c2c84211473b4699223edd363d3207b43b9578e739b5bf638f42204ea6e0f",
+      "engine_next/thirdparty/zlib/zlib.h": "818667d6ab6a37fe7469cb06a7f0cb2c2cb2f2c948a03e5accf1a4a74bf3020a",
+      "engine_next/thirdparty/zlib/zutil.c": "1279908a15580224a2c1f377555ffdd150327fed71801aa77fc35978dcb741c8",
+      "engine_next/thirdparty/zlib/zutil.h": "a12243cc6d338ffad0c8e3500fbc05bc7fdcdc25a469393b1c2f7e5df307fff3",
+      "tools/check_engine_next_contract.py": "ce528852c68b418dd27c4c2618d15900a6e1e51566e9d64a039de19cba4b992d",
+      "tools/engine_next_contract.json": "897ad309c10b67f913e91879a3c70aaf78167a7c8ba4f2780997f6e9264e5652"
+    },
+    "sanitize": false
+  },
+  "source_git_blobs": {
+    "ai_core/Runtime.cpp": "9f1c5e8fe00e7075fcbaf76bae0bb43a5453c433",
+    "ai_core/Runtime.h": "c008bc07d579a1c3cef92be198f93ee3060b09d3",
+    "engine_next/AI/ArtifactAdapter.cpp": "c92247dbfac0183bebda20facc6b956324c940cd",
+    "engine_next/AI/ProcessTransport.cpp": "afbf2f23f5541467bc89f555b759973fa167f23e",
+    "engine_next/AI/WorkflowController.cpp": "a63451ba527c45eaaf9aa2edae3ccdfdc9ab46fc",
+    "engine_next/AI/WorkflowSnapshot.cpp": "1ddf34dd9823e4491b18a605f4b1bff62a6db235",
+    "engine_next/Apps/NextVisualClientMain.cpp": "55143e43bebc01f94587c1353e841ca42f768c63",
+    "engine_next/Assets/AssetCompiler.cpp": "8429ebdf49761e2f3d847228714640a17585e5be",
+    "engine_next/Assets/AssetManifest.cpp": "63848a9d33dd4b9eb993d155862472539a2e6161",
+    "engine_next/Assets/AssetPackage.cpp": "393451339b3ebc787ec882368362e6659909271c",
+    "engine_next/Assets/AssetValidation.h": "215088526004213c5301b380449bd1510cef56de",
+    "engine_next/Assets/BlobValidator.cpp": "7b7ebf74da41d0ae8315636e66a7f17ab6309208",
+    "engine_next/Assets/SceneDocument.cpp": "26b4933fbc9b54aa844fa324cb2e2af491d4b5b8",
+    "engine_next/Assets/Types.cpp": "27dc3b7ba52ac9ee105fcc469f640ad38b1f7a17",
+    "engine_next/Client/ClientRuntime.cpp": "6168b50ebc851c3ab6faa0d336aab9a82d2d5545",
+    "engine_next/Client/ClientRuntime.h": "50cbc3f602f168b14d356ea10571180aedd10c51",
+    "engine_next/Client/ClientSession.cpp": "36c90914c40c70c0da95df96036e4474e9226659",
+    "engine_next/Client/ClientSession.h": "41119c2d709afc40064251011ba7b9203fdfbb08",
+    "engine_next/Gameplay/InterpolationBuffer.cpp": "ee62277ad8f0b2e5dd673d1dae1b4aacaf44a9d9",
+    "engine_next/Gameplay/PredictionModel.cpp": "f8588e175b3c6dac0627680144631435e7df26f3",
+    "engine_next/Gameplay/PredictionReconciler.cpp": "80be4227b8e9f270b65edbbb2dd8a6215947edd3",
+    "engine_next/Network/EnetTransport.cpp": "f8b7742436a8f017ed63d3c98ac99a6062bd0c88",
+    "engine_next/Network/ImpairmentTransport.cpp": "ab0b26dfeab50aa601fba6d9a49d26c30a7829bd",
+    "engine_next/Network/Protocol.cpp": "2366e09b229c8ac861c019b5457c186e9afa22f7",
+    "engine_next/Network/SessionManager.cpp": "8f6c0b15815f3c8e28c00367d18049102b3e816f",
+    "engine_next/Network/SessionManager.h": "553629589e22548a50d3237d06c305607040df02",
+    "engine_next/Platform/Windows/Window.cpp": "8becf1dae6e69168a36dc31ae8e707660b5b3656",
+    "engine_next/Platform/Windows/Window.h": "588670c311c1ad9b5e8cac2a2b2b27e4a05435a5",
+    "engine_next/Rendering/CameraMatrices.cpp": "6052df8be7d3650c5883b18f6f842128eb7eda63",
+    "engine_next/Rendering/Cook/EnvironmentLighting.cpp": "dc508c2de6b0360a3e27c16b34710fba4319d002",
+    "engine_next/Rendering/Cook/EnvironmentLighting.h": "5fae4c4fd0ed1665eb37aa5388504c1a96855042",
+    "engine_next/Rendering/Cook/GltfDecoder.cpp": "f6e95f3ed33f940353938f308807ddb3e69ab284",
+    "engine_next/Rendering/Cook/GltfDecoder.h": "247efc4fefeddcbcccfd2e603dce85d49cbbf65f",
+    "engine_next/Rendering/Cook/GpuPackage.cpp": "b5722c38fd7e4981456d9ab55b71315816382ee7",
+    "engine_next/Rendering/Cook/GpuPackage.h": "8e7a77f6be3037f4d60c46bf60e2afd04275d8ba",
+    "engine_next/Rendering/Cook/ImageDecoder.cpp": "578baabdb174822b33d97ac27fe7565c0ae5440c",
+    "engine_next/Rendering/Cook/ImageDecoder.h": "653978338509693a5a1e770aa321c2fb048aa95f",
+    "engine_next/Rendering/Cook/JpegValidation.c": "b9a56518347d89390f8dc05be4ade9111ae26046",
+    "engine_next/Rendering/Cook/JpegValidation.h": "a817925671d5d1beca1f90fd20a10d1589f25f43",
+    "engine_next/Rendering/Cook/MeshCluster.cpp": "52f27f2a04ca3296ee26d3f4e0577fee21a1e85a",
+    "engine_next/Rendering/Cook/MeshCluster.h": "8d67ca934fa1f2989937ca5aa136b2bb5eafa1b5",
+    "engine_next/Rendering/Cook/TextureCook.cpp": "fc6d3d3069767ce7387ca5ffd0568251684ee7b2",
+    "engine_next/Rendering/Cook/TextureCook.h": "f1277775865a0a8115635a417f1a78e0897d5645",
+    "engine_next/Rendering/FrameGraph.cpp": "29f4da4a5c2bcdd40ee927056e3f810cc997f9bb",
+    "engine_next/Rendering/LightTimeline.cpp": "3adaa5e75f29fecf40ef753855be1b1564283028",
+    "engine_next/Rendering/LocalShadowData.cpp": "36225bd7b393d52b3a06d772cba455f8d4bd748a",
+    "engine_next/Rendering/ParticleSettings.cpp": "48694a343f9b6ed607fc4bf1e187f30b806042e6",
+    "engine_next/Rendering/ParticleState.cpp": "944beb3cb6bcc65113a67fff7565c9945d544305",
+    "engine_next/Rendering/PostProcessSettings.cpp": "abe95d48f772e13969a5394644d66e41ef13a73f",
+    "engine_next/Rendering/ReflectionSettings.cpp": "db2dd1bd351988231794a464e1fdb9a781135b7d",
+    "engine_next/Rendering/RenderConfiguration.cpp": "addbd2b98d34cebbce58db3bfff368f6e41ab73d",
+    "engine_next/Rendering/RenderPipeline.cpp": "33defb1366cf8ceb7c36af744e58e276d58fc84e",
+    "engine_next/Rendering/RenderPipeline.h": "fe66d2e8ab1e09ab1f9c549722805dc6303f07be",
+    "engine_next/Rendering/RenderScene.cpp": "c7ebfff90d9e0d67c705a2e960ae1b9d14acc57e",
+    "engine_next/Rendering/Shaders/Bloom.hlsl": "76d0f0bbc71cc930563ced63598d8ba36f71a16b",
+    "engine_next/Rendering/Shaders/BloomSampling.hlsli": "f45936284adc8befb586e5d516bb664bc93d5794",
+    "engine_next/Rendering/Shaders/Deferred.hlsl": "44ff174fc0226a7c7bce7bb41cc7f41d048cbede",
+    "engine_next/Rendering/Shaders/Exposure.hlsl": "7095a05a88dfb0eb92b4cf070edcb23b4986a89d",
+    "engine_next/Rendering/Shaders/ExposureMath.hlsli": "4bf2007dc18e4129bfc6ce1ea6eb12625747ee51",
+    "engine_next/Rendering/Shaders/FixedMesh.hlsl": "0e32bb1b8f794bd6ef3b8ede41f29ebf618fd60a",
+    "engine_next/Rendering/Shaders/Reflection.hlsl": "e237b7c37e3d9fb6b405003cef7e343143ecd1b8",
+    "engine_next/Rendering/Shaders/ReflectionSampling.hlsli": "2992954bebced4b97df7425788698cc5e231e909",
+    "engine_next/Rendering/Shaders/ReflectionTrace.hlsli": "d0e9ca94a79b9bc02e6d03ae99428b9e48fbded4",
+    "engine_next/Rendering/Shaders/Shadow.hlsl": "626ef5e92768041e5fd96505c832670768d4de8a",
+    "engine_next/Rendering/Shaders/ShadowSampling.hlsli": "665209001be61d30bc7cc3108503f9aec52ce562",
+    "engine_next/Rendering/Shaders/TemporalAA.hlsl": "6ac223799baf5b41bf5ba49d3d6a57d56b4a03f5",
+    "engine_next/Rendering/Shaders/TemporalSampling.hlsli": "73fe510099519ba29bcc4772ae0a9baa7e1fb1f1",
+    "engine_next/Rendering/Shaders/Transparent.hlsl": "d2441b788567bca864e77c50f2d696a48be7927c",
+    "engine_next/Rendering/Shaders/TransparentMath.hlsli": "017548bc955237934e3e62b4f7f0243e3e4ca539",
+    "engine_next/Rendering/Shaders/Volume.hlsl": "a916d67e67c9aa70191d8f643983991b67704a03",
+    "engine_next/Rendering/Shaders/VolumeColor.hlsli": "097e0918de8d4425622269ad7aabd3605be7374f",
+    "engine_next/Rendering/Shaders/VolumeCommon.hlsli": "008a161bbd7e2a5b3b5fa39d94f6ea11d8c19af4",
+    "engine_next/Rendering/Shaders/VolumeComposite.hlsl": "abfaf3dacf4d9ef503270b266a48ee2d7b8d8278",
+    "engine_next/Rendering/Shaders/VolumeMath.hlsli": "556a1a31351c45d24823bcb9081fcc9656c5df6f",
+    "engine_next/Rendering/Shaders/VolumeSampling.hlsli": "bfcbf0d5b1561b92ba0a5a906b036d3848384824",
+    "engine_next/Rendering/Shaders/VolumeTemporal.hlsl": "703a8ecc49c3fdfc3f1b7d879d5de48616b7eb30",
+    "engine_next/Rendering/Shaders/VolumeTemporalMath.hlsli": "42f83c2ae18aad30f9ef240f62def9072d4e35b4",
+    "engine_next/Rendering/ShadowBounds.cpp": "8dd6c7dc95890506ed2996a3c10ddd30d15da6b9",
+    "engine_next/Rendering/ShadowBounds.h": "31a8703332f7c2fa172d1a16f7c08ece805abe2f",
+    "engine_next/Rendering/ShadowData.cpp": "c9772a4bf3cc51bee1f61314cd52232f0c6d1320",
+    "engine_next/Rendering/TemporalState.cpp": "0a3cd9520af76d8768108b3f0d8eb74d38f4d2d4",
+    "engine_next/Rendering/VisualRuntime.cpp": "9f8f98a8f79f1fbae88a72d178faf7ebea17d77a",
+    "engine_next/Rendering/VolumeGrid.cpp": "c567d0a17e2da2d73098b2eab2a3efe451fce319",
+    "engine_next/Rendering/VolumeSettings.cpp": "aff162185732df7def950cb033f09161f2afc334",
+    "engine_next/Runtime/Clock.cpp": "783f041a080628ce6d227a14288a6868e2088fdc",
+    "engine_next/Runtime/FixedStepLoop.cpp": "8b3e820974b9d3809e041c90c79117d3c09d9799",
+    "engine_next/Runtime/RuntimeConfig.cpp": "68ee5a7f5105cba2fd986fa13aaa8b7f7d5db29f",
+    "engine_next/Runtime/RuntimeHost.cpp": "5cbc8e5dcc4f5f4ac79363e991e32912719b7542",
+    "engine_next/Runtime/SceneRuntime.cpp": "b8d94c8f3378edc18a4b9b28409cd5d7fbea15b5",
+    "engine_next/Runtime/Trace.cpp": "619d567f5a9452cf3166adb1948512ea7c601db1",
+    "engine_next/Runtime/World.cpp": "4f414fcb996cebd7cdf396f85870e705f3f3a419",
+    "engine_next/Serialization/Json.cpp": "5f1ea2854a6f10a072b8041e375f633de0dc73bf",
+    "engine_next/Serialization/Sha256.cpp": "4ec45def1aee0062fdf9f9c255e8ce866488a763",
+    "engine_next/Server/ServerRuntime.cpp": "7c6297de4fd17bab33127a4d439051835ea9b29b",
+    "engine_next/Server/ServerRuntime.h": "e38f73128d8de5d45e542200a4b3350c596c856a",
+    "engine_next/Tests/Assets/FixtureSupport.h": "39edd81c9dd064bae3550e1ab75f684ea779f3c8",
+    "engine_next/Tests/Rendering/TestBloomSampling.cpp": "21db48f804ac9eaed1008a182080673874b5969b",
+    "engine_next/Tests/Rendering/TestCameraMatrices.cpp": "9e8f33a5908e9604662a6a701ba1bb19adc2a7ff",
+    "engine_next/Tests/Rendering/TestEnvironmentLighting.cpp": "9e1f6016d34b0374df8fd248fd20a4acc5a9b319",
+    "engine_next/Tests/Rendering/TestExposureSampling.cpp": "f0ee844bf3898fe87ecab469a05402742445f30d",
+    "engine_next/Tests/Rendering/TestFrameGraph.cpp": "35625140fd25c1cb9c5cc4b5362abc55dfa15ea6",
+    "engine_next/Tests/Rendering/TestGltfDecoder.cpp": "478646f5f6eef1c0237f6ab59c7a8fee30790b3d",
+    "engine_next/Tests/Rendering/TestGpuPackage.cpp": "7fe570f0a8652a57f88917e391ba89361d532be8",
+    "engine_next/Tests/Rendering/TestImageDecoder.cpp": "0990471ace3c6360db7b30c5581ac3422eb25a8b",
+    "engine_next/Tests/Rendering/TestLightTimeline.cpp": "62215ab5d4868ed0c42571e5a971c091fbb4f2fe",
+    "engine_next/Tests/Rendering/TestLocalShadowData.cpp": "2ff1b3eff76e00b2af69896ebbaf6bdc10f4861e",
+    "engine_next/Tests/Rendering/TestMeshCluster.cpp": "5de16ccf15f5e584041cc2c3b3bfb86fd2180c31",
+    "engine_next/Tests/Rendering/TestParticles.cpp": "f4f15101d4ef41ee4f7df05f4e63e1918a7414b3",
+    "engine_next/Tests/Rendering/TestPostProcessSettings.cpp": "d5a337c3cbb168b06de0fba8bc38f0d21cc7c152",
+    "engine_next/Tests/Rendering/TestReflectionSampling.cpp": "e8b20c7a5ff7625af2679a8e811ff54c6e97f02d",
+    "engine_next/Tests/Rendering/TestReflectionSettings.cpp": "dc1787cdb95e1d3ab8033b4db63b4633783d4fa0",
+    "engine_next/Tests/Rendering/TestReflectionTrace.cpp": "c8bb98677969ed926a15851bebb5c78f47fa7ac4",
+    "engine_next/Tests/Rendering/TestRenderConfiguration.cpp": "bcc328063ae2747eebae32b75c1ef9f76636c5d3",
+    "engine_next/Tests/Rendering/TestRenderPipeline.cpp": "01a26810b399091b3b131006ea34fc46f15ab1a9",
+    "engine_next/Tests/Rendering/TestSceneEntityTransforms.cpp": "b2c7f782a60f22be482aae61e35c31d10e31d5e4",
+    "engine_next/Tests/Rendering/TestShadowBounds.cpp": "662bc1f77165c8f5224c724ffb9e751ac197ff6c",
+    "engine_next/Tests/Rendering/TestShadowData.cpp": "5e251538b6d3b6edd1e95c014d5841d45d12610d",
+    "engine_next/Tests/Rendering/TestShadowSampling.cpp": "635f50adb1b951c1772c91777d2f833f0e3abbc2",
+    "engine_next/Tests/Rendering/TestTemporalSampling.cpp": "2dc8686b05e6b7c4b4b17279055c95c668510f8c",
+    "engine_next/Tests/Rendering/TestTemporalState.cpp": "173810ba7c34cf5d9693c5f2bd880237b54815a9",
+    "engine_next/Tests/Rendering/TestTextureCook.cpp": "3620b561f40ca6e44e9f736eb09c135fbd7eb25f",
+    "engine_next/Tests/Rendering/TestTransparentMath.cpp": "0a8900e78d53d328466b0baf18ff81e440253c09",
+    "engine_next/Tests/Rendering/TestVolumeColor.cpp": "92787c14e3613f8d5b1133c027250c2d714357f6",
+    "engine_next/Tests/Rendering/TestVolumeMath.cpp": "771bd38e18b9b0a77cee72d81d442310ef1ed396",
+    "engine_next/Tests/Rendering/TestVolumeParse.cpp": "914bb117c93d763f097c0aea19123d6a3215703b",
+    "engine_next/Tests/Rendering/TestVolumeSettings.cpp": "1e12c0fdb278b86659e4adf5fddfd8ce0afa87b6",
+    "engine_next/Tests/Rendering/TestVolumeTemporalMath.cpp": "c4dc689d0e8702da37e35e3fda96e91cc66262db",
+    "engine_next/Tests/RenderingTestMain.cpp": "b31c369a051b9f717cd8c577bec6be198b0f6614",
+    "engine_next/Tests/TestFramework.h": "9d6d3ec745e9c1c14f404d1a49249b61fcd02fa3",
+    "engine_next/Tools/BuildGameplay.py": "42546938545ea6ec4ee18d5156ac30ccce801d90",
+    "engine_next/Tools/BuildRuntime.py": "48ce0bf883eab16f0ab25f459d166c0feb2ad636",
+    "engine_next/Tools/BuildVisualRuntime.py": "2a818e8417956794c103070dcd846fcc1b09eced",
+    "engine_next/Tools/PackageVisualRuntime.py": "cfd0ff8877bc557322c5e8f29eb351a62b1f6296",
+    "engine_next/include/EngineNext/AI/ArtifactAdapter.h": "a0f8b4683aea0b709ca46a95e4b08bd56d9e3cb8",
+    "engine_next/include/EngineNext/AI/IProcessTransport.h": "27282ffeb4898aba6e242913810797a34c732fd0",
+    "engine_next/include/EngineNext/AI/ProcessTransport.h": "7b7d9f16ef6f5a8fd3027fd42fb2bf52af7f4ed3",
+    "engine_next/include/EngineNext/AI/WorkflowController.h": "2137c6a543ae7df55836cd2a6e5f4a6e3a307ea9",
+    "engine_next/include/EngineNext/AI/WorkflowSnapshot.h": "2db3e310831701983bde027db6be93caa785379a",
+    "engine_next/include/EngineNext/Assets/AssetCompiler.h": "cddcb084eed05430a1bff52d5ca578deaf59f459",
+    "engine_next/include/EngineNext/Assets/AssetManifest.h": "7eed0eeaefdfef3ad7347ab9416b938b2142ae95",
+    "engine_next/include/EngineNext/Assets/AssetPackage.h": "935a16ab49c2137a39fbc96d9294bee0f75e2a29",
+    "engine_next/include/EngineNext/Assets/BlobValidator.h": "1355dc0c7e05f6589514a5b1d5ed1f8e335c4e72",
+    "engine_next/include/EngineNext/Assets/SceneDocument.h": "bb01ddd7ea5d32e87695aac319914753081a5997",
+    "engine_next/include/EngineNext/Assets/Types.h": "f1e140e4d32e0dc2c9f8087d4654f5be73f35244",
+    "engine_next/include/EngineNext/Gameplay/InterpolationBuffer.h": "80c2bca83ee9ec543241180342a56f7d78e9fa43",
+    "engine_next/include/EngineNext/Gameplay/PredictionModel.h": "b7f8a39277252b632be45859504c95292e8c9247",
+    "engine_next/include/EngineNext/Gameplay/PredictionReconciler.h": "86305e34500e677654b8495cb385dde6f2d1390a",
+    "engine_next/include/EngineNext/Gameplay/PredictionTypes.h": "2c5fa35f47bc7b0f5d951744c6f2a76c4f756137",
+    "engine_next/include/EngineNext/Gameplay/Status.h": "adcfbff2025352f67c88840cf63a2b360c53a98c",
+    "engine_next/include/EngineNext/Gameplay/Vector3.h": "08ab807b2c540e017a22e4a3463a9114d0bdb3e8",
+    "engine_next/include/EngineNext/Network/ITransport.h": "f0a833ccf140818af71af6c8df935bd491abddb5",
+    "engine_next/include/EngineNext/Network/ImpairmentTransport.h": "90ed2ea1f641c461adec7238c8669ba19c3d86a5",
+    "engine_next/include/EngineNext/Network/Protocol.h": "0b64bdabe8e083ef7652f68deccda09dfe3aedb9",
+    "engine_next/include/EngineNext/Rendering/CameraMatrices.h": "4b3e16f3d4f2681a95bfc2248710d8c3c4fdc179",
+    "engine_next/include/EngineNext/Rendering/FrameGraph.h": "b770b22e1c6dba98ba2cc2ba0bddbe783ab4b14a",
+    "engine_next/include/EngineNext/Rendering/ImageData.h": "72b58e43b007eb054d97969380b937cfc31f0eb8",
+    "engine_next/include/EngineNext/Rendering/LightTimeline.h": "6be7477ac36453dccbfd5c6ada545b68464827c0",
+    "engine_next/include/EngineNext/Rendering/LocalShadowData.h": "6935a1db0e451f6f560e4b6a22620eebf8869491",
+    "engine_next/include/EngineNext/Rendering/MeshData.h": "c91147cab5a0b6c3eca0ed15ed48f103851a3941",
+    "engine_next/include/EngineNext/Rendering/ParticleSettings.h": "50b5bfa0ae2dce794a08b513bcc28aad7191b0e8",
+    "engine_next/include/EngineNext/Rendering/ParticleState.h": "c327904bf13f85dc00268cc1f6ac9ebf14419f19",
+    "engine_next/include/EngineNext/Rendering/PostProcessSettings.h": "9d6280803d41ea5e782094c0eee447b71658f3d5",
+    "engine_next/include/EngineNext/Rendering/ReflectionSettings.h": "447848f747b42f901c568f86f170caebc2339353",
+    "engine_next/include/EngineNext/Rendering/RenderConfiguration.h": "1bc7d48fbac270f647fb4dc088ad519868b13c3d",
+    "engine_next/include/EngineNext/Rendering/RenderScene.h": "5303769b2405f9c3506bcf78f3df49412d75bd6b",
+    "engine_next/include/EngineNext/Rendering/ShadowData.h": "9d01beb0bc860fee5adfe45a27407c4f80a77e0b",
+    "engine_next/include/EngineNext/Rendering/TemporalState.h": "e33205c340db68c5476bfe93a5c5c8931b8e1ddf",
+    "engine_next/include/EngineNext/Rendering/TextureData.h": "cc482d85a19ee40bd547362408523ae5ad2447e6",
+    "engine_next/include/EngineNext/Rendering/VisualRuntime.h": "22db326674728caf76474365547d70fd61daf6d0",
+    "engine_next/include/EngineNext/Rendering/VolumeGrid.h": "1b827065db0c313752c50a19a3936f48bce77527",
+    "engine_next/include/EngineNext/Rendering/VolumeSettings.h": "aec5c3e77300da4c389411243227f03eb1b44a94",
+    "engine_next/include/EngineNext/Runtime/Clock.h": "9d90e4bd7937594a9cce71255e228a9043427dcb",
+    "engine_next/include/EngineNext/Runtime/FixedStepLoop.h": "36bf9d8c01e6ef464cf2e104d48334e21633205b",
+    "engine_next/include/EngineNext/Runtime/RuntimeConfig.h": "6b5670c2539228b1b55878c62394ccc4fc3bde13",
+    "engine_next/include/EngineNext/Runtime/RuntimeHost.h": "2821eae5e5fd0e94c31595f2682faa6f232e73ea",
+    "engine_next/include/EngineNext/Runtime/SceneRuntime.h": "f9a3ec6be3d120d3cc93e194937b75c035e78942",
+    "engine_next/include/EngineNext/Runtime/Trace.h": "7154d7b05cc2495de3513b83e4a8b6cefb3b7ee2",
+    "engine_next/include/EngineNext/Runtime/Types.h": "96bf7a36621b1e83c7ceceef173d95e4934abe7d",
+    "engine_next/include/EngineNext/Runtime/World.h": "0d6c457fb30ece3b6f90b16d4ac74cc0c0bfb839",
+    "engine_next/include/EngineNext/Serialization/Json.h": "ba092fb3090f37177d97fea819009c7e6ef5f03f",
+    "engine_next/include/EngineNext/Serialization/Sha256.h": "1b2db5ddd0e1a0b45f30740f059b49f63cbda56a",
+    "engine_next/thirdparty/enet/.gitattributes": "79155d38e40dc5a280b832e8ecb857b6fdde62a6",
+    "engine_next/thirdparty/enet/LICENSE": "ec14b3f09b72315c6e774c4aae144a90affe3bc0",
+    "engine_next/thirdparty/enet/PATCHES.json": "97e9b675cfaf42dc01e624310a8f5ee2df265674",
+    "engine_next/thirdparty/enet/README": "3b6318b22a223fabaaf9beedee1dce06cd727f3b",
+    "engine_next/thirdparty/enet/UPSTREAM.json": "f0c95768a960203fb6bb52951f151544f11682ec",
+    "engine_next/thirdparty/enet/callbacks.c": "b3990af1fb91951cd7bf17f57e0108b9c27319e1",
+    "engine_next/thirdparty/enet/compress.c": "784489a7877cca4e6f13bb57a856434d2a0a60be",
+    "engine_next/thirdparty/enet/host.c": "fff946a392c1e2bf9a1ec50bf957e98d048d76c5",
+    "engine_next/thirdparty/enet/include/enet/callbacks.h": "340a4a9896b0860da09112b6ebe48a617254089d",
+    "engine_next/thirdparty/enet/include/enet/enet.h": "30010187633fa1e31cba58a1d066669e789054a8",
+    "engine_next/thirdparty/enet/include/enet/list.h": "d7b2600848ff0cdc67838ecc7d6a1e7471b66aef",
+    "engine_next/thirdparty/enet/include/enet/protocol.h": "f8c73d8a668c7a73bf41b9d793ec539b1c0df376",
+    "engine_next/thirdparty/enet/include/enet/time.h": "c82a5460351bc2f160124f89cc91458ddd84a649",
+    "engine_next/thirdparty/enet/include/enet/types.h": "ab010a4b13ddd439e807db5ffcda6ead134b8fef",
+    "engine_next/thirdparty/enet/include/enet/unix.h": "b55be33103d0d3cad4c7b96ea69b72b7e2dadb3a",
+    "engine_next/thirdparty/enet/include/enet/utility.h": "b04bb7a5b3584149617e72c5623eaee883043a53",
+    "engine_next/thirdparty/enet/include/enet/win32.h": "6fbd7c02c8df884b1f71c1d760d9a1bd8d0e4e53",
+    "engine_next/thirdparty/enet/list.c": "1c1a8dfaafc9119a68c599ed90a90600fa65d8c1",
+    "engine_next/thirdparty/enet/packet.c": "d51c6404049fc08d9f7548176f288d77a53b33eb",
+    "engine_next/thirdparty/enet/peer.c": "a7ac012079adacd49fb0c007635d40b1fd2ccfef",
+    "engine_next/thirdparty/enet/protocol.c": "cfd07ad835cf5c8c65870a360d8a0ca24a609aa9",
+    "engine_next/thirdparty/enet/unix.c": "66692169c1360c891492b785bbf73ca8ab83470d",
+    "engine_next/thirdparty/enet/win32.c": "f395c09b1920e369a61a85a649320b27177daf10",
+    "engine_next/thirdparty/libjpeg-turbo/LICENSE.md": "f299cf39e7423fdd46b46d88e357ca2c66e601e3",
+    "engine_next/thirdparty/libjpeg-turbo/PATCHES.json": "c6880192fe699204bb0fa3b0c4fd6bea72dc79b1",
+    "engine_next/thirdparty/libjpeg-turbo/README.ijg": "dbf8070cac812bcfd7eb4d407062919f69c777c8",
+    "engine_next/thirdparty/libjpeg-turbo/UPSTREAM.json": "0b27fb47c6d5ef18d315c8dd8ea565fdba81bc8a",
+    "engine_next/thirdparty/libjpeg-turbo/src/jaricom.c": "215640cc446404847d2d2f50604d30d3a27dadc7",
+    "engine_next/thirdparty/libjpeg-turbo/src/jcomapi.c": "84f37e172ecee6c5b60e87cc43b0a72acaa22811",
+    "engine_next/thirdparty/libjpeg-turbo/src/jconfig.h": "99314470230aa2e9701f44efe7e871c6bb5487db",
+    "engine_next/thirdparty/libjpeg-turbo/src/jconfigint.h": "57ecfa0c90e8a2136a84f455f443b6316bf3cbef",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdapimin.c": "f2419f8adb6555097836576732faee5b923318fe",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdarith.c": "21575e80c722aea6628f4b9332e4b28e6770c3c8",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdatasrc.c": "dc135f43a470cbf93c6373390ef42a9c0324b4a7",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdcoefct.c": "194d5a5cb7b909692b9654e14e4dd9a7b84dbba5",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdcoefct.h": "bbe9e970515c3ab7dfa2b42a36c160e87007319d",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdhuff.c": "cd8c0847a22e1f1dcf4e0ec44e3e3dd859318371",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdhuff.h": "3eee002c020a9d3641bfce08123e17aaa87cefdf",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdinput.c": "33e3a820fd28d7caed00b2c2282d78c6a2a07c6a",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdmarker.c": "f918ee4db522e5663531556e33acd6b6350b46a1",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdmaster.h": "76897e2820f82b5812cb34ceb4bd7f458dc69653",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdphuff.c": "bf97333a34c0fdd947947fd114461a21762699ca",
+    "engine_next/thirdparty/libjpeg-turbo/src/jdtrans.c": "719813f676728b95ac5f739e03791d1a874e80c2",
+    "engine_next/thirdparty/libjpeg-turbo/src/jerror.c": "2133244f8aed306cdd14aa5e77112ce730ad9637",
+    "engine_next/thirdparty/libjpeg-turbo/src/jerror.h": "71ba03e2a3ed0757c3aa78b4caf5ea2a24a31d63",
+    "engine_next/thirdparty/libjpeg-turbo/src/jinclude.h": "56e7a4b296d2ac123043dd276da84acd54f88e50",
+    "engine_next/thirdparty/libjpeg-turbo/src/jmemmgr.c": "eb199c8b3de084882c370b6e2f7b21c9dda36842",
+    "engine_next/thirdparty/libjpeg-turbo/src/jmemnobs.c": "692775f5a85945d78bde0b8e50a19d800d89ad4a",
+    "engine_next/thirdparty/libjpeg-turbo/src/jmemsys.h": "ac09ef4c36d39563e1f20290e3f2a309825e3314",
+    "engine_next/thirdparty/libjpeg-turbo/src/jmorecfg.h": "89c7842c87169b5797b6750ba8c9d694cb2c1662",
+    "engine_next/thirdparty/libjpeg-turbo/src/jpeg_nbits.c": "752a163653ee31c0222ef6c6deaaa81c7342451c",
+    "engine_next/thirdparty/libjpeg-turbo/src/jpeg_nbits.h": "61666fd57a9b588de37918f7c32ec2522875c0c7",
+    "engine_next/thirdparty/libjpeg-turbo/src/jpegapicomp.h": "bb3912eb2f16e754dfc3452e70fd362f836999ad",
+    "engine_next/thirdparty/libjpeg-turbo/src/jpegint.h": "a90493f9e08b20710bcae5e3b64ff10567382b5d",
+    "engine_next/thirdparty/libjpeg-turbo/src/jpeglib.h": "f7076a18d0106f28c608ac06272dcb397916a0c1",
+    "engine_next/thirdparty/libjpeg-turbo/src/jsamplecomp.h": "3a1f29602997fb90baed3337f4d72da60c91e467",
+    "engine_next/thirdparty/libjpeg-turbo/src/jstdhuff.c": "394590120550260305b25afaf5e43f2379e7ec13",
+    "engine_next/thirdparty/libjpeg-turbo/src/jutils.c": "24caac19021dae468751f9d85bda4780cee7f21e",
+    "engine_next/thirdparty/libjpeg-turbo/src/jversion.h": "0c127b5fa00990bfccf5247a505e1e372562b926",
+    "engine_next/thirdparty/libjpeg-turbo/src/wrapper/jdcoefct-12.c": "efeb532066d976fa254766dc1c88707166459215",
+    "engine_next/thirdparty/libjpeg-turbo/src/wrapper/jdcoefct-8.c": "446cefcee91af740e7790df5d1b9a64750c5ee50",
+    "engine_next/thirdparty/libjpeg-turbo/src/wrapper/jutils-12.c": "6620aa2d78a81ce61c40ee77951c5c2fa8b86f1d",
+    "engine_next/thirdparty/libjpeg-turbo/src/wrapper/jutils-16.c": "2df48891d1d341e74095b6fae3d40f05bddc6d63",
+    "engine_next/thirdparty/libjpeg-turbo/src/wrapper/jutils-8.c": "3c84956c3ca32129f4ed0f2e6f73e141af9d1115",
+    "engine_next/thirdparty/zlib/LICENSE": "b7a69d058e616651eae27b3f90c0b7fd36c099b2",
+    "engine_next/thirdparty/zlib/PATCHES.json": "826ea95e24a0ec660a021400fd4a85203983c84c",
+    "engine_next/thirdparty/zlib/UPSTREAM.json": "8c54c2c9bfa30d37785163bdcf7348c333a85563",
+    "engine_next/thirdparty/zlib/adler32.c": "04b81d29bad1691878648d7ae1680726abd905e4",
+    "engine_next/thirdparty/zlib/contrib/crc32vx/README": "329610d5690d9dc8f42018475fbbb0eb509dca26",
+    "engine_next/thirdparty/zlib/contrib/crc32vx/crc32_vx_hooks.h": "951c3188ab2ec7c791f72862e05f5d6fbbf7c67c",
+    "engine_next/thirdparty/zlib/crc32.c": "d9ade51502393a910646bcc19bbee7976ac2c5d3",
+    "engine_next/thirdparty/zlib/crc32.h": "137df68d616c5ed38913579ba37b4e4c533fa903",
+    "engine_next/thirdparty/zlib/gzguts.h": "266305debc8bac945863ed844adec8d7994ba3f1",
+    "engine_next/thirdparty/zlib/inffast.c": "d1657f3f30348aedf10add2838004a7ea0344c39",
+    "engine_next/thirdparty/zlib/inffast.h": "49c6d156c5c652dbd9e2e6aff90e20eb279a2b37",
+    "engine_next/thirdparty/zlib/inffixed.h": "05ce88e4ff5cd4e7ffe05d3a8309af1bf3b0e989",
+    "engine_next/thirdparty/zlib/inflate.c": "5f5d4922b7157792c817b622acfa95fecf1ba8b2",
+    "engine_next/thirdparty/zlib/inflate.h": "f758e0dcc18dc1dcfd875d3df98d71aa5743d349",
+    "engine_next/thirdparty/zlib/inftrees.c": "dcbc64e05b15c1083452787519041c0df3004421",
+    "engine_next/thirdparty/zlib/inftrees.h": "84d053697cd881db2f1d3a303e238a0cce0bf886",
+    "engine_next/thirdparty/zlib/zconf.h": "828ca617e90747c2f05ef0b8e2db4bc2b1be0e5f",
+    "engine_next/thirdparty/zlib/zlib.h": "a57d336134217efeddab550ed53df4b89adeca5d",
+    "engine_next/thirdparty/zlib/zutil.c": "4ea02a9c3644eebd10b2b9aec238689c2c32a93c",
+    "engine_next/thirdparty/zlib/zutil.h": "a9bc23ca62956e59b6ee304b0b6889f3ca776d7b",
+    "tools/check_engine_next_contract.py": "31848d7290bb804f114e01cffd37fe5efc010bf9",
+    "tools/engine_next_contract.json": "022c230fe4e4efc25f317a5458345d96944ffce1"
+  },
+  "source_mismatches": [],
+  "executable": {
+    "path": "build/engine_next/volume-r7/next_visual_client.exe",
+    "sha256": "55de295bb435cf9eec88ffa17f101144161c8df050c23c3b7201362ec06f7821"
+  },
+  "build_report": {
+    "path": "build/engine_next/volume-r7/VisualBuildReport.json",
+    "sha256": "5b9397337ce2a64f190f2765f91e2957c5e57f16f72deaf2dcbf46aa0dc7fbe0"
+  },
+  "cpu_test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=312 checks=175852 failures=0",
+  "shaders": [
+    {
+      "entry": "VSMain",
+      "path": "build/engine_next/volume-r7/FixedMesh.vs.cso",
+      "profile": "vs_6_0",
+      "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+    },
+    {
+      "entry": "PSMain",
+      "path": "build/engine_next/volume-r7/FixedMesh.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+    },
+    {
+      "entry": "CSMain",
+      "path": "build/engine_next/volume-r7/FixedMesh.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+    },
+    {
+      "entry": "VSMain",
+      "path": "build/engine_next/volume-r7/Deferred.vs.cso",
+      "profile": "vs_6_0",
+      "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+    },
+    {
+      "entry": "PSMain",
+      "path": "build/engine_next/volume-r7/Deferred.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+    },
+    {
+      "entry": "FullscreenVS",
+      "path": "build/engine_next/volume-r7/Lighting.vs.cso",
+      "profile": "vs_6_0",
+      "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+    },
+    {
+      "entry": "LightingPS",
+      "path": "build/engine_next/volume-r7/Lighting.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+    },
+    {
+      "entry": "ToneMapPS",
+      "path": "build/engine_next/volume-r7/ToneMap.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+    },
+    {
+      "entry": "ShadowVS",
+      "path": "build/engine_next/volume-r7/Shadow.vs.cso",
+      "profile": "vs_6_0",
+      "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+    },
+    {
+      "entry": "ShadowPS",
+      "path": "build/engine_next/volume-r7/Shadow.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+    },
+    {
+      "entry": "CSMain",
+      "path": "build/engine_next/volume-r7/Temporal.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+    },
+    {
+      "entry": "HistogramBuildCS",
+      "path": "build/engine_next/volume-r7/Histogram.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+    },
+    {
+      "entry": "ExposureAdaptCS",
+      "path": "build/engine_next/volume-r7/Exposure.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+    },
+    {
+      "entry": "DownsampleCS",
+      "path": "build/engine_next/volume-r7/BloomDown.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+    },
+    {
+      "entry": "UpsampleCS",
+      "path": "build/engine_next/volume-r7/BloomUp.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+    },
+    {
+      "entry": "LightingPS",
+      "path": "build/engine_next/volume-r7/ReflectionLighting.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "f2590dd8cc22dfbd00aa5030b1169cf234bf465a802e3a4372083323d2f0c0cb"
+    },
+    {
+      "entry": "ColorMipCS",
+      "path": "build/engine_next/volume-r7/ReflectionColor.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+    },
+    {
+      "entry": "TraceCS",
+      "path": "build/engine_next/volume-r7/ReflectionTrace.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+    },
+    {
+      "entry": "CompositeCS",
+      "path": "build/engine_next/volume-r7/ReflectionComposite.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+    },
+    {
+      "entry": "RadianceCS",
+      "path": "build/engine_next/volume-r7/ReflectionRadiance.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+    },
+    {
+      "entry": "InjectCS",
+      "path": "build/engine_next/volume-r7/VolumeInject.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+    },
+    {
+      "entry": "LightCS",
+      "path": "build/engine_next/volume-r7/VolumeLight.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+    },
+    {
+      "entry": "TemporalCS",
+      "path": "build/engine_next/volume-r7/VolumeTemporal.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+    },
+    {
+      "entry": "IntegrateCS",
+      "path": "build/engine_next/volume-r7/VolumeIntegrate.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+    },
+    {
+      "entry": "CompositeCS",
+      "path": "build/engine_next/volume-r7/VolumeComposite.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+    },
+    {
+      "entry": "VSMain",
+      "path": "build/engine_next/volume-r7/Transparent.vs.cso",
+      "profile": "vs_6_0",
+      "sha256": "343de3273f95c54fc4462e8ed9c886aef2445e8a8fc24f38b69aaf09a7629daa"
+    },
+    {
+      "entry": "PSMain",
+      "path": "build/engine_next/volume-r7/Transparent.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "9ad499be7c6e46be2aba6c17ed07cae1955057fd31e9ed7764886f5ab9705e2a"
+    }
+  ],
+  "command_display": "Absolute executable, repository and fixture paths are normalized for publication. Private command records retain the executed paths.",
+  "physical_display": {
+    "width": 2560,
+    "height": 1440,
+    "refresh_hz": 180,
+    "adapter": "NVIDIA GeForce RTX 4070 Ti",
+    "observation": {
+      "path": "build/engine_next/R7DisplayMode.json",
+      "sha256": "a9b18789ff9737e2a94cd86f4fc19b1031add387bc9254b26f70f02ae3547193"
+    }
+  },
+  "render_target_4k": {
+    "width": 3840,
+    "height": 2160,
+    "frames": 12,
+    "hidden_window": true
+  },
+  "assertions": {
+    "normal_entry_cases": 25,
+    "normal_entry_frames": 1138,
+    "all_exit_success": true,
+    "all_gpu_validation_errors_zero": true,
+    "all_expected_frames_and_complete_samples": true,
+    "all_capture_dimensions_match_reports": true,
+    "all_report_numeric_values_finite": true,
+    "zero_medium_equals_disabled_capture": true,
+    "zero_local_light_equals_no_local_light_capture": true,
+    "dynamic_and_replay_peak_and_final_40": true,
+    "all_dynamic_and_replay_frames_at_most_40": true,
+    "maximum_particles_reaches_4096": true,
+    "one_shot_peak_5_then_final_0": true,
+    "nextafter_duration_one_shot_peak_and_final_2": true,
+    "deterministic_dynamic_replay_capture_equal": true,
+    "all_forward_cases_render_three_transparent_meshes": true,
+    "odd_and_combined_resize_exercised": true
+  },
+  "cases": [
+    {
+      "name": "Combined4K",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--width",
+        "3840",
+        "--height",
+        "2160",
+        "--frames",
+        "12",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/volume-4k-r7/Config.json",
+        "--report",
+        "build/engine_next/volume-4k-r7/Runtime.json",
+        "--capture",
+        "build/engine_next/volume-4k-r7/Frame.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-4k-r7/Runtime.json",
+        "sha256": "a780be959eb058667fd687d4d502f5c8b443190fe960a2ae4e71f95e5c7fb74a"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-4k-r7/Frame.ppm",
+        "sha256": "8a9b17de909ccf9fcbc9c2c86e8ff93cb221e979bd6edb658eb3bb65def01fcc"
+      },
+      "config": {
+        "path": "build/engine_next/volume-4k-r7/Config.json",
+        "sha256": "1a417e4480247f20eb7eb901dd984cac5563182a03d964a4c84e2e1c9e2e80a9"
+      },
+      "frames": 12,
+      "width": 3840,
+      "height": 2160,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 491520000,
+      "forward_resource_bytes": 225705984,
+      "peak_local_memory": 4147806208,
+      "peak_particles": 4,
+      "final_particles": 4,
+      "maximum_sample_particles": 4,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "Off",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "reference_fixture/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "reference_fixture/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/volume-gpu-r7/OffConfig.json",
+        "--report",
+        "build/engine_next/volume-gpu-r7/Off.json",
+        "--capture",
+        "build/engine_next/volume-gpu-r7/Off.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-gpu-r7/Off.json",
+        "sha256": "59845b3482dce2ec27da3bcbee87e2214cd11c48f4b4aa1dda789810d347b209"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-gpu-r7/Off.ppm",
+        "sha256": "71c9756984ff09bb75bdec5a564b2a39e32d81cb5b0239e4a19c9fd4c5a07798"
+      },
+      "config": {
+        "path": "build/engine_next/volume-gpu-r7/OffConfig.json",
+        "sha256": "60249dd95a9d93a0854120ada1b40d70661f49b805e47a072459a55ca0d82014"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 0,
+      "forward_resource_bytes": 0,
+      "peak_local_memory": 648568832,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 0,
+      "resizes": 0,
+      "asset_package": {
+        "name": "reflection-benchmark-r2.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+          "blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+          "Scene.json": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7"
+        },
+        "tree_sha256": "29d6ecd1207b8e67a6b0eb751ace90594f8129e15578bba54712f3deee7a35b9"
+      },
+      "gpu_package": {
+        "name": "reflection-benchmark-r2.engpu",
+        "member_sha256": {
+          "blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+          "GpuManifest.json": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e"
+        },
+        "tree_sha256": "eabafd06804d5f7098da8231c4c26da78429ae5a6d6e0ee05e385095140bf0df"
+      }
+    },
+    {
+      "name": "OpaqueTemporal",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "reference_fixture/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "reference_fixture/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/volume-gpu-r7/OpaqueTemporalConfig.json",
+        "--report",
+        "build/engine_next/volume-gpu-r7/OpaqueTemporal.json",
+        "--capture",
+        "build/engine_next/volume-gpu-r7/OpaqueTemporal.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-gpu-r7/OpaqueTemporal.json",
+        "sha256": "b869477c779c13c59ad9a33fd4cc6d24ff00dca6abf693d1d40bf7bf72815198"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-gpu-r7/OpaqueTemporal.ppm",
+        "sha256": "3115d55e76313edbd2d85932c887d1625b19474600e6e8e5245ebe535094eef5"
+      },
+      "config": {
+        "path": "build/engine_next/volume-gpu-r7/OpaqueTemporalConfig.json",
+        "sha256": "0f9e4b0a4eab1930f289211ae6a7e861c192a7d08b5427a9817a152140b88a0a"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 0,
+      "forward_resource_bytes": 0,
+      "peak_local_memory": 665288704,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 0,
+      "resizes": 0,
+      "asset_package": {
+        "name": "reflection-benchmark-r2.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+          "blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+          "Scene.json": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7"
+        },
+        "tree_sha256": "29d6ecd1207b8e67a6b0eb751ace90594f8129e15578bba54712f3deee7a35b9"
+      },
+      "gpu_package": {
+        "name": "reflection-benchmark-r2.engpu",
+        "member_sha256": {
+          "blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+          "GpuManifest.json": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e"
+        },
+        "tree_sha256": "eabafd06804d5f7098da8231c4c26da78429ae5a6d6e0ee05e385095140bf0df"
+      }
+    },
+    {
+      "name": "Zero",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "reference_fixture/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "reference_fixture/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/volume-gpu-r7/ZeroConfig.json",
+        "--report",
+        "build/engine_next/volume-gpu-r7/Zero.json",
+        "--capture",
+        "build/engine_next/volume-gpu-r7/Zero.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-gpu-r7/Zero.json",
+        "sha256": "6003e256452cd12f2c208b82200c3ee91910f122e30526d910f868f15dacbbac"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-gpu-r7/Zero.ppm",
+        "sha256": "71c9756984ff09bb75bdec5a564b2a39e32d81cb5b0239e4a19c9fd4c5a07798"
+      },
+      "config": {
+        "path": "build/engine_next/volume-gpu-r7/ZeroConfig.json",
+        "sha256": "412db37d0699a0bea49c6a700f21aabfed1c71c111cc6d8104ea26b0071ddbdd"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 7864320,
+      "peak_local_memory": 677675008,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 0,
+      "resizes": 0,
+      "asset_package": {
+        "name": "reflection-benchmark-r2.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+          "blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+          "Scene.json": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7"
+        },
+        "tree_sha256": "29d6ecd1207b8e67a6b0eb751ace90594f8129e15578bba54712f3deee7a35b9"
+      },
+      "gpu_package": {
+        "name": "reflection-benchmark-r2.engpu",
+        "member_sha256": {
+          "blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+          "GpuManifest.json": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e"
+        },
+        "tree_sha256": "eabafd06804d5f7098da8231c4c26da78429ae5a6d6e0ee05e385095140bf0df"
+      }
+    },
+    {
+      "name": "Homogeneous",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "reference_fixture/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "reference_fixture/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/volume-gpu-r7/HomogeneousConfig.json",
+        "--report",
+        "build/engine_next/volume-gpu-r7/Homogeneous.json",
+        "--capture",
+        "build/engine_next/volume-gpu-r7/Homogeneous.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-gpu-r7/Homogeneous.json",
+        "sha256": "b91786ff28d5535b7089e63887186d9cc18b46416c9a59c9905cc85883505368"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-gpu-r7/Homogeneous.ppm",
+        "sha256": "130dc8a3e8783c5133702cfeaa959fc7d089bd7063cd46da31889b89f4073c47"
+      },
+      "config": {
+        "path": "build/engine_next/volume-gpu-r7/HomogeneousConfig.json",
+        "sha256": "a3221f2ec92f04eca7df1cb1864771d7a64616dd84264d82d786a5b79e73c83a"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 7864320,
+      "peak_local_memory": 677666816,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 0,
+      "resizes": 0,
+      "asset_package": {
+        "name": "reflection-benchmark-r2.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+          "blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+          "Scene.json": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7"
+        },
+        "tree_sha256": "29d6ecd1207b8e67a6b0eb751ace90594f8129e15578bba54712f3deee7a35b9"
+      },
+      "gpu_package": {
+        "name": "reflection-benchmark-r2.engpu",
+        "member_sha256": {
+          "blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+          "GpuManifest.json": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e"
+        },
+        "tree_sha256": "eabafd06804d5f7098da8231c4c26da78429ae5a6d6e0ee05e385095140bf0df"
+      }
+    },
+    {
+      "name": "MinimumWindow",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "64",
+        "--height",
+        "64",
+        "--asset-package",
+        "reference_fixture/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "reference_fixture/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/volume-gpu-r7/MinimumWindowConfig.json",
+        "--report",
+        "build/engine_next/volume-gpu-r7/MinimumWindow.json",
+        "--capture",
+        "build/engine_next/volume-gpu-r7/MinimumWindow.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-gpu-r7/MinimumWindow.json",
+        "sha256": "0aca3705411e6122a639493cd05fe61557e0e182002d355d26789307460b03ba"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-gpu-r7/MinimumWindow.ppm",
+        "sha256": "fc680c04c2b929957391dbdca4cce10a2e36ef80efa337ec4545bc530f7df43e"
+      },
+      "config": {
+        "path": "build/engine_next/volume-gpu-r7/MinimumWindowConfig.json",
+        "sha256": "a3221f2ec92f04eca7df1cb1864771d7a64616dd84264d82d786a5b79e73c83a"
+      },
+      "frames": 24,
+      "width": 64,
+      "height": 64,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 917504,
+      "forward_resource_bytes": 196608,
+      "peak_local_memory": 593444864,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 0,
+      "resizes": 0,
+      "asset_package": {
+        "name": "reflection-benchmark-r2.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+          "blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+          "Scene.json": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7"
+        },
+        "tree_sha256": "29d6ecd1207b8e67a6b0eb751ace90594f8129e15578bba54712f3deee7a35b9"
+      },
+      "gpu_package": {
+        "name": "reflection-benchmark-r2.engpu",
+        "member_sha256": {
+          "blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+          "GpuManifest.json": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e"
+        },
+        "tree_sha256": "eabafd06804d5f7098da8231c4c26da78429ae5a6d6e0ee05e385095140bf0df"
+      }
+    },
+    {
+      "name": "Emission",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "reference_fixture/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "reference_fixture/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/volume-gpu-r7/EmissionConfig.json",
+        "--report",
+        "build/engine_next/volume-gpu-r7/Emission.json",
+        "--capture",
+        "build/engine_next/volume-gpu-r7/Emission.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-gpu-r7/Emission.json",
+        "sha256": "baa3c4b64e647a38e6fa6793aad9cd7b2b435ca57126c465ef0f7a8b88defb4d"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-gpu-r7/Emission.ppm",
+        "sha256": "878ab4a2c7d95f716880f501397bd023893dd1483d7e33cdb324672ee947523d"
+      },
+      "config": {
+        "path": "build/engine_next/volume-gpu-r7/EmissionConfig.json",
+        "sha256": "03ca133108b79dde61d050ebc060fe82b2a4a640a16e3da508a64892774646c0"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 7864320,
+      "peak_local_memory": 677675008,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 0,
+      "resizes": 0,
+      "asset_package": {
+        "name": "reflection-benchmark-r2.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+          "blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+          "Scene.json": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7"
+        },
+        "tree_sha256": "29d6ecd1207b8e67a6b0eb751ace90594f8129e15578bba54712f3deee7a35b9"
+      },
+      "gpu_package": {
+        "name": "reflection-benchmark-r2.engpu",
+        "member_sha256": {
+          "blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+          "GpuManifest.json": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e"
+        },
+        "tree_sha256": "eabafd06804d5f7098da8231c4c26da78429ae5a6d6e0ee05e385095140bf0df"
+      }
+    },
+    {
+      "name": "OddResize",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "321",
+        "--height",
+        "239",
+        "--asset-package",
+        "reference_fixture/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "reference_fixture/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/volume-gpu-r7/OddResizeConfig.json",
+        "--report",
+        "build/engine_next/volume-gpu-r7/OddResize.json",
+        "--capture",
+        "build/engine_next/volume-gpu-r7/OddResize.ppm",
+        "--exercise-resize"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-gpu-r7/OddResize.json",
+        "sha256": "53400af3fec7be87968e2c4e090fbfce3bfb3c52e269e7555466ccc9d3a95a00"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-gpu-r7/OddResize.ppm",
+        "sha256": "bcae39b45c0e611d0596a218f0ab71f064301358608b58ff2dc2012d80307e96"
+      },
+      "config": {
+        "path": "build/engine_next/volume-gpu-r7/OddResizeConfig.json",
+        "sha256": "a3221f2ec92f04eca7df1cb1864771d7a64616dd84264d82d786a5b79e73c83a"
+      },
+      "frames": 24,
+      "width": 321,
+      "height": 239,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 4915200,
+      "forward_resource_bytes": 2162688,
+      "peak_local_memory": 618635264,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 0,
+      "resizes": 2,
+      "asset_package": {
+        "name": "reflection-benchmark-r2.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+          "blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+          "Scene.json": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7"
+        },
+        "tree_sha256": "29d6ecd1207b8e67a6b0eb751ace90594f8129e15578bba54712f3deee7a35b9"
+      },
+      "gpu_package": {
+        "name": "reflection-benchmark-r2.engpu",
+        "member_sha256": {
+          "blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+          "GpuManifest.json": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e"
+        },
+        "tree_sha256": "eabafd06804d5f7098da8231c4c26da78429ae5a6d6e0ee05e385095140bf0df"
+      }
+    },
+    {
+      "name": "Combined",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "reference_fixture/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "reference_fixture/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/volume-gpu-r7/CombinedConfig.json",
+        "--report",
+        "build/engine_next/volume-gpu-r7/Combined.json",
+        "--capture",
+        "build/engine_next/volume-gpu-r7/Combined.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-gpu-r7/Combined.json",
+        "sha256": "c53a20958b89b65327823a098b57a0ef83015423831ef375b21aec0e48752614"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-gpu-r7/Combined.ppm",
+        "sha256": "39712437339d1e7e1cd33fbcc738f9fbb25c25aae6418a68e56f25d38c75ee91"
+      },
+      "config": {
+        "path": "build/engine_next/volume-gpu-r7/CombinedConfig.json",
+        "sha256": "1bbf0e84874d1fb8f353fb184f8f9d900afadf579dd0f3fc9320f9d02eebf744"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 7864320,
+      "peak_local_memory": 731938816,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 0,
+      "resizes": 0,
+      "asset_package": {
+        "name": "reflection-benchmark-r2.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+          "blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+          "Scene.json": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7"
+        },
+        "tree_sha256": "29d6ecd1207b8e67a6b0eb751ace90594f8129e15578bba54712f3deee7a35b9"
+      },
+      "gpu_package": {
+        "name": "reflection-benchmark-r2.engpu",
+        "member_sha256": {
+          "blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+          "GpuManifest.json": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e"
+        },
+        "tree_sha256": "eabafd06804d5f7098da8231c4c26da78429ae5a6d6e0ee05e385095140bf0df"
+      }
+    },
+    {
+      "name": "WeakHighLight",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "reference_fixture/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "reference_fixture/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/volume-gpu-r7/WeakHighLightConfig.json",
+        "--report",
+        "build/engine_next/volume-gpu-r7/WeakHighLight.json",
+        "--capture",
+        "build/engine_next/volume-gpu-r7/WeakHighLight.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-gpu-r7/WeakHighLight.json",
+        "sha256": "e78bd32a3f5f21827fab0083449dffe0d3c90ad8831829b7895f39c12c8cf64e"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-gpu-r7/WeakHighLight.ppm",
+        "sha256": "202a57438c9885e5782cf261b3f9cf736c65927fa7d65595ff6778403216ba4a"
+      },
+      "config": {
+        "path": "build/engine_next/volume-gpu-r7/WeakHighLightConfig.json",
+        "sha256": "268e78a83d668e0658877e927da0ccd0338c4659ab9c72491a6ad06e21f98efc"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 7864320,
+      "peak_local_memory": 677666816,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 0,
+      "resizes": 0,
+      "asset_package": {
+        "name": "reflection-benchmark-r2.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+          "blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+          "Scene.json": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7"
+        },
+        "tree_sha256": "29d6ecd1207b8e67a6b0eb751ace90594f8129e15578bba54712f3deee7a35b9"
+      },
+      "gpu_package": {
+        "name": "reflection-benchmark-r2.engpu",
+        "member_sha256": {
+          "blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+          "GpuManifest.json": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e"
+        },
+        "tree_sha256": "eabafd06804d5f7098da8231c4c26da78429ae5a6d6e0ee05e385095140bf0df"
+      }
+    },
+    {
+      "name": "WeakZeroLocal",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "reference_fixture/reflection-benchmark-r2.enpak",
+        "--gpu-package",
+        "reference_fixture/reflection-benchmark-r2.engpu",
+        "--render-config",
+        "build/engine_next/volume-gpu-r7/WeakZeroLocalConfig.json",
+        "--report",
+        "build/engine_next/volume-gpu-r7/WeakZeroLocal.json",
+        "--capture",
+        "build/engine_next/volume-gpu-r7/WeakZeroLocal.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/volume-gpu-r7/WeakZeroLocal.json",
+        "sha256": "f4fa1bb8b5a2618fd55dfc7f98f972b10ac6be60d8ab0f9e4623b7cd6603c89f"
+      },
+      "capture": {
+        "path": "build/engine_next/volume-gpu-r7/WeakZeroLocal.ppm",
+        "sha256": "202a57438c9885e5782cf261b3f9cf736c65927fa7d65595ff6778403216ba4a"
+      },
+      "config": {
+        "path": "build/engine_next/volume-gpu-r7/WeakZeroLocalConfig.json",
+        "sha256": "d64c41cb4cb4b96486a16608a65f24d37893ac8e7b88ee6c0d64bc2201da9b51"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 7864320,
+      "peak_local_memory": 677666816,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 0,
+      "resizes": 0,
+      "asset_package": {
+        "name": "reflection-benchmark-r2.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "ccbb4b796c3b559b7bf9b15974d0429fa01d81a4bbd249283363c147a18f7cad",
+          "blobs/4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93": "4a287c60943f6e6aabf947dd15b868c7cde9249f68839584b59ac977c8032f93",
+          "Scene.json": "5c2cd0ff64cead3815109e87503b565f7fc94c0adb67ab60363efc92d3fbfba7"
+        },
+        "tree_sha256": "29d6ecd1207b8e67a6b0eb751ace90594f8129e15578bba54712f3deee7a35b9"
+      },
+      "gpu_package": {
+        "name": "reflection-benchmark-r2.engpu",
+        "member_sha256": {
+          "blobs/f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174": "f960deea6dea7526d9ed2407fd046bab7f17a4026a9540583cbf8519b36fb174",
+          "GpuManifest.json": "efb9fa418be5ca9877b0b6473b81f3d05722eac202ff00907490374a519c017e"
+        },
+        "tree_sha256": "eabafd06804d5f7098da8231c4c26da78429ae5a6d6e0ee05e385095140bf0df"
+      }
+    },
+    {
+      "name": "Off",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/OffConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/Off.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/Off.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/Off.json",
+        "sha256": "a0f386aa3304c0823b02a933367034d041ce7f3038a9836de6032e3883a43749"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/Off.ppm",
+        "sha256": "f2e135d9ee50169938ba40d84e5a1f3d5b75b19c95682dbe4b8c593cf1ea14a8"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/OffConfig.json",
+        "sha256": "2d98fbd57bf303688a1beb2475cfd36039d9d5ac04a2f7e66112c224f429944f"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 0,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 664829952,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "Homogeneous",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/HomogeneousConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/Homogeneous.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/Homogeneous.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/Homogeneous.json",
+        "sha256": "abc4afb3153db631f5a99810a2a6f87d832e61e4dc3b1ba3a120b84e9e8dd59c"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/Homogeneous.ppm",
+        "sha256": "65bd2a7029ec795d324f4f7126aa21617d737efeb2a98ed6cb0f4adecbe4f912"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/HomogeneousConfig.json",
+        "sha256": "d4d7b90c175b2833d93e3baa7399199572d27756fdb139cbc7c05e741b2374eb"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 685801472,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "HomogeneousEmission",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/HomogeneousEmissionConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/HomogeneousEmission.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/HomogeneousEmission.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/HomogeneousEmission.json",
+        "sha256": "acb752a881905567e64b724fbadc400fa2de7ac80f11160586a51dc909e71eae"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/HomogeneousEmission.ppm",
+        "sha256": "0aa649f174f57f20d3d00f8e1bae37a24f1c13567e1a975169f4944605955f19"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/HomogeneousEmissionConfig.json",
+        "sha256": "a18d3b3111cfa95ac7338e3d8e0bc4cdc7ee5ce47d51315471f74bfb7e66528c"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 685793280,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "Local",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/LocalConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/Local.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/Local.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/Local.json",
+        "sha256": "8ce46dd219f8048cab81008f3c80629142d17cbab963d427eed07c571f3d6d75"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/Local.ppm",
+        "sha256": "749f5161f65f3d7b60ad67d1c90200489d7231a60250c779b84a5b6b739aac8f"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/LocalConfig.json",
+        "sha256": "f613a2d6bd859013fc8b886e1ad8c812faa19e123938478fda524e49c7a30b3e"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 685801472,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "Transparent",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/TransparentConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/Transparent.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/Transparent.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/Transparent.json",
+        "sha256": "b4aa6cda206e2a045195a979a5f691771e3ffaab408c17fd1219ef9c32904fa6"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/Transparent.ppm",
+        "sha256": "f2e135d9ee50169938ba40d84e5a1f3d5b75b19c95682dbe4b8c593cf1ea14a8"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/TransparentConfig.json",
+        "sha256": "2d98fbd57bf303688a1beb2475cfd36039d9d5ac04a2f7e66112c224f429944f"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 0,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 664829952,
+      "peak_particles": 0,
+      "final_particles": 0,
+      "maximum_sample_particles": 0,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "Particle",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/ParticleConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/Particle.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/Particle.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/Particle.json",
+        "sha256": "e777417f1728c4270a8df88a36bdc6970a95f9a66c7655071ff5b8224c7ab368"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/Particle.ppm",
+        "sha256": "6e98935cc08ac78fe595e832babf02571723dba31f3abe55ddc12c8ce4a0b2b7"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/ParticleConfig.json",
+        "sha256": "808c81be0b2688f79be6cfe885f5b37f77f43e9095be6d67f27e476e580f7a60"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 0,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 665223168,
+      "peak_particles": 8,
+      "final_particles": 8,
+      "maximum_sample_particles": 8,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "Combined",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/CombinedConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/Combined.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/Combined.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/Combined.json",
+        "sha256": "046645283ec77ccb691a4706b6e02e4d3754d60f47199345ef4547541f6688f9"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/Combined.ppm",
+        "sha256": "646030f64128905daeadf4fafcd2989dfd2d81ea4df5b1d9c57da82098ac8c80"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedConfig.json",
+        "sha256": "f3fb4167f49421d8af10734d5a67d9a9968565f45a74624be02ebc1604ae0e01"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 703750144,
+      "peak_particles": 8,
+      "final_particles": 8,
+      "maximum_sample_particles": 8,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "CombinedAutomatic",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/CombinedAutomaticConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/CombinedAutomatic.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/CombinedAutomatic.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedAutomatic.json",
+        "sha256": "ecb94c25e764471a46fc39ff340d57d3d89fe66313b54b40de0f02130392d75b"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedAutomatic.ppm",
+        "sha256": "4d4fdc8794b5026e63261329bafe39a2abbc38e5eee11297c33eaaed72487214"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedAutomaticConfig.json",
+        "sha256": "d3bff148841b288e407aa00c2e043439c21883925316d539c9a618ada79f58c8"
+      },
+      "frames": 24,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 703758336,
+      "peak_particles": 8,
+      "final_particles": 8,
+      "maximum_sample_particles": 8,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "CombinedDynamic",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "240",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/CombinedDynamicConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/CombinedDynamic.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/CombinedDynamic.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedDynamic.json",
+        "sha256": "892d080a0407f57c189d267169fe4841ed6cd79dbd2b6442833f81176f9fdb82"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedDynamic.ppm",
+        "sha256": "d49e2333926fdc5fac26c84a49460b7d5b9f67060624eaee8f6c2cc0bb2116c3"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedDynamicConfig.json",
+        "sha256": "f3fb4167f49421d8af10734d5a67d9a9968565f45a74624be02ebc1604ae0e01"
+      },
+      "frames": 240,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 704806912,
+      "peak_particles": 40,
+      "final_particles": 40,
+      "maximum_sample_particles": 40,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "CombinedReplay",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "240",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/CombinedReplayConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/CombinedReplay.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/CombinedReplay.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedReplay.json",
+        "sha256": "6ee5b2792df33ae26d6ec19d14ec8b067e898317e037102c07269280a0f59508"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedReplay.ppm",
+        "sha256": "d49e2333926fdc5fac26c84a49460b7d5b9f67060624eaee8f6c2cc0bb2116c3"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedReplayConfig.json",
+        "sha256": "f3fb4167f49421d8af10734d5a67d9a9968565f45a74624be02ebc1604ae0e01"
+      },
+      "frames": 240,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 16384000,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 704806912,
+      "peak_particles": 40,
+      "final_particles": 40,
+      "maximum_sample_particles": 40,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "CombinedResize",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "24",
+        "--width",
+        "321",
+        "--height",
+        "239",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/CombinedResizeConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/CombinedResize.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/CombinedResize.ppm",
+        "--exercise-resize"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedResize.json",
+        "sha256": "5722e0ecd5ced951d89eb061e867c4692a7e182911c33bc7e6e90994a00736aa"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedResize.ppm",
+        "sha256": "9efd13f45cb9f558e927b0c6ee2ad6a0db7b92f2809c36aaa6efd40b9f6184f4"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/CombinedResizeConfig.json",
+        "sha256": "f3fb4167f49421d8af10734d5a67d9a9968565f45a74624be02ebc1604ae0e01"
+      },
+      "frames": 24,
+      "width": 321,
+      "height": 239,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 4915200,
+      "forward_resource_bytes": 2555904,
+      "peak_local_memory": 633774080,
+      "peak_particles": 8,
+      "final_particles": 8,
+      "maximum_sample_particles": 8,
+      "transparent_mesh_draws": 3,
+      "resizes": 2,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "MaximumParticles",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "70",
+        "--width",
+        "320",
+        "--height",
+        "240",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/MaximumParticlesConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/MaximumParticles.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/MaximumParticles.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/MaximumParticles.json",
+        "sha256": "286bb6929f7b3b6ec5e137192d6b65da894a790f2c74e5a8ad76e9ea680f9601"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/MaximumParticles.ppm",
+        "sha256": "a24a00cb333c707ef8d05a3abe6dd63b6f2a153f319a6c6da5bd21e2d54a3349"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/MaximumParticlesConfig.json",
+        "sha256": "fc56fb920a659aa516b2bdd3aa406c1db589d6768375bac28d89e0f15d363ec2"
+      },
+      "frames": 70,
+      "width": 320,
+      "height": 240,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 0,
+      "forward_resource_bytes": 2359296,
+      "peak_local_memory": 741318656,
+      "peak_particles": 4096,
+      "final_particles": 4096,
+      "maximum_sample_particles": 4096,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "OneShotTail",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "90",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/OneShotTailConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/OneShotTail.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/OneShotTail.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/OneShotTail.json",
+        "sha256": "d27c5b0bc476d1525e6b5dabc3a8d6f1b9f32730f72a01df83772fa71beb87f7"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/OneShotTail.ppm",
+        "sha256": "2a5e43c0afb14b7fb8806bc2b609a894f3686877dd371c9cf975d01b11a5cc59"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/OneShotTailConfig.json",
+        "sha256": "57960b076024abbec82bcbeaa021bb0f2454642eaae4a16eb8ba161d8a3be66b"
+      },
+      "frames": 90,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 0,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 665223168,
+      "peak_particles": 5,
+      "final_particles": 0,
+      "maximum_sample_particles": 5,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    },
+    {
+      "name": "OneShotBoundary",
+      "command": [
+        "build/engine_next/volume-r7/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--frames",
+        "30",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/forward-gpu-r7/OneShotBoundaryConfig.json",
+        "--report",
+        "build/engine_next/forward-gpu-r7/OneShotBoundary.json",
+        "--capture",
+        "build/engine_next/forward-gpu-r7/OneShotBoundary.ppm"
+      ],
+      "report": {
+        "path": "build/engine_next/forward-gpu-r7/OneShotBoundary.json",
+        "sha256": "bce427d1740c46a3c80ba6dfed4b4fa3062ed56f6c4344ccab2e71d629da9fc2"
+      },
+      "capture": {
+        "path": "build/engine_next/forward-gpu-r7/OneShotBoundary.ppm",
+        "sha256": "7b6f52cc9a6d37951198691e290fba2aebe884acf653926be783dec7df1488d5"
+      },
+      "config": {
+        "path": "build/engine_next/forward-gpu-r7/OneShotBoundaryConfig.json",
+        "sha256": "13eb3c65396b7035360876296d216ba9390d2c217ae1cbf738098236932ff3d8"
+      },
+      "frames": 30,
+      "width": 640,
+      "height": 480,
+      "validation_errors": 0,
+      "all_frame_samples_gpu_ready": true,
+      "all_report_numbers_finite": true,
+      "adapter": "NVIDIA GeForce RTX 4070 Ti",
+      "volume_resource_bytes": 0,
+      "forward_resource_bytes": 8847360,
+      "peak_local_memory": 665214976,
+      "peak_particles": 2,
+      "final_particles": 2,
+      "maximum_sample_particles": 2,
+      "transparent_mesh_draws": 3,
+      "resizes": 0,
+      "asset_package": {
+        "name": "Volume.enpak",
+        "member_sha256": {
+          "AssetManifest.json": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f",
+          "blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+          "Scene.json": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+        },
+        "tree_sha256": "efc1a88afb7e5dc27a8c9439f58cada8c135c7d80229c4d6d6d0cb33804465c5"
+      },
+      "gpu_package": {
+        "name": "Volume.engpu",
+        "member_sha256": {
+          "blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+          "GpuManifest.json": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+        },
+        "tree_sha256": "29770ddec9246cae5052a2620e8feb377bcc67cf8c6ffaa8b417273f3036bf22"
+      }
+    }
+  ],
+  "limits": [
+    "The 3840x2160 test validates hidden render targets and their capture. The physical monitor operated at 2560x1440.",
+    "Parent M4 4K High frame-rate and UE comparison targets require their dedicated acceptance evidence.",
+    "PixelHistory, analytic scattering/transmission checks and real network F evidence remain separately bound artifacts."
+  ],
+  "runner_scripts": [
+    {
+      "path": "build/engine_next/RunVolume4k.py",
+      "sha256": "36bb3d4d45e18a5d91f9775b8d8caefc0baedd94c832dd526031c6e8f1bc134b"
+    },
+    {
+      "path": "build/engine_next/RunVolumeGpu.py",
+      "sha256": "5266abd24d208f89c0d398eac0a55ca8f5c707c53341450a389036e7c9f244de"
+    },
+    {
+      "path": "build/engine_next/RunForwardGpu.py",
+      "sha256": "02ebac0519c742b4e69145baafe5a04b37b599922758ff01001a77872a19f9d7"
+    },
+    {
+      "path": "build/engine_next/SummarizeVolumeR7.py",
+      "sha256": "26764d68e80be2fc95408d81343ebe92e2c718e14f17356aec1a1080665f5009"
+    }
+  ]
+}

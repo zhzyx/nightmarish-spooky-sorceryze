@@ -36,6 +36,7 @@
 
 #include <array>
 #include <cstdint>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -70,6 +71,13 @@ struct RenderScene
 	std::vector<RenderAsset> arrAssets;
 	std::vector<RenderInstance> arrInstances;
 };
+
+// Resolves every source entity, including non-renderable parents, into a
+// column-major world transform using the scene hierarchy. Pure CPU operation
+// with immutable input; matrices must be finite and fit binary32. Validation
+// diagnostics are appended and failure preserves the previous output map.
+[[nodiscard]] bool BuildSceneEntityTransforms(const Assets::SceneDocument &stScene, std::map<std::uint64_t, std::array<double, 16>> &out_mapTransforms,
+											  Assets::Diagnostics &out_arrDiagnostics);
 
 // CPU-only and transactional. Original package bytes and M3 identities are read-only.
 [[nodiscard]] bool BuildRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics);

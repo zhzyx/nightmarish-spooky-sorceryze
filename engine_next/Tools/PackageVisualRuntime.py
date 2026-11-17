@@ -30,6 +30,13 @@ SHADER_FILES = {
     "ReflectionTrace.cs.cso",
     "ReflectionComposite.cs.cso",
     "ReflectionRadiance.cs.cso",
+    "VolumeInject.cs.cso",
+    "VolumeLight.cs.cso",
+    "VolumeTemporal.cs.cso",
+    "VolumeIntegrate.cs.cso",
+    "VolumeComposite.cs.cso",
+    "Transparent.vs.cso",
+    "Transparent.ps.cso",
 }
 
 

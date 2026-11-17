@@ -1,0 +1,587 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "status": "verified_r3_candidate",
+  "scope": "Actual D3D12 transparent mesh and CPU-expanded particle draws, with PixelHistory and per-draw texture readback. This candidate precedes the ParticleState birth-boundary correction.",
+  "candidate": "volume-r3",
+  "native_key": "af76cef0083b293b95a9222a88c123f68f85cc93b0eeae2d8e44e40369be2a68",
+  "executable": {
+    "path": "build/engine_next/volume-r3/next_visual_client.exe",
+    "size_bytes": 3161088,
+    "sha256": "aa4828586d81235aabc06ac76ac948dcee3c3aa2f889c4f5318cf683805fc41a"
+  },
+  "build_report": {
+    "path": "build/engine_next/volume-r3/VisualBuildReport.json",
+    "size_bytes": 1994601,
+    "sha256": "d7d4d4bce8db2df72f6357e20888b7f9df29e7ac370fe1b312e49dfc651f2ff4"
+  },
+  "shaders": [
+    {
+      "path": "build/engine_next/volume-r3/FixedMesh.vs.cso",
+      "size_bytes": 4316,
+      "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+    },
+    {
+      "path": "build/engine_next/volume-r3/FixedMesh.ps.cso",
+      "size_bytes": 4132,
+      "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+    },
+    {
+      "path": "build/engine_next/volume-r3/FixedMesh.cs.cso",
+      "size_bytes": 3300,
+      "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Deferred.vs.cso",
+      "size_bytes": 8236,
+      "sha256": "12e48f0b830781d081245a3e283b51df335601b5eec0f1ccc9f2ca1d1e0d5fc2"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Deferred.ps.cso",
+      "size_bytes": 9760,
+      "sha256": "c1c529dadd44e0b6f6f73b7f489401519354004a4ef0a8fd75506c8fa17cd7f8"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Lighting.vs.cso",
+      "size_bytes": 3052,
+      "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Lighting.ps.cso",
+      "size_bytes": 77096,
+      "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+    },
+    {
+      "path": "build/engine_next/volume-r3/ToneMap.ps.cso",
+      "size_bytes": 6376,
+      "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Shadow.vs.cso",
+      "size_bytes": 4648,
+      "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Shadow.ps.cso",
+      "size_bytes": 4236,
+      "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Temporal.cs.cso",
+      "size_bytes": 19880,
+      "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Histogram.cs.cso",
+      "size_bytes": 5648,
+      "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Exposure.cs.cso",
+      "size_bytes": 5804,
+      "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+    },
+    {
+      "path": "build/engine_next/volume-r3/BloomDown.cs.cso",
+      "size_bytes": 43620,
+      "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+    },
+    {
+      "path": "build/engine_next/volume-r3/BloomUp.cs.cso",
+      "size_bytes": 14672,
+      "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+    },
+    {
+      "path": "build/engine_next/volume-r3/ReflectionLighting.ps.cso",
+      "size_bytes": 77608,
+      "sha256": "f2590dd8cc22dfbd00aa5030b1169cf234bf465a802e3a4372083323d2f0c0cb"
+    },
+    {
+      "path": "build/engine_next/volume-r3/ReflectionColor.cs.cso",
+      "size_bytes": 4928,
+      "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+    },
+    {
+      "path": "build/engine_next/volume-r3/ReflectionTrace.cs.cso",
+      "size_bytes": 31880,
+      "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+    },
+    {
+      "path": "build/engine_next/volume-r3/ReflectionComposite.cs.cso",
+      "size_bytes": 5100,
+      "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+    },
+    {
+      "path": "build/engine_next/volume-r3/ReflectionRadiance.cs.cso",
+      "size_bytes": 4304,
+      "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+    },
+    {
+      "path": "build/engine_next/volume-r3/VolumeInject.cs.cso",
+      "size_bytes": 8836,
+      "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+    },
+    {
+      "path": "build/engine_next/volume-r3/VolumeLight.cs.cso",
+      "size_bytes": 66432,
+      "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+    },
+    {
+      "path": "build/engine_next/volume-r3/VolumeTemporal.cs.cso",
+      "size_bytes": 16000,
+      "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+    },
+    {
+      "path": "build/engine_next/volume-r3/VolumeIntegrate.cs.cso",
+      "size_bytes": 7508,
+      "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+    },
+    {
+      "path": "build/engine_next/volume-r3/VolumeComposite.cs.cso",
+      "size_bytes": 19948,
+      "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Transparent.vs.cso",
+      "size_bytes": 7188,
+      "sha256": "343de3273f95c54fc4462e8ed9c886aef2445e8a8fc24f38b69aaf09a7629daa"
+    },
+    {
+      "path": "build/engine_next/volume-r3/Transparent.ps.cso",
+      "size_bytes": 96540,
+      "sha256": "9ad499be7c6e46be2aba6c17ed07cae1955057fd31e9ed7764886f5ab9705e2a"
+    }
+  ],
+  "source_mismatches_at_capture_start": [
+    "engine_next/Rendering/ParticleState.cpp",
+    "engine_next/Tests/Rendering/TestParticles.cpp",
+    "engine_next/include/EngineNext/Rendering/ParticleState.h"
+  ],
+  "scene": {
+    "path": "build/engine_next/volume-benchmark-r1/Volume.enpak",
+    "kind": "directory",
+    "files": [
+      {
+        "path": "build/engine_next/volume-benchmark-r1/Volume.enpak/AssetManifest.json",
+        "size_bytes": 485,
+        "sha256": "183595c8efd6a7690af0b5afc4d983ab7a19a24524b08ed2a381f65f6e63e54f"
+      },
+      {
+        "path": "build/engine_next/volume-benchmark-r1/Volume.enpak/blobs/ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647",
+        "size_bytes": 90104,
+        "sha256": "ed1d851b313a3d2c80c1b6cbcdd2383394923d4785b7323302e173dd22e39647"
+      },
+      {
+        "path": "build/engine_next/volume-benchmark-r1/Volume.enpak/Scene.json",
+        "size_bytes": 1187,
+        "sha256": "1ffb1590ae1ebb0836314a4470fc6185092d4b89529d4ec60961f42b3d143612"
+      }
+    ]
+  },
+  "gpu_package": {
+    "path": "build/engine_next/volume-benchmark-r1/Volume.engpu",
+    "kind": "directory",
+    "files": [
+      {
+        "path": "build/engine_next/volume-benchmark-r1/Volume.engpu/blobs/29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26",
+        "size_bytes": 11261,
+        "sha256": "29734df77d5342a6601284e06a6e5947abcf201d2e0c8b2828bd3b3b827a2b26"
+      },
+      {
+        "path": "build/engine_next/volume-benchmark-r1/Volume.engpu/GpuManifest.json",
+        "size_bytes": 610,
+        "sha256": "1cbea882ca408c9553fbf9ff0b6e0c9dd2f0cd9ea27f7b14358eea8dbcfbc01b"
+      }
+    ]
+  },
+  "capture_manifest": {
+    "path": "build/engine_next/transparency-gpu-r3/CaptureManifest.json",
+    "size_bytes": 14058,
+    "sha256": "4da965ff09d60154e730b9757b9be10bbabf53b62e687b601a1a1abb87bc0c8d"
+  },
+  "inspection": {
+    "path": "build/engine_next/transparency-gpu-r3/ReadbackVerified/Inspection.json",
+    "size_bytes": 72454,
+    "sha256": "3c11fda7d2a7d6ee75a5e016d267ca19e4e55f15103e19194a10f8382a1a1ce4"
+  },
+  "numerical_checks": {
+    "path": "build/engine_next/transparency-gpu-r3/NumericalChecks.json",
+    "size_bytes": 13653,
+    "sha256": "ea13636f6f11808d6dd0e4d4dda4e64995f1256099c4665b0270ebe4c61b842a"
+  },
+  "final_analysis_tools": [
+    {
+      "path": "build/engine_next/transparency-texture-tools/InspectTransparency.py",
+      "size_bytes": 7519,
+      "sha256": "e2be45803a2d2c5eedb7c98eb6551ff29b0b2b025eca13503d8f237372c257e7"
+    },
+    {
+      "path": "build/engine_next/transparency-texture-tools/CheckTransparency.py",
+      "size_bytes": 8138,
+      "sha256": "c39cfb85bfb065016a705ef5925333aa800df12129bd76a8218dfdb83ef41db5"
+    },
+    {
+      "path": "build/engine_next/transparency-texture-tools/CaptureTransparency.py",
+      "size_bytes": 7489,
+      "sha256": "408aa1da78f660f290b07e0f7930df1b6fbb7371c29dac543ddf52a647208463"
+    },
+    {
+      "path": "build/engine_next/transparency-texture-tools/TestTransparencyChecker.py",
+      "size_bytes": 4245,
+      "sha256": "2e0b0644c98427a5e206059d2e243e79a150dff1b07072e983388b0e58310212"
+    }
+  ],
+  "checker_self_test": {
+    "path": "build/engine_next/transparency-texture-tools/CheckerSelfTest.json",
+    "size_bytes": 367,
+    "sha256": "521f4486b4db5f8d185ff215cd7299432187895240ff37eeb520d4859e334275"
+  },
+  "cases": [
+    {
+      "name": "Layers",
+      "command": [
+        "renderdoccmd.exe",
+        "capture",
+        "--working-dir",
+        "build/engine_next/volume-r3",
+        "--capture-file",
+        "build/engine_next/transparency-gpu-r3/Layers/Transparency",
+        "build/engine_next/volume-r3/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--vsync",
+        "--frames",
+        "240",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/transparency-gpu-r3/Layers/Configuration.json",
+        "--report",
+        "build/engine_next/transparency-gpu-r3/Layers/Runtime.json"
+      ],
+      "configuration": {
+        "path": "build/engine_next/transparency-gpu-r3/Layers/Configuration.json",
+        "size_bytes": 1091,
+        "sha256": "bf2c9d07c1625768ccd2f03db20740ee53d9445289e25fe03bac94517b1378be"
+      },
+      "runtime_report": {
+        "path": "build/engine_next/transparency-gpu-r3/Layers/Runtime.json",
+        "size_bytes": 318273,
+        "sha256": "8b08d7b67950f36df41d1aa379a1af33fb42048590ee5f854b47ac5d1cf698f9"
+      },
+      "frames": 240,
+      "validation_errors": 0,
+      "captures": [
+        {
+          "path": "build/engine_next/transparency-gpu-r3/Layers/Transparency_frame0.rdc",
+          "size_bytes": 3493417,
+          "sha256": "30ba82841885ccd2f9ff627335ba960ae87ffdcda76c10d775b2b9e8f61a6896"
+        },
+        {
+          "path": "build/engine_next/transparency-gpu-r3/Layers/Transparency_frame1.rdc",
+          "size_bytes": 3675092,
+          "sha256": "c5b13e5c7d56b321b7e1cbb4aca8536c12419fb3f4929894ca48e049478bcdca"
+        },
+        {
+          "path": "build/engine_next/transparency-gpu-r3/Layers/Transparency_frame2.rdc",
+          "size_bytes": 3674155,
+          "sha256": "a403fbbf5b816310381c0dea84bc2e5fd36cdb7591ef4b7392ea81f498f93164"
+        }
+      ],
+      "replayed_capture": {
+        "path": "build/engine_next/transparency-gpu-r3/Layers/Transparency_frame0.rdc",
+        "size_bytes": 3493417,
+        "sha256": "30ba82841885ccd2f9ff627335ba960ae87ffdcda76c10d775b2b9e8f61a6896"
+      },
+      "pixel_history_supported": true,
+      "probe_pixels": [
+        [
+          309,
+          321
+        ]
+      ],
+      "checks": {
+        "opaque_depth_byte_unchanged": true,
+        "mesh_order_matches_far_to_near": true,
+        "emissive_order_rgb": true,
+        "snapshot_blending": true,
+        "snapshot_reactive_max": true,
+        "pixel_history_blending": true
+      },
+      "actual_depth_is_byte_identical_after_each_draw": true
+    },
+    {
+      "name": "SoftHalf",
+      "command": [
+        "renderdoccmd.exe",
+        "capture",
+        "--working-dir",
+        "build/engine_next/volume-r3",
+        "--capture-file",
+        "build/engine_next/transparency-gpu-r3/SoftHalf/Transparency",
+        "build/engine_next/volume-r3/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--vsync",
+        "--frames",
+        "240",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/transparency-gpu-r3/SoftHalf/Configuration.json",
+        "--report",
+        "build/engine_next/transparency-gpu-r3/SoftHalf/Runtime.json"
+      ],
+      "configuration": {
+        "path": "build/engine_next/transparency-gpu-r3/SoftHalf/Configuration.json",
+        "size_bytes": 1717,
+        "sha256": "1e807a96fdc58fd0fbe6537dd9b34e7b2ceee729a9fbb3071bb52a00fed21aab"
+      },
+      "runtime_report": {
+        "path": "build/engine_next/transparency-gpu-r3/SoftHalf/Runtime.json",
+        "size_bytes": 318228,
+        "sha256": "2b519926d689d849eb45f6197c0ea0584bf2680357607881093e66faa984100a"
+      },
+      "frames": 240,
+      "validation_errors": 0,
+      "captures": [
+        {
+          "path": "build/engine_next/transparency-gpu-r3/SoftHalf/Transparency_frame1.rdc",
+          "size_bytes": 3695631,
+          "sha256": "aedac8903bbe587785addff207555d47218b9a28459fc518ff2190d5f90302e9"
+        },
+        {
+          "path": "build/engine_next/transparency-gpu-r3/SoftHalf/Transparency_frame2.rdc",
+          "size_bytes": 3695658,
+          "sha256": "dafc067901c2ffeba9f7ca06d27636ceed8f490bd46a7a768bdfe371a99d393d"
+        },
+        {
+          "path": "build/engine_next/transparency-gpu-r3/SoftHalf/Transparency_frame3.rdc",
+          "size_bytes": 3853318,
+          "sha256": "3a52600c1e75a584b343379224164b24096e11d6b2def6aff19282ae07a36883"
+        }
+      ],
+      "replayed_capture": {
+        "path": "build/engine_next/transparency-gpu-r3/SoftHalf/Transparency_frame1.rdc",
+        "size_bytes": 3695631,
+        "sha256": "aedac8903bbe587785addff207555d47218b9a28459fc518ff2190d5f90302e9"
+      },
+      "pixel_history_supported": true,
+      "probe_pixels": [
+        [
+          320,
+          181
+        ]
+      ],
+      "checks": {
+        "opaque_depth_byte_unchanged": true,
+        "mesh_order_matches_far_to_near": true,
+        "emissive_order_rgb": true,
+        "snapshot_blending": true,
+        "snapshot_reactive_max": true,
+        "pixel_history_blending": true
+      },
+      "actual_depth_is_byte_identical_after_each_draw": true
+    },
+    {
+      "name": "SoftSeparated",
+      "command": [
+        "renderdoccmd.exe",
+        "capture",
+        "--working-dir",
+        "build/engine_next/volume-r3",
+        "--capture-file",
+        "build/engine_next/transparency-gpu-r3/SoftSeparated/Transparency",
+        "build/engine_next/volume-r3/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--vsync",
+        "--frames",
+        "240",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/transparency-gpu-r3/SoftSeparated/Configuration.json",
+        "--report",
+        "build/engine_next/transparency-gpu-r3/SoftSeparated/Runtime.json"
+      ],
+      "configuration": {
+        "path": "build/engine_next/transparency-gpu-r3/SoftSeparated/Configuration.json",
+        "size_bytes": 1716,
+        "sha256": "0284961a1ec0cc42ba79cac86d75a7225493320504bfa66bbffa0ee8e569bb9a"
+      },
+      "runtime_report": {
+        "path": "build/engine_next/transparency-gpu-r3/SoftSeparated/Runtime.json",
+        "size_bytes": 318202,
+        "sha256": "71f8c9a538afdd92e00b8d3b9cc1b88dba8ee5e95e30da93b7988f6aed4e0fe5"
+      },
+      "frames": 240,
+      "validation_errors": 0,
+      "captures": [
+        {
+          "path": "build/engine_next/transparency-gpu-r3/SoftSeparated/Transparency_frame1.rdc",
+          "size_bytes": 3694722,
+          "sha256": "ac23e5d9453185178eb3cec2accbce5239e2e61a454b0e16a96f295f5666419c"
+        },
+        {
+          "path": "build/engine_next/transparency-gpu-r3/SoftSeparated/Transparency_frame2.rdc",
+          "size_bytes": 3693569,
+          "sha256": "f51384e95f8e2994d2f8b82a81bdcb367e196d9b4ea8ac96553d0a2f1cac02ff"
+        },
+        {
+          "path": "build/engine_next/transparency-gpu-r3/SoftSeparated/Transparency_frame3.rdc",
+          "size_bytes": 3854026,
+          "sha256": "88c3151065df2ad777600e0cb34c51de6627a4dd04324269340fab5e5a60de0f"
+        }
+      ],
+      "replayed_capture": {
+        "path": "build/engine_next/transparency-gpu-r3/SoftSeparated/Transparency_frame1.rdc",
+        "size_bytes": 3694722,
+        "sha256": "ac23e5d9453185178eb3cec2accbce5239e2e61a454b0e16a96f295f5666419c"
+      },
+      "pixel_history_supported": true,
+      "probe_pixels": [
+        [
+          320,
+          181
+        ]
+      ],
+      "checks": {
+        "opaque_depth_byte_unchanged": true,
+        "mesh_order_matches_far_to_near": true,
+        "emissive_order_rgb": true,
+        "snapshot_blending": true,
+        "snapshot_reactive_max": true,
+        "pixel_history_blending": true
+      },
+      "actual_depth_is_byte_identical_after_each_draw": true
+    },
+    {
+      "name": "SoftCoincident",
+      "command": [
+        "renderdoccmd.exe",
+        "capture",
+        "--working-dir",
+        "build/engine_next/volume-r3",
+        "--capture-file",
+        "build/engine_next/transparency-gpu-r3/SoftCoincident/Transparency",
+        "build/engine_next/volume-r3/next_visual_client.exe",
+        "--hidden",
+        "--validation",
+        "--deterministic",
+        "--vsync",
+        "--frames",
+        "240",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--asset-package",
+        "build/engine_next/volume-benchmark-r1/Volume.enpak",
+        "--gpu-package",
+        "build/engine_next/volume-benchmark-r1/Volume.engpu",
+        "--render-config",
+        "build/engine_next/transparency-gpu-r3/SoftCoincident/Configuration.json",
+        "--report",
+        "build/engine_next/transparency-gpu-r3/SoftCoincident/Runtime.json"
+      ],
+      "configuration": {
+        "path": "build/engine_next/transparency-gpu-r3/SoftCoincident/Configuration.json",
+        "size_bytes": 1714,
+        "sha256": "53e04023e856b88e12c9d88011145ff11b352c51c12be12d5e4f3c4e444a1d84"
+      },
+      "runtime_report": {
+        "path": "build/engine_next/transparency-gpu-r3/SoftCoincident/Runtime.json",
+        "size_bytes": 318252,
+        "sha256": "d84f6405ce8f4950adac3ab4fb79b6c34cc50dae2d09c136475c3e6f2d87b8f4"
+      },
+      "frames": 240,
+      "validation_errors": 0,
+      "captures": [
+        {
+          "path": "build/engine_next/transparency-gpu-r3/SoftCoincident/Transparency_frame1.rdc",
+          "size_bytes": 3694520,
+          "sha256": "6f564e4fd8a5cdc67560a75f506898e5cb32111e3b15b22517966378389f96fa"
+        },
+        {
+          "path": "build/engine_next/transparency-gpu-r3/SoftCoincident/Transparency_frame2.rdc",
+          "size_bytes": 3694948,
+          "sha256": "5a11a0c382d8c9980290fa0c5b8053c6a25696aacbfec79e8e9d775909a919a4"
+        },
+        {
+          "path": "build/engine_next/transparency-gpu-r3/SoftCoincident/Transparency_frame3.rdc",
+          "size_bytes": 3854763,
+          "sha256": "3f8550af709e6b5402ce9a8e37702f238d31f087799ba0822329afb45a0dfb9b"
+        }
+      ],
+      "replayed_capture": {
+        "path": "build/engine_next/transparency-gpu-r3/SoftCoincident/Transparency_frame1.rdc",
+        "size_bytes": 3694520,
+        "sha256": "6f564e4fd8a5cdc67560a75f506898e5cb32111e3b15b22517966378389f96fa"
+      },
+      "pixel_history_supported": true,
+      "probe_pixels": [
+        [
+          320,
+          181
+        ]
+      ],
+      "checks": {
+        "opaque_depth_byte_unchanged": true,
+        "mesh_order_matches_far_to_near": true,
+        "emissive_order_rgb": true,
+        "snapshot_blending": true,
+        "snapshot_reactive_max": true,
+        "pixel_history_blending": true,
+        "coincident_leaves_pixel_unchanged": true
+      },
+      "actual_depth_is_byte_identical_after_each_draw": true
+    }
+  ],
+  "methods": {
+    "pixel_history": "D3D12 APIProperties.pixelHistory was true on every replay. Actual preMod, shaderOut and postMod values were recorded for the HDR and reactive outputs.",
+    "premultiplied_blending": "Compare postMod against shaderOut + preMod * (1 - shaderOut.a), within one binary16 ULP. The emissive-only layer fixture independently predicts each source value.",
+    "reactive": "Compare R8 target against MAX(previous, effective alpha), within one UNORM8 ULP.",
+    "soft_depth": "Reconstruct positive view depth from captured reverse-Z opaque depth and FrameConstants projection. Fixed 0.1-world-unit particle fade is tested at 0.05, 0.2 and 0 gaps.",
+    "depth_preservation": "The complete 640x480 opaque D32 texture is byte-identical before and after every transparent draw.",
+    "fixture_choice": "Directional illumination is set to zero, with fog, temporal AA, bloom and SSR disabled. The existing self-authored three-layer geometry and material values are preserved.",
+    "api_source": "https://github.com/baldurk/renderdoc/blob/v1.47/renderdoc/driver/d3d12/d3d12_replay.cpp"
+  },
+  "limitations": [
+    "This result validates the bound r3 executable and shaders; it does not relabel the corrected particle CPU candidate as tested.",
+    "Each static case replays one of its three actual captures for PixelHistory; all 12 original captures are retained.",
+    "The selected probes validate ordered overlapping layers and depth fade. They do not establish order-independent transparency for intersecting geometry.",
+    "Fogged transparency, network motion and maximum-particle performance use separate acceptance evidence."
+  ],
+  "tool_recovery": "Initial replay filenames omitted the case directory and collided. Original RDC files were retained; all four cases were replayed again into separate ReadbackVerified case directories. Only these hash-verified readbacks are authoritative.",
+  "metadata_paths": {
+    "display": "Repository artifacts use relative paths. Command executable paths use their file names. Exact executed commands remain in the original private metadata.",
+    "original": {
+      "path": "build/engine_next/volume-metadata-originals/engine-next-visual-runtime-m4-3-volume-transparency-gpu.json",
+      "sha256": "061191121eb42f868c44143ba5ee6a28f1900083960a870099574556b3a00b9f",
+      "size_bytes": 27970
+    }
+  }
+}
