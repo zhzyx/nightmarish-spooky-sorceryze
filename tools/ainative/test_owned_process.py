@@ -49,6 +49,55 @@ else:
 
 
 class AdapterProcessTests(unittest.TestCase):
+    def test_explicit_cwd_and_default_inheritance(self):
+        parent = Path.cwd()
+        with tempfile.TemporaryDirectory(prefix="owned-cwd-") as folder:
+            for cwd, expected in ((folder, Path(folder)), (None, parent)):
+                with self.subTest(cwd=cwd), tempfile.TemporaryFile() as output:
+                    failures = []
+                    code = run_owned(
+                        [sys.executable, "-c", "import os; print(os.getcwd())"],
+                        stdout=output,
+                        limit=4096,
+                        timeout=5,
+                        active=lambda: True,
+                        fail=failures.append,
+                        cwd=cwd,
+                    )
+                    self.assertEqual(code, 0)
+                    self.assertEqual(failures, [])
+                    output.seek(0)
+                    self.assertEqual(Path(output.read().decode().strip()), expected)
+                    self.assertEqual(Path.cwd(), parent)
+
+    def test_owned_helper_change_invalidates_generated_bundle(self):
+        repository = Path(__file__).resolve().parents[2]
+        spec = importlib.util.spec_from_file_location("cwd_bundle_builders", repository / "editor/ainative/builders.py")
+        builders = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(builders)
+        with tempfile.TemporaryDirectory(prefix="owned-build-") as folder:
+            root = Path(folder)
+            command = root / "owned_process.py"
+            helper = root / "editor_provenance_process.py"
+            command.write_bytes((repository / "tools/ainative/owned_process.py").read_bytes())
+            helper.write_bytes((repository / "tools/editor_provenance_process.py").read_bytes())
+            header = root / "bundle.gen.h"
+            sources = builders.bundle_sources([command])
+            self.assertIn(str(helper.resolve()), sources)
+            builders.build_bundle([header], sources, None)
+            original = header.read_bytes()
+            command.write_text(
+                command.read_text(encoding="utf-8") + "\n# changed isolated build input\n", encoding="utf-8"
+            )
+            builders.build_bundle([header], sources, None)
+            changed = header.read_bytes()
+            self.assertNotEqual(original, changed)
+            digest = hashlib.sha256(command.read_text(encoding="utf-8").encode()).hexdigest()
+            self.assertIn(digest.encode(), changed)
+            command.write_bytes((repository / "tools/ainative/owned_process.py").read_bytes())
+            builders.build_bundle([header], sources, None)
+            self.assertEqual(header.read_bytes(), original)
+
     @unittest.skipUnless(sys.platform == "darwin", "Darwin process inspection")
     def test_group_readback_rejects_live_member_and_accepts_pinned_zombie(self):
         with tempfile.TemporaryFile() as output:
@@ -203,8 +252,9 @@ class AdapterProcessTests(unittest.TestCase):
                     provider._active = active
                     provider.finish = lambda *args: failures.append(args)
                     args = [sys.executable, str(script), str(root), mode, "parent"]
-                    # Windows starts three interpreters before the ready marker.
-                    timeout = 3.0 if os.name == "nt" else 0.6
+                    # Three interpreters need startup time on constrained hosts,
+                    # including POSIX containers. The production limit is unchanged.
+                    timeout = 3.0
                     started = time.monotonic()
                     try:
                         with (

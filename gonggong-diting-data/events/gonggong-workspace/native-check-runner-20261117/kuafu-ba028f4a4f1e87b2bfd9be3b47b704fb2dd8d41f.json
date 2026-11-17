@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ba028f4a4f1e87b2bfd9be3b47b704fb2dd8d41f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-check-runner-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "cbe2318c06983787e7162d940692f37aa0e84d1a01022f4a3cfb60779ab3da86",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1424",
+    "action": "dispatch",
+    "detection_head": "04fcdb5f1f0e301f179e0581944accee382a2496",
+    "context_sha256": "bb97de33e9c1645902f916fb3aa4dab38ab696a03e671c68bd1427ac531f4551",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "D:/GongGong/data-collection/receipts/duobao-1382/check-runner-review-dispatch-result.json",
+    "diagnosis": "Parent started dispatch before prior reconciliation session completed; native coordination lock correctly refused it. Waited original session exit0 and read terminal result, then lock naturally released and review worker actually started. No lock removal or duplicate worker.",
+    "next_action": "Continue independent review; preserve this orchestration correction and require completed session result before next dispatch.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T11:31:14.399173+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T11:35:27.789558+00:00",
+  "sha256": "b308c1bba81e7caa39f399ea7f0baecc876b5bff6402172e7e347f095b23f2cd"
+}

@@ -1,0 +1,133 @@
+{
+  "issue": 1422,
+  "reviewer": "independent-native-subagent",
+  "mode": "read-only-source",
+  "reviewed_at": "2026-11-17T11:38:00.211972+00:00",
+  "source_root": "D:\\GongGong-work\\native-check-runner-20261117",
+  "source_head": "04fcdb5f1f0e301f179e0581944accee382a2496",
+  "source_bindings": {
+    "customizations/components/tianxuan/duobao/native_check_runner.py": {
+      "sha256": "473b900e16c35a672f02b09fb7b1779c033cc22e5308bbf36560272eda164ab5",
+      "git_blob": "fe9b0d240ab18e6182f3f5fea1fb17751c748b89"
+    },
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py": {
+      "sha256": "f7d2913ce437f11be7bc56951238f54069449b5e6f00489abafcb218b365f0c0",
+      "git_blob": "4cd0daa0972b123345d65f0ceda43bb86b2eb084"
+    },
+    "customizations/components/tianxuan/duobao/native_check_runner.md": {
+      "sha256": "318b696305a0b739f214f7c95744070347dae915b0e09955094fc6d98503ea13",
+      "git_blob": "d2271ceca51cd937a1daa22a0b6a55085e65f960"
+    },
+    "tools/ainative/owned_process.py": {
+      "sha256": "72cf68efb4965de39b59806f55ad9b5f802b1c1bb674bed7498d0914d40b8150",
+      "git_blob": "299243639ded6ce63066006df1055ee18021ad68"
+    },
+    "tools/editor_provenance_process.py": {
+      "sha256": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+      "git_blob": "1792895eca6d3ff29467380ea4f3be4fd9236fcd"
+    },
+    "tools/ainative/test_owned_process.py": {
+      "sha256": "fb4137f100595003c3663edfe491da4e01b4726f14ff40087828a0508216838c",
+      "git_blob": "08178dda25eb0a802b28e55736d6d4f02891e9b8"
+    },
+    "customizations/components/tianxuan/duobao/native_evidence.py": {
+      "sha256": "779a6f9162874c2f2a24349c3dca2193cad31fec04c950749f851fcaf9f3216f",
+      "git_blob": "9586dbf0dd4e830d0ddfe0217fea056ee2ad3e87"
+    },
+    "customizations/components/tianxuan/duobao/native_store.py": {
+      "sha256": "74a13f19f462a542377572a0aaa95ed17c196fc3e0330d579aa7f70de903c98b",
+      "git_blob": "1503687c9add396cd2ff7a9902f21f263431e997"
+    },
+    "customizations/components/tianxuan/duobao/native_workspace.py": {
+      "sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "git_blob": "8e6334622cd69d6a710eed9786ce1c879588fff1"
+    },
+    "customizations/components/tianxuan/duobao/native_release.py": {
+      "sha256": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+      "git_blob": "1f508962cf22644995856cb2a50a5e4f1c5c28f9"
+    },
+    "design-docs/native-check-runner-20261117.md": {
+      "sha256": "cf8666660afadfe487f0b1571be0c64632e25c441a3a18c413abaed8f808f9f8",
+      "git_blob": "eb5916f248133cc8fb06594a67cfc0e48586ba01"
+    }
+  },
+  "frozen_bindings_verified": true,
+  "verdict": "changes_requested",
+  "findings": [
+    {
+      "priority": "P1",
+      "title": "Execution result is rebound to policy changed during execution",
+      "file": "customizations/components/tianxuan/duobao/native_check_runner.py",
+      "lines": [
+        159,
+        173,
+        184,
+        190,
+        287,
+        300
+      ],
+      "cause": "execute stores initial binding only in native_check_runs.request. _record_result invokes EvidenceCache.record, which recomputes binding from mutable current policies, without requiring original binding equality. Thus v1 execution can become passed v2 evidence.",
+      "reproduce": [
+        "Use RunnerTests fixture; run real Python check that writes DUOBAO_OUTPUT/started and sleeps 0.6 seconds.",
+        "Capture cache.binding before submitting runner.execute in a ThreadPoolExecutor.",
+        "Wait for real started marker, set cache.policies[check][version] to v2, await result.",
+        "Read cache.lookup with same runner.context. Result is complete/passed and cache hit binds v2, despite starting with v1."
+      ],
+      "observed": {
+        "outcome": "passed",
+        "state": "complete",
+        "initial_policy": "79d9851837d934bb0683536f79f8fe112aec43873d7199ff6becbe9ea76ad54e",
+        "recorded_policy": "440d683aebc7a31dc338db833ac27160639c0a7bc00093b5752f15ec7409b7b4",
+        "new_policy_cache_hit": true
+      },
+      "required_fix": "Bind persisted result and evidence writeback to the frozen original policy/input binding; prevent policy drift between comparison and record. Add mid-run drift and result writeback/replay boundary tests; changed context must not acquire passed evidence.",
+      "reproducer_python": "import sys,json,time\nfrom concurrent.futures import ThreadPoolExecutor\nsys.path.insert(0,'customizations/components/tianxuan/duobao')\nfrom test_native_check_runner import RunnerTests\nx=RunnerTests(); x.setUp()\ntry:\n r=x.runner(\"import os,pathlib,time; pathlib.Path(os.environ['DUOBAO_OUTPUT'],'started').write_text('yes'); time.sleep(0.6)\")\n before=x.cache.binding('test',x.candidate,'check',**r.context('check',x.candidate))\n with ThreadPoolExecutor(max_workers=1) as pool:\n  f=pool.submit(x.run_check,r,'policy-drift')\n  deadline=time.monotonic()+5\n  while not list(x.root.glob('native-check-*/output/started')):\n   assert time.monotonic()<deadline\n   time.sleep(.01)\n  x.cache.policies['check']['version']='v2'\n  result=f.result()\n hit=x.cache.lookup('test',x.candidate,'check',**r.context('check',x.candidate))\n print(json.dumps({'outcome':result['outcome'],'state':result['state'],'initial_policy':before['binding']['policy'],'recorded_policy':hit['evidence']['binding']['policy'],'new_policy_cache_hit':hit is not None}))\nfinally: x.doCleanups()\n"
+    }
+  ],
+  "tests": [
+    {
+      "command": "py -B -m unittest discover -s customizations/components/tianxuan/duobao -p test_native_*.py -q",
+      "exit_code": 0,
+      "tests": 76,
+      "skipped": 2,
+      "seconds": 16.364
+    },
+    {
+      "command": "py -B -m unittest discover -s tools/ainative -p test_owned_process.py -q",
+      "exit_code": 0,
+      "tests": 13,
+      "skipped": 3,
+      "seconds": 16.174
+    },
+    {
+      "command": "Inline Python real subprocess policy drift reproduction using RunnerTests fixture and ThreadPoolExecutor",
+      "exit_code": 0,
+      "result": "Confirmed invalid passed cache reuse under changed policy"
+    }
+  ],
+  "inspection": {
+    "authorization": "Explicit strict True execute and installation callbacks; separate cache.record permission. No default allow. Host-authenticated actor is external prerequisite.",
+    "sqlite": "BEGIN IMMEDIATE serializes durable same-key claim; process waits outside transaction. Result replay uses durable evidence request id.",
+    "process": "Reuses Windows suspended child assignment to kill-on-close Job; bounded output, cancellation, timeout, post-exit cleanup inspected and Windows tests passed. POSIX identity-pinning implementation inspected but not executed here.",
+    "input": "Materializes complete immutable composition and verifies content, manifest, timestamps and bounded entries after process. Context includes full candidate even partial policy scopes.",
+    "crash": "Reserved/running/held rows not automatically respawned; persisted result can retry writeback. Real controller death test included in passing suite.",
+    "compatibility": "Only helper implementation diff adds optional cwd=None passthrough; old callers retain inherited cwd. Actual bundle invalidation and rollback test part of passing suite.",
+    "revocation": "Completed same-key response is historical, documented fresh EvidenceCache/NativeRelease verification required. New key cache lookup checks revocation and record authority."
+  },
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "recalled": [
+      "await-terminal-observers",
+      "bind-consumer-release",
+      "review-context-and-source-evidence"
+    ],
+    "application": "Bound actual test evidence to exact source bytes; terminal success does not override independently reproduced provenance failure."
+  },
+  "limits": [
+    "Windows local deterministic subprocesses only; Linux validation delegated to parent.",
+    "No model, deployment, performance or business acceptance claims.",
+    "Trusted host callbacks and storage remain required; no OS sandbox, output disk quota or malicious timestamp restoration protection.",
+    "No source modifications, commits or pushes."
+  ],
+  "cleanup": "TemporaryDirectory fixtures cleaned; private review receipt retained. Source files unchanged by reviewer."
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-772cd6b5d9e600f86b6b77e5d48c98c5cb77e4fa",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-check-runner-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b9cf3359792b1e0dc38774345f140faf474ee42fa20e19ebb19f8f18b7340e9c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1422",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1425",
+    "action": "validation",
+    "detection_head": "04fcdb5f1f0e301f179e0581944accee382a2496",
+    "context_sha256": "7eb86ca20bb829edc0fc67edaf49f8ef4e56b5e6de4cba62b6fca82aba242d0b",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "D:/GongGong/data-collection/receipts/duobao-1382/check-runner-process-diagnostic.json",
+    "diagnosis": "Harness skipped TestCase objects were not JSON serializable; convert to names. A shell quoting correction failed before edit and accidentally reran old harness once; preserve that failure. Readable Linux run exposed canonical executable requirement and old adapter fixture0.6s startup budget. Real diagnostic0.6s timed out with2 PIDs;3s completed0.965s with3 PIDs. Launch canonical python3.12 and set synthetic fixture3s on all platforms; production timeouts unchanged.",
+    "next_action": "Run final Linux suite, independently review fixture-only delta and preserve exact source bindings before delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T11:53:37.284379+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T12:05:41.674607+00:00",
+  "sha256": "99dbc188930280fda5366d2ba1864e678853da87e9ed811eefbf4ae67aaff0a5"
+}

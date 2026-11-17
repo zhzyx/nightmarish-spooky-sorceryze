@@ -1,0 +1,82 @@
+{
+  "issue": "github:zhzyx/nightmarish-spooky-sorceryze#1422",
+  "kind": "local-implementation-validation",
+  "source_baseline": "04fcdb5f1f0e301f179e0581944accee382a2496",
+  "design": "design-docs/native-check-runner-20261117.md",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.14.3 (tags/v3.14.3:323c59a, Feb  3 2026, 16:04:56) [MSC v.1944 64 bit (AMD64)]",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/native_check_runner.py": "473b900e16c35a672f02b09fb7b1779c033cc22e5308bbf36560272eda164ab5",
+    "customizations/components/tianxuan/duobao/test_native_check_runner.py": "f7d2913ce437f11be7bc56951238f54069449b5e6f00489abafcb218b365f0c0",
+    "customizations/components/tianxuan/duobao/native_check_runner.md": "318b696305a0b739f214f7c95744070347dae915b0e09955094fc6d98503ea13",
+    "tools/ainative/owned_process.py": "72cf68efb4965de39b59806f55ad9b5f802b1c1bb674bed7498d0914d40b8150",
+    "tools/editor_provenance_process.py": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1",
+    "tools/ainative/test_owned_process.py": "fb4137f100595003c3663edfe491da4e01b4726f14ff40087828a0508216838c"
+  },
+  "checks": [
+    {
+      "command": "py -m unittest discover -s customizations/components/tianxuan/duobao -p test_native_*.py -q",
+      "result": "passed",
+      "tests": 76,
+      "skipped": 2
+    },
+    {
+      "command": "py -m mypy --follow-imports=skip customizations/components/tianxuan/duobao/native_check_runner.py customizations/components/tianxuan/duobao/test_native_check_runner.py tools/ainative/owned_process.py tools/ainative/test_owned_process.py",
+      "result": "passed"
+    },
+    {
+      "command": "py -m ruff check customizations/components/tianxuan/duobao/native_check_runner.py customizations/components/tianxuan/duobao/test_native_check_runner.py tools/ainative/owned_process.py tools/ainative/test_owned_process.py",
+      "result": "passed"
+    },
+    {
+      "command": "py -m ruff format --check customizations/components/tianxuan/duobao/native_check_runner.py customizations/components/tianxuan/duobao/test_native_check_runner.py tools/ainative/owned_process.py tools/ainative/test_owned_process.py",
+      "result": "passed"
+    },
+    {
+      "command": "py -m unittest discover -s tools/ainative -p test_owned_process.py -q",
+      "result": "passed",
+      "tests": 13,
+      "skipped": 3
+    }
+  ],
+  "coverage": [
+    "real success/nonzero/timeout/output overflow/input pollution/cancellation",
+    "Windows Job descendant termination",
+    "concurrent duplicate and independent native submit while command remains running",
+    "real controller kill and restart retains running record without respawn",
+    "result replay after committed EvidenceCache receipt loss",
+    "cache reuse, environment and input invalidation, evidence revocation",
+    "actual evidence consumed by NativeRelease with distinct producer, runner, reviewer and publisher test identities",
+    "independent actual long and short commands run concurrently",
+    "toolchain/rule/expiry invalidation and bounded 800KB binary transcript",
+    "explicit output cwd in real runner, default inherited cwd compatibility in helper",
+    "actual embedded generator: helper input mutation changes generated header and embedded SHA; rollback restores bytes"
+  ],
+  "limitations": [
+    "trusted host callback authentication and full environment attestation required; no default allow",
+    "no OS sandbox, output artifact disk quota, malicious timestamp restoration defense or remote/model execution",
+    "reserved/running/held records need external owner reconciliation; only persisted result writeback recovers automatically",
+    "historical same-key receipts require fresh EvidenceCache/NativeRelease lookup before consumption",
+    "server isolated validation and independent review pending parent",
+    "no commit, push, deployment or business acceptance claimed"
+  ],
+  "cleanup": {
+    "test_temporary_directories": "TemporaryDirectory cleanup completed after tests",
+    "implementation_files": "retained for parent integration",
+    "runtime_unknown_workspaces": "design retains logical ownership and evidence; test-only crash fixture Job closed and test temporary directory removed"
+  },
+  "build_impact": {
+    "runner": "host_tool",
+    "existing_helper": "embedded",
+    "inputs": [
+      "editor/SCsub",
+      "editor/ainative/builders.py",
+      "tools/ainative/owned_process.py",
+      "tools/editor_provenance_process.py"
+    ],
+    "target": "editor/ainative/bundle.gen.h",
+    "generated_input_invalidation": true,
+    "engine_rebuild_claimed": false,
+    "rollback": "Stop new runner entry, retain database/unknown workspaces; helper cwd defaults remain compatible. Embedded delivery follows existing engine build workflow."
+  }
+}
