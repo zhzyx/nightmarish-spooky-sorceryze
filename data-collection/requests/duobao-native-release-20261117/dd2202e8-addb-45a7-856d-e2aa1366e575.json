@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "duobao-native-release-20261117",
+  "collected_at": "2026-11-17T09:04:41.556066+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/duobao-native-release-20261117/codex-intake-1409-20261117.json",
+      "sha256": "0805790fb46786106682397aa89d8ed18e1ad943721d23c5758a7f6808249a90",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "codex-intake-1409-20261117",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/duobao-native-release-20261117/dispatch-7d556a05735348c080bccc67c6426455.json",
+      "sha256": "704848ecc7718ee9d66e8c1d0e526f2e3b52eed8e376c32bd93a5f9f18e6cf1a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-7d556a05735348c080bccc67c6426455",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/duobao-native-release-20261117/dispatch-7fcb2f4bb807444fb9b05bd5acc3a90f.json",
+      "sha256": "32ea165c1a6b5a72f54a1de65bdbac49ca3b742567ca291cba2bd91dbf1eb551",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-7fcb2f4bb807444fb9b05bd5acc3a90f",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/duobao-native-release-20261117/dispatch-8968eeda8058452cbc0fa2855eda425a.json",
+      "sha256": "8e24d8af276e02d826958459df574853aeb1f7b6f6003abd08982e662a31013c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-8968eeda8058452cbc0fa2855eda425a",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/duobao-native-release-20261117/dispatch-9ce7f7b8e20041c7ac150a87a09e4855.json",
+      "sha256": "2d05be6777c2fb25868a4e0eebcbf91902adc55058941b7110436727141cec09",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-9ce7f7b8e20041c7ac150a87a09e4855",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/duobao-native-release-20261117/kuafu-edae71d2b232191bb79aa5eea983f700b334662d.json",
+      "sha256": "ab067cd0a5328ab5ed5eef8a36bd54649eab6eac6e7857a0e7deb8f14a0263ff",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-edae71d2b232191bb79aa5eea983f700b334662d",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1409,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1409"
+}

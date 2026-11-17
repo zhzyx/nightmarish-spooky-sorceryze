@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "issue_number": 1409,
+  "request_id": "duobao-native-release-20261117",
+  "observed_at": "2026-11-17T08:53:33.897614+00:00",
+  "environment": "existing tianxuan server isolated temporary directory",
+  "python": "3.12.3",
+  "platform": "Linux",
+  "source_sha256": {
+    "native_store.py": "2e8c149703a81ff50d0f2c4c0894fea427745172005126dbefc9cf7f2f56129a",
+    "native_evidence.py": "779a6f9162874c2f2a24349c3dca2193cad31fec04c950749f851fcaf9f3216f",
+    "native_release.py": "1b0d51f6997fc5226dfc61bedc44f76fe336bc64a68686f47e01b48ee5fb98f8",
+    "test_native_release.py": "dd22e2ef946264ae23a7ced27c0b2205911f1a8237ca86d0cf75705aaace531c"
+  },
+  "tests_run": 20,
+  "passed": true,
+  "seconds": 1.6458224090165459,
+  "temporary_directory_removed": true,
+  "server_services_changed": false,
+  "test_output": "test_channels_and_same_channel_competitors (test_native_release.ReleaseTests.test_channels_and_same_channel_competitors) ... ok\ntest_check_policy_drift_and_evidence_expiry (test_native_release.ReleaseTests.test_check_policy_drift_and_evidence_expiry) ... ok\ntest_corruption_rejected (test_native_release.ReleaseTests.test_corruption_rejected) ... ok\ntest_event_cursor_is_bounded_and_product_scoped (test_native_release.ReleaseTests.test_event_cursor_is_bounded_and_product_scoped) ... ok\ntest_event_failure_rolls_back_pointer_receipt_and_manifest (test_native_release.ReleaseTests.test_event_failure_rolls_back_pointer_receipt_and_manifest) ... ok\ntest_event_product_corruption_rejects_current_selection (test_native_release.ReleaseTests.test_event_product_corruption_rejects_current_selection) ... ok\ntest_expiry_authority_policy_and_source_rechecked (test_native_release.ReleaseTests.test_expiry_authority_policy_and_source_rechecked) ... ok\ntest_full_flow_restart_and_rollback (test_native_release.ReleaseTests.test_full_flow_restart_and_rollback) ... ok\ntest_idempotent_receipts_events_and_revocation_no_resurrection (test_native_release.ReleaseTests.test_idempotent_receipts_events_and_revocation_no_resurrection) ... ok\ntest_identity_source_and_required_policy_rejections (test_native_release.ReleaseTests.test_identity_source_and_required_policy_rejections) ... ok\ntest_latest_failed_unknown_or_changed_evidence_rejects_prior_review (test_native_release.ReleaseTests.test_latest_failed_unknown_or_changed_evidence_rejects_prior_review) ... ok\ntest_publish_before_revocation_has_historical_event_but_invalid_selection (test_native_release.ReleaseTests.test_publish_before_revocation_has_historical_event_but_invalid_selection) ... ok\ntest_reader_snapshot_does_not_block_unrelated_publication (test_native_release.ReleaseTests.test_reader_snapshot_does_not_block_unrelated_publication) ... ok\ntest_record_and_blob_corruption_rejected_on_consumer_read (test_native_release.ReleaseTests.test_record_and_blob_corruption_rejected_on_consumer_read) ... ok\ntest_release_flow_without_network_process_or_git (test_native_release.ReleaseTests.test_release_flow_without_network_process_or_git) ... ok\ntest_review_revocation_before_publish_and_reapproved_rollback (test_native_release.ReleaseTests.test_review_revocation_before_publish_and_reapproved_rollback) ... ok\ntest_revocation_commits_before_blocked_publish (test_native_release.ReleaseTests.test_revocation_commits_before_blocked_publish) ... ok\ntest_revoked_evidence_rejects_publish_and_current_read (test_native_release.ReleaseTests.test_revoked_evidence_rejects_publish_and_current_read) ... ok\ntest_tenant_product_isolation (test_native_release.ReleaseTests.test_tenant_product_isolation) ... ok\ntest_unknown_composition_context_and_missing_atomic_event (test_native_release.ReleaseTests.test_unknown_composition_context_and_missing_atomic_event) ... ok\n\n----------------------------------------------------------------------\nRan 20 tests in 1.646s\n\nOK\n",
+  "limits": "Native release trusted-host semantics and reader/writer concurrency only; no online identity, deployment, token, production capacity or AA acceptance."
+}
