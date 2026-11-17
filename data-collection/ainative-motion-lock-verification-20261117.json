@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "request_id": "ainative-motion-lock-20261117",
+  "issue_number": 1440,
+  "parent_issue_number": 1343,
+  "baseline": "22a7431e2d44d4c47262af0f5c471f9aa1cc2034",
+  "environment": {
+    "platform": "Windows-11-10.0.22631-SP0",
+    "python": "3.12.14",
+    "utf8_mode": true
+  },
+  "source_sha256": {
+    "tools/ainative/motion_jobs.py": "11f4207867030aa16526b064e443252f80a32159d3aa557f98992870d0029cd0",
+    "tools/ainative/test_motion_provider.py": "fb9a558208c0804158f3a11d62ca9e2d5666f8d695e2d6ae36d91942193891a8"
+  },
+  "original_failure": {
+    "parent_regression_tests": 437,
+    "errors": 2,
+    "test": "MotionRecoveryTests.test_concurrent_same_key_launches_once",
+    "primary_error": "PermissionError in exclusive marker flush before try/finally",
+    "secondary_error": "Windows sharing violation while deleting a leaked dispatch.lock handle"
+  },
+  "eof_probe": {
+    "empty_file_lock_supported": true,
+    "second_handle_conflict": true,
+    "reacquire_after_unlock": true,
+    "file_size": 0,
+    "handles_closed_file_removed": true
+  },
+  "deterministic_regression": {
+    "before": {
+      "tests": 4,
+      "failures": 3,
+      "observed": [
+        "Empty locks contain marker bytes",
+        "Controlled holder/waiter interleaving performs redundant writes",
+        "An unlock exception leaves its stream open"
+      ]
+    },
+    "after": {
+      "tests": 14,
+      "failures": 0,
+      "coverage": [
+        "Existing marker file preserved",
+        "Zero-byte locks exclude another handle and another process",
+        "Blocked waiter enters after holder release",
+        "Body and unlock exceptions close the stream",
+        "Same job key launches once"
+      ]
+    }
+  },
+  "stress": {
+    "rounds": 50,
+    "tests_per_round": 3,
+    "tests": 150,
+    "failures": 0
+  },
+  "full_ainative": {
+    "command": "python -m unittest discover -s tools/ainative -p test_*.py",
+    "tests": 445,
+    "skipped": 36,
+    "errors": 0,
+    "failures": 0,
+    "elapsed_seconds": 284.587
+  },
+  "package_regression": {
+    "command": "python -m unittest tests.editor.test_ainative_bundle tests.editor.test_maliang_package -v",
+    "tests": 9,
+    "skipped": 2,
+    "errors": 0,
+    "failures": 0
+  },
+  "static_checks": {
+    "ruff_check": "passed; 0.17.1",
+    "ruff_format": "2 files already formatted; 0.17.1",
+    "mypy": "2 files passed; 2.4.0",
+    "compileall": "passed"
+  },
+  "raw_log_sha256": {
+    "BaselineTests.log": "5418f7ee2f123ec42633013c39f90e3e4bd213faa9a3ddc6b688d7a55e85ec7f",
+    "FinalScopedTests.log": "957503cfe3060e04516163e7676ee2a1c0510a597c924a14c68af297acfaddbd",
+    "FixedTests.log": "5e1be907cbaacb94a2836ae72ce7ecb2ce84f475a4958c800c006aa836a6ce97",
+    "FullAinative.log": "f3319bd06cd9c14dd0af6064787bb674e89df959f9791767fc2283dd2bd07802",
+    "FullAinativeFinal.log": "905163339c45be77742627831a29acfd925057cad7f4466f80b38fbc01a500e7",
+    "PackageTests.log": "20b55ea27ff682dfacc39962dab62a6aa6235d81c9cdaf25b85f38898692b1cf",
+    "StressTests.log": "d2b3bd7a497c8587a8de73e40ca2b98ed785137977ba99a0cc342af44289e072"
+  },
+  "independent_review": {
+    "path": "data-collection/ainative-motion-lock-review-20261117.json",
+    "sha256": "9ed4da3907c5c57f3d297be5c5401cb87c325835b1c610587589e0196e678712"
+  },
+  "linux_verification": {
+    "state": "pending_exact_candidate_ci",
+    "implementation": "POSIX flock path retained; cross-process regression executes on Linux in the existing complete AINative job"
+  },
+  "reference": "https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/locking?view=msvc-170",
+  "scope_note": "Local tests cover OS locking and synthetic provider launch coordination."
+}

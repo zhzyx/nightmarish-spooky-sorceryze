@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "motion-lock-verified-windows-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-motion-lock-20261117",
+  "kind": "step",
+  "occurred_at": "2026-11-17T14:24:55.863389+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1440",
+  "agent": {
+    "id": "codex-m42-capture-tools",
+    "version": "repository-instructions-22a7431e",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "motion-lock-request-20261117"
+  ],
+  "payload": {
+    "verification": "445 AINative tests (36 explicit skips), 9 package tests (2 explicit skips), 150 repeated lock/provider concurrency tests passed on Windows. Six new lock regression cases cover an actual child process.",
+    "evidence": "data-collection/ainative-motion-lock-verification-20261117.json",
+    "independent_review": "data-collection/ainative-motion-lock-review-20261117.json",
+    "remaining": "Formal submission gate, exact-candidate cross-platform CI, and main delivery."
+  },
+  "sha256": "85bbc6234604b2bfb304eadb26cc6285ef6b92e6481303c36096d717d4759f57"
+}
