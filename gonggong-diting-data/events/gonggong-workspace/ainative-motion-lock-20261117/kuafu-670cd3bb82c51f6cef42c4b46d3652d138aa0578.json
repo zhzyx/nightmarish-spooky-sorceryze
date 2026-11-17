@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-670cd3bb82c51f6cef42c4b46d3652d138aa0578",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-motion-lock-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1440",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c52865d8771aafd7228ac98cbb0ed04c70004e7710f40000cb52cec69575ab14",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1440",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1440",
+    "action": "validation",
+    "detection_head": "22a7431e2d44d4c47262af0f5c471f9aa1cc2034",
+    "context_sha256": "e517209668f302b3fa9e0d6ece9afe6e485e36b1b391d0fd99f7a3e39c4b04a0",
+    "operator": "kaiyunxue",
+    "worker": "codex:/root/m42_capture_tools",
+    "authority_ref": "User Engine Next M4 execution mandate; parent issue 1343 explicitly delegated isolated repair and tested PR delivery on 2026-11-17",
+    "evidence": "build/engine_next/motion-lock/EofProbe.json and BaselineTests.log",
+    "diagnosis": "The empty-file marker write precedes lock acquisition and handle cleanup, so concurrent Windows writers can fail before try/finally. An unlock exception also bypasses stream.close. Real EOF byte-lock probe succeeded; deterministic old-code regressions fail.",
+    "next_action": "Remove marker writes and scope the stream with a context manager; run Windows and Linux regression, independent review, formal gate, CI, and PR delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T14:08:27.020094+00:00",
+    "attempted": null,
+    "repair_owner": "codex:/root/m42_capture_tools",
+    "continuable": "Volume work continues independently on parent issue 1343."
+  },
+  "occurred_at": "2026-11-17T14:13:47.351342+00:00",
+  "sha256": "c3df764291af59d21abd2bf3f0f66074b96ce7017157cd07ccdcc906e5927f3a"
+}

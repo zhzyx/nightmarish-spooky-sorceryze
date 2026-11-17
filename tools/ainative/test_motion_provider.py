@@ -4,6 +4,8 @@ import os
 import subprocess
 import sys
 import tempfile
+import threading
+import time
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -13,7 +15,7 @@ from unittest.mock import patch
 import test_motion
 from extensions import NodeRegistry, validate_invocation
 from motion import publish
-from motion_jobs import alive, process_identity, process_state, write_new
+from motion_jobs import alive, exclusive, process_identity, process_state, write_new
 from motion_provider import MotionProvider, register
 
 
@@ -50,6 +52,194 @@ class MotionBoundaryTests(unittest.TestCase):
         }
         with self.assertRaisesRegex(ValueError, "unsupported context type"):
             validate_invocation(registry, request, manifest, provider)
+
+
+class MotionLockTests(unittest.TestCase):
+    def test_existing_lock_file_content_is_preserved(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "job.lock"
+            path.write_bytes(b"existing lock marker")
+            with exclusive(path):
+                pass
+            self.assertEqual(path.read_bytes(), b"existing lock marker")
+
+    def test_empty_file_lock_preserves_size_and_nonblocking_conflict(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "job.lock"
+            with exclusive(path):
+                self.assertEqual(path.stat().st_size, 0)
+                with self.assertRaises(BlockingIOError):
+                    with exclusive(path, blocking=False):
+                        self.fail("The second handle acquired an exclusive lock")
+            with exclusive(path, blocking=False):
+                self.assertEqual(path.stat().st_size, 0)
+            path.unlink()
+
+    def test_empty_file_lock_excludes_another_process(self):
+        code = (
+            "import sys\n"
+            "from pathlib import Path\n"
+            "from motion_jobs import exclusive\n"
+            "with exclusive(sys.argv[1]):\n"
+            "    Path(sys.argv[2]).write_text('locked', encoding='utf-8')\n"
+            "    sys.stdin.read(1)\n"
+        )
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "job.lock"
+            ready = Path(temporary) / "ready"
+            child = subprocess.Popen(
+                [sys.executable, "-c", code, str(path), str(ready)],
+                cwd=Path(__file__).resolve().parent,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
+            try:
+                deadline = time.monotonic() + 10
+                while not ready.exists() and child.poll() is None and time.monotonic() < deadline:
+                    time.sleep(0.01)
+                self.assertTrue(ready.exists(), "Child did not acquire the lock")
+                self.assertEqual(path.stat().st_size, 0)
+                with self.assertRaises(BlockingIOError):
+                    with exclusive(path, blocking=False):
+                        self.fail("Another process acquired the held lock")
+            finally:
+                try:
+                    _, error = child.communicate("x", timeout=10)
+                except subprocess.TimeoutExpired:
+                    child.kill()
+                    _, error = child.communicate(timeout=10)
+            self.assertEqual(child.returncode, 0, error)
+            with exclusive(path, blocking=False):
+                pass
+            path.unlink()
+
+    def test_waiter_opened_empty_file_before_holder_does_not_write(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "job.lock"
+            waiter_opened = threading.Event()
+            holder_acquired = threading.Event()
+            waiter_progress = threading.Event()
+            streams = []
+            entered = []
+            errors = []
+            original_open = open
+            original_sleep = time.sleep
+
+            def controlled_open(*args, **kwargs):
+                stream = original_open(*args, **kwargs)
+                streams.append(stream)
+                if threading.current_thread().name == "motion-lock-waiter":
+                    waiter_opened.set()
+                    if not holder_acquired.wait(10):
+                        stream.close()
+                        raise TimeoutError("holder did not acquire the empty file")
+                return stream
+
+            def controlled_sleep(seconds):
+                if threading.current_thread().name == "motion-lock-waiter":
+                    waiter_progress.set()
+                original_sleep(seconds)
+
+            def waiter():
+                try:
+                    with exclusive(path):
+                        entered.append("waiter")
+                except BaseException as error:
+                    errors.append(error)
+                finally:
+                    waiter_progress.set()
+
+            def holder():
+                try:
+                    with exclusive(path):
+                        entered.append("holder")
+                        holder_acquired.set()
+                        if not waiter_progress.wait(10):
+                            raise TimeoutError("waiter did not attempt the held lock")
+                except BaseException as error:
+                    errors.append(error)
+
+            first = threading.Thread(target=waiter, name="motion-lock-waiter")
+            second = threading.Thread(target=holder, name="motion-lock-holder")
+            try:
+                with (
+                    patch("motion_jobs.open", side_effect=controlled_open, create=True),
+                    patch("motion_jobs.time.sleep", side_effect=controlled_sleep),
+                ):
+                    first.start()
+                    self.assertTrue(waiter_opened.wait(10))
+                    second.start()
+                    first.join(15)
+                    second.join(15)
+                    self.assertFalse(first.is_alive())
+                    self.assertFalse(second.is_alive())
+                self.assertEqual(errors, [])
+                self.assertEqual(entered, ["holder", "waiter"])
+                self.assertTrue(all(stream.closed for stream in streams))
+                self.assertEqual(path.stat().st_size, 0)
+                path.unlink()
+            finally:
+                holder_acquired.set()
+                waiter_progress.set()
+                if first.ident is not None:
+                    first.join(15)
+                if second.ident is not None:
+                    second.join(15)
+                for stream in streams:
+                    stream.close()
+
+    def test_body_exception_releases_lock(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "job.lock"
+            with self.assertRaisesRegex(RuntimeError, "body failure"):
+                with exclusive(path):
+                    raise RuntimeError("body failure")
+            with exclusive(path, blocking=False):
+                pass
+            path.unlink()
+
+    def test_unlock_exception_still_closes_handle(self):
+        if os.name == "nt":
+            import msvcrt as lock_module
+
+            lock_name, unlock = "locking", lock_module.LK_UNLCK
+        else:
+            import fcntl as lock_module
+
+            lock_name, unlock = "flock", lock_module.LOCK_UN
+        original_lock = getattr(lock_module, lock_name)
+        original_open = open
+        streams = []
+
+        def controlled_open(*args, **kwargs):
+            stream = original_open(*args, **kwargs)
+            streams.append(stream)
+            return stream
+
+        def fail_unlock(descriptor, mode, *args):
+            if mode == unlock:
+                raise OSError("unlock failure")
+            return original_lock(descriptor, mode, *args)
+
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "job.lock"
+            try:
+                with (
+                    patch("motion_jobs.open", side_effect=controlled_open, create=True),
+                    patch.object(lock_module, lock_name, side_effect=fail_unlock),
+                    self.assertRaisesRegex(OSError, "unlock failure"),
+                ):
+                    with exclusive(path):
+                        pass
+                self.assertTrue(all(stream.closed for stream in streams))
+                with exclusive(path, blocking=False):
+                    pass
+                path.unlink()
+            finally:
+                for stream in streams:
+                    stream.close()
 
 
 class MotionRecoveryTests(unittest.TestCase):

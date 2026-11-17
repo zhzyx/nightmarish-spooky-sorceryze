@@ -27,42 +27,40 @@ def write_new(path, value):
 
 @contextmanager
 def exclusive(path, blocking=True):
-    stream = open(path, "a+b")
-    if stream.tell() == 0:
-        stream.write(b"0")
-        stream.flush()
-    acquired = False
-    try:
-        while True:
-            stream.seek(0)
-            try:
+    # Windows can lock a byte beyond EOF. Initializing that byte would race
+    # another handle that has already locked the same newly created file.
+    with open(path, "a+b") as stream:
+        acquired = False
+        try:
+            while True:
+                stream.seek(0)
+                try:
+                    if os.name == "nt":
+                        import msvcrt
+
+                        msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+                    else:
+                        import fcntl
+
+                        fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    acquired = True
+                    break
+                except (BlockingIOError, OSError):
+                    if not blocking:
+                        raise BlockingIOError("Job lock held")
+                    time.sleep(0.05)
+            yield
+        finally:
+            if acquired:
+                stream.seek(0)
                 if os.name == "nt":
                     import msvcrt
 
-                    msvcrt.locking(stream.fileno(), msvcrt.LK_NBLCK, 1)
+                    msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
                 else:
                     import fcntl
 
-                    fcntl.flock(stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-                acquired = True
-                break
-            except (BlockingIOError, OSError):
-                if not blocking:
-                    raise BlockingIOError("Job lock held")
-                time.sleep(0.05)
-        yield
-    finally:
-        if acquired:
-            stream.seek(0)
-            if os.name == "nt":
-                import msvcrt
-
-                msvcrt.locking(stream.fileno(), msvcrt.LK_UNLCK, 1)
-            else:
-                import fcntl
-
-                fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
-        stream.close()
+                    fcntl.flock(stream.fileno(), fcntl.LOCK_UN)
 
 
 def process_identity(pid):

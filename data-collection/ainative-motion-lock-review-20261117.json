@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "request_id": "ainative-motion-lock-20261117",
+  "issue": 1440,
+  "recorded_at_utc": "2026-11-17T14:22:35.222124+00:00",
+  "reviewer": "m42_cook_review",
+  "review_type": "independent code review and isolated Windows regression execution",
+  "scope": [
+    "tools/ainative/motion_jobs.py",
+    "tools/ainative/test_motion_provider.py"
+  ],
+  "result": "passed",
+  "findings": [],
+  "source_sha256": {
+    "tools/ainative/motion_jobs.py": "11f4207867030aa16526b064e443252f80a32159d3aa557f98992870d0029cd0",
+    "tools/ainative/test_motion_provider.py": "fb9a558208c0804158f3a11d62ca9e2d5666f8d695e2d6ae36d91942193891a8"
+  },
+  "source_git_blob": {
+    "tools/ainative/motion_jobs.py": "2dbaed85850d69191d70c5ada8dca98536faa166",
+    "tools/ainative/test_motion_provider.py": "3672160947185420f9193bee726534d680b20bde"
+  },
+  "review_checks": [
+    "Lock acquisition performs no content write before locking, including a newly created empty file.",
+    "Context-managed stream closes after acquisition, body, or unlock failure.",
+    "Existing lock-file content and blocking/nonblocking entry behavior are preserved.",
+    "Controlled holder/waiter ordering exercises separate handles opened while the file is empty.",
+    "Child-process fixture signals readiness only after acquiring its lock, then exits through the context manager.",
+    "Child-process cleanup releases or kills and reaps its own process on every exit path.",
+    "Windows backend executed. POSIX backend read-reviewed only."
+  ],
+  "runs": [
+    {
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "test_motion_provider.MotionLockTests",
+        "-v"
+      ],
+      "cwd": "repository_root",
+      "environment_overrides": {
+        "PYTHONPATH": "tools/ainative"
+      },
+      "platform": "Windows-11-10.0.22631-SP0",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "test_body_exception_releases_lock (test_motion_provider.MotionLockTests.test_body_exception_releases_lock) ... ok\ntest_empty_file_lock_excludes_another_process (test_motion_provider.MotionLockTests.test_empty_file_lock_excludes_another_process) ... ok\ntest_empty_file_lock_preserves_size_and_nonblocking_conflict (test_motion_provider.MotionLockTests.test_empty_file_lock_preserves_size_and_nonblocking_conflict) ... ok\ntest_existing_lock_file_content_is_preserved (test_motion_provider.MotionLockTests.test_existing_lock_file_content_is_preserved) ... ok\ntest_unlock_exception_still_closes_handle (test_motion_provider.MotionLockTests.test_unlock_exception_still_closes_handle) ... ok\ntest_waiter_opened_empty_file_before_holder_does_not_write (test_motion_provider.MotionLockTests.test_waiter_opened_empty_file_before_holder_does_not_write) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.115s\n\nOK\n",
+      "tests": 6,
+      "command_display": "Local executable and repository paths normalized for publication. The recorded run executed on Windows."
+    }
+  ],
+  "evidence_boundary": "The owner is recording the full AINative suite and old-implementation reproduction separately."
+}

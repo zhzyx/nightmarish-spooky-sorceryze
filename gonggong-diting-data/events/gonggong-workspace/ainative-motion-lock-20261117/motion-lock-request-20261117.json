@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "motion-lock-request-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-motion-lock-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T14:20:05.033226+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1440",
+  "agent": {
+    "id": "codex-m42-capture-tools",
+    "version": "repository-instructions-22a7431e",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "scope": "Repair Windows empty-file lock initialization race and guarantee handle closure through exceptional unlock; preserve blocking, nonblocking and POSIX semantics.",
+    "authority": "User Engine Next M4 mandate and explicit parent issue 1343 delegation to repair, test, submit and merge the isolated defect.",
+    "parent_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "baseline": "22a7431e2d44d4c47262af0f5c471f9aa1cc2034",
+    "design": "design-docs/ainative-motion-lock-20261117.md",
+    "finding": "Original 437-test AINative regression reported PermissionError during empty-file marker flush and a leaked dispatch.lock during cleanup."
+  },
+  "sha256": "125b08d3fe7bc237a658f148c4cb7d27f192f61dd1eb1edecc1ec5436ee4eb75"
+}

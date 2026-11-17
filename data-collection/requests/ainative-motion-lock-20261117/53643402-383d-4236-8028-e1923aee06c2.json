@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "ainative-motion-lock-20261117",
+  "collected_at": "2026-11-17T14:25:37.486292+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ainative-motion-lock-20261117/github-667fcab3bbfa7b0a812cebfbc6efe2e94b6754761302ce0e5f009321e0b84580.json",
+      "sha256": "ad731b17489faedfa311c1d78a12909dad5e0acc29342b4d3f5e25268fef3072",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "github-667fcab3bbfa7b0a812cebfbc6efe2e94b6754761302ce0e5f009321e0b84580",
+      "origin": "explicit-github-issue-event-intake"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ainative-motion-lock-20261117/kuafu-670cd3bb82c51f6cef42c4b46d3652d138aa0578.json",
+      "sha256": "3839c6ee542216ef23794afaa2ee1ee93768f89facd7c5143eae542201b059b7",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-670cd3bb82c51f6cef42c4b46d3652d138aa0578",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ainative-motion-lock-20261117/motion-lock-request-20261117.json",
+      "sha256": "b310fded478288223bff768901dbfc91a086dd4a71aacc835fb70cd459d5b0df",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "motion-lock-request-20261117",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ainative-motion-lock-20261117/motion-lock-verified-windows-20261117.json",
+      "sha256": "a2d0507fa8bd870bb7cf35c00e661a9057780c559d6de699aa0fbc52758474a9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "motion-lock-verified-windows-20261117",
+      "origin": "AGENTS.md"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1440,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1440"
+}
