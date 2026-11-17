@@ -1,0 +1,10 @@
+{
+  "issue": 1451,
+  "kind": "factual_documentation_correction_after_code_review",
+  "path": "customizations/components/tianxuan/duobao/native_candidates.md",
+  "reviewed_sha256": "677c60d168affd41a93b6791571d2d76473b02f816e269a9390950847486bf18",
+  "current_sha256": "dfc7be879f6fb35afb831d879805b34b28b56e890b9c49ea954938d495f8c441",
+  "change": "Only first paragraph corrected: host inventory now contains four new paths, actual SCons zero-overlap evidence. Code and all other reviewed files unchanged.",
+  "evidence": "data-collection/native-candidate-host-boundary-1451.json",
+  "independent_code_approval_unchanged": true
+}

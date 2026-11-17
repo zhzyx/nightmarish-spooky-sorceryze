@@ -1,0 +1,53 @@
+{
+  "issue": 1451,
+  "passed": true,
+  "native_sources": 9378,
+  "native_sources_sha256": "caa0ad6a92a89eebd6c5a6e055e10a0b92dc69bbbca114135c58743fbb8de900",
+  "module_inputs": [
+    "customizations/components/tianxuan/duobao/native_candidates.py",
+    "customizations/components/tianxuan/duobao/native_candidates_cli.py",
+    "customizations/components/tianxuan/duobao/test_native_candidates.py",
+    "customizations/components/tianxuan/duobao/native_candidates.md"
+  ],
+  "overlap": [],
+  "inventory_before": 139,
+  "inventory_after": 143,
+  "policy_sha256": "5483e24b0e6b6aec92b424bd139009be68ae844f057e6a6ab6a4efcb0378fe81",
+  "checks": [
+    {
+      "command": "py -X utf8 tests/editor/test_native_host_inputs.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: invalid host input inventory\nFull-tree identity required: invalid host input inventory\n...\n----------------------------------------------------------------------\nRan 3 tests in 9.512s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tests/editor/test_editor_native_cache.py",
+      "exit_code": 0,
+      "output": "..............\n----------------------------------------------------------------------\nRan 14 tests in 18.331s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tools/test_windows_editor_artifact.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\ns........\n----------------------------------------------------------------------\nRan 9 tests in 0.916s\n\nOK (skipped=1)\n"
+    }
+  ],
+  "actual_scons_command": [
+    "py",
+    "-X",
+    "utf8",
+    "-m",
+    "SCons",
+    "-n",
+    "-Q",
+    "gonggong_native_probe=D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-candidate-scons-probe.json",
+    "accesskit=no",
+    "angle=no",
+    "d3d12=no",
+    "debug_symbols=no",
+    "dev_mode=yes",
+    "platform=windows",
+    "target=editor"
+  ],
+  "seconds": 35.47592659998918,
+  "compilation_performed": false,
+  "limits": "Windows actual SCons consumer graph and cache regression; no renderer performance or AA-quality acceptance."
+}

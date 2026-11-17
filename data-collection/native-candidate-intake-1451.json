@@ -1,0 +1,84 @@
+{
+  "request_id": "native-candidate-intake-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1451",
+  "parent_issue": 1444,
+  "occurred_at": "2026-11-17T17:40:17.614878+00:00",
+  "candidate_base": "4c45067171c8201eb0386cb99472ae49cdd73917",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "Python 3.12.14",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/native_candidates.py": "4dc0dc611a2314599e5381e69504983d4c5fb33e9cff9432e63cc30d8894a683",
+    "customizations/components/tianxuan/duobao/native_candidates_cli.py": "152c6268aad889f69c9f8f965b151a6d25f49d96dc6690d128341dce91b45094",
+    "customizations/components/tianxuan/duobao/test_native_candidates.py": "1670d75504ca0ea73eb0b7b3ef57f904a34868e0069650d743b7b52cb1be3682",
+    "customizations/components/tianxuan/duobao/native_store.py": "bee1c2af572fe3f891c77ad9dc46896511780f0123649c40dab25077548193bf",
+    "customizations/components/tianxuan/duobao/native_workspace.py": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+    "customizations/components/tianxuan/duobao/native_candidates.md": "677c60d168affd41a93b6791571d2d76473b02f816e269a9390950847486bf18",
+    "customizations/components/tianxuan/duobao/README.md": "ed0e3add558d5001a1f6cd51740372265e554b2096e8627cf158f9e38b4861a3"
+  },
+  "tests": {
+    "command": [
+      "D:/GongGong-work/tx-venv/Scripts/python.exe",
+      "-X",
+      "utf8",
+      "-m",
+      "pytest",
+      "customizations/components/tianxuan/duobao/test_native_candidates.py",
+      "customizations/components/tianxuan/duobao/test_native_store.py",
+      "customizations/components/tianxuan/duobao/test_native_evidence.py",
+      "customizations/components/tianxuan/duobao/test_native_release.py",
+      "customizations/components/tianxuan/duobao/test_native_workspace.py",
+      "customizations/components/tianxuan/duobao/test_native_check_runner.py",
+      "customizations/components/tianxuan/duobao/test_native_check_inputs.py",
+      "-q",
+      "-rs"
+    ],
+    "exit_code": 0,
+    "stdout": "................................................................ [ 61%]\n.........ss.............................        [100%]\n=========================== short test summary info ===========================\nSKIPPED [1] customizations\\components\\tianxuan\\duobao\\test_native_workspace.py:237: Host cannot create symlink: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\tmp2hy0ugmt\\\\native.sqlite' -> 'C:\\\\Users\\\\ROG\\\\AppData\\\\Local\\\\Temp\\\\tmp2hy0ugmt\\\\work\\\\app\\\\link'\nSKIPPED [1] customizations\\components\\tianxuan\\duobao\\test_native_workspace.py:177: POSIX fifo test\n102 passed, 2 skipped, 33 subtests passed in 26.89s\n",
+    "stderr": ""
+  },
+  "expanded_optional_regression": {
+    "command": "python -m pytest customizations/components/tianxuan/duobao -q",
+    "result": "6 failed, 301 passed, 5 skipped, 119 subtests passed",
+    "failures": [
+      "test_admin_paths: symlink creation WinError1314 (three cases)",
+      "test_git_service_repo_root: relpath C: temporary directory vs D: cwd (three cases)"
+    ],
+    "routing": "Parent confirms existing Kuafu #1445 and isolated fixture repair #1453; no unrelated sources changed"
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scopes": [
+      "content-storage-integrity",
+      "native-storage-resource-boundary"
+    ],
+    "verified_lessons": []
+  },
+  "placement": "host_tool",
+  "host_contract": "Trusted local Python/CLI; authenticated identity/origin and transaction-aware strictly True authorization; current consumers CLI and tests only",
+  "checks": {
+    "host_behavior": "Four actual concurrent CLI processes with empty PATH; two identical and two different outputs, independent origin receipts, moving shared head, fresh process receipt recovery and actual materialization",
+    "atomicity": "Injected SQLite receipt-insert abort and bad second module leave exact database rows unchanged",
+    "rollback": "New tables retained; old NativeStore reads original base and submits again after stopping candidate intake",
+    "unknown_reads": "Preserved null and final-composition-validation requirement; old submit still rejects drift",
+    "release": "Actual release-head row and release tables unchanged by receive"
+  },
+  "limits": [
+    "Windows-only agent verification; independent Linux/review/delivery parent-owned",
+    "No NativeWorker/HTTP/Heqi semantic integration, compiler or production deployment",
+    "No token/AA performance claim or model calls",
+    "Database and local CLI require trusted OS owner; not external authentication or malicious-process sandbox"
+  ],
+  "cleanup": {
+    "tests": "unittest TemporaryDirectory scopes cleaned by context managers; pytest retains its shared OS temp history by default, not deleted because outside isolated write scope and parent may have concurrent pytest sessions",
+    "worktree": "Retained for uncommitted parent handoff; no branch deletion or commit/push authorized",
+    "retained": "Source, intake events, evidence, worktree and test caches retained for parent independent validation and delivery; no application package/install or background service created"
+  },
+  "model_calls": 0,
+  "business_acceptance": false,
+  "static_validation": {
+    "ruff_check": "All checks passed",
+    "ruff_format": "4 files already formatted",
+    "git_diff_check": "exit 0",
+    "consumer_search": "Only new CLI and tests import NativeCandidates; existing API native_candidates capability label is pre-existing and does not import this module"
+  }
+}

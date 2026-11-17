@@ -1,0 +1,212 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1451",
+  "request_id": "native-candidate-intake-20261118",
+  "reviewer": "independent Codex native subagent /root/sinan_48b5c4ff6b76ff14",
+  "occurred_at": "2026-11-17T19:41:55.405520+00:00",
+  "verdict": "approved_annotation_delta_only",
+  "business_acceptance": false,
+  "candidate_HEAD": "1539c1c57c3bf99e6d979513141c53da43ad243b",
+  "source_root": "D:\\GongGong-work\\native-candidate-intake-20261118",
+  "changed_path": "customizations/components/tianxuan/duobao/native_store.py",
+  "changed_line": 244,
+  "source_hashes": {
+    "customizations/components/tianxuan/duobao/native_candidates.py": {
+      "prior_review_raw_sha256": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b",
+      "HEAD_git_blob_sha256": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b",
+      "current_raw_sha256": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b",
+      "current_LF_sha256": "a041e0debb42b2df3859205416409c37e15c644bdcc33895998bf70c7e63db2b",
+      "current_normalized_equals_HEAD": true,
+      "prior_matches_current_raw": true,
+      "prior_matches_HEAD_LF_or_reconstructed_CRLF": true
+    },
+    "customizations/components/tianxuan/duobao/native_candidates_cli.py": {
+      "prior_review_raw_sha256": "152c6268aad889f69c9f8f965b151a6d25f49d96dc6690d128341dce91b45094",
+      "HEAD_git_blob_sha256": "152c6268aad889f69c9f8f965b151a6d25f49d96dc6690d128341dce91b45094",
+      "current_raw_sha256": "152c6268aad889f69c9f8f965b151a6d25f49d96dc6690d128341dce91b45094",
+      "current_LF_sha256": "152c6268aad889f69c9f8f965b151a6d25f49d96dc6690d128341dce91b45094",
+      "current_normalized_equals_HEAD": true,
+      "prior_matches_current_raw": true,
+      "prior_matches_HEAD_LF_or_reconstructed_CRLF": true
+    },
+    "customizations/components/tianxuan/duobao/test_native_candidates.py": {
+      "prior_review_raw_sha256": "27899fc71e233d820d67a98535ac5f054d33ce15b143bbed2b5399702e5fb9b2",
+      "HEAD_git_blob_sha256": "27899fc71e233d820d67a98535ac5f054d33ce15b143bbed2b5399702e5fb9b2",
+      "current_raw_sha256": "27899fc71e233d820d67a98535ac5f054d33ce15b143bbed2b5399702e5fb9b2",
+      "current_LF_sha256": "27899fc71e233d820d67a98535ac5f054d33ce15b143bbed2b5399702e5fb9b2",
+      "current_normalized_equals_HEAD": true,
+      "prior_matches_current_raw": true,
+      "prior_matches_HEAD_LF_or_reconstructed_CRLF": true
+    },
+    "customizations/components/tianxuan/duobao/native_store.py": {
+      "prior_review_raw_sha256": "bee1c2af572fe3f891c77ad9dc46896511780f0123649c40dab25077548193bf",
+      "HEAD_git_blob_sha256": "6f38e1ecfa52c71242fca1399f30e126258f3775e668b0ab667da4a1d2835e36",
+      "current_raw_sha256": "fd390d3aad3deb4b861cb5e0ff2111bc74cdb6eaf70107f5bbc357ee7da50cf2",
+      "current_LF_sha256": "dca516233810b0ed1428fd9742ecac75d67cf16461a7969e6e9af74e355c1ef8",
+      "current_normalized_equals_HEAD": false,
+      "prior_matches_current_raw": false,
+      "prior_matches_HEAD_LF_or_reconstructed_CRLF": true
+    },
+    "customizations/components/tianxuan/duobao/native_workspace.py": {
+      "prior_review_raw_sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "HEAD_git_blob_sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "current_raw_sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "current_LF_sha256": "dfb23a9fbed8bac0a43f5c6c705b4539813b8b85752a7ac5a646a8192b6aefe1",
+      "current_normalized_equals_HEAD": true,
+      "prior_matches_current_raw": true,
+      "prior_matches_HEAD_LF_or_reconstructed_CRLF": true
+    },
+    "customizations/components/tianxuan/duobao/native_candidates.md": {
+      "prior_review_raw_sha256": "677c60d168affd41a93b6791571d2d76473b02f816e269a9390950847486bf18",
+      "HEAD_git_blob_sha256": "89a67c3bb094d088c72216e6489dcbba8231231146b25d8ee76e9395a9f9a7fb",
+      "current_raw_sha256": "dfc7be879f6fb35afb831d879805b34b28b56e890b9c49ea954938d495f8c441",
+      "current_LF_sha256": "89a67c3bb094d088c72216e6489dcbba8231231146b25d8ee76e9395a9f9a7fb",
+      "current_normalized_equals_HEAD": true,
+      "prior_matches_current_raw": false,
+      "prior_matches_HEAD_LF_or_reconstructed_CRLF": false
+    },
+    "customizations/components/tianxuan/duobao/README.md": {
+      "prior_review_raw_sha256": "ed0e3add558d5001a1f6cd51740372265e554b2096e8627cf158f9e38b4861a3",
+      "HEAD_git_blob_sha256": "15c343c607598ce399d0bb7574d6ea556d7d316f730fa4001341de1fa18beb54",
+      "current_raw_sha256": "ed0e3add558d5001a1f6cd51740372265e554b2096e8627cf158f9e38b4861a3",
+      "current_LF_sha256": "15c343c607598ce399d0bb7574d6ea556d7d316f730fa4001341de1fa18beb54",
+      "current_normalized_equals_HEAD": true,
+      "prior_matches_current_raw": true,
+      "prior_matches_HEAD_LF_or_reconstructed_CRLF": false
+    },
+    "tools/native_host_inputs.json": {
+      "prior_review_raw_sha256": "5483e24b0e6b6aec92b424bd139009be68ae844f057e6a6ab6a4efcb0378fe81",
+      "HEAD_git_blob_sha256": "5483e24b0e6b6aec92b424bd139009be68ae844f057e6a6ab6a4efcb0378fe81",
+      "current_raw_sha256": "5483e24b0e6b6aec92b424bd139009be68ae844f057e6a6ab6a4efcb0378fe81",
+      "current_LF_sha256": "5483e24b0e6b6aec92b424bd139009be68ae844f057e6a6ab6a4efcb0378fe81",
+      "current_normalized_equals_HEAD": true,
+      "prior_matches_current_raw": true,
+      "prior_matches_HEAD_LF_or_reconstructed_CRLF": true
+    },
+    "design-docs/native-candidate-intake-20261118.md": {
+      "prior_review_raw_sha256": "5dfad2c97b161222242187b291bd517098808ac6534bfc7167c5e3c8343b6ec0",
+      "HEAD_git_blob_sha256": "5dfad2c97b161222242187b291bd517098808ac6534bfc7167c5e3c8343b6ec0",
+      "current_raw_sha256": "5dfad2c97b161222242187b291bd517098808ac6534bfc7167c5e3c8343b6ec0",
+      "current_LF_sha256": "5dfad2c97b161222242187b291bd517098808ac6534bfc7167c5e3c8343b6ec0",
+      "current_normalized_equals_HEAD": true,
+      "prior_matches_current_raw": true,
+      "prior_matches_HEAD_LF_or_reconstructed_CRLF": true
+    }
+  },
+  "original_evidence_sha256": {
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-candidate-review.json": "999679d09dcebcd1ca43036761a0ad617595b2f783c7d4fb08a21e6cd04d1c79",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-candidate-review2.json": "1a68e6e22a76c1181e98e5596b4d7bae26c7a9b4bf697bf2030f0069a82861cb",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\candidate-pr1468-ci-failure.log": "da8b335b0e89385e192ca57e7f209b48e3d79e3814acae46d12d4b30f76779d0",
+    "D:\\GongGong-work\\native-candidate-intake-20261118\\data-collection\\native-candidate-type-check-1451.json": "41a7c3c0e2936a704c3e2417220004efe5181ac9eee103b21c006eae7c1e2473"
+  },
+  "original_evidence_unchanged": true,
+  "findings": [],
+  "independent_checks": {
+    "exact_change": "Only local assignment base becomes base: dict[str, Any], with identical initializer; LF-normalized complete file differs by this exact single replacement only.",
+    "ast_normalization": "Normalize only AnnAssign base at line 244 to Assign; preserve all other AST nodes and annotations. Whole-file AST equality succeeds.",
+    "guard_invariants": "All imports, branches, values, authorization checks, validation, transactions, head/receipt updates and exception paths unchanged. Function-local annotation has no runtime evaluation; behavior conclusions and scope limitations of review2 remain applicable.",
+    "prior_source_binding": "All Python sources and host-input inventory from review2 bind to HEAD, allowing explicit CRLF reconstruction for native_store.py. Prior raw native_store hash bee1c2... is not the canonical Git blob hash 6f38e1... .",
+    "tracked_diff": "Only native_store.py changed relative to HEAD; untracked parent evidence/dispatch records excluded from delta approval.",
+    "validation": [
+      {
+        "command": [
+          "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "mypy",
+          "--cache-dir",
+          "nul",
+          "customizations/components/tianxuan/duobao/native_store.py",
+          "customizations/components/tianxuan/duobao/native_candidates.py",
+          "customizations/components/tianxuan/duobao/native_candidates_cli.py",
+          "customizations/components/tianxuan/duobao/test_native_candidates.py"
+        ],
+        "exit_code": 0,
+        "stdout": "Success: no issues found in 4 source files\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "ruff",
+          "check",
+          "--no-cache",
+          "customizations/components/tianxuan/duobao/native_store.py",
+          "customizations/components/tianxuan/duobao/native_candidates.py",
+          "customizations/components/tianxuan/duobao/native_candidates_cli.py",
+          "customizations/components/tianxuan/duobao/test_native_candidates.py"
+        ],
+        "exit_code": 0,
+        "stdout": "All checks passed!\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "C:\\Users\\ROG\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "ruff",
+          "format",
+          "--check",
+          "--no-cache",
+          "customizations/components/tianxuan/duobao/native_store.py",
+          "customizations/components/tianxuan/duobao/native_candidates.py",
+          "customizations/components/tianxuan/duobao/native_candidates_cli.py",
+          "customizations/components/tianxuan/duobao/test_native_candidates.py"
+        ],
+        "exit_code": 0,
+        "stdout": "4 files already formatted\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "author_typecheck_evidence": {
+    "sha256": "41a7c3c0e2936a704c3e2417220004efe5181ac9eee103b21c006eae7c1e2473",
+    "all_exit_codes_zero": true,
+    "scope": "Author mypy checked four files; author Ruff checked native_store.py only. Independent checks above cover all four files."
+  },
+  "ci": {
+    "previous_static_failure": "Private log records native_store.py:244 Need type annotation for base [var-annotated], one error in four source files; Ruff check and format passed.",
+    "other_previous_jobs": "Parent reported other jobs passed except Windows blocked by static prerequisite; not independently verified in this delta review.",
+    "replacement_ci": "Required; parent owns fresh exact-candidate CI readback."
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scopes": [
+      "content-storage-integrity",
+      "native-storage-resource-boundary"
+    ],
+    "verified_lessons": [],
+    "unavailable": []
+  },
+  "limits": [
+    "Intake-only approval; no NativeWorker/HTTP/Heqi/business integration acceptance; #1444 remains open",
+    "Independent probes executed Windows only; parent Linux receipt retained as separate author evidence",
+    "No crash-kill injection; actual SQL rollback exercised",
+    "No entire suite rerun in this review; author111pass2skip33subtests evidence read and source hashes matched",
+    "Prior WinError5 remains an unresolved host observation despite later passing runs",
+    "This approves only the exact code annotation delta, not the complete PR or parent goal.",
+    "native_candidates.md current/HEAD differs from the raw hash in review2; no claim of full document equivalence. README current raw bytes match review2 despite mixed newline canonicalization.",
+    "No behavior suite or probe rerun: this review independently proves exact unchanged runtime AST and reruns relevant static checks.",
+    "No merge, release, service switch, issue closure, model run or parent business acceptance performed."
+  ],
+  "cleanup": {
+    "writes": "Only this review JSON; Python bytecode disabled and static checker caches disabled.",
+    "retained": "Prior reviews, CI failure log, author evidence and all parent resources untouched."
+  },
+  "prior_document_correction": {
+    "receipt": "data-collection/native-candidate-doc-correction-1451.json",
+    "receipt_sha256": "e07a4398cb303ef35a21ec3b23d560b1671a72cad7c556f00f40e012a4fe872e",
+    "before_hash_matches_review2": true,
+    "after_hash_matches_current_raw": true,
+    "change_as_recorded": "Only first paragraph corrected: host inventory now contains four new paths, actual SCons zero-overlap evidence. Code and all other reviewed files unchanged.",
+    "scope": "Separately recorded author factual documentation correction; not part of this annotation delta."
+  }
+}
