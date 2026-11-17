@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import errno
 import os
 import subprocess
 import tempfile
@@ -126,7 +127,16 @@ class GitServiceRepoRootTests(unittest.TestCase):
                 status = self.service.status(repository / ".")
                 self.assertEqual(status["path"], str(repository.resolve()))
                 self.assertIs(status["bare"], bare)
-                self.assertEqual(self.service.status(os.path.relpath(repository))["path"], str(repository.resolve()))
+                # A relative path only exists on the current drive. Exercise real
+                # cwd resolution on the fixture's drive and restore cwd on failure.
+                previous_cwd = Path.cwd()
+                try:
+                    os.chdir(self.root)
+                    relative = os.path.relpath(repository)
+                    self.assertFalse(os.path.isabs(relative))
+                    self.assertEqual(self.service.status(relative)["path"], str(repository.resolve()))
+                finally:
+                    os.chdir(previous_cwd)
                 self.assertFalse(status["empty"])
                 self.assertEqual(self.service.branch(repository, "accepted-root"), status["head_sha"])
                 self.assertIn("accepted-root", self.service.list_branches(repository))
@@ -143,8 +153,16 @@ class GitServiceRepoRootTests(unittest.TestCase):
             link = self.root / f"alias-{index}"
             try:
                 link.symlink_to(repository, target_is_directory=True)
+            except NotImplementedError as error:
+                self.skipTest(f"directory symlinks unsupported: {error}")
             except OSError as error:
-                self.skipTest(f"directory symlinks unavailable: {error}")
+                if getattr(error, "winerror", None) == 1314 or error.errno in (
+                    errno.ENOSYS,
+                    errno.ENOTSUP,
+                    errno.EOPNOTSUPP,
+                ):
+                    self.skipTest(f"directory symlink capability unavailable: {error}")
+                raise
             with self.subTest(repository=repository.name):
                 status = self.service.status(link)
                 self.assertEqual(status["path"], str(repository.resolve()))

@@ -1,5 +1,6 @@
 """Regression cases for untrusted commit file mappings (no external services)."""
 
+import errno
 import os
 import subprocess
 import tempfile
@@ -11,6 +12,21 @@ from git_service import GitService, ValidationError
 
 
 class AdminPathsTests(unittest.TestCase):
+    def _symlink_or_skip(self, link, target, *, directory):
+        # Probe the actual fixture filesystem, including file/directory capability.
+        try:
+            link.symlink_to(target, target_is_directory=directory)
+        except NotImplementedError as error:
+            self.skipTest(f"symlinks unsupported: {error}")
+        except OSError as error:
+            if getattr(error, "winerror", None) == 1314 or error.errno in (
+                errno.ENOSYS,
+                errno.ENOTSUP,
+                errno.EOPNOTSUPP,
+            ):
+                self.skipTest(f"symlink capability unavailable: {error}")
+            raise
+
     def test_resolved_admin_alias_rejected(self):
         # Model a directory alias not detected as a symlink/junction. This is
         # defense in depth, not a claim that Git clone creates such an alias.
@@ -22,7 +38,7 @@ class AdminPathsTests(unittest.TestCase):
             config = admin / "config"
             config.write_text("original")
             alias = worktree / "alias"
-            alias.symlink_to(admin, target_is_directory=True)
+            self._symlink_or_skip(alias, admin, directory=True)
             original_is_symlink = Path.is_symlink
 
             def is_symlink(path):
@@ -85,7 +101,7 @@ class AdminPathsTests(unittest.TestCase):
                 config = admin / "config"
                 config.write_text("original")
                 link = worktree / "alias"
-                link.symlink_to(admin if directory_link else config, target_is_directory=directory_link)
+                self._symlink_or_skip(link, admin if directory_link else config, directory=directory_link)
                 path = "alias/config" if directory_link else "alias"
                 service = GitService()
                 with (

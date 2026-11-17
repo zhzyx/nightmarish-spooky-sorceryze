@@ -1,0 +1,82 @@
+{
+  "issue": 1453,
+  "reviewer": "independent native Codex subagent /root/sinan_922472db451be891",
+  "occurred_at": "2026-11-17T18:13:40.753874+00:00",
+  "verdict": "pass",
+  "findings": [],
+  "gitattributes_sha256": "765a731832beb8c48621c6cca697e714414a7d71d99f16107e41e0481942a76e",
+  "gitattributes_staged_sha256": "765a731832beb8c48621c6cca697e714414a7d71d99f16107e41e0481942a76e",
+  "gitattributes_delta": [
+    "# Preserve the exact #1453 receipt referenced by immutable intake and learning events.",
+    "data-collection/git-test-portability-1453.json -text whitespace=cr-at-eol",
+    "# Preserve the concurrent #1451 intake receipt already bound to validation events.",
+    "data-collection/native-candidate-intake-1451.json -text whitespace=cr-at-eol"
+  ],
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/test_admin_paths.py": "27a3a97a28593b20abb8ef5f8c83f981914fac50ea53daeb73623d2fc52983cb",
+    "customizations/components/tianxuan/duobao/test_git_service_repo_root.py": "34981062543c6c359702f5ce236f9e42a76f0eca88aa6aba726dc00d6793d2be",
+    "customizations/components/tianxuan/duobao/git_service.py": "55871785d6a4d9eaf32c2caf690e66e61b1a7e0ef9aa731c350104913773d10f"
+  },
+  "prior_source_hashes_match": true,
+  "evidence": [
+    {
+      "path": "data-collection/git-test-portability-1453.json",
+      "source_root": "[verified-local-path]",
+      "sha256": "cb163864580e075e94668fb6af95c0e34a3fb6bb02872ff648addb02d6292f18",
+      "crlf_count": 235,
+      "raw_git_blob": "357cc77fe117e4ee151e8bb8967489657bc61540",
+      "filtered_git_blob": "357cc77fe117e4ee151e8bb8967489657bc61540",
+      "cached_attributes": "data-collection/git-test-portability-1453.json: text: unset\ndata-collection/git-test-portability-1453.json: whitespace: cr-at-eol\n",
+      "staged_exact_bytes": true
+    },
+    {
+      "path": "data-collection/native-candidate-intake-1451.json",
+      "source_root": "[verified-local-path]",
+      "sha256": "e240df6eb296cb96578fd91333dd718f554e597534f29e11795564ca0a1aaa77",
+      "crlf_count": 84,
+      "raw_git_blob": "2fac10c5f875580066a66b65bcb2263fbfc99aad",
+      "filtered_git_blob": "2fac10c5f875580066a66b65bcb2263fbfc99aad",
+      "cached_attributes": "data-collection/native-candidate-intake-1451.json: text: unset\ndata-collection/native-candidate-intake-1451.json: whitespace: cr-at-eol\n",
+      "staged_exact_bytes": "Not staged in 1453; separate 1451 delivery. External bytes tested against 1453 attributes."
+    }
+  ],
+  "1453_immutable_learning_references": [
+    {
+      "path": "gonggong-diting-data\\events\\gonggong-workspace\\learning-build-validation\\learn-75ad1c99cf4122464cf1e20c9d77324c3d1e0c8e6f04c25a40443aa8d9251703.json",
+      "sha256": "7f8ef8308a9cca37ca5511e838c94a2c10766fd34b5ee2221007b10e026c0f8e"
+    }
+  ],
+  "1451_validation_event": {
+    "path": "[verified-local-path]\\gonggong-diting-data\\events\\gonggong-workspace\\native-candidate-intake-20261118\\candidate-intake-validation-1451-20261118.json",
+    "sha256": "07f2c20860c82155a20e0c76bb78b2f10b5022f938f6e66191814864c889ad5b",
+    "original_report_hash_reference_match": true
+  },
+  "observations": [
+    "Only two literal file paths and comments added; no patterns or removals.",
+    "Reuses repository -text whitespace=cr-at-eol convention without disabling other whitespace checks.",
+    "Original evidence bytes unchanged; prior source and service hashes match.",
+    "Design explicitly records shared evidence metadata repair and separate 1451 delivery."
+  ],
+  "resolved_finding": {
+    "initial_1453_index_blob": "4dd960101fbbc0c10c3c0e3e2a5ef41f3f696470",
+    "action": "Parent refreshed index after reviewer notification.",
+    "readback_1453_index_blob": "357cc77fe117e4ee151e8bb8967489657bc61540",
+    "result": "Exact original CRLF bytes retained in index"
+  },
+  "method_recall": {
+    "scope": "build-validation",
+    "applicable": "validate-whole-signed-candidate revision 3: exact source/evidence/index checks; full gate remains parent responsibility",
+    "not_applicable": "match-ci-warning-policy revision 2: compiler-specific"
+  },
+  "limits": [
+    "Prior 35 probes not rerun; reviewed source hashes match.",
+    "Original formal gate retry must subsequently pass, owned by parent.",
+    "1451 report not staged in this candidate.",
+    "No full suite, model, deployment, commit, push or issue closure."
+  ],
+  "cleanup": {
+    "temporary_files_created": false,
+    "product_edits": false
+  },
+  "private_original_sha256": "72eb6b17fe6a1d269fa743813fcb03d51f7ecfedb8f68426505d97806d81efa2"
+}
