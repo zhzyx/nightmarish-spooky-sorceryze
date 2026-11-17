@@ -81,3 +81,8 @@ data-collection/editor-design-contract-943-template-installed.json -text whitesp
 
 # Preserve the original whitespace in this byte-verified upstream notice.
 engine_next/thirdparty/zlib/contrib/crc32vx/README -whitespace
+
+# Preserve exact #1386 Windows review and process receipts referenced by evidence.
+data-collection/duobao-native-review-original-1386.json -text whitespace=cr-at-eol
+data-collection/duobao-native-review-fixed-1386.json -text whitespace=cr-at-eol
+data-collection/duobao-native-processes-1386.json -text whitespace=cr-at-eol

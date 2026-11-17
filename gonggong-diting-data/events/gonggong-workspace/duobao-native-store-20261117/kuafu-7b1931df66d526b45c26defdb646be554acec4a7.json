@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7b1931df66d526b45c26defdb646be554acec4a7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-store-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6f2efedf50c2f2880c6215e2aa1c273639ae054ee70a7d2363f3444d29c778ba",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1399",
+    "action": "delivery",
+    "detection_head": "7ca0653fb5e4229df6bb0fa49e6da0286b4ad19b",
+    "context_sha256": "8c494414c011651db40762d191941899fd6dc4fde135ae94ce176c9f04f9486d",
+    "operator": "Sail-Li",
+    "worker": "codex-1382-current",
+    "authority_ref": "codex:user-start-execution-20261117",
+    "evidence": "data-collection/duobao-native-processes-1386.json",
+    "diagnosis": "Existing index retained LF-normalized receipts after explicit byte-preserving attributes were added. Renormalized only the three owned receipt entries using those attributes; independently compared all index blobs against exact original filesystem bytes. No evidence rewrite.",
+    "next_action": "Resume exact candidate formal gate; retain source hashes and immutable method evidence.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T06:58:04.531178+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T06:59:39.574910+00:00",
+  "sha256": "db71dd9c2aaf0260ed0d48262fc8b3f64e43286ed8b8683bcb4f0ac20147d3ac"
+}

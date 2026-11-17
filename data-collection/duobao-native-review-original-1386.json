@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "issue": 1386,
+  "reviewer": "independent-native-subagent",
+  "host_descriptor": "inherited host descriptor; exact observed model unknown",
+  "observed_at": "2026-11-17T06:40:00.385423+00:00",
+  "verdict": "changes_requested",
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/native_store.py": "971bda837700f46c178e81e41789a57ceaa9b8eb264a7f97911bf89aaa83b13d",
+    "customizations/components/tianxuan/duobao/native_cli.py": "a7dcd7692ae2b9e191dcb93a9442f8db7a3eaf85135dec5bc34ccf8180dc3919",
+    "customizations/components/tianxuan/duobao/test_native_store.py": "8e5373d82d175d3d2cbfd110c3ae5c908a864ba2277362a2ab4c3ce21ede1b6d"
+  },
+  "frozen_hashes_match_before_and_after": true,
+  "design": "design-docs/duobao-native-store-20261117.md",
+  "findings": [
+    {
+      "id": "NATIVE-REVIEW-001",
+      "severity": "P2",
+      "title": "Reject corrupted blob deduplication hits before acknowledging new revisions",
+      "file": "D:\\GongGong-work\\duobao-native-modules-20261117\\customizations\\components\\tianxuan\\duobao\\native_store.py",
+      "start_line": 268,
+      "end_line": 269,
+      "description": "INSERT OR IGNORE trusts an existing tenant/digest row without validating its bytes. A fresh request supplying valid bytes can receive a durable success receipt and new head pointing to corrupt bytes already in storage. The new revision cannot be read immediately after successful acceptance.",
+      "repro": [
+        "Create a temporary NativeStore database.",
+        "Submit module a, object x=b'original', base=None.",
+        "Using an owned SQLite connection, UPDATE native_blobs SET content=b'corrupt'; close the connection.",
+        "Submit a new module b, object x=b'original', base=None, using a fresh request key.",
+        "Observe received and committed b head; read(org,b,new_revision,x) raises Object integrity failure."
+      ],
+      "actual": {
+        "submit_state": "received",
+        "new_head_committed": true,
+        "read_error": "Object integrity failure"
+      },
+      "expected": "Detect and reject the corrupted existing content inside the transaction, rolling back new revisions/heads/receipts, or perform an explicitly validated recovery policy.",
+      "scope": "Requires preexisting storage corruption; no authentication bypass or ordinary healthy-store lost update was demonstrated."
+    }
+  ],
+  "validation": {
+    "interpreter": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "unit_tests": {
+      "command": "D:/GongGong/project/runtime/python/python.exe -B -X utf8 -m unittest test_native_store -v",
+      "passed": 17,
+      "seconds": 3.127
+    },
+    "independent_process_verification": {
+      "script": "customizations/components/tianxuan/duobao/verify_native_processes.py",
+      "sha256": "bbc24ba4383a0bfeddb03ea2646b42bc8e1dce5b236029dcb16164d6c0351307",
+      "requests": 250,
+      "maximum_concurrent_cli_processes": 16,
+      "producer_retries": 0,
+      "child_PATH": "",
+      "all_checks_passed": true,
+      "wall_seconds": 1.781629500001145,
+      "cli_seconds_p99": 0.9895413999984157,
+      "temporary_database_removed": true
+    },
+    "confirmed_repro": true
+  },
+  "review_coverage": [
+    "Read all frozen store/CLI/test source and design.",
+    "Checked structural field/type/path validation, tenant/module revision predicates, stable-key request normalization, transactional rollback, base/read/write conflict checks, exact dependency traversal and contradictory pins.",
+    "Independently ran tests forbidding process/network use in core calls, and actual CLI processes from a temporary directory without Git metadata."
+  ],
+  "coverage_limits": [
+    "Trusted host authentication and authorization are outside these APIs; tenant/actor strings are not evidence of authentication.",
+    "Caller declarations do not establish complete read sets; no proof of host read capture was supplied.",
+    "Conflict checks compare current versus base content digests, not per-object mutation history; no guarantee against arbitrary ABA history is asserted.",
+    "Thread suite submits 250 jobs with 16 worker threads; process script uses at most 16 simultaneous CLI processes. Neither proves 250 simultaneously running workers.",
+    "No forced process termination, power-loss durability, disk exhaustion, multi-host replicas, network filesystem, Linux execution, production capacity, or token savings independently validated.",
+    "Composition validates revision/dependency metadata, not all blob bytes or business approval.",
+    "Review is limited to frozen source and supplemental process verification script; no claim of defect absence beyond exercised cases."
+  ],
+  "cleanup": {
+    "product_source_modified": false,
+    "commits_created": false,
+    "owned_repro_databases_removed": true,
+    "owned_test_directories_removed": true,
+    "notes": "Initial repro cleanup hit a retained sqlite handle; process exited and exact owned files were removed after path validation. A generic PowerShell recursive cleanup was blocked by tool policy; explicit validated file unlink cleanup succeeded. Default python WindowsApps alias was unusable; explicit runtime resolved testing."
+  }
+}

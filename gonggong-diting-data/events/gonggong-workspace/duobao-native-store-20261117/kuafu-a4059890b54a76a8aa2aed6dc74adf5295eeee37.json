@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a4059890b54a76a8aa2aed6dc74adf5295eeee37",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-store-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1386",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "52c0c37334d85a7628436ff882d4b92bf767e9ef8c5fca1c800d8f19bd6ff210",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1386",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1399",
+    "action": "validation",
+    "detection_head": "0590179c01e42ccab6aa925ca097e9ee78cd116e",
+    "context_sha256": "8c494414c011651db40762d191941899fd6dc4fde135ae94ce176c9f04f9486d",
+    "operator": "Sail-Li",
+    "worker": "codex-1382-current",
+    "authority_ref": "codex:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44036194243/job/133879523773",
+    "diagnosis": "Second CI candidate passes codespell but file-format tries to normalize the three byte-preserved Windows receipts. Added only those exact paths to existing raw receipt formatting exclusions. Local file-format confirms every other candidate file unchanged; source and original evidence stay byte-identical.",
+    "next_action": "Publish corrected candidate and require full static, module/web and Windows editor checks; parent remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T07:04:28.564507+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T07:10:42.709077+00:00",
+  "sha256": "f42e3dae2e0eb3c26d3a8738a0e9a65e8bcb0c663efa79d98cb28ea123b428ce"
+}

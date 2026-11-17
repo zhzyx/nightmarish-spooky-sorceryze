@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1386-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-store-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T06:54:35.282408+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1386",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1386,
+    "title": "多宝原生模块修订：无 Git 存储、对象并发与组合候选",
+    "body": "<!-- gonggong-request:duobao-native-store-20261117 -->\r\n\r\n需求文档：`design-docs/duobao-native-store-20261117.md`\r\n\r\n[查看主线设计（合入后可用）](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/duobao-native-store-20261117.md)\r\n\r\n# 多宝原生模块修订与组合候选\r\n\r\n需求 ID：duobao-native-store-20261117。父需求：[全链路 AI 原生引擎 #1382](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1382)，设计条款 P0-A。\r\n\r\n用户于 2026-11-17 明确取消新多宝的 Git 权威并“开始执行”。本子项实现 Git 无关的模块修订接收、读取、对象级并发、幂等与精确依赖组合；它是整体内核的一步，不能关闭父目标或宣称真实发布、模型收益及 AA 渲染已通过。\r\n\r\n复用现有多宝宿主目录；新增 native_store.py 及正常 CLI 入口，Python 标准库即可执行。不修改既有 Git 服务及线上绑定，不新增 Agent。数据路径由调用方明确指定，不依据源码仓库或当前 Git 根解析。工具需可信宿主提供已认证 org/actor；核心不把字符串身份自证为认证。\r\n\r\n验收：\r\n1. 不调用 Git、网络、外部进程即可创建模块修订、读取二进制/文本、回溯历史、形成精确依赖组合候选。\r\n2. 模块互不追赶全局 HEAD；同模块旧基线下不相交的读写对象可合成，已读对象变化、同对象竞争、删除/命名冲突与未知依赖在发生漂移时不能静默覆盖。\r\n3. 一次请求支持跨模块原子变更；稳定请求键幂等，同键异内容拒绝；故障回滚及重启重放不丢版本/不重复接收。\r\n4. 组织数据边界、修订归属、内容摘要和结构输入验证；路径只作逻辑对象标识，禁止任意宿主路径读写。\r\n5. 组合候选固定模块修订并核对依赖闭包；接受内容不等于独立验收，不提供未经授权的“通过/已发布”状态。\r\n6. 单模块/多模块、独立连接并发、250 个在途提交、持续无关更新及竞争反例留证；测得时延不外推生产服务容量或 token 收益。\r\n\r\n平台：Windows Python 3.11+ 首验，Linux 标准库兼容由 CI 验证。placement=host_tool，输入为显式请求、字节与数据库路径；不进入原生引擎链接。回退停用新 CLI/适配并保留数据库；不删除既有数据。数据存储首版用短 SQLite 事务验证语义，不在事务内执行模型/编译/外部校验；大文件流式对象存储与多副本为后续整体任务，不将首版标为全目标完成。\r\n\r\n范围不包含产品发布授权、在线 API、UI、完整协作文档、运行时装载与 GPU 验收。主责为当前 Codex 会话；实现完成后独立核查，Git 仅留底实现代码与证据。\r\n\r\n\r\n执行授权来源（由调用宿主核实，不代替候选准入）：Codex user 2026-11-17 explicitly started execution of #1382\r\n\r\n\r\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+    "updated_at": "2026-11-17T06:53:08Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "6a1d82ddee5c1af41422af4f86d674fd3d14a85e79478a3dfb78fdf5f484859a"
+}

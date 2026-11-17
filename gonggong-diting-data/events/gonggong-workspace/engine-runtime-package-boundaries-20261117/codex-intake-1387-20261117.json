@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1387-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-runtime-package-boundaries-20261117",
+  "kind": "request",
+  "occurred_at": "2026-11-17T06:54:36.808721+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1387",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1387,
+    "title": "引擎业务包：生成头消费者与 Engine Next 复用边界核查",
+    "body": "<!-- gonggong-request:engine-runtime-package-boundaries-20261117 -->\r\n\r\n需求文档：`design-docs/engine-runtime-package-boundaries-20261117.md`\r\n\r\n[查看主线设计（合入后可用）](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/engine-runtime-package-boundaries-20261117.md)\r\n\r\n# 引擎业务包边界与既有 Engine Next 复用核查\r\n\r\n需求 ID：engine-runtime-package-boundaries-20261117。父需求：[AI 原生引擎 #1382](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1382)，设计条款 P0-B。\r\n\r\n用户于 2026-11-17 授权开始执行，要求优化内嵌头文件、模块化交付及多 Agent 工作流，渲染/3D 至少支持《血源诅咒》参考的 AA 写实沉浸目标，Windows 优先。当前 main a22d44c5 含 Engine Next M3/M4 等已有实现及在途工作，先核验可复用边界，禁止重复创建运行时或抢占他人代码。\r\n\r\n此独立子项输出精确可执行的模块迁移契约、实际消费者清单和验证方案，覆盖：\r\n- daqian_scripts/startup_checks/daqian_board/ainative bundle/gonggong_validation 生成头的输入、原生引用与实际执行入口；已有 tianshu-ui/1 包的使用、兼容与回退证据。\r\n- engine_next 的 AICore、Executor、Artifact/Asset/Scene、包、WorkflowController、独立运行时和渲染里程碑；远端 Issue/PR 当前责任与状态，区分已交付、在途和未知。\r\n- 分清可外置脚本/宿主工具、必须保留或重构的原生接口及会影响画质/帧时间的路径。模块逻辑边界不以扩展名推断。\r\n- 给出首个业务包迁移的固定接口、读写边界、依赖、同二进制更新/不兼容拒绝/回退验收，以及与多宝模块修订的接合方式。\r\n\r\n本子项只读产品代码，文档与机器可读证据写入本子项授权文件；不更改源码、构建、运行安装或其他任务分支。实际迁移按核查结果另拆开发子项。当前责任者核验源文件/消费点与工单回读后方可接收；仅规划说明不代表完成外置或 AA 验收。\r\n\r\n资源：本子项产生的私有派发回执保留；只读不启动图形窗口、不运行生产模型、不触碰凭据。\r\n\r\n\r\n执行授权来源（由调用宿主核实，不代替候选准入）：Codex user 2026-11-17 explicitly started execution of #1382\r\n\r\n\r\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+    "updated_at": "2026-11-16T18:51:22Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "2ab61f61ec73f28749c41e1201f6d3be5eca900d8eacb0745764a1442fab2840"
+}

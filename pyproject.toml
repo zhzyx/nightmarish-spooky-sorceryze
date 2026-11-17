@@ -89,6 +89,8 @@ skip = [
 	"data-collection/maliang-gpt-modeling-20261108-complex-builder-review.json",
 	# Preserve the issued review's exact quoted before/after spelling and source hashes.
 	"data-collection/maliang-gpt-modeling-20261108-calibration-consumer-independent-review.json",
+	# Preserve verbatim remote Issue/PR observations in the #1387 source audit.
+	"data-collection/engine-runtime-package-boundaries-1387.json",
 	"DONORS.md",
 	"editor/import/unicode_ranges.inc",
 	"editor/project_converter_3_to_4.cpp",
