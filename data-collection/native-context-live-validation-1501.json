@@ -1,0 +1,251 @@
+{
+  "issue": 1501,
+  "status": "baseline_pass_tool_unknown_comparison_incomplete",
+  "plan_sha256": "568edea1932070498d3346eaf8794ab92012aeb54f2d83558f6711ea331cef90",
+  "review_sha256": "418996de84f0cdacb33d9a5696839f206e4e1dc8173720826fcd783d9820827d",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "030a56626baeac81062149e3e6480d92e95d249a9fe38e0644133885c45fb017",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "54ada57b24087bff5ac123274724108178da80205a39416c776f70b586fd3db4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c84fe150265c829f17ae9e6b09ee2fa2f867fe7d541d82132e6ba262cac53de4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77a29da320e653ddf73c0204455a62f17709266fc9e7c66b6827de6ae435bcae",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "aa3b53fbadaa2a21eb4d9b981e16cc04808accc0c147ffca6dfcff927b95c112",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "8a541d64c29eb83fa71e69d8d75eb68a6406394af0afc5f90398e14c63917b5c",
+    "customizations/components/tianxuan/duobao/native_store.py": "69e2283effdc88e042c478d79fdb3efd2c102dd3df0cfcccf525785c10331748",
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py": "bb987a461258b16b7e901b3a5f520eeacf6483f98695d9cb50614f2f33f9252a"
+  },
+  "sources_unchanged": true,
+  "actual_calls": {
+    "prior": 9,
+    "baseline": 1,
+    "tool": 1,
+    "total_new": 2,
+    "total_including_prior": 11,
+    "retries": 0
+  },
+  "quality": {
+    "baseline": {
+      "passed": true,
+      "parsed": {
+        "audio": {
+          "gain": 0.5
+        },
+        "modules": {
+          "render": {
+            "api": 3
+          },
+          "weather": {
+            "enabled": true
+          }
+        },
+        "scene": {
+          "budget": 384,
+          "quality": 3,
+          "title": "夜航"
+        }
+      },
+      "output_sha256": "4b1e5b4f148507ea67ef0eb0a078302b2428762ec9bc850b8de43b144ebb6e88"
+    },
+    "tool": {
+      "passed": false,
+      "reason": "No proposal or tool action received; output quality unmeasured"
+    },
+    "criteria_sha256": "b682d312fd275fcf500eeea248a1da01f44507f105ac0ecf08b5662c00f88351"
+  },
+  "timing": {
+    "full_wall_seconds": 255.8289999999979,
+    "baseline_wall_seconds": 133.86000000001513,
+    "tool_wall_seconds": 121.42199999999139,
+    "baseline_phases": {
+      "thread_start_ms": 75,
+      "turn_start_ms": 14,
+      "first_text_after_turn_ms": 124249,
+      "text_span_ms": 4628,
+      "turn_completed_after_sent_ms": 131193
+    },
+    "tool_phases": {
+      "thread_start_ms": 79,
+      "turn_start_ms": 6,
+      "first_text_after_turn_ms": null,
+      "text_span_ms": null,
+      "turn_completed_after_sent_ms": 116551
+    }
+  },
+  "usage": {
+    "baseline": {
+      "thread_id": "01a1ecf9-2cfb-7550-8e1a-84bb5d5a2401",
+      "turn_id": "01a1ecf9-2d45-7681-99ab-e497a679164c",
+      "observed_model": "gpt-6.2-sol",
+      "raw": {
+        "total": {
+          "totalTokens": 9780,
+          "inputTokens": 9545,
+          "cachedInputTokens": 0,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 235,
+          "reasoningOutputTokens": 0
+        },
+        "last": {
+          "totalTokens": 9780,
+          "inputTokens": 9545,
+          "cachedInputTokens": 0,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 235,
+          "reasoningOutputTokens": 0
+        },
+        "modelContextWindow": 475000
+      },
+      "status": "observed",
+      "updates": 1,
+      "source": "thread/tokenUsage/updated",
+      "normalized_usage": null
+    },
+    "tool": {
+      "normalized_usage": null,
+      "observed_model": "gpt-6.2-sol",
+      "raw": null,
+      "source": "thread/tokenUsage/updated",
+      "status": "unknown",
+      "thread_id": "01a1ecfb-42e6-7482-8095-24fc54c0a365",
+      "turn_id": "01a1ecfb-4334-7e13-9ea3-f95bed7cc3ea",
+      "updates": 0
+    },
+    "aggregation": "Raw last/total retained separately; unknown tool usage not zero and not estimated. No cumulative totals summed."
+  },
+  "identities": {
+    "baseline_request_id": "native-context-live-1501",
+    "baseline_thread": "01a1ecf9-2cfb-7550-8e1a-84bb5d5a2401",
+    "baseline_turn": "01a1ecf9-2d45-7681-99ab-e497a679164c",
+    "tool_execution": "native-context-live-1501",
+    "tool_binding": "5404b22ee2ebc88cb25c16c195334e090fa9cdf6376e71b9085595ccf3c19040",
+    "tool_sequence": 1,
+    "tool_thread": "01a1ecfb-42e6-7482-8095-24fc54c0a365",
+    "tool_turn": "01a1ecfb-4334-7e13-9ea3-f95bed7cc3ea"
+  },
+  "inputs": {
+    "baseline_original_request_digest": "10569af16ad8903ed8635675faf1f1873f1cf032514d91e0ec869cff8d08f7f3",
+    "baseline_effective_request_digest": "2ad29ffd175db0b89f9fc8ebbb5e4dd1608c34360f26242a7bb466f2fdaba1c8",
+    "baseline_governance_digest": "9c9f9b71ec3b7e5835eb2734ce507b14b72f2339c50bcd57937cf5c36b4935d3",
+    "baseline_request_bytes": 13842,
+    "real_admitted_framework_context_sha256": "028c01afba79fb6b4e0f14780bbcb8b889b6d1fcc399a5678aa895a3551f4000",
+    "tool_history_digest": "9d268d2aa5e636b9d59e893c9628dc86441c8e47341aee8b3b895f77e1afcc3c",
+    "tool_history_bytes": 11695,
+    "tool_system_message_sha256": "6cdc8670a97b2445324e19fa17ba1a169399a3ba98a739231fa496dd09c23afb",
+    "tool_wire_input": "unknown: unknown receipt has no wire_input/inputTextBytes fields",
+    "tool_response_bytes": 0,
+    "actual_object_reads": 0,
+    "incremental_turns": 0
+  },
+  "failure": {
+    "host_exception": "native_model_host.py:121 ValueError Unknown model turn; no replay",
+    "wrapper": "native_model_proposal.cjs:307 catches exception and emits status unknown without exception text; unknown wrapper packet is durable in tool-events.json model_unknown",
+    "adapter": "native_proposal_adapter.ContextTransport.call wraps as TransportUnknown with reason; runner records call_end unknown and needs_reconciliation",
+    "body": "No agent text observed (first_text/last_text null), no action/proposal field in unknown packet; cannot establish whether provider generated unobserved content or whether lower-level parsing failed, because wrapper catch omits exception. No semantic body was delivered to host validator.",
+    "underlying_cause": "unknown; requires offline diagnostic repair, not replay"
+  },
+  "physical_terminal": {
+    "baseline": {
+      "closed": true,
+      "exit_code": 0
+    },
+    "tool": [
+      {
+        "exit_code": 0,
+        "physical": true
+      }
+    ],
+    "parent_command_exit_code": 0,
+    "meaning": "Parent exit0 means evidence script finished; it does not mean validation passed",
+    "central_leases": [
+      {
+        "task": "3988381a10359369830a767a3ed7645e11d558b01e1b8285e6794c5776b9763f",
+        "calls": 6,
+        "active": 0
+      }
+    ]
+  },
+  "cleanup": {
+    "isolated_session_revoked": true,
+    "deleted": [],
+    "retained": "Own fixture DBs, immutable plan, failures, private profile/grant and protocol records retained for root incident audit; private installed credentials not printed or copied to public report. Framework temporary mailboxes cleaned by actual host close. No branches, listeners or production installation created."
+  },
+  "pending": [
+    "v2 actual live acceptance failed/unknown",
+    "root offline Kuafu diagnosis",
+    "factory integration",
+    "CI/main",
+    "parent whole-goal acceptance"
+  ],
+  "limitations": [
+    "Single representative synthetic data integration using real admitted framework/model/domain runtime; no production rollout",
+    "No valid v2 result, no efficiency/caching comparison or general savings claim",
+    "CLI cannot enforce output token cap; bytes/time/calls limits are enforced"
+  ],
+  "references": {
+    "plan.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\plan.json",
+      "sha256": "568edea1932070498d3346eaf8794ab92012aeb54f2d83558f6711ea331cef90"
+    },
+    "launch-intent.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\launch-intent.json",
+      "sha256": "df68178f72aa10817ad6884c967bcb6e27bcab171bf3be97f66391122f77e91b"
+    },
+    "tool-launch-intent.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\tool-launch-intent.json",
+      "sha256": "e0087deb3965d22266f449221bc9cf43f6d0fd7eb73aaacd0080caf3861aef0d"
+    },
+    "offline-recovery.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\offline-recovery.json",
+      "sha256": "adb4af598b28bb3d807e602098e9136fac3a369b7d96e216d224a75f11d466a9"
+    },
+    "offline.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\offline.json",
+      "sha256": "a97514e3b82ac55db3e7988bde91ef1cb1b71e80581dc648456238837b3a6f4e"
+    },
+    "authorize-result.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\authorize-result.json",
+      "sha256": "8232aa199811ac99197f743cb6c851a33d9a5b4c930901f976eed178d4c93636"
+    },
+    "baseline-raw.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\baseline-raw.json",
+      "sha256": "42678a61615ef621ead370f69ba6c501514fb1c51f4c33f0fe6a64420d0bf32d"
+    },
+    "tool-events.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\tool-events.json",
+      "sha256": "d1a26b4b3c3b295a62465475d9b2596e5a2ee98ce12559992f610b0c3e535bdb"
+    },
+    "tool-receipt.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\tool-receipt.json",
+      "sha256": "a761278c3b8e4b96c9c6434bd851e240beb1aaa9e8e11eb2290ef1c20759c902"
+    },
+    "tool-result.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\tool-result.json",
+      "sha256": "2bc01f6c548915e4c3ebc6917b5f64e8a40416897c1e1516db29574c5d1138ca"
+    },
+    "failure.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\failure.json",
+      "sha256": "71383e8ad9f405671c90670ac1bfab90dc33be5199fefdffc2d97a823da64c72"
+    },
+    "summary.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\summary.json",
+      "sha256": "9ac3e7cceaa34d4984cc0ba9c95958aaa578eaf47a00f28afa68117e79043bdb"
+    },
+    "suite.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\suite.json",
+      "sha256": "ca704a83983f84e1081c6403ce9b8ac7a3d48cd581ff46363cf9fcb1feb12ffb"
+    },
+    "task.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\task.json",
+      "sha256": "48b586b472f5d60064398e187db3414b74f90375e63e0e81524df9fb1107caf8"
+    },
+    "governance.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\governance.json",
+      "sha256": "6df2c3b2ea778b14255864cb785c388f731b351b0b6b63daabfed61876d352a5"
+    },
+    "quality.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\quality.json",
+      "sha256": "b682d312fd275fcf500eeea248a1da01f44507f105ac0ecf08b5662c00f88351"
+    }
+  }
+}

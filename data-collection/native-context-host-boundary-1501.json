@@ -1,0 +1,71 @@
+{
+  "issue": 1501,
+  "passed": true,
+  "native_sources": 9392,
+  "native_sources_sha256": "d99730749465b133ab44fdd8d1f1b719a906bf6336d098b6a7a297f5d2e528c0",
+  "changed_host_inputs": [
+    "customizations/components/tianxuan/sinan-workorders/native_context.py",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py"
+  ],
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "91324f70549b21eef137d3fc5980e84b241ecd5c796a6a6dea22e3dd459f2906",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "54ada57b24087bff5ac123274724108178da80205a39416c776f70b586fd3db4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "4cf7af21c626ebe188df03829b489a21279a973e3c97f40e33cbd96f5bf41e64",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77a29da320e653ddf73c0204455a62f17709266fc9e7c66b6827de6ae435bcae",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "c03c426c5fc99d40ff89753f8a3cbb8ee638272c3efef53292e0cb014bb17e11",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "8a541d64c29eb83fa71e69d8d75eb68a6406394af0afc5f90398e14c63917b5c"
+  },
+  "overlap": [],
+  "inventory_before": 176,
+  "inventory_after": 178,
+  "added_inventory": [
+    "customizations/components/tianxuan/sinan-workorders/native_context.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py"
+  ],
+  "policy_sha256": "c4039daccf6d973d3d0946558f619f20fbe445a819fb2c98223e8052ab65c351",
+  "checks": [
+    {
+      "command": "py -X utf8 tests/editor/test_native_host_inputs.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: invalid host input inventory\nFull-tree identity required: invalid host input inventory\n.....\n----------------------------------------------------------------------\nRan 5 tests in 15.619s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tests/editor/test_editor_native_cache.py",
+      "exit_code": 0,
+      "output": "...............\n----------------------------------------------------------------------\nRan 15 tests in 18.898s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tools/test_windows_editor_artifact.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\ns.........\n----------------------------------------------------------------------\nRan 10 tests in 0.827s\n\nOK (skipped=1)\n"
+    }
+  ],
+  "actual_scons_command": [
+    "py",
+    "-X",
+    "utf8",
+    "-m",
+    "SCons",
+    "-n",
+    "-Q",
+    "gonggong_native_probe=D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-scons-probe.json",
+    "accesskit=no",
+    "angle=no",
+    "d3d12=no",
+    "debug_symbols=no",
+    "dev_mode=yes",
+    "platform=windows",
+    "target=editor"
+  ],
+  "seconds": 42.69151900001452,
+  "compilation_performed": false,
+  "limits": "Actual Windows SCons consumer graph and cache regression only; current source functional review pending, no factory/live/render/AA acceptance."
+}

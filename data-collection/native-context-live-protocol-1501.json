@@ -1,0 +1,590 @@
+{
+  "issue": 1501,
+  "status": "passed_bounded_reviewed_protocol_live_validation",
+  "plan_sha256": "2bdebc7039612fd64bab645a61704b9179c68a7c391e832f289dc21ce0da4e59",
+  "review_sha256": "4e7f442034d56544f0a753c126c58268232f63749fe79d6f22987733a963ad16",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "030a56626baeac81062149e3e6480d92e95d249a9fe38e0644133885c45fb017",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "4e2880b13171ace9d9e565cde5e5c7544b80c0c858bb4d334b338ce59b99ea56",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c84fe150265c829f17ae9e6b09ee2fa2f867fe7d541d82132e6ba262cac53de4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "0fd8fbd19388902d3e614e4bee604ea4229c6c8a73d0204fd5f5cb909391e19a",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "fb541596410617739b907d21a8ec26399993b657ab0f649b28bc8ac4d9636267",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "d5844822a892454166a610049222d6d6dad03e195a659510dd564f89f9533663",
+    "customizations/components/tianxuan/duobao/native_store.py": "69e2283effdc88e042c478d79fdb3efd2c102dd3df0cfcccf525785c10331748",
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py": "bb987a461258b16b7e901b3a5f520eeacf6483f98695d9cb50614f2f33f9252a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "ad6fba0acbe5cee94f31b9500cbe9e1af1aef0a7312263e43f473de055043a0d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "4122db587ecd67c24a1d5cef2a8cf17e78db240374a223f381d7911d89144e6a"
+  },
+  "sources_unchanged": true,
+  "actual_calls": {
+    "prior": 11,
+    "baseline": 1,
+    "tool": 4,
+    "new": 5,
+    "total_including_prior": 16,
+    "retries": 0
+  },
+  "quality": {
+    "baseline": {
+      "passed": true,
+      "parsed": {
+        "audio": {
+          "gain": 0.5
+        },
+        "modules": {
+          "render": {
+            "api": 3
+          },
+          "weather": {
+            "enabled": true
+          }
+        },
+        "scene": {
+          "budget": 384,
+          "quality": 3,
+          "title": "夜航"
+        }
+      },
+      "output_sha256": "2f62c76da00efb74d4be1bdb35dfbc1e3eb02a8318197701c1dacba9a7b73d86"
+    },
+    "tool": {
+      "passed": true,
+      "parsed": {
+        "audio": {
+          "gain": 0.5
+        },
+        "modules": {
+          "render": {
+            "api": 3
+          },
+          "weather": {
+            "enabled": true
+          }
+        },
+        "scene": {
+          "budget": 384,
+          "quality": 3,
+          "title": "夜航"
+        }
+      },
+      "output_sha256": "d131cf0cf9905864651d82891cc2f8392f44d051dbb65634ceabfc29b05b4cc7"
+    },
+    "criteria_sha256": "b682d312fd275fcf500eeea248a1da01f44507f105ac0ecf08b5662c00f88351",
+    "current_authority_after_response": "runner host rechecked after each accepted response; explicit resolver.check(apply_proposal) passed after final before session revocation"
+  },
+  "timing": {
+    "baseline_wall_seconds": 126.84400000001187,
+    "tool_wall_seconds": 157.35899999999674,
+    "overall_seconds": 284.73399999999674,
+    "baseline": {
+      "version": 1,
+      "clock": "monotonic",
+      "marks": {
+        "session_ready": 1646,
+        "thread_start_sent": 1648,
+        "thread_start_received": 1728,
+        "turn_start_sent": 1728,
+        "turn_start_received": 1734,
+        "first_response": 1734,
+        "first_text": 122655,
+        "last_text": 124831,
+        "turn_completed": 125975,
+        "proposal_validated": 125975,
+        "receipt_ready": 126026
+      },
+      "rpc": {
+        "thread_start_calls": 1,
+        "turn_start_calls": 1
+      }
+    },
+    "baseline_host": {
+      "clock": "monotonic",
+      "origin": "after_installation_validation",
+      "owned_process_closed_ms": 126140,
+      "receipt_validated_ms": 126375,
+      "protocol_elapsed_ms": 126028,
+      "total_ms": 126375
+    }
+  },
+  "usage": {
+    "baseline": {
+      "thread_id": "01a1ed21-2029-7683-9d1c-e0b0f0f13397",
+      "turn_id": "01a1ed21-2077-75d1-af97-1fa687eb0ec6",
+      "observed_model": "gpt-6.2-sol",
+      "raw": {
+        "total": {
+          "totalTokens": 9764,
+          "inputTokens": 9545,
+          "cachedInputTokens": 0,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 219,
+          "reasoningOutputTokens": 0
+        },
+        "last": {
+          "totalTokens": 9764,
+          "inputTokens": 9545,
+          "cachedInputTokens": 0,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 219,
+          "reasoningOutputTokens": 0
+        },
+        "modelContextWindow": 475000
+      },
+      "status": "observed",
+      "updates": 1,
+      "source": "thread/tokenUsage/updated",
+      "normalized_usage": null
+    },
+    "tool_final_cumulative_snapshot": {
+      "cacheWriteInputTokens": 0,
+      "cachedInputTokens": 31104,
+      "inputTokens": 44097,
+      "outputTokens": 717,
+      "reasoningOutputTokens": 20,
+      "totalTokens": 44814
+    },
+    "aggregation": "Final cumulative snapshot used once; per-turn raw last/total retained. No cumulative snapshots summed. Historical unknown remains unknown."
+  },
+  "inputs": {
+    "source_body_bytes": 5132,
+    "source_body_sha256": "5c656358e49c8d539ebed2b61ff61ee6978ff110049813554069604e3be57f0a",
+    "baseline_original_request_digest": "b7aa52c5556f0f4b0e3d7f6a5a7c9ddb9bfc4bfcfc0bd7a0cd84c915d8ec8809",
+    "baseline_effective_request_digest": "c58218b6139f092205a03f7a0fe163f0500db105276a15d36470fd51ae1db382",
+    "baseline_effective_request_bytes": 13860,
+    "framework_context_sha256": "999cf3fc4b3928a51f97a48625896809a9da0c1d21bd659bc78d6950367d7e46",
+    "tool_bootstrap_wire_bytes": 12146,
+    "tool_incremental_wire_bytes": [
+      1918,
+      1918,
+      1974
+    ],
+    "actual_reads": [
+      {
+        "module": "requirement-9047fe6d6d62c1232f4d613261d94bceb59ef3385361015d4c39f8acab07c4e1",
+        "name": "scene/base.json",
+        "object_digest": "8ebbb27968cd22e272ce639812cb990eb8a044e914c145bf2b6d9e79bb3305a5",
+        "revision": "c8533222dcc3eb9bc328415db8813b4d047f7cc05a6527a1ceee0d98fe56a181",
+        "tenant": "ten_7d002f720e364ca4b5956dea313651ac"
+      },
+      {
+        "module": "requirement-9047fe6d6d62c1232f4d613261d94bceb59ef3385361015d4c39f8acab07c4e1",
+        "name": "scene/contribution_a.json",
+        "object_digest": "ec1fa415c69a807d91783eaf9cb9193d91bd9a11df31ddf04d4b33381fa0a386",
+        "revision": "c8533222dcc3eb9bc328415db8813b4d047f7cc05a6527a1ceee0d98fe56a181",
+        "tenant": "ten_7d002f720e364ca4b5956dea313651ac"
+      },
+      {
+        "module": "requirement-9047fe6d6d62c1232f4d613261d94bceb59ef3385361015d4c39f8acab07c4e1",
+        "name": "scene/contribution_b.json",
+        "object_digest": "32375bc16cd6def48288c44f4014116231b7583be516118c1260a6e68de9a053",
+        "revision": "c8533222dcc3eb9bc328415db8813b4d047f7cc05a6527a1ceee0d98fe56a181",
+        "tenant": "ten_7d002f720e364ca4b5956dea313651ac"
+      }
+    ],
+    "read_bytes": 372,
+    "turns": [
+      {
+        "sequence": 1,
+        "status": "tool_requested",
+        "mode": "bootstrap",
+        "rebuild": "new_thread",
+        "input_digest": "086fa0f531aff7b7ed3fa13f816db1981e94605e5bf62b7450c9310f137b4fd8",
+        "output_digest": "9065aa0c88365a25eb543a427d12aa5757d5719cd66ff6fff1da456ca08f4010",
+        "wire_input": {
+          "bytes": 12146,
+          "sha256": "8a7b8be1be65d05bb40337b0a13a7c59bba73e225621623cebc02ece4ae04916"
+        },
+        "inputTextBytes": 12146,
+        "usage": {
+          "normalized_usage": null,
+          "observed_model": "gpt-6.2-sol",
+          "raw": {
+            "last": {
+              "cacheWriteInputTokens": 0,
+              "cachedInputTokens": 0,
+              "inputTokens": 9609,
+              "outputTokens": 176,
+              "reasoningOutputTokens": 0,
+              "totalTokens": 9785
+            },
+            "modelContextWindow": 475000,
+            "total": {
+              "cacheWriteInputTokens": 0,
+              "cachedInputTokens": 0,
+              "inputTokens": 9609,
+              "outputTokens": 176,
+              "reasoningOutputTokens": 0,
+              "totalTokens": 9785
+            }
+          },
+          "source": "thread/tokenUsage/updated",
+          "status": "observed",
+          "thread_id": "01a1ed23-1509-75d0-b312-e75c993fab8e",
+          "turn_id": "01a1ed23-155d-7322-abf0-9042f41675f0",
+          "updates": 1
+        },
+        "timing": {
+          "clock": "monotonic",
+          "marks": {
+            "first_response": 1549,
+            "first_text": 122842,
+            "last_text": 122843,
+            "proposal_validated": 123053,
+            "receipt_ready": 123105,
+            "session_ready": 1455,
+            "thread_start_received": 1542,
+            "thread_start_sent": 1457,
+            "turn_completed": 123053,
+            "turn_start_received": 1549,
+            "turn_start_sent": 1543
+          },
+          "rpc": {
+            "thread_start_calls": 1,
+            "turn_start_calls": 1
+          },
+          "version": 1
+        },
+        "host_history_bytes": 11971,
+        "host_history_sha256": "fdb1a56c6cc3101f3c515747f739fb0075fd1fd93420d9e8092b166ca3ad5917"
+      },
+      {
+        "sequence": 2,
+        "status": "tool_requested",
+        "mode": "incremental",
+        "rebuild": null,
+        "input_digest": "dad0d7d580406353ae8ba3320af09f466b9829136b613c158a3c4c1d0655238b",
+        "output_digest": "1b54af0b79ab2da9bae352f6f6b70cc2114874de7072d4de53afa4397a4642a7",
+        "wire_input": {
+          "bytes": 1918,
+          "sha256": "3a7b5a5334ac08ab202110edf3bc0978ad359c9c2087da2bd9a50233eca4e720"
+        },
+        "inputTextBytes": 1918,
+        "usage": {
+          "normalized_usage": null,
+          "observed_model": "gpt-6.2-sol",
+          "raw": {
+            "last": {
+              "cacheWriteInputTokens": 0,
+              "cachedInputTokens": 9600,
+              "inputTokens": 10548,
+              "outputTokens": 180,
+              "reasoningOutputTokens": 0,
+              "totalTokens": 10728
+            },
+            "modelContextWindow": 475000,
+            "total": {
+              "cacheWriteInputTokens": 0,
+              "cachedInputTokens": 9600,
+              "inputTokens": 20157,
+              "outputTokens": 356,
+              "reasoningOutputTokens": 0,
+              "totalTokens": 20513
+            }
+          },
+          "source": "thread/tokenUsage/updated",
+          "status": "observed",
+          "thread_id": "01a1ed23-1509-75d0-b312-e75c993fab8e",
+          "turn_id": "01a1ed24-f3e9-7a50-9b53-7c206629d205",
+          "updates": 1
+        },
+        "timing": {
+          "clock": "monotonic",
+          "marks": {
+            "first_response": 10,
+            "first_text": 9525,
+            "last_text": 9528,
+            "proposal_validated": 9934,
+            "receipt_ready": 9989,
+            "session_ready": 0,
+            "thread_start_received": null,
+            "thread_start_sent": null,
+            "turn_completed": 9934,
+            "turn_start_received": 9,
+            "turn_start_sent": 2
+          },
+          "rpc": {
+            "thread_start_calls": 0,
+            "turn_start_calls": 1
+          },
+          "version": 1
+        },
+        "host_history_bytes": 13781,
+        "host_history_sha256": "0566784935e26ad87aaeb44f5b70bc534909a8991b3cf69c14a5879f839d550b"
+      },
+      {
+        "sequence": 3,
+        "status": "tool_requested",
+        "mode": "incremental",
+        "rebuild": null,
+        "input_digest": "df6efc1c48912b45dd5b78ff733b425628d989bd87f10aa3ee2e2b9c8b3e09ec",
+        "output_digest": "177bf5471cd16e1932dca8803baa222da24e19e5be13c6dd23ea13c76f8ae344",
+        "wire_input": {
+          "bytes": 1918,
+          "sha256": "31e8a3aea278770eeeaf86a49f54167823901e123775982619d87e070123a4b4"
+        },
+        "inputTextBytes": 1918,
+        "usage": {
+          "normalized_usage": null,
+          "observed_model": "gpt-6.2-sol",
+          "raw": {
+            "last": {
+              "cacheWriteInputTokens": 0,
+              "cachedInputTokens": 10240,
+              "inputTokens": 11487,
+              "outputTokens": 176,
+              "reasoningOutputTokens": 0,
+              "totalTokens": 11663
+            },
+            "modelContextWindow": 475000,
+            "total": {
+              "cacheWriteInputTokens": 0,
+              "cachedInputTokens": 19840,
+              "inputTokens": 31644,
+              "outputTokens": 532,
+              "reasoningOutputTokens": 0,
+              "totalTokens": 32176
+            }
+          },
+          "source": "thread/tokenUsage/updated",
+          "status": "observed",
+          "thread_id": "01a1ed23-1509-75d0-b312-e75c993fab8e",
+          "turn_id": "01a1ed25-1ebb-7561-bff3-0a02fc59e9e0",
+          "updates": 1
+        },
+        "timing": {
+          "clock": "monotonic",
+          "marks": {
+            "first_response": 6,
+            "first_text": 8281,
+            "last_text": 8283,
+            "proposal_validated": 9178,
+            "receipt_ready": 9234,
+            "session_ready": 0,
+            "thread_start_received": null,
+            "thread_start_sent": null,
+            "turn_completed": 9178,
+            "turn_start_received": 5,
+            "turn_start_sent": 2
+          },
+          "rpc": {
+            "thread_start_calls": 0,
+            "turn_start_calls": 1
+          },
+          "version": 1
+        },
+        "host_history_bytes": 15591,
+        "host_history_sha256": "90781c11a589e06fc3ecda8aad410513e8947005c9f282b80ab45525f66d3718"
+      },
+      {
+        "sequence": 4,
+        "status": "final",
+        "mode": "incremental",
+        "rebuild": null,
+        "input_digest": "4ec78f643d067d3b75404b1d30df0a3f527e01e372e3bdc6dc778f5cd0a85b8f",
+        "output_digest": "99ac5afda1a88b87e0bfad337e1ccac03103b5be41b938cea01c19759ede577a",
+        "wire_input": {
+          "bytes": 1974,
+          "sha256": "ba762515bb69ec609dab98720130d31cd5d42a6706d74684cbbd69288291698b"
+        },
+        "inputTextBytes": 1974,
+        "usage": {
+          "normalized_usage": null,
+          "observed_model": "gpt-6.2-sol",
+          "raw": {
+            "last": {
+              "cacheWriteInputTokens": 0,
+              "cachedInputTokens": 11264,
+              "inputTokens": 12453,
+              "outputTokens": 185,
+              "reasoningOutputTokens": 20,
+              "totalTokens": 12638
+            },
+            "modelContextWindow": 475000,
+            "total": {
+              "cacheWriteInputTokens": 0,
+              "cachedInputTokens": 31104,
+              "inputTokens": 44097,
+              "outputTokens": 717,
+              "reasoningOutputTokens": 20,
+              "totalTokens": 44814
+            }
+          },
+          "source": "thread/tokenUsage/updated",
+          "status": "observed",
+          "thread_id": "01a1ed23-1509-75d0-b312-e75c993fab8e",
+          "turn_id": "01a1ed25-4659-7743-bca2-027e36968016",
+          "updates": 1
+        },
+        "timing": {
+          "clock": "monotonic",
+          "marks": {
+            "first_response": 4,
+            "first_text": 7604,
+            "last_text": 8514,
+            "proposal_validated": 9946,
+            "receipt_ready": 10008,
+            "session_ready": 0,
+            "thread_start_received": null,
+            "thread_start_sent": null,
+            "turn_completed": 9946,
+            "turn_start_received": 4,
+            "turn_start_sent": 2
+          },
+          "rpc": {
+            "thread_start_calls": 0,
+            "turn_start_calls": 1
+          },
+          "version": 1
+        },
+        "host_history_bytes": 17457,
+        "host_history_sha256": "38ed13473faca563917bc3833f8eb0b2689fb6dae8eeb49e91817d0887b43ea2"
+      }
+    ]
+  },
+  "physical_terminal": {
+    "baseline_closed": true,
+    "baseline_exit_code": 0,
+    "tool": [
+      {
+        "exit_code": 0,
+        "physical": true
+      }
+    ],
+    "parent_command_exit_code": 0,
+    "central_leases": [
+      {
+        "task": "aeb4ad73fd2000b46212aeed66d19f6fe0ae7d31dc08103d9603c12178dcf1d0",
+        "reserved_calls": 6,
+        "active": 0
+      }
+    ]
+  },
+  "cleanup": {
+    "isolated_session_revoked": true,
+    "readback": "user_for_token returned None and current authority denied",
+    "correction": "summary.json false flag was a report-check error: API returns None on revoked token rather than raising. Session was already revoked; no repeat revoke or new session.",
+    "deleted": [],
+    "retained": "Own isolated fixture DBs, immutable plan, script, private signed grant/profile, raw inputs and receipts retained for audit. Host owns and closes temporary mailboxes. No branch, installation, listener or unrelated resource touched."
+  },
+  "bounds": {
+    "maximum_new_calls": 7,
+    "tool_max_turns": 6,
+    "host_session_cumulative_seconds": 600,
+    "subscription_turn_seconds": 300,
+    "two_session_max_seconds": 1200,
+    "output_token_limit": "unsupported"
+  },
+  "historical": {
+    "status": "baseline_pass_tool_unknown_comparison_incomplete",
+    "actual_calls": 11,
+    "underlying_cause": "unknown",
+    "usage": "prior tool unknown remains unknown"
+  },
+  "limitations": [
+    "Single fixed composite task only; no general savings or production acceptance.",
+    "Tool session took longer and used more total tokens than baseline; cachedInputTokens are observed counters, not price or savings estimates.",
+    "Source bodies were 5132 bytes; bootstrap/history include governing instructions and schemas and are reported separately."
+  ],
+  "pending": [
+    "factory integration",
+    "remote/package update and rollback",
+    "CI/main",
+    "whole-goal acceptance"
+  ],
+  "method_feedback": {
+    "lesson": "await-terminal-observers r7",
+    "observed": "Physical close plus final durable receipt and inactive exact budget lease verified; revoked session returns None, so exception-only cleanup check was corrected by authoritative readback."
+  },
+  "references": {
+    "plan.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\plan.json",
+      "sha256": "2bdebc7039612fd64bab645a61704b9179c68a7c391e832f289dc21ce0da4e59"
+    },
+    "validate.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\validate.py",
+      "sha256": "36093ad1500e00675cb67f13a08b702834872c77088783398484976c58e0f3c7"
+    },
+    "source.private.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\source.private.json",
+      "sha256": "5c656358e49c8d539ebed2b61ff61ee6978ff110049813554069604e3be57f0a"
+    },
+    "suite.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\suite.json",
+      "sha256": "fc987747dd596bf9fa0f8a27ee167280ed174f590637e0b9307d90eb45bcbdda"
+    },
+    "task.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\task.json",
+      "sha256": "0a9b6c3e97554f0c8bbb3c0075b555dd7ea061f51bea4e6130e09e10c27784c1"
+    },
+    "quality.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\quality.json",
+      "sha256": "b682d312fd275fcf500eeea248a1da01f44507f105ac0ecf08b5662c00f88351"
+    },
+    "binding.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\binding.json",
+      "sha256": "9d2eab0bf845d32a2a31528f51a0fbb7f436c5f2a891810753eb647431569726"
+    },
+    "governance.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\governance.json",
+      "sha256": "fa21de4d644911237af3498a4592445a8880c2bd58269cedbe2f28c3a6f37781"
+    },
+    "launch-intent.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\launch-intent.json",
+      "sha256": "6c8658ce0bb2d57aec1dae5a4c465d909fcb6af9ad51c430f33a700dea5971da"
+    },
+    "tool-launch-intent.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\tool-launch-intent.json",
+      "sha256": "af66faa2d659765a353e8e6ff46e11af06697a5bfcd41be7344f8b17065074eb"
+    },
+    "authorize-result.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\authorize-result.json",
+      "sha256": "47f5aabe2d97038ea0c88cdb8e5a24a29a0915c4ded02109fab97e83fbe4e250"
+    },
+    "runner-plan.private.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\runner-plan.private.json",
+      "sha256": "d23d8335a3b242d40c7022988c8645c4cecc2cdd3c964f8731ca3c2c092c73e6"
+    },
+    "grant.private.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\grant.private.json",
+      "sha256": "79c50ec61e654c2052d1646652039c3069adcf3f006dba0d4b15761114d51970"
+    },
+    "baseline-raw.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\baseline-raw.json",
+      "sha256": "fc226c270d753378517aa1d1fef2fa865f649b53b6ac5e326c63a5746346e70f"
+    },
+    "tool-result.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\tool-result.json",
+      "sha256": "22b511ac323ed65b2335e6cd57d6763caf00e660b56f22e8172ee275d977207e"
+    },
+    "tool-events.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\tool-events.json",
+      "sha256": "899ffd5c170f19193a3072547032e88d5e5a2a709ae8500eb6c65b40935cfa90"
+    },
+    "tool-receipt.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\tool-receipt.json",
+      "sha256": "71ff81f7067ad6aa87ec8fa89735e7e1ddeb061a8a3bb95e8d81f6bcfb2955ed"
+    },
+    "summary.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\summary.json",
+      "sha256": "c539f1c3c1dcb04e4408d8bac4304eef2539262d824271afac0d3f0ca882566d"
+    },
+    "offline.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\offline.json",
+      "sha256": "a97514e3b82ac55db3e7988bde91ef1cb1b71e80581dc648456238837b3a6f4e"
+    },
+    "cleanup-readback.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\cleanup-readback.json",
+      "sha256": "37d8e962cd4a3b8cf3c1c0ecf62c0f454d3dcde3ae17a9ea691c85c01dab4b23"
+    },
+    "budget-readback.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-protocol-1501\\budget-readback.json",
+      "sha256": "dfb189b83be55e91a442fa9bc77466f09146e4c2de37a8902fbffa02b0c872df"
+    },
+    "historical-final-report": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-live-validation-1501\\final-report.json",
+      "sha256": "5d19d630f50836091a8415d252cb1ccc8c294e8c87823e14a65107651c75a053"
+    }
+  }
+}

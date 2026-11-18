@@ -275,3 +275,47 @@ test('duplicate RPC cannot be misreported as a single request', async () => {
     assert.equal(f.observer.value.rpc.thread_start_calls, 2); // Rejected by the host's <=1 bound.
     f.observer.detach();
 });
+
+
+test('wire envelope requires inactive nulls and exact typed operation arguments', () => {
+    const {validateAction} = require('./native_model_proposal.cjs');
+    const valid = {action:'tool',name:'native_context',arguments:{op:'manifest',cursor:null},value:null};
+    const check = x => validateAction(JSON.stringify(x),request,digest(request));
+    assert.deepEqual(check(valid),{action:'tool',name:'native_context',arguments:valid.arguments});
+    const read={op:'read',module:'code',revision:'r',name:'n',object_digest:'d',offset:0,length:1,cursor:null,known_receipt:null};
+    const delta={op:'delta',module:'code',before:'a',after:'b',cursor:null};
+    for(const args of [read,delta,{op:'manifest',cursor:'opaque'}]) assert.deepEqual(check({...valid,arguments:args}).arguments,args);
+    for(const action of [{...valid,value:{}},{...valid,name:null},{action:'tool',name:'native_context',arguments:valid.arguments},
+        {...valid,action:'final'}, {...valid,extra:true}]) assert.throws(()=>check(action));
+    for(const args of [{op:'manifest'}, {op:'manifest',cursor:1}, {op:'manifest',cursor:null,module:'inactive'},
+        {...read,offset:1.5},{...read,length:0},{...read,known_receipt:'unsupported'}, {...read,name:null},
+        {...read,before:'inactive'},{...delta,after:null},{...delta,offset:0}]) assert.throws(()=>check({...valid,arguments:args}));
+    const proposal={request_id:request.request_id,input_digest:digest(request),summary:'ok',files:[]};
+    assert.deepEqual(check({action:'final',name:null,arguments:null,value:proposal}),{action:'final',value:proposal});
+    assert.throws(()=>check({action:'final',name:'native_context',arguments:null,value:proposal}));
+});
+
+test('schema preflight rejects incompatible installed schema before startup', async () => {
+    const {actionSchema,contextSession} = require('./native_model_proposal.cjs');
+    const fs=require('node:fs/promises'),os=require('node:os'),path=require('node:path');
+    const mailbox=await fs.mkdtemp(path.join(os.tmpdir(),'schema-preflight-'));
+    const binding='b'.repeat(64),messages=[{role:'user',content:'fixed'}];
+    let starts=0;
+    try {
+        await fs.writeFile(path.join(mailbox,'1.input.json'),JSON.stringify({binding,sequence:1,messages,input_digest:digest(messages)}));
+        actionSchema.additionalProperties=true;
+        await contextSession({request,installed,mailbox,binding,max_calls:1},async()=>{starts++;throw Error('must not start');});
+        const receipt=JSON.parse(await fs.readFile(path.join(mailbox,'1.output.json'),'utf8'));
+        assert.equal(starts,0); assert.equal(receipt.status,'unknown');
+        assert.deepEqual(receipt.diagnostic,{version:1,phase:'schema_preflight',terminal:'unknown',reason:'schema_preflight'});
+    } finally {actionSchema.additionalProperties=false;await fs.rm(mailbox,{recursive:true,force:true});}
+});
+
+test('bounded diagnosis retains observed terminal or local phase only', async () => {
+    for(const [mode,reason] of [['failed','terminal_failure'],['malformed','proposal_rejection'],['reject','unknown']]){
+        const f=fake([],[],mode==='malformed',mode==='reject',mode==='failed'?'failed':'completed');
+        const r=await propose(request,installed,async()=>f.session);
+        assert.equal(r.diagnostic.reason,reason);
+        assert.equal(JSON.stringify(r.diagnostic).includes('disconnect'),false);
+    }
+});

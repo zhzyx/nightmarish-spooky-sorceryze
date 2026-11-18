@@ -1,0 +1,250 @@
+{
+  "issue": 1501,
+  "status": "implementation_and_deterministic_validation_ready_for_independent_review",
+  "source_root": "D:\\GongGong-work\\native-context-consumption-20261118",
+  "head": "8b6b210be8aae3f36f7b457979e31964b44026ea",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "91324f70549b21eef137d3fc5980e84b241ecd5c796a6a6dea22e3dd459f2906",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "54ada57b24087bff5ac123274724108178da80205a39416c776f70b586fd3db4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "4cf7af21c626ebe188df03829b489a21279a973e3c97f40e33cbd96f5bf41e64",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77a29da320e653ddf73c0204455a62f17709266fc9e7c66b6827de6ae435bcae",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "c03c426c5fc99d40ff89753f8a3cbb8ee638272c3efef53292e0cb014bb17e11",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "8a541d64c29eb83fa71e69d8d75eb68a6406394af0afc5f90398e14c63917b5c"
+  },
+  "tests": [
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\pre-format-python-regression.json",
+      "sha256": "fccd639cd7dd9ea5ea28e27a93b5877bb7dc9c67599610baf494fa904f050c0b",
+      "result": {
+        "command": [
+          "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "pytest",
+          "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py",
+          "customizations/platforms/ai-access/host-http/runtime/test_adapters.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 70.312,
+        "stdout": "......................................................... [ 69%]\n.........................                                     [100%]\n82 passed, 98 subtests passed in 69.89s (0:01:09)\n",
+        "stderr": "",
+        "network": "No server test module; fake protocol subprocesses only"
+      }
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\pre-lf-python-regression.json",
+      "sha256": "3a98b92ad4d67ebba95aca6a16fecdbf2a471187a847a46bc1a14098f8b27e94",
+      "result": {
+        "command": [
+          "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "pytest",
+          "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py",
+          "customizations/platforms/ai-access/host-http/runtime/test_adapters.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 69.766,
+        "stdout": "......................................................... [ 68%]\n..........................                                    [100%]\n83 passed, 98 subtests passed in 69.39s (0:01:09)\n",
+        "stderr": "",
+        "network": "No server test module; fake protocol subprocesses only",
+        "source_stage": "Ruff formatted before explicit LF normalization; four files still CRLF"
+      }
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\final-lf-python-regression.json",
+      "sha256": "50bc72702914bd2ae99563cdd443ec35ebb2b76520de5a16376bc000f8eaef18",
+      "result": {
+        "command": [
+          "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "pytest",
+          "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+          "-q"
+        ],
+        "exit_code": 0,
+        "elapsed_seconds": 44.078,
+        "stdout": "................................................          [100%]\n48 passed, 15 subtests passed in 43.71s\n",
+        "stderr": "",
+        "source_stage": "final explicit LF bytes",
+        "network": "No server test module; fake protocol subprocesses only"
+      }
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\node-regression.json",
+      "sha256": "1a1ac5682888ee09cb3921f2d4366ff3a44dd5fe058e8990e1ac4afdaf6d8858",
+      "result": {
+        "command": [
+          "C:/Users/ROG/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+          "--test",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs"
+        ],
+        "exit_code": 0,
+        "stdout": "✔ real Subscription early events retained, strict proposal bound, original notifications work (55.4093ms)\n✔ late update replaces raw snapshot without summing (59.298ms)\n✔ duplicate fails usage closed (62.7122ms)\n✔ wrong_thread fails usage closed (63.1118ms)\n✔ wrong_turn fails usage closed (60.9242ms)\n✔ negative fails usage closed (60.9983ms)\n✔ wrong_type fails usage closed (63.0427ms)\n✔ overflow fails usage closed (62.2818ms)\n✔ missing usage remains unknown (61.182ms)\n✔ unacknowledged turn never binds early usage or replays (0.4736ms)\n✔ malformed proposal retains independently bound usage without authority (0.2218ms)\n✔ failed proposal retains independently bound usage without authority (0.1531ms)\n✔ failed proposal retains invalid usage classification (0.1481ms)\n✔ request configuration injection and duplicate paths rejected before start (0.1984ms)\n✔ callback preserved and restored including compaction signal (0.0506ms)\n✔ context compaction forces existing Subscription to rebuild (0.2227ms)\n✔ strict output rejects wrong digest, duplicate paths, extra authority and outside path (0.2228ms)\n✔ replayed completed messages do not move last text, including before acknowledgement (0.2373ms)\n✔ identical text deltas and distinct completed items remain distinct output (0.0846ms)\n✔ completed message identities are required and bounded with unknown overflow (0.3634ms)\n✔ monotonic phase separation and terminal freeze without extra calls (0.1761ms)\n✔ early notification timestamps bind only to acknowledged turn (0.1055ms)\n✔ malformed and unrelated notifications cannot fabricate timing (0.112ms)\n✔ early overflow discards ambiguous timings without retaining payloads (0.1974ms)\n✔ observer preserves original rejection and callback exception (0.2736ms)\n✔ receipt timing accompanies proposed, failed and unacknowledged results and restores observers (58.4697ms)\n✔ startup failure produces unknown timing with no protocol calls (0.3001ms)\n✔ transport timeout after text stays unknown and closes without retry (0.4161ms)\n✔ out of range monotonic stamps remain unknown (0.0607ms)\n✔ duplicate RPC cannot be misreported as a single request (0.0619ms)\nℹ tests 30\nℹ suites 0\nℹ pass 30\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 670.2171\n",
+        "stderr": "",
+        "source_stage": "final explicit LF bytes"
+      }
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\final-static-checks.json",
+      "sha256": "fbba260de3571aca21b93011147b092cf5989faf834f733b47c35e6065f3e11b",
+      "result": {
+        "checks": [
+          {
+            "command": [
+              "py",
+              "-X",
+              "utf8",
+              "-m",
+              "ruff",
+              "format",
+              "--check",
+              "customizations/components/tianxuan/sinan-workorders/native_context.py",
+              "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+              "customizations/components/tianxuan/sinan-workorders/native_model_producer.py",
+              "customizations/components/tianxuan/sinan-workorders/native_worker.py",
+              "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+              "customizations/platforms/ai-access/host-http/runtime/runner.py",
+              "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py"
+            ],
+            "exit_code": 0,
+            "stdout": "7 files already formatted\n",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "py",
+              "-X",
+              "utf8",
+              "-m",
+              "ruff",
+              "check",
+              "customizations/components/tianxuan/sinan-workorders/native_context.py",
+              "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+              "customizations/components/tianxuan/sinan-workorders/native_model_producer.py",
+              "customizations/components/tianxuan/sinan-workorders/native_worker.py",
+              "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+              "customizations/platforms/ai-access/host-http/runtime/runner.py",
+              "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py"
+            ],
+            "exit_code": 0,
+            "stdout": "All checks passed!\n",
+            "stderr": ""
+          },
+          {
+            "command": [
+              "git",
+              "diff",
+              "--check"
+            ],
+            "exit_code": 0,
+            "stdout": "",
+            "stderr": ""
+          }
+        ],
+        "all_eight_owned_files_lf": true
+      }
+    }
+  ],
+  "actual_ledgers": [
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\multi-turn-ledger.json",
+      "sha256": "f31afcb5f666af07999247de1561105ce7d65f4c17b5cbb80e6e24a6d8fb6964"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\worker-pipeline-ledger.json",
+      "sha256": "c2fd93cf7f14aeb20ad6a4549e93f8174abd3fb41ea6a810be68d40b97c2f889"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\crash-ledger.json",
+      "sha256": "409d7cb951b65adcd480b5ec44d8c9eb4afdbc1fdfab52c4448489fc5f892443"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\flood-ledger.json",
+      "sha256": "ffec730fc432b7026b974795402012490be8aa025710c35b66ca0395a3f4abda"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\revocation-ledger.json",
+      "sha256": "91e84aecb5a8b31af5e63f1e4da94e9a0420fafb56ce746e36c52f9fe3a837d6"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\worker-owned-process-closures.json",
+      "sha256": "7d989a3c1487bce52f9ab92021168a58387827abd8c1b0ad4d327b2dfe93fd99"
+    }
+  ],
+  "validated": [
+    "bounded exact object ranges, manifest and fixed-pair metadata delta",
+    "namespace and absence evidence; reads=None and immutable dependency revisions preserved",
+    "five real-process Subscription turns on one thread; four incremental inputs, raw per-turn usage and wire bytes",
+    "actual NativeWorker/producer/runner/host/Node/Subscription immutable candidate path",
+    "current Tianxuan document authority revoked after object read before response; no delivered body",
+    "crash and bounded stdout overflow close the physical owned process and block execution restart",
+    "v1 compatibility, timing, worker intake/coordination, no-server adapter regression"
+  ],
+  "failures_preserved": [
+    {
+      "stage": "initial focused tests",
+      "cause": "new test unmatched parenthesis and old overflow exception text regex; corrected before final test",
+      "product_failure": false
+    },
+    {
+      "stage": "combined runtime import",
+      "summary": "10 failed, 71 passed, 98 subtests; test_runtime import wrote GONGGONG_HOST_KEY globally and started synthetic loopback HTTP server. Host credential isolation correctly rejected inherited test environments. Server finally shutdown/server_close completed.",
+      "correction": "Exclude import-executing server module, run clean subprocess. No security bypass.",
+      "network": "Local synthetic loopback only; no external provider or business service call"
+    },
+    {
+      "stage": "new pipeline fixture",
+      "cause": "child fixture missing tianxuan_core import path; corrected with fixed source module directory",
+      "product_failure": false
+    }
+  ],
+  "limitations": [
+    "known_receipt content omission deliberately rejected; session incrementality is implemented, not receipt-only deduplication",
+    "delta is explicit revision metadata with content_omitted=true, bodies require range reads",
+    "unknown calls do not replay; completed runner result can be read back without new transport",
+    "production context factory/installation and independent review remain root/#1499 responsibility",
+    "live model comparison, package update/rollback, source admission, CI/main and issue closure not performed by this worker"
+  ],
+  "cleanup": {
+    "processes": "All test-owned contexts use finally close; successful and crash/flood ledger exports include physical terminal. Synthetic loopback server closed in test finally.",
+    "mailboxes": "TemporaryDirectory cleaned by NativeContextSession.close after owned process closure",
+    "retained": "Durable ledger exports, actual outer worker process closures and raw regression receipts retained. Current task pytest directory C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-266 retained pending root independent review; no other task directory or worktree changed."
+  },
+  "delivery_authority": "root owns review/live/install/commit/push/main; no business-complete claim",
+  "efficiency_claims": "No token or time savings inferred from synthetic fixtures",
+  "normalization": {
+    "all_eight_owned_files": "LF",
+    "ruff": "system py -X utf8 -m ruff 0.17.1; seven Python files format/check passed",
+    "historical_report": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-implementation-probes\\pre-format-implementation-report.json",
+    "final_source_tests": "48 passed and 15 subtests; Node 30 passed; broad pre-LF suite 83 passed and 98 subtests"
+  },
+  "upstream_timing_receipt": {
+    "authority": "root coordination message; root performed remote readback",
+    "signed_source": "8b6b210be8aae3f36f7b457979e31964b44026ea",
+    "main": "3a160ec26725e2fc5c833cd10f9ff7b38ad534af",
+    "issue": 1495,
+    "state": "root reports merged and closed; historical source-alignment pending field preserved"
+  }
+}

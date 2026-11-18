@@ -220,6 +220,9 @@ repos:
         exclude: |
           (?x)^(
             tools/maliang_hunyuan/HUNYUAN-NOTICE|
+            data\-collection/native\-context\-consumption\-implementation\-1501\.json|
+            data\-collection/native\-context\-live\-validation\-1501\.json|
+            data\-collection/native\-context\-live\-protocol\-1501\.json|
             data\-collection/native\-continuous\-integration\-before\-1488\.json|
             data\-collection/native\-continuous\-integration\-fifty\-member250\-1488\.json|
             data\-collection/native\-continuous\-integration\-first250\-1488\.json|
