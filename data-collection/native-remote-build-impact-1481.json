@@ -1,0 +1,46 @@
+{
+  "module": "customizations/components/tianxuan/sinan-workorders",
+  "request_id": "native-remote-execution-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1481",
+  "input_blobs": {
+    "customizations/components/tianxuan/sinan-workorders/README.md": "87dea15f20021978e0709ea1658d6f763e990ec3",
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": "9bbc6d468d36e1e0eae99d8a0baa1a95632572ab",
+    "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md": "e3a59149ada1d66070c2d83e9bfac32e574ea0ef",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "bfe435515e388d9339169e7215d788760b94b89b",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.md": "90e30cbb0dc2b9a3a848693e413d0e3b51351882",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "7b56a6fccfbf5bd46f1476ee64cabaec6f58c554",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "f31dc5de7aabf037b6844d1641797a156dd84348",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "216680c431f65d3d066a1ab8ef4b00f1b86be8dd",
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "c69892d1df79c637a138089c112bcd4446c93d98",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "0b1dbc1519b474aec80be9bd9f9b0704c94146d0",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "7369bf9d27d00dda1bbdbcf7bb1dca9d659e95aa",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "87178f7bbca2a979b8e995e2ba675d2ebea2e094",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "89986f44b444087e6f40b2ae231ceaf34f3f1edb",
+    "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": "0b7c208ad38f7fbaf1277f3b78c9ec9a71e952da",
+    "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": "7e6e2b92d62b5ae005bced258b558cbd9484142a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "1597cc78489f61bef24ffe027776bb022bec936a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "64ce91b1412c1e3ca409e5a26ac2ac04536df31f",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "d8c9502d46c1ff6e77091b75e61341ec403b447e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "b30d844caa1ebfb9f1d3524cbc5a486438f32722",
+    "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": "8c532b093c0466a2b198d6f67b2f1a327b616de8",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py": "e0fd9d7711d590131b5e85952a981253b9d8447c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py": "36bbc1c8be45f8521643b7edd7d266fb224a4e0e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "91819985bb3b9a839c409edb5aaadc96fd56b1cc",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": "2dc8e1232cfeb563f61c3996fe0aa034963516c4"
+  },
+  "checks": {
+    "host_behavior": {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 -m pytest test_native_remote.py test_native_remote_repair.py test_tianxuan_core.py -q; full paths and current SHA in native-remote-post-live-1481.json",
+      "observed": "..............                                                           [100%]\n14 passed in 36.30s; actual HTTP/subprocess recovery, revoked physical closure, lock handoff and progress boundaries. All indexed module input bytes inventoried, targeted test scope only; unchanged functionality retains prior independently reviewed main evidence.",
+      "passed": true
+    }
+  },
+  "evidence_refs": [
+    "data-collection/native-remote-post-live-1481.json",
+    "data-collection/native-post-live-review-1481.json",
+    "data-collection/native-remote-host-boundary-complete-1481.json"
+  ],
+  "previous_evidence": "data-collection/native-remote-execution-1481.json",
+  "correction": "Original author build-impact pointed to pre-repair incomplete module inventory. Retain original, append exact current candidate proof. No source behavior changed.",
+  "test_log_sha256": "d4cc589493dd4273cd955096e97efc1d69a83e6603387acdfbfb780c979fef68"
+}

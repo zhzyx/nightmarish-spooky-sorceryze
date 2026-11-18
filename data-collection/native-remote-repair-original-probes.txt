@@ -1,0 +1,22 @@
+FFF                                                                      [100%]
+================================== FAILURES ===================================
+___________________ test_revoked_offer_blocks_later_cancel ____________________
+D:\GongGong\data-collection\receipts\duobao-1382\native-remote-review-probes\test_review.py:34: in test_revoked_offer_blocks_later_cancel
+    with pytest.raises(NativeStoreError): remote.events('token',0,timeout=0)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE NativeStoreError
+________________ test_recovery_launch_does_not_receive_cancel _________________
+D:\GongGong\data-collection\receipts\duobao-1382\native-remote-review-probes\test_review.py:65: in test_recovery_launch_does_not_receive_cancel
+    assert key not in node.active
+E   AssertionError: assert '50f498fa9a2e06b8a45bf8930156d061e2093a47b7c0da180cd172cd23711f1f' not in {'50f498fa9a2e06b8a45bf8930156d061e2093a47b7c0da180cd172cd23711f1f': <threading.Event at 0x2dce8e1c4a0: unset>}
+E    +  where {'50f498fa9a2e06b8a45bf8930156d061e2093a47b7c0da180cd172cd23711f1f': <threading.Event at 0x2dce8e1c4a0: unset>} = <native_node.NativeNode object at 0x000002DCE8DABD70>.active
+______________ test_actor_revocation_leaves_global_capacity_held ______________
+D:\GongGong\data-collection\receipts\duobao-1382\native-remote-review-probes\test_review.py:84: in test_actor_revocation_leaves_global_capacity_held
+    with pytest.raises(PermissionDenied): remote.receipt('n',key,receipt)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   Failed: DID NOT RAISE PermissionDenied
+=========================== short test summary info ===========================
+FAILED ..\..\GongGong\data-collection\receipts\duobao-1382\native-remote-review-probes\test_review.py::test_revoked_offer_blocks_later_cancel
+FAILED ..\..\GongGong\data-collection\receipts\duobao-1382\native-remote-review-probes\test_review.py::test_recovery_launch_does_not_receive_cancel
+FAILED ..\..\GongGong\data-collection\receipts\duobao-1382\native-remote-review-probes\test_review.py::test_actor_revocation_leaves_global_capacity_held
+3 failed in 1.90s

@@ -1,0 +1,95 @@
+{
+  "issue": 1481,
+  "reviewer": "independent-native-remote-review",
+  "status": "changes-required",
+  "source_root": "D:\\GongGong-work\\native-remote-execution-20261118",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "535f877565305e8238c0ed52466d31835b231c729c09283a2be8b1ddb2b646d1",
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "9aaa6e209b4824e77457b19c4a39bceca1769473a095f872615e193e9501e85e",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "14b5f742311afed1dec8dd53438a849994b53a552d6a8feab7c5e41157f1be37",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "4b368d3fe63a7d2143a4595cd0c14bc591976a7ee2e7e0d6912f6de57c2aa647",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "d127c7f2544389729349c72b9568cf4bd6bd3acd5bde1d7bd207cb76549acc45",
+    "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+    "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1"
+  },
+  "declared_hashes_match": true,
+  "scope": "Read-only source review plus isolated independent Windows probes; no models, SSH, external network, deployment or product edits.",
+  "method_recall": {
+    "scope": "gonggong-workspace/editor-dependency-handoff",
+    "applicable": [
+      "bind-consumer-release",
+      "await-terminal-observers",
+      "reconstruct-worker-outcomes"
+    ],
+    "application": "Pinned actual source and tested cancellation/physical settlement separately from content approval. Same-host transport success does not prove cross-machine or live-model acceptance."
+  },
+  "checks": [
+    {
+      "command": "pytest test_review.py -q -s -p no:cacheprovider",
+      "result": "3 passed in 1.71s",
+      "meaning": "Three successful reproductions of defects, not passing product acceptance."
+    },
+    {
+      "command": "pytest test_native_remote.py -q -p no:cacheprovider",
+      "result": "1 passed in 6.80s",
+      "meaning": "Existing real HTTP/separate-process comprehensive scenario independently rerun on exact source."
+    }
+  ],
+  "blockers": [
+    {
+      "id": "R1",
+      "priority": "P1",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py",
+      "line": 197,
+      "title": "A revoked offer poisons the node event batch and prevents later cancellation",
+      "reproduction": "Reserve a and b on one capacity-2 node; enqueue cancel(b); revoke producer read/receive for a; events(token,0,timeout=0) raises NativeStoreError on both attempts while cancel(b) remains in durable ledger.",
+      "impact": "No response means node cannot advance its cursor; HTTP 409 terminates serve, or current workflow permission failure causes 500 and endless unchanged retries. Unrelated valid work and cancellation cannot progress.",
+      "fix_acceptance": "Deliver a cursor-advancing minimal withdrawal/no-launch event for invalidated offers without exposing task content; later valid offers and cancels must remain consumable under continued revocation."
+    },
+    {
+      "id": "R2",
+      "priority": "P1",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_node.py",
+      "line": 185,
+      "title": "Recovery executes a producer synchronously outside cancellation tracking",
+      "reproduction": "Persist received row and advanced cursor before intent (valid crash window). Run recover(); actual NativeWorker producer starts, active has no execution. Enqueue server cancellation while real process runs; recover blocks until natural process completion, cursor remains unchanged, output cancelled=false.",
+      "impact": "serve invokes recover before step; recovery workers cannot receive cancellation for their entire run (potentially installed timeout). Capacity also recovers sequentially. This is the ordinary continuous service path, not the documented --once limitation.",
+      "fix_acceptance": "Recovered received-without-intent work must use the same bounded executor/active cancellation path as new offers while event consumption continues. Prove real parent/descendant cancellation during recovery; existing unknown intent must still never relaunch."
+    },
+    {
+      "id": "R3",
+      "priority": "P1",
+      "file": "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py",
+      "line": 296,
+      "title": "Physical settlement depends on the revoked original user and leaks global capacity",
+      "reproduction": "Reserve execution then revoke w.authorize for its original actor. Trusted matching physical closure writes remote closed=1; receipt calls workflow.reconcile(original actor), whose initial status raises PermissionDenied. native_tasks stays running.",
+      "impact": "Node slot is closed but global capacity counts running/held/reserved forever. HTTP failure/replay cannot repair while revocation persists. Existing producer-intake revocation test does not cover user coordination ACL withdrawal.",
+      "fix_acceptance": "Use a narrowly authorized physical-settlement path that closes global ownership without granting original actor content/read privileges. Revoke current user ACL, submit trusted exact physical closure, verify global and node capacity release, candidate absent, and replay stable."
+    }
+  ],
+  "source_review_positive": [
+    "Narrow node mount authenticates separately from ProductionAccess; baseline confirms node credential rejected by ordinary models API.",
+    "Assignments bind tenant/node/profile/installation/package/task; node verifies exact task and local installation before prepare.",
+    "Node cache and approval records are not imported as server candidates; server reconstructs its own current-authority intake.",
+    "Durable intent prevents restart relaunch; baseline verifies coordinator OS lock, actual descendant closure and physical/output mismatch rejection.",
+    "Explicit installed factory and rollback instructions exist, but actual cross-machine installation/rollback is not demonstrated by this review."
+  ],
+  "remaining_unproven": [
+    "Fix and independently rerun R1-R3",
+    "Cross-machine server/node operation and actual installation/rollback",
+    "Measured 128-160 MiB and 250 task workload",
+    "Real model efficiency/quality and parent AA",
+    "Parent delivery gates/main/Issue lifecycle"
+  ],
+  "evidence": {
+    "test_review.py": "e3e0d042bb52b042764d36c8c00014a1659e1e433e5c9e5b2b3a9c195d57e533",
+    "results.txt": "93dece978c5206a2fd90f0fa9cb70ebdacb9d14435704e5795aea69ad5b52515",
+    "baseline-results.txt": "dc61a7fb29f6a44222d3b396f454b5a57dd8a12189b51759935e5601c00e2f53"
+  },
+  "cleanup": {
+    "product_edits": false,
+    "processes": "Probe recovery thread joined, node executor shut down, comprehensive fixture terminated owned node/server processes; no deployed services.",
+    "retained": "Review script, test script and text receipts kept for reproducibility.",
+    "temporary_test_databases": "Private probe tmp and baseline-tmp retained: tool automatic policy rejected the scoped recursive removal command. No deletion occurred."
+  }
+}

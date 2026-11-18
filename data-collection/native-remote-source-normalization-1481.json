@@ -1,0 +1,29 @@
+{
+  "issue": 1481,
+  "request_id": "native-remote-execution-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1481",
+  "reason": "After explicit actual consumer terminal handoff, normalize source CRLF to repository LF; original evaluated/tested bytes archived unchanged.",
+  "source_mapping": [
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_node.py",
+      "work_sha256": "f76311827cbf99586d536007e10ed554399338d7d704d8de08c66320a1d215f4",
+      "index_sha256": "75fa74d0850c9aa6424c048aa7d474b506dba4ae6b734e543507753ecdb6c273",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_remote.md",
+      "work_sha256": "f1cd6820b0ead4335c63df76af416a7c9115dcb33c7bc5322a047041ca6aaab6",
+      "index_sha256": "55538cdc687046e98d26e505e5febd443af172dc8259ea56ee729f9002ec5713",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py",
+      "work_sha256": "07f4f48401b070d6e653c0bd5cc981345918a0fa2b63466c2a413ed292a3782f",
+      "index_sha256": "eb79a77915e6abbfe5ae69cc83b7e60bfa985e243189eb98a5a825995485d961",
+      "only_crlf": true
+    }
+  ],
+  "source_archive": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\remote-pre-normalization-source",
+  "path_base": "absolute current host audit archive",
+  "limits": "Prior live reports retain their original exact installation/source hashes. They are not approval for new source digests or permission to replay unknown tasks. New installations require matching grants and applicable admission."
+}

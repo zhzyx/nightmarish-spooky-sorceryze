@@ -1,0 +1,92 @@
+{
+  "issue": 1481,
+  "created_at": "2026-11-17T22:27:39.551395+00:00",
+  "status": "implemented-awaiting-independent-review",
+  "source_root": "D:\\GongGong-work\\native-remote-execution-20261118",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "f76311827cbf99586d536007e10ed554399338d7d704d8de08c66320a1d215f4",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "1d34f1b716639a81f411d33ad4b27d03ecc8426ede43c98abc18992f2d270146",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "2615a8683dbbb69fd208c92cf3e27eb1af06337fe9e91500bc8290ed83d3fae6",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "f1cd6820b0ead4335c63df76af416a7c9115dcb33c7bc5322a047041ca6aaab6",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "4b368d3fe63a7d2143a4595cd0c14bc591976a7ee2e7e0d6912f6de57c2aa647",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "e243b0c5649f0396cb245466fdefea357847891711b65330d428f0ea39bc3234",
+    "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+    "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1"
+  },
+  "immutable_evidence": {
+    "review": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-review.json",
+      "sha256": "7cd1d962b90977cbefa553f78e81e6e2ab1654257c4795b9c5f194240626711b"
+    },
+    "original_probes": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-review-probes\\test_review.py",
+      "sha256": "e3e0d042bb52b042764d36c8c00014a1659e1e433e5c9e5b2b3a9c195d57e533"
+    },
+    "author_report": {
+      "path": "data-collection/native-remote-execution-1481.json",
+      "sha256": "c55f0439c276b5a205100f54d9e55f44f39e7b49fcf1802757e8302e8de3ea0e"
+    }
+  },
+  "repairs": {
+    "R1": "Current revoked offer converts to minimal withdrawal and durable cancellation; cancelled manifest never exposes task/source content. No-intent node acknowledges no-launch without task disclosure; unknown intent only replays actual closure. Later valid offers/cancels continue.",
+    "R2": "Received without intent recovers through bounded pool/active cancellation; pending startup work drained with event processing; unknown intent never relaunched. Actual parent and descendant terminated in repair test.",
+    "R3": "Only installed worker with matching persisted physical evidence may release global ownership if actor reconciliation denies. Returns only state, no candidate intake or identity substitution; node installation and tenant checks remain mandatory."
+  },
+  "validation": [
+    {
+      "command": "immutable test_review.py before edits",
+      "observed": "3 passed in 1.99s",
+      "meaning": "Successful reproductions of original defects"
+    },
+    {
+      "command": "immutable test_review.py after repair",
+      "observed": "3 failed in 1.90s",
+      "meaning": "Original defect assertions no longer hold; independent originals unchanged"
+    },
+    {
+      "command": "pytest test_native_remote_repair.py test_native_workflow.py test_native_remote.py -q -p no:cacheprovider",
+      "observed": "28 passed, 1 warning in 30.13s",
+      "meaning": "Repair contracts plus original workflow and real HTTP separate-node-process regression"
+    },
+    {
+      "command": "py -m ruff check native_node.py native_remote_worker.py native_workflow.py test_native_remote_repair.py",
+      "observed": "All checks passed!"
+    },
+    {
+      "command": "py -m mypy --follow-imports=silent --ignore-missing-imports native_node.py native_remote_worker.py native_workflow.py native_node_api.py native_remote_host.py",
+      "observed": "Success: no issues found in 5 source files"
+    }
+  ],
+  "evidence_sha256": {
+    "data-collection/native-remote-repair-tests.txt": "1f2ab4b19d7ab861cf5d98256ebb70ab2ee3674bf43435a3516dd986faac38a8",
+    "data-collection/native-remote-repair-original-probes.txt": "26ae51ce9036a1cfe762928d06b72eaf377392fc2075f1c3d8a6272426924625",
+    "data-collection/native-remote-repair-e2e.txt": "7886984d1ef10192ab637522861a4d5e11ecec5d8fd5cf2c638c1492ddeae686"
+  },
+  "method_recall": {
+    "scope": "gonggong-workspace/editor-dependency-handoff",
+    "applicable": [
+      "bind-consumer-release",
+      "await-terminal-observers",
+      "reconstruct-worker-outcomes"
+    ],
+    "applied": "Pinned source and immutable originals; physical closure, content authority, transport and business completion validated separately."
+  },
+  "corrected_validation_failures": [
+    "Default py and bundled Python lacked pytest; used existing tx-venv Python without installs.",
+    "First end-to-end run overlapped source mutation and failed; after source stabilized independent rerun passed, then combined regression passed.",
+    "Ruff autofix removed imported pytest fixture; restored explicit fixture re-export and reran full affected suite successfully."
+  ],
+  "cleanup": {
+    "product_edits": "Only native_node.py, native_remote_worker.py, narrow native_workflow.py hook, native_remote.md and added test_native_remote_repair.py; other inherited files unchanged.",
+    "processes": "Repair executor shut down; actual parent/child closure checked; original comprehensive fixture terminates owned subprocesses/server.",
+    "retained": "Source tests and receipts retained as necessary review evidence; pytest-managed temporary fixtures retained pending parent cleanup; no installed package, deployment, branch, worktree or credentials created."
+  },
+  "remaining": [
+    "Independent delta review",
+    "Cross-machine operation and installation/rollback",
+    "Measured memory and 250-task load",
+    "Real-model efficiency/quality and parent acceptance",
+    "CI/main and Issue lifecycle owned by root"
+  ],
+  "authority": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117"
+}

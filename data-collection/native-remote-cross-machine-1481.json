@@ -1,0 +1,135 @@
+{
+  "issue": 1481,
+  "request_id": "native-remote-execution-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1481",
+  "run_id": "7c5f382c158d",
+  "state": "passed",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "f76311827cbf99586d536007e10ed554399338d7d704d8de08c66320a1d215f4",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "1d34f1b716639a81f411d33ad4b27d03ecc8426ede43c98abc18992f2d270146",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "2615a8683dbbb69fd208c92cf3e27eb1af06337fe9e91500bc8290ed83d3fae6",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "f1cd6820b0ead4335c63df76af416a7c9115dcb33c7bc5322a047041ca6aaab6",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "4b368d3fe63a7d2143a4595cd0c14bc591976a7ee2e7e0d6912f6de57c2aa647",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "e243b0c5649f0396cb245466fdefea357847891711b65330d428f0ea39bc3234",
+    "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+    "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1"
+  },
+  "model_calls": 0,
+  "tokens": null,
+  "limits": "Two actual machines, deterministic installed producer and explicit test barriers; not throughput/250/model/production-cutover acceptance. Fixture reviewer/publisher are trusted test identities.",
+  "cleanup": {
+    "node": {
+      "exit_code": null,
+      "reasons": [],
+      "process_tree_closed": true,
+      "thread_stopped": true
+    },
+    "ssh_forward_closed": true,
+    "container_removed": true,
+    "retained": "Owned local node DB/config/token and logs retained for exact trial evidence/replay until receipt archive and subsequent cleanup; no existing production or other-task paths touched."
+  },
+  "final": {
+    "keys": {
+      "a": "93ebd9bd3d438447fcada38e9f72aba6ebfe03fffd683a6855f6db49186932e9",
+      "b": "ec80237f04c28946470ac3f4bc940a9f167b8801e681ce6b06d518bc95179c65",
+      "c": "24e66a81a0e36ecac68c7009cb227b2011fe60c8fad3da84e1379ac0da48203b"
+    },
+    "states": {
+      "a": "accepted",
+      "b": "accepted",
+      "c": "accepted"
+    },
+    "accepted": {
+      "a": {
+        "id": "75c7460149b9de8eccdd572e3a3e1243c2e3353c56daf08a0529bfea2867f2c1",
+        "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+        "modules": {
+          "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+        },
+        "policy": "25cc235beb10e9e67975e044539e0fddffddc93b4366ad45a3e0868a618c27d0",
+        "recorded_at": 1794955151.71411,
+        "request": {
+          "action": "publish",
+          "actor": "publisher",
+          "channel": "stable",
+          "expected": null,
+          "product": "a",
+          "request_key": "publish-93ebd9bd3d438447fcada38e9f72aba6ebfe03fffd683a6855f6db49186932e9",
+          "review": "4f610d1df98c586afe7cfda0e47c7c37fe397405e4e4bbfaf356ca21d80032c8",
+          "tenant": "ten_d1e58c98da904dbd868f0365a6d0c8c4"
+        },
+        "state": "content_selected",
+        "tenant": "ten_d1e58c98da904dbd868f0365a6d0c8c4"
+      },
+      "b": {
+        "id": "75ffe83dd861008cbbaf8d97b0aa00ac165bbef0fe34d0ccef6e5b3042e8bf77",
+        "candidate": "463ce9a42dd67e4f058ead4d2097cd3a88eb6a222b0c84d1545960af248752c4",
+        "modules": {
+          "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+        },
+        "policy": "25cc235beb10e9e67975e044539e0fddffddc93b4366ad45a3e0868a618c27d0",
+        "recorded_at": 1794955152.0650768,
+        "request": {
+          "action": "publish",
+          "actor": "publisher",
+          "channel": "stable",
+          "expected": null,
+          "product": "b",
+          "request_key": "publish-ec80237f04c28946470ac3f4bc940a9f167b8801e681ce6b06d518bc95179c65",
+          "review": "285ad0958fa5a119c4310a08a35a122bf582bcb8dcce8fd91172ff487b3f2721",
+          "tenant": "ten_d1e58c98da904dbd868f0365a6d0c8c4"
+        },
+        "state": "content_selected",
+        "tenant": "ten_d1e58c98da904dbd868f0365a6d0c8c4"
+      },
+      "c": {
+        "id": "1124b75008e35d55e431e983667ce33fe746767932ed94231f8c4844df881473",
+        "candidate": "5273a73ced69a0a7a66e19cbd2c3566326f9eb0a1ba3e8e75e91435d01d1fbac",
+        "modules": {
+          "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab",
+          "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42",
+          "c": "5af3f05f9eb13c0c9d61b45dea2dbc74b2786840d95f797fcd2b3ca58ed17788"
+        },
+        "policy": "25cc235beb10e9e67975e044539e0fddffddc93b4366ad45a3e0868a618c27d0",
+        "recorded_at": 1794955157.788473,
+        "request": {
+          "action": "publish",
+          "actor": "publisher",
+          "channel": "stable",
+          "expected": null,
+          "product": "c",
+          "request_key": "publish-24e66a81a0e36ecac68c7009cb227b2011fe60c8fad3da84e1379ac0da48203b",
+          "review": "4ed76df0cbc7d4dded0d91530c16c0874e7fd3fd82101e01ca9746cad79d7a64",
+          "tenant": "ten_d1e58c98da904dbd868f0365a6d0c8c4"
+        },
+        "state": "content_selected",
+        "tenant": "ten_d1e58c98da904dbd868f0365a6d0c8c4"
+      }
+    },
+    "unrelated_updates": [
+      "c0eef32d033fc5a53097bf800bb29d35910f24644bc5f5d65ee2fcb727fc323b"
+    ],
+    "global_held": 0,
+    "node_held": 0,
+    "tenant": "ten_d1e58c98da904dbd868f0365a6d0c8c4",
+    "production_installation": false
+  },
+  "actual_parent_intervals": {
+    "a": [
+      1794955146344339400,
+      1794955147691734800
+    ],
+    "b": [
+      1794955145859394000,
+      1794955147694911600
+    ]
+  },
+  "unrelated_update_ack_windows_ns": 1794955147677263100,
+  "exact_three_producer_intervals_preserved": true,
+  "server_sampled_resources": "51.19MiB / 160MiB 0.28%",
+  "server_memory_limit_MiB": 160,
+  "server_cpu_limit": 1,
+  "node_database": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-cross-7c5f382c158d\\node.sqlite",
+  "source_bundle_sha256": "f2e8a3bb636eef2a27fdc4d885028225fe3f53fb7018d42ad324959a1a48ff9c",
+  "production_changed": false
+}

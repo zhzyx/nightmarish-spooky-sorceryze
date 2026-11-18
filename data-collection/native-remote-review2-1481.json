@@ -1,0 +1,108 @@
+{
+  "issue": 1481,
+  "reviewer": "independent-native-remote-repair-review",
+  "status": "passed-scoped-R1-R2-R3",
+  "created_at": "2026-11-17T22:36:51.165829+00:00",
+  "source_root": "D:\\GongGong-work\\native-remote-execution-20261118",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "f76311827cbf99586d536007e10ed554399338d7d704d8de08c66320a1d215f4",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "1d34f1b716639a81f411d33ad4b27d03ecc8426ede43c98abc18992f2d270146",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "2615a8683dbbb69fd208c92cf3e27eb1af06337fe9e91500bc8290ed83d3fae6",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "f1cd6820b0ead4335c63df76af416a7c9115dcb33c7bc5322a047041ca6aaab6",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "4b368d3fe63a7d2143a4595cd0c14bc591976a7ee2e7e0d6912f6de57c2aa647",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "e243b0c5649f0396cb245466fdefea357847891711b65330d428f0ea39bc3234",
+    "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+    "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1"
+  },
+  "declared_hashes_match": true,
+  "immutable_originals": {
+    "review": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-review.json",
+      "sha256": "7cd1d962b90977cbefa553f78e81e6e2ab1654257c4795b9c5f194240626711b"
+    },
+    "original_probes": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-review-probes\\test_review.py",
+      "sha256": "e3e0d042bb52b042764d36c8c00014a1659e1e433e5c9e5b2b3a9c195d57e533"
+    }
+  },
+  "scope": "Only R1/R2/R3 repaired paths and directly related permission/replay/intake guards. No whole Issue, main, cross-machine, models, performance or parent acceptance claim.",
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "applied": [
+      "bind-consumer-release",
+      "await-terminal-observers",
+      "reconstruct-worker-outcomes"
+    ],
+    "conditions": "Actual code and original negative evidence pinned; closed physical ownership and content authority tested separately. Same-host transport does not establish cross-machine or business acceptance."
+  },
+  "checks": [
+    {
+      "command": "python -B -X utf8 -m pytest test_review2.py -q -s -p no:cacheprovider",
+      "result": "4 passed in 3.38s",
+      "evidence": "native-remote-review2-probes/results.txt"
+    },
+    {
+      "command": "PYTHONUTF8=1 PYTHONDONTWRITEBYTECODE=1 python -B -X utf8 -m pytest test_native_remote.py -q -p no:cacheprovider",
+      "result": "1 passed in 7.31s",
+      "evidence": "native-remote-review2-probes/http-utf8-results.txt"
+    }
+  ],
+  "repairs": {
+    "R1": {
+      "verdict": "passed",
+      "observed": "Adapted original two offers plus later cancel under producer revocation. Withdrawal fields exactly cursor/node/execution/kind, cancelled manifest exactly execution/cancelled/package, blob rejected. Actual node advances cursor and never launches withdrawn tasks; subsequent valid offer executes to terminal. Fixture c lacks a/b selected sources and therefore expected failed execution, separately distinguished from normal successful acceptance."
+    },
+    "R2": {
+      "verdict": "passed",
+      "observed": "Persisted received row + advanced cursor without intent; recover returns below one second and uses active bounded executor. Real parent creates real sleeping child; subsequent server cancel is consumed, output cancelled=true, both PIDs terminated within ten seconds (installed timeout twenty). Unknown preexisting intent stays reserved with no work directory after repeated recovery."
+    },
+    "R3": {
+      "verdict": "passed",
+      "observed": "Original actor authorization revoked. Exact trusted physical closure yields minimal stopped receipt and stable replay. status and reconcile remain denied; no candidate or terminal minted. One closed assignment releases node/global capacity while independent unknown assignment retains both. Missing physical evidence and noninstalled worker settlement rejected."
+    },
+    "normal": {
+      "verdict": "passed",
+      "observed": "Real ordinary producer output creates exactly one candidate, produced terminal stable across closure replay and recovery; original HTTP regression also passed on UTF8 rerun."
+    }
+  },
+  "source_review": [
+    "events withdrawal and manifest no-content path preserve assignment installation binding",
+    "recovery schedules through existing pool and active cancellation; unknown intent only send_closed",
+    "_settle_physical requires installed worker identity plus exact persisted process closure, modifies ownership state only; receipt falls back only on PermissionDenied"
+  ],
+  "blockers_in_scoped_repairs": [],
+  "validation_corrections": [
+    {
+      "initial": "Independent R1 probe incorrectly expected standalone fixture c to produce successfully without its mandatory a/b input files.",
+      "resolution": "Changed expected state to failed with actual work-directory proof; normal successful intake tested independently. Initial output retained."
+    }
+  ],
+  "additional_regression_observation": {
+    "initial": "Original comprehensive HTTP regression failed at coordinator restart test_native_remote.py:287 with node returncode=1; subprocess stderr was lost to UnicodeDecodeError; shutdown logged closed database after pending event waiter.",
+    "subsequent": "Reran unchanged source with inherited UTF8 and bytecode suppression; passed in 7.31s.",
+    "limitation": "Single rerun does not establish initial root cause; encoding masked diagnostics and coordinator shutdown timing may remain relevant. This does not retract the four deterministic scoped repair probes. Retain first failure for parent if broader lifecycle validation recurs.",
+    "evidence": "native-remote-review2-probes/http-results.txt",
+    "raw_child_stderr": "Not obtained: pytest subprocess text reader thread raised UnicodeDecodeError; CompletedProcess.stderr was None. Only rendered exception (byte 0xd3 at position 1313) remains; no raw child stderr bytes retained. Initial logs and failing fixture preserved without overwriting."
+  },
+  "remaining": [
+    "Parent real cross-machine and installation/rollback acceptance",
+    "Measured memory limits and 250-task workload",
+    "Real-model efficiency/quality",
+    "CI/main/Issue lifecycle; no authority transferred by this review"
+  ],
+  "evidence_sha256": {
+    "http-results.txt": "f042c73428a0c8bee497302ea1b5c86af76af8f18c865df39889a036cce254d9",
+    "http-utf8-results.txt": "4367b16c48f145cec8f1ea1ee4ea757b11b66390b554df1cf9a41cd6ea897b06",
+    "initial-results.txt": "c69a98a4bceff7719572196075317fd14efe463e83344473c6e891d07cdf1bfe",
+    "results.txt": "4018b205a26f026787f497c0c1b3fdf5dae3fcf07450562025ec92027107394a",
+    "test_review2.py": "13c4a1bb4b3f525989c569ed71772f267e0e28c6c5c0c09a3602d12e12754cd3",
+    "write_report.py": "0f9622844eac7e620efc5ab7f15b2f322ede65a501e9246b731650560de1ec5f"
+  },
+  "cleanup": {
+    "product_edits": false,
+    "processes": "Probe finally blocks set cancellation and shut down pools; actual tested parent/child handles signalled. HTTP test terminates owned node/restarted server and joins local server. Commands completed; no service deployed.",
+    "retained": "Scripts, logs and initial failing HTTP fixture retained as diagnostics until parent triages broader lifecycle; temporary fixture directories cleanup recorded separately.",
+    "temporary_directories": "All private fixture directories retained: automatic tool policy rejected the scoped recursive cleanup command before execution. No removal occurred. Parent may clean after retaining initial HTTP diagnosis evidence."
+  }
+}

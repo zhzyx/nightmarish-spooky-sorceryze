@@ -1,0 +1,452 @@
+{
+  "issue": 1481,
+  "status": "passed-scoped-final-delta-and-archived-load-audit",
+  "source_root": "D:\\GongGong-work\\native-remote-execution-20261118",
+  "base": "0bddf191f8329539aff9f87aac4556816ca97e8e",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "f76311827cbf99586d536007e10ed554399338d7d704d8de08c66320a1d215f4",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "e5267934543b8087d9d73cd3abac1dc49f199c450a8d5ee58b705db48b32c015",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "54f2b6dbe759d6ae3e965d7399534ec600c07208be2422d9f0d924b932ddca64",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "f1cd6820b0ead4335c63df76af416a7c9115dcb33c7bc5322a047041ca6aaab6",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "c28c50b2a7fff9efdce1cd682200619e7c7bcee427eb4cb30b144b989998a9e5",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "07f4f48401b070d6e653c0bd5cc981345918a0fa2b63466c2a413ed292a3782f",
+    "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+    "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "fe4f5f081f73e46fef83855acc1a148f6685007039a8ebe9cb9ec202eb31a427",
+    "customizations/components/tianxuan/server/test_tianxuan_core.py": "8ba19b1ba2f0f5122bf37906fbcac00273f8a6326355b3d16f4df37f3f1ea95b"
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "applied": [
+      "bind-consumer-release",
+      "await-terminal-observers",
+      "reconstruct-worker-outcomes"
+    ],
+    "conditions": "Actual candidate and physical terminal evidence pinned; transport and sampled resource success do not imply model or business acceptance."
+  },
+  "blockers_in_reviewed_scope": [],
+  "source_review": {
+    "bind": "Initial seek/read/write/flush and OS lock all inside OSError guard; failed bind closes owner. Actual failed bind then successful handoff independently rerun.",
+    "http_restart": "Real pending25second event request observed before should_exit; join35 then assert thread terminal and HTTP200 before replacement. Raw bytes captured; replacement readiness checked. POSIX initial socket sets SO_REUSEADDR. No claim original review2 missing stderr was recovered.",
+    "pid_fixture": "Windows process handle signalled or absent; Linux /proc absent or Z. Killing is distinct from PID1 reaping. Redundant inner os import removed.",
+    "progress": "Incomplete done<total capped99; zero remains0; all nonempty issues done yields100. Tests cover newly added remaining work.",
+    "workflow": "Only prior reviewed reservation/FIFO/wait/run/physical settlement hooks over 0bdd. LF-to-CRLF reconstruction exactly matches historical reviewed/load hash.",
+    "delivered_dependency_alignment": {
+      "customizations/components/tianxuan/duobao/native_candidates.py": true,
+      "customizations/components/tianxuan/server/native_api.py": true,
+      "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": true,
+      "customizations/components/tianxuan/sinan-workorders/native_integration.md": true,
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": true
+    }
+  },
+  "independent_windows_delta": "....                                                                     [100%]\n4 passed in 33.37s\n",
+  "linux_original_and_repaired": {
+    "native-remote-linux-before-1481.json": {
+      "exit_code": 1,
+      "summary": "2 failed, 12 passed in 51.37s",
+      "sha256": "ff40e7874bbf3eb10265cdd7f31bdca43f43ebd6a20f2cb978acfb49d43a0420"
+    },
+    "native-remote-linux-import-failure-1481.json": {
+      "exit_code": 1,
+      "summary": "1 failed, 13 passed in 6.01s",
+      "sha256": "fb4f09d04749fcd1a79bead153cc3713be6df6d86d5acb0091baef1ada4bd3ec"
+    },
+    "native-remote-linux-final-1481.json": {
+      "exit_code": 0,
+      "summary": "14 passed in 49.46s",
+      "sha256": "258e47c0d38c0acf75b00ca994e91af9d9175dc29b2dee3005f523724a0058c4"
+    },
+    "final_hash_match": {
+      "customizations/components/tianxuan/duobao/backup.py": true,
+      "customizations/components/tianxuan/duobao/backup_drill.py": true,
+      "customizations/components/tianxuan/duobao/gitea_client.py": true,
+      "customizations/components/tianxuan/duobao/git_service.py": true,
+      "customizations/components/tianxuan/duobao/merge_queue.py": true,
+      "customizations/components/tianxuan/duobao/native_candidates.py": true,
+      "customizations/components/tianxuan/duobao/native_candidates_cli.py": true,
+      "customizations/components/tianxuan/duobao/native_check_inputs.py": true,
+      "customizations/components/tianxuan/duobao/native_check_runner.py": true,
+      "customizations/components/tianxuan/duobao/native_cli.py": true,
+      "customizations/components/tianxuan/duobao/native_evidence.py": true,
+      "customizations/components/tianxuan/duobao/native_release.py": true,
+      "customizations/components/tianxuan/duobao/native_store.py": true,
+      "customizations/components/tianxuan/duobao/native_workspace.py": true,
+      "customizations/components/tianxuan/duobao/native_workspace_cli.py": true,
+      "customizations/components/tianxuan/duobao/policy.py": true,
+      "customizations/components/tianxuan/duobao/test_admin_paths.py": true,
+      "customizations/components/tianxuan/duobao/test_backup.py": true,
+      "customizations/components/tianxuan/duobao/test_backup_drill.py": true,
+      "customizations/components/tianxuan/duobao/test_gitea_client.py": true,
+      "customizations/components/tianxuan/duobao/test_git_service.py": true,
+      "customizations/components/tianxuan/duobao/test_git_service_repo_root.py": true,
+      "customizations/components/tianxuan/duobao/test_import_reservation.py": true,
+      "customizations/components/tianxuan/duobao/test_import_source.py": true,
+      "customizations/components/tianxuan/duobao/test_merge_queue.py": true,
+      "customizations/components/tianxuan/duobao/test_native_candidates.py": true,
+      "customizations/components/tianxuan/duobao/test_native_check_inputs.py": true,
+      "customizations/components/tianxuan/duobao/test_native_check_runner.py": true,
+      "customizations/components/tianxuan/duobao/test_native_evidence.py": true,
+      "customizations/components/tianxuan/duobao/test_native_release.py": true,
+      "customizations/components/tianxuan/duobao/test_native_store.py": true,
+      "customizations/components/tianxuan/duobao/test_native_workspace.py": true,
+      "customizations/components/tianxuan/duobao/test_policy.py": true,
+      "customizations/components/tianxuan/duobao/verify_native_processes.py": true,
+      "customizations/components/tianxuan/server/access_control.py": true,
+      "customizations/components/tianxuan/server/api.py": true,
+      "customizations/components/tianxuan/server/conftest.py": true,
+      "customizations/components/tianxuan/server/demo.py": true,
+      "customizations/components/tianxuan/server/docx_export.py": true,
+      "customizations/components/tianxuan/server/duobao_bridge.py": true,
+      "customizations/components/tianxuan/server/gateway.py": true,
+      "customizations/components/tianxuan/server/gitea_bridge.py": true,
+      "customizations/components/tianxuan/server/identity.py": true,
+      "customizations/components/tianxuan/server/main.py": true,
+      "customizations/components/tianxuan/server/markdown_images.py": true,
+      "customizations/components/tianxuan/server/markdown_render.py": true,
+      "customizations/components/tianxuan/server/native_api.py": true,
+      "customizations/components/tianxuan/server/native_node_api.py": true,
+      "customizations/components/tianxuan/server/native_remote_host.py": true,
+      "customizations/components/tianxuan/server/pdf_export.py": true,
+      "customizations/components/tianxuan/server/schemas.py": true,
+      "customizations/components/tianxuan/server/test_acceptance_smoke.py": true,
+      "customizations/components/tianxuan/server/test_access_control.py": true,
+      "customizations/components/tianxuan/server/test_acl_matrix.py": true,
+      "customizations/components/tianxuan/server/test_api.py": true,
+      "customizations/components/tianxuan/server/test_api_auth_mode.py": true,
+      "customizations/components/tianxuan/server/test_api_board.py": true,
+      "customizations/components/tianxuan/server/test_api_comments.py": true,
+      "customizations/components/tianxuan/server/test_api_doc_issues.py": true,
+      "customizations/components/tianxuan/server/test_api_export.py": true,
+      "customizations/components/tianxuan/server/test_api_field_permissions.py": true,
+      "customizations/components/tianxuan/server/test_api_gateway.py": true,
+      "customizations/components/tianxuan/server/test_api_gitea.py": true,
+      "customizations/components/tianxuan/server/test_api_git_repo.py": true,
+      "customizations/components/tianxuan/server/test_api_import_jobs.py": true,
+      "customizations/components/tianxuan/server/test_api_invites.py": true,
+      "customizations/components/tianxuan/server/test_api_links.py": true,
+      "customizations/components/tianxuan/server/test_api_merge.py": true,
+      "customizations/components/tianxuan/server/test_api_metrics.py": true,
+      "customizations/components/tianxuan/server/test_api_patch.py": true,
+      "customizations/components/tianxuan/server/test_api_ready.py": true,
+      "customizations/components/tianxuan/server/test_api_repo_links.py": true,
+      "customizations/components/tianxuan/server/test_api_requirement_export.py": true,
+      "customizations/components/tianxuan/server/test_api_roles.py": true,
+      "customizations/components/tianxuan/server/test_api_search.py": true,
+      "customizations/components/tianxuan/server/test_api_session.py": true,
+      "customizations/components/tianxuan/server/test_api_sharing.py": true,
+      "customizations/components/tianxuan/server/test_api_tenant_mutations.py": true,
+      "customizations/components/tianxuan/server/test_api_versions.py": true,
+      "customizations/components/tianxuan/server/test_api_webhooks.py": true,
+      "customizations/components/tianxuan/server/test_cli.py": true,
+      "customizations/components/tianxuan/server/test_e2e.py": true,
+      "customizations/components/tianxuan/server/test_event_retention.py": true,
+      "customizations/components/tianxuan/server/test_external_links.py": true,
+      "customizations/components/tianxuan/server/test_gateway.py": true,
+      "customizations/components/tianxuan/server/test_identity_adapters.py": true,
+      "customizations/components/tianxuan/server/test_issue_ancestor_acl.py": true,
+      "customizations/components/tianxuan/server/test_issue_comments.py": true,
+      "customizations/components/tianxuan/server/test_main_app.py": true,
+      "customizations/components/tianxuan/server/test_markdown_render.py": true,
+      "customizations/components/tianxuan/server/test_merge_queue_api.py": true,
+      "customizations/components/tianxuan/server/test_native_api.py": true,
+      "customizations/components/tianxuan/server/test_native_platform.py": true,
+      "customizations/components/tianxuan/server/test_scope_idempotency.py": true,
+      "customizations/components/tianxuan/server/test_share_expiry.py": true,
+      "customizations/components/tianxuan/server/test_tenant_mutations.py": true,
+      "customizations/components/tianxuan/server/test_tianshu_bridge.py": true,
+      "customizations/components/tianxuan/server/test_tianxuan_boundary.py": true,
+      "customizations/components/tianxuan/server/test_tianxuan_concurrency.py": true,
+      "customizations/components/tianxuan/server/test_tianxuan_core.py": true,
+      "customizations/components/tianxuan/server/test_tool_receipts.py": true,
+      "customizations/components/tianxuan/server/test_webhook_signature.py": true,
+      "customizations/components/tianxuan/server/test_ws.py": true,
+      "customizations/components/tianxuan/server/tianshu_bridge.py": true,
+      "customizations/components/tianxuan/server/tianxuan_cli.py": true,
+      "customizations/components/tianxuan/server/tianxuan_core.py": true,
+      "customizations/components/tianxuan/server/webhooks.py": true,
+      "customizations/components/tianxuan/server/wenqu_bridge.py": true,
+      "customizations/components/tianxuan/sinan-workorders/conftest.py": true,
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": true,
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": true,
+      "customizations/components/tianxuan/sinan-workorders/native_node.py": true,
+      "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": true,
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": true,
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": true,
+      "customizations/components/tianxuan/wenqu/test_wenqu.py": true,
+      "customizations/components/tianxuan/wenqu/wenqu.py": true,
+      "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": true,
+      "customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs": true,
+      "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": true,
+      "customizations/platforms/process-management/yuanheng-local/sinan/refresh.mjs": true,
+      "tools/ainative/owned_process.py": true,
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": true,
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": true,
+      "tools/codex_cli/subscription_session.js": true,
+      "tools/codex_cli/content_preview.js": true,
+      "tools/codex_cli/subscription_profile.py": true,
+      "tools/editor_provenance_process.py": true,
+      "editor/ainative/builders.py": true,
+      "editor/SCsub": true
+    }
+  },
+  "load_audit": {
+    "sql": {
+      "domain-archive.sqlite": {
+        "select tenant_id,role,count(*) from users group by tenant_id,role": [
+          [
+            "ten_24a0dd7a072d4f24bc6ce0fcaa8fe94a",
+            "admin",
+            1
+          ],
+          [
+            "ten_2583ad483dab4c3d9e123b3c43ec896c",
+            "admin",
+            1
+          ],
+          [
+            "ten_2583ad483dab4c3d9e123b3c43ec896c",
+            "editor",
+            49
+          ]
+        ],
+        "select type,status,count(*) from issues group by type,status": [
+          [
+            "requirement",
+            "backlog",
+            1
+          ],
+          [
+            "task",
+            "done",
+            250
+          ]
+        ],
+        "select state,count(*) from native_tasks group by state": [
+          [
+            "accepted",
+            250
+          ]
+        ],
+        "select type,count(*) from events group by type": [
+          [
+            "doc.created",
+            1
+          ],
+          [
+            "issue.created",
+            251
+          ],
+          [
+            "native.accepted",
+            250
+          ],
+          [
+            "native.authorized",
+            250
+          ],
+          [
+            "native.reconciled",
+            250
+          ],
+          [
+            "native.started",
+            250
+          ],
+          [
+            "requirement.planned",
+            50
+          ],
+          [
+            "user.invited",
+            49
+          ],
+          [
+            "user.registered",
+            2
+          ]
+        ],
+        "select count(distinct actor_id),count(*) from tool_receipts where tool='requirement.plan'": [
+          [
+            50,
+            50
+          ]
+        ],
+        "select count(*) from native_contributions": [
+          [
+            250
+          ]
+        ],
+        "select count(*) from native_integrations where acceptance is not null": [
+          [
+            1
+          ]
+        ],
+        "select closed,count(*) from native_remote_assignments group by closed": [
+          [
+            1,
+            250
+          ]
+        ],
+        "select progress from docs where kind='requirement'": [
+          [
+            "{\"total\": 251, \"done\": 250, \"percent\": 100}"
+          ]
+        ]
+      },
+      "native-archive.sqlite": {
+        "select count(*) from native_check_runs": [
+          [
+            251
+          ]
+        ],
+        "select count(*) from native_release_events": [
+          [
+            1
+          ]
+        ],
+        "select count(*) from native_worker_process_closures": [
+          [
+            250
+          ]
+        ]
+      },
+      "node.sqlite": {
+        "select state,count(*) from native_node_intents group by state": [
+          [
+            "acknowledged",
+            250
+          ]
+        ],
+        "select count(*) from native_worker_process_closures": [
+          [
+            250
+          ]
+        ]
+      }
+    },
+    "fixed_input_set_count": 1,
+    "distinct_source_revisions": 250,
+    "launch_count": 250,
+    "all_once": true,
+    "producer_body_overlap_max": 1,
+    "resources": {
+      "linux_sample_count": 50,
+      "linux_max_sample_MiB": 90.79,
+      "windows_sample_count": 187,
+      "windows_max_sample_MiB": 210.80859375,
+      "true_peak": false
+    },
+    "same_database_stop_restart_and_manual_replays": {
+      "recorded_pass": true,
+      "reviewed_harness": "harness-run.py lines157-165 joins actual node thread, restarts same worker/DB, manually calls send_closed for250 keys, compares intervals. Node intents ack and unique launch files corroborate. Not250 automatic restart replays."
+    },
+    "tenant_controls": {
+      "time_ns": 1794956923246567200,
+      "same_request_only_token_replaced": true,
+      "object_path": "/api/v1/native/modules/a/revisions/1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e/objects/output",
+      "object": {
+        "own": {
+          "status": 200,
+          "body": "initial"
+        },
+        "foreign": {
+          "status": 422,
+          "body": "{\"detail\":\"invalid or unavailable native content\"}"
+        }
+      },
+      "workflow": {
+        "own": {
+          "status": 200,
+          "state": "produced",
+          "body_if_error": null
+        },
+        "foreign": {
+          "status": 404,
+          "body": "{\"detail\":\"issues object not found: iss_aa7fa8ac0c0c4b0ba984ca15cb450467\"}"
+        }
+      }
+    },
+    "parent": "Archive retains250 done children plus backlog parent251st and oldpercent100. No complete parent acceptance.",
+    "scope": "Public tickets endpoint50 distinct planning actors,5each; installed deterministic plans/producers/review/publish; one fixed input set,251checks,onejointintegration/onerelease."
+  },
+  "historical_load_source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "f76311827cbf99586d536007e10ed554399338d7d704d8de08c66320a1d215f4",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "1d34f1b716639a81f411d33ad4b27d03ecc8426ede43c98abc18992f2d270146",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "2615a8683dbbb69fd208c92cf3e27eb1af06337fe9e91500bc8290ed83d3fae6",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "f1cd6820b0ead4335c63df76af416a7c9115dcb33c7bc5322a047041ca6aaab6",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "4b368d3fe63a7d2143a4595cd0c14bc591976a7ee2e7e0d6912f6de57c2aa647",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "e243b0c5649f0396cb245466fdefea357847891711b65330d428f0ea39bc3234",
+    "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+    "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1"
+  },
+  "evidence_sha256": {
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-review.json": "7cd1d962b90977cbefa553f78e81e6e2ab1654257c4795b9c5f194240626711b",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-review2.json": "afefc8b908d1ba992d1ebb2ad5a1f18b1251ca08c05f9f050b84f8601b933d1c",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-report.json": "bd9e7c13e46a08e6aa441c9576aaa65222ff746031aa313cb44e95eebb7043ef",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-progress-after-1481.json": "2c4131d012111ac3b9d019d5b88cbb59293b9c3528c83c6d318ffeec9faba6ae",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-progress-before-1481.json": "2790ab64acf101b13691a2464b723362715c18d5822910afbd46f98d89c860c9",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-alignment-1481.json": "efe3156dc2d4d5b6f5302eeab9b1c22a271967da4a9fcf3591cbb8fc721e3b60",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-cross-machine-1481.json": "2a3994a258c54bbff597a1e452cbc381fbe64aa1ed972be7f98cd412c573b94c",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-execution-1481.json": "c55f0439c276b5a205100f54d9e55f44f39e7b49fcf1802757e8302e8de3ea0e",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-followups-1481.json": "42a542a23ec2353f828867a5dcfb6441fd5dd46a3db1ef1e8b106a5eb173e3ca",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-host-boundary-1481.json": "5beef11d34a7d87f140fad4cba56c532828553d2337124c1da8a294a692c46f4",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-line-ending-1481.json": "32853e3f27de5b8f7df5b0115e43bd670e1d5f813418079233f33ca57aa3189f",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-linux-before-1481.json": "ff40e7874bbf3eb10265cdd7f31bdca43f43ebd6a20f2cb978acfb49d43a0420",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-linux-final-1481.json": "258e47c0d38c0acf75b00ca994e91af9d9175dc29b2dee3005f523724a0058c4",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-linux-import-failure-1481.json": "fb4f09d04749fcd1a79bead153cc3713be6df6d86d5acb0091baef1ada4bd3ec",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-load-1481.json": "5b827ae8deb08c58e6e517eb607987385c7fef5ad5d944d6b1a794a6ff99e181",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-load-audit-1481.json": "3dd3fcc67fad966957e670d3548d05d62f743c2023952dd5f91ecd52534f3dde",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-repair-1481.json": "0cd07b88a1ca0619f606326d4125a37d53308278603c800b07bf5065c30d375c",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-review-1481.json": "7cd1d962b90977cbefa553f78e81e6e2ab1654257c4795b9c5f194240626711b",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-review2-1481.json": "afefc8b908d1ba992d1ebb2ad5a1f18b1251ca08c05f9f050b84f8601b933d1c",
+    "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-shutdown-before-1481.json": "2007694ef03d02b3b51a739868c2d35307c648607301af84313a10ab79df8760",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\acceptance-audit.json": "3dd3fcc67fad966957e670d3548d05d62f743c2023952dd5f91ecd52534f3dde",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\domain-archive.sqlite": "1c2f0d48b159d04b1e714cd55a30ef9130e8441061bc2bc94ff2499af9c8ad6c",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\native-archive.sqlite": "5b76035507e66dfcea07b5d0aa1bc9bc3cfc65bad7b587fcc9c81d954b32dce0",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\node.sqlite": "0901895db4400cc3a15ba3ea6a80902fdd2b3b6a9603506334fb5606972bd609",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\harness-run.py": "2144cb6924d6bcd7525ab79febd0ad60888b079cc2e138b5ff7f62076a9916a8",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\harness-server.py": "d9745005f92982d5516716ff464f573f2775f7662b4bc672fa150aa054180188",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\harness-fifo.py": "be038a46435380e6ef1b5f397097a25f0b92807383ca01b7b42581a0811b948e",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\result.json": "bd9e7c13e46a08e6aa441c9576aaa65222ff746031aa313cb44e95eebb7043ef",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\live-tenant-isolation.json": "d58b9c88aec729a5d7436e2a605a57b9135a502b35e1904b4a8ff6c2aae6e439",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\source-integrity.json": "89a93109b0116addd0224ef28e197ad36c702c9af1e7dae845bc113d8a6aa2d6",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\windows-resource-samples.jsonl": "ee4a10666cae40209ffa628be4ef882c50c4c37ea09302a5982f1a60786fcade",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-probes\\run-e1b2f97217f3\\process-closure.json": "1ab9f2a50c795474afde84b40adb3249fe372baf5e6d7fdb84ed77110eefe8c8"
+  },
+  "limits": [
+    "No250 workload rerun: archival SQL/files independently audited, final deltas separately tested.",
+    "No provider calls or real model admission/quality/throughput established. Configuredcapacity4; observed producer bodies max1.",
+    "Resource measurements are samples, not true peaks or sustained128-160MiB production guarantee.",
+    "Actual optional-resource installation/rollback and production cutover remain unestablished.",
+    "No whole parent acceptance, main delivery or Issue closure authorized by this review.",
+    "Linux results are exact-source retained reports, not independently rerun on Linux during this review."
+  ],
+  "cleanup": {
+    "product_edits": false,
+    "prior_blocked_cleanup_retried": false,
+    "raw_reports_preserved": true,
+    "private_probe_fixtures": "Retained under own allowed probe directory for reproducibility; test finally closes owned processes and threads. No deployed services."
+  },
+  "private_probe_sha256": {
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-final-review-probes\\audit.py": "c33712009cb83ffdcde06f73fd6689814e9e3cee8e56788a0553453f7bd120a5",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-final-review-probes\\sql-audit.json": "0faec408e557a92ab2672df39fd80289ba57d6cf5e2d6a71c346b3d6a6a0df37",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-final-review-probes\\windows-tests.txt": "5ba8a10e5837f9afada71131efc76ab21ae8a259dc76d5a06fc0125069ff5e14"
+  },
+  "evidence_unchanged_at_review_completion": true
+}

@@ -1609,7 +1609,10 @@ class Tianxuan:
         ).fetchall()
         total = len(issues)
         done = sum(1 for row in issues if row["status"] == "done")
-        progress = {"total": total, "done": done, "percent": round((done / total) * 100) if total else 0}
+        percent = round((done / total) * 100) if total else 0
+        if done < total:
+            percent = min(percent, 99)
+        progress = {"total": total, "done": done, "percent": percent}
         self.db.execute(
             "UPDATE docs SET progress = ?, updated_at = ? WHERE id = ?", (json.dumps(progress), _now(), requirement_id)
         )

@@ -1,0 +1,104 @@
+{
+  "request_id": "native-remote-execution-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1481",
+  "status": "implementation-ready-for-independent-review-and-parent-cross-machine-validation",
+  "boundary": "same-machine Windows real HTTP and independent OS processes/databases; no live model invocation",
+  "checks": [
+    {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -m pytest customizations/components/tianxuan/sinan-workorders -q",
+      "observed": "116 passed, 1 Starlette deprecation warning in 119.85s; followed by focused final-source remote rerun",
+      "passed": true
+    },
+    {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -m pytest customizations/components/tianxuan/sinan-workorders/test_native_remote.py -q",
+      "observed": "1 comprehensive real-process protocol test passed in 7.26s after final package/receipt binding changes",
+      "passed": true
+    },
+    {
+      "command": "py -m ruff check <owned Python files>",
+      "observed": "All checks passed",
+      "passed": true
+    },
+    {
+      "command": "py -m mypy --follow-imports=silent --ignore-missing-imports <four new production Python files>",
+      "observed": "Success: no issues found in 4 source files",
+      "passed": true
+    }
+  ],
+  "observations": [
+    "Actual ProductionAccess protects ordinary API; enrolled node token rejected on general models API",
+    "Separate NativeStore SQLite and execution directory in real node subprocess; no server-side producer work directory",
+    "Two actual producers and checker processes; independent reviewer/publisher fixture identities; acceptance outbox drives third actual joint producer",
+    "Exact joint output a produced b produced; release receipts use existing NativeRelease",
+    "Duplicate closure receipt does not change producer interval or re-execute; corrupt physical/output mismatch and cross-org node rejected",
+    "Producer ACL withdrawn after launch: physical closure releases node capacity, server candidate terminal remains absent",
+    "Cancellation before manifest creates trusted no-launch closure and no producer directory",
+    "Running cancellation closes real Windows parent and sleeping descendant; WaitForSingleObject observes descendant completion",
+    "Durable unknown launch intent survives separate node process restart and separate HTTP coordinator process restart; repeated offer does not launch",
+    "Original server coordinator shut down before new process; independent server process uses durable domain/native databases",
+    "Remote reservation and global capacity use one domain transaction; unknown ownership retains capacity",
+    "Node local journal digests checked before upload; candidate/approval records are never copied from node",
+    "OS lock rejects simultaneous coordinator ownership; explicit factory/mount installation only"
+  ],
+  "original_failures_retained": [
+    {
+      "observed": "py import pytest failed: ModuleNotFoundError; system Python is not tx-venv",
+      "resolution": "Use existing D:/GongGong-work/tx-venv/Scripts/python.exe"
+    },
+    {
+      "observed": "Initial added capacity assertion invoked w.status inside w._transaction: NativeStoreError Workflow requires independent transaction",
+      "resolution": "Read task before opening capacity assertion transaction"
+    },
+    {
+      "observed": "Initial checker assertion expected outcome at top-level: KeyError outcome",
+      "resolution": "Use actual w.check return mapping check -> result"
+    },
+    {
+      "observed": "First Ruff run found imported fixture F811 and import/style issues",
+      "resolution": "Use existing test fixture noqa convention and format/check again"
+    }
+  ],
+  "remaining_acceptance": [
+    "Parent-owned independent review",
+    "Actual Linux server / Windows node cross-machine test via existing SSH tunnel",
+    "Measured 128-160 MiB server resource envelope and 250-task workload",
+    "Real model efficiency/quality acceptance belongs to its separately authorized work; no fixture substitution",
+    "Parent-owned delivery gates/commit/push/main/Issue lifecycle"
+  ],
+  "cleanup": {
+    "processes": "Test-owned HTTP threads and node/server child processes terminated and waited; cancelled producer descendant independently checked",
+    "retained": "Isolated worktree, source, tests and this review evidence retained for parent delivery; no temporary production package or real service deployed",
+    "pytest": "Only pytest-managed temporary test databases/configurations used; no real node credential installed"
+  },
+  "input_blobs": {
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": "9bbc6d468d36e1e0eae99d8a0baa1a95632572ab",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "bfe435515e388d9339169e7215d788760b94b89b",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.md": "90e30cbb0dc2b9a3a848693e413d0e3b51351882",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "7b56a6fccfbf5bd46f1476ee64cabaec6f58c554",
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "84e9ac480d890e0d2b760ac3c28b38d6ddb79eba",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "6050e87bfe350649a2577d2b1f8b3aa11e925165",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "2f296a53300843cd5b4f385776c9cb4475cd4f79",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "87178f7bbca2a979b8e995e2ba675d2ebea2e094",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "1c489e48ac482414358148d7f1a7ceaf729db896",
+    "customizations/components/tianxuan/sinan-workorders/README.md": "87dea15f20021978e0709ea1658d6f763e990ec3",
+    "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": "0b7c208ad38f7fbaf1277f3b78c9ec9a71e952da",
+    "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": "7e6e2b92d62b5ae005bced258b558cbd9484142a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "95d55ce2e1f2174cf8c1a28ca03fcabfbab22f84",
+    "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": "8c532b093c0466a2b198d6f67b2f1a327b616de8",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py": "e0fd9d7711d590131b5e85952a981253b9d8447c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py": "36bbc1c8be45f8521643b7edd7d266fb224a4e0e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "91819985bb3b9a839c409edb5aaadc96fd56b1cc",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": "2dc8e1232cfeb563f61c3996fe0aa034963516c4",
+    "customizations/components/tianxuan/server/native_node_api.py": "db4f385894d0e8e7872bd8c893fe7ceda0d54554",
+    "customizations/components/tianxuan/server/native_remote_host.py": "df3ed48d6431d48711f7ebc8c649589d091a9e5f"
+  },
+  "owned_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "535f877565305e8238c0ed52466d31835b231c729c09283a2be8b1ddb2b646d1",
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "9aaa6e209b4824e77457b19c4a39bceca1769473a095f872615e193e9501e85e",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "14b5f742311afed1dec8dd53438a849994b53a552d6a8feab7c5e41157f1be37",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "4b368d3fe63a7d2143a4595cd0c14bc591976a7ee2e7e0d6912f6de57c2aa647",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "d127c7f2544389729349c72b9568cf4bd6bd3acd5bde1d7bd207cb76549acc45",
+    "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+    "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1"
+  }
+}

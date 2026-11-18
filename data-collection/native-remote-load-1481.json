@@ -1,0 +1,67 @@
+{
+  "issue": 1481,
+  "request_id": "native-remote-execution-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1481",
+  "run_id": "e1b2f97217f3",
+  "state": "passed",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "f76311827cbf99586d536007e10ed554399338d7d704d8de08c66320a1d215f4",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "1d34f1b716639a81f411d33ad4b27d03ecc8426ede43c98abc18992f2d270146",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "2615a8683dbbb69fd208c92cf3e27eb1af06337fe9e91500bc8290ed83d3fae6",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "f1cd6820b0ead4335c63df76af416a7c9115dcb33c7bc5322a047041ca6aaab6",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "4b368d3fe63a7d2143a4595cd0c14bc591976a7ee2e7e0d6912f6de57c2aa647",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "e243b0c5649f0396cb245466fdefea357847891711b65330d428f0ea39bc3234",
+    "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+    "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1"
+  },
+  "model_calls": 0,
+  "tokens": null,
+  "limits": "Actual two-machine deterministic native load; fixture installed plans and reviewer/publisher, no models or production cutover.",
+  "cleanup": {
+    "node": {
+      "exit_code": null,
+      "reasons": [],
+      "process_tree_closed": true,
+      "thread_stopped": true
+    },
+    "ssh_forward_closed": true,
+    "container_removed": true,
+    "retained": "Archived databases, immutable outputs, configurations without credential bytes, raw logs, source/harness hashes and sampled resources retained for root independent acceptance. No other-task resources touched.",
+    "removed_token_after_archive_and_actual_process_closure": true
+  },
+  "enrollment_seconds": 117.96899999999732,
+  "authenticated_members": 50,
+  "accepted_inflight": 250,
+  "submission_seconds": 13.312999999994645,
+  "production_and_contribution_checks_seconds": 370.23399999999674,
+  "joint_integration_check_review_publish_seconds": 32.26600000000326,
+  "exact_250_launches": true,
+  "total_measured_seconds": 817.9059999999881,
+  "source_bundle_sha256": "21a1940fcd6ee198f8fb04bc44346c0611d357a428f35306e4931940679d70f8",
+  "production_changed": false,
+  "archive_before_cleanup": true,
+  "trust_boundary": "50 real registered/invited sessions. Existing public requirement tickets endpoint; installed fixture plans, deterministic producer/checks and fixture reviewer/publisher. Harness dispatch capacity4; actual native event/await-terminal ports; no production autoscheduler or model throughput claim.",
+  "remaining": [
+    "Requirement parent is backlog: real progress 250/251; displayed percent100 is not acceptance.",
+    "Installed deterministic producer/checks and fixture reviewer/publisher do not prove model quality or production autoscheduling.",
+    "Optional native mount/launcher rollback preserving data not exercised by this load probe."
+  ],
+  "scope": "Actual two-machine deterministic fifty-member/250-task load probe only; not complete #1481 production acceptance.",
+  "restart_replay_timing": "Included in total_measured_seconds; not separately instrumented. Production+contribution and joint phases separately measured.",
+  "prior_attempts": [
+    "run-312680c48062",
+    "run-d0f478a37166",
+    "run-07d1fb9e4f3e"
+  ],
+  "source_released_to_root": true,
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-load-report.json",
+    "sha256": "bd9e7c13e46a08e6aa441c9576aaa65222ff746031aa313cb44e95eebb7043ef",
+    "path_base": "absolute current host audit archive"
+  },
+  "audit": {
+    "path": "data-collection/native-remote-load-audit-1481.json",
+    "sha256": "3dd3fcc67fad966957e670d3548d05d62f743c2023952dd5f91ecd52534f3dde",
+    "path_base": "repository_root"
+  }
+}
