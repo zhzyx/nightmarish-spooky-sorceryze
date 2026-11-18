@@ -1,0 +1,27 @@
+{
+  "request_id": "native-runtime-artifact-20261118",
+  "issue_number": 1529,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1529",
+  "review": "data-collection/native-runtime-artifact-review-1529.json",
+  "source_hashes": {
+    ".github/workflows/tianxuan-deploy-build.yml": {
+      "worktree_sha256": "92cf300b6f3f3c7f9ffcecb6a921bc06956c9fa76551d7b671511fd4f88698af",
+      "index_blob_sha256": "92cf300b6f3f3c7f9ffcecb6a921bc06956c9fa76551d7b671511fd4f88698af"
+    },
+    "data-collection/native-runtime-artifact-local-validation-1529.json": {
+      "worktree_sha256": "60093b51a894f9505c70527c14f99c582fde52ebe4781873390c07f9f96c3a42",
+      "index_blob_sha256": "60093b51a894f9505c70527c14f99c582fde52ebe4781873390c07f9f96c3a42"
+    },
+    "deploy/README.md": {
+      "worktree_sha256": "c6cd4f4aca38fcf33806ce23d3ec91fb7a01d63f2bc20710045250e18d21383b",
+      "index_blob_sha256": "c6cd4f4aca38fcf33806ce23d3ec91fb7a01d63f2bc20710045250e18d21383b"
+    },
+    "design-docs/native-runtime-artifact-20261118.md": {
+      "worktree_sha256": "b7ad0a322ec34544d307cb174fa59f3c51274ccc5656e17bdf4e763cc9f606c1",
+      "index_blob_sha256": "b7ad0a322ec34544d307cb174fa59f3c51274ccc5656e17bdf4e763cc9f606c1"
+    }
+  },
+  "incident": "747435c8474e1281ee5c691d731fc7ef2c3887da71cb9f8e8cde33e50cebd4c9",
+  "repair": "Append explicit request and issue binding to evidence; reviewed application source/index entries unchanged. Original writer rejected before commit; actual retry and CI/main still required.",
+  "limits": "Source delivery only. Real Docker archive/download/load and isolated server acceptance remain outstanding; production unchanged."
+}

@@ -1,0 +1,40 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-artifact-index-static.json",
+    "sha256": "4b05f6d3d25edfe51210a09e28e744e45de4536f23b9ee86c7c507c02d33086d",
+    "path_base": "absolute private host evidence archive"
+  },
+  "export": "Lossless JSON value export; original retained.",
+  "report": {
+    "index_tree": "4266af72788b6e70cc5dff5671442cad39fa82c8",
+    "checks": [
+      {
+        "command": [
+          "py",
+          "-X",
+          "utf8",
+          "D:\\GongGong-work\\native-runtime-artifact-20261118\\misc\\scripts\\file_format.py",
+          ".github/workflows/tianxuan-deploy-build.yml"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "py",
+          "-X",
+          "utf8",
+          "-m",
+          "codespell_lib"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    ],
+    "formatter_changes": [],
+    "original_candidate_unchanged": true,
+    "retained_private_snapshot": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-artifact-index-static"
+  }
+}

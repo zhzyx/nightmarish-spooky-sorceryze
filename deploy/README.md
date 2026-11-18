@@ -458,6 +458,29 @@ the runtime closure without pulling duplicate full images. Such a derivative
 test must record its base and input hashes separately; it does not replace the
 normal Dockerfile build or grant production activation.
 
+## Reuse the tested API image
+
+Successful deploy-build jobs publish an Actions artifact named
+`tianxuan-api-<run_id>-<run_attempt>`. It contains the tested immutable API image,
+its source-file hashes and a manifest with archive hashes, image ID, actual
+checkout/tree, candidate head and run identity. Upload follows the container and
+Compose checks; it does not attest that other workflows or main delivery passed.
+
+Before installation, select the exact artifact ID from the reviewed run, verify
+all applicable checks and the candidate's delivery to main, then verify every
+manifest file's byte count and SHA256. A PR job may test a merge checkout, so
+compare the actual source tree and relevant package inputs with the delivered
+candidate instead of assuming the checkout SHA equals its head. Expired or
+unavailable artifacts are unavailable evidence; a same-named replacement is not
+an equivalent package.
+
+Check server disk and memory headroom before transferring or loading the archive.
+Load the verified archive into Docker and verify the resulting image ID against
+the manifest. Run the exact ID in an isolated, bounded container using owned test
+state. Keep the current production image, configuration and data intact while
+validating installation, update and rollback. No server-side rebuild or production
+switch is implied by downloading or loading this package.
+
 ## Troubleshooting
 
 - `dependency failed to start: container ... api ... is unhealthy` - check

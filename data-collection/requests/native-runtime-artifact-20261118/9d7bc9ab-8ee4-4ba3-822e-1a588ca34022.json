@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "native-runtime-artifact-20261118",
+  "collected_at": "2026-11-18T11:03:20.192521+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/codex-intake-1529-20261117.json",
+      "sha256": "f1d67b9e7b66494c4d86b3a9e68daaf22340f5f315b8923dfcf4df80e3c0a424",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "codex-intake-1529-20261117",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/dispatch-868a0f2174a6414ea9aee8e68b3d461e.json",
+      "sha256": "196b8ba35d5a543808d52af080532583f24353b75e09d40fd055ffee58e6bf39",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-868a0f2174a6414ea9aee8e68b3d461e",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/dispatch-bfe47f02546f484cb72be9adac9d4733.json",
+      "sha256": "a6973e2c6fa152a7c37c99d3412a235932e3e32a05ee8332aadb33e29536a733",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-bfe47f02546f484cb72be9adac9d4733",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/kuafu-8b22b769a9ccbd8e5782ba2324f85b2ce4b303df.json",
+      "sha256": "c83bb4bb16fe5899f28b70b148e53838bd8285bf9f64b1d9d1f147dd66fb41e4",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-8b22b769a9ccbd8e5782ba2324f85b2ce4b303df",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1529,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1529"
+}
