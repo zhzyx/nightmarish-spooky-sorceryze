@@ -119,3 +119,23 @@ write paths use the existing ASCII portable proposal dialect (<=512 bytes,
 to the aggregate request/response limits above. Host role/capability admission
 must be verified before calling evaluate with `scope="live"`; that label itself
 is not independent proof of a real provider or permission.
+
+### Ordinary installed runtime transport
+
+Ordinary main can select local or existing RemoteNativeWorker execution through the digest-pinned runtime sidecar described in `design-docs/native-production-entry-20261118.md` (repository-root relative). Its context policy is served over `/native-context/{execution}` to the installed broker, and is never writable through the ordinary request API. Producer configuration may add `context_transport` with an HTTPS server origin and private absolute `token_file`; node configuration also sets an absolute existing `contract_registry` matching the producer's registry argument. The existing signed template must admit the context tool and call budget when demand context is selected. Small tasks retain bounded full inputs. Historical delta pairs require a separately admitted policy and are denied by this sidecar.
+
+Server-owned context receipts are read only after real worker closure; node-local copies cannot establish current server authority. Transport or model outcomes that are unknown retain their original intent. Deterministic HTTP/node tests are not production model acceptance or a universal cost-saving measurement.
+
+Local context admission continuation (#1501) retains the same serialized RPC,
+execution and call identity inside the live tool turn. Only an exact HTTP 503
+`not_started/context_capacity` response is retried, with at most 16 attempts,
+a 120-second admission scheduling budget, and equal-jitter exponential delays
+from 0.125–0.25 seconds up to 2–4 seconds. Each new attempt reserves the full
+35-second transport window beyond the server's 30-second start deadline; no
+shortened final attempt is sent. Socket timeouts remain unknown outcomes, not
+proof of nonexecution. Exhaustion preserves `ContextNotStarted`. The caller's
+existing model response remains in memory; no model call, execution, daemon or
+persistent recovery job is created. Process interruption remains under the
+outer worker's physical lease and cancellation control; each admitted request
+rechecks current server authority and closure. This is bounded live admission,
+not durable crash recovery or a guarantee that all 250 contenders complete.

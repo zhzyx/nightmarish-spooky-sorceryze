@@ -1,0 +1,95 @@
+{
+  "issue": 1501,
+  "state": "implemented_and_locally_verified_parent_delivery_pending",
+  "workspace": "D:\\GongGong-work\\native-context-backpressure-20261118",
+  "base_main": "29d4fb25324b4727fb3e26fc9ce9b785d0ee8520",
+  "scope": "Bounded synchronous admission continuation for same local RPC; no server, runner, model, provider, source-index or deployment changes",
+  "limits": {
+    "attempts": 16,
+    "admission_scheduling_seconds": 120,
+    "transport_seconds": 35,
+    "minimum_full_window_before_retry": 35,
+    "equal_jitter_seconds": "0.125-0.25 initial, exponential capped at2-4"
+  },
+  "verification": {
+    "new_tests": "22 passed in49.68s; additional real elapsed/attempt exhaustion parameterization4 passed in4.74s (2 overlap),24 unique current cases",
+    "existing_regression": "24 existing context/resources cases passed in wider probe-4; that run also had21 new cases pass and1 fixture timeout retained",
+    "broker": {
+      "synthetic_model_turns": 3,
+      "model_threads": 1,
+      "resolve_attempts": 3,
+      "refused_requests": 1,
+      "same_execution_arguments_and_call": true,
+      "duration_seconds": 7.157,
+      "physical_closure_and_signed_result": "asserted by reused actual broker helper"
+    },
+    "burst": {
+      "requests": 250,
+      "successful_tools": 250,
+      "rpc_attempts": 1640,
+      "http_body_reads": 250,
+      "model_calls": 0,
+      "duration_seconds": 29.328,
+      "started": 250,
+      "resolved": 250,
+      "fixture": "one live local execution,250 concurrent local tool RPC callers,synthetic selected source,expanded read budget before immutable binding creation"
+    },
+    "cache": {
+      "cold_body_bytes": 139264,
+      "hot_body_bytes": 8192,
+      "cold_verifications": 1,
+      "local_and_remote": true
+    },
+    "ruff": "check --no-fix passed",
+    "mypy": "follow-imports=skip;2 source files passed",
+    "codespell": "private toml write-changes=false passed"
+  },
+  "failure_history": [
+    {
+      "evidence": "initial-probe-failures.json",
+      "finding": "Incomplete test PYTHONPATH and wrong lint interpreter corrected using existing dependencies; original tool output retained in chat, structured summary here"
+    },
+    {
+      "evidence": "probe-2.txt",
+      "finding": "Burst fixture mutated immutable policy after initial binding; rebuilt policy before initial client binding"
+    },
+    {
+      "evidence": [
+        "probe-4.txt",
+        "diagnostic-saturation.txt"
+      ],
+      "finding": "50ms synthetic server deadline produced remote revoke/withdraw future10s timeout;500ms fixture allows real authority checks; server production30s unchanged; corrected probe-5 passed"
+    }
+  ],
+  "method_learning": {
+    "recall": "editor-dependency-handoff, verified bind-consumer-release and await-terminal-observers",
+    "application": "Exact source handoff hashes verified; actual broker process closure and signed output checked; local implementation is not main delivery",
+    "counterexample": "Neither synthetic250 local RPC completion nor local tests prove250 real models,currentserver production performance,durable recovery,or main acceptance",
+    "parent_followup": "Parent owns source origin learning-event append outside delegated write scope"
+  },
+  "files": {
+    "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "de4c8a8183839cfae927877cae7823c43cce39182914d56d4d9eaf7df3e8b1fd",
+    "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": "efc787046a18f7130c6c07d045c6e6eb93b362418438edffa63547c1e2ae0e0e",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "b8bd4394235ca07f078388774f7b11b313cd35aff43b7728af2ce9ab216abcdd"
+  },
+  "unchanged_handoff_files": 18,
+  "evidence_base": "Absolute D:/GongGong/data-collection/receipts/duobao-1382/native-context-backpressure; receipt paths below relative to that directory",
+  "evidence": {
+    "diagnostic-saturation.txt": "a858be66c2090e3c821a392c096258b538dc74044ec657c59e068f6d6724520a",
+    "elapsed-exhaustion.txt": "3dd84b7c4565d81f8d965e8cb47cf680d94fa87203ce98deb7a349548d6d56c2",
+    "probe-2.txt": "784577d4e661122ce0861af151aab7b6b8a45e2b1a082507a68813ac765c4f93",
+    "probe-3.txt": "39e8bdf71aa4d14048a4b4df82539d19018753ee04f91c46d48948baf4e1ebfa",
+    "probe-4.txt": "3ca0f3dbeb7ca38ba4b054fdad724d6af8edd4a4748b2c3a6ef8c9b9c5ab566e",
+    "probe-5.txt": "78ce1a2cfb61a09167d5dfb6674c45c4154b63473bd8f30bad340c9ff1c5b38c"
+  },
+  "limitations": [
+    "Admission budget bounds scheduling, socket timeout is transport inactivity protection; a started/unknown operation is never classified not-started or replayed",
+    "No provider/live model call; no deployment,commit,push,CI or main acceptance claimed",
+    "Outer worker owns termination and physical lease; no background retry or automatic execution restart"
+  ],
+  "cleanup": {
+    "listeners_and_threads": "All final fixture listeners/threads joined; owned test runs terminal",
+    "retained": "Raw failed/successful transcripts and codespell nonmutating config are evidence; parent worktree/source preserved",
+    "pending": "Automatic approval rejected own mypy-cache removal before execution: blocked by policy. Cache retained without bypass. Pytest temporary roots are outside delegated write paths and retained for parent review/cleanup. No deletion claimed."
+  }
+}

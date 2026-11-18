@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8d8ee2addc2a2f16032913828ed738aec862faba",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-production-entry-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "63758d789fc3c8e3adc873c1ecd512504236340b14a7462492b0c01ea988dfad",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "88a401d8a8498af36063eedbed3abc5657c52d90",
+    "context_sha256": "7f61d7637a30fa9ea803767f35b232f02ec89ba69a2db439741863d9b668d914",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44275598235/job/134702775987",
+    "diagnosis": "PR1523 exact signed f7a7aff normal API image built successfully. Native container suite52 passed1 failed: remote signed-broker test fixture passed symlink /usr/local/bin/python to NativeWorker, which correctly rejects links. Fix fixture to bind resolved actual executable and same digest; retain production rejection. Compose diagnostic cleanup also lacks env when earlier step fails; guard on actual initialized compose env. No production defect or deployment claimed.",
+    "next_action": "Root owns fixture and CI guard repair, original failure repro plus exact Linux followup and independent review. Integrate separately reviewed1501 finite same-RPC continuation after actual worker reconciliation; no unknown replay or bypass.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T04:02:21.601184+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T09:29:33.806253+00:00",
+  "sha256": "d78d50096f1103ff3304a15148506fb71fd3a0a35682c9cf36b207695fa8446a"
+}

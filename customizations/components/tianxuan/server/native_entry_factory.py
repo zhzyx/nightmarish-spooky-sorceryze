@@ -60,19 +60,18 @@ class CoordinatorOwnership:
 
 
 class OrdinaryEntry:
-    def __init__(self, domain, native, manifest, digest, root, *, context_factory=None, installed_worker=None):
+    def __init__(self, domain, native, manifest, digest, root, *, installed_worker=None, runtime_installation=None):
+        self.runtime_installation = runtime_installation
         self.installation = InstallationManifest(manifest, digest)
         try:
-            self._initialize(domain, native, root, context_factory=context_factory, installed_worker=installed_worker)
+            self._initialize(domain, native, root, installed_worker=installed_worker)
         except BaseException:
             self.installation.close()
             raise
 
-    def _initialize(self, domain, native, root, *, context_factory, installed_worker):
+    def _initialize(self, domain, native, root, *, installed_worker):
         self.domain, self.native = domain, native
         digest = self.installation.sha256
-        # Trusted installation-only future #1501 port. v1 does not expose tools.
-        self.context_factory = context_factory
         self.execution_nodes = "local-only" if installed_worker is None else "trusted-existing-adapter"
         self.root = Path(root)
         require(self.root.is_absolute(), "Absolute installation state root required")
@@ -141,6 +140,46 @@ class OrdinaryEntry:
             lambda *_: bool(installation.verify()),
             authorize=self.module_authority,
         )
+        if self.runtime_installation is not None:
+            runtime_spec = self.runtime_installation.verify()
+            require(runtime_spec["installation"] == digest, "Runtime installation identity mismatch")
+            if runtime_spec["remote"] is not None:
+                from native_remote_worker import RemoteNativeWorker
+
+                remote = runtime_spec["remote"]
+                require(
+                    installed_worker is None and set(remote) == {"profiles", "nodes"},
+                    "Closed remote installation required",
+                )
+
+                class EntryRemoteWorker(RemoteNativeWorker):
+                    def _contract(self, task, execution):
+                        marker = factory.current_entry.set(task["mandate"])
+                        try:
+                            return super()._contract(task, execution)
+                        finally:
+                            factory.current_entry.reset(marker)
+
+                    def reconcile(self, task, execution):
+                        marker = factory.current_entry.set(task["mandate"])
+                        try:
+                            return super().reconcile(task, execution)
+                        finally:
+                            factory.current_entry.reset(marker)
+
+                installed_worker = EntryRemoteWorker(
+                    native,
+                    self.root / "workers",
+                    remote["profiles"],
+                    authorize=self.module_authority,
+                    nodes=remote["nodes"],
+                    single_coordinator=True,
+                )
+                self.execution_nodes = "trusted-existing-adapter"
+            from native_entry_context import EntryContexts
+
+            self.contexts = EntryContexts(self, self.runtime_installation)
+            worker.context_receipt_reader = self.contexts.receipt
         if installed_worker is not None:
             from native_remote_worker import RemoteNativeWorker
 
@@ -150,6 +189,8 @@ class OrdinaryEntry:
                 "Existing admitted worker adapter must share the exact native store",
             )
             worker = installed_worker
+            if self.runtime_installation is not None:
+                worker.context_receipt_reader = self.contexts.receipt
         cache = EvidenceCache(
             native, {"content": dict(version=digest, reads=None, max_age_seconds=3600)}, self.check_authority
         )
@@ -333,6 +374,8 @@ class OrdinaryEntry:
 
     def authorize(self, actor, issue, action):
         self.installation.verify()
+        if self.runtime_installation is not None:
+            self.runtime_installation.verify()
         with self.domain._connection_lock:
             row, _ = self.binding(issue)
             self.domain._require_requirement(actor, row["requirement"], write=action != "read")
@@ -588,10 +631,20 @@ class OrdinaryEntry:
 
     def next_issues(self, actor, event):
         result = []
+        current = self.current_entry.get()
         for row in self.entries():
-            if row["actor"] != actor or not row["receipt"]:
+            if row["id"] != current or row["actor"] != actor or not row["receipt"]:
                 continue
             for issue in json.loads(row["receipt"]).get("mapping", {}).get("tasks", {}).values():
+                # Installation changes cannot rebind historical or in-flight
+                # contracts. Existing tasks retain their exact authorization;
+                # the workflow validates them when continuing their own work.
+                with self.domain._connection_lock:
+                    bound = self.domain.db.execute(
+                        "SELECT 1 FROM native_active_tasks WHERE issue=?", (issue,)
+                    ).fetchone()
+                if bound:
+                    continue
                 try:
                     self.plan(actor, issue)
                     result.append(issue)

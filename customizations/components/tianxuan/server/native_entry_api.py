@@ -16,7 +16,7 @@ def create_entry_router(entry):
         return dict(
             automatic_execution=True,
             mode=spec["mode"],
-            context_tools=False,
+            context_tools=entry.runtime_installation is not None,
             execution_nodes=entry.execution_nodes,
             identity=spec["identity"],
             scopes=spec["scopes"],

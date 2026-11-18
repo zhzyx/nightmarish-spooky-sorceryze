@@ -1,53 +1,53 @@
-# Build context for deploy/Dockerfile.api is the repository root, because the
-# FastAPI service imports sibling modules from customizations/components/tianxuan.
-#
-# BuildKit automatically applies this file to deploy/Dockerfile.api (the
-# "<Dockerfile-name>.dockerignore" convention next to the Dockerfile). Docker's
-# legacy builder ignores it; the build then still works, it is only slower.
-#
-# Keep only what the API image copies, so the huge game/editor tree does not get
-# sent to the builder on every build.
+# Repository-root API build context: only actual COPY inputs are admitted.
+# Adjacent Dockerfile-specific ignore file requires BuildKit.
+**
+!framework/
+!framework/**
+!customizations/
+customizations/*
+!customizations/components/
+customizations/components/*
+!customizations/components/tianxuan/
+customizations/components/tianxuan/*
+!customizations/components/tianxuan/server/
+!customizations/components/tianxuan/server/**
+!customizations/components/tianxuan/wenqu/
+!customizations/components/tianxuan/wenqu/**
+!customizations/components/tianxuan/duobao/
+!customizations/components/tianxuan/duobao/**
+!customizations/components/tianxuan/sinan-workorders/
+!customizations/components/tianxuan/sinan-workorders/**
+!customizations/platforms/
+customizations/platforms/*
+!customizations/platforms/ai-access/
+customizations/platforms/ai-access/*
+!customizations/platforms/ai-access/host-http/
+customizations/platforms/ai-access/host-http/*
+!customizations/platforms/ai-access/host-http/runtime/
+!customizations/platforms/ai-access/host-http/runtime/**
+!customizations/platforms/process-management/
+customizations/platforms/process-management/*
+!customizations/platforms/process-management/yuanheng-local/
+customizations/platforms/process-management/yuanheng-local/*
+!customizations/platforms/process-management/yuanheng-local/sinan/
+customizations/platforms/process-management/yuanheng-local/sinan/*
+!customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs
+!tools/
+tools/*
+!tools/ainative/
+tools/ainative/*
+!tools/ainative/owned_process.py
+!tools/codex_cli/
+tools/codex_cli/*
+!tools/codex_cli/subscription_session.js
+!tools/codex_cli/content_preview.js
+!tools/codex_cli/subscription_profile.py
 
-.git
-.github
-apps
-archive
-core
-data-collection
-design-docs
-distribution
-doc
-drivers
-editor
-engine_next
-framework
-gonggong-diting-data
-integrations
-Markdown
-misc
-modules
-olympus-hermes-data
-platform
-project
-releases
-samples
-scene
-servers
-tests
-thirdparty
-tools
-
-# Other customization components/platforms are not imported by the API.
-customizations/components/codex-dispatch
-customizations/components/godot-host
-customizations/components/issue-workorders
-customizations/components/repository-dispatch
-customizations/components/yanluo
-customizations/platforms
-
-# Generated Python artifacts.
+# Generated files and private environment files are never context inputs.
 **/__pycache__
 **/*.pyc
 **/.pytest_cache
 **/.venv
 **/venv
+**/.env
+**/.env.*
