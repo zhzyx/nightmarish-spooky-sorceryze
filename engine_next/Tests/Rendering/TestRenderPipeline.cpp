@@ -977,3 +977,33 @@ ENGINE_NEXT_TEST("RenderPipeline relocates probes between remap and radiance tra
 	ENGINE_NEXT_CHECK(FindWork(stLegacy, PassWork::GiRelocate) == nullptr);
 	CheckReusableStates(stPipeline);
 }
+
+ENGINE_NEXT_TEST("RenderPipeline orders bounded shadow uploads feedback and receiver reads")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 6, true, true, 0, 0, { false, true }, false, false, {}, false, true, true));
+	const CompiledPass *pUpload = FindWork(stPipeline, PassWork::ShadowPageUpload);
+	const CompiledPass *pRender = FindWork(stPipeline, PassWork::ShadowPageRender);
+	const CompiledPass *pFeedback = FindWork(stPipeline, PassWork::ShadowPageFeedback);
+	const CompiledPass *pReadback = FindWork(stPipeline, PassWork::ShadowPageReadback);
+	const CompiledPass *pLighting = FindWork(stPipeline, PassWork::DeferredLighting);
+	const CompiledPass *pTransparent = FindWork(stPipeline, PassWork::Transparency);
+	ENGINE_NEXT_CHECK(pUpload != nullptr && pRender != nullptr && pFeedback != nullptr && pReadback != nullptr && pLighting != nullptr && pTransparent != nullptr);
+	if (pUpload == nullptr || pRender == nullptr || pFeedback == nullptr || pReadback == nullptr || pLighting == nullptr || pTransparent == nullptr)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(HasTransition(*pUpload, stPipeline.nShadowPageTable, ResourceState::Common, ResourceState::CopyDestination));
+	ENGINE_NEXT_CHECK(HasAccess(*pRender, stPipeline.nDeformedVertices, ResourceState::VertexIndexRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pRender, stPipeline.nShadowPagePool, ResourceState::DepthWrite, true));
+	ENGINE_NEXT_CHECK(HasAccess(*pFeedback, stPipeline.nDepth, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pFeedback, stPipeline.nShadowPageFeedback, ResourceState::UnorderedAccess, true));
+	ENGINE_NEXT_CHECK(HasTransition(*pReadback, stPipeline.nShadowPageFeedback, ResourceState::UnorderedAccess, ResourceState::CopySource));
+	ENGINE_NEXT_CHECK(HasAccess(*pLighting, stPipeline.nShadowPagePool, ResourceState::ShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pTransparent, stPipeline.nShadowPageTable, ResourceState::ShaderRead, false));
+	CheckReusableStates(stPipeline);
+	RenderPipeline stFixed;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stFixed, stDiagnostic, 0, false, false, 0, 0, {}, false, false, {}, false, false, true));
+	ENGINE_NEXT_CHECK(FindWork(stFixed, PassWork::ShadowPageUpload) == nullptr);
+}

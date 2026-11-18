@@ -1232,3 +1232,28 @@ ENGINE_NEXT_TEST("Render configuration routes optional GPU geometry settings tra
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
 	ENGINE_NEXT_CHECK(stConfiguration.stGeometry.bEnabled && stConfiguration.stGeometry.nMaxCommands == 1);
 }
+
+ENGINE_NEXT_TEST("Render configuration validates optional bounded virtual shadow pages")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stConfiguration.stShadows.stVirtualPages.bEnabled);
+	(*stValue.GetObject())["shadows"] = JsonValue::Object{
+		{ "enabled", true }, { "resolution", std::int64_t{ 1024 } }, { "distance", 50.0 }, { "split_lambda", 0.6 }, { "depth_bias", 0.0005 }, { "normal_bias", 0.01 }, { "virtual_pages", JsonValue::Object{ { "enabled", true }, { "resolution", std::int64_t{ 8192 } }, { "physical_pages", std::int64_t{ 16 } }, { "updates_per_frame", std::int64_t{ 8 } } } }
+	};
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stShadows.stVirtualPages.bEnabled);
+	ENGINE_NEXT_CHECK(stConfiguration.stShadows.stVirtualPages.nPhysicalPages == 16);
+	JsonValue::Object &mapVirtual = *(*(*stValue.GetObject())["shadows"].GetObject())["virtual_pages"].GetObject();
+	mapVirtual["updates_per_frame"] = std::int64_t{ 17 };
+	CheckRejected(stValue);
+	mapVirtual["updates_per_frame"] = std::int64_t{ 8 };
+	mapVirtual["enabled"] = false;
+	mapVirtual["resolution"] = std::int64_t{ 9000 };
+	CheckRejected(stValue);
+	mapVirtual["resolution"] = std::int64_t{ 8192 };
+	mapVirtual["unexpected"] = true;
+	CheckRejected(stValue);
+}

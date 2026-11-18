@@ -59,7 +59,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bDeformation)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bDeformation, bool bVirtualShadows)
 {
 	if (nLocalShadowViews > 28)
 	{
@@ -100,6 +100,27 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			stPipeline.nPreviousPositions = stGraph.AddResource({ "PreviousPositions", ResourceState::Common, true });
 			stPipeline.nDeformationUpload = stGraph.AddResource({ "DeformationUpload", ResourceState::GenericRead, true });
 			if (!AddPipelinePass(stGraph, stPipeline, { "DeformationUpload", QueueType::Graphics, { { stPipeline.nDeformationUpload, ResourceState::GenericRead, false }, { stPipeline.nDeformedVertices, ResourceState::CopyDestination, true }, { stPipeline.nPreviousPositions, ResourceState::CopyDestination, true } }, {} }, PassWork::DeformationUpload, out_stDiagnostic))
+			{
+				return false;
+			}
+		}
+		if (bVirtualShadows)
+		{
+			stPipeline.nShadowPagePool = stGraph.AddResource({ "ShadowPhysicalPages", ResourceState::Common, true });
+			stPipeline.nShadowPageTable = stGraph.AddResource({ "ShadowPageTable", ResourceState::Common, true });
+			stPipeline.nShadowPageUpload = stGraph.AddResource({ "ShadowPageUpload", ResourceState::GenericRead, true });
+			stPipeline.nShadowPageFeedback = stGraph.AddResource({ "ShadowPageFeedback", ResourceState::Common, true });
+			stPipeline.nShadowPageReadback = stGraph.AddResource({ "ShadowPageReadback", ResourceState::CopyDestination, true });
+			if (!AddPipelinePass(stGraph, stPipeline, { "ShadowPageUpload", QueueType::Graphics, { { stPipeline.nShadowPageUpload, ResourceState::GenericRead, false }, { stPipeline.nShadowPageTable, ResourceState::CopyDestination, true }, { stPipeline.nShadowPageFeedback, ResourceState::CopyDestination, true } }, {} }, PassWork::ShadowPageUpload, out_stDiagnostic))
+			{
+				return false;
+			}
+			PassDesc stPages{ "ShadowPageRender", QueueType::Graphics, { { stPipeline.nShadowPagePool, ResourceState::DepthWrite, true }, { stPipeline.nShadowPageUpload, ResourceState::GenericRead, false } }, {} };
+			if (bDeformation)
+			{
+				stPages.arrAccesses.push_back({ stPipeline.nDeformedVertices, ResourceState::VertexIndexRead, false });
+			}
+			if (!AddPipelinePass(stGraph, stPipeline, stPages, PassWork::ShadowPageRender, out_stDiagnostic))
 			{
 				return false;
 			}
@@ -294,8 +315,21 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			stPipeline.nReflectedHdr = stGraph.AddResource({ "ReflectedHdr", ResourceState::Common, false });
 			stLighting.arrAccesses.push_back({ stPipeline.nEnvironmentSpecular, ResourceState::RenderTarget, true });
 		}
-		if (!AddPipelinePass(stGraph, stPipeline, stGbuffer, PassWork::GBuffer, out_stDiagnostic) ||
-			!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic))
+		if (!AddPipelinePass(stGraph, stPipeline, stGbuffer, PassWork::GBuffer, out_stDiagnostic))
+		{
+			return false;
+		}
+		if (bVirtualShadows)
+		{
+			if (!AddPipelinePass(stGraph, stPipeline, { "ShadowPageFeedback", QueueType::Graphics, { { stPipeline.nDepth, ResourceState::NonPixelShaderRead, false }, { stPipeline.nShadowPageTable, ResourceState::NonPixelShaderRead, false }, { stPipeline.nShadowPageFeedback, ResourceState::UnorderedAccess, true }, { stPipeline.nShadowPageUpload, ResourceState::GenericRead, false } }, {} }, PassWork::ShadowPageFeedback, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline, { "ShadowPageReadback", QueueType::Graphics, { { stPipeline.nShadowPageFeedback, ResourceState::CopySource, false }, { stPipeline.nShadowPageReadback, ResourceState::CopyDestination, true } }, {} }, PassWork::ShadowPageReadback, out_stDiagnostic))
+			{
+				return false;
+			}
+			stLighting.arrAccesses.push_back({ stPipeline.nShadowPagePool, ResourceState::ShaderRead, false });
+			stLighting.arrAccesses.push_back({ stPipeline.nShadowPageTable, ResourceState::ShaderRead, false });
+		}
+		if (!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic))
 		{
 			return false;
 		}
@@ -471,6 +505,11 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			if (bExposure)
 			{
 				stTransparency.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::ShaderRead, false });
+			}
+			if (bVirtualShadows)
+			{
+				stTransparency.arrAccesses.push_back({ stPipeline.nShadowPagePool, ResourceState::ShaderRead, false });
+				stTransparency.arrAccesses.push_back({ stPipeline.nShadowPageTable, ResourceState::ShaderRead, false });
 			}
 			if (bDeformation)
 			{
@@ -728,6 +767,12 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 	{
 		stPresent.arrAccesses.push_back({ stPipeline.nDeformedVertices, ResourceState::Common, false });
 		stPresent.arrAccesses.push_back({ stPipeline.nPreviousPositions, ResourceState::Common, false });
+	}
+	if (bSceneMode && bVirtualShadows)
+	{
+		stPresent.arrAccesses.push_back({ stPipeline.nShadowPagePool, ResourceState::Common, false });
+		stPresent.arrAccesses.push_back({ stPipeline.nShadowPageTable, ResourceState::Common, false });
+		stPresent.arrAccesses.push_back({ stPipeline.nShadowPageFeedback, ResourceState::Common, false });
 	}
 	if (!AddPipelinePass(stGraph, stPipeline, stPresent, PassWork::Present, out_stDiagnostic) || !stGraph.Compile(stPipeline.stGraph, out_stDiagnostic))
 	{

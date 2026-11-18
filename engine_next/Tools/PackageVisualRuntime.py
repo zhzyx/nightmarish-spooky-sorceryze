@@ -59,6 +59,12 @@ SHADER_FILES = {
     "GeometryDepth.vs.cso",
     "GeometryDepth.ps.cso",
 }
+SHADER_FILES |= {
+    "Virtual" + name
+    for name in SHADER_FILES
+    if name.endswith("Lighting.ps.cso") or name.endswith("Transparent.ps.cso")
+}
+SHADER_FILES.add("ShadowPageFeedback.cs.cso")
 
 
 def digest(path):

@@ -152,6 +152,19 @@
             "pcss"
           ]
         },
+        "virtual_pages": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "cache": { "type": "boolean", "default": true },
+            "resolution": { "type": "integer", "enum": [2048, 4096, 8192, 16384], "default": 8192 },
+            "physical_pages": { "type": "integer", "minimum": 16, "maximum": 2048, "default": 512 },
+            "updates_per_frame": { "type": "integer", "minimum": 1, "maximum": 2048, "default": 128 },
+            "memory_budget_bytes": { "type": "integer", "minimum": 8388608, "maximum": 1073741824, "default": 268435456 }
+          },
+          "$comment": "Updates per frame cannot exceed physical pages. The complete resource payload and actual D3D allocations must fit the byte budget. Missing pages use complete conventional shadows."
+        },
         "light_radius": {
           "type": "number",
           "minimum": 0,

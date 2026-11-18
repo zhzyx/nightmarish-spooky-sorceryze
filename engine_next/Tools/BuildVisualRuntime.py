@@ -20,6 +20,7 @@ CORE_SOURCES = [
     "engine_next/Rendering/RenderConfiguration.cpp",
     "engine_next/Rendering/CameraMatrices.cpp",
     "engine_next/Rendering/ShadowData.cpp",
+    "engine_next/Rendering/ShadowPageCache.cpp",
     "engine_next/Rendering/LocalShadowData.cpp",
     "engine_next/Rendering/TemporalState.cpp",
     "engine_next/Rendering/PostProcessSettings.cpp",
@@ -77,6 +78,7 @@ VISUAL_SOURCES = [
     "engine_next/Platform/Windows/RayTracingScene.cpp",
     "engine_next/Platform/Windows/GpuProbeGrid.cpp",
     "engine_next/Platform/Windows/GpuDeformation.cpp",
+    "engine_next/Platform/Windows/GpuShadowPages.cpp",
     "engine_next/Platform/Windows/GpuGeometry.cpp",
 ]
 TEST_SOURCES = [
@@ -86,6 +88,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
     "engine_next/Tests/Rendering/TestCameraMatrices.cpp",
     "engine_next/Tests/Rendering/TestShadowData.cpp",
+    "engine_next/Tests/Rendering/TestShadowPageCache.cpp",
     "engine_next/Tests/Rendering/TestLocalShadowData.cpp",
     "engine_next/Tests/Rendering/TestShadowSampling.cpp",
     "engine_next/Tests/Rendering/TestTemporalSampling.cpp",
@@ -137,6 +140,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/RenderConfiguration.h",
     "EngineNext/Rendering/CameraMatrices.h",
     "EngineNext/Rendering/ShadowData.h",
+    "EngineNext/Rendering/VirtualShadowSettings.h",
     "EngineNext/Rendering/LocalShadowData.h",
     "EngineNext/Rendering/TemporalState.h",
     "EngineNext/Rendering/PostProcessSettings.h",
@@ -251,6 +255,12 @@ SHADERS = [
     ("DepthVS", "vs_6_0", "GeometryDepth.vs.cso", []),
     ("DepthPS", "ps_6_0", "GeometryDepth.ps.cso", []),
 ]
+SHADERS += [
+    (entry, profile, "Virtual" + name, [*definitions, "-D", "VIRTUAL_SHADOW_STAGE=1"])
+    for entry, profile, name, definitions in SHADERS
+    if name.endswith("Lighting.ps.cso") or name.endswith("Transparent.ps.cso")
+]
+SHADERS.append(("FeedbackCS", "cs_6_0", "ShadowPageFeedback.cs.cso", []))
 
 
 def write_json(path, value):
@@ -591,6 +601,8 @@ def compile_shaders(args, commands):
             / (
                 "FixedMesh.hlsl"
                 if name.startswith("FixedMesh")
+                else "ShadowPageFeedback.hlsl"
+                if name == "ShadowPageFeedback.cs.cso"
                 else "GeometryCull.hlsl"
                 if name == "GeometryCull.cs.cso"
                 else "GeometryHiZ.hlsl"
@@ -599,6 +611,7 @@ def compile_shaders(args, commands):
                 if name.startswith("GeometryDepth")
                 else "Transparent.hlsl"
                 if name.startswith(("Transparent", "MaterialTransparent", "GiTransparent", "GiMaterialTransparent"))
+                or (name.startswith("Virtual") and name.endswith("Transparent.ps.cso"))
                 else "GI.hlsl"
                 if name in ("GiPrepare.cs.cso", "GiRelocate.cs.cso", "GiTrace.cs.cso", "GiIntegrate.cs.cso")
                 else "VolumeTemporal.hlsl"
@@ -714,6 +727,9 @@ def build(args):
                 "engine_next/Rendering/Shaders/FixedMesh.hlsl",
                 "engine_next/Rendering/Shaders/Deferred.hlsl",
                 "engine_next/Rendering/Shaders/Shadow.hlsl",
+                "engine_next/Rendering/Shaders/ShadowPageGpu.hlsli",
+                "engine_next/Rendering/Shaders/ShadowPageFeedback.hlsl",
+                "engine_next/Rendering/Shaders/ShadowPageReceiver.hlsli",
                 "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
                 "engine_next/Rendering/Shaders/ShadowReceiverPlane.hlsli",
                 "engine_next/Rendering/Shaders/TemporalAA.hlsl",

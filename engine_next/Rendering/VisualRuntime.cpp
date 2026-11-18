@@ -49,6 +49,7 @@
 #include "engine_next/include/EngineNext/Rendering/DeformationFrame.h"
 #include "engine_next/Rendering/DeformationChanges.h"
 #include "engine_next/Platform/Windows/GpuDeformation.h"
+#include "engine_next/Platform/Windows/GpuShadowPages.h"
 #include "engine_next/include/EngineNext/Rendering/TextureData.h"
 #include "engine_next/include/EngineNext/Rendering/CameraMatrices.h"
 #include "engine_next/include/EngineNext/Rendering/RenderConfiguration.h"
@@ -56,6 +57,7 @@
 #include "engine_next/Platform/Windows/GpuGeometry.h"
 #include "engine_next/Platform/Windows/RhiComOwner.h"
 #include "engine_next/include/EngineNext/Rendering/ShadowData.h"
+#include "engine_next/include/EngineNext/Rendering/ProbePlacement.h"
 #include "engine_next/Rendering/ShadowBounds.h"
 #include "engine_next/include/EngineNext/Rendering/LocalShadowData.h"
 #include "engine_next/include/EngineNext/Rendering/TemporalState.h"
@@ -101,7 +103,9 @@ namespace
 {
 
 constexpr std::uint32_t FRAME_COUNT = 3;
-constexpr std::uint32_t FRAME_VIEW_COUNT = 232;
+constexpr std::uint32_t FRAME_VIEW_COUNT = 468;
+constexpr std::uint32_t SHADOW_PAGE_VIEW_START = 460;
+static_assert(SHADOW_PAGE_VIEW_START + SHADOW_PAGE_VIEW_COUNT <= FRAME_VIEW_COUNT);
 constexpr std::uint32_t GI_VIEW_START = 152;
 constexpr std::uint32_t GEOMETRY_VIEW_START = 192;
 static_assert(GI_VIEW_START + 32 <= GEOMETRY_VIEW_START);
@@ -267,6 +271,9 @@ struct FrameContext
 
 struct FrameTiming
 {
+	ShadowPageStatistics stShadowPages;
+	std::array<std::uint32_t, 4> arrShadowFeedback{};
+	bool bCoarseShadowReused = false;
 	std::uint32_t nFrame = 0;
 	std::uint32_t nWidth = 0;
 	std::uint32_t nHeight = 0;
@@ -310,6 +317,7 @@ struct GpuPrimitive
 struct GpuDraw
 {
 	GpuPrimitive stPrimitive;
+	WorldBounds stLocalShadowBounds;
 	std::array<double, 16> arrTransform{};
 	std::array<float, 16> arrNormal{};
 	std::uint64_t nEntityId = 0;
@@ -665,6 +673,7 @@ public:
 		}
 		ReleaseGiResources();
 		ReleaseGeometryResources();
+		ReleaseShadowPages();
 	}
 	bool Initialize();
 	bool Run();
@@ -692,6 +701,12 @@ private:
 	bool ResolveNetworkBindings();
 	bool CreateDeferredPipeline();
 	bool CreateShadowPipeline();
+	bool UseVirtualShadows() const noexcept;
+	bool CreateShadowPages();
+	bool PrepareShadowPages(std::uint32_t nFrame);
+	bool RecordShadowPages(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork);
+	void DrawShadowPages(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
+	void ReleaseShadowPages();
 	bool CreatePostProcessPipeline();
 	bool CreatePostProcessTargets();
 	bool PreparePostProcess(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
@@ -845,6 +860,13 @@ private:
 	std::uint64_t nHistoryResets = 0;
 	ComOwner<ID3D12RootSignature> stShadowRoot;
 	std::array<ComOwner<ID3D12PipelineState>, 4> arrShadowPipelines;
+	GpuShadowPages stShadowPages;
+	std::vector<WorldBounds> arrPageCasterBounds;
+	std::array<std::uint64_t, FRAME_COUNT> arrCoarseShadowRevision{};
+	std::uint32_t nPendingShadowPageFrame = FRAME_COUNT;
+	bool bShadowPageCommandsExecuted = false;
+	UINT nLightingPageRoot = 0;
+	UINT nTransparentPageRoot = 0;
 	ComOwner<ID3D12DescriptorHeap> stSamplerHeap;
 	std::vector<ComOwner<ID3D12Resource>> arrTextures;
 	std::vector<ComOwner<ID3D12Resource>> arrTextureUploads;
@@ -1087,7 +1109,7 @@ bool VisualRuntime::Initialize()
 	nDsvStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	nViewStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	return LoadScene() && BuildGraph() && CreateFrameContexts() && CreateTargets() && CreatePipeline() &&
-			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline() && CreateReflectionPipeline() && CreateVolumePipeline())) && (bSceneMode ? (CreateSceneMesh() && CreateGeometryResources() && CreateGiResources() && CreateParticleMesh() && (!stForwardEffects.bTransparency || CreateTransparencyPipeline())) : CreateMesh()) && CreateConstantBuffers();
+			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline() && CreateReflectionPipeline() && CreateVolumePipeline())) && (bSceneMode ? (CreateSceneMesh() && CreateGeometryResources() && CreateGiResources() && CreateShadowPages() && CreateParticleMesh() && (!stForwardEffects.bTransparency || CreateTransparencyPipeline())) : CreateMesh()) && CreateConstantBuffers();
 }
 
 bool VisualRuntime::CreateFrameContexts()
@@ -2129,6 +2151,16 @@ bool VisualRuntime::CreateSceneMesh()
 		stDraw.nSourceAsset = stInstance.nAsset;
 		stDraw.nSourcePrimitive = stInstance.nPrimitive;
 		stDraw.nSourceNode = stInstance.nNode;
+		if (UseVirtualShadows())
+		{
+			const AnimationMatrix arrIdentity{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+			Assets::Diagnostics arrBoundsDiagnostics;
+			if (!TransformShadowBounds(stRenderScene.arrAssets[stInstance.nAsset].stMesh.arrPrimitives[stInstance.nPrimitive].arrVertices,
+									   arrIdentity, stDraw.stLocalShadowBounds, arrBoundsDiagnostics))
+			{
+				return Fail("Compute immutable virtual shadow local bounds");
+			}
+		}
 		if (bAnimationActive && stRenderScene.arrAssets[stInstance.nAsset].bAnimated)
 		{
 			const MeshPrimitive &stSource = stRenderScene.arrAssets[stInstance.nAsset].stMesh.arrPrimitives[stInstance.nPrimitive];
@@ -2617,6 +2649,12 @@ void VisualRuntime::ReleaseGeometryResources()
 
 bool VisualRuntime::DiscardUnsubmittedFrames()
 {
+	if (nPendingShadowPageFrame < FRAME_COUNT && !bShadowPageCommandsExecuted)
+	{
+		arrFrames[nPendingShadowPageFrame].stGraphicsList.Reset();
+		stShadowPages.Cancel();
+		nPendingShadowPageFrame = FRAME_COUNT;
+	}
 	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
 	{
 		const bool bGiPending = nPendingGiFrame == nFrame && !bGiCommandsExecuted;
@@ -2675,7 +2713,8 @@ bool VisualRuntime::CreateDeferredPipeline()
 			pLightingShader = stRenderConfiguration.stReflections.bEnabled ? "GiMaterialReflectionLighting.ps.cso" : "GiMaterialLighting.ps.cso";
 		}
 	}
-	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, pLightingShader);
+	const std::string strLightingShader = (UseVirtualShadows() ? "Virtual" : "") + std::string(pLightingShader);
+	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, strLightingShader.c_str());
 	const std::vector<std::uint8_t> arrToneMap = ReadShader(stConfig.strShaderDirectory, "ToneMap.ps.cso");
 	if (arrVertex.empty() || arrPixel.empty() || arrFullscreen.empty() || arrLighting.empty() || arrToneMap.empty())
 	{
@@ -2683,7 +2722,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	}
 	for (std::uint32_t nPipeline = 0; nPipeline < 2; ++nPipeline)
 	{
-		std::array<D3D12_DESCRIPTOR_RANGE, 9> arrDescriptorRanges{};
+		std::array<D3D12_DESCRIPTOR_RANGE, 10> arrDescriptorRanges{};
 		arrDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrDescriptorRanges[0].NumDescriptors = 5;
 		arrDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
@@ -2707,7 +2746,8 @@ bool VisualRuntime::CreateDeferredPipeline()
 		arrDescriptorRanges[7].NumDescriptors = 1;
 		arrDescriptorRanges[7].BaseShaderRegister = 15;
 		arrDescriptorRanges[8] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 16, 0, 0 };
-		std::array<D3D12_ROOT_PARAMETER, 10> arrParameters{};
+		arrDescriptorRanges[9] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 32, 0, 0 };
+		std::array<D3D12_ROOT_PARAMETER, 12> arrParameters{};
 		arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 		arrParameters[0].Descriptor.ShaderRegister = nPipeline == 0 ? 0 : 1;
 		arrParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -2746,6 +2786,16 @@ bool VisualRuntime::CreateDeferredPipeline()
 				arrParameters[nGiRoot + 1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 				arrParameters[nGiRoot + 1].Descriptor.ShaderRegister = 4;
 				arrParameters[nGiRoot + 1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+				stRoot.NumParameters += 2;
+			}
+			if (UseVirtualShadows())
+			{
+				nLightingPageRoot = stRoot.NumParameters;
+				arrParameters[nLightingPageRoot] = arrParameters[2];
+				arrParameters[nLightingPageRoot].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[9];
+				arrParameters[nLightingPageRoot + 1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+				arrParameters[nLightingPageRoot + 1].Descriptor.ShaderRegister = 5;
+				arrParameters[nLightingPageRoot + 1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 				stRoot.NumParameters += 2;
 			}
 		}
@@ -3368,12 +3418,13 @@ bool VisualRuntime::CreateTransparencyPipeline()
 	{
 		pPixelShader = bMaterialExtensions ? "GiMaterialTransparent.ps.cso" : "GiTransparent.ps.cso";
 	}
-	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, pPixelShader);
+	const std::string strPixelShader = (UseVirtualShadows() ? "Virtual" : "") + std::string(pPixelShader);
+	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, strPixelShader.c_str());
 	if (arrVertex.empty() || arrPixel.empty())
 	{
 		return Fail("Missing transparent shader bundle");
 	}
-	std::array<D3D12_DESCRIPTOR_RANGE, 11> arrDescriptorRanges{};
+	std::array<D3D12_DESCRIPTOR_RANGE, 12> arrDescriptorRanges{};
 	arrDescriptorRanges[0] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 5, 0, 0, 0 };
 	arrDescriptorRanges[1] = { D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 5, 0, 0, 0 };
 	arrDescriptorRanges[2] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 5, 0, 0 };
@@ -3385,7 +3436,8 @@ bool VisualRuntime::CreateTransparencyPipeline()
 	arrDescriptorRanges[8] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 14, 0, 0 };
 	arrDescriptorRanges[9] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 15, 0, 0 };
 	arrDescriptorRanges[10] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 16, 0, 0 };
-	std::array<D3D12_ROOT_PARAMETER, 16> arrParameters{};
+	arrDescriptorRanges[11] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 32, 0, 0 };
+	std::array<D3D12_ROOT_PARAMETER, 18> arrParameters{};
 	for (std::uint32_t nIndex = 0; nIndex < 2; ++nIndex)
 	{
 		arrParameters[nIndex].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -3432,6 +3484,16 @@ bool VisualRuntime::CreateTransparencyPipeline()
 	stEnvironmentSampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 	D3D12_ROOT_SIGNATURE_DESC stRoot{};
 	stRoot.NumParameters = nGiRoot + (bGi ? 2U : 0U);
+	if (UseVirtualShadows())
+	{
+		nTransparentPageRoot = stRoot.NumParameters;
+		arrParameters[nTransparentPageRoot] = arrParameters[12];
+		arrParameters[nTransparentPageRoot].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[11];
+		arrParameters[nTransparentPageRoot + 1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+		arrParameters[nTransparentPageRoot + 1].Descriptor.ShaderRegister = 5;
+		arrParameters[nTransparentPageRoot + 1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+		stRoot.NumParameters += 2;
+	}
 	stRoot.pParameters = arrParameters.data();
 	stRoot.NumStaticSamplers = 1;
 	stRoot.pStaticSamplers = &stEnvironmentSampler;
@@ -3764,6 +3826,11 @@ void VisualRuntime::DrawTransparency(ID3D12GraphicsCommandList *pList, std::uint
 	pList->SetGraphicsRootDescriptorTable(10, GpuView(nFrame * FRAME_VIEW_COUNT));
 	pList->SetGraphicsRootDescriptorTable(11, GpuView(nFrame * FRAME_VIEW_COUNT + VOLUME_INTEGRAL_VIEW));
 	pList->SetGraphicsRootDescriptorTable(12, GpuView(nFrame * FRAME_VIEW_COUNT + VOLUME_HISTORY_WRITE_VIEW));
+	if (UseVirtualShadows())
+	{
+		pList->SetGraphicsRootDescriptorTable(nTransparentPageRoot, stShadowPages.Receiver(nFrame));
+		pList->SetGraphicsRootConstantBufferView(nTransparentPageRoot + 1, stShadowPages.Constants(nFrame));
+	}
 	if (bMaterialExtensions)
 	{
 		pList->SetGraphicsRootDescriptorTable(13, GpuView(ENVIRONMENT_ALIAS_VIEW));
@@ -4418,6 +4485,199 @@ void VisualRuntime::ResolveTemporal(ID3D12GraphicsCommandList *pList, std::uint3
 	pList->Dispatch((nWidth + 7) / 8, (nHeight + 7) / 8, 1);
 }
 
+bool VisualRuntime::UseVirtualShadows() const noexcept
+{
+	return bSceneMode && stRenderConfiguration.stShadows.bEnabled && stRenderConfiguration.stShadows.stVirtualPages.bEnabled;
+}
+
+bool VisualRuntime::CreateShadowPages()
+{
+	if (!UseVirtualShadows())
+	{
+		return true;
+	}
+	std::array<ShadowPageDescriptors, SHADOW_PAGE_FRAME_COUNT> arrBlocks{};
+	const UINT nStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
+	{
+		const std::uint32_t nStart = nFrame * FRAME_VIEW_COUNT + SHADOW_PAGE_VIEW_START;
+		arrBlocks[nFrame] = { View(nStart), GpuView(nStart), nStride };
+	}
+	Assets::Diagnostics arrDiagnostics;
+	return stShadowPages.Initialize(stDevice.Get(), stRenderConfiguration.stShadows.stVirtualPages,
+									std::filesystem::u8path(stConfig.strShaderDirectory), arrBlocks, arrDiagnostics) ||
+			Fail(arrDiagnostics.empty() ? "Create virtual shadow pages" : arrDiagnostics.back().strMessage);
+}
+
+bool VisualRuntime::PrepareShadowPages(std::uint32_t nFrame)
+{
+	if (!UseVirtualShadows())
+	{
+		return true;
+	}
+	Assets::Diagnostics arrDiagnostics;
+	std::vector<AnimationMatrix> arrWorlds;
+	arrWorlds.reserve(stTemporalFrame.arrDraws.size());
+	arrPageCasterBounds.clear();
+	arrPageCasterBounds.reserve(arrDraws.size());
+	for (std::size_t nDraw = 0; nDraw < arrDraws.size(); ++nDraw)
+	{
+		const GpuDraw &stDraw = arrDraws[nDraw];
+		const AnimationMatrix &arrWorld = stTemporalFrame.arrDraws[nDraw].arrCurrentWorld;
+		arrWorlds.push_back(arrWorld);
+		const std::vector<MeshVertex> &arrVertices = bAnimationActive && arrDeformationLookup[nDraw] != UINT32_MAX ? stDeformationFrame.arrDraws[arrDeformationLookup[nDraw]].arrVertices : stRenderScene.arrAssets[stDraw.nSourceAsset].stMesh.arrPrimitives[stDraw.nSourcePrimitive].arrVertices;
+		WorldBounds stLocalBounds = stDraw.stLocalShadowBounds;
+		WorldBounds stBounds;
+		const AnimationMatrix arrIdentity{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+		const bool bDeformed = bAnimationActive && arrDeformationLookup[nDraw] != UINT32_MAX;
+		if ((bDeformed && !TransformShadowBounds(arrVertices, arrIdentity, stLocalBounds, arrDiagnostics)) ||
+			!TransformProbeGeometryBounds(stLocalBounds, arrWorld, stBounds))
+		{
+			return Fail("Compute virtual shadow caster bounds");
+		}
+		arrPageCasterBounds.push_back(stBounds);
+	}
+	std::vector<std::uint32_t> arrChanged;
+	if (bAnimationActive && bAnimationHistory)
+	{
+		std::vector<GiGeometryChange> arrChanges;
+		if (!BuildDeformationGeometryChanges(stCommittedDeformation, stDeformationFrame, arrCommittedAnimationWorlds, arrWorlds, arrChanges, arrDiagnostics))
+		{
+			return Fail("Compute virtual shadow deformation changes");
+		}
+		for (const GiGeometryChange &stChange : arrChanges)
+		{
+			arrChanged.push_back(stChange.nDraw);
+		}
+	}
+	ShadowPageConstants stConstants;
+	for (std::size_t nElement = 0; nElement < 16; ++nElement)
+	{
+		stConstants.arrInverseViewProjection[nElement] = static_cast<float>(stCameraMatrices.arrInverseViewProjection[nElement]);
+		stConstants.arrView[nElement] = static_cast<float>(stCameraMatrices.arrView[nElement]);
+		for (std::size_t nCascade = 0; nCascade < 4; ++nCascade)
+		{
+			stConstants.arrShadowProjection[nCascade][nElement] = static_cast<float>(stShadowData.arrCascades[nCascade].arrViewProjection[nElement]);
+		}
+	}
+	for (std::size_t nCascade = 0; nCascade < 4; ++nCascade)
+	{
+		stConstants.arrSplits[nCascade] = static_cast<float>(stShadowData.arrCascades[nCascade].dSplitFar);
+	}
+	stConstants.arrViewport = { static_cast<float>(nWidth), static_cast<float>(nHeight), static_cast<float>(SHADOW_CASCADE_BLEND_FRACTION), 1 };
+	if (!stShadowPages.Prepare(nFrame, stGraphics.stFence->GetCompletedValue(), stShadowData, arrPageCasterBounds, arrChanged, stConstants, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Prepare virtual shadow pages" : arrDiagnostics.back().strMessage);
+	}
+	nPendingShadowPageFrame = nFrame;
+	bShadowPageCommandsExecuted = false;
+	return true;
+}
+
+bool VisualRuntime::RecordShadowPages(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork)
+{
+	Assets::Diagnostics arrDiagnostics;
+	bool bResult = true;
+	if (eWork == PassWork::ShadowPageUpload)
+	{
+		bResult = stShadowPages.RecordUpload(nFrame, pList, arrDiagnostics);
+	}
+	else if (eWork == PassWork::ShadowPageRender)
+	{
+		DrawShadowPages(pList, nFrame);
+	}
+	else if (eWork == PassWork::ShadowPageFeedback)
+	{
+		bResult = stShadowPages.RecordFeedback(nFrame, pList, arrFrames[nFrame].stDepth.Get(), arrDiagnostics);
+	}
+	else if (eWork == PassWork::ShadowPageReadback)
+	{
+		bResult = stShadowPages.RecordReadback(nFrame, pList, arrDiagnostics);
+	}
+	else
+	{
+		return Fail("Unknown virtual shadow pass");
+	}
+	return bResult || Fail(arrDiagnostics.empty() ? "Record virtual shadow pass" : arrDiagnostics.back().strMessage);
+}
+
+void VisualRuntime::DrawShadowPages(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
+{
+	ID3D12DescriptorHeap *arrHeaps[]{ stViewHeap.Get(), stSamplerHeap.Get() };
+	pList->SetDescriptorHeaps(2, arrHeaps);
+	const D3D12_VIEWPORT stViewport{ 0, 0, static_cast<float>(SHADOW_PAGE_PHYSICAL_TEXELS), static_cast<float>(SHADOW_PAGE_PHYSICAL_TEXELS), 0, 1 };
+	const D3D12_RECT stScissor{ 0, 0, SHADOW_PAGE_PHYSICAL_TEXELS, SHADOW_PAGE_PHYSICAL_TEXELS };
+	pList->RSSetViewports(1, &stViewport);
+	pList->RSSetScissorRects(1, &stScissor);
+	pList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	BindSceneVertices(pList);
+	pList->IASetIndexBuffer(&stIndexView);
+	pList->SetGraphicsRootSignature(stShadowRoot.Get());
+	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+	const std::vector<ShadowPageRender> &arrPages = stShadowPages.Plan().arrRender;
+	for (std::uint32_t nUpdate = 0; nUpdate < arrPages.size(); ++nUpdate)
+	{
+		const ShadowPageRender &stPage = arrPages[nUpdate];
+		const D3D12_CPU_DESCRIPTOR_HANDLE stDepth = stShadowPages.Dsv(stPage.nPhysical);
+		pList->ClearDepthStencilView(stDepth, D3D12_CLEAR_FLAG_DEPTH, 0, 0, 0, nullptr);
+		pList->OMSetRenderTargets(0, nullptr, FALSE, &stDepth);
+		pList->SetGraphicsRootConstantBufferView(1, stShadowPages.PageConstants(nFrame, nUpdate));
+		for (std::size_t nDraw = 0; nDraw < arrDraws.size(); ++nDraw)
+		{
+			const GpuDraw &stDraw = arrDraws[nDraw];
+			const GpuMaterial &stMaterial = arrMaterials[stDraw.stPrimitive.nMaterial];
+			if (stMaterial.stData.eAlphaMode == AlphaMode::Blend)
+			{
+				continue;
+			}
+			if (!IntersectsShadowPage(arrPageCasterBounds[nDraw], stPage.arrViewProjection))
+			{
+				continue;
+			}
+			const std::size_t nPipeline = (stDraw.bMirrored ? 1 : 0) + (stMaterial.stData.bDoubleSided ? 2 : 0);
+			pList->SetPipelineState(arrShadowPipelines[nPipeline].Get());
+			pList->SetGraphicsRootConstantBufferView(0, arrFrames[nFrame].stConstants->GetGPUVirtualAddress() + FRAME_CONSTANT_BYTES + nDraw * DRAW_CONSTANT_BYTES);
+			pList->SetGraphicsRootDescriptorTable(2, GpuView(stMaterial.nViewStart));
+			D3D12_GPU_DESCRIPTOR_HANDLE stSampler = stSamplerHeap->GetGPUDescriptorHandleForHeapStart();
+			stSampler.ptr += static_cast<UINT64>(nSamplerStride) * stDraw.stPrimitive.nMaterial * MATERIAL_TEXTURE_COUNT;
+			pList->SetGraphicsRootDescriptorTable(3, stSampler);
+			pList->DrawIndexedInstanced(stDraw.stPrimitive.nIndexCount, 1, stDraw.stPrimitive.nFirstIndex, stDraw.stPrimitive.nBaseVertex, 0);
+		}
+	}
+}
+
+void VisualRuntime::ReleaseShadowPages()
+{
+	if (stShadowPages.AllocatedBytes() == 0)
+	{
+		return;
+	}
+	Assets::Diagnostics arrDiagnostics;
+	const std::uint64_t nCompleted = stGraphics.stFence->GetCompletedValue();
+	bool bReleased = true;
+	if (nPendingShadowPageFrame < FRAME_COUNT)
+	{
+		if (bShadowPageCommandsExecuted)
+		{
+			bReleased = stShadowPages.Submit(nPendingShadowPageFrame, nCompleted, arrDiagnostics);
+		}
+		else
+		{
+			arrFrames[nPendingShadowPageFrame].stGraphicsList.Reset();
+			stShadowPages.Cancel();
+		}
+	}
+	bReleased = bReleased && stShadowPages.Release(nCompleted, arrDiagnostics);
+	if (!bReleased && SUCCEEDED(stDevice->GetDeviceRemovedReason()))
+	{
+		std::cerr << "Fatal virtual shadow retirement failure\n";
+		std::abort();
+	}
+	nPendingShadowPageFrame = FRAME_COUNT;
+	bShadowPageCommandsExecuted = false;
+	arrCoarseShadowRevision = {};
+}
+
 bool VisualRuntime::CreateShadowPipeline()
 {
 	const std::vector<std::uint8_t> arrVertex = ReadShader(stConfig.strShaderDirectory, "Shadow.vs.cso");
@@ -4486,6 +4746,11 @@ bool VisualRuntime::CreateShadowPipeline()
 
 void VisualRuntime::DrawShadows(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, bool bLocal)
 {
+	if (!bLocal && UseVirtualShadows() && stRenderConfiguration.stShadows.stVirtualPages.bCache &&
+		arrCoarseShadowRevision[nFrame] == stShadowPages.Plan().nSceneRevision)
+	{
+		return;
+	}
 	const float fResolution = static_cast<float>(bLocal ? stRenderConfiguration.stShadows.nLocalResolution : stRenderConfiguration.stShadows.nResolution);
 	const D3D12_VIEWPORT stViewport{ 0, 0, fResolution, fResolution, 0, 1 };
 	const D3D12_RECT stScissor{ 0, 0, static_cast<LONG>(fResolution), static_cast<LONG>(fResolution) };
@@ -4640,7 +4905,20 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 			const std::vector<MeshVertex> &arrVertices = bAnimationActive && arrDeformationLookup[nDraw] != UINT32_MAX
 					? stDeformationFrame.arrDraws[arrDeformationLookup[nDraw]].arrVertices
 					: stRenderScene.arrAssets[stDraw.nSourceAsset].stMesh.arrPrimitives[stDraw.nSourcePrimitive].arrVertices;
-			if (!TransformShadowBounds(arrVertices, arrWorld, stBounds, arrDiagnostics))
+			bool bBoundsValid = false;
+			if (UseVirtualShadows())
+			{
+				const AnimationMatrix arrIdentity{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+				WorldBounds stLocal = stDraw.stLocalShadowBounds;
+				const bool bDeformed = bAnimationActive && arrDeformationLookup[nDraw] != UINT32_MAX;
+				bBoundsValid = (!bDeformed || TransformShadowBounds(arrVertices, arrIdentity, stLocal, arrDiagnostics)) &&
+						TransformProbeGeometryBounds(stLocal, arrWorld, stBounds);
+			}
+			else
+			{
+				bBoundsValid = TransformShadowBounds(arrVertices, arrWorld, stBounds, arrDiagnostics);
+			}
+			if (!bBoundsValid)
 			{
 				return Fail("Compute shadow caster bounds");
 			}
@@ -4893,6 +5171,11 @@ void VisualRuntime::DrawLighting(ID3D12GraphicsCommandList *pList, std::uint32_t
 	pList->SetGraphicsRootDescriptorTable(3, GpuView(ENVIRONMENT_VIEW_START));
 	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 8));
 	pList->SetGraphicsRootDescriptorTable(5, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
+	if (UseVirtualShadows())
+	{
+		pList->SetGraphicsRootDescriptorTable(nLightingPageRoot, stShadowPages.Receiver(nFrame));
+		pList->SetGraphicsRootConstantBufferView(nLightingPageRoot + 1, stShadowPages.Constants(nFrame));
+	}
 	if (bMaterialExtensions)
 	{
 		pList->SetGraphicsRootDescriptorTable(6, GpuView(nFrame * FRAME_VIEW_COUNT + MATERIAL_PARAMETERS_VIEW));
@@ -5092,7 +5375,7 @@ bool VisualRuntime::BuildGraph()
 	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, bAnimationActive))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, bAnimationActive, UseVirtualShadows()))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -5339,6 +5622,14 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			arrResources[stRenderPipeline.nVolumeHistoryWrite] = arrVolumeHistory[1 - nVolumeRead].Get();
 		}
 		arrResources[stRenderPipeline.nDirectionalShadow] = stFrame.stDirectionalShadow.Get();
+		if (UseVirtualShadows())
+		{
+			arrResources[stRenderPipeline.nShadowPagePool] = stShadowPages.Pool();
+			arrResources[stRenderPipeline.nShadowPageTable] = stShadowPages.Table(nIndex);
+			arrResources[stRenderPipeline.nShadowPageFeedback] = stShadowPages.Feedback(nIndex);
+			arrResources[stRenderPipeline.nShadowPageUpload] = stShadowPages.Upload(nIndex);
+			arrResources[stRenderPipeline.nShadowPageReadback] = stShadowPages.Readback(nIndex);
+		}
 		arrResources[stRenderPipeline.nLocalShadow] = stFrame.stLocalShadow.Get();
 		arrResources[stRenderPipeline.nMotion] = stFrame.stMotion.Get();
 		arrResources[stRenderPipeline.nObjectId] = stFrame.stObjectId.Get();
@@ -5383,7 +5674,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		stTiming.dLightingSeconds = dSeconds;
 		stTiming.dDirectionalIlluminance = stFrameLight.dIlluminance;
 		if (!PrepareAnimation(dSeconds) || !UpdateEffectTransforms() || !UpdateConstantBuffer(stFrame) || !PrepareAnimationUpload(nIndex) ||
-			!UpdateVolumeParameters(nIndex) || !UpdateParticleBuffers(nIndex, dSeconds) || !PrepareGiFrame(nIndex) || !PrepareGeometryFrame(nIndex))
+			!UpdateVolumeParameters(nIndex) || !UpdateParticleBuffers(nIndex, dSeconds) || !PrepareGiFrame(nIndex) || !PrepareGeometryFrame(nIndex) || !PrepareShadowPages(nIndex))
 		{
 			(void)DiscardUnsubmittedFrames();
 			return false;
@@ -5396,6 +5687,13 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			stTiming.nAnimatedVertices = stDeformationFrame.nVertexCount;
 			stTiming.nAnimationGiChangedDraws = nAnimationGiChangedDraws;
 			stTiming.bAnimationHistoryValid = bAnimationHistory && stTemporalFrame.bHistoryValid;
+		}
+		if (UseVirtualShadows())
+		{
+			stTiming.stShadowPages = stShadowPages.Plan().stStatistics;
+			stTiming.arrShadowFeedback = stShadowPages.FeedbackStatistics();
+			stTiming.bCoarseShadowReused = stRenderConfiguration.stShadows.stVirtualPages.bCache &&
+					arrCoarseShadowRevision[nIndex] == stShadowPages.Plan().nSceneRevision;
 		}
 		if (stRenderConfiguration.stGlobalIllumination.bEnabled)
 		{
@@ -5489,6 +5787,13 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		else if (eWork >= PassWork::GeometryUpload && eWork <= PassWork::GeometryReadback)
 		{
 			if (!RecordGeometryPass(pList, nIndex, eWork, stRenderPipeline.arrPassMipIndex[stPass.nPass]))
+			{
+				return false;
+			}
+		}
+		else if (eWork >= PassWork::ShadowPageUpload && eWork <= PassWork::ShadowPageReadback)
+		{
+			if (!RecordShadowPages(pList, nIndex, eWork))
 			{
 				return false;
 			}
@@ -5621,6 +5926,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	bGiCommandsExecuted = nPendingGiFrame == nIndex;
 	bGeometryCommandsExecuted = nPendingGeometryFrame == nIndex;
 	bAnimationCommandsExecuted = nPendingAnimationFrame == nIndex;
+	bShadowPageCommandsExecuted = nPendingShadowPageFrame == nIndex;
 	stGraphics.stQueue->ExecuteCommandLists(1, &pGraphicsList);
 	const HRESULT nPresent = stSwapchain->Present(stConfig.bVsync ? 1 : 0, !stConfig.bVsync && bTearing ? DXGI_PRESENT_ALLOW_TEARING : 0);
 	if (!stGraphics.Signal(stFrame.nGraphicsFence))
@@ -5656,6 +5962,17 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		}
 		nPendingGeometryFrame = FRAME_COUNT;
 		bGeometryCommandsExecuted = false;
+	}
+	if (UseVirtualShadows())
+	{
+		Assets::Diagnostics arrDiagnostics;
+		if (!stShadowPages.Submit(nIndex, stFrame.nGraphicsFence, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Commit virtual shadow pages" : arrDiagnostics.back().strMessage);
+		}
+		arrCoarseShadowRevision[nIndex] = stShadowPages.Plan().nSceneRevision;
+		nPendingShadowPageFrame = FRAME_COUNT;
+		bShadowPageCommandsExecuted = false;
 	}
 	if (FAILED(nPresent))
 	{
@@ -5724,6 +6041,7 @@ bool VisualRuntime::Resize()
 		}
 	}
 	ReleaseGeometryResources();
+	ReleaseShadowPages();
 	for (std::uint32_t nIndex = 0; nIndex < FRAME_COUNT; ++nIndex)
 	{
 		arrBackbuffers[nIndex].Reset();
@@ -5766,7 +6084,7 @@ bool VisualRuntime::Resize()
 	}
 	++nResizes;
 	bGeometryActive = stRenderConfiguration.stGeometry.bEnabled && !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
-	if (!ResetTemporalHistory() || !CreateTargets())
+	if (!ResetTemporalHistory() || !CreateTargets() || !CreateShadowPages())
 	{
 		return false;
 	}
@@ -6210,6 +6528,11 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["shadow_cascades"] = JsonValue(static_cast<std::int64_t>(bSceneMode ? 4 : 0));
 	mapReport["shadow_resolution"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stShadows.nResolution));
 	mapReport["shadow_filter"] = JsonValue("pcf_3x3_cascade_blend");
+	mapReport["virtual_shadows_enabled"] = JsonValue(UseVirtualShadows());
+	mapReport["virtual_shadow_cache"] = JsonValue(stRenderConfiguration.stShadows.stVirtualPages.bCache);
+	mapReport["virtual_shadow_resolution"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stShadows.stVirtualPages.nResolution));
+	mapReport["virtual_shadow_physical_pages"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stShadows.stVirtualPages.nPhysicalPages));
+	mapReport["virtual_shadow_bytes"] = JsonValue(static_cast<std::int64_t>(stShadowPages.AllocatedBytes()));
 	mapReport["local_lights"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.arrPointLights.size() + stRenderConfiguration.arrSpotLights.size()));
 	mapReport["local_shadow_views"] = JsonValue(static_cast<std::int64_t>(stLocalShadowData.arrViews.size()));
 	mapReport["local_shadow_resolution"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stShadows.nLocalResolution));
@@ -6412,6 +6735,19 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 		mapTiming["animation_max_local_motion"] = JsonValue(stTiming.dAnimationMaxMotion);
 		mapTiming["animation_vertices"] = JsonValue(static_cast<std::int64_t>(stTiming.nAnimatedVertices));
 		mapTiming["animation_gi_changed_draws"] = JsonValue(static_cast<std::int64_t>(stTiming.nAnimationGiChangedDraws));
+		mapTiming["shadow_pages_requested"] = JsonValue(static_cast<std::int64_t>(stTiming.stShadowPages.nRequested));
+		mapTiming["shadow_pages_resident"] = JsonValue(static_cast<std::int64_t>(stTiming.stShadowPages.nResident));
+		mapTiming["shadow_pages_reused"] = JsonValue(static_cast<std::int64_t>(stTiming.stShadowPages.nReused));
+		mapTiming["shadow_pages_rendered"] = JsonValue(static_cast<std::int64_t>(stTiming.stShadowPages.nRendered));
+		mapTiming["shadow_pages_invalidated"] = JsonValue(static_cast<std::int64_t>(stTiming.stShadowPages.nInvalidated));
+		mapTiming["shadow_pages_evicted"] = JsonValue(static_cast<std::int64_t>(stTiming.stShadowPages.nEvicted));
+		mapTiming["shadow_pages_deferred"] = JsonValue(static_cast<std::int64_t>(stTiming.stShadowPages.nDeferred));
+		mapTiming["shadow_pages_rejected_feedback"] = JsonValue(static_cast<std::int64_t>(stTiming.stShadowPages.nRejectedFeedback));
+		mapTiming["shadow_feedback_receivers"] = JsonValue(static_cast<std::int64_t>(stTiming.arrShadowFeedback[0]));
+		mapTiming["shadow_feedback_mapped_receivers"] = JsonValue(static_cast<std::int64_t>(stTiming.arrShadowFeedback[1]));
+		mapTiming["shadow_feedback_missing_receivers"] = JsonValue(static_cast<std::int64_t>(stTiming.arrShadowFeedback[2]));
+		mapTiming["shadow_feedback_invalid"] = JsonValue(static_cast<std::int64_t>(stTiming.arrShadowFeedback[3]));
+		mapTiming["shadow_coarse_reused"] = JsonValue(stTiming.bCoarseShadowReused);
 		mapTiming["animation_history_valid"] = JsonValue(stTiming.bAnimationHistoryValid);
 		if (stTiming.bPostReady)
 		{

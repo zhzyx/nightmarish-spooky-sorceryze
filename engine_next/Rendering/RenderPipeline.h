@@ -86,6 +86,10 @@ enum class PassWork : std::uint8_t
 	GeometryCullColor = 46,
 	GeometryReadback = 47,
 	DeformationUpload = 60,
+	ShadowPageUpload = 80,
+	ShadowPageRender = 81,
+	ShadowPageFeedback = 82,
+	ShadowPageReadback = 83,
 };
 
 struct ForwardEffects
@@ -146,6 +150,11 @@ struct RenderPipeline
 	ResourceId nDeformedVertices = INVALID_RESOURCE;
 	ResourceId nPreviousPositions = INVALID_RESOURCE;
 	ResourceId nDeformationUpload = INVALID_RESOURCE;
+	ResourceId nShadowPagePool = INVALID_RESOURCE;
+	ResourceId nShadowPageTable = INVALID_RESOURCE;
+	ResourceId nShadowPageUpload = INVALID_RESOURCE;
+	ResourceId nShadowPageFeedback = INVALID_RESOURCE;
+	ResourceId nShadowPageReadback = INVALID_RESOURCE;
 	std::array<ResourceId, 2> arrGeometryArguments{ INVALID_RESOURCE, INVALID_RESOURCE };
 	std::array<ResourceId, 2> arrGeometryCounters{ INVALID_RESOURCE, INVALID_RESOURCE };
 	// Additional reflection color levels 1..N-1. Before tracing, level zero is
@@ -187,6 +196,6 @@ struct RenderPipeline
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bDeformation = false);
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bDeformation = false, bool bVirtualShadows = false);
 
 } // namespace EngineNext::Rendering

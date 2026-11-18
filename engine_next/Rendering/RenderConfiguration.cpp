@@ -355,11 +355,50 @@ bool ParseDirectionalLight(const Serialization::JsonValue &stValue, DirectionalL
 	return true;
 }
 
+bool ParseVirtualShadows(const Serialization::JsonValue &stValue, VirtualShadowSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.shadows.virtual_pages";
+	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pObject == nullptr || !RequiredFields(*pObject, {}, { "enabled", "cache", "resolution", "physical_pages", "updates_per_frame", "memory_budget_bytes" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itEnabled = pObject->find("enabled");
+	if (itEnabled != pObject->end() && !itEnabled->second.GetBool(out_stSettings.bEnabled))
+	{
+		return Fail("type", strPath + ".enabled", "Expected a boolean.", out_arrDiagnostics);
+	}
+	const Serialization::JsonValue::Object::const_iterator itCache = pObject->find("cache");
+	if (itCache != pObject->end() && !itCache->second.GetBool(out_stSettings.bCache))
+	{
+		return Fail("type", strPath + ".cache", "Expected a boolean.", out_arrDiagnostics);
+	}
+	const std::array<const char *, 4> arrNames{ "resolution", "physical_pages", "updates_per_frame", "memory_budget_bytes" };
+	std::array<std::uint64_t, 4> arrValues{ out_stSettings.nResolution, out_stSettings.nPhysicalPages, out_stSettings.nUpdatesPerFrame, out_stSettings.nMemoryBudget };
+	for (std::size_t nIndex = 0; nIndex < arrNames.size(); ++nIndex)
+	{
+		if (pObject->find(arrNames[nIndex]) != pObject->end())
+		{
+			std::int64_t nValue = 0;
+			if (!Assets::Integer(*pObject, arrNames[nIndex], strPath, nValue, out_arrDiagnostics) || nValue < 0 || nValue > UINT32_MAX)
+			{
+				return Fail("range", strPath + "." + arrNames[nIndex], "Expected a nonnegative 32-bit integer.", out_arrDiagnostics);
+			}
+			arrValues[nIndex] = static_cast<std::uint64_t>(nValue);
+		}
+	}
+	out_stSettings.nResolution = static_cast<std::uint32_t>(arrValues[0]);
+	out_stSettings.nPhysicalPages = static_cast<std::uint32_t>(arrValues[1]);
+	out_stSettings.nUpdatesPerFrame = static_cast<std::uint32_t>(arrValues[2]);
+	out_stSettings.nMemoryBudget = arrValues[3];
+	return ValidateVirtualShadowSettings(out_stSettings, out_arrDiagnostics);
+}
+
 bool ParseShadows(const Serialization::JsonValue &stValue, ShadowSettings &out_stShadows, Assets::Diagnostics &out_arrDiagnostics)
 {
 	const std::string strPath = "$.shadows";
 	const Serialization::JsonValue::Object *pShadows = Assets::Object(stValue, strPath, out_arrDiagnostics);
-	if (pShadows == nullptr || !RequiredFields(*pShadows, { "enabled", "resolution", "distance", "split_lambda", "depth_bias", "normal_bias" }, { "local_resolution", "filter", "light_radius" }, strPath, out_arrDiagnostics))
+	if (pShadows == nullptr || !RequiredFields(*pShadows, { "enabled", "resolution", "distance", "split_lambda", "depth_bias", "normal_bias" }, { "local_resolution", "filter", "light_radius", "virtual_pages" }, strPath, out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -410,6 +449,11 @@ bool ParseShadows(const Serialization::JsonValue &stValue, ShadowSettings &out_s
 			return Fail("shadow_filter", strPath + ".filter", "Expected pcf or pcss.", out_arrDiagnostics);
 		}
 		out_stShadows.eFilter = strFilter == "pcf" ? ShadowFilter::Pcf : ShadowFilter::Pcss;
+	}
+	const Serialization::JsonValue::Object::const_iterator itVirtual = pShadows->find("virtual_pages");
+	if (itVirtual != pShadows->end() && !ParseVirtualShadows(itVirtual->second, out_stShadows.stVirtualPages, out_arrDiagnostics))
+	{
+		return false;
 	}
 	return pShadows->find("light_radius") == pShadows->end() ||
 			BoundedNumber(*pShadows, "light_radius", strPath, 0, 10, out_stShadows.dLightRadius, out_arrDiagnostics);
