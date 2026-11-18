@@ -106,11 +106,13 @@ struct GeometryFeatures
 	bool bEnabled = false;
 	bool bOcclusion = true;
 	std::uint32_t nHiZMips = 1;
+	bool bPaged = false;
 };
 
 struct RenderPipeline
 {
 	CompiledGraph stGraph;
+	ResourceId nColorLut = INVALID_RESOURCE;
 	// Indexed by the stable PassId, independently of the compiled execution order.
 	std::vector<PassWork> arrWorkByPass;
 	// Indexed by PassId. Bloom and reflection color-mip passes have valid indices.
@@ -148,6 +150,8 @@ struct RenderPipeline
 	std::array<ResourceId, 3> arrGiRead{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	std::array<ResourceId, 3> arrGiWrite{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	ResourceId nGeometryClusters = INVALID_RESOURCE;
+	// The host expands each pool barrier to every resident and pending page buffer.
+	ResourceId nGeometryPages = INVALID_RESOURCE;
 	ResourceId nGeometryHiZ = INVALID_RESOURCE;
 	ResourceId nGeometryReadback = INVALID_RESOURCE;
 	ResourceId nDeformedVertices = INVALID_RESOURCE;
@@ -201,6 +205,6 @@ struct RenderPipeline
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false, bool bDeformation = false, bool bVirtualShadows = false, std::uint32_t nShadowPageCount = 512);
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false, bool bDeformation = false, bool bScreenEffects = false, bool bVirtualShadows = false, std::uint32_t nShadowPageCount = 512);
 
 } // namespace EngineNext::Rendering

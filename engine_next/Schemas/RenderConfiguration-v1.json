@@ -497,7 +497,12 @@
           "default": 1
         },
         "sample_count": {
-          "enum": [8, 16, 32, 64],
+          "enum": [
+            8,
+            16,
+            32,
+            64
+          ],
           "default": 32
         }
       },
@@ -1073,6 +1078,39 @@
           "minimum": 1,
           "maximum": 4294967295,
           "default": 262144
+        },
+        "lod_enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "pixel_error": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "default": 1
+        },
+        "lod_hysteresis": {
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 1,
+          "default": 0.1
+        },
+        "page_gpu_bytes": {
+          "type": "integer",
+          "minimum": 65536,
+          "maximum": 2147483648,
+          "default": 134217728
+        },
+        "page_staging_bytes": {
+          "type": "integer",
+          "minimum": 65536,
+          "maximum": 268435456,
+          "default": 16777216
+        },
+        "max_page_loads": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 256,
+          "default": 16
         }
       },
       "$comment": "The command limit controls GPU allocation planning. Capacity exhaustion selects the complete conventional draw path and is reported."
@@ -1097,6 +1135,43 @@
         },
         "start_seconds": {
           "type": "number"
+        }
+      }
+    },
+    "screen_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "sharpening": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "vignette_intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "vignette_inner_radius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "vignette_outer_radius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 2
+        },
+        "lut_asset_id": {
+          "type": "string"
+        },
+        "lut_intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       }
     }

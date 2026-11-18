@@ -15,6 +15,13 @@ import BuildRuntime as RuntimeSupport
 import PackageVisualRuntime
 
 CORE_SOURCES = [
+    "engine_next/Rendering/PagedGeometry.cpp",
+    "engine_next/Rendering/PageResidency.cpp",
+    "engine_next/Rendering/Cook/GpuPagedPackage.cpp",
+    "engine_next/Rendering/LodSelection.cpp",
+    "engine_next/Rendering/Cook/GeometryLod.cpp",
+    "engine_next/thirdparty/meshoptimizer/simplifier.cpp",
+    "engine_next/thirdparty/meshoptimizer/allocator.cpp",
     "engine_next/Rendering/FrameGraph.cpp",
     "engine_next/Rendering/RenderPipeline.cpp",
     "engine_next/Rendering/RenderConfiguration.cpp",
@@ -24,6 +31,7 @@ CORE_SOURCES = [
     "engine_next/Rendering/LocalShadowData.cpp",
     "engine_next/Rendering/TemporalState.cpp",
     "engine_next/Rendering/PostProcessSettings.cpp",
+    "engine_next/Rendering/ColorLut.cpp",
     "engine_next/Rendering/LightTimeline.cpp",
     "engine_next/Rendering/ReflectionSettings.cpp",
     "engine_next/Rendering/AmbientOcclusionSettings.cpp",
@@ -81,8 +89,14 @@ VISUAL_SOURCES = [
     "engine_next/Platform/Windows/GpuDeformation.cpp",
     "engine_next/Platform/Windows/GpuShadowPages.cpp",
     "engine_next/Platform/Windows/GpuGeometry.cpp",
+    "engine_next/Platform/Windows/GpuPagedGeometry.cpp",
 ]
 TEST_SOURCES = [
+    "engine_next/Tests/Rendering/TestPagedGeometry.cpp",
+    "engine_next/Tests/Rendering/TestPageResidency.cpp",
+    "engine_next/Tests/Rendering/TestGpuPagedPackage.cpp",
+    "engine_next/Tests/Rendering/TestLodSelection.cpp",
+    "engine_next/Tests/Rendering/TestGeometryLod.cpp",
     "engine_next/Tests/RenderingTestMain.cpp",
     "engine_next/Tests/Rendering/TestFrameGraph.cpp",
     "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
@@ -95,6 +109,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestTemporalSampling.cpp",
     "engine_next/Tests/Rendering/TestTemporalState.cpp",
     "engine_next/Tests/Rendering/TestPostProcessSettings.cpp",
+    "engine_next/Tests/Rendering/TestColorLut.cpp",
     "engine_next/Tests/Rendering/TestLightTimeline.cpp",
     "engine_next/Tests/Rendering/TestReflectionSettings.cpp",
     "engine_next/Tests/Rendering/TestAmbientOcclusionSettings.cpp",
@@ -135,6 +150,9 @@ TEST_SOURCES = [
 PUBLIC_HEADERS = [
     "EngineNext/Rendering/DeformationFrame.h",
     "EngineNext/Rendering/AnimationData.h",
+    "EngineNext/Rendering/PagedGeometry.h",
+    "EngineNext/Rendering/PageResidency.h",
+    "EngineNext/Rendering/GeometryLod.h",
     "EngineNext/Rendering/FrameGraph.h",
     "EngineNext/Rendering/MeshData.h",
     "EngineNext/Rendering/ImageData.h",
@@ -146,6 +164,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/LocalShadowData.h",
     "EngineNext/Rendering/TemporalState.h",
     "EngineNext/Rendering/PostProcessSettings.h",
+    "EngineNext/Rendering/ColorLut.h",
     "EngineNext/Rendering/LightTimeline.h",
     "EngineNext/Rendering/ReflectionSettings.h",
     "EngineNext/Rendering/AmbientOcclusionSettings.h",
@@ -181,6 +200,7 @@ SHADERS = [
         ["-D", "MATERIAL_EXTENSION_STAGE=1", "-D", "ENVIRONMENT_IMPORTANCE_STAGE=1"],
     ),
     ("ToneMapPS", "ps_6_0", "ToneMap.ps.cso", ["-D", "TONEMAP_STAGE=1"]),
+    ("ToneMapPS", "ps_6_0", "ScreenEffects.ps.cso", ["-D", "TONEMAP_STAGE=1", "-D", "SCREEN_EFFECTS_STAGE=1"]),
     ("ShadowVS", "vs_6_0", "Shadow.vs.cso", []),
     ("ShadowPS", "ps_6_0", "Shadow.ps.cso", []),
     ("CSMain", "cs_6_0", "Temporal.cs.cso", []),
@@ -253,6 +273,7 @@ SHADERS = [
     ("TraceCS", "cs_6_5", "GiTrace.cs.cso", []),
     ("UpdateCS", "cs_6_5", "GiIntegrate.cs.cso", []),
     ("CullCS", "cs_6_0", "GeometryCull.cs.cso", []),
+    ("CullCS", "cs_6_0", "GeometryPagedCull.cs.cso", ["-D", "PAGED_GEOMETRY_STAGE=1"]),
     ("CopyDepthCS", "cs_6_0", "GeometryHiZCopy.cs.cso", []),
     ("ReduceDepthCS", "cs_6_0", "GeometryHiZReduce.cs.cso", []),
     ("DepthVS", "vs_6_0", "GeometryDepth.vs.cso", []),
@@ -616,7 +637,7 @@ def compile_shaders(args, commands):
                 else "AmbientOcclusion.hlsl"
                 if name.startswith("AmbientOcclusion")
                 else "GeometryCull.hlsl"
-                if name == "GeometryCull.cs.cso"
+                if name in ("GeometryCull.cs.cso", "GeometryPagedCull.cs.cso")
                 else "GeometryHiZ.hlsl"
                 if name.startswith("GeometryHiZ")
                 else "GeometryDepth.hlsl"
@@ -724,7 +745,7 @@ def build(args):
         "engine_next/Tools/BuildRuntime.py",
         *[
             path.relative_to(args.repo).as_posix()
-            for name in ("enet", "zlib", "libjpeg-turbo")
+            for name in ("enet", "zlib", "libjpeg-turbo", "meshoptimizer")
             for path in (args.repo / "engine_next/thirdparty" / name).rglob("*")
             if path.is_file()
         ],
@@ -740,6 +761,7 @@ def build(args):
                 "engine_next/Rendering/Shaders/Deferred.hlsl",
                 "engine_next/Rendering/Shaders/AmbientOcclusion.hlsl",
                 "engine_next/Rendering/Shaders/AmbientOcclusionMath.hlsli",
+                "engine_next/Rendering/Shaders/ScreenEffects.hlsli",
                 "engine_next/Rendering/Shaders/Shadow.hlsl",
                 "engine_next/Rendering/Shaders/ShadowPageGpu.hlsli",
                 "engine_next/Rendering/Shaders/ShadowPageFeedback.hlsl",

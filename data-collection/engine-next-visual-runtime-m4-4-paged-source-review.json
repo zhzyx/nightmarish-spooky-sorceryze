@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "issue_number": 1506,
+  "parent_issue_number": 1323,
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "recorded_at_utc": "2026-11-18T11:49:20.847496+00:00",
+  "candidate": "paged-residency-r10",
+  "native_key": "e0897ff8aa4a2775392a44a95da4a963550374857c80052ac462d18937ce92e8",
+  "record_compiled_by": "codex/m42_cook_review",
+  "review_role": {
+    "current_delta_reviewer": "codex/root",
+    "current_delta_independent": true,
+    "implementation_author": "codex/m42_cook_review",
+    "scope": "Same-frame cut reuse, E/paging integration conflicts, pending/cancel/submit lifecycle and current build input binding.",
+    "excluded": "This wrapper does not turn author self-review or historical reviews into an independent review of every inherited source file."
+  },
+  "status": "no_confirmed_finding_in_current_reviewed_delta",
+  "current_source_scope": [
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "9315db3176481c75bc4250c3142cefe36e3f5b7bd5d59856c997f92463b4824f",
+      "size_bytes": 329692
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "sha256": "cab5f6c994583c21b9c372b23a7d303ff1dff8e8787d3aba69a6018a0f541251",
+      "size_bytes": 42290
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "sha256": "2f5d2d70a45cd534e3f334eb334ecf08c8a559805c258d4eefb37e42abda4d79",
+      "size_bytes": 9486
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderScene.h",
+      "sha256": "7f9a607004187652eff69edc7ef6892fbc82167c2d17223a1b389f5e38f1579a",
+      "size_bytes": 5085
+    },
+    {
+      "path": "engine_next/Tools/BuildRuntime.py",
+      "sha256": "204a2cb7ae8f44472c33f4471674e48d293b65d26dbf157441133d346bc8b758",
+      "size_bytes": 34047
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "sha256": "700aaee48591841a0c0e538713b9b0180b00403e0bfd626b2d1334fcc79e7f60",
+      "size_bytes": 39493
+    },
+    {
+      "path": "engine_next/Platform/Windows/GpuPagedGeometry.cpp",
+      "sha256": "297fc9821c976d639ad1943cac79d83dc2633c4ebbc60ac61f80a027048e443d",
+      "size_bytes": 26232
+    },
+    {
+      "path": "engine_next/Platform/Windows/GpuPagedGeometry.h",
+      "sha256": "842eb7489a98b86ee5124a0f0fcfbc9964b36b3b70cc83e56dbfe55378f48b0b",
+      "size_bytes": 6938
+    }
+  ],
+  "current_delta_review": {
+    "path": "build/engine_next/pages-r10-integration/RootReview.json",
+    "sha256": "c9ad793c337c2afdd94a74735dd4aa8158929fd9c1ab4ea93c00c1680ecf66bc",
+    "size_bytes": 2384
+  },
+  "reviewed_areas": [
+    "Same-frame resident bitmap comparison preserves the full original public selection validation on the first selection.",
+    "World matrices, view, settings and committed previous selection remain unchanged within the owner-thread Prepare call.",
+    "Pages become UploadReady after CPU load and remain absent from the Resident snapshot until GPU upload completion.",
+    "Changed residency still invokes the original second selection; BuildActive resolves current slots and generations.",
+    "Selection reuse moves the original selection only after its request list is consumed. Failure continues through Discard.",
+    "E and paging retain separate pending, executed, cancellation and post-fence commit state.",
+    "Animated load and resize keep conventional raster fallback; paged-active derives from the final geometry-active flag.",
+    "Standalone BuildRuntime keeps the extracted native identity helper and includes GeometryLod and meshoptimizer inputs."
+  ],
+  "historical_reviews": [
+    {
+      "identity_scope": "Historical snapshot; not asserted byte-identical to all current sources.",
+      "record": {
+        "path": "build/engine_next/paged-independent-capture/Review.json",
+        "sha256": "821220400cdfd1e88b2e1f24b5cab033e632133f11e236bb33baa75c789e24eb",
+        "size_bytes": 3675
+      }
+    },
+    {
+      "identity_scope": "Historical snapshot; not asserted byte-identical to all current sources.",
+      "record": {
+        "path": "build/engine_next/paged-root-normal-review/Review.json",
+        "sha256": "7509861167afde388d0de4af339846941f044d984041305fd284db73e48fc4da",
+        "size_bytes": 5239
+      }
+    },
+    {
+      "identity_scope": "Historical snapshot; not asserted byte-identical to all current sources.",
+      "record": {
+        "path": "build/engine_next/bvh-root-review-r3/Review.json",
+        "sha256": "a08cbb04837f236a54d55bf233b20a425512f7d0880ff85eaf748ab82bd8655b",
+        "size_bytes": 10307
+      }
+    },
+    {
+      "identity_scope": "Historical snapshot; not asserted byte-identical to all current sources.",
+      "record": {
+        "path": "build/engine_next/paged-cache-root-review-r6/Review.json",
+        "sha256": "3067d6ef41bbd1a4717d9e5d3fb4909ed76bfdb564539d874a15a36072945a2a",
+        "size_bytes": 2277
+      }
+    }
+  ],
+  "verification": {
+    "path": "data-collection/engine-next-visual-runtime-m4-4-paged-geometry-verification.json",
+    "sha256": "f04c30460ee2d42bffd289b76f97649d1c56bd487ca707d2aa7477afce1ac37d",
+    "size_bytes": 29922
+  },
+  "limitations": [
+    "Historical review records retain their original source hashes and test scope.",
+    "Current GPU matrix verifies functioning integration; 4K throughput comparison and remaining M4.4 features are not implied."
+  ]
+}

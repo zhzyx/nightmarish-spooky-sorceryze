@@ -32,6 +32,14 @@ struct GeometryBucket
 struct GeometryCommand
 {
     uint2 Constants;
+#ifdef PAGED_GEOMETRY_STAGE
+    uint2 VertexAddress;
+    uint VertexBytes;
+    uint VertexStride;
+    uint2 IndexAddress;
+    uint IndexBytes;
+    uint IndexFormat;
+#endif
     uint IndexCount;
     uint InstanceCount;
     uint StartIndex;
@@ -39,6 +47,18 @@ struct GeometryCommand
     uint StartInstance;
     uint Padding;
 };
+#ifdef PAGED_GEOMETRY_STAGE
+struct GeometryPageView
+{
+    uint2 VertexAddress;
+    uint VertexBytes;
+    uint VertexStride;
+    uint2 IndexAddress;
+    uint IndexBytes;
+    uint IndexFormat;
+};
+StructuredBuffer<GeometryPageView> PageViews : register(t4);
+#endif
 StructuredBuffer<GeometryCluster> Clusters : register(t0);
 StructuredBuffer<GeometryInstance> Instances : register(t1);
 Texture2D<float> HiZ : register(t2);
@@ -115,6 +135,21 @@ void CullCS(uint3 Thread : SV_DispatchThreadID)
             }
         }
     }
+#ifdef PAGED_GEOMETRY_STAGE
+    if (Cluster.Metadata.y >= Viewport.z)
+    {
+        InterlockedAdd(Counters[2], 1);
+        return;
+    }
+    GeometryPageView Page = PageViews[Cluster.Metadata.y];
+    if ((Page.VertexAddress.x | Page.VertexAddress.y) == 0 ||
+        (Page.IndexAddress.x | Page.IndexAddress.y) == 0 || Page.VertexStride != 48 || Page.IndexFormat != 42 ||
+        Cluster.Draw.y > Page.IndexBytes / 4 || Cluster.Draw.x > Page.IndexBytes / 4 - Cluster.Draw.y)
+    {
+        InterlockedAdd(Counters[2], 1);
+        return;
+    }
+#endif
     InterlockedAdd(Counters[0], 1);
     GeometryBucket Bucket = Buckets[BucketIndex];
     uint Slot;
@@ -128,6 +163,14 @@ void CullCS(uint3 Thread : SV_DispatchThreadID)
     }
     GeometryCommand Command;
     Command.Constants = Instance.Constants;
+#ifdef PAGED_GEOMETRY_STAGE
+    Command.VertexAddress = Page.VertexAddress;
+    Command.VertexBytes = Page.VertexBytes;
+    Command.VertexStride = Page.VertexStride;
+    Command.IndexAddress = Page.IndexAddress;
+    Command.IndexBytes = Page.IndexBytes;
+    Command.IndexFormat = Page.IndexFormat;
+#endif
     Command.IndexCount = Cluster.Draw.x;
     Command.InstanceCount = 1;
     Command.StartIndex = Cluster.Draw.y;

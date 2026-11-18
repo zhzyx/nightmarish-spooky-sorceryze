@@ -1,0 +1,704 @@
+{
+  "schema_version": 1,
+  "issue_number": 1506,
+  "parent_issue_number": 1323,
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "recorded_at_utc": "2026-11-18T11:34:55.322233+00:00",
+  "candidate": "paged-residency-r10",
+  "status": "functional_and_cpu_validated_performance_pending",
+  "stage_complete": false,
+  "build_source_base_commit": "bccea9dba82058aaef625dff1944d84d8dfb3a2a",
+  "delivery_base_commit": "f539bd711fc623937350a7ea8d689bd929170ab5",
+  "scope": "v3 mesh/texture byte paging format, verified normal source binding, real mesh residency/closed-cut LOD and same-frame selection reuse, combined with committed animation/E and existing GI/AO.",
+  "candidate_identity": {
+    "native_key": "e0897ff8aa4a2775392a44a95da4a963550374857c80052ac462d18937ce92e8",
+    "native_input_count": 360,
+    "native_input_mismatches": [],
+    "executable": {
+      "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/next_visual_client.exe",
+      "sha256": "88960702ba16de6b16a519d755236ffbbf8d3633dfca9f206e84e6c8e40b8892",
+      "size_bytes": 4383744
+    },
+    "build_report": {
+      "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/VisualBuildReport.json",
+      "sha256": "5ad41c5e4b7b35133c4e0e11921816bfaf3eee763f7fc37ccd6e6bb5336ea924",
+      "size_bytes": 3142311
+    },
+    "shader_count": 59,
+    "shaders": [
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AmbientOcclusion.cs.cso",
+        "sha256": "e7559681a8ad015eb517ea1d52a53825136be2d85be389dcc64a43c7f32ebb20",
+        "size_bytes": 7488
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AmbientOcclusionBlur.cs.cso",
+        "sha256": "3bdcfabe0e4d593138e85d6f11e8662806c8197e2d7b98538df647ec2cbdcf08",
+        "size_bytes": 9308
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AnimatedDeferred.vs.cso",
+        "sha256": "161b2509dad1b4ae88145184b501a9835b7d8c19134b85e299cf5328c33ae786",
+        "size_bytes": 8480
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AoGiLighting.ps.cso",
+        "sha256": "4f5a02fd10ba09ae4b2f95f1f2491cc4875a28c3c30a5cbac0e9624fb047d5ef",
+        "size_bytes": 118344
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AoGiMaterialLighting.ps.cso",
+        "sha256": "b7c3687aa3afd8da3bd2479760c5baef0744b64a8d3a75642c04d49fbc9ec144",
+        "size_bytes": 159396
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AoGiMaterialReflectionLighting.ps.cso",
+        "sha256": "2d0a4e22a20a2d3430a5c449b0610929ce3550b65dd473b7bbecffb7091932b6",
+        "size_bytes": 159884
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AoGiReflectionLighting.ps.cso",
+        "sha256": "fbade9ef9b9179e17782d100425742973891678ad9492a4ddfb58fd54155ccf1",
+        "size_bytes": 118828
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AoLighting.ps.cso",
+        "sha256": "f1e6c583a8ec7f312bcee20bd898f7d954f54cd2c1a66ad84b21ec921a2cbb2d",
+        "size_bytes": 80060
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AoMaterialLighting.ps.cso",
+        "sha256": "0fc7dd013cf714eb33a5be8215cae788866d3f2e9ae88e1874e10d33dc31e6fa",
+        "size_bytes": 120808
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AoMaterialReflectionLighting.ps.cso",
+        "sha256": "f4494b8e08b3be27e27a0ab5bb9dd29fd15539e7f4b3192b102dddc7ab8aba61",
+        "size_bytes": 121296
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/AoReflectionLighting.ps.cso",
+        "sha256": "ba563357566bb462301e5f436e4730b0362d185397659a97d9af06b9b4a883a3",
+        "size_bytes": 80572
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/BloomDown.cs.cso",
+        "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7",
+        "size_bytes": 43620
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/BloomUp.cs.cso",
+        "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c",
+        "size_bytes": 14672
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Deferred.ps.cso",
+        "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0",
+        "size_bytes": 9796
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Deferred.vs.cso",
+        "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225",
+        "size_bytes": 8272
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Exposure.cs.cso",
+        "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c",
+        "size_bytes": 5804
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/FixedMesh.cs.cso",
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+        "size_bytes": 3300
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/FixedMesh.ps.cso",
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+        "size_bytes": 4132
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/FixedMesh.vs.cso",
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+        "size_bytes": 4316
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GeometryCull.cs.cso",
+        "sha256": "6cfdf85dab45264853e02250e07784dd0c69996c2dd07b776178582fd9a94891",
+        "size_bytes": 13484
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GeometryDepth.ps.cso",
+        "sha256": "e439f80592f6a4b0159be38a3438e153e87ccd79a44ce355b00804cbf3649759",
+        "size_bytes": 4236
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GeometryDepth.vs.cso",
+        "sha256": "d512d92cfa83cf0c59ada91b855ee8dff3126a3057e6768face7e012a117905d",
+        "size_bytes": 4632
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GeometryHiZCopy.cs.cso",
+        "sha256": "c7903bc86740ce6e76935cf58bc39a0c249eb93012074e198f14b2f06d890873",
+        "size_bytes": 3492
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GeometryHiZReduce.cs.cso",
+        "sha256": "de4f7c0219ea5bcde366580e2bd501e6e1ca3f991c8a607f4d8465e4b4ca7485",
+        "size_bytes": 3816
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GeometryPagedCull.cs.cso",
+        "sha256": "90c0d974934f74266a57eda454d4f2eec0d6a92214d14f9b5a396c1e4d17332a",
+        "size_bytes": 14460
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GiIntegrate.cs.cso",
+        "sha256": "5e1e746a17f903677d648be9d8742b96c465c5266c4120a789516844c63cfb07",
+        "size_bytes": 14388
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GiLighting.ps.cso",
+        "sha256": "d54f75499742edbee01e54f3ef9472a7ee7755b991a69cb76f0ac5705cda5c79",
+        "size_bytes": 118192
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GiMaterialLighting.ps.cso",
+        "sha256": "dea087b84c09c5027d5984639e1f4dfe2895a1c9cae668883effa3157a66e31a",
+        "size_bytes": 159248
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GiMaterialReflectionLighting.ps.cso",
+        "sha256": "2d101f71f5aea7b86b0b3970309bf69074125e654e40cf435b99c5dc45672fee",
+        "size_bytes": 159744
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GiMaterialTransparent.ps.cso",
+        "sha256": "0dd57b9b9c092b2ce5ea1bd79fc193312625d39b5f6793d1df0d1c47aed50914",
+        "size_bytes": 178956
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GiPrepare.cs.cso",
+        "sha256": "8dbe62fa48673fca9bf93d385c1ecc3d9ab6e5ac3dfaee7bebf10b9602a0954b",
+        "size_bytes": 7624
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GiReflectionLighting.ps.cso",
+        "sha256": "5136234946b38705d93856f9d61685d5b22663d312035565e65587e9d85fec37",
+        "size_bytes": 118684
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GiRelocate.cs.cso",
+        "sha256": "c9c4a20d728caa29e924af0abd6f8ac9c785e6315381dd50b2b0246d99a8f345",
+        "size_bytes": 14388
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GiTrace.cs.cso",
+        "sha256": "5695e8c6e3684d81745e9adc64f93351dad3d5ffe1b08238502ef65fa5b9231d",
+        "size_bytes": 134776
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/GiTransparent.ps.cso",
+        "sha256": "7cb64d7e3ceb2c1a029907d95e09738a426be79a287377b331bd484653aff5a1",
+        "size_bytes": 137960
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Histogram.cs.cso",
+        "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1",
+        "size_bytes": 5648
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Lighting.ps.cso",
+        "sha256": "1f4c8b9458e5a55bfdc4895baf04252cdad353ee9aebf5d0de4cd4b44ddb8811",
+        "size_bytes": 79908
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Lighting.vs.cso",
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+        "size_bytes": 3052
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/MaterialDeferred.ps.cso",
+        "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb",
+        "size_bytes": 10172
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/MaterialLighting.ps.cso",
+        "sha256": "f082e75cdd0418aac5d937656b1ccb7d8277d83b67a06d8a5373bfce6fcd22a4",
+        "size_bytes": 120644
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/MaterialReflectionLighting.ps.cso",
+        "sha256": "5c1510dfaf7430dad0c8dd1a043c18e6fdadc670e06352ecf9b051fdeab5b0ec",
+        "size_bytes": 121144
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/MaterialReflectionTrace.cs.cso",
+        "sha256": "9964ad98771e172f329d2c82efc5e4f7028e09f799cf9730e37da6f6912b9648",
+        "size_bytes": 82680
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/MaterialTransparent.ps.cso",
+        "sha256": "be1a8bf1b1ec204c8fe49c01c7fcd42e665fa6a1989f95785d33672f127d4d6b",
+        "size_bytes": 139900
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/ReflectionColor.cs.cso",
+        "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7",
+        "size_bytes": 4928
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/ReflectionComposite.cs.cso",
+        "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4",
+        "size_bytes": 5100
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/ReflectionLighting.ps.cso",
+        "sha256": "835b114057a21d4961e4b29b01c4b0c3c8945f1ca90c42b76cd40515e0e502d8",
+        "size_bytes": 80424
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/ReflectionRadiance.cs.cso",
+        "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88",
+        "size_bytes": 4304
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/ReflectionTrace.cs.cso",
+        "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051",
+        "size_bytes": 31880
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Shadow.ps.cso",
+        "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24",
+        "size_bytes": 4236
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Shadow.vs.cso",
+        "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4",
+        "size_bytes": 4648
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Temporal.cs.cso",
+        "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f",
+        "size_bytes": 19880
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/ToneMap.ps.cso",
+        "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f",
+        "size_bytes": 6376
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Transparent.ps.cso",
+        "sha256": "9701a4ef7d943bc79723cd4cdfc9722c1b51ae51fb08763bd31eaa7169a46b79",
+        "size_bytes": 99444
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/Transparent.vs.cso",
+        "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24",
+        "size_bytes": 7224
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/VolumeComposite.cs.cso",
+        "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523",
+        "size_bytes": 19948
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/VolumeInject.cs.cso",
+        "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f",
+        "size_bytes": 8836
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/VolumeIntegrate.cs.cso",
+        "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c",
+        "size_bytes": 7508
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/VolumeLight.cs.cso",
+        "sha256": "230fc27342821a56b3330e9b1c13162739c50e59ac186968aa3ce93859c4f638",
+        "size_bytes": 66428
+      },
+      {
+        "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Visual/Release/VolumeTemporal.cs.cso",
+        "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057",
+        "size_bytes": 16000
+      }
+    ]
+  },
+  "cpu": {
+    "msvc_tests": 533,
+    "clang_tests": 533,
+    "checks_per_compiler": 535844,
+    "failures": 0,
+    "clang_result": {
+      "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/ClangCl/Result.json",
+      "sha256": "b487661ee4b2b7c72ce53ee945c7911b33cfb2e8162709e47e24d8f82bbd3950",
+      "size_bytes": 3849824
+    },
+    "runtime": "Four targets compiled and packaged; network acceptance not rerun in this pass.",
+    "runtime_report": {
+      "path": "build/engine_next/paged-runtime-r10-source/build/engine_next/Runtime/RuntimeBuildReport.json",
+      "sha256": "cbe83a2c7a8afc165bef8e8d538be2d5921ee31f78be5a6ee3886524e3a765b6",
+      "size_bytes": 314642
+    },
+    "tool_tests": {
+      "tests": 41,
+      "skipped": 1,
+      "failures": 0,
+      "evidence": {
+        "path": "build/engine_next/pages-r10-integration/ToolTests.json",
+        "sha256": "264aa2fa99e96026eb2cb0f2ba7c638b424b983a4b61f0250eebf25eb31bd2ac",
+        "size_bytes": 681
+      }
+    },
+    "static": {
+      "path": "build/engine_next/pages-static-r10/Result.json",
+      "sha256": "fd21171f0fc0b7b90b461b4027a6da246f5fd220a2ccdf6f69f31286545f49d4",
+      "size_bytes": 22363
+    }
+  },
+  "gpu": {
+    "normal_cases": 22,
+    "normal_frames": 745,
+    "module_valid_frames": 144,
+    "total_valid_frames": 889,
+    "validation_errors": 0,
+    "micro_checks_per_compiler": 93,
+    "micro_errors": 0,
+    "micro_warnings": 0,
+    "normal_groups": [
+      {
+        "name": "basic",
+        "cases": [
+          {
+            "name": "Paged",
+            "frames": 16,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-basic/PagedReport.json",
+              "sha256": "404e2c32afa781d2968908504d0b62d0f7c1263565ffff0586e7ef0229ba73f3",
+              "size_bytes": 82044
+            }
+          },
+          {
+            "name": "Full",
+            "frames": 16,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-basic/FullReport.json",
+              "sha256": "11df7cf3482a837149578f327c380dfdc6458338fcaa9f1e2269ac7a97a8f067",
+              "size_bytes": 80869
+            }
+          },
+          {
+            "name": "V2",
+            "frames": 16,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-basic/V2Report.json",
+              "sha256": "0995dbdc408b8d8bcfe714493bec1226965e925306dfdf53cb6d63620f9a887c",
+              "size_bytes": 80882
+            }
+          },
+          {
+            "name": "V1",
+            "frames": 16,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-basic/V1Report.json",
+              "sha256": "3ad3f19404cdd22ebe0986f9ee817c80539c294080b0f2156faa905253717e01",
+              "size_bytes": 80867
+            }
+          },
+          {
+            "name": "Temporal",
+            "frames": 32,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-basic/TemporalReport.json",
+              "sha256": "ac54445dabc280baed2db70ecb740bc1490b836744ff78b79bdaa59bf9009166",
+              "size_bytes": 125631
+            }
+          },
+          {
+            "name": "Resize",
+            "frames": 12,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-basic/ResizeReport.json",
+              "sha256": "2875594ab5ce1e0f62883ae52ab5f3b7135fdcf60e27c752ea0545c3fc014932",
+              "size_bytes": 73395
+            }
+          }
+        ]
+      },
+      {
+        "name": "large",
+        "cases": [
+          {
+            "name": "Coarse",
+            "frames": 60,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-large/CoarseReport.json",
+              "sha256": "fb10f9a5778c3191d63b6be4f1faf62f4c2f76e6a9f8d559b630041321b2b1a1",
+              "size_bytes": 178138
+            }
+          },
+          {
+            "name": "Fine",
+            "frames": 60,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-large/FineReport.json",
+              "sha256": "7814442518feb371f4bd83916cf7299ab7a193017a1e8a23bc053e564626d919",
+              "size_bytes": 178540
+            }
+          },
+          {
+            "name": "Budget",
+            "frames": 60,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-large/BudgetReport.json",
+              "sha256": "ee8f60e55ba1da8f2fbc86eff7010650077a84255195dc77897846b926fa0914",
+              "size_bytes": 178503
+            }
+          },
+          {
+            "name": "Full",
+            "frames": 60,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-large/FullReport.json",
+              "sha256": "0cdd6d56d976129006530805226728e57955bd94e820bb627c4af4749e230fa4",
+              "size_bytes": 176794
+            }
+          },
+          {
+            "name": "Fallback",
+            "frames": 60,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-large/FallbackReport.json",
+              "sha256": "03b3f144e78263caafae1162279d486df8e0888f9a28017a233636f65b746fe8",
+              "size_bytes": 121776
+            }
+          }
+        ]
+      },
+      {
+        "name": "material",
+        "cases": [
+          {
+            "name": "Paged",
+            "frames": 64,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-material/PagedReport.json",
+              "sha256": "4e9f763e5f4f8df4cf9c9e32d301f05a872c209a1fe303e04c8d0ed030f9a313",
+              "size_bytes": 193906
+            }
+          },
+          {
+            "name": "Full",
+            "frames": 64,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-material/FullReport.json",
+              "sha256": "d5285acf28daf6cac091896bb4269c33bc72f8c19d05bd6a8d5ac1808c9d2ba0",
+              "size_bytes": 192329
+            }
+          }
+        ]
+      },
+      {
+        "name": "combined",
+        "cases": [
+          {
+            "name": "AInitial",
+            "frames": 1,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-combined/AInitialReport.json",
+              "sha256": "0fe96a7d79391b66fa8e97daff33f446e54fe4338c441010d56ec45f9b407151",
+              "size_bytes": 66447
+            }
+          },
+          {
+            "name": "APaged",
+            "frames": 64,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-combined/APagedReport.json",
+              "sha256": "effbb91ad81cccf67ab1676f00a00d3733d79dad8428c467e185d461f50589ee",
+              "size_bytes": 220725
+            }
+          },
+          {
+            "name": "AFull",
+            "frames": 64,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-combined/AFullReport.json",
+              "sha256": "e444751b6ddaf72fc9c7e294faa5f5c229c79f0c73dc4627678ea75081e0cec7",
+              "size_bytes": 219211
+            }
+          },
+          {
+            "name": "C4k",
+            "frames": 12,
+            "width": 3840,
+            "height": 2160,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-combined/C4kReport.json",
+              "sha256": "44a5fed2b999fd7a24ed244fc2860b773d572a71bd4fde22180efa737eef1c7d",
+              "size_bytes": 76091
+            }
+          }
+        ]
+      },
+      {
+        "name": "animation",
+        "cases": [
+          {
+            "name": "OffWalk",
+            "frames": 12,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-animation/OffWalkReport.json",
+              "sha256": "ef2f7fc15479a269a26ea0ae1e9edce775764e7af9265b589e03baeda6d5a08e",
+              "size_bytes": 45282
+            }
+          },
+          {
+            "name": "GiWalk",
+            "frames": 16,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-animation/GiWalkReport.json",
+              "sha256": "31eb312e03d56d2e3d760705e305a809e61c2b26d919f253d4411e0c167aaced",
+              "size_bytes": 70217
+            }
+          },
+          {
+            "name": "AnimatedPlacementGeometryFallback",
+            "frames": 12,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-animation/AnimatedPlacementGeometryFallbackReport.json",
+              "sha256": "9816c9362d1ac88e57e00a5bd03a8a1b8c67b279040a3e4648acca116daf6f8a",
+              "size_bytes": 65052
+            }
+          },
+          {
+            "name": "AnimatedPlacementTemporal",
+            "frames": 16,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-animation/AnimatedPlacementTemporalReport.json",
+              "sha256": "df560f09f1acb4c5a354f29471545fcbd422a75964446ab4583bee83fd0fe41c",
+              "size_bytes": 80261
+            }
+          },
+          {
+            "name": "ProjectionClipEnd",
+            "frames": 12,
+            "width": 640,
+            "height": 480,
+            "report": {
+              "path": "build/engine_next/paged-residency-r10/Gpu-animation/ProjectionClipEndReport.json",
+              "sha256": "2d7d659963d38830af8af19d2864aaba4e107c163a26b9a2d436449ed6085792",
+              "size_bytes": 72785
+            }
+          }
+        ]
+      }
+    ],
+    "micro": {
+      "path": "build/engine_next/paged-residency-r10/Micro/Results.json",
+      "sha256": "b08e2004399ecf2eb1e9dfad4772771faff2bb621f6dc693f39f879d6ce54d1a",
+      "size_bytes": 1660
+    },
+    "module": {
+      "path": "build/engine_next/paged-residency-r10/ModuleGpu/Results.json",
+      "sha256": "1cf641e6e775e63bfbaa34f1ede840488a9e8a431c9425c7fc420d993678302f",
+      "size_bytes": 11076
+    },
+    "module_assertions": {
+      "path": "build/engine_next/paged-residency-r10/ModuleGpu/Assertions.json",
+      "sha256": "798c98f0f2713a489b2c7d36b78340f058de058d26ad29a091edbdbb349632c2",
+      "size_bytes": 287
+    },
+    "budget": {
+      "path": "build/engine_next/paged-residency-r10/Gpu-large/BudgetAssertions.json",
+      "sha256": "98bc6be0173d08ca90c1de9bb61afdfc63c9f3203168d281b3878c3fdf5338b3",
+      "size_bytes": 165
+    },
+    "resolution": "C4k rendered a 3840x2160 backbuffer; desktop mode was 2560x1440 at 180 Hz. These are distinct measurements.",
+    "desktop": {
+      "path": "build/engine_next/pages-r10-integration/DisplayMode.json",
+      "sha256": "a9b18789ff9737e2a94cd86f4fc19b1031add387bc9254b26f70f02ae3547193",
+      "size_bytes": 154
+    }
+  },
+  "module_build": {
+    "changed_key": "19f12ea1b5e4af9ddd36ebd4d7ef92b2cc3d3d11b00734af927799e92094c947",
+    "restored_key": "e0897ff8aa4a2775392a44a95da4a963550374857c80052ac462d18937ce92e8",
+    "experiment": {
+      "path": "build/engine_next/paged-module-r10/BuildPhase.json",
+      "sha256": "f346d220fe6406daa96607931f4f90b45cc30cd606246294a3e430fbf3f47ad0",
+      "size_bytes": 113812
+    },
+    "shader_comparison": {
+      "path": "build/engine_next/paged-module-r10/ShaderDifferences.json",
+      "sha256": "7d1ae84d6dcff1ca1eec920562c61c8de13fd7f0d6f6aee3675ea9e75d6995b7",
+      "size_bytes": 19415
+    },
+    "behavior": "Only GeometryCull and GeometryPagedCull binaries change. Same baseline executable accepts changed shaders, produces altered pixels, restores exact baseline pixels, rejects malformed shader before rendering any frame, and recovers."
+  },
+  "normal_source_binding": {
+    "path": "build/engine_next/paged-residency-r10/CookC.json",
+    "sha256": "7dbd76b5b5bf9d23c9c56fc14883da299937c68a21a2f1cff75911085165e708",
+    "size_bytes": 1718
+  },
+  "independent_delta_review": {
+    "path": "build/engine_next/pages-r10-integration/RootReview.json",
+    "sha256": "c9ad793c337c2afdd94a74735dd4aa8158929fd9c1ab4ea93c00c1680ecf66bc",
+    "size_bytes": 2384
+  },
+  "main_alignment": {
+    "path": "build/engine_next/pages-r10-integration/MainAlignment.json",
+    "sha256": "ce1316d68d8e61c06b86fff5d22caaad7de4b15b062487171884a3389ad2fdfa",
+    "size_bytes": 451
+  },
+  "details": {
+    "path": "build/engine_next/paged-residency-r10/Summary.json",
+    "sha256": "8a018d02962c3d1a712cb8f713a2471bce96d812e169c0ca1c6abd398d177ad5",
+    "size_bytes": 66826
+  },
+  "limitations": [
+    "Native4K quiet performance comparison has not yet run. Current frame times under functional validation are not performance acceptance.",
+    "No new manual F interaction in this increment.",
+    "GPU texture page residency, background file loading, remaining streaming/LOD quality work and full M4.4 virtual-shadow integration remain open.",
+    "This record is a draft pending parent formal gate/signing/CI; it does not state all M4 completed."
+  ]
+}

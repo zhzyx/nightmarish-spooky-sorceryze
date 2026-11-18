@@ -240,6 +240,32 @@ bool ParseBloom(const Serialization::JsonValue &stValue, BloomSettings &out_stSe
 			ValidateBloomSettings(out_stSettings, out_arrDiagnostics);
 }
 
+bool ParseScreenEffects(const Serialization::JsonValue &stValue, ScreenEffectsSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.screen_effects";
+	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pObject == nullptr || !RequiredFields(*pObject, {}, { "enabled", "sharpening", "vignette_intensity", "vignette_inner_radius", "vignette_outer_radius", "lut_asset_id", "lut_intensity" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itEnabled = pObject->find("enabled");
+	if (itEnabled != pObject->end() && !itEnabled->second.GetBool(out_stSettings.bEnabled))
+	{
+		return Fail("type", strPath + ".enabled", "Expected a boolean.", out_arrDiagnostics);
+	}
+	if (pObject->find("lut_asset_id") != pObject->end() &&
+		!Assets::String(*pObject, "lut_asset_id", strPath, out_stSettings.strLutAssetId, out_arrDiagnostics))
+	{
+		return false;
+	}
+	return OptionalNumber(*pObject, "sharpening", strPath, out_stSettings.dSharpening, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "vignette_intensity", strPath, out_stSettings.dVignetteIntensity, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "vignette_inner_radius", strPath, out_stSettings.dVignetteInnerRadius, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "vignette_outer_radius", strPath, out_stSettings.dVignetteOuterRadius, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "lut_intensity", strPath, out_stSettings.dLutIntensity, out_arrDiagnostics) &&
+			ValidateScreenEffectsSettings(out_stSettings, out_arrDiagnostics);
+}
+
 bool ParseLightAnimation(const Serialization::JsonValue &stValue, double dBaseIlluminance,
 						 LightAnimationSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
 {
@@ -665,7 +691,7 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 							  Assets::Diagnostics &out_arrDiagnostics)
 {
 	const Serialization::JsonValue::Object *pRoot = Assets::Object(stValue, "$", out_arrDiagnostics);
-	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "light_animation", "reflections", "ambient_occlusion", "volumetric_fog", "particles", "material_overrides", "global_illumination", "geometry_culling", "animation" }, "$", out_arrDiagnostics))
+	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "screen_effects", "light_animation", "reflections", "ambient_occlusion", "volumetric_fog", "particles", "material_overrides", "global_illumination", "geometry_culling", "animation" }, "$", out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -746,6 +772,11 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 	}
 	const Serialization::JsonValue::Object::const_iterator itBloom = pRoot->find("bloom");
 	if (itBloom != pRoot->end() && !ParseBloom(itBloom->second, stConfiguration.stBloom, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itScreenEffects = pRoot->find("screen_effects");
+	if (itScreenEffects != pRoot->end() && !ParseScreenEffects(itScreenEffects->second, stConfiguration.stScreenEffects, out_arrDiagnostics))
 	{
 		return false;
 	}

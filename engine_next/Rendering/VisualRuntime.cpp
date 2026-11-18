@@ -45,16 +45,19 @@
 #include "engine_next/Rendering/Cook/EnvironmentLighting.h"
 #include "engine_next/Rendering/Cook/EnvironmentImportance.h"
 #include "engine_next/Rendering/Cook/GpuPackage.h"
+#include "engine_next/Rendering/Cook/GpuPagedPackage.h"
 #include "engine_next/include/EngineNext/Rendering/RenderScene.h"
 #include "engine_next/include/EngineNext/Rendering/DeformationFrame.h"
 #include "engine_next/Rendering/DeformationChanges.h"
 #include "engine_next/Platform/Windows/GpuDeformation.h"
 #include "engine_next/Platform/Windows/GpuShadowPages.h"
 #include "engine_next/include/EngineNext/Rendering/TextureData.h"
+#include "engine_next/include/EngineNext/Rendering/ColorLut.h"
 #include "engine_next/include/EngineNext/Rendering/CameraMatrices.h"
 #include "engine_next/include/EngineNext/Rendering/RenderConfiguration.h"
 #include "engine_next/Rendering/RenderPipeline.h"
 #include "engine_next/Platform/Windows/GpuGeometry.h"
+#include "engine_next/Platform/Windows/GpuPagedGeometry.h"
 #include "engine_next/Platform/Windows/RhiComOwner.h"
 #include "engine_next/include/EngineNext/Rendering/ShadowData.h"
 #include "engine_next/include/EngineNext/Rendering/ProbePlacement.h"
@@ -110,6 +113,7 @@ static_assert(SHADOW_PAGE_VIEW_START + SHADOW_PAGE_VIEW_COUNT <= FRAME_VIEW_COUN
 constexpr std::uint32_t GI_VIEW_START = 152;
 constexpr std::uint32_t GEOMETRY_VIEW_START = 192;
 constexpr std::uint32_t AMBIENT_VIEW_START = 184;
+constexpr std::uint32_t SCREEN_EFFECTS_VIEW = 190;
 static_assert(GI_VIEW_START + 32 <= GEOMETRY_VIEW_START);
 static_assert(GI_VIEW_START + 32 <= AMBIENT_VIEW_START && AMBIENT_VIEW_START + 6 <= GEOMETRY_VIEW_START);
 static_assert(GEOMETRY_VIEW_START + 40 <= FRAME_VIEW_COUNT);
@@ -304,6 +308,11 @@ struct FrameTiming
 	bool bVolumeHistoryValid = false;
 	std::uint32_t nVolumeHistoryRead = 0;
 	std::uint32_t nParticles = 0;
+	bool bPagedLod = false;
+	std::uint64_t nPageCandidates = 0;
+	std::uint64_t nPageTriangles = 0;
+	std::uint64_t nPageResidentBytes = 0;
+	std::uint64_t nPageReadRequests = 0;
 	double dCpuMsec = 0.0;
 	double dGraphicsMsec = 0.0;
 	double dComputeMsec = 0.0;
@@ -685,7 +694,8 @@ public:
 			{
 				// A live GPU may still reference every allocation. Process teardown
 				// is the only safe terminal outcome after retirement has failed.
-				std::cerr << "Fatal GPU retirement failure; live resources retained until process teardown\n";
+				std::cerr << "Fatal GPU retirement failure; live resources retained "
+							 "until process teardown\n";
 				std::abort();
 			}
 		}
@@ -778,6 +788,7 @@ private:
 	void DrawShadows(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, bool bLocal);
 	bool UploadTexture(const std::vector<MipLevel> &arrLevels, bool bSrgb, std::uint32_t nView);
 	bool UploadFloatTexture(const std::vector<const FloatImage *> &arrImages, std::uint32_t nMips, std::uint32_t nView);
+	bool UploadColorLut();
 	bool UploadEnvironmentImportance(const EnvironmentImportance &stImportance);
 	bool CreateEnvironment();
 	void DrawScene(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
@@ -810,6 +821,11 @@ private:
 
 	GeometryClusterSet stGeometryData;
 	GpuGeometry stGeometry;
+	GpuPagedGeometry stPagedGeometry;
+	GpuPageIndex stPagedIndex;
+	bool bPagedGeometryActive = false;
+	bool bPagedCommandsExecuted = false;
+	std::uint32_t nPendingPagedFrame = FRAME_COUNT;
 	bool bGeometryActive = false;
 	std::string strGeometryFallback;
 	std::uint32_t nPendingGeometryFrame = FRAME_COUNT;
@@ -895,6 +911,9 @@ private:
 	UINT nTransparentPageRoot = 0;
 	ComOwner<ID3D12DescriptorHeap> stSamplerHeap;
 	std::vector<ComOwner<ID3D12Resource>> arrTextures;
+	ColorLut stColorLut;
+	ComOwner<ID3D12Resource> stColorLutTexture;
+	std::uint64_t nColorLutBytes = 0;
 	std::vector<ComOwner<ID3D12Resource>> arrTextureUploads;
 	std::vector<GpuDraw> arrDraws;
 	std::vector<DeformationRange> arrDeformationRanges;
@@ -914,11 +933,13 @@ private:
 	bool bMaterialExtensions = false;
 	std::uint64_t nMaterialBytes = 0;
 	RenderScene stRenderScene;
+	GpuPageReadStats stGpuPageStats;
 	RenderConfiguration stRenderConfiguration;
 	GpuProbeGrid stGi;
 	std::uint32_t nPendingGiFrame = FRAME_COUNT;
 	bool bGiCommandsExecuted = false;
 	CameraMatrices stCameraMatrices;
+	std::array<double, 3> arrFrameCameraPosition{};
 	ShadowData stShadowData;
 	LocalShadowData stLocalShadowData;
 	Assets::SceneDocument stNetworkScene;
@@ -1027,7 +1048,9 @@ bool VisualRuntime::Initialize()
 		const HRESULT nResult = D3D12GetDebugInterface(IID_PPV_ARGS(stDebug.Put()));
 		if (FAILED(nResult))
 		{
-			return Fail("GPU validation requested but Graphics Tools debug layer is unavailable", nResult);
+			return Fail("GPU validation requested but Graphics Tools debug layer is "
+						"unavailable",
+						nResult);
 		}
 		stDebug->EnableDebugLayer();
 		stDebug->SetEnableGPUBasedValidation(TRUE);
@@ -1744,7 +1767,8 @@ bool VisualRuntime::LoadScene()
 {
 	if (stConfig.strAssetPackagePath.empty())
 	{
-		return (stConfig.strGpuPackagePath.empty() && stConfig.strRenderConfigPath.empty()) || Fail("GPU package and render configuration require a source asset package");
+		return (stConfig.strGpuPackagePath.empty() && stConfig.strRenderConfigPath.empty()) || Fail("GPU package and render configuration require a source asset "
+																									"package");
 	}
 	Assets::Diagnostics arrDiagnostics;
 	Assets::PackageData stSourcePackage;
@@ -1756,6 +1780,43 @@ bool VisualRuntime::LoadScene()
 	{
 		return Fail(arrDiagnostics.empty() ? "Load rendering configuration" : arrDiagnostics.front().strMessage);
 	}
+	if (stRenderConfiguration.stScreenEffects.bEnabled)
+	{
+		DecodedImage stLutImage;
+		const std::string &strLutId = stRenderConfiguration.stScreenEffects.strLutAssetId;
+		if (strLutId.empty())
+		{
+			stLutImage.nWidth = 4;
+			stLutImage.nHeight = 2;
+			stLutImage.arrRgba8 = { 0, 0, 0, 255, 255, 0, 0, 255, 0, 0, 255, 255, 255, 0, 255, 255,
+									0, 255, 0, 255, 255, 255, 0, 255, 0, 255, 255, 255, 255, 255, 255, 255 };
+		}
+		else
+		{
+			const Assets::AssetEntry *pLutAsset = nullptr;
+			for (const Assets::AssetEntry &stAsset : stSourcePackage.stManifest.arrAssets)
+			{
+				if (stAsset.strAssetId == strLutId)
+				{
+					pLutAsset = &stAsset;
+					break;
+				}
+			}
+			if (pLutAsset == nullptr || pLutAsset->strType != "image")
+			{
+				return Fail("Color LUT asset must reference an image in the source package");
+			}
+			const std::map<std::string, std::vector<std::uint8_t>>::const_iterator itBlob = stSourcePackage.mapBlobs.find(pLutAsset->strContentSha256);
+			if (itBlob == stSourcePackage.mapBlobs.end() || !DecodeImage(itBlob->second, pLutAsset->strMediaType, stLutImage, arrDiagnostics))
+			{
+				return Fail("Decode source-package color LUT");
+			}
+		}
+		if (!BuildColorLut(stLutImage, stColorLut, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.back().strMessage);
+		}
+	}
 	stRenderConfiguration.stAnimation.bEnabled = stRenderConfiguration.stAnimation.bEnabled || stConfig.bAnimation;
 	if (!(stRenderConfiguration.stAnimation.bEnabled ? BuildAnimatedRenderScene(stSourcePackage, stRenderScene, arrDiagnostics)
 													 : BuildRenderScene(stSourcePackage, stRenderScene, arrDiagnostics)))
@@ -1765,13 +1826,9 @@ bool VisualRuntime::LoadScene()
 	if (!stConfig.strGpuPackagePath.empty())
 	{
 		RenderScene stCooked;
-		if (!LoadGpuPackage(stConfig.strGpuPackagePath, stRenderScene.strPackageDigest, stCooked, arrDiagnostics))
+		if (!LoadVerifiedGpuPackage(stConfig.strGpuPackagePath, stRenderScene, {}, stCooked, stGpuPageStats, arrDiagnostics))
 		{
-			return Fail(arrDiagnostics.empty() ? "Load GPU package" : arrDiagnostics.front().strMessage);
-		}
-		if (!VerifyCookedScene(stRenderScene, stCooked, arrDiagnostics))
-		{
-			return Fail(arrDiagnostics.empty() ? "Verify GPU source binding" : arrDiagnostics.front().strMessage);
+			return Fail(arrDiagnostics.empty() ? "Load and verify GPU package" : arrDiagnostics.front().strMessage);
 		}
 		if (stRenderConfiguration.stAnimation.bEnabled)
 		{
@@ -1818,6 +1875,11 @@ bool VisualRuntime::LoadScene()
 			return Fail(arrDiagnostics.empty() ? "Prepare geometry clusters" : arrDiagnostics.back().strMessage);
 		}
 		bGeometryActive = !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
+		bPagedGeometryActive = bGeometryActive && stRenderScene.nGpuFormatVersion == 3 && stRenderConfiguration.stGeometry.bLodEnabled;
+		if (bPagedGeometryActive && (!LoadGpuPageIndex(stConfig.strGpuPackagePath, stRenderScene.strPackageDigest, {}, stPagedIndex, arrDiagnostics) || !VerifyPagedScene(stRenderScene, stPagedIndex, arrDiagnostics)))
+		{
+			return Fail(arrDiagnostics.empty() ? "Bind paged geometry source" : arrDiagnostics.back().strMessage);
+		}
 		if (stGeometryData.bCapacityFallback)
 		{
 			strGeometryFallback = "command_capacity";
@@ -1831,6 +1893,7 @@ bool VisualRuntime::LoadScene()
 			// Keep complete conventional draws until the optional cluster path
 			// can update bounds and vertex offsets for deformed instances.
 			bGeometryActive = false;
+			bPagedGeometryActive = false;
 			strGeometryFallback = "animated_vertex_layout";
 		}
 	}
@@ -1933,6 +1996,86 @@ bool VisualRuntime::UploadTexture(const std::vector<MipLevel> &arrLevels, bool b
 	const std::wstring strName = L"EngineNext.Texture." + std::to_wstring(nView);
 	(void)stTexture->SetName(strName.c_str());
 	arrTextures.push_back(std::move(stTexture));
+	arrTextureUploads.push_back(std::move(stUpload));
+	return true;
+}
+
+bool VisualRuntime::UploadColorLut()
+{
+	if (!stRenderConfiguration.stScreenEffects.bEnabled)
+	{
+		return true;
+	}
+	D3D12_RESOURCE_DESC stDescription{};
+	stDescription.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+	stDescription.Width = stColorLut.nSize;
+	stDescription.Height = stColorLut.nSize;
+	stDescription.DepthOrArraySize = static_cast<UINT16>(stColorLut.nSize);
+	stDescription.MipLevels = 1;
+	stDescription.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	stDescription.SampleDesc.Count = 1;
+	const D3D12_HEAP_PROPERTIES stDefault = HeapProperties(D3D12_HEAP_TYPE_DEFAULT);
+	if (FAILED(stDevice->CreateCommittedResource(&stDefault, D3D12_HEAP_FLAG_NONE, &stDescription, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(stColorLutTexture.Put()))))
+	{
+		return Fail("Create color LUT texture");
+	}
+	const D3D12_RESOURCE_ALLOCATION_INFO stAllocation = stDevice->GetResourceAllocationInfo(0, 1, &stDescription);
+	nColorLutBytes = stAllocation.SizeInBytes;
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT stFootprint{};
+	UINT64 nUploadBytes = 0;
+	stDevice->GetCopyableFootprints(&stDescription, 0, 1, 0, &stFootprint, nullptr, nullptr, &nUploadBytes);
+	if (nUploadBytes > MAX_TEXTURE_UPLOAD_BYTES - nTextureUploadBytes)
+	{
+		return Fail("Color LUT exceeds the texture upload budget");
+	}
+	ComOwner<ID3D12Resource> stUpload;
+	const D3D12_HEAP_PROPERTIES stUploadHeap = HeapProperties(D3D12_HEAP_TYPE_UPLOAD);
+	const D3D12_RESOURCE_DESC stUploadDescription = BufferDescription(nUploadBytes);
+	if (FAILED(stDevice->CreateCommittedResource(&stUploadHeap, D3D12_HEAP_FLAG_NONE, &stUploadDescription, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stUpload.Put()))))
+	{
+		return Fail("Create color LUT upload buffer");
+	}
+	void *pMapped = nullptr;
+	const D3D12_RANGE stNoRead{ 0, 0 };
+	if (FAILED(stUpload->Map(0, &stNoRead, &pMapped)))
+	{
+		return Fail("Map color LUT upload buffer");
+	}
+	std::uint8_t *pBytes = static_cast<std::uint8_t *>(pMapped) + stFootprint.Offset;
+	for (std::uint32_t nDepth = 0; nDepth < stColorLut.nSize; ++nDepth)
+	{
+		for (std::uint32_t nRow = 0; nRow < stColorLut.nSize; ++nRow)
+		{
+			const std::size_t nSource = (static_cast<std::size_t>(nDepth) * stColorLut.nSize + nRow) * stColorLut.nSize * 4;
+			const std::size_t nTarget = (static_cast<std::size_t>(nDepth) * stColorLut.nSize + nRow) * stFootprint.Footprint.RowPitch;
+			std::memcpy(pBytes + nTarget, stColorLut.arrRgba8.data() + nSource, static_cast<std::size_t>(stColorLut.nSize) * 4);
+		}
+	}
+	stUpload->Unmap(0, nullptr);
+	D3D12_TEXTURE_COPY_LOCATION stSource{};
+	stSource.pResource = stUpload.Get();
+	stSource.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+	stSource.PlacedFootprint = stFootprint;
+	D3D12_TEXTURE_COPY_LOCATION stTarget{};
+	stTarget.pResource = stColorLutTexture.Get();
+	stTarget.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+	ID3D12GraphicsCommandList *pList = arrFrames[0].stGraphicsList.Get();
+	pList->CopyTextureRegion(&stTarget, 0, 0, 0, &stSource, nullptr);
+	D3D12_RESOURCE_BARRIER stBarrier{};
+	stBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	stBarrier.Transition.pResource = stColorLutTexture.Get();
+	stBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	stBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+	stBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	pList->ResourceBarrier(1, &stBarrier);
+	D3D12_SHADER_RESOURCE_VIEW_DESC stView{};
+	stView.Format = stDescription.Format;
+	stView.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
+	stView.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	stView.Texture3D.MipLevels = 1;
+	stDevice->CreateShaderResourceView(stColorLutTexture.Get(), &stView, View(SCREEN_EFFECTS_VIEW));
+	(void)stColorLutTexture->SetName(L"EngineNext.ColorGradingLut");
+	nTextureUploadBytes += nUploadBytes;
 	arrTextureUploads.push_back(std::move(stUpload));
 	return true;
 }
@@ -2226,7 +2369,7 @@ bool VisualRuntime::CreateSceneMesh()
 	{
 		const RenderAsset &stAsset = stRenderScene.arrAssets[nAssetIndex];
 		const std::uint32_t nMaterialBase = static_cast<std::uint32_t>(arrMaterials.size());
-		if (stRenderScene.nGpuFormatVersion == 2 && stAsset.stTextureCook.arrMaterials.size() != stAsset.stMesh.arrMaterials.size())
+		if (stRenderScene.nGpuFormatVersion >= 2 && stAsset.stTextureCook.arrMaterials.size() != stAsset.stMesh.arrMaterials.size())
 		{
 			return Fail("Cooked material texture bindings do not match source materials");
 		}
@@ -2258,7 +2401,7 @@ bool VisualRuntime::CreateSceneMesh()
 				if (nTexture >= 0)
 				{
 					const TextureData &stTexture = stAsset.stMesh.arrTextures[static_cast<std::size_t>(nTexture)];
-					if (stRenderScene.nGpuFormatVersion == 2)
+					if (stRenderScene.nGpuFormatVersion >= 2)
 					{
 						const std::int32_t nVariant = stAsset.stTextureCook.arrMaterials[nSourceMaterial].arrVariants[nSlot];
 						if (nVariant < 0 || static_cast<std::size_t>(nVariant) >= stAsset.stTextureCook.arrVariants.size())
@@ -2270,7 +2413,8 @@ bool VisualRuntime::CreateSceneMesh()
 						const TextureAlphaPolicy eExpectedAlpha = nSlot == 4 || (nSlot == 0 && stMaterial.eAlphaMode == AlphaMode::Opaque) ? TextureAlphaPolicy::Ignore : TextureAlphaPolicy::Preserve;
 						if (stVariant.nImage != stTexture.nImage || stVariant.eSemantic != eExpectedSemantic || stVariant.eAlphaPolicy != eExpectedAlpha || stVariant.arrMips.empty())
 						{
-							return Fail("Cooked texture variant semantics differ from its material slot");
+							return Fail("Cooked texture variant semantics differ from its "
+										"material slot");
 						}
 						pUploadMips = &stVariant.arrMips;
 					}
@@ -2434,7 +2578,7 @@ bool VisualRuntime::CreateSceneMesh()
 	{
 		stGpuDeformation.RecordInitialization(pList);
 	}
-	if (!CreateEnvironment())
+	if (!CreateEnvironment() || !UploadColorLut())
 	{
 		return false;
 	}
@@ -2692,6 +2836,27 @@ bool VisualRuntime::CreateGeometryResources()
 		stSettings.arrDepth[nFrame] = arrFrames[nFrame].stDepth.Get();
 	}
 	Assets::Diagnostics arrDiagnostics;
+	if (bPagedGeometryActive)
+	{
+		if (!stPagedGeometry.Initialize(stDevice.Get(), stRenderScene, stPagedIndex, stGeometryData, { stVertexView, stIndexView }, stRenderConfiguration.stGeometry, arrDiagnostics))
+		{
+			if (arrDiagnostics.empty() || arrDiagnostics.back().strCode != "geometry_allocation")
+			{
+				return Fail(arrDiagnostics.empty() ? "Initialize paged geometry" : arrDiagnostics.back().strMessage);
+			}
+			strGeometryFallback = arrDiagnostics.back().strMessage;
+			bPagedGeometryActive = false;
+			if (!BuildGraph())
+			{
+				return false;
+			}
+		}
+		else
+		{
+			stSettings.bPaged = true;
+			stSettings.nMaximumCandidates = stRenderConfiguration.stGeometry.nMaxCommands;
+		}
+	}
 	if (stGeometry.Initialize(stDevice.Get(), stGeometryData, stSettings, arrDiagnostics))
 	{
 		return true;
@@ -2701,6 +2866,11 @@ bool VisualRuntime::CreateGeometryResources()
 		return Fail(arrDiagnostics.empty() ? "Initialize GPU geometry" : arrDiagnostics.back().strMessage);
 	}
 	strGeometryFallback = arrDiagnostics.back().strMessage;
+	if (bPagedGeometryActive && !stPagedGeometry.Release(stGraphics.stFence->GetCompletedValue(), arrDiagnostics))
+	{
+		return Fail("Release unused paged geometry");
+	}
+	bPagedGeometryActive = false;
 	bGeometryActive = false;
 	return BuildGraph() && CreateFrameContexts() && CreateDeferredPipeline();
 }
@@ -2725,11 +2895,60 @@ bool VisualRuntime::PrepareGeometryFrame(std::uint32_t nFrame)
 		arrViewProjection[nElement] = static_cast<float>(stCameraMatrices.arrViewProjection[nElement]);
 	}
 	Assets::Diagnostics arrDiagnostics;
+	const GeometryClusterSet *pGeometry = nullptr;
+	std::uint64_t nPageViews = 0;
+	std::uint32_t nPageViewCount = 0;
+	if (bPagedGeometryActive)
+	{
+		LodView stView;
+		stView.arrPosition = arrFrameCameraPosition;
+		stView.arrForward = { -stCameraMatrices.arrView[2], -stCameraMatrices.arrView[6], -stCameraMatrices.arrView[10] };
+		stView.dProjectionPixels = .5 * std::max(std::abs(stCameraMatrices.arrProjection[0]) * nWidth, std::abs(stCameraMatrices.arrProjection[5]) * nHeight);
+		stView.dNearDistance = stRenderConfiguration.stCamera.dNearPlane;
+		stView.dMaximumErrorPixels = stRenderConfiguration.stGeometry.dPixelError;
+		if (!stPagedGeometry.Prepare(nFrame, arrWorlds, stView, stGraphics.stFence->GetCompletedValue(), nFrames, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Prepare paged geometry" : arrDiagnostics.back().strMessage);
+		}
+		nPendingPagedFrame = nFrame;
+		bPagedCommandsExecuted = false;
+		pGeometry = &stPagedGeometry.ActiveGeometry();
+		nPageViews = stPagedGeometry.PageViews(nFrame);
+		nPageViewCount = stPagedGeometry.PageViewCount();
+		if (stRenderConfiguration.stTemporal.bEnabled && !stPagedGeometry.ChangedDraws().empty())
+		{
+			void *pMapped = nullptr;
+			const D3D12_RANGE stNoRead{ 0, 0 };
+			if (FAILED(arrFrames[nFrame].stConstants->Map(0, &stNoRead, &pMapped)))
+			{
+				return Fail("Map retired constants for LOD history rejection");
+			}
+			// A different index cut changes pixel ownership even when the retained
+			// vertices have exact previous-world positions. Reject only those draws.
+			for (std::uint32_t nDraw : stPagedGeometry.ChangedDraws())
+			{
+				const std::uint32_t nInvalidHistory = 0;
+				std::memcpy(static_cast<std::uint8_t *>(pMapped) + FRAME_CONSTANT_BYTES +
+									static_cast<std::uint64_t>(nDraw) * DRAW_CONSTANT_BYTES + offsetof(DrawConstants, arrTemporal) + sizeof(std::uint32_t),
+							&nInvalidHistory, sizeof(nInvalidHistory));
+			}
+			arrFrames[nFrame].stConstants->Unmap(0, nullptr);
+		}
+	}
 	if (!stGeometry.PrepareFrame(nFrame, arrWorlds, arrViewProjection,
 								 arrFrames[nFrame].stConstants->GetGPUVirtualAddress() + FRAME_CONSTANT_BYTES, DRAW_CONSTANT_BYTES,
-								 stRenderConfiguration.stGeometry.bOcclusion, stGraphics.stFence->GetCompletedValue(), arrDiagnostics))
+								 stRenderConfiguration.stGeometry.bOcclusion, stGraphics.stFence->GetCompletedValue(), arrDiagnostics, pGeometry, nPageViews, nPageViewCount))
 	{
 		return Fail(arrDiagnostics.empty() ? "Prepare geometry frame" : arrDiagnostics.back().strMessage);
+	}
+	FrameTiming &stTiming = Timing(nFrames);
+	stTiming.bPagedLod = bPagedGeometryActive && stPagedGeometry.UsesLod();
+	stTiming.nPageCandidates = pGeometry != nullptr ? pGeometry->nCandidateCount : stGeometryData.nCandidateCount;
+	stTiming.nPageTriangles = pGeometry != nullptr ? pGeometry->nTriangleCount : stGeometryData.nTriangleCount;
+	if (bPagedGeometryActive)
+	{
+		stTiming.nPageResidentBytes = stPagedGeometry.Telemetry().nResidentBytes;
+		stTiming.nPageReadRequests = stPagedGeometry.IoStatistics().nReadRequests;
 	}
 	nPendingGeometryFrame = nFrame;
 	bGeometryCommandsExecuted = false;
@@ -2776,6 +2995,10 @@ bool VisualRuntime::RecordGeometryPass(ID3D12GraphicsCommandList *pList, std::ui
 	ID3D12DescriptorHeap *arrHeaps[]{ stViewHeap.Get(), stSamplerHeap.Get() };
 	pList->SetDescriptorHeaps(2, arrHeaps);
 	Assets::Diagnostics arrDiagnostics;
+	if (bPagedGeometryActive && eGeometryWork == GeometryWork::Upload && !stPagedGeometry.RecordUploads(pList, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Record paged geometry copies" : arrDiagnostics.back().strMessage);
+	}
 	return stGeometry.Record(nFrame, eGeometryWork, nMip, pList, arrDiagnostics) ||
 			Fail(arrDiagnostics.empty() ? "Record geometry pass" : arrDiagnostics.back().strMessage);
 }
@@ -2795,9 +3018,9 @@ void VisualRuntime::DrawGeometry(ID3D12GraphicsCommandList *pList, std::uint32_t
 	pList->SetGraphicsRootConstantBufferView(3, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
 	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
 	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-	for (std::uint32_t nBucket = 0; nBucket < stGeometry.Buckets().size(); ++nBucket)
+	for (std::uint32_t nBucket = 0; nBucket < stGeometry.Buckets(nFrame).size(); ++nBucket)
 	{
-		const GeometryBucket &stBucket = stGeometry.Buckets()[nBucket];
+		const GeometryBucket &stBucket = stGeometry.Buckets(nFrame)[nBucket];
 		ID3D12PipelineState *pPipeline = arrGeometryDepthPipelines[stBucket.nFlags].Get();
 		if (!bDepthOnly)
 		{
@@ -2811,11 +3034,15 @@ void VisualRuntime::DrawGeometry(ID3D12GraphicsCommandList *pList, std::uint32_t
 		pList->SetGraphicsRootDescriptorTable(2, stSampler);
 		stGeometry.Execute(nFrame, bDepthOnly ? 0 : 1, nBucket, pList);
 	}
+	// ExecuteIndirect changes IA bindings for page draws. Subsequent forward and
+	// shadow work continues to use the unchanged complete source scene buffers.
+	pList->IASetVertexBuffers(0, 1, &stVertexView);
+	pList->IASetIndexBuffer(&stIndexView);
 }
 
 void VisualRuntime::ReleaseGeometryResources()
 {
-	if (stGeometry.MipCount() == 0)
+	if (stGeometry.MipCount() == 0 && !bPagedGeometryActive)
 	{
 		return;
 	}
@@ -2834,14 +3061,30 @@ void VisualRuntime::ReleaseGeometryResources()
 			bReleased = stGeometry.Discard(nPendingGeometryFrame, arrDiagnostics);
 		}
 	}
-	bReleased = bReleased && stGeometry.Release(nCompleted, arrDiagnostics);
+	if (nPendingPagedFrame < FRAME_COUNT)
+	{
+		if (!bPagedCommandsExecuted)
+		{
+			arrFrames[nPendingPagedFrame].stGraphicsList.Reset();
+		}
+		const bool bPageRetired = bPagedCommandsExecuted ? stPagedGeometry.Commit(nPendingPagedFrame, nCompleted, arrDiagnostics) : stPagedGeometry.Discard(nPendingPagedFrame, arrDiagnostics);
+		bReleased = bPageRetired && bReleased;
+	}
+	if (bPagedGeometryActive)
+	{
+		const bool bPageReleased = stPagedGeometry.Release(nCompleted, arrDiagnostics);
+		bReleased = bPageReleased && bReleased;
+	}
+	bReleased = stGeometry.Release(nCompleted, arrDiagnostics) && bReleased;
 	if (!bReleased && SUCCEEDED(stDevice->GetDeviceRemovedReason()))
 	{
 		std::cerr << "Fatal geometry retirement failure\n";
 		std::abort();
 	}
 	nPendingGeometryFrame = FRAME_COUNT;
+	nPendingPagedFrame = FRAME_COUNT;
 	bGeometryCommandsExecuted = false;
+	bPagedCommandsExecuted = false;
 }
 
 bool VisualRuntime::DiscardUnsubmittedFrames()
@@ -2857,7 +3100,8 @@ bool VisualRuntime::DiscardUnsubmittedFrames()
 		const bool bGiPending = nPendingGiFrame == nFrame && !bGiCommandsExecuted;
 		const bool bGeometryPending = nPendingGeometryFrame == nFrame && !bGeometryCommandsExecuted;
 		const bool bAnimationPending = nPendingAnimationFrame == nFrame && !bAnimationCommandsExecuted;
-		if (!bGiPending && !bGeometryPending && !bAnimationPending)
+		const bool bPagePending = nPendingPagedFrame == nFrame && !bPagedCommandsExecuted;
+		if (!bGiPending && !bGeometryPending && !bAnimationPending && !bPagePending)
 		{
 			continue;
 		}
@@ -2888,6 +3132,14 @@ bool VisualRuntime::DiscardUnsubmittedFrames()
 			}
 			nPendingAnimationFrame = FRAME_COUNT;
 		}
+		if (bPagePending)
+		{
+			if (!stPagedGeometry.Discard(nFrame, arrDiagnostics))
+			{
+				return Fail(arrDiagnostics.empty() ? "Discard paged geometry frame" : arrDiagnostics.back().strMessage);
+			}
+			nPendingPagedFrame = FRAME_COUNT;
+		}
 	}
 	return true;
 }
@@ -2912,7 +3164,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	}
 	const std::string strLightingShader = (UseVirtualShadows() ? std::string("Virtual") : "") + (stRenderConfiguration.stAmbientOcclusion.bEnabled ? std::string("Ao") : "") + pLightingShader;
 	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, strLightingShader.c_str());
-	const std::vector<std::uint8_t> arrToneMap = ReadShader(stConfig.strShaderDirectory, "ToneMap.ps.cso");
+	const std::vector<std::uint8_t> arrToneMap = ReadShader(stConfig.strShaderDirectory, stRenderConfiguration.stScreenEffects.bEnabled ? "ScreenEffects.ps.cso" : "ToneMap.ps.cso");
 	if (arrVertex.empty() || arrPixel.empty() || arrFullscreen.empty() || arrLighting.empty() || arrToneMap.empty())
 	{
 		return Fail("Missing deferred shader bundle");
@@ -3147,11 +3399,12 @@ bool VisualRuntime::CreateDeferredPipeline()
 	{
 		return Fail("Create lighting PSO");
 	}
-	std::array<D3D12_DESCRIPTOR_RANGE, 4> arrToneRanges{};
-	std::array<D3D12_ROOT_PARAMETER, 5> arrToneParameters{};
+	std::array<D3D12_DESCRIPTOR_RANGE, 5> arrToneRanges{};
+	std::array<D3D12_ROOT_PARAMETER, 7> arrToneParameters{};
+	const std::uint32_t nToneViews = stRenderConfiguration.stScreenEffects.bEnabled ? 5U : 4U;
 	arrToneParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	arrToneParameters[0].Descriptor.ShaderRegister = 1;
-	for (std::uint32_t nRange = 0; nRange < 4; ++nRange)
+	for (std::uint32_t nRange = 0; nRange < nToneViews; ++nRange)
 	{
 		arrToneRanges[nRange].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrToneRanges[nRange].NumDescriptors = 1;
@@ -3160,6 +3413,9 @@ bool VisualRuntime::CreateDeferredPipeline()
 		arrToneParameters[nRange + 1].DescriptorTable.NumDescriptorRanges = 1;
 		arrToneParameters[nRange + 1].DescriptorTable.pDescriptorRanges = &arrToneRanges[nRange];
 	}
+	arrToneParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	arrToneParameters[6].Constants.ShaderRegister = 2;
+	arrToneParameters[6].Constants.Num32BitValues = 8;
 	D3D12_STATIC_SAMPLER_DESC stToneSampler{};
 	stToneSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 	stToneSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
@@ -3168,7 +3424,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	stToneSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
 	stToneSampler.MaxLOD = D3D12_FLOAT32_MAX;
 	D3D12_ROOT_SIGNATURE_DESC stToneRoot{};
-	stToneRoot.NumParameters = static_cast<UINT>(arrToneParameters.size());
+	stToneRoot.NumParameters = stRenderConfiguration.stScreenEffects.bEnabled ? 7U : 5U;
 	stToneRoot.pParameters = arrToneParameters.data();
 	stToneRoot.NumStaticSamplers = 1;
 	stToneRoot.pStaticSamplers = &stToneSampler;
@@ -5074,6 +5330,7 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 	{
 		return Fail(arrDiagnostics.empty() ? "Prepare temporal frame" : arrDiagnostics.back().strMessage);
 	}
+	arrFrameCameraPosition = stCamera.arrPosition;
 	stCameraMatrices = stTemporalFrame.stCurrentUnjitteredCamera;
 	if (stRenderConfiguration.stTemporal.bEnabled)
 	{
@@ -5483,6 +5740,18 @@ void VisualRuntime::DrawToneMap(ID3D12GraphicsCommandList *pList, std::uint32_t 
 	pList->SetGraphicsRootDescriptorTable(2, GpuView(nFrame * FRAME_VIEW_COUNT + 96));
 	pList->SetGraphicsRootDescriptorTable(3, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
 	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 27));
+	if (stRenderConfiguration.stScreenEffects.bEnabled)
+	{
+		const ScreenEffectsSettings &stEffects = stRenderConfiguration.stScreenEffects;
+		const std::array<float, 8> arrEffects{
+			static_cast<float>(nWidth), static_cast<float>(nHeight), static_cast<float>(stColorLut.nSize),
+			stEffects.strLutAssetId.empty() ? 0.0F : static_cast<float>(stEffects.dLutIntensity),
+			static_cast<float>(stEffects.dSharpening), static_cast<float>(stEffects.dVignetteIntensity),
+			static_cast<float>(stEffects.dVignetteInnerRadius), static_cast<float>(stEffects.dVignetteOuterRadius)
+		};
+		pList->SetGraphicsRootDescriptorTable(5, GpuView(SCREEN_EFFECTS_VIEW));
+		pList->SetGraphicsRoot32BitConstants(6, static_cast<UINT>(arrEffects.size()), arrEffects.data(), 0);
+	}
 	pList->DrawInstanced(3, 1, 0, 0);
 }
 
@@ -5585,6 +5854,7 @@ bool VisualRuntime::BuildGraph()
 	}
 	GeometryFeatures stGeometryFeatures;
 	stGeometryFeatures.bEnabled = bGeometryActive;
+	stGeometryFeatures.bPaged = bPagedGeometryActive;
 	stGeometryFeatures.bOcclusion = stRenderConfiguration.stGeometry.bOcclusion;
 	stGeometryFeatures.nHiZMips = 1;
 	for (std::uint32_t nSize = 1; nSize < std::max(nWidth, nHeight); nSize *= 2)
@@ -5593,7 +5863,7 @@ bool VisualRuntime::BuildGraph()
 	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, stRenderConfiguration.stAmbientOcclusion.bEnabled, bAnimationActive, UseVirtualShadows(), stRenderConfiguration.stShadows.stVirtualPages.nPhysicalPages))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, stRenderConfiguration.stAmbientOcclusion.bEnabled, bAnimationActive, stRenderConfiguration.stScreenEffects.bEnabled, UseVirtualShadows(), stRenderConfiguration.stShadows.stVirtualPages.nPhysicalPages))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -5624,20 +5894,36 @@ void VisualRuntime::ApplyBarriers(ID3D12GraphicsCommandList *pList, const std::v
 {
 	for (const ResourceBarrier &stBarrier : arrBarriers)
 	{
-		D3D12_RESOURCE_BARRIER stNative{};
-		stNative.Type = stBarrier.eKind == BarrierKind::Uav ? D3D12_RESOURCE_BARRIER_TYPE_UAV : D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		if (stNative.Type == D3D12_RESOURCE_BARRIER_TYPE_UAV)
+		const auto fnApply = [pList, &stBarrier](ID3D12Resource *pResource)
 		{
-			stNative.UAV.pResource = arrResources[stBarrier.nResource];
+			D3D12_RESOURCE_BARRIER stNative{};
+			stNative.Type = stBarrier.eKind == BarrierKind::Uav ? D3D12_RESOURCE_BARRIER_TYPE_UAV : D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+			if (stNative.Type == D3D12_RESOURCE_BARRIER_TYPE_UAV)
+			{
+				stNative.UAV.pResource = pResource;
+			}
+			else
+			{
+				stNative.Transition.pResource = pResource;
+				stNative.Transition.StateBefore = NativeState(stBarrier.eBefore);
+				stNative.Transition.StateAfter = NativeState(stBarrier.eAfter);
+				stNative.Transition.Subresource = stBarrier.nSubresource;
+			}
+			pList->ResourceBarrier(1, &stNative);
+		};
+		if (bPagedGeometryActive && stBarrier.nResource == stRenderPipeline.nGeometryPages)
+		{
+			// All physical pages start and finish Common. The pool declaration is
+			// expanded after Prepare, so this includes every newly allocated copy.
+			for (ID3D12Resource *pResource : stPagedGeometry.Resources())
+			{
+				fnApply(pResource);
+			}
 		}
 		else
 		{
-			stNative.Transition.pResource = arrResources[stBarrier.nResource];
-			stNative.Transition.StateBefore = NativeState(stBarrier.eBefore);
-			stNative.Transition.StateAfter = NativeState(stBarrier.eAfter);
-			stNative.Transition.Subresource = stBarrier.nSubresource;
+			fnApply(arrResources[stBarrier.nResource]);
 		}
-		pList->ResourceBarrier(1, &stNative);
 	}
 }
 
@@ -5786,6 +6072,10 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	stTiming.nHeight = nHeight;
 	std::vector<ID3D12Resource *> arrResources(stCompiled.arrResources.size());
 	arrResources[stRenderPipeline.nTint] = stFrame.stTint.Get();
+	if (stRenderPipeline.nColorLut != INVALID_RESOURCE)
+	{
+		arrResources[stRenderPipeline.nColorLut] = stColorLutTexture.Get();
+	}
 	arrResources[stRenderPipeline.nColor] = stFrame.stColor.Get();
 	arrResources[stRenderPipeline.nDepth] = stFrame.stDepth.Get();
 	arrResources[stRenderPipeline.nBackbuffer] = arrBackbuffers[nIndex].Get();
@@ -5799,7 +6089,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		}
 		if (bGeometryActive)
 		{
-			arrResources[stRenderPipeline.nGeometryClusters] = stGeometry.Clusters();
+			arrResources[stRenderPipeline.nGeometryClusters] = stGeometry.Clusters(nIndex);
 			arrResources[stRenderPipeline.nGeometryReadback] = stGeometry.Readback(nIndex);
 			for (std::uint32_t nPhase = 0; nPhase < 2; ++nPhase)
 			{
@@ -6162,6 +6452,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	bGeometryCommandsExecuted = nPendingGeometryFrame == nIndex;
 	bAnimationCommandsExecuted = nPendingAnimationFrame == nIndex;
 	bShadowPageCommandsExecuted = nPendingShadowPageFrame == nIndex;
+	bPagedCommandsExecuted = nPendingPagedFrame == nIndex;
 	stGraphics.stQueue->ExecuteCommandLists(1, &pGraphicsList);
 	const HRESULT nPresent = stSwapchain->Present(stConfig.bVsync ? 1 : 0, !stConfig.bVsync && bTearing ? DXGI_PRESENT_ALLOW_TEARING : 0);
 	if (!stGraphics.Signal(stFrame.nGraphicsFence))
@@ -6208,6 +6499,16 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		arrCoarseShadowRevision[nIndex] = stShadowPages.Plan().nSceneRevision;
 		nPendingShadowPageFrame = FRAME_COUNT;
 		bShadowPageCommandsExecuted = false;
+	}
+	if (bPagedGeometryActive)
+	{
+		Assets::Diagnostics arrDiagnostics;
+		if (!stPagedGeometry.Commit(nIndex, stFrame.nGraphicsFence, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Commit paged geometry" : arrDiagnostics.back().strMessage);
+		}
+		nPendingPagedFrame = FRAME_COUNT;
+		bPagedCommandsExecuted = false;
 	}
 	if (FAILED(nPresent))
 	{
@@ -6319,6 +6620,7 @@ bool VisualRuntime::Resize()
 	}
 	++nResizes;
 	bGeometryActive = stRenderConfiguration.stGeometry.bEnabled && !bAnimationActive && !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
+	bPagedGeometryActive = bGeometryActive && stRenderScene.nGpuFormatVersion == 3 && stRenderConfiguration.stGeometry.bLodEnabled;
 	if (!ResetTemporalHistory() || !CreateTargets() || !CreateShadowPages())
 	{
 		return false;
@@ -6503,8 +6805,8 @@ bool VisualRuntime::Run()
 		}
 		if (stConfig.bConnect && !bNetworkStartedAfterGpuWarmup)
 		{
-			// Driver validation can block the first draw for longer than a transport timeout.
-			// Retire that work before starting the peer's handshake clock.
+			// Driver validation can block the first draw for longer than a transport
+			// timeout. Retire that work before starting the peer's handshake clock.
 			if (!stGraphics.Flush() || !stCompute.Flush())
 			{
 				return Fail("Retire GPU warmup before network startup");
@@ -6616,7 +6918,8 @@ Serialization::JsonValue VisualRuntime::DescribeGraph() const
 	using Serialization::JsonValue;
 	JsonValue::Object mapGraph;
 	mapGraph["revision"] = JsonValue(std::int64_t{ 1 });
-	mapGraph["scope"] = JsonValue("Fixed pass structure shared by every recorded frame; native allocations vary by frame context and resize.");
+	mapGraph["scope"] = JsonValue("Fixed pass structure shared by every recorded frame; native "
+								  "allocations vary by frame context and resize.");
 	JsonValue::List arrPasses;
 	for (const CompiledPass &stPass : stCompiled.arrPasses)
 	{
@@ -6818,8 +7121,10 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 			nCookedMipLevels += stVariant.arrMips.size();
 		}
 	}
+	mapReport["gpu_page_read_requests"] = JsonValue(static_cast<std::int64_t>(stGpuPageStats.nReadRequests));
+	mapReport["gpu_page_bytes_read"] = JsonValue(static_cast<std::int64_t>(stGpuPageStats.nBytesRead));
 	mapReport["gpu_package_version"] = JsonValue(static_cast<std::int64_t>(stRenderScene.nGpuFormatVersion));
-	mapReport["texture_mip_source"] = JsonValue(!bSceneMode ? "none" : (stRenderScene.nGpuFormatVersion == 2 ? "cooked_gpu_package" : "runtime_decode"));
+	mapReport["texture_mip_source"] = JsonValue(!bSceneMode ? "none" : (stRenderScene.nGpuFormatVersion >= 2 ? "cooked_gpu_package" : "runtime_decode"));
 	mapReport["cooked_texture_mip_levels"] = JsonValue(static_cast<std::int64_t>(nCookedMipLevels));
 	mapReport["loaded_mesh_clusters"] = JsonValue(static_cast<std::int64_t>(nLoadedClusters));
 	mapReport["mesh_cluster_draw_path"] = JsonValue(bGeometryActive ? "gpu_cluster_indirect" : "indexed_primitive");
@@ -6829,6 +7134,35 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["geometry_fallback_reason"] = JsonValue(strGeometryFallback);
 	mapReport["geometry_candidates"] = JsonValue(static_cast<std::int64_t>(stGeometryData.nCandidateCount));
 	mapReport["geometry_buffer_bytes"] = JsonValue(static_cast<std::int64_t>(stGeometry.AllocatedBytes()));
+	mapReport["paged_geometry_active"] = JsonValue(bPagedGeometryActive);
+	mapReport["paged_geometry_uses_lod"] = JsonValue(bPagedGeometryActive && stPagedGeometry.UsesLod());
+	mapReport["geometry_indirect_stride"] = JsonValue(static_cast<std::int64_t>(bPagedGeometryActive ? 64 : 32));
+	const ResidencyTelemetry &stResidency = stPagedGeometry.Telemetry();
+	mapReport["paged_geometry_resident_bytes"] = JsonValue(static_cast<std::int64_t>(stResidency.nResidentBytes));
+	mapReport["paged_geometry_peak_gpu_bytes"] = JsonValue(static_cast<std::int64_t>(stResidency.nPeakGpuBytes));
+	mapReport["paged_geometry_peak_staging_bytes"] = JsonValue(static_cast<std::int64_t>(stResidency.nPeakStagingBytes));
+	mapReport["paged_geometry_view_bytes"] = JsonValue(static_cast<std::int64_t>(stPagedGeometry.OverheadBytes()));
+	mapReport["paged_geometry_loads"] = JsonValue(static_cast<std::int64_t>(stResidency.nLoadsStarted));
+	mapReport["paged_geometry_failures"] = JsonValue(static_cast<std::int64_t>(stResidency.nLoadFailures));
+	mapReport["paged_geometry_evictions"] = JsonValue(static_cast<std::int64_t>(stResidency.nEvictions));
+	mapReport["paged_geometry_budget_stalls"] = JsonValue(static_cast<std::int64_t>(stPagedGeometry.BudgetStalls()));
+	mapReport["paged_geometry_world_cache_bytes"] = JsonValue(
+			static_cast<std::int64_t>(stPagedGeometry.WorldCache().CachedBytes()));
+	mapReport["paged_geometry_world_cache_hits"] =
+			JsonValue(static_cast<std::int64_t>(stPagedGeometry.WorldCache().Hits()));
+	mapReport["paged_geometry_world_cache_misses"] = JsonValue(
+			static_cast<std::int64_t>(stPagedGeometry.WorldCache().Misses()));
+	mapReport["paged_geometry_active_reuses"] =
+			JsonValue(static_cast<std::int64_t>(stPagedGeometry.ActiveReuses()));
+	mapReport["paged_geometry_selection_reuses"] = JsonValue(static_cast<std::int64_t>(stPagedGeometry.SelectionReuses()));
+	mapReport["paged_geometry_camera_position"] = JsonValue(
+			JsonValue::List{ arrFrameCameraPosition[0], arrFrameCameraPosition[1],
+							 arrFrameCameraPosition[2] });
+	mapReport["paged_geometry_read_requests"] = JsonValue(static_cast<std::int64_t>(stPagedGeometry.IoStatistics().nReadRequests));
+	mapReport["paged_geometry_read_bytes"] = JsonValue(static_cast<std::int64_t>(stPagedGeometry.IoStatistics().nBytesRead));
+	mapReport["paged_geometry_last_error"] = JsonValue(stPagedGeometry.LastPageError());
+	mapReport["paged_geometry_event_hash"] = JsonValue(std::to_string(stResidency.nEventHash));
+
 	const GeometryGpuStatistics &stGeometryStats = stGeometry.Statistics();
 	mapReport["geometry_depth_commands"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nDepthCommands));
 	mapReport["geometry_depth_triangles"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nDepthTriangles));
@@ -6841,6 +7175,9 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["material_overrides"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stMaterials.arrOverrides.size()));
 	mapReport["material_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nMaterialBytes));
 	mapReport["ambient_occlusion_enabled"] = JsonValue(bSceneMode && stRenderConfiguration.stAmbientOcclusion.bEnabled);
+	mapReport["screen_effects_enabled"] = JsonValue(bSceneMode && stRenderConfiguration.stScreenEffects.bEnabled);
+	mapReport["color_lut_size"] = JsonValue(static_cast<std::int64_t>(stColorLut.nSize));
+	mapReport["color_lut_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nColorLutBytes));
 	mapReport["ambient_occlusion_samples"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stAmbientOcclusion.nSampleCount));
 	mapReport["ambient_occlusion_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nAmbientBytes));
 	mapReport["material_parameter_format"] = JsonValue(bMaterialExtensions ? "R32G32B32A32_FLOAT" : "disabled");
@@ -6967,6 +7304,11 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 		mapTiming["volume_history_valid"] = JsonValue(stTiming.bVolumeHistoryValid);
 		mapTiming["volume_history_read_index"] = JsonValue(static_cast<std::int64_t>(stTiming.nVolumeHistoryRead));
 		mapTiming["particles"] = JsonValue(static_cast<std::int64_t>(stTiming.nParticles));
+		mapTiming["paged_lod"] = JsonValue(stTiming.bPagedLod);
+		mapTiming["page_candidates"] = JsonValue(static_cast<std::int64_t>(stTiming.nPageCandidates));
+		mapTiming["page_triangles"] = JsonValue(static_cast<std::int64_t>(stTiming.nPageTriangles));
+		mapTiming["page_resident_bytes"] = JsonValue(static_cast<std::int64_t>(stTiming.nPageResidentBytes));
+		mapTiming["page_read_requests"] = JsonValue(static_cast<std::int64_t>(stTiming.nPageReadRequests));
 		mapTiming["lighting_seconds"] = JsonValue(stTiming.dLightingSeconds);
 		mapTiming["directional_illuminance"] = JsonValue(stTiming.dDirectionalIlluminance);
 		mapTiming["animation_seconds"] = JsonValue(stTiming.dAnimationSeconds);
@@ -7023,7 +7365,10 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["frame_samples"] = JsonValue(std::move(arrSamples));
 	mapReport["first_recorded_frame_id"] = JsonValue(static_cast<std::int64_t>(nFirstFrame));
 	mapReport["discarded_old_frame_samples"] = JsonValue(static_cast<std::int64_t>(nFirstFrame));
-	mapReport["timing_scope"] = JsonValue("CPU frame includes event handling, fence waits and presentation; GPU pass intervals include their resource barriers. Present pass GPU time covers release barriers, not display scanout.");
+	mapReport["timing_scope"] = JsonValue(
+			"CPU frame includes event handling, fence waits and presentation; GPU "
+			"pass intervals include their resource barriers. Present pass GPU time "
+			"covers release barriers, not display scanout.");
 	mapReport["cpu_frame_msec"] = JsonValue(std::move(arrCpu));
 	mapReport["graphics_msec"] = JsonValue(std::move(arrGpu));
 	mapReport["compute_msec"] = JsonValue(std::move(arrCompute));

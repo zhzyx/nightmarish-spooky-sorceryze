@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-77eceeff9dea34cdb34a066d09d6a612256863d8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7bca162b67cc44642f9e42c1491b6124a84c5f5df0f720a2e3b80590966223bb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1534",
+    "action": "validation",
+    "detection_head": "93d42f1652af1e85703c9cbdc0df96a003e836b1",
+    "context_sha256": "900527ca2ef23aa17da68cf41973a439abc044c06436431924138691df158dcb",
+    "operator": "kaiyunxue",
+    "worker": "codex/root",
+    "authority_ref": "User authorized complete M4 implementation testing and main delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44301304419",
+    "diagnosis": "New paged-package tests invoke PNG pixel decoding on Linux and macOS although the current decoder explicitly supports that operation only on Windows. The test continues after the failed Cook and indexes an empty instance vector, causing SIGSEGV. Both platform job logs identify the same first failed Cook and subsequent empty metadata assertions.",
+    "next_action": "After the in-progress quiet performance run, repair the new test fixtures and explicit unsupported-platform assertions, guard failed setup before metadata access, preserve platform-supported coverage, rerun local tests and exact candidate CI, and close this incident only after verified main integration.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T12:19:08.643152+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T12:21:39.145349+00:00",
+  "sha256": "a02c1b7839140e80f7c140b4be556f1995c00a9659fce112aface1894bda3e94"
+}

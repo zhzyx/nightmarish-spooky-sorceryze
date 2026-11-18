@@ -74,3 +74,18 @@ ENGINE_NEXT_TEST("Geometry invalid options preserve output")
 	stSettings.nMaxCommands = 0;
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::ValidateGeometrySettings(stSettings, arrDiagnostics));
 }
+
+ENGINE_NEXT_TEST("Geometry paging controls are bounded and preserve disabled validation")
+{
+	GeometrySettings stSettings;
+	Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(Parse(R"({"lod_enabled":false,"pixel_error":2.5,"lod_hysteresis":0.2,"page_gpu_bytes":65536,"page_staging_bytes":65536,"max_page_loads":1})", stSettings, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stSettings.bLodEnabled);
+	ENGINE_NEXT_CHECK_EQ(stSettings.dPixelError, 2.5);
+	ENGINE_NEXT_CHECK_EQ(stSettings.nPageGpuBytes, 65536ULL);
+	for (const char *pJson : { R"({"enabled":false,"pixel_error":0})", R"({"lod_hysteresis":1})", R"({"page_gpu_bytes":65535})", R"({"page_staging_bytes":268435457})", R"({"max_page_loads":0})", R"({"max_page_loads":257})" })
+	{
+		ENGINE_NEXT_CHECK(!Parse(pJson, stSettings, arrDiagnostics));
+		ENGINE_NEXT_CHECK_EQ(stSettings.dPixelError, 2.5);
+	}
+}

@@ -1293,3 +1293,30 @@ ENGINE_NEXT_TEST("Render configuration rejects invalid ambient occlusion transac
 		CheckRejected(stValue);
 	}
 }
+
+ENGINE_NEXT_TEST("Render configuration parses optional screen effects transactionally")
+{
+	JsonValue stValue = ValidConfiguration();
+	(*stValue.GetObject())["screen_effects"] = JsonValue::Object{ { "enabled", true }, { "sharpening", 0.25 }, { "vignette_intensity", 0.4 }, { "lut_asset_id", "grade.warm" }, { "lut_intensity", 0.75 } };
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stScreenEffects.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stScreenEffects.dSharpening, 0.25);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stScreenEffects.dVignetteIntensity, 0.4);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stScreenEffects.strLutAssetId, "grade.warm");
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stScreenEffects.dLutIntensity, 0.75);
+	(*stValue.GetObject())["screen_effects"] = JsonValue::Object{ { "enabled", false }, { "sharpening", 2.0 } };
+	ENGINE_NEXT_CHECK(!EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stScreenEffects.dSharpening, 0.25);
+}
+
+ENGINE_NEXT_TEST("Render configuration rejects invalid screen effect types and unknown fields")
+{
+	for (const JsonValue &stEffects : { JsonValue(JsonValue::Object{ { "enabled", "true" } }), JsonValue(JsonValue::Object{ { "lut_asset_id", 5.0 } }), JsonValue(JsonValue::Object{ { "unknown", true } }), JsonValue(JsonValue::Object{ { "vignette_inner_radius", 0.8 }, { "vignette_outer_radius", 0.8 } }) })
+	{
+		JsonValue stValue = ValidConfiguration();
+		(*stValue.GetObject())["screen_effects"] = stEffects;
+		CheckRejected(stValue);
+	}
+}

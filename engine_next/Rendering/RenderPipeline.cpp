@@ -59,7 +59,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bAmbientOcclusion, bool bDeformation, bool bVirtualShadows, std::uint32_t nShadowPageCount)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bAmbientOcclusion, bool bDeformation, bool bScreenEffects, bool bVirtualShadows, std::uint32_t nShadowPageCount)
 {
 	if (bSceneMode && bVirtualShadows && (nShadowPageCount < 16 || nShadowPageCount > 2048))
 	{
@@ -253,10 +253,19 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 				stPipeline.arrGeometryArguments[nPhase] = stGraph.AddResource({ "GeometryArguments" + std::to_string(nPhase), ResourceState::Common, true });
 				stPipeline.arrGeometryCounters[nPhase] = stGraph.AddResource({ "GeometryCounters" + std::to_string(nPhase), ResourceState::Common, true });
 			}
-			if (!AddPipelinePass(stGraph, stPipeline, { "GeometryUpload", QueueType::Graphics, { { stPipeline.nGeometryClusters, ResourceState::CopyDestination, true } }, {} }, PassWork::GeometryUpload, out_stDiagnostic) ||
+			PassDesc stUpload{ "GeometryUpload", QueueType::Graphics, { { stPipeline.nGeometryClusters, ResourceState::CopyDestination, true } }, {} };
+			PassDesc stDepth{ "GeometryDepth", QueueType::Graphics, { { stPipeline.arrGeometryArguments[0], ResourceState::IndirectArgument, false }, { stPipeline.arrGeometryCounters[0], ResourceState::IndirectArgument, false }, { stPipeline.nDepth, ResourceState::DepthWrite, true } }, {} };
+			if (stGeometry.bPaged)
+			{
+				stPipeline.nGeometryPages = stGraph.AddResource({ "GeometryPagePool", ResourceState::Common, true });
+				stUpload.arrAccesses.push_back({ stPipeline.nGeometryPages, ResourceState::CopyDestination, true });
+				stDepth.arrAccesses.push_back({ stPipeline.nGeometryPages, ResourceState::VertexIndexRead, false });
+				stGbuffer.arrAccesses.push_back({ stPipeline.nGeometryPages, ResourceState::VertexIndexRead, false });
+			}
+			if (!AddPipelinePass(stGraph, stPipeline, stUpload, PassWork::GeometryUpload, out_stDiagnostic) ||
 				!AddPipelinePass(stGraph, stPipeline, { "GeometryClearDepth", QueueType::Graphics, { { stPipeline.arrGeometryCounters[0], ResourceState::UnorderedAccess, true } }, {} }, PassWork::GeometryClearDepth, out_stDiagnostic) ||
 				!AddPipelinePass(stGraph, stPipeline, { "GeometryCullDepth", QueueType::Graphics, { { stPipeline.nGeometryClusters, ResourceState::NonPixelShaderRead, false }, { stPipeline.arrGeometryArguments[0], ResourceState::UnorderedAccess, true }, { stPipeline.arrGeometryCounters[0], ResourceState::UnorderedAccess, true } }, {} }, PassWork::GeometryCullDepth, out_stDiagnostic) ||
-				!AddPipelinePass(stGraph, stPipeline, { "GeometryDepth", QueueType::Graphics, { { stPipeline.arrGeometryArguments[0], ResourceState::IndirectArgument, false }, { stPipeline.arrGeometryCounters[0], ResourceState::IndirectArgument, false }, { stPipeline.nDepth, ResourceState::DepthWrite, true } }, {} }, PassWork::GeometryDepth, out_stDiagnostic))
+				!AddPipelinePass(stGraph, stPipeline, stDepth, PassWork::GeometryDepth, out_stDiagnostic))
 			{
 				return false;
 			}
@@ -593,6 +602,11 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		PassDesc stToneMap{
 			"ToneMap", QueueType::Graphics, { { nToneMapSource, ResourceState::ShaderRead, false }, { stPipeline.nColor, ResourceState::RenderTarget, true } }, {}
 		};
+		if (bScreenEffects)
+		{
+			stPipeline.nColorLut = stGraph.AddResource({ "ColorGradingLut", ResourceState::ShaderRead, true });
+			stToneMap.arrAccesses.push_back({ stPipeline.nColorLut, ResourceState::ShaderRead, false });
+		}
 		if (bExposure)
 		{
 			if (!AddPipelinePass(stGraph, stPipeline,
@@ -700,6 +714,10 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		if (stGeometry.bEnabled)
 		{
 			stPresent.arrAccesses.push_back({ stPipeline.nGeometryClusters, ResourceState::Common, false });
+			if (stGeometry.bPaged)
+			{
+				stPresent.arrAccesses.push_back({ stPipeline.nGeometryPages, ResourceState::Common, false });
+			}
 			for (std::uint32_t nPhase = 0; nPhase < 2; ++nPhase)
 			{
 				stPresent.arrAccesses.push_back({ stPipeline.arrGeometryArguments[nPhase], ResourceState::Common, false });
