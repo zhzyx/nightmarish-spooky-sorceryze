@@ -1,0 +1,42 @@
+{
+  "issue": 1501,
+  "status": "ci_defects_repaired_pending_independent_review",
+  "failed_pr": 1515,
+  "failed_signed": "0e935c9c5e23b769e31cd5bfe4cf660bf614b24a",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "030a56626baeac81062149e3e6480d92e95d249a9fe38e0644133885c45fb017",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "4e2880b13171ace9d9e565cde5e5c7544b80c0c858bb4d334b338ce59b99ea56",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c84fe150265c829f17ae9e6b09ee2fa2f867fe7d541d82132e6ba262cac53de4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "0fd8fbd19388902d3e614e4bee604ea4229c6c8a73d0204fd5f5cb909391e19a",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "9e8996e57c39362982d23285bf3b809ed3e726d2fd19dc4a5dbed57cf32d7ba1",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "a1dc1a6aa2398788bd6c1a0cec05a6e7c09f75fbbb8a1b5e353906c65ccd131a",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "d5844822a892454166a610049222d6d6dad03e195a659510dd564f89f9533663",
+    "customizations/components/tianxuan/duobao/native_store.py": "69e2283effdc88e042c478d79fdb3efd2c102dd3df0cfcccf525785c10331748",
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py": "bb987a461258b16b7e901b3a5f520eeacf6483f98695d9cb50614f2f33f9252a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "ad6fba0acbe5cee94f31b9500cbe9e1af1aef0a7312263e43f473de055043a0d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "4122db587ecd67c24a1d5cef2a8cf17e78db240374a223f381d7911d89144e6a",
+    ".gitattributes": "91064e978b09e264e1d67f8b413d45b193c98a47e22a61db7e243409cdf29d22",
+    ".pre-commit-config.yaml": "8b89a33f09c1e58a2d6b0ec1b8029ccaf09a549723256248e9115e4efe50e183"
+  },
+  "changes": [
+    "NativeWorker optional context_receipt_reader class default preserves RemoteNativeWorker shared reconcile when subclass owns initialization. No remote v2 reader admission claimed.",
+    "Test runtime executable discovered from NATIVE_TEST_NODE or existing PATH; skip only real Node probes when absent. No hardcoded workstation path.",
+    "Only3 existing immutable original reports exempted from text formatter under existing evidence convention; exact original raw hashes preserved by existing Git attributes."
+  ],
+  "regression": {
+    "passed": 25,
+    "log": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\context-ci-repair-regression.log",
+    "scope": "actual offline context Node/Subscription + real loopbackHTTP separate remote node, no models"
+  },
+  "failures": [
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\context-ci-module-failure.log",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\context-ci-static-failure.log"
+  ],
+  "historical_live": "Original bounded live report remains exact original12source; no rerun and no new savings claim.",
+  "remaining": [
+    "Independent review",
+    "new exact signed CI/main",
+    "ordinaryfactory and production integration"
+  ]
+}

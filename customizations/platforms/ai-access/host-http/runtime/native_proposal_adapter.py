@@ -35,6 +35,19 @@ def host_for(profile):
 
         # Preserve the production dependency roots used by original.configuration.
         class ProbeHost(type(host)):
+            def context_session(self, request, authority, max_calls):
+                original_wrapper, original_configuration = self.wrapper, self.configuration
+
+                def configuration():
+                    self.wrapper = original_wrapper
+                    try:
+                        return original_configuration()
+                    finally:
+                        self.wrapper = probe
+
+                self.wrapper, self.configuration = probe, configuration
+                return super().context_session(request, authority, max_calls)
+
             def run(self, request, cancel=None):
                 configured = self.configuration()
                 old_wrapper, old_configuration = self.wrapper, self.configuration
@@ -76,7 +89,68 @@ def build_request(messages):
         else:
             governance.append(message)
     effective = {**original, "context": original["context"] + "\nRuntime governing context:\n" + canonical(governance)}
+    if len(effective["context"].encode()) > 65536 or len(canonical(effective).encode()) > 131072:
+        raise ValueError("Effective native request too large for installed context ceiling")
     return original, governance, effective
+
+
+class ContextTransport:
+    def __init__(self, resolver, max_calls):
+        self.resolver, self.max_calls = resolver, max_calls
+        self.session = None
+        self.profile = None
+        self.initial = None
+
+    def call(self, profile, messages, output_limit):
+        if output_limit is not None:
+            raise ValueError("Native token ceilings unsupported")
+        try:
+            if self.session is None:
+                original = json.loads(messages[1]["content"])["input"]["native_request"]
+                self.initial = messages[:2]
+                self.profile = canonical(profile)
+                self.session = validate_profile(profile).context_session(original, self.resolver, self.max_calls)
+            if self.profile != canonical(profile) or messages[:2] != self.initial:
+                raise ValueError("Session task/profile changed")
+            # Re-serialize assistant JSON exactly as accepted by Subscription.
+            history = [
+                {**m, "content": json.dumps(json.loads(m["content"]), ensure_ascii=False, separators=(",", ":"))}
+                if m["role"] == "assistant"
+                else m
+                for m in messages
+            ]
+            history[0] = {
+                **history[0],
+                "content": history[0]["content"]
+                + "\nReturn strict host action JSON. All four fields action,name,arguments,value are required. Tool: {action:tool,name:native_context,arguments:{op:manifest,cursor:null},value:null}; "
+                "read fields: op,module,revision,name,object_digest,offset,length,cursor,known_receipt; "
+                "delta fields: op,module,before,after,cursor. cursor is string or null; known_receipt must be null. Final: {action:final,name:null,arguments:null,value:proposal}. Inactive fields must be null. Prior accepted history omits inactive fields; new output must include all four. "
+                "Proposal input_digest must equal "
+                + hashlib.sha256(
+                    json.dumps(self.session.request, ensure_ascii=False, separators=(",", ":")).encode()
+                ).hexdigest()
+                + ". Provider tools remain disabled; only the host executes tool actions.",
+            }
+            if len(canonical(history).encode()) > profile["max_context_bytes"]:
+                raise ValueError("Effective context history exceeds installed byte ceiling")
+            terminal = self.session.turn(history)
+            return {
+                **model_provenance(profile),
+                "text": json.dumps(terminal["action"], ensure_ascii=False, separators=(",", ":")),
+                "finish_reason": "stop",
+                "usage": {},
+                "provider_request_id": terminal["usage"].get("turn_id"),
+                "protocol_evidence": terminal,
+            }
+        except Exception as exc:
+            raise TransportUnknown(
+                "Native context turn unavailable; reconciliation required",
+                {"reason": "native_context_unavailable", "diagnostic": getattr(self.session, "last_diagnostic", None)},
+            ) from exc
+
+    def close(self):
+        if self.session:
+            self.session.close()
 
 
 def installed_profile(identifier, installation, max_context_bytes=131072):

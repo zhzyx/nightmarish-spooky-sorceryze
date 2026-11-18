@@ -27,10 +27,12 @@ def source_digest():
 
     paths = [
         Path(__file__),
+        Path(__file__).with_name("native_context.py"),
         HOST,
         HELPER,
         Path(__file__).with_name("native_worker.py"),
         ROOT / "customizations/components/tianxuan/duobao/native_workspace.py",
+        ROOT / "customizations/components/tianxuan/duobao/native_store.py",
     ]
     return runner.digest({
         "runtime": runner.runtime_digest(),
@@ -68,6 +70,10 @@ def prepare_inputs(contract, execution, workspace, files, write_allowlist, accep
         write_allowlist=write_allowlist,
         acceptance=acceptance,
     )
+    runner.require(
+        len(request["context"].encode()) <= 60000,
+        "Small-full context exceeds reserved governance ceiling; select admitted v2",
+    )
     binding = dict(
         execution=execution,
         workspace=str(workspace),
@@ -78,6 +84,39 @@ def prepare_inputs(contract, execution, workspace, files, write_allowlist, accep
         acceptance=acceptance,
     )
     return {"native_request": request, "native_binding": binding}
+
+
+def prepare_context_inputs(
+    contract, execution, workspace, manifest, write_allowlist, acceptance, installed_context, *, materialized_files=None
+):
+    """Host-only schema-2 input; installation factory owns store/identity/authority."""
+    result = prepare_inputs(contract, execution, workspace, {}, write_allowlist, acceptance)
+    runner.require(
+        isinstance(manifest, dict) and len(runner.canonical(manifest).encode()) <= 8192,
+        "Bounded initial manifest required",
+    )
+    result["native_request"]["context"] = runner.canonical({
+        "schema": 2,
+        "manifest": manifest,
+        "tool": "native_context",
+        "operations": ["manifest", "read", "delta"],
+        "instruction": "Request exact sources through host tool actions; unknown or omitted content is not complete.",
+    })
+    materialized_files = snapshot(Path(workspace), large=True) if materialized_files is None else materialized_files
+    runner.require(
+        isinstance(materialized_files, dict)
+        and all(isinstance(v, str) and len(v) == 64 for v in materialized_files.values()),
+        "Exact materialized file digests required",
+    )
+    result["native_binding"].update(
+        schema=2,
+        installed_context=installed_context,
+        manifest=manifest,
+        materialized_digest=runner.digest(materialized_files),
+        contract=contract,
+    )
+    result["native_binding"].pop("files")
+    return result
 
 
 def register(registry, execution, grant, framework):
@@ -102,20 +141,23 @@ def register(registry, execution, grant, framework):
         os.fsync(f.fileno())
 
 
-def snapshot(work):
+def snapshot(work, large=False):
     absolute(work)
     files = {}
     for p in sorted(work.rglob("*")):
         absolute(p)
         if p.is_file() and p.name != ".duobao-source.json":
             data = p.read_bytes()
-            runner.require(len(data) <= 131072, "Model input file too large")
-            files[p.relative_to(work).as_posix()] = data.decode("utf-8")
-    runner.require(len(runner.canonical(files).encode("utf-8")) <= 100000, "Model input exceeds fixed context bound")
+            runner.require(len(data) <= (2097152 if large else 131072), "Model input file too large")
+            files[p.relative_to(work).as_posix()] = hashlib.sha256(data).hexdigest() if large else data.decode("utf-8")
+    runner.require(
+        len(runner.canonical(files).encode("utf-8")) <= (8388608 if large else 60000),
+        "Model input exceeds fixed context bound",
+    )
     return files
 
 
-def launch(registry):
+def launch(registry, context_factory=None):
     work = absolute(os.environ["NATIVE_WORKSPACE"])
     execution = work.parent.name
     runner.require(
@@ -135,12 +177,26 @@ def launch(registry):
     )
     runner.require(binding["producer_source"] == source_digest(), "Installed producer changed")
     runner.require(runner.read(os.environ["NATIVE_CONTEXT"]) == binding["definition"], "Original definition changed")
-    files = snapshot(work)
-    runner.require(files == binding["files"], "Selected materialized inputs changed")
-    runner.require(
-        request["task"] == runner.canonical(binding["definition"]) and request["context"] == runner.canonical(files),
-        "Model inputs are not fixed original inputs",
-    )
+    contextual = binding.get("schema") == 2
+    resolver = None
+    files = snapshot(work, large=contextual)
+    if contextual:
+        runner.require(callable(context_factory), "Trusted installed context factory required")
+        runner.require(runner.digest(binding["contract"]) == execution, "Fixed context contract changed")
+        runner.require(runner.digest(files) == binding["materialized_digest"], "Materialized source changed")
+        resolver = context_factory(binding, execution, work)
+        runner.require(
+            resolver.binding["execution"] == execution
+            and resolver.binding["tenant"] == binding["contract"]["tenant"]
+            and resolver.binding["selected"] == binding["contract"]["selected"]
+            and resolver.binding["source_digest"] == runner.digest(binding["contract"]["source"]),
+            "Factory context identity changed",
+        )
+        resolver.check("launch")
+    else:
+        runner.require(files == binding["files"], "Selected materialized inputs changed")
+        runner.require(request["context"] == runner.canonical(files), "Model inputs are not fixed original inputs")
+    runner.require(request["task"] == runner.canonical(binding["definition"]), "Original task changed")
     runner.require(
         request["write_allowlist"] == binding["write_allowlist"] and request["acceptance"] == binding["acceptance"],
         "Native mandate changed",
@@ -154,7 +210,7 @@ def launch(registry):
             "Reserved or non-module output",
         )
     owner = _capture_stage_owner(work)
-    result = runner.run(grant, framework, Path(p["state_dir"]))
+    result = runner.run(grant, framework, Path(p["state_dir"]), context_resolver=resolver)
     runner.require(result["status"] == "completed", "Model result unknown or incomplete; no proposal application")
     runner.verify_grant(grant, framework, Path(p["state_dir"]))
     runner.require(len(result["result"]["outputs"]) == 1, "One native production step required")
@@ -171,7 +227,8 @@ def launch(registry):
     runner.require(
         evidence["original_request_digest"] == runner.digest(request)
         and proposal["request_id"] == request["request_id"]
-        and proposal["input_digest"] == evidence["input_digest"],
+        and proposal["input_digest"]
+        == (evidence["original_request_digest"] if contextual else evidence["input_digest"]),
         "Original proposal binding mismatch",
     )
     edits = proposal["files"]
@@ -184,7 +241,9 @@ def launch(registry):
             and len(edit["content"].encode("utf-8")) <= 131072,
             "Output outside original mandate",
         )
-    runner.require(snapshot(work) == files, "Workspace changed during model execution")
+    if resolver:
+        resolver.check("apply_proposal")
+    runner.require(snapshot(work, large=contextual) == files, "Workspace changed during model execution")
     # Any partial IO failure exits nonzero: NativeWorker closes without collecting
     # or accepting any output. Original files and journal remain for inspection.
     for edit in edits:

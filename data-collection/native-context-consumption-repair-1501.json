@@ -1,0 +1,369 @@
+{
+  "issue": 1501,
+  "status": "scoped_R1_R2_repair_ready_for_new_independent_review",
+  "source_root": "D:\\GongGong-work\\native-context-consumption-20261118",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "030a56626baeac81062149e3e6480d92e95d249a9fe38e0644133885c45fb017",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "54ada57b24087bff5ac123274724108178da80205a39416c776f70b586fd3db4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c84fe150265c829f17ae9e6b09ee2fa2f867fe7d541d82132e6ba262cac53de4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77a29da320e653ddf73c0204455a62f17709266fc9e7c66b6827de6ae435bcae",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "aa3b53fbadaa2a21eb4d9b981e16cc04808accc0c147ffca6dfcff927b95c112",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "8a541d64c29eb83fa71e69d8d75eb68a6406394af0afc5f90398e14c63917b5c",
+    "customizations/components/tianxuan/duobao/native_store.py": "69e2283effdc88e042c478d79fdb3efd2c102dd3df0cfcccf525785c10331748",
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py": "bb987a461258b16b7e901b3a5f520eeacf6483f98695d9cb50614f2f33f9252a"
+  },
+  "source_bytes": {
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": 14583,
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": 24854,
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": 11622,
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": 20669,
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": 16209,
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": 24987,
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": 33647,
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": 8730,
+    "customizations/components/tianxuan/duobao/native_store.py": 21730,
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py": 6156
+  },
+  "all_source_lf": true,
+  "historical_reports": {
+    "implementation_sha256": "46662c395ecba8167faf7cc6fd29aab8b3b2feeefb97dccd5f91cfccd849f3a6",
+    "independent_review_sha256": "2d7e32b7d0cc5fc397372178fc671a7a10b58f963a78ef083d629260f81bf482"
+  },
+  "repairs": {
+    "R1": "Conservative selected plus all explicitly admitted delta endpoints authority checked at launch/request/response/model-turn/proposal-apply. Revoke during historical read/delta and after retained history tested.",
+    "R2": "Bounded metadata SHA256 verification and stable cached manifest paging; no blob body reads for lengths. Cold blob streaming whole SHA256 produces trusted execution-local block hashes. Every warm returned block reauthenticated; inode/length/corruption rejection, tenant/revision/execution isolation tested. native_store.py now included in producer source_digest."
+  },
+  "bounds": {
+    "revisions": 128,
+    "objects_across_endpoints": 4096,
+    "revision_payload_bytes": 1048576,
+    "object_bytes": 2097152,
+    "total_source_bytes": 8388608,
+    "block_bytes": 8192,
+    "returned_range_bytes": 8192,
+    "max_warm_range_blob_bytes": 16384,
+    "max_cold_range_blob_bytes": 2113536,
+    "max_session_body_bytes": "8388608 + max_reads * 16384",
+    "sqlite_cache_target_bytes": 262144,
+    "sqlite_mmap_bytes": 0
+  },
+  "io": {
+    "pages": [
+      {
+        "entries": 63,
+        "response_bytes": 16384,
+        "cumulative_storage_io": {
+          "metadata_bytes": 9421,
+          "body_bytes": 0,
+          "cold_verifications": 0
+        }
+      },
+      {
+        "entries": 57,
+        "response_bytes": 14707,
+        "cumulative_storage_io": {
+          "metadata_bytes": 9421,
+          "body_bytes": 0,
+          "cold_verifications": 0
+        }
+      }
+    ],
+    "cold_range_blob_bytes": 73728,
+    "warm_range_blob_bytes": 8192,
+    "range_returned_bytes": 2,
+    "old_manifest_blob_bytes": 15728640,
+    "old_each_range_blob_bytes": 65536,
+    "interpretation": "Measured bytes returned by SQLite blob.read; not physical OS disk/cache I/O. Cold verifies whole digest then authenticates requested chunk; warm authenticates requested chunks. Metadata length queries do not load bodies."
+  },
+  "memory": {
+    "metadata_peak_python_bytes": 92650,
+    "cold_peak_python_bytes": 100436,
+    "warm_peak_python_bytes": 92380,
+    "scope": "tracemalloc tracked Python allocations for 120x64KiB metadata and one 2-byte cold/warm range; excludes SQLite native cache and whole process RSS"
+  },
+  "validation": {
+    "python": "95 passed, 98 subtests passed; exact frozen source unchanged",
+    "store": "34 passed, 2 skipped, 35 subtests passed",
+    "node": "30 passed",
+    "ruff": "All checks passed",
+    "never_collected": "runtime/test_runtime.py",
+    "process_terminal": [
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\targeted-temp\\test_authority_revoked_before_0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 143,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\targeted-temp\\test_real_process_reuses_subsc0\\multi.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\targeted-temp\\test_real_process_unknown_turn0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 7,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\targeted-temp\\test_real_process_unknown_turn1\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 143,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\targeted-temp\\test_real_worker_producer_cont0\\pipeline.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\frozen-final-temp\\test_actual_runner_loop_and_no0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\frozen-final-temp\\test_authority_revoked_before_0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 143,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\frozen-final-temp\\test_real_process_reuses_subsc0\\multi.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\frozen-final-temp\\test_real_process_unknown_turn0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 7,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\frozen-final-temp\\test_real_process_unknown_turn1\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 143,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\frozen-final-temp\\test_real_worker_producer_cont0\\pipeline.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-temp\\test_actual_runner_loop_and_no0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-temp\\test_authority_revoked_before_0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 143,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-temp\\test_real_process_reuses_subsc0\\multi.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-temp\\test_real_process_unknown_turn0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 7,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-temp\\test_real_process_unknown_turn1\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 143,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-temp\\test_real_worker_producer_cont0\\pipeline.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-source-temp\\test_actual_runner_loop_and_no0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-source-temp\\test_authority_revoked_before_0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 143,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-source-temp\\test_real_process_reuses_subsc0\\multi.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-source-temp\\test_real_process_unknown_turn0\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 7,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-source-temp\\test_real_process_unknown_turn1\\ledger.sqlite",
+        "closures": [
+          {
+            "exit_code": 143,
+            "physical": true
+          }
+        ]
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\final-source-temp\\test_real_worker_producer_cont0\\pipeline.sqlite",
+        "closures": [
+          {
+            "exit_code": 0,
+            "physical": true
+          }
+        ]
+      }
+    ]
+  },
+  "resolved_test_setup_failures": [
+    "First targeted test invocation had missing private probes parent, all fixtures ENOENT before execution; created scoped parent.",
+    "Standalone context tests previously relied on runtime import side effect of other test module; added explicit runtime path, then final suite passed."
+  ],
+  "method_learning": {
+    "recall": "Root recalled native-storage-resource-boundary: no verified methods; editor-dependency-handoff retained exact consumer/terminal binding conditions.",
+    "proposal": "Root owns measure-source-io-before-context-admission r1; current I/O and integrity tests provide trial evidence, not self-independent approval."
+  },
+  "limitations": [
+    "No actual provider/network/production calls, model session replay or new scheduler/client.",
+    "Factory/installation ACL/live authority integration, package/build/update/rollback, CI/main and full business acceptance remain root-owned.",
+    "Trusted process-private metadata and chunk index; no claim against privileged in-place memory mutation. Warm ranges authenticate touched chunks, not every untouched chunk on every call.",
+    "Metadata capped before payload fetch, Python tracked allocations measured separately; SQLite cache setting is a target, not a whole-process RSS limit.",
+    "Two storage/workspace platform tests skipped; see store-regression receipt.",
+    "No superseding approval or business completion; original rejected review remains history."
+  ],
+  "cleanup": {
+    "processes": "All own shell/test processes terminal; actual context process closures exported with physical=true and exit codes 0/7/143. No installed settings, branches or worktrees created by this repair worker.",
+    "deleted": [],
+    "retained": [
+      "Final test stores, measured stores, ledgers and JSON reports retained for new independent review.",
+      "Intermediate targeted-temp/final-temp/final-source-temp deletion was automatically rejected by tool policy before execution; retained, not represented as cleaned."
+    ],
+    "automatic_review_rejection": "PowerShell Remove-Item for three scoped intermediate directories, after resolved-parent boundary verification: blocked by policy. No retry/bypass."
+  },
+  "evidence": [
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\frozen-source-hashes.json",
+      "sha256": "6be8c00a40c790193152c39769dfa545d05849298ee2822aa3cde90fe57e7f38"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\io-measurement.json",
+      "sha256": "a5d903ab42536cc834f3a7b99d259f71019893f2df84fee2a4e9c893f065cfb5"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\memory-measurement.json",
+      "sha256": "754031dbde6832162b04cba0ade8905ac9a8758b5afefa870947d7efffe7388e"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\node-regression.json",
+      "sha256": "fe45e518f6f1de9015b9975508209c0e7dec219ee0fd2a09525f9d2f486c2c7f"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\pre-cache-limit-python-regression.json",
+      "sha256": "be451b1a2b36e8292dd772b10c3a6f583450f7c16ad7fc7e9fbcfae7b63430f2"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\pre-launch-limit-python-regression.json",
+      "sha256": "bed0225410af1e173b709ff656e8294c2360c1aa4ab7b97518ae8daadecef39f"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\process-closures.json",
+      "sha256": "337a31aaddf9c151df940467f6fd423aca47a28995400af18b4c8439574420ca"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\python-regression.json",
+      "sha256": "e56c5e651d51bdc7e352b01fba30eb1d8e4f4e2304e77126d7248faae8baf21c"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-repair-probes\\store-regression.json",
+      "sha256": "09c69f4020845051cd240ad7aa49613fa4ae5587fa223fd1c88984cd03c66dce"
+    }
+  ],
+  "design": {
+    "path": "design-docs/native-context-consumption-20261118.md",
+    "sha256": "66c7aace65d3ee63485b1d460be8d5e88a34fc5901abe44ea5f10c6f5f0d2758"
+  }
+}

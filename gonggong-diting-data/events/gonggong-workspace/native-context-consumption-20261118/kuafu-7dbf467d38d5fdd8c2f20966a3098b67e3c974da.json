@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7dbf467d38d5fdd8c2f20966a3098b67e3c974da",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-context-consumption-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "287529bd0c1c6fa51a3861d8ae0807565c0aa9eae3ac157534997be52113f163",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "8b6b210be8aae3f36f7b457979e31964b44026ea",
+    "context_sha256": "49429a6d5f505b01e89543e3cdea1ecb6700655ee95ebc333ebe1aca7076069a",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "diagnosis": "Actual live fixed plan568edea1 emitted2new calls, historical total11. Full baseline quality passed133.860s/9545input235output0cache. Tool path one turn121.422s then unknown; no read/final, usage unknown, owned physical exit0. Wrapper catches without preserving turn error classification; cannot infer provider exact cause. Root code inspection found root-anyOf actionSchema and open arguments object passed as outputSchema; official OpenAI Structured Outputs documentation https://developers.openai.com/api/docs/guides/structured-outputs requires object root not anyOf and additionalProperties:false. This is a directly observable contract incompatibility, not proof it caused this specific unknown. Need offline schema repair plus bounded non-content failure diagnostics, exact negative fixtures and independent review before any new live plan. Original unknown never replayed. Earlier offline WindowsApps Python alias broke framework subprocess before live; process-local verified Python PATH restored actual admission without source edits.",
+    "next_action": "Repair offline native wrapper schema and failure classification; retain raw unknown and old source evidence, no new model calls until independent review and a newly bounded validation plan.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T03:51:54.570344+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T04:54:09.837954+00:00",
+  "sha256": "84cb528cad128d46e6ae188501a24eabc3734be7d136b02b5c9f93f745c9f000"
+}

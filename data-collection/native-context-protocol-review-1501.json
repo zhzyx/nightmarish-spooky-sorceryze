@@ -1,0 +1,215 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-protocol-review.json",
+    "sha256": "4e7f442034d56544f0a753c126c58268232f63749fe79d6f22987733a963ad16",
+    "path_base": "absolute current host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "issue": 1501,
+    "status": "scoped_pass_exact_protocol_candidate",
+    "blockers": [],
+    "source_root": "D:\\GongGong-work\\native-context-consumption-20261118",
+    "repair_report_sha256": "4a153d92ebb5ffef2283ccd618896ee1d5b358b4a5edfb9acbc7b539797af035",
+    "source_sha256_before": {
+      "customizations/components/tianxuan/sinan-workorders/native_context.py": "030a56626baeac81062149e3e6480d92e95d249a9fe38e0644133885c45fb017",
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "4e2880b13171ace9d9e565cde5e5c7544b80c0c858bb4d334b338ce59b99ea56",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c84fe150265c829f17ae9e6b09ee2fa2f867fe7d541d82132e6ba262cac53de4",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "0fd8fbd19388902d3e614e4bee604ea4229c6c8a73d0204fd5f5cb909391e19a",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+      "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "fb541596410617739b907d21a8ec26399993b657ab0f649b28bc8ac4d9636267",
+      "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+      "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "d5844822a892454166a610049222d6d6dad03e195a659510dd564f89f9533663",
+      "customizations/components/tianxuan/duobao/native_store.py": "69e2283effdc88e042c478d79fdb3efd2c102dd3df0cfcccf525785c10331748",
+      "customizations/components/tianxuan/duobao/test_native_context_storage.py": "bb987a461258b16b7e901b3a5f520eeacf6483f98695d9cb50614f2f33f9252a",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "ad6fba0acbe5cee94f31b9500cbe9e1af1aef0a7312263e43f473de055043a0d",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "4122db587ecd67c24a1d5cef2a8cf17e78db240374a223f381d7911d89144e6a"
+    },
+    "source_sha256_after": {
+      "customizations/components/tianxuan/sinan-workorders/native_context.py": "030a56626baeac81062149e3e6480d92e95d249a9fe38e0644133885c45fb017",
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "4e2880b13171ace9d9e565cde5e5c7544b80c0c858bb4d334b338ce59b99ea56",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c84fe150265c829f17ae9e6b09ee2fa2f867fe7d541d82132e6ba262cac53de4",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "0fd8fbd19388902d3e614e4bee604ea4229c6c8a73d0204fd5f5cb909391e19a",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+      "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "fb541596410617739b907d21a8ec26399993b657ab0f649b28bc8ac4d9636267",
+      "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+      "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "d5844822a892454166a610049222d6d6dad03e195a659510dd564f89f9533663",
+      "customizations/components/tianxuan/duobao/native_store.py": "69e2283effdc88e042c478d79fdb3efd2c102dd3df0cfcccf525785c10331748",
+      "customizations/components/tianxuan/duobao/test_native_context_storage.py": "bb987a461258b16b7e901b3a5f520eeacf6483f98695d9cb50614f2f33f9252a",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "ad6fba0acbe5cee94f31b9500cbe9e1af1aef0a7312263e43f473de055043a0d",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "4122db587ecd67c24a1d5cef2a8cf17e78db240374a223f381d7911d89144e6a"
+    },
+    "source_binding": "12 combined inputs exactly match supplied manifest. Physical hashes captured before/after independent metadata check and report; source tests preceded these captures. Initial inspection and final hashes match supplied candidate.",
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "lesson": "bind-consumer-release",
+      "revision": 22,
+      "conditions": "Exact candidate and terminal required; older evidence or transport completion cannot release factory/live acceptance."
+    },
+    "provider_contract": {
+      "reference": "https://developers.openai.com/api/docs/guides/structured-outputs",
+      "checked": "2026-11-18",
+      "finding": "Actual Subscription turn/start outputSchema captured. Closed object root; no root anyOf; all properties required; every nested object closed; nullable inactive fields/cursors; exact manifest/read/delta shapes. Current schema contains no unsupported composition keywords. Semantic action/null exclusivity and byte/integer limits enforced locally.",
+      "preflight": "Independent allOf mutation produced schema_preflight unknown before start with zero starts/threads/turns. Source test additionally mutates additionalProperties. Conservative installed-schema guard, not a general JSON Schema validator.",
+      "evidence": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-protocol-review-probes\\actual-outputSchema.json"
+    },
+    "verified": [
+      "33 wrapper tests and 56 Python tests plus15 subtests pass on current source. All native-context, model-host and model-producer source tests included; real five-turn manifest/read/read-cursor/delta/final child, runner loop and worker producer pipeline covered.",
+      "Independent actual Subscription RPC: valid tool then final uses one thread, two turns and incremental second turn. Normalized accepted assistant equals next history prefix; next wire input has exactly assistant+result messages. Action digests and wire byte counts agree.",
+      "Independent inactive value, unknown operation, oversized output and duplicate output paths terminate unknown after one turn. No second turn/replay or tool executor in fixture.",
+      "Wrong thread/turn failure notifications cannot classify current diagnostic. Conflicting turnId/turn.id also remains unknown. Failed and empty output stay unknown with terminal_failure/missing_output. Injected SECRET exception/message absent from receipts.",
+      "Diagnostic has only exact version/phase/terminal/reason enums; Python validates field set and values. Adapter exposes fixed reason and bounded diagnostic, removing exception content. Unknown does not become final or accepted history.",
+      "47 Git input blobs match build-impact. All12 host files are inventoried; root SCons evidence has zero native overlap. Cache/graph checks read as root evidence, not rerun here.",
+      "Registration differs from supplied before only at native_proposal_adapter.py leaf; independent current distribution check passes. Byte consistency is not production admission."
+    ],
+    "independent_scenarios": [
+      {
+        "mode": "success",
+        "starts": 1,
+        "threads": 1,
+        "turns": 2,
+        "rpc_closed": 1,
+        "statuses": [
+          "tool_requested",
+          "final"
+        ]
+      },
+      {
+        "mode": "inactive",
+        "starts": 1,
+        "threads": 1,
+        "turns": 1,
+        "rpc_closed": 1,
+        "statuses": [
+          "unknown"
+        ]
+      },
+      {
+        "mode": "unknown",
+        "starts": 1,
+        "threads": 1,
+        "turns": 1,
+        "rpc_closed": 1,
+        "statuses": [
+          "unknown"
+        ]
+      },
+      {
+        "mode": "oversize",
+        "starts": 1,
+        "threads": 1,
+        "turns": 1,
+        "rpc_closed": 1,
+        "statuses": [
+          "unknown"
+        ]
+      },
+      {
+        "mode": "duplicate_paths",
+        "starts": 1,
+        "threads": 1,
+        "turns": 1,
+        "rpc_closed": 1,
+        "statuses": [
+          "unknown"
+        ]
+      },
+      {
+        "mode": "foreign",
+        "starts": 1,
+        "threads": 1,
+        "turns": 1,
+        "rpc_closed": 1,
+        "statuses": [
+          "unknown"
+        ]
+      },
+      {
+        "mode": "conflicting",
+        "starts": 1,
+        "threads": 1,
+        "turns": 1,
+        "rpc_closed": 1,
+        "statuses": [
+          "unknown"
+        ]
+      },
+      {
+        "mode": "empty",
+        "starts": 1,
+        "threads": 1,
+        "turns": 1,
+        "rpc_closed": 1,
+        "statuses": [
+          "unknown"
+        ]
+      },
+      {
+        "mode": "failed",
+        "starts": 1,
+        "threads": 1,
+        "turns": 1,
+        "rpc_closed": 1,
+        "statuses": [
+          "unknown"
+        ]
+      },
+      {
+        "mode": "preflight",
+        "starts": 0,
+        "threads": 0,
+        "turns": 0,
+        "rpc_closed": 0,
+        "statuses": [
+          "unknown"
+        ]
+      }
+    ],
+    "validation": {
+      "python": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 -m pytest customizations/components/tianxuan/sinan-workorders/test_native_context.py customizations/components/tianxuan/sinan-workorders/test_native_model_host.py customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py -q -p no:cacheprovider --basetemp D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-protocol-review-probes\\pytest-tmp",
+      "python_result": "exit0; 56 passed,15 subtests passed in40.20s; exec session30025 terminal0",
+      "node_executable": "C:/Users/ROG/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "node_commands": [
+        "--test customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs",
+        "--test tests/editor/test_codex_subscription.js",
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-protocol-review-probes\\adversarial.cjs"
+      ],
+      "node_results": "All exit0; wrapper33 passed; Subscription1 passed/2 skipped (Windows EOF job tests skipped by original suite);10 independent scenarios passed. No claim that skipped transport tests ran.",
+      "metadata_command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-protocol-review-probes\\metadata.py",
+      "metadata_result": "exit0; exact12 sources,47 input blobs, single registration leaf, current distribution check passed",
+      "excluded": "runtime/test_runtime.py never collected by review commands"
+    },
+    "physical_terminal": "Source Python real-child tests assert tree closure and terminal/no-replay across successful, crash, overflow and unknown paths. Independent RPC fixtures assert close counts; they do not claim a provider child was launched. All test launcher processes returned exit0.",
+    "budget_critique": "Installation timeout (0<timeout<=600) is cumulative session deadline from NativeContextSession construction, including startup/mailbox/multiple turns. Shared Subscription separately has fixed300s turn timer and Channel15s RPC acknowledgement timer. Larger session cap does not extend a turn beyond300s; multiple roughly120s turns can exceed600s.180s total is inadequate for expected multi-turn comparison. Declare a new bounded experiment before live; no claim timeout caused historical unknown.",
+    "historical": {
+      "review_sha256": "418996de84f0cdacb33d9a5696839f206e4e1dc8173720826fcd783d9820827d",
+      "live_sha256": "5d19d630f50836091a8415d252cb1ccc8c294e8c87823e14a65107651c75a053",
+      "status": "baseline_pass_tool_unknown_comparison_incomplete",
+      "actual_calls": 11,
+      "new_live_calls": 0,
+      "replays": 0,
+      "cause": "Unknown; schema finding alone cannot establish historical cause. R1/R2 and storage evidence retain older hashes; storage code unchanged."
+    },
+    "limits": [
+      "No live provider/model/listener/production, factory, install/update/rollback or whole-goal acceptance.",
+      "Does not claim all113 older regressions rerun on current wrapper.",
+      "Semantic exclusivity is local validation; wire schema alone does not authorize execution.",
+      "No source edit or commit. Parent retains delivery and live responsibility."
+    ],
+    "metadata_ref": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-protocol-review-probes\\metadata.json",
+    "cleanup": "No branch/worktree/package created. RPC mailboxes, pytest fixture evidence and logs retained under authorized probes for reproduction; no review launcher remains running; tests own and close workers. No production setting changed.",
+    "evidence_sha256": {
+      "actual-outputSchema.json": "880662c7972de2c3a0ff05da6ce8b9b8e3def36ec6edc278f63987e7170ee4fd",
+      "adversarial.cjs": "9811359bf044653b199d51ea8e38afce3428796e9bf4f79f821c3e98362efb84",
+      "independent-results.json": "9ca8073162b53351c690819c0c8b9143a700f5cc2d04911077e39ee6d957a1d3",
+      "independent.log": "2c59121219f7fee51b1f5340863b0e127adaa29aa6a70e66f7e22f9fab536dd8",
+      "metadata.json": "745f1b7c0d322024a48aade3d4cc3de753f1e1086887659462b09afc123382d4",
+      "metadata.py": "cb69e9fa7388f51106690bc46037cf3647473470a7e7ff76187015d5e94ac3d2",
+      "node.log": "c0f8398799f9501b612d8e94ca634ade56ddb64b5d0fcf95070b09b050e786b6",
+      "python.log": "bcbc259180d4cdbd0020df8432ff289545726c49182b668bec2e2982a1c308b9",
+      "registration.log": "5fc2bed64cc06b82dfd27ad69dcc775c5ca6f11f0210b3f98bdc1039b8482555",
+      "report.py": "fdf689144f72f686adb6079e1254e96b25b1c1f4087a20e033122ef5c6dbf247",
+      "subscription.log": "c5260ff6ba94f00ebf0316515be25d1846820e452de4496d6ad69e5274117394"
+    }
+  }
+}

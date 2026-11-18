@@ -1,0 +1,16 @@
+{
+  "issue": 1501,
+  "before": "604fd44d64fc96cb2c110ecb26b3a36aacdff002",
+  "target": "8b6b210be8aae3f36f7b457979e31964b44026ea",
+  "local_only_pending_timing_ci_main": true,
+  "accepted_continuous_main": "88a401d8a8498af36063eedbed3abc5657c52d90",
+  "owned_preserved": {
+    "data-collection/requests/native-context-consumption-20261118/e661af69-585e-43c0-a611-157108392b76.json": "cbe0e3ca35e502992d5702abe99d92f454c839d3dd3913fb693c676aded4d10d",
+    "design-docs/native-context-consumption-20261118.md": "baaa5c43c182b88c0d743453bf9d926a28ead93d4e424d57a57483c36fd0afe5",
+    "gonggong-diting-data/events/gonggong-workspace/native-context-consumption-20261118/codex-intake-1501-20261117.json": "377499f32e2121a8b8cdadda72f087f57dfaaf8f0df414c332e1d733d3eb3a9f",
+    "gonggong-diting-data/events/gonggong-workspace/native-context-consumption-20261118/dispatch-68ea48340538493cb9cb56c76914e70c.json": "e0a094071b6d26e72f6fb2a2a25a7fefba904f4cad9ea07d7c8ea1b48e3e02e3",
+    "gonggong-diting-data/events/gonggong-workspace/native-context-consumption-20261118/dispatch-abfde7366d9b42faa80ad54e4c97cfb3.json": "eba1507dd29cc397e823b56e8e2ff57e734d7d50ece8b473e918b31a64d211f6",
+    "gonggong-diting-data/events/gonggong-workspace/native-context-consumption-20261118/kuafu-68f769b58379e0a1614d15bec7f71a26b6be1341.json": "524a923c1959bd1ae69de03a6e9b891c79da8a24b6ce51435008d35fadad6515"
+  },
+  "scope": "Only reviewed signed timing source dependency aligned after audit terminal/reconciliation. Upstream timing CI/main still pending, no deployment."
+}

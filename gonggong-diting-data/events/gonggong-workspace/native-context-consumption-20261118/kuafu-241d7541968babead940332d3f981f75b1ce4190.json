@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-241d7541968babead940332d3f981f75b1ce4190",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-context-consumption-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e02aadd9b48276e3ef1398126a493b4c9d4c73ee376632d208434e0efcaf20cd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "8b6b210be8aae3f36f7b457979e31964b44026ea",
+    "context_sha256": "49429a6d5f505b01e89543e3cdea1ecb6700655ee95ebc333ebe1aca7076069a",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "diagnosis": "Implementation #1501 broad pytest invocation included host-http/runtime/test_runtime.py, whose import starts a synthetic loopback HTTP server and writes GONGGONG_HOST_KEY. This contaminated peer-test inherited environments: 10 failed,71 passed,98 subtests. Strict host credential checking correctly refused; no product security bypass or external provider invocation occurred. Original report preserves failure; module finally shutdown/server_close completed. Corrected orchestration excludes that import-executing module and runs clean subprocess. Broad corrected run83tests98subtests passed before LF normalization; final exact LF targeted48tests15subtests and30Node tests passed. Root received implementation actor actual terminal and reconciled it; independent review pending. This is test orchestration isolation defect, not proof of production credential failure.",
+    "next_action": "Preserve original failure and clean-process evidence; independent reviewer validates exact source and actual owned process closure. Do not import executable integration-server scripts into shared pytest collection. Continue normal factory integration only after review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T03:46:04.806440+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T03:46:25.351780+00:00",
+  "sha256": "24559ef6f48ca3007a6b4e396e18b4e9cbe9edbe68a9f7b0884cd94b5b7c9571"
+}

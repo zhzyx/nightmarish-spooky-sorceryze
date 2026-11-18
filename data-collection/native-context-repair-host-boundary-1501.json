@@ -1,0 +1,74 @@
+{
+  "issue": 1501,
+  "passed": true,
+  "native_sources": 9392,
+  "native_sources_sha256": "d99730749465b133ab44fdd8d1f1b719a906bf6336d098b6a7a297f5d2e528c0",
+  "changed_host_inputs": [
+    "customizations/components/tianxuan/duobao/native_store.py",
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py",
+    "customizations/components/tianxuan/sinan-workorders/native_context.py",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py"
+  ],
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "030a56626baeac81062149e3e6480d92e95d249a9fe38e0644133885c45fb017",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "54ada57b24087bff5ac123274724108178da80205a39416c776f70b586fd3db4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c84fe150265c829f17ae9e6b09ee2fa2f867fe7d541d82132e6ba262cac53de4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77a29da320e653ddf73c0204455a62f17709266fc9e7c66b6827de6ae435bcae",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "aa3b53fbadaa2a21eb4d9b981e16cc04808accc0c147ffca6dfcff927b95c112",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "8a541d64c29eb83fa71e69d8d75eb68a6406394af0afc5f90398e14c63917b5c",
+    "customizations/components/tianxuan/duobao/native_store.py": "69e2283effdc88e042c478d79fdb3efd2c102dd3df0cfcccf525785c10331748",
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py": "bb987a461258b16b7e901b3a5f520eeacf6483f98695d9cb50614f2f33f9252a"
+  },
+  "overlap": [],
+  "inventory_before": 178,
+  "inventory_after": 179,
+  "added_inventory": [
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py"
+  ],
+  "policy_sha256": "0aa8a1cbefc20101d1ed16b16e6175ba506c5a0c9cb095adf2192b6bc871e1c2",
+  "checks": [
+    {
+      "command": "py -X utf8 tests/editor/test_native_host_inputs.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: invalid host input inventory\nFull-tree identity required: invalid host input inventory\n.....\n----------------------------------------------------------------------\nRan 5 tests in 13.702s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tests/editor/test_editor_native_cache.py",
+      "exit_code": 0,
+      "output": "...............\n----------------------------------------------------------------------\nRan 15 tests in 17.037s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tools/test_windows_editor_artifact.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\ns.........\n----------------------------------------------------------------------\nRan 10 tests in 0.784s\n\nOK (skipped=1)\n"
+    }
+  ],
+  "actual_scons_command": [
+    "py",
+    "-X",
+    "utf8",
+    "-m",
+    "SCons",
+    "-n",
+    "-Q",
+    "gonggong_native_probe=D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-repair-scons-probe.json",
+    "accesskit=no",
+    "angle=no",
+    "d3d12=no",
+    "debug_symbols=no",
+    "dev_mode=yes",
+    "platform=windows",
+    "target=editor"
+  ],
+  "seconds": 37.41901329997927,
+  "compilation_performed": false,
+  "limits": "Actual Windows SCons consumer graph and cache regression only; current source functional review pending, no factory/live/render/AA acceptance."
+}

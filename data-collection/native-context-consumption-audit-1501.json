@@ -1,0 +1,120 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-audit.json",
+    "sha256": "705cf938c2841e8e4b76ffc0724904d7c36b894e6f0449aba9ed4e4f1e1699ec",
+    "path_base": "absolute current host audit archive"
+  },
+  "export": "Lossless JSON value export; original audit bytes retained.",
+  "review": {
+    "schema": 1,
+    "issue": 1501,
+    "scope": "read-only-source-audit",
+    "head": "604fd44d64fc96cb2c110ecb26b3a36aacdff002",
+    "recorded_at": "2026-11-18T10:58:42.322597+08:00",
+    "sources": {
+      "customizations/components/tianxuan/duobao/native_workspace.py": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66",
+      "customizations/components/tianxuan/duobao/native_workspace_cli.py": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa",
+      "customizations/components/tianxuan/duobao/native_store.py": "dca516233810b0ed1428fd9742ecac75d67cf16461a7969e6e9af74e355c1ef8",
+      "customizations/components/tianxuan/duobao/native_candidates.py": "5f485fb726ee6a5463ab7dfb1bd336d389499f0e35057b78aef2870014f977c4",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "54f2b6dbe759d6ae3e965d7399534ec600c07208be2422d9f0d924b932ddca64",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "678497caa907733894d7a582b14eb9229efe818f7085bd1a68a593bc441b76fa",
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "60142028e8b5488924c6b6ad81912c702e14229db8054af30351b3692a660976",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77e708992333bd8d8ff7a354da9791c948836442e9d3c3be1347e06c52ffb89f",
+      "customizations/platforms/ai-access/host-http/runtime/runner.py": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5",
+      "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156",
+      "customizations/platforms/ai-access/host-http/runtime/adapters.py": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08",
+      "tools/codex_cli/subscription_session.js": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2",
+      "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+      "editor/docks/daqian/workflow_controller.gd": "a75e6edadde617b244b52243ea1b889f2c165f08b75385335615eeea2bce4a14"
+    },
+    "probes": [
+      {
+        "name": "delta-content-omitted-no-range-cursor",
+        "observed": true
+      },
+      {
+        "name": "producer-snapshot-accepts-context-over-host-65536",
+        "context_bytes": 70021
+      },
+      {
+        "name": "workspace-collect-unknown-reads",
+        "observed": true
+      },
+      {
+        "name": "actual-cli-delta-process",
+        "exit_code": 0,
+        "stdout_sha256": "bd16b9efddc5aa1af9eb83bf5936f9f153c94d112ffe6883a1c9fead901d065c",
+        "process_terminal": "exited"
+      },
+      {
+        "name": "native-adapter-rejects-tool-result-history",
+        "observed": true
+      }
+    ],
+    "model_calls": 0,
+    "network_calls": 0,
+    "product_edits": false,
+    "temporary_fixture_cleanup": "TemporaryDirectory exited; fixture removed",
+    "remaining": [
+      "implementation",
+      "independent review",
+      "bounded live validation",
+      "CI/main",
+      "ordinary user acceptance"
+    ],
+    "business_complete": false,
+    "process_terminal": {
+      "audit_command": "py -B native-context-consumption-audit-probes/audit.py",
+      "exit_code": 0,
+      "real_cli_exit_code": 0,
+      "active_model_processes": 0,
+      "state": "all audit probes exited"
+    },
+    "design": {
+      "path": "D:/GongGong-work/native-context-consumption-20261118/design-docs/native-context-consumption-20261118.md",
+      "sha256": "baaa5c43c182b88c0d743453bf9d926a28ead93d4e424d57a57483c36fd0afe5"
+    },
+    "findings": [
+      "NativeWorkspace collect keeps reads=None; metadata/source validation is not model consumption",
+      "delta can omit content with no content continuation cursor",
+      "producer snapshot allows 100000 bytes but proposal context accepts 65536 including governance",
+      "runtime autonomous lookup_resource is static; native proposal path cannot receive tool-result history",
+      "grant verification is not live source/module authorization",
+      "Subscription/controller inspected only; #1499 active tree not read"
+    ],
+    "minimal_plan": [
+      "One existing runner loop, optional trusted native_context resolver, strict versioned native action schema",
+      "Task-bound manifest/read/delta and host-owned durable actual-byte delivery ledger",
+      "Keep conservative reads=None for candidate conflict behavior; attach trusted ledger to worker terminal",
+      "Require installed live source/doc/module authorization factory before admitting v2",
+      "Keep small-full and all existing adapters; no new scheduler/client; no Subscription changes"
+    ],
+    "intake": {
+      "origin": "root relay",
+      "exit_code": 0,
+      "event": "gonggong-diting-data/events/gonggong-workspace/native-context-consumption-20261118/codex-intake-1501-20261117.json",
+      "sha256": "819ae0291be9992cbe661ac5dea48fcf214577c30b3509403b1925bdf78c75c0"
+    },
+    "methods": [
+      {
+        "lesson": "bind-consumer-release",
+        "revision": 21,
+        "state": "verified",
+        "application": "Bind next dispatch to reviewed exact candidate; audit is not business acceptance"
+      },
+      {
+        "lesson": "await-terminal-observers",
+        "revision": 6,
+        "state": "verified",
+        "application": "Process close plus durable transcript/ledger required before candidate delivery"
+      }
+    ],
+    "kuafu": {
+      "source": "root relay",
+      "state": "assessed",
+      "issue": 1445,
+      "incident": "e0b11d9b28c10cda5ef16bb7e2f8be802b8fdb986e19315473a8bdcf23cb3d15"
+    }
+  }
+}

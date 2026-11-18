@@ -17,6 +17,182 @@ import time
 from pathlib import Path
 
 
+class NativeContextSession:
+    """Private bounded mailbox; the existing owned-process helper owns all children."""
+
+    def __init__(self, host, request, authority, max_calls):
+        if type(max_calls) is not int or not 1 <= max_calls <= 16:
+            raise ValueError("Native context session requires 1..16 cumulative calls")
+        if request.get("request_id") != authority.binding["execution"]:
+            raise ValueError("Context session task identity mismatch")
+        if any(e["kind"] == "model_call_start" for e in authority.events()):
+            raise ValueError("Existing model execution cannot restart; reconcile durable receipts")
+        self.host, self.request, self.authority = host, request, authority
+        self.profile, self.config = host.configuration()
+        self.binding = digest([request, authority.identity, self.config])
+        self.sequence, self.max_calls, self.total_bytes = 0, max_calls, 0
+        self.command = None
+        self.last_diagnostic = None
+        self.temp = tempfile.TemporaryDirectory(prefix="native-context-")
+        self.mailbox = Path(self.temp.name).resolve()
+        self.owner = self.mailbox.stat()
+        self.streams = [tempfile.TemporaryFile() for _ in range(3)]
+        self.deadline = time.monotonic() + self.profile["timeout"]
+
+    def _check(self, authority=True, installation=True):
+        stat = self.mailbox.lstat()
+        if self.mailbox.is_symlink() or (stat.st_dev, stat.st_ino) != (self.owner.st_dev, self.owner.st_ino):
+            raise ValueError("Private mailbox identity changed")
+        if installation and self.host.configuration()[1] != self.config:
+            raise ValueError("Installed session changed")
+        if authority:
+            self.authority.check("model_turn")
+        if time.monotonic() >= self.deadline:
+            raise ValueError("Cumulative session deadline exceeded")
+        if self.command and (self.command.overflow.is_set() or self.command.read_error.is_set()):
+            raise ValueError("Session output invalid")
+
+    def turn(self, messages):
+        self._check()
+        self.sequence += 1
+        size = len(encoded(messages))
+        self.total_bytes += size
+        if self.sequence > self.max_calls or size > 1048576 or self.total_bytes > 8388608:
+            raise ValueError("Cumulative session input ceiling exceeded")
+        if self.command is None:
+            source, out, err = self.streams
+            source.write(
+                encoded(
+                    dict(
+                        schema=2,
+                        request=self.request,
+                        installed={
+                            **{k: v for k, v in self.profile.items() if k not in {"node", "timeout"}},
+                            "config_digest": self.config,
+                        },
+                        mailbox=str(self.mailbox),
+                        binding=self.binding,
+                        max_calls=self.max_calls,
+                    )
+                )
+            )
+            source.seek(0)
+            self.command = self.host.helper.OwnedCommand(
+                [self.profile["node"], str(self.host.wrapper)],
+                stdin=source,
+                stdout=out,
+                stderr=err,
+                env=self.profile["env"],
+                limit=524288,
+                cwd=self.host.wrapper.parent,
+            )
+        packet = dict(binding=self.binding, sequence=self.sequence, messages=messages, input_digest=digest(messages))
+        tmp = self.mailbox / (str(self.sequence) + ".input.tmp")
+        with tmp.open("xb") as f:
+            f.write(encoded(packet))
+            f.flush()
+            os.fsync(f.fileno())
+        self._check()
+        self.authority.emit(
+            "model_call_start",
+            {
+                "sequence": self.sequence,
+                "binding": self.binding,
+                "input_digest": digest(messages),
+                "messages": messages,
+            },
+        )
+        tmp.replace(self.mailbox / (str(self.sequence) + ".input.json"))
+        output = self.mailbox / (str(self.sequence) + ".output.json")
+        while True:
+            self._check(authority=False, installation=False)
+            if output.exists():
+                if output.is_symlink() or output.stat().st_size > 524288:
+                    raise ValueError("Invalid mailbox response")
+                receipt = json.loads(output.read_bytes())
+                if (
+                    receipt.get("binding") != self.binding
+                    or receipt.get("sequence") != self.sequence
+                    or receipt.get("input_digest") != digest(messages)
+                ):
+                    raise ValueError("Session response binding mismatch")
+                if receipt.get("status") not in {"tool_requested", "final"}:
+                    self.host._validate_diagnostic(receipt.get("diagnostic"))
+                    self.last_diagnostic = receipt["diagnostic"]
+                    self.authority.emit("model_unknown", receipt)
+                    raise ValueError("Unknown model turn; no replay")
+                action = receipt["action"]
+                if (
+                    receipt.get("output_digest") != digest(action)
+                    or receipt.get("original_request_digest") != digest(self.request)
+                    or receipt.get("config_digest") != self.config
+                ):
+                    raise ValueError("Invalid session receipt")
+                if receipt.get("wire_input", {}).get("bytes") != receipt.get("inputTextBytes"):
+                    raise ValueError("Actual model input bytes not bound")
+                metadata = dict(
+                    request_id=self.request["request_id"],
+                    input_digest=digest(self.request),
+                    config_digest=self.config,
+                    requested_model=self.profile["model"],
+                    execution_authority=False,
+                    status="unknown",
+                    proposal=None,
+                    output_digest=None,
+                    usage=receipt["usage"],
+                    elapsed_ms=0,
+                    timing=receipt["timing"],
+                )
+                self.host._validate(metadata, self.request, self.config)
+                if action.get("action") == "final":
+                    candidate = dict(
+                        request_id=self.request["request_id"],
+                        input_digest=digest(self.request),
+                        config_digest=self.config,
+                        requested_model=self.profile["model"],
+                        execution_authority=False,
+                        status="proposed",
+                        proposal=action["value"],
+                        output_digest=digest(action["value"]),
+                        usage=receipt["usage"],
+                        elapsed_ms=0,
+                    )
+                    self.host._validate(candidate, self.request, self.config)
+                elif (
+                    set(action) != {"action", "name", "arguments"}
+                    or action["action"] != "tool"
+                    or action["name"] != "native_context"
+                    or not isinstance(action["arguments"], dict)
+                ):
+                    raise ValueError("Invalid host tool action")
+                self.authority.emit("model_receipt", receipt)
+                self._check()
+                if receipt["status"] == "final":
+                    while self.command.poll() is None:
+                        self._check(authority=False, installation=False)
+                        time.sleep(0.01)
+                    code = self.command.poll()
+                    self.command.close()
+                    if code != 0 or self.command.overflow.is_set() or self.command.read_error.is_set():
+                        raise ValueError("Session final drain failed")
+                    receipt["process_tree_closed"] = True
+                    receipt["process_exit_code"] = code
+                return receipt
+            if self.command.poll() is not None:
+                raise ValueError("Session exited without response")
+            time.sleep(0.01)
+
+    def close(self):
+        try:
+            if self.command:
+                self.command.close()
+                self.authority.emit("process_closed", {"physical": True, "exit_code": self.command.process.returncode})
+        finally:
+            for stream in self.streams:
+                stream.close()
+            self.temp.cleanup()
+
+
 def encoded(value):
     return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
@@ -53,6 +229,9 @@ class NativeModelHost:
         self.helper = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(self.helper)
         self.wrapper = Path(__file__).with_name("native_model_proposal.cjs")
+
+    def context_session(self, request, authority, max_calls):
+        return NativeContextSession(self, request, authority, max_calls)
 
     def configuration(self):
         profile = json.loads(encoded(self.installed))
@@ -171,6 +350,20 @@ class NativeModelHost:
         return terminal
 
     @staticmethod
+    def _validate_diagnostic(value):
+        if (
+            not isinstance(value, dict)
+            or set(value) != {"version", "phase", "terminal", "reason"}
+            or type(value["version"]) is not int
+            or value["version"] != 1
+            or value["phase"] not in {"schema_preflight", "transport", "proposal_validation"}
+            or value["terminal"] not in {"unknown", "completed", "failed", "interrupted"}
+            or value["reason"]
+            not in {"schema_preflight", "terminal_failure", "proposal_rejection", "missing_output", "unknown"}
+        ):
+            raise ValueError("Invalid bounded diagnostic")
+
+    @staticmethod
     def _validate(candidate, request, binding):
         keys = {
             "request_id",
@@ -186,7 +379,7 @@ class NativeModelHost:
         }
         if (
             not isinstance(candidate, dict)
-            or not keys <= set(candidate) <= keys | {"timing"}
+            or not keys <= set(candidate) <= keys | {"timing", "diagnostic"}
             or candidate["request_id"] != request["request_id"]
             or candidate["input_digest"] != digest(request)
             or candidate["config_digest"] != binding
@@ -200,6 +393,8 @@ class NativeModelHost:
             or not 0 <= candidate["elapsed_ms"] <= 86400000
         ):
             raise ValueError("Invalid response metadata")
+        if "diagnostic" in candidate:
+            NativeModelHost._validate_diagnostic(candidate["diagnostic"])
         if "timing" in candidate:
             NativeModelHost._validate_timing(candidate["timing"])
         p = candidate["proposal"]

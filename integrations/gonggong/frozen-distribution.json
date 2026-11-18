@@ -300,9 +300,9 @@
       "adapters.py": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08",
       "diting.py": "ee5f9d885e553f787a596b85db386952d12ae3f54754d4c9b044f602600ec9f9",
       "evaluate.py": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa",
-      "native_proposal_adapter.py": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156",
+      "native_proposal_adapter.py": "d5844822a892454166a610049222d6d6dad03e195a659510dd564f89f9533663",
       "README.md": "5face9479b06526b12a74ac6b38c733eed54d3d28f802e445e3e9ad11a7cdcf8",
-      "runner.py": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5",
+      "runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
       "task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
       "test_adapters.py": "721ed5e808cbb4c97e3cad5ccb8502173d34abaedeeb54ed7164f8a403fb60eb",
       "test_runtime.py": "0fb66513ba9856bdaf5b0d097ede8d44243284a25fcd79e9bb7d9bc9028c6883"
