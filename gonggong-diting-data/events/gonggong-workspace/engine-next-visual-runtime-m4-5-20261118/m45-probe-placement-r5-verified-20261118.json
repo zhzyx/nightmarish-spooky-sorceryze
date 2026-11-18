@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "event_id": "m45-probe-placement-r5-verified-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T08:50:18.660893+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1505",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m45-gi-request-routed-20261118"
+  ],
+  "payload": {
+    "scope": "Bounded probe relocation, classification, local dirty-history revisions and analytic environment irradiance.",
+    "native_key": "b61296d58bd7ad5da960758f54e4bcef9b8f2bceae7fbe1712979dfb5e601218",
+    "delivery_base_commit": "29d4fb25324b4727fb3e26fc9ce9b785d0ee8520",
+    "cpu": {
+      "msvc_tests": 440,
+      "msvc_checks": 490117,
+      "clang_cl_tests": 440,
+      "clang_cl_checks": 490117,
+      "current_independent_placement_tests_per_compiler": 14,
+      "current_independent_placement_checks_per_compiler": 4503
+    },
+    "gpu": "Current R5 main executable completed 1012 frames with nine RenderDoc captures and zero counted validation errors. Affected indirect-draw reports retain the validation-tracking warning.",
+    "module": "Three clean builds and three 24-frame shader bundles cover source invalidation, changed behavior, byte-exact rollback and malformed relocation-shader rejection at zero frames.",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-5-probe-placement-source-review.json",
+      "data-collection/engine-next-visual-runtime-m4-5-probe-placement-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-5-probe-placement-verification.json"
+    ],
+    "stage_complete": false,
+    "remaining": "Combined animated producer, full specular indirect lighting, final denoising, UE A-F comparison and 4K performance/stability acceptance."
+  },
+  "sha256": "20b26a692f58ce0df3e27cf37ca3bc4062529a2eaa7ed3336eddbd62bf395f75"
+}
