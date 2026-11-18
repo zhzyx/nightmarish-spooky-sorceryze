@@ -1,0 +1,897 @@
+{
+  "schema_version": 1,
+  "issue_number": 1506,
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "parent_issue_number": 1323,
+  "related_issue_number": 1505,
+  "recorded_at_utc": "2026-11-18T05:36:40.673944+00:00",
+  "candidate": "geometry-integrated-r1",
+  "status": "targeted_combination_validation_passed",
+  "stage_complete": false,
+  "parent_issues_remain_open": [
+    1506,
+    1323
+  ],
+  "build_source_base_commit": "3a160ec26725e2fc5c833cd10f9ff7b38ad534af",
+  "delivery_base_commit": "6735f9d60fa9ad98643465a33271dadcc755a7dd",
+  "candidate_identity": {
+    "native_key": "c2311438b0133d044d29429b009dab2b1bb999aaa2baa5c315c8cc03defe7ba9",
+    "native_input_count": 316,
+    "native_input_mismatches": [],
+    "executable": {
+      "path": "build/engine_next/geometry-integrated-r1/next_visual_client.exe",
+      "sha256": "10913d033f15a84d9832da0290e315ee9646b038d8c9ff488f0b0c96229c7c93",
+      "size_bytes": 3437056
+    },
+    "build_report": {
+      "path": "build/engine_next/geometry-integrated-r1/VisualBuildReport.json",
+      "sha256": "aa14102a5f2a8cf81c271148f86dffbd6d9bc30c40d8dc02f3af7b6d48af48f3",
+      "size_bytes": 2518690
+    },
+    "shader_count": 46,
+    "shaders": [
+      {
+        "path": "build/engine_next/geometry-integrated-r1/FixedMesh.vs.cso",
+        "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+        "size_bytes": 4316
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/FixedMesh.ps.cso",
+        "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+        "size_bytes": 4132
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/FixedMesh.cs.cso",
+        "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+        "size_bytes": 3300
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Deferred.vs.cso",
+        "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225",
+        "size_bytes": 8272
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Deferred.ps.cso",
+        "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0",
+        "size_bytes": 9796
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/MaterialDeferred.ps.cso",
+        "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb",
+        "size_bytes": 10172
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Lighting.vs.cso",
+        "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+        "size_bytes": 3052
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Lighting.ps.cso",
+        "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8",
+        "size_bytes": 77096
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/MaterialLighting.ps.cso",
+        "sha256": "aac456cac58467287cc7ec17fe418c2856a4a76663893127956656d970b582ae",
+        "size_bytes": 117808
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/ToneMap.ps.cso",
+        "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f",
+        "size_bytes": 6376
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Shadow.vs.cso",
+        "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4",
+        "size_bytes": 4648
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Shadow.ps.cso",
+        "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24",
+        "size_bytes": 4236
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Temporal.cs.cso",
+        "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f",
+        "size_bytes": 19880
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Histogram.cs.cso",
+        "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1",
+        "size_bytes": 5648
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Exposure.cs.cso",
+        "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c",
+        "size_bytes": 5804
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/BloomDown.cs.cso",
+        "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7",
+        "size_bytes": 43620
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/BloomUp.cs.cso",
+        "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c",
+        "size_bytes": 14672
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/ReflectionLighting.ps.cso",
+        "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8",
+        "size_bytes": 77608
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/MaterialReflectionLighting.ps.cso",
+        "sha256": "d8fdcb41b2ffe7b7101f1b2ca9e7b551ff5fe2f2d867093472ca3a55a0602a33",
+        "size_bytes": 118312
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/ReflectionColor.cs.cso",
+        "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7",
+        "size_bytes": 4928
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/ReflectionTrace.cs.cso",
+        "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051",
+        "size_bytes": 31880
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/MaterialReflectionTrace.cs.cso",
+        "sha256": "9964ad98771e172f329d2c82efc5e4f7028e09f799cf9730e37da6f6912b9648",
+        "size_bytes": 82680
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/ReflectionComposite.cs.cso",
+        "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4",
+        "size_bytes": 5100
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/ReflectionRadiance.cs.cso",
+        "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88",
+        "size_bytes": 4304
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/VolumeInject.cs.cso",
+        "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f",
+        "size_bytes": 8836
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/VolumeLight.cs.cso",
+        "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada",
+        "size_bytes": 66432
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/VolumeTemporal.cs.cso",
+        "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057",
+        "size_bytes": 16000
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/VolumeIntegrate.cs.cso",
+        "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c",
+        "size_bytes": 7508
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/VolumeComposite.cs.cso",
+        "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523",
+        "size_bytes": 19948
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Transparent.vs.cso",
+        "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24",
+        "size_bytes": 7224
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/Transparent.ps.cso",
+        "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f",
+        "size_bytes": 96584
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/MaterialTransparent.ps.cso",
+        "sha256": "3044198db486b7a963f650e0d1d2bc06d8b4887ed1b4afff92e110d21d8c6321",
+        "size_bytes": 137108
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GiLighting.ps.cso",
+        "sha256": "46ee6d5f0ba10cd7766274e39c6a3c32af36ef9b502139828a0b0d90aeeb1ce3",
+        "size_bytes": 113696
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GiMaterialLighting.ps.cso",
+        "sha256": "c9e271296d355fdf9f3da0b568fed0e6789a6f4674f0c1014b3a6ac27e72caa0",
+        "size_bytes": 154716
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GiReflectionLighting.ps.cso",
+        "sha256": "0dbd1862da9d7fa84fc03319c28f6a066c1b123fec26d0d18996ce61580629db",
+        "size_bytes": 114200
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GiMaterialReflectionLighting.ps.cso",
+        "sha256": "a64178acc209cdda27ae9840d602d1b1da202722da0bad95a46b88e6e9d35c74",
+        "size_bytes": 155212
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GiTransparent.ps.cso",
+        "sha256": "73c6c406206b3657160a3a84afb5ab843531e2421443880b58679ae630f55441",
+        "size_bytes": 133420
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GiMaterialTransparent.ps.cso",
+        "sha256": "8b8132fb7d11fadb9c4c29b3cb34a794c4328d8a620383a16ace6021e6c6a328",
+        "size_bytes": 174428
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GiPrepare.cs.cso",
+        "sha256": "3458bebc9a1ad2e6ad3bf9a6e0ccb16c4d010682afbf61edf93482a4948f0ffe",
+        "size_bytes": 7008
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GiTrace.cs.cso",
+        "sha256": "319643e25123cda5f31d96e0ce559d84903ccb08809de88b2e37b3f36dd6e8f7",
+        "size_bytes": 132744
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GiIntegrate.cs.cso",
+        "sha256": "d62629d44c24aa5b1489f4a315c852a648e55d9837079c57e50acbf9a62f588d",
+        "size_bytes": 14104
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GeometryCull.cs.cso",
+        "sha256": "6cfdf85dab45264853e02250e07784dd0c69996c2dd07b776178582fd9a94891",
+        "size_bytes": 13484
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GeometryHiZCopy.cs.cso",
+        "sha256": "c7903bc86740ce6e76935cf58bc39a0c249eb93012074e198f14b2f06d890873",
+        "size_bytes": 3492
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GeometryHiZReduce.cs.cso",
+        "sha256": "de4f7c0219ea5bcde366580e2bd501e6e1ca3f991c8a607f4d8465e4b4ca7485",
+        "size_bytes": 3816
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GeometryDepth.vs.cso",
+        "sha256": "d512d92cfa83cf0c59ada91b855ee8dff3126a3057e6768face7e012a117905d",
+        "size_bytes": 4632
+      },
+      {
+        "path": "build/engine_next/geometry-integrated-r1/GeometryDepth.ps.cso",
+        "sha256": "e439f80592f6a4b0159be38a3438e153e87ccd79a44ce355b00804cbf3649759",
+        "size_bytes": 4236
+      }
+    ],
+    "sync_proof": {
+      "path": "build/engine_next/Integration/SyncGiMain.json",
+      "sha256": "4956b6f21c9cf2e4ff3b0c12c85c8498b40fcb5dfba882a7062db52ba0488dff",
+      "size_bytes": 3845
+    }
+  },
+  "cpp_validation": {
+    "msvc": {
+      "tests": 417,
+      "checks": 484987,
+      "failures": 0,
+      "report": {
+        "path": "build/engine_next/geometry-integrated-r1/VisualBuildReport.json",
+        "sha256": "aa14102a5f2a8cf81c271148f86dffbd6d9bc30c40d8dc02f3af7b6d48af48f3",
+        "size_bytes": 2518690
+      }
+    },
+    "clang_cl": {
+      "tests": 417,
+      "checks": 484987,
+      "failures": 0,
+      "report": {
+        "path": "build/engine_next/geometry-integrated-clang-r1/Result.json",
+        "sha256": "fd2136180b97a8e791cc1650dda8b714f7e58c5ec4ad6cdbaa4642e6ad019ccf",
+        "size_bytes": 3029600
+      },
+      "scope": "All first-party C++ and VisualRuntime/RHI; C support archive from MSVC build."
+    }
+  },
+  "current_gpu_validation": {
+    "normal_entry_cases": 11,
+    "normal_entry_frames": 216,
+    "extra_cases": 2,
+    "extra_frames": 42,
+    "validated_frames": 228,
+    "unvalidated_timing_sample_frames": 30,
+    "validation_errors": 0,
+    "geometry_invalid": 0,
+    "geometry_overflow": 0,
+    "pixel_identical_pairs": 5,
+    "case_results": [
+      {
+        "name": "BCombinedOff",
+        "frames": 24,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 0,
+          "geometry_candidates": 0,
+          "geometry_culling_active": false,
+          "geometry_culling_requested": false,
+          "geometry_depth_commands": 0,
+          "geometry_depth_triangles": 0,
+          "geometry_fallback_reason": "",
+          "geometry_invalid": 0,
+          "geometry_occlusion": false,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 0,
+          "geometry_visible_triangles": 0
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 2304
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/BCombinedOff.json",
+          "sha256": "33a7b85768618423565cf2d0b69b8a325ad50e935edbd26cf0703967f8c289d4",
+          "size_bytes": 78906
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/BCombinedOff.ppm",
+          "sha256": "41541607ea64db0342aad4e95cb06b23729cdc7096f24907398526d449fe2294",
+          "size_bytes": 921615
+        }
+      },
+      {
+        "name": "BCombinedOn",
+        "frames": 24,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 9830400,
+          "geometry_candidates": 268,
+          "geometry_culling_active": true,
+          "geometry_culling_requested": true,
+          "geometry_depth_commands": 268,
+          "geometry_depth_triangles": 15460,
+          "geometry_fallback_reason": "",
+          "geometry_invalid": 0,
+          "geometry_occlusion": true,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 268,
+          "geometry_visible_triangles": 15460
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 2304
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/BCombinedOn.json",
+          "sha256": "0e0254bed35744721be4aedd56a35f1dfddfd4607dd5aeaa1462dabd91cd873b",
+          "size_bytes": 110783
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/BCombinedOn.ppm",
+          "sha256": "41541607ea64db0342aad4e95cb06b23729cdc7096f24907398526d449fe2294",
+          "size_bytes": 921615
+        }
+      },
+      {
+        "name": "BEffectsOff",
+        "frames": 24,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 0,
+          "geometry_candidates": 0,
+          "geometry_culling_active": false,
+          "geometry_culling_requested": false,
+          "geometry_depth_commands": 0,
+          "geometry_depth_triangles": 0,
+          "geometry_fallback_reason": "",
+          "geometry_invalid": 0,
+          "geometry_occlusion": false,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 0,
+          "geometry_visible_triangles": 0
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 2304
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/BEffectsOff.json",
+          "sha256": "80efdb81b0e3e84559f5a88ad2f44ab3250de70c43e94a07dc347938d5a515db",
+          "size_bytes": 141540
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/BEffectsOff.ppm",
+          "sha256": "7a3d3d09e5b111cea99ae692488afdf6f4b924910dabb6ddc400fe009f2ccc7a",
+          "size_bytes": 921615
+        }
+      },
+      {
+        "name": "BEffectsOn",
+        "frames": 24,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 9830400,
+          "geometry_candidates": 268,
+          "geometry_culling_active": true,
+          "geometry_culling_requested": true,
+          "geometry_depth_commands": 268,
+          "geometry_depth_triangles": 15460,
+          "geometry_fallback_reason": "",
+          "geometry_invalid": 0,
+          "geometry_occlusion": true,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 268,
+          "geometry_visible_triangles": 15460
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 2304
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/BEffectsOn.json",
+          "sha256": "ff6099b11b899f444f352a3dc0c4ce7e455eae39575ca9881e50fe58e3d18c6b",
+          "size_bytes": 173468
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/BEffectsOn.ppm",
+          "sha256": "7a3d3d09e5b111cea99ae692488afdf6f4b924910dabb6ddc400fe009f2ccc7a",
+          "size_bytes": 921615
+        }
+      },
+      {
+        "name": "BResizeOff",
+        "frames": 12,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 0,
+          "geometry_candidates": 0,
+          "geometry_culling_active": false,
+          "geometry_culling_requested": false,
+          "geometry_depth_commands": 0,
+          "geometry_depth_triangles": 0,
+          "geometry_fallback_reason": "",
+          "geometry_invalid": 0,
+          "geometry_occlusion": false,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 0,
+          "geometry_visible_triangles": 0
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 1536
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/BResizeOff.json",
+          "sha256": "bfd9385d0717ab74769bbae749466ee30784c7715d7b856a795601ed527c774e",
+          "size_bytes": 113234
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/BResizeOff.ppm",
+          "sha256": "4ddbe629e95b9a00b9e5807abf1685fe5c98e8d1b7f15f0f3d2baca4fb25f691",
+          "size_bytes": 921615
+        }
+      },
+      {
+        "name": "BResizeOn",
+        "frames": 12,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 9830400,
+          "geometry_candidates": 268,
+          "geometry_culling_active": true,
+          "geometry_culling_requested": true,
+          "geometry_depth_commands": 268,
+          "geometry_depth_triangles": 15460,
+          "geometry_fallback_reason": "",
+          "geometry_invalid": 0,
+          "geometry_occlusion": true,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 268,
+          "geometry_visible_triangles": 15460
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 1536
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/BResizeOn.json",
+          "sha256": "7a05997a18c8d9a76e150e2795c9567760fc9216f5df63d26ab20cc43c1361b0",
+          "size_bytes": 137622
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/BResizeOn.ppm",
+          "sha256": "4ddbe629e95b9a00b9e5807abf1685fe5c98e8d1b7f15f0f3d2baca4fb25f691",
+          "size_bytes": 921615
+        }
+      },
+      {
+        "name": "BFallback",
+        "frames": 24,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 0,
+          "geometry_candidates": 268,
+          "geometry_culling_active": false,
+          "geometry_culling_requested": true,
+          "geometry_depth_commands": 0,
+          "geometry_depth_triangles": 0,
+          "geometry_fallback_reason": "command_capacity",
+          "geometry_invalid": 0,
+          "geometry_occlusion": false,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 0,
+          "geometry_visible_triangles": 0
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 2304
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/BFallback.json",
+          "sha256": "4a5c1b1f0cb265c80f20eb4b349d9f22159bcb8c6ab96d9ec7c42dae5d0d54b6",
+          "size_bytes": 78912
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/BFallback.ppm",
+          "sha256": "41541607ea64db0342aad4e95cb06b23729cdc7096f24907398526d449fe2294",
+          "size_bytes": 921615
+        }
+      },
+      {
+        "name": "ARoomOff",
+        "frames": 24,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 0,
+          "geometry_candidates": 0,
+          "geometry_culling_active": false,
+          "geometry_culling_requested": false,
+          "geometry_depth_commands": 0,
+          "geometry_depth_triangles": 0,
+          "geometry_fallback_reason": "",
+          "geometry_invalid": 0,
+          "geometry_occlusion": false,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 0,
+          "geometry_visible_triangles": 0
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 2304
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/ARoomOff.json",
+          "sha256": "b0b137d9a297fb586473025f01e2fefea020ea34120e7aadfddf3c4edd70ea12",
+          "size_bytes": 72007
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/ARoomOff.ppm",
+          "sha256": "664ba3fc85abb1a99a984607ed3ec82e6001532a46c92c42afb9eb0ef893aafa",
+          "size_bytes": 921615
+        }
+      },
+      {
+        "name": "ARoomOn",
+        "frames": 24,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 9830400,
+          "geometry_candidates": 89,
+          "geometry_culling_active": true,
+          "geometry_culling_requested": true,
+          "geometry_depth_commands": 89,
+          "geometry_depth_triangles": 4442,
+          "geometry_fallback_reason": "",
+          "geometry_invalid": 0,
+          "geometry_occlusion": true,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 89,
+          "geometry_visible_triangles": 4442
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 2304
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/ARoomOn.json",
+          "sha256": "3bed5300c4420bd303904418eb276a27b3ffd4474c73259a1488a761acf8cca1",
+          "size_bytes": 103899
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/ARoomOn.ppm",
+          "sha256": "664ba3fc85abb1a99a984607ed3ec82e6001532a46c92c42afb9eb0ef893aafa",
+          "size_bytes": 921615
+        }
+      },
+      {
+        "name": "CLargeOcclusion",
+        "frames": 12,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 63111168,
+          "geometry_candidates": 166000,
+          "geometry_culling_active": true,
+          "geometry_culling_requested": true,
+          "geometry_depth_commands": 153293,
+          "geometry_depth_triangles": 9239565,
+          "geometry_fallback_reason": "",
+          "geometry_invalid": 0,
+          "geometry_occlusion": true,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 106767,
+          "geometry_visible_triangles": 6512552
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 2304
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/CLargeOcclusion.json",
+          "sha256": "324dae89f737a0e95f24538e7ace254bf2236ec291e78eebc873c93a2aa61a29",
+          "size_bytes": 79546
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/CLargeOcclusion.ppm",
+          "sha256": "90129f43dff65a011af2eb1485f7bc99d0e2010f3874863fd642addd3038898b",
+          "size_bytes": 921615
+        }
+      },
+      {
+        "name": "CLargeFrustum",
+        "frames": 12,
+        "passed": true,
+        "exit_code": 0,
+        "geometry": {
+          "geometry_buffer_bytes": 63111168,
+          "geometry_candidates": 166000,
+          "geometry_culling_active": true,
+          "geometry_culling_requested": true,
+          "geometry_depth_commands": 153293,
+          "geometry_depth_triangles": 9239565,
+          "geometry_fallback_reason": "",
+          "geometry_invalid": 0,
+          "geometry_occlusion": false,
+          "geometry_overflow": 0,
+          "geometry_visible_commands": 153293,
+          "geometry_visible_triangles": 9239565
+        },
+        "gi": {
+          "gi_peak_invalid_probe_count": 0,
+          "gi_valid_probe_count": 2304
+        },
+        "runtime": {
+          "path": "build/engine_next/integrated-gpu-r1/CLargeFrustum.json",
+          "sha256": "38e5fda8fe380207927e245d811b3b5735cb62567591f0fd53dafa73487d405d",
+          "size_bytes": 66182
+        },
+        "image": {
+          "path": "build/engine_next/integrated-gpu-r1/CLargeFrustum.ppm",
+          "sha256": "90129f43dff65a011af2eb1485f7bc99d0e2010f3874863fd642addd3038898b",
+          "size_bytes": 921615
+        }
+      }
+    ],
+    "summary": {
+      "path": "build/engine_next/integrated-gpu-r1/Summary.json",
+      "sha256": "d459692baa68c1dd149100d983e81f616faf5788b82e7d20f109c1576dd82349",
+      "size_bytes": 1686
+    },
+    "results": {
+      "path": "build/engine_next/integrated-gpu-r1/Results.json",
+      "sha256": "a21c5cfbeab4fc7432e77022c106a8f685fcf47700f150f954aad6207d7a6134",
+      "size_bytes": 24163
+    },
+    "inputs": {
+      "path": "build/engine_next/integrated-gpu-r1/Inputs.json",
+      "sha256": "1ef7d3778876a0d67f82cbc91727af14e6a7d2020786f199401cca5ecd4ebae0",
+      "size_bytes": 27435
+    },
+    "pixel_comparisons": {
+      "path": "build/engine_next/integrated-gpu-r1/PixelPairs.json",
+      "sha256": "fb4adad96b1eaf285109bbbcfe592a2b1644033c0aed307fbeee0a9427d9f4aa",
+      "size_bytes": 2536
+    },
+    "harness_corrections": {
+      "path": "build/engine_next/integrated-gpu-r1/HarnessNotes.json",
+      "sha256": "19c5fafccbbad97248bc6bc630ebf4ef7118146b72b14c1c15214bd4b53be6f6",
+      "size_bytes": 1295
+    },
+    "extra_results": {
+      "path": "build/engine_next/integrated-gpu-r1-extra/Results.json",
+      "sha256": "8ee542b47181693f2b28ca23f17c6bb39711f4b420866e9835a03400538d44e3",
+      "size_bytes": 5227
+    },
+    "extra_outputs": [
+      {
+        "path": "build/engine_next/integrated-gpu-r1-extra/BEffects4K.json",
+        "sha256": "9949427a28cda9ac06819c019cd4fb83c7ab5eabdf2c64599cdfd140047740e8",
+        "size_bytes": 140004
+      },
+      {
+        "path": "build/engine_next/integrated-gpu-r1-extra/BEffects4K.ppm",
+        "sha256": "baebf7be92492ad477aa8dcfc026cc4a1b8aa06e6cdaeb63faf18062c1bac8f5",
+        "size_bytes": 24883217
+      },
+      {
+        "path": "build/engine_next/integrated-gpu-r1-extra/BEffects4K.log",
+        "sha256": "b534ffdd3148ed3d84ba175d75ef2d7279ba1412a7631ecd0fa2f6132a2f8128",
+        "size_bytes": 60
+      },
+      {
+        "path": "build/engine_next/integrated-gpu-r1-extra/CLargeTiming.json",
+        "sha256": "db3ab5762ec63fccc54b50869284d81a062b8fbe73f9c910916f39a71ef258c3",
+        "size_bytes": 115164
+      },
+      {
+        "path": "build/engine_next/integrated-gpu-r1-extra/CLargeTiming.ppm",
+        "sha256": "82487d17bffe572081266b5a7f0002893fb32ab37f01f47a346c3677542daf28",
+        "size_bytes": 921615
+      },
+      {
+        "path": "build/engine_next/integrated-gpu-r1-extra/CLargeTiming.log",
+        "sha256": "84e8ea06e3e3b4d68ef5c5724441a68623f24e98b391333564cdf37ed73f8dca",
+        "size_bytes": 60
+      }
+    ],
+    "four_k": {
+      "requested_size": [
+        3840,
+        2160
+      ],
+      "actual_size": [
+        3840,
+        2160
+      ],
+      "frames": 12,
+      "gpu_validation": true,
+      "scope": "Offscreen render target on a 2560x1440 physical display, not physical 4K output."
+    },
+    "performance_sample": {
+      "case": "CLargeTiming",
+      "frames": 30,
+      "resolution": [
+        640,
+        480
+      ],
+      "gpu_validation": false,
+      "warm_graphics_mean_msec": 7.43490648275862,
+      "scope": "One directed sample; not a sustained performance or 4K/120-FPS acceptance result."
+    }
+  },
+  "module_build_impact": {
+    "path": "data-collection/engine-next-visual-runtime-m4-4-geometry-build-impact.json",
+    "sha256": "3360bc5091e114ce14e3155e632840505d7238661ab4b0586997d37656ce2734",
+    "size_bytes": 100435
+  },
+  "source_review": {
+    "path": "data-collection/engine-next-visual-runtime-m4-4-geometry-source-review.json",
+    "sha256": "2a22f9c5af32ab9fbbf291a1882b80805d35283b95874c7e03da1f6488589b30",
+    "size_bytes": 10774
+  },
+  "historical_supplements": {
+    "shader_identity": {
+      "gi_r5_identical_shaders": 41,
+      "geometry_r4_identical_shaders": 5,
+      "comparison": {
+        "path": "build/engine_next/Integration/ShaderComparison.json",
+        "sha256": "1dd772417f9287bd0cf53d5b81b1e51610a3533dbf1bf2b210ada04f4d1bc8a9",
+        "size_bytes": 2438
+      }
+    },
+    "geometry_r4_command_readback": {
+      "candidate": "geometry-runtime-r4",
+      "native_key": "feb1b47a9386abf29599507391d2a49cb166d17f2d8f5cb0a0942a1c3febdaf0",
+      "scope": "Two 268-command streams, nine buckets, 15460 triangles, 34 actual constant-buffer views and eight draw identities. Historical supplement for the five identical Geometry shaders; not a new R1 capture.",
+      "artifacts": [
+        {
+          "path": "build/engine_next/integrated-delivery-r1/HistoricalInputs/geometry_r4/build/engine_next/geometry-capture-r4/Readback/NumericalChecks.json",
+          "sha256": "9d6e82b010e31a067c64e2b38bd87dcab0abd4a4766f75591606faad06ecd35e",
+          "size_bytes": 16968
+        },
+        {
+          "path": "build/engine_next/integrated-delivery-r1/HistoricalInputs/geometry_r4/build/engine_next/geometry-capture-r4/Readback/Inspection.json",
+          "sha256": "a976bbf675523abde94bbf45a79c124e3cdd91d89f4d030840ef57787ce68d0b",
+          "size_bytes": 35919
+        },
+        {
+          "path": "build/engine_next/integrated-delivery-r1/HistoricalInputs/geometry_r4/build/engine_next/geometry-capture-r4/SmallOn_frame0.rdc",
+          "sha256": "d63637c502808dda0837147fb557586d1ec9e7386c31b7c6c4027903df1cace2",
+          "size_bytes": 3634392
+        },
+        {
+          "path": "build/engine_next/integrated-delivery-r1/HistoricalInputs/geometry_r4/build/engine_next/geometry-numerical-independent/Review.json",
+          "sha256": "21ea74fb0116fa985fe9ad6a8bcdc0e9733af6574caa4d1f41922e576551a8a5",
+          "size_bytes": 763
+        }
+      ]
+    },
+    "gi_r5_manual_network": {
+      "candidate": "gi-runtime-r5",
+      "native_key": "f9abfc13850cce2065164a70ee1cc4d54b04cb034c2113436b12be769f37fee0",
+      "proof": {
+        "path": "build/engine_next/integrated-delivery-r1/HistoricalInputs/gi_r5/data-collection/engine-next-visual-runtime-m4-5-gi-network-r5.json",
+        "sha256": "db686568d1bdf3ba9a0882c8a03b9434b18f885004451a141df12f76055c6a93",
+        "size_bytes": 24796
+      },
+      "scope": "Historical GI R5 actual keyboard, reconnect and minimize/restore acceptance. The new integrated R1 binary did not run a manual F session in this matrix.",
+      "counts_as_current_r1_manual_acceptance": false
+    },
+    "repository_context": "Historical byte copies retain their original embedded relative paths and candidate identities. Copy provenance is indexed separately; originals are unchanged."
+  },
+  "known_limitations": [
+    "This is the first GPU-culling/indirect-drawing combination increment, not full M4.4 completion.",
+    "Current R1 acceptance covers GPU output/state/resize/capacity fallback. No current R1 manual keyboard F claim is made.",
+    "Original Geometry R4 Large30 timing was not run; the separately identified integrated R1 C30 sample supplies only current progress evidence.",
+    "The D3D12 ExecuteIndirect root-CBV tracking warning is retained. Zero reported validation errors does not imply every subsequent binding is precisely tracked by GBV.",
+    "The C workload is a 1000-instance, 10-million-triangle sphere-array load fixture, not the final varied-content C scene.",
+    "Probe placement/leak boundaries and shadow/4K visual artifacts documented for inherited GI remain open; this functional matrix does not establish UE-equivalent quality.",
+    "Cold-start shader compilation, full 4K throughput, tail latency and 30-minute stability targets are not closed by these samples."
+  ],
+  "remaining_stage_acceptance": [
+    "Hierarchical cluster LOD and screen-error transitions with moving-view temporal validation.",
+    "Mesh/texture page residency, asynchronous upload/eviction, fence/generation safety and bounded cold/warm streaming.",
+    "Virtual shadow pages or equivalent detailed-shadow cache, invalidation and update-budget validation.",
+    "Full varied-content C scene, diagnostics, workload/quality comparisons and parent performance/stability acceptance.",
+    "Final combined delivery gates, CI and main readback remain the parent delivery owner's responsibility."
+  ],
+  "metadata_paths": "Public references are repository-relative. Raw private commands keep their actual execution paths; historical files are copied byte-for-byte.",
+  "static_checks": {
+    "path": "build/engine_next/geometry-static-r1-ci/Result.json",
+    "sha256": "de67c00f8dbcc6c62b38bc07bcb8af39cfa035cf0a454add3f3e0aaa540606a9",
+    "size_bytes": 23812
+  },
+  "initial_static_checks": {
+    "path": "build/engine_next/geometry-static-r1-final/Result.json",
+    "sha256": "d19b592098c85ff51d48edd483cd821ec36a14c23c332260d496acea5e28eeba",
+    "size_bytes": 21177
+  },
+  "static_review": "The correctly spelled typed identifier is registered in the repository spelling dictionary after PR1511 exposed the missing CI configuration. All nine checks now use that configuration and pass without modifying files.",
+  "tool_and_contract_regression": {
+    "path": "build/engine_next/geometry-regression-r1/Result.json",
+    "sha256": "4218475c5f39c3a18fde8b82be1f589a50b3f77ba8a5fba98ad87c9ce1f83bd5",
+    "size_bytes": 1023
+  },
+  "additional_cpu_source_review": {
+    "path": "build/engine_next/geometry-root-review-r1/Review.json",
+    "sha256": "2f6cd319bb06edd194ee227a13b24598ac1d95643501afa285010e584c9f16b3",
+    "size_bytes": 3908
+  },
+  "updated_at_utc": "2026-11-18T05:59:49.840147+00:00",
+  "local_static_review": "Initial codespell reported the correctly spelled typed identifier arrRanges. The final pass records that identifier exception; all nine checks pass without file mutations.",
+  "initial_local_static_exception": {
+    "path": "build/engine_next/geometry-static-r1-final2/Result.json",
+    "sha256": "53fc992f350b6226c1783ccca7a61a8f60726aa006c13c0c6109d77789ed4463",
+    "size_bytes": 21358
+  },
+  "ci_failure_log": {
+    "path": "build/engine_next/GeometryCiStaticFailure.log",
+    "sha256": "730f843aef3b66edd96bb2852e16316221f033f6f8df19079fdf2e571872e3ec",
+    "size_bytes": 304901
+  },
+  "spelling_configuration": {
+    "path": "pyproject.toml",
+    "sha256": "1ae7c920b76cdb3cd750f1df5b63ce26b1fe6daa877e78457066a7a64c87359e",
+    "size_bytes": 5147
+  },
+  "spelling_independent_review": {
+    "path": "build/engine_next/GeometrySpellingReview.json",
+    "sha256": "d46573ce724aa74522f2711d021295e5504b82b58dc94160a08231bba0bee97b",
+    "size_bytes": 1550
+  },
+  "current_native_identity_audit": {
+    "path": "build/engine_next/GeometryCiIdentityAudit.json",
+    "sha256": "d1c36dd8eb4c4eb1ef77b87099cfcd7d37e5c7cc6eb42b561507031b030f627b",
+    "size_bytes": 187
+  },
+  "previous_verification": {
+    "path": "data-collection/engine-next-visual-runtime-m4-4-geometry-verification.json",
+    "sha256": "07158ccd22c7e40ee5d75a5b88da217238562ec8df6d1ab4bf0fa30779aad5e8",
+    "size_bytes": 34691
+  }
+}

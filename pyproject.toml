@@ -110,6 +110,8 @@ skip = [
 ]
 ignore-words-list = [
 	"acknowledgement",
+	# C++ typed identifier for an array of D3D12 descriptor ranges.
+	"arrranges",
 	"breaked",
 	"cancelled",
 	"checkin",
