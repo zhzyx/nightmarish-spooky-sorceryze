@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "engine_next/include/EngineNext/Rendering/RenderConfiguration.h"
+#include "engine_next/include/EngineNext/Rendering/DeformationFrame.h"
 
 #include "engine_next/Assets/AssetValidation.h"
 
@@ -620,7 +621,7 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 							  Assets::Diagnostics &out_arrDiagnostics)
 {
 	const Serialization::JsonValue::Object *pRoot = Assets::Object(stValue, "$", out_arrDiagnostics);
-	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "light_animation", "reflections", "ambient_occlusion", "volumetric_fog", "particles", "material_overrides", "global_illumination", "geometry_culling" }, "$", out_arrDiagnostics))
+	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "light_animation", "reflections", "ambient_occlusion", "volumetric_fog", "particles", "material_overrides", "global_illumination", "geometry_culling", "animation" }, "$", out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -741,6 +742,11 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 	}
 	const Serialization::JsonValue::Object::const_iterator itGeometry = pRoot->find("geometry_culling");
 	if (itGeometry != pRoot->end() && !ParseGeometrySettings(itGeometry->second, stConfiguration.stGeometry, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itPlayback = pRoot->find("animation");
+	if (itPlayback != pRoot->end() && !ParseAnimationPlayback(itPlayback->second, stConfiguration.stAnimation, out_arrDiagnostics))
 	{
 		return false;
 	}

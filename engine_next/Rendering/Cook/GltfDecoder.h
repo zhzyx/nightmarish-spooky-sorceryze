@@ -32,6 +32,7 @@
 
 #include "engine_next/include/EngineNext/Assets/Types.h"
 #include "engine_next/include/EngineNext/Rendering/MeshData.h"
+#include "engine_next/include/EngineNext/Rendering/AnimationData.h"
 
 #include <cstdint>
 #include <vector>
@@ -42,5 +43,11 @@ namespace EngineNext::Rendering
 // Synchronous CPU-only decode. Owns all returned data and preserves the old
 // output on failure. First applies M3 validation, then rendering semantics.
 [[nodiscard]] bool DecodeGlb(const std::vector<std::uint8_t> &arrBytes, DecodedMesh &out_stMesh, Assets::Diagnostics &out_arrDiagnostics);
+
+// Explicit CPU deformation entry. Uses the same validated GLB parser and
+// preserves both outputs on failure. The static entry keeps rejecting skins,
+// animation and morph data until a caller opts in to the deformation contract.
+[[nodiscard]] bool DecodeAnimatedGlb(const std::vector<std::uint8_t> &arrBytes, DecodedMesh &out_stMesh,
+									 AnimationData &out_stAnimation, Assets::Diagnostics &out_arrDiagnostics);
 
 } // namespace EngineNext::Rendering

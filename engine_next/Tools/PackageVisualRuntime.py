@@ -14,6 +14,7 @@ SHADER_FILES = {
     "FixedMesh.ps.cso",
     "FixedMesh.cs.cso",
     "Deferred.vs.cso",
+    "AnimatedDeferred.vs.cso",
     "Deferred.ps.cso",
     "MaterialDeferred.ps.cso",
     "Lighting.vs.cso",

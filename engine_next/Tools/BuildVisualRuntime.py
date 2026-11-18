@@ -39,6 +39,10 @@ CORE_SOURCES = [
     "engine_next/Rendering/ProbePlacement.cpp",
     "engine_next/Rendering/ShadowBounds.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
+    "engine_next/Rendering/Animation.cpp",
+    "engine_next/Rendering/DeformationFrame.cpp",
+    "engine_next/Rendering/DeformationChanges.cpp",
+    "engine_next/Rendering/MeshBasis.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
     "engine_next/Rendering/Cook/EnvironmentLighting.cpp",
     "engine_next/Rendering/Cook/EnvironmentImportance.cpp",
@@ -73,6 +77,7 @@ VISUAL_SOURCES = [
     "engine_next/Platform/Windows/Window.cpp",
     "engine_next/Platform/Windows/RayTracingScene.cpp",
     "engine_next/Platform/Windows/GpuProbeGrid.cpp",
+    "engine_next/Platform/Windows/GpuDeformation.cpp",
     "engine_next/Platform/Windows/GpuGeometry.cpp",
 ]
 TEST_SOURCES = [
@@ -116,6 +121,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestBloomSampling.cpp",
     "engine_next/Tests/Rendering/TestShadowBounds.cpp",
     "engine_next/Tests/Rendering/TestGltfDecoder.cpp",
+    "engine_next/Tests/Rendering/TestAnimation.cpp",
     "engine_next/Tests/Rendering/TestImageDecoder.cpp",
     "engine_next/Tests/Rendering/TestEnvironmentLighting.cpp",
     "engine_next/Tests/Rendering/TestEnvironmentImportance.cpp",
@@ -124,6 +130,8 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestTextureCook.cpp",
 ]
 PUBLIC_HEADERS = [
+    "EngineNext/Rendering/DeformationFrame.h",
+    "EngineNext/Rendering/AnimationData.h",
     "EngineNext/Rendering/FrameGraph.h",
     "EngineNext/Rendering/MeshData.h",
     "EngineNext/Rendering/ImageData.h",
@@ -157,6 +165,7 @@ SHADERS = [
     ("PSMain", "ps_6_0", "FixedMesh.ps.cso", []),
     ("CSMain", "cs_6_0", "FixedMesh.cs.cso", ["-D", "COMPUTE_STAGE=1"]),
     ("VSMain", "vs_6_0", "Deferred.vs.cso", ["-D", "GEOMETRY_STAGE=1"]),
+    ("VSMain", "vs_6_0", "AnimatedDeferred.vs.cso", ["-D", "GEOMETRY_STAGE=1", "-D", "ANIMATION_STAGE=1"]),
     ("PSMain", "ps_6_0", "Deferred.ps.cso", ["-D", "GEOMETRY_STAGE=1"]),
     ("PSMain", "ps_6_0", "MaterialDeferred.ps.cso", ["-D", "GEOMETRY_STAGE=1", "-D", "MATERIAL_EXTENSION_STAGE=1"]),
     ("FullscreenVS", "vs_6_0", "Lighting.vs.cso", []),

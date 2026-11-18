@@ -119,7 +119,8 @@ public:
 								  std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool PrepareFrame(std::uint32_t nFrame, const std::array<double, 3> &arrCenter,
 									const std::vector<std::array<double, 16>> &arrWorlds, std::uint64_t nCompletedFence,
-									Assets::Diagnostics &out_arrDiagnostics, const std::vector<GiGeometryChange> &arrGeometryChanges = {});
+									Assets::Diagnostics &out_arrDiagnostics, const std::vector<GiGeometryChange> &arrGeometryChanges = {},
+									const DeformationFrame *pDeformation = nullptr);
 	[[nodiscard]] bool Record(std::uint32_t nFrame, GiPass ePass, ID3D12GraphicsCommandList4 *pList,
 							  const GiBindings &stBindings, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool Submit(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics);

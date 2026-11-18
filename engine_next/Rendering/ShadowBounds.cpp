@@ -51,10 +51,10 @@ bool Fail(Assets::Diagnostics &out_arrDiagnostics, const char *pCode, const char
 
 } // namespace
 
-bool TransformShadowBounds(const MeshPrimitive &stPrimitive, const std::array<double, 16> &arrWorld,
+bool TransformShadowBounds(const std::vector<MeshVertex> &arrVertices, const std::array<double, 16> &arrWorld,
 						   WorldBounds &out_stBounds, Assets::Diagnostics &out_arrDiagnostics)
 {
-	if (stPrimitive.arrVertices.empty())
+	if (arrVertices.empty())
 	{
 		return Fail(out_arrDiagnostics, "shadow_bounds_geometry", "Shadow bounds require at least one vertex.");
 	}
@@ -79,7 +79,7 @@ bool TransformShadowBounds(const MeshPrimitive &stPrimitive, const std::array<do
 		-std::numeric_limits<double>::infinity(),
 		-std::numeric_limits<double>::infinity(),
 	};
-	for (const MeshVertex &stVertex : stPrimitive.arrVertices)
+	for (const MeshVertex &stVertex : arrVertices)
 	{
 		for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
 		{
@@ -123,6 +123,12 @@ bool TransformShadowBounds(const MeshPrimitive &stPrimitive, const std::array<do
 	}
 	out_stBounds = stBounds;
 	return true;
+}
+
+bool TransformShadowBounds(const MeshPrimitive &stPrimitive, const std::array<double, 16> &arrWorld,
+						   WorldBounds &out_stBounds, Assets::Diagnostics &out_arrDiagnostics)
+{
+	return TransformShadowBounds(stPrimitive.arrVertices, arrWorld, out_stBounds, out_arrDiagnostics);
 }
 
 } // namespace EngineNext::Rendering

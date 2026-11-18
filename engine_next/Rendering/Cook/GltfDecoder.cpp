@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "engine_next/Rendering/Cook/GltfDecoder.h"
+#include "engine_next/Rendering/MeshBasis.h"
 
 #include "engine_next/include/EngineNext/Assets/BlobValidator.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
@@ -39,6 +40,7 @@
 #include <cstddef>
 #include <cstring>
 #include <limits>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -126,21 +128,6 @@ Matrix Multiply(const Matrix &arrLeft, const Matrix &arrRight)
 	return arrResult;
 }
 
-bool Normalize(std::array<float, 3> &out_arrVector)
-{
-	const double dLength = std::sqrt(static_cast<double>(out_arrVector[0]) * out_arrVector[0] +
-									 static_cast<double>(out_arrVector[1]) * out_arrVector[1] + static_cast<double>(out_arrVector[2]) * out_arrVector[2]);
-	if (!std::isfinite(dLength) || dLength < 1.0e-20)
-	{
-		return false;
-	}
-	for (float &fValue : out_arrVector)
-	{
-		fValue = static_cast<float>(fValue / dLength);
-	}
-	return true;
-}
-
 struct BufferView
 {
 	std::size_t nOffset = 0;
@@ -158,10 +145,25 @@ struct Accessor
 	bool bNormalized = false;
 };
 
+bool MatchesAnimationTimeBound(double dDeclared, float fActual)
+{
+	const float fMaximum = std::numeric_limits<float>::max();
+	const double dMaximum = static_cast<double>(fMaximum);
+	const double dHalfUlp = (dMaximum - static_cast<double>(std::nextafter(fMaximum, 0.0F))) * 0.5;
+	if (!std::isfinite(dDeclared) || std::abs(dDeclared) >= dMaximum + dHalfUlp)
+	{
+		return false;
+	}
+	// JSON bounds have the accessor's float precision. Clamp the rounding
+	// interval next to FLT_MAX before casting to keep conversion in range.
+	const double dClamped = (std::max)(-dMaximum, (std::min)(dMaximum, dDeclared));
+	return static_cast<float>(dClamped) == fActual;
+}
+
 class Decoder final
 {
 public:
-	Decoder(const std::vector<std::uint8_t> &in_arrBytes, Assets::Diagnostics &out_arrDiagnostics) : arrBytes(in_arrBytes), arrDiagnostics(out_arrDiagnostics) {}
+	Decoder(const std::vector<std::uint8_t> &in_arrBytes, Assets::Diagnostics &out_arrDiagnostics, AnimationData *in_pAnimation = nullptr) : arrBytes(in_arrBytes), arrDiagnostics(out_arrDiagnostics), pAnimation(in_pAnimation) {}
 	bool Run(DecodedMesh &out_stMesh);
 
 private:
@@ -178,6 +180,11 @@ private:
 	bool Texture(const JsonValue::Object &mapMaterial, const char *pName, std::size_t nTextureCount, std::int32_t &out_nTexture);
 	bool Factors(const JsonValue::Object &mapObject, const char *pName, float *out_pValues, std::size_t nCount, double dMinimum, double dMaximum);
 	bool ReadMeshes(const JsonValue::Object &mapRoot, DecodedMesh &out_stMesh);
+	bool ReadPrimitiveDeformation(const JsonValue::Object &mapPrimitive, const JsonValue::Object &mapAttributes, std::size_t nCount, PrimitiveDeformation &out_stDeformation);
+	bool ReadAnimationData(const JsonValue::Object &mapRoot, const DecodedMesh &stMesh);
+	bool ReadAnimationClips(const JsonValue::Object &mapRoot);
+	bool Weights(const JsonValue::Object &mapObject, std::size_t nCount, std::vector<double> &out_arrWeights);
+	bool Allocate(std::size_t nCount, std::size_t nSize);
 	bool ReadPrimitive(const JsonValue::Object &mapPrimitive, DecodedMesh &out_stMesh);
 	bool Attribute(const JsonValue::Object &mapAttributes, const char *pName, std::uint32_t nComponents, std::size_t nVertexCount, std::int64_t &out_nAccessor);
 	bool Values(const Accessor &stAccessor, std::size_t nElement, float *out_pValues);
@@ -192,6 +199,8 @@ private:
 	std::vector<BufferView> arrViews;
 	std::vector<Accessor> arrAccessors;
 	std::vector<std::vector<std::uint32_t>> arrMeshPrimitives;
+	std::vector<std::vector<double>> arrMeshWeights;
+	AnimationData *pAnimation = nullptr;
 	std::vector<std::uint8_t> arrNodeState;
 	std::size_t nDecodedBytes = 0;
 	std::string strContext;
@@ -632,100 +641,7 @@ bool Decoder::Attribute(const JsonValue::Object &mapAttributes, const char *pNam
 
 bool Decoder::GenerateBasis(MeshPrimitive &out_stPrimitive, bool bNormals, bool bTangents, bool bTexcoord)
 {
-	std::vector<std::array<double, 3>> arrNormals(out_stPrimitive.arrVertices.size());
-	std::vector<std::array<double, 3>> arrTangents(out_stPrimitive.arrVertices.size());
-	std::vector<std::array<double, 3>> arrBitangents(out_stPrimitive.arrVertices.size());
-	for (std::size_t nIndex = 0; nIndex < out_stPrimitive.arrIndices.size(); nIndex += 3)
-	{
-		const MeshVertex &stA = out_stPrimitive.arrVertices[out_stPrimitive.arrIndices[nIndex]];
-		const MeshVertex &stB = out_stPrimitive.arrVertices[out_stPrimitive.arrIndices[nIndex + 1]];
-		const MeshVertex &stC = out_stPrimitive.arrVertices[out_stPrimitive.arrIndices[nIndex + 2]];
-		std::array<double, 3> arrEdge1{};
-		std::array<double, 3> arrEdge2{};
-		for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
-		{
-			arrEdge1[nAxis] = static_cast<double>(stB.arrPosition[nAxis]) - stA.arrPosition[nAxis];
-			arrEdge2[nAxis] = static_cast<double>(stC.arrPosition[nAxis]) - stA.arrPosition[nAxis];
-		}
-		const std::array<double, 3> arrNormal{ arrEdge1[1] * arrEdge2[2] - arrEdge1[2] * arrEdge2[1], arrEdge1[2] * arrEdge2[0] - arrEdge1[0] * arrEdge2[2], arrEdge1[0] * arrEdge2[1] - arrEdge1[1] * arrEdge2[0] };
-		const double dU1 = static_cast<double>(stB.arrTexcoord[0]) - stA.arrTexcoord[0];
-		const double dV1 = static_cast<double>(stB.arrTexcoord[1]) - stA.arrTexcoord[1];
-		const double dU2 = static_cast<double>(stC.arrTexcoord[0]) - stA.arrTexcoord[0];
-		const double dV2 = static_cast<double>(stC.arrTexcoord[1]) - stA.arrTexcoord[1];
-		const double dDeterminant = dU1 * dV2 - dU2 * dV1;
-		for (std::size_t nCorner = 0; nCorner < 3; ++nCorner)
-		{
-			const std::uint32_t nVertex = out_stPrimitive.arrIndices[nIndex + nCorner];
-			for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
-			{
-				arrNormals[nVertex][nAxis] += arrNormal[nAxis];
-				if (bTexcoord && std::abs(dDeterminant) > 1.0e-20)
-				{
-					arrTangents[nVertex][nAxis] += (arrEdge1[nAxis] * dV2 - arrEdge2[nAxis] * dV1) / dDeterminant;
-					arrBitangents[nVertex][nAxis] += (arrEdge2[nAxis] * dU1 - arrEdge1[nAxis] * dU2) / dDeterminant;
-				}
-			}
-		}
-	}
-	for (std::size_t nIndex = 0; nIndex < out_stPrimitive.arrVertices.size(); ++nIndex)
-	{
-		MeshVertex &stVertex = out_stPrimitive.arrVertices[nIndex];
-		if (bNormals)
-		{
-			const double dLength = std::sqrt(arrNormals[nIndex][0] * arrNormals[nIndex][0] + arrNormals[nIndex][1] * arrNormals[nIndex][1] + arrNormals[nIndex][2] * arrNormals[nIndex][2]);
-			if (dLength > 1.0e-20 && std::isfinite(dLength))
-			{
-				for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
-				{
-					stVertex.arrNormal[nAxis] = static_cast<float>(arrNormals[nIndex][nAxis] / dLength);
-				}
-			}
-		}
-		if (!Normalize(stVertex.arrNormal))
-		{
-			return Error(strContext, "Normal has zero length.");
-		}
-		std::array<float, 3> arrTangent{ stVertex.arrTangent[0], stVertex.arrTangent[1], stVertex.arrTangent[2] };
-		if (bTangents)
-		{
-			const double dLength = std::sqrt(arrTangents[nIndex][0] * arrTangents[nIndex][0] + arrTangents[nIndex][1] * arrTangents[nIndex][1] + arrTangents[nIndex][2] * arrTangents[nIndex][2]);
-			for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
-			{
-				arrTangent[nAxis] = dLength > 1.0e-20 && std::isfinite(dLength) ? static_cast<float>(arrTangents[nIndex][nAxis] / dLength) : 0.0F;
-			}
-		}
-		const float fDot = arrTangent[0] * stVertex.arrNormal[0] + arrTangent[1] * stVertex.arrNormal[1] + arrTangent[2] * stVertex.arrNormal[2];
-		for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
-		{
-			arrTangent[nAxis] -= fDot * stVertex.arrNormal[nAxis];
-		}
-		if (!Normalize(arrTangent))
-		{
-			if (!bTangents)
-			{
-				return Error(strContext, "Tangent is parallel to the normal or has zero length.");
-			}
-			arrTangent = std::abs(stVertex.arrNormal[0]) < 0.9F ? std::array<float, 3>{ 1, 0, 0 } : std::array<float, 3>{ 0, 1, 0 };
-			const float fProjection = arrTangent[0] * stVertex.arrNormal[0] + arrTangent[1] * stVertex.arrNormal[1] + arrTangent[2] * stVertex.arrNormal[2];
-			for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
-			{
-				arrTangent[nAxis] -= fProjection * stVertex.arrNormal[nAxis];
-			}
-			(void)Normalize(arrTangent);
-		}
-		for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
-		{
-			stVertex.arrTangent[nAxis] = arrTangent[nAxis];
-		}
-		if (bTangents)
-		{
-			const std::array<float, 3> &arrNormal = stVertex.arrNormal;
-			const double dHandedness = (arrNormal[1] * arrTangent[2] - arrNormal[2] * arrTangent[1]) * arrBitangents[nIndex][0] +
-					(arrNormal[2] * arrTangent[0] - arrNormal[0] * arrTangent[2]) * arrBitangents[nIndex][1] + (arrNormal[0] * arrTangent[1] - arrNormal[1] * arrTangent[0]) * arrBitangents[nIndex][2];
-			stVertex.arrTangent[3] = dHandedness < 0 ? -1.0F : 1.0F;
-		}
-	}
-	return true;
+	return BuildMeshBasis(out_stPrimitive, bNormals, bTangents, bTexcoord, arrDiagnostics, strContext);
 }
 
 bool Decoder::ReadPrimitive(const JsonValue::Object &mapPrimitive, DecodedMesh &out_stMesh)
@@ -733,7 +649,7 @@ bool Decoder::ReadPrimitive(const JsonValue::Object &mapPrimitive, DecodedMesh &
 	std::int64_t nMode = 4;
 	std::int64_t nMaterial = -1;
 	std::int64_t nIndices = -1;
-	if (!Integer(mapPrimitive, "mode", 4, nMode) || nMode != 4 || Find(mapPrimitive, "targets") != nullptr || !Integer(mapPrimitive, "material", -1, nMaterial) || !Integer(mapPrimitive, "indices", -1, nIndices))
+	if (!Integer(mapPrimitive, "mode", 4, nMode) || nMode != 4 || (pAnimation == nullptr && Find(mapPrimitive, "targets") != nullptr) || !Integer(mapPrimitive, "material", -1, nMaterial) || !Integer(mapPrimitive, "indices", -1, nIndices))
 	{
 		return Error(strContext, "Only triangle primitives without morph targets are supported.", "gltf_unsupported");
 	}
@@ -746,7 +662,7 @@ bool Decoder::ReadPrimitive(const JsonValue::Object &mapPrimitive, DecodedMesh &
 	}
 	for (const std::pair<const std::string, JsonValue> &stMember : *pAttributes)
 	{
-		if (stMember.first != "POSITION" && stMember.first != "NORMAL" && stMember.first != "TANGENT" && stMember.first != "TEXCOORD_0")
+		if (stMember.first != "POSITION" && stMember.first != "NORMAL" && stMember.first != "TANGENT" && stMember.first != "TEXCOORD_0" && !(pAnimation != nullptr && (stMember.first == "JOINTS_0" || stMember.first == "WEIGHTS_0")))
 		{
 			return Error(strContext + ".attributes." + stMember.first, "Unsupported vertex attribute.", "gltf_unsupported");
 		}
@@ -835,6 +751,13 @@ bool Decoder::ReadPrimitive(const JsonValue::Object &mapPrimitive, DecodedMesh &
 		}
 		stPrimitive.arrIndices.push_back(nValue);
 	}
+	PrimitiveDeformation stDeformation;
+	stDeformation.bGenerateNormals = nNormal < 0;
+	stDeformation.bGenerateTangents = nNormal < 0 || nTangent < 0;
+	if (pAnimation != nullptr && !ReadPrimitiveDeformation(mapPrimitive, *pAttributes, stPosition.nCount, stDeformation))
+	{
+		return false;
+	}
 	if (nNormal < 0)
 	{
 		// glTF requires flat normals when NORMAL is absent. Split indexed
@@ -850,6 +773,42 @@ bool Decoder::ReadPrimitive(const JsonValue::Object &mapPrimitive, DecodedMesh &
 		{
 			arrExpanded.push_back(stPrimitive.arrVertices[nIndex]);
 		}
+		if (pAnimation != nullptr)
+		{
+			if (!stDeformation.arrInfluences.empty())
+			{
+				if (!Allocate(nIndexCount, sizeof(SkinInfluence)))
+				{
+					return false;
+				}
+				std::vector<SkinInfluence> arrExpandedInfluences;
+				for (std::uint32_t nIndex : stPrimitive.arrIndices)
+				{
+					arrExpandedInfluences.push_back(stDeformation.arrInfluences[nIndex]);
+				}
+				stDeformation.arrInfluences = std::move(arrExpandedInfluences);
+			}
+			for (MorphTarget &stTarget : stDeformation.arrMorphTargets)
+			{
+				for (std::vector<std::array<float, 3>> *pValues : { &stTarget.arrPositions, &stTarget.arrNormals, &stTarget.arrTangents })
+				{
+					if (pValues->empty())
+					{
+						continue;
+					}
+					if (!Allocate(nIndexCount, sizeof(std::array<float, 3>)))
+					{
+						return false;
+					}
+					std::vector<std::array<float, 3>> arrExpandedValues;
+					for (std::uint32_t nIndex : stPrimitive.arrIndices)
+					{
+						arrExpandedValues.push_back((*pValues)[nIndex]);
+					}
+					*pValues = std::move(arrExpandedValues);
+				}
+			}
+		}
 		stPrimitive.arrVertices = std::move(arrExpanded);
 		for (std::size_t nIndex = 0; nIndex < nIndexCount; ++nIndex)
 		{
@@ -860,6 +819,10 @@ bool Decoder::ReadPrimitive(const JsonValue::Object &mapPrimitive, DecodedMesh &
 	if (!GenerateBasis(stPrimitive, nNormal < 0, nNormal < 0 || nTangent < 0, nUv >= 0))
 	{
 		return false;
+	}
+	if (pAnimation != nullptr)
+	{
+		pAnimation->arrPrimitives.push_back(std::move(stDeformation));
 	}
 	out_stMesh.arrPrimitives.push_back(std::move(stPrimitive));
 	return true;
@@ -878,7 +841,7 @@ bool Decoder::ReadMeshes(const JsonValue::Object &mapRoot, DecodedMesh &out_stMe
 		strContext = "$.meshes[" + std::to_string(nMesh) + "]";
 		const JsonValue::Object *pMesh = (*pMeshes)[nMesh].GetObject();
 		const JsonValue::List *pPrimitives = nullptr;
-		if (pMesh == nullptr || Find(*pMesh, "weights") != nullptr || !List(*pMesh, "primitives", pPrimitives) || pPrimitives == nullptr || pPrimitives->empty())
+		if (pMesh == nullptr || (pAnimation == nullptr && Find(*pMesh, "weights") != nullptr) || !List(*pMesh, "primitives", pPrimitives) || pPrimitives == nullptr || pPrimitives->empty())
 		{
 			return Error(strContext, "Mesh requires primitives and cannot use morph weights.", "gltf_unsupported");
 		}
@@ -896,6 +859,23 @@ bool Decoder::ReadMeshes(const JsonValue::Object &mapRoot, DecodedMesh &out_stMe
 			{
 				return false;
 			}
+		}
+		if (pAnimation != nullptr)
+		{
+			const std::size_t nTargetCount = pAnimation->arrPrimitives[arrPrimitiveIds.front()].arrMorphTargets.size();
+			for (std::uint32_t nPrimitive : arrPrimitiveIds)
+			{
+				if (pAnimation->arrPrimitives[nPrimitive].arrMorphTargets.size() != nTargetCount)
+				{
+					return Error(strContext, "All mesh primitives require the same morph target count.");
+				}
+			}
+			std::vector<double> arrWeights;
+			if (!Weights(*pMesh, nTargetCount, arrWeights))
+			{
+				return false;
+			}
+			arrMeshWeights.push_back(std::move(arrWeights));
 		}
 		arrMeshPrimitives.push_back(std::move(arrPrimitiveIds));
 	}
@@ -1034,7 +1014,7 @@ bool Decoder::ReadInstances(const JsonValue::Object &mapRoot, DecodedMesh &out_s
 		}
 		for (std::uint32_t nPrimitive = 0; nPrimitive < out_stMesh.arrPrimitives.size(); ++nPrimitive)
 		{
-			out_stMesh.arrInstances.push_back(MeshInstance{ nPrimitive, 0, Identity() });
+			out_stMesh.arrInstances.push_back(MeshInstance{ nPrimitive, pAnimation == nullptr ? 0 : nPrimitive, Identity() });
 		}
 		return true;
 	}
@@ -1045,7 +1025,7 @@ bool Decoder::ReadInstances(const JsonValue::Object &mapRoot, DecodedMesh &out_s
 		const JsonValue::Object *pNode = (*pNodes)[nNode].GetObject();
 		const JsonValue::List *pChildren = nullptr;
 		Matrix arrValidated = Identity();
-		if (pNode == nullptr || Find(*pNode, "skin") != nullptr || Find(*pNode, "weights") != nullptr || Find(*pNode, "camera") != nullptr || !List(*pNode, "children", pChildren) || !Transform(*pNode, arrValidated))
+		if (pNode == nullptr || (pAnimation == nullptr && (Find(*pNode, "skin") != nullptr || Find(*pNode, "weights") != nullptr)) || Find(*pNode, "camera") != nullptr || !List(*pNode, "children", pChildren) || !Transform(*pNode, arrValidated))
 		{
 			return Error(strContext, "Invalid node or unsupported skin, morph, or embedded camera.", "gltf_unsupported");
 		}
@@ -1127,6 +1107,660 @@ bool Decoder::ReadInstances(const JsonValue::Object &mapRoot, DecodedMesh &out_s
 	return !out_stMesh.arrInstances.empty() || Error("$.scenes", "Selected scene has no drawable instances.");
 }
 
+bool Decoder::Allocate(std::size_t nCount, std::size_t nSize)
+{
+	if (nSize == 0 || nCount > (MAX_DECODED_BYTES - nDecodedBytes) / nSize)
+	{
+		return Error(strContext, "Deformation data exceeds decoded byte budget.");
+	}
+	nDecodedBytes += nCount * nSize;
+	return true;
+}
+
+bool Decoder::Weights(const JsonValue::Object &mapObject, std::size_t nCount, std::vector<double> &out_arrWeights)
+{
+	const JsonValue::List *pWeights = nullptr;
+	if (!List(mapObject, "weights", pWeights) || (pWeights != nullptr && pWeights->size() != nCount) || !Allocate(nCount, sizeof(double)))
+	{
+		return Error(strContext, "Morph weights must match the mesh target count.");
+	}
+	out_arrWeights.assign(nCount, 0);
+	if (pWeights != nullptr)
+	{
+		for (std::size_t nIndex = 0; nIndex < nCount; ++nIndex)
+		{
+			if (!(*pWeights)[nIndex].GetNumber(out_arrWeights[nIndex]) || !std::isfinite(out_arrWeights[nIndex]) || std::abs(out_arrWeights[nIndex]) > std::numeric_limits<float>::max())
+			{
+				return Error(strContext, "Morph weights must be finite binary32 values.");
+			}
+		}
+	}
+	return true;
+}
+
+bool Decoder::ReadPrimitiveDeformation(const JsonValue::Object &mapPrimitive, const JsonValue::Object &mapAttributes, std::size_t nCount, PrimitiveDeformation &out_stDeformation)
+{
+	if (!Allocate(1, sizeof(PrimitiveDeformation)))
+	{
+		return false;
+	}
+	std::int64_t nJoints = -1;
+	std::int64_t nWeights = -1;
+	if (!Integer(mapAttributes, "JOINTS_0", -1, nJoints) || !Integer(mapAttributes, "WEIGHTS_0", -1, nWeights))
+	{
+		return false;
+	}
+	const bool bHasJoints = Find(mapAttributes, "JOINTS_0") != nullptr;
+	const bool bHasWeights = Find(mapAttributes, "WEIGHTS_0") != nullptr;
+	if (bHasJoints != bHasWeights || (bHasJoints && (nJoints < 0 || nWeights < 0 || nJoints >= static_cast<std::int64_t>(arrAccessors.size()) || nWeights >= static_cast<std::int64_t>(arrAccessors.size()))))
+	{
+		return Error(strContext, "JOINTS_0 and WEIGHTS_0 must form a valid pair.");
+	}
+	if (bHasJoints)
+	{
+		const Accessor &stJoints = arrAccessors[static_cast<std::size_t>(nJoints)];
+		const Accessor &stWeights = arrAccessors[static_cast<std::size_t>(nWeights)];
+		const bool bFloatWeights = stWeights.nComponent == 5126 && !stWeights.bNormalized;
+		const bool bIntegerWeights = (stWeights.nComponent == 5121 || stWeights.nComponent == 5123) && stWeights.bNormalized;
+		if (stJoints.nComponents != 4 || stJoints.nCount != nCount || stJoints.bNormalized || (stJoints.nComponent != 5121 && stJoints.nComponent != 5123) ||
+			stWeights.nComponents != 4 || stWeights.nCount != nCount || (!bFloatWeights && !bIntegerWeights) || !Allocate(nCount, sizeof(SkinInfluence)))
+		{
+			return Error(strContext, "Unsupported joint or weight accessor representation.");
+		}
+		out_stDeformation.arrInfluences.resize(nCount);
+		for (std::size_t nVertex = 0; nVertex < nCount; ++nVertex)
+		{
+			std::array<float, 4> arrJointValues{};
+			SkinInfluence &stInfluence = out_stDeformation.arrInfluences[nVertex];
+			if (!Values(stJoints, nVertex, arrJointValues.data()) || !Values(stWeights, nVertex, stInfluence.arrWeights.data()))
+			{
+				return false;
+			}
+			double dTotal = 0;
+			for (std::size_t nWeight = 0; nWeight < 4; ++nWeight)
+			{
+				if (stInfluence.arrWeights[nWeight] < 0)
+				{
+					return Error(strContext, "Skin weights must be nonnegative.");
+				}
+				stInfluence.arrJoints[nWeight] = static_cast<std::uint16_t>(arrJointValues[nWeight]);
+				dTotal += stInfluence.arrWeights[nWeight];
+			}
+			std::size_t nNonzero = 0;
+			for (std::size_t nWeight = 0; nWeight < 4; ++nWeight)
+			{
+				if (stInfluence.arrWeights[nWeight] <= 0)
+				{
+					continue;
+				}
+				++nNonzero;
+				for (std::size_t nEarlier = 0; nEarlier < nWeight; ++nEarlier)
+				{
+					if (stInfluence.arrWeights[nEarlier] > 0 && stInfluence.arrJoints[nEarlier] == stInfluence.arrJoints[nWeight])
+					{
+						return Error(strContext, "A vertex must not have duplicate nonzero joint weights.");
+					}
+				}
+			}
+			if (nNonzero == 0 || (bIntegerWeights && std::abs(dTotal - 1) > 2.0e-7 * static_cast<double>(nNonzero)))
+			{
+				return Error(strContext, "Skin weights must sum to one.");
+			}
+			for (float &fWeight : stInfluence.arrWeights)
+			{
+				fWeight = static_cast<float>(fWeight / dTotal);
+			}
+		}
+	}
+	const JsonValue::List *pTargets = nullptr;
+	if (!List(mapPrimitive, "targets", pTargets))
+	{
+		return false;
+	}
+	if (pTargets == nullptr)
+	{
+		return true;
+	}
+	if (pTargets->empty() || !Allocate(pTargets->size(), sizeof(MorphTarget)))
+	{
+		return Error(strContext, "Morph targets must be nonempty and bounded.");
+	}
+	for (const JsonValue &stValue : *pTargets)
+	{
+		const JsonValue::Object *pTarget = stValue.GetObject();
+		if (pTarget == nullptr || pTarget->empty())
+		{
+			return Error(strContext, "Morph target requires displacement attributes.");
+		}
+		MorphTarget stTarget;
+		for (const std::pair<const std::string, JsonValue> &stAttribute : *pTarget)
+		{
+			std::vector<std::array<float, 3>> *pOutput = stAttribute.first == "POSITION" ? &stTarget.arrPositions : stAttribute.first == "NORMAL" ? &stTarget.arrNormals
+					: stAttribute.first == "TANGENT"																							  ? &stTarget.arrTangents
+																																				  : nullptr;
+			std::int64_t nAccessor = -1;
+			if (Find(mapAttributes, stAttribute.first.c_str()) == nullptr)
+			{
+				return Error(strContext, "Morph target attribute must also exist in the base primitive.");
+			}
+			if (pOutput == nullptr || !stAttribute.second.GetInteger(nAccessor) || nAccessor < 0 || nAccessor >= static_cast<std::int64_t>(arrAccessors.size()))
+			{
+				return Error(strContext, "Unsupported or invalid morph target attribute.", "gltf_unsupported");
+			}
+			const Accessor &stAccessor = arrAccessors[static_cast<std::size_t>(nAccessor)];
+			if (stAccessor.nCount != nCount || stAccessor.nComponents != 3 || stAccessor.nComponent != 5126 || stAccessor.bNormalized || !Allocate(nCount, sizeof(std::array<float, 3>)))
+			{
+				return Error(strContext, "Morph displacement requires matching FLOAT VEC3 data.");
+			}
+			pOutput->resize(nCount);
+			for (std::size_t nVertex = 0; nVertex < nCount; ++nVertex)
+			{
+				if (!Values(stAccessor, nVertex, (*pOutput)[nVertex].data()))
+				{
+					return false;
+				}
+			}
+		}
+		out_stDeformation.arrMorphTargets.push_back(std::move(stTarget));
+	}
+	return true;
+}
+
+bool Decoder::ReadAnimationData(const JsonValue::Object &mapRoot, const DecodedMesh &stMesh)
+{
+	const JsonValue::List *pNodes = nullptr;
+	const JsonValue::List *pSkins = nullptr;
+	if (!List(mapRoot, "nodes", pNodes) || !List(mapRoot, "skins", pSkins))
+	{
+		return false;
+	}
+	if (pNodes == nullptr)
+	{
+		if (pSkins != nullptr && !pSkins->empty())
+		{
+			return Error("$.skins", "Skins require nodes.");
+		}
+		pAnimation->arrNodes.resize(stMesh.arrPrimitives.size());
+		if (!Allocate(pAnimation->arrNodes.size(), sizeof(AnimationNode)))
+		{
+			return false;
+		}
+		for (std::size_t nMesh = 0; nMesh < arrMeshPrimitives.size(); ++nMesh)
+		{
+			for (std::uint32_t nPrimitive : arrMeshPrimitives[nMesh])
+			{
+				pAnimation->arrNodes[nPrimitive].arrWeights = arrMeshWeights[nMesh];
+				if (!Allocate(arrMeshWeights[nMesh].size(), sizeof(double)))
+				{
+					return false;
+				}
+			}
+		}
+		const JsonValue::List *pClips = nullptr;
+		if (!List(mapRoot, "animations", pClips) || (pClips != nullptr && !pClips->empty()))
+		{
+			return Error("$.animations", "Animation targets require actual glTF nodes.");
+		}
+	}
+	else
+	{
+		if (!Allocate(pNodes->size(), sizeof(AnimationNode)))
+		{
+			return false;
+		}
+		pAnimation->arrNodes.resize(pNodes->size());
+		for (std::size_t nNode = 0; nNode < pNodes->size(); ++nNode)
+		{
+			strContext = "$.nodes[" + std::to_string(nNode) + "]";
+			const JsonValue::Object &mapNode = *(*pNodes)[nNode].GetObject();
+			AnimationNode &stNode = pAnimation->arrNodes[nNode];
+			stNode.bMatrix = Find(mapNode, "matrix") != nullptr;
+			if (!Transform(mapNode, stNode.arrMatrix))
+			{
+				return false;
+			}
+			std::array<float, 3> arrTranslation{};
+			std::array<float, 3> arrScale{ 1, 1, 1 };
+			std::array<float, 4> arrRotation{ 0, 0, 0, 1 };
+			if (!Factors(mapNode, "translation", arrTranslation.data(), 3, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()) ||
+				!Factors(mapNode, "rotation", arrRotation.data(), 4, -1, 1) ||
+				!Factors(mapNode, "scale", arrScale.data(), 3, -std::numeric_limits<float>::max(), std::numeric_limits<float>::max()))
+			{
+				return false;
+			}
+			std::copy(arrTranslation.begin(), arrTranslation.end(), stNode.stTransform.arrTranslation.begin());
+			std::copy(arrRotation.begin(), arrRotation.end(), stNode.stTransform.arrRotation.begin());
+			std::copy(arrScale.begin(), arrScale.end(), stNode.stTransform.arrScale.begin());
+			std::int64_t nMesh = -1;
+			std::int64_t nSkin = -1;
+			if (!Integer(mapNode, "mesh", -1, nMesh) || !Integer(mapNode, "skin", -1, nSkin) || nSkin < -1 ||
+				(Find(mapNode, "skin") != nullptr && (nSkin < 0 || nMesh < 0 || pSkins == nullptr || nSkin >= static_cast<std::int64_t>(pSkins->size()))))
+			{
+				return Error(strContext, "Skin binding requires a valid mesh and skin.");
+			}
+			stNode.nSkin = static_cast<std::int32_t>(nSkin);
+			if (nMesh >= 0)
+			{
+				stNode.arrWeights = arrMeshWeights[static_cast<std::size_t>(nMesh)];
+				if (!Allocate(stNode.arrWeights.size(), sizeof(double)))
+				{
+					return false;
+				}
+			}
+			if (Find(mapNode, "weights") != nullptr && (nMesh < 0 || !Weights(mapNode, stNode.arrWeights.size(), stNode.arrWeights)))
+			{
+				return Error(strContext, "Node weights require a mesh and matching target count.");
+			}
+			const JsonValue::List *pChildren = nullptr;
+			if (!List(mapNode, "children", pChildren))
+			{
+				return false;
+			}
+			if (pChildren != nullptr)
+			{
+				for (const JsonValue &stChild : *pChildren)
+				{
+					std::int64_t nChild = -1;
+					if (!stChild.GetInteger(nChild) || nChild < 0 || nChild >= static_cast<std::int64_t>(pNodes->size()))
+					{
+						return Error(strContext, "Invalid child index.");
+					}
+					pAnimation->arrNodes[static_cast<std::size_t>(nChild)].nParent = static_cast<std::int32_t>(nNode);
+				}
+			}
+		}
+	}
+	if (pSkins != nullptr)
+	{
+		if (!Allocate(pSkins->size(), sizeof(SkinData)))
+		{
+			return false;
+		}
+		for (std::size_t nSkin = 0; nSkin < pSkins->size(); ++nSkin)
+		{
+			strContext = "$.skins[" + std::to_string(nSkin) + "]";
+			const JsonValue::Object *pSkin = (*pSkins)[nSkin].GetObject();
+			const JsonValue::List *pJoints = nullptr;
+			std::int64_t nInverse = -1;
+			std::int64_t nSkeleton = -1;
+			if (pSkin == nullptr || !List(*pSkin, "joints", pJoints) || pJoints == nullptr || pJoints->empty() ||
+				!Integer(*pSkin, "inverseBindMatrices", -1, nInverse) || !Integer(*pSkin, "skeleton", -1, nSkeleton) ||
+				(nSkeleton != -1 && (nSkeleton < 0 || nSkeleton >= static_cast<std::int64_t>(pAnimation->arrNodes.size()))) ||
+				(Find(*pSkin, "skeleton") != nullptr && nSkeleton == -1) ||
+				!Allocate(pJoints->size(), sizeof(std::uint32_t) + sizeof(AnimationMatrix)))
+			{
+				return Error(strContext, "Invalid skin joints or skeleton root.");
+			}
+			const Accessor *pInverse = nullptr;
+			if (Find(*pSkin, "inverseBindMatrices") != nullptr)
+			{
+				if (nInverse < 0 || nInverse >= static_cast<std::int64_t>(arrAccessors.size()))
+				{
+					return Error(strContext, "Invalid inverse bind accessor.");
+				}
+				pInverse = &arrAccessors[static_cast<std::size_t>(nInverse)];
+				if (pInverse->nComponents != 16 || pInverse->nComponent != 5126 || pInverse->bNormalized || pInverse->nCount < pJoints->size())
+				{
+					return Error(strContext, "Inverse binds require at least one FLOAT MAT4 per joint.");
+				}
+			}
+			SkinData stSkin;
+			stSkin.nSkeleton = static_cast<std::int32_t>(nSkeleton);
+			std::set<std::uint32_t> setJoints;
+			for (std::size_t nJoint = 0; nJoint < pJoints->size(); ++nJoint)
+			{
+				std::int64_t nNode = -1;
+				if (!(*pJoints)[nJoint].GetInteger(nNode) || nNode < 0 || nNode >= static_cast<std::int64_t>(pAnimation->arrNodes.size()) || !setJoints.insert(static_cast<std::uint32_t>(nNode)).second)
+				{
+					return Error(strContext, "Joint index is invalid or duplicated.");
+				}
+				if (nSkeleton >= 0)
+				{
+					std::int32_t nAncestor = static_cast<std::int32_t>(nNode);
+					while (nAncestor >= 0 && nAncestor != nSkeleton)
+					{
+						nAncestor = pAnimation->arrNodes[static_cast<std::size_t>(nAncestor)].nParent;
+					}
+					if (nAncestor != nSkeleton)
+					{
+						return Error(strContext, "Skeleton must be an ancestor of every joint.");
+					}
+				}
+				AnimationMatrix arrMatrix = Identity();
+				if (pInverse != nullptr)
+				{
+					std::array<float, 16> arrValues{};
+					if (!Values(*pInverse, nJoint, arrValues.data()))
+					{
+						return false;
+					}
+					std::copy(arrValues.begin(), arrValues.end(), arrMatrix.begin());
+					if (arrMatrix[3] != 0 || arrMatrix[7] != 0 || arrMatrix[11] != 0 || arrMatrix[15] != 1)
+					{
+						return Error(strContext, "Inverse bind matrix must be affine.");
+					}
+				}
+				if (!stSkin.arrJoints.empty())
+				{
+					std::int32_t nFirstRoot = static_cast<std::int32_t>(stSkin.arrJoints.front());
+					std::int32_t nCurrentRoot = static_cast<std::int32_t>(nNode);
+					while (pAnimation->arrNodes[static_cast<std::size_t>(nFirstRoot)].nParent >= 0)
+					{
+						nFirstRoot = pAnimation->arrNodes[static_cast<std::size_t>(nFirstRoot)].nParent;
+					}
+					while (pAnimation->arrNodes[static_cast<std::size_t>(nCurrentRoot)].nParent >= 0)
+					{
+						nCurrentRoot = pAnimation->arrNodes[static_cast<std::size_t>(nCurrentRoot)].nParent;
+					}
+					if (nFirstRoot != nCurrentRoot)
+					{
+						return Error(strContext, "Skin joints require a common hierarchy root.");
+					}
+				}
+				stSkin.arrJoints.push_back(static_cast<std::uint32_t>(nNode));
+				stSkin.arrInverseBindMatrices.push_back(arrMatrix);
+			}
+			pAnimation->arrSkins.push_back(std::move(stSkin));
+		}
+	}
+	if (pNodes != nullptr)
+	{
+		for (std::size_t nNode = 0; nNode < pNodes->size(); ++nNode)
+		{
+			const AnimationNode &stNode = pAnimation->arrNodes[nNode];
+			if (stNode.nSkin < 0)
+			{
+				continue;
+			}
+			std::int64_t nMesh = -1;
+			if (!Integer(*(*pNodes)[nNode].GetObject(), "mesh", -1, nMesh))
+			{
+				return false;
+			}
+			for (std::uint32_t nPrimitive : arrMeshPrimitives[static_cast<std::size_t>(nMesh)])
+			{
+				const std::vector<SkinInfluence> &arrInfluences = pAnimation->arrPrimitives[nPrimitive].arrInfluences;
+				if (arrInfluences.empty())
+				{
+					return Error("$.meshes", "All skinned primitives require joint data.");
+				}
+				for (const SkinInfluence &stInfluence : arrInfluences)
+				{
+					for (std::uint16_t nJoint : stInfluence.arrJoints)
+					{
+						if (nJoint >= pAnimation->arrSkins[static_cast<std::size_t>(stNode.nSkin)].arrJoints.size())
+						{
+							return Error("$.meshes", "Joint attribute is outside its skin palette.");
+						}
+					}
+				}
+			}
+		}
+	}
+	for (const MeshInstance &stInstance : stMesh.arrInstances)
+	{
+		const AnimationNode &stNode = pAnimation->arrNodes[stInstance.nNode];
+		if (stNode.nSkin >= 0)
+		{
+			for (std::uint32_t nJointNode : pAnimation->arrSkins[static_cast<std::size_t>(stNode.nSkin)].arrJoints)
+			{
+				if (nJointNode >= arrNodeState.size() || arrNodeState[nJointNode] != 2)
+				{
+					return Error("$.skins", "Skin joints must belong to the same selected scene as the mesh.");
+				}
+			}
+			const std::vector<SkinInfluence> &arrInfluences = pAnimation->arrPrimitives[stInstance.nPrimitive].arrInfluences;
+			if (arrInfluences.empty())
+			{
+				return Error("$.meshes", "Skinned primitives require joints and weights.");
+			}
+			for (const SkinInfluence &stInfluence : arrInfluences)
+			{
+				for (std::uint16_t nJoint : stInfluence.arrJoints)
+				{
+					if (nJoint >= pAnimation->arrSkins[static_cast<std::size_t>(stNode.nSkin)].arrJoints.size())
+					{
+						return Error("$.meshes", "Joint attribute is outside its skin palette.");
+					}
+				}
+			}
+		}
+	}
+	if (!ReadAnimationClips(mapRoot))
+	{
+		return false;
+	}
+	AnimationPose stPose;
+	return EvaluateAnimation(*pAnimation, -1, 0, false, stPose, arrDiagnostics);
+}
+
+bool Decoder::ReadAnimationClips(const JsonValue::Object &mapRoot)
+{
+	const JsonValue::List *pAnimations = nullptr;
+	if (!List(mapRoot, "animations", pAnimations))
+	{
+		return false;
+	}
+	if (pAnimations == nullptr)
+	{
+		return true;
+	}
+	if (!Allocate(pAnimations->size(), sizeof(AnimationClip)))
+	{
+		return false;
+	}
+	for (std::size_t nAnimation = 0; nAnimation < pAnimations->size(); ++nAnimation)
+	{
+		strContext = "$.animations[" + std::to_string(nAnimation) + "]";
+		const JsonValue::Object *pAnimationValue = (*pAnimations)[nAnimation].GetObject();
+		const JsonValue::List *pSamplers = nullptr;
+		const JsonValue::List *pChannels = nullptr;
+		if (pAnimationValue == nullptr || !List(*pAnimationValue, "samplers", pSamplers) || !List(*pAnimationValue, "channels", pChannels) || pSamplers == nullptr || pSamplers->empty() || pChannels == nullptr || pChannels->empty() || !Allocate(pChannels->size(), sizeof(AnimationChannel)))
+		{
+			return Error(strContext, "Animation requires nonempty samplers and channels.");
+		}
+		AnimationClip stClip;
+		const JsonValue *pName = Find(*pAnimationValue, "name");
+		if (pName != nullptr)
+		{
+			if (pName->GetString() == nullptr || !Allocate(pName->GetString()->size(), sizeof(char)))
+			{
+				return Error(strContext, "Animation name must be a string.");
+			}
+			stClip.strName = *pName->GetString();
+		}
+		for (const JsonValue &stSamplerValue : *pSamplers)
+		{
+			const JsonValue::Object *pSampler = stSamplerValue.GetObject();
+			std::int64_t nInput = -1;
+			std::int64_t nOutput = -1;
+			if (pSampler == nullptr || !Integer(*pSampler, "input", -1, nInput) || !Integer(*pSampler, "output", -1, nOutput) || nInput < 0 || nOutput < 0 || nInput >= static_cast<std::int64_t>(arrAccessors.size()) || nOutput >= static_cast<std::int64_t>(arrAccessors.size()))
+			{
+				return Error(strContext, "Invalid animation sampler accessor.");
+			}
+			const Accessor &stInput = arrAccessors[static_cast<std::size_t>(nInput)];
+			const Accessor &stOutput = arrAccessors[static_cast<std::size_t>(nOutput)];
+			if (stInput.nCount > MAX_ITEMS || stInput.nComponents != 1 || stInput.nComponent != 5126 || stInput.bNormalized || (!((stOutput.nComponent == 5126 && !stOutput.bNormalized) || (stOutput.bNormalized && (stOutput.nComponent == 5120 || stOutput.nComponent == 5121 || stOutput.nComponent == 5122 || stOutput.nComponent == 5123)))) || (stOutput.nComponents != 1 && stOutput.nComponents != 3 && stOutput.nComponents != 4))
+			{
+				return Error(strContext, "Animation samplers require float data.");
+			}
+			const JsonValue::Object &mapInput = *Find(mapRoot, "accessors")->GetList()->at(static_cast<std::size_t>(nInput)).GetObject();
+			const JsonValue::List *pMinimum = nullptr;
+			const JsonValue::List *pMaximum = nullptr;
+			double dMinimum = 0;
+			double dMaximum = 0;
+			if (!List(mapInput, "min", pMinimum) || !List(mapInput, "max", pMaximum) || pMinimum == nullptr || pMaximum == nullptr ||
+				pMinimum->size() != 1 || pMaximum->size() != 1 || !pMinimum->front().GetNumber(dMinimum) || !pMaximum->front().GetNumber(dMaximum))
+			{
+				return Error(strContext, "Animation input accessors require finite scalar min and max bounds.");
+			}
+			float fPrevious = -1;
+			for (std::size_t nKey = 0; nKey < stInput.nCount; ++nKey)
+			{
+				float fTime = 0;
+				if (!Values(stInput, nKey, &fTime) || fTime < 0 || fTime <= fPrevious)
+				{
+					return Error(strContext, "Animation key times must increase strictly.");
+				}
+				if (nKey == 0 && !MatchesAnimationTimeBound(dMinimum, fTime))
+				{
+					return Error(strContext, "Animation input minimum differs from the first key.");
+				}
+				fPrevious = fTime;
+			}
+			if (!MatchesAnimationTimeBound(dMaximum, fPrevious))
+			{
+				return Error(strContext, "Animation input maximum differs from the last key.");
+			}
+			for (std::size_t nValue = 0; nValue < stOutput.nCount; ++nValue)
+			{
+				std::array<float, 16> arrValues{};
+				if (!Values(stOutput, nValue, arrValues.data()))
+				{
+					return false;
+				}
+			}
+			const JsonValue *pInterpolation = Find(*pSampler, "interpolation");
+			if (pInterpolation != nullptr && (pInterpolation->GetString() == nullptr || (*pInterpolation->GetString() != "LINEAR" && *pInterpolation->GetString() != "STEP" && *pInterpolation->GetString() != "CUBICSPLINE")))
+			{
+				return Error(strContext, "Unsupported animation interpolation.");
+			}
+		}
+		for (const JsonValue &stChannelValue : *pChannels)
+		{
+			const JsonValue::Object *pChannel = stChannelValue.GetObject();
+			std::int64_t nSampler = -1;
+			if (pChannel == nullptr || !Integer(*pChannel, "sampler", -1, nSampler) || nSampler < 0 || nSampler >= static_cast<std::int64_t>(pSamplers->size()))
+			{
+				return Error(strContext, "Invalid animation sampler index.");
+			}
+			const JsonValue *pTargetValue = Find(*pChannel, "target");
+			const JsonValue::Object *pTarget = pTargetValue == nullptr ? nullptr : pTargetValue->GetObject();
+			std::int64_t nNode = -1;
+			if (pTarget == nullptr || !Integer(*pTarget, "node", -1, nNode) || nNode < 0 || nNode >= static_cast<std::int64_t>(pAnimation->arrNodes.size()))
+			{
+				return Error(strContext, "Invalid animation target node.");
+			}
+			const JsonValue *pPath = Find(*pTarget, "path");
+			const std::string *pPathName = pPath == nullptr ? nullptr : pPath->GetString();
+			if (pPathName == nullptr)
+			{
+				return Error(strContext, "Missing animation target path.");
+			}
+			AnimationChannel stChannel;
+			stChannel.nNode = static_cast<std::uint32_t>(nNode);
+			if (*pPathName == "translation")
+			{
+				stChannel.eProperty = AnimationProperty::Translation;
+				stChannel.nComponents = 3;
+			}
+			else if (*pPathName == "rotation")
+			{
+				stChannel.eProperty = AnimationProperty::Rotation;
+				stChannel.nComponents = 4;
+			}
+			else if (*pPathName == "scale")
+			{
+				stChannel.eProperty = AnimationProperty::Scale;
+				stChannel.nComponents = 3;
+			}
+			else if (*pPathName == "weights")
+			{
+				stChannel.eProperty = AnimationProperty::Weights;
+				stChannel.nComponents = static_cast<std::uint32_t>(pAnimation->arrNodes[stChannel.nNode].arrWeights.size());
+			}
+			else
+			{
+				return Error(strContext, "Unsupported animation target path.", "gltf_unsupported");
+			}
+			const JsonValue::Object &mapSampler = *(*pSamplers)[static_cast<std::size_t>(nSampler)].GetObject();
+			const JsonValue *pInterpolation = Find(mapSampler, "interpolation");
+			if (pInterpolation != nullptr)
+			{
+				if (*pInterpolation->GetString() == "STEP")
+				{
+					stChannel.eInterpolation = AnimationInterpolation::Step;
+				}
+				if (*pInterpolation->GetString() == "CUBICSPLINE")
+				{
+					stChannel.eInterpolation = AnimationInterpolation::CubicSpline;
+				}
+			}
+			std::int64_t nInput = -1;
+			std::int64_t nOutput = -1;
+			if (!Integer(mapSampler, "input", -1, nInput) || !Integer(mapSampler, "output", -1, nOutput))
+			{
+				return false;
+			}
+			const Accessor &stInput = arrAccessors[static_cast<std::size_t>(nInput)];
+			const Accessor &stOutput = arrAccessors[static_cast<std::size_t>(nOutput)];
+			if ((stChannel.eProperty == AnimationProperty::Translation || stChannel.eProperty == AnimationProperty::Scale) && stOutput.nComponent != 5126)
+			{
+				return Error(strContext, "Translation and scale animation require FLOAT output.");
+			}
+			const std::size_t nFactor = stChannel.eInterpolation == AnimationInterpolation::CubicSpline ? 3 : 1;
+			const std::size_t nOutputComponents = stChannel.eProperty == AnimationProperty::Weights ? 1 : stChannel.nComponents;
+			const std::size_t nKeyWidth = stChannel.eProperty == AnimationProperty::Weights ? stChannel.nComponents : 1;
+			if (stChannel.nComponents == 0 || stOutput.nComponents != nOutputComponents || stInput.nCount > MAX_DECODED_BYTES / sizeof(double) / nFactor / stChannel.nComponents || stOutput.nCount != stInput.nCount * nFactor * nKeyWidth || !Allocate(stInput.nCount, sizeof(double)) || !Allocate(stOutput.nCount * stOutput.nComponents, sizeof(double)))
+			{
+				return Error(strContext, "Animation output count or shape mismatch.");
+			}
+			stChannel.arrTimes.reserve(stInput.nCount);
+			stChannel.arrValues.reserve(stOutput.nCount * stOutput.nComponents);
+			for (std::size_t nKey = 0; nKey < stInput.nCount; ++nKey)
+			{
+				float fTime = 0;
+				if (!Values(stInput, nKey, &fTime))
+				{
+					return false;
+				}
+				stChannel.arrTimes.push_back(fTime);
+			}
+			for (std::size_t nKey = 0; nKey < stOutput.nCount; ++nKey)
+			{
+				std::array<float, 16> arrValues{};
+				if (!Values(stOutput, nKey, arrValues.data()))
+				{
+					return false;
+				}
+				for (std::size_t nComponent = 0; nComponent < stOutput.nComponents; ++nComponent)
+				{
+					stChannel.arrValues.push_back(arrValues[nComponent]);
+				}
+			}
+			if (stChannel.eProperty == AnimationProperty::Rotation && stOutput.bNormalized)
+			{
+				for (std::size_t nKey = 0; nKey < stInput.nCount; ++nKey)
+				{
+					const std::size_t nOffset = (nKey * nFactor + (nFactor == 3 ? 1 : 0)) * 4;
+					double dLength = 0;
+					for (std::size_t nComponent = 0; nComponent < 4; ++nComponent)
+					{
+						dLength += stChannel.arrValues[nOffset + nComponent] * stChannel.arrValues[nOffset + nComponent];
+					}
+					if (dLength == 0)
+					{
+						return Error(strContext, "Quantized rotation key must not be zero.");
+					}
+					dLength = std::sqrt(dLength);
+					for (std::size_t nComponent = 0; nComponent < 4; ++nComponent)
+					{
+						stChannel.arrValues[nOffset + nComponent] /= dLength;
+					}
+				}
+			}
+			stClip.arrChannels.push_back(std::move(stChannel));
+		}
+		pAnimation->arrClips.push_back(std::move(stClip));
+		AnimationPose stPose;
+		if (!EvaluateAnimation(*pAnimation, static_cast<std::int32_t>(pAnimation->arrClips.size() - 1), 0, false, stPose, arrDiagnostics))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
 bool Decoder::Run(DecodedMesh &out_stMesh)
 {
 	Assets::BlobInfo stInfo;
@@ -1159,6 +1793,10 @@ bool Decoder::Run(DecodedMesh &out_stMesh)
 	}
 	for (const char *pUnsupported : { "extensionsRequired", "skins", "animations" })
 	{
+		if (pAnimation != nullptr && std::string(pUnsupported) != "extensionsRequired")
+		{
+			continue;
+		}
 		const JsonValue::List *pList = nullptr;
 		if (!List(mapRoot, pUnsupported, pList) || (pList != nullptr && !pList->empty()))
 		{
@@ -1166,7 +1804,7 @@ bool Decoder::Run(DecodedMesh &out_stMesh)
 		}
 	}
 	DecodedMesh stResult;
-	if (!RejectUnsupported(stDocument, "$", 0) || !ReadLayouts(mapRoot) || !ReadImages(mapRoot, stResult) || !ReadTextures(mapRoot, stResult) || !ReadMaterials(mapRoot, stResult) || !ReadMeshes(mapRoot, stResult) || !ReadInstances(mapRoot, stResult))
+	if (!RejectUnsupported(stDocument, "$", 0) || !ReadLayouts(mapRoot) || !ReadImages(mapRoot, stResult) || !ReadTextures(mapRoot, stResult) || !ReadMaterials(mapRoot, stResult) || !ReadMeshes(mapRoot, stResult) || !ReadInstances(mapRoot, stResult) || (pAnimation != nullptr && !ReadAnimationData(mapRoot, stResult)))
 	{
 		return false;
 	}
@@ -1180,6 +1818,20 @@ bool DecodeGlb(const std::vector<std::uint8_t> &arrBytes, DecodedMesh &out_stMes
 {
 	Decoder stDecoder(arrBytes, out_arrDiagnostics);
 	return stDecoder.Run(out_stMesh);
+}
+
+bool DecodeAnimatedGlb(const std::vector<std::uint8_t> &arrBytes, DecodedMesh &out_stMesh, AnimationData &out_stAnimation, Assets::Diagnostics &out_arrDiagnostics)
+{
+	DecodedMesh stMesh;
+	AnimationData stAnimation;
+	Decoder stDecoder(arrBytes, out_arrDiagnostics, &stAnimation);
+	if (!stDecoder.Run(stMesh))
+	{
+		return false;
+	}
+	out_stMesh = std::move(stMesh);
+	out_stAnimation = std::move(stAnimation);
+	return true;
 }
 
 } // namespace EngineNext::Rendering

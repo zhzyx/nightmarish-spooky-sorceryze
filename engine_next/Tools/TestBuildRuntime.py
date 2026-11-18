@@ -1,5 +1,6 @@
 """Tests for the independent runtime build and clean-source export helpers."""
 
+import hashlib
 import json
 import shutil
 import unittest
@@ -37,6 +38,32 @@ class BuildRuntimeTests(unittest.TestCase):
         ]:
             self.assertTrue(source.startswith(("engine_next/", "ai_core/")), source)
             self.assertFalse((self.repo / source).is_symlink(), source)
+
+    def test_animation_headers_invalidate_runtime_identity(self):
+        args = SimpleNamespace(repo=self.repo, compiler="msvc", sanitize=False)
+        baseline = BuildRuntime.build_native_identity(args, BuildRuntime.LIBRARY_SOURCES)
+        baseline_key = hashlib.sha256(json.dumps(baseline, sort_keys=True).encode("utf-8")).hexdigest()
+        digest = BuildRuntime.BuildSupport.digest
+        self.assertIn("EngineNext/Rendering/AnimationData.h", BuildRuntime.PUBLIC_HEADERS)
+        for name in (
+            "engine_next/include/EngineNext/Rendering/AnimationData.h",
+            "engine_next/Rendering/MeshBasis.h",
+        ):
+            with self.subTest(header=name):
+                self.assertIn(name, baseline["inputs"])
+                source = self.repo / name
+                changed = self.temporary / source.name
+                changed.write_bytes(source.read_bytes() + b"\n// Native identity regression.\n")
+
+                def changed_digest(path):
+                    return digest(changed if Path(path) == source else path)
+
+                with mock.patch.object(BuildRuntime.BuildSupport, "digest", side_effect=changed_digest):
+                    current = BuildRuntime.build_native_identity(args, BuildRuntime.LIBRARY_SOURCES)
+                current_key = hashlib.sha256(json.dumps(current, sort_keys=True).encode("utf-8")).hexdigest()
+                self.assertNotEqual(current_key, baseline_key)
+                self.assertNotEqual(current["inputs"][name], baseline["inputs"][name])
+        self.assertEqual(BuildRuntime.build_native_identity(args, BuildRuntime.LIBRARY_SOURCES), baseline)
 
     def test_clean_export_contains_only_declared_inputs(self):
         output = self.temporary / "CleanSource"

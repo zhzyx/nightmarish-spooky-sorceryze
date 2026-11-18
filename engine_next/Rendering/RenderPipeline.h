@@ -85,6 +85,7 @@ enum class PassWork : std::uint8_t
 	GeometryClearColor = 45,
 	GeometryCullColor = 46,
 	GeometryReadback = 47,
+	DeformationUpload = 60,
 	AmbientOcclusion = 64,
 	AmbientBlurHorizontal = 65,
 	AmbientBlurVertical = 66,
@@ -145,6 +146,9 @@ struct RenderPipeline
 	ResourceId nGeometryClusters = INVALID_RESOURCE;
 	ResourceId nGeometryHiZ = INVALID_RESOURCE;
 	ResourceId nGeometryReadback = INVALID_RESOURCE;
+	ResourceId nDeformedVertices = INVALID_RESOURCE;
+	ResourceId nPreviousPositions = INVALID_RESOURCE;
+	ResourceId nDeformationUpload = INVALID_RESOURCE;
 	ResourceId nAmbientConstants = INVALID_RESOURCE;
 	std::array<ResourceId, 3> arrAmbientOcclusion{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	std::array<ResourceId, 2> arrGeometryArguments{ INVALID_RESOURCE, INVALID_RESOURCE };
@@ -188,6 +192,6 @@ struct RenderPipeline
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false);
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false, bool bDeformation = false);
 
 } // namespace EngineNext::Rendering

@@ -31,6 +31,7 @@
 #pragma once
 
 #include "engine_next/include/EngineNext/Assets/AssetPackage.h"
+#include "engine_next/include/EngineNext/Rendering/AnimationData.h"
 #include "engine_next/include/EngineNext/Rendering/MeshData.h"
 #include "engine_next/include/EngineNext/Rendering/TextureData.h"
 
@@ -48,6 +49,8 @@ struct RenderAsset
 	Assets::AssetRef stIdentity;
 	DecodedMesh stMesh;
 	MeshTextureCook stTextureCook;
+	AnimationData stAnimation{};
+	bool bAnimated = false;
 };
 
 struct RenderInstance
@@ -58,6 +61,9 @@ struct RenderInstance
 	std::uint32_t nNode = 0;
 	std::array<double, 16> arrTransform{};
 	std::array<double, 3> arrEntityOrigin{};
+	// Source entity world transform, before applying the glTF mesh node.
+	std::array<double, 16> arrEntityTransform{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+	std::uint32_t nMeshInstance = UINT32_MAX;
 };
 
 struct RenderScene
@@ -82,5 +88,11 @@ struct RenderScene
 // CPU-only and transactional. Original package bytes and M3 identities are read-only.
 [[nodiscard]] bool BuildRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics);
 [[nodiscard]] bool LoadRenderScene(const std::string &strPath, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics);
+
+// Explicit rendering entry for source GLB animation and deformation. Source
+// package identities and the static loader's behavior are preserved. Animation
+// data is owned by each RenderAsset and shares the scene's decoded-data budget.
+[[nodiscard]] bool BuildAnimatedRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics);
+[[nodiscard]] bool LoadAnimatedRenderScene(const std::string &strPath, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics);
 
 } // namespace EngineNext::Rendering
