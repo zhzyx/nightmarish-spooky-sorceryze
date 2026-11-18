@@ -63,9 +63,7 @@ SHADER_FILES |= {"AmbientOcclusion.cs.cso", "AmbientOcclusionBlur.cs.cso"} | {
     "Ao" + name for name in SHADER_FILES if name.endswith("Lighting.ps.cso")
 }
 SHADER_FILES |= {
-    "Virtual" + name
-    for name in SHADER_FILES
-    if name.endswith("Lighting.ps.cso") or name.endswith("Transparent.ps.cso")
+    "Virtual" + name for name in SHADER_FILES if name.endswith("Lighting.ps.cso") or name.endswith("Transparent.ps.cso")
 }
 SHADER_FILES.add("ShadowPageFeedback.cs.cso")
 
