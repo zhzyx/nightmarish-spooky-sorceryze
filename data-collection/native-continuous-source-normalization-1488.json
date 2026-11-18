@@ -1,0 +1,30 @@
+{
+  "issue": 1488,
+  "request_id": "native-continuous-integration-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1488",
+  "mapping": {
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": {
+      "before": "aa97cae85a305861ecfb5e854aa67da9e074d4d15d070c1c8eb9f75ddce49e02",
+      "after": "c44552e4bac7cbeb703a625bf43988df1e997a4ae40c3fc9cb76ed003a029c1c",
+      "change": "CRLF to LF only; all consumers released before edit"
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": {
+      "before": "627aefa528a3278e32fd465573f5bcf4afd0dde4eb52d9058e6b0f487083ae45",
+      "after": "970c5b3ebe10645671dcb426f8cf3f8ec97f23997637e6bde2fa2c0026069864",
+      "change": "CRLF to LF only; all consumers released before edit"
+    },
+    "customizations/components/tianxuan/duobao/native_check_runner.py": {
+      "before": "e0bbb19cd24f47a2a33c70c335ac3cdfa4f39da4a58951e43860c4ccf745cc1a",
+      "after": "2006b4d59bc9a758875eff7d01b5ea265f6ad5b723e31de52997dac124b5afe8",
+      "change": "CRLF to LF only; all consumers released before edit"
+    },
+    "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py": {
+      "before": "37670e48b95883f4fa06b544ba51b7e42df9daa45c76ab418cff2d2003cf0868",
+      "after": "b9023179164a7f0d97b5b0ae4c88b4922a1a8c09cc056bc966a25a8651c478f5",
+      "change": "CRLF to LF only; all consumers released before edit"
+    }
+  },
+  "original_archive": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\continuous-pre-normalization-source",
+  "path_base": "absolute current host archive",
+  "limits": "Earlier full250/repair reports remain bound to their actual byte hashes; final LF source requires targeted independent/Linux validation. No old receipt rewritten."
+}

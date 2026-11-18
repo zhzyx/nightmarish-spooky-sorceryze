@@ -1,0 +1,17 @@
+{
+  "issue": 1488,
+  "request_id": "native-continuous-integration-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1488",
+  "upstream_source": "ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079",
+  "command": "python -B -X utf8 -m pytest customizations/components/tianxuan/sinan-workorders/test_native_continuous.py -k \"distinct_modifications or installation_drift or external_cas or fixed or cache\" -q",
+  "exit_code": 0,
+  "log": "..................                                                       [100%]\n18 passed, 37 deselected in 24.59s\n",
+  "log_sha256": "268266e257fec10e34ab7d168db08dda8fad81468010bf7a5c7631a9eda27653",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "c44552e4bac7cbeb703a625bf43988df1e997a4ae40c3fc9cb76ed003a029c1c",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "970c5b3ebe10645671dcb426f8cf3f8ec97f23997637e6bde2fa2c0026069864",
+    "customizations/components/tianxuan/duobao/native_check_runner.py": "489cd45b840ca8bed917a9cee7471ed82ee26d4c931a1509c065384223958317"
+  },
+  "scope": "After upstream producer source integration; 18 focused tests including fixed group, cache, identity drift and automatic successor. Previous250 run remains bound to earlier Worker; sole incoming Worker change adds exact argv file fingerprints. No claim that full250 was repeated after this dependency change."
+}

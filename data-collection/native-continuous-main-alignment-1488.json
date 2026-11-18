@@ -1,0 +1,32 @@
+{
+  "issue": 1488,
+  "request_id": "native-continuous-integration-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1488",
+  "previous_head": "ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079",
+  "remote_main": "604fd44d64fc96cb2c110ecb26b3a36aacdff002",
+  "producer_delivery": {
+    "pr": {
+      "headRefOid": "ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079",
+      "mergeCommit": {
+        "oid": "604fd44d64fc96cb2c110ecb26b3a36aacdff002"
+      },
+      "mergedAt": "2026-11-18T02:30:06Z",
+      "mergedBy": {
+        "id": "U_kgDOFOKx7w",
+        "is_bot": false,
+        "login": "Sail-Li",
+        "name": ""
+      },
+      "state": "MERGED"
+    },
+    "remote_main": "604fd44d64fc96cb2c110ecb26b3a36aacdff002",
+    "signed_head_ancestor": true,
+    "all_delivered_paths_match": true,
+    "delivery_log": "native-producer-writer-submit.log",
+    "delivery_path_count": 62
+  },
+  "upstream_paths": [],
+  "overlap": [],
+  "reviewed_sources_unchanged": true,
+  "scope": "Source delivery dependency accepted; earlier local-only alignment evidence remains historical. No production installation switched."
+}

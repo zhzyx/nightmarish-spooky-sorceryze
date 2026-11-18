@@ -1,0 +1,14 @@
+{
+  "first_release": "a6ed0c5dff5e103cf4ccbe682d528bec7868110e5a4bf80421fb42044db0fbdc",
+  "second_plan": "50f2c5481349dfd51347f4f5ee40047b4abe1440b2c05d6125340f58cc309625",
+  "failure": {
+    "type": "Conflict",
+    "message": "Channel changed; reread before selecting"
+  },
+  "second_state": "produced",
+  "selected_objects": {
+    "first": "7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed",
+    "output": "e4c84ec9bacfbaa4bcb038e961a622f6452c27995ee9df89370e50cb17c0237f"
+  },
+  "source_sha256": "dd86b8bbd643949bf091a4f28d21a678a1ac71d4b545d32f54dcb85205c87e06"
+}

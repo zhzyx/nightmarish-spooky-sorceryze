@@ -6,6 +6,7 @@ can reuse original contributions after a product CAS loss.
 """
 
 import json
+import time
 from contextlib import contextmanager
 
 from native_store import Conflict, NativeStoreError, _digest, _json
@@ -19,7 +20,14 @@ def digest(value):
 
 class NativeIntegration:
     def __init__(
-        self, workflow, candidates, installed_plan, installed_resolver=None, review_receipt=None, installed_groups=None
+        self,
+        workflow,
+        candidates,
+        installed_plan,
+        installed_resolver=None,
+        review_receipt=None,
+        installed_groups=None,
+        installed_continuous=None,
     ):
         if not callable(installed_plan):
             raise NativeStoreError("Installed integration planner required")
@@ -39,9 +47,13 @@ class NativeIntegration:
         ):
             raise NativeStoreError("Integration ports must share one authoritative native store")
         workflow.integration = self
+        self.continuous = None
         with workflow._transaction() as db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS native_integration_groups (actor TEXT NOT NULL, name TEXT NOT NULL, spec TEXT NOT NULL, plan TEXT, PRIMARY KEY(actor,name))"
+            )
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS native_integration_timings (plan TEXT NOT NULL, stage TEXT NOT NULL, started REAL NOT NULL, finished REAL NOT NULL)"
             )
             db.execute("CREATE TABLE IF NOT EXISTS native_contributions (task TEXT PRIMARY KEY, receipt TEXT NOT NULL)")
             db.execute(
@@ -56,6 +68,11 @@ class NativeIntegration:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS native_integration_authors (tenant TEXT NOT NULL, candidate TEXT NOT NULL, author TEXT NOT NULL, PRIMARY KEY(tenant,candidate,author))"
             )
+        if installed_continuous is not None:
+            from native_continuous import ContinuousIntegration
+
+            self.continuous = ContinuousIntegration(self, installed_continuous)
+            self.w.runner.history_provider = self.continuous
         previous = workflow.release.contributors
 
         def authors(db, tenant, candidate):
@@ -70,6 +87,8 @@ class NativeIntegration:
     def discover(self, actor):
         """Event-driven installed membership; freeze plans before producers finish."""
         result = dict(ready=[], errors=[])
+        if self.continuous:
+            result["continuous"] = self.continuous.ready(actor)
         if not callable(self.installed_groups):
             return result
         groups = self.installed_groups(actor)
@@ -204,13 +223,23 @@ class NativeIntegration:
             if old and json.loads(old[0]) != result:
                 raise Conflict("Contribution check receipt is immutable")
             db.execute("INSERT OR IGNORE INTO native_contributions VALUES (?,?)", (key, _json(result)))
+        if self.continuous:
+            self.continuous.enqueue(actor, key, automatic=True)
         return result
 
+    def continue_lane(self, actor, key, event=None):
+        if not self.continuous:
+            raise NativeStoreError("Continuous integration installation required")
+        return self.continuous.drive(actor, key, event)
+
     def authorize(self, actor, group):
+        return self._authorize_spec(actor, group, self.installed_plan(actor, group))
+
+    def _authorize_spec(self, actor, group, installed_spec):
         if not callable(self.w.principals):
             raise NativeStoreError("Admitted integration principals required")
-        spec = json.loads(_json(self.installed_plan(actor, group)))
-        if set(spec) - {"repins"} != {
+        spec = json.loads(_json(installed_spec))
+        if set(spec) - {"repins", "continuation"} != {
             "tasks",
             "product",
             "channel",
@@ -322,6 +351,11 @@ class NativeIntegration:
             # Read already accepted facts under current source/release authority.
             # Do not re-authorize old execution, reset issues, or emit new events.
             return dict(row), plan
+        if plan.get("continuation"):
+            if not self.continuous:
+                raise NativeStoreError("Continuous installation removed")
+            policy = self.continuous.validate(actor, plan["continuation"])
+            self.continuous.require_continuous(actor, plan["tasks"], policy["coordinator"])
         if plan["contexts"] != {c: self.w.runner.context(c, "0" * 64) for c in plan["checks"]}:
             raise NativeStoreError("Final check installation changed")
         if plan["principals"] != {
@@ -380,7 +414,11 @@ class NativeIntegration:
                     or old["dependencies"] != new["dependencies"]
                     or new["dependencies"] != base[module]["dependencies"]
                 ):
-                    conflicts.append(dict(module=module, reason="explicit dependency/base resolution required"))
+                    conflicts.append(
+                        dict(
+                            module=module, task=original["task"], reason="explicit dependency/base resolution required"
+                        )
+                    )
                     continue
                 for path in sorted(set(old["objects"]) | set(new["objects"])):
                     before, after = old["objects"].get(path), new["objects"].get(path)
@@ -592,7 +630,19 @@ class NativeIntegration:
             _, policy = self.w.release._policy(native_db, plan["tenant"], plan["product"])
             if policy["checks"] != plan["contexts"]:
                 raise NativeStoreError("Exact joint check policy required")
+            if plan.get("continuation"):
+                result = json.loads(
+                    self.w.domain.db.execute("SELECT result FROM native_integrations WHERE id=?", (key,)).fetchone()[0]
+                )
+                for check in plan["checks"]:
+                    self.continuous.prepare(
+                        plan["tenant"], plan["principals"]["checker"], result["candidate"], check, materialize=False
+                    )
             yield
+
+    def _timing(self, key, stage, started):
+        with self.w._transaction() as db:
+            db.execute("INSERT INTO native_integration_timings VALUES (?,?,?,?)", (key, stage, started, time.time()))
 
     def finish(self, actor, key):
         row = self.status(actor, key)
@@ -635,12 +685,14 @@ class NativeIntegration:
                     db.execute("UPDATE native_integrations SET review=? WHERE id=?", (_json(recovered_review), key))
                 return self.finish(actor, key)
             checker = self.w.principals(actor, issue, "checker")
+            check_started = time.time()
             facts = {
                 c: self.w.runner.execute(
                     plan["tenant"], checker, "integration-" + key + "-" + c, result["candidate"], c
                 )
                 for c in plan["checks"]
             }
+            self._timing(key, "checks", check_started)
             if any(not passed(self.w.runner, plan["tenant"], result["candidate"], c, f) for c, f in facts.items()):
                 raise NativeStoreError("Joint product checks failed")
             with self.w._transaction() as db:
@@ -679,6 +731,7 @@ class NativeIntegration:
             )
             with self.w._transaction() as db:
                 db.execute("UPDATE native_integrations SET review=? WHERE id=?", (_json(review), key))
+        publish_started = time.time()
         published = self.w.release.publish(
             plan["tenant"],
             publisher,
@@ -689,6 +742,7 @@ class NativeIntegration:
             plan["expected"],
             guard=lambda db: self._guard(actor, key, db),
         )
+        self._timing(key, "publish", publish_started)
         return self.complete(actor, key, published["id"])
 
     def complete(self, actor, key, release_id):

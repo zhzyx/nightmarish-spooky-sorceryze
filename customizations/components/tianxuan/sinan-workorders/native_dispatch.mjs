@@ -23,7 +23,7 @@ export function httpService(base, token, {executeTimeoutMs = 120000} = {}) {
   return async (operation, value) => {
     const response = await fetch(new URL(`/api/v1/native/workflow/${operation}`, url), {
       method: 'POST', headers: {'content-type': 'application/json', authorization: `Bearer ${token}`},
-      body: JSON.stringify(value), signal: AbortSignal.timeout(operation === 'await-terminal' ? 86500000 : operation === 'execute' ? executeTimeoutMs : 120000), redirect: 'error',
+      body: JSON.stringify(value), signal: AbortSignal.timeout(['await-terminal', 'integration-await'].includes(operation) ? 86500000 : operation === 'execute' ? executeTimeoutMs : 120000), redirect: 'error',
     });
     const chunks = []; let bytes = 0;
     for await (const chunk of response.body) {
@@ -38,7 +38,7 @@ export function httpService(base, token, {executeTimeoutMs = 120000} = {}) {
 }
 
 export async function driveNative(service, initial = {type: 'user.requested', reference: 'native-cli'}) {
-  const watched = new Set();
+  const watched = new Set(), continuousEvents = new Set();
   const checked = new Set(), integrated = new Set(), groupErrors = new Set();
   const attempted = new Set(), finished = new Set(), pending = new Set(), rejectedEvents = new Set();
   const result = {results: [], deliveries: [], deferred: [], errors: []};
@@ -108,6 +108,20 @@ export async function driveNative(service, initial = {type: 'user.requested', re
       for (const error of board.integrations?.errors ?? []) {
         const id = JSON.stringify(error);
         if (!groupErrors.has(id)) {groupErrors.add(id); result.errors.push({stage: 'integration-discovery', ...error});}
+      }
+      for (const lane of board.integrations?.continuous ?? []) {
+        if (continuousEvents.has(lane.event)) continue;
+        continuousEvents.add(lane.event);
+        track((async () => {
+          const request = {key: lane.key, event: lane.event};
+          let receipt;
+          try {receipt = await service('integration-continue', request);}
+          catch {receipt = await service('integration-await', request);}
+          if (receipt.state === 'publisher_busy') receipt = await service('integration-await', request);
+          result.deliveries.push(receipt);
+          if (receipt.state === 'held') result.errors.push({stage: 'integration', key: lane.key, reason: receipt.error});
+          await signal({type: 'execution.finished', reference: lane.event});
+        })());
       }
       for (const group of board.integrations?.ready ?? []) if (!integrated.has(group.key)) track(integrate(group.key));
       for (const key of [...(board.produced ?? []), ...(board.contributions ?? [])]) if (!finished.has(key)) track(delivery(key, (board.contributions ?? []).includes(key)));
