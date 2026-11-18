@@ -278,7 +278,7 @@ bool GpuShadowPages::Prepare(std::uint32_t nFrame, std::uint64_t nCompletedFence
 							 const ShadowPageConstants &stConstants, Assets::Diagnostics &out_arrDiagnostics)
 {
 	if (!bInitialized || !IsOwner() || nFrame >= SHADOW_PAGE_FRAME_COUNT || nPendingFrame != SHADOW_PAGE_FRAME_COUNT ||
-		arrFrames[nFrame].nFence > nCompletedFence || !std::isfinite(stConstants.arrViewport[0]) || !std::isfinite(stConstants.arrViewport[1]) ||
+		nCompletedFence == UINT64_MAX || arrFrames[nFrame].nFence > nCompletedFence || !std::isfinite(stConstants.arrViewport[0]) || !std::isfinite(stConstants.arrViewport[1]) ||
 		stConstants.arrViewport[0] < 1 || stConstants.arrViewport[0] > 16384 || stConstants.arrViewport[1] < 1 || stConstants.arrViewport[1] > 16384)
 	{
 		return Error(out_arrDiagnostics, "Prepare requires a retired owner slot and bounded viewport.");
@@ -366,12 +366,14 @@ bool GpuShadowPages::RecordReadback(std::uint32_t nFrame, ID3D12GraphicsCommandL
 
 bool GpuShadowPages::Submit(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics)
 {
-	if (!bInitialized || !IsOwner() || nFrame >= SHADOW_PAGE_FRAME_COUNT || nPendingFrame != nFrame || nRecordedStage != 3 || nFence <= nPreparedFence || !stCache.Commit())
+	if (!bInitialized || !IsOwner() || nFrame >= SHADOW_PAGE_FRAME_COUNT || nPendingFrame != nFrame || nRecordedStage != 3 ||
+		nFence == UINT64_MAX || nFence <= nPreparedFence || nFence <= nLatestFence || !stCache.Commit())
 	{
 		return Error(out_arrDiagnostics, "Submit requires a prepared complete frame and a new fence.");
 	}
 	arrFrames[nFrame].nFence = nFence;
 	arrFrames[nFrame].bReadbackPending = true;
+	nLatestFence = nFence;
 	nPendingFrame = SHADOW_PAGE_FRAME_COUNT;
 	return true;
 }
@@ -384,6 +386,10 @@ void GpuShadowPages::Cancel() noexcept
 
 bool GpuShadowPages::Release(std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics)
 {
+	if (nCompletedFence == UINT64_MAX)
+	{
+		return Error(out_arrDiagnostics, "A device-removal sentinel cannot retire the page pool.");
+	}
 	if (!bInitialized)
 	{
 		return true;

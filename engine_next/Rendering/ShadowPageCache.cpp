@@ -367,6 +367,18 @@ bool ShadowPageCache::Prepare(const ShadowData &stProjection, const std::vector<
 	const std::uint32_t nPerCascade = nAxis * nAxis;
 	std::vector<bool> arrDirty(LogicalPages(), false);
 	bool bSceneChanged = stCandidate.nEpoch == 0 || stCandidate.arrCasters.size() != arrCasters.size();
+	if (!bSceneChanged)
+	{
+		for (std::size_t nDraw = 0; nDraw < arrCasters.size(); ++nDraw)
+		{
+			if (arrForced[nDraw] || stCandidate.arrCasters[nDraw].arrMinimum != arrCasters[nDraw].arrMinimum ||
+				stCandidate.arrCasters[nDraw].arrMaximum != arrCasters[nDraw].arrMaximum)
+			{
+				bSceneChanged = true;
+				break;
+			}
+		}
+	}
 	for (std::uint32_t nCascade = 0; nCascade < 4; ++nCascade)
 	{
 		const bool bSameXY = stCandidate.nEpoch != 0 && SameProjection(stProjection.arrCascades[nCascade], stCandidate.stProjection.arrCascades[nCascade], false);
@@ -383,7 +395,6 @@ bool ShadowPageCache::Prepare(const ShadowData &stProjection, const std::vector<
 			{
 				continue;
 			}
-			bSceneChanged = true;
 			for (const WorldBounds *pBounds : { &stPrevious, &arrCasters[nDraw] })
 			{
 				const PageRectangle stRange = ProjectBounds(*pBounds, stProjection.arrCascades[nCascade], stSettings.nResolution);

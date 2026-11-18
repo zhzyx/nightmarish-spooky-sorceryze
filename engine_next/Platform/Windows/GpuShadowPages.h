@@ -74,7 +74,9 @@ static_assert(sizeof(ShadowPageConstants) == 432);
 
 // One caller thread and one DIRECT queue/fence domain. Caller declares all
 // transitions and executes Upload -> Render -> Feedback -> Readback before
-// Submit. Physical pages persist; upload/descriptors/readback are slot owned.
+// Submit with a strictly increasing signal value. Physical pages persist;
+// upload/descriptors/readback are slot owned. UINT64_MAX is device removal,
+// never completed work.
 class GpuShadowPages final
 {
 public:
@@ -136,6 +138,7 @@ private:
 	std::uint64_t nUploadBytes = 0;
 	std::uint64_t nAllocatedBytes = 0;
 	std::uint64_t nPreparedFence = 0;
+	std::uint64_t nLatestFence = 0;
 	std::uint32_t nPendingFrame = SHADOW_PAGE_FRAME_COUNT;
 	std::uint32_t nRecordedStage = 0;
 	std::uint32_t nWidth = 0;

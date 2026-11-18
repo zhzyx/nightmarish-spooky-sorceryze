@@ -384,3 +384,33 @@ ENGINE_NEXT_TEST("ShadowPageCache frustum rejection retains border and cancellat
 	arrProjection[0] = std::numeric_limits<float>::quiet_NaN();
 	ENGINE_NEXT_CHECK(IntersectsShadowPage({ { 2, -0.5, 0.2 }, { 3, 0.5, 0.8 } }, arrProjection));
 }
+
+ENGINE_NEXT_TEST("ShadowPageCache uncached scene revisions track movement and explicit deformation")
+{
+	VirtualShadowSettings stSettings = SmallSettings();
+	stSettings.bCache = false;
+	ShadowPageCache stCache;
+	Diagnostics arrDiagnostics;
+	const ShadowData stProjection = Projection();
+	const ShadowPageFeedback stFeedback = Request(stProjection, 8, 4);
+	const WorldBounds stInitial = Caster(0);
+	const WorldBounds stMoved = Caster(0.1);
+	ENGINE_NEXT_CHECK(stCache.Initialize(stSettings, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, { stInitial }, {}, { stFeedback }, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Plan().nSceneRevision == 1);
+	ENGINE_NEXT_CHECK(stCache.Commit());
+	ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, { stInitial }, {}, { stFeedback }, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Plan().nSceneRevision == 1);
+	ENGINE_NEXT_CHECK(stCache.Commit());
+	ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, { stMoved }, {}, { stFeedback }, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Plan().nSceneRevision == 2);
+	ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nRendered == 4);
+	stCache.Cancel();
+	ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, { stMoved }, {}, { stFeedback }, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Plan().nSceneRevision == 2);
+	ENGINE_NEXT_CHECK(stCache.Commit());
+	ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, { stMoved }, { 0 }, { stFeedback }, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Plan().nSceneRevision == 3);
+	ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nRendered == 4);
+	ENGINE_NEXT_CHECK(stCache.Commit());
+}
