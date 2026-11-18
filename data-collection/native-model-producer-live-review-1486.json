@@ -1,0 +1,261 @@
+{
+  "issue": 1486,
+  "verdict": "pass for the three source-bound native-text-integration representative cases only; not production admission",
+  "findings": [],
+  "profile_digest": "1333e7474d9b10d29d2f73eff8ec7f67e5cc340f2296d03d04422819fcfd949a",
+  "suite_digest": "f15fea31b04740ad22cdf7fcb2e13d937b869901cfc7378eba7e642d1f0be934",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "9cdd447f8d3a9d75f462baab326c8f112ffaeacfe360da64b595a7eedd441010",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "7c5a463017a8fcf605a1cc3082dd20b5885abada8085b07cd1816e9183529441",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "a32bc1a7c3ab72f2b7d8ac02c0d4bba714f4fd1b526189ef4d3c4d091dc4e48e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "ccd4c01dde99dfa16aa9b91c2e2dfb398312fc2f21e3e9cc89b33cdb0a9a6316",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "ce9f9577af769d2c32277e4f889896f6f8ed02ffc4ed2a8945246486d2d74ebb",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "fb59c3e4c8f02cd013a895a81bdab0b68f4954259ca5548579052a8e021b18ad",
+    "customizations/platforms/ai-access/host-http/runtime/adapters.py": "b3fef23b8595c699fdaeb819c0f0c1426dc9e746956096f39ade1bc6f583466a",
+    "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "4f3f3788fe070ed14f57f9b3fd04d0d260cad1d5eb6edd72ab6d84c980030261",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "98f3864a26ffff48359400c95fd389def735c01a51a5af30c13180a1f9bc591c",
+    "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
+    "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "224502a920c656b94e8326bbceaa7daf31c7fb951fac1d99dc4867f1652396e7"
+  },
+  "cases": [
+    {
+      "id": "disjoint-lighting-contributions",
+      "passed": true,
+      "parsed_output": {
+        "fog": {
+          "density": 0.06
+        },
+        "light": {
+          "color": "warm",
+          "intensity": 3
+        },
+        "version": 1
+      },
+      "turn_id": "01a1ebd4-fbb6-7ec0-8459-a917aa96fef0",
+      "thread_id": "01a1ebd4-fb65-71b0-ab20-a06feca00865",
+      "elapsed_seconds": 121.76600000000326,
+      "owned_process_elapsed_ms": 121297,
+      "raw_usage": {
+        "thread_id": "01a1ebd4-fb65-71b0-ab20-a06feca00865",
+        "turn_id": "01a1ebd4-fbb6-7ec0-8459-a917aa96fef0",
+        "observed_model": "gpt-6.2-sol",
+        "raw": {
+          "total": {
+            "totalTokens": 8599,
+            "inputTokens": 8406,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 193,
+            "reasoningOutputTokens": 0
+          },
+          "last": {
+            "totalTokens": 8599,
+            "inputTokens": 8406,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 193,
+            "reasoningOutputTokens": 0
+          },
+          "modelContextWindow": 475000
+        },
+        "status": "observed",
+        "updates": 1,
+        "source": "thread/tokenUsage/updated",
+        "normalized_usage": null
+      },
+      "original_digest": "ad3ec01aa89febee11459dafef3b0a2d6057bfa1f398bf2369b56c2c560509ae",
+      "governance_digest": "014bc8ff318f03f3273815b00355e1f80c9dc56ad196b035350abc594ec0b4fb",
+      "effective_digest": "2e7d2472e4d5cfe4aa2a2062c81251320c01f97fa5f93f4df4b15bb51685d69c"
+    },
+    {
+      "id": "explicit-overlap-resolution",
+      "passed": true,
+      "parsed_output": {
+        "audio": {
+          "reverb": "hall"
+        },
+        "streaming": {
+          "budget": 384,
+          "radius": 10
+        }
+      },
+      "turn_id": "01a1ebd6-d794-7793-8dd1-69f5772c0f64",
+      "thread_id": "01a1ebd6-d747-7143-bfbb-bc4b26a84124",
+      "elapsed_seconds": 121.6869999999908,
+      "owned_process_elapsed_ms": 121218,
+      "raw_usage": {
+        "thread_id": "01a1ebd6-d747-7143-bfbb-bc4b26a84124",
+        "turn_id": "01a1ebd6-d794-7793-8dd1-69f5772c0f64",
+        "observed_model": "gpt-6.2-sol",
+        "raw": {
+          "total": {
+            "totalTokens": 8572,
+            "inputTokens": 8397,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 175,
+            "reasoningOutputTokens": 0
+          },
+          "last": {
+            "totalTokens": 8572,
+            "inputTokens": 8397,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 175,
+            "reasoningOutputTokens": 0
+          },
+          "modelContextWindow": 475000
+        },
+        "status": "observed",
+        "updates": 1,
+        "source": "thread/tokenUsage/updated",
+        "normalized_usage": null
+      },
+      "original_digest": "a1e2db0a5b0231093edb2cc8aa54dcb89672ab5950040f7b2ed7c210bd7e7175",
+      "governance_digest": "3f70dea6946116fe313e06d578e2cca3af0be667350e47d4cbd3b088f050cbda",
+      "effective_digest": "cf5db8c0573c8889147b4c8728831f0d4930c9438baa58967737300a14bdb545"
+    },
+    {
+      "id": "deletion-and-added-object",
+      "passed": true,
+      "parsed_output": {
+        "modules": {
+          "audio": {
+            "api": 2
+          },
+          "render": {
+            "api": 3
+          }
+        },
+        "title": "沉浸式场景"
+      },
+      "turn_id": "01a1ebd8-b506-7240-9e27-2d104f043f48",
+      "thread_id": "01a1ebd8-b4b5-7dd0-832f-4f6b6661f7a2",
+      "elapsed_seconds": 121.46900000001187,
+      "owned_process_elapsed_ms": 120953,
+      "raw_usage": {
+        "thread_id": "01a1ebd8-b4b5-7dd0-832f-4f6b6661f7a2",
+        "turn_id": "01a1ebd8-b506-7240-9e27-2d104f043f48",
+        "observed_model": "gpt-6.2-sol",
+        "raw": {
+          "total": {
+            "totalTokens": 8617,
+            "inputTokens": 8439,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 178,
+            "reasoningOutputTokens": 0
+          },
+          "last": {
+            "totalTokens": 8617,
+            "inputTokens": 8439,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 178,
+            "reasoningOutputTokens": 0
+          },
+          "modelContextWindow": 475000
+        },
+        "status": "observed",
+        "updates": 1,
+        "source": "thread/tokenUsage/updated",
+        "normalized_usage": null
+      },
+      "original_digest": "a7aed456a1ee3353a2016e7feae38942a5ba704ce959833a687608c0c2a133cd",
+      "governance_digest": "c3f1711970b4fd58cd468239e73d838d918ff5192944f87eecf91dd8f4813b3f",
+      "effective_digest": "f00567d2bb11091ce14dd090ea61c5ffc8e5015ec447144f02a500168f04e455"
+    }
+  ],
+  "distinct_turns": 3,
+  "automatic_retries": 0,
+  "provider_calls_by_reviewer": 0,
+  "approval_granted": false,
+  "heqi": {
+    "version": "0.3.3",
+    "candidate_digest": "010295a8d986db4ebce7be37693b72a9b6269012ccc2e22c1b80e144ae58ff92",
+    "permit_id": "platform-families-0.10.0-heqi",
+    "context_sha256": "61d9c4dd8f7707ffc2ef606e0dad5e73e257309455aa3f1b6a97a47705cbcf4e",
+    "scope": "Existing exact definition admission verified; no task execution grant inferred"
+  },
+  "verified": [
+    "Strict unique-key finite JSON with numeric semantics and boolean distinction; independently derived base/A/B expected values",
+    "One exact output allowlist path only; source inputs remain in prompt, no writes performed by evaluation host",
+    "Original/governance/ordered-effective input digests independently reconstructed and matched proposals and host terminals",
+    "Three durable attempt=1 intents and distinct CLI threads/turns; reviewed loop has no retries; full suite and individual suite digests match",
+    "All 11 previously reviewed source hashes unchanged and all author/raw evidence unchanged during this review",
+    "Existing Heqi admission candidate byte hashes match manifest and pass; context receipt and actual prompt inclusion match",
+    "Owned local process closure, exit code zero, no process reasons in all three source-bound terminals; remote cancellation unknown",
+    "Installation digest independently recomputed from installed fixed configuration, five sources, three exact executable bytes and Windows owned-process helper dependency bytes"
+  ],
+  "limitations": [
+    "Only these explicitly supplied native-text-integration cases; no arbitrary coding/rendering/general competence or formal production qualification",
+    "Task-specific signed host grant and independent business review remain required; definition admission is not execution authority",
+    "CLI protocol evidence records observed gpt-6.2-sol, while generic model provenance remains unavailable/unverified; no promotion to HTTP provenance",
+    "Raw last/total CLI usage retained, normalized usage and billing unknown; no savings or efficiency claim",
+    "Three calls took about 121-122 seconds each; no Git/native comparison, deployment, merge, issue completion, 250-worker qualification or whole-goal acceptance established",
+    "No claim to independently witness historical process lifetime beyond source-bound owned-process terminal evidence"
+  ],
+  "call_ceiling": {
+    "evaluation_used": 3,
+    "evaluation_limit": 3,
+    "predeclared_total_limit": 5,
+    "comparison_reserved": 2
+  },
+  "evidence_sha256": {
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\deletion-and-added-object-intent.json": "be093e67899d70cede042852b2eba593750aeed78c3290d4a0ea4068b8abc0eb",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\deletion-and-added-object-quality.json": "6f0e8962b1ed83cfee0ec2cc7d63e9e033c65053da82cb3ccca0e17df93e5539",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\deletion-and-added-object-raw.json": "5317d9ad5681854e1b7d59b3b63a6a20f3aa43ad8d5fbba5c8d4eb20d702f3e3",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\disjoint-lighting-contributions-intent.json": "185e4487d9c08a652dbcc433c66de4378418333f573a1dd1be52ce05904f22d4",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\disjoint-lighting-contributions-quality.json": "d3f24f16beb89d856b6a05737bb340558509cb4ae622947409b1e946bada73f5",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\disjoint-lighting-contributions-raw.json": "b7c0f234d6c0d1ce2cfe209a70229bea0a35d9736e44c608a955ed8ac9352804",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\evaluation-intent.json": "36450d2d6a1b5fd87da0481eae175c87ec4e386574e2aa751e68679a49d010c8",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\evaluation.json": "4bf1a95d08f85a571742b88c66d4530b36f1c228b9d4f478627614e84296151b",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\explicit-overlap-resolution-intent.json": "ed6d6e7427b1d82c8d263f8b322e101c6c6994aa8ac5e22ddc7a170cbfa15678",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\explicit-overlap-resolution-quality.json": "fc5b890dd76c14940bd2a7a585ce23c95a90ad8572eb3e147a607bf35b28286d",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\explicit-overlap-resolution-raw.json": "ea25d165e8562a7fc7ad228e9ace5175d77bb01c0de5cd7b13712f992c604906",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\preflight.json": "2800d26331b956dbb0d18c83274a00bf2fd03b68aded8c8d7b18542ff889d990",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\profile.private.json": "a27033e9cbdf0a704c5474e085e71037e6fa65df8b3f1d5d0326965491c6e737",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\quality-expectations.json": "376eeb2faa894a4daba0555cf041ab4ad4b53b7de3dc16bf10d59fd8a6391b6e",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-suite-1486-v1\\suite.json": "8fb46fe3323779cbd0a64647d40f0a43f46b78a20ce2fea87c26454f1000b7f7",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-heqi-context.json": "43d2f558b5b9900e678ee0038c1a9267cd970c6520c5d336f80884a6043853e9",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-heqi-context.txt": "61d9c4dd8f7707ffc2ef606e0dad5e73e257309455aa3f1b6a97a47705cbcf4e",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-integration-suite-plan.json": "6f4d80026dd418db3a0171d2711e0f4114f1ff910f5cc9417fa8bf9c6300f645",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-producer-review.json": "1761c383e723c693645be910d5e80527442a73f8e59550367b4dd1bd016d3788",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\run-native-live-evaluation.py": "0f9292f5914e839741d9659ddc46f6ab7d144311d266fed04d255829a7974f08"
+  },
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "recall": "Verified bind-consumer-release, await-terminal-observers, reconstruct-worker-outcomes recalled; exact candidate, durable terminal and downstream permission kept separate. Counterexample: a successful generated proposal alone cannot authorize production."
+  },
+  "cleanup": "Only private verification script and report retained as audit evidence; no temporary processes, branches, worktrees or product files created.",
+  "installation_recomputation": {
+    "digest": "d63d5e9f900adc893676e64529e0ff1216226c17a40ff1e66518c33e7dab8831",
+    "executables": {
+      "node": "b59feb2088f80e1fa431c8f9c316861e660e5936f968fd97b802e550fed356c5",
+      "entry": "094d4db493de22025712cc5963854e7654b7c97f4cee795e3e986270a0f4f6b4",
+      "python": "9f29b8965d6bf169315bbc20946f33b23c9dacb4587c3cccaf1f536b844b2dc2"
+    },
+    "sources": {
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "9cdd447f8d3a9d75f462baab326c8f112ffaeacfe360da64b595a7eedd441010",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77e708992333bd8d8ff7a354da9791c948836442e9d3c3be1347e06c52ffb89f",
+      "tools/codex_cli/subscription_session.js": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2",
+      "tools/codex_cli/content_preview.js": "160cad8dcedfddeb31b5db37108edcb90c74311af02f74bb219dab2c2794e99b",
+      "tools/codex_cli/subscription_profile.py": "869ddbf0568befe87e6d2fb076a070b02326f11ef2e4d6a22d6989019c6d282c"
+    },
+    "helpers": {
+      "tools/ainative/owned_process.py": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78",
+      "tools/editor_provenance_process.py": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1"
+    },
+    "method": "Independent standard-library byte hashing and ordered configuration serialization; no product modules imported or executed"
+  },
+  "validation": {
+    "command": "python -B -X utf8 <probes>/independent.py; python -B -X utf8 <probes>/finalize.py",
+    "result": "Three cases pass; all source, profile, suite, context, configuration and proposal bindings verified",
+    "negative_controls": "Duplicate keys, NaN, Infinity, boolean-as-number and extra fields rejected",
+    "probe_correction": "First reviewer probe used canonically reordered text envelope for insertion-ordered proposal hash; assertion exposed ordering distinction. Corrected to exact protocol_evidence proposal order, matching reviewed host source; original evidence unchanged. No model retry."
+  },
+  "private_probe_sha256": {
+    "finalize.py": "c1817ffd51e80afa5598501b9c79e1fd1051cace5f4461262b91a25dbbc15f27",
+    "independent.py": "13dca0721dd59cf42e15f9b8aec2ba237c4d159fd8636c8c5ca3f063fcce9421"
+  }
+}

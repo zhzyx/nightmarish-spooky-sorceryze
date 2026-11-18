@@ -1,0 +1,97 @@
+{
+  "request_id": "native-model-producer-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1486",
+  "kind": "deterministic installed host-tool implementation; no live admission",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "9cdd447f8d3a9d75f462baab326c8f112ffaeacfe360da64b595a7eedd441010",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "7c5a463017a8fcf605a1cc3082dd20b5885abada8085b07cd1816e9183529441",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "a32bc1a7c3ab72f2b7d8ac02c0d4bba714f4fd1b526189ef4d3c4d091dc4e48e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "ccd4c01dde99dfa16aa9b91c2e2dfb398312fc2f21e3e9cc89b33cdb0a9a6316",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "ce9f9577af769d2c32277e4f889896f6f8ed02ffc4ed2a8945246486d2d74ebb",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "fb59c3e4c8f02cd013a895a81bdab0b68f4954259ca5548579052a8e021b18ad",
+    "customizations/platforms/ai-access/host-http/runtime/adapters.py": "b3fef23b8595c699fdaeb819c0f0c1426dc9e746956096f39ade1bc6f583466a",
+    "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "4f3f3788fe070ed14f57f9b3fd04d0d260cad1d5eb6edd72ab6d84c980030261",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "98f3864a26ffff48359400c95fd389def735c01a51a5af30c13180a1f9bc591c",
+    "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
+    "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "224502a920c656b94e8326bbceaa7daf31c7fb951fac1d99dc4867f1652396e7"
+  },
+  "validation": [
+    {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 -m pytest customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py customizations/components/tianxuan/sinan-workorders/test_native_model_host.py customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py customizations/platforms/ai-access/host-http/runtime/test_adapters.py -q --basetemp=work/producer-1486-final-tests",
+      "result": "52 passed, 83 subtests passed in 45.36s"
+    },
+    {
+      "command": "python -B -X utf8 customizations/platforms/ai-access/host-http/runtime/test_runtime.py",
+      "result": "13 synthetic scenarios passed after closing sqlite handles in fixture"
+    },
+    {
+      "command": "node --test customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs",
+      "result": "17 passed"
+    },
+    {
+      "command": "py -X utf8 -m ruff format/check --no-fix changed Python paths",
+      "result": "passed with installed system Python ruff 0.17.1; initial venv availability failure resolved without installation"
+    },
+    {
+      "command": "python -B -X utf8 -m pytest ... --basetemp=work/producer-1486-formatted-tests3",
+      "result": "52 passed, 83 subtests passed in 45.10s"
+    },
+    {
+      "command": "python -B -X utf8 -m pytest test_native_model_producer.py --basetemp=work/producer-1486-public-api-tests",
+      "result": "14 passed in 19.74s"
+    },
+    {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 -m pytest customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py customizations/components/tianxuan/sinan-workorders/test_native_model_host.py -q --basetemp=work/producer-1486-contract-final",
+      "result": "22 passed in 26.22s on final contract including effective context bounds and native envelope instruction"
+    }
+  ],
+  "failed_attempts": [
+    {
+      "stage": "first parse",
+      "result": "runner digest dictionary comprehension syntax error; corrected before execution"
+    },
+    {
+      "stage": "first HTTP regression",
+      "result": "bare python package_integrity failed under ambient PATH; explicit venv PATH and PYTHONUTF8 used thereafter"
+    },
+    {
+      "stage": "HTTP fixture cleanup",
+      "result": "WinError32 runtime.sqlite from unclosed sqlite context; fixture now explicitly closes; original work/model-integration-gfxbx24f retained and cleanup not retried"
+    },
+    {
+      "stage": "producer fixture import",
+      "result": "native_cli collided with duobao sibling; renamed native_proposal_adapter"
+    },
+    {
+      "stage": "cross-process binding",
+      "result": "dictionary ordering changed installation/request digests; canonical installation and explicit ordered request fixed"
+    },
+    {
+      "stage": "ruff",
+      "result": "venv has no ruff; no network installation attempted"
+    },
+    {
+      "stage": "formatter import relocation",
+      "result": "ruff preview E402 auto-fix moved bootstrap-dependent imports; explicit documented E402/isort bootstrap boundary added, lint check rerun with --no-fix and tests passed"
+    }
+  ],
+  "acceptance": {
+    "native_workflow_and_integration": "two actual owned NativeWorker launcher processes, installed model protocol probes, checks, independent review reading exact immutable outputs, joint release and issue completion passed",
+    "unknown_usage": "failed bound CLI raw last/total retained; second run rejects without new call",
+    "boundaries": "old runtime/install/evaluation, token ceiling, production probe, state directory reset, registry rebind, authority environment key, path escape, partial apply, central budget exhaustion/reset, governance inclusion and context overflow tested",
+    "live_model_evaluation": "not executed by implementation agent; root responsibility",
+    "equal_task_git_comparison": "not executed; no savings or production admission claim"
+  },
+  "cleanup": {
+    "retained": "all owned fixture evidence and failed original cleanup directory pending root review; no active test subprocess remains at evidence recording",
+    "policy": "no retry of blocked cleanup; no other worktrees/resources touched"
+  },
+  "limitations": [
+    "CLI output-token cap unsupported; call count/time/outer response bytes bounded",
+    "Frozen HTTP telemetry cannot normalize CLI counters; raw evidence remains in original runtime journal",
+    "Interrupted active central lease requires explicit host reconciliation; no auto reclaim or remote cancellation claim",
+    "UTF-8 selected files only, finite output list and existing parent directories",
+    "New runtime/source binding invalidates old grants and old #1480 installation evidence",
+    "No commit, push, deployment, provider or real network call by implementation agent"
+  ]
+}

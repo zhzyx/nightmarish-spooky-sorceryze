@@ -22,10 +22,21 @@ ROOT = Path(__file__).resolve().parents[5] / "framework"
 
 def runtime_digest():
     folder = Path(__file__).resolve().parent
-    return digest({
+    from native_proposal_adapter import HELPER, HOST
+
+    external = {str(p): hashlib.sha256(p.read_bytes()).hexdigest() for p in (HOST, HELPER)}
+    external.update({
         name: hashlib.sha256((folder / name).read_bytes()).hexdigest()
-        for name in ("runner.py", "adapters.py", "diting.py", "evaluate.py")
+        for name in (
+            "runner.py",
+            "adapters.py",
+            "diting.py",
+            "evaluate.py",
+            "native_proposal_adapter.py",
+            "task_budget.py",
+        )
     })
+    return digest(external)
 
 
 def now():
@@ -118,18 +129,37 @@ def validate_plan(p):
     require(t["mode"] != "single" or len(t["steps"]) == 1, "Single mode requires one step")
     require(isinstance(t.get("work_items"), list) and t["work_items"], "Work linkage required")
     require(isinstance(t.get("resources", {}), dict), "Resources must be host-provided map")
-    for field, maximum in [("max_calls", 100), ("max_output_tokens", 32000)]:
+    cli = any(m["protocol"] == "codex-native-proposal" for m in profiles)
+    if cli:
+        require(
+            all(m["protocol"] == "codex-native-proposal" for m in profiles),
+            "Do not mix incompatible token budget protocols",
+        )
+        require(
+            limits.get("max_output_tokens") is None and limits.get("output_token_limit") == "unsupported",
+            "CLI output token ceiling unsupported",
+        )
+        from native_proposal_adapter import validate_profile
+
+        for model in profiles:
+            require(
+                not model.get("validation_probe") or t.get("validation_only") is True,
+                "Installed probes cannot authorize production",
+            )
+            validate_profile(model)
+    for field, maximum in [("max_calls", 100)] if cli else [("max_calls", 100), ("max_output_tokens", 32000)]:
         require(type(limits.get(field)) is int and 1 <= limits[field] <= maximum, "Invalid " + field)
     require(profiles and len({x["id"] for x in profiles}) == len(profiles), "Unique model profiles required")
     for model in profiles:
         model_provenance(model)  # Validate the requested identity before any dispatch.
         require(
-            model["protocol"] in {"chat-completions", "ollama-chat", "gonggong-json"}, "Unsupported model transport"
+            model["protocol"] in {"chat-completions", "ollama-chat", "gonggong-json", "codex-native-proposal"},
+            "Unsupported model transport",
         )
         require(
             type(model["max_context_bytes"]) is int and model["max_context_bytes"] > 0, "Context byte ceiling required"
         )
-        require(0 < model.get("timeout_seconds", 30) <= 120, "Timeout must be 1..120 seconds")
+        require(0 < model.get("timeout_seconds", 30) <= (600 if cli else 120), "Timeout exceeds transport ceiling")
         evidence = model["evaluation"]
         require(
             evidence["profile_digest"] == digest({k: v for k, v in model.items() if k != "evaluation"}),
@@ -267,8 +297,11 @@ def worker_lock(state):
 
 def run(grant, root, state):
     verify_grant(grant, root, state)
-    with worker_lock(state):
-        return _run(grant, root, state)
+    from task_budget import reservation
+
+    with reservation(grant, state):
+        with worker_lock(state):
+            return _run(grant, root, state)
 
 
 def _run(grant, root, state):
@@ -309,13 +342,24 @@ def _run(grant, root, state):
                     + ". Required value format: "
                     + canonical({"output": step["output"], "schema": step.get("schema")})
                 )
+                if p["profiles"][0]["protocol"] == "codex-native-proposal":
+                    instruction = (
+                        "Return only JSON for the fixed native proposal schema, without an action/value wrapper. "
+                        "The installed transport wraps the validated proposal for the runtime. "
+                        "No tool calls, execution authority or release approval. Required proposal schema: "
+                        + canonical(step.get("schema"))
+                    )
                 messages = [
                     {"role": "system", "content": base + "\n" + step_context(root, step) + "\n" + instruction},
                     {
                         "role": "user",
                         "content": canonical({
                             "instruction": step["instruction"],
-                            "input": t.get("input"),
+                            "input": (
+                                {"native_request": t["input"]["native_request"]}
+                                if p["profiles"][0]["protocol"] == "codex-native-proposal"
+                                else t.get("input")
+                            ),
                             "previous_results": outputs,
                             "available_resource_keys": list(t.get("resources", {})),
                         }),
@@ -354,6 +398,7 @@ def _run(grant, root, state):
                                     "status": "unknown",
                                     **model_provenance(model),
                                     "error": str(error),
+                                    "protocol_evidence": error.evidence,
                                 },
                             )
                             export(root, state, t, cx, jid)

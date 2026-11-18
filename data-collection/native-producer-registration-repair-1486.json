@@ -1,0 +1,35 @@
+{
+  "issue": 1486,
+  "request_id": "native-model-producer-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1486",
+  "failed_pr": 1492,
+  "signed_head": "9608cd91ca3ac8946c9cf225bb14d6776a07a515",
+  "ci_run": 44211794824,
+  "failure": "Platform file set or digest mismatch: customizations/platforms/ai-access/host-http/runtime",
+  "raw_failure_log_sha256": "a31f199b550743f4f7af4f5b9a32381f3ccc10ee149c656ace90f1b2fdb8ae1b",
+  "registration_before_sha256": "a34c602ef1db2863e2910ee0594e8baf377087b36be4cf3176d6410b4f58dc90",
+  "registration_after_sha256": "2774eab46bea9b5cdb255758e3d369fb16af94ac4f2f514a37ee992cb2018133",
+  "only_changed_package": "customizations/platforms/ai-access/host-http/runtime",
+  "previous": {
+    "adapters.py": "d251de6a7c187caa6a5b3cb786485a396c58cdad0dbdf57b7d69548e8833dcc1",
+    "diting.py": "ee5f9d885e553f787a596b85db386952d12ae3f54754d4c9b044f602600ec9f9",
+    "evaluate.py": "408ba0bb8b664e4197255194196401258f22c347d5ce2501f53870d9cf96c249",
+    "README.md": "3a3ce05335894aeb3d48faf00246662cddea27e86e8820c99b14c53a419ac303",
+    "runner.py": "7ccc47b132adf52c3bd0dbdd133f315ad79bd74b9b8218d0573a6ebbaf13ab7f",
+    "test_adapters.py": "721ed5e808cbb4c97e3cad5ccb8502173d34abaedeeb54ed7164f8a403fb60eb",
+    "test_runtime.py": "8f0afdd4aeef5d694771131ae8dc1b190a8098b301a060b7747dfa045291323b"
+  },
+  "current": {
+    "adapters.py": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08",
+    "diting.py": "ee5f9d885e553f787a596b85db386952d12ae3f54754d4c9b044f602600ec9f9",
+    "evaluate.py": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa",
+    "native_proposal_adapter.py": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156",
+    "README.md": "5face9479b06526b12a74ac6b38c733eed54d3d28f802e445e3e9ad11a7cdcf8",
+    "runner.py": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5",
+    "task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
+    "test_adapters.py": "721ed5e808cbb4c97e3cad5ccb8502173d34abaedeeb54ed7164f8a403fb60eb",
+    "test_runtime.py": "0fb66513ba9856bdaf5b0d097ede8d44243284a25fcd79e9bb7d9bc9028c6883"
+  },
+  "frozen_framework_and_other_registration_unchanged": true,
+  "scope": "Offline recorded byte consistency only; independent reviewed runtime implementation and bounded profile admission remain separate. No new general Agent approval or production cutover."
+}

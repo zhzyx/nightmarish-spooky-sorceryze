@@ -1,0 +1,49 @@
+{
+  "issue": 1486,
+  "request_id": "native-model-producer-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1486",
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\final-source-qa.py",
+        "D:\\GongGong-work\\native-model-producer-20261118"
+      ],
+      "exit_code": 0,
+      "seconds": 0.6025468000007095,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "tools/check_gonggong_distribution.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.6723295999981929,
+      "stdout": "{\"agent_execution_authorized\": false, \"authority_authenticated\": false, \"diting_extension_syntax_checked\": true, \"frozen_files\": 256, \"live_upstream_verified\": false, \"ok\": true, \"scope\": \"offline_registered_snapshot_consistency_only\", \"syntax\": {\"javascript\": 16, \"json\": 158, \"python\": 27}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "file_format.py dry run on copies",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "changed": [],
+      "temporary_directory_removed": true
+    }
+  ],
+  "source_sha256": {},
+  "format_selected": [
+    "data-collection/native-producer-registration-repair-1486.json",
+    "data-collection/native-producer-registration-review-1486.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-producer-20261118/dispatch-3198f2abf3e44f0d8a558afe2431db85.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-producer-20261118/dispatch-cf8185d5bcf54e87bd338d720624ea81.json",
+    "integrations/gonggong/frozen-distribution.json"
+  ]
+}

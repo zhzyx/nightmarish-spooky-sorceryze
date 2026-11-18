@@ -12,7 +12,11 @@ def evaluate(profile, cases, scope):
     for case in cases:
         result = {"id": case["id"], "task_type": case["task_type"], "passed": False}
         try:
-            response = call(profile, case["messages"], case.get("max_output_tokens", 512))
+            response = call(
+                profile,
+                case["messages"],
+                case.get("max_output_tokens", None if profile["protocol"] == "codex-native-proposal" else 512),
+            )
             result["response"] = response
             if response["finish_reason"] != "stop":
                 raise ValueError("Incomplete output")
@@ -25,6 +29,8 @@ def evaluate(profile, cases, scope):
             result["passed"] = True
         except Exception as error:
             result["error"] = str(error)
+            if hasattr(error, "evidence"):
+                result["protocol_evidence"] = error.evidence
         results.append(result)
     kinds = {r["task_type"] for r in results}
     passed = sorted(k for k in kinds if all(r["passed"] for r in results if r["task_type"] == k))

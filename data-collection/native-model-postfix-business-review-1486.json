@@ -1,0 +1,28 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-postfix-native-business-review.json",
+    "sha256": "9bbbad880779d273b583dc38a373cb33a022b895099aebfb9b3aed12648abad4",
+    "path_base": "absolute current host audit archive"
+  },
+  "export": "Lossless JSON value export with repository LF; original bytes retained.",
+  "report": {
+    "id": "root-native-business-365f49e92d84c950243a2887c7cee5c70de4dd60efa64388eb7e696ecc467ad5",
+    "plan": "4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb",
+    "candidate": "218c93256e24b5b9caed2872c92ee3308fd51fe640efaf9ad4c5d38b31a03caf",
+    "reviewer": "root-independent-reviewer",
+    "decision": "accepted",
+    "evidence": {
+      "sealed_sha256": "365f49e92d84c950243a2887c7cee5c70de4dd60efa64388eb7e696ecc467ad5",
+      "runtime_sha256": "59371627e15a4aa63b3b1974f209dc0d0228b8ab643c8311bb4ee4af1ae57e16",
+      "output_sha256": "b6b526c1fb2a40f10529967e4d3d54a370ab4d3e4a8c94d0770eb6552acbb201",
+      "actual_local_node_blobs_validated": true,
+      "input_bytes_preserved": true,
+      "strict_semantic_quality": true,
+      "one_model_call": true,
+      "exact_model_proposal_bytes_preserved": true,
+      "current_source_binding_checked": true,
+      "actual_linux_joint_check": "97368c6b03c15e698edcf137ab6d00b65dff4b89d2f6ff089ecba827f918e900"
+    },
+    "limits": "Sandbox text integration on independently reviewed corrected source; Windows output is byte-exact UTF-8 model proposal. Native publish must revalidate current source and exact checks. This is a bounded regression, not a new performance comparison or production deployment."
+  }
+}

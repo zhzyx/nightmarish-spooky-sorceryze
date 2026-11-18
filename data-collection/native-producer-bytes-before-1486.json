@@ -1,0 +1,10 @@
+{
+  "issue": 1486,
+  "source_sha256": "a32bc1a7c3ab72f2b7d8ac02c0d4bba714f4fd1b526189ef4d3c4d091dc4e48e",
+  "actual_hex": "66697273740d0a7365636f6e640d0d0a74686972640de69cabe8a18c",
+  "expected_hex": "66697273740a7365636f6e640d0a74686972640de69cabe8a18c",
+  "exact_bytes": false,
+  "model_calls": 0,
+  "scope": "real NativeWorker and signed validation-only installed probe; no provider",
+  "process_closed": true
+}

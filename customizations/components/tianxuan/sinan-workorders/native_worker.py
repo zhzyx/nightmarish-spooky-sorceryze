@@ -70,6 +70,11 @@ class NativeWorker:
             _json({
                 "profile": spec,
                 "executable": _digest(Path(spec["argv"][0]).read_bytes()),
+                "argv_sources": {
+                    a: _digest(Path(a).read_bytes())
+                    for a in spec["argv"][1:]
+                    if Path(a).is_absolute() and Path(a).is_file()
+                },
                 "helper": self.helper.implementation_fingerprint(),
                 "worker": _digest(Path(__file__).read_bytes()),
             }).encode()

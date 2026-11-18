@@ -51,6 +51,7 @@ HOST_INPUT_PREFIXES = (
     "Markdown/",
     "apps/tianxuan/",
     "customizations/components/tianxuan/",
+    "customizations/platforms/ai-access/host-http/runtime/",
     "customizations/platforms/development/git/heqi/",
     "deploy/",
 )

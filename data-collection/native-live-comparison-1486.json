@@ -1,0 +1,530 @@
+{
+  "issue": 1486,
+  "state": "passed-scoped-controlled-comparison",
+  "production_calls": 2,
+  "prior_qualification_calls": 3,
+  "suite_total_calls": 5,
+  "automatic_retries": 0,
+  "unknown_replays": 0,
+  "authority": {
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "max_calls": 2,
+    "max_concurrent": 1,
+    "state_dir": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-comparison-probes\\central-budget"
+  },
+  "reservations": [
+    {
+      "task": "c5e4c50f6a617bb794f29edaebee451a9dc3064ef3cc297c80e9375b51ff6c75",
+      "binding": "9858e050b89439a8e8ca2ab4caef6bf35f6035150e1a1de44aeaaf6b85086b64",
+      "calls": 1,
+      "active": 0
+    },
+    {
+      "task": "8e64ddffe9e9c1f3fd23d78eee8e69d7471d4ec68be96bfcbcd6abb9b9329205",
+      "binding": "4f4c05c7aa7b39d6e77b47788b28c5f9fe12e463c1487bd5378bb98ba3e9e02e",
+      "calls": 1,
+      "active": 0
+    }
+  ],
+  "exact_sources": {
+    "model": {
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "9cdd447f8d3a9d75f462baab326c8f112ffaeacfe360da64b595a7eedd441010",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "7c5a463017a8fcf605a1cc3082dd20b5885abada8085b07cd1816e9183529441",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "a32bc1a7c3ab72f2b7d8ac02c0d4bba714f4fd1b526189ef4d3c4d091dc4e48e",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "ccd4c01dde99dfa16aa9b91c2e2dfb398312fc2f21e3e9cc89b33cdb0a9a6316",
+      "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "ce9f9577af769d2c32277e4f889896f6f8ed02ffc4ed2a8945246486d2d74ebb",
+      "customizations/platforms/ai-access/host-http/runtime/runner.py": "fb59c3e4c8f02cd013a895a81bdab0b68f4954259ca5548579052a8e021b18ad",
+      "customizations/platforms/ai-access/host-http/runtime/adapters.py": "b3fef23b8595c699fdaeb819c0f0c1426dc9e746956096f39ade1bc6f583466a",
+      "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "4f3f3788fe070ed14f57f9b3fd04d0d260cad1d5eb6edd72ab6d84c980030261",
+      "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "98f3864a26ffff48359400c95fd389def735c01a51a5af30c13180a1f9bc591c",
+      "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
+      "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "224502a920c656b94e8326bbceaa7daf31c7fb951fac1d99dc4867f1652396e7"
+    },
+    "remote": {
+      "customizations/components/tianxuan/sinan-workorders/native_node.py": "f76311827cbf99586d536007e10ed554399338d7d704d8de08c66320a1d215f4",
+      "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "e5267934543b8087d9d73cd3abac1dc49f199c450a8d5ee58b705db48b32c015",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "54f2b6dbe759d6ae3e965d7399534ec600c07208be2422d9f0d924b932ddca64",
+      "customizations/components/tianxuan/sinan-workorders/native_remote.md": "f1cd6820b0ead4335c63df76af416a7c9115dcb33c7bc5322a047041ca6aaab6",
+      "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "c28c50b2a7fff9efdce1cd682200619e7c7bcee427eb4cb30b144b989998a9e5",
+      "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "07f4f48401b070d6e653c0bd5cc981345918a0fa2b63466c2a413ed292a3782f",
+      "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+      "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "fe4f5f081f73e46fef83855acc1a148f6685007039a8ebe9cb9ec202eb31a427",
+      "customizations/components/tianxuan/server/test_tianxuan_core.py": "8ba19b1ba2f0f5122bf37906fbcac00273f8a6326355b3d16f4df37f3f1ea95b"
+    },
+    "native_combined_manifest": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-comparison-probes\\native-live\\source-manifest.json",
+    "native_combined_manifest_sha256": "6a513d377e10c7cd4ac965292f540abc8e904a58efceccb9883f85de226d6cfc"
+  },
+  "profile_digest": "1333e7474d9b10d29d2f73eff8ec7f67e5cc340f2296d03d04422819fcfd949a",
+  "installation_digest": "d63d5e9f900adc893676e64529e0ff1216226c17a40ff1e66518c33e7dab8831",
+  "producer_source_digest": "82298178967d91eddf9771c89f5e9811d1fbc0c5ec7ac394d16d289e16f52e7e",
+  "held_out_sha256": "0dcb63f89acfcaaa7fb6a3b55760ae6c5c9780e6790ad747d6219da38542c1f3",
+  "ordering": [
+    "git",
+    "native"
+  ],
+  "git": {
+    "call": {
+      "status": "received",
+      "requested_model": "gpt-6.2-sol",
+      "generic_model_identity_verified": false,
+      "identity": "gpt-6.2-sol",
+      "thread_id": "01a1ebed-70bc-74e3-b8b3-eb23f7f3de44",
+      "turn_id": "01a1ebed-7112-7fd1-9218-fd3708e301a1",
+      "usage": {
+        "normalized_usage": null,
+        "observed_model": "gpt-6.2-sol",
+        "raw": {
+          "last": {
+            "cacheWriteInputTokens": 0,
+            "cachedInputTokens": 0,
+            "inputTokens": 9216,
+            "outputTokens": 256,
+            "reasoningOutputTokens": 0,
+            "totalTokens": 9472
+          },
+          "modelContextWindow": 475000,
+          "total": {
+            "cacheWriteInputTokens": 0,
+            "cachedInputTokens": 0,
+            "inputTokens": 9216,
+            "outputTokens": 256,
+            "reasoningOutputTokens": 0,
+            "totalTokens": 9472
+          }
+        },
+        "source": "thread/tokenUsage/updated",
+        "status": "observed",
+        "thread_id": "01a1ebed-70bc-74e3-b8b3-eb23f7f3de44",
+        "turn_id": "01a1ebed-7112-7fd1-9218-fd3708e301a1",
+        "updates": 1
+      },
+      "process_tree_closed": true,
+      "process_exit_code": 0,
+      "process_reasons": [],
+      "elapsed_ms": 18016,
+      "remote_cancellation": "unknown",
+      "original_request_digest": "4c7d844d613bb5eec3963a3614db801ae54d268641d555dca5c04afbbd627d7a",
+      "governance_digest": "742346fb8a45b9c14100be550a2f01b5fc639ba212b262298c0f515ab9beb589",
+      "effective_digest": "bdeb2138e442ee4231066d72d2f0863936bcddfc89a8fce2d173491091b8f4f1"
+    },
+    "producer_elapsed_seconds": 19.968999999997322,
+    "queue_elapsed_seconds": 0.9370000000053551,
+    "candidate": "40f49e3c06a9afc6f4af5eba9cc1b05b4b0c9a8b",
+    "publication": {
+      "state": "passed",
+      "queue": {
+        "id": "mq_2749bebb52e044e39c63c42111f450ca",
+        "repo": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-comparison-probes\\git-live\\comparison.git",
+        "source": "candidate",
+        "target": "main",
+        "title": "Accepted held-out candidate 1486",
+        "priority": 0,
+        "status": "merged",
+        "attempts": 1,
+        "evidence": {
+          "policy": {
+            "target": "main",
+            "protected": false,
+            "path": "queue",
+            "actor_role": "editor"
+          },
+          "validated_at": "2026-11-17T23:56:07.735938+00:00",
+          "checks": [
+            {
+              "command": "'D:\\GongGong-work\\tx-venv\\Scripts\\python.exe' -B -X utf8 -c 'import json,pathlib,os; p=pathlib.Path(os.environ.get('\"'\"'DUOBAO_INPUT'\"'\"','\"'\"'.'\"'\"')); f=p/'\"'\"'scene/output.json'\"'\"'; v=json.loads(f.read_text(encoding='\"'\"'utf-8'\"'\"')); assert v=={'\"'\"'scene'\"'\"': {'\"'\"'title'\"'\"': '\"'\"'夜航'\"'\"', '\"'\"'quality'\"'\"': 3, '\"'\"'budget'\"'\"': 384}, '\"'\"'modules'\"'\"': {'\"'\"'render'\"'\"': {'\"'\"'api'\"'\"': 3}, '\"'\"'weather'\"'\"': {'\"'\"'enabled'\"'\"': True}}, '\"'\"'audio'\"'\"': {'\"'\"'gain'\"'\"': 0.5}}'",
+              "exit_code": 0,
+              "duration_seconds": 0.041,
+              "output": ""
+            }
+          ],
+          "conflicts": [],
+          "merge_sha": "a43c88dcc83ed8a213fed34316a6f5d4778f7fee",
+          "merged_at": "2026-11-17T23:56:08.244735+00:00"
+        },
+        "created_by": "root-independent-business-review",
+        "created_at": "2026-11-17T23:56:07.362858+00:00",
+        "updated_at": "2026-11-17T23:56:08.244735+00:00"
+      },
+      "elapsed_seconds": 0.9370000000053551,
+      "original_candidate_retained": true,
+      "unrelated_main_preserved": true,
+      "root_review_sha256": "fd3b1da539c6d2e5b557c196c45fcd2f6229d1c80335784adeaa80d86d58b0c9",
+      "production_calls": 1
+    },
+    "quality": "root independently accepted exact original candidate; final composition check passed",
+    "reruns": 0
+  },
+  "native": {
+    "call": {
+      "status": "received",
+      "requested_model": "gpt-6.2-sol",
+      "generic_model_identity_verified": false,
+      "identity": "gpt-6.2-sol",
+      "thread_id": "01a1ebf1-929e-70f0-8d2a-cde3156a2289",
+      "turn_id": "01a1ebf1-92ef-7ed1-90a6-382e2df909b4",
+      "usage": {
+        "normalized_usage": null,
+        "observed_model": "gpt-6.2-sol",
+        "raw": {
+          "last": {
+            "cacheWriteInputTokens": 0,
+            "cachedInputTokens": 0,
+            "inputTokens": 9197,
+            "outputTokens": 245,
+            "reasoningOutputTokens": 0,
+            "totalTokens": 9442
+          },
+          "modelContextWindow": 475000,
+          "total": {
+            "cacheWriteInputTokens": 0,
+            "cachedInputTokens": 0,
+            "inputTokens": 9197,
+            "outputTokens": 245,
+            "reasoningOutputTokens": 0,
+            "totalTokens": 9442
+          }
+        },
+        "source": "thread/tokenUsage/updated",
+        "status": "observed",
+        "thread_id": "01a1ebf1-929e-70f0-8d2a-cde3156a2289",
+        "turn_id": "01a1ebf1-92ef-7ed1-90a6-382e2df909b4",
+        "updates": 1
+      },
+      "process_tree_closed": true,
+      "process_exit_code": 0,
+      "process_reasons": [],
+      "elapsed_ms": 121735,
+      "remote_cancellation": "unknown",
+      "original_request_digest": "3525624fac57c7b23e5862dccbae30b66327d326d883e7fc63f0320518d2de21",
+      "governance_digest": "d10035332410e1d7dc3c2c1e1f05ca3f4d02ce95dd27d9545f4eb01afdbc5305",
+      "effective_digest": "1eca87088bc1912f1456f9ac2932fc0a5217686b6476a2048352bab601eba516"
+    },
+    "production_elapsed_seconds": 132.85899999999674,
+    "publication_elapsed_seconds": 1.0619999999908032,
+    "sealed": {
+      "plan": "a3e5be8e2a8ec872c3a0ed1f1d95bb6d18b7fb8e6dc2634d0e4b4b87dcbe1da6",
+      "result": {
+        "state": "integrated",
+        "plan": "a3e5be8e2a8ec872c3a0ed1f1d95bb6d18b7fb8e6dc2634d0e4b4b87dcbe1da6",
+        "candidate": "88149c52e3e42e58f53eed1cfb5e654df79ef33badf1fa406f80e2fe9e10283a",
+        "modules": {
+          "integration-a3e5be8e2a8ec872c3a0ed1f1d95bb6d18b7fb8e6dc2634d0e4b4b87dcbe1da6": "ee030c1ced822fb35d4a5e5b43f31e4ce4ca30f2a0c8379409d695afc50e0b08",
+          "scene": "be51cd0926776b1fceb892f516d9a657554d81b7fdd02eddfce5302937147c2b"
+        },
+        "authors": [
+          "usr_4eb16808317441f0abda1dd4a3528b8b"
+        ],
+        "intake": {
+          "state": "candidate_received",
+          "tenant": "ten_4d37aa139c2042519904407b920264fa",
+          "actor": "usr_4eb16808317441f0abda1dd4a3528b8b",
+          "request_key": "integration-a3e5be8e2a8ec872c3a0ed1f1d95bb6d18b7fb8e6dc2634d0e4b4b87dcbe1da6",
+          "request_digest": "c2a1a952970302b46622f75bd5898b9cc1f6aa199703f9fb45f387843c3ac439",
+          "origin": {
+            "source_ref": "a3e5be8e2a8ec872c3a0ed1f1d95bb6d18b7fb8e6dc2634d0e4b4b87dcbe1da6",
+            "worker_ref": "heqi-a3e5be8e2a8ec872c3a0ed1f1d95bb6d18b7fb8e6dc2634d0e4b4b87dcbe1da6",
+            "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1486"
+          },
+          "inputs": {
+            "scene": {
+              "module": "scene",
+              "base": "2b02809bbd358fea0add8d580472dd941c72137c7e40c512f0d8f64df74eb04b",
+              "reads": null,
+              "edits": {
+                "output.json": "5b4c4b8605101eb682b463f6c37339a849bc6ff8a88a8aaff345bc56ebb37f36"
+              },
+              "dependencies": {}
+            }
+          },
+          "revisions": {
+            "scene": "be51cd0926776b1fceb892f516d9a657554d81b7fdd02eddfce5302937147c2b"
+          },
+          "requires_final_composition_validation": true,
+          "id": "496f1eb6ed317064fdc796b703447949f67fef0c8f8ee36b7bf4fa6c7be1264d"
+        }
+      },
+      "check": {
+        "state": "complete",
+        "actor": "usr_4eb16808317441f0abda1dd4a3528b8b",
+        "candidate": "88149c52e3e42e58f53eed1cfb5e654df79ef33badf1fa406f80e2fe9e10283a",
+        "check": "check",
+        "context": {
+          "toolchain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "environment": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "parameters": {
+            "registry": "b59d2e95adc06e08e9f03df785a4dd776e942f1fc75b29c195edc1cb05a20bce",
+            "execution_contract": "native-check/2:cwd=output:scoped-input",
+            "input_view": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06",
+            "workspace_helpers": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66",
+            "process_helper": [
+              "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78"
+            ],
+            "runner": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f"
+          }
+        },
+        "binding": {
+          "key": "0a90867797f43ed37487ac843e7f9e778a806c765fd24cec5b9996787d3c3350",
+          "binding": {
+            "format": "duobao-check-input/1",
+            "check": "check",
+            "policy": "e09b71b794a3f3f161a0dcd61a0e503a9d7fb347d1e3b77be50814daaeaaccf8",
+            "inputs": {
+              "integration-a3e5be8e2a8ec872c3a0ed1f1d95bb6d18b7fb8e6dc2634d0e4b4b87dcbe1da6": {
+                "objects": {
+                  "integration.json": "a3e5be8e2a8ec872c3a0ed1f1d95bb6d18b7fb8e6dc2634d0e4b4b87dcbe1da6"
+                },
+                "dependencies": {},
+                "revision": "ee030c1ced822fb35d4a5e5b43f31e4ce4ca30f2a0c8379409d695afc50e0b08"
+              },
+              "scene": {
+                "objects": {
+                  "inputs.json": "bac5954ce5c946a20470c82d878d60b29f45a66e6f643bffce093f37de49acb8",
+                  "output.json": "5b4c4b8605101eb682b463f6c37339a849bc6ff8a88a8aaff345bc56ebb37f36"
+                },
+                "dependencies": {},
+                "revision": "be51cd0926776b1fceb892f516d9a657554d81b7fdd02eddfce5302937147c2b"
+              }
+            },
+            "toolchain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "environment": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "parameters": {
+              "execution_contract": "native-check/2:cwd=output:scoped-input",
+              "input_view": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06",
+              "process_helper": [
+                "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78"
+              ],
+              "registry": "b59d2e95adc06e08e9f03df785a4dd776e942f1fc75b29c195edc1cb05a20bce",
+              "runner": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+              "workspace_helpers": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66"
+            }
+          }
+        },
+        "evidence_request": "native-run-821ae81b8eced9cd6c88fdc69d4bf5a08a4e6b4d70d83db18df5bd0ff915470a",
+        "workspace": "/tmp/comparison-state/checks/native-check-821ae81b8eced9cd6c88fdc69d4bf5a08a4e6b4d70d83db18df5bd0ff915470a",
+        "outcome": "passed",
+        "log": "{\"exit_code\":0,\"output_base64\":\"\",\"raw_log_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"reasons\":[],\"transcript_truncated\":false}",
+        "exit_code": 0,
+        "reasons": [],
+        "evidence": "f2c48ad905e32ab1a28f8053a46e66f2e605ab9a6e403e1b601246bce632fdc0"
+      },
+      "output": "{\r\n  \"scene\": {\r\n    \"title\": \"夜航\",\r\n    \"quality\": 3,\r\n    \"budget\": 384\r\n  },\r\n  \"modules\": {\r\n    \"render\": {\"api\": 3},\r\n    \"weather\": {\"enabled\": true}\r\n  },\r\n  \"audio\": {\"gain\": 0.5}\r\n}\r\n",
+      "task": {
+        "actor": "usr_4eb16808317441f0abda1dd4a3528b8b",
+        "capabilities": [],
+        "check_contexts": {
+          "check": {
+            "environment": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "parameters": {
+              "execution_contract": "native-check/2:cwd=output:scoped-input",
+              "input_view": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06",
+              "process_helper": [
+                "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78"
+              ],
+              "registry": "b59d2e95adc06e08e9f03df785a4dd776e942f1fc75b29c195edc1cb05a20bce",
+              "runner": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+              "workspace_helpers": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66"
+            },
+            "toolchain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        },
+        "checks": [
+          "check"
+        ],
+        "delivery_mode": "contribution",
+        "dependencies": {},
+        "installation": "cbd0fdea314338b6c45f650168425ff9a9695c72170c0d22efae49285d3d5483",
+        "issue": "iss_d514a612e0894bb2852af6728a2b8332",
+        "mandate": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+        "producer": "usr_4eb16808317441f0abda1dd4a3528b8b",
+        "product": "held-out-1486",
+        "profile": "local",
+        "selected": {
+          "scene": "2b02809bbd358fea0add8d580472dd941c72137c7e40c512f0d8f64df74eb04b"
+        },
+        "source": {
+          "definition": {
+            "acceptance": "Integrate A removal of legacy and B addition of weather and budget change. Owner resolved quality conflict in favor of A. Preserve all unrelated values and Unicode title. Return full integrated strict JSON only into scene/output.json. Only scene/output.json may change. Preserve all input files byte-for-byte. JSON must have unique keys, finite numbers, exact object semantics.",
+            "body_md": "",
+            "id": "iss_d514a612e0894bb2852af6728a2b8332",
+            "parent_id": null,
+            "requirement_id": "doc_cfc1ce2dabb64942a0b46c171c7d1d77",
+            "requirements": [
+              {
+                "body_md": "---\nrequest_id: native\nkind: requirement\nlang: zh\n---\n\n# Native\n\n## 目标\n\nOutcome\n\n## 范围\n\nScope\n\n## 验收\n\nPass\n",
+                "id": "doc_cfc1ce2dabb64942a0b46c171c7d1d77",
+                "kind": "requirement",
+                "title": "Native"
+              }
+            ],
+            "tenant_id": "ten_4d37aa139c2042519904407b920264fa",
+            "title": "Held-out integration 1486",
+            "type": "task"
+          },
+          "revision": "217624923845376be23e9d8e772bdbd2b51f3081e00ec75240ebbc19223defb4"
+        },
+        "tenant": "ten_4d37aa139c2042519904407b920264fa",
+        "writes": {
+          "scene": [
+            "output.json"
+          ]
+        }
+      },
+      "terminal": {
+        "candidate": "1c2289fe0091ccd6de0b2d5af26eb29a976f669e8dd56584017a9ad4ff7ff64b",
+        "exit_code": 0,
+        "intake": {
+          "actor": "usr_4eb16808317441f0abda1dd4a3528b8b",
+          "id": "c36e3a30953aaac138a9ea22646bf4f7db03ee68cfb899c47d896a9eac581a10",
+          "inputs": {
+            "scene": {
+              "base": "2b02809bbd358fea0add8d580472dd941c72137c7e40c512f0d8f64df74eb04b",
+              "dependencies": {},
+              "edits": {
+                "output.json": "5b4c4b8605101eb682b463f6c37339a849bc6ff8a88a8aaff345bc56ebb37f36"
+              },
+              "module": "scene",
+              "reads": null
+            }
+          },
+          "origin": {
+            "issue_url": "native://ten_4d37aa139c2042519904407b920264fa/issues/iss_d514a612e0894bb2852af6728a2b8332",
+            "source_ref": "native-source:6f81f8f22a28141a5023227e9b20b069a9dd1d562997e7387b7abd0085c6e518",
+            "worker_ref": "native-worker:2a5dfc701487c496228a182d4db0a13b1da97e8a39491301ae554ab860c76af5"
+          },
+          "request_digest": "94e45698dc0fe21d6a89a9835672c254dc2a388e92361e44b96221feeb3a5fa2",
+          "request_key": "worker-2a5dfc701487c496228a182d4db0a13b1da97e8a39491301ae554ab860c76af5",
+          "requires_final_composition_validation": true,
+          "revisions": {
+            "scene": "be51cd0926776b1fceb892f516d9a657554d81b7fdd02eddfce5302937147c2b"
+          },
+          "state": "candidate_received",
+          "tenant": "ten_4d37aa139c2042519904407b920264fa"
+        },
+        "modules": {
+          "scene": "be51cd0926776b1fceb892f516d9a657554d81b7fdd02eddfce5302937147c2b"
+        },
+        "no_changes": false,
+        "origin": {
+          "issue_url": "native://ten_4d37aa139c2042519904407b920264fa/issues/iss_d514a612e0894bb2852af6728a2b8332",
+          "source_ref": "native-source:6f81f8f22a28141a5023227e9b20b069a9dd1d562997e7387b7abd0085c6e518",
+          "worker_ref": "native-worker:2a5dfc701487c496228a182d4db0a13b1da97e8a39491301ae554ab860c76af5"
+        },
+        "provider_model": null,
+        "state": "produced",
+        "transcript": "7a0ea86866e66e0e86827f6376b3ddf67d71cf958405627fbc1f3a339a3bf66e",
+        "usage": null
+      },
+      "files": {
+        "scene/output.json": "{}",
+        "scene/inputs.json": "{\"base\": {\"scene\": {\"title\": \"夜航\", \"quality\": 2, \"budget\": 256}, \"modules\": {\"legacy\": false, \"render\": {\"api\": 3}}, \"audio\": {\"gain\": 0.5}}, \"contribution_a\": {\"scene\": {\"title\": \"夜航\", \"quality\": 3, \"budget\": 256}, \"modules\": {\"render\": {\"api\": 3}}, \"audio\": {\"gain\": 0.5}}, \"contribution_b\": {\"scene\": {\"title\": \"夜航\", \"quality\": 4, \"budget\": 384}, \"modules\": {\"legacy\": false, \"render\": {\"api\": 3}, \"weather\": {\"enabled\": true}}, \"audio\": {\"gain\": 0.5}}, \"instruction\": \"Integrate A removal of legacy and B addition of weather and budget change. Owner resolved quality conflict in favor of A. Preserve all unrelated values and Unicode title. Return full integrated strict JSON only into scene/output.json.\"}"
+      }
+    },
+    "finish": {
+      "accepted": {
+        "id": "9b3f2bf5c306ae0c6d4cef0938f97d912b19b73c6f1aeed1657f74d412007165",
+        "candidate": "88149c52e3e42e58f53eed1cfb5e654df79ef33badf1fa406f80e2fe9e10283a",
+        "modules": {
+          "integration-a3e5be8e2a8ec872c3a0ed1f1d95bb6d18b7fb8e6dc2634d0e4b4b87dcbe1da6": "ee030c1ced822fb35d4a5e5b43f31e4ce4ca30f2a0c8379409d695afc50e0b08",
+          "scene": "be51cd0926776b1fceb892f516d9a657554d81b7fdd02eddfce5302937147c2b"
+        },
+        "policy": "a373421a567e11017887134f06b2b70a5ff286cc367f3350e66d637531faecdd",
+        "recorded_at": 1794960081.8482597,
+        "request": {
+          "action": "publish",
+          "actor": "publisher",
+          "channel": "stable",
+          "expected": null,
+          "product": "held-out-1486",
+          "request_key": "integration-publish-a3e5be8e2a8ec872c3a0ed1f1d95bb6d18b7fb8e6dc2634d0e4b4b87dcbe1da6",
+          "review": "6d34f87e760c51a281c089dc2707bbff06f5974b66881091a9ed07e39ecf7fed",
+          "tenant": "ten_4d37aa139c2042519904407b920264fa"
+        },
+        "state": "content_selected",
+        "tenant": "ten_4d37aa139c2042519904407b920264fa"
+      },
+      "issue": {
+        "id": "iss_d514a612e0894bb2852af6728a2b8332",
+        "tenant_id": "ten_4d37aa139c2042519904407b920264fa",
+        "parent_id": null,
+        "number": 1,
+        "type": "task",
+        "status": "done",
+        "priority": "normal",
+        "title": "Held-out integration 1486",
+        "body_md": "",
+        "acceptance": "Integrate A removal of legacy and B addition of weather and budget change. Owner resolved quality conflict in favor of A. Preserve all unrelated values and Unicode title. Return full integrated strict JSON only into scene/output.json. Only scene/output.json may change. Preserve all input files byte-for-byte. JSON must have unique keys, finite numbers, exact object semantics.",
+        "requirement_id": "doc_cfc1ce2dabb64942a0b46c171c7d1d77",
+        "created_by": "usr_4eb16808317441f0abda1dd4a3528b8b",
+        "created_at": "2026-11-17T23:57:04.744225+00:00",
+        "updated_at": "2026-11-17T23:57:04.744225+00:00"
+      },
+      "progress": {
+        "total": 1,
+        "done": 1,
+        "percent": 100
+      },
+      "status": "accepted"
+    },
+    "last_status": {
+      "key": "2a5dfc701487c496228a182d4db0a13b1da97e8a39491301ae554ab860c76af5",
+      "state": "accepted",
+      "held": 0,
+      "node_held": 0
+    },
+    "cleanup": {
+      "node_pool_closed": true,
+      "server_archived": true,
+      "container_stop_exit": 0,
+      "container_absent": true,
+      "tunnel_closed": true
+    },
+    "quality": "root independently accepted sealed exact integration candidate before publication",
+    "reruns": 0
+  },
+  "same_control": {
+    "scene_input_bytes": true,
+    "initial_output_bytes": true,
+    "acceptance": true,
+    "model": "gpt-6.2-sol",
+    "effort": "low",
+    "timeout_seconds": 180,
+    "output_token_limit": "unsupported"
+  },
+  "failures": [
+    {
+      "stage": "harness preparation",
+      "error": "NativeCheckRunner profiles attribute absent; corrected to existing _registry before any model calls",
+      "product_source_changed": false
+    },
+    {
+      "stage": "Git postprocessing",
+      "error": "read_text newline normalization differed from snapshot; resumed from original closed worker without model replay",
+      "product_source_changed": false
+    }
+  ],
+  "limitations": [
+    "Windows launcher write_text transforms LF to CRLF: text semantic acceptance only, not exact proposal-byte preservation. Root owns subsequent source fix; this evidence belongs only to original hashes.",
+    "Git/native task execution identifiers and requirement metadata differ; held-out scene inputs, requested output and acceptance are identical. Sequential one-pair ordering/cache/latency effects prevent general efficiency inference.",
+    "Model protocol observes gpt-6.2-sol but generic identity verification remains false; no HTTP provenance claim. Raw last and total preserved separately, normalized usage and billing unknown.",
+    "One unrelated native module update is not same-product channel publication contention. NativeIntegration successor/manual advancement gap remains separately owned by root.",
+    "Windows outbound NativeNode.execute runs actual one-task materialization/closure/receipt protocol against isolated Linux coordinator with independent DBs; not a complete legacy editor/#951 orchestration or full persistent native serve qualification.",
+    "No cost savings claim, 250 concurrent model capacity claim, AA renderer quality/performance claim or production cutover.",
+    "Fixture principals authorize the isolated storage service; actual Heqi definition, runtime task grants, profile evaluation and root business review are retained separately."
+  ],
+  "source_consumer": "released: both provider process trees and local helper executions terminal; native node pool closed; owned Linux container absent; owned SSH tunnel and server process terminal; all tool sessions completed",
+  "cleanup_retention": "Retain private grants/budget/registries/worker journals, source manifests, DB archives, original failures and Git objects as required reproducibility and rollback evidence; deterministic temporary framework copies remain because host tool policy rejected recursive deletion before execution; no cleanup retry performed (deterministic-cleanup.json).",
+  "cleanup_detail": {
+    "target": "D:/GongGong/data-collection/receipts/duobao-1382/native-live-comparison-probes/deterministic-tests",
+    "state": "retained-cleanup-rejected",
+    "operation": "PowerShell Remove-Item -LiteralPath -Recurse after absolute path containment check",
+    "actual_outcome": "exec_command rejected before execution: blocked by policy",
+    "retry": false,
+    "reason": "Host tool policy blocked recursive deletion; obey no retry on blocked cleanup; all test processes terminal, summary retained in deterministic-tests.txt"
+  },
+  "independent_business_reviews": {
+    "native-live-git-business-review.json": "fd3b1da539c6d2e5b557c196c45fcd2f6229d1c80335784adeaa80d86d58b0c9",
+    "native-live-native-business-review.json": "4236e8f3b69a5f20f57b1bd4a5b3b157e866612c33a751026db7a845cef6617f"
+  },
+  "final_original_source_hashes_reverified": true
+}

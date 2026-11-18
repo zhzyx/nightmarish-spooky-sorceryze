@@ -1,0 +1,293 @@
+{
+  "profile_digest": "1333e7474d9b10d29d2f73eff8ec7f67e5cc340f2296d03d04422819fcfd949a",
+  "scope": "live",
+  "time": "2026-11-17T23:32:09.727630+00:00",
+  "suite_digest": "f15fea31b04740ad22cdf7fcb2e13d937b869901cfc7378eba7e642d1f0be934",
+  "passed_task_types": [
+    "native-text-integration"
+  ],
+  "results": [
+    {
+      "id": "disjoint-lighting-contributions",
+      "task_type": "native-text-integration",
+      "passed": true,
+      "response": {
+        "requested_model": "gpt-6.2-sol",
+        "observed_model": null,
+        "protocol": "codex-native-proposal",
+        "observed_model_source": null,
+        "observed_model_status": "unavailable",
+        "model_identity_verified": false,
+        "text": "{\"action\":\"final\",\"value\":{\"files\":[{\"content\":\"{\\n  \\\"fog\\\": {\\n    \\\"density\\\": 0.06\\n  },\\n  \\\"light\\\": {\\n    \\\"color\\\": \\\"warm\\\",\\n    \\\"intensity\\\": 3\\n  },\\n  \\\"version\\\": 1\\n}\\n\",\"path\":\"scene/integrated.json\"}],\"input_digest\":\"2e7d2472e4d5cfe4aa2a2062c81251320c01f97fa5f93f4df4b15bb51685d69c\",\"request_id\":\"1486-eval-disjoint-lighting-contributions\",\"summary\":\"Merged both accepted changes: fog density is 0.06 and light intensity is 3. Light color and version are unchanged.\"}}",
+        "finish_reason": "stop",
+        "usage": {},
+        "provider_request_id": "01a1ebd4-fbb6-7ec0-8459-a917aa96fef0",
+        "protocol_evidence": {
+          "request_id": "1486-eval-disjoint-lighting-contributions",
+          "input_digest": "2e7d2472e4d5cfe4aa2a2062c81251320c01f97fa5f93f4df4b15bb51685d69c",
+          "config_digest": "d63d5e9f900adc893676e64529e0ff1216226c17a40ff1e66518c33e7dab8831",
+          "requested_model": "gpt-6.2-sol",
+          "status": "proposed",
+          "proposal": {
+            "request_id": "1486-eval-disjoint-lighting-contributions",
+            "input_digest": "2e7d2472e4d5cfe4aa2a2062c81251320c01f97fa5f93f4df4b15bb51685d69c",
+            "summary": "Merged both accepted changes: fog density is 0.06 and light intensity is 3. Light color and version are unchanged.",
+            "files": [
+              {
+                "path": "scene/integrated.json",
+                "content": "{\n  \"fog\": {\n    \"density\": 0.06\n  },\n  \"light\": {\n    \"color\": \"warm\",\n    \"intensity\": 3\n  },\n  \"version\": 1\n}\n"
+              }
+            ]
+          },
+          "output_digest": "3c45cd84bd9f62b45dc2fbfd83e77d675d8901c1b9b81bc6eb187c2db4e6a45d",
+          "usage": {
+            "thread_id": "01a1ebd4-fb65-71b0-ab20-a06feca00865",
+            "turn_id": "01a1ebd4-fbb6-7ec0-8459-a917aa96fef0",
+            "observed_model": "gpt-6.2-sol",
+            "raw": {
+              "total": {
+                "totalTokens": 8599,
+                "inputTokens": 8406,
+                "cachedInputTokens": 0,
+                "cacheWriteInputTokens": 0,
+                "outputTokens": 193,
+                "reasoningOutputTokens": 0
+              },
+              "last": {
+                "totalTokens": 8599,
+                "inputTokens": 8406,
+                "cachedInputTokens": 0,
+                "cacheWriteInputTokens": 0,
+                "outputTokens": 193,
+                "reasoningOutputTokens": 0
+              },
+              "modelContextWindow": 475000
+            },
+            "status": "observed",
+            "updates": 1,
+            "source": "thread/tokenUsage/updated",
+            "normalized_usage": null
+          },
+          "execution_authority": false,
+          "process_tree_closed": true,
+          "process_exit_code": 0,
+          "process_reasons": [],
+          "elapsed_ms": 121297,
+          "remote_cancellation": "unknown",
+          "original_request_digest": "ad3ec01aa89febee11459dafef3b0a2d6057bfa1f398bf2369b56c2c560509ae",
+          "governance_digest": "014bc8ff318f03f3273815b00355e1f80c9dc56ad196b035350abc594ec0b4fb"
+        }
+      },
+      "elapsed_seconds": 121.76600000000326,
+      "quality": {
+        "passed": true,
+        "output_sha256": "06ff0c8c8cffeeb597bf9eb6f33fbcd59678e8d27c3d7637b0a9cc8d789a0b21",
+        "parsed_output": {
+          "fog": {
+            "density": 0.06
+          },
+          "light": {
+            "color": "warm",
+            "intensity": 3
+          },
+          "version": 1
+        },
+        "process_tree_closed": true
+      }
+    },
+    {
+      "id": "explicit-overlap-resolution",
+      "task_type": "native-text-integration",
+      "passed": true,
+      "response": {
+        "requested_model": "gpt-6.2-sol",
+        "observed_model": null,
+        "protocol": "codex-native-proposal",
+        "observed_model_source": null,
+        "observed_model_status": "unavailable",
+        "model_identity_verified": false,
+        "text": "{\"action\":\"final\",\"value\":{\"files\":[{\"content\":\"{\\n  \\\"audio\\\": {\\n    \\\"reverb\\\": \\\"hall\\\"\\n  },\\n  \\\"streaming\\\": {\\n    \\\"budget\\\": 384,\\n    \\\"radius\\\": 10\\n  }\\n}\\n\",\"path\":\"scene/integrated.json\"}],\"input_digest\":\"cf5db8c0573c8889147b4c8728831f0d4930c9438baa58967737300a14bdb545\",\"request_id\":\"1486-eval-explicit-overlap-resolution\",\"summary\":\"Uses contribution A’s radius of 10 and contribution B’s budget of 384, leaving the hall reverb unchanged.\"}}",
+        "finish_reason": "stop",
+        "usage": {},
+        "provider_request_id": "01a1ebd6-d794-7793-8dd1-69f5772c0f64",
+        "protocol_evidence": {
+          "request_id": "1486-eval-explicit-overlap-resolution",
+          "input_digest": "cf5db8c0573c8889147b4c8728831f0d4930c9438baa58967737300a14bdb545",
+          "config_digest": "d63d5e9f900adc893676e64529e0ff1216226c17a40ff1e66518c33e7dab8831",
+          "requested_model": "gpt-6.2-sol",
+          "status": "proposed",
+          "proposal": {
+            "request_id": "1486-eval-explicit-overlap-resolution",
+            "input_digest": "cf5db8c0573c8889147b4c8728831f0d4930c9438baa58967737300a14bdb545",
+            "summary": "Uses contribution A’s radius of 10 and contribution B’s budget of 384, leaving the hall reverb unchanged.",
+            "files": [
+              {
+                "path": "scene/integrated.json",
+                "content": "{\n  \"audio\": {\n    \"reverb\": \"hall\"\n  },\n  \"streaming\": {\n    \"budget\": 384,\n    \"radius\": 10\n  }\n}\n"
+              }
+            ]
+          },
+          "output_digest": "cfe38bf18f90bda956ce619a7c235a7c13409684f374a37e392caed895322c08",
+          "usage": {
+            "thread_id": "01a1ebd6-d747-7143-bfbb-bc4b26a84124",
+            "turn_id": "01a1ebd6-d794-7793-8dd1-69f5772c0f64",
+            "observed_model": "gpt-6.2-sol",
+            "raw": {
+              "total": {
+                "totalTokens": 8572,
+                "inputTokens": 8397,
+                "cachedInputTokens": 0,
+                "cacheWriteInputTokens": 0,
+                "outputTokens": 175,
+                "reasoningOutputTokens": 0
+              },
+              "last": {
+                "totalTokens": 8572,
+                "inputTokens": 8397,
+                "cachedInputTokens": 0,
+                "cacheWriteInputTokens": 0,
+                "outputTokens": 175,
+                "reasoningOutputTokens": 0
+              },
+              "modelContextWindow": 475000
+            },
+            "status": "observed",
+            "updates": 1,
+            "source": "thread/tokenUsage/updated",
+            "normalized_usage": null
+          },
+          "execution_authority": false,
+          "process_tree_closed": true,
+          "process_exit_code": 0,
+          "process_reasons": [],
+          "elapsed_ms": 121218,
+          "remote_cancellation": "unknown",
+          "original_request_digest": "a1e2db0a5b0231093edb2cc8aa54dcb89672ab5950040f7b2ed7c210bd7e7175",
+          "governance_digest": "3f70dea6946116fe313e06d578e2cca3af0be667350e47d4cbd3b088f050cbda"
+        }
+      },
+      "elapsed_seconds": 121.6869999999908,
+      "quality": {
+        "passed": true,
+        "output_sha256": "f45d755978233deef88504a82d104811bf8d3567dc93391a3b2cbc5be9d183e7",
+        "parsed_output": {
+          "audio": {
+            "reverb": "hall"
+          },
+          "streaming": {
+            "budget": 384,
+            "radius": 10
+          }
+        },
+        "process_tree_closed": true
+      }
+    },
+    {
+      "id": "deletion-and-added-object",
+      "task_type": "native-text-integration",
+      "passed": true,
+      "response": {
+        "requested_model": "gpt-6.2-sol",
+        "observed_model": null,
+        "protocol": "codex-native-proposal",
+        "observed_model_source": null,
+        "observed_model_status": "unavailable",
+        "model_identity_verified": false,
+        "text": "{\"action\":\"final\",\"value\":{\"files\":[{\"content\":\"{\\n  \\\"modules\\\": {\\n    \\\"audio\\\": {\\\"api\\\": 2},\\n    \\\"render\\\": {\\\"api\\\": 3}\\n  },\\n  \\\"title\\\": \\\"沉浸式场景\\\"\\n}\\n\",\"path\":\"scene/integrated.json\"}],\"input_digest\":\"f00567d2bb11091ce14dd090ea61c5ffc8e5015ec447144f02a500168f04e455\",\"request_id\":\"1486-eval-deletion-and-added-object\",\"summary\":\"Proposes removing the disabled legacy module and adding audio API 2, while preserving rendering API 3 and the original title.\"}}",
+        "finish_reason": "stop",
+        "usage": {},
+        "provider_request_id": "01a1ebd8-b506-7240-9e27-2d104f043f48",
+        "protocol_evidence": {
+          "request_id": "1486-eval-deletion-and-added-object",
+          "input_digest": "f00567d2bb11091ce14dd090ea61c5ffc8e5015ec447144f02a500168f04e455",
+          "config_digest": "d63d5e9f900adc893676e64529e0ff1216226c17a40ff1e66518c33e7dab8831",
+          "requested_model": "gpt-6.2-sol",
+          "status": "proposed",
+          "proposal": {
+            "request_id": "1486-eval-deletion-and-added-object",
+            "input_digest": "f00567d2bb11091ce14dd090ea61c5ffc8e5015ec447144f02a500168f04e455",
+            "summary": "Proposes removing the disabled legacy module and adding audio API 2, while preserving rendering API 3 and the original title.",
+            "files": [
+              {
+                "path": "scene/integrated.json",
+                "content": "{\n  \"modules\": {\n    \"audio\": {\"api\": 2},\n    \"render\": {\"api\": 3}\n  },\n  \"title\": \"沉浸式场景\"\n}\n"
+              }
+            ]
+          },
+          "output_digest": "409d3f1d1b5fe0a305122d2265136677e65099eaf023bbd1bc354a0bf81d0778",
+          "usage": {
+            "thread_id": "01a1ebd8-b4b5-7dd0-832f-4f6b6661f7a2",
+            "turn_id": "01a1ebd8-b506-7240-9e27-2d104f043f48",
+            "observed_model": "gpt-6.2-sol",
+            "raw": {
+              "total": {
+                "totalTokens": 8617,
+                "inputTokens": 8439,
+                "cachedInputTokens": 0,
+                "cacheWriteInputTokens": 0,
+                "outputTokens": 178,
+                "reasoningOutputTokens": 0
+              },
+              "last": {
+                "totalTokens": 8617,
+                "inputTokens": 8439,
+                "cachedInputTokens": 0,
+                "cacheWriteInputTokens": 0,
+                "outputTokens": 178,
+                "reasoningOutputTokens": 0
+              },
+              "modelContextWindow": 475000
+            },
+            "status": "observed",
+            "updates": 1,
+            "source": "thread/tokenUsage/updated",
+            "normalized_usage": null
+          },
+          "execution_authority": false,
+          "process_tree_closed": true,
+          "process_exit_code": 0,
+          "process_reasons": [],
+          "elapsed_ms": 120953,
+          "remote_cancellation": "unknown",
+          "original_request_digest": "a7aed456a1ee3353a2016e7feae38942a5ba704ce959833a687608c0c2a133cd",
+          "governance_digest": "c3f1711970b4fd58cd468239e73d838d918ff5192944f87eecf91dd8f4813b3f"
+        }
+      },
+      "elapsed_seconds": 121.46900000001187,
+      "quality": {
+        "passed": true,
+        "output_sha256": "da6a6e708fb634895136e353f94e1341eb2c66447c66577e54e6a3c3bb0445b5",
+        "parsed_output": {
+          "modules": {
+            "audio": {
+              "api": 2
+            },
+            "render": {
+              "api": 3
+            }
+          },
+          "title": "沉浸式场景"
+        },
+        "process_tree_closed": true
+      }
+    }
+  ],
+  "approval_granted": false,
+  "limitations": "Three explicitly supplied text-integration cases, raw partial CLI usage only. Not general coding/AA quality, production admission or full workflow performance.",
+  "elapsed_seconds": 365.8899999999994,
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "9cdd447f8d3a9d75f462baab326c8f112ffaeacfe360da64b595a7eedd441010",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "7c5a463017a8fcf605a1cc3082dd20b5885abada8085b07cd1816e9183529441",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "a32bc1a7c3ab72f2b7d8ac02c0d4bba714f4fd1b526189ef4d3c4d091dc4e48e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "ccd4c01dde99dfa16aa9b91c2e2dfb398312fc2f21e3e9cc89b33cdb0a9a6316",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "ce9f9577af769d2c32277e4f889896f6f8ed02ffc4ed2a8945246486d2d74ebb",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "fb59c3e4c8f02cd013a895a81bdab0b68f4954259ca5548579052a8e021b18ad",
+    "customizations/platforms/ai-access/host-http/runtime/adapters.py": "b3fef23b8595c699fdaeb819c0f0c1426dc9e746956096f39ade1bc6f583466a",
+    "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "4f3f3788fe070ed14f57f9b3fd04d0d260cad1d5eb6edd72ab6d84c980030261",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "98f3864a26ffff48359400c95fd389def735c01a51a5af30c13180a1f9bc591c",
+    "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
+    "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "224502a920c656b94e8326bbceaa7daf31c7fb951fac1d99dc4867f1652396e7"
+  },
+  "attempts": 3,
+  "automatic_retries": 0
+}

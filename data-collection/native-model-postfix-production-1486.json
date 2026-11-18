@@ -1,0 +1,1121 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-postfix-production.json",
+    "sha256": "4e500170f4916ee696c3969949d6c008a7777adb0dd6b93d99b1b2bea0fc1932",
+    "path_base": "absolute current host audit archive"
+  },
+  "export": "Lossless JSON value export with repository LF; original bytes retained.",
+  "report": {
+    "issue": 1486,
+    "related_issue": 1481,
+    "status": "passed-scoped-current-source-native-regression",
+    "qualification": {
+      "state": "passed",
+      "source_sha256": {
+        "producer": {
+          ".gitattributes": "690754255d939f647bfcb85523ae8ca61823b03daa1e412ed68a01b2f1b30d98",
+          ".pre-commit-config.yaml": "e8ba40a2fc38d8e52cca922d9bf1de23133b3ee496db439d59c66052fe57fd6c",
+          "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "60142028e8b5488924c6b6ad81912c702e14229db8054af30351b3692a660976",
+          "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "678497caa907733894d7a582b14eb9229efe818f7085bd1a68a593bc441b76fa",
+          "customizations/components/tianxuan/sinan-workorders/native_worker.py": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "c8c6076f352c3f8e26431a1724bf8df4a7c406c84ae210fa91842c8d49733eb6",
+          "customizations/platforms/ai-access/host-http/runtime/adapters.py": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08",
+          "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa",
+          "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156",
+          "customizations/platforms/ai-access/host-http/runtime/runner.py": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5",
+          "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
+          "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "0fb66513ba9856bdaf5b0d097ede8d44243284a25fcd79e9bb7d9bc9028c6883",
+          "tests/editor/test_native_host_inputs.py": "7550127c6050d0597440f00a2c2d2cb3f9b660fe5c1c1f6ee1453a18bb2374b9",
+          "tools/editor_native_cache.py": "822223ccf963ee95645db54aaecc5117a18658d607ff37a38ca1fa090a834fea",
+          "tools/native_host_inputs.json": "c13971a00aca1a792340154fff73d6d212115dc6d2c4c1a04be25fc54d46dcc9"
+        },
+        "remote": {
+          ".gitattributes": "6167adb7e1741e46c1747bb4d23b4eab041f53eaf5b682026fe1b721ca2b6a95",
+          ".pre-commit-config.yaml": "350a3932b8a4659ca77cfc92d522dc367df531008d38bae366239d21fb3e9472",
+          "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+          "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1",
+          "customizations/components/tianxuan/server/test_tianxuan_core.py": "8ba19b1ba2f0f5122bf37906fbcac00273f8a6326355b3d16f4df37f3f1ea95b",
+          "customizations/components/tianxuan/server/tianxuan_core.py": "fe4f5f081f73e46fef83855acc1a148f6685007039a8ebe9cb9ec202eb31a427",
+          "customizations/components/tianxuan/sinan-workorders/native_node.py": "75fa74d0850c9aa6424c048aa7d474b506dba4ae6b734e543507753ecdb6c273",
+          "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "e5267934543b8087d9d73cd3abac1dc49f199c450a8d5ee58b705db48b32c015",
+          "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "54f2b6dbe759d6ae3e965d7399534ec600c07208be2422d9f0d924b932ddca64",
+          "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "c28c50b2a7fff9efdce1cd682200619e7c7bcee427eb4cb30b144b989998a9e5",
+          "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "eb79a77915e6abbfe5ae69cc83b7e60bfa985e243189eb98a5a825995485d961",
+          "tools/native_host_inputs.json": "0771548bc112e33b0987437f88b275261f96383455d84f087865bdeee5fab043"
+        }
+      },
+      "evaluation_sha256": "71d2bbeb776a92ff87b36c52039c110338230f38a9833310bb414e993d60f1aa",
+      "profile_digest": "1c4c8a89a05af14bedd384546761fb5cabdcbcabf97b8153de543dad1b6de553",
+      "installation_digest": "e566d736e74ca6521013f040e15c7604813a207ed1d2f98131b5a63c1a49bcc7",
+      "original": "b9fbf2f9e17d0694ad421218cc5dc64ae5c98163e70be68a23032bec9b36940d",
+      "governance": "d99e638fba7c459a48a0e7355176500c305cadd5d4a8a18425d78187d8551ed4",
+      "effective": "1e5e78d67841dc5f7bce152f5bc85923e896104d6ff4dff3a5f24168f48f9c02",
+      "usage": {
+        "thread_id": "01a1ec01-ab63-71e1-9c72-1fa258e26bc9",
+        "turn_id": "01a1ec01-abab-70c0-9993-d1b8e6cde23a",
+        "observed_model": "gpt-6.2-sol",
+        "raw": {
+          "total": {
+            "totalTokens": 8852,
+            "inputTokens": 8624,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 228,
+            "reasoningOutputTokens": 0
+          },
+          "last": {
+            "totalTokens": 8852,
+            "inputTokens": 8624,
+            "cachedInputTokens": 0,
+            "cacheWriteInputTokens": 0,
+            "outputTokens": 228,
+            "reasoningOutputTokens": 0
+          },
+          "modelContextWindow": 475000
+        },
+        "status": "observed",
+        "updates": 1,
+        "source": "thread/tokenUsage/updated",
+        "normalized_usage": null
+      },
+      "physical_closure": true,
+      "strict_semantics": true,
+      "method_recall": [
+        "bind-consumer-release",
+        "await-terminal-observers"
+      ],
+      "limitations": "Only one composite qualification; normalized usage and observed model proof unavailable; no broad admission."
+    },
+    "production": {
+      "issue": 1486,
+      "variant": "native-live",
+      "container": "native-postfix-1486-ca6777985370",
+      "provider_calls": 1,
+      "state": "passed",
+      "cleanup": {
+        "node_pool_closed": true,
+        "server_archived": true,
+        "container_stop_exit": 0,
+        "container_absent": true,
+        "service_exit_code": 0,
+        "tunnel_closed": true
+      },
+      "execution": "483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f",
+      "unrelated": {
+        "state": "received",
+        "revisions": {
+          "unrelated": "a7fa808324d7ab3a9dbf25aac47b7ae69d1ea3385a0e227b1b6b44477a95dae8"
+        },
+        "request_digest": "7f0beee0cd83d157e7809f2f4f32f247d69f0498857977aa0e5cc42c45e919b7"
+      },
+      "production_elapsed_seconds": 135.0619999999908,
+      "physical_closed": true,
+      "sealed": {
+        "plan": "4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb",
+        "result": {
+          "state": "integrated",
+          "plan": "4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb",
+          "candidate": "218c93256e24b5b9caed2872c92ee3308fd51fe640efaf9ad4c5d38b31a03caf",
+          "modules": {
+            "integration-4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb": "3793c05671cfc7eaab1f89b5256f313c51776931674eddd29602f7099a084b36",
+            "scene": "eb6305184d0bd183f8de68af83b2121dbdfea5cb44c6db7b56cc9d1d7dfd7edc"
+          },
+          "authors": [
+            "usr_8f85cc26f0e34e2baf0081884bbc0623"
+          ],
+          "intake": {
+            "state": "candidate_received",
+            "tenant": "ten_4ebe8bf4464044159c2ef3fe2164b04b",
+            "actor": "usr_8f85cc26f0e34e2baf0081884bbc0623",
+            "request_key": "integration-4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb",
+            "request_digest": "f1638e43cdbe3405088bf56cfadea637cf8ae04925a6c0afcae70998715a9edc",
+            "origin": {
+              "source_ref": "4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb",
+              "worker_ref": "heqi-4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb",
+              "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1486"
+            },
+            "inputs": {
+              "scene": {
+                "module": "scene",
+                "base": "2b02809bbd358fea0add8d580472dd941c72137c7e40c512f0d8f64df74eb04b",
+                "reads": null,
+                "edits": {
+                  "output.json": "b6b526c1fb2a40f10529967e4d3d54a370ab4d3e4a8c94d0770eb6552acbb201"
+                },
+                "dependencies": {}
+              }
+            },
+            "revisions": {
+              "scene": "eb6305184d0bd183f8de68af83b2121dbdfea5cb44c6db7b56cc9d1d7dfd7edc"
+            },
+            "requires_final_composition_validation": true,
+            "id": "4e1863c4f773acbba3e1e2bb1dc06fc09dae1198b10c6075aea94f8a16998ee1"
+          }
+        },
+        "check": {
+          "state": "complete",
+          "actor": "usr_8f85cc26f0e34e2baf0081884bbc0623",
+          "candidate": "218c93256e24b5b9caed2872c92ee3308fd51fe640efaf9ad4c5d38b31a03caf",
+          "check": "check",
+          "context": {
+            "toolchain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "environment": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "parameters": {
+              "registry": "b59d2e95adc06e08e9f03df785a4dd776e942f1fc75b29c195edc1cb05a20bce",
+              "execution_contract": "native-check/2:cwd=output:scoped-input",
+              "input_view": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06",
+              "workspace_helpers": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66",
+              "process_helper": [
+                "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78"
+              ],
+              "runner": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f"
+            }
+          },
+          "binding": {
+            "key": "692981141694b6169553886913af00252704b96968c303b179ec6a0736398299",
+            "binding": {
+              "format": "duobao-check-input/1",
+              "check": "check",
+              "policy": "e09b71b794a3f3f161a0dcd61a0e503a9d7fb347d1e3b77be50814daaeaaccf8",
+              "inputs": {
+                "integration-4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb": {
+                  "objects": {
+                    "integration.json": "4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb"
+                  },
+                  "dependencies": {},
+                  "revision": "3793c05671cfc7eaab1f89b5256f313c51776931674eddd29602f7099a084b36"
+                },
+                "scene": {
+                  "objects": {
+                    "inputs.json": "bac5954ce5c946a20470c82d878d60b29f45a66e6f643bffce093f37de49acb8",
+                    "output.json": "b6b526c1fb2a40f10529967e4d3d54a370ab4d3e4a8c94d0770eb6552acbb201"
+                  },
+                  "dependencies": {},
+                  "revision": "eb6305184d0bd183f8de68af83b2121dbdfea5cb44c6db7b56cc9d1d7dfd7edc"
+                }
+              },
+              "toolchain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "environment": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "parameters": {
+                "execution_contract": "native-check/2:cwd=output:scoped-input",
+                "input_view": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06",
+                "process_helper": [
+                  "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78"
+                ],
+                "registry": "b59d2e95adc06e08e9f03df785a4dd776e942f1fc75b29c195edc1cb05a20bce",
+                "runner": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+                "workspace_helpers": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66"
+              }
+            }
+          },
+          "evidence_request": "native-run-5f5ae8978b290af3c07654395dd42ce4a5c4da8d6cba10a3955d5c63e8beafdc",
+          "workspace": "/tmp/comparison-state/checks/native-check-5f5ae8978b290af3c07654395dd42ce4a5c4da8d6cba10a3955d5c63e8beafdc",
+          "outcome": "passed",
+          "log": "{\"exit_code\":0,\"output_base64\":\"\",\"raw_log_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"reasons\":[],\"transcript_truncated\":false}",
+          "exit_code": 0,
+          "reasons": [],
+          "evidence": "97368c6b03c15e698edcf137ab6d00b65dff4b89d2f6ff089ecba827f918e900"
+        },
+        "output": "{\n  \"scene\": {\n    \"title\": \"夜航\",\n    \"quality\": 3,\n    \"budget\": 384\n  },\n  \"modules\": {\n    \"render\": { \"api\": 3 },\n    \"weather\": { \"enabled\": true }\n  },\n  \"audio\": { \"gain\": 0.5 }\n}\n",
+        "task": {
+          "actor": "usr_8f85cc26f0e34e2baf0081884bbc0623",
+          "capabilities": [],
+          "check_contexts": {
+            "check": {
+              "environment": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "parameters": {
+                "execution_contract": "native-check/2:cwd=output:scoped-input",
+                "input_view": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06",
+                "process_helper": [
+                  "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78"
+                ],
+                "registry": "b59d2e95adc06e08e9f03df785a4dd776e942f1fc75b29c195edc1cb05a20bce",
+                "runner": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f",
+                "workspace_helpers": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66"
+              },
+              "toolchain": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          },
+          "checks": [
+            "check"
+          ],
+          "delivery_mode": "contribution",
+          "dependencies": {},
+          "installation": "4a8ccbdaa0878fc23bd9a0c05b7c42be5e40806b938f1bd51f005cdd0ae5aceb",
+          "issue": "iss_9953394547d649ce90abc27871c33fca",
+          "mandate": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+          "producer": "usr_8f85cc26f0e34e2baf0081884bbc0623",
+          "product": "held-out-1486",
+          "profile": "local",
+          "selected": {
+            "scene": "2b02809bbd358fea0add8d580472dd941c72137c7e40c512f0d8f64df74eb04b"
+          },
+          "source": {
+            "definition": {
+              "acceptance": "Integrate A removal of legacy and B addition of weather and budget change. Owner resolved quality conflict in favor of A. Preserve all unrelated values and Unicode title. Return full integrated strict JSON only into scene/output.json. Only scene/output.json may change. Preserve all input files byte-for-byte. JSON must have unique keys, finite numbers, exact object semantics.",
+              "body_md": "",
+              "id": "iss_9953394547d649ce90abc27871c33fca",
+              "parent_id": null,
+              "requirement_id": "doc_2ec46d656b8b4723b30a8efc87ee165b",
+              "requirements": [
+                {
+                  "body_md": "---\nrequest_id: native\nkind: requirement\nlang: zh\n---\n\n# Native\n\n## 目标\n\nOutcome\n\n## 范围\n\nScope\n\n## 验收\n\nPass\n",
+                  "id": "doc_2ec46d656b8b4723b30a8efc87ee165b",
+                  "kind": "requirement",
+                  "title": "Native"
+                }
+              ],
+              "tenant_id": "ten_4ebe8bf4464044159c2ef3fe2164b04b",
+              "title": "Held-out integration 1486",
+              "type": "task"
+            },
+            "revision": "27931db832d99d4517700aa971f0789d19531dce30f6bbb96dc3d6e18f574d72"
+          },
+          "tenant": "ten_4ebe8bf4464044159c2ef3fe2164b04b",
+          "writes": {
+            "scene": [
+              "output.json"
+            ]
+          }
+        },
+        "terminal": {
+          "candidate": "916bdd1a649611925ce8eb5a33296a6e27ff99bae820f71703b6556e992e660a",
+          "exit_code": 0,
+          "intake": {
+            "actor": "usr_8f85cc26f0e34e2baf0081884bbc0623",
+            "id": "4ca57c15a2ef79a87352c9dd7b026a5599270408b68c6a21d4dedc101aef8369",
+            "inputs": {
+              "scene": {
+                "base": "2b02809bbd358fea0add8d580472dd941c72137c7e40c512f0d8f64df74eb04b",
+                "dependencies": {},
+                "edits": {
+                  "output.json": "b6b526c1fb2a40f10529967e4d3d54a370ab4d3e4a8c94d0770eb6552acbb201"
+                },
+                "module": "scene",
+                "reads": null
+              }
+            },
+            "origin": {
+              "issue_url": "native://ten_4ebe8bf4464044159c2ef3fe2164b04b/issues/iss_9953394547d649ce90abc27871c33fca",
+              "source_ref": "native-source:61c2a0cb27c5b8032c57927c93da451901321ab684fe7e3603ba9562afd3fc3d",
+              "worker_ref": "native-worker:483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f"
+            },
+            "request_digest": "93a5f2dab72e957236d43ce6a0b66fcc31b7ce536daf3a05caffa7a786b29076",
+            "request_key": "worker-483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f",
+            "requires_final_composition_validation": true,
+            "revisions": {
+              "scene": "eb6305184d0bd183f8de68af83b2121dbdfea5cb44c6db7b56cc9d1d7dfd7edc"
+            },
+            "state": "candidate_received",
+            "tenant": "ten_4ebe8bf4464044159c2ef3fe2164b04b"
+          },
+          "modules": {
+            "scene": "eb6305184d0bd183f8de68af83b2121dbdfea5cb44c6db7b56cc9d1d7dfd7edc"
+          },
+          "no_changes": false,
+          "origin": {
+            "issue_url": "native://ten_4ebe8bf4464044159c2ef3fe2164b04b/issues/iss_9953394547d649ce90abc27871c33fca",
+            "source_ref": "native-source:61c2a0cb27c5b8032c57927c93da451901321ab684fe7e3603ba9562afd3fc3d",
+            "worker_ref": "native-worker:483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f"
+          },
+          "provider_model": null,
+          "state": "produced",
+          "transcript": "1366e12a74c10583c947c7011afa43c48e4dea700aa93a62fe846dd5976e4b41",
+          "usage": null
+        },
+        "files": {
+          "scene/output.json": "{}",
+          "scene/inputs.json": "{\"base\": {\"scene\": {\"title\": \"夜航\", \"quality\": 2, \"budget\": 256}, \"modules\": {\"legacy\": false, \"render\": {\"api\": 3}}, \"audio\": {\"gain\": 0.5}}, \"contribution_a\": {\"scene\": {\"title\": \"夜航\", \"quality\": 3, \"budget\": 256}, \"modules\": {\"render\": {\"api\": 3}}, \"audio\": {\"gain\": 0.5}}, \"contribution_b\": {\"scene\": {\"title\": \"夜航\", \"quality\": 4, \"budget\": 384}, \"modules\": {\"legacy\": false, \"render\": {\"api\": 3}, \"weather\": {\"enabled\": true}}, \"audio\": {\"gain\": 0.5}}, \"instruction\": \"Integrate A removal of legacy and B addition of weather and budget change. Owner resolved quality conflict in favor of A. Preserve all unrelated values and Unicode title. Return full integrated strict JSON only into scene/output.json.\"}"
+        }
+      },
+      "byte_verification": {
+        "exact_utf8_proposal_bytes": true,
+        "original_input_bytes": true,
+        "strict_semantics": true,
+        "output_sha256": "b6b526c1fb2a40f10529967e4d3d54a370ab4d3e4a8c94d0770eb6552acbb201",
+        "output_bytes": 191,
+        "call": {
+          "config_digest": "e566d736e74ca6521013f040e15c7604813a207ed1d2f98131b5a63c1a49bcc7",
+          "elapsed_ms": 122625,
+          "execution_authority": false,
+          "governance_digest": "4b69303459077192c9364f22661f6c6a8d4729fac5226329fd5bc697df36553e",
+          "input_digest": "a97c02c833a59c46a6745e794e8b1cb40e5763acf9c68f0718ed53920e6e7177",
+          "original_request_digest": "6eff3071e16e0436c7109f5cabfcc7d6484f4334e595cc2d510e2201eb67bfab",
+          "output_digest": "b60e53b08ddef41547d9468018a0d7f10b97d1c304786fd65c638234d1a99200",
+          "process_exit_code": 0,
+          "process_reasons": [],
+          "process_tree_closed": true,
+          "proposal": {
+            "files": [
+              {
+                "content": "{\n  \"scene\": {\n    \"title\": \"夜航\",\n    \"quality\": 3,\n    \"budget\": 384\n  },\n  \"modules\": {\n    \"render\": { \"api\": 3 },\n    \"weather\": { \"enabled\": true }\n  },\n  \"audio\": { \"gain\": 0.5 }\n}\n",
+                "path": "scene/output.json"
+              }
+            ],
+            "input_digest": "a97c02c833a59c46a6745e794e8b1cb40e5763acf9c68f0718ed53920e6e7177",
+            "request_id": "483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f",
+            "summary": "Proposes A’s legacy removal and quality setting, and B’s weather module and budget change. Only scene/output.json is included."
+          },
+          "remote_cancellation": "unknown",
+          "request_id": "483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f",
+          "requested_model": "gpt-6.2-sol",
+          "status": "proposed",
+          "usage": {
+            "normalized_usage": null,
+            "observed_model": "gpt-6.2-sol",
+            "raw": {
+              "last": {
+                "cacheWriteInputTokens": 0,
+                "cachedInputTokens": 0,
+                "inputTokens": 9205,
+                "outputTokens": 244,
+                "reasoningOutputTokens": 0,
+                "totalTokens": 9449
+              },
+              "modelContextWindow": 475000,
+              "total": {
+                "cacheWriteInputTokens": 0,
+                "cachedInputTokens": 0,
+                "inputTokens": 9205,
+                "outputTokens": 244,
+                "reasoningOutputTokens": 0,
+                "totalTokens": 9449
+              }
+            },
+            "source": "thread/tokenUsage/updated",
+            "status": "observed",
+            "thread_id": "01a1ec0c-19ad-76a2-a4db-844883470036",
+            "turn_id": "01a1ec0c-1a04-7801-8340-5f7d53083b0a",
+            "updates": 1
+          }
+        }
+      },
+      "runtime_events": [
+        {
+          "seq": 1,
+          "time": "2026-11-18T00:26:16.210521+00:00",
+          "kind": "request",
+          "data": {
+            "outcome": "Integrate explicitly supplied accepted text contributions in this task-owned native workspace; preserve immutable original inputs and independent acceptance."
+          }
+        },
+        {
+          "seq": 2,
+          "time": "2026-11-18T00:26:16.422814+00:00",
+          "kind": "call_start",
+          "data": {
+            "call": 1,
+            "profile_id": "heqi-native-text-integration-1486",
+            "step_id": "proposal"
+          }
+        },
+        {
+          "seq": 3,
+          "time": "2026-11-18T00:28:19.530979+00:00",
+          "kind": "call_end",
+          "data": {
+            "call": 1,
+            "finish_reason": "stop",
+            "model_identity_verified": false,
+            "observed_model": null,
+            "observed_model_source": null,
+            "observed_model_status": "unavailable",
+            "profile": {
+              "model": "gpt-6.2-sol",
+              "protocol": "codex-native-proposal"
+            },
+            "protocol": "codex-native-proposal",
+            "protocol_evidence": {
+              "config_digest": "e566d736e74ca6521013f040e15c7604813a207ed1d2f98131b5a63c1a49bcc7",
+              "elapsed_ms": 122625,
+              "execution_authority": false,
+              "governance_digest": "4b69303459077192c9364f22661f6c6a8d4729fac5226329fd5bc697df36553e",
+              "input_digest": "a97c02c833a59c46a6745e794e8b1cb40e5763acf9c68f0718ed53920e6e7177",
+              "original_request_digest": "6eff3071e16e0436c7109f5cabfcc7d6484f4334e595cc2d510e2201eb67bfab",
+              "output_digest": "b60e53b08ddef41547d9468018a0d7f10b97d1c304786fd65c638234d1a99200",
+              "process_exit_code": 0,
+              "process_reasons": [],
+              "process_tree_closed": true,
+              "proposal": {
+                "files": [
+                  {
+                    "content": "{\n  \"scene\": {\n    \"title\": \"夜航\",\n    \"quality\": 3,\n    \"budget\": 384\n  },\n  \"modules\": {\n    \"render\": { \"api\": 3 },\n    \"weather\": { \"enabled\": true }\n  },\n  \"audio\": { \"gain\": 0.5 }\n}\n",
+                    "path": "scene/output.json"
+                  }
+                ],
+                "input_digest": "a97c02c833a59c46a6745e794e8b1cb40e5763acf9c68f0718ed53920e6e7177",
+                "request_id": "483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f",
+                "summary": "Proposes A’s legacy removal and quality setting, and B’s weather module and budget change. Only scene/output.json is included."
+              },
+              "remote_cancellation": "unknown",
+              "request_id": "483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f",
+              "requested_model": "gpt-6.2-sol",
+              "status": "proposed",
+              "usage": {
+                "normalized_usage": null,
+                "observed_model": "gpt-6.2-sol",
+                "raw": {
+                  "last": {
+                    "cacheWriteInputTokens": 0,
+                    "cachedInputTokens": 0,
+                    "inputTokens": 9205,
+                    "outputTokens": 244,
+                    "reasoningOutputTokens": 0,
+                    "totalTokens": 9449
+                  },
+                  "modelContextWindow": 475000,
+                  "total": {
+                    "cacheWriteInputTokens": 0,
+                    "cachedInputTokens": 0,
+                    "inputTokens": 9205,
+                    "outputTokens": 244,
+                    "reasoningOutputTokens": 0,
+                    "totalTokens": 9449
+                  }
+                },
+                "source": "thread/tokenUsage/updated",
+                "status": "observed",
+                "thread_id": "01a1ec0c-19ad-76a2-a4db-844883470036",
+                "turn_id": "01a1ec0c-1a04-7801-8340-5f7d53083b0a",
+                "updates": 1
+              }
+            },
+            "provider_request_id": "01a1ec0c-1a04-7801-8340-5f7d53083b0a",
+            "requested_model": "gpt-6.2-sol",
+            "started_at": "2026-11-18T00:26:16.422814+00:00",
+            "status": "received",
+            "step_id": "proposal",
+            "text": "{\"action\":\"final\",\"value\":{\"files\":[{\"content\":\"{\\n  \\\"scene\\\": {\\n    \\\"title\\\": \\\"夜航\\\",\\n    \\\"quality\\\": 3,\\n    \\\"budget\\\": 384\\n  },\\n  \\\"modules\\\": {\\n    \\\"render\\\": { \\\"api\\\": 3 },\\n    \\\"weather\\\": { \\\"enabled\\\": true }\\n  },\\n  \\\"audio\\\": { \\\"gain\\\": 0.5 }\\n}\\n\",\"path\":\"scene/output.json\"}],\"input_digest\":\"a97c02c833a59c46a6745e794e8b1cb40e5763acf9c68f0718ed53920e6e7177\",\"request_id\":\"483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f\",\"summary\":\"Proposes A’s legacy removal and quality setting, and B’s weather module and budget change. Only scene/output.json is included.\"}}",
+            "usage": {}
+          }
+        },
+        {
+          "seq": 4,
+          "time": "2026-11-18T00:28:19.533981+00:00",
+          "kind": "step_result",
+          "data": {
+            "call": 1,
+            "step_id": "proposal",
+            "value": {
+              "files": [
+                {
+                  "content": "{\n  \"scene\": {\n    \"title\": \"夜航\",\n    \"quality\": 3,\n    \"budget\": 384\n  },\n  \"modules\": {\n    \"render\": { \"api\": 3 },\n    \"weather\": { \"enabled\": true }\n  },\n  \"audio\": { \"gain\": 0.5 }\n}\n",
+                  "path": "scene/output.json"
+                }
+              ],
+              "input_digest": "a97c02c833a59c46a6745e794e8b1cb40e5763acf9c68f0718ed53920e6e7177",
+              "request_id": "483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f",
+              "summary": "Proposes A’s legacy removal and quality setting, and B’s weather module and budget change. Only scene/output.json is included."
+            }
+          }
+        },
+        {
+          "seq": 5,
+          "time": "2026-11-18T00:28:19.897135+00:00",
+          "kind": "completed",
+          "data": {
+            "candidate_only": true
+          }
+        }
+      ],
+      "finish": {
+        "accepted": {
+          "id": "539c1dd2ecfe6a9f9bd9d43758785ac4506857dd21fb4239d30142214a8db543",
+          "candidate": "218c93256e24b5b9caed2872c92ee3308fd51fe640efaf9ad4c5d38b31a03caf",
+          "modules": {
+            "integration-4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb": "3793c05671cfc7eaab1f89b5256f313c51776931674eddd29602f7099a084b36",
+            "scene": "eb6305184d0bd183f8de68af83b2121dbdfea5cb44c6db7b56cc9d1d7dfd7edc"
+          },
+          "policy": "a373421a567e11017887134f06b2b70a5ff286cc367f3350e66d637531faecdd",
+          "recorded_at": 1794961768.536733,
+          "request": {
+            "action": "publish",
+            "actor": "publisher",
+            "channel": "stable",
+            "expected": null,
+            "product": "held-out-1486",
+            "request_key": "integration-publish-4ddc511b46f8f60d05cd1345f8feeac3facbe14d455a39b2d0de11baf83c72eb",
+            "review": "e6145faaa281f177e0cf9ab4cc1d6863f3aba6bdb690326db81e6e0221e2de93",
+            "tenant": "ten_4ebe8bf4464044159c2ef3fe2164b04b"
+          },
+          "state": "content_selected",
+          "tenant": "ten_4ebe8bf4464044159c2ef3fe2164b04b"
+        },
+        "issue": {
+          "id": "iss_9953394547d649ce90abc27871c33fca",
+          "tenant_id": "ten_4ebe8bf4464044159c2ef3fe2164b04b",
+          "parent_id": null,
+          "number": 1,
+          "type": "task",
+          "status": "done",
+          "priority": "normal",
+          "title": "Held-out integration 1486",
+          "body_md": "",
+          "acceptance": "Integrate A removal of legacy and B addition of weather and budget change. Owner resolved quality conflict in favor of A. Preserve all unrelated values and Unicode title. Return full integrated strict JSON only into scene/output.json. Only scene/output.json may change. Preserve all input files byte-for-byte. JSON must have unique keys, finite numbers, exact object semantics.",
+          "requirement_id": "doc_2ec46d656b8b4723b30a8efc87ee165b",
+          "created_by": "usr_8f85cc26f0e34e2baf0081884bbc0623",
+          "created_at": "2026-11-18T00:26:04.168109+00:00",
+          "updated_at": "2026-11-18T00:26:04.168109+00:00"
+        },
+        "progress": {
+          "total": 1,
+          "done": 1,
+          "percent": 100
+        },
+        "status": "accepted"
+      },
+      "publication_elapsed_seconds": 1.139999999999418,
+      "last_status": {
+        "key": "483a60237fcfe43002c30d5dd37800f6ba27a4e44757d0fffcac5a99c277836f",
+        "state": "accepted",
+        "held": 0,
+        "node_held": 0
+      }
+    },
+    "exact_composed_sources": {
+      "customizations/components/tianxuan/duobao/backup.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\backup.py",
+        "sha256": "19b1e4fc00cb09acbef489f6369e875fbe153c1ca1495c149770acabd9839548"
+      },
+      "customizations/components/tianxuan/duobao/backup_drill.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\backup_drill.py",
+        "sha256": "289a655a9f226ae757b1c1d92269ce13119151e5f1b65696ace31807603a51c1"
+      },
+      "customizations/components/tianxuan/duobao/gitea_client.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\gitea_client.py",
+        "sha256": "77c1ce5fe3c3581c51f6b31a0f0278b0cdf83f85e5d164fab9f39618c84fcc38"
+      },
+      "customizations/components/tianxuan/duobao/git_service.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\git_service.py",
+        "sha256": "55871785d6a4d9eaf32c2caf690e66e61b1a7e0ef9aa731c350104913773d10f"
+      },
+      "customizations/components/tianxuan/duobao/merge_queue.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\merge_queue.py",
+        "sha256": "4a3c39eed0a09091fcd33a3d5fd047b760b08ec76e2b1e11846f2d96e43d6755"
+      },
+      "customizations/components/tianxuan/duobao/native_candidates.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\native_candidates.py",
+        "sha256": "5f485fb726ee6a5463ab7dfb1bd336d389499f0e35057b78aef2870014f977c4"
+      },
+      "customizations/components/tianxuan/duobao/native_candidates_cli.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\native_candidates_cli.py",
+        "sha256": "152c6268aad889f69c9f8f965b151a6d25f49d96dc6690d128341dce91b45094"
+      },
+      "customizations/components/tianxuan/duobao/native_check_inputs.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\native_check_inputs.py",
+        "sha256": "a3880f7480b1b98234a5d022cc77d4ca173de9c09dc898fa27558a1e92575f06"
+      },
+      "customizations/components/tianxuan/duobao/native_check_runner.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\native_check_runner.py",
+        "sha256": "93a933d4cced3d1c34d991f3814119945ff6b448a2f106e097d8790f7ed98f8f"
+      },
+      "customizations/components/tianxuan/duobao/native_cli.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\native_cli.py",
+        "sha256": "e7db40a12ca5b18d753a182f7d8a853c76d8f96bb9c3893a27bd842049a9613a"
+      },
+      "customizations/components/tianxuan/duobao/native_evidence.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\native_evidence.py",
+        "sha256": "c0497cae5a43cc653b2135dcc99cda3bbd0282b6c9b50066de9759c12f24be1d"
+      },
+      "customizations/components/tianxuan/duobao/native_release.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\native_release.py",
+        "sha256": "4ce171897ac1a1259467eba466a56b934978018f8226635fafd976474cb2ad07"
+      },
+      "customizations/components/tianxuan/duobao/native_store.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\native_store.py",
+        "sha256": "dca516233810b0ed1428fd9742ecac75d67cf16461a7969e6e9af74e355c1ef8"
+      },
+      "customizations/components/tianxuan/duobao/native_workspace.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\native_workspace.py",
+        "sha256": "401dcb5e0fe2ab1a8b8e888457044b4f622a1cbf39346f1a0dddc48ab9b9af66"
+      },
+      "customizations/components/tianxuan/duobao/native_workspace_cli.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\native_workspace_cli.py",
+        "sha256": "1bc61a3165c58ac918af8a0874fc8c85db7ee6cb8946f2e95ddbeb088f4038fa"
+      },
+      "customizations/components/tianxuan/duobao/policy.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\policy.py",
+        "sha256": "2e42b969ac54e88211757c74a9c4927205b78fe5f8419d2fc3d52a6c7bf72b7b"
+      },
+      "customizations/components/tianxuan/duobao/test_admin_paths.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_admin_paths.py",
+        "sha256": "27a3a97a28593b20abb8ef5f8c83f981914fac50ea53daeb73623d2fc52983cb"
+      },
+      "customizations/components/tianxuan/duobao/test_backup.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_backup.py",
+        "sha256": "bbeaff35ef999562aab3be91bcd4732a48be39b022ad1fbea59ad14c5bfab1ea"
+      },
+      "customizations/components/tianxuan/duobao/test_backup_drill.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_backup_drill.py",
+        "sha256": "22307a8f6f7dff28df1f625b1ad9e837b5c9070b22758c11fefaa7f82f38803b"
+      },
+      "customizations/components/tianxuan/duobao/test_gitea_client.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_gitea_client.py",
+        "sha256": "a629148331a00f263c803d6e9b27dceaca5c44d8bb6f91a140a0217281764f5f"
+      },
+      "customizations/components/tianxuan/duobao/test_git_service.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_git_service.py",
+        "sha256": "04f4dcc1aa7004ba2f5056cdef7b99105c965712e85ac7ff168fcd0553cc2dd6"
+      },
+      "customizations/components/tianxuan/duobao/test_git_service_repo_root.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_git_service_repo_root.py",
+        "sha256": "34981062543c6c359702f5ce236f9e42a76f0eca88aa6aba726dc00d6793d2be"
+      },
+      "customizations/components/tianxuan/duobao/test_import_reservation.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_import_reservation.py",
+        "sha256": "3f9d5a4b404420fc8b657457d8e036eded4a19e56f7f369e27cebac432433258"
+      },
+      "customizations/components/tianxuan/duobao/test_import_source.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_import_source.py",
+        "sha256": "a6bc613c0048f6fb040d99989090649418e57bcd75ff9a3ccde67927012eb1f6"
+      },
+      "customizations/components/tianxuan/duobao/test_merge_queue.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_merge_queue.py",
+        "sha256": "cf8341aa3541891231832c74fae13d2ce89317012ad171b573ff7d039cdd0ba8"
+      },
+      "customizations/components/tianxuan/duobao/test_native_candidates.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_candidates.py",
+        "sha256": "27899fc71e233d820d67a98535ac5f054d33ce15b143bbed2b5399702e5fb9b2"
+      },
+      "customizations/components/tianxuan/duobao/test_native_check_inputs.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_check_inputs.py",
+        "sha256": "d5d6eee1ebe6b840511e20dcb281a6d99c02409a38c832067d10e5005bf4856b"
+      },
+      "customizations/components/tianxuan/duobao/test_native_check_runner.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_check_runner.py",
+        "sha256": "059bf81e8a08ba1d43b2f6395e439f4c462938b9366eff94a8f9fb89e0760da5"
+      },
+      "customizations/components/tianxuan/duobao/test_native_evidence.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_evidence.py",
+        "sha256": "054ede06d298edcb71488a76879afb12bc67d4938d731cf7daa77f523d71c304"
+      },
+      "customizations/components/tianxuan/duobao/test_native_release.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_release.py",
+        "sha256": "dd22e2ef946264ae23a7ced27c0b2205911f1a8237ca86d0cf75705aaace531c"
+      },
+      "customizations/components/tianxuan/duobao/test_native_store.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_store.py",
+        "sha256": "cb7df0539fc42cd5cb2dc0bcb31f681994ace28041c782f32a5b7a894446a743"
+      },
+      "customizations/components/tianxuan/duobao/test_native_workspace.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_native_workspace.py",
+        "sha256": "b300fa1bdf2ea4b357fa4074e3f6dcbc30b7e27a8ce9ea5ad8b2ea66bf911602"
+      },
+      "customizations/components/tianxuan/duobao/test_policy.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\test_policy.py",
+        "sha256": "6626dba6631c25c8fd3dca54e19a08a5c14f7bb079e32fe758989c8ac36f9769"
+      },
+      "customizations/components/tianxuan/duobao/verify_native_processes.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\duobao\\verify_native_processes.py",
+        "sha256": "f5f03eaef371c7d007b4c88003e16a75a20c43bfb9938a30f71614a91d449120"
+      },
+      "customizations/components/tianxuan/server/access_control.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\access_control.py",
+        "sha256": "4d1f5911bdf4e33aca95b6d73a166687202d0d36553c3d3e4d8082d4473b7ffd"
+      },
+      "customizations/components/tianxuan/server/api.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\api.py",
+        "sha256": "e9cf3ea7ddf6041ff2b462dfa2ba0d341827e34b7600cac846a4d0dc2f09e8c7"
+      },
+      "customizations/components/tianxuan/server/conftest.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\conftest.py",
+        "sha256": "ff22f32a23f09e1473e85f1b6132d311835e6b80c59bca26688edb1494901258"
+      },
+      "customizations/components/tianxuan/server/demo.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\demo.py",
+        "sha256": "31f66dd2bd55a0024bd4aedf096da24b42cb70f999629d481582191b3405b122"
+      },
+      "customizations/components/tianxuan/server/docx_export.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\docx_export.py",
+        "sha256": "bc024a44e347e28c5574a9d90d3a9fc97e29b82f0c59c7745c0bd63e7a196fee"
+      },
+      "customizations/components/tianxuan/server/duobao_bridge.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\duobao_bridge.py",
+        "sha256": "221819b17a40881369a8e4fbc1c699981168f9fa3a33794cbfb72c78307e1fa7"
+      },
+      "customizations/components/tianxuan/server/gateway.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\gateway.py",
+        "sha256": "7fb68bcd8d73e7e1377a4a69892f709eef39808bbacb332094ea4c0e4af99522"
+      },
+      "customizations/components/tianxuan/server/gitea_bridge.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\gitea_bridge.py",
+        "sha256": "3137ec96b60b572aabba6cdee214bbc6f1da0976e77f6f359e0ab00b3fb6a4e3"
+      },
+      "customizations/components/tianxuan/server/identity.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\identity.py",
+        "sha256": "c5d8804c605ef4e7f7c90d0d50c0923dc94b95d0836de0f52abe4a092c91b311"
+      },
+      "customizations/components/tianxuan/server/main.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\main.py",
+        "sha256": "d8f211eb6dd27a126a59bf78489eef06a68f7b454ec4ab2b8a243a305ba76b14"
+      },
+      "customizations/components/tianxuan/server/markdown_images.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\markdown_images.py",
+        "sha256": "20c6b19d4c24205621fe400874c3b1f060040c757ba915c2ba3cf35656af245f"
+      },
+      "customizations/components/tianxuan/server/markdown_render.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\markdown_render.py",
+        "sha256": "80b220e1e570d0d0f7a7b0381d2fe5ece0db60e311288887c183896794fd8dd0"
+      },
+      "customizations/components/tianxuan/server/native_api.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\native_api.py",
+        "sha256": "b234aaace839e2909674aa5d039809f5b3810acc44a9f295e71855c9b69efe43"
+      },
+      "customizations/components/tianxuan/server/pdf_export.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\pdf_export.py",
+        "sha256": "21b936bcde60ba7e34b49cee49edbb567782774369fba37fa9597597f6394a62"
+      },
+      "customizations/components/tianxuan/server/schemas.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\schemas.py",
+        "sha256": "f031dbf76ced7666e77a8dea5c43ebd25c5e9450d6a8877005ea8fe04420d30e"
+      },
+      "customizations/components/tianxuan/server/test_acceptance_smoke.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_acceptance_smoke.py",
+        "sha256": "af815d85dc087c5cfda030f7c9119ee85b3a42d88414e054460d742e3100b762"
+      },
+      "customizations/components/tianxuan/server/test_access_control.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_access_control.py",
+        "sha256": "dd8b5e93a072ffc9126b2d7ce58999d8ff671d4972c760ce40ca4df06e84abd4"
+      },
+      "customizations/components/tianxuan/server/test_acl_matrix.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_acl_matrix.py",
+        "sha256": "5f92e2b298826eee9a45e338d655ec2049708c0aa0a28d9aa57498a44606b98e"
+      },
+      "customizations/components/tianxuan/server/test_api.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api.py",
+        "sha256": "d46fb014e724ef163b05970c5ee1dac819f22367916db7b6ea39e27f27841c16"
+      },
+      "customizations/components/tianxuan/server/test_api_auth_mode.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_auth_mode.py",
+        "sha256": "141b01aba6eb8179077cfa19ef4df495c64f88c7e598ed849f83963386c98d9a"
+      },
+      "customizations/components/tianxuan/server/test_api_board.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_board.py",
+        "sha256": "1f154a1faf3a5c1a29d3d86857904e36d66bacc77d0a04d4253f1e31fa268ddc"
+      },
+      "customizations/components/tianxuan/server/test_api_comments.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_comments.py",
+        "sha256": "cdaf28b64d7d38611fc06e2a91fc753a1a89d4d85a49cb278f2b0594c027293c"
+      },
+      "customizations/components/tianxuan/server/test_api_doc_issues.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_doc_issues.py",
+        "sha256": "98642c8cf391808e63e1e7cd2947bb400a5dde2ac5c889d46f7742db8c83b498"
+      },
+      "customizations/components/tianxuan/server/test_api_export.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_export.py",
+        "sha256": "b8ad17fbf71b53098a076ab9c62c646d2f7972121f5d5e927fbf464db5eb5082"
+      },
+      "customizations/components/tianxuan/server/test_api_field_permissions.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_field_permissions.py",
+        "sha256": "ebce6b3f9a4e151bd265ad3fa21c17f94120ee3654ddb11549d123025eb3f62b"
+      },
+      "customizations/components/tianxuan/server/test_api_gateway.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_gateway.py",
+        "sha256": "b4ea4125e23bf0c64278be68f2f2acd13cdd13cf8ddbf932b35915848dd11539"
+      },
+      "customizations/components/tianxuan/server/test_api_gitea.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_gitea.py",
+        "sha256": "e19c46de601c92fcd1aa21b68149988a12263b918d0986553b0158834b287d6e"
+      },
+      "customizations/components/tianxuan/server/test_api_git_repo.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_git_repo.py",
+        "sha256": "cba3f17a9f518620a39f58ce8f6bd907ca942c55355a0dcb6c07ff9d8af0440f"
+      },
+      "customizations/components/tianxuan/server/test_api_import_jobs.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_import_jobs.py",
+        "sha256": "81ebbc88e4326263d7195d8417dbf3b7fcab3a2aa320e31c9dff918e77a4184f"
+      },
+      "customizations/components/tianxuan/server/test_api_invites.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_invites.py",
+        "sha256": "ad89c5a282eab075500bf50f68b545528959f985b8e8595508dc26ccb69275a4"
+      },
+      "customizations/components/tianxuan/server/test_api_links.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_links.py",
+        "sha256": "b7b4cf28dbae5b2c2cfe920434ac7262b398573dd4b21ef2c3ff15c419cbed15"
+      },
+      "customizations/components/tianxuan/server/test_api_merge.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_merge.py",
+        "sha256": "8ddbab954a711648f9aba5897af4b9f0e4876e22150449f9459fe0cac3ee7ea6"
+      },
+      "customizations/components/tianxuan/server/test_api_metrics.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_metrics.py",
+        "sha256": "d934bce45c707954c61978c84f79c747a3d529a112e2e979f43b97dffca5fda7"
+      },
+      "customizations/components/tianxuan/server/test_api_patch.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_patch.py",
+        "sha256": "4e998e45b3221e542a7daa7075bd5ae0355c96931732d67eb0e6e82b676a2c1e"
+      },
+      "customizations/components/tianxuan/server/test_api_ready.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_ready.py",
+        "sha256": "4b9f52303c25140f01403ff262ac58796434e476db4cac9baf02a4934612b829"
+      },
+      "customizations/components/tianxuan/server/test_api_repo_links.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_repo_links.py",
+        "sha256": "07c7156ad24b8dd6d75fff19b561f058ca49d9e12d2b9c110d4e0fe79a6d0f45"
+      },
+      "customizations/components/tianxuan/server/test_api_requirement_export.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_requirement_export.py",
+        "sha256": "cfa64271af7aeaf4d48a47777db86c7d70f2b2d8de0b3391cfbd5c5c72762021"
+      },
+      "customizations/components/tianxuan/server/test_api_roles.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_roles.py",
+        "sha256": "08c3ec1bf212a150b81c14322b6413d1b339fac8cc422f99024b8dab7ce3d5cc"
+      },
+      "customizations/components/tianxuan/server/test_api_search.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_search.py",
+        "sha256": "126420e66e8e8eb5ca7a921ce0a2bf960e9c90ba1cf90a3586e159a33d71b144"
+      },
+      "customizations/components/tianxuan/server/test_api_session.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_session.py",
+        "sha256": "866d4c0f5e4dfb4f3503e433cc38c07ec5969bdbceaf81ec2084454a9ecb2eb3"
+      },
+      "customizations/components/tianxuan/server/test_api_sharing.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_sharing.py",
+        "sha256": "8282c4062693a8c6ca60844ecc5217d1aa0c6a79d25706e24f62cfa159a516a5"
+      },
+      "customizations/components/tianxuan/server/test_api_tenant_mutations.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_tenant_mutations.py",
+        "sha256": "bf9404bbc51ed91962a5d7a61b165b7b24ebeb03e6461c6531fb9df7101e54bb"
+      },
+      "customizations/components/tianxuan/server/test_api_versions.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_versions.py",
+        "sha256": "5f30a7113f28f54777e4fb566baa5ca04316d8d6b0e496d0d2248aed46e2940b"
+      },
+      "customizations/components/tianxuan/server/test_api_webhooks.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_api_webhooks.py",
+        "sha256": "a8fe00b40e75b5100933fb4f37ff9f60a61b4771c6958571e40f7ac22f8db092"
+      },
+      "customizations/components/tianxuan/server/test_cli.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_cli.py",
+        "sha256": "343c75e787033e166efe96496f4e5900da03b40e833503cff3cb8d0838941419"
+      },
+      "customizations/components/tianxuan/server/test_e2e.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_e2e.py",
+        "sha256": "0fadd6f861fa02b11b239ada53f197e74eef585a2e16ce4d5f9f2e99689c0e77"
+      },
+      "customizations/components/tianxuan/server/test_event_retention.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_event_retention.py",
+        "sha256": "e789227eda54faeb06b26cb27485a01e86c533fbad77f4b8b7bc0c186e90d38c"
+      },
+      "customizations/components/tianxuan/server/test_external_links.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_external_links.py",
+        "sha256": "843553fe3dc17c14774e411d3028d59bdb9dd12ab502b525c26e042f1ccc94a6"
+      },
+      "customizations/components/tianxuan/server/test_gateway.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_gateway.py",
+        "sha256": "a4640d6cb6216e80d64eb602baac7358bc16198a4ea392956dc7a41172f00d48"
+      },
+      "customizations/components/tianxuan/server/test_identity_adapters.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_identity_adapters.py",
+        "sha256": "e6f6d603d7eb40b3276663b5660d898ceb17a8c144e3fc2fdd331b63b36a0b31"
+      },
+      "customizations/components/tianxuan/server/test_issue_ancestor_acl.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_issue_ancestor_acl.py",
+        "sha256": "961428b676d963f01e8440a9ccb8f4d793d68346ba370c7b4dec460870bdd62b"
+      },
+      "customizations/components/tianxuan/server/test_issue_comments.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_issue_comments.py",
+        "sha256": "ceffe2b76c2f3e02c0d9f25e96ab7c39fa225c3510302174b4bc706d0de0af2f"
+      },
+      "customizations/components/tianxuan/server/test_main_app.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_main_app.py",
+        "sha256": "989809fd05d49ec71d2acc50bfe899913e82669b912d171f3f98a6e1e79b4c1a"
+      },
+      "customizations/components/tianxuan/server/test_markdown_render.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_markdown_render.py",
+        "sha256": "5cf5021bb879aaaa5f66dddc02650c4a173613f6faa8e6490a666557a85e3447"
+      },
+      "customizations/components/tianxuan/server/test_merge_queue_api.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_merge_queue_api.py",
+        "sha256": "dc68588e0e250300c81c393f3d23a2e88e2055aefead4a9e09c18c3be11c1b50"
+      },
+      "customizations/components/tianxuan/server/test_native_api.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_native_api.py",
+        "sha256": "4a85726e458399def6555fb94e5259815b37ca7f21eea2fc11f721037083ce1e"
+      },
+      "customizations/components/tianxuan/server/test_native_platform.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_native_platform.py",
+        "sha256": "b40695e79772b9296a35178fbc0898772893b61239d89fbae7b22c56b7f24abc"
+      },
+      "customizations/components/tianxuan/server/test_scope_idempotency.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_scope_idempotency.py",
+        "sha256": "2bc83d89b8469e5d655e886740cc3fd1b8c2c9159ceac943bea09574d1807d59"
+      },
+      "customizations/components/tianxuan/server/test_share_expiry.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_share_expiry.py",
+        "sha256": "5728ab899daff8bb3fa048bbef5d97790bb553ad7c4ffa0fae763730610fd347"
+      },
+      "customizations/components/tianxuan/server/test_tenant_mutations.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_tenant_mutations.py",
+        "sha256": "9aa7f63fd88d7aca9a956697ebac8c32ac6334a0b9604f521530d18869d81937"
+      },
+      "customizations/components/tianxuan/server/test_tianshu_bridge.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_tianshu_bridge.py",
+        "sha256": "041dd22c345f3c924f96d6ceb99ed7d6a7dc6c22fbea146bb5e8355915730909"
+      },
+      "customizations/components/tianxuan/server/test_tianxuan_boundary.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_tianxuan_boundary.py",
+        "sha256": "bb561f11373ae1580ed939ded7defb6813e72bbaa4ebe7810524b39dbf25dafe"
+      },
+      "customizations/components/tianxuan/server/test_tianxuan_concurrency.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_tianxuan_concurrency.py",
+        "sha256": "7e42d2244562ab7d676b27546a7ef2248846f6a1b4ea5d8543d81efd01af06f1"
+      },
+      "customizations/components/tianxuan/server/test_tianxuan_core.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_tianxuan_core.py",
+        "sha256": "76f8390e766f5454444766859b2aa257351d9a757bdcd6ab2aa99e82e7c562a6"
+      },
+      "customizations/components/tianxuan/server/test_tool_receipts.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_tool_receipts.py",
+        "sha256": "d572b79384478674fef4afb9cf92835dd2c258119ebea2ee455557ea5c0979d7"
+      },
+      "customizations/components/tianxuan/server/test_webhook_signature.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_webhook_signature.py",
+        "sha256": "3e1decb8da4a3838fe4689ea0af5872d63ebb3029a3d8792496fd5be024d1e27"
+      },
+      "customizations/components/tianxuan/server/test_ws.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\test_ws.py",
+        "sha256": "a8a342a45863ab68248ab9d1925d1567056365b293361f9d58a58486de612b8f"
+      },
+      "customizations/components/tianxuan/server/tianshu_bridge.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\tianshu_bridge.py",
+        "sha256": "d2b6023adcbf47c1fd471fb89ec0007c735d792d8a1b8228de33c45432142da8"
+      },
+      "customizations/components/tianxuan/server/tianxuan_cli.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\tianxuan_cli.py",
+        "sha256": "9fc9b4495c3bb6a3ec10247e642c272a4bcef4fa0bd12f3a294820bad8a17074"
+      },
+      "customizations/components/tianxuan/server/tianxuan_core.py": {
+        "source": "D:\\GongGong-work\\native-remote-execution-20261118\\customizations\\components\\tianxuan\\server\\tianxuan_core.py",
+        "sha256": "fe4f5f081f73e46fef83855acc1a148f6685007039a8ebe9cb9ec202eb31a427"
+      },
+      "customizations/components/tianxuan/server/webhooks.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\webhooks.py",
+        "sha256": "ab92309455037d63686260912ec73be6a31140bbaa212988c752c1139a454115"
+      },
+      "customizations/components/tianxuan/server/wenqu_bridge.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\server\\wenqu_bridge.py",
+        "sha256": "572e23e9b7c236acbcbf4434b84e36a6cc279019fda12a157ea44ef6961f27c1"
+      },
+      "customizations/components/tianxuan/sinan-workorders/conftest.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\conftest.py",
+        "sha256": "c37dc8303d58efd8fb4302254c4fcfd88ea729255fba2af4b5453129d8654e37"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_integration.py",
+        "sha256": "dd86b8bbd643949bf091a4f28d21a678a1ac71d4b545d32f54dcb85205c87e06"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_model_host.py",
+        "sha256": "60142028e8b5488924c6b6ad81912c702e14229db8054af30351b3692a660976"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_model_producer.py",
+        "sha256": "678497caa907733894d7a582b14eb9229efe818f7085bd1a68a593bc441b76fa"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_worker.py",
+        "sha256": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": {
+        "source": "D:\\GongGong-work\\native-remote-execution-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_workflow.py",
+        "sha256": "54f2b6dbe759d6ae3e965d7399534ec600c07208be2422d9f0d924b932ddca64"
+      },
+      "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_integration.py",
+        "sha256": "224b4d3ac3fcadcac271d6b4707a5d4fd5ec4426b34d56d241a6f6674e6217b1"
+      },
+      "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_joint_workflow.py",
+        "sha256": "eadbdd767cffbfe4e84e22449f9c3c70d9599739536a19cb5c1cfc36cd3a4d83"
+      },
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_model_host.py",
+        "sha256": "12153a1f2388b5eb220f767652120fbaa446fb082a2b756415c341c9a5c6f655"
+      },
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_model_producer.py",
+        "sha256": "c8c6076f352c3f8e26431a1724bf8df4a7c406c84ae210fa91842c8d49733eb6"
+      },
+      "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_terminal_events.py",
+        "sha256": "05ff5f956367de735cba27404897685e008ba38c635c210629eafa74fcc5ed00"
+      },
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_worker_coordination.py",
+        "sha256": "4d4e1c35d2fb89f1dcc6b4680b2006f0fbaf71de883386eb9cef949dc90f2440"
+      },
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_worker_intake.py",
+        "sha256": "c63b7292a9adc374a63da5d7eb94bc189c13e0e349daa0aa22ad481168318f9f"
+      },
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_workflow.py",
+        "sha256": "59c8a0f2afc5aaa40190a5fa2a90405ddbcf26d567e28d51e585169ddec26f1b"
+      },
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_workflow_revisions.py",
+        "sha256": "81b5d32e265820f6cd5dd5d84dc3433febac53f4c96c71995e192ee75b96bfd7"
+      },
+      "customizations/components/tianxuan/wenqu/test_wenqu.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\wenqu\\test_wenqu.py",
+        "sha256": "8d4af45f4fd0b1b917b5a1988f71430c8ab858ffff784c2ab313ba6838fad620"
+      },
+      "customizations/components/tianxuan/wenqu/wenqu.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\wenqu\\wenqu.py",
+        "sha256": "c968d7e73a2ec833e4d306eba0604e132657bb551529bbfea8c80213568ce933"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_node.py": {
+        "source": "D:\\GongGong-work\\native-remote-execution-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_node.py",
+        "sha256": "75fa74d0850c9aa6424c048aa7d474b506dba4ae6b734e543507753ecdb6c273"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": {
+        "source": "D:\\GongGong-work\\native-remote-execution-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_remote_worker.py",
+        "sha256": "e5267934543b8087d9d73cd3abac1dc49f199c450a8d5ee58b705db48b32c015"
+      },
+      "customizations/components/tianxuan/server/native_node_api.py": {
+        "source": "D:\\GongGong-work\\native-remote-execution-20261118\\customizations\\components\\tianxuan\\server\\native_node_api.py",
+        "sha256": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742"
+      },
+      "customizations/components/tianxuan/server/native_remote_host.py": {
+        "source": "D:\\GongGong-work\\native-remote-execution-20261118\\customizations\\components\\tianxuan\\server\\native_remote_host.py",
+        "sha256": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1"
+      },
+      "tools/ainative/owned_process.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\tools\\ainative\\owned_process.py",
+        "sha256": "ccc8da0fd43d5aeb8ef9b33ccad233fcbb9201b97962320566ded051ad9f6a78"
+      },
+      "tools/editor_provenance_process.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\tools\\editor_provenance_process.py",
+        "sha256": "75d866530e9f34a810cb164ed7cec4fce30c72287bbfef4c7df1d477b72c1ad1"
+      },
+      "editor/ainative/builders.py": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\editor\\ainative\\builders.py",
+        "sha256": "2185b5313bc68b94f87aceee41bf70c60d34d90c6a99a8b7ddd55d7f1fdc6804"
+      },
+      "editor/SCsub": {
+        "source": "D:\\GongGong-work\\native-model-producer-20261118\\editor\\SCsub",
+        "sha256": "f1774abfafc72675a4e9b09bd187f92d51eb8881d130d202389d5857724de0ac"
+      }
+    },
+    "source_unchanged_at_completion": true,
+    "central_budget": {
+      "calls": 1,
+      "active": 0
+    },
+    "independent_root_review_sha256": "9bbbad880779d273b583dc38a373cb33a022b895099aebfb9b3aed12648abad4",
+    "sealed_sha256": "365f49e92d84c950243a2887c7cee5c70de4dd60efa64388eb7e696ecc467ad5",
+    "runtime_sha256": "59371627e15a4aa63b3b1974f209dc0d0228b8ab643c8311bb4ee4af1ae57e16",
+    "exact_final_utf8_proposal_bytes": true,
+    "original_input_bytes_preserved": true,
+    "archived_blob_hashes_verified": true,
+    "domain_issue_done": true,
+    "source_consumers": "released; model process tree physically closed; node pool shut down; owned container absent; SSH service and tunnel terminal",
+    "audit_correction": "First audit mistakenly used sorted runner.digest for native effective input; exact host insertion-order digest independently resolved mismatch before any production call. No evaluation relabel or source change.",
+    "cleanup": "Only own resources closed. Evidence, task registry, signed grant and budget retained for audit; private host key removed after terminal. No old deterministic cleanup retried.",
+    "limits": "One fresh composite evaluation plus one production regression only. Prior five-call suite and Git/native pair unchanged historical evidence. No new A/B/savings, 250-model-concurrency, AA/render quality, persistent service, formal production deployment, or broad coding admission. Fixture principals remain isolated; normalized/billed usage and observed-model proof unavailable.",
+    "cleanup_removed": [
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-postfix-production-probes\\host-key.private"
+    ]
+  }
+}

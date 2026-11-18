@@ -1,0 +1,58 @@
+{
+  "module": "customizations/components/tianxuan/sinan-workorders",
+  "request_id": "native-model-producer-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1486",
+  "input_blobs": {
+    "customizations/components/tianxuan/sinan-workorders/README.md": "98a30bbad5aafe2e8aa1713f8d2202d04045d3d3",
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": "9bbc6d468d36e1e0eae99d8a0baa1a95632572ab",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "82f55454d51c0ad863863e76d87260abd46c0c8a",
+    "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md": "e3a59149ada1d66070c2d83e9bfac32e574ea0ef",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "bfe435515e388d9339169e7215d788760b94b89b",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.md": "90e30cbb0dc2b9a3a848693e413d0e3b51351882",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "7b56a6fccfbf5bd46f1476ee64cabaec6f58c554",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "4ed0280bfe59ce671c75e5865cf66162bce8d6d7",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "0ff18d768c8b43173c58c1e43ba40dc9c7ef49e2",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "216680c431f65d3d066a1ab8ef4b00f1b86be8dd",
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "c69892d1df79c637a138089c112bcd4446c93d98",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "0b1dbc1519b474aec80be9bd9f9b0704c94146d0",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "7369bf9d27d00dda1bbdbcf7bb1dca9d659e95aa",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "49ad6c2d0251447d279c7cbe969be860fcbef94f",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "89986f44b444087e6f40b2ae231ceaf34f3f1edb",
+    "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": "0b7c208ad38f7fbaf1277f3b78c9ec9a71e952da",
+    "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": "7e6e2b92d62b5ae005bced258b558cbd9484142a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "1597cc78489f61bef24ffe027776bb022bec936a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "13d54029b854e481b96fb0520d0401401cc7580c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "64ce91b1412c1e3ca409e5a26ac2ac04536df31f",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "d8c9502d46c1ff6e77091b75e61341ec403b447e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "b30d844caa1ebfb9f1d3524cbc5a486438f32722",
+    "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": "8c532b093c0466a2b198d6f67b2f1a327b616de8",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py": "e0fd9d7711d590131b5e85952a981253b9d8447c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py": "36bbc1c8be45f8521643b7edd7d266fb224a4e0e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "91819985bb3b9a839c409edb5aaadc96fd56b1cc",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": "2dc8e1232cfeb563f61c3996fe0aa034963516c4",
+    "customizations/platforms/ai-access/host-http/runtime/README.md": "f85321fcbdd652d332e05a058334e99ecd3b4535",
+    "customizations/platforms/ai-access/host-http/runtime/adapters.py": "110141e355307ddc80a877d7c125bf0d99540d68",
+    "customizations/platforms/ai-access/host-http/runtime/diting.py": "f4fa9b1d1af3170632b0a95b3a00bb605c36eb84",
+    "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "354e76e75e1125e27bf3062ac84de7a3a5c3fd35",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "8aceab92ce07354cc5e76ba183221a5fe436347f",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "c61c52d619a98f277dad377f36d1cb6f804deb84",
+    "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "0c6695fe8a9e6203c14d6cbfdd9f666e435e0b36",
+    "customizations/platforms/ai-access/host-http/runtime/test_adapters.py": "5cb0cc57fc69357dc8047eca480f4da1fbbd2112",
+    "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "374a01ea0609fe2a235b93aa4510e498e31c6829"
+  },
+  "checks": {
+    "host_behavior": {
+      "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 -m pytest customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py customizations/platforms/ai-access/host-http/runtime/test_runtime.py -q; actual test run and exact source in native-producer-post-live-1486.json",
+      "observed": ".....................................................         [100%]\n53 passed, 83 subtests passed in 54.57s; targeted implementation tests, not all inventoried legacy behaviors. Actual current-source Linux-coordinator/Windows-model-node regression and independent byte/business review separately bound.",
+      "passed": true
+    }
+  },
+  "evidence_refs": [
+    "data-collection/native-model-postfix-production-1486.json",
+    "data-collection/native-model-postfix-business-review-1486.json",
+    "data-collection/native-post-live-review-1486.json",
+    "data-collection/native-producer-host-boundary-complete-1486.json",
+    "data-collection/native-producer-aligned-boundary-1486.json"
+  ],
+  "alignment": "Current8da2ba2main includes remote execution and incoming WebView2 support; all reviewed producer/runtime bytes unchanged. Runtime qualification installation binding independently recomputed unchanged after alignment."
+}

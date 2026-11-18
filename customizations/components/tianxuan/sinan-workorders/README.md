@@ -144,3 +144,9 @@ A physical non-success can reconstruct failure even if interrupted before output
 spooling. A physical success without an output decision remains unknown; arbitrary
 terminal rows cannot establish failure or success. Trusted-host database corruption
 probes test integrity, not a public producer attack surface.
+
+## Optional native model production
+
+The fixed installed launcher and explicit CLI protocol are documented in
+[native-model-producer.md](native-model-producer.md). The existing NativeWorker
+process closure, candidate and NativeIntegration paths remain authoritative.

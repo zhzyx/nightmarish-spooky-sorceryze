@@ -85,6 +85,15 @@ class HostInputTests(unittest.TestCase):
         self.policy.write_text(json.dumps({"schema_version": 1, "inputs": [self.name]}))
         self.assert_actual_generator_consumption()
 
+    @unittest.skipUnless(importlib.util.find_spec("SCons"), "SCons required for actual generator probe")
+    def test_model_runtime_generator_consumption_overrides_host_inventory(self):
+        self.name = "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py"
+        self.host = self.root / self.name
+        self.host.parent.mkdir(parents=True)
+        self.host.write_text("installed_runtime = True\n")
+        self.policy.write_text(json.dumps({"schema_version": 1, "inputs": [self.name]}))
+        self.assert_actual_generator_consumption()
+
     def assert_actual_generator_consumption(self):
         script = (
             "import sys\n"

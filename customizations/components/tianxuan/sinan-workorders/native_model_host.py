@@ -10,6 +10,8 @@ import hashlib
 import importlib.util
 import json
 import math
+import os
+import re
 import tempfile
 import time
 from pathlib import Path
@@ -25,7 +27,7 @@ def digest(value):
 
 class NativeModelHost:
     def __init__(self, installed, verify_installation, process_helper_path):
-        self.installed = json.loads(encoded(installed))
+        self.installed = json.loads(json.dumps(installed, ensure_ascii=False, sort_keys=True, allow_nan=False))
         self.verify = verify_installation
         required = {"node", "entry", "python", "model", "reasoning_effort", "env", "timeout"}
         if set(self.installed) != required or not callable(self.verify):
@@ -38,6 +40,9 @@ class NativeModelHost:
             isinstance(k, str) and isinstance(v, str) for k, v in self.installed["env"].items()
         ):
             raise ValueError("Fixed environment required")
+        secret = os.environ.get("GONGGONG_HOST_KEY")
+        if any(k.upper() == "GONGGONG_HOST_KEY" or (secret and secret in v) for k, v in self.installed["env"].items()):
+            raise ValueError("Authority key forbidden in model environment")
         timeout = self.installed["timeout"]
         if type(timeout) not in {float, int} or not math.isfinite(timeout) or not 0 < timeout <= 600:
             raise ValueError("Invalid timeout")
@@ -80,6 +85,24 @@ class NativeModelHost:
         request = json.loads(encoded({k: request[k] for k in keys}))
         if len(encoded(request)) > 131072:
             raise ValueError("Proposal request too large")
+        for field, limit in (("request_id", 128), ("task", 32768), ("context", 65536), ("acceptance", 16384)):
+            if not isinstance(request[field], str) or not 0 < len(request[field].encode("utf-8")) <= limit:
+                raise ValueError("Proposal request field too large or invalid: " + field)
+        paths = request["write_allowlist"]
+        if (
+            not isinstance(paths, list)
+            or len(paths) > 64
+            or any(
+                not isinstance(p, str)
+                or not 0 < len(p.encode("utf-8")) <= 512
+                or not re.fullmatch(r"[a-zA-Z0-9_./-]+", p)
+                or p.startswith("/")
+                or any(part in {"", ".", ".."} for part in p.split("/"))
+                for p in paths
+            )
+            or len(set(paths)) != len(paths)
+        ):
+            raise ValueError("Invalid proposal write allowlist")
         profile, binding = self.configuration()
         started = time.monotonic()
         terminal = {
@@ -221,6 +244,7 @@ class NativeModelHost:
             or not 0 < len(p["summary"].encode()) <= 4096
             or not isinstance(p["files"], list)
             or len(p["files"]) > 64
+            or len(encoded(p)) > 262144
         ):
             raise ValueError("Proposal bounds rejected")
         seen = set()

@@ -9,6 +9,7 @@ import sys
 import tempfile
 import threading
 import time
+from contextlib import closing
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
@@ -203,7 +204,7 @@ try:
             database, reference = usage["metering_ref"].split("#", 1)
             task_id, seq = reference.rsplit("/", 1)
             job = runner.jid_for({"tenant_id": step["tenant_id"], "id": task_id})
-            with sqlite3.connect(state / database) as cx:
+            with closing(sqlite3.connect(state / database)) as cx:
                 kind, raw = cx.execute("SELECT kind,data FROM events WHERE job=? AND seq=?", (job, int(seq))).fetchone()
             receipt = json.loads(raw)
             assert kind == "call_end" and receipt["status"] == "received"
@@ -214,10 +215,10 @@ try:
             assert receipt["observed_model_status"] == "provider_reported"
             assert receipt["model_identity_verified"] is False
             # Simulate a stop after the completed event but before terminal finalization.
-            with sqlite3.connect(state / database) as cx:
+            with closing(sqlite3.connect(state / database)) as cx:
                 runner.set_status(cx, job, "needs_attention")
             assert runner.recover(g, root, state, "retry")["status"] == "completed"
-            with sqlite3.connect(state / database) as cx:
+            with closing(sqlite3.connect(state / database)) as cx:
                 assert cx.execute("SELECT data FROM events WHERE job=? AND seq=?", (job, int(seq))).fetchone()[0] == raw
             assert len(requests) == n
             ok(p["protocol"] + " evaluation/journal/telemetry reference provenance + replay/recovery")
@@ -231,7 +232,7 @@ try:
             })
             g = grant(plan(status, models=[p]), state)
             assert runner.run(g, root, state)["status"] == "completed"
-            with sqlite3.connect(state / "runtime.sqlite") as cx:
+            with closing(sqlite3.connect(state / "runtime.sqlite")) as cx:
                 receipt = next(
                     e["data"]
                     for e in runner.events(cx, runner.jid_for(g["payload"]["task"]))
@@ -244,7 +245,7 @@ try:
         response_overrides.append({"model": "unusable-response-model"})
         g = grant(plan("unknown", models=[profiles[0]]), state)
         assert runner.run(g, root, state)["status"] == "needs_reconciliation"
-        with sqlite3.connect(state / "runtime.sqlite") as cx:
+        with closing(sqlite3.connect(state / "runtime.sqlite")) as cx:
             receipt = next(
                 e["data"] for e in runner.events(cx, runner.jid_for(g["payload"]["task"])) if e["kind"] == "call_end"
             )
@@ -261,7 +262,7 @@ try:
             except KeyboardInterrupt:
                 pass
         assert runner.recover(g, root, state, "cancel")["status"] == "cancelled"
-        with sqlite3.connect(state / "runtime.sqlite") as cx:
+        with closing(sqlite3.connect(state / "runtime.sqlite")) as cx:
             receipt = next(
                 e["data"] for e in runner.events(cx, runner.jid_for(g["payload"]["task"])) if e["kind"] == "call_end"
             )

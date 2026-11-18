@@ -1,7 +1,7 @@
 {
   "placement": "host_tool",
-  "reason": "Remote server and node adapters are explicit Tianxuan host tools. Actual SCons9382 native inputs are disjoint from seven exact host files; no renderer or generated native asset changed.",
-  "host_contract": "Trusted installation factory returns NativeWorkflow with RemoteNativeWorker; explicit outer ASGI machine router, ProductionAccess for user API, node outbound authenticated events and exact bounded content/closure transport.",
+  "reason": "Model producer and optional installed proposal protocol execute in the Tianxuan host; 12 exact host paths are disjoint from actual SCons9392 native inputs on current main with verified WebView2 SDK. Preserve incoming renderer/build consumers and link flags.",
+  "host_contract": "Authenticated optional create_app(native_workflow=...) HTTP operations; fixed installed local worker/check/reviewer/target ports; existing Sinan dispatchEvent/selectModel and NativeStore; CLI env endpoints remain outside task context.",
   "rollback": "Disable optional native workflow API/CLI invocation; retain domain/native databases, actual terminals, pending outbox and unknown occupancy. Restore only verified installation; do not relaunch unknown producers or delete unfinished outputs.",
-  "evidence": "data-collection/native-remote-build-impact-1481.json"
+  "evidence": "data-collection/native-producer-build-impact-1486.json"
 }
