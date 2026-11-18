@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0bc20daf03aa69fa5db5a8847705d8515287c038",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-web-platforms-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ab5365b2281630cae2d9fb93f2de4ce6b9390e55556a0b3400772c585507af39",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1540",
+    "action": "delivery",
+    "detection_head": "55afcdbfc2a8e9d27608a3b84d295824a5147f12",
+    "context_sha256": "88df1f167f3cff83a371a08d77016d10c3c4b11ded712336f3f4cabe4742929a",
+    "operator": "Sail-Li",
+    "worker": "codex:root",
+    "authority_ref": "codex:user-request-20261118-existing-web-server",
+    "evidence": "data-collection/godot-web-platforms-1454-server-entry.json",
+    "diagnosis": "Writer submit reported GITHUB_NETWORK with unknown remote state after local gate and committed-data check passed. Readback confirms remote candidate branch contains source 55afcdbfc2a8e9d27608a3b84d295824a5147f12. Resuming the existing candidate through the same idempotent writer entry; no force overwrite or duplicate blind publication.",
+    "next_action": "Verify signed PR and exact-head checks, merge and read main. Keep personal-Key login unresolved independently; technical auth diagnosis requires authorized server administration access.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T16:00:00.149243+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li via current Codex root",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T16:02:15.497732+00:00",
+  "sha256": "31d2eb9136ff01a0a1519f46cc74a4c71bec4ac75fd851b611779eb78b7e2471"
+}
