@@ -89,6 +89,13 @@ enum class PassWork : std::uint8_t
 	AmbientOcclusion = 64,
 	AmbientBlurHorizontal = 65,
 	AmbientBlurVertical = 66,
+	RayReflectionBuildScene = 68,
+	RayReflectionPrepare = 69,
+	RayReflectionTrace = 70,
+	RayReflectionTemporal = 71,
+	RayReflectionSpatial = 72,
+	RayReflectionComposite = 73,
+	RayReflectionReadback = 74,
 	ShadowPageUpload = 80,
 	ShadowPageRender = 81,
 	ShadowPageFeedback = 82,
@@ -107,6 +114,12 @@ struct GeometryFeatures
 	bool bOcclusion = true;
 	std::uint32_t nHiZMips = 1;
 	bool bPaged = false;
+};
+
+struct RayReflectionFeatures
+{
+	bool bEnabled = false;
+	std::uint32_t nSpatialPasses = 2;
 };
 
 struct RenderPipeline
@@ -166,6 +179,14 @@ struct RenderPipeline
 	std::array<ResourceId, 3> arrAmbientOcclusion{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	std::array<ResourceId, 2> arrGeometryArguments{ INVALID_RESOURCE, INVALID_RESOURCE };
 	std::array<ResourceId, 2> arrGeometryCounters{ INVALID_RESOURCE, INVALID_RESOURCE };
+	ResourceId nRayScene = INVALID_RESOURCE;
+	ResourceId nRayUpload = INVALID_RESOURCE;
+	ResourceId nRayCounters = INVALID_RESOURCE;
+	ResourceId nRayReadback = INVALID_RESOURCE;
+	std::array<ResourceId, 3> arrRayRaw{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
+	std::array<ResourceId, 2> arrRayScratch{ INVALID_RESOURCE, INVALID_RESOURCE };
+	std::array<ResourceId, 7> arrRayHistoryRead{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
+	std::array<ResourceId, 7> arrRayHistoryWrite{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	// Additional reflection color levels 1..N-1. Before tracing, level zero is
 	// nReflectedHdr containing full lighting without screen-space reflections.
 	std::vector<ResourceId> arrReflectionMips;
@@ -205,6 +226,6 @@ struct RenderPipeline
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false, bool bDeformation = false, bool bScreenEffects = false, bool bVirtualShadows = false, std::uint32_t nShadowPageCount = 512);
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false, bool bDeformation = false, bool bScreenEffects = false, RayReflectionFeatures stRayReflections = {}, bool bVirtualShadows = false, std::uint32_t nShadowPageCount = 512);
 
 } // namespace EngineNext::Rendering

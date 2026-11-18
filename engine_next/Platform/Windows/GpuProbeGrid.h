@@ -59,6 +59,8 @@ struct GiBindings
 	D3D12_GPU_DESCRIPTOR_HANDLE stMaterials{};
 	D3D12_GPU_DESCRIPTOR_HANDLE stSamplers{};
 	D3D12_GPU_DESCRIPTOR_HANDLE stTint{};
+	// A later ray-query consumer must call FinishSceneReads before submission.
+	bool bDeferSceneFinish = false;
 };
 
 enum class GiPass
@@ -123,6 +125,7 @@ public:
 									const DeformationFrame *pDeformation = nullptr);
 	[[nodiscard]] bool Record(std::uint32_t nFrame, GiPass ePass, ID3D12GraphicsCommandList4 *pList,
 							  const GiBindings &stBindings, Assets::Diagnostics &out_arrDiagnostics);
+	[[nodiscard]] bool FinishSceneReads(std::uint32_t nFrame, ID3D12GraphicsCommandList4 *pList, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool Submit(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool Discard(std::uint32_t nFrame, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
@@ -150,6 +153,7 @@ public:
 	std::uint64_t SubmissionEpoch() const noexcept;
 	const GpuProbeMemory &Memory() const noexcept;
 	const std::vector<RayTracingIdentity> &Identities() const noexcept;
+	const RayTracingScene &RayScene() const noexcept;
 
 private:
 	struct Frame

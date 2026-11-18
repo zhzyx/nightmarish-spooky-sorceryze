@@ -467,6 +467,63 @@
           "type": "number",
           "exclusiveMinimum": 0,
           "maximum": 1
+        },
+        "ray_tracing": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "resolution_divisor": {
+              "enum": [
+                1,
+                2
+              ]
+            },
+            "samples_per_lobe": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 4
+            },
+            "spatial_passes": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            },
+            "max_history": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 64
+            },
+            "history_weight": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 0.98
+            },
+            "depth_threshold": {
+              "type": "number",
+              "minimum": 1e-06,
+              "maximum": 1
+            },
+            "normal_threshold": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "roughness_threshold": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "max_gpu_bytes": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2147483648
+            }
+          },
+          "$comment": "Optional DXR specular path; requires reflections.enabled. Default half resolution, one sample per lobe, two spatial passes, sixteen history samples, and 768 MiB allocation budget."
         }
       },
       "$comment": "Missing fields use disabled reflections, maximum distance 100, thickness 0.1, normal bias 0.02, 128 steps, maximum perceptual roughness 0.8. Positive GPU values must remain normal binary32. All fields are validated when disabled."

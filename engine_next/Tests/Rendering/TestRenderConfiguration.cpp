@@ -1101,6 +1101,29 @@ ENGINE_NEXT_TEST("Render configuration rejects malformed reflection fields trans
 	CheckRejected(stValue);
 }
 
+ENGINE_NEXT_TEST("Render configuration validates optional DXR reflection settings")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	(*stValue.GetObject())["reflections"] = JsonValue::Object{
+		{ "enabled", true }, { "ray_tracing", JsonValue::Object{ { "enabled", true }, { "resolution_divisor", std::int64_t{ 1 } }, { "samples_per_lobe", std::int64_t{ 4 } }, { "spatial_passes", std::int64_t{ 3 } }, { "max_history", std::int64_t{ 64 } }, { "max_gpu_bytes", std::int64_t{ 2147483648LL } } } }
+	};
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stReflections.stRayTracing.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stReflections.stRayTracing.nResolutionDivisor, 1U);
+	for (const JsonValue &stBad : std::array<JsonValue, 8>{ JsonValue(true), JsonValue::Object{ { "enabled", std::int64_t{ 1 } } },
+															JsonValue::Object{ { "resolution_divisor", std::int64_t{ 3 } } }, JsonValue::Object{ { "samples_per_lobe", 1.0 } },
+															JsonValue::Object{ { "spatial_passes", std::int64_t{ 4 } } }, JsonValue::Object{ { "max_history", std::int64_t{ 0 } } },
+															JsonValue::Object{ { "history_weight", 1.0 } }, JsonValue::Object{ { "unused", true } } })
+	{
+		(*stValue.GetObject())["reflections"] = JsonValue::Object{ { "enabled", true }, { "ray_tracing", stBad } };
+		CheckRejected(stValue);
+	}
+	(*stValue.GetObject())["reflections"] = JsonValue::Object{ { "enabled", false }, { "ray_tracing", JsonValue::Object{ { "enabled", true } } } };
+	CheckRejected(stValue);
+}
+
 ENGINE_NEXT_TEST("Render configuration accepts optional fog and particle emitters")
 {
 	JsonValue stValue = ValidConfiguration();

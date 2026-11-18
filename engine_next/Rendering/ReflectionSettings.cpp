@@ -54,7 +54,12 @@ bool ValidateReflectionSettings(const ReflectionSettings &stSettings, Assets::Di
 		Assets::AddDiagnostic(out_arrDiagnostics, "reflection_settings", "$.reflections", "Reflection ranges require positive normal binary32 distance, thickness and roughness, finite bias in [0,1], and steps in [8,256].");
 		return false;
 	}
-	return true;
+	if (stSettings.stRayTracing.bEnabled && !stSettings.bEnabled)
+	{
+		Assets::AddDiagnostic(out_arrDiagnostics, "reflection_settings", "$.reflections.ray_tracing", "Ray tracing requires enabled reflections.");
+		return false;
+	}
+	return ValidateRayReflectionSettings(stSettings.stRayTracing, out_arrDiagnostics);
 }
 
 } // namespace EngineNext::Rendering
