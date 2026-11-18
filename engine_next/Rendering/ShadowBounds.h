@@ -35,6 +35,7 @@
 #include "engine_next/include/EngineNext/Rendering/ShadowData.h"
 
 #include <array>
+#include <vector>
 
 namespace EngineNext::Rendering
 {
@@ -43,6 +44,8 @@ namespace EngineNext::Rendering
 // The matrix is finite, column-major and affine. Singular transforms are supported.
 // Failure leaves the output unchanged and appends a diagnostic. No shared state is used.
 [[nodiscard]] bool TransformShadowBounds(const MeshPrimitive &stPrimitive, const std::array<double, 16> &arrWorld,
+										 WorldBounds &out_stBounds, Assets::Diagnostics &out_arrDiagnostics);
+[[nodiscard]] bool TransformShadowBounds(const std::vector<MeshVertex> &arrVertices, const std::array<double, 16> &arrWorld,
 										 WorldBounds &out_stBounds, Assets::Diagnostics &out_arrDiagnostics);
 
 } // namespace EngineNext::Rendering

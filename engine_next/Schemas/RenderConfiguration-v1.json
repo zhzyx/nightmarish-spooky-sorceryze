@@ -1063,6 +1063,29 @@
         }
       },
       "$comment": "The command limit controls GPU allocation planning. Capacity exhaustion selects the complete conventional draw path and is reported."
+    },
+    "animation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "loop": {
+          "type": "boolean"
+        },
+        "clip": {
+          "type": "integer",
+          "minimum": -1,
+          "maximum": 2147483647
+        },
+        "speed": {
+          "type": "number"
+        },
+        "start_seconds": {
+          "type": "number"
+        }
+      }
     }
   },
   "$defs": {

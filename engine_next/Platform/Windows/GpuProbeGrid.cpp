@@ -474,7 +474,8 @@ void GpuProbeGrid::WriteDescriptors(std::uint32_t nFrame)
 
 bool GpuProbeGrid::PrepareFrame(std::uint32_t nFrame, const std::array<double, 3> &arrCenter,
 								const std::vector<std::array<double, 16>> &arrWorlds, std::uint64_t nCompletedFence,
-								Assets::Diagnostics &out_arrDiagnostics, const std::vector<GiGeometryChange> &arrGeometryChanges)
+								Assets::Diagnostics &out_arrDiagnostics, const std::vector<GiGeometryChange> &arrGeometryChanges,
+								const DeformationFrame *pDeformation)
 {
 	if (!IsOwner() || !bInitialized || nFrame >= GI_PENDING_FRAMES || nPendingFrame != GI_PENDING_FRAMES ||
 		nCompletedFence == UINT64_MAX || arrFrames[nFrame].nFence > nCompletedFence || arrWorlds.size() != stScene.Identities().size())
@@ -645,6 +646,10 @@ bool GpuProbeGrid::PrepareFrame(std::uint32_t nFrame, const std::array<double, 3
 	{
 		arrNextNeeds[nIndex] = 0;
 	}
+	if (pDeformation != nullptr && !stScene.PrepareDeformation(nFrame, *pDeformation, nCompletedFence, out_arrDiagnostics))
+	{
+		return false;
+	}
 	stPendingGrid = std::move(stNext);
 	arrPendingNeedsUpdate = std::move(arrNextNeeds);
 	arrPendingUpdates = std::move(arrUpdates);
@@ -720,6 +725,10 @@ bool GpuProbeGrid::Record(std::uint32_t nFrame, GiPass ePass, ID3D12GraphicsComm
 	{
 		pList->CopyBufferRegion(arrFrames[nFrame].stReadback.Get(), 0, arrHistory[1 - nReadHistory].arrBuffers[2].Get(), 0,
 								static_cast<std::uint64_t>(stPendingGrid.stBudget.nProbeCount) * stPendingGrid.stBudget.nStateStride);
+		if (!stScene.FinishDeformationReads(nFrame, pList, out_arrDiagnostics))
+		{
+			return false;
+		}
 	}
 	else
 	{

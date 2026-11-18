@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "issue_number": 1505,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T10:27:07.530971+00:00",
+  "candidate": "animation-ao-integrated-r4",
+  "native_key": "487631f1b2483a2a6de470a270b7fc43749c03ec3ae535745a1c6d83b70fa375",
+  "base_commit": "38759596c5cbfb06bc368935d773b915bff1e757",
+  "source_commit": "4100d3e73f22a28feeb3a01b5a38e5486f7e20fd",
+  "status": "confirmed_findings_closed_in_reviewed_scopes",
+  "implementer": "codex/m4_ue_reference",
+  "reviewers": [
+    "codex/m42_cook_review",
+    "codex/m42_capture_tools",
+    "codex/root"
+  ],
+  "source_files": [
+    {
+      "path": "design-docs/engine-next-animation-cpu-20261118.md",
+      "sha256": "945cbc7e1f753a0527fdc13bcb75d7f4995374e5dcfd819933b7d9368560b046",
+      "size_bytes": 10016
+    },
+    {
+      "path": "engine_next/Apps/NextVisualClientMain.cpp",
+      "sha256": "ed719744f513376960af922c1f88c5f43d9f5309ea7fe00b9ddd59c714921dbf",
+      "size_bytes": 7088
+    },
+    {
+      "path": "engine_next/Platform/Windows/GpuDeformation.cpp",
+      "sha256": "02191639dc858208c58cc169c52b870c9ae7c9817d7bce5152031510063e3ffe",
+      "size_bytes": 13349
+    },
+    {
+      "path": "engine_next/Platform/Windows/GpuDeformation.h",
+      "sha256": "e0652ee07604865f0b448714cb6a98ebd86699b890940b59060b1b52626b43ee",
+      "size_bytes": 4936
+    },
+    {
+      "path": "engine_next/Platform/Windows/GpuProbeGrid.cpp",
+      "sha256": "104fd1822ed5c08164b5201afa854f17596027897e3a6f20ecab8c43245121b4",
+      "size_bytes": 48152
+    },
+    {
+      "path": "engine_next/Platform/Windows/GpuProbeGrid.h",
+      "sha256": "b794627799aeb8eb93d1f59fa1249b8eab49bb7237f91e221092520f356889ba",
+      "size_bytes": 9431
+    },
+    {
+      "path": "engine_next/Platform/Windows/RayTracingScene.cpp",
+      "sha256": "aa36224d410eb098ada25053c3d9b9df77b1d182da18a871b91745024b06e78b",
+      "size_bytes": 41686
+    },
+    {
+      "path": "engine_next/Platform/Windows/RayTracingScene.h",
+      "sha256": "577ce5311c55c11341d735b2ad40fb316cbecbb488117c7372074e96fcd26792",
+      "size_bytes": 9754
+    },
+    {
+      "path": "engine_next/Rendering/Animation.cpp",
+      "sha256": "e49ea962fd9d9eaffce0679f8d264bf78001a4a3862f51377f1d4cc7a7a56c51",
+      "size_bytes": 27719
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GltfDecoder.cpp",
+      "sha256": "ab58bd1a650ec551199596c1e464347b0c5491ff7068e53179503967b01b88f3",
+      "size_bytes": 75109
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GltfDecoder.h",
+      "sha256": "fc442c42a7e8dbe8434513afefa35bcf9e0294daf596b5c39afc10175f14d963",
+      "size_bytes": 3263
+    },
+    {
+      "path": "engine_next/Rendering/DeformationChanges.cpp",
+      "sha256": "22a7ba40ef5efc54fb61935cddd03748c47ada02cfdbd0326e9a9b87476640c2",
+      "size_bytes": 5304
+    },
+    {
+      "path": "engine_next/Rendering/DeformationChanges.h",
+      "sha256": "7c745961028871f835a7b318970ef79317e9bad2328cfbf58b06ad288bfbd7b8",
+      "size_bytes": 3093
+    },
+    {
+      "path": "engine_next/Rendering/DeformationFrame.cpp",
+      "sha256": "d4f4b9bef2dd8a6d141dd7e7ce1e55b24695bde6b72d2f00106a1a760c8c69a0",
+      "size_bytes": 8814
+    },
+    {
+      "path": "engine_next/Rendering/FrameGraph.cpp",
+      "sha256": "ba4158c70c6851e95e77a2dfe7324b510fd052b2396d76ea835bd6403ff7e14a",
+      "size_bytes": 16797
+    },
+    {
+      "path": "engine_next/Rendering/MeshBasis.cpp",
+      "sha256": "1642afe536cdc991f69e20cc561a4359952415c1a93601601735e936dabe7077",
+      "size_bytes": 8037
+    },
+    {
+      "path": "engine_next/Rendering/MeshBasis.h",
+      "sha256": "0834d30a51d4a0e7976e92a95f6181660639011af57c14b9a5923563be8df7de",
+      "size_bytes": 2607
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "sha256": "46a5a7ae0d006d8657293fe25feb20023800d4dfda9872d22063f39792d6b884",
+      "size_bytes": 36405
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "sha256": "28e1f90959db2c6cfcd2d18c434eb3087258be8f0cee429c0e1534f7c0c8dde8",
+      "size_bytes": 41639
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "sha256": "3197b7c00c54b58f041528cfced1bb5794d72a79e3d539a69df8406f830023b0",
+      "size_bytes": 9335
+    },
+    {
+      "path": "engine_next/Rendering/RenderScene.cpp",
+      "sha256": "b673f2b3a568b97d826eb273a81bb412af36893f26aeb6914eb09c4dee5c0e18",
+      "size_bytes": 15998
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "sha256": "e32be1ca29d903b3e338084d58a244e665abcac680f8868396c6a23220d546eb",
+      "size_bytes": 17351
+    },
+    {
+      "path": "engine_next/Rendering/ShadowBounds.cpp",
+      "sha256": "54a083fd87ee16be4468718b370a9329fc9820e3e846a2674b479b212cc0c00c",
+      "size_bytes": 5832
+    },
+    {
+      "path": "engine_next/Rendering/ShadowBounds.h",
+      "sha256": "6b0eef064f63b8f10a3a3cc1c4fb61a953ef47e5c798505a28dc2bb707c55a54",
+      "size_bytes": 3203
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "c1bcd5cd72f3337c37efd4ddc356021d66ef1621844d27ea391bb4cbd365fddd",
+      "size_bytes": 319626
+    },
+    {
+      "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+      "sha256": "0e5d17b1478cd3714dd258777075ad3615553007362a87da6509c14c2a48b13a",
+      "size_bytes": 27744
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestAnimation.cpp",
+      "sha256": "c29dbe0bc676a95e8e6cd18c392c73e60243de7f1e2cdd0cd82fc5170a56fc4c",
+      "size_bytes": 46788
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestFrameGraph.cpp",
+      "sha256": "2d2d3884659a5897b7ad0fb64d8c054f5a0b2f8537cf2f60c7a993dcbe05824f",
+      "size_bytes": 26642
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
+      "sha256": "fa18b5b10bef86c71620ec551e6195ba2167d3173279763362c7a7002275d979",
+      "size_bytes": 58744
+    },
+    {
+      "path": "engine_next/Tools/BuildRuntime.py",
+      "sha256": "30f4a2825ebebdb7ca89dabc3ebec4fb67448a17b64f72c37b1381d2af406ef7",
+      "size_bytes": 33677
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "sha256": "d618fb4273c1d4a2d58ed09dc6d987afcc38be64bcfb4a61cc9e6d8abdd79d2e",
+      "size_bytes": 38526
+    },
+    {
+      "path": "engine_next/Tools/GenerateAnimationBenchmark.py",
+      "sha256": "8d1cb33776b27a5220baeb6de51e473d4c123807e4fbe4eebcbf1199802495c1",
+      "size_bytes": 11186
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "sha256": "cb7a2521fce7c8fceed0b323c621d30f9277dfa78bbdf271a2b6fefa3c03eb5b",
+      "size_bytes": 7996
+    },
+    {
+      "path": "engine_next/Tools/TestBuildRuntime.py",
+      "sha256": "799949fc203bd955bdee3babd388bf8a1ed974ad3881b6107a532e5d3d92481d",
+      "size_bytes": 7999
+    },
+    {
+      "path": "engine_next/Tools/TestGenerateAnimationBenchmark.py",
+      "sha256": "343ca7d034f3e49090766e510ed73a7b1b52baf0d507678179c66644851be434",
+      "size_bytes": 1959
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/AnimationData.h",
+      "sha256": "5cfd97827fa791942ff2c88ee7e88529d373c692b21561eb74c5118f23859b8b",
+      "size_bytes": 5943
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/DeformationFrame.h",
+      "sha256": "6e4e713897dfab6184ed03ff9a71e48fa67b41eff44c5bd72d99790e3229e84d",
+      "size_bytes": 3432
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/FrameGraph.h",
+      "sha256": "af83d5d6c2816a3cafc837c2dca4a71d655f06beb8b2b6f59ca0bdc5bed82587",
+      "size_bytes": 6690
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "sha256": "7ed4f92f417823e53f9107deab02bb9547adb2effbcc561c71c57f145df4997d",
+      "size_bytes": 8484
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderScene.h",
+      "sha256": "6d714ad04b38598c012d193cf277db7742bef9738b42572b6aedae1a13cd9003",
+      "size_bytes": 5013
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/VisualRuntime.h",
+      "sha256": "5b5820761495052814d231b33099c227e8ba740ca3fe2d9bc8c4bd84f35ebd9d",
+      "size_bytes": 3221
+    }
+  ],
+  "cpu_review": {
+    "path": "build/engine_next/animation-independent-fixed-r2/IndependentReview.json",
+    "sha256": "4406d9f6313a88685b11cb1ea21418ea24840c5265e547de429d7286d58de572",
+    "size_bytes": 6486
+  },
+  "gpu_lifecycle_review": {
+    "path": "build/engine_next/animation-final-evidence-r4/External/1195a44968b0/Review.json",
+    "sha256": "1195a44968b0925fc132c380eadfff4abc73d9ddfd3c5697ca2dbe264dc2c58d",
+    "size_bytes": 4836
+  },
+  "resize_closure": {
+    "path": "build/engine_next/animation-final-evidence-r4/External/6a37cb2eb791/Closure.json",
+    "sha256": "6a37cb2eb791d9b691c21383c73c91d026fdf5a786b3baf96e0972f4dfb28a9d",
+    "size_bytes": 2577
+  },
+  "integration_review": {
+    "path": "build/engine_next/animation-final-evidence-r4/External/0429d5f6de25/Review.json",
+    "sha256": "0429d5f6de2549e1b698e9f594db043dd79eebd6c5ed52602877d7dd9603b192",
+    "size_bytes": 2641
+  },
+  "scope": "CPU decoding and deformation, current/previous raster streams, animated DXR geometry, independent GI dirty tracking, resize fallback and subsequent AO integration.",
+  "review_relationship": "The original E author separately reviewed the later root-authored AO merge. Original CPU and GPU lifecycle reviews were performed by other agents. Each source digest retains its original candidate identity.",
+  "closed_findings": [
+    "Animation accessor bounds match binary32 representations.",
+    "Large looping times reduce phase before subtracting offsets.",
+    "Runtime identity includes animation headers.",
+    "GI dirty tracking uses the last submitted pose independently of TAA validity.",
+    "Resize keeps animated geometry on the conventional raster path."
+  ]
+}

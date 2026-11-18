@@ -59,7 +59,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bAmbientOcclusion)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bAmbientOcclusion, bool bDeformation)
 {
 	if (nLocalShadowViews > 28)
 	{
@@ -94,16 +94,33 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 	}
 	if (bSceneMode)
 	{
+		if (bDeformation)
+		{
+			stPipeline.nDeformedVertices = stGraph.AddResource({ "DeformedVertices", ResourceState::Common, true });
+			stPipeline.nPreviousPositions = stGraph.AddResource({ "PreviousPositions", ResourceState::Common, true });
+			stPipeline.nDeformationUpload = stGraph.AddResource({ "DeformationUpload", ResourceState::GenericRead, true });
+			if (!AddPipelinePass(stGraph, stPipeline, { "DeformationUpload", QueueType::Graphics, { { stPipeline.nDeformationUpload, ResourceState::GenericRead, false }, { stPipeline.nDeformedVertices, ResourceState::CopyDestination, true }, { stPipeline.nPreviousPositions, ResourceState::CopyDestination, true } }, {} }, PassWork::DeformationUpload, out_stDiagnostic))
+			{
+				return false;
+			}
+		}
 		stPipeline.nDirectionalShadow = stGraph.AddResource({ "DirectionalShadow", ResourceState::DepthWrite, true, 4 });
-		if (!AddPipelinePass(stGraph, stPipeline,
-							 { "DirectionalShadow", QueueType::Graphics, { { stPipeline.nDirectionalShadow, ResourceState::DepthWrite, true } }, {} },
-							 PassWork::DirectionalShadow, out_stDiagnostic))
+		PassDesc stDirectional{ "DirectionalShadow", QueueType::Graphics, { { stPipeline.nDirectionalShadow, ResourceState::DepthWrite, true } }, {} };
+		if (bDeformation)
+		{
+			stDirectional.arrAccesses.push_back({ stPipeline.nDeformedVertices, ResourceState::VertexIndexRead, false });
+		}
+		if (!AddPipelinePass(stGraph, stPipeline, stDirectional, PassWork::DirectionalShadow, out_stDiagnostic))
 		{
 			return false;
 		}
 		stPipeline.nLocalShadow = stGraph.AddResource({ "LocalShadow", ResourceState::DepthWrite, true, nLocalShadowViews == 0 ? 1U : nLocalShadowViews });
-		if (!AddPipelinePass(stGraph, stPipeline, { "LocalShadow", QueueType::Graphics, { { stPipeline.nLocalShadow, ResourceState::DepthWrite, true } }, {} },
-							 PassWork::LocalShadow, out_stDiagnostic))
+		PassDesc stLocal{ "LocalShadow", QueueType::Graphics, { { stPipeline.nLocalShadow, ResourceState::DepthWrite, true } }, {} };
+		if (bDeformation)
+		{
+			stLocal.arrAccesses.push_back({ stPipeline.nDeformedVertices, ResourceState::VertexIndexRead, false });
+		}
+		if (!AddPipelinePass(stGraph, stPipeline, stLocal, PassWork::LocalShadow, out_stDiagnostic))
 		{
 			return false;
 		}
@@ -113,6 +130,11 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		stPipeline.arrGbuffer[3] = stGraph.AddResource({ "GBufferEmissive", ResourceState::Common, false });
 		stPipeline.nHdr = stGraph.AddResource({ "HdrColor", ResourceState::Common, false });
 		PassDesc stGbuffer{ "GBuffer", QueueType::Graphics, {}, {} };
+		if (bDeformation)
+		{
+			stGbuffer.arrAccesses.push_back({ stPipeline.nDeformedVertices, ResourceState::VertexIndexRead, false });
+			stGbuffer.arrAccesses.push_back({ stPipeline.nPreviousPositions, ResourceState::VertexIndexRead, false });
+		}
 		PassDesc stLighting{ "DeferredLighting", QueueType::Graphics, { { stPipeline.nTint, ResourceState::ShaderRead, false } }, {} };
 		if (bGlobalIllumination)
 		{
@@ -473,6 +495,10 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			{
 				stTransparency.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::ShaderRead, false });
 			}
+			if (bDeformation)
+			{
+				stTransparency.arrAccesses.push_back({ stPipeline.nDeformedVertices, ResourceState::VertexIndexRead, false });
+			}
 			if (stForwardEffects.bVolume)
 			{
 				stTransparency.arrAccesses.push_back({ stPipeline.nVolumeIntegral, ResourceState::ShaderRead, false });
@@ -727,6 +753,11 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		{
 			stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });
 		}
+	}
+	if (bSceneMode && bDeformation)
+	{
+		stPresent.arrAccesses.push_back({ stPipeline.nDeformedVertices, ResourceState::Common, false });
+		stPresent.arrAccesses.push_back({ stPipeline.nPreviousPositions, ResourceState::Common, false });
 	}
 	if (!AddPipelinePass(stGraph, stPipeline, stPresent, PassWork::Present, out_stDiagnostic) || !stGraph.Compile(stPipeline.stGraph, out_stDiagnostic))
 	{

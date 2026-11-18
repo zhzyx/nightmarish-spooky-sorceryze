@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "issue_number": 1505,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T10:27:07.530971+00:00",
+  "candidate": "animation-ao-integrated-r4",
+  "native_key": "487631f1b2483a2a6de470a270b7fc43749c03ec3ae535745a1c6d83b70fa375",
+  "base_commit": "38759596c5cbfb06bc368935d773b915bff1e757",
+  "source_commit": "4100d3e73f22a28feeb3a01b5a38e5486f7e20fd",
+  "status": "functional_increment_verified",
+  "stage_complete": false,
+  "issues_remaining_open": [
+    1505,
+    1323
+  ],
+  "native_input_count": 337,
+  "shader_count": 58,
+  "msvc_build": {
+    "path": "build/engine_next/animation-final-evidence-r4/External/f2d3260c03ac/VisualBuildReport.json",
+    "sha256": "f2d3260c03acb24f108ebbd501d56a4a0f338c4d16280f3e8aa2c006e72c33ac",
+    "size_bytes": 2829586
+  },
+  "clang_cl_build": {
+    "path": "build/engine_next/animation-final-evidence-r4/External/0372414723ea/Result.json",
+    "sha256": "0372414723eabd44a74b20b21485ba8136783cdfff74546d73c956adb7588342",
+    "size_bytes": 3419909
+  },
+  "runtime_contract": {
+    "path": "build/engine_next/animation-final-evidence-r4/External/d729080c8b1e/RuntimeBuildReport.json",
+    "sha256": "d729080c8b1e0dbd86f528f2d6c3f2fbab7b7b1a715a7b4b12d7b2e4810f189d",
+    "size_bytes": 297939
+  },
+  "runtime_contract_scope": "Current source builds standalone next_server, next_client and next_asset; normal, clean-copy and packaged handshakes pass, alongside M3 asset, scene, AI and drain-fault acceptance.",
+  "runtime_contract_setup": "The first invocation lacked the VS compiler environment. The retained retry uses the existing BuildVisualRuntime compiler setup and passes without source changes.",
+  "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=479 checks=498187 failures=0",
+  "source_review": {
+    "path": "data-collection/engine-next-visual-runtime-m4-5-animation-source-review.json",
+    "sha256": "bfe9d3fd3142a6ca8c989128cc34d8d21f0bc99d50c2eccc82e20b49497089a9",
+    "size_bytes": 9929
+  },
+  "build_impact": {
+    "path": "data-collection/engine-next-visual-runtime-m4-5-animation-build-impact.json",
+    "sha256": "40861d84777c8ad7a69e5323e504fb927e60c66dd48d4ee05aa90b4ea3a2cfae",
+    "size_bytes": 40480
+  },
+  "normal_gpu": {
+    "path": "build/engine_next/animation-final-evidence-r4/External/27641aab96dc/Matrix.json",
+    "sha256": "27641aab96dc7436ed4526196f1a92f05299a8abb8da365f75b7d426ad9b442b",
+    "size_bytes": 2003
+  },
+  "normal_frames": 160,
+  "capture_manifests": [
+    {
+      "path": "build/engine_next/animation-capture-r4/CaptureAnimatedPlacement/CaptureManifest.json",
+      "sha256": "9683ce1a8136d78e115ed51a630a539c73aeceb0264188a30ce3f26760cae3bb",
+      "size_bytes": 4461
+    },
+    {
+      "path": "build/engine_next/animation-capture-r4/CaptureProjectionClipEnd/CaptureManifest.json",
+      "sha256": "7135405daefb3d8d0dfcd6d1b0d18d15cb4a098e39de8f3fc483a3f6e1ed8f36",
+      "size_bytes": 4441
+    },
+    {
+      "path": "build/engine_next/animation-capture-r4/CapturePausedPlacement/CaptureManifest.json",
+      "sha256": "01848b47bced1c579bab14307f305eb6152b8728b4070d3b62ae665ba823930d",
+      "size_bytes": 3832
+    }
+  ],
+  "capture_frames": 104,
+  "rdc_count": 7,
+  "actual_gpu_readback": {
+    "path": "build/engine_next/animation-capture-r4/VerificationR4/Result.json",
+    "sha256": "799ab508494777561c7910341e6bfc1e79686307222939a13c6051394af8a80c",
+    "size_bytes": 3493
+  },
+  "module_frames": 144,
+  "shader_compatibility": {
+    "path": "build/engine_next/AnimationShaderCompatibilityR4.json",
+    "sha256": "425411328267fcaefb39a3cfa7270d63ab6cbfcf4400870c5bd2d0b23fd81807",
+    "size_bytes": 702
+  },
+  "resize_regression": {
+    "path": "build/engine_next/animation-final-evidence-r4/External/fa7a222940bf/Result.json",
+    "sha256": "fa7a222940bf08622d8e6f08590f3e8ce93635b4b48d07b24f3355590195d640",
+    "size_bytes": 957
+  },
+  "historical_r2_handoff": {
+    "path": "build/engine_next/animation-final-evidence-r4/External/8c6e4d4d7c86/Manifest.json",
+    "sha256": "8c6e4d4d7c8696ff04121d42af11948f35725bbfef72486d2094d6c69d08a8b7",
+    "size_bytes": 1854
+  },
+  "historical_scope": "R2 and R3 retain their original identities; current R4 builds, normal runs, captures and module experiments are recorded separately.",
+  "remaining": [
+    "The twelve-frame 3840x2160 run is a functional check. Native 4K target frame rates, long-duration stability and final UE E comparison remain pending.",
+    "Animated geometry uses conventional raster fallback when optional cluster culling is requested.",
+    "Complete M4 rendering, gameplay regression and release-package acceptance remain open."
+  ],
+  "static_checks": {
+    "path": "build/engine_next/animation-static-r4/Result.json",
+    "sha256": "33bb6b1696797e71e47d9ac4acdfe2b6b3fb923490c744ed572c360a4f685331",
+    "size_bytes": 25302
+  },
+  "static_scope": "Nine applicable checks passed with zero source mutations; verification aggregate omitted from its own input digest.",
+  "capture_launcher_recovery": "The first direct script launcher produced no manifest or capture. An explicit script bootstrap then completed all seven current-candidate captures and readbacks."
+}

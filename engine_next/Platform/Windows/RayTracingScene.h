@@ -32,6 +32,7 @@
 
 #include "engine_next/Platform/Windows/RhiComOwner.h"
 #include "engine_next/include/EngineNext/Rendering/RenderScene.h"
+#include "engine_next/include/EngineNext/Rendering/DeformationFrame.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -135,9 +136,15 @@ public:
 	// Existing resources must already be retired. Candidate allocation and
 	// source validation are transactional. Source pointers are never retained.
 	[[nodiscard]] bool Prepare(ID3D12Device5 *pDevice, const RenderScene &stSource, const RayTracingLimits &stLimits, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
+	// Stages per-instance local positions in a retired upload slot. No GPU work
+	// is submitted here; RecordBuildOrUpdate consumes the complete staged pose.
+	[[nodiscard]] bool PrepareDeformation(std::uint32_t nFrame, const DeformationFrame &stPose, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
 	// Worlds follow Identities() order. The selected slot must be retired.
-	// This records geometry copies/BLAS once and TLAS build or update per slot.
+	// Static BLAS builds once; deformed BLAS rebuilds from the staged pose.
+	// TLAS builds or updates per slot on the same ordered DIRECT queue.
 	[[nodiscard]] bool RecordBuildOrUpdate(std::uint32_t nFrame, ID3D12GraphicsCommandList4 *pList, const std::vector<std::array<double, 16>> &arrWorlds, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
+	// Call after the final ray query reads the deformed vertex buffer.
+	[[nodiscard]] bool FinishDeformationReads(std::uint32_t nFrame, ID3D12GraphicsCommandList4 *pList, Assets::Diagnostics &out_arrDiagnostics);
 	// Call after ExecuteCommandLists and successful signal on the same queue.
 	[[nodiscard]] bool CommitSubmission(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics);
 	// Call only after discarding/resetting the unsubmitted command list.
@@ -162,14 +169,20 @@ private:
 	{
 		D3D12_RAYTRACING_GEOMETRY_DESC stDescription{};
 		std::uint64_t nResultOffset = 0;
+		std::uint32_t nDynamicDraw = UINT32_MAX;
+		std::uint32_t nFirstVertex = 0;
+		std::uint32_t nVertexCount = 0;
+		std::uint64_t nUploadOffset = 0;
 	};
 	struct Frame
 	{
 		ComOwner<ID3D12Resource> stTlas;
 		ComOwner<ID3D12Resource> stScratch;
 		ComOwner<ID3D12Resource> stInstances;
+		ComOwner<ID3D12Resource> stDeformation;
 		std::uint64_t nFence = 0;
 		bool bBuilt = false;
+		bool bDeformationReady = false;
 	};
 	bool IsOwner() const noexcept;
 	bool CanRelease(std::uint64_t nCompletedFence) const noexcept;
@@ -195,8 +208,10 @@ private:
 	std::uint64_t nLatestFence = 0;
 	std::uint64_t nBlasScratchAllocation = 0;
 	std::uint64_t nGeometryUploadAllocation = 0;
+	std::uint64_t nDeformationBytes = 0;
 	std::uint32_t nPendingFrame = NO_RAY_TRACING_FRAME;
 	bool bPendingStaticBuild = false;
+	bool bPendingDeformationFinished = false;
 	bool bStaticBuilt = false;
 	bool bPrepared = false;
 	RayTracingMemory stMemory;

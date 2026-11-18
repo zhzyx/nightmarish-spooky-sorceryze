@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "event_id": "m45-animation-ao-r4-verified-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T10:27:22.768010+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1505",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m45-gi-request-routed-20261118"
+  ],
+  "payload": {
+    "scope": "Animated raster and DXR geometry, submitted-pose GI invalidation and AO integration",
+    "native_key": "487631f1b2483a2a6de470a270b7fc43749c03ec3ae535745a1c6d83b70fa375",
+    "tests": [
+      479,
+      498187,
+      0
+    ],
+    "normal_gpu_frames": 160,
+    "rdc_count": 7,
+    "module_gpu_frames": 144,
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-5-animation-source-review.json",
+      "data-collection/engine-next-visual-runtime-m4-5-animation-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-5-animation-verification.json"
+    ],
+    "stage_complete": false
+  },
+  "sha256": "6cedb23938cd657625f41d93aa66654b8708079f9d60aaab3b8ca052db72d500"
+}

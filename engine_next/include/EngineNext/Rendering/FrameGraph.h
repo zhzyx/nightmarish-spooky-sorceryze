@@ -74,6 +74,7 @@ enum class ResourceState : std::uint8_t
 	AccelerationStructure = 11,
 	GenericRead = 12,
 	IndirectArgument = 13,
+	VertexIndexRead = 14,
 };
 
 enum class BarrierKind : std::uint8_t

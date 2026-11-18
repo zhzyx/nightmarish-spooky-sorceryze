@@ -71,6 +71,9 @@ struct VertexInput
     float3 Normal : NORMAL;
     float4 Tangent : TANGENT;
     float2 Texcoord : TEXCOORD;
+#if defined(ANIMATION_STAGE)
+    float3 PreviousPosition : PREVPOSITION;
+#endif
 };
 struct VertexOutput
 {
@@ -87,7 +90,11 @@ VertexOutput VSMain(VertexInput Input)
     float4 Position = mul(World, float4(Input.Position, 1));
     Output.Position = mul(ViewProjection, Position);
     Output.CurrentClip = mul(UnjitteredViewProjection, Position);
+#if defined(ANIMATION_STAGE)
+    Output.PreviousClip = mul(PreviousViewProjection, mul(PreviousWorld, float4(Input.PreviousPosition, 1)));
+#else
     Output.PreviousClip = mul(PreviousViewProjection, mul(PreviousWorld, float4(Input.Position, 1)));
+#endif
     Output.Normal = UnitDirection(mul((float3x3)NormalWorld, Input.Normal), float3(0, 0, 1));
     Output.Tangent = float4(UnitDirection(mul((float3x3)World, Input.Tangent.xyz), float3(1, 0, 0)), Input.Tangent.w * Flags.y);
     Output.Texcoord = Input.Texcoord;

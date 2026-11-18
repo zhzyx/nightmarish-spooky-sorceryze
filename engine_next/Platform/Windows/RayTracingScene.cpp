@@ -36,6 +36,7 @@
 #include <limits>
 #include <map>
 #include <string>
+#include <tuple>
 #include <utility>
 
 namespace EngineNext::Rendering
@@ -184,8 +185,10 @@ RayTracingScene &RayTracingScene::operator=(RayTracingScene &&stOther) noexcept
 		stDestination.stTlas = std::move(stSource.stTlas);
 		stDestination.stScratch = std::move(stSource.stScratch);
 		stDestination.stInstances = std::move(stSource.stInstances);
+		stDestination.stDeformation = std::move(stSource.stDeformation);
 		stDestination.nFence = std::exchange(stSource.nFence, 0);
 		stDestination.bBuilt = std::exchange(stSource.bBuilt, false);
+		stDestination.bDeformationReady = std::exchange(stSource.bDeformationReady, false);
 	}
 	nOwnerThread = std::exchange(stOther.nOwnerThread, 0);
 	nVertexBytes = std::exchange(stOther.nVertexBytes, 0);
@@ -195,8 +198,10 @@ RayTracingScene &RayTracingScene::operator=(RayTracingScene &&stOther) noexcept
 	nLatestFence = std::exchange(stOther.nLatestFence, 0);
 	nBlasScratchAllocation = std::exchange(stOther.nBlasScratchAllocation, 0);
 	nGeometryUploadAllocation = std::exchange(stOther.nGeometryUploadAllocation, 0);
+	nDeformationBytes = std::exchange(stOther.nDeformationBytes, 0);
 	nPendingFrame = std::exchange(stOther.nPendingFrame, NO_RAY_TRACING_FRAME);
 	bPendingStaticBuild = std::exchange(stOther.bPendingStaticBuild, false);
+	bPendingDeformationFinished = std::exchange(stOther.bPendingDeformationFinished, false);
 	bStaticBuilt = std::exchange(stOther.bStaticBuilt, false);
 	bPrepared = std::exchange(stOther.bPrepared, false);
 	stMemory = std::exchange(stOther.stMemory, RayTracingMemory{});
@@ -255,7 +260,7 @@ bool RayTracingScene::Prepare(ID3D12Device5 *pDevice, const RenderScene &stSourc
 	std::vector<RayTracingDraw> arrDraws;
 	std::vector<RayTracingMaterial> arrMaterials;
 	std::vector<std::uint32_t> arrMaterialBase;
-	std::map<std::pair<std::uint32_t, std::uint32_t>, std::uint32_t> mapGeometry;
+	std::map<std::tuple<std::uint32_t, std::uint32_t, std::uint32_t>, std::uint32_t> mapGeometry;
 	std::vector<RayTracingDraw> arrGeometryDraws;
 	std::uint64_t nBlasBytes = 0;
 	std::uint64_t nScratchBytes = 0;
@@ -332,8 +337,10 @@ bool RayTracingScene::Prepare(ID3D12Device5 *pDevice, const RenderScene &stSourc
 		{
 			return Error(out_arrDiagnostics, "Instance transform must be finite binary32 and affine.");
 		}
-		const std::pair<std::uint32_t, std::uint32_t> stKey{ stInstance.nAsset, stInstance.nPrimitive };
-		std::map<std::pair<std::uint32_t, std::uint32_t>, std::uint32_t>::iterator it = mapGeometry.find(stKey);
+		const bool bDynamic = stSource.arrAssets[stInstance.nAsset].bAnimated;
+		const std::uint32_t nDrawIndex = static_cast<std::uint32_t>(stCandidate.arrInstances.size());
+		const std::tuple<std::uint32_t, std::uint32_t, std::uint32_t> stKey{ stInstance.nAsset, stInstance.nPrimitive, bDynamic ? nDrawIndex + 1 : 0 };
+		auto it = mapGeometry.find(stKey);
 		if (it == mapGeometry.end())
 		{
 			if (stCandidate.arrGeometry.size() >= stLimits.nMaxGeometries || arrVertices.size() + stPrimitive.arrVertices.size() > UINT32_MAX || arrIndices.size() + stPrimitive.arrIndices.size() > UINT32_MAX || (arrVertices.size() + stPrimitive.arrVertices.size()) * sizeof(MeshVertex) + (arrIndices.size() + stPrimitive.arrIndices.size()) * sizeof(std::uint32_t) > stLimits.nMaxResidentBytes)
@@ -365,6 +372,14 @@ bool RayTracingScene::Prepare(ID3D12Device5 *pDevice, const RenderScene &stSourc
 				}
 			}
 			Geometry stGeometry;
+			stGeometry.nFirstVertex = static_cast<std::uint32_t>(arrVertices.size());
+			stGeometry.nVertexCount = static_cast<std::uint32_t>(stPrimitive.arrVertices.size());
+			if (bDynamic)
+			{
+				stGeometry.nDynamicDraw = nDrawIndex;
+				stGeometry.nUploadOffset = stCandidate.nDeformationBytes;
+				stCandidate.nDeformationBytes += stPrimitive.arrVertices.size() * sizeof(MeshVertex);
+			}
 			stGeometry.stDescription.Type = D3D12_RAYTRACING_GEOMETRY_TYPE_TRIANGLES;
 			stGeometry.stDescription.Flags = stMesh.arrMaterials[stPrimitive.nMaterial].eAlphaMode == AlphaMode::Opaque ? D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE : D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
 			D3D12_RAYTRACING_GEOMETRY_TRIANGLES_DESC &stTriangles = stGeometry.stDescription.Triangles;
@@ -440,6 +455,10 @@ bool RayTracingScene::Prepare(ID3D12Device5 *pDevice, const RenderScene &stSourc
 	}
 	for (std::uint32_t nFrame = 0; nFrame < RAY_TRACING_FRAME_COUNT; ++nFrame)
 	{
+		if (stCandidate.nDeformationBytes != 0 && !Account(pDevice, stCandidate.nDeformationBytes, D3D12_RESOURCE_FLAG_NONE, stLimits.nMaxUploadBytes, stPlannedMemory.nUploadBytes))
+		{
+			return Error(out_arrDiagnostics, "Animated BLAS staging exceeds the upload budget.");
+		}
 		if (!Account(pDevice, nTlasBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, stLimits.nMaxResidentBytes, stPlannedMemory.nResidentBytes) || !Account(pDevice, nTlasScratchBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, stLimits.nMaxScratchBytes, stPlannedMemory.nScratchBytes) || !Account(pDevice, nInstanceBytes, D3D12_RESOURCE_FLAG_NONE, stLimits.nMaxUploadBytes, stPlannedMemory.nUploadBytes))
 		{
 			return Error(out_arrDiagnostics, "TLAS frame allocations exceed the explicit budget.");
@@ -472,6 +491,10 @@ bool RayTracingScene::Prepare(ID3D12Device5 *pDevice, const RenderScene &stSourc
 	}
 	for (Frame &stFrame : stCandidate.arrFrames)
 	{
+		if (stCandidate.nDeformationBytes != 0 && !CreateBuffer(pDevice, stCandidate.nDeformationBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, stFrame.stDeformation))
+		{
+			return Error(out_arrDiagnostics, "Animated BLAS staging allocation failed.");
+		}
 		if (!CreateBuffer(pDevice, nTlasBytes, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, stFrame.stTlas) || !CreateBuffer(pDevice, nTlasScratchBytes, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, stFrame.stScratch) || !CreateBuffer(pDevice, nInstanceBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, stFrame.stInstances))
 		{
 			return Error(out_arrDiagnostics, "D3D12 TLAS frame allocation failed.");
@@ -482,6 +505,72 @@ bool RayTracingScene::Prepare(ID3D12Device5 *pDevice, const RenderScene &stSourc
 	stCandidate.nOwnerThread = GetCurrentThreadId();
 	stCandidate.bPrepared = true;
 	*this = std::move(stCandidate);
+	return true;
+}
+
+bool RayTracingScene::PrepareDeformation(std::uint32_t nFrame, const DeformationFrame &stPose, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics)
+{
+	if (!IsOwner() || !bPrepared || nFrame >= RAY_TRACING_FRAME_COUNT || nPendingFrame != NO_RAY_TRACING_FRAME ||
+		nCompletedFence == UINT64_MAX || nCompletedFence < arrFrames[nFrame].nFence)
+	{
+		return Error(out_arrDiagnostics, "Animated BLAS staging needs an idle retired frame slot.");
+	}
+	std::vector<const DeformedDraw *> arrDraws(arrInstances.size(), nullptr);
+	for (const DeformedDraw &stDraw : stPose.arrDraws)
+	{
+		if (stDraw.nDraw >= arrDraws.size() || arrDraws[stDraw.nDraw] != nullptr)
+		{
+			return Error(out_arrDiagnostics, "Animated BLAS pose has an invalid or duplicate draw.");
+		}
+		arrDraws[stDraw.nDraw] = &stDraw;
+	}
+	std::size_t nExpected = 0;
+	for (const Geometry &stGeometry : arrGeometry)
+	{
+		if (stGeometry.nDynamicDraw == UINT32_MAX)
+		{
+			continue;
+		}
+		++nExpected;
+		const DeformedDraw *pDraw = arrDraws[stGeometry.nDynamicDraw];
+		if (pDraw == nullptr || pDraw->arrVertices.size() != stGeometry.nVertexCount)
+		{
+			return Error(out_arrDiagnostics, "Animated BLAS pose differs from its stable geometry layout.");
+		}
+		for (const MeshVertex &stVertex : pDraw->arrVertices)
+		{
+			for (float fValue : stVertex.arrPosition)
+			{
+				if (!std::isfinite(fValue))
+				{
+					return Error(out_arrDiagnostics, "Animated BLAS position is nonfinite.");
+				}
+			}
+		}
+	}
+	if (nExpected != stPose.arrDraws.size())
+	{
+		return Error(out_arrDiagnostics, "Animated BLAS pose contains unexpected static draws.");
+	}
+	if (nDeformationBytes != 0)
+	{
+		void *pMapped = nullptr;
+		const D3D12_RANGE stNoRead{ 0, 0 };
+		if (FAILED(arrFrames[nFrame].stDeformation->Map(0, &stNoRead, &pMapped)))
+		{
+			return Error(out_arrDiagnostics, "Animated BLAS staging map failed.");
+		}
+		for (const Geometry &stGeometry : arrGeometry)
+		{
+			if (stGeometry.nDynamicDraw != UINT32_MAX)
+			{
+				std::memcpy(static_cast<std::uint8_t *>(pMapped) + stGeometry.nUploadOffset,
+							arrDraws[stGeometry.nDynamicDraw]->arrVertices.data(), static_cast<std::size_t>(stGeometry.nVertexCount) * sizeof(MeshVertex));
+			}
+		}
+		arrFrames[nFrame].stDeformation->Unmap(0, nullptr);
+	}
+	arrFrames[nFrame].bDeformationReady = true;
 	return true;
 }
 
@@ -500,6 +589,10 @@ bool RayTracingScene::RecordBuildOrUpdate(std::uint32_t nFrame, ID3D12GraphicsCo
 		}
 	}
 	Frame &stFrame = arrFrames[nFrame];
+	if (nDeformationBytes != 0 && !stFrame.bDeformationReady)
+	{
+		return Error(out_arrDiagnostics, "Animated BLAS recording requires this frame's complete staged pose.");
+	}
 	if (!Fill(stFrame.stInstances.Get(), arrCandidate.data(), arrCandidate.size() * sizeof(D3D12_RAYTRACING_INSTANCE_DESC)))
 	{
 		return Error(out_arrDiagnostics, "Mapping the retired instance upload failed.");
@@ -520,12 +613,33 @@ bool RayTracingScene::RecordBuildOrUpdate(std::uint32_t nFrame, ID3D12GraphicsCo
 			arrBarriers[nIndex].Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 		}
 		pList->ResourceBarrier(2, arrBarriers);
+	}
+	if (nDeformationBytes != 0)
+	{
+		// The prior frame explicitly releases dynamic vertices to COMMON.
+		Transition(pList, stVertices.Get(), bStaticBuilt ? D3D12_RESOURCE_STATE_COMMON : D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COPY_DEST);
+		for (const Geometry &stGeometry : arrGeometry)
+		{
+			if (stGeometry.nDynamicDraw != UINT32_MAX)
+			{
+				pList->CopyBufferRegion(stVertices.Get(), static_cast<std::uint64_t>(stGeometry.nFirstVertex) * sizeof(MeshVertex),
+										stFrame.stDeformation.Get(), stGeometry.nUploadOffset, static_cast<std::uint64_t>(stGeometry.nVertexCount) * sizeof(MeshVertex));
+			}
+		}
+		Transition(pList, stVertices.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE);
+	}
+	if (!bStaticBuilt || nDeformationBytes != 0)
+	{
 		if (stBlasScratch.Get() != nullptr)
 		{
 			Transition(pList, stBlasScratch.Get(), D3D12_RESOURCE_STATE_COMMON, D3D12_RESOURCE_STATE_UNORDERED_ACCESS);
 		}
 		for (const Geometry &stGeometry : arrGeometry)
 		{
+			if (bStaticBuilt && stGeometry.nDynamicDraw == UINT32_MAX)
+			{
+				continue;
+			}
 			D3D12_BUILD_RAYTRACING_ACCELERATION_STRUCTURE_DESC stBuild{};
 			stBuild.Inputs.Type = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL;
 			stBuild.Inputs.Flags = BUILD_FLAGS;
@@ -537,6 +651,10 @@ bool RayTracingScene::RecordBuildOrUpdate(std::uint32_t nFrame, ID3D12GraphicsCo
 			pList->BuildRaytracingAccelerationStructure(&stBuild, 0, nullptr);
 			UavBarrier(pList, stBlas.Get());
 			UavBarrier(pList, stBlasScratch.Get());
+		}
+		if (nDeformationBytes != 0)
+		{
+			Transition(pList, stBlasScratch.Get(), D3D12_RESOURCE_STATE_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON);
 		}
 	}
 	// Scratch is a buffer and decays to COMMON across ExecuteCommandLists.
@@ -558,17 +676,35 @@ bool RayTracingScene::RecordBuildOrUpdate(std::uint32_t nFrame, ID3D12GraphicsCo
 	UavBarrier(pList, stFrame.stTlas.Get());
 	nPendingFrame = nFrame;
 	bPendingStaticBuild = !bStaticBuilt;
+	bPendingDeformationFinished = false;
+	return true;
+}
+
+bool RayTracingScene::FinishDeformationReads(std::uint32_t nFrame, ID3D12GraphicsCommandList4 *pList, Assets::Diagnostics &out_arrDiagnostics)
+{
+	if (!IsOwner() || nFrame >= RAY_TRACING_FRAME_COUNT || nPendingFrame != nFrame || pList == nullptr ||
+		pList->GetType() != D3D12_COMMAND_LIST_TYPE_DIRECT || bPendingDeformationFinished)
+	{
+		return Error(out_arrDiagnostics, "Dynamic vertex release needs the recorded frame and its final ray query.");
+	}
+	if (nDeformationBytes != 0)
+	{
+		Transition(pList, stVertices.Get(), D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE, D3D12_RESOURCE_STATE_COMMON);
+	}
+	bPendingDeformationFinished = true;
 	return true;
 }
 
 bool RayTracingScene::CommitSubmission(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics)
 {
-	if (!IsOwner() || nFrame >= RAY_TRACING_FRAME_COUNT || nPendingFrame != nFrame || nFence == 0 || nFence == UINT64_MAX || nFence < nLatestFence)
+	if (!IsOwner() || nFrame >= RAY_TRACING_FRAME_COUNT || nPendingFrame != nFrame || nFence == 0 || nFence == UINT64_MAX || nFence < nLatestFence ||
+		(nDeformationBytes != 0 && !bPendingDeformationFinished))
 	{
 		return Error(out_arrDiagnostics, "Commit needs the recorded frame and a monotonic graphics fence.");
 	}
 	arrFrames[nFrame].bBuilt = true;
 	arrFrames[nFrame].nFence = nFence;
+	arrFrames[nFrame].bDeformationReady = false;
 	nLatestFence = nFence;
 	if (bPendingStaticBuild)
 	{
@@ -577,6 +713,7 @@ bool RayTracingScene::CommitSubmission(std::uint32_t nFrame, std::uint64_t nFenc
 	}
 	nPendingFrame = NO_RAY_TRACING_FRAME;
 	bPendingStaticBuild = false;
+	bPendingDeformationFinished = false;
 	return true;
 }
 
@@ -586,8 +723,10 @@ bool RayTracingScene::CancelRecorded(std::uint32_t nFrame, Assets::Diagnostics &
 	{
 		return Error(out_arrDiagnostics, "Only the current unsubmitted recording can be cancelled.");
 	}
+	arrFrames[nFrame].bDeformationReady = false;
 	nPendingFrame = NO_RAY_TRACING_FRAME;
 	bPendingStaticBuild = false;
+	bPendingDeformationFinished = false;
 	return true;
 }
 
@@ -616,7 +755,7 @@ bool RayTracingScene::Retire(std::uint64_t nCompletedFence, Assets::Diagnostics 
 			stMemory.nUploadBytes -= nGeometryUploadAllocation;
 			stMemory.nRetiredUploadBytes += nGeometryUploadAllocation;
 		}
-		if (stBlasScratch.Get() != nullptr)
+		if (stBlasScratch.Get() != nullptr && nDeformationBytes == 0)
 		{
 			stBlasScratch.Reset();
 			stMemory.nScratchBytes -= nBlasScratchAllocation;

@@ -46,6 +46,9 @@
 #include "engine_next/Rendering/Cook/EnvironmentImportance.h"
 #include "engine_next/Rendering/Cook/GpuPackage.h"
 #include "engine_next/include/EngineNext/Rendering/RenderScene.h"
+#include "engine_next/include/EngineNext/Rendering/DeformationFrame.h"
+#include "engine_next/Rendering/DeformationChanges.h"
+#include "engine_next/Platform/Windows/GpuDeformation.h"
 #include "engine_next/include/EngineNext/Rendering/TextureData.h"
 #include "engine_next/include/EngineNext/Rendering/CameraMatrices.h"
 #include "engine_next/include/EngineNext/Rendering/RenderConfiguration.h"
@@ -284,6 +287,12 @@ struct FrameTiming
 	bool bPostReady = false;
 	double dLightingSeconds = 0;
 	double dDirectionalIlluminance = 0;
+	double dAnimationSeconds = 0;
+	double dAnimationCpuMsec = 0;
+	double dAnimationMaxMotion = 0;
+	std::uint64_t nAnimatedVertices = 0;
+	std::uint32_t nAnimationGiChangedDraws = 0;
+	bool bAnimationHistoryValid = false;
 	bool bTemporalHistoryValid = false;
 	bool bVolumeHistoryValid = false;
 	std::uint32_t nVolumeHistoryRead = 0;
@@ -317,6 +326,38 @@ struct GpuDraw
 	std::uint32_t nSourcePrimitive = 0;
 	std::uint32_t nSourceNode = 0;
 };
+
+bool SetDrawTransform(GpuDraw &out_stDraw, const std::array<double, 16> &arrWorld)
+{
+	const double dDeterminant = arrWorld[0] * (arrWorld[5] * arrWorld[10] - arrWorld[9] * arrWorld[6]) -
+			arrWorld[4] * (arrWorld[1] * arrWorld[10] - arrWorld[9] * arrWorld[2]) + arrWorld[8] * (arrWorld[1] * arrWorld[6] - arrWorld[5] * arrWorld[2]);
+	if (!std::isfinite(dDeterminant) || dDeterminant == 0)
+	{
+		return false;
+	}
+	std::array<float, 16> arrNormal{};
+	arrNormal[0] = static_cast<float>((arrWorld[5] * arrWorld[10] - arrWorld[9] * arrWorld[6]) / dDeterminant);
+	arrNormal[1] = static_cast<float>((arrWorld[8] * arrWorld[6] - arrWorld[4] * arrWorld[10]) / dDeterminant);
+	arrNormal[2] = static_cast<float>((arrWorld[4] * arrWorld[9] - arrWorld[8] * arrWorld[5]) / dDeterminant);
+	arrNormal[4] = static_cast<float>((arrWorld[9] * arrWorld[2] - arrWorld[1] * arrWorld[10]) / dDeterminant);
+	arrNormal[5] = static_cast<float>((arrWorld[0] * arrWorld[10] - arrWorld[8] * arrWorld[2]) / dDeterminant);
+	arrNormal[6] = static_cast<float>((arrWorld[8] * arrWorld[1] - arrWorld[0] * arrWorld[9]) / dDeterminant);
+	arrNormal[8] = static_cast<float>((arrWorld[1] * arrWorld[6] - arrWorld[5] * arrWorld[2]) / dDeterminant);
+	arrNormal[9] = static_cast<float>((arrWorld[4] * arrWorld[2] - arrWorld[0] * arrWorld[6]) / dDeterminant);
+	arrNormal[10] = static_cast<float>((arrWorld[0] * arrWorld[5] - arrWorld[4] * arrWorld[1]) / dDeterminant);
+	arrNormal[15] = 1;
+	for (float fValue : arrNormal)
+	{
+		if (!std::isfinite(fValue))
+		{
+			return false;
+		}
+	}
+	out_stDraw.arrTransform = arrWorld;
+	out_stDraw.arrNormal = arrNormal;
+	out_stDraw.bMirrored = dDeterminant < 0;
+	return true;
+}
 
 struct GpuMaterial
 {
@@ -497,6 +538,8 @@ D3D12_RESOURCE_STATES NativeState(ResourceState eState)
 			return D3D12_RESOURCE_STATE_GENERIC_READ;
 		case ResourceState::IndirectArgument:
 			return D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT;
+		case ResourceState::VertexIndexRead:
+			return D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER | D3D12_RESOURCE_STATE_INDEX_BUFFER;
 		default:
 			return D3D12_RESOURCE_STATE_COMMON;
 	}
@@ -548,6 +591,8 @@ const char *StateName(ResourceState eState)
 			return "present";
 		case ResourceState::IndirectArgument:
 			return "indirect_argument";
+		case ResourceState::VertexIndexRead:
+			return "vertex_index_read";
 	}
 	return "unknown";
 }
@@ -649,6 +694,9 @@ private:
 	bool CreateMesh();
 	bool LoadScene();
 	bool CreateSceneMesh();
+	bool PrepareAnimation(double dSeconds);
+	bool PrepareAnimationUpload(std::uint32_t nFrame);
+	void BindSceneVertices(ID3D12GraphicsCommandList *pList, bool bPreviousPositions = false) const;
 	bool CreateGiResources();
 	bool PrepareGiFrame(std::uint32_t nFrame);
 	bool RecordGiPass(std::uint32_t nFrame, PassWork eWork);
@@ -827,6 +875,18 @@ private:
 	std::vector<ComOwner<ID3D12Resource>> arrTextures;
 	std::vector<ComOwner<ID3D12Resource>> arrTextureUploads;
 	std::vector<GpuDraw> arrDraws;
+	std::vector<DeformationRange> arrDeformationRanges;
+	std::vector<std::uint32_t> arrDeformationLookup;
+	GpuDeformation stGpuDeformation;
+	DeformationFrame stDeformationFrame;
+	DeformationFrame stCommittedDeformation;
+	std::vector<AnimationMatrix> arrCommittedAnimationWorlds;
+	bool bAnimationActive = false;
+	bool bAnimationHistory = false;
+	std::uint32_t nPendingAnimationFrame = FRAME_COUNT;
+	bool bAnimationCommandsExecuted = false;
+	double dAnimationCpuMsec = 0;
+	std::uint32_t nAnimationGiChangedDraws = 0;
 	std::vector<GpuMaterial> arrMaterials;
 	std::vector<RuntimeMaterialAsset> arrResolvedMaterials;
 	bool bMaterialExtensions = false;
@@ -1661,9 +1721,20 @@ bool VisualRuntime::LoadScene()
 		return (stConfig.strGpuPackagePath.empty() && stConfig.strRenderConfigPath.empty()) || Fail("GPU package and render configuration require a source asset package");
 	}
 	Assets::Diagnostics arrDiagnostics;
-	if (!LoadRenderScene(stConfig.strAssetPackagePath, stRenderScene, arrDiagnostics))
+	Assets::PackageData stSourcePackage;
+	if (!Assets::LoadPackage(stConfig.strAssetPackagePath, stSourcePackage, arrDiagnostics))
 	{
 		return Fail(arrDiagnostics.empty() ? "Load render scene" : arrDiagnostics.front().strMessage);
+	}
+	if (!stConfig.strRenderConfigPath.empty() && !LoadRenderConfiguration(std::filesystem::u8path(stConfig.strRenderConfigPath), stSourcePackage.strPackageDigest, stRenderConfiguration, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Load rendering configuration" : arrDiagnostics.front().strMessage);
+	}
+	stRenderConfiguration.stAnimation.bEnabled = stRenderConfiguration.stAnimation.bEnabled || stConfig.bAnimation;
+	if (!(stRenderConfiguration.stAnimation.bEnabled ? BuildAnimatedRenderScene(stSourcePackage, stRenderScene, arrDiagnostics)
+													 : BuildRenderScene(stSourcePackage, stRenderScene, arrDiagnostics)))
+	{
+		return Fail(arrDiagnostics.empty() ? "Decode render scene" : arrDiagnostics.front().strMessage);
 	}
 	if (!stConfig.strGpuPackagePath.empty())
 	{
@@ -1676,11 +1747,18 @@ bool VisualRuntime::LoadScene()
 		{
 			return Fail(arrDiagnostics.empty() ? "Verify GPU source binding" : arrDiagnostics.front().strMessage);
 		}
-		stRenderScene = std::move(stCooked);
-	}
-	if (!stConfig.strRenderConfigPath.empty() && !LoadRenderConfiguration(std::filesystem::u8path(stConfig.strRenderConfigPath), stRenderScene.strPackageDigest, stRenderConfiguration, arrDiagnostics))
-	{
-		return Fail(arrDiagnostics.empty() ? "Load rendering configuration" : arrDiagnostics.front().strMessage);
+		if (stRenderConfiguration.stAnimation.bEnabled)
+		{
+			for (std::size_t nAsset = 0; nAsset < stRenderScene.arrAssets.size(); ++nAsset)
+			{
+				stRenderScene.arrAssets[nAsset].stTextureCook = std::move(stCooked.arrAssets[nAsset].stTextureCook);
+			}
+			stRenderScene.nGpuFormatVersion = stCooked.nGpuFormatVersion;
+		}
+		else
+		{
+			stRenderScene = std::move(stCooked);
+		}
 	}
 	if (!ResolveMaterialSettings(stRenderConfiguration.stMaterials, stRenderScene, arrResolvedMaterials, arrDiagnostics))
 	{
@@ -1703,6 +1781,10 @@ bool VisualRuntime::LoadScene()
 		return Fail(arrDiagnostics.empty() ? "Build local shadow views" : arrDiagnostics.back().strMessage);
 	}
 	bSceneMode = true;
+	for (const RenderAsset &stAsset : stRenderScene.arrAssets)
+	{
+		bAnimationActive = bAnimationActive || (stRenderConfiguration.stAnimation.bEnabled && stAsset.bAnimated);
+	}
 	if (stRenderConfiguration.stGeometry.bEnabled)
 	{
 		if (!BuildGeometryClusterSet(stRenderScene, stRenderConfiguration.stGeometry, stGeometryData, arrDiagnostics))
@@ -1717,6 +1799,13 @@ bool VisualRuntime::LoadScene()
 		else if (!bGeometryActive)
 		{
 			strGeometryFallback = "no_opaque_clusters";
+		}
+		if (bAnimationActive)
+		{
+			// Keep complete conventional draws until the optional cluster path
+			// can update bounds and vertex offsets for deformed instances.
+			bGeometryActive = false;
+			strGeometryFallback = "animated_vertex_layout";
 		}
 	}
 	if (stConfig.bConnect || stRenderConfiguration.stVolume.bEnabled || !stRenderConfiguration.arrParticles.empty())
@@ -2233,29 +2322,21 @@ bool VisualRuntime::CreateSceneMesh()
 		stDraw.nSourceAsset = stInstance.nAsset;
 		stDraw.nSourcePrimitive = stInstance.nPrimitive;
 		stDraw.nSourceNode = stInstance.nNode;
-		const std::array<double, 16> &arrWorld = stDraw.arrTransform;
-		const double dDeterminant = arrWorld[0] * (arrWorld[5] * arrWorld[10] - arrWorld[9] * arrWorld[6]) - arrWorld[4] * (arrWorld[1] * arrWorld[10] - arrWorld[9] * arrWorld[2]) + arrWorld[8] * (arrWorld[1] * arrWorld[6] - arrWorld[5] * arrWorld[2]);
-		if (!std::isfinite(dDeterminant) || dDeterminant == 0)
+		if (bAnimationActive && stRenderScene.arrAssets[stInstance.nAsset].bAnimated)
 		{
-			return Fail("Render instance has a singular normal transform");
-		}
-		stDraw.bMirrored = dDeterminant < 0;
-		stDraw.arrNormal[0] = static_cast<float>((arrWorld[5] * arrWorld[10] - arrWorld[9] * arrWorld[6]) / dDeterminant);
-		stDraw.arrNormal[1] = static_cast<float>((arrWorld[8] * arrWorld[6] - arrWorld[4] * arrWorld[10]) / dDeterminant);
-		stDraw.arrNormal[2] = static_cast<float>((arrWorld[4] * arrWorld[9] - arrWorld[8] * arrWorld[5]) / dDeterminant);
-		stDraw.arrNormal[4] = static_cast<float>((arrWorld[9] * arrWorld[2] - arrWorld[1] * arrWorld[10]) / dDeterminant);
-		stDraw.arrNormal[5] = static_cast<float>((arrWorld[0] * arrWorld[10] - arrWorld[8] * arrWorld[2]) / dDeterminant);
-		stDraw.arrNormal[6] = static_cast<float>((arrWorld[8] * arrWorld[1] - arrWorld[0] * arrWorld[9]) / dDeterminant);
-		stDraw.arrNormal[8] = static_cast<float>((arrWorld[1] * arrWorld[6] - arrWorld[5] * arrWorld[2]) / dDeterminant);
-		stDraw.arrNormal[9] = static_cast<float>((arrWorld[4] * arrWorld[2] - arrWorld[0] * arrWorld[6]) / dDeterminant);
-		stDraw.arrNormal[10] = static_cast<float>((arrWorld[0] * arrWorld[5] - arrWorld[4] * arrWorld[1]) / dDeterminant);
-		stDraw.arrNormal[15] = 1;
-		for (float fComponent : stDraw.arrNormal)
-		{
-			if (!std::isfinite(fComponent))
+			const MeshPrimitive &stSource = stRenderScene.arrAssets[stInstance.nAsset].stMesh.arrPrimitives[stInstance.nPrimitive];
+			constexpr std::size_t MAX_RASTER_VERTICES = (256ULL * 1024 * 1024) / sizeof(MeshVertex);
+			if (arrVertices.size() > MAX_RASTER_VERTICES || stSource.arrVertices.size() > MAX_RASTER_VERTICES - arrVertices.size())
 			{
-				return Fail("Render normal transform exceeds binary32 range");
+				return Fail("Animated raster vertex duplication exceeds its 256 MiB budget");
 			}
+			stDraw.stPrimitive.nBaseVertex = static_cast<std::int32_t>(arrVertices.size());
+			arrDeformationRanges.push_back({ static_cast<std::uint32_t>(arrDraws.size()), static_cast<std::uint32_t>(arrVertices.size()), static_cast<std::uint32_t>(stSource.arrVertices.size()) });
+			arrVertices.insert(arrVertices.end(), stSource.arrVertices.begin(), stSource.arrVertices.end());
+		}
+		if (!SetDrawTransform(stDraw, stDraw.arrTransform))
+		{
+			return Fail("Render instance has a singular or overflowing normal transform");
 		}
 		arrDraws.push_back(stDraw);
 		nSceneTriangles += stPrimitive.nIndexCount / 3;
@@ -2263,6 +2344,14 @@ bool VisualRuntime::CreateSceneMesh()
 	if (!ResolveNetworkBindings())
 	{
 		return false;
+	}
+	if (bAnimationActive)
+	{
+		Assets::Diagnostics arrDiagnostics;
+		if (!stGpuDeformation.Initialize(stDevice.Get(), arrVertices, arrDeformationRanges, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Initialize GPU deformation" : arrDiagnostics.back().strMessage);
+		}
 	}
 	const std::uint64_t nVertexBytes = arrVertices.size() * sizeof(MeshVertex);
 	const std::uint64_t nIndexBytes = arrIndices.size() * sizeof(std::uint32_t);
@@ -2302,9 +2391,13 @@ bool VisualRuntime::CreateSceneMesh()
 	for (std::size_t nIndex = 0; nIndex < arrBarriers.size(); ++nIndex)
 	{
 		arrBarriers[nIndex].Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
-		arrBarriers[nIndex].Transition.StateAfter = nIndex == 0 ? D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER : D3D12_RESOURCE_STATE_INDEX_BUFFER;
+		arrBarriers[nIndex].Transition.StateAfter = nIndex == 0 ? (bAnimationActive ? D3D12_RESOURCE_STATE_COMMON : D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER) : D3D12_RESOURCE_STATE_INDEX_BUFFER;
 	}
 	pList->ResourceBarrier(2, arrBarriers.data());
+	if (bAnimationActive)
+	{
+		stGpuDeformation.RecordInitialization(pList);
+	}
 	if (!CreateEnvironment())
 	{
 		return false;
@@ -2326,6 +2419,73 @@ bool VisualRuntime::CreateSceneMesh()
 	(void)stVertices->SetName(L"EngineNext.SceneVertices");
 	(void)stIndices->SetName(L"EngineNext.SceneIndices");
 	return true;
+}
+
+bool VisualRuntime::PrepareAnimation(double dSeconds)
+{
+	if (!bAnimationActive)
+	{
+		return true;
+	}
+	const std::chrono::steady_clock::time_point stStart = std::chrono::steady_clock::now();
+	DeformationFrame stCandidate;
+	Assets::Diagnostics arrDiagnostics;
+	if (!BuildDeformationFrame(stRenderScene, stRenderConfiguration.stAnimation, dSeconds, stCandidate, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Build deformation frame" : arrDiagnostics.back().strMessage);
+	}
+	std::vector<GpuDraw> arrCandidate = arrDraws;
+	for (const DeformedDraw &stDraw : stCandidate.arrDraws)
+	{
+		if (stDraw.nDraw >= arrCandidate.size() || !SetDrawTransform(arrCandidate[stDraw.nDraw], stDraw.arrWorld))
+		{
+			return Fail("Animated draw has an invalid world or normal transform");
+		}
+	}
+	arrDraws = std::move(arrCandidate);
+	stDeformationFrame = std::move(stCandidate);
+	arrDeformationLookup.assign(arrDraws.size(), UINT32_MAX);
+	for (std::size_t nDraw = 0; nDraw < stDeformationFrame.arrDraws.size(); ++nDraw)
+	{
+		arrDeformationLookup[stDeformationFrame.arrDraws[nDraw].nDraw] = static_cast<std::uint32_t>(nDraw);
+	}
+	dAnimationCpuMsec = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - stStart).count();
+	return true;
+}
+
+bool VisualRuntime::PrepareAnimationUpload(std::uint32_t nFrame)
+{
+	if (!bAnimationActive)
+	{
+		return true;
+	}
+	Assets::Diagnostics arrDiagnostics;
+	if (!stGpuDeformation.PrepareFrame(nFrame, stDeformationFrame, bAnimationHistory ? &stCommittedDeformation : nullptr,
+									   bAnimationHistory && stTemporalFrame.bHistoryValid, stGraphics.stFence->GetCompletedValue(), arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Prepare deformation upload" : arrDiagnostics.back().strMessage);
+	}
+	nPendingAnimationFrame = nFrame;
+	bAnimationCommandsExecuted = false;
+	return true;
+}
+
+void VisualRuntime::BindSceneVertices(ID3D12GraphicsCommandList *pList, bool bPreviousPositions) const
+{
+	if (bAnimationActive)
+	{
+		std::array<D3D12_VERTEX_BUFFER_VIEW, 2> arrViews{ stVertexView, {} };
+		if (bPreviousPositions)
+		{
+			arrViews[1] = { stGpuDeformation.PreviousPositions()->GetGPUVirtualAddress(),
+							static_cast<UINT>(stGpuDeformation.PreviousPositions()->GetDesc().Width), sizeof(std::array<float, 3>) };
+		}
+		pList->IASetVertexBuffers(0, static_cast<UINT>(arrViews.size()), arrViews.data());
+	}
+	else
+	{
+		pList->IASetVertexBuffers(0, 1, &stVertexView);
+	}
 }
 
 bool VisualRuntime::CreateGiResources()
@@ -2380,6 +2540,7 @@ bool VisualRuntime::CreateGiResources()
 
 bool VisualRuntime::PrepareGiFrame(std::uint32_t nFrame)
 {
+	nAnimationGiChangedDraws = 0;
 	if (!stRenderConfiguration.stGlobalIllumination.bEnabled)
 	{
 		return true;
@@ -2399,10 +2560,21 @@ bool VisualRuntime::PrepareGiFrame(std::uint32_t nFrame)
 		arrWorlds.push_back(stDraw.arrCurrentWorld);
 	}
 	Assets::Diagnostics arrDiagnostics;
-	if (!stGi.PrepareFrame(nFrame, arrCenter, arrWorlds, stGraphics.stFence->GetCompletedValue(), arrDiagnostics))
+	std::vector<GiGeometryChange> arrGeometryChanges;
+	if (bAnimationActive && bAnimationHistory)
+	{
+		if (!BuildDeformationGeometryChanges(stCommittedDeformation, stDeformationFrame, arrCommittedAnimationWorlds, arrWorlds,
+											 arrGeometryChanges, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Build deformation GI changes" : arrDiagnostics.back().strMessage);
+		}
+	}
+	if (!stGi.PrepareFrame(nFrame, arrCenter, arrWorlds, stGraphics.stFence->GetCompletedValue(), arrDiagnostics,
+						   arrGeometryChanges, bAnimationActive ? &stDeformationFrame : nullptr))
 	{
 		return Fail(arrDiagnostics.empty() ? "Prepare GI probe update" : arrDiagnostics.back().strMessage);
 	}
+	nAnimationGiChangedDraws = static_cast<std::uint32_t>(arrGeometryChanges.size());
 	nPendingGiFrame = nFrame;
 	bGiCommandsExecuted = false;
 	return true;
@@ -2579,7 +2751,7 @@ void VisualRuntime::DrawGeometry(ID3D12GraphicsCommandList *pList, std::uint32_t
 	pList->RSSetViewports(1, &stViewport);
 	pList->RSSetScissorRects(1, &stScissor);
 	pList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	pList->IASetVertexBuffers(0, 1, &stVertexView);
+	BindSceneVertices(pList, !bDepthOnly);
 	pList->IASetIndexBuffer(&stIndexView);
 	ID3D12DescriptorHeap *arrHeaps[]{ stViewHeap.Get(), stSamplerHeap.Get() };
 	pList->SetDescriptorHeaps(2, arrHeaps);
@@ -2642,7 +2814,8 @@ bool VisualRuntime::DiscardUnsubmittedFrames()
 	{
 		const bool bGiPending = nPendingGiFrame == nFrame && !bGiCommandsExecuted;
 		const bool bGeometryPending = nPendingGeometryFrame == nFrame && !bGeometryCommandsExecuted;
-		if (!bGiPending && !bGeometryPending)
+		const bool bAnimationPending = nPendingAnimationFrame == nFrame && !bAnimationCommandsExecuted;
+		if (!bGiPending && !bGeometryPending && !bAnimationPending)
 		{
 			continue;
 		}
@@ -2665,13 +2838,21 @@ bool VisualRuntime::DiscardUnsubmittedFrames()
 			}
 			nPendingGeometryFrame = FRAME_COUNT;
 		}
+		if (bAnimationPending)
+		{
+			if (!stGpuDeformation.Cancel(nFrame, arrDiagnostics))
+			{
+				return Fail(arrDiagnostics.empty() ? "Discard deformation frame" : arrDiagnostics.back().strMessage);
+			}
+			nPendingAnimationFrame = FRAME_COUNT;
+		}
 	}
 	return true;
 }
 
 bool VisualRuntime::CreateDeferredPipeline()
 {
-	const std::vector<std::uint8_t> arrVertex = ReadShader(stConfig.strShaderDirectory, "Deferred.vs.cso");
+	const std::vector<std::uint8_t> arrVertex = ReadShader(stConfig.strShaderDirectory, bAnimationActive ? "AnimatedDeferred.vs.cso" : "Deferred.vs.cso");
 	const std::vector<std::uint8_t> arrPixel = ReadShader(stConfig.strShaderDirectory, bMaterialExtensions ? "MaterialDeferred.ps.cso" : "Deferred.ps.cso");
 	const std::vector<std::uint8_t> arrFullscreen = ReadShader(stConfig.strShaderDirectory, "Lighting.vs.cso");
 	const char *pLightingShader = stRenderConfiguration.stReflections.bEnabled ? "ReflectionLighting.ps.cso" : "Lighting.ps.cso";
@@ -2806,17 +2987,18 @@ bool VisualRuntime::CreateDeferredPipeline()
 			return Fail("Create deferred root signature");
 		}
 	}
-	const std::array<D3D12_INPUT_ELEMENT_DESC, 4> arrLayout{ {
+	const std::array<D3D12_INPUT_ELEMENT_DESC, 5> arrLayout{ {
 			{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "TANGENT", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 24, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 			{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+			{ "PREVPOSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
 	} };
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC stPipeline{};
 	stPipeline.pRootSignature = stDeferredRoot.Get();
 	stPipeline.VS = { arrVertex.data(), arrVertex.size() };
 	stPipeline.PS = { arrPixel.data(), arrPixel.size() };
-	stPipeline.InputLayout = { arrLayout.data(), static_cast<UINT>(arrLayout.size()) };
+	stPipeline.InputLayout = { arrLayout.data(), bAnimationActive ? 5U : 4U };
 	stPipeline.SampleMask = UINT_MAX;
 	stPipeline.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
 	stPipeline.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
@@ -3814,7 +3996,7 @@ void VisualRuntime::DrawTransparency(ID3D12GraphicsCommandList *pList, std::uint
 			const GpuDraw &stDraw = arrDraws[stItem.nIndex];
 			nMaterial = stDraw.stPrimitive.nMaterial;
 			nPipeline = (stDraw.bMirrored ? 1U : 0U) + (arrMaterials[nMaterial].stData.bDoubleSided ? 2U : 0U);
-			pList->IASetVertexBuffers(0, 1, &stVertexView);
+			BindSceneVertices(pList);
 			pList->IASetIndexBuffer(&stIndexView);
 			nConstants = arrFrames[nFrame].stConstants->GetGPUVirtualAddress() + FRAME_CONSTANT_BYTES + stItem.nIndex * DRAW_CONSTANT_BYTES;
 		}
@@ -4515,7 +4697,7 @@ void VisualRuntime::DrawShadows(ID3D12GraphicsCommandList *pList, std::uint32_t 
 	pList->RSSetViewports(1, &stViewport);
 	pList->RSSetScissorRects(1, &stScissor);
 	pList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	pList->IASetVertexBuffers(0, 1, &stVertexView);
+	BindSceneVertices(pList);
 	pList->IASetIndexBuffer(&stIndexView);
 	ID3D12DescriptorHeap *arrHeaps[]{ stViewHeap.Get(), stSamplerHeap.Get() };
 	pList->SetDescriptorHeaps(2, arrHeaps);
@@ -4660,7 +4842,10 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 			}
 			const std::array<double, 16> &arrWorld = stTemporalFrame.arrDraws[nDraw].arrCurrentWorld;
 			WorldBounds stBounds;
-			if (!TransformShadowBounds(stRenderScene.arrAssets[stDraw.nSourceAsset].stMesh.arrPrimitives[stDraw.nSourcePrimitive], arrWorld, stBounds, arrDiagnostics))
+			const std::vector<MeshVertex> &arrVertices = bAnimationActive && arrDeformationLookup[nDraw] != UINT32_MAX
+					? stDeformationFrame.arrDraws[arrDeformationLookup[nDraw]].arrVertices
+					: stRenderScene.arrAssets[stDraw.nSourceAsset].stMesh.arrPrimitives[stDraw.nSourcePrimitive].arrVertices;
+			if (!TransformShadowBounds(arrVertices, arrWorld, stBounds, arrDiagnostics))
 			{
 				return Fail("Compute shadow caster bounds");
 			}
@@ -4870,7 +5055,7 @@ void VisualRuntime::DrawScene(ID3D12GraphicsCommandList *pList, std::uint32_t nF
 	pList->RSSetViewports(1, &stViewport);
 	pList->RSSetScissorRects(1, &stScissor);
 	pList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	pList->IASetVertexBuffers(0, 1, &stVertexView);
+	BindSceneVertices(pList, true);
 	pList->IASetIndexBuffer(&stIndexView);
 	ID3D12DescriptorHeap *arrHeaps[]{ stViewHeap.Get(), stSamplerHeap.Get() };
 	pList->SetDescriptorHeaps(2, arrHeaps);
@@ -5117,7 +5302,7 @@ bool VisualRuntime::BuildGraph()
 	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, stRenderConfiguration.stAmbientOcclusion.bEnabled))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, stRenderConfiguration.stAmbientOcclusion.bEnabled, bAnimationActive))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -5315,6 +5500,12 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	arrResources[stRenderPipeline.nBackbuffer] = arrBackbuffers[nIndex].Get();
 	if (bSceneMode)
 	{
+		if (bAnimationActive)
+		{
+			arrResources[stRenderPipeline.nDeformedVertices] = stVertices.Get();
+			arrResources[stRenderPipeline.nPreviousPositions] = stGpuDeformation.PreviousPositions();
+			arrResources[stRenderPipeline.nDeformationUpload] = stGpuDeformation.Upload(nIndex);
+		}
 		if (bGeometryActive)
 		{
 			arrResources[stRenderPipeline.nGeometryClusters] = stGeometry.Clusters();
@@ -5409,10 +5600,20 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		}
 		stTiming.dLightingSeconds = dSeconds;
 		stTiming.dDirectionalIlluminance = stFrameLight.dIlluminance;
-		if (!UpdateEffectTransforms() || !UpdateConstantBuffer(stFrame) || !UpdateVolumeParameters(nIndex) || !UpdateParticleBuffers(nIndex, dSeconds) || !PrepareGiFrame(nIndex) || !PrepareGeometryFrame(nIndex))
+		if (!PrepareAnimation(dSeconds) || !UpdateEffectTransforms() || !UpdateConstantBuffer(stFrame) || !PrepareAnimationUpload(nIndex) ||
+			!UpdateVolumeParameters(nIndex) || !UpdateParticleBuffers(nIndex, dSeconds) || !PrepareGiFrame(nIndex) || !PrepareGeometryFrame(nIndex))
 		{
 			(void)DiscardUnsubmittedFrames();
 			return false;
+		}
+		if (bAnimationActive)
+		{
+			stTiming.dAnimationSeconds = stDeformationFrame.dSeconds;
+			stTiming.dAnimationCpuMsec = dAnimationCpuMsec;
+			stTiming.dAnimationMaxMotion = stGpuDeformation.MaxLocalMotion();
+			stTiming.nAnimatedVertices = stDeformationFrame.nVertexCount;
+			stTiming.nAnimationGiChangedDraws = nAnimationGiChangedDraws;
+			stTiming.bAnimationHistoryValid = bAnimationHistory && stTemporalFrame.bHistoryValid;
 		}
 		if (stRenderConfiguration.stGlobalIllumination.bEnabled)
 		{
@@ -5488,7 +5689,15 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		pList->EndQuery(stGraphicsQueries.Get(), D3D12_QUERY_TYPE_TIMESTAMP, nQueryIndex);
 		PIXBeginEvent(pList, PIX_COLOR_DEFAULT, stPass.strName.c_str());
 		ApplyBarriers(pList, stPass.arrBeforeBarriers, arrResources);
-		if (eWork >= PassWork::GiBuildScene && eWork <= PassWork::GiReadback)
+		if (eWork == PassWork::DeformationUpload)
+		{
+			Assets::Diagnostics arrDiagnostics;
+			if (!stGpuDeformation.Record(nIndex, pList, stVertices.Get(), arrDiagnostics))
+			{
+				return Fail(arrDiagnostics.empty() ? "Record deformation upload" : arrDiagnostics.back().strMessage);
+			}
+		}
+		else if (eWork >= PassWork::GiBuildScene && eWork <= PassWork::GiReadback)
 		{
 			if (!RecordGiPass(nIndex, eWork))
 			{
@@ -5557,7 +5766,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			pList->RSSetViewports(1, &stViewport);
 			pList->RSSetScissorRects(1, &stScissor);
 			pList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			pList->IASetVertexBuffers(0, 1, &stVertexView);
+			BindSceneVertices(pList);
 			pList->IASetIndexBuffer(&stIndexView);
 			pList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 		}
@@ -5633,11 +5842,22 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	ID3D12CommandList *pGraphicsList = pList;
 	bGiCommandsExecuted = nPendingGiFrame == nIndex;
 	bGeometryCommandsExecuted = nPendingGeometryFrame == nIndex;
+	bAnimationCommandsExecuted = nPendingAnimationFrame == nIndex;
 	stGraphics.stQueue->ExecuteCommandLists(1, &pGraphicsList);
 	const HRESULT nPresent = stSwapchain->Present(stConfig.bVsync ? 1 : 0, !stConfig.bVsync && bTearing ? DXGI_PRESENT_ALLOW_TEARING : 0);
 	if (!stGraphics.Signal(stFrame.nGraphicsFence))
 	{
 		return Fail("Graphics completion signal");
+	}
+	if (bAnimationActive)
+	{
+		Assets::Diagnostics arrDiagnostics;
+		if (!stGpuDeformation.Commit(nIndex, stFrame.nGraphicsFence, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Commit deformation upload" : arrDiagnostics.back().strMessage);
+		}
+		nPendingAnimationFrame = FRAME_COUNT;
+		bAnimationCommandsExecuted = false;
 	}
 	if (stRenderConfiguration.stGlobalIllumination.bEnabled)
 	{
@@ -5669,6 +5889,17 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		if (!stTemporalState.CommitFrame(stTemporalFrame.nToken, arrDiagnostics))
 		{
 			return Fail("Commit submitted temporal frame");
+		}
+		if (bAnimationActive)
+		{
+			stCommittedDeformation = std::move(stDeformationFrame);
+			arrCommittedAnimationWorlds.clear();
+			arrCommittedAnimationWorlds.reserve(stTemporalFrame.arrDraws.size());
+			for (const TemporalDrawFrame &stDraw : stTemporalFrame.arrDraws)
+			{
+				arrCommittedAnimationWorlds.push_back(stDraw.arrCurrentWorld);
+			}
+			bAnimationHistory = true;
 		}
 		if (stRenderConfiguration.stTemporal.bEnabled)
 		{
@@ -5756,7 +5987,7 @@ bool VisualRuntime::Resize()
 		return Fail("ResizeBuffers", nResult);
 	}
 	++nResizes;
-	bGeometryActive = stRenderConfiguration.stGeometry.bEnabled && !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
+	bGeometryActive = stRenderConfiguration.stGeometry.bEnabled && !bAnimationActive && !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
 	if (!ResetTemporalHistory() || !CreateTargets())
 	{
 		return false;
@@ -5831,6 +6062,7 @@ bool VisualRuntime::CheckValidation()
 bool VisualRuntime::Run()
 {
 	(void)stWindow.ConsumeResize();
+	const double dOriginalFov = stRenderConfiguration.stCamera.dVerticalFovDegrees;
 	const std::chrono::steady_clock::time_point stStart = std::chrono::steady_clock::now();
 	while (!stWindow.ShouldClose() && (stConfig.nFrameLimit == 0 || nFrames < stConfig.nFrameLimit))
 	{
@@ -5973,6 +6205,12 @@ bool VisualRuntime::Run()
 			RECT stRect{ 0, 0, static_cast<LONG>(stConfig.nWidth + (nFrames == 3 ? 64 : 0)), static_cast<LONG>(stConfig.nHeight) };
 			(void)AdjustWindowRect(&stRect, WS_OVERLAPPEDWINDOW, FALSE);
 			(void)SetWindowPos(hWindow, nullptr, 0, 0, stRect.right - stRect.left, stRect.bottom - stRect.top, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+		}
+		if (stConfig.bExerciseProjection && (nFrames == 3 || nFrames == 6))
+		{
+			// Projection-only cuts exercise screen-history invalidation while
+			// world-space probe history remains owned by its geometry revisions.
+			stRenderConfiguration.stCamera.dVerticalFovDegrees = nFrames == 6 ? dOriginalFov : dOriginalFov * (dOriginalFov > 85 ? 0.9 : 1.1);
 		}
 	}
 	if (!stGraphics.Flush() || !stCompute.Flush())
@@ -6302,6 +6540,13 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["environment_importance_bytes"] = JsonValue(static_cast<std::int64_t>(nEnvironmentAliasBytes));
 	mapReport["texture_upload_bytes"] = JsonValue(static_cast<std::int64_t>(nTextureUploadBytes));
 	mapReport["draw_instances"] = JsonValue(static_cast<std::int64_t>(arrDraws.size()));
+	mapReport["animation_enabled"] = JsonValue(bAnimationActive);
+	mapReport["projection_exercise"] = JsonValue(stConfig.bExerciseProjection);
+	mapReport["animation_deformed_draws"] = JsonValue(static_cast<std::int64_t>(arrDeformationRanges.size()));
+	mapReport["animation_resource_bytes"] = JsonValue(static_cast<std::int64_t>(stGpuDeformation.MemoryBytes()));
+	mapReport["animation_cpu_msec"] = JsonValue(dAnimationCpuMsec);
+	mapReport["animation_seconds"] = JsonValue(stCommittedDeformation.dSeconds);
+	mapReport["animation_max_local_motion"] = JsonValue(stGpuDeformation.MaxLocalMotion());
 	mapReport["scene_triangles"] = JsonValue(static_cast<std::int64_t>(nSceneTriangles));
 	mapReport["network_start_after_gpu_warmup"] = JsonValue(bNetworkStartedAfterGpuWarmup);
 	mapReport["network_input_frames"] = JsonValue(static_cast<std::int64_t>(nNetworkInputFrames));
@@ -6387,6 +6632,12 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 		mapTiming["particles"] = JsonValue(static_cast<std::int64_t>(stTiming.nParticles));
 		mapTiming["lighting_seconds"] = JsonValue(stTiming.dLightingSeconds);
 		mapTiming["directional_illuminance"] = JsonValue(stTiming.dDirectionalIlluminance);
+		mapTiming["animation_seconds"] = JsonValue(stTiming.dAnimationSeconds);
+		mapTiming["animation_cpu_msec"] = JsonValue(stTiming.dAnimationCpuMsec);
+		mapTiming["animation_max_local_motion"] = JsonValue(stTiming.dAnimationMaxMotion);
+		mapTiming["animation_vertices"] = JsonValue(static_cast<std::int64_t>(stTiming.nAnimatedVertices));
+		mapTiming["animation_gi_changed_draws"] = JsonValue(static_cast<std::int64_t>(stTiming.nAnimationGiChangedDraws));
+		mapTiming["animation_history_valid"] = JsonValue(stTiming.bAnimationHistoryValid);
 		if (stTiming.bPostReady)
 		{
 			JsonValue::List arrExposureRecord;
