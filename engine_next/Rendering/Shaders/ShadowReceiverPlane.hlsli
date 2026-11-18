@@ -37,7 +37,7 @@ float2 ShadowReceiverGradient(float3 vRowX, float3 vRowY, float3 vRowZ, float3 v
 		return float2(0, 0);
 	}
 	vProjectedNormal = vProjectedNormal / fScale;
-	// A nearly edge-on or degenerate plane cannot predict a finite neighbouring
+	// A nearly edge-on or degenerate plane cannot predict a finite neighboring
 	// intersection reliably. Preserve the existing depth comparison in that case.
 	if (abs(vProjectedNormal.z) <= 0.000001f)
 	{
