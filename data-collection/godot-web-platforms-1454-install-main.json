@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "request_id": "godot-web-platforms-20261118",
+  "issue_number": 1454,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "installation_receipt": "data-collection/godot-web-platforms-1454-local-install.json",
+  "delivery": {
+    "headRefOid": "df47c38c9745f64558d1b33050caaecdbfac88c9",
+    "mergeCommit": {
+      "oid": "9d800958a5ebd8237c3c907d6d09c757fd7db625"
+    },
+    "mergedAt": "2026-11-18T14:10:32Z",
+    "mergedBy": {
+      "id": "U_kgDOFOKx7w",
+      "is_bot": false,
+      "login": "Sail-Li",
+      "name": ""
+    },
+    "state": "MERGED"
+  },
+  "required_checks": [
+    {
+      "name": "issue-association",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44321079281/job/134859879485"
+    },
+    {
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44321079680/job/134859881934"
+    }
+  ],
+  "remote_main_contains_signed_candidate": true,
+  "bug": 1535,
+  "recovery": "Canonical issue_url fixed the metadata binding failure; original intake and corrected signed candidate delivery verified. Intermittent authenticated read failures handled with temporary bounded read-only retries; no automatic retry of writes and no persistent configuration change.",
+  "parent_issues": {
+    "1454": "open: overall real-site/display acceptance incomplete",
+    "1474": "open: no production URL; real-display checks outstanding"
+  },
+  "cleanup": {
+    "staged_app_project_profile_source": "removed; successful logs retained privately",
+    "installed_app": "retained and verified through actual original entry",
+    "previous_app": "retained intact for rollback",
+    "task_worktree_and_branches": "remove after this final evidence is accepted on main",
+    "temporary_transport_helper": "remove after delivery and preserve audit description; no scheduled process"
+  }
+}
