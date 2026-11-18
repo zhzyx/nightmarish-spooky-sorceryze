@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-480e2388fc258a0dac5bf8d5a4ffcbda58de70ff",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-context-consumption-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "287529bd0c1c6fa51a3861d8ae0807565c0aa9eae3ac157534997be52113f163",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "8b6b210be8aae3f36f7b457979e31964b44026ea",
+    "context_sha256": "49429a6d5f505b01e89543e3cdea1ecb6700655ee95ebc333ebe1aca7076069a",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "diagnosis": "R1/R2 actual source repair and independent review418996de completed:113 tests98subtests,30Node,12 adverse tests1Windows privilege skip; isolated Linux41tests29subtests4platform skips plus13adverse0skip. Source10file hashes preserved. Repair setup first failed before fixtures because scoped probe parent absent; later standalone test import lacked explicit runtime path, corrected and final tests passed. Root registration CLI incorrectly passed unsupported --node; original exit2 receipt retained and documented PATH-based invocation subsequently verified256frozen/27Python/16JS/158JSON. Method verify attempted occupied revision1: append correctly rejected without state change, actual status showed same prior head; fresh revision2 appended successfully head06b1a5173492677709e52404a6cfd9b6f7ffbdf74667a70794bbd1702fb8ad87. Live worker dispatch initially declared broad shared receipts directory read, correctly deferred resource_conflict before launch; narrowed to actual immutable input files, original deferred receipt preserved, real spawn sinan_52150e8f47ec8a03 and native session event_completed after actual response. These are orchestration corrections, not new model execution or production acceptance. Independent review evidence exported losslessly; real live comparison and normal factory integration remain underway.",
+    "next_action": "Preserve original failed setup and rejected operations; continue separately bounded live validation and ordinary factory integration, then update/rollback, exact review and Git delivery. No old model attempt replay or cleanup bypass.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T03:51:54.570344+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T04:41:16.016948+00:00",
+  "sha256": "7f4fe90be9f204321e10020670d5956815d53c722f5d71380b017294fec297ab"
+}

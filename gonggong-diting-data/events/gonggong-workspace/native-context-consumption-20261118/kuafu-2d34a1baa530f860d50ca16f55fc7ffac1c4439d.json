@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2d34a1baa530f860d50ca16f55fc7ffac1c4439d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-context-consumption-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e02aadd9b48276e3ef1398126a493b4c9d4c73ee376632d208434e0efcaf20cd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "8b6b210be8aae3f36f7b457979e31964b44026ea",
+    "context_sha256": "49429a6d5f505b01e89543e3cdea1ecb6700655ee95ebc333ebe1aca7076069a",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1515",
+    "diagnosis": "Actual signed candidate0e935c9 CI:12failed1083passed233subtests.11realcontexttests use hardcoded WindowsNode path and fail Linux admission; remoteHTTP fails NativeWorker.reconcile reading optional context_receipt_reader missing on RemoteNativeWorker subclass. Static file-format rewrites3 immutable CRLF receipts despite exactGit attributes. Original logs saved. Root owns minimal source compatibility/portable fixture and exact evidence-only formatter exemptions, no weakening of executable authorization, normalcode formatting or role admission. Earlier ghTLS handshake timeout recovered after explicit proxy endpointHTTP200, no publish replay; stagedbyte check prevented candidate creation until exactattributesrenormalized.",
+    "next_action": "Fix optional base reader default, discover existing Node via explicit env/PATH, preserve only3 exact original evidence files in formatter exclusions; revalidate actual remoteHTTP and real context protocol plus currentLinuxNode, rebind metadata/review and submit new exact candidate while retaining failedPR.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T03:46:04.806440+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T06:16:12.690019+00:00",
+  "sha256": "8fba6e5f3becc50d299a181fbffd15a17865487d417b862676ca1eb490b037f6"
+}

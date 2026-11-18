@@ -13,13 +13,29 @@ from native_workspace import Limits, NativeWorkspace, absolute
 
 
 class NativeWorker:
+    # Transport adapters may own their initialization while sharing reconcile.
+    # Context receipts are optional until that trusted adapter supplies a reader.
+    context_receipt_reader = None
+
     def __init__(
-        self, store, root, profiles, verify_installation, process_helper_path=None, *, authorize=None, limits=None
+        self,
+        store,
+        root,
+        profiles,
+        verify_installation,
+        process_helper_path=None,
+        *,
+        authorize=None,
+        limits=None,
+        context_receipt_reader=None,
     ):
         if not callable(verify_installation):
             raise NativeStoreError("Installation verifier required")
         limits = limits or Limits(file_bytes=2 * 1024 * 1024, total_bytes=8 * 1024 * 1024)
         self.intake = NativeCandidates(store, authorize, limits)
+        self.context_receipt_reader = context_receipt_reader
+        if context_receipt_reader is not None and not callable(context_receipt_reader):
+            raise NativeStoreError("Trusted context receipt reader required")
         self.store = store
         self.root = absolute(root, missing=True)
         self.root.mkdir(parents=True, exist_ok=True)
@@ -276,6 +292,22 @@ class NativeWorker:
             {**c, "edits": {n: None if b is None else bytes.fromhex(b) for n, b in c["edits"].items()}}
             for c in payload["changes"]
         ]
+        context_receipt = self.context_receipt_reader(task, execution) if self.context_receipt_reader else None
+        if context_receipt is not None:
+            if (
+                context_receipt.get("execution") != execution
+                or context_receipt.get("tenant") != task["tenant"]
+                or context_receipt.get("reads", "missing") is not None
+            ):
+                raise NativeStoreError("Context ledger binding rejected")
+            if (
+                context_receipt.get("source_digest") != _digest(_json(task["source"]).encode())
+                or context_receipt.get("terminal") != "final"
+            ):
+                raise NativeStoreError("Context source or terminal rejected")
+            events = context_receipt.get("events", [])
+            if not events or events[-1]["kind"] != "process_closed" or events[-1]["data"].get("physical") is not True:
+                raise NativeStoreError("Context process closure missing")
         revisions = dict(task["selected"])
         receipt = None
         origin = self._origin(task, execution)
@@ -294,4 +326,6 @@ class NativeWorker:
             "usage": None,
             "provider_model": None,
         }
+        if context_receipt is not None:
+            terminal["context_receipt"] = context_receipt
         return self._terminal(task, execution, terminal)

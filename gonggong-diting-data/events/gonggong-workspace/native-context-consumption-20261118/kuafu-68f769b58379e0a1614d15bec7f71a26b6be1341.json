@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-68f769b58379e0a1614d15bec7f71a26b6be1341",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-context-consumption-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e0b11d9b28c10cda5ef16bb7e2f8be802b8fdb986e19315473a8bdcf23cb3d15",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "604fd44d64fc96cb2c110ecb26b3a36aacdff002",
+    "context_sha256": "49429a6d5f505b01e89543e3cdea1ecb6700655ee95ebc333ebe1aca7076069a",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "diagnosis": "Read-only current-source probes reproduced missing actual consumer capabilities: delta can omit body while reporting no range-continuation cursor; producer snapshot accepts70021context bytes exceeding proposal65536bound; workspace collect conservatively records unknown reads; existing native adapter rejects tool-result message history. These are bounded protocol/integration observations, not a production data-loss or token-savings claim. Actual no-model CLI process exited0. Source604fd44 and source hashes retained; audit suggests task-bound host context service with live authority recheck, existing runtime tool extension and precise read receipts. Ordinary producer grant expiry is not live revocation. Existing whole-snapshot path retained until verified replacement.",
+    "next_action": "Current root owns1501 repair and independent review; finish source audit then implement bounded read tools/continuation and compatible producer consumption, coordinate1499 installer without taking951. Validate actual protocol/authorization before bounded live use and CI/main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T03:00:31.756814+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T03:00:53.871724+00:00",
+  "sha256": "6bec0abc779160df193ffbffaaa103aa8a88899f04e0606580849d2577808f80"
+}
