@@ -78,6 +78,15 @@ class NativeContext:
                 for n, k, p in db.execute("SELECT seq,kind,payload FROM context_events ORDER BY seq")
             ]
 
+    def ledger_budget(self, max_bytes=8388608):
+        # Bound response materialization without loading all historical payloads.
+        with self.db() as db:
+            count, size = db.execute(
+                "SELECT count(*),coalesce(sum(length(payload)+length(CAST(kind AS BLOB))+64),0) FROM context_events"
+            ).fetchone()
+        if count >= 4096 or size >= max_bytes:
+            raise ValueError("Context ledger budget exceeded")
+
     def emit(self, kind, data):
         with self.db() as db:
             db.execute("INSERT INTO context_events(kind,payload) VALUES (?,?)", (kind, encoded(data)))

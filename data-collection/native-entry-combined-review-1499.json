@@ -1,0 +1,211 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-combined-review.json",
+    "sha256": "00fbcdfa07eb3b6854eaf2883a58657cac40f4d89a8e68a122124f9f93c617e1",
+    "path_base": "absolute private host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "schema": 1,
+    "issue": 1445,
+    "related": [
+      1499,
+      1501
+    ],
+    "status": "scoped_pass",
+    "reviewed_at": "2026-11-18T09:59:58.337297+00:00",
+    "scope": "Independent combined transport, Linux fixture and CI source repair acceptance at exact handed-off candidate; fresh normal CI and full business acceptance remain required",
+    "source_hashes": {
+      "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "060ac18a8735a91a583c3355e43c1d2b537b0e5c8ce974035bd50f85594c9168",
+      "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": "88f522a4fde1a2b2c3147f9d4ed5944e2acb95439eaf1625665b99af492ce8b9",
+      "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "b8bd4394235ca07f078388774f7b11b313cd35aff43b7728af2ce9ab216abcdd",
+      "customizations/components/tianxuan/server/test_native_entry_broker_context.py": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607",
+      ".github/workflows/tianxuan-deploy-build.yml": "0af4c1f36783c51955e6252669e5259b9d8142a51213ba1ac055de6d052d34b7"
+    },
+    "inherited_unchanged": {
+      "customizations/components/tianxuan/server/api.py": {
+        "prior": "bbf8f673aee6e8f3fc4d16584b87022f8462468bc8a5b0ded212c63d03efac19",
+        "actual": "bbf8f673aee6e8f3fc4d16584b87022f8462468bc8a5b0ded212c63d03efac19"
+      },
+      "customizations/components/tianxuan/server/main.py": {
+        "prior": "c3fe9915b5aa011d55262b5fb1ca8810ac4d3dc2c6b4f870466e071da2497734",
+        "actual": "c3fe9915b5aa011d55262b5fb1ca8810ac4d3dc2c6b4f870466e071da2497734"
+      },
+      "customizations/components/tianxuan/server/native_entry_api.py": {
+        "prior": "3e3c515f3d78130add945084114a81643071fdc1cb69eeb049a996e2ca67bb06",
+        "actual": "3e3c515f3d78130add945084114a81643071fdc1cb69eeb049a996e2ca67bb06"
+      },
+      "customizations/components/tianxuan/server/native_entry_context.py": {
+        "prior": "af865c9c832ce4cb93794535b6f5d46d11e3afb03e10e6cafc8095d0cf42bfb8",
+        "actual": "af865c9c832ce4cb93794535b6f5d46d11e3afb03e10e6cafc8095d0cf42bfb8"
+      },
+      "customizations/components/tianxuan/server/native_entry_factory.py": {
+        "prior": "ba3888de3587be7c90a18432847d0f34aece9012d96a8a3e8af16cda93a75c1d",
+        "actual": "ba3888de3587be7c90a18432847d0f34aece9012d96a8a3e8af16cda93a75c1d"
+      },
+      "customizations/components/tianxuan/server/test_native_entry_context.py": {
+        "prior": "802c8ce92b2ceab1b16e2991e1878e6dd3b052f666e7021c484ee7fc0fec00ba",
+        "actual": "802c8ce92b2ceab1b16e2991e1878e6dd3b052f666e7021c484ee7fc0fec00ba"
+      },
+      "customizations/components/tianxuan/server/test_native_entry_remote_normal.py": {
+        "prior": "7a295143edf398b55cefd0c1c18953150fcdf9d4c14b87e9ae5caa2ce69ce79e",
+        "actual": "7a295143edf398b55cefd0c1c18953150fcdf9d4c14b87e9ae5caa2ce69ce79e"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": {
+        "prior": "d07e0cd4dbf053a8179e3e7056165f6fc9c97628fcb7d75a28c162830749de19",
+        "actual": "d07e0cd4dbf053a8179e3e7056165f6fc9c97628fcb7d75a28c162830749de19"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": {
+        "prior": "0b44f7f7f385454729c5a6cd2cf38ef4113b4ee6526d6a0bbee6ee5ed68eb2b6",
+        "actual": "0b44f7f7f385454729c5a6cd2cf38ef4113b4ee6526d6a0bbee6ee5ed68eb2b6"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": {
+        "prior": "42986e21bb5c528c4dfbc342ff597613aee861ff0468bbb2c2d12b89453b4803",
+        "actual": "42986e21bb5c528c4dfbc342ff597613aee861ff0468bbb2c2d12b89453b4803"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_node.py": {
+        "prior": "bfafb68f372f91367878974d9e24c344cdaf8df0d766d1ab0b2b4d5afb7adb84",
+        "actual": "bfafb68f372f91367878974d9e24c344cdaf8df0d766d1ab0b2b4d5afb7adb84"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": {
+        "prior": "26ad8ef3f1d07faeb04ee7fa89ac266346806dade17d77514bb4744680b402c9",
+        "actual": "26ad8ef3f1d07faeb04ee7fa89ac266346806dade17d77514bb4744680b402c9"
+      },
+      "design-docs/native-production-entry-20261118.md": {
+        "prior": "c73edb616cb79621076693d563d76fd8c3838d873df0dc723e592502e38c46a2",
+        "actual": "c73edb616cb79621076693d563d76fd8c3838d873df0dc723e592502e38c46a2"
+      },
+      "customizations/components/tianxuan/server/test_native_entry_context_resources.py": {
+        "prior": "806e94b2204e9d4fd2a6ce1b9e20249f9adf377bfc18af82d592ba9d7bf52735",
+        "actual": "806e94b2204e9d4fd2a6ce1b9e20249f9adf377bfc18af82d592ba9d7bf52735"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_context.py": {
+        "prior": "0d63295903cc051019ff771cd4bf250a17cb93f656f0767aa609177390402c2e",
+        "actual": "0d63295903cc051019ff771cd4bf250a17cb93f656f0767aa609177390402c2e"
+      },
+      "customizations/components/tianxuan/server/test_native_entry_context_admission.py": {
+        "prior": "ed3529d76654b1bfd353a072aa09eb92592e4a27a16c891c969c80d131931d5b",
+        "actual": "ed3529d76654b1bfd353a072aa09eb92592e4a27a16c891c969c80d131931d5b"
+      },
+      "customizations/components/tianxuan/server/test_native_entry_installation_lifecycle.py": {
+        "prior": "d1b701d66ca066df48670b47bd1b8dd6dd884aee8e527164eacbd0230ae19470",
+        "actual": "d1b701d66ca066df48670b47bd1b8dd6dd884aee8e527164eacbd0230ae19470"
+      }
+    },
+    "inherited_changed": {
+      "customizations/components/tianxuan/server/test_native_entry_broker_context.py": {
+        "prior": "29dde74671f44d7d84efa948473171bd90bb6745ee3cb5adf25bdbc178e27582",
+        "actual": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607"
+      }
+    },
+    "blocking_findings": [],
+    "checks": {
+      "independent_socket_probes": "8 passed; HTTP early503/success/redirect/reset; trustedHTTPS503/redirect; untrusted cert/hostname rejected; delayed request bytes preserved; observed physicalEOF; MainThread only",
+      "targeted_regression": "23 passed,3 deselected in12.75s; no250 or broker duplicate",
+      "finite": "Request built once, exact typed503 only,16attempts/120s scheduling/35s socket inactivity unchanged; not total wall-time guarantee",
+      "tls": "HTTPSHandler passes original context and check_hostname to default HTTPSConnection; custom subclass only rewrites Connection header",
+      "fixture": "resolve(strict=True) pins actual Python binary for path/hash/argv;60s synthetic cumulative and120s outer budget fixture only",
+      "workflow": "192MiB excludes both burst parameters; separate512MiB same image step explicitly selects both. Testdriver budget not production capacity.",
+      "linux_current_nonburst": "Read and hash-verified actual isolated192MiB1CPU result26passed2deselected129.49s, three readonly overlay raw bytes exactly current source; removed container and unchanged production recorded",
+      "host_boundary_reuse": "Historical combined-host-boundary retained byte-for-byte; no new consumer/inventory boundary changes from transport header and fixture budget/executable correction. New backpressure input already inventoried. Current module218/39 files and252/85 total input blobs plus15indexed evidence references each checked exactly."
+    },
+    "failures_preserved": [
+      "original server52/51 tests",
+      "original WinError10054 not identical proven cause to controlled10053",
+      "192MiB combined server+250client test exit137 OOM; not independently attributable service capacity"
+    ],
+    "limits": [
+      "No fresh normal fullCI pass",
+      "No real model/provider call or250realmodel acceptance",
+      "No deployed distributed250 capacity validation",
+      "No source/index/git/provider/server writes",
+      "Separate512MiB normal Docker CI burst step has not yet run; scoped source pass authorizes continued validation, not an assertion this resource budget is sufficient."
+    ],
+    "method_learning": {
+      "recalled": "editor-dependency-handoff bind-consumer-release rev23 and await-terminal-observers rev7",
+      "applied": "Verify actual socket EOF and preserve failures; final candidate not accepted until exact binding",
+      "parent_ledger": "Parent owns append outside delegated paths"
+    },
+    "artifacts": {
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-combined-review-probes\\probe.py": "d250d73c5f16dc3d3104d0ceb16db32790d582bada3de1ce6e8bfc2742eff9e8",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-combined-review-probes\\result.json": "a7ae3c34f2a7318a7539dd4590fde4a01456425e1dcf5aefd02b95bc9135e473",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-combined-review-probes\\targeted.log": "2796ea01970ec85899bc05996ad7e3aa211e255e0c7ba19aec32d8e3c66b9b5d",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-combined-review-probes\\candidate-audit.json": "f390dc5725cf724cfae366cca6215966533f53d526aaa26fb843b7bce0193c9d"
+    },
+    "cleanup": "All own probe server threads and pytest process exited. Synthetic TLS key/cert and probe artifacts retained to reproduce evidence; no installed trust changes or background tasks.",
+    "index_tree": "05c0832f6dd000dd2b8168a14add74380f5e9a59",
+    "candidate_audit": {
+      "index_tree": "05c0832f6dd000dd2b8168a14add74380f5e9a59",
+      "head": "fd48cb4a8a03e20292ef3c1c0def89d5aaf5b8b6",
+      "staged_paths": [
+        ".github/workflows/tianxuan-deploy-build.yml",
+        "customizations/components/tianxuan/build-impact.json",
+        "customizations/components/tianxuan/server/test_native_entry_broker_context.py",
+        "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py",
+        "customizations/components/tianxuan/sinan-workorders/build-impact.json",
+        "customizations/components/tianxuan/sinan-workorders/native-model-producer.md",
+        "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py",
+        "data-collection/native-context-backpressure-1501.json",
+        "data-collection/native-context-backpressure-review-1501.json",
+        "data-collection/native-context-burst-repair-1501.json",
+        "data-collection/native-entry-combined-module-build-impact-1499.json",
+        "data-collection/native-entry-combined-repair-1499.json",
+        "data-collection/native-entry-combined-workflow-build-impact-1499.json",
+        "data-collection/native-entry-runtime-combined-host-boundary-1499.json",
+        "gonggong-diting-data/events/gonggong-workspace/kuafu-local-1444-ffffe549d4ec4376898c6571b4be336ecf62913b530db55973e53f6202a96390/dispatch-e29a0789df8e4b15a5acf7e46369c094.json",
+        "gonggong-diting-data/events/gonggong-workspace/native-context-consumption-20261118/dispatch-25122738994b4e16818e885dd3c81fd6.json",
+        "gonggong-diting-data/events/gonggong-workspace/native-context-consumption-20261118/dispatch-ca76eb0e2aed43fc8042de256aecd7a9.json",
+        "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-8d8ee2addc2a2f16032913828ed738aec862faba.json",
+        "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-da7a5f568e2fdf8656f6d39b49c27804c21736c8.json",
+        "tools/native_host_inputs.json"
+      ],
+      "source_mapping": {
+        "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": {
+          "raw_sha256": "060ac18a8735a91a583c3355e43c1d2b537b0e5c8ce974035bd50f85594c9168",
+          "index_sha256": "5ad989ae05b4dd4859107e4fddea3bd47316aadd9ccb16c1ed988a7a7ad169b1",
+          "index_blob": "3aeff1167b1b682c822864348112c3734d4910eb"
+        },
+        "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": {
+          "raw_sha256": "88f522a4fde1a2b2c3147f9d4ed5944e2acb95439eaf1625665b99af492ce8b9",
+          "index_sha256": "5526a7315faca9867b3cad70ea8626faea3dcab05ac8acb49c400047d8d047ed",
+          "index_blob": "616b75c3247a98a43ce7086e2432ebdf50310924"
+        },
+        "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": {
+          "raw_sha256": "b8bd4394235ca07f078388774f7b11b313cd35aff43b7728af2ce9ab216abcdd",
+          "index_sha256": "5989d0e2bc4356a42fbc69b0c06689025aa3218a7577d87bf7130679b647f5e3",
+          "index_blob": "2db7623802bb271184f502821197d5c973e0ed89"
+        },
+        "customizations/components/tianxuan/server/test_native_entry_broker_context.py": {
+          "raw_sha256": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607",
+          "index_sha256": "6360293151f4d267bcc9a9759baf5b9424f3aa0381053e921fb0d4cf1c53076a",
+          "index_blob": "628aa6a74932dc96e65507929f311b2b9149e283"
+        },
+        ".github/workflows/tianxuan-deploy-build.yml": {
+          "raw_sha256": "0af4c1f36783c51955e6252669e5259b9d8142a51213ba1ac055de6d052d34b7",
+          "index_sha256": "0af4c1f36783c51955e6252669e5259b9d8142a51213ba1ac055de6d052d34b7",
+          "index_blob": "3c30d711090f9060c9810e4f53543cd241b2b24c"
+        }
+      },
+      "proofs": {
+        "module": {
+          "module": "customizations/components/tianxuan",
+          "covered_module_files": 218,
+          "total_inputs": 252,
+          "indexed_evidence_sha_verified": 15
+        },
+        "workflow": {
+          "module": "customizations/components/tianxuan/sinan-workorders",
+          "covered_module_files": 39,
+          "total_inputs": 85,
+          "indexed_evidence_sha_verified": 15
+        }
+      },
+      "private_evidence_verified": 12,
+      "public_raw_review_value_and_original_hash_match": true,
+      "linux_overlay_bytes_match_current": true,
+      "linux_result": "26passed2deselected129.49s",
+      "host_inventory_backpressure_present": true
+    },
+    "delivery_boundary": "Parent may append lossless export of this receipt and actual worker reconciliation events. Any code, workflow, inventory or moduleproof change requires rebind/review; signed delivery candidate and fresh CI remain parent responsibility."
+  }
+}

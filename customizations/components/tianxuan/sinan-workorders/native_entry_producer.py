@@ -7,7 +7,7 @@ import time
 from pathlib import Path
 
 from native_entry_runtime import load_config, runner, runtime_state
-from native_model_producer import launch, prepare_inputs, register, snapshot
+from native_model_producer import launch, prepare_context_inputs, prepare_inputs, register, snapshot
 
 
 def produce(config, template, registry):
@@ -19,13 +19,47 @@ def produce(config, template, registry):
     contract = runner.read(registry / (execution + ".contract.json"))
     runner.require(runner.digest(contract) == execution, "Authorized task changed")
     runner.require(runner.read(os.environ["NATIVE_CONTEXT"]) == contract["source"]["definition"], "Source changed")
-    files = snapshot(work)
+    resolver = None
+    if "context_transport" in config:
+        from native_entry_context_client import EntryContextClient
+
+        resolver = EntryContextClient(config["context_transport"], execution)
+    files = snapshot(work, large=True) if resolver else snapshot(work)
     outputs = [module + "/" + path for module, paths in contract["writes"].items() for path in paths]
     runner.require(
         all(isinstance(paths, list) for paths in contract["writes"].values()), "Finite producer outputs required"
     )
     acceptance = contract["source"]["definition"]["acceptance"]
-    inputs = prepare_inputs(contract, execution, work, files, outputs, acceptance)
+    contextual = (
+        resolver is not None and sum(p.stat().st_size for p in work.rglob("*") if p.is_file()) > resolver.full_bytes
+    )
+    small_files = None
+    if not contextual:
+        try:
+            small_files = snapshot(work)
+        except (ValueError, UnicodeError):
+            if resolver is None:
+                raise
+            contextual = True
+        if resolver is not None and small_files is not None:
+            contextual = len(runner.canonical(small_files).encode()) > resolver.full_bytes
+    if contextual:
+        manifest = {
+            "selection_digest": runner.digest(resolver.binding["selected"]),
+            "module_count": len(resolver.binding["selected"]),
+        }
+        inputs = prepare_context_inputs(
+            contract,
+            execution,
+            work,
+            manifest,
+            outputs,
+            acceptance,
+            runner.digest(resolver.binding),
+            materialized_files=files,
+        )
+    else:
+        inputs = prepare_inputs(contract, execution, work, small_files, outputs, acceptance)
     plan = runner.read(config["template"])
     runner.require(plan == template, "Installed template changed")
     task = plan["task"]
@@ -56,7 +90,20 @@ def produce(config, template, registry):
     }
     grant = {"payload": payload, "signature": runner.signature(payload)}
     register(registry, execution, grant, framework)
-    launch(registry)
+
+    def context_factory(binding, execution, workspace):
+        runner.require(
+            runner.digest(resolver.binding) == binding["installed_context"]
+            and resolver.binding["installation_digest"] == contract["installation"]
+            and resolver.binding["actor"] == contract["actor"]
+            and resolver.binding["producer"] == contract["producer"],
+            "Installed context identity changed",
+        )
+        return resolver
+
+    launch(registry, context_factory=context_factory if contextual else None)
+    if resolver:
+        resolver.check("producer_completed")
 
 
 if __name__ == "__main__":
