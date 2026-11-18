@@ -1,7 +1,7 @@
 {
   "placement": "mixed",
-  "reason": "Independent C++ rendering builds a source-matched environment importance table, a hardware ray-tracing scene and bounded probe histories. Shared shaders integrate material environment lighting, trace radiance, update spherical harmonics and distance moments, and consume diffuse indirect light through explicit frame-graph dependencies. GPU cluster culling and reverse-Z Hi-Z compact bounded commands for ExecuteIndirect while preserving draw identity.",
+  "reason": "Independent rendering builds include bounded probe relocation/classification, conservative geometry revision invalidation, analytic environment irradiance, and their shared host/shader contracts, alongside the existing GI and geometry pipeline.",
   "host_contract": "Windows x86_64 D3D12 inline ray queries use one DIRECT queue with frame-owned uploads and retired descriptor updates. The renderer preserves M3 asset identities, keeps environment distributions matched to the uploaded source and changes probe history roles after successful submission. Public configuration and grid headers remain platform-independent. GI and geometry use disjoint per-frame descriptor ranges and the same retired-frame ownership rules.",
   "rollback": "Restore the source and shader bundle, rebuild, then verify the native identity and deterministic capture. Verify source invalidation and restoration with clean builds, and verify changed shaders, exact rollback and malformed-shader rejection with one baseline executable.",
-  "evidence": "data-collection/engine-next-visual-runtime-m4-4-geometry-build-impact.json"
+  "evidence": "data-collection/engine-next-visual-runtime-m4-5-probe-placement-build-impact.json"
 }

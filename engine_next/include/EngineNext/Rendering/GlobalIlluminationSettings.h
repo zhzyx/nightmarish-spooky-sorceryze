@@ -31,6 +31,7 @@
 #pragma once
 
 #include "engine_next/include/EngineNext/Assets/Types.h"
+#include "engine_next/include/EngineNext/Rendering/ProbePlacement.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 
 #include <array>
@@ -67,6 +68,7 @@ struct GlobalIlluminationSettings
 	double dBounceStrength = 1;
 	double dHistoryChangeThreshold = 0.2;
 	std::uint64_t nMaxGpuBytes = 128ULL * 1024 * 1024;
+	ProbeRelocationSettings stPlacement;
 };
 
 struct GlobalIlluminationBudget
@@ -74,6 +76,7 @@ struct GlobalIlluminationBudget
 	std::uint32_t nProbeCount = 0;
 	std::uint32_t nUpdateCount = 0;
 	std::uint32_t nRayCount = 0;
+	std::uint32_t nStateStride = GI_STATE_STRIDE;
 	std::uint64_t nHistoryBytes = 0;
 	std::uint64_t nPositionBytes = 0;
 	std::uint64_t nRayBytes = 0;

@@ -173,3 +173,79 @@ ENGINE_NEXT_TEST("Environment preprocessing rejects invalid sizes and numeric da
 	ENGINE_NEXT_CHECK(!EngineNext::Rendering::GenerateEnvironmentLighting(stConfig, stLighting, strError));
 	ENGINE_NEXT_CHECK_EQ(stLighting.stBrdfLut.arrPixels[0], arrAccepted);
 }
+
+ENGINE_NEXT_TEST("Procedural sky irradiance matches analytic hemisphere and gradient integrals")
+{
+	EngineNext::Rendering::EnvironmentConfig stConfig = SmallConfig();
+	stConfig.nEnvironmentSize = 2;
+	stConfig.nIrradianceSize = 1;
+	stConfig.nBrdfSize = 2;
+	stConfig.nSampleCount = 1;
+	stConfig.arrSkyHorizon = { 0, 1, 0 };
+	stConfig.arrSkyZenith = { 1, 1, 0 };
+	stConfig.arrGround = { 0, 0, 1 };
+	stConfig.arrSunRadiance = { 0, 0, 0 };
+	EngineNext::Rendering::EnvironmentLighting stLighting;
+	std::string strError;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::GenerateEnvironmentLighting(stConfig, stLighting, strError));
+	constexpr double PI = 3.14159265358979323846;
+	const double dSideGradient = std::tgamma(0.75) * std::tgamma(1.5) / std::tgamma(2.25);
+	for (std::size_t nFace = 0; nFace < 6; ++nFace)
+	{
+		const std::array<float, 4> &arrPixel = stLighting.arrIrradiance[nFace].arrPixels[0];
+		const double dNormalY = nFace == 2 ? 1.0 : (nFace == 3 ? -1.0 : 0.0);
+		const double dGradient = nFace == 2 ? 4.0 * PI / 5.0 : (nFace == 3 ? 0.0 : dSideGradient);
+		ENGINE_NEXT_CHECK(std::abs(arrPixel[0] - dGradient) < 0.00001);
+		ENGINE_NEXT_CHECK(std::abs(arrPixel[1] - PI * 0.5 * (1.0 + dNormalY)) < 0.000001);
+		ENGINE_NEXT_CHECK(std::abs(arrPixel[2] - PI * 0.5 * (1.0 - dNormalY)) < 0.000001);
+	}
+}
+
+ENGINE_NEXT_TEST("Procedural sun irradiance preserves narrow cap energy without missed samples")
+{
+	EngineNext::Rendering::EnvironmentConfig stConfig = SmallConfig();
+	stConfig.nEnvironmentSize = 2;
+	stConfig.nIrradianceSize = 1;
+	stConfig.nBrdfSize = 2;
+	stConfig.nSampleCount = 1;
+	stConfig.arrSkyHorizon = { 0, 0, 0 };
+	stConfig.arrSkyZenith = { 0, 0, 0 };
+	stConfig.arrGround = { 0, 0, 0 };
+	stConfig.arrSunDirection = { 0.6F, 0.8F, 0 };
+	stConfig.arrSunRadiance = { 30, 20, 10 };
+	EngineNext::Rendering::EnvironmentLighting stLighting;
+	std::string strError;
+	constexpr double PI = 3.14159265358979323846;
+	for (float fRadius : { 0.001F, 0.08F, 0.6F })
+	{
+		stConfig.fSunAngularRadius = fRadius;
+		ENGINE_NEXT_CHECK(EngineNext::Rendering::GenerateEnvironmentLighting(stConfig, stLighting, strError));
+		const double dEdge = std::cos(fRadius);
+		const double dCapEnergy = PI * (1.0 - dEdge) * (dEdge + 2.0) / 3.0;
+		for (std::size_t nChannel = 0; nChannel < 3; ++nChannel)
+		{
+			ENGINE_NEXT_CHECK(std::abs(stLighting.arrIrradiance[0].arrPixels[0][nChannel] - dCapEnergy * 0.6 * stConfig.arrSunRadiance[nChannel]) < 0.000002);
+			ENGINE_NEXT_CHECK(std::abs(stLighting.arrIrradiance[2].arrPixels[0][nChannel] - dCapEnergy * 0.8 * stConfig.arrSunRadiance[nChannel]) < 0.000002);
+			ENGINE_NEXT_CHECK_EQ(stLighting.arrIrradiance[1].arrPixels[0][nChannel], 0.0F);
+			ENGINE_NEXT_CHECK_EQ(stLighting.arrIrradiance[3].arrPixels[0][nChannel], 0.0F);
+			ENGINE_NEXT_CHECK(stLighting.arrIrradiance[4].arrPixels[0][nChannel] > 0.0F);
+			ENGINE_NEXT_CHECK_EQ(stLighting.arrIrradiance[4].arrPixels[0][nChannel], stLighting.arrIrradiance[5].arrPixels[0][nChannel]);
+		}
+	}
+}
+
+ENGINE_NEXT_TEST("Diffuse environment convolution is independent of specular sample count")
+{
+	EngineNext::Rendering::EnvironmentConfig stConfig = SmallConfig();
+	stConfig.nSampleCount = 1;
+	EngineNext::Rendering::EnvironmentLighting stSingleSample;
+	EngineNext::Rendering::EnvironmentLighting stManySamples;
+	std::string strError;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::GenerateEnvironmentLighting(stConfig, stSingleSample, strError));
+	stConfig.nSampleCount = 1024;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::GenerateEnvironmentLighting(stConfig, stManySamples, strError));
+	for (std::size_t nFace = 0; nFace < 6; ++nFace)
+	{
+		ENGINE_NEXT_CHECK_EQ(stSingleSample.arrIrradiance[nFace].arrPixels, stManySamples.arrIrradiance[nFace].arrPixels);
+	}
+}

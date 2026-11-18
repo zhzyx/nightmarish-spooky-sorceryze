@@ -35,6 +35,7 @@ CORE_SOURCES = [
     "engine_next/Rendering/MaterialSettings.cpp",
     "engine_next/Rendering/GlobalIlluminationSettings.cpp",
     "engine_next/Rendering/ProbeGrid.cpp",
+    "engine_next/Rendering/ProbePlacement.cpp",
     "engine_next/Rendering/ShadowBounds.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
@@ -101,6 +102,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestMaterialEnvironment.cpp",
     "engine_next/Tests/Rendering/TestGlobalIlluminationSettings.cpp",
     "engine_next/Tests/Rendering/TestProbeGrid.cpp",
+    "engine_next/Tests/Rendering/TestProbePlacement.cpp",
     "engine_next/Tests/Rendering/TestProbeMath.cpp",
     "engine_next/Tests/Rendering/TestGISampling.cpp",
     "engine_next/Tests/Rendering/TestGiMaterialSampling.cpp",
@@ -142,6 +144,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/MaterialSettings.h",
     "EngineNext/Rendering/GlobalIlluminationSettings.h",
     "EngineNext/Rendering/ProbeGrid.h",
+    "EngineNext/Rendering/ProbePlacement.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
@@ -230,6 +233,7 @@ SHADERS = [
         ["-D", "ENGINE_NEXT_GI=1", "-D", "MATERIAL_EXTENSION_STAGE=1", "-D", "ENVIRONMENT_IMPORTANCE_STAGE=1"],
     ),
     ("PrepareCS", "cs_6_5", "GiPrepare.cs.cso", []),
+    ("RelocateCS", "cs_6_5", "GiRelocate.cs.cso", []),
     ("TraceCS", "cs_6_5", "GiTrace.cs.cso", []),
     ("UpdateCS", "cs_6_5", "GiIntegrate.cs.cso", []),
     ("CullCS", "cs_6_0", "GeometryCull.cs.cso", []),
@@ -587,7 +591,7 @@ def compile_shaders(args, commands):
                 else "Transparent.hlsl"
                 if name.startswith(("Transparent", "MaterialTransparent", "GiTransparent", "GiMaterialTransparent"))
                 else "GI.hlsl"
-                if name in ("GiPrepare.cs.cso", "GiTrace.cs.cso", "GiIntegrate.cs.cso")
+                if name in ("GiPrepare.cs.cso", "GiRelocate.cs.cso", "GiTrace.cs.cso", "GiIntegrate.cs.cso")
                 else "VolumeTemporal.hlsl"
                 if name == "VolumeTemporal.cs.cso"
                 else "VolumeComposite.hlsl"
@@ -732,6 +736,7 @@ def build(args):
                 "engine_next/Rendering/Shaders/ProbeMath.hlsli",
                 "engine_next/Rendering/Shaders/Transparent.hlsl",
                 "engine_next/Rendering/Shaders/GI.hlsl",
+                "engine_next/Rendering/Shaders/ProbePlacementMath.hlsli",
                 "engine_next/Rendering/Shaders/GILighting.hlsli",
                 "engine_next/Rendering/Shaders/GISampling.hlsli",
                 "engine_next/Rendering/Shaders/GISamplingMath.hlsli",

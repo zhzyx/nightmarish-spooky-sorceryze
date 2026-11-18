@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "issue_number": 1505,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T08:58:05.966128+00:00",
+  "native_key": "b61296d58bd7ad5da960758f54e4bcef9b8f2bceae7fbe1712979dfb5e601218",
+  "original_candidate": "49c9f22533e9398fda7ff5117abcea58441e09af",
+  "original_signed_commit": "e70aaba0d8c3cf9f4d6499daa96cb2d4858d21bb",
+  "original_pr": 1520,
+  "ci_failure": {
+    "path": "build/engine_next/ProbeStaticCiFailureR5.log",
+    "sha256": "93e49f02556d3181984dddaef976a77f369648af498aa81b74f41185660c54a5",
+    "size_bytes": 306882
+  },
+  "correction": "Preserve the original D3D12 diagnostic in immutable evidence. Codespell excludes only the exact parenthesized phrase containing the driver spelling.",
+  "configuration": {
+    "path": "pyproject.toml",
+    "sha256": "a7f425abd82353419ecc14cb07ef485263fa2ba1f4a895453580ec1e7f693bc4",
+    "size_bytes": 5308
+  },
+  "independent_review": {
+    "path": "build/engine_next/ProbeQuoteReview.json",
+    "sha256": "3e96c82d5e568ff24d8891ffba6266def25fde61088c3eb33602fe19b41e9bb4",
+    "size_bytes": 1533
+  },
+  "native_inputs_unchanged": true,
+  "original_verification": {
+    "path": "data-collection/engine-next-visual-runtime-m4-5-probe-placement-verification.json",
+    "sha256": "b7636a3fa366afdf1f2594733ffca0f25b6676539473abdf2bd32fccd80f787c",
+    "size_bytes": 19894
+  },
+  "stage_complete": false,
+  "pending": "New signed-candidate CI and main readback.",
+  "independent_final_review": {
+    "path": "build/engine_next/ProbeQuoteReviewFinal.json",
+    "sha256": "71fe06ce47e978a475c14cfbcbe14c965defdd44eb00bfc4cbdcd802ef4d2d47",
+    "size_bytes": 1958
+  },
+  "static_checks": {
+    "path": "build/engine_next/probe-static-delivery-r5-ci2/Result.json",
+    "sha256": "329090bc7085a581543787475bff4057776c2c7f22b6bc668dd654818d0acca4",
+    "size_bytes": 18107
+  },
+  "static_scope": "All nine applicable checks passed with zero mutations. The immutable original verification file is included; this aggregate correction record is excluded from its own manifest.",
+  "prior_local_failure": {
+    "path": "build/engine_next/probe-static-delivery-r5-ci/Result.json",
+    "sha256": "ece5e5468cba2ed69057fab0cc76d62b0aa531823bf381f6b90095891d987dc9",
+    "size_bytes": 18098
+  }
+}

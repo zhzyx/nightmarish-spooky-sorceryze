@@ -202,3 +202,43 @@ ENGINE_NEXT_TEST("GI malformed and disabled invalid objects fail transactionally
 		ENGINE_NEXT_CHECK_EQ(stSettings.nRaysPerProbe, 123U);
 	}
 }
+
+ENGINE_NEXT_TEST("GI placement is opt in and its full float state is budgeted")
+{
+	GlobalIlluminationSettings stSettings;
+	GlobalIlluminationBudget stLegacy;
+	GlobalIlluminationBudget stPlaced;
+	Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(Parse("{}", stSettings, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stSettings.stPlacement.bEnabled);
+	ENGINE_NEXT_CHECK(BuildGlobalIlluminationBudget(stSettings, stLegacy, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stLegacy.nStateStride, 16U);
+	ENGINE_NEXT_CHECK(Parse(R"({"placement":{"enabled":true,"minimum_clearance":0.05,"maximum_offset_fraction":0.4,"backface_threshold":0.2,"rays_per_probe":64,"stable_updates":3}})", stSettings, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stSettings.stPlacement.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stSettings.stPlacement.nMinimumRays, 64U);
+	ENGINE_NEXT_CHECK(BuildGlobalIlluminationBudget(stSettings, stPlaced, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(stPlaced.nStateStride, 48U);
+	ENGINE_NEXT_CHECK_EQ(stPlaced.nHistoryBytes - stLegacy.nHistoryBytes, 2ULL * 32 * stPlaced.nProbeCount);
+	ENGINE_NEXT_CHECK_EQ(stPlaced.nTotalBytes - stLegacy.nTotalBytes, 76ULL * stPlaced.nProbeCount);
+	stSettings.nMaxGpuBytes = stLegacy.nTotalBytes;
+	ENGINE_NEXT_CHECK(!ValidateGlobalIlluminationSettings(stSettings, arrDiagnostics));
+}
+
+ENGINE_NEXT_TEST("GI placement settings reject unsafe numeric and unknown fields transactionally")
+{
+	GlobalIlluminationSettings stSettings;
+	stSettings.nRaysPerProbe = 123;
+	Diagnostics arrDiagnostics;
+	for (const char *pJson : {
+				 R"({"placement":null})", R"({"placement":{"enabled":1}})", R"({"placement":{"unknown":0}})",
+				 R"({"placement":{"minimum_clearance":0}})", R"({"placement":{"maximum_offset_fraction":0.5}})",
+				 R"({"placement":{"rays_per_probe":5}})", R"({"placement":{"rays_per_probe":1025}})",
+				 R"({"placement":{"stable_updates":0}})", R"({"placement":{"stable_updates":65}})",
+				 R"({"placement":{"backface_threshold":1}})", R"({"trace_distance":0.001,"placement":{"enabled":true}})" })
+	{
+		ENGINE_NEXT_CHECK(!Parse(pJson, stSettings, arrDiagnostics));
+		ENGINE_NEXT_CHECK_EQ(stSettings.nRaysPerProbe, 123U);
+	}
+	ENGINE_NEXT_CHECK(Parse(R"({"trace_distance":0.001,"placement":{"enabled":false}})", stSettings, arrDiagnostics));
+	ENGINE_NEXT_CHECK(Parse(R"({"trace_distance":50,"placement":{"minimum_clearance":30,"enabled":true}})", stSettings, arrDiagnostics));
+}

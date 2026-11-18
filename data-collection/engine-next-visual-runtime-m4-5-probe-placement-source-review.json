@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "issue_number": 1505,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T08:46:02.902258+00:00",
+  "candidate": "probe-placement-r5",
+  "native_key": "b61296d58bd7ad5da960758f54e4bcef9b8f2bceae7fbe1712979dfb5e601218",
+  "status": "no_confirmed_finding_in_reviewed_scope",
+  "role_declaration": "The implementation author assembled this index and performed compiler/GPU checks. Source-review claims below belong to the named independent reviewers and their stated scopes.",
+  "source_sha256": {
+    "engine_next/Platform/Windows/GpuGeometry.cpp": "760ae59cfec9b8a53d38fc7edec1f63bcb601e8b2582d75392a79c8b4adac62d",
+    "engine_next/Platform/Windows/GpuGeometry.h": "9c48be34f3c9a3df8868525cce642511a655fa5bf9d6b90c7d44f7cc0aaa4bd8",
+    "engine_next/Platform/Windows/GpuProbeGrid.cpp": "e3993acfb6acaa482cef595da34555a726b9eca64af7886eb4b683d5e01c0a74",
+    "engine_next/Platform/Windows/GpuProbeGrid.h": "3cc0ac3f5468cb99081a80dd20b2ba6cd7cf565821c461a015814068b1bae0fd",
+    "engine_next/Platform/Windows/RayTracingScene.cpp": "228833715959acaa96b01eba2375f98a9657bf2739f56e42bf104d50c83a6285",
+    "engine_next/Platform/Windows/RayTracingScene.h": "b1804853e4b0d2311e7af76a3606c91e6b82b6b5e35cb5cb1f0e8213824c13c6",
+    "engine_next/Platform/Windows/RhiComOwner.h": "801d41ecdf12a026e864e22416631c66e7bb315cc74d161eed734540fa025ceb",
+    "engine_next/Platform/Windows/Window.cpp": "7f3294e73822dfafb2197cbc5b7a41fb100f4aeed65152db8d68b4bc5732c2a9",
+    "engine_next/Platform/Windows/Window.h": "5f30501e5c608ad0605920ec6d53ad9a30d4daea055eb59dcd48e9883758730e",
+    "engine_next/Rendering/Cook/EnvironmentLighting.cpp": "0c52fc300167d489cccfacd55cf867300d2b34dc542474737b41e129146e7435",
+    "engine_next/Rendering/ProbePlacement.cpp": "3c76d22ae183dc954cd45fa485b6fad928632bac460cf6a93fbc0a42e66d9a35",
+    "engine_next/Rendering/RenderPipeline.cpp": "3ecf618f79c27f7d8c60035ee85dfbc2a0644497bc6ceffc779a3834d1a1f9d6",
+    "engine_next/Rendering/RenderPipeline.h": "d8d6684c6094c627761c9e3dd5223d6f7a8c5b0f435ee0539ec27dd78e925ccf",
+    "engine_next/Rendering/Shaders/ProbePlacementMath.hlsli": "fd0bbbe5c452cf40792aa5d506b9aa33bebf1a15c1ddc4f5a34a1d8eb18e270b",
+    "engine_next/Rendering/VisualRuntime.cpp": "54c2096a3f8ad15d2022313fb0d1c53862acc779c54dcaadc52b7a842146db9f",
+    "engine_next/Tests/Rendering/TestEnvironmentLighting.cpp": "0f586ee410b780039ab685c177c51fec88f801e7fcf6cf62f9198ce1cb7d261c",
+    "engine_next/Tests/Rendering/TestProbePlacement.cpp": "f5d2449426bc29759205e7900ef221ab7dbe969b91b244d9a28a13b187f9024b",
+    "engine_next/Tests/Rendering/TestRenderPipeline.cpp": "ba7b64a8a93c8cf2f0782fff70ef8125dfc939c64942b9fef3f41fa3ffca9740",
+    "engine_next/include/EngineNext/Rendering/ProbePlacement.h": "4bf494a6a3a67375cd5f614f5e65d1881165e64c7033f68ff3ae96718415d5d8"
+  },
+  "review_index": {
+    "path": "build/engine_next/probe-placement-reviews-r5/Index.json",
+    "sha256": "5c5c32d713ec9aab0df110a4210dd1940c20f3ba6dfb284120a0105c9001a0c0",
+    "size_bytes": 1235
+  },
+  "root_placement_review": {
+    "path": "build/engine_next/placement-root-integration-r5/Review.json",
+    "sha256": "3f22606bc15fb388de17a72080ff3a1e94ec7783030f32a7bad5954d4f0687a6",
+    "size_bytes": 11191
+  },
+  "rename_equivalence": {
+    "path": "build/engine_next/probe-placement-r4/BeforeIdentifierRename/Rename.json",
+    "sha256": "4de9263341b6374274ec3f0364907e2913639f98ce3c9ccb843778b8a8fa8034",
+    "size_bytes": 910
+  },
+  "independent_mature_readback": {
+    "path": "build/engine_next/probe-placement-final-evidence/Files/External/80014f262ee8/codex-probe-mature-independent-review-r5.json",
+    "sha256": "80014f262ee803317970f3d825b592174809d2d5410492f2c8bb0f8b78f020eb",
+    "size_bytes": 1214
+  },
+  "reviewer": "codex/root and codex/m42_cook_review, with implementation responsibilities recorded in the attached reviews",
+  "integrated_host_review": {
+    "path": "build/engine_next/placement-root-integration-r5/HostReview.json",
+    "sha256": "f02ec7d3bf20cdedee94ddb2a58a6f4df6453cdf2d6fb2070db91340c3743018",
+    "size_bytes": 4146
+  },
+  "remaining_validation": "Combined animated producer GPU validation and full M4.5 acceptance continue after this increment."
+}

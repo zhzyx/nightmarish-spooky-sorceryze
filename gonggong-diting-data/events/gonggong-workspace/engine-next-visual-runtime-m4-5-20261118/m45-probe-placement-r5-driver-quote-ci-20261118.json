@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "event_id": "m45-probe-placement-r5-driver-quote-ci-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T08:58:05.967128+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1505",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m45-gi-request-routed-20261118"
+  ],
+  "payload": {
+    "scope": "Exact D3D12 diagnostic spelling in immutable verification evidence",
+    "original_pr": 1520,
+    "native_key": "b61296d58bd7ad5da960758f54e4bcef9b8f2bceae7fbe1712979dfb5e601218",
+    "native_inputs_unchanged": true,
+    "record": "data-collection/engine-next-visual-runtime-m4-5-probe-placement-verification-ci.json",
+    "review": {
+      "path": "build/engine_next/ProbeQuoteReview.json",
+      "sha256": "3e96c82d5e568ff24d8891ffba6266def25fde61088c3eb33602fe19b41e9bb4",
+      "size_bytes": 1533
+    },
+    "stage_complete": false
+  },
+  "sha256": "75bc4f925d044fa9dd0591d05dca11a260ca7ae702336f63c1d664ad5149b14f"
+}
