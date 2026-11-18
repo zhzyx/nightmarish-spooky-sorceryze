@@ -5765,7 +5765,7 @@ bool VisualRuntime::Resize()
 		return Fail("ResizeBuffers", nResult);
 	}
 	++nResizes;
-	bGeometryActive = stRenderConfiguration.stGeometry.bEnabled && !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
+	bGeometryActive = stRenderConfiguration.stGeometry.bEnabled && !bAnimationActive && !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
 	if (!ResetTemporalHistory() || !CreateTargets())
 	{
 		return false;
