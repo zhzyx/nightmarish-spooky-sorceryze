@@ -47,6 +47,43 @@ constexpr float PI = 3.14159265358979323846F;
 constexpr std::uint32_t MAX_SIZE = 256;
 constexpr std::uint32_t MAX_SAMPLES = 1024;
 constexpr std::uint64_t MAX_INTEGRATION_SAMPLES = 64000000;
+constexpr double DOUBLE_PI = 3.14159265358979323846;
+// Gauss-Legendre nodes and weights mapped to [0,1]. The procedural sky and
+// soft sun are axisymmetric, so their azimuth integrals are analytic.
+constexpr std::array<std::array<double, 2>, 32> IRRADIANCE_QUADRATURE{ {
+		{ 0.0013680690752592151, 0.0035093050047352529 },
+		{ 0.0071942442273658092, 0.0081371973654528716 },
+		{ 0.017618872206246805, 0.012696032654631012 },
+		{ 0.032546962031130167, 0.017136931456510882 },
+		{ 0.051839422116973954, 0.021417949011113418 },
+		{ 0.075316193133715015, 0.025499029631188046 },
+		{ 0.10275810201602881, 0.029342046739267783 },
+		{ 0.13390894062985514, 0.032911111388180841 },
+		{ 0.16847786653489238, 0.036172897054424169 },
+		{ 0.20614212137961885, 0.039096947893535114 },
+		{ 0.24655004553388532, 0.041655962113473353 },
+		{ 0.28932436193468236, 0.043826046502201892 },
+		{ 0.33406569885893617, 0.04558693934788189 },
+		{ 0.38035631887393145, 0.046922199540402255 },
+		{ 0.42776401920860174, 0.047819360039637354 },
+		{ 0.47584616715613082, 0.04827004425736383 },
+		{ 0.52415383284386918, 0.04827004425736383 },
+		{ 0.57223598079139826, 0.047819360039637354 },
+		{ 0.61964368112606849, 0.046922199540402255 },
+		{ 0.66593430114106389, 0.04558693934788189 },
+		{ 0.71067563806531764, 0.043826046502201892 },
+		{ 0.75344995446611462, 0.041655962113473353 },
+		{ 0.79385787862038115, 0.039096947893535114 },
+		{ 0.83152213346510762, 0.036172897054424169 },
+		{ 0.86609105937014486, 0.032911111388180841 },
+		{ 0.89724189798397114, 0.029342046739267783 },
+		{ 0.92468380686628504, 0.025499029631188046 },
+		{ 0.94816057788302599, 0.021417949011113418 },
+		{ 0.96745303796886983, 0.017136931456510882 },
+		{ 0.98238112779375319, 0.012696032654631012 },
+		{ 0.99280575577263419, 0.0081371973654528716 },
+		{ 0.99863193092474078, 0.0035093050047352529 },
+} };
 
 Vector Add(const Vector &arrA, const Vector &arrB)
 {
@@ -147,17 +184,79 @@ Vector Radiance(const EnvironmentConfig &stConfig, const Vector &arrDirection)
 	return arrResult;
 }
 
+double IntegrateAzimuthCosine(double dNormalCosine, double dHeight)
+{
+	const double dCenter = dNormalCosine * dHeight;
+	const double dRadius = std::sqrt((std::max)(0.0, (1.0 - dNormalCosine * dNormalCosine) * (1.0 - dHeight * dHeight)));
+	if (dCenter >= dRadius)
+	{
+		return 2.0 * DOUBLE_PI * dCenter;
+	}
+	if (dCenter <= -dRadius)
+	{
+		return 0.0;
+	}
+	const double dRatio = std::clamp(dCenter / dRadius, -1.0, 1.0);
+	return 2.0 * (dCenter * std::acos(-dRatio) + dRadius * std::sqrt((std::max)(0.0, 1.0 - dRatio * dRatio)));
+}
+
+double IntegrateSkyGradient(double dNormalY)
+{
+	const double dBoundary = std::sqrt((std::max)(0.0, 1.0 - dNormalY * dNormalY));
+	// y=t*t removes the sky's square-root endpoint. A sine substitution also
+	// smooths the latitude circle's tangent to the receiver horizon.
+	const double dLimit = std::sqrt(dBoundary);
+	double dIntegral = 0.0;
+	for (const std::array<double, 2> &arrSample : IRRADIANCE_QUADRATURE)
+	{
+		const double dAngle = DOUBLE_PI * 0.5 * arrSample[0];
+		const double dT = dLimit * std::sin(dAngle);
+		const double dDerivative = dLimit * std::cos(dAngle) * DOUBLE_PI * 0.5;
+		dIntegral += arrSample[1] * 2.0 * dT * dT * IntegrateAzimuthCosine(dNormalY, dT * dT) * dDerivative;
+	}
+	if (dNormalY > 0.0)
+	{
+		dIntegral += 4.0 * DOUBLE_PI * dNormalY / 5.0 * (1.0 - std::pow(dBoundary, 2.5));
+	}
+	return dIntegral;
+}
+
+double IntegrateSun(const EnvironmentConfig &stConfig, double dNormalCosine)
+{
+	// Match the finite-precision cap edge used by Radiance. Integrating this
+	// narrow cap directly avoids missed sun samples at adjacent cube texels.
+	const double dEdge = std::cos(stConfig.fSunAngularRadius);
+	const double dWidth = 1.0 - dEdge;
+	const double dBoundary = std::sqrt((std::max)(0.0, 1.0 - dNormalCosine * dNormalCosine));
+	const double dTop = std::clamp(dBoundary, dEdge, 1.0);
+	const double dExtent = dTop - dEdge;
+	double dIntegral = 0.0;
+	for (const std::array<double, 2> &arrSample : IRRADIANCE_QUADRATURE)
+	{
+		const double dHeight = dEdge + dExtent * arrSample[0];
+		dIntegral += arrSample[1] * (dHeight - dEdge) / dWidth * IntegrateAzimuthCosine(dNormalCosine, dHeight) * dExtent;
+	}
+	if (dNormalCosine > 0.0)
+	{
+		const double dCapHeight = 1.0 - dTop;
+		dIntegral += 2.0 * DOUBLE_PI * dNormalCosine * dCapHeight *
+				(1.0 - dCapHeight * 0.5 - dCapHeight / dWidth * (0.5 - dCapHeight / 3.0));
+	}
+	return dIntegral;
+}
+
 Vector Irradiance(const EnvironmentConfig &stConfig, const Vector &arrNormal)
 {
-	Vector arrSum{};
-	for (std::uint32_t nSample = 0; nSample < stConfig.nSampleCount; ++nSample)
+	const double dNormalY = std::clamp(static_cast<double>(arrNormal[1]), -1.0, 1.0);
+	const double dSkyGradient = IntegrateSkyGradient(dNormalY);
+	const double dSun = IntegrateSun(stConfig, std::clamp(static_cast<double>(Dot(arrNormal, stConfig.arrSunDirection)), -1.0, 1.0));
+	Vector arrResult{};
+	for (std::size_t nChannel = 0; nChannel < 3; ++nChannel)
 	{
-		const float fRadius = std::sqrt((static_cast<float>(nSample) + 0.5F) / static_cast<float>(stConfig.nSampleCount));
-		const float fPhi = 2.0F * PI * RadicalInverse(nSample);
-		const Vector arrLocal{ fRadius * std::cos(fPhi), fRadius * std::sin(fPhi), std::sqrt((std::max)(0.0F, 1.0F - fRadius * fRadius)) };
-		arrSum = Add(arrSum, Radiance(stConfig, LocalToWorld(arrLocal, arrNormal)));
+		const double dSky = DOUBLE_PI * 0.5 * ((1.0 - dNormalY) * stConfig.arrGround[nChannel] + (1.0 + dNormalY) * stConfig.arrSkyHorizon[nChannel]);
+		arrResult[nChannel] = static_cast<float>(dSky + dSkyGradient * (stConfig.arrSkyZenith[nChannel] - stConfig.arrSkyHorizon[nChannel]) + dSun * stConfig.arrSunRadiance[nChannel]);
 	}
-	return Scale(arrSum, PI / static_cast<float>(stConfig.nSampleCount));
+	return arrResult;
 }
 
 Vector Prefilter(const EnvironmentConfig &stConfig, const Vector &arrNormal, float fRoughness)
@@ -226,7 +325,8 @@ bool Validate(EnvironmentConfig &out_stConfig, std::string &out_strError)
 	{
 		nFilteredPixels += static_cast<std::uint64_t>(nSize) * nSize * 6;
 	}
-	const std::uint64_t nTotalSamples = (nFilteredPixels + static_cast<std::uint64_t>(out_stConfig.nIrradianceSize) * out_stConfig.nIrradianceSize * 6 + static_cast<std::uint64_t>(out_stConfig.nBrdfSize) * out_stConfig.nBrdfSize) * out_stConfig.nSampleCount;
+	const std::uint64_t nIrradianceSamples = static_cast<std::uint64_t>(out_stConfig.nIrradianceSize) * out_stConfig.nIrradianceSize * 6 * IRRADIANCE_QUADRATURE.size() * 2;
+	const std::uint64_t nTotalSamples = (nFilteredPixels + static_cast<std::uint64_t>(out_stConfig.nBrdfSize) * out_stConfig.nBrdfSize) * out_stConfig.nSampleCount + nIrradianceSamples;
 	if (nTotalSamples > MAX_INTEGRATION_SAMPLES)
 	{
 		out_strError = "Environment convolution exceeds its integration budget.";

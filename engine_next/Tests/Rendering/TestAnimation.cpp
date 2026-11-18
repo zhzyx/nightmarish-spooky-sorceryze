@@ -30,6 +30,7 @@
 
 #include "engine_next/Tests/TestFramework.h"
 #include "engine_next/Rendering/Cook/GltfDecoder.h"
+#include "engine_next/Rendering/DeformationChanges.h"
 #include "engine_next/include/EngineNext/Assets/BlobValidator.h"
 #include "engine_next/include/EngineNext/Rendering/DeformationFrame.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
@@ -928,4 +929,48 @@ ENGINE_NEXT_TEST("Animated scene loader preserves source instances and rejects c
 	ENGINE_NEXT_CHECK_EQ(stScene.arrInstances.size(), std::size_t{ 4 });
 	ENGINE_NEXT_CHECK_EQ(stScene.arrAssets[0].stIdentity.strContentSha256, strDigest);
 	ENGINE_NEXT_CHECK_EQ(stScene.strPackageDigest, stPackage.strPackageDigest);
+}
+
+ENGINE_NEXT_TEST("Deformation GI changes include old and new poses and skip paused geometry")
+{
+	using EngineNext::Rendering::BuildDeformationGeometryChanges;
+	using EngineNext::Rendering::DeformationFrame;
+	using EngineNext::Rendering::GiGeometryChange;
+	EngineNext::Rendering::AnimationMatrix arrIdentity{};
+	for (std::size_t nAxis = 0; nAxis < 4; ++nAxis)
+	{
+		arrIdentity[nAxis * 5] = 1;
+	}
+	std::vector<EngineNext::Rendering::AnimationMatrix> arrWorlds(2, arrIdentity);
+	arrWorlds[1][0] = -2;
+	arrWorlds[1][12] = 10;
+	DeformationFrame stBefore;
+	stBefore.arrDraws.resize(1);
+	stBefore.arrDraws[0].nDraw = 1;
+	stBefore.arrDraws[0].arrVertices.resize(1);
+	stBefore.arrDraws[0].arrVertices[0].arrPosition = { 1, 2, 3 };
+	DeformationFrame stAfter = stBefore;
+	stAfter.arrDraws[0].arrVertices[0].arrPosition[0] = 2;
+	std::vector<GiGeometryChange> arrChanges;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(BuildDeformationGeometryChanges(stBefore, stAfter, arrWorlds, arrWorlds, arrChanges, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(arrChanges.size(), std::size_t{ 1 });
+	ENGINE_NEXT_CHECK(arrChanges[0].stPreviousWorldBounds.arrMinimum[0] <= 8 && arrChanges[0].stPreviousWorldBounds.arrMaximum[0] >= 8);
+	ENGINE_NEXT_CHECK(arrChanges[0].stCurrentWorldBounds.arrMinimum[0] <= 6 && arrChanges[0].stCurrentWorldBounds.arrMaximum[0] >= 6);
+	ENGINE_NEXT_CHECK(BuildDeformationGeometryChanges(stBefore, stBefore, arrWorlds, arrWorlds, arrChanges, arrDiagnostics));
+	ENGINE_NEXT_CHECK(arrChanges.empty());
+	std::vector<EngineNext::Rendering::AnimationMatrix> arrMoved = arrWorlds;
+	arrMoved[1][12] = 11;
+	ENGINE_NEXT_CHECK(BuildDeformationGeometryChanges(stAfter, stAfter, arrWorlds, arrMoved, arrChanges, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(arrChanges.size(), std::size_t{ 1 });
+	ENGINE_NEXT_CHECK(arrChanges[0].stPreviousWorldBounds.arrMinimum[0] <= 6 && arrChanges[0].stPreviousWorldBounds.arrMaximum[0] >= 6);
+	ENGINE_NEXT_CHECK(arrChanges[0].stCurrentWorldBounds.arrMinimum[0] <= 7 && arrChanges[0].stCurrentWorldBounds.arrMaximum[0] >= 7);
+	stAfter.arrDraws[0].arrVertices[0].arrPosition[0] = std::numeric_limits<float>::quiet_NaN();
+	ENGINE_NEXT_CHECK(!BuildDeformationGeometryChanges(stBefore, stAfter, arrWorlds, arrWorlds, arrChanges, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(arrChanges.size(), std::size_t{ 1 });
+	ENGINE_NEXT_CHECK(arrChanges[0].stCurrentWorldBounds.arrMinimum[0] <= 7 && arrChanges[0].stCurrentWorldBounds.arrMaximum[0] >= 7);
+	stAfter = stBefore;
+	stAfter.arrDraws[0].nDraw = 0;
+	ENGINE_NEXT_CHECK(!BuildDeformationGeometryChanges(stBefore, stAfter, arrWorlds, arrWorlds, arrChanges, arrDiagnostics));
+	ENGINE_NEXT_CHECK_EQ(arrChanges.size(), std::size_t{ 1 });
 }

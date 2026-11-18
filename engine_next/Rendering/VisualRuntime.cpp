@@ -47,6 +47,7 @@
 #include "engine_next/Rendering/Cook/GpuPackage.h"
 #include "engine_next/include/EngineNext/Rendering/RenderScene.h"
 #include "engine_next/include/EngineNext/Rendering/DeformationFrame.h"
+#include "engine_next/Rendering/DeformationChanges.h"
 #include "engine_next/Platform/Windows/GpuDeformation.h"
 #include "engine_next/include/EngineNext/Rendering/TextureData.h"
 #include "engine_next/include/EngineNext/Rendering/CameraMatrices.h"
@@ -285,6 +286,7 @@ struct FrameTiming
 	double dAnimationCpuMsec = 0;
 	double dAnimationMaxMotion = 0;
 	std::uint64_t nAnimatedVertices = 0;
+	std::uint32_t nAnimationGiChangedDraws = 0;
 	bool bAnimationHistoryValid = false;
 	bool bTemporalHistoryValid = false;
 	bool bVolumeHistoryValid = false;
@@ -857,6 +859,7 @@ private:
 	std::uint32_t nPendingAnimationFrame = FRAME_COUNT;
 	bool bAnimationCommandsExecuted = false;
 	double dAnimationCpuMsec = 0;
+	std::uint32_t nAnimationGiChangedDraws = 0;
 	std::vector<GpuMaterial> arrMaterials;
 	std::vector<RuntimeMaterialAsset> arrResolvedMaterials;
 	bool bMaterialExtensions = false;
@@ -2343,6 +2346,7 @@ bool VisualRuntime::CreateGiResources()
 
 bool VisualRuntime::PrepareGiFrame(std::uint32_t nFrame)
 {
+	nAnimationGiChangedDraws = 0;
 	if (!stRenderConfiguration.stGlobalIllumination.bEnabled)
 	{
 		return true;
@@ -2362,11 +2366,27 @@ bool VisualRuntime::PrepareGiFrame(std::uint32_t nFrame)
 		arrWorlds.push_back(stDraw.arrCurrentWorld);
 	}
 	Assets::Diagnostics arrDiagnostics;
+	std::vector<GiGeometryChange> arrGeometryChanges;
+	if (bAnimationActive && bAnimationHistory && stTemporalFrame.bHistoryValid)
+	{
+		std::vector<AnimationMatrix> arrPreviousWorlds;
+		arrPreviousWorlds.reserve(stTemporalFrame.arrDraws.size());
+		for (const TemporalDrawFrame &stDraw : stTemporalFrame.arrDraws)
+		{
+			arrPreviousWorlds.push_back(stDraw.arrPreviousWorld);
+		}
+		if (!BuildDeformationGeometryChanges(stCommittedDeformation, stDeformationFrame, arrPreviousWorlds, arrWorlds,
+											 arrGeometryChanges, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Build deformation GI changes" : arrDiagnostics.back().strMessage);
+		}
+	}
 	if (!stGi.PrepareFrame(nFrame, arrCenter, arrWorlds, stGraphics.stFence->GetCompletedValue(), arrDiagnostics,
-						   bAnimationActive ? &stDeformationFrame : nullptr))
+						   arrGeometryChanges, bAnimationActive ? &stDeformationFrame : nullptr))
 	{
 		return Fail(arrDiagnostics.empty() ? "Prepare GI probe update" : arrDiagnostics.back().strMessage);
 	}
+	nAnimationGiChangedDraws = static_cast<std::uint32_t>(arrGeometryChanges.size());
 	nPendingGiFrame = nFrame;
 	bGiCommandsExecuted = false;
 	return true;
@@ -2374,8 +2394,8 @@ bool VisualRuntime::PrepareGiFrame(std::uint32_t nFrame)
 
 bool VisualRuntime::RecordGiPass(std::uint32_t nFrame, PassWork eWork)
 {
-	constexpr std::array<GiPass, 7> arrPasses{ GiPass::BuildScene, GiPass::Upload, GiPass::InitializeHistory,
-											   GiPass::Remap, GiPass::Trace, GiPass::Update, GiPass::Readback };
+	constexpr std::array<GiPass, 8> arrPasses{ GiPass::BuildScene, GiPass::Upload, GiPass::InitializeHistory,
+											   GiPass::Remap, GiPass::Relocate, GiPass::Trace, GiPass::Update, GiPass::Readback };
 	const std::size_t nPass = static_cast<std::size_t>(eWork) - static_cast<std::size_t>(PassWork::GiBuildScene);
 	if (nPass >= arrPasses.size())
 	{
@@ -5077,7 +5097,7 @@ bool VisualRuntime::BuildGraph()
 	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, bAnimationActive))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, bAnimationActive))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -5379,6 +5399,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			stTiming.dAnimationCpuMsec = dAnimationCpuMsec;
 			stTiming.dAnimationMaxMotion = stGpuDeformation.MaxLocalMotion();
 			stTiming.nAnimatedVertices = stDeformationFrame.nVertexCount;
+			stTiming.nAnimationGiChangedDraws = nAnimationGiChangedDraws;
 			stTiming.bAnimationHistoryValid = bAnimationHistory && stTemporalFrame.bHistoryValid;
 		}
 		if (stRenderConfiguration.stGlobalIllumination.bEnabled)
@@ -6260,6 +6281,12 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["gi_valid_probe_count"] = JsonValue(static_cast<std::int64_t>(stGi.ValidCount()));
 	mapReport["gi_invalid_probe_count"] = JsonValue(static_cast<std::int64_t>(stGi.InvalidCount()));
 	mapReport["gi_peak_invalid_probe_count"] = JsonValue(static_cast<std::int64_t>(stGi.PeakInvalidCount()));
+	mapReport["gi_placement_enabled"] = JsonValue(stGi.ProbeCount() != 0 && stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled);
+	mapReport["gi_placement_state_stride"] = JsonValue(static_cast<std::int64_t>(stGi.ProbeCount() == 0 ? 0 : (stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled ? 48 : 16)));
+	mapReport["gi_placement_active_count"] = JsonValue(static_cast<std::int64_t>(stGi.PlacementActiveCount()));
+	mapReport["gi_placement_pending_count"] = JsonValue(static_cast<std::int64_t>(stGi.PlacementPendingCount()));
+	mapReport["gi_placement_inactive_count"] = JsonValue(static_cast<std::int64_t>(stGi.PlacementInactiveCount()));
+	mapReport["gi_relocated_count"] = JsonValue(static_cast<std::int64_t>(stGi.RelocatedCount()));
 	mapReport["gi_submission_epoch"] = JsonValue(static_cast<std::int64_t>(stGi.SubmissionEpoch()));
 	mapReport["gi_resource_bytes"] = JsonValue(static_cast<std::int64_t>(stGi.Memory().nTotalBytes));
 	mapReport["gi_default_bytes"] = JsonValue(static_cast<std::int64_t>(stGi.Memory().nDefaultBytes));
@@ -6375,6 +6402,7 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 		mapTiming["animation_cpu_msec"] = JsonValue(stTiming.dAnimationCpuMsec);
 		mapTiming["animation_max_local_motion"] = JsonValue(stTiming.dAnimationMaxMotion);
 		mapTiming["animation_vertices"] = JsonValue(static_cast<std::int64_t>(stTiming.nAnimatedVertices));
+		mapTiming["animation_gi_changed_draws"] = JsonValue(static_cast<std::int64_t>(stTiming.nAnimationGiChangedDraws));
 		mapTiming["animation_history_valid"] = JsonValue(stTiming.bAnimationHistoryValid);
 		if (stTiming.bPostReady)
 		{

@@ -914,7 +914,7 @@ ENGINE_NEXT_TEST("RenderPipeline combines GI and geometry with reusable resource
 {
 	RenderPipeline stPipeline;
 	GraphDiagnostic stDiagnostic;
-	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 28, true, true, 6, 6, { true, true }, true, true, { true, true, 15 }));
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 28, true, true, 6, 6, { true, true }, true, true, { true, true, 15 }, true));
 	const CompiledPass *pGiUpdate = FindWork(stPipeline, PassWork::GiUpdate);
 	const CompiledPass *pCull = FindWork(stPipeline, PassWork::GeometryCullColor);
 	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
@@ -935,7 +935,7 @@ ENGINE_NEXT_TEST("RenderPipeline orders deformation copies before vertex consume
 {
 	RenderPipeline stPipeline;
 	GraphDiagnostic stDiagnostic;
-	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, true, {}, true));
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, true, {}, false, true));
 	const CompiledPass *pUpload = FindWork(stPipeline, PassWork::DeformationUpload);
 	const CompiledPass *pShadow = FindWork(stPipeline, PassWork::DirectionalShadow);
 	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
@@ -949,5 +949,31 @@ ENGINE_NEXT_TEST("RenderPipeline orders deformation copies before vertex consume
 	ENGINE_NEXT_CHECK(HasTransition(*pShadow, stPipeline.nDeformedVertices, ResourceState::CopyDestination, ResourceState::VertexIndexRead));
 	ENGINE_NEXT_CHECK(HasTransition(*pGbuffer, stPipeline.nPreviousPositions, ResourceState::CopyDestination, ResourceState::VertexIndexRead));
 	ENGINE_NEXT_CHECK(HasAccess(*pGbuffer, stPipeline.nDeformedVertices, ResourceState::VertexIndexRead, false));
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline relocates probes between remap and radiance tracing")
+{
+	RenderPipeline stPipeline;
+	RenderPipeline stLegacy;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stLegacy, stDiagnostic, 0, false, false, 0, 0, {}, false, true));
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, false, false, 0, 0, {}, false, true, {}, true));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), stLegacy.stGraph.arrPasses.size() + 1);
+	const CompiledPass *pRemap = FindWork(stPipeline, PassWork::GiRemap);
+	const CompiledPass *pPlacement = FindWork(stPipeline, PassWork::GiRelocate);
+	const CompiledPass *pTrace = FindWork(stPipeline, PassWork::GiTrace);
+	ENGINE_NEXT_CHECK(pRemap != nullptr && pPlacement != nullptr && pTrace != nullptr);
+	if (pRemap != nullptr && pPlacement != nullptr && pTrace != nullptr)
+	{
+		ENGINE_NEXT_CHECK(pRemap->nPass < pPlacement->nPass && pPlacement->nPass < pTrace->nPass);
+		ENGINE_NEXT_CHECK(HasAccess(*pPlacement, stPipeline.nGiScene, ResourceState::AccelerationStructure, false));
+		ENGINE_NEXT_CHECK(HasAccess(*pPlacement, stPipeline.nGiPositions, ResourceState::NonPixelShaderRead, false));
+		for (ResourceId nResource : stPipeline.arrGiWrite)
+		{
+			ENGINE_NEXT_CHECK(HasAccess(*pPlacement, nResource, ResourceState::UnorderedAccess, true));
+		}
+	}
+	ENGINE_NEXT_CHECK(FindWork(stLegacy, PassWork::GiRelocate) == nullptr);
 	CheckReusableStates(stPipeline);
 }

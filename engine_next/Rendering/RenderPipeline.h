@@ -73,9 +73,10 @@ enum class PassWork : std::uint8_t
 	GiUpload = 29,
 	GiPrepare = 30,
 	GiRemap = 31,
-	GiTrace = 32,
-	GiUpdate = 33,
-	GiReadback = 34,
+	GiRelocate = 32,
+	GiTrace = 33,
+	GiUpdate = 34,
+	GiReadback = 35,
 	GeometryUpload = 40,
 	GeometryClearDepth = 41,
 	GeometryCullDepth = 42,
@@ -186,6 +187,6 @@ struct RenderPipeline
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bDeformation = false);
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bDeformation = false);
 
 } // namespace EngineNext::Rendering

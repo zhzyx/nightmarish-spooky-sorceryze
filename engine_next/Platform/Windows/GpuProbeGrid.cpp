@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "engine_next/Platform/Windows/GpuProbeGrid.h"
+#include "engine_next/Rendering/ShadowBounds.h"
 
 #include <algorithm>
 #include <cmath>
@@ -48,6 +49,12 @@ constexpr std::uint32_t CLEAR_VIEW = 25;
 constexpr std::uint32_t MATERIAL_TEXTURE_LIMIT = 2045;
 constexpr std::uint32_t GROUP_WIDTH = 64;
 constexpr std::uint32_t MAX_DISPATCH_GROUPS = D3D12_CS_DISPATCH_MAX_THREAD_GROUPS_PER_DIMENSION;
+struct alignas(16) PlacementConstants
+{
+	std::array<float, 4> arrLimits{};
+	std::array<std::uint32_t, 4> arrInfo{};
+};
+static_assert(sizeof(GiGridParameters) + sizeof(PlacementConstants) <= D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT);
 
 bool Error(Assets::Diagnostics &out_arrDiagnostics, const char *pMessage)
 {
@@ -187,9 +194,9 @@ bool ReadShader(const std::filesystem::path &stPath, std::vector<std::uint8_t> &
 
 bool CreatePipelines(ID3D12Device5 *pDevice, const std::filesystem::path &stDirectory,
 					 ComOwner<ID3D12RootSignature> &out_stRoot,
-					 std::array<ComOwner<ID3D12PipelineState>, 3> &out_arrPipelines)
+					 std::array<ComOwner<ID3D12PipelineState>, 4> &out_arrPipelines)
 {
-	std::array<D3D12_DESCRIPTOR_RANGE, 11> arrDescriptorRanges{};
+	std::array<D3D12_DESCRIPTOR_RANGE, 12> arrDescriptorRanges{};
 	arrDescriptorRanges[0] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 7, 0, 0, 0 };
 	arrDescriptorRanges[1] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 11, 0, 11 };
 	arrDescriptorRanges[2] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 14, 0, 14 };
@@ -201,7 +208,8 @@ bool CreatePipelines(ID3D12Device5 *pDevice, const std::filesystem::path &stDire
 	arrDescriptorRanges[8] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, MATERIAL_TEXTURE_LIMIT, 0, 1, 0 };
 	arrDescriptorRanges[9] = { D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, MATERIAL_TEXTURE_LIMIT, 0, 1, 0 };
 	arrDescriptorRanges[10] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 17, 0, 0 };
-	std::array<D3D12_ROOT_PARAMETER, 11> arrParameters{};
+	arrDescriptorRanges[11] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 18, 0, 0 };
+	std::array<D3D12_ROOT_PARAMETER, 12> arrParameters{};
 	arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	arrParameters[0].Descriptor.ShaderRegister = 0;
 	arrParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
@@ -233,7 +241,7 @@ bool CreatePipelines(ID3D12Device5 *pDevice, const std::filesystem::path &stDire
 	{
 		return false;
 	}
-	const std::array<const char *, 3> arrNames{ "GiPrepare.cs.cso", "GiTrace.cs.cso", "GiIntegrate.cs.cso" };
+	const std::array<const char *, 4> arrNames{ "GiPrepare.cs.cso", "GiTrace.cs.cso", "GiIntegrate.cs.cso", "GiRelocate.cs.cso" };
 	for (std::size_t nIndex = 0; nIndex < arrNames.size(); ++nIndex)
 	{
 		std::vector<std::uint8_t> arrBytes;
@@ -316,6 +324,19 @@ bool GpuProbeGrid::Initialize(ID3D12Device5 *pDevice, const GlobalIlluminationSe
 			return Error(out_arrDiagnostics, "Ray-tracing identity order differs from the render-scene draw order.");
 		}
 	}
+	if (stInputSettings.stPlacement.bEnabled)
+	{
+		constexpr std::array<double, 16> arrIdentity{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+		for (const RenderInstance &stInstance : stSource.arrInstances)
+		{
+			WorldBounds stBounds;
+			if (!TransformShadowBounds(stSource.arrAssets[stInstance.nAsset].stMesh.arrPrimitives[stInstance.nPrimitive], arrIdentity, stBounds, out_arrDiagnostics))
+			{
+				return false;
+			}
+			stCandidate.arrLocalBounds.push_back(stBounds);
+		}
+	}
 	if (arrMaterialExtensions.size() != stCandidate.stScene.SourceMaterials().size() ||
 		arrMaterialExtensions.size() > MATERIAL_TEXTURE_LIMIT / 5)
 	{
@@ -343,7 +364,7 @@ bool GpuProbeGrid::Initialize(ID3D12Device5 *pDevice, const GlobalIlluminationSe
 	const std::array<std::uint64_t, 3> arrHistoryBytes{
 		static_cast<std::uint64_t>(stBudget.nProbeCount) * GI_SH_STRIDE,
 		static_cast<std::uint64_t>(stBudget.nProbeCount) * 64 * GI_MOMENTS_STRIDE,
-		static_cast<std::uint64_t>(stBudget.nProbeCount) * GI_STATE_STRIDE
+		static_cast<std::uint64_t>(stBudget.nProbeCount) * stBudget.nStateStride
 	};
 	for (HistoryResources &stHistory : stCandidate.arrHistory)
 	{
@@ -359,7 +380,8 @@ bool GpuProbeGrid::Initialize(ID3D12Device5 *pDevice, const GlobalIlluminationSe
 	stCandidate.nPositionOffset = D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT;
 	stCandidate.nRemapOffset = Align(stCandidate.nPositionOffset + stBudget.nPositionBytes, 16);
 	stCandidate.nUpdateOffset = Align(stCandidate.nRemapOffset + static_cast<std::uint64_t>(stBudget.nProbeCount) * 4, 16);
-	const std::uint64_t nUploadBytes = Align(stCandidate.nUpdateOffset + static_cast<std::uint64_t>(stBudget.nUpdateCount) * 4, 256);
+	stCandidate.nRevisionOffset = stInputSettings.stPlacement.bEnabled ? Align(stCandidate.nUpdateOffset + static_cast<std::uint64_t>(stBudget.nUpdateCount) * 4, 16) : stCandidate.nRemapOffset;
+	const std::uint64_t nUploadBytes = Align(stInputSettings.stPlacement.bEnabled ? stCandidate.nRevisionOffset + static_cast<std::uint64_t>(stBudget.nProbeCount) * 4 : stCandidate.nUpdateOffset + static_cast<std::uint64_t>(stBudget.nUpdateCount) * 4, 256);
 	if (!CreateBuffer(pDevice, stBudget.nPositionBytes, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_NONE,
 					  nLimit, stCandidate.stMemory, stCandidate.stPositions) ||
 		!CreateBuffer(pDevice, arrMaterialExtensions.size() * sizeof(std::array<float, 4>),
@@ -432,7 +454,7 @@ void GpuProbeGrid::WriteDescriptors(std::uint32_t nFrame)
 	CreateSrv(pDevice, stScene.MaterialBuffer(), 0, nMaterialCount, sizeof(RayTracingMaterial), CpuView(stBlock, 4));
 	CreateSrv(pDevice, stPositions.Get(), 0, nCount, GI_POSITION_STRIDE, CpuView(stBlock, 5));
 	CreateSrv(pDevice, stFrame.stUpload.Get(), nUpdateOffset / sizeof(std::uint32_t), stGrid.stBudget.nUpdateCount, sizeof(std::uint32_t), CpuView(stBlock, 6));
-	const std::array<std::uint32_t, 3> arrCounts{ nCount * 9, nCount * 64, nCount };
+	const std::array<std::uint32_t, 3> arrCounts{ nCount * 9, nCount * 64, nCount * stGrid.stBudget.nStateStride / GI_STATE_STRIDE };
 	const std::array<std::uint32_t, 3> arrStrides{ 16, GI_MOMENTS_STRIDE, GI_STATE_STRIDE };
 	for (std::uint32_t nIndex = 0; nIndex < 3; ++nIndex)
 	{
@@ -442,6 +464,7 @@ void GpuProbeGrid::WriteDescriptors(std::uint32_t nFrame)
 		CreateClearUav(pDevice, arrHistory[nReadHistory].arrBuffers[nIndex].Get(), CpuView(stBlock, CLEAR_VIEW + nIndex));
 	}
 	CreateSrv(pDevice, stFrame.stUpload.Get(), nRemapOffset / sizeof(std::uint32_t), nCount, sizeof(std::uint32_t), CpuView(stBlock, 11));
+	CreateSrv(pDevice, stFrame.stUpload.Get(), nRevisionOffset / sizeof(std::uint32_t), nCount, sizeof(std::uint32_t), CpuView(stBlock, 28));
 	CreateSrv(pDevice, stFrame.stRays.Get(), 0, nRays, GI_RAY_RESULT_STRIDE, CpuView(stBlock, 14));
 	CreateSrv(pDevice, stFrame.stRayStatus.Get(), 0, nRays, GI_RAY_STATUS_STRIDE, CpuView(stBlock, 15));
 	CreateSrv(pDevice, stMaterialExtensions.Get(), 0, nMaterialCount, 16, CpuView(stBlock, 16));
@@ -451,12 +474,18 @@ void GpuProbeGrid::WriteDescriptors(std::uint32_t nFrame)
 
 bool GpuProbeGrid::PrepareFrame(std::uint32_t nFrame, const std::array<double, 3> &arrCenter,
 								const std::vector<std::array<double, 16>> &arrWorlds, std::uint64_t nCompletedFence,
-								Assets::Diagnostics &out_arrDiagnostics, const DeformationFrame *pDeformation)
+								Assets::Diagnostics &out_arrDiagnostics, const std::vector<GiGeometryChange> &arrGeometryChanges,
+								const DeformationFrame *pDeformation)
 {
 	if (!IsOwner() || !bInitialized || nFrame >= GI_PENDING_FRAMES || nPendingFrame != GI_PENDING_FRAMES ||
 		nCompletedFence == UINT64_MAX || arrFrames[nFrame].nFence > nCompletedFence || arrWorlds.size() != stScene.Identities().size())
 	{
 		return Error(out_arrDiagnostics, "Prepare needs a retired frame slot and one world matrix per scene identity.");
+	}
+	WorldBounds stDeformed;
+	if (!arrGeometryChanges.empty() && !BuildProbeGeometryChangeBounds(arrGeometryChanges, static_cast<std::uint32_t>(arrWorlds.size()), stDeformed))
+	{
+		return Error(out_arrDiagnostics, "Deformation changes require unique draw identities and finite ordered world bounds.");
 	}
 	ProbeGrid stNext;
 	if (!SnapProbeGrid(stSettings, arrCenter, stNext, out_arrDiagnostics))
@@ -468,6 +497,7 @@ bool GpuProbeGrid::PrepareFrame(std::uint32_t nFrame, const std::array<double, 3
 	const bool bHistoryValid = bHasSubmitted && nCommittedInvalidation == nInvalidationSerial;
 	std::vector<std::uint32_t> arrRemap(nCount, UINT32_MAX);
 	std::vector<std::uint8_t> arrNextNeeds(nCount, 1);
+	std::vector<std::uint32_t> arrNextRevisions(nCount, nGeometrySerial);
 	if (bHistoryValid)
 	{
 		std::map<std::array<float, 4>, std::uint32_t> mapOldPositions;
@@ -482,14 +512,72 @@ bool GpuProbeGrid::PrepareFrame(std::uint32_t nFrame, const std::array<double, 3
 			{
 				arrRemap[nIndex] = itOld->second;
 				arrNextNeeds[nIndex] = arrNeedsUpdate[itOld->second];
+				if (stSettings.stPlacement.bEnabled)
+				{
+					arrNextRevisions[nIndex] = arrGeometryRevisions[itOld->second];
+				}
+			}
+		}
+	}
+	std::uint32_t nNextGeometrySerial = nGeometrySerial;
+	if (stSettings.stPlacement.bEnabled && bHistoryValid && (arrWorlds != arrCommittedWorlds || !arrGeometryChanges.empty()))
+	{
+		if (nGeometrySerial == UINT32_MAX || arrCommittedWorlds.size() != arrWorlds.size())
+		{
+			return Error(out_arrDiagnostics, "Geometry revision exhausted or committed instance identities changed.");
+		}
+		++nNextGeometrySerial;
+		WorldBounds stChanged;
+		stChanged.arrMinimum.fill(std::numeric_limits<double>::infinity());
+		stChanged.arrMaximum.fill(-std::numeric_limits<double>::infinity());
+		if (!arrGeometryChanges.empty())
+		{
+			stChanged = stDeformed;
+		}
+		for (std::size_t nInstance = 0; nInstance < arrWorlds.size(); ++nInstance)
+		{
+			if (arrWorlds[nInstance] == arrCommittedWorlds[nInstance])
+			{
+				continue;
+			}
+			for (const std::array<double, 16> *pWorld : std::array<const std::array<double, 16> *, 2>{ &arrWorlds[nInstance], &arrCommittedWorlds[nInstance] })
+			{
+				WorldBounds stWorld;
+				if (!TransformProbeGeometryBounds(arrLocalBounds[nInstance], *pWorld, stWorld))
+				{
+					return Error(out_arrDiagnostics, "Changed geometry requires finite affine bounds.");
+				}
+				for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+				{
+					stChanged.arrMinimum[nAxis] = std::min(stChanged.arrMinimum[nAxis], stWorld.arrMinimum[nAxis]);
+					stChanged.arrMaximum[nAxis] = std::max(stChanged.arrMaximum[nAxis], stWorld.arrMaximum[nAxis]);
+				}
+			}
+		}
+		for (std::uint32_t nProbe = 0; nProbe < nCount; ++nProbe)
+		{
+			const std::array<float, 4> &arrPosition = stNext.arrPositions[nProbe];
+			const ProbeGridLevel &stLevel = stNext.arrLevels[static_cast<std::uint32_t>(arrPosition[3])];
+			const std::array<float, 3> arrSpacing{ static_cast<float>(stLevel.arrSpacing[0]), static_cast<float>(stLevel.arrSpacing[1]), static_cast<float>(stLevel.arrSpacing[2]) };
+			bool bAffected = false;
+			if (!ProbeTouchesChangedGeometry(stSettings.stPlacement, { arrPosition[0], arrPosition[1], arrPosition[2] }, arrSpacing, stChanged, bAffected))
+			{
+				return Error(out_arrDiagnostics, "Could not classify changed-geometry neighborhoods.");
+			}
+			if (bAffected)
+			{
+				arrNextRevisions[nProbe] = nNextGeometrySerial;
+				arrNextNeeds[nProbe] = 1;
 			}
 		}
 	}
 	std::vector<std::uint32_t> arrUpdates;
 	arrUpdates.reserve(nUpdates);
 	std::vector<std::uint8_t> arrSelected(nCount, 0);
-	for (std::uint32_t nIndex = 0; nIndex < nCount && arrUpdates.size() < nUpdates; ++nIndex)
+	const std::uint32_t nPriorityStart = stSettings.stPlacement.bEnabled ? static_cast<std::uint32_t>((nEpoch % nCount) * nUpdates % nCount) : 0;
+	for (std::uint32_t nVisit = 0; nVisit < nCount && arrUpdates.size() < nUpdates; ++nVisit)
 	{
+		const std::uint32_t nIndex = (nPriorityStart + nVisit) % nCount;
 		if (arrNextNeeds[nIndex] != 0)
 		{
 			arrUpdates.push_back(nIndex);
@@ -531,7 +619,11 @@ bool GpuProbeGrid::PrepareFrame(std::uint32_t nFrame, const std::array<double, 3
 	stParameters.arrWorkInfo = { nCount, nUpdates, stSettings.nRaysPerProbe, static_cast<std::uint32_t>(nEpoch) };
 	stParameters.arrSampling = { static_cast<float>(stSettings.dTraceDistance), static_cast<float>(stSettings.dHysteresis), static_cast<float>(stSettings.dNormalBias), static_cast<float>(stSettings.dViewBias) };
 	stParameters.arrHistory = { static_cast<float>(stSettings.dBounceStrength), static_cast<float>(stSettings.dHistoryChangeThreshold), bHistoryValid ? 1.0F : 0.0F, static_cast<float>(GI_DISTANCE_RESOLUTION) };
-	stParameters.arrCounts = { nMaterialCount * 5, nMaterialCount, MAX_DISPATCH_GROUPS * GROUP_WIDTH, 0 };
+	stParameters.arrCounts = { nMaterialCount * 5, nMaterialCount, MAX_DISPATCH_GROUPS * GROUP_WIDTH, stSettings.stPlacement.bEnabled ? 1U : 0U };
+	const PlacementConstants stPlacement{
+		{ stSettings.stPlacement.fMinimumClearance, stSettings.stPlacement.fMaximumOffsetFraction, stSettings.stPlacement.fBackfaceThreshold, 0 },
+		{ stSettings.stPlacement.nMinimumRays, stSettings.stPlacement.nRequiredStableUpdates, 0, 0 }
+	};
 	void *pMapped = nullptr;
 	const D3D12_RANGE stNoRead{ 0, 0 };
 	if (FAILED(arrFrames[nFrame].stUpload->Map(0, &stNoRead, &pMapped)))
@@ -541,9 +633,14 @@ bool GpuProbeGrid::PrepareFrame(std::uint32_t nFrame, const std::array<double, 3
 	std::uint8_t *pBytes = static_cast<std::uint8_t *>(pMapped);
 	std::memset(pBytes, 0, static_cast<std::size_t>(arrFrames[nFrame].stUpload->GetDesc().Width));
 	std::memcpy(pBytes, &stParameters, sizeof(stParameters));
+	std::memcpy(pBytes + sizeof(stParameters), &stPlacement, sizeof(stPlacement));
 	std::memcpy(pBytes + nPositionOffset, stNext.arrPositions.data(), stNext.arrPositions.size() * sizeof(std::array<float, 4>));
 	std::memcpy(pBytes + nRemapOffset, arrRemap.data(), arrRemap.size() * sizeof(std::uint32_t));
 	std::memcpy(pBytes + nUpdateOffset, arrUpdates.data(), arrUpdates.size() * sizeof(std::uint32_t));
+	if (stSettings.stPlacement.bEnabled)
+	{
+		std::memcpy(pBytes + nRevisionOffset, arrNextRevisions.data(), arrNextRevisions.size() * sizeof(std::uint32_t));
+	}
 	arrFrames[nFrame].stUpload->Unmap(0, nullptr);
 	for (std::uint32_t nIndex : arrUpdates)
 	{
@@ -557,6 +654,8 @@ bool GpuProbeGrid::PrepareFrame(std::uint32_t nFrame, const std::array<double, 3
 	arrPendingNeedsUpdate = std::move(arrNextNeeds);
 	arrPendingUpdates = std::move(arrUpdates);
 	arrPendingWorlds = arrWorlds;
+	arrPendingGeometryRevisions = std::move(arrNextRevisions);
+	nPendingGeometrySerial = nNextGeometrySerial;
 	nPendingFrame = nFrame;
 	nPendingInvalidation = nInvalidationSerial;
 	bPendingHistoryValid = bHistoryValid;
@@ -588,6 +687,10 @@ bool GpuProbeGrid::Record(std::uint32_t nFrame, GiPass ePass, ID3D12GraphicsComm
 		{
 			nRequired |= 1U << static_cast<std::uint32_t>(GiPass::InitializeHistory);
 		}
+	}
+	else if (ePass == GiPass::Trace && !stSettings.stPlacement.bEnabled)
+	{
+		nRequired = 1U << static_cast<std::uint32_t>(GiPass::Remap);
 	}
 	if ((nRecordedPasses & nRequired) != nRequired)
 	{
@@ -621,7 +724,7 @@ bool GpuProbeGrid::Record(std::uint32_t nFrame, GiPass ePass, ID3D12GraphicsComm
 	else if (ePass == GiPass::Readback)
 	{
 		pList->CopyBufferRegion(arrFrames[nFrame].stReadback.Get(), 0, arrHistory[1 - nReadHistory].arrBuffers[2].Get(), 0,
-								static_cast<std::uint64_t>(stPendingGrid.stBudget.nProbeCount) * GI_STATE_STRIDE);
+								static_cast<std::uint64_t>(stPendingGrid.stBudget.nProbeCount) * stPendingGrid.stBudget.nStateStride);
 		if (!stScene.FinishDeformationReads(nFrame, pList, out_arrDiagnostics))
 		{
 			return false;
@@ -635,14 +738,14 @@ bool GpuProbeGrid::Record(std::uint32_t nFrame, GiPass ePass, ID3D12GraphicsComm
 		{
 			return Error(out_arrDiagnostics, "GI compute descriptors and frame constants must be bound.");
 		}
-		const std::uint32_t nPipeline = ePass == GiPass::Remap ? 0 : (ePass == GiPass::Trace ? 1 : 2);
+		const std::uint32_t nPipeline = ePass == GiPass::Remap ? 0 : (ePass == GiPass::Trace ? 1 : (ePass == GiPass::Relocate ? 3 : 2));
 		const GiDescriptorBlock &stBlock = arrDescriptors[nFrame];
 		pList->SetComputeRootSignature(stRoot.Get());
 		pList->SetPipelineState(arrPipelines[nPipeline].Get());
 		pList->SetComputeRootConstantBufferView(0, ConstantsGpu(nFrame));
 		pList->SetComputeRootConstantBufferView(1, stBindings.nFrameConstants);
 		pList->SetComputeRootDescriptorTable(2, GpuView(stBlock, 0));
-		pList->SetComputeRootDescriptorTable(3, GpuView(stBlock, ePass == GiPass::Trace ? NEW_HISTORY_VIEW : 7));
+		pList->SetComputeRootDescriptorTable(3, GpuView(stBlock, ePass == GiPass::Trace || ePass == GiPass::Relocate ? NEW_HISTORY_VIEW : 7));
 		pList->SetComputeRootDescriptorTable(4, stBindings.stEnvironment);
 		pList->SetComputeRootDescriptorTable(5, stBindings.stDirectionalShadow);
 		pList->SetComputeRootDescriptorTable(6, stBindings.stLocalShadow);
@@ -650,6 +753,7 @@ bool GpuProbeGrid::Record(std::uint32_t nFrame, GiPass ePass, ID3D12GraphicsComm
 		pList->SetComputeRootDescriptorTable(8, stBindings.stMaterials);
 		pList->SetComputeRootDescriptorTable(9, stBindings.stSamplers);
 		pList->SetComputeRootDescriptorTable(10, stBindings.stTint);
+		pList->SetComputeRootDescriptorTable(11, GpuView(stBlock, 28));
 		std::uint32_t nThreads = stPendingGrid.stBudget.nUpdateCount;
 		if (ePass == GiPass::Remap)
 		{
@@ -689,6 +793,9 @@ bool GpuProbeGrid::Submit(std::uint32_t nFrame, std::uint64_t nFence, Assets::Di
 	arrFrames[nFrame].bReadbackPending = (nRecordedPasses & (1U << static_cast<std::uint32_t>(GiPass::Readback))) != 0;
 	stGrid = std::move(stPendingGrid);
 	arrNeedsUpdate = std::move(arrPendingNeedsUpdate);
+	arrGeometryRevisions = std::move(arrPendingGeometryRevisions);
+	nGeometrySerial = nPendingGeometrySerial;
+	arrCommittedWorlds = arrPendingWorlds;
 	nUpdatedCount = static_cast<std::uint32_t>(arrPendingUpdates.size());
 	arrPendingUpdates.clear();
 	arrPendingWorlds.clear();
@@ -715,6 +822,7 @@ bool GpuProbeGrid::Discard(std::uint32_t nFrame, Assets::Diagnostics &out_arrDia
 	}
 	stPendingGrid = ProbeGrid{};
 	arrPendingNeedsUpdate.clear();
+	arrPendingGeometryRevisions.clear();
 	arrPendingUpdates.clear();
 	arrPendingWorlds.clear();
 	nPendingFrame = GI_PENDING_FRAMES;
@@ -739,7 +847,7 @@ bool GpuProbeGrid::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, 
 		return true;
 	}
 	void *pMapped = nullptr;
-	const D3D12_RANGE stRange{ 0, static_cast<SIZE_T>(stGrid.stBudget.nProbeCount) * GI_STATE_STRIDE };
+	const D3D12_RANGE stRange{ 0, static_cast<SIZE_T>(stGrid.stBudget.nProbeCount) * stGrid.stBudget.nStateStride };
 	if (FAILED(stFrame.stReadback->Map(0, &stRange, &pMapped)))
 	{
 		return Error(out_arrDiagnostics, "Could not map the retired probe state readback.");
@@ -747,10 +855,14 @@ bool GpuProbeGrid::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, 
 	const ProbeGpuState *pStates = static_cast<const ProbeGpuState *>(pMapped);
 	std::uint32_t nValid = 0;
 	std::uint32_t nInvalid = 0;
+	std::uint32_t nActive = 0;
+	std::uint32_t nPending = 0;
+	std::uint32_t nInactive = 0;
+	std::uint32_t nRelocated = 0;
 	bool bMalformed = false;
 	for (std::uint32_t nIndex = 0; nIndex < stGrid.stBudget.nProbeCount; ++nIndex)
 	{
-		const std::array<std::uint32_t, 4> &arrState = pStates[nIndex].arrValues;
+		const std::array<std::uint32_t, 4> &arrState = pStates[nIndex * stGrid.stBudget.nStateStride / GI_STATE_STRIDE].arrValues;
 		if (arrState[0] > 1 || arrState[3] > 1 || (arrState[0] != 0 && arrState[3] != 0) ||
 			(arrState[0] == 0 && arrState[3] == 0 && arrState[2] != 0) ||
 			((arrState[0] != 0 || arrState[3] != 0) && arrState[2] != stSettings.nRaysPerProbe))
@@ -760,6 +872,33 @@ bool GpuProbeGrid::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, 
 		}
 		nValid += arrState[0] != 0 ? 1U : 0U;
 		nInvalid += arrState[3] != 0 ? 1U : 0U;
+		if (stSettings.stPlacement.bEnabled)
+		{
+			ProbePlacement stPlacement;
+			std::memcpy(&stPlacement, pStates + nIndex * 3 + 1, sizeof(stPlacement));
+			const std::uint32_t nClass = static_cast<std::uint32_t>(stPlacement.eClassification);
+			const std::uint32_t nPerLevel = stGrid.stBudget.nProbeCount / stGrid.nLevelCount;
+			const ProbeGridLevel &stLevel = stGrid.arrLevels[nIndex / nPerLevel];
+			double dSquaredOffset = 0;
+			for (std::size_t nAxis = 0; nAxis < 3; ++nAxis)
+			{
+				const double dRelative = static_cast<double>(stPlacement.arrOffset[nAxis]) / stLevel.arrSpacing[nAxis];
+				dSquaredOffset += dRelative * dRelative;
+			}
+			const double dLimit = stSettings.stPlacement.fMaximumOffsetFraction;
+			if (nClass > 2 || !std::isfinite(stPlacement.fClearance) || stPlacement.fClearance < 0 ||
+				!std::isfinite(dSquaredOffset) || dSquaredOffset > dLimit * dLimit * 1.0001 ||
+				stPlacement.nStableUpdates > stSettings.stPlacement.nRequiredStableUpdates ||
+				(arrState[0] != 0 && nClass != static_cast<std::uint32_t>(ProbeClassification::Active)))
+			{
+				bMalformed = true;
+				break;
+			}
+			nActive += nClass == 1 ? 1U : 0U;
+			nInactive += nClass == 2 ? 1U : 0U;
+			nPending += nClass == 0 ? 1U : 0U;
+			nRelocated += dSquaredOffset > 0 ? 1U : 0U;
+		}
 	}
 	const D3D12_RANGE stNoWrite{ 0, 0 };
 	stFrame.stReadback->Unmap(0, &stNoWrite);
@@ -773,6 +912,10 @@ bool GpuProbeGrid::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, 
 		nCollectedFence = stFrame.nFence;
 		nValidCount = nValid;
 		nInvalidCount = nInvalid;
+		nPlacementActiveCount = nActive;
+		nPlacementPendingCount = nPending;
+		nPlacementInactiveCount = nInactive;
+		nRelocatedCount = nRelocated;
 	}
 	stFrame.bReadbackPending = false;
 	return true;
@@ -872,6 +1015,23 @@ std::uint32_t GpuProbeGrid::PeakInvalidCount() const noexcept
 	return nPeakInvalidCount;
 }
 
+std::uint32_t GpuProbeGrid::PlacementActiveCount() const noexcept
+{
+	return nPlacementActiveCount;
+}
+std::uint32_t GpuProbeGrid::PlacementPendingCount() const noexcept
+{
+	return nPlacementPendingCount;
+}
+std::uint32_t GpuProbeGrid::PlacementInactiveCount() const noexcept
+{
+	return nPlacementInactiveCount;
+}
+std::uint32_t GpuProbeGrid::RelocatedCount() const noexcept
+{
+	return nRelocatedCount;
+}
+
 std::uint64_t GpuProbeGrid::SubmissionEpoch() const noexcept
 {
 	return nEpoch;
@@ -928,6 +1088,17 @@ void GpuProbeGrid::Swap(GpuProbeGrid &stOther) noexcept
 	swap(stRoot, stOther.stRoot);
 	swap(stClearHeap, stOther.stClearHeap);
 	swap(arrPipelines, stOther.arrPipelines);
+	swap(nPlacementActiveCount, stOther.nPlacementActiveCount);
+	swap(nPlacementPendingCount, stOther.nPlacementPendingCount);
+	swap(nPlacementInactiveCount, stOther.nPlacementInactiveCount);
+	swap(nRelocatedCount, stOther.nRelocatedCount);
+	swap(nGeometrySerial, stOther.nGeometrySerial);
+	swap(nPendingGeometrySerial, stOther.nPendingGeometrySerial);
+	swap(nRevisionOffset, stOther.nRevisionOffset);
+	swap(arrCommittedWorlds, stOther.arrCommittedWorlds);
+	swap(arrLocalBounds, stOther.arrLocalBounds);
+	swap(arrGeometryRevisions, stOther.arrGeometryRevisions);
+	swap(arrPendingGeometryRevisions, stOther.arrPendingGeometryRevisions);
 	swap(stMemory, stOther.stMemory);
 }
 

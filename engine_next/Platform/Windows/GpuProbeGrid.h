@@ -67,6 +67,7 @@ enum class GiPass
 	Upload,
 	InitializeHistory,
 	Remap,
+	Relocate,
 	Trace,
 	Update,
 	Readback
@@ -118,7 +119,8 @@ public:
 								  std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool PrepareFrame(std::uint32_t nFrame, const std::array<double, 3> &arrCenter,
 									const std::vector<std::array<double, 16>> &arrWorlds, std::uint64_t nCompletedFence,
-									Assets::Diagnostics &out_arrDiagnostics, const DeformationFrame *pDeformation = nullptr);
+									Assets::Diagnostics &out_arrDiagnostics, const std::vector<GiGeometryChange> &arrGeometryChanges = {},
+									const DeformationFrame *pDeformation = nullptr);
 	[[nodiscard]] bool Record(std::uint32_t nFrame, GiPass ePass, ID3D12GraphicsCommandList4 *pList,
 							  const GiBindings &stBindings, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool Submit(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics);
@@ -141,6 +143,10 @@ public:
 	std::uint32_t ValidCount() const noexcept;
 	std::uint32_t InvalidCount() const noexcept;
 	std::uint32_t PeakInvalidCount() const noexcept;
+	std::uint32_t PlacementActiveCount() const noexcept;
+	std::uint32_t PlacementPendingCount() const noexcept;
+	std::uint32_t PlacementInactiveCount() const noexcept;
+	std::uint32_t RelocatedCount() const noexcept;
 	std::uint64_t SubmissionEpoch() const noexcept;
 	const GpuProbeMemory &Memory() const noexcept;
 	const std::vector<RayTracingIdentity> &Identities() const noexcept;
@@ -174,6 +180,12 @@ private:
 	std::uint32_t nValidCount = 0;
 	std::uint32_t nInvalidCount = 0;
 	std::uint32_t nPeakInvalidCount = 0;
+	std::uint32_t nPlacementActiveCount = 0;
+	std::uint32_t nPlacementPendingCount = 0;
+	std::uint32_t nPlacementInactiveCount = 0;
+	std::uint32_t nRelocatedCount = 0;
+	std::uint32_t nGeometrySerial = 1;
+	std::uint32_t nPendingGeometrySerial = 1;
 	bool bPendingHistoryValid = false;
 	std::uint64_t nEpoch = 0;
 	std::uint64_t nInvalidationSerial = 1;
@@ -184,6 +196,7 @@ private:
 	std::uint64_t nPositionOffset = 0;
 	std::uint64_t nRemapOffset = 0;
 	std::uint64_t nUpdateOffset = 0;
+	std::uint64_t nRevisionOffset = 0;
 	std::uint32_t nMaterialCount = 0;
 	ComOwner<ID3D12Device5> stDevice;
 	RayTracingScene stScene;
@@ -194,6 +207,10 @@ private:
 	std::vector<std::uint8_t> arrPendingNeedsUpdate;
 	std::vector<std::uint32_t> arrPendingUpdates;
 	std::vector<std::array<double, 16>> arrPendingWorlds;
+	std::vector<std::array<double, 16>> arrCommittedWorlds;
+	std::vector<WorldBounds> arrLocalBounds;
+	std::vector<std::uint32_t> arrGeometryRevisions;
+	std::vector<std::uint32_t> arrPendingGeometryRevisions;
 	std::array<Frame, GI_PENDING_FRAMES> arrFrames;
 	std::array<HistoryResources, 2> arrHistory;
 	std::array<GiDescriptorBlock, GI_PENDING_FRAMES> arrDescriptors;
@@ -201,7 +218,7 @@ private:
 	ComOwner<ID3D12Resource> stMaterialExtensions;
 	ComOwner<ID3D12RootSignature> stRoot;
 	ComOwner<ID3D12DescriptorHeap> stClearHeap;
-	std::array<ComOwner<ID3D12PipelineState>, 3> arrPipelines;
+	std::array<ComOwner<ID3D12PipelineState>, 4> arrPipelines;
 	GpuProbeMemory stMemory;
 };
 

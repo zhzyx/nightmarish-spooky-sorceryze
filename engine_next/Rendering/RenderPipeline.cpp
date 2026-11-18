@@ -59,7 +59,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bDeformation)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bDeformation)
 {
 	if (nLocalShadowViews > 28)
 	{
@@ -174,8 +174,23 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 				stUpdate.arrAccesses.push_back({ stPipeline.arrGiWrite[nKind], ResourceState::UnorderedAccess, true });
 			}
 			if (!AddPipelinePass(stGraph, stPipeline, stPrepare, PassWork::GiPrepare, out_stDiagnostic) ||
-				!AddPipelinePass(stGraph, stPipeline, stRemap, PassWork::GiRemap, out_stDiagnostic) ||
-				!AddPipelinePass(stGraph, stPipeline, stTrace, PassWork::GiTrace, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline, stRemap, PassWork::GiRemap, out_stDiagnostic))
+			{
+				return false;
+			}
+			if (bProbePlacement)
+			{
+				PassDesc stPlacement{ "GiRelocate", QueueType::Graphics, { { stPipeline.nGiUpload, ResourceState::GenericRead, false }, { stPipeline.nGiScene, ResourceState::AccelerationStructure, false }, { stPipeline.nGiPositions, ResourceState::NonPixelShaderRead, false } }, {} };
+				for (ResourceId nResource : stPipeline.arrGiWrite)
+				{
+					stPlacement.arrAccesses.push_back({ nResource, ResourceState::UnorderedAccess, true });
+				}
+				if (!AddPipelinePass(stGraph, stPipeline, stPlacement, PassWork::GiRelocate, out_stDiagnostic))
+				{
+					return false;
+				}
+			}
+			if (!AddPipelinePass(stGraph, stPipeline, stTrace, PassWork::GiTrace, out_stDiagnostic) ||
 				!AddPipelinePass(stGraph, stPipeline, stUpdate, PassWork::GiUpdate, out_stDiagnostic) ||
 				!AddPipelinePass(stGraph, stPipeline,
 								 { "GiReadback", QueueType::Graphics, { { stPipeline.arrGiWrite[2], ResourceState::CopySource, false }, { stPipeline.nGiReadback, ResourceState::CopyDestination, true } }, {} },
