@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-804d587e6c139088d913d16336afcfded8435505",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-web-platforms-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c545cd3a3689ffc2a6781461956c18e09dfe1d3af96d806dd931ff6c73ebfb0b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1540",
+    "action": "user-report",
+    "detection_head": "63a727e545b6015eb7483c7c9b1cbbce6d6fbfba",
+    "context_sha256": "88df1f167f3cff83a371a08d77016d10c3c4b11ded712336f3f4cabe4742929a",
+    "operator": "Sail-Li",
+    "worker": "codex:root",
+    "authority_ref": "codex:user-request-20261118-existing-web-server",
+    "evidence": "data-collection/godot-web-platforms-1454-server-entry.json",
+    "diagnosis": "Installed editor had no configured Web URL; prior delivery incorrectly implied the full platform was immediately accessible. User supplied the existing server. Its HTTP endpoint redirects to a TLS hostname, and that verified HTTPS origin redirects to the existing login. Saved canonical origin in local EditorSettings and selected the Tianxuan tab while the user project editor was closed. The original launcher now opens the production login page inside Godot; hidden actual native WebKit probe also reached login and exited cleanly. No service deployment, credentials copied or certificate bypass.",
+    "next_action": "Publish scoped connection evidence and close bug1540 after main receipt. Parent1454 and acceptance1474 remain open for authenticated business/real-display interactions beyond login-page observation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T15:35:01.876741+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li via current Codex root",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T15:44:40.288033+00:00",
+  "sha256": "76cdca9a0f182edc68c906b3ec9cf323699f0d2f4d9ea96660c8303e8e76bff4"
+}
