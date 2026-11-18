@@ -1,0 +1,11 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "acceptance_issue": 1474,
+  "parent": 1454,
+  "children": [
+    1462,
+    1474
+  ],
+  "scope": "manual display and authorized production deployment acceptance; original parent remains open"
+}

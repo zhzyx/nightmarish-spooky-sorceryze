@@ -1,0 +1,182 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "parent_issue": 1454,
+  "source_candidate": "2cd46efa7a61c9682dbd7e49d300459416c6bc44",
+  "signed_candidate": "ef7629014765e11527c4e9eb7c272549f79d766f",
+  "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1487",
+  "merge_commit": "0d25307990587113bd63a33442f402443853ccaf",
+  "merged_at": "2026-11-18T00:30:47Z",
+  "merged_by": "Sail-Li",
+  "remote_main_readback": "0d25307990587113bd63a33442f402443853ccaf",
+  "signed_candidate_is_main_ancestor": true,
+  "checks": [
+    {
+      "name": "📊 Static checks",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200641119/job/134453504927"
+    },
+    {
+      "name": "verify-routing (windows-latest, windows, x64, platform=windows target=editor d3d12=no)",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200662995/job/134453571246"
+    },
+    {
+      "name": "issue-association",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663039/job/134453570958"
+    },
+    {
+      "name": "cache-tests (ubuntu-latest)",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200662894/job/134453570985"
+    },
+    {
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663078/job/134453571901"
+    },
+    {
+      "name": "verify-routing (macos-26, metal, arm64, platform=macos target=editor arch=arm64 metal=yes vulkan=no)",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200662995/job/134453570819"
+    },
+    {
+      "name": "cache-tests (windows-latest)",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200662894/job/134453570425"
+    },
+    {
+      "name": "🤖 Android",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663078/job/134453907607"
+    },
+    {
+      "name": "🤖 Android",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200641119/job/134453505463"
+    },
+    {
+      "name": "🍏 iOS",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663078/job/134453907942"
+    },
+    {
+      "name": "🍏 iOS",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200641119/job/134453555277"
+    },
+    {
+      "name": "🐧 Linux",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663078/job/134453907017"
+    },
+    {
+      "name": "🐧 Linux",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200641119/job/134453565358"
+    },
+    {
+      "name": "🍎 macOS",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663078/job/134453908001"
+    },
+    {
+      "name": "🍎 macOS",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200641119/job/134453580548"
+    },
+    {
+      "name": "Compile affected Windows engine targets",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663078/job/134453907251"
+    },
+    {
+      "name": "Compile affected Windows engine targets",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200641119/job/134453562107"
+    },
+    {
+      "name": "Compile affected Metal targets",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663078/job/134453908174"
+    },
+    {
+      "name": "Compile affected Metal targets",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200641119/job/134453571778"
+    },
+    {
+      "name": "🌐 Web",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663078/job/134453908115"
+    },
+    {
+      "name": "🌐 Web",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200641119/job/134453578527"
+    },
+    {
+      "name": "🏁 Windows",
+      "conclusion": "SKIPPED",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200641119/job/134453506268"
+    },
+    {
+      "name": "🏁 Windows / Editor (target=editor)",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663078/job/134453905912"
+    }
+  ],
+  "runtime_evidence": "data-collection/godot-windows-web-1462-runtime-final.json",
+  "package_evidence": "data-collection/godot-windows-web-1462-package.json",
+  "review_evidence": "data-collection/godot-windows-web-1462-independent-review-alignment.json",
+  "source_delivery_manifest": "data-collection/godot-windows-web-1462-delivery-manifest.json",
+  "windows_architecture_tested": "x64 MSVC; other configured compiler/architecture combinations not runtime-tested",
+  "windows_child_acceptance": "technical source/build/runtime criteria met; issue closure follows telemetry merge and readback",
+  "parent_acceptance": "incomplete; #1454 stays open",
+  "remaining_issue": 1474,
+  "manual_unknown": [
+    "real display input/IME/focus and native dialogs on both platforms",
+    "authorized production HTTPS deployment login/logout/permissions and business flows"
+  ],
+  "effective_user_installation_changed": false,
+  "downstream_collection_consumption": null,
+  "parent_criteria": [
+    {
+      "id": 1,
+      "state": "done",
+      "evidence": "Shared editor entry/configuration verified by macOS headless probe and source review; Windows native backend runtime and full compilation. Actual display interactions remain criterion 3."
+    },
+    {
+      "id": 2,
+      "state": "unknown",
+      "passed": "Local macOS complete-site navigation/auth tests and Windows persistent browser storage.",
+      "remaining": "Authorized production HTTPS login/logout/permissions and full business flows in #1474."
+    },
+    {
+      "id": 3,
+      "state": "unknown",
+      "passed": "Hidden native bounds/visibility/lifecycle and late-callback destruction.",
+      "remaining": "Real keyboard/IME/focus/Escape/DPI/modal behavior on both platforms in #1474."
+    },
+    {
+      "id": 4,
+      "state": "unknown",
+      "passed": "Origin parsing, same-origin positive frame and external-document/script rejection; no host execution bridge.",
+      "remaining": "Visible upload/download and native interaction in #1474; speculative GET is not prevented."
+    },
+    {
+      "id": 5,
+      "state": "unknown",
+      "passed": "Invalid-address policy, renderer crash diagnostics and explicit retry; missing/tampered distribution dependencies rejected.",
+      "remaining": "Visible service/runtime failure and recovery acceptance in #1474 without uninstalling an effective Runtime."
+    },
+    {
+      "id": 6,
+      "state": "done",
+      "evidence": "Pinned SDK/loader/licenses, actual CI archive verification, independent review, formal gate, committed-data check, complete exact Windows CI and main readback."
+    }
+  ],
+  "parent_completed_criteria": 2,
+  "parent_total_criteria": 6
+}

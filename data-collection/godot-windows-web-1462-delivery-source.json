@@ -1,0 +1,29 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "candidate": {
+    "repository": ".",
+    "commit": "2cd46efa7a61c9682dbd7e49d300459416c6bc44",
+    "tree": "bd352d376ee59dbfc6ff6f508efee801076ce526"
+  },
+  "inputs_sha256": "1045e3518a005f67f8eb8f675f4c487ad23f2f2c7d71fe9d9ba87a514b5129a7",
+  "status": "passed",
+  "path_resolution_base": "repository root",
+  "kind": "source",
+  "checks": [
+    "25 source hashes match final independent review",
+    "candidate source commit and tree exact bytes",
+    "formal gate and committed-data check passed during writer_submit"
+  ],
+  "review": "data-collection/godot-windows-web-1462-independent-review-alignment.json",
+  "runtime_status": "Exact signed Windows candidate passed native WebView2 hidden runtime and complete editor build/regressions; main receipt verified. Source delivery does not imply effective installation or production business acceptance.",
+  "not_claimed": [
+    "effective user installation",
+    "production deployment",
+    "full parent issue acceptance",
+    "visual input/IME and native dialogs acceptance"
+  ],
+  "main_evidence": "data-collection/godot-windows-web-1462-main-receipt.json",
+  "runtime_evidence": "data-collection/godot-windows-web-1462-runtime-final.json",
+  "package_evidence": "data-collection/godot-windows-web-1462-package.json"
+}

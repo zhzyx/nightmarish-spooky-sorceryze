@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8e381c36a92aa3932ccbb136d2846e40b4c061be",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "150c0d0c539ae13ab52d0fc6c064717ef61b8f5b746ab9ebbb56c364853ed43b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1467",
+    "action": "delivery",
+    "detection_head": "9705545ec59b73a67504567bcad2eba28c8cae49",
+    "context_sha256": "61ec3605973ea7a67cdb5ceb4d0c07f931bb77dece4b7c3e308278584afcec4d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-windows",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1487",
+    "diagnosis": "Writer created canonical candidate2cd46efa7a61c9682dbd7e49d300459416c6bc44, verified signed ef7629014765e11527c4e9eb7c272549f79d766f and PR1487, and closed superseded PR1484. Formal gate and committed-data check passed. Exact candidate issue association, static checks, Windows/macOS routing, both cache jobs and native WebView2 runtime passed; full editor still compiling.",
+    "next_action": "Wait for exact full editor and regression completion, verify artifact and main, then close recovered technical issues.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T23:32:47.978379+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T23:43:19.230594+00:00",
+  "sha256": "cc980ba3cd8e7820eff85150101b4fea6d8ea30912ef0dc89f50ccfc8c71c721"
+}
