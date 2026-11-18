@@ -50,6 +50,8 @@
 #include "engine_next/include/EngineNext/Rendering/CameraMatrices.h"
 #include "engine_next/include/EngineNext/Rendering/RenderConfiguration.h"
 #include "engine_next/Rendering/RenderPipeline.h"
+#include "engine_next/Platform/Windows/GpuGeometry.h"
+#include "engine_next/Platform/Windows/RhiComOwner.h"
 #include "engine_next/include/EngineNext/Rendering/ShadowData.h"
 #include "engine_next/Rendering/ShadowBounds.h"
 #include "engine_next/include/EngineNext/Rendering/LocalShadowData.h"
@@ -96,8 +98,11 @@ namespace
 {
 
 constexpr std::uint32_t FRAME_COUNT = 3;
-constexpr std::uint32_t FRAME_VIEW_COUNT = 208;
+constexpr std::uint32_t FRAME_VIEW_COUNT = 232;
 constexpr std::uint32_t GI_VIEW_START = 152;
+constexpr std::uint32_t GEOMETRY_VIEW_START = 192;
+static_assert(GI_VIEW_START + 32 <= GEOMETRY_VIEW_START);
+static_assert(GEOMETRY_VIEW_START + 40 <= FRAME_VIEW_COUNT);
 constexpr std::uint32_t VOLUME_MEDIUM_VIEW = 120;
 constexpr std::uint32_t VOLUME_EMISSION_VIEW = 122;
 constexpr std::uint32_t VOLUME_SOURCE_VIEW = 124;
@@ -472,6 +477,8 @@ D3D12_RESOURCE_STATES NativeState(ResourceState eState)
 			return D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE;
 		case ResourceState::GenericRead:
 			return D3D12_RESOURCE_STATE_GENERIC_READ;
+		case ResourceState::IndirectArgument:
+			return D3D12_RESOURCE_STATE_INDIRECT_ARGUMENT;
 		default:
 			return D3D12_RESOURCE_STATE_COMMON;
 	}
@@ -521,6 +528,8 @@ const char *StateName(ResourceState eState)
 			return "generic_read";
 		case ResourceState::Present:
 			return "present";
+		case ResourceState::IndirectArgument:
+			return "indirect_argument";
 	}
 	return "unknown";
 }
@@ -610,6 +619,7 @@ public:
 			}
 		}
 		ReleaseGiResources();
+		ReleaseGeometryResources();
 	}
 	bool Initialize();
 	bool Run();
@@ -625,6 +635,12 @@ private:
 	bool PrepareGiFrame(std::uint32_t nFrame);
 	bool RecordGiPass(std::uint32_t nFrame, PassWork eWork);
 	void ReleaseGiResources();
+	bool CreateGeometryResources();
+	bool PrepareGeometryFrame(std::uint32_t nFrame);
+	bool RecordGeometryPass(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork, std::uint32_t nMip);
+	void DrawGeometry(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, bool bDepthOnly);
+	void ReleaseGeometryResources();
+	bool DiscardUnsubmittedFrames();
 	bool ResolveNetworkBindings();
 	bool CreateDeferredPipeline();
 	bool CreateShadowPipeline();
@@ -707,6 +723,13 @@ private:
 	D3D12_CPU_DESCRIPTOR_HANDLE View(std::uint32_t nIndex) const;
 	D3D12_GPU_DESCRIPTOR_HANDLE GpuView(std::uint32_t nIndex) const;
 
+	GeometryClusterSet stGeometryData;
+	GpuGeometry stGeometry;
+	bool bGeometryActive = false;
+	std::string strGeometryFallback;
+	std::uint32_t nPendingGeometryFrame = FRAME_COUNT;
+	bool bGeometryCommandsExecuted = false;
+	std::array<ComOwner<ID3D12PipelineState>, 4> arrGeometryDepthPipelines;
 	VisualConfig stConfig;
 	Platform::Windows::Window stWindow;
 	ComOwner<IDXGIFactory6> stFactory;
@@ -1004,7 +1027,7 @@ bool VisualRuntime::Initialize()
 	nDsvStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	nViewStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	return LoadScene() && BuildGraph() && CreateFrameContexts() && CreateTargets() && CreatePipeline() &&
-			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline() && CreateReflectionPipeline() && CreateVolumePipeline())) && (bSceneMode ? (CreateSceneMesh() && CreateGiResources() && CreateParticleMesh() && (!stForwardEffects.bTransparency || CreateTransparencyPipeline())) : CreateMesh()) && CreateConstantBuffers();
+			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline() && CreateReflectionPipeline() && CreateVolumePipeline())) && (bSceneMode ? (CreateSceneMesh() && CreateGeometryResources() && CreateGiResources() && CreateParticleMesh() && (!stForwardEffects.bTransparency || CreateTransparencyPipeline())) : CreateMesh()) && CreateConstantBuffers();
 }
 
 bool VisualRuntime::CreateFrameContexts()
@@ -1487,6 +1510,22 @@ bool VisualRuntime::LoadScene()
 		return Fail(arrDiagnostics.empty() ? "Build local shadow views" : arrDiagnostics.back().strMessage);
 	}
 	bSceneMode = true;
+	if (stRenderConfiguration.stGeometry.bEnabled)
+	{
+		if (!BuildGeometryClusterSet(stRenderScene, stRenderConfiguration.stGeometry, stGeometryData, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Prepare geometry clusters" : arrDiagnostics.back().strMessage);
+		}
+		bGeometryActive = !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
+		if (stGeometryData.bCapacityFallback)
+		{
+			strGeometryFallback = "command_capacity";
+		}
+		else if (!bGeometryActive)
+		{
+			strGeometryFallback = "no_opaque_clusters";
+		}
+	}
 	if (stConfig.bConnect || stRenderConfiguration.stVolume.bEnabled || !stRenderConfiguration.arrParticles.empty())
 	{
 		Assets::PackageData stPackage;
@@ -2234,6 +2273,209 @@ void VisualRuntime::ReleaseGiResources()
 	}
 }
 
+bool VisualRuntime::CreateGeometryResources()
+{
+	if (!bGeometryActive)
+	{
+		return true;
+	}
+	GeometryGpuConfig stSettings;
+	stSettings.nWidth = nWidth;
+	stSettings.nHeight = nHeight;
+	stSettings.stShaderDirectory = std::filesystem::u8path(stConfig.strShaderDirectory);
+	stSettings.pDrawRoot = stDeferredRoot.Get();
+	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
+	{
+		const std::uint32_t nView = nFrame * FRAME_VIEW_COUNT + GEOMETRY_VIEW_START;
+		stSettings.arrDescriptors[nFrame] = { View(nView), GpuView(nView), nViewStride };
+		stSettings.arrDepth[nFrame] = arrFrames[nFrame].stDepth.Get();
+	}
+	Assets::Diagnostics arrDiagnostics;
+	if (stGeometry.Initialize(stDevice.Get(), stGeometryData, stSettings, arrDiagnostics))
+	{
+		return true;
+	}
+	if (arrDiagnostics.empty() || arrDiagnostics.back().strCode != "geometry_allocation")
+	{
+		return Fail(arrDiagnostics.empty() ? "Initialize GPU geometry" : arrDiagnostics.back().strMessage);
+	}
+	strGeometryFallback = arrDiagnostics.back().strMessage;
+	bGeometryActive = false;
+	return BuildGraph() && CreateFrameContexts() && CreateDeferredPipeline();
+}
+
+bool VisualRuntime::PrepareGeometryFrame(std::uint32_t nFrame)
+{
+	if (!bGeometryActive)
+	{
+		return true;
+	}
+	std::vector<std::array<float, 16>> arrWorlds(stTemporalFrame.arrDraws.size());
+	for (std::size_t nDraw = 0; nDraw < arrWorlds.size(); ++nDraw)
+	{
+		for (std::size_t nElement = 0; nElement < 16; ++nElement)
+		{
+			arrWorlds[nDraw][nElement] = static_cast<float>(stTemporalFrame.arrDraws[nDraw].arrCurrentWorld[nElement]);
+		}
+	}
+	std::array<float, 16> arrViewProjection{};
+	for (std::size_t nElement = 0; nElement < 16; ++nElement)
+	{
+		arrViewProjection[nElement] = static_cast<float>(stCameraMatrices.arrViewProjection[nElement]);
+	}
+	Assets::Diagnostics arrDiagnostics;
+	if (!stGeometry.PrepareFrame(nFrame, arrWorlds, arrViewProjection,
+								 arrFrames[nFrame].stConstants->GetGPUVirtualAddress() + FRAME_CONSTANT_BYTES, DRAW_CONSTANT_BYTES,
+								 stRenderConfiguration.stGeometry.bOcclusion, stGraphics.stFence->GetCompletedValue(), arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Prepare geometry frame" : arrDiagnostics.back().strMessage);
+	}
+	nPendingGeometryFrame = nFrame;
+	bGeometryCommandsExecuted = false;
+	return true;
+}
+
+bool VisualRuntime::RecordGeometryPass(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork, std::uint32_t nMip)
+{
+	if (eWork == PassWork::GeometryDepth)
+	{
+		const D3D12_CPU_DESCRIPTOR_HANDLE stDepth = Dsv(nFrame);
+		pList->ClearDepthStencilView(stDepth, D3D12_CLEAR_FLAG_DEPTH, 0, 0, 0, nullptr);
+		pList->OMSetRenderTargets(0, nullptr, FALSE, &stDepth);
+		DrawGeometry(pList, nFrame, true);
+		return true;
+	}
+	GeometryWork eGeometryWork = GeometryWork::Upload;
+	switch (eWork)
+	{
+		case PassWork::GeometryUpload:
+			eGeometryWork = GeometryWork::Upload;
+			break;
+		case PassWork::GeometryClearDepth:
+			eGeometryWork = GeometryWork::ClearDepth;
+			break;
+		case PassWork::GeometryCullDepth:
+			eGeometryWork = GeometryWork::CullDepth;
+			break;
+		case PassWork::GeometryHiZ:
+			eGeometryWork = GeometryWork::HiZ;
+			break;
+		case PassWork::GeometryClearColor:
+			eGeometryWork = GeometryWork::ClearColor;
+			break;
+		case PassWork::GeometryCullColor:
+			eGeometryWork = GeometryWork::CullColor;
+			break;
+		case PassWork::GeometryReadback:
+			eGeometryWork = GeometryWork::Readback;
+			break;
+		default:
+			return Fail("Unknown geometry work item");
+	}
+	ID3D12DescriptorHeap *arrHeaps[]{ stViewHeap.Get(), stSamplerHeap.Get() };
+	pList->SetDescriptorHeaps(2, arrHeaps);
+	Assets::Diagnostics arrDiagnostics;
+	return stGeometry.Record(nFrame, eGeometryWork, nMip, pList, arrDiagnostics) ||
+			Fail(arrDiagnostics.empty() ? "Record geometry pass" : arrDiagnostics.back().strMessage);
+}
+
+void VisualRuntime::DrawGeometry(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, bool bDepthOnly)
+{
+	const D3D12_VIEWPORT stViewport{ 0, 0, static_cast<float>(nWidth), static_cast<float>(nHeight), 0, 1 };
+	const D3D12_RECT stScissor{ 0, 0, static_cast<LONG>(nWidth), static_cast<LONG>(nHeight) };
+	pList->RSSetViewports(1, &stViewport);
+	pList->RSSetScissorRects(1, &stScissor);
+	pList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	pList->IASetVertexBuffers(0, 1, &stVertexView);
+	pList->IASetIndexBuffer(&stIndexView);
+	ID3D12DescriptorHeap *arrHeaps[]{ stViewHeap.Get(), stSamplerHeap.Get() };
+	pList->SetDescriptorHeaps(2, arrHeaps);
+	pList->SetGraphicsRootSignature(stDeferredRoot.Get());
+	pList->SetGraphicsRootConstantBufferView(3, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
+	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
+	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+	for (std::uint32_t nBucket = 0; nBucket < stGeometry.Buckets().size(); ++nBucket)
+	{
+		const GeometryBucket &stBucket = stGeometry.Buckets()[nBucket];
+		ID3D12PipelineState *pPipeline = arrGeometryDepthPipelines[stBucket.nFlags].Get();
+		if (!bDepthOnly)
+		{
+			const std::array<ID3D12PipelineState *, 4> arrPipelines{ stDeferredPipeline.Get(), stMirroredPipeline.Get(), stDoubleSidedPipeline.Get(), stMirroredDoubleSidedPipeline.Get() };
+			pPipeline = arrPipelines[stBucket.nFlags];
+		}
+		pList->SetPipelineState(pPipeline);
+		pList->SetGraphicsRootDescriptorTable(1, GpuView(arrMaterials[stBucket.nMaterial].nViewStart));
+		D3D12_GPU_DESCRIPTOR_HANDLE stSampler = stSamplerHeap->GetGPUDescriptorHandleForHeapStart();
+		stSampler.ptr += static_cast<UINT64>(nSamplerStride) * stBucket.nMaterial * MATERIAL_TEXTURE_COUNT;
+		pList->SetGraphicsRootDescriptorTable(2, stSampler);
+		stGeometry.Execute(nFrame, bDepthOnly ? 0 : 1, nBucket, pList);
+	}
+}
+
+void VisualRuntime::ReleaseGeometryResources()
+{
+	if (stGeometry.MipCount() == 0)
+	{
+		return;
+	}
+	Assets::Diagnostics arrDiagnostics;
+	const std::uint64_t nCompleted = stGraphics.stFence->GetCompletedValue();
+	bool bReleased = true;
+	if (nPendingGeometryFrame < FRAME_COUNT)
+	{
+		if (bGeometryCommandsExecuted)
+		{
+			bReleased = stGeometry.Commit(nPendingGeometryFrame, nCompleted, arrDiagnostics);
+		}
+		else
+		{
+			arrFrames[nPendingGeometryFrame].stGraphicsList.Reset();
+			bReleased = stGeometry.Discard(nPendingGeometryFrame, arrDiagnostics);
+		}
+	}
+	bReleased = bReleased && stGeometry.Release(nCompleted, arrDiagnostics);
+	if (!bReleased && SUCCEEDED(stDevice->GetDeviceRemovedReason()))
+	{
+		std::cerr << "Fatal geometry retirement failure\n";
+		std::abort();
+	}
+	nPendingGeometryFrame = FRAME_COUNT;
+	bGeometryCommandsExecuted = false;
+}
+
+bool VisualRuntime::DiscardUnsubmittedFrames()
+{
+	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
+	{
+		const bool bGiPending = nPendingGiFrame == nFrame && !bGiCommandsExecuted;
+		const bool bGeometryPending = nPendingGeometryFrame == nFrame && !bGeometryCommandsExecuted;
+		if (!bGiPending && !bGeometryPending)
+		{
+			continue;
+		}
+		arrFrames[nFrame].stRayTracingList.Reset();
+		arrFrames[nFrame].stGraphicsList.Reset();
+		Assets::Diagnostics arrDiagnostics;
+		if (bGiPending)
+		{
+			if (!stGi.Discard(nFrame, arrDiagnostics))
+			{
+				return Fail(arrDiagnostics.empty() ? "Discard GI frame" : arrDiagnostics.back().strMessage);
+			}
+			nPendingGiFrame = FRAME_COUNT;
+		}
+		if (bGeometryPending)
+		{
+			if (!stGeometry.Discard(nFrame, arrDiagnostics))
+			{
+				return Fail(arrDiagnostics.empty() ? "Discard geometry frame" : arrDiagnostics.back().strMessage);
+			}
+			nPendingGeometryFrame = FRAME_COUNT;
+		}
+	}
+	return true;
+}
+
 bool VisualRuntime::CreateDeferredPipeline()
 {
 	const std::vector<std::uint8_t> arrVertex = ReadShader(stConfig.strShaderDirectory, "Deferred.vs.cso");
@@ -2380,7 +2622,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	stPipeline.RasterizerState.FrontCounterClockwise = TRUE;
 	stPipeline.RasterizerState.DepthClipEnable = TRUE;
 	stPipeline.DepthStencilState.DepthEnable = TRUE;
-	stPipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	stPipeline.DepthStencilState.DepthWriteMask = bGeometryActive ? D3D12_DEPTH_WRITE_MASK_ZERO : D3D12_DEPTH_WRITE_MASK_ALL;
 	stPipeline.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
 	stPipeline.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	stPipeline.NumRenderTargets = bMaterialExtensions ? 8U : 6U;
@@ -2417,6 +2659,36 @@ bool VisualRuntime::CreateDeferredPipeline()
 	if (FAILED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(stMirroredDoubleSidedPipeline.Put()))))
 	{
 		return Fail("Create mirrored double-sided PSO");
+	}
+	if (bGeometryActive)
+	{
+		const std::vector<std::uint8_t> arrDepthVertex = ReadShader(stConfig.strShaderDirectory, "GeometryDepth.vs.cso");
+		const std::vector<std::uint8_t> arrDepthPixel = ReadShader(stConfig.strShaderDirectory, "GeometryDepth.ps.cso");
+		if (arrDepthVertex.empty() || arrDepthPixel.empty())
+		{
+			return Fail("Missing geometry depth shader");
+		}
+		D3D12_GRAPHICS_PIPELINE_STATE_DESC stDepthPipeline = stPipeline;
+		stDepthPipeline.VS = { arrDepthVertex.data(), arrDepthVertex.size() };
+		stDepthPipeline.PS = { arrDepthPixel.data(), arrDepthPixel.size() };
+		const std::array<D3D12_INPUT_ELEMENT_DESC, 2> arrDepthLayout{ { { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+																		{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 40, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 } } };
+		stDepthPipeline.InputLayout = { arrDepthLayout.data(), static_cast<UINT>(arrDepthLayout.size()) };
+		stDepthPipeline.NumRenderTargets = 0;
+		for (DXGI_FORMAT &eFormat : stDepthPipeline.RTVFormats)
+		{
+			eFormat = DXGI_FORMAT_UNKNOWN;
+		}
+		stDepthPipeline.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+		for (std::uint32_t nFlags = 0; nFlags < 4; ++nFlags)
+		{
+			stDepthPipeline.RasterizerState.FrontCounterClockwise = (nFlags & 1) == 0;
+			stDepthPipeline.RasterizerState.CullMode = (nFlags & 2) != 0 ? D3D12_CULL_MODE_NONE : D3D12_CULL_MODE_BACK;
+			if (FAILED(stDevice->CreateGraphicsPipelineState(&stDepthPipeline, IID_PPV_ARGS(arrGeometryDepthPipelines[nFlags].Put()))))
+			{
+				return Fail("Create geometry depth PSO");
+			}
+		}
 	}
 	stPipeline.RasterizerState.FrontCounterClockwise = TRUE;
 	stPipeline.pRootSignature = stLightingRoot.Get();
@@ -4383,6 +4655,11 @@ std::array<float, 16> VisualRuntime::DrawTransform(const GpuDraw &stDraw) const
 
 void VisualRuntime::DrawScene(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame)
 {
+	if (bGeometryActive)
+	{
+		DrawGeometry(pList, nFrame, false);
+		return;
+	}
 	const D3D12_VIEWPORT stViewport{ 0, 0, static_cast<float>(nWidth), static_cast<float>(nHeight), 0, 1 };
 	const D3D12_RECT stScissor{ 0, 0, static_cast<LONG>(nWidth), static_cast<LONG>(nHeight) };
 	pList->RSSetViewports(1, &stViewport);
@@ -4620,9 +4897,17 @@ bool VisualRuntime::BuildGraph()
 			stForwardEffects.bTransparency = stForwardEffects.bTransparency || stMaterial.eAlphaMode == AlphaMode::Blend;
 		}
 	}
+	GeometryFeatures stGeometryFeatures;
+	stGeometryFeatures.bEnabled = bGeometryActive;
+	stGeometryFeatures.bOcclusion = stRenderConfiguration.stGeometry.bOcclusion;
+	stGeometryFeatures.nHiZMips = 1;
+	for (std::uint32_t nSize = 1; nSize < std::max(nWidth, nHeight); nSize *= 2)
+	{
+		++stGeometryFeatures.nHiZMips;
+	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -4775,6 +5060,15 @@ bool VisualRuntime::CollectTiming(FrameContext &stFrame)
 			return Fail(arrDiagnostics.empty() ? "Collect GI state readback" : arrDiagnostics.back().strMessage);
 		}
 	}
+	if (bGeometryActive)
+	{
+		Assets::Diagnostics arrDiagnostics;
+		const std::uint32_t nFrame = static_cast<std::uint32_t>(&stFrame - arrFrames.data());
+		if (!stGeometry.Collect(nFrame, stGraphics.stFence->GetCompletedValue(), arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Collect geometry" : arrDiagnostics.back().strMessage);
+		}
+	}
 	stTiming.bGpuReady = true;
 	stFrame.bTimingPending = false;
 	return true;
@@ -4811,6 +5105,20 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	arrResources[stRenderPipeline.nBackbuffer] = arrBackbuffers[nIndex].Get();
 	if (bSceneMode)
 	{
+		if (bGeometryActive)
+		{
+			arrResources[stRenderPipeline.nGeometryClusters] = stGeometry.Clusters();
+			arrResources[stRenderPipeline.nGeometryReadback] = stGeometry.Readback(nIndex);
+			for (std::uint32_t nPhase = 0; nPhase < 2; ++nPhase)
+			{
+				arrResources[stRenderPipeline.arrGeometryArguments[nPhase]] = stGeometry.Arguments(nIndex, nPhase);
+				arrResources[stRenderPipeline.arrGeometryCounters[nPhase]] = stGeometry.Counters(nIndex, nPhase);
+			}
+			if (stRenderConfiguration.stGeometry.bOcclusion)
+			{
+				arrResources[stRenderPipeline.nGeometryHiZ] = stGeometry.HiZ(nIndex);
+			}
+		}
 		arrResources[stRenderPipeline.nHdr] = stFrame.stHdr.Get();
 		if (stRenderConfiguration.stReflections.bEnabled)
 		{
@@ -4883,8 +5191,9 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		}
 		stTiming.dLightingSeconds = dSeconds;
 		stTiming.dDirectionalIlluminance = stFrameLight.dIlluminance;
-		if (!UpdateEffectTransforms() || !UpdateConstantBuffer(stFrame) || !UpdateVolumeParameters(nIndex) || !UpdateParticleBuffers(nIndex, dSeconds) || !PrepareGiFrame(nIndex))
+		if (!UpdateEffectTransforms() || !UpdateConstantBuffer(stFrame) || !UpdateVolumeParameters(nIndex) || !UpdateParticleBuffers(nIndex, dSeconds) || !PrepareGiFrame(nIndex) || !PrepareGeometryFrame(nIndex))
 		{
+			(void)DiscardUnsubmittedFrames();
 			return false;
 		}
 		if (stRenderConfiguration.stGlobalIllumination.bEnabled)
@@ -4964,6 +5273,13 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		if (eWork >= PassWork::GiBuildScene && eWork <= PassWork::GiReadback)
 		{
 			if (!RecordGiPass(nIndex, eWork))
+			{
+				return false;
+			}
+		}
+		else if (eWork >= PassWork::GeometryUpload && eWork <= PassWork::GeometryReadback)
+		{
+			if (!RecordGeometryPass(pList, nIndex, eWork, stRenderPipeline.arrPassMipIndex[stPass.nPass]))
 			{
 				return false;
 			}
@@ -5049,7 +5365,10 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 				pList->ClearRenderTargetView(arrTargets[nTarget], arrClear.data(), 0, nullptr);
 			}
 			const D3D12_CPU_DESCRIPTOR_HANDLE stDepthHandle = Dsv(nIndex);
-			pList->ClearDepthStencilView(stDepthHandle, D3D12_CLEAR_FLAG_DEPTH, 0.0F, 0, 0, nullptr);
+			if (!bGeometryActive)
+			{
+				pList->ClearDepthStencilView(stDepthHandle, D3D12_CLEAR_FLAG_DEPTH, 0.0F, 0, 0, nullptr);
+			}
 			pList->OMSetRenderTargets(nTargetCount, arrTargets.data(), FALSE, &stDepthHandle);
 			DrawScene(pList, nIndex);
 		}
@@ -5091,6 +5410,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	}
 	ID3D12CommandList *pGraphicsList = pList;
 	bGiCommandsExecuted = nPendingGiFrame == nIndex;
+	bGeometryCommandsExecuted = nPendingGeometryFrame == nIndex;
 	stGraphics.stQueue->ExecuteCommandLists(1, &pGraphicsList);
 	const HRESULT nPresent = stSwapchain->Present(stConfig.bVsync ? 1 : 0, !stConfig.bVsync && bTearing ? DXGI_PRESENT_ALLOW_TEARING : 0);
 	if (!stGraphics.Signal(stFrame.nGraphicsFence))
@@ -5106,6 +5426,16 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		}
 		nPendingGiFrame = FRAME_COUNT;
 		bGiCommandsExecuted = false;
+	}
+	if (bGeometryActive)
+	{
+		Assets::Diagnostics arrDiagnostics;
+		if (!stGeometry.Commit(nIndex, stFrame.nGraphicsFence, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Commit geometry" : arrDiagnostics.back().strMessage);
+		}
+		nPendingGeometryFrame = FRAME_COUNT;
+		bGeometryCommandsExecuted = false;
 	}
 	if (FAILED(nPresent))
 	{
@@ -5161,6 +5491,10 @@ bool VisualRuntime::Resize()
 		{
 			return false;
 		}
+	}
+	ReleaseGeometryResources();
+	for (std::uint32_t nIndex = 0; nIndex < FRAME_COUNT; ++nIndex)
+	{
 		arrBackbuffers[nIndex].Reset();
 		arrFrames[nIndex].stColor.Reset();
 		arrFrames[nIndex].stHdr.Reset();
@@ -5200,7 +5534,16 @@ bool VisualRuntime::Resize()
 		return Fail("ResizeBuffers", nResult);
 	}
 	++nResizes;
-	return ResetTemporalHistory() && CreateTargets();
+	bGeometryActive = stRenderConfiguration.stGeometry.bEnabled && !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
+	if (!ResetTemporalHistory() || !CreateTargets())
+	{
+		return false;
+	}
+	if (stRenderConfiguration.stGeometry.bEnabled)
+	{
+		return BuildGraph() && CreateFrameContexts() && CreateDeferredPipeline() && CreateGeometryResources();
+	}
+	return true;
 }
 
 bool VisualRuntime::ReadCapture()
@@ -5370,6 +5713,7 @@ bool VisualRuntime::Run()
 		const bool bCapture = !stConfig.strCapturePath.empty() && (stConfig.nFrameLimit == 0 ? nFrames == 60 : nFrames + 1 == stConfig.nFrameLimit);
 		if (!RenderFrame(dSeconds, bCapture))
 		{
+			(void)DiscardUnsubmittedFrames();
 			return false;
 		}
 		if (stConfig.bConnect && !bNetworkStartedAfterGpuWarmup)
@@ -5681,7 +6025,20 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["texture_mip_source"] = JsonValue(!bSceneMode ? "none" : (stRenderScene.nGpuFormatVersion == 2 ? "cooked_gpu_package" : "runtime_decode"));
 	mapReport["cooked_texture_mip_levels"] = JsonValue(static_cast<std::int64_t>(nCookedMipLevels));
 	mapReport["loaded_mesh_clusters"] = JsonValue(static_cast<std::int64_t>(nLoadedClusters));
-	mapReport["mesh_cluster_draw_path"] = JsonValue("indexed_primitive");
+	mapReport["mesh_cluster_draw_path"] = JsonValue(bGeometryActive ? "gpu_cluster_indirect" : "indexed_primitive");
+	mapReport["geometry_culling_requested"] = JsonValue(stRenderConfiguration.stGeometry.bEnabled);
+	mapReport["geometry_culling_active"] = JsonValue(bGeometryActive);
+	mapReport["geometry_occlusion"] = JsonValue(bGeometryActive && stRenderConfiguration.stGeometry.bOcclusion);
+	mapReport["geometry_fallback_reason"] = JsonValue(strGeometryFallback);
+	mapReport["geometry_candidates"] = JsonValue(static_cast<std::int64_t>(stGeometryData.nCandidateCount));
+	mapReport["geometry_buffer_bytes"] = JsonValue(static_cast<std::int64_t>(stGeometry.AllocatedBytes()));
+	const GeometryGpuStatistics &stGeometryStats = stGeometry.Statistics();
+	mapReport["geometry_depth_commands"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nDepthCommands));
+	mapReport["geometry_depth_triangles"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nDepthTriangles));
+	mapReport["geometry_visible_commands"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nVisibleCommands));
+	mapReport["geometry_visible_triangles"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nVisibleTriangles));
+	mapReport["geometry_overflow"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nOverflow));
+	mapReport["geometry_invalid"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nInvalid));
 	mapReport["materials"] = JsonValue(static_cast<std::int64_t>(arrMaterials.size()));
 	mapReport["material_extensions"] = JsonValue(bMaterialExtensions);
 	mapReport["material_overrides"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stMaterials.arrOverrides.size()));

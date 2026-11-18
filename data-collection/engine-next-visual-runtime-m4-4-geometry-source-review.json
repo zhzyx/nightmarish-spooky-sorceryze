@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "issue_number": 1506,
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "parent_issue_number": 1323,
+  "related_issue_number": 1505,
+  "recorded_at_utc": "2026-11-18T05:36:40.673944+00:00",
+  "candidate": "geometry-integrated-r1",
+  "native_key": "c2311438b0133d044d29429b009dab2b1bb999aaa2baa5c315c8cc03defe7ba9",
+  "build_source_base_commit": "3a160ec26725e2fc5c833cd10f9ff7b38ad534af",
+  "delivery_base_commit": "6735f9d60fa9ad98643465a33271dadcc755a7dd",
+  "status": "no_confirmed_finding_in_reviewed_scope",
+  "review_role": {
+    "reviewer": "m42_capture_tools",
+    "independent_product_scope": "GI/Geometry integration lifecycle and graph changes, Geometry backend and shader scope inherited from the two exact source reviews.",
+    "authored_code_excluded": [
+      "GpuProbeGrid implementation",
+      "earlier RenderPipeline, material, shadow and transparency work"
+    ],
+    "exclusion_note": "The current combined RenderPipeline additions were reviewed as an integration delta; this is not an independent review of every inherited renderer implementation.",
+    "tests": "Full candidate test outputs and current GPU reports were checked; the reviewer did not rerun the complete C++ suite for this metadata review."
+  },
+  "current_source_scope": [
+    {
+      "path": "engine_next/Platform/Windows/GpuGeometry.cpp",
+      "sha256": "760ae59cfec9b8a53d38fc7edec1f63bcb601e8b2582d75392a79c8b4adac62d",
+      "size_bytes": 31753
+    },
+    {
+      "path": "engine_next/Platform/Windows/GpuGeometry.h",
+      "sha256": "9c48be34f3c9a3df8868525cce642511a655fa5bf9d6b90c7d44f7cc0aaa4bd8",
+      "size_bytes": 7662
+    },
+    {
+      "path": "engine_next/Rendering/GeometryCulling.cpp",
+      "sha256": "a54dae56b056ea44638ea635b2d09aeb41b747b0f8359e7a6a2083e82d521ad1",
+      "size_bytes": 7651
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "sha256": "d0378523fefbf25465a9377b1a8e17f270a75ab22c75a5c22b9be65149c78bbb",
+      "size_bytes": 37702
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "sha256": "c75489959df76d9c787b34754cbc0b2ea4645aa56d7a582bc1a7b073707d65f4",
+      "size_bytes": 8817
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/GeometryCull.hlsl",
+      "sha256": "a54de1cecd80b2cc61e95b7b209f50b511f6698fd19c53c64c223acf0d1b0b21",
+      "size_bytes": 5092
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/GeometryDepth.hlsl",
+      "sha256": "0a6ce8b6c544184a9ba85f4b269850ea827872cc90d858e2c02a86bc5e21aa3c",
+      "size_bytes": 997
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/GeometryHiZ.hlsl",
+      "sha256": "06c666f9f161f667a3e594aad4631cacaf9ec39e9940e0dd3ceaa4b0e09e121c",
+      "size_bytes": 1373
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/GeometryVisibility.hlsli",
+      "sha256": "a63b8919de426815a00b7d155a7ff6dce7a63dcf5495c6e17e366c656faed3e0",
+      "size_bytes": 4161
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "e126f9465c879c1f86e73fddff12de5e830fdbd71c21d7bc4ca594324e32e01e",
+      "size_bytes": 296372
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestGeometryCulling.cpp",
+      "sha256": "5204ae5e15b636ba66562e11c5855f43f87af4af42c30de8735e0ce562a2caca",
+      "size_bytes": 11149
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/GeometryCulling.h",
+      "sha256": "1501c8dbfd4fe8749383a9af297775945a527a18c6de39e6ca8be5742f632dbb",
+      "size_bytes": 4403
+    }
+  ],
+  "checks": [
+    "Frame descriptor stride 232 contains disjoint GI [152,184) and geometry [192,232) blocks; history/material ranges begin after all frame blocks.",
+    "PrepareGiFrame precedes PrepareGeometryFrame. Any combined preparation failure resets both interfaces to the shared unsubmitted DIRECT list before each pending owner is discarded.",
+    "Graphics Execute marks both pending owners executed. A successful queue signal precedes GI Submit and geometry Commit. If the first commit returns failure, the other remains pending/executed and is retired by the destructor after queue Flush.",
+    "Destructor flushes the graphics/compute/copy queues before ReleaseGiResources and ReleaseGeometryResources. Executed pending owners receive the completed fence; unsubmitted lists are discarded before cancellation.",
+    "Resize flushes and collects all frames, retires geometry size-dependent allocations, then recreates depth/targets/frame contexts. GI logical resources and descriptor heap remain alive. New command-list interfaces and per-frame texture/tint bindings use the same stable GI descriptor blocks.",
+    "ResetTemporalHistory invalidates the GI history through its existing CPU reset path.",
+    "Shadow writes precede GiTrace. GiRemap writes the new history group before trace; GiUpdate reads the old group and writes the new group; raster receivers read the completed new group.",
+    "Geometry upload, depth counter clear/cull, depth draw, per-mip reverse-Z Hi-Z, color counter clear/cull precede indirect GBuffer. The color argument and counter resources are declared IndirectArgument reads.",
+    "Transparency reads the current GI group after opaque/volume work. The temporal pass consumes the reactive mask after transparency.",
+    "Present returns geometry argument/counter/Hi-Z, GI position/ray/history resources to Common, while depth and shadow resources return to DepthWrite.",
+    "All 316 native input hashes and 46 compiled shader hashes match the frozen R1 build after the main-base synchronization."
+  ],
+  "native_input_count": 316,
+  "native_input_mismatches": [],
+  "historical_review_reconciliation": [
+    {
+      "path": "engine_next/Platform/Windows/GpuGeometry.h",
+      "reviewed_sha256": "9c48be34f3c9a3df8868525cce642511a655fa5bf9d6b90c7d44f7cc0aaa4bd8",
+      "current_sha256": "9c48be34f3c9a3df8868525cce642511a655fa5bf9d6b90c7d44f7cc0aaa4bd8",
+      "same": true
+    },
+    {
+      "path": "engine_next/Platform/Windows/GpuGeometry.cpp",
+      "reviewed_sha256": "b1b5434afc329dbe6209313dcc390d0940e2344dc0c1cc5812c1dcaa677b39b6",
+      "current_sha256": "760ae59cfec9b8a53d38fc7edec1f63bcb601e8b2582d75392a79c8b4adac62d",
+      "same": false
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/GeometryCull.hlsl",
+      "reviewed_sha256": "a54de1cecd80b2cc61e95b7b209f50b511f6698fd19c53c64c223acf0d1b0b21",
+      "current_sha256": "a54de1cecd80b2cc61e95b7b209f50b511f6698fd19c53c64c223acf0d1b0b21",
+      "same": true
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/GeometryHiZ.hlsl",
+      "reviewed_sha256": "06c666f9f161f667a3e594aad4631cacaf9ec39e9940e0dd3ceaa4b0e09e121c",
+      "current_sha256": "06c666f9f161f667a3e594aad4631cacaf9ec39e9940e0dd3ceaa4b0e09e121c",
+      "same": true
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/GeometryDepth.hlsl",
+      "reviewed_sha256": "0a6ce8b6c544184a9ba85f4b269850ea827872cc90d858e2c02a86bc5e21aa3c",
+      "current_sha256": "0a6ce8b6c544184a9ba85f4b269850ea827872cc90d858e2c02a86bc5e21aa3c",
+      "same": true
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/GeometryVisibility.hlsli",
+      "reviewed_sha256": "a63b8919de426815a00b7d155a7ff6dce7a63dcf5495c6e17e366c656faed3e0",
+      "current_sha256": "a63b8919de426815a00b7d155a7ff6dce7a63dcf5495c6e17e366c656faed3e0",
+      "same": true
+    },
+    {
+      "path": "engine_next/Rendering/GeometryCulling.cpp",
+      "reviewed_sha256": "a54dae56b056ea44638ea635b2d09aeb41b747b0f8359e7a6a2083e82d521ad1",
+      "current_sha256": "a54dae56b056ea44638ea635b2d09aeb41b747b0f8359e7a6a2083e82d521ad1",
+      "same": true
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/GeometryCulling.h",
+      "reviewed_sha256": "1501c8dbfd4fe8749383a9af297775945a527a18c6de39e6ca8be5742f632dbb",
+      "current_sha256": "1501c8dbfd4fe8749383a9af297775945a527a18c6de39e6ca8be5742f632dbb",
+      "same": true
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestGeometryCulling.cpp",
+      "reviewed_sha256": "5204ae5e15b636ba66562e11c5855f43f87af4af42c30de8735e0ce562a2caca",
+      "current_sha256": "5204ae5e15b636ba66562e11c5855f43f87af4af42c30de8735e0ce562a2caca",
+      "same": true
+    },
+    {
+      "path": "engine_next/Platform/Windows/GpuGeometry.cpp",
+      "reviewed_sha256": "760ae59cfec9b8a53d38fc7edec1f63bcb601e8b2582d75392a79c8b4adac62d",
+      "current_sha256": "760ae59cfec9b8a53d38fc7edec1f63bcb601e8b2582d75392a79c8b4adac62d",
+      "same": true
+    }
+  ],
+  "historical_review_note": "The old backend review's one nonmatching GpuGeometry.cpp hash precedes the conservative float-underflow frustum fix. The later FTZ review binds the current GpuGeometry.cpp and shared culling helper. It supersedes only that earlier source hash.",
+  "artifacts": [
+    {
+      "path": "build/engine_next/GiGeometryIntegrationReview.json",
+      "sha256": "d7dfebc511803b3574df91d8f16ec00c97add9d1740da387e5c6edfeac40f822",
+      "size_bytes": 1928
+    },
+    {
+      "path": "build/engine_next/integrated-delivery-r1/HistoricalInputs/geometry_r4/build/engine_next/geometry-backend-review-capture.json",
+      "sha256": "d2047e331097bd83508a014646d536e78cbde2ba7af01fb55c0fa0de774e46a2",
+      "size_bytes": 2010
+    },
+    {
+      "path": "build/engine_next/integrated-delivery-r1/HistoricalInputs/geometry_r4/build/engine_next/geometry-frustum-ftz-review.json",
+      "sha256": "a561d5eaa44b27185d7c67e59369060bb8bfc80af0d7763777c693a75a01bb7d",
+      "size_bytes": 1477
+    },
+    {
+      "path": "build/engine_next/geometry-integrated-r1/VisualBuildReport.json",
+      "sha256": "aa14102a5f2a8cf81c271148f86dffbd6d9bc30c40d8dc02f3af7b6d48af48f3",
+      "size_bytes": 2518690
+    },
+    {
+      "path": "build/engine_next/geometry-integrated-clang-r1/Result.json",
+      "sha256": "fd2136180b97a8e791cc1650dda8b714f7e58c5ec4ad6cdbaa4642e6ad019ccf",
+      "size_bytes": 3029600
+    },
+    {
+      "path": "build/engine_next/Integration/ShaderComparison.json",
+      "sha256": "1dd772417f9287bd0cf53d5b81b1e51610a3533dbf1bf2b210ada04f4d1bc8a9",
+      "size_bytes": 2438
+    },
+    {
+      "path": "build/engine_next/Integration/SyncGiMain.json",
+      "sha256": "4956b6f21c9cf2e4ff3b0c12c85c8498b40fcb5dfba882a7062db52ba0488dff",
+      "size_bytes": 3845
+    }
+  ],
+  "limitations": [
+    "No blanket independent-source-review claim for all 316 inputs.",
+    "ExecuteIndirect changes root CBV bindings; the retained D3D12 warning limits subsequent GPU-validation state tracking. Command readback complements validation, but does not remove that limitation.",
+    "Source review and zero validation errors do not establish final visual quality, throughput, or the unfinished M4.4 LOD/streaming/virtual-shadow-page requirements."
+  ]
+}

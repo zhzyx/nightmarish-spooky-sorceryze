@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "event_id": "m44-geometry-r1-combination-accepted-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T05:46:26.733592+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m44-request-20261118"
+  ],
+  "payload": {
+    "scope": "GPU-driven geometry culling and indirect rendering combined with the delivered GI and material runtime",
+    "candidate": "geometry-integrated-r1",
+    "native_key": "c2311438b0133d044d29429b009dab2b1bb999aaa2baa5c315c8cc03defe7ba9",
+    "delivery_base_commit": "6735f9d60fa9ad98643465a33271dadcc755a7dd",
+    "source_review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-4-geometry-source-review.json",
+      "sha256": "2a22f9c5af32ab9fbbf291a1882b80805d35283b95874c7e03da1f6488589b30",
+      "size_bytes": 10774
+    },
+    "module_build_impact": {
+      "path": "data-collection/engine-next-visual-runtime-m4-4-geometry-build-impact.json",
+      "sha256": "3360bc5091e114ce14e3155e632840505d7238661ab4b0586997d37656ce2734",
+      "size_bytes": 100435
+    },
+    "gpu_matrix": {
+      "path": "build/engine_next/integrated-gpu-r1/Summary.json",
+      "sha256": "d459692baa68c1dd149100d983e81f616faf5788b82e7d20f109c1576dd82349",
+      "size_bytes": 1686
+    },
+    "extra_gpu_cases": {
+      "path": "build/engine_next/integrated-gpu-r1-extra/Results.json",
+      "sha256": "8ee542b47181693f2b28ca23f17c6bb39711f4b420866e9835a03400538d44e3",
+      "size_bytes": 5227
+    },
+    "tool_and_contract_tests": {
+      "path": "build/engine_next/geometry-regression-r1/Result.json",
+      "sha256": "4218475c5f39c3a18fde8b82be1f589a50b3f77ba8a5fba98ad87c9ce1f83bd5",
+      "size_bytes": 1023
+    },
+    "normal_entry_cases": 11,
+    "normal_entry_frames": 216,
+    "four_k_functional_frames": 12,
+    "small_resolution_timing_frames": 30,
+    "stage_complete": false,
+    "issues_remaining_open": [
+      1506,
+      1323
+    ],
+    "remaining": [
+      "Hierarchical cluster LOD and screen-error transitions with moving-view temporal validation.",
+      "Mesh/texture page residency, asynchronous upload/eviction, fence/generation safety and bounded cold/warm streaming.",
+      "Virtual shadow pages or equivalent detailed-shadow cache, invalidation and update-budget validation.",
+      "Full varied-content C scene, diagnostics, workload/quality comparisons and parent performance/stability acceptance."
+    ],
+    "limitations": [
+      "This is the first GPU-culling/indirect-drawing combination increment, not full M4.4 completion.",
+      "Current R1 acceptance covers GPU output/state/resize/capacity fallback. No current R1 manual keyboard F claim is made.",
+      "Original Geometry R4 Large30 timing was not run; the separately identified integrated R1 C30 sample supplies only current progress evidence.",
+      "The D3D12 ExecuteIndirect root-CBV tracking warning is retained. Zero reported validation errors does not imply every subsequent binding is precisely tracked by GBV.",
+      "The C workload is a 1000-instance, 10-million-triangle sphere-array load fixture, not the final varied-content C scene.",
+      "Probe placement/leak boundaries and shadow/4K visual artifacts documented for inherited GI remain open; this functional matrix does not establish UE-equivalent quality.",
+      "Cold-start shader compilation, full 4K throughput, tail latency and 30-minute stability targets are not closed by these samples."
+    ]
+  },
+  "sha256": "e259e1b841098b7fbddcc7e2e9c402d1bfa3a475c512c020baa5e8239a4fbc22"
+}

@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "issue_number": 1506,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506",
+  "parent_issue_number": 1323,
+  "parent_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1323",
+  "observed_at": "2026-11-18T03:16:29.429221+00:00",
+  "authority": "Current user instruction to implement M4, with original attachment stage routing confirmed on 2026-11-18.",
+  "status": "in-progress",
+  "native_relationship_verified": true,
+  "document": {
+    "path": "design-docs/engine-next-visual-runtime-m4-4-20261118.md",
+    "sha256": "082ad094e01d295d64a59bc549cab19623bbdd86b4fcd0edef4974fa52ccb324"
+  },
+  "remote_body_sha256": "18429e8d12a063e6b032f61efa3d891e71beb98c38ff433fc17834ce19c04b9f",
+  "complete_scope": [
+    "Cluster generation and optimization",
+    "GPU instancing, frustum/Hi-Z culling and indirect draws",
+    "Hierarchical cluster LOD",
+    "Mesh and texture streaming",
+    "Residency, upload and retirement budgets",
+    "Virtual shadow pages or equivalent high-detail shadow cache/update path",
+    "C scene with at least 1000 instances and 10000000 scene triangles",
+    "Diagnostics, current GPU capture and CPU/GPU/VRAM telemetry"
+  ],
+  "incremental_delivery_keeps_issue_open": true,
+  "historical_scope": {
+    "issue_number": 1343,
+    "request_id": "engine-next-visual-runtime-m4-3-20261116",
+    "policy": "Keep earlier test and event identities unchanged; link them from current observations."
+  }
+}

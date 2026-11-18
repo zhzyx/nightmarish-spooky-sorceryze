@@ -61,7 +61,7 @@ bool IsQueueValid(QueueType eQueue)
 
 bool IsStateValid(ResourceState eState)
 {
-	return eState >= ResourceState::Common && eState <= ResourceState::GenericRead;
+	return eState >= ResourceState::Common && eState <= ResourceState::IndirectArgument;
 }
 
 bool IsFixedState(ResourceState eState)
@@ -83,7 +83,7 @@ bool IsQueueStateSupported(QueueType eQueue, ResourceState eState)
 	{
 		return true;
 	}
-	return eQueue == QueueType::Compute && (eState == ResourceState::NonPixelShaderRead || eState == ResourceState::UnorderedAccess || eState == ResourceState::AccelerationStructure);
+	return eQueue == QueueType::Compute && (eState == ResourceState::NonPixelShaderRead || eState == ResourceState::UnorderedAccess || eState == ResourceState::AccelerationStructure || eState == ResourceState::IndirectArgument);
 }
 
 bool IsWriteState(ResourceState eState)

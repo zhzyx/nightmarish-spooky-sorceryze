@@ -25,6 +25,9 @@ CORE_SOURCES = [
     "engine_next/Rendering/PostProcessSettings.cpp",
     "engine_next/Rendering/LightTimeline.cpp",
     "engine_next/Rendering/ReflectionSettings.cpp",
+    "engine_next/Rendering/GeometrySettings.cpp",
+    "engine_next/Rendering/GeometryCulling.cpp",
+    "engine_next/Rendering/GeometryScene.cpp",
     "engine_next/Rendering/VolumeSettings.cpp",
     "engine_next/Rendering/VolumeGrid.cpp",
     "engine_next/Rendering/ParticleSettings.cpp",
@@ -68,6 +71,7 @@ VISUAL_SOURCES = [
     "engine_next/Platform/Windows/Window.cpp",
     "engine_next/Platform/Windows/RayTracingScene.cpp",
     "engine_next/Platform/Windows/GpuProbeGrid.cpp",
+    "engine_next/Platform/Windows/GpuGeometry.cpp",
 ]
 TEST_SOURCES = [
     "engine_next/Tests/RenderingTestMain.cpp",
@@ -83,6 +87,9 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestPostProcessSettings.cpp",
     "engine_next/Tests/Rendering/TestLightTimeline.cpp",
     "engine_next/Tests/Rendering/TestReflectionSettings.cpp",
+    "engine_next/Tests/Rendering/TestGeometrySettings.cpp",
+    "engine_next/Tests/Rendering/TestGeometryCulling.cpp",
+    "engine_next/Tests/Rendering/TestGeometryScene.cpp",
     "engine_next/Tests/Rendering/TestVolumeSettings.cpp",
     "engine_next/Tests/Rendering/TestVolumeParse.cpp",
     "engine_next/Tests/Rendering/TestVolumeMath.cpp",
@@ -125,6 +132,9 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/PostProcessSettings.h",
     "EngineNext/Rendering/LightTimeline.h",
     "EngineNext/Rendering/ReflectionSettings.h",
+    "EngineNext/Rendering/GeometrySettings.h",
+    "EngineNext/Rendering/GeometryCulling.h",
+    "EngineNext/Rendering/GeometryScene.h",
     "EngineNext/Rendering/VolumeSettings.h",
     "EngineNext/Rendering/VolumeGrid.h",
     "EngineNext/Rendering/ParticleSettings.h",
@@ -222,6 +232,11 @@ SHADERS = [
     ("PrepareCS", "cs_6_5", "GiPrepare.cs.cso", []),
     ("TraceCS", "cs_6_5", "GiTrace.cs.cso", []),
     ("UpdateCS", "cs_6_5", "GiIntegrate.cs.cso", []),
+    ("CullCS", "cs_6_0", "GeometryCull.cs.cso", []),
+    ("CopyDepthCS", "cs_6_0", "GeometryHiZCopy.cs.cso", []),
+    ("ReduceDepthCS", "cs_6_0", "GeometryHiZReduce.cs.cso", []),
+    ("DepthVS", "vs_6_0", "GeometryDepth.vs.cso", []),
+    ("DepthPS", "ps_6_0", "GeometryDepth.ps.cso", []),
 ]
 
 
@@ -563,6 +578,12 @@ def compile_shaders(args, commands):
             / (
                 "FixedMesh.hlsl"
                 if name.startswith("FixedMesh")
+                else "GeometryCull.hlsl"
+                if name == "GeometryCull.cs.cso"
+                else "GeometryHiZ.hlsl"
+                if name.startswith("GeometryHiZ")
+                else "GeometryDepth.hlsl"
+                if name.startswith("GeometryDepth")
                 else "Transparent.hlsl"
                 if name.startswith(("Transparent", "MaterialTransparent", "GiTransparent", "GiMaterialTransparent"))
                 else "GI.hlsl"
@@ -688,6 +709,10 @@ def build(args):
                 "engine_next/Rendering/Shaders/Bloom.hlsl",
                 "engine_next/Rendering/Shaders/BloomSampling.hlsli",
                 "engine_next/Rendering/Shaders/Reflection.hlsl",
+                "engine_next/Rendering/Shaders/GeometryVisibility.hlsli",
+                "engine_next/Rendering/Shaders/GeometryCull.hlsl",
+                "engine_next/Rendering/Shaders/GeometryHiZ.hlsl",
+                "engine_next/Rendering/Shaders/GeometryDepth.hlsl",
                 "engine_next/Rendering/Shaders/ReflectionTrace.hlsli",
                 "engine_next/Rendering/Shaders/ReflectionSampling.hlsli",
                 "engine_next/Rendering/Shaders/Volume.hlsl",

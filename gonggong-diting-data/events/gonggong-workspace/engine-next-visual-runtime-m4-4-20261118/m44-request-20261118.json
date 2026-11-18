@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "m44-request-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-18T03:16:29.429221+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506",
+  "agent": {
+    "id": "codex-m44-geometry",
+    "version": "repository-instructions-cefa69ea",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "source_record": "data-collection/engine-next-visual-runtime-m4-4-request.json",
+    "authorization": "User authorized implementing complete M4. Formal M4.4 stage covers GPU-driven geometry, LOD, streaming and virtual shadow pages.",
+    "scope_confirmation": "Parent #1323 native relationship read back; current first slice can be delivered incrementally while M4.4 remains open."
+  },
+  "sha256": "18a4e9d10af8d44b6af8a69acb97e13677efa656db05a83acb434528c216535c"
+}

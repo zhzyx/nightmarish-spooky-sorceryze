@@ -976,6 +976,27 @@
           "maximum": 536870912
         }
       }
+    },
+    "geometry_culling": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "occlusion": {
+          "type": "boolean",
+          "default": true
+        },
+        "max_commands": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4294967295,
+          "default": 262144
+        }
+      },
+      "$comment": "The command limit controls GPU allocation planning. Capacity exhaustion selects the complete conventional draw path and is reported."
     }
   },
   "$defs": {
