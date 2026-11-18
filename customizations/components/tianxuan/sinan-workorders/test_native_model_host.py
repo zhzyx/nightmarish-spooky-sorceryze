@@ -73,11 +73,18 @@ class OwnedHostTests(unittest.TestCase):
         r = self.run_probe("success")
         self.assertEqual(r["status"], "proposed")
         self.assertEqual(r["proposal"]["files"][0]["content"], "hello")
+        timing = r["host_timing"]
+        self.assertEqual(timing["protocol_elapsed_ms"], 0)
+        self.assertLessEqual(timing["owned_process_closed_ms"], timing["receipt_validated_ms"])
+        self.assertLessEqual(timing["receipt_validated_ms"], timing["total_ms"])
 
     def test_timeout_closes_descendant(self):
         r = self.run_probe("timeout")
         self.assertEqual(r["status"], "unknown")
         self.assertIn("timeout", r["process_reasons"])
+        self.assertIsNone(r["host_timing"]["protocol_elapsed_ms"])
+        self.assertIsNone(r["host_timing"]["receipt_validated_ms"])
+        self.assertIsInstance(r["host_timing"]["owned_process_closed_ms"], int)
 
     def test_cancel_closes_descendant(self):
         self.assertEqual(self.run_probe("cancel")["status"], "unknown")
@@ -124,6 +131,91 @@ class UsageContractTests(unittest.TestCase):
         value["proposal"] = {"files": []}
         with self.assertRaises(ValueError):
             NativeModelHost._validate(value, REQUEST, "a" * 64)
+
+
+class TimingContractTests(UsageContractTests):
+    def response(self):
+        value = super().response()
+        value["timing"] = {
+            "version": 1,
+            "clock": "monotonic",
+            "marks": dict(
+                session_ready=1,
+                thread_start_sent=2,
+                thread_start_received=4,
+                turn_start_sent=5,
+                turn_start_received=10,
+                first_response=6,
+                first_text=7,
+                last_text=8,
+                turn_completed=9,
+                proposal_validated=None,
+                receipt_ready=12,
+            ),
+            "rpc": dict(thread_start_calls=1, turn_start_calls=1),
+        }
+        return value
+
+    def test_early_events_and_failed_turn_timing_are_preserved(self):
+        value = self.response()
+        NativeModelHost._validate(value, REQUEST, "a" * 64)
+        self.assertEqual(value["timing"]["marks"]["turn_completed"], 9)
+
+    def test_startup_failure_has_unknown_stages(self):
+        value = self.response()
+        value["timing"]["marks"] = dict.fromkeys(value["timing"]["marks"])
+        value["timing"]["marks"]["receipt_ready"] = 15
+        value["timing"]["rpc"] = dict(thread_start_calls=0, turn_start_calls=0)
+        NativeModelHost._validate(value, REQUEST, "a" * 64)
+
+    def test_invalid_timings_cannot_enter_trusted_receipt(self):
+        changes = [
+            ("clock", None, "wall"),
+            ("version", None, True),
+            ("marks", "first_text", -1),
+            ("marks", "first_text", float("nan")),
+            ("marks", "first_text", True),
+            ("marks", "first_text", 86400001),
+            ("marks", "first_text", "private text"),
+            ("marks", "first_text", 11),
+            ("marks", "receipt_ready", None),
+            ("marks", "receipt_ready", 0),
+            ("marks", "last_text", None),
+            ("marks", "turn_start_sent", None),
+            ("rpc", "turn_start_calls", 2),
+            ("rpc", "thread_start_calls", False),
+            ("rpc", "turn_start_calls", 0),
+        ]
+        for section, field, replacement in changes:
+            with self.subTest(section=section, field=field, replacement=replacement):
+                value = self.response()
+                if field is None:
+                    value["timing"][section] = replacement
+                else:
+                    value["timing"][section][field] = replacement
+                with self.assertRaises(ValueError):
+                    NativeModelHost._validate(value, REQUEST, "a" * 64)
+
+    def test_no_unbounded_fields_or_claimed_physical_closure(self):
+        for section in (None, "marks", "rpc"):
+            value = self.response()
+            target = value["timing"] if section is None else value["timing"][section]
+            target["private_packet"] = {"text": "not accepted"}
+            with self.assertRaises(ValueError):
+                NativeModelHost._validate(value, REQUEST, "a" * 64)
+        value = self.response()
+        value["host_timing"] = {"owned_process_closed_ms": 0}
+        with self.assertRaises(ValueError):
+            NativeModelHost._validate(value, REQUEST, "a" * 64)
+
+    def test_response_after_terminal_without_text_is_rejected(self):
+        value = self.response()
+        marks = value["timing"]["marks"]
+        marks.update(first_response=90, first_text=None, last_text=None, turn_completed=40, receipt_ready=100)
+        with self.assertRaises(ValueError):
+            NativeModelHost._validate(value, REQUEST, "a" * 64)
+        marks["first_response"] = 40
+        NativeModelHost._validate(value, REQUEST, "a" * 64)
 
 
 if __name__ == "__main__":

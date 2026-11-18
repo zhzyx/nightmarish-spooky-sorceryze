@@ -1,0 +1,126 @@
+{
+  "issue": 1495,
+  "request_id": "native-model-latency-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "--no-fix",
+        "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12735660001635551,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.11859940001158975,
+      "stdout": "2 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "mypy",
+        "--follow-imports=silent",
+        "--ignore-missing-imports",
+        "--cache-dir",
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\model-timing-final-mypy",
+        "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.7758411999966484,
+      "stdout": "Success: no issues found in 2 source files\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\final-source-qa.py",
+        "D:\\GongGong-work\\native-model-latency-20261118"
+      ],
+      "exit_code": 0,
+      "seconds": 0.6894675999938045,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "tools/check_gonggong_distribution.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.9265094000147656,
+      "stdout": "{\"agent_execution_authorized\": false, \"authority_authenticated\": false, \"diting_extension_syntax_checked\": true, \"frozen_files\": 256, \"live_upstream_verified\": false, \"ok\": true, \"scope\": \"offline_registered_snapshot_consistency_only\", \"syntax\": {\"javascript\": 16, \"json\": 158, \"python\": 27}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "file_format.py dry run on copies",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "changed": [],
+      "temporary_directory_removed": true
+    }
+  ],
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "26c7693abd4599bf2272ca32591ec61e490f04b782e7d5c3f02c105689feaa01",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "eb9b022cf7715e99e0ce72cd808b09fee8a652bbbf08325b921f7a7ef465db39"
+  },
+  "format_selected": [
+    "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs",
+    "data-collection/native-model-timing-alignment-1495.json",
+    "data-collection/native-model-timing-boundary-1495.json",
+    "data-collection/native-model-timing-js-1495.json",
+    "data-collection/native-model-timing-live-1495.json",
+    "data-collection/native-model-timing-method-applied-1495.json",
+    "data-collection/native-model-timing-repair-1495.json",
+    "data-collection/native-model-timing-repair-review-1495.json",
+    "data-collection/native-model-timing-review-1495.json",
+    "data-collection/native-model-timing-root-validation-1495.json",
+    "data-collection/requests/native-model-latency-20261118/0358cbc4-3159-4db8-aaaf-1945b64c9f38.json",
+    "design-docs/native-model-latency-20261118.md",
+    "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-6c6a1fa119685f352a2d0397486ca13a6c0df42961e57abba049f35c586b0a2b.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/codex-intake-1495-20261117.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-13302404571a4addafd9cfd96be73a85.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-1d6f483b4d334e6c84b1cd97ad0a970b.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-9e132cae81a7448b9d966d724e07023e.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-ca1410c9cb15436b8c0f22f9263bdf53.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-d1ae096c154848439b95041503fbd3a9.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-f932d237e16d46b6ba8bfda9b479d1ee.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/kuafu-66860482fa4c97177e6844872958af35941c49c2.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/kuafu-a66b9d8ba715c79971fd5a7ccd553fd018d3df49.json"
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "issue": 1495,
+  "request_id": "native-model-latency-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+  "actual_trial": {
+    "issue": 1495,
+    "request_id": "native-model-latency-20261118",
+    "elapsed_seconds": 171.15838410001015,
+    "attempts": 1,
+    "automatic_retries": 0,
+    "quality": {
+      "passed": true,
+      "output_sha256": "d131cf0cf9905864651d82891cc2f8392f44d051dbb65634ceabfc29b05b4cc7",
+      "parsed_output": {
+        "audio": {
+          "gain": 0.5
+        },
+        "modules": {
+          "render": {
+            "api": 3
+          },
+          "weather": {
+            "enabled": true
+          }
+        },
+        "scene": {
+          "budget": 384,
+          "quality": 3,
+          "title": "夜航"
+        }
+      },
+      "process_tree_closed": true
+    },
+    "phases": {
+      "session_ready_ms": 3193,
+      "thread_start_roundtrip_ms": 78,
+      "turn_start_roundtrip_ms": 6,
+      "first_response_after_turn_sent_ms": 6,
+      "first_text_after_turn_sent_ms": 163522,
+      "text_span_ms": 2789,
+      "terminal_after_last_text_ms": 456,
+      "receipt_after_terminal_ms": 61
+    },
+    "timing": {
+      "version": 1,
+      "clock": "monotonic",
+      "marks": {
+        "session_ready": 3193,
+        "thread_start_sent": 3195,
+        "thread_start_received": 3273,
+        "turn_start_sent": 3274,
+        "turn_start_received": 3280,
+        "first_response": 3280,
+        "first_text": 166796,
+        "last_text": 169585,
+        "turn_completed": 170041,
+        "proposal_validated": 170041,
+        "receipt_ready": 170102
+      },
+      "rpc": {
+        "thread_start_calls": 1,
+        "turn_start_calls": 1
+      }
+    },
+    "host_timing": {
+      "clock": "monotonic",
+      "origin": "after_installation_validation",
+      "owned_process_closed_ms": 170217,
+      "receipt_validated_ms": 170449,
+      "protocol_elapsed_ms": 170103,
+      "total_ms": 170449
+    },
+    "usage": {
+      "thread_id": "01a1ec65-567a-7b12-a48c-9a72e3b48af2",
+      "turn_id": "01a1ec65-56c6-7df1-92c4-172b3557680c",
+      "observed_model": "gpt-6.2-sol",
+      "raw": {
+        "total": {
+          "totalTokens": 8801,
+          "inputTokens": 8621,
+          "cachedInputTokens": 0,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 180,
+          "reasoningOutputTokens": 0
+        },
+        "last": {
+          "totalTokens": 8801,
+          "inputTokens": 8621,
+          "cachedInputTokens": 0,
+          "cacheWriteInputTokens": 0,
+          "outputTokens": 180,
+          "reasoningOutputTokens": 0
+        },
+        "modelContextWindow": 475000
+      },
+      "status": "observed",
+      "updates": 1,
+      "source": "thread/tokenUsage/updated",
+      "normalized_usage": null
+    },
+    "process_tree_closed": true,
+    "source_sha256": {
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "2e59e59fa33409a3e875d4f3453123774497722d8a542c7f7900595090b56fc2",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "a997698699eacd272159555ea21cd785929c9a43c6416ebbb1afe23f445225f5",
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "26c7693abd4599bf2272ca32591ec61e490f04b782e7d5c3f02c105689feaa01",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "eb9b022cf7715e99e0ce72cd808b09fee8a652bbbf08325b921f7a7ef465db39",
+      "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156",
+      "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa",
+      "customizations/platforms/ai-access/host-http/runtime/runner.py": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5",
+      "tools/codex_cli/subscription_session.js": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2",
+      "tools/codex_cli/content_preview.js": "160cad8dcedfddeb31b5db37108edcb90c74311af02f74bb219dab2c2794e99b",
+      "tools/codex_cli/subscription_profile.py": "869ddbf0568befe87e6d2fb076a070b02326f11ef2e4d6a22d6989019c6d282c"
+    },
+    "profile_digest": "f4cd7bbb577aa47b361a81292216f589c36d232244e46ca6c71549cb2af85b19",
+    "installation_digest": "ece3ad3ff32ac1c28e3fec608adae4e612743d2b0c17f01170f9613e068bc279",
+    "review_sha256": "f246d75d4c7f51c06d84110837b860c34375df1ba9986bc4e0e430e5f125b0c7",
+    "raw_sha256": "7e70e38a12da6d1ec8f5fe5cd4804f14e6fab937c96906967de1db3aed2d644d",
+    "production_approval": false,
+    "limits": "Single source-bound diagnostic, not A/B performance or token savings. Protocol receipt and host physical closure are separate observations; phase delays cannot alone distinguish provider scheduling, transport buffering, network and inference."
+  },
+  "originals": {
+    "plan.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-live-1495-v2\\plan.json",
+      "sha256": "d223e6153183b041bdf95957a5bdc3771afd75b93bbbffda9198c688b8c0b372",
+      "path_base": "absolute current host audit archive"
+    },
+    "intent.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-live-1495-v2\\intent.json",
+      "sha256": "25ff209b1388005630a950fa3d1f846335d4c476fff9a1047372985a96c53015",
+      "path_base": "absolute current host audit archive"
+    },
+    "raw.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-live-1495-v2\\raw.json",
+      "sha256": "7e70e38a12da6d1ec8f5fe5cd4804f14e6fab937c96906967de1db3aed2d644d",
+      "path_base": "absolute current host audit archive"
+    },
+    "summary.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-live-1495-v2\\summary.json",
+      "sha256": "81696626f965c5bcd81ebb3bbd3148c17b5499089f1fb3f6559374cbdcb16c5b",
+      "path_base": "absolute current host audit archive"
+    },
+    "quality.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-live-1495-v2\\quality.json",
+      "sha256": "447285eafebfb5e4ecbdee67292aa8fb4ae51ec3417074cb9648d4d2e61c8ef3",
+      "path_base": "absolute current host audit archive"
+    }
+  },
+  "diagnosis": [
+    "This sample returned a correct proposal in171.1583841seconds with physical tree closure. Session readiness3193ms,thread start78ms,turn start6ms. First text arrived163522ms after turn request; text span2789ms,terminal after last text456ms,receipt after terminal61ms.",
+    "First response6ms is a turn-start notification, not proof of text generation or model inference start. The pretext interval cannot distinguish service scheduling,inference,network or buffering.",
+    "Original Git/native comparison uses the same NativeModelHost and native proposal profile on both sides. No separate faster Git model transport was discovered. Sequential18vs121seconds does not identify a native storage or Git performance cause.",
+    "No120second hardcoded delay found in reviewed proposal wrapper: only50ms late usage collection; shared session owns300000ms upper timeout,not a successful120second wait. This171second sample disproves treating prior near120seconds as a fixed platform delay.",
+    "Raw observed usage8621input180output8801total,cache0 and reasoning0 is provider-reported; not a cost estimate or independent proof of inference work. Existing model routing/evaluation may select alternatives only under actual available installation and capability evidence."
+  ],
+  "remaining": "Whole goal efficiency remains open. Do not reduce required quality,close on first text,rerun this intent,or silently select an unqualified model. Shared Subscription remains owned by existing task951 and unchanged.",
+  "production_cutover": false
+}

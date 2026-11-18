@@ -1,0 +1,23 @@
+{
+  "origin": "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/codex-intake-1495-20261117.json",
+  "occurred_at": "2026-11-18T02:12:45.638402+00:00",
+  "scope": "editor-dependency-handoff",
+  "lesson": "await-terminal-observers",
+  "revision": 7,
+  "previous": "76a44653156b9403a18c6638674aa92e50a20778c457032e4e734b70ac1bf454",
+  "evidence": [
+    {
+      "path": "data-collection/native-model-timing-live-1495.json",
+      "sha256": "308d64ce10bddc11ce19b297ebaa5b564886e3ac3136b65b4f2c3f549dd508fe"
+    },
+    {
+      "path": "data-collection/native-model-timing-repair-review-1495.json",
+      "sha256": "7a54aa5891ad173f563c55aa56a01991380d3824fb1734db2ed7d25de750fefb"
+    }
+  ],
+  "action": "applied",
+  "details": {
+    "task": "#1495 separates valid turn text, terminal receipt, independent host validation and owned process closure; original independent failures repaired before one new source-bound diagnostic.",
+    "observed": "Actual first protocol notification did not establish model text or completion. One request produced first text163522ms after turn start and passed exact semantic checks only after terminal, host receipt validation and verified physical closure;171.1583841seconds total. Repeated completion notifications no longer shift last-text timing, impossible first-response/terminal order rejected, unknown stages remain null. No automatic replay, cached old admission or early user-flow completion claimed."
+  }
+}

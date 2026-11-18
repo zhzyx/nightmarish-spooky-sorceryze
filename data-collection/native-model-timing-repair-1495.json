@@ -1,0 +1,31 @@
+{
+  "issue": 1495,
+  "status": "local_repair_verified_pending_independent_review",
+  "source_hashes": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "2e59e59fa33409a3e875d4f3453123774497722d8a542c7f7900595090b56fc2",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "a997698699eacd272159555ea21cd785929c9a43c6416ebbb1afe23f445225f5",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "26c7693abd4599bf2272ca32591ec61e490f04b782e7d5c3f02c105689feaa01",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "eb9b022cf7715e99e0ce72cd808b09fee8a652bbbf08325b921f7a7ef465db39"
+  },
+  "original_review": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-review.json",
+    "sha256": "a4279a35d56aff36e03ada23fac77e291639d460450d3fe4b6e29d5710bb887b"
+  },
+  "repairs": [
+    "Deduplicate completed agent messages by bounded stable item identity after turn binding; preserve identical deltas and distinct items; missing IDs ignored and overflow makes event timing unknown.",
+    "Reject first response later than terminal even when no text was observed. Equal timestamps remain valid."
+  ],
+  "tests": {
+    "javascript": 30,
+    "python": 31,
+    "python_subtests": 15,
+    "ruff": "passed",
+    "mypy": "passed"
+  },
+  "logs": {
+    "native-model-timing-repair-js.log": "1e9456dc45048d9b78d4a3976da46c4a4d6530df41ce80dfbdf1d6a3f245a9b0",
+    "native-model-timing-repair-python.log": "de1faf3414ca805e5510417af69075bd2ed371c44b6c823a80a2aa32911481c3"
+  },
+  "live_model_calls": 0,
+  "production_cutover": false
+}

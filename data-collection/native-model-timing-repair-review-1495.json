@@ -1,0 +1,71 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-repair-review.json",
+    "sha256": "f246d75d4c7f51c06d84110837b860c34375df1ba9986bc4e0e430e5f125b0c7",
+    "path_base": "absolute current host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "issue": 1495,
+    "reviewer": "sinan_fdf8de9e2cedecff",
+    "status": "scoped pass",
+    "decision": "scoped_pass",
+    "scope": "Independent bounded review of four current changed source/test files and focused R1/R2 repair probes; no product mutation, provider/network/model calls, commit or deployment.",
+    "source_root": "D:/GongGong-work/native-model-latency-20261118",
+    "source_sha256": {
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "2e59e59fa33409a3e875d4f3453123774497722d8a542c7f7900595090b56fc2",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "a997698699eacd272159555ea21cd785929c9a43c6416ebbb1afe23f445225f5",
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "26c7693abd4599bf2272ca32591ec61e490f04b782e7d5c3f02c105689feaa01",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "eb9b022cf7715e99e0ce72cd808b09fee8a652bbbf08325b921f7a7ef465db39"
+    },
+    "findings": [],
+    "repaired_findings": [
+      {
+        "id": "R1",
+        "result": "Repeated message-1 completion at 10 and 90 retains first_text=last_text=10, both before and after acknowledgement; unrelated turn cannot poison dedupe; terminal=100 freezes later text."
+      },
+      {
+        "id": "R2",
+        "result": "No-text first_response=90 after terminal=40 rejected; equal 40 accepted; early event before acknowledgement retained."
+      }
+    ],
+    "independent_validation": {
+      "javascript_probes": {
+        "scenarios": 5,
+        "exit_code": 0,
+        "boundaries": "Same-text deltas and distinct IDs preserved; missing/invalid IDs ignored; empty identified message is response only; 256 unique completions accepted, duplicates/unrelated IDs do not overflow; 257th unique clears four event marks and subsequent events stay unknown; original callbacks and both observer wrappers restored; exactly two mock RPC calls per fixture."
+      },
+      "python_probes": {
+        "boundaries": "Reversed/equal/order bounds, no-text, text, early acknowledgement ordering, unknown marks, duplicate RPC sentinel and boolean marks.",
+        "exit_code": 0,
+        "cases": 10
+      },
+      "javascript_suite": {
+        "passed": 30,
+        "exit_code": 0,
+        "tests": 30
+      },
+      "process_terminal": "All three foreground processes returned exit_code=0, no session_id or background worker; no pending processes spawned by reviewer."
+    },
+    "evidence_sha256": {
+      "process-results.json": "3b63d7b8d351fda3989346478a32474bfe75850539eeedd5a9d9e5fbbf667c44",
+      "review.cjs": "c952a7cb3aa29f800dba02edbf27bb835336408816c00920ebc39e52d4bba8cf",
+      "review.py": "891bb97085e10c3f024cb24d4e27243c659f21e7dabc2fb78f7cd585669d8e2f"
+    },
+    "original_review_sha256": "a4279a35d56aff36e03ada23fac77e291639d460450d3fe4b6e29d5710bb887b",
+    "repair_receipt_sha256": "bc1dd4b77640fe9c770ac31b5c05ed6546f9baab2c49b5482c5ebc0a67c75d1f",
+    "method_learning": {
+      "scope": "editor-dependency-handoff",
+      "applied": "Recalled verified await-terminal-observers, bind-consumer-release, reconstruct-worker-outcomes, review-context-and-source-evidence. Bound review to exact current bytes and actual foreground terminals; prior stale live installation cannot inherit approval.",
+      "unavailable": []
+    },
+    "limitations": [
+      "No live installation script imported or executed; stale preregistered installation remains inadmissible.",
+      "No actual provider latency or full business acceptance established.",
+      "Python full suite, Ruff and mypy are root-reported checks; reviewer independently ran focused Python probes and 30 JS tests.",
+      "Scoped pass does not authorize production cutover, CI/main delivery or issue closure."
+    ],
+    "cleanup": "Only assigned report and probe directory written. Probe sources and process-results retained as reproducible review evidence; no temporary installations, branches, worktrees or background processes created.",
+    "recorded_at": "2026-11-18T10:02:44.5609986+08:00"
+  }
+}

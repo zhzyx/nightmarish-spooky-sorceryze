@@ -1,0 +1,34 @@
+{
+  "issue": 1495,
+  "request_id": "native-model-latency-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+  "passed": true,
+  "command": [
+    "D:/GongGong-work/tx-venv/Scripts/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py::test_complete_parallel_native_chain",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py::test_failed_usage_unknown_no_replay",
+    "-q"
+  ],
+  "exit_code": 0,
+  "output": "..                                                                       [100%]\n2 passed in 7.97s\n",
+  "seconds": 8.361168500006897,
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "26c7693abd4599bf2272ca32591ec61e490f04b782e7d5c3f02c105689feaa01",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "2e59e59fa33409a3e875d4f3453123774497722d8a542c7f7900595090b56fc2",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "678497caa907733894d7a582b14eb9229efe818f7085bd1a68a593bc441b76fa",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "970c5b3ebe10645671dcb426f8cf3f8ec97f23997637e6bde2fa2c0026069864",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "c44552e4bac7cbeb703a625bf43988df1e997a4ae40c3fc9cb76ed003a029c1c"
+  },
+  "live_source_dependencies_unchanged": true,
+  "installation_digest": "ece3ad3ff32ac1c28e3fec608adae4e612743d2b0c17f01170f9613e068bc279",
+  "original_live_call_repeated": false,
+  "additional_provider_calls": 0,
+  "combined_continuous_source": "20fc244783835a3a81b3c5a67858c560cc5233a0",
+  "scope": "Two deterministic original producer/integration and unknown-no-replay compatibility tests after continuous source alignment. Existing real call dependencies and installed digest exactly unchanged; no repeat real model call or250load or renderer acceptance. Continuous main still pending."
+}

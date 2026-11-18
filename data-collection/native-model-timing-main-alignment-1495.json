@@ -1,0 +1,32 @@
+{
+  "issue": 1495,
+  "request_id": "native-model-latency-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+  "previous_head": "20fc244783835a3a81b3c5a67858c560cc5233a0",
+  "remote_main": "88a401d8a8498af36063eedbed3abc5657c52d90",
+  "continuous_delivery": {
+    "pr": {
+      "headRefOid": "20fc244783835a3a81b3c5a67858c560cc5233a0",
+      "mergeCommit": {
+        "oid": "88a401d8a8498af36063eedbed3abc5657c52d90"
+      },
+      "mergedAt": "2026-11-18T02:54:12Z",
+      "mergedBy": {
+        "id": "U_kgDOFOKx7w",
+        "is_bot": false,
+        "login": "Sail-Li",
+        "name": ""
+      },
+      "state": "MERGED"
+    },
+    "remote_main": "88a401d8a8498af36063eedbed3abc5657c52d90",
+    "signed_head_ancestor": true,
+    "all_delivered_paths_match": true,
+    "delivery_log": "native-continuous-writer-submit.log",
+    "delivery_path_count": 52
+  },
+  "upstream_paths": [],
+  "overlap": [],
+  "reviewed_sources_unchanged": true,
+  "scope": "Continuous source delivery accepted; earlier source alignment evidence remains historical. No production installation switched. No model calls repeated."
+}

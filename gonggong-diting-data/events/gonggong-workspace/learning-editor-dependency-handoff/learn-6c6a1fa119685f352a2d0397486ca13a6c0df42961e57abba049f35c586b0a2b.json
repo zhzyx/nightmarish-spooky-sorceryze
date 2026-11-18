@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-6c6a1fa119685f352a2d0397486ca13a6c0df42961e57abba049f35c586b0a2b",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+  "occurred_at": "2026-11-18T02:12:45.638402+00:00",
+  "evidence_refs": [
+    "codex-intake-1495-20261117",
+    "learn-5f3b162cde4ef41ce8bc858cebdbd8e1b8f86e492e4581be1ec7ddcffcaedeeb"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "await-terminal-observers",
+    "revision": 7,
+    "previous": "76a44653156b9403a18c6638674aa92e50a20778c457032e4e734b70ac1bf454",
+    "action": "applied",
+    "details": {
+      "task": "#1495 separates valid turn text, terminal receipt, independent host validation and owned process closure; original independent failures repaired before one new source-bound diagnostic.",
+      "observed": "Actual first protocol notification did not establish model text or completion. One request produced first text163522ms after turn start and passed exact semantic checks only after terminal, host receipt validation and verified physical closure;171.1583841seconds total. Repeated completion notifications no longer shift last-text timing, impossible first-response/terminal order rejected, unknown stages remain null. No automatic replay, cached old admission or early user-flow completion claimed."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-model-timing-live-1495.json",
+        "sha256": "308d64ce10bddc11ce19b297ebaa5b564886e3ac3136b65b4f2c3f549dd508fe"
+      },
+      {
+        "path": "data-collection/native-model-timing-repair-review-1495.json",
+        "sha256": "7a54aa5891ad173f563c55aa56a01991380d3824fb1734db2ed7d25de750fefb"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/codex-intake-1495-20261117.json",
+      "sha256": "b49bf99f4579539fc303129ca03717352d26b84608ae4726f4d3498e34f36f71"
+    }
+  },
+  "sha256": "fde2878c1d29e72e502dca85af4a3cfe8e83a33c3cf631e65071242638475fd9"
+}
