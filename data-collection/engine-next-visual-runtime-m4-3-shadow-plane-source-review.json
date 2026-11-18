@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T07:24:23.957715+00:00",
+  "candidate": "shadow-receiver-plane-r6",
+  "source_base_commit": "2dbfc19fa30a70dc96be341a2b3eda47fb05683b",
+  "source_delta_from_base": "Two indentation-only lines in TestShadowSampling.cpp, bound by the current native-input digest.",
+  "delivery_base_commit": "eb6d6512ff14942e5f26e25264959a4c5600d37f",
+  "native_key": "28d905de8f5b7ba3b7b2c589d74da08ce0c7b68266dc1f95bcf2d31e64ede56b",
+  "status": "no_confirmed_finding_in_reviewed_scope",
+  "reviewer": "codex/root",
+  "implementer": "codex/m4_ue_reference",
+  "review_scope": "Shared geometric receiver-plane PCF, deferred and transparent callers, regression tests and the new native-input entry.",
+  "source_files": [
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "sha256": "127bc7e517e3bb2600f879cb7cde9a1d427f2089f97aea94517da11368d9baa5",
+      "size_bytes": 16903
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ShadowReceiverPlane.hlsli",
+      "sha256": "a0117a43351d02e2f09f8004fa7a02d69da4e1dde6741ad4b937d8a1974c0655",
+      "size_bytes": 1994
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
+      "sha256": "de1a9a5abc7d9b733e819efc0e5f11bf9bd88c48f17920d711bb99acd01ae9f6",
+      "size_bytes": 11405
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Transparent.hlsl",
+      "sha256": "875a74f9ce2ba1661a8b5e7b252db4e62b44d8a2c8da039709a8d6013e5a88c4",
+      "size_bytes": 13846
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestShadowSampling.cpp",
+      "sha256": "71263ca489d0d5538f64ecaf80edfd71342d68e2ee6e29dcda31d3b385fd8fab",
+      "size_bytes": 21843
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "sha256": "dc845842c66a88cbdec3f3cc1f49219beca8f2c5f430bb1ac0238f45a36afaa6",
+      "size_bytes": 36972
+    }
+  ],
+  "independent_review": {
+    "path": "build/engine_next/shadow-root-review-r6/Review.json",
+    "sha256": "36ca2c53cd9608427b881efb84f916ee4614b564ab807b9d29109e1ae63057cf",
+    "size_bytes": 7391
+  },
+  "independent_tests": "MSVC and clang-cl independently compile the shared HLSL helper tests; each passed 11 tests and 6119 checks.",
+  "checks": [
+    "Cofactors transform the geometric normal, with the common determinant canceled by the depth-gradient ratio.",
+    "Each PCF tap compares at its actual clamped texel center, retaining configured bias and cascade blend.",
+    "Singular, nonfinite and grazing planes use the bounded legacy comparison fallback.",
+    "Local-light callers preserve zero-gradient sampling through the default argument.",
+    "The added build input binds the new shared HLSL file to native and shader identity."
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "collected_at": "2026-11-18T07:27:34.684849+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-1d63c156d0a0ca0e0c6552fef60918dcb575a8e3.json",
+      "sha256": "f508aae9b7fcfb63dd22006eb1a85ba88337e0348f922d7549afe256d0f0615f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-1d63c156d0a0ca0e0c6552fef60918dcb575a8e3",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-2d41ae871004e511dc014b4720fb9e5a4fc868a7.json",
+      "sha256": "5655292d10e0315ac0cff468ec99480b938bd934e7505c30d3f2386b31414aa2",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-2d41ae871004e511dc014b4720fb9e5a4fc868a7",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-342a82ba9ebb3d95754d8359a77b980a8d91a759.json",
+      "sha256": "0d072818c58b73e62469eafc3a2f7615a729e731adea06829ae35c7e0dfab99e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-342a82ba9ebb3d95754d8359a77b980a8d91a759",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-387138c821eaf6a8c21da67b3533cae65bcdaaf0.json",
+      "sha256": "266ec2760b5ef0128985875f2f245f9cdb86f809cb306c97c129a2c4c4069279",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-387138c821eaf6a8c21da67b3533cae65bcdaaf0",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-398caa38a647389650dd606055e3a4304b3354e3.json",
+      "sha256": "b87fb831fb96a3fac980c2eaf910691edff6f6820011adcb032a56321b3cd396",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-398caa38a647389650dd606055e3a4304b3354e3",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-3e2123e25967b28756250625ca27b646f331e09e.json",
+      "sha256": "0840ff71ee9fe2950072ea89554a939fb6bcf1ad40ae33662d1848ffded2ea11",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-3e2123e25967b28756250625ca27b646f331e09e",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-5649396a79bdc82654200c859332c3197bcc4948.json",
+      "sha256": "14eee14f12924801b3a4ddc67ecc7fc0e852d8b38badb9240edb8d1309ec631a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-5649396a79bdc82654200c859332c3197bcc4948",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-7a881e35c64dc243780218eaee2ad1fc76247d7c.json",
+      "sha256": "61af638fc5e08b9b8f64ef458ba27530d5679222c4c94efa7e39f8179160ac8f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-7a881e35c64dc243780218eaee2ad1fc76247d7c",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-8618cb0eb9a885f08aa9042549167088b2999355.json",
+      "sha256": "05cd476fec01a9457db509a716500531f219118c3a86e4956daf3a4d843fad22",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-8618cb0eb9a885f08aa9042549167088b2999355",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-cdcbcb83dfd698b5c380d95b89327b3b5d8e32f2.json",
+      "sha256": "227958f68805f061e8654d18af29918933c4823eaa889bf9484c4a84d4942074",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-cdcbcb83dfd698b5c380d95b89327b3b5d8e32f2",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/kuafu-e58006ee053d702b2ba196a008c81c4a6ca12387.json",
+      "sha256": "e503ae2fe8fd50be4fe837a638de9bd6ccaf6a7ad5beaf6d96fb2420bb092651",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-e58006ee053d702b2ba196a008c81c4a6ca12387",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-foundation-verified-20261116.json",
+      "sha256": "33d4fca68d3c1683a3d02ae2dbcbef5c2a0007f0b1c05a7c4361e619af100bdb",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-foundation-verified-20261116",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-ibl-ci-repair-verified-20261118.json",
+      "sha256": "d71114833e3504f99d5d763060c9a5ab010b3e6fe58a0fa900502e30c106e8b6",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-ibl-ci-repair-verified-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-ibl-final-verified-20261118.json",
+      "sha256": "f86e0613deb57a70d7b843a5583ec8f1d925846db0bf562fba49c6a635abbfec",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-ibl-final-verified-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-local-shadow-final-verified-20261117.json",
+      "sha256": "a9ec1a831fe7a37fc984ca9d75b092e8b87d6020bdf3ac8f2aef312ae59edd95",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-local-shadow-final-verified-20261117",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-local-shadow-gpu-verified-20261117.json",
+      "sha256": "8f1227c1c7f76ace202bdc2efa2a78b498b84091e3402196186afcc48e1dee5c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-local-shadow-gpu-verified-20261117",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-materials-final-verified-20261118.json",
+      "sha256": "39ad8327532daaebd5654ba8668d601e49f231ee2eb9c4faf853cc24677d5cfc",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-materials-final-verified-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-postprocess-final-verified-20261117.json",
+      "sha256": "0ff6576972b9a2100f5d6161759030caeb690635fc117e91b5b41c2f0b6ea5aa",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-postprocess-final-verified-20261117",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-reflections-final-verified-20261117.json",
+      "sha256": "706eb5c6673a4000104af29c9cec025d028c340ad2ad9d9849e4c8d025ad4480",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-reflections-final-verified-20261117",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-request-20261116.json",
+      "sha256": "a3ccdcd0f7b54303f8148fb0e1adbb5d58aea50631c72bc08ec6c1f5814593b1",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-request-20261116",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-shadow-receiver-plane-r5-verified-20261118.json",
+      "sha256": "fe28a45a93512790a4381774699d7f6915355bd2ea1f0403224b7b53626272a8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-shadow-receiver-plane-r5-verified-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-shadow-receiver-plane-r6-verified-20261118.json",
+      "sha256": "5b38257bc2e0e6896a09c9d775f724e56f42eba2ca6d59087ee6d290648d2c4f",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-shadow-receiver-plane-r6-verified-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-shadow-start-20261116.json",
+      "sha256": "4a2fea8c5dd6a5f0194f520f4fe1e8804bd803bc9316ff025d38676defb132ce",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-shadow-start-20261116",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-temporal-final-verified-20261117.json",
+      "sha256": "f67b3b41249d8fde19a68f8b7beb18f4b503b9a4daf31ae1214e7526331f66ff",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-temporal-final-verified-20261117",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-temporal-static-verified-20261117.json",
+      "sha256": "a5afefa59f7281a8ef29764e922dc68a3e69720f921c0bb0bcb68e199ba5fc2c",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-temporal-static-verified-20261117",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-3-20261116/m43-volume-final-verified-20261117.json",
+      "sha256": "26bf87704f0f6ea09a5ea8ec41d3f1ed18984f4bf7dee9a17c5a83da6d1c0e7a",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m43-volume-final-verified-20261117",
+      "origin": "AGENTS.md"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1343,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343"
+}
