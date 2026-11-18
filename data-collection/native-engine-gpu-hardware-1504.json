@@ -1,0 +1,30 @@
+{
+  "controllers": [
+    {
+      "Name": "NVIDIA GeForce RTX 5080",
+      "DriverVersion": "32.0.16.1088"
+    },
+    {
+      "Name": "Intel(R) Graphics",
+      "DriverVersion": "32.0.101.6314"
+    }
+  ],
+  "cpu": {
+    "Name": "Intel(R) Core(TM) Ultra 9 285K",
+    "NumberOfCores": 24,
+    "NumberOfLogicalProcessors": 24
+  },
+  "memory": {
+    "TotalPhysicalMemory": 67939753984
+  },
+  "nvidia_smi": {
+    "raw_rows": [
+      "NVIDIA GeForce RTX 5080, 610.88, 16303, 2160, 10"
+    ],
+    "exit_code": 0,
+    "command": "--query-gpu=name,driver_version,memory.total,memory.used,utilization.gpu --format=csv,noheader,nounits"
+  },
+  "issue": 1504,
+  "recorded_at": "2026-11-18T03:13:43.7084351+00:00",
+  "scope": "Current measurement host only; not minimum hardware or game performance acceptance. WMI AdapterRAM omitted because it may truncate large VRAM."
+}

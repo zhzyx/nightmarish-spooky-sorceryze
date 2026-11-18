@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1504-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-engine-gpu-baseline-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-18T03:09:29.591837+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1504",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1504,
+    "title": "AI原生引擎：Windows真实GPU与后台工作负载基线",
+    "body": "<!-- gonggong-request:native-engine-gpu-baseline-20261118 -->\n\n# AI 原生引擎 Windows GPU 与后台工作基线\n\n需求 ID：native-engine-gpu-baseline-20261118；父 #1382。用户明确要求 AI 友好的引擎与多 Agent 工作流，同时保持至少 AA 游戏开发能力，参考《血源诅咒》的写实沉浸方向；Windows PC 优先，先测硬件与基线再共同确定最低配置、分辨率和帧率。\n\n本项使用可信主线现有 Engine Next 渲染器与自有程序化验证场景测量真实 GPU，固定候选、资产、配置、驱动和工具；不接管 #1343/#1323 的渲染实现或 #951 控制器。不修改画质算法、原生功能或共享渲染源码。若发现属于其在途实现的缺陷，只记录精确证据并按原责任接续，不更改他人副本。\n\n1. 核实当前 Windows CPU/GPU/内存/驱动，使用实际 GPU 显存查询，不能把 WMI 32 位 AdapterRAM 当作准确显存。记录实际测量来源、时间与限制，不当作最低配置。\n2. 从当前主线按既有 BuildVisualRuntime/资产工具构建，记录原生输入、二进制、shader、工具链与生成资产摘要，或复用可逐字节验证的已接受产物。全部生成物位于本任务明确目录，不替换安装。\n3. 隐藏窗口运行真实 D3D12，不使用 dummy/headless renderer。固定种子、分辨率、镜头、帧数、配置，记录暖机策略、CPU/GPU 原始帧时间、P50/P95/P99、显存/内存可取得的实际值、验证错误和实际进程终态。缺指标保持未知，不估计。初始取当前屏幕量级与 4K 离屏目标，不能将隐藏目标当作物理 4K 输出。\n4. 同一二进制/场景/配置下，串行测量空闲与本机真实原生工作者负载；后台负载须明确实际工作、并发、资源和完成回执，不把人工 sleep 称为 AI 推理。记录前台帧时间变化、后台吞吐、真实 CPU/IO 条件，保留离群/失败，不择优删样本。负载只用确定性本地工具，不调用模型或占用他人工作者。\n5. 本次程序化功能/性能基线不能代替写实成品场景、画面审美、角色/动画/音频/加载、长稳或 AA 整体验收。现有材料离散亮点与 GI 等 #1343/#1323 未完成范围保留。测得数据后提出可验证的后续场景与硬件目标，阈值决定仍交用户；不先作保证。\n\n验收：真实源与产物绑定、隐藏 GPU 帧回执、空闲/后台负载可比性、限制与原始数据、独立复核、正式门禁和 main 留底。只交付测量工具/本次证据，不切换生产。必要临时场景/二进制/日志保留至复核及父项比较结束，实际子进程关闭后才处理本任务临时文件；不清理他人资源。\n\n构建类别：验证宿主工具 host_tool；已有引擎输入原样构建，任何新增测量脚本都不得通过嵌入进入引擎二进制。路径相对当前任务仓库根，私有绝对路径注明宿主证据基准。正常仓库方法回召 godot-build-placement 和 editor-dependency-handoff，遵循真实消费者与同候选证据规则。用户已授权执行，无需重复确认普通测量。\n\n排障跟踪：#1445。\n授权：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "updated_at": "2026-11-18T03:09:18Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "ec910821b2b019be88032b0d15fecd253e526f2e91d6ab603ab413ceabc6152a"
+}

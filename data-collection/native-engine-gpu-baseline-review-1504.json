@@ -1,0 +1,152 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-engine-gpu-baseline-review.json",
+    "sha256": "c43e80f21d6bfe5a6c9f1cfbacb98f1e0d7fc22fd9d8b94da29202dd38310b3c",
+    "path_base": "absolute current host audit archive"
+  },
+  "export": "Lossless JSON value export; original reviewer bytes retained.",
+  "review": {
+    "schema_version": 1,
+    "issue": 1504,
+    "reviewer": "independent-native-agent-/root/sinan_41e5236f4f85b0c6",
+    "passed": true,
+    "blocking_findings": [],
+    "candidate_sha256": "947613cffbbb1333e8da0db51341f02cd904aa45453bee460b8ec94b48ec4ebf",
+    "source": "fd7281e6266d3e36b9b3cbfaa728daa8edee9db1",
+    "design_sha256": "24ae18b47b5af70e50335fbd421fbcd40618e7bf5d37ddba3b2438ec83c2fc37",
+    "verification": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-engine-gpu-baseline-review-probes\\verification.json",
+      "sha256": "9632d4b28a241a3e1555b8188dfba4f15fcf3875bfb87e89e6323856ed219e1b",
+      "script": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-engine-gpu-baseline-review-probes\\verify.py",
+      "script_sha256": "b9758a46c95c569248884a74864b5586839165ff1f260ee399282f6f5203766f",
+      "actual_process_exit_code": 0,
+      "actual_exec_chunk": "896228",
+      "actual_review_pid": 66184,
+      "terminal": "completed; Python process returned exit 0 and no ongoing exec session"
+    },
+    "checks": {
+      "native_inputs_exact_git_and_disk": 279,
+      "hashed_source_artifact_and_metadata_files": 423,
+      "raw_gpu_reports": 8,
+      "raw_frame_rows": 7232,
+      "nearest_rank_all_metrics_exact": true,
+      "shader_files": 32,
+      "source_and_asset_provenance": true,
+      "seed": 20261117,
+      "camera_and_flags_same_per_resolution": true,
+      "loads": [
+        {
+          "index": 0,
+          "producers": 250,
+          "publications": 36,
+          "check_runs": 572,
+          "actual_complete_checks": 287,
+          "cached_checks": 285,
+          "originals_present": 250,
+          "physical_exit0_closures": 250,
+          "overlaps": {
+            "1440p": 22,
+            "2160p": 35
+          }
+        },
+        {
+          "index": 1,
+          "producers": 250,
+          "publications": 36,
+          "check_runs": 572,
+          "actual_complete_checks": 287,
+          "cached_checks": 285,
+          "originals_present": 250,
+          "physical_exit0_closures": 250,
+          "overlaps": {
+            "1440p": 22,
+            "2160p": 35
+          }
+        },
+        {
+          "index": 2,
+          "producers": 250,
+          "publications": 36,
+          "check_runs": 572,
+          "actual_complete_checks": 287,
+          "cached_checks": 285,
+          "originals_present": 250,
+          "physical_exit0_closures": 250,
+          "overlaps": {
+            "1440p": 22,
+            "2160p": 35
+          }
+        },
+        {
+          "index": 3,
+          "producers": 250,
+          "publications": 36,
+          "check_runs": 572,
+          "actual_complete_checks": 287,
+          "cached_checks": 285,
+          "originals_present": 250,
+          "physical_exit0_closures": 250,
+          "overlaps": {
+            "1440p": 22,
+            "2160p": 35
+          }
+        }
+      ],
+      "all_producer_physical_exit0_closures": 1000,
+      "actual_publications": 144,
+      "checks_per_load": {
+        "actual_complete": 287,
+        "cached": 285
+      },
+      "source_fixture_only_two_text_substitutions": true,
+      "first_validation_cpu_waits_msec": [
+        51849.0515,
+        58591.3666
+      ],
+      "failures_preserved": [
+        {
+          "stage": "initial validation preflight",
+          "observed": "Wrapper initially hashed .enpak/.engpu directories as regular files and failed before trial intent/GPU launch. Corrected directory identity; empty first folder retained, actual run is validation-attempt-2.",
+          "incident": "6ad2e52e5bed684497e0df797b7e3d90939a27a9c61441661bfdabb174731df5"
+        }
+      ]
+    },
+    "resolved_findings": [
+      {
+        "finding": "Main report did not explicitly preserve unknown global CPU/IO sampling",
+        "resolution": "Root added only explicit limitation; reverified final SHA947613cffbbb1333e8da0db51341f02cd904aa45453bee460b8ec94b48ec4ebf; raw rows/source unchanged"
+      }
+    ],
+    "limitations": [
+      "Full-system CPU utilization and I/O throughput unknown: not continuously sampled; no-task-added-load is not idle host.",
+      "8 reports include two validation runs only; six performance runs did not enable GPU validation.",
+      "One before/load/after episode cannot prove workload improves performance or general capacity.",
+      "Functional self-authored 15462-triangle scene, hidden 1440p/4K targets; no AA visuals/physical4K/long-soak/gameplay acceptance.",
+      "Fixture authority/reviewer callbacks are not production authority or model inference.",
+      "Original first validation CPU waits retained; cause unknown.",
+      "Historical process closure supported by exit-zero receipts, database physical closures and inspected Windows job/drain implementation, not independently observed live during original execution."
+    ],
+    "method_recall": {
+      "tenant": "gonggong-workspace",
+      "scopes": [
+        "godot-build-placement",
+        "editor-dependency-handoff"
+      ],
+      "application": "Verified actual consumers, exact source hashes, terminal physical closure and transcript/drain boundary; fixture callbacks not authority acceptance."
+    },
+    "probe_corrections": [
+      "Initial reviewer schema assumption manifest_sha256 universal was false for runtime target; corrected to pin runtime manifest bytes without inventing preexisting bound digest.",
+      "Initial reviewer check schema assumption every run actual was false: cached checks lack exit_code. Corrected accounting and asserted actual complete checks exit0/passed, preserving cached counts."
+    ],
+    "cleanup": {
+      "created_only": [
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-engine-gpu-baseline-review-probes",
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-engine-gpu-baseline-review.json"
+      ],
+      "retained": "Verification script and hash-bound results are necessary audit evidence; no GPU or worker launched; no product/source edits, no test setting or temporary branch."
+    },
+    "parent_goal_open": true,
+    "scope": "Bounded functional-scene single episode measurement review only; root owns commit/CI/main and original overall acceptance.",
+    "finished_at": "2026-11-18T04:28:13.175085+00:00"
+  }
+}
