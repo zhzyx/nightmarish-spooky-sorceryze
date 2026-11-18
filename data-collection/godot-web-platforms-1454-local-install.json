@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "request_id": "godot-web-platforms-20261118",
+  "issue": 1454,
+  "authority_ref": "codex:user-request-20261118-install-godot",
+  "scope": "Install the previously delivered macOS arm64 embedded-Web editor into the existing local Godot application; no Engine Next change",
+  "state": "installed_verified",
+  "installed_at": "2026-11-18T14:02:44.853505+00:00",
+  "source_commit": "dd0ac17406d2e568210f5c9236dd10d3661361ba",
+  "source_binding": "data-collection/godot-web-platforms-1454-delivery-source.json",
+  "source_artifact_sha256": "8d5ed24677188c0e97327ed5b158875a660d9dd08dbb908d189ff0e93144f3d3",
+  "installed_signed_executable_sha256": "7b8812119767ae9603f1bf14665fcbabd0c4a0b2207a6968e633bc40398f333d",
+  "previous_signed_executable_sha256": "823dbe058971d48f35a348f3e4ca7cf3c4f5d95e96d3d4dc3218e7fb4d06bd2d",
+  "version": "4.8.beta.custom_build.9af92c7a8",
+  "version_metadata_note": "Build occurred before the formatting-only commit; version reports its parent. Binary hash matches the published source binding.",
+  "path_resolution_base": "repository root; user profile paths remain in private installation receipt",
+  "entry": "bin/godot_macos_editor.app",
+  "launcher": "Existing user Godot command shortcut; content unchanged",
+  "packages_sha256": {
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu-board.json": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914"
+  },
+  "checks": [
+    {
+      "name": "Staged app native Web workspace headless EditorPlugin",
+      "state": "passed",
+      "result": "WEB_PLATFORM_DOCK_OK; URL validation and settings, three sizes, hide/show, clean exit"
+    },
+    {
+      "name": "Existing main-screen tab smoke check",
+      "state": "passed",
+      "result": [
+        "AI Chat",
+        "马良",
+        "天枢",
+        "天璇",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "设置"
+      ]
+    },
+    {
+      "name": "Actual installed app",
+      "state": "passed",
+      "result": "Strict deep code-sign verification, WebKit linkage, executable digest and --version via actual existing entry; no foreground desktop launch"
+    },
+    {
+      "name": "Preservation",
+      "state": "passed",
+      "result": "Existing launcher and two editor settings files unchanged; complete previous app retained for rollback"
+    }
+  ],
+  "review": {
+    "scope": "Previously reviewed executable source reused without code change; installation metadata only",
+    "references": [
+      "data-collection/godot-web-platforms-1454-independent-review-format.json"
+    ],
+    "additional_source_review": "not_required_for_tier0_docs_telemetry"
+  },
+  "temporary_fixture_correction": "The tab-switch smoke fixture initially omitted HOME/Library/Caches. Created that isolated directory and reran successfully with no ERROR output; no product source fix.",
+  "logs": {
+    "staged-web-probe.log": "2ab7796c73ec9ac0acb21f61e7202be242983340acfe482085e29831c816fc53",
+    "staged-entry-probe-fixed.log": "e6930c0c29c0f84811940d340fa102c9edc5734a1c0b2bd8c40ce5b1bbc3c033",
+    "installation-probe.gd": "cd03c9a8a20578e67ea12520724492ebad7629f0eff142587120e62b7f9505d4",
+    "codesign-install.log": "12ccc4e19bcab48b579c2bae5beecbbc7c9da80736c2bd6c9ea2c8b2d4a74f22"
+  },
+  "remaining": [
+    "No production URL supplied; production login and business acceptance remain open in #1474.",
+    "Real display IME/focus/Escape, DPI and native dialogs remain unverified under silent validation.",
+    "Windows source and verified package previously delivered; no Windows device was available or installed in this macOS action."
+  ],
+  "overall_parent_state": "partial; keep #1454 and #1474 open",
+  "cleanup": {
+    "test_app_project_profile_source": "removed after logs were archived",
+    "previous_effective_app": "retained as rollback",
+    "installed_app": "retained as effective installation",
+    "temporary_worktree_branch": "pending metadata main receipt then remove",
+    "user_resources_and_other_tasks": "preserved"
+  },
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "metadata_gate_correction": "PR evidence binding requires issue_url or issue_number; the initial numeric issue field was insufficient. Added the canonical issue URL and rechecked the full candidate index."
+}

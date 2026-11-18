@@ -42,3 +42,9 @@ PR #1459 已合入 main，提交 bf72c2dd4e36bc057c64cbdd5e9a060163b16526，源�
 Windows 后端由 #1462 / PR #1487 交付；确切 CI 与 main 接收以 `data-collection/godot-windows-web-1462-main-receipt.json` 为准。真实 WebView2 隐藏窗口测试已验证页面、持久化、导航拒绝、渲染进程故障后的显式重试和生命周期，原始报告在 `data-collection/godot-windows-web-1462-runtime-final.json`。WebView2 取消导航前可能发出推测 GET；本实现限制文档导航与执行，不宣称网络隔离。
 
 双平台真实显示器交互和生产站点业务验收由原生子项 #1474（godot-web-platforms-acceptance-20261118）承接，逐条映射原验收 2–5，设计见 `design-docs/godot-web-platforms-acceptance-20261118.md`。#1454 保留开放；新子项不是原始验收已完成的证明。用户回执到达后继续修复和复验，不以拆单关闭原目标。
+
+## 2026-11-18 本机安装追加验收
+
+用户在本会话明确要求直接安装到引擎。复用本单已审查、已合入且摘要固定的 macOS arm64 构建，将现有 Godot 应用升级并保留整个旧应用作为回退。安装包含同源版本的天枢 UI 和 board 包；原快捷方式、项目及用户设置保留。后台验证天璇入口、地址设置、布局及所有主工作区切换，实际安装通过签名、链接依赖、摘要和启动版本回读。版本字符串保留构建时父提交，二进制摘要与既有交付来源一致。详见 `data-collection/godot-web-platforms-1454-local-install.json`。
+
+本次仅落地当前 macOS 设备安装；Windows 构建沿原交付记录，没有声称在 Windows 设备上安装。用户暂未提供站点地址，生产登录与业务联调、真实显示器交互仍由 #1474 承接，父单 #1454 保持开放。临时应用、测试项目与配置已清理；有效安装、回退应用和必要证据保留。工单回读遇到的一次网络失败经同候选原命令复验恢复，关联 #1535。

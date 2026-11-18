@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-web-platforms-1454-local-install",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-web-platforms-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T14:03:56.773705+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1454,
+    "authority_ref": "codex:user-request-20261118-install-godot",
+    "state": "installed_verified",
+    "scope": "macOS effective installation with rollback",
+    "evidence_paths": [
+      "data-collection/godot-web-platforms-1454-local-install.json"
+    ],
+    "parent_acceptance": "partial; #1474 remains open"
+  },
+  "evidence_refs": [
+    "godot-web-platforms-1454-request"
+  ],
+  "sha256": "d1a35bed3de2559e8340db653c9753ee0b7398b338c836c8168e4588eaa7212a"
+}

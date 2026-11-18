@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-99ee35460cf883281ba819e70817b9bf9c648125",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7e1c24bb4437c0afc4ff10d9f90159e848f73ce5139b303d31359b0c16bc49d0",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1534",
+    "action": "delivery",
+    "detection_head": "3c62095a7f642232ddacd11a0f091b314009112a",
+    "context_sha256": "900527ca2ef23aa17da68cf41973a439abc044c06436431924138691df158dcb",
+    "operator": "kaiyunxue",
+    "worker": "codex/root",
+    "authority_ref": "User authorized complete M4 implementation testing and main delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44318849046",
+    "diagnosis": "Writer committed 3c62095a locally but authenticated Git upload returned exit1. Exact candidate remote ref was read back as HTTP404, with no signed receipt or new PR. Main concurrently advanced to63a727e5 through six Godot-web documentation and telemetry paths; none intersect the candidate write paths or Engine Next source inputs. The network and metadata-only drift are tracked separately from the fixed portable test failure.",
+    "next_action": "Retry the same authorized writer with reviewed disjoint auto-integration and supersession, verify the exact signed tree and current CI, then read back main before closing the incident.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T13:56:18.097908+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T15:10:10.052153+00:00",
+  "sha256": "f9196b2266826a4e0bc0388ea37255bf267305c75352edcbc23ae556620c2fb0"
+}

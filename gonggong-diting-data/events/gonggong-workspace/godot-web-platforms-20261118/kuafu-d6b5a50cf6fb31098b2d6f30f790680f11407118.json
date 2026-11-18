@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d6b5a50cf6fb31098b2d6f30f790680f11407118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-web-platforms-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a1cd8303cccd192ef218ef4878f792e4ed0d7187c7b134ba992065d99f8ada19",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1535",
+    "action": "delivery",
+    "detection_head": "f539bd711fc623937350a7ea8d689bd929170ab5",
+    "context_sha256": "99da655cf7a65e11624c00a0bab3593b8577b5bd661de2cc6cea205cc8f199b4",
+    "operator": "Sail-Li",
+    "worker": "codex:root",
+    "authority_ref": "codex:user-request-20261118-install-godot",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1536",
+    "diagnosis": "Added canonical issue_url to the installation receipt after numeric issue failed evidence binding. Candidate1c8795d08 passed formal gate and committed-data verification; signed df47c38c9745f64558d1b33050caaecdbfac88c9 passed exact CI and merged as 9d800958a5ebd8237c3c907d6d09c757fd7db625. Product installation was unaffected. Intermittent TLS failures were addressed for this audit by bounded retries of authenticated read-only gh calls; writes are never automatically retried.",
+    "next_action": "Publish recovery evidence, close bug1535, preserve parent1454 and acceptance1474; clean this task worktree after main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T14:05:31.074749+00:00",
+    "attempted": "Canonical issue binding local check and exact PR1536 issue-association/static CI passed; original intake also reverified.",
+    "repair_owner": "Sail-Li via current Codex root",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T14:13:42.913548+00:00",
+  "sha256": "657bfcea1e405f8f2399926c40bbe8cadd1751f125083351b9ec7a531e4f4585"
+}
