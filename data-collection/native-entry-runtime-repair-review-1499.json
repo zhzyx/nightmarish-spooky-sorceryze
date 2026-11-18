@@ -1,0 +1,136 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-runtime-repair-review.json",
+    "sha256": "0ea509ecb66e790a84ce8762ce8ba61c45a18fe661958d28c5103f85882bf9fc",
+    "path_base": "absolute private host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "schema": 1,
+    "issue": 1499,
+    "status": "scoped-R1-R2-independent-review-passed",
+    "worktree": "D:\\GongGong-work\\native-entry-runtime-integration-20261118",
+    "authority": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "original_review_sha256": "0e1f50d86a5f4b0193e9d26b30c00adf409899aa0ae321a72e8bdf5cdaf8f1f8",
+    "r2_report_sha256": "af04b6c79a0a6b537721f87b4ae8b22148f03ef684f112284cd8119198a9ca77",
+    "source_hashes": {
+      "customizations/components/tianxuan/server/api.py": "bbf8f673aee6e8f3fc4d16584b87022f8462468bc8a5b0ded212c63d03efac19",
+      "customizations/components/tianxuan/server/main.py": "c3fe9915b5aa011d55262b5fb1ca8810ac4d3dc2c6b4f870466e071da2497734",
+      "customizations/components/tianxuan/server/native_entry_api.py": "3e3c515f3d78130add945084114a81643071fdc1cb69eeb049a996e2ca67bb06",
+      "customizations/components/tianxuan/server/native_entry_context.py": "af865c9c832ce4cb93794535b6f5d46d11e3afb03e10e6cafc8095d0cf42bfb8",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "ba3888de3587be7c90a18432847d0f34aece9012d96a8a3e8af16cda93a75c1d",
+      "customizations/components/tianxuan/server/test_native_entry_broker_context.py": "29dde74671f44d7d84efa948473171bd90bb6745ee3cb5adf25bdbc178e27582",
+      "customizations/components/tianxuan/server/test_native_entry_context.py": "802c8ce92b2ceab1b16e2991e1878e6dd3b052f666e7021c484ee7fc0fec00ba",
+      "customizations/components/tianxuan/server/test_native_entry_remote_normal.py": "7a295143edf398b55cefd0c1c18953150fcdf9d4c14b87e9ae5caa2ce69ce79e",
+      "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "a917868cb2d8d091f4ad905fa6cad0de1758dae5fc087738dbc84943d3cb93d6",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "3e1c7ad3b71a3cc83c1332ec7edfe967d85046c79e1a43b5e1a2b8b51c3a36e3",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "d07e0cd4dbf053a8179e3e7056165f6fc9c97628fcb7d75a28c162830749de19",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "0b44f7f7f385454729c5a6cd2cf38ef4113b4ee6526d6a0bbee6ee5ed68eb2b6",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "42986e21bb5c528c4dfbc342ff597613aee861ff0468bbb2c2d12b89453b4803",
+      "customizations/components/tianxuan/sinan-workorders/native_node.py": "bfafb68f372f91367878974d9e24c344cdaf8df0d766d1ab0b2b4d5afb7adb84",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "26ad8ef3f1d07faeb04ee7fa89ac266346806dade17d77514bb4744680b402c9",
+      "design-docs/native-production-entry-20261118.md": "c73edb616cb79621076693d563d76fd8c3838d873df0dc723e592502e38c46a2",
+      "customizations/components/tianxuan/server/test_native_entry_context_resources.py": "806e94b2204e9d4fd2a6ce1b9e20249f9adf377bfc18af82d592ba9d7bf52735",
+      "customizations/components/tianxuan/sinan-workorders/native_context.py": "0d63295903cc051019ff771cd4bf250a17cb93f656f0767aa609177390402c2e",
+      "customizations/components/tianxuan/server/test_native_entry_context_admission.py": "ed3529d76654b1bfd353a072aa09eb92592e4a27a16c891c969c80d131931d5b",
+      "customizations/components/tianxuan/server/test_native_entry_installation_lifecycle.py": "d1b701d66ca066df48670b47bd1b8dd6dd884aee8e527164eacbd0230ae19470"
+    },
+    "exact_source_count": 20,
+    "source_verification": "Original18 sources plus four R1 and two R2 overrides/additions; union20 unchanged throughout independent execution. No source/index/Git mutation.",
+    "blocking_findings": [],
+    "R1": {
+      "decision": "Resolved within HTTP admission scope",
+      "evidence": [
+        "32 admission/resource tests passed88.61s, both local and remote72requests =>40 immediate503/32 admitted, then32success",
+        "Original35second consumer regression both returns503 at30.03seconds with no started event before or after release",
+        "Delayed physical executor, real TCP disconnect, live revocation, cache16, cold139264/hot8192 and one cold verification all passed",
+        "Independent final-begin expiry and started-past-deadline tests passed local+remote; no expired operation starts, started operation returns200 with durable started/resolved",
+        "All32 cancelled ASGI handlers retain physical capacity: next request503 until actual workers finish, then200",
+        "Malformed body409 with recovery and oversized413/slowbody deadline retained",
+        "Only exact503 JSON detail not_started/context_capacity becomes ContextNotStarted;409,unknown,extra fields and incomplete detail retain HTTPError"
+      ],
+      "architecture": "Admission before body collection/executor; dedicated32 worker pool; event-loop occupancy callback tracks physical futures; one receipt deadline checked through authority, lease, ledger budget and final begin. Authority remains live and uncached; per-execution busy lease retains unknown serialization. No tool/provider retry added."
+    },
+    "R2": {
+      "decision": "Resolved within current-entry authorization scope",
+      "evidence": [
+        "Independent unchanged lifecycle v1-v2-v1 plus invalidversion passed;3 accepted/3physical markers/dispatcher exits0, historical full task rows unchanged",
+        "Independent same-entry two-step DAG across v1-v2-v1 passed14.54s;6accepted tasks/6physical markers, dependencies result->tail resume automatically; historical rows preserved and invalidversion rejected",
+        "Private copies of real ASGI cross-member dependency and withdrawal probes both terminal exit0; original evidence untouched"
+      ],
+      "source_review": "next_issues restricts current ContextVar entry and actor; any native_active_tasks binding is excluded independent of task state, including unknown/inflight. It does not alter binding, expected version/CAS, source validation or prior task authorization. consume establishes and resets current_entry; callback authority explicitly sets mandate when consulting modules. DAG acceptance demonstrates current-entry propagation and real successor event continuation."
+    },
+    "shutdown": {
+      "original_warning": "Original implementer log Cancel0 retained. It is not evidence of missing worker shutdown by itself. Installed uvicorn waits connections and tasks under one grace timeout, logs task count at timeout, then awaits lifespan. Historical exact connection cause cannot be reconstructed from that log alone.",
+      "independent_actual": "2 real local/remote uvicorn forced-shutdown probes produced graceful timeout cancellation. Server thread remained alive and context busy while physical resolve held beyond3seconds; after release durable started/resolved present, thread joined, busy false, native-context threads0. Independent outer lifespan test confirms exact original user app start/stop and physical completion before outer lifespan returns.",
+      "normal_rerun": "32 admission/resource and10 runtime/broker/remote tests passed without the original Cancel0 warning; no lingering owned python/node process found."
+    },
+    "verification": {
+      "r1": "32 passed88.61s",
+      "ordinary_lifecycle": "1 passed in first R2 run; same run contained a separate private DAG assertion typo",
+      "same_entry_dag": "1 passed14.54s",
+      "independent_deadline_lifespan": "5 passed4.37s",
+      "forced_shutdown": "2 passed8.50s",
+      "malformed_cancelled_exact_type": "4 passed2.07s",
+      "actual_runtime_flows": "10 passed1deselected24.29s; excluded existing unittest tempdir case outside allowed write roots",
+      "cross_member_dependencies": "exit0",
+      "withdrawal": "exit0",
+      "static": "System Python Ruff --no-fix, Ruff format --check, mypy --follow-imports=skip privatecache, codespell_lib private write-changes=false config all exit0 on six repair source files"
+    },
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "verified": [
+        "await-terminal-observers",
+        "bind-consumer-release",
+        "reconstruct-worker-outcomes"
+      ],
+      "application": "Exact20 source bytes before/after and physical terminal closure govern handoff; transport completion is not business acceptance. Own failure retained: missing PYTHONPATH prevented first collection; corrected environment. Own DAG textual generation accidentally expected200 percent; retained original probe/log, corrected expected100, then all3 phases passed. No repository learning append outside assigned write scope."
+    },
+    "limits": [
+      "This accepts R1/R2 scoped repairs only, not complete1499/1501/parent or250task workflow acceptance.",
+      "Durable upstream pending tool recovery remains parent scope; runner generic needs_attention handling is unchanged. No provider/model/tool replay implemented or approved.",
+      "Server fresh same-image3container lifecycle evidence read and hash-bound only; it contains oldmain plus next_issues patch, excludes new HTTP/context runtime. No production activation or server mutation performed.",
+      "No full-engine repeat, throughput/RSS/universal efficiency or real provider validation claim."
+    ],
+    "cleanup": {
+      "removed": [],
+      "retained": [
+        "All own private fixtures, logs, failed probes and static caches retained as pending parent-review evidence; original failed receipts untouched"
+      ],
+      "terminal": "All review commands terminal; private runtime fixture joins asserted; owned python/node process readback empty. No cleanup rejection bypass or production resource change."
+    },
+    "provider_calls": 0,
+    "production_activation": false,
+    "evidence": {
+      "dag-tests2.log": "ed8cc2a27fde304c31357764ce20058254e393a0e14f69f6d4fd18c385bd71ae",
+      "dependencies.log": "e4cb4b89164bb1a8c666ec1192062a97a11746498f09b2a6c8093157c4046181",
+      "extra-tests.log": "f2977669b9a0cbdea0c56390091c7cfefe7daa8ca7c65b32075abb1f69b1492b",
+      "flows.log": "0e525222f7667b227489d80d3e36660ed0d6ac92808f3b6bf4d23e571de12bb9",
+      "hashes-after.json": "6f06e322aeb67273336552e4f7ba2cd78550724db429a67bfb478cc1639a7f03",
+      "hashes-before.json": "e4672bed42e45e02dccfdae47755fc17d37d7b1373d76f52834b4f404d8da8ce",
+      "independent-tests.log": "cf53b6bd0a9f830ed4e251f6b1cfe3563bbc8e10f158c819c6b57fbd5ec13f57",
+      "r1-tests.log": "e7edd11bbce6c1250f92b90b6db6d35c71aa3840299991e7a10dedf7b7041ed4",
+      "r1-tests2.log": "e26863ffce745e4d1f61be963208d564ce7db60617936f31930acd7c078388f2",
+      "r2-tests.log": "88f6e5de0b05d2877e5e7390e162dbe31b91376c40a8e254f6b3368d8168fd54",
+      "review-ready-dependencies.json": "c7c9f74efeb7aa59f26137c637f22791473f677996345ab21eb4c12d5b59f5c2",
+      "review-ready-dependencies.py": "1a060fea3c1bb6201e9a0201b5bcaa2ab6a8505620e07da1068640b4767b9820",
+      "review-ready-withdrawal.json": "65abf0462ef37ffcb8ff690a4e9ae11f27ae833b28175b4f11bb1dd46ade8fea",
+      "review-ready-withdrawal.py": "17427f3a3003ba62e3fecc42a549d9f828335bea966100aa6895e2e2cc5b1ce0",
+      "run_flows.py": "234a19eeb6bd2c4b9dd9eeed2f13d44f9a37ee3e8b2409ef5ba556690f72d5a4",
+      "same-entry-dag-original.txt": "cb315bf1bd40b0002591fea465454082bb6a880f6713452c7be445880796d990",
+      "shutdown-tests.log": "9013501bdbeb54970d151dfebd8a4c30d165c5f6993b709d877c5c988dcf924b",
+      "shutdown_fixture.py": "37633dfa32074633c801013468f110d25e77cbda94378cdb9ce512284f1f1740",
+      "spelling.toml": "fd72f50bc3ae082a0ac94157ca6942f0a9bf444fa89b23d219b372fb4850ba48",
+      "static-0.log": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0",
+      "static-1.log": "f57152af69ed696672a20f7a07dc500ce85005053092505a680768f611957e48",
+      "static-2.log": "90377c8fd97127580c93ac5740d596c9ebc9db94dafa6560ee11fe16b4460c62",
+      "static-3.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "static-results.json": "0782a0bf557f77b77beca653c5534ec0e486ffbb29c0271b4a124597c8d56036",
+      "test_independent.py": "cb4b0421679f554da93612dd1f147f669103f2bac339982cf693da0f18018b33",
+      "test_lifecycle_copy.py": "5494a3812c218bf8cf6f173f0614268f7f57254e0aefb1524f01fe5704a52c75",
+      "test_same_entry_dag.py": "706ff889a5940862d3845fd752317168fbb52f2772b2fc521a70d179fe5251dc",
+      "test_shutdown.py": "a778ec1d4976c837adb325227506f6542670e21f4e57e00efda7bdee13baa941",
+      "withdrawal.log": "6cf8014e71268a9e78043d5b93f71cefa6196d2576d587e076ec003a4b47b764"
+    }
+  }
+}

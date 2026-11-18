@@ -1,0 +1,176 @@
+{
+  "schema": 1,
+  "issue": 1499,
+  "related": [
+    1445,
+    1501
+  ],
+  "status": "scoped-R2-repair-verified-pending-independent-review",
+  "base_commit": "593dc422f8d213327f70fa0fa599e938060dd935",
+  "finding": "After accepted v1 work, new independent v2 requirement tried to reauthorize historical accepted task with changed installation; active definition CAS correctly rejected, but blocked unrelated new work.",
+  "repair": "OrdinaryEntry.next_issues only returns current-entry unbound issues. Existing active bindings retain immutable authorization and normal workflow validity checks; no expected-version bypass, no automatic old task replacement.",
+  "sources": {
+    "customizations/components/tianxuan/server/native_entry_factory.py": "ba3888de3587be7c90a18432847d0f34aece9012d96a8a3e8af16cda93a75c1d",
+    "customizations/components/tianxuan/server/test_native_entry_installation_lifecycle.py": "d1b701d66ca066df48670b47bd1b8dd6dd884aee8e527164eacbd0230ae19470"
+  },
+  "verification": [
+    {
+      "case": "actual main/ASGI v1-v2-v1 same state with unmodified accepted task rows",
+      "before": "failed planned vs delivered at new v2 requirement",
+      "after": "passed,3 accepted,3 physical producer markers,3 dispatcher exit0; old task rows/receipts identical"
+    },
+    {
+      "case": "same test with incompatible version999 attempted after phase1",
+      "after": "rejected without task/producer changes; complete v1-v2-v1 passed7.24s"
+    },
+    {
+      "case": "normal entry plus4coordinator handoff tests and lifecycle",
+      "after": "6passed19.81s"
+    },
+    {
+      "case": "real ASGI cross-member dependencies and withdrawal",
+      "after": [
+        {
+          "probe": "review-ready-dependencies",
+          "exit_code": 0,
+          "seconds": 29.043838099983986
+        },
+        {
+          "probe": "review-ready-withdrawal",
+          "exit_code": 0,
+          "seconds": 5.676740299997618
+        }
+      ]
+    },
+    {
+      "case": "Ruff check/format and mypy bothchangedPython",
+      "after": "passed"
+    }
+  ],
+  "server": {
+    "base": "sha256:4eb4d88323f584fecbf61a1b8e9ed28523751a41b07b29de309a5462c6d6f044",
+    "image": "sha256:6dd4ae38433e93be91bf1a6820506c53ad5663b4f2906a5fb60f7677affff3f9",
+    "inputs": {
+      "base": "593dc422f8d213327f70fa0fa599e938060dd935",
+      "path": "customizations/components/tianxuan/server/native_entry_factory.py",
+      "base_sha256": "167f3da15024f706adcfdf8b406f2227696b8468cff6c8e2f58afd472925f012",
+      "candidate_sha256": "e90c4ce399d49c811ea3bff17689ff1cd9631fd40d59e08bbef00e338ab39792",
+      "exact_method_same_as_runtime": true,
+      "scope": "Only OrdinaryEntry.next_issues; no runtime/context integration copied, no production activation"
+    },
+    "probe_sha256": "915e645bb8833d8a66c715c60af576338bd3c84213023a3250ba8270f5d9c28c",
+    "prior_known_state": [
+      [
+        "delivered"
+      ],
+      [
+        "planned"
+      ]
+    ],
+    "prior_phase1": {
+      "phase": 1,
+      "installation": "v1",
+      "manifest_sha256": "2a2d252f7eb110cd11ca1362740cab3d3385771473186096874395186fa9ce07",
+      "accepted_entries": 1,
+      "old_receipts_unchanged": true,
+      "physical_producer_markers": 1,
+      "provider_calls": 0,
+      "scope": "Same immutable image, separate OS container lifetimes, same durable state; deterministic admitted roles"
+    },
+    "phases": [
+      {
+        "phase": [
+          "2",
+          "v2"
+        ],
+        "exit_code": 0,
+        "seconds": 10.259862779988907,
+        "container_removed": true,
+        "output": "{\"phase\": 2, \"installation\": \"v2\", \"manifest_sha256\": \"b0e600f515374d8ef79d4e4d179182491f6ee45a98d246dab3df293bef56ca5f\", \"accepted_entries\": 2, \"old_receipts_unchanged\": true, \"physical_producer_markers\": 2, \"provider_calls\": 0, \"scope\": \"Same immutable image, separate OS container lifetimes, same durable state; deterministic admitted roles\"}\n"
+      },
+      {
+        "phase": [
+          "3",
+          "v1"
+        ],
+        "exit_code": 0,
+        "seconds": 14.299820624990389,
+        "container_removed": true,
+        "output": "{\"phase\": 3, \"installation\": \"v1\", \"manifest_sha256\": \"2a2d252f7eb110cd11ca1362740cab3d3385771473186096874395186fa9ce07\", \"accepted_entries\": 3, \"old_receipts_unchanged\": true, \"physical_producer_markers\": 3, \"provider_calls\": 0, \"scope\": \"Same immutable image, separate OS container lifetimes, same durable state; deterministic admitted roles\"}\n"
+      }
+    ],
+    "production_containers_unchanged": true,
+    "free_after": 448729088
+  },
+  "limits": [
+    "Server repair image only changes next_issues on accepted main base; it does not contain newer runtime/context integration.",
+    "Original mixed-image repair chain retained separately. Fresh same-image v1-v2-v1 now passed all3 phases against one durable state with3 exact accepted entries/3 physical producers; no runtime/context integration included.",
+    "No provider/model calls; deterministic admitted roles only. Production unchanged. R1 HTTPadmission repair is another owner/claim and not accepted by this report.",
+    "Whole1499/1501/parent remainOPEN; real resolver, organization, normal freshDockerfileCI and complete chain efficiency pending."
+  ],
+  "failures_retained": [
+    "SSH uid1000 cannot chown10001; failed before launch; readback emptyinstallation andno container then isolatedroot preparation only.",
+    "Initialprobe reused actor call_id execute across requirements, rejected idempotency rebound before new execution; corrected to phase-unique call ID.",
+    "Actual R2 failure then verified oneaccepted task/oneproducer and newplanned entry without native task before sourcefix recovery.",
+    "Docker FROM raw sha256 imageID resolved as repository tag; failed build before run, verified existingtagID then used exact owned tag.",
+    "First Kuafu assess rejected wrongtree; used original detectingtree and obtained actual issue comment event."
+  ],
+  "evidence": {
+    "native-entry-installation-lifecycle-before.log": "67f3ec5aefba9b1d1d81b7d0dbd472aeaf50971fc8000d02257f63a89983ff45",
+    "native-entry-installation-lifecycle-after.log": "7ce2027225a83a6844854f4dbca89316a21f67acde0c22c7593e67b65d7191b4",
+    "native-entry-installation-lifecycle-regression.log": "4b4fcee8e0155a46c26afba8b6af2252621c9fd768031ca43e11ad9903976cfa",
+    "native-entry-installation-lifecycle-final.log": "643226b1b90424f44c14ab1c29d6b2907b00612839776a19e6d56a0bee6444bb",
+    "native-entry-installation-lifecycle-asgi/suite.json": "211716081fd63c2696a1d797c0a595aaaeb4fa108b4e83168685e386f41c240b",
+    "native-server-package/server-lifecycle-output.log": "30eb18ad1f0dd571562becf02bdf03e2981fd5bc80d3951b766b6e4bde253815",
+    "native-server-package/server-lifecycle-output-v2.log": "b392331078f7d191ea83f9387b256fbc210c65f182c760352dcb4fd452128fc3",
+    "native-server-package/server-lifecycle-output-v3.log": "1438842b1ac8c43e4723f7d1f3d591f72b328849402b5f7bbd4136ba9144b5ff",
+    "native-server-package/server-lifecycle-repaired-output.log": "8737e1e71144a6910b86d8844f1e2413149c142a5fe4f2b2fb705b7a171bb5e7",
+    "native-server-package/server-lifecycle-repaired-result.json": "b85711222434435a154cea8de5d2a655c6c2e1435fe1f9cadc8de3df0b8721fe",
+    "native-server-package/r2-factory-inputs.json": "1dc771293e79ba6d62a3ec6a16e549ec69d738f63fd8a9f1b2fb9b5187909536",
+    "native-entry-installation-lifecycle-assess.log": "b4132efebae046cbe676c728e657f081b0fd2f569048e60594184f8882155ca9",
+    "native-server-package/server-lifecycle-fresh-result.json": "1f7fd9061d0a91de8ecb815dd19fe6fe2791466ed986c44fc057887ead18cec5"
+  },
+  "cleanup": "All server test containers removed after real exits. Source/sandbox images/private fixtures retained for independent review and unfinished integration; no other-task or rollback resources removed.",
+  "server_fresh_same_image": {
+    "image": "sha256:6dd4ae38433e93be91bf1a6820506c53ad5663b4f2906a5fb60f7677affff3f9",
+    "script_sha256": "00394a21b95c4b7d15d20803d2b21fc45a4ae79ce9ca92eb07cde16eb5ffb111",
+    "phases": [
+      {
+        "phase": [
+          "1",
+          "v1"
+        ],
+        "exit_code": 0,
+        "seconds": 13.468533603008837,
+        "container_removed": true,
+        "output": "{\"phase\": 1, \"installation\": \"v1\", \"manifest_sha256\": \"2a2d252f7eb110cd11ca1362740cab3d3385771473186096874395186fa9ce07\", \"accepted_entries\": 1, \"old_receipts_unchanged\": true, \"physical_producer_markers\": 1, \"provider_calls\": 0, \"scope\": \"Same immutable image, separate OS container lifetimes, same durable state; deterministic admitted roles\"}\n",
+        "stderr": "/usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n"
+      },
+      {
+        "phase": [
+          "2",
+          "v2"
+        ],
+        "exit_code": 0,
+        "seconds": 12.241604173032101,
+        "container_removed": true,
+        "output": "{\"phase\": 2, \"installation\": \"v2\", \"manifest_sha256\": \"b0e600f515374d8ef79d4e4d179182491f6ee45a98d246dab3df293bef56ca5f\", \"accepted_entries\": 2, \"old_receipts_unchanged\": true, \"physical_producer_markers\": 2, \"provider_calls\": 0, \"scope\": \"Same immutable image, separate OS container lifetimes, same durable state; deterministic admitted roles\"}\n",
+        "stderr": "/usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n"
+      },
+      {
+        "phase": [
+          "3",
+          "v1"
+        ],
+        "exit_code": 0,
+        "seconds": 10.447168969956692,
+        "container_removed": true,
+        "output": "{\"phase\": 3, \"installation\": \"v1\", \"manifest_sha256\": \"2a2d252f7eb110cd11ca1362740cab3d3385771473186096874395186fa9ce07\", \"accepted_entries\": 3, \"old_receipts_unchanged\": true, \"physical_producer_markers\": 3, \"provider_calls\": 0, \"scope\": \"Same immutable image, separate OS container lifetimes, same durable state; deterministic admitted roles\"}\n",
+        "stderr": "/usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n"
+      }
+    ],
+    "production_containers_unchanged": true,
+    "free_after": 447275008,
+    "scope": "same exact image all3 phases, same durable state, installed program v1-v2-v1; no real model calls"
+  }
+}

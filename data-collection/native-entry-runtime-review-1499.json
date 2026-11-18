@@ -1,0 +1,151 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-runtime-review.json",
+    "sha256": "0e1f50d86a5f4b0193e9d26b30c00adf409899aa0ae321a72e8bdf5cdaf8f1f8",
+    "path_base": "absolute private host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "schema": 1,
+    "issue": 1499,
+    "related": [
+      1501
+    ],
+    "status": "blocked-independent-review",
+    "base_commit": "593dc422f8d213327f70fa0fa599e938060dd935",
+    "worktree": "D:\\GongGong-work\\native-entry-runtime-integration-20261118",
+    "authority": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "source_hashes": {
+      "customizations/components/tianxuan/server/api.py": "bbf8f673aee6e8f3fc4d16584b87022f8462468bc8a5b0ded212c63d03efac19",
+      "customizations/components/tianxuan/server/main.py": "c3fe9915b5aa011d55262b5fb1ca8810ac4d3dc2c6b4f870466e071da2497734",
+      "customizations/components/tianxuan/server/native_entry_api.py": "3e3c515f3d78130add945084114a81643071fdc1cb69eeb049a996e2ca67bb06",
+      "customizations/components/tianxuan/server/native_entry_context.py": "5b2eef7176e3307909af8a84756bb75b5521f2c2e9664a57ca6273054988491a",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "02dff865181f0d413c039c6384a97d2659c62fc90485829d91489989e96266bd",
+      "customizations/components/tianxuan/server/test_native_entry_broker_context.py": "29dde74671f44d7d84efa948473171bd90bb6745ee3cb5adf25bdbc178e27582",
+      "customizations/components/tianxuan/server/test_native_entry_context.py": "802c8ce92b2ceab1b16e2991e1878e6dd3b052f666e7021c484ee7fc0fec00ba",
+      "customizations/components/tianxuan/server/test_native_entry_remote_normal.py": "7a295143edf398b55cefd0c1c18953150fcdf9d4c14b87e9ae5caa2ce69ce79e",
+      "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "a917868cb2d8d091f4ad905fa6cad0de1758dae5fc087738dbc84943d3cb93d6",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "b148212258a3877e3990f492cf6ee1dbcaddaab42b791224d544f68293635aa2",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "d07e0cd4dbf053a8179e3e7056165f6fc9c97628fcb7d75a28c162830749de19",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "0b44f7f7f385454729c5a6cd2cf38ef4113b4ee6526d6a0bbee6ee5ed68eb2b6",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "42986e21bb5c528c4dfbc342ff597613aee861ff0468bbb2c2d12b89453b4803",
+      "customizations/components/tianxuan/sinan-workorders/native_node.py": "bfafb68f372f91367878974d9e24c344cdaf8df0d766d1ab0b2b4d5afb7adb84",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "26ad8ef3f1d07faeb04ee7fa89ac266346806dade17d77514bb4744680b402c9",
+      "design-docs/native-production-entry-20261118.md": "c73edb616cb79621076693d563d76fd8c3838d873df0dc723e592502e38c46a2",
+      "customizations/components/tianxuan/server/test_native_entry_context_resources.py": "193236f7c55772a13184a4a399e40b39275b1e1dd441e9795e739df774285661",
+      "customizations/components/tianxuan/sinan-workorders/native_context.py": "0d63295903cc051019ff771cd4bf250a17cb93f656f0767aa609177390402c2e"
+    },
+    "source_hash_checks": "18 exact changed/new source files match original16 plus resource repair3 overrides/additions",
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "verified": [
+        "bind-consumer-release",
+        "reconstruct-worker-outcomes"
+      ],
+      "application": "Exact final source bytes checked; real terminal fixtures independently executed; transport completion does not imply acceptance"
+    },
+    "blocking_findings": [
+      {
+        "id": "R1",
+        "priority": "P1",
+        "file": "customizations/components/tianxuan/server/native_entry_context.py",
+        "line": 255,
+        "title": "Bound admission before submitting context work to the shared executor",
+        "evidence": {
+          "http_queue_local_and_remote": {
+            "requests": 72,
+            "completed_before_release": 0,
+            "lease_waiters": 28,
+            "declared_max_waiters": 32,
+            "result": "2 passed in 5.64s"
+          },
+          "actual_transport_timeout": {
+            "elapsed_seconds": 35.02,
+            "events_at_timeout": [],
+            "events_after_disconnect_and_release": [
+              "started",
+              "resolved"
+            ],
+            "blocker_http_status": 503,
+            "result": "1 passed, 1 remote skipped (shared queue), 2 deselected in 36.70s"
+          },
+          "actual_flows": {
+            "result": "10 passed, 1 deselected, 1 existing Starlette warning in 17.14s",
+            "coverage": [
+              "ordinary actual main/API remote delivered100",
+              "signed broker local context final physical receipt",
+              "signed broker remote context final physical receipt",
+              "local/remote authority/reconstruction/unknown rejection",
+              "URL authority confusion rejection"
+            ],
+            "deselected": "test_main_installed_context uses unittest temporary paths outside reviewer allowed writes; complete source inspected, prior implementer pass retained"
+          }
+        },
+        "cause": "asyncio.to_thread is called before _lease admission. Executor queue is unbounded, retaining per-request body/parsed arguments/token. _lease starts its30second deadline only once a thread is available. This host has28 executor workers, so max_waiters32 never rejects the queued HTTP workload. Arbitrary Bearer requests also queue before authentication.",
+        "impact": "Claimed32 waiting-request and30second deadline bounds do not apply end-to-end. Queued RPCs can outlive35second transport timeout and later start durable tool side effects; unbounded bursts retain unbounded request memory and block unrelated use of the default executor.",
+        "required_change": "Bound active plus queued work before executor submission, with a single absolute deadline from HTTP receipt, and check expiry before NativeContext operation. Return explicit not_started capacity failure without durable started. Preserve started/unknown operations; never replay provider requests. Validate actual consumer propagation and both local/remote HTTP saturation.",
+        "scope_note": "Late read unknown-to-client is not evidence of duplicate provider requests; no automatic replay was observed."
+      }
+    ],
+    "reviewed": {
+      "authority": "Exact task digest/source, workflow actor/tenant, mandate, installation, module, current remote node/token/package/profile/assignment checked per RPC and after result; waiting rechecks after lease. No live permission cache found. Selected-only revision policy intentional.",
+      "resources": "Storage LRU16 holds metadata and block hashes, no retained full object bodies; per-context source/metadata/object/revision caps compose as repair report describes. Ledger aggregate budget avoids full history per check. Transport ingress queue remains unbounded (R1).",
+      "locks": "Condition released before context or storage I/O; per-execution active lease serializes ledger mutations. Independent execution test inspected. No additional cyclic domain/lease/remote condition lock-order defect found in normal reconcile path.",
+      "transport": "Origin requires HTTPS except explicit127.0.0.1 port; rejects URL user-info/path/query/fragment; redirect handler refuses redirects. Token stays in broker transport, absent signed model input. HTTPError is closed and raised;503 detail is not translated to typed resumable caller state. Runner generic exception records needs_attention; no replay is performed.",
+      "durable_receipts": "Only server reader emits final process_closed after validating immutable process/output records. Node-local context data cannot create server closure authority. Unknown starts block later resolve; native worker checks final context receipt before intake.",
+      "physical_lifecycle": "Independent signed local/remote broker and ordinary remote main fixtures pass and join own HTTP/model/node processes. No global operation lock introduced.",
+      "original_reports": "Both immutable reports read; baseline hot139264->8192 logical body bytes and cold verification1 supported by resource implementation/test evidence. No OSrestart, pre-repair concurrency timing, RSS or universal savings assertion made."
+    },
+    "verification": {
+      "http_queue_local_and_remote": {
+        "requests": 72,
+        "completed_before_release": 0,
+        "lease_waiters": 28,
+        "declared_max_waiters": 32,
+        "result": "2 passed in 5.64s"
+      },
+      "actual_transport_timeout": {
+        "elapsed_seconds": 35.02,
+        "events_at_timeout": [],
+        "events_after_disconnect_and_release": [
+          "started",
+          "resolved"
+        ],
+        "blocker_http_status": 503,
+        "result": "1 passed, 1 remote skipped (shared queue), 2 deselected in 36.70s"
+      },
+      "actual_flows": {
+        "result": "10 passed, 1 deselected, 1 existing Starlette warning in 17.14s",
+        "coverage": [
+          "ordinary actual main/API remote delivered100",
+          "signed broker local context final physical receipt",
+          "signed broker remote context final physical receipt",
+          "local/remote authority/reconstruction/unknown rejection",
+          "URL authority confusion rejection"
+        ],
+        "deselected": "test_main_installed_context uses unittest temporary paths outside reviewer allowed writes; complete source inspected, prior implementer pass retained"
+      }
+    },
+    "diff_check": "passed",
+    "provider_calls": 0,
+    "production_activation": false,
+    "limitations": [
+      "Parent still owns packaging/resolver/organization/full250 verification and delivery. This review is not complete business acceptance.",
+      "No new source fixes or Git/provider/production changes performed.",
+      "Original private p fixture directory retained untouched; prior cleanup rejection respected."
+    ],
+    "cleanup": {
+      "removed": [],
+      "retained": [
+        "native-entry-runtime-review-probes/fixtures",
+        "native-entry-runtime-review-probes/timeout-fixtures",
+        "native-entry-runtime-review-probes/flow-fixtures",
+        "reproducible probe scripts and observations.json",
+        "original implementation p directory untouched"
+      ],
+      "terminal_evidence": "All13 executed tests returned; fixture HTTP threads joined and worker pools shut down; Win32_Process found no Python/node consumer of reviewer probe root.",
+      "failure": "Automatic approval review rejected verified owned subtree Remove-Item: blocked by policy. No retry or alternate deletion performed.",
+      "status": "blocked-by-automatic-approval-review"
+    }
+  }
+}

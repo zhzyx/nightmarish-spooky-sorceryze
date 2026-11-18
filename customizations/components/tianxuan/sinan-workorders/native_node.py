@@ -284,6 +284,7 @@ def main():
         config["profiles"],
         lambda *a: True,
         process_helper_path=config.get("process_helper"),
+        contract_registry=config.get("contract_registry"),
         authorize=lambda *a: True,
         limits=Limits(file_bytes=1048576, total_bytes=4194304, files=1000),
     )

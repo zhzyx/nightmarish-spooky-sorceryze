@@ -397,6 +397,67 @@ project's real command.
   responses plus free space; `production/verify.sh` prints disk usage and
   certificate expiry for the HTTPS profile.
 
+## Optional native execution package
+
+The API image includes the existing native domain, Sinan dispatcher, frozen
+framework definitions, signed host runtime and process transport helpers. Its
+Node executable comes from the Debian Node 22 image, matching the Python image's
+glibc environment. The Alpine web image is a separate installation. Model CLIs,
+provider credentials, task signing keys and operator manifests are not built into
+the API image. Installing the image does not admit or start a model task.
+
+Build from the repository root using `deploy/Dockerfile.api`. Its adjacent
+Docker ignore file retains the explicit runtime dependencies and excludes the
+engine checkout, data receipts, private environment files and unrelated host
+tools. Image construction checks Node and Python imports without opening a
+database or starting the server.
+
+`docker-compose.native.yml.example` is an explicit optional overlay. Review its
+paths, then provide an existing read-only `/installation` directory containing
+the admitted manifest and its exact SHA256. Paths inside that manifest resolve
+inside the container: code is under `/app`, installed configuration under
+`/installation`, and durable task/database state under `/data`. Do not copy a
+Windows manifest with host paths or reuse an old digest for new source bytes.
+The existing production HTTPS/key overlay still applies; this package does not
+change account or organization admission. Never include an unverified native
+overlay in the live Compose invocation.
+
+For admitted remote workers and context RPC, also set `TIANXUAN_NATIVE_RUNTIME`
+to the absolute container path of the reviewed runtime sidecar and
+`TIANXUAN_NATIVE_RUNTIME_SHA256` to its exact digest. Leave both empty when that
+capability is not installed. The sidecar binds the ordinary installation digest,
+node profiles and context policy. Context token files remain outside model input
+and writable task workspaces. The proxy routes `/native-context/` to the API with
+its execution bearer preserved and a 256 KiB request limit; production uses the
+HTTPS origin, not browser login redirects. A package missing the matching
+runtime implementation must not enable this sidecar.
+
+For an upgrade or rollback:
+
+1. Record the exact old/new image IDs, manifest and source hashes, and ownership
+   of in-flight tasks. Stop new admission and reconcile actual physical terminals.
+   Unknown executions retain their occupancy and receipts; switching an image
+   never authorizes replay.
+2. Back up the domain and native databases consistently, including required WAL
+   state. Rehearse restore into a separate owned volume. Retain the current
+   production image, configuration and recovery data.
+3. Validate the candidate in an isolated container with a read-only root,
+   bounded temporary storage and an owned writable state directory. Verify
+   ordinary entry, actual Node transport, revocation, durable progress and
+   replacement/reversion against the same isolated state. Import success alone
+   is not production acceptance.
+4. Only after the complete installation and migration acceptance, switch the
+   service to the exact verified image and configuration. If reverting, use the
+   verified compatible old installation after handoff. Preserve current task
+   journals; never delete the volume or silently rewind accepted work.
+
+The existing small server must also retain sufficient free memory and disk for
+its running service and rollback image. Downloading only the verified Node layer
+and deriving an isolated test image from an already-installed API base can test
+the runtime closure without pulling duplicate full images. Such a derivative
+test must record its base and input hashes separately; it does not replace the
+normal Dockerfile build or grant production activation.
+
 ## Troubleshooting
 
 - `dependency failed to start: container ... api ... is unhealthy` - check

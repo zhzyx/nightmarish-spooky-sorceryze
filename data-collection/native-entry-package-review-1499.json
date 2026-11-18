@@ -1,0 +1,73 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-package-review.json",
+    "sha256": "0a8856d7f04358c237fab69e8e3df503e91cc5ac06b25cd593edd3009db2e4bc",
+    "path_base": "absolute private host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "schema": 1,
+    "issue": 1499,
+    "related_bug": 1445,
+    "status": "scoped-package-independent-review-conditionally-passed-awaiting-normal-Dockerfile-CI",
+    "worktree": "D:\\GongGong-work\\native-entry-runtime-integration-20261118",
+    "authority": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "source_request_id": "kuafu-local-1444-ffffe549d4ec4376898c6571b4be336ecf62913b530db55973e53f6202a96390",
+    "reviewed_at": "2026-11-18T09:02:56.320772+00:00",
+    "source_sha256": {
+      "deploy/Dockerfile.api": "6ea2eaaffcb337ea8434dd20fb530e526d99cd2ddc31b35b9bd1d5e0293743da",
+      "deploy/Dockerfile.api.dockerignore": "320a2fcc12a3cd2bd7111ea36dc0fb50ab2ffd3f6c23ace2353515fa2b4605fc",
+      "deploy/README.md": "4c76936ed40fb8dbf5b5dc900ed909d60ccef99c471f5bda684cb13ece910b16",
+      "deploy/nginx.conf": "858543b7a2c5d646ee4698c4379e97275b3af509007751dd4149a2bfb3cc45b7",
+      "deploy/production/nginx.gate.conf.example": "6c120344f4852e18e232a6abd97c1a02ec194f4d95b7f85f0d620b03277e7d57",
+      "deploy/docker-compose.native.yml.example": "cece5a53345fb2f99277fbb6e7a85c27a2abc5fbd6493cc1705a788eae67b47b",
+      ".github/workflows/tianxuan-deploy-build.yml": "74f4ed903be06d2560dfc128434b8b336c31a86cf9c5fa1e23335c9ed91c6dbe"
+    },
+    "package_report_sha256": "a7192f95fa2dcadd2e82a2c5dfa42488d16525a8ac6758e87f4cb37b177f55a9",
+    "package_ci_alignment_sha256": "8a7723e3569d4af2dbfe9e8387e8807c02172dd7b5cf329b9149d579920ac170",
+    "upstream_runtime_review_sha256": "0ea509ecb66e790a84ce8762ce8ba61c45a18fe661958d28c5103f85882bf9fc",
+    "findings": [],
+    "corrected_findings": [
+      {
+        "priority": 2,
+        "finding": "New Docker COPY dependencies did not trigger deploy CI when changed alone.",
+        "resolution": "Root added all seven dependency paths; independently reread current workflow and pinned revised SHA."
+      }
+    ],
+    "checks": [
+      "All seven original hashes and nine private evidence hashes matched; two reviewed source changes now bound by CI-alignment receipt, other five unchanged.",
+      "Current Dockerfile COPY input snapshot449 files: Python native_entry_factory/native_context/native_node and native_entry_runtime.runner.runtime_digest imports succeeded. Node subscription_session and native_dispatch module imports succeeded without model calls. Windows import probes only, not Linux ABI/build tests.",
+      "Node22 Debian executable only; Python glibc image installs libstdc++6. No Alpine binary, npm or provider installation copied. Existing Linux derivative passed Node transport; fresh base remains CI obligation.",
+      "Host runtime relative paths resolve through copied framework, native_model_host and owned_process. Windows-only editor helper absent from Linux image is guarded by os.name.",
+      "Ignore policy re-denies children below traversal-only parents. Archived441 BuildKit COPY export matched all hashes and excluded8sentinels. Current8added files fall within allowed server/sinan roots;449inventory is not a new remote export claim.",
+      "Nonroot UID10001 and /data ownership retained. Optional overlay read_only, bounded /tmp, durable DB/coordinator /data paths, readonly existing /installation bind/create_host_path false. Manifest and sidecar separately digest pinned and absolute; base Compose does not enable native mode.",
+      "HTTP/TLS changes add only /native-context/ location. Execution Authorization preserved, no browser auth_request redirect;256KiB cap, request/response buffering off,40s inactivity timeout. Application separately imposes30s admission/body deadline; proxy timeout is not a total deadline.",
+      "Actual nginx syntax and HTTP/TLS synthetic upstream200/401/413 evidence and Compose normalization verified. Initial failed proxy cleanup and443-vs441 sibling leak retained with correction. Synthetic upstream does not establish application authority or production acceptance.",
+      "Current proxy/Compose bytes are already LF and equal tested bytes. git hash-object --path matches expected LF blobs; final actual index must retain them.",
+      "Requirements COPY/install precedes business source, dependency closure unchanged, validation RUN follows all inputs. Workflow normal Dockerfile build then9modules with network none/read-only/192MiB/1CPU and bounded tmpfs.",
+      "Recalled editor-dependency-handoff: exact candidate and delivery-versus-acceptance separation apply. Old derivative/import success cannot establish new image acceptance."
+    ],
+    "remaining_acceptance": [
+      "Fresh normal Dockerfile build and nine test modules in Linux CI on final candidate.",
+      "Publisher must compare final staged/committed proxy/Compose blob IDs with normalization.json.",
+      "Production installation/migration, resolver/provider acceptance and wholeIssue1445/1499 remain outside review."
+    ],
+    "limits": [
+      "No local Docker daemon; none installed. No remote mutations, provider/model calls, source/index edits or production changes.",
+      "Prior runtime R1/R2 review reused; broad review not repeated.",
+      "Old derivative9tests and same-image v1-v2-v1 do not validate newer449-file runtime image.",
+      "Named synthetic exclusions do not prove universal absence of arbitrary secrets within admitted roots."
+    ],
+    "evidence": {
+      "closure.json": "a51fe6399e7f0389f025c8cd99822c1734d3142b2927f0c78376b0f025a6cec9",
+      "learning-recall.json": "87fa46f3f782375d32bb736689a02824f8e0a9fb44e8612c2ac3438866889c65",
+      "normalization.json": "6d77c53b62e03af77cc8a11abc12bcaca84553e6c1bdfcac3a65e64b4b94e373"
+    },
+    "cleanup": {
+      "owned_import_snapshot_removed": false,
+      "retained": "app/ snapshot and closure hashes/import outputs, normalization proof and learning recall",
+      "reason": "Automatic approval review rejected boundary-checked PowerShell Remove-Item of this owned snapshot; tool supplied only blocked by policy. No deletion occurred and no bypass attempted.",
+      "source_or_server_resources_modified": false
+    }
+  }
+}

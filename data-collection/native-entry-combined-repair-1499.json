@@ -1,0 +1,385 @@
+{
+  "issue": 1499,
+  "related": [
+    1382,
+    1445,
+    1501
+  ],
+  "status": "targeted_repair_verified_pending_exact_review_and_fresh_CI",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "060ac18a8735a91a583c3355e43c1d2b537b0e5c8ce974035bd50f85594c9168",
+    "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": "88f522a4fde1a2b2c3147f9d4ed5944e2acb95439eaf1625665b99af492ce8b9",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "b8bd4394235ca07f078388774f7b11b313cd35aff43b7728af2ce9ab216abcdd",
+    "customizations/components/tianxuan/server/test_native_entry_broker_context.py": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607",
+    ".github/workflows/tianxuan-deploy-build.yml": "0af4c1f36783c51955e6252669e5259b9d8142a51213ba1ac055de6d052d34b7"
+  },
+  "private_evidence_sha256": {
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-runtime-ci-docker-1523.log": "94fa9e277f66d3f45c9b1ad6242b8710b7dcef4c00fac6175913b79d42375deb",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-runtime-ci-module-1523.log": "d5b377a38378cd8caa6185cd866585fda150ade888f23fc5aa83b510e4ab2941",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-runtime-combined-regression.log": "4c38b30d06a2a7eddb6822f4416f7a9737552d0865dd57f73e76210ac6128526",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-runtime-broker-fixed-windows.log": "c76992411dd5383d426c3bbc338af4b8d3e7c7b65923f1a10dd0a18bf695944c",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\inputs.json": "d13eec520d5cf8b9c9a6b7a3c961eeb592ccd1ae413e7261697199b5ff00c694",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\server-result.json": "cd88e2e284656a743530d24cfb13f24e343c76b817decbe20033a6d9895e717b",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\broker-budget-result.json": "5e33b217b42c7edc2627f25b08a5c0a89eb65611b87a603edd12f1c1743938c4",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\backpressure-inputs.json": "3261eb6f19d0492cf4fc6b1a434da58db447f0c3ec811924733163ba52c74a3d",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\backpressure-result.json": "fb1a6de79adc3ff3e535bcbc8630677e0080733df306d1c538354c0d838c39af",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\backpressure-memory-readback.json": "8db971b7f7c029b88b78257f0b1608196eb897541d1fed46223e5b90c9a52418",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\backpressure-smoke-inputs.json": "feb5de381be708e2aaf42e3fc266f2f21a4df5293654f225f070baf165a39f35",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\backpressure-smoke-result.json": "fd6b1cabf550874ec4c459af6a536a37aaa129bf4f4d65690666abd991983aa2"
+  },
+  "failures_preserved": {
+    "pr1523": {
+      "source": "fd48cb4a8a03e20292ef3c1c0def89d5aaf5b8b6",
+      "signed": "f7a7aff93e2f923eaca0c5851cf126b4b3630feb",
+      "docker_run": 44275598235,
+      "module_run": 44275598192,
+      "observed": "Normal Dockerfile API image built. Container test52passed1failed and module1179passed1failed/233subtests/9skipped: fixture supplied Python symlink, correctly rejected by installed-worker validator. Static/Windows/cache/association checks passed; failed PR not merged."
+    },
+    "server_original": "Earlier derivative image53tests:51passed2failed; Python symlink and cumulative synthetic10s session budget. Readonly ledger shows two model/tool turns received, third unknown; preserved without replay.",
+    "transport": "Original combined Windows failure10054 retained. Controlled delayed-body original transport reproducibly10053; keep-alive control succeeds. Exact original packet sequence unproven.",
+    "oom": {
+      "metadata": {
+        "files": {
+          "customizations/components/tianxuan/server/test_native_entry_broker_context.py": {
+            "sha256": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\combined-test_native_entry_broker_context.py",
+            "remote": "combined-test_native_entry_broker_context.py"
+          },
+          "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": {
+            "sha256": "88f522a4fde1a2b2c3147f9d4ed5944e2acb95439eaf1625665b99af492ce8b9",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\combined-test_native_entry_context_backpressure.py",
+            "remote": "combined-test_native_entry_context_backpressure.py"
+          },
+          "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": {
+            "sha256": "060ac18a8735a91a583c3355e43c1d2b537b0e5c8ce974035bd50f85594c9168",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\combined-native_entry_context_client.py",
+            "remote": "combined-native_entry_context_client.py"
+          }
+        },
+        "image": "sha256:9e68494a546fed6479a8651ea7114c3f297fe06b3443665393c26d55fe8bfb9b",
+        "scope": "Exact three readonly file overlays on committed fd48cb4 runtime derivative; no production installation"
+      },
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--name",
+        "gonggong-native-1499-backpressure-20261118",
+        "--label",
+        "org.gonggong.task=1499-native-package",
+        "--network",
+        "none",
+        "--read-only",
+        "--memory",
+        "192m",
+        "--cpus",
+        "1",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,size=67108864,mode=1777",
+        "--mount",
+        "type=bind,src=/tmp/gonggong-native-package-1499-20261118-a/runtime-rpc/combined-test_native_entry_broker_context.py,dst=/app/customizations/components/tianxuan/server/test_native_entry_broker_context.py,readonly",
+        "--mount",
+        "type=bind,src=/tmp/gonggong-native-package-1499-20261118-a/runtime-rpc/combined-test_native_entry_context_backpressure.py,dst=/app/customizations/components/tianxuan/server/test_native_entry_context_backpressure.py,readonly",
+        "--mount",
+        "type=bind,src=/tmp/gonggong-native-package-1499-20261118-a/runtime-rpc/combined-native_entry_context_client.py,dst=/app/customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py,readonly",
+        "--mount",
+        "type=bind,src=/tmp/gonggong-native-package-1499-20261118-a/runtime-rpc/backpressure-evidence,dst=/evidence",
+        "-e",
+        "NATIVE_TEST_NODE=/usr/local/bin/node",
+        "gonggong-native-package:1499-rpc-20261118",
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-s",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/evidence/tests",
+        "--tb=short",
+        "-o",
+        "faulthandler_timeout=150",
+        "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py",
+        "customizations/components/tianxuan/server/test_native_entry_broker_context.py"
+      ],
+      "exit_code": 137,
+      "seconds": 71.84916191198863,
+      "log": "..................BROKER_CAPACITY {\"duration\": 35.03310016699834, \"model_calls\": 3, \"resolve_attempts\": 3}\n.",
+      "container_removed": true,
+      "production_containers_unchanged": true
+    },
+    "docker_memory_events": {
+      "events": [
+        {
+          "Type": "container",
+          "Action": "create",
+          "Actor": {
+            "ID": "b13adb5a9b2c0a547a1fdde1f361e693e3a64f5cdc74443a394c88bbeccdcead",
+            "Attributes": {
+              "image": "gonggong-native-package:1499-rpc-20261118",
+              "name": "gonggong-native-1499-backpressure-20261118",
+              "org.gonggong.purpose": "isolated-validation",
+              "org.gonggong.scope": "runtime-rpc-validation",
+              "org.gonggong.task": "1499-native-package"
+            }
+          },
+          "scope": "local",
+          "time": 1794995119,
+          "timeNano": 1794995119664685165
+        },
+        {
+          "Type": "container",
+          "Action": "attach",
+          "Actor": {
+            "ID": "b13adb5a9b2c0a547a1fdde1f361e693e3a64f5cdc74443a394c88bbeccdcead",
+            "Attributes": {
+              "image": "gonggong-native-package:1499-rpc-20261118",
+              "name": "gonggong-native-1499-backpressure-20261118",
+              "org.gonggong.purpose": "isolated-validation",
+              "org.gonggong.scope": "runtime-rpc-validation",
+              "org.gonggong.task": "1499-native-package"
+            }
+          },
+          "scope": "local",
+          "time": 1794995119,
+          "timeNano": 1794995119680040856
+        },
+        {
+          "Type": "container",
+          "Action": "start",
+          "Actor": {
+            "ID": "b13adb5a9b2c0a547a1fdde1f361e693e3a64f5cdc74443a394c88bbeccdcead",
+            "Attributes": {
+              "image": "gonggong-native-package:1499-rpc-20261118",
+              "name": "gonggong-native-1499-backpressure-20261118",
+              "org.gonggong.purpose": "isolated-validation",
+              "org.gonggong.scope": "runtime-rpc-validation",
+              "org.gonggong.task": "1499-native-package"
+            }
+          },
+          "scope": "local",
+          "time": 1794995120,
+          "timeNano": 1794995120155311696
+        },
+        {
+          "Type": "container",
+          "Action": "oom",
+          "Actor": {
+            "ID": "b13adb5a9b2c0a547a1fdde1f361e693e3a64f5cdc74443a394c88bbeccdcead",
+            "Attributes": {
+              "image": "gonggong-native-package:1499-rpc-20261118",
+              "name": "gonggong-native-1499-backpressure-20261118",
+              "org.gonggong.purpose": "isolated-validation",
+              "org.gonggong.scope": "runtime-rpc-validation",
+              "org.gonggong.task": "1499-native-package"
+            }
+          },
+          "scope": "local",
+          "time": 1794995189,
+          "timeNano": 1794995189656929464
+        },
+        {
+          "Type": "container",
+          "Action": "die",
+          "Actor": {
+            "ID": "b13adb5a9b2c0a547a1fdde1f361e693e3a64f5cdc74443a394c88bbeccdcead",
+            "Attributes": {
+              "execDuration": "70",
+              "exitCode": "137",
+              "image": "gonggong-native-package:1499-rpc-20261118",
+              "name": "gonggong-native-1499-backpressure-20261118",
+              "org.gonggong.purpose": "isolated-validation",
+              "org.gonggong.scope": "runtime-rpc-validation",
+              "org.gonggong.task": "1499-native-package"
+            }
+          },
+          "scope": "local",
+          "time": 1794995190,
+          "timeNano": 1794995190280062959
+        },
+        {
+          "Type": "container",
+          "Action": "destroy",
+          "Actor": {
+            "ID": "b13adb5a9b2c0a547a1fdde1f361e693e3a64f5cdc74443a394c88bbeccdcead",
+            "Attributes": {
+              "image": "gonggong-native-package:1499-rpc-20261118",
+              "name": "gonggong-native-1499-backpressure-20261118",
+              "org.gonggong.purpose": "isolated-validation",
+              "org.gonggong.scope": "runtime-rpc-validation",
+              "org.gonggong.task": "1499-native-package"
+            }
+          },
+          "scope": "local",
+          "time": 1794995190,
+          "timeNano": 1794995190681081760
+        }
+      ],
+      "stderr": "",
+      "meminfo": {
+        "MemTotal": "469224 kB",
+        "MemAvailable": "218068 kB",
+        "SwapTotal": "3145724 kB",
+        "SwapFree": "2854776 kB"
+      }
+    }
+  },
+  "repair": {
+    "transport": "Scoped urllib HTTP/HTTPS handler changes only Connection header. Local connection still physically closes. Retry only exact typed503 known-not-started, same request/call/execution; no unknown transport replay, model restart or crash recovery.",
+    "fixture": "Resolve and hash actual Python executable; synthetic cumulative session60s, outer worker120s. Production budgets and symlink rejection unchanged.",
+    "ci": "Same normal image:192MiB/1CPU10-module smoke excludes only the two250burst parameters; separate512MiB/1CPU step runs both.512MiB includes test-driver250threads; not a production resource upgrade or service capacity measurement. Compose logs/down require .env to exist."
+  },
+  "validation": {
+    "windows_fixture": "2passed13.89s with current client/fixture",
+    "windows_burst": "Repair receipt: normal/delayed250 twice,2822connections made and closed; original fail retained. Independent23nonburst tests and8real-socket probes pass; final review appended separately.",
+    "static": "Current three Python files: ruff check --no-fix, ruff format --check, mypy --follow-imports=silent --ignore-missing-imports all pass; no mutation.",
+    "linux_fixture": {
+      "metadata": {
+        "fixture_sha256": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607",
+        "image": "sha256:9e68494a546fed6479a8651ea7114c3f297fe06b3443665393c26d55fe8bfb9b",
+        "original_result_sha256": "cd88e2e284656a743530d24cfb13f24e343c76b817decbe20033a6d9895e717b"
+      },
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--name",
+        "gonggong-native-1499-broker-budget-20261118",
+        "--label",
+        "org.gonggong.task=1499-native-package",
+        "--network",
+        "none",
+        "--read-only",
+        "--memory",
+        "192m",
+        "--cpus",
+        "1",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,size=67108864,mode=1777",
+        "--mount",
+        "type=bind,src=/tmp/gonggong-native-package-1499-20261118-a/runtime-rpc/broker-fixture-budget.py,dst=/app/customizations/components/tianxuan/server/test_native_entry_broker_context.py,readonly",
+        "--mount",
+        "type=bind,src=/tmp/gonggong-native-package-1499-20261118-a/runtime-rpc/broker-budget-evidence,dst=/evidence",
+        "-e",
+        "NATIVE_TEST_NODE=/usr/local/bin/node",
+        "gonggong-native-package:1499-rpc-20261118",
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/evidence/tests",
+        "--tb=short",
+        "customizations/components/tianxuan/server/test_native_entry_broker_context.py"
+      ],
+      "exit_code": 0,
+      "seconds": 85.91822294401936,
+      "log": "..                                                                       [100%]\n2 passed in 78.77s (0:01:18)\n",
+      "container_removed": true,
+      "production_containers_unchanged": true
+    },
+    "linux_current_nonburst": {
+      "metadata": {
+        "files": {
+          "customizations/components/tianxuan/server/test_native_entry_broker_context.py": {
+            "sha256": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\smoke-test_native_entry_broker_context.py",
+            "remote": "smoke-test_native_entry_broker_context.py"
+          },
+          "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": {
+            "sha256": "88f522a4fde1a2b2c3147f9d4ed5944e2acb95439eaf1625665b99af492ce8b9",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\smoke-test_native_entry_context_backpressure.py",
+            "remote": "smoke-test_native_entry_context_backpressure.py"
+          },
+          "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": {
+            "sha256": "060ac18a8735a91a583c3355e43c1d2b537b0e5c8ce974035bd50f85594c9168",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\smoke-native_entry_context_client.py",
+            "remote": "smoke-native_entry_context_client.py"
+          }
+        },
+        "image": "sha256:9e68494a546fed6479a8651ea7114c3f297fe06b3443665393c26d55fe8bfb9b",
+        "scope": "Exact three readonly file overlays on committed fd48cb4 runtime derivative; no production installation"
+      },
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--name",
+        "gonggong-native-1499-backpressure-smoke-20261118",
+        "--label",
+        "org.gonggong.task=1499-native-package",
+        "--network",
+        "none",
+        "--read-only",
+        "--memory",
+        "192m",
+        "--cpus",
+        "1",
+        "--tmpfs",
+        "/tmp:rw,nosuid,nodev,size=67108864,mode=1777",
+        "--mount",
+        "type=bind,src=/tmp/gonggong-native-package-1499-20261118-a/runtime-rpc/smoke-test_native_entry_broker_context.py,dst=/app/customizations/components/tianxuan/server/test_native_entry_broker_context.py,readonly",
+        "--mount",
+        "type=bind,src=/tmp/gonggong-native-package-1499-20261118-a/runtime-rpc/smoke-test_native_entry_context_backpressure.py,dst=/app/customizations/components/tianxuan/server/test_native_entry_context_backpressure.py,readonly",
+        "--mount",
+        "type=bind,src=/tmp/gonggong-native-package-1499-20261118-a/runtime-rpc/smoke-native_entry_context_client.py,dst=/app/customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py,readonly",
+        "--mount",
+        "type=bind,src=/tmp/gonggong-native-package-1499-20261118-a/runtime-rpc/backpressure-smoke-evidence,dst=/evidence",
+        "-e",
+        "NATIVE_TEST_NODE=/usr/local/bin/node",
+        "gonggong-native-package:1499-rpc-20261118",
+        "python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-s",
+        "-p",
+        "no:cacheprovider",
+        "--basetemp=/evidence/tests",
+        "--tb=short",
+        "-k",
+        "not test_250_local_tool_burst",
+        "-o",
+        "faulthandler_timeout=150",
+        "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py",
+        "customizations/components/tianxuan/server/test_native_entry_broker_context.py"
+      ],
+      "exit_code": 0,
+      "seconds": 136.73258151701884,
+      "log": "..................BROKER_CAPACITY {\"duration\": 34.225651355984155, \"model_calls\": 3, \"resolve_attempts\": 3}\n........\n26 passed, 2 deselected in 129.49s (0:02:09)\n",
+      "container_removed": true,
+      "production_containers_unchanged": true
+    }
+  },
+  "host_boundary_reuse": {
+    "historical_report": "data-collection/native-entry-runtime-combined-host-boundary-1499.json",
+    "historical_sha256": "7d10458433a71cf6a2a26517f229cb37b04854b7ac7eb50f4932225547b79f03",
+    "changed_content": {
+      "customizations/components/tianxuan/server/test_native_entry_broker_context.py": {
+        "measured": "557f66315ad4569ece9af8ed4ecf12027a115cdcf460f36026968df398fc4766",
+        "current": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": {
+        "measured": "de4c8a8183839cfae927877cae7823c43cce39182914d56d4d9eaf7df3e8b1fd",
+        "current": "060ac18a8735a91a583c3355e43c1d2b537b0e5c8ce974035bd50f85594c9168"
+      },
+      "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": {
+        "measured": "efc787046a18f7130c6c07d045c6e6eb93b362418438edffa63547c1e2ae0e0e",
+        "current": "88f522a4fde1a2b2c3147f9d4ed5944e2acb95439eaf1625665b99af492ce8b9"
+      }
+    },
+    "reason": "Only bodies of already inventoried host Python files changed. No SCons consumer, native input or host file membership changed. Historical9392-input zero-overlap graph and three cache suites reused for boundary only; current content tested separately and bound in new module proofs.",
+    "current_policy_sha256": "2a8da68f0a86827842fbeaed90800c3ccf62f045ea8a6c86e8717c7c44b8b3e4",
+    "compilation_performed_for_this_repair": false
+  },
+  "limitations": [
+    "Server evidence uses prior derivative image plus exact readonly file overlays, not fresh normal Dockerfile package installation.",
+    "192MiB combined250client test OOM preserved. Real distributed250coordinator capacity remains unmeasured; no250models or time/token savings claim.",
+    "Fresh normal image CI and main delivery still required; production unchanged.",
+    "Durable crash continuation, admitted resolver, multi-organization onboarding, full end-to-end goal and AA game acceptance remain outstanding."
+  ],
+  "cleanup": "All own completed test containers removed and production container IDs unchanged. Retain own derivative images, test state, evidence and prior policy-blocked snapshots pending delivery; no global prune or cleanup bypass."
+}

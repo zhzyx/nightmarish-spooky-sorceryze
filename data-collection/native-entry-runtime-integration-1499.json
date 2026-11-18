@@ -1,0 +1,129 @@
+{
+  "schema": 1,
+  "issue": 1499,
+  "related": [
+    1501
+  ],
+  "source_commit": "46f43c5d38236bfb194ffdf71b0e8451e705a616",
+  "worktree": "D:\\GongGong-work\\native-entry-runtime-integration-20261118",
+  "status": "implementation-verified-pending-parent-review-and-delivery",
+  "authority": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+  "intake": {
+    "issue": 1499,
+    "result": "passed",
+    "updated_at": "2026-11-18T07:21:55Z"
+  },
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "result": "verified methods recalled; exact source and physical terminal preservation applied"
+  },
+  "tests": [
+    {
+      "scope": "original ordinary-main/remote/context regression",
+      "result": "26 passed",
+      "seconds": 52.1
+    },
+    {
+      "scope": "combined context/remote/repair/broker after integration",
+      "result": "36 passed, 1 test assertion failed: remote public profile intentionally has no env; corrected"
+    },
+    {
+      "scope": "final new ordinary-main remote, RPC authority/restart, signed local/remote broker",
+      "result": "11 passed, 1 warning",
+      "seconds": 25.18
+    },
+    {
+      "scope": "final input selection and existing signed broker regression",
+      "result": "3 passed",
+      "seconds": 13.31
+    },
+    {
+      "scope": "ruff",
+      "result": "14 changed/new Python files checked and formatted; passed"
+    },
+    {
+      "scope": "mypy",
+      "result": "2 new production modules passed"
+    },
+    {
+      "scope": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "failures_retained": [
+    {
+      "observed": "Signed demand broker returned unknown before first host turn",
+      "cause": "RPC resolver missed existing NativeContext.events and identity interface",
+      "repair": "Implemented interface with live authorized RPC; real signed broker passed",
+      "events": []
+    },
+    {
+      "observed": "Remote fixture closed-unresolved after local production",
+      "cause": "Test reused server native database as node cache, causing conflicting immutable terminals",
+      "repair": "Independent node database; actual HTTP node produced and final context receipt retained"
+    },
+    {
+      "observed": "Remote test KeyError context_receipt then env",
+      "cause": "Workflow reconcile returns task row; remote public profile has no env by design",
+      "repair": "Read immutable worker terminal and inspect local profile environment separately"
+    },
+    {
+      "observed": "36 setup errors for requested private basetemp",
+      "cause": "Parent directory absent",
+      "repair": "Created owned p/native-entry-runtime-integration parent before pytest"
+    },
+    {
+      "observed": "All 8 authority assertions passed but one Windows server teardown stayed alive",
+      "cause": "HTTPError response resource was not explicitly closed; Windows connection reset during teardown",
+      "repair": "Client closes HTTPError response; test server uses bounded graceful shutdown; final11 passed"
+    }
+  ],
+  "claims": {
+    "provider_calls": 0,
+    "production_activation": false,
+    "ordinary_remote_delivered": true,
+    "signed_context_local_and_remote": true,
+    "physical_closure": true,
+    "unknown_no_replay": true,
+    "server_holds_node_model_credentials": false,
+    "universal_savings_claim": false
+  },
+  "limitations": [
+    "Deterministic fixture admission only; no real provider/model quality acceptance or production activation.",
+    "Runtime sidecar admits selected revisions only; historical delta pairs explicitly denied. Existing NativeContext historical-authority tests remain unchanged.",
+    "Organization identity resolution and source resolver remain separate work.",
+    "Parent owns packaging source closure, independent review, Git delivery and production installation admission."
+  ],
+  "sources": {
+    "customizations/components/tianxuan/server/api.py": "bbf8f673aee6e8f3fc4d16584b87022f8462468bc8a5b0ded212c63d03efac19",
+    "customizations/components/tianxuan/server/main.py": "c3fe9915b5aa011d55262b5fb1ca8810ac4d3dc2c6b4f870466e071da2497734",
+    "customizations/components/tianxuan/server/native_entry_api.py": "3e3c515f3d78130add945084114a81643071fdc1cb69eeb049a996e2ca67bb06",
+    "customizations/components/tianxuan/server/native_entry_context.py": "9375cb281ca9be4f64b6ee02957b22d1a8aa454afd9576f12a6c41c2f18c053a",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "02dff865181f0d413c039c6384a97d2659c62fc90485829d91489989e96266bd",
+    "customizations/components/tianxuan/server/test_native_entry_broker_context.py": "29dde74671f44d7d84efa948473171bd90bb6745ee3cb5adf25bdbc178e27582",
+    "customizations/components/tianxuan/server/test_native_entry_context.py": "802c8ce92b2ceab1b16e2991e1878e6dd3b052f666e7021c484ee7fc0fec00ba",
+    "customizations/components/tianxuan/server/test_native_entry_remote_normal.py": "7a295143edf398b55cefd0c1c18953150fcdf9d4c14b87e9ae5caa2ce69ce79e",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "a917868cb2d8d091f4ad905fa6cad0de1758dae5fc087738dbc84943d3cb93d6",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "b148212258a3877e3990f492cf6ee1dbcaddaab42b791224d544f68293635aa2",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "d07e0cd4dbf053a8179e3e7056165f6fc9c97628fcb7d75a28c162830749de19",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "0b44f7f7f385454729c5a6cd2cf38ef4113b4ee6526d6a0bbee6ee5ed68eb2b6",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "42986e21bb5c528c4dfbc342ff597613aee861ff0468bbb2c2d12b89453b4803",
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "bfafb68f372f91367878974d9e24c344cdaf8df0d766d1ab0b2b4d5afb7adb84",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "26ad8ef3f1d07faeb04ee7fa89ac266346806dade17d77514bb4744680b402c9",
+    "design-docs/native-production-entry-20261118.md": "c73edb616cb79621076693d563d76fd8c3838d873df0dc723e592502e38c46a2"
+  },
+  "cleanup": {
+    "state": "blocked-by-tool-policy",
+    "owned_private_root": "p/native-entry-runtime-integration",
+    "retained": [
+      "Uncommitted implementation and evidence for parent delivery; unrelated worktrees/configuration untouched"
+    ],
+    "attempted": [
+      "verified owned p/native-entry-runtime-integration subtree deletion",
+      "literal absolute owned subtree deletion"
+    ],
+    "failure": "Automatic approval review rejected Remove-Item with blocked by policy; no deletion executed.",
+    "verification": "All final test harness threads joined; process query showed no task scratch consumers.",
+    "remaining": "p/native-entry-runtime-integration and earlier pytest-managed fixture directories retained. Exclude private p tree from source delivery. No source/branch/worktree cleanup authorized before parent delivery."
+  }
+}

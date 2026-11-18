@@ -82,14 +82,21 @@ _NATIVE_ENTRY = None
 if os.environ.get("TIANXUAN_NATIVE_INSTALLATION"):
     if _MODE != "native":
         raise RuntimeError("Native installation requires native storage mode")
+    from native_entry_context import RuntimeInstallation
     from native_entry_factory import OrdinaryEntry
 
+    _RUNTIME_INSTALLATION = (
+        RuntimeInstallation(os.environ["TIANXUAN_NATIVE_RUNTIME"], os.environ["TIANXUAN_NATIVE_RUNTIME_SHA256"])
+        if os.environ.get("TIANXUAN_NATIVE_RUNTIME")
+        else None
+    )
     _NATIVE_ENTRY = OrdinaryEntry(
         _STORE,
         _NATIVE_STORE,
         os.environ["TIANXUAN_NATIVE_INSTALLATION"],
         os.environ["TIANXUAN_NATIVE_INSTALLATION_SHA256"],
         os.environ["TIANXUAN_NATIVE_STATE"],
+        runtime_installation=_RUNTIME_INSTALLATION,
     )
 
 app = create_app(
@@ -104,3 +111,8 @@ app = create_app(
     native_entry=_NATIVE_ENTRY,
     native_workflow=_NATIVE_ENTRY.workflow if _NATIVE_ENTRY else None,
 )
+
+if _NATIVE_ENTRY and _NATIVE_ENTRY.runtime_installation is not None:
+    from native_entry_context import mount_entry_runtime
+
+    app = mount_entry_runtime(app, _NATIVE_ENTRY)

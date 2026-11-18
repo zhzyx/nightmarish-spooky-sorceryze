@@ -1,0 +1,24 @@
+{
+  "issue": 1499,
+  "incident": "6c012c189fe939c7255bac36e68c2812f875a774b46219c33440a809f5f7f81e",
+  "action": "Retain original bytes, align working copies to already independently reviewed index bytes; no index or JSON semantic change",
+  "index_before_and_after": "377c36210cb3db1a4e872c3c3940fc70a58af601",
+  "files": [
+    {
+      "path": "data-collection/native-context-backpressure-1501.json",
+      "original_path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\original-bytes-native-context-backpressure-1501.json",
+      "original_sha256": "db7fa2afccbd4d6c7a62261043e56b74c3e76acc6ba4e772880261974563148d",
+      "indexed_sha256": "7a9075498a2e28c9ee81a694fb50da23989d7460ae32fd4aba527940df2fd937",
+      "json_equal": true
+    },
+    {
+      "path": "data-collection/native-context-burst-repair-1501.json",
+      "original_path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\original-bytes-native-context-burst-repair-1501.json",
+      "original_sha256": "815d7eeac2169d7bdd7f97bf44eb2d0344ad9e3f1f6d5a88ca9ebce6d92c2f57",
+      "indexed_sha256": "a76eef546f177c1d18e429c5e3a5072101e4a6083061beee9ec9fbed4b3df18c",
+      "json_equal": true
+    }
+  ],
+  "original_failure": "data-collection/native-context-backpressure-1501.json working-copy bytes differ from staged bytes",
+  "code_changed": false
+}

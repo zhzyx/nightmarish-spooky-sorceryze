@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-da7a5f568e2fdf8656f6d39b49c27804c21736c8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-production-entry-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "63758d789fc3c8e3adc873c1ecd512504236340b14a7462492b0c01ea988dfad",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "88a401d8a8498af36063eedbed3abc5657c52d90",
+    "context_sha256": "7f61d7637a30fa9ea803767f35b232f02ec89ba69a2db439741863d9b668d914",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "native-context-burst-repair-1501-and-runtime-server-sandbox",
+    "diagnosis": "Controlled headers/body delay reproduces early-close HTTP admission failure; scoped keep-alive transport fixes tested class without replaying unknown failures. Actual 192MiB container combining coordinator and 250 Python client threads exited137 with Docker oom event; this does not isolate coordinator capacity. Broker fixture Python symlink and cumulative10s test budget corrected after real Linux evidence. Original failures retained.",
+    "next_action": "Independently review exact repaired candidate; validate192MiB nonburst server smoke and separate512MiB CI burst driver using same image; require new full CI before source delivery. Keep real distributed250 capacity and production activation outstanding.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T04:02:21.601184+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T09:54:59.260424+00:00",
+  "sha256": "58ef4ed202e3752641e71a536a970f358ea72ef5afb8adffc2987a40e220f9c7"
+}
