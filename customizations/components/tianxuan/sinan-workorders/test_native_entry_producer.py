@@ -8,16 +8,22 @@ No actual model, provider, network listener or production configuration is used.
 import hashlib
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 
 import native_entry_producer as bridge
+import pytest
 import runner
 from test_native_model_producer import SCHEMA, framework, installed
 from test_native_workflow import fixture, reserve  # noqa: F401
 
 
 def test_actual_broker_signs_exact_finite_task_and_uses_central_budget(fixture, monkeypatch):
+    node_path = os.environ.get("NATIVE_TEST_NODE") or shutil.which("node")
+    if not node_path:
+        pytest.skip("Installed Node required")
+    node = Path(node_path).resolve()
     w, actor, tenant, requirement, initial, tmp = fixture
     profile, environment = installed(tmp, monkeypatch)
     framework_root = framework(tmp)
@@ -25,7 +31,6 @@ def test_actual_broker_signs_exact_finite_task_and_uses_central_budget(fixture, 
     registry.mkdir()
     key_file = tmp / "signing-key"
     key_file.write_text(os.environ["GONGGONG_HOST_KEY"], encoding="utf-8")
-    node = Path(os.environ["NATIVE_TEST_NODE"])
     central = dict(
         state_dir=str(tmp / "entry-budget"), max_calls=10, max_concurrent=2, authority_ref="synthetic-central"
     )

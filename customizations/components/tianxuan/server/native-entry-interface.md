@@ -200,7 +200,7 @@ protocol limits, not an RSS bound or evidence of production model throughput.
 
 Logical completion is recorded as native.entry.dispatch_completed. A logical
 receipt explicitly reports physical_terminal=false; coordinator shutdown drains
-the shared process and records its actual exit. Cancelling a caller leaves its
+the shared process and records its actual exit. Canceling a caller leaves its
 already-admitted logical driver tracked, including queued start writes. Shared
 process startup also survives a detached caller without spawning a second process.
 Unknown contexts, malformed replies and

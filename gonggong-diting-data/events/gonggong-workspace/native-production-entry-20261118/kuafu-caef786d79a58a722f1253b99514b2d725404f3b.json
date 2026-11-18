@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-caef786d79a58a722f1253b99514b2d725404f3b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-production-entry-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "83094b930450510880a236f88a2dfa7414dc00c7005e52218d32331971a73fbb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "dispatch",
+    "detection_head": "46f43c5d38236bfb194ffdf71b0e8451e705a616",
+    "context_sha256": "7f61d7637a30fa9ea803767f35b232f02ec89ba69a2db439741863d9b668d914",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+    "diagnosis": "Root private batch requested same Issue twice. Adapter rejects duplicate tickets before launch. Actual bridge has no unissued request for either target and no spawn tool was invoked. Split into sequential event sessions with distinct task requests, preserving failed configuration and unknown older occupancy. Product scheduler unchanged.",
+    "next_action": "Root executes one corrected session at a time and records actual worker receipts before next; keep source PR1517 validation running.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T07:10:29.178954+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T07:12:35.478985+00:00",
+  "sha256": "ea439565ffe7455aa6d2ed0458be1d57602fefac768c2add6499a65d335f3562"
+}

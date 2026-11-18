@@ -18,7 +18,7 @@ for folder in (HERE, HERE.parent / "duobao", HERE.parent / "sinan-workorders"):
 from native_execution_host import SharedSinanProcess
 from native_store import NativeStoreError
 
-IDENTITY = contextvars.ContextVar("test_entry")
+IDENTITY: contextvars.ContextVar[int | str] = contextvars.ContextVar("test_entry")
 DRIVER = HERE.parent / "sinan-workorders" / "native_entry_driver.mjs"
 
 
