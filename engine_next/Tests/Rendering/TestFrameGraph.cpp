@@ -458,3 +458,23 @@ ENGINE_NEXT_TEST("FrameGraph orders UAV-generated indirect arguments before cons
 	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers[0].eAfter, ResourceState::IndirectArgument);
 	ENGINE_NEXT_CHECK_EQ(stCompiled.arrResources[nArguments].arrFinalStates[0], ResourceState::Common);
 }
+
+ENGINE_NEXT_TEST("FrameGraph orders mutable vertex index pages through upload and retirement")
+{
+	FrameGraph stGraph;
+	const ResourceId nPages = stGraph.AddResource({ "Pages", ResourceState::Common, true });
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("Upload", QueueType::Graphics, nPages, ResourceState::CopyDestination, true)), 0U);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("Draw", QueueType::Graphics, nPages, ResourceState::VertexIndexRead, false)), 1U);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("Retire", QueueType::Graphics, nPages, ResourceState::Common, false)), 2U);
+	CompiledGraph stCompiled;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(stGraph.Compile(stCompiled, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers[0].eBefore, ResourceState::CopyDestination);
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers[0].eAfter, ResourceState::VertexIndexRead);
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrResources[nPages].arrFinalStates[0], ResourceState::Common);
+	stGraph.Clear();
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "Pages", ResourceState::Common, true }), 0U);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("WrongQueue", QueueType::Compute, 0, ResourceState::VertexIndexRead, false)), 0U);
+	ENGINE_NEXT_CHECK(!stGraph.Compile(stCompiled, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::UnsupportedQueueState);
+}

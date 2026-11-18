@@ -64,6 +64,8 @@ struct GeometryGpuConfig
 	std::array<GeometryDescriptorBlock, GEOMETRY_FRAME_COUNT> arrDescriptors;
 	std::array<ID3D12Resource *, GEOMETRY_FRAME_COUNT> arrDepth{};
 	ID3D12RootSignature *pDrawRoot = nullptr;
+	bool bPaged = false;
+	std::uint32_t nMaximumCandidates = 0;
 };
 struct alignas(16) GeometryGpuInstance
 {
@@ -77,6 +79,24 @@ struct alignas(16) GeometryIndirectCommand
 	D3D12_DRAW_INDEXED_ARGUMENTS stDraw{};
 	std::uint32_t nPadding = 0;
 };
+struct GeometryPageView
+{
+	D3D12_VERTEX_BUFFER_VIEW stVertex{};
+	D3D12_INDEX_BUFFER_VIEW stIndex{};
+};
+struct alignas(8) GeometryPagedIndirectCommand
+{
+	std::uint64_t nConstants = 0;
+	D3D12_VERTEX_BUFFER_VIEW stVertex{};
+	D3D12_INDEX_BUFFER_VIEW stIndex{};
+	D3D12_DRAW_INDEXED_ARGUMENTS stDraw{};
+	std::uint32_t nPadding = 0;
+};
+static_assert(sizeof(GeometryPageView) == 32);
+static_assert(sizeof(GeometryPagedIndirectCommand) == 64);
+static_assert(offsetof(GeometryPagedIndirectCommand, stVertex) == 8);
+static_assert(offsetof(GeometryPagedIndirectCommand, stIndex) == 24);
+static_assert(offsetof(GeometryPagedIndirectCommand, stDraw) == 40);
 static_assert(sizeof(GeometryGpuInstance) == 80);
 static_assert(sizeof(GeometryIndirectCommand) == 32);
 static_assert(offsetof(GeometryIndirectCommand, stDraw) == 8);
@@ -114,7 +134,8 @@ public:
 	[[nodiscard]] bool Initialize(ID3D12Device *pDevice, const GeometryClusterSet &stSource, const GeometryGpuConfig &stConfig, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool PrepareFrame(std::uint32_t nFrame, const std::vector<std::array<float, 16>> &arrWorlds,
 									const std::array<float, 16> &arrViewProjection, std::uint64_t nDrawConstants, std::uint64_t nDrawStride,
-									bool bOcclusion, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
+									bool bOcclusion, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics,
+									const GeometryClusterSet *pDynamic = nullptr, std::uint64_t nPageViews = 0, std::uint32_t nPageViewCount = 0);
 	[[nodiscard]] bool Record(std::uint32_t nFrame, GeometryWork eWork, std::uint32_t nMip, ID3D12GraphicsCommandList *pList, Assets::Diagnostics &out_arrDiagnostics);
 	void Execute(std::uint32_t nFrame, std::uint32_t nPhase, std::uint32_t nBucket, ID3D12GraphicsCommandList *pList) const;
 	[[nodiscard]] bool Commit(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics);
@@ -122,6 +143,7 @@ public:
 	[[nodiscard]] bool Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool Release(std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
 	ID3D12Resource *Clusters() const noexcept;
+	ID3D12Resource *Clusters(std::uint32_t nFrame) const noexcept;
 	ID3D12Resource *Arguments(std::uint32_t nFrame, std::uint32_t nPhase) const noexcept;
 	ID3D12Resource *Counters(std::uint32_t nFrame, std::uint32_t nPhase) const noexcept;
 	ID3D12Resource *HiZ(std::uint32_t nFrame) const noexcept;
@@ -130,6 +152,7 @@ public:
 	std::uint64_t AllocatedBytes() const noexcept;
 	const GeometryGpuStatistics &Statistics() const noexcept;
 	const std::vector<GeometryBucket> &Buckets() const noexcept;
+	const std::vector<GeometryBucket> &Buckets(std::uint32_t nFrame) const noexcept;
 
 private:
 	struct Frame
@@ -137,6 +160,10 @@ private:
 		std::array<ComOwner<ID3D12Resource>, 2> arrArguments;
 		std::array<ComOwner<ID3D12Resource>, 2> arrCounters;
 		ComOwner<ID3D12Resource> stUpload;
+		ComOwner<ID3D12Resource> stClusters;
+		std::vector<GeometryBucket> arrBuckets;
+		std::uint32_t nActiveCount = 0;
+		std::uint64_t nPageViews = 0;
 		ComOwner<ID3D12Resource> stHiZ;
 		ComOwner<ID3D12Resource> stReadback;
 		std::uint64_t nFence = 0;
@@ -150,6 +177,10 @@ private:
 	DWORD nOwnerThread = 0;
 	std::uint32_t nPendingFrame = GEOMETRY_FRAME_COUNT;
 	bool bUploaded = false;
+	bool bPaged = false;
+	std::uint32_t nCommandStride = sizeof(GeometryIndirectCommand);
+	std::uint64_t nClusterUploadOffset = 0;
+	std::uint64_t nBucketUploadOffset = 0;
 	std::uint32_t nMipCount = 0;
 	std::uint32_t nWidth = 0;
 	std::uint32_t nHeight = 0;

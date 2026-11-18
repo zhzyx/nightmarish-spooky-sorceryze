@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "event_id": "m44-paged-r11-portable-tests-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T13:38:55.171976+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1534",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m44-paged-r10-validation-20261118",
+    "m44-request-20261118"
+  ],
+  "payload": {
+    "candidate": "paged-tests-portability-r11",
+    "issue_number": 1506,
+    "incident_issue_number": 1534,
+    "correction": {
+      "path": "data-collection/engine-next-visual-runtime-m4-4-paged-ci-correction-r11.json",
+      "sha256": "d2fb1a21caf004676b83bf27e0cde64014de5c23c807fd7271a199a41ff039b3",
+      "size_bytes": 43999
+    },
+    "native_key": "3a0f4b90e4ed77a652b91ead2953c8ddf55ca59e55a894a044b94e2dc6456a8e",
+    "scope": "Derived from all 360 current native input hashes with the unchanged BuildVisualRuntime serialization and R10 compiler/DXC identities. This is not a new full renderer build or a new GPU run.",
+    "local_windows_full_tests_per_compiler": 533,
+    "local_windows_checks_per_compiler": 535865,
+    "unsupported_simulation_tests_per_compiler": 13,
+    "unsupported_simulation_checks_per_compiler": 1137,
+    "remote_ci_status": "pending_new_candidate",
+    "stage_complete": false
+  },
+  "sha256": "31073acf5cf7e363b0eefbfa620208ba6d60ee32dc45cf1001ea9b88e89fd221"
+}

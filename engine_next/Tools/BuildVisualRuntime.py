@@ -15,6 +15,13 @@ import BuildRuntime as RuntimeSupport
 import PackageVisualRuntime
 
 CORE_SOURCES = [
+    "engine_next/Rendering/PagedGeometry.cpp",
+    "engine_next/Rendering/PageResidency.cpp",
+    "engine_next/Rendering/Cook/GpuPagedPackage.cpp",
+    "engine_next/Rendering/LodSelection.cpp",
+    "engine_next/Rendering/Cook/GeometryLod.cpp",
+    "engine_next/thirdparty/meshoptimizer/simplifier.cpp",
+    "engine_next/thirdparty/meshoptimizer/allocator.cpp",
     "engine_next/Rendering/FrameGraph.cpp",
     "engine_next/Rendering/RenderPipeline.cpp",
     "engine_next/Rendering/RenderConfiguration.cpp",
@@ -79,8 +86,14 @@ VISUAL_SOURCES = [
     "engine_next/Platform/Windows/GpuProbeGrid.cpp",
     "engine_next/Platform/Windows/GpuDeformation.cpp",
     "engine_next/Platform/Windows/GpuGeometry.cpp",
+    "engine_next/Platform/Windows/GpuPagedGeometry.cpp",
 ]
 TEST_SOURCES = [
+    "engine_next/Tests/Rendering/TestPagedGeometry.cpp",
+    "engine_next/Tests/Rendering/TestPageResidency.cpp",
+    "engine_next/Tests/Rendering/TestGpuPagedPackage.cpp",
+    "engine_next/Tests/Rendering/TestLodSelection.cpp",
+    "engine_next/Tests/Rendering/TestGeometryLod.cpp",
     "engine_next/Tests/RenderingTestMain.cpp",
     "engine_next/Tests/Rendering/TestFrameGraph.cpp",
     "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
@@ -132,6 +145,9 @@ TEST_SOURCES = [
 PUBLIC_HEADERS = [
     "EngineNext/Rendering/DeformationFrame.h",
     "EngineNext/Rendering/AnimationData.h",
+    "EngineNext/Rendering/PagedGeometry.h",
+    "EngineNext/Rendering/PageResidency.h",
+    "EngineNext/Rendering/GeometryLod.h",
     "EngineNext/Rendering/FrameGraph.h",
     "EngineNext/Rendering/MeshData.h",
     "EngineNext/Rendering/ImageData.h",
@@ -249,6 +265,7 @@ SHADERS = [
     ("TraceCS", "cs_6_5", "GiTrace.cs.cso", []),
     ("UpdateCS", "cs_6_5", "GiIntegrate.cs.cso", []),
     ("CullCS", "cs_6_0", "GeometryCull.cs.cso", []),
+    ("CullCS", "cs_6_0", "GeometryPagedCull.cs.cso", ["-D", "PAGED_GEOMETRY_STAGE=1"]),
     ("CopyDepthCS", "cs_6_0", "GeometryHiZCopy.cs.cso", []),
     ("ReduceDepthCS", "cs_6_0", "GeometryHiZReduce.cs.cso", []),
     ("DepthVS", "vs_6_0", "GeometryDepth.vs.cso", []),
@@ -604,7 +621,7 @@ def compile_shaders(args, commands):
                 else "AmbientOcclusion.hlsl"
                 if name.startswith("AmbientOcclusion")
                 else "GeometryCull.hlsl"
-                if name == "GeometryCull.cs.cso"
+                if name in ("GeometryCull.cs.cso", "GeometryPagedCull.cs.cso")
                 else "GeometryHiZ.hlsl"
                 if name.startswith("GeometryHiZ")
                 else "GeometryDepth.hlsl"
@@ -711,7 +728,7 @@ def build(args):
         "engine_next/Tools/BuildRuntime.py",
         *[
             path.relative_to(args.repo).as_posix()
-            for name in ("enet", "zlib", "libjpeg-turbo")
+            for name in ("enet", "zlib", "libjpeg-turbo", "meshoptimizer")
             for path in (args.repo / "engine_next/thirdparty" / name).rglob("*")
             if path.is_file()
         ],

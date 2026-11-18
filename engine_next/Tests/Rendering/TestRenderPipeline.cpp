@@ -1004,3 +1004,27 @@ ENGINE_NEXT_TEST("Ambient occlusion reads the completed GBuffer and feeds indire
 	ENGINE_NEXT_CHECK_EQ(stPipeline.arrAmbientOcclusion[0], EngineNext::Rendering::INVALID_RESOURCE);
 	ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::AmbientOcclusion) == nullptr);
 }
+
+ENGINE_NEXT_TEST("Paged geometry pool declares all physical upload draw and retirement states")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 28, true, true, 6, 6, { true, true }, true, true, { true, true, 8, true }, true, true));
+	const CompiledPass *pUpload = FindWork(stPipeline, PassWork::GeometryUpload);
+	const CompiledPass *pDepth = FindWork(stPipeline, PassWork::GeometryDepth);
+	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
+	const CompiledPass *pPresent = FindWork(stPipeline, PassWork::Present);
+	ENGINE_NEXT_CHECK(pUpload && pDepth && pGbuffer && pPresent);
+	if (!pUpload || !pDepth || !pGbuffer || !pPresent)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(stPipeline.nGeometryPages != EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(HasAccess(*pUpload, stPipeline.nGeometryPages, ResourceState::CopyDestination, true));
+	ENGINE_NEXT_CHECK(HasAccess(*pDepth, stPipeline.nGeometryPages, ResourceState::VertexIndexRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pGbuffer, stPipeline.nGeometryPages, ResourceState::VertexIndexRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pPresent, stPipeline.nGeometryPages, ResourceState::Common, false));
+	CheckReusableStates(stPipeline);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, false, 0, 0, {}, false, false, { true, true, 8 }));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nGeometryPages, EngineNext::Rendering::INVALID_RESOURCE);
+}
