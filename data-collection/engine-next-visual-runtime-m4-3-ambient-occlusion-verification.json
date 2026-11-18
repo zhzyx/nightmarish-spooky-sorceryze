@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T09:36:47.248271+00:00",
+  "candidate": "ambient-occlusion-r6",
+  "native_key": "069cc40a5140d03da1528b864b0a00618d1ec5bce20f43c5d55f623f68eb0465",
+  "base_commit": "489fddc0b40979219f89214dfb430e4d632607e0",
+  "status": "functional_increment_verified",
+  "stage_complete": false,
+  "issues_remaining_open": [
+    1343,
+    1323
+  ],
+  "native_input_count": 326,
+  "shader_count": 57,
+  "msvc_build": {
+    "path": "build/engine_next/ao-runtime-r6/VisualBuildReport.json",
+    "sha256": "5f4f8dd33bb20ee8c571d2792c9e19731b5a308590568c98f19af7639b256d41",
+    "size_bytes": 2661380
+  },
+  "clang_cl_build": {
+    "path": "build/engine_next/ao-clang-cl-r6/Result.json",
+    "sha256": "13e6d2d2ce133625e188424ad9587f29c19e4502e1c771b366589f3ea6831f72",
+    "size_bytes": 3183431
+  },
+  "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=446 checks=491776 failures=0",
+  "source_review": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-ambient-occlusion-source-review.json",
+    "sha256": "553532546b819332dc2650c6b67b478ab793988978bddc416dabf1f1a9298b3d",
+    "size_bytes": 4473
+  },
+  "build_impact": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-ambient-occlusion-build-impact.json",
+    "sha256": "b5a956b964491364c06fb65bbc3f57e3848e62d3b79265b3eb5520fea9270697",
+    "size_bytes": 37939
+  },
+  "normal_gpu": {
+    "path": "build/engine_next/ao-gpu-r6/Matrix.json",
+    "sha256": "5c413681b2c3172c9684b713378d6820575bcba86101153898f7e009a51c98a9",
+    "size_bytes": 5251
+  },
+  "normal_frames": 436,
+  "capture_manifests": [
+    {
+      "path": "build/engine_next/ao-capture-r6/AOn/CaptureManifest.json",
+      "sha256": "8752e8ef0699ec4b7b7f62a578a0da016c31fdcab422fb3a89e1a95ad5f2ded5",
+      "size_bytes": 3347
+    },
+    {
+      "path": "build/engine_next/ao-capture-r6/AZero/CaptureManifest.json",
+      "sha256": "976457796f2cd400d06a524a28a0c1755a36b04116637839ba909d708fab9bff",
+      "size_bytes": 3359
+    }
+  ],
+  "capture_frames": 240,
+  "rdc_count": 6,
+  "actual_gpu_readback": {
+    "path": "build/engine_next/ao-capture-r6/NumericalChecks.json",
+    "sha256": "dd52c57df13f48ee7a9e4a3d766e5e1d7d959551b66fc286cad66f999b96602e",
+    "size_bytes": 1551
+  },
+  "neutral_output": "Current R6 default-disabled and enabled-zero-intensity LDR outputs are byte-identical. Actual neutral raw, horizontal, vertical and receiver texels are exactly one.",
+  "gpu_scope": "A and B normal entry points include material extensions, GI, probe placement, geometry culling, TAA, two resize events and a 3840x2160 render target.",
+  "remaining": [
+    "Final SSAO quality tuning against the UE A-F reference remains pending.",
+    "The 3840x2160 functional run covers twelve frames with a partly converged probe grid. Native 4K output, target frame rates and long-duration stability remain pending.",
+    "Other M4.3 post-processing and complete M4 acceptance continue under the open issues."
+  ],
+  "static_checks": {
+    "path": "build/engine_next/ao-static-delivery-r6-corrected/Result.json",
+    "sha256": "0f40cac795ab33468d6db4f09cf3444f845d02036e78256a3a688d2e1cf034f4",
+    "size_bytes": 16276
+  },
+  "static_scope": "Nine applicable checks passed with zero mutations; the aggregate verification file is excluded from its own input manifest.",
+  "shader_compatibility": {
+    "path": "build/engine_next/AoShaderCompatibilityR6.json",
+    "sha256": "413c2606bc2b22ec95537561ad6888c37056ccc46a6ad42e8ec472e35a029228",
+    "size_bytes": 5708
+  },
+  "proof_schema_correction": "The initial module proof used boolean summaries. The corrected records bind measured commands, observations, executable identity and bundle digests to the completed runs."
+}

@@ -59,7 +59,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bDeformation)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bAmbientOcclusion, bool bDeformation)
 {
 	if (nLocalShadowViews > 28)
 	{
@@ -294,8 +294,31 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			stPipeline.nReflectedHdr = stGraph.AddResource({ "ReflectedHdr", ResourceState::Common, false });
 			stLighting.arrAccesses.push_back({ stPipeline.nEnvironmentSpecular, ResourceState::RenderTarget, true });
 		}
-		if (!AddPipelinePass(stGraph, stPipeline, stGbuffer, PassWork::GBuffer, out_stDiagnostic) ||
-			!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic))
+		if (!AddPipelinePass(stGraph, stPipeline, stGbuffer, PassWork::GBuffer, out_stDiagnostic))
+		{
+			return false;
+		}
+		if (bAmbientOcclusion)
+		{
+			stPipeline.nAmbientConstants = stGraph.AddResource({ "AmbientConstants", ResourceState::GenericRead, true });
+			const std::array<const char *, 3> arrNames{ "AmbientRaw", "AmbientHorizontal", "AmbientFiltered" };
+			const std::array<PassWork, 3> arrWork{ PassWork::AmbientOcclusion, PassWork::AmbientBlurHorizontal, PassWork::AmbientBlurVertical };
+			for (std::size_t nStage = 0; nStage < arrNames.size(); ++nStage)
+			{
+				stPipeline.arrAmbientOcclusion[nStage] = stGraph.AddResource({ arrNames[nStage], ResourceState::Common, true });
+				PassDesc stPass{ arrNames[nStage], QueueType::Graphics, { { stPipeline.nAmbientConstants, ResourceState::GenericRead, false }, { stPipeline.nDepth, ResourceState::NonPixelShaderRead, false }, { stPipeline.arrGbuffer[1], ResourceState::NonPixelShaderRead, false }, { stPipeline.arrAmbientOcclusion[nStage], ResourceState::UnorderedAccess, true } }, {} };
+				if (nStage != 0)
+				{
+					stPass.arrAccesses.push_back({ stPipeline.arrAmbientOcclusion[nStage - 1], ResourceState::NonPixelShaderRead, false });
+				}
+				if (!AddPipelinePass(stGraph, stPipeline, stPass, arrWork[nStage], out_stDiagnostic))
+				{
+					return false;
+				}
+			}
+			stLighting.arrAccesses.push_back({ stPipeline.arrAmbientOcclusion.back(), ResourceState::ShaderRead, false });
+		}
+		if (!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic))
 		{
 			return false;
 		}
@@ -663,6 +686,13 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		}
 		stPresent.arrAccesses.push_back({ stPipeline.nMotion, ResourceState::Common, false });
 		stPresent.arrAccesses.push_back({ stPipeline.nObjectId, ResourceState::Common, false });
+		if (bAmbientOcclusion)
+		{
+			for (ResourceId nResource : stPipeline.arrAmbientOcclusion)
+			{
+				stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });
+			}
+		}
 		if (bGlobalIllumination)
 		{
 			for (std::size_t nKind = 0; nKind < stPipeline.arrGiRead.size(); ++nKind)

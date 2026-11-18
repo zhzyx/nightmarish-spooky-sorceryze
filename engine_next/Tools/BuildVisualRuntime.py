@@ -25,6 +25,7 @@ CORE_SOURCES = [
     "engine_next/Rendering/PostProcessSettings.cpp",
     "engine_next/Rendering/LightTimeline.cpp",
     "engine_next/Rendering/ReflectionSettings.cpp",
+    "engine_next/Rendering/AmbientOcclusionSettings.cpp",
     "engine_next/Rendering/GeometrySettings.cpp",
     "engine_next/Rendering/GeometryCulling.cpp",
     "engine_next/Rendering/GeometryScene.cpp",
@@ -93,6 +94,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestPostProcessSettings.cpp",
     "engine_next/Tests/Rendering/TestLightTimeline.cpp",
     "engine_next/Tests/Rendering/TestReflectionSettings.cpp",
+    "engine_next/Tests/Rendering/TestAmbientOcclusionSettings.cpp",
     "engine_next/Tests/Rendering/TestGeometrySettings.cpp",
     "engine_next/Tests/Rendering/TestGeometryCulling.cpp",
     "engine_next/Tests/Rendering/TestGeometryScene.cpp",
@@ -142,6 +144,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/PostProcessSettings.h",
     "EngineNext/Rendering/LightTimeline.h",
     "EngineNext/Rendering/ReflectionSettings.h",
+    "EngineNext/Rendering/AmbientOcclusionSettings.h",
     "EngineNext/Rendering/GeometrySettings.h",
     "EngineNext/Rendering/GeometryCulling.h",
     "EngineNext/Rendering/GeometryScene.h",
@@ -250,6 +253,13 @@ SHADERS = [
     ("ReduceDepthCS", "cs_6_0", "GeometryHiZReduce.cs.cso", []),
     ("DepthVS", "vs_6_0", "GeometryDepth.vs.cso", []),
     ("DepthPS", "ps_6_0", "GeometryDepth.ps.cso", []),
+    ("AmbientOcclusionCS", "cs_6_0", "AmbientOcclusion.cs.cso", []),
+    ("AmbientBlurCS", "cs_6_0", "AmbientOcclusionBlur.cs.cso", []),
+]
+SHADERS += [
+    (entry, profile, "Ao" + name, [*definitions, "-D", "AMBIENT_OCCLUSION_STAGE=1"])
+    for entry, profile, name, definitions in SHADERS
+    if name.endswith("Lighting.ps.cso")
 ]
 
 
@@ -591,6 +601,8 @@ def compile_shaders(args, commands):
             / (
                 "FixedMesh.hlsl"
                 if name.startswith("FixedMesh")
+                else "AmbientOcclusion.hlsl"
+                if name.startswith("AmbientOcclusion")
                 else "GeometryCull.hlsl"
                 if name == "GeometryCull.cs.cso"
                 else "GeometryHiZ.hlsl"
@@ -713,6 +725,8 @@ def build(args):
             else [
                 "engine_next/Rendering/Shaders/FixedMesh.hlsl",
                 "engine_next/Rendering/Shaders/Deferred.hlsl",
+                "engine_next/Rendering/Shaders/AmbientOcclusion.hlsl",
+                "engine_next/Rendering/Shaders/AmbientOcclusionMath.hlsli",
                 "engine_next/Rendering/Shaders/Shadow.hlsl",
                 "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
                 "engine_next/Rendering/Shaders/ShadowReceiverPlane.hlsli",

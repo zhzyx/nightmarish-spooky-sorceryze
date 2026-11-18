@@ -40,6 +40,7 @@
 #include "engine_next/include/EngineNext/Rendering/ParticleSettings.h"
 #include "engine_next/include/EngineNext/Rendering/MaterialSettings.h"
 #include "engine_next/include/EngineNext/Rendering/GlobalIlluminationSettings.h"
+#include "engine_next/include/EngineNext/Rendering/AmbientOcclusionSettings.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 
 #include <array>
@@ -129,6 +130,7 @@ struct RenderConfiguration
 	BloomSettings stBloom;
 	LightAnimationSettings stLightAnimation;
 	ReflectionSettings stReflections;
+	AmbientOcclusionSettings stAmbientOcclusion;
 	GeometrySettings stGeometry;
 	VolumeSettings stVolume;
 	std::vector<ParticleSettings> arrParticles;
