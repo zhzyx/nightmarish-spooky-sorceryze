@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1499-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-production-entry-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-18T02:11:42.006551+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1499,
+    "title": "原生工作流：普通需求入口与自动推进接入",
+    "body": "<!-- gonggong-request:native-production-entry-20261118 -->\n\n# 原生工作流普通入口与自动推进\n\n需求 ID：native-production-entry-20261118；父 #1444，原始用户目标 #1382。路径以实施仓库根解析。当前用户已授权继续实施；最高优先级仍是完整 AI 链路效率，不以各机制测试成功代替正常产品交付。\n\n已有原生存储、任务、贡献接收、远程节点和模型提案机制；#1486 的源码交付、#1488 持续合入与 #1495 观测仍在各自交付流程中。普通服务器启动、用户注册并创建需求后，是否能够通过实际安装的司南策略自动拆单、选择模型/节点、生产、独立检查和审查、发布及回写进度，尚须逐入口核实。私有试验脚本手建 fixture、授权对象、产品安装和驱动调用不等于产品已提供这些入口。\n\n1. 对当前可信 main 的实际服务器启动路径、API、安装配置、浏览器/Godot入口和事件消费建立源码证据图；与已独立审查的1486/1488候选对照，明确哪些是运行能力、哪些仍依赖私有测试配置。只核对本任务，保留 #951/#1343 原责任。\n2. 设计一个可安装且可回退的正常产品接入，复用现有司南/偃师/合契/阎罗和原生状态机；不另建模型客户端、任务数据库或协调 Agent。登录和组织边界仍由现有服务器负责。注册不把未经授权的模型或执行程序开放给组织；平台运营者安装执行能力，组织用户选择已准入能力并在其需求范围内自动运行。\n3. 需求修订、拆单、模型路由、工作者领取、检查、独立验收与完成事件须经实际现有契约绑定；过程持久可恢复、未知外部执行不重放。只处理真实事件，不新增定时扫描。模型调用按任务复杂度和能力证据选择已安装 CLI/API，不能绕过评测或从用户文本执行任意程序。\n4. 首先给出可复现的普通入口缺口证据与最小实施分解，由根责任者核对后实施隔离代码；再从正常注册/需求 API 运行两名用户的相互独立任务及相关协作任务到交付，额外再测撤权、未知执行、重启与失败恢复。模型可用确定性测试安装验证状态机，真实模型、实际服务器沙盒和正常用户操作另行留证，不能混淆。\n5. 不要求一次完成整个文档/表格/视觉产品，但正常 API/CLI 入口应可供浏览器与 Godot 共用，未覆盖的人机交互明确留在父项。原始需求和工单都在原生平台权威存储；Git只用于本实现留底及可选导出。\n6. 宿主工具/运行包的实际构建输入、安装身份、停用和回退随实现登记；不改渲染能力，不重编译无关宿主脚本，不使用未验证安装替换服务器生产。\n\n首阶段为事实核对与设计，不修改任何产品源码，不运行模型或生产部署；普通需求无需新的框架定义或治理批准。根责任者保留整体验收与正式交付。\n\n排障跟踪：#1445。\n授权：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "updated_at": "2026-11-18T02:11:31Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "588de027dc49bbce0d05b365751cd2960511d0eacb71fc46f8863082e960095a"
+}

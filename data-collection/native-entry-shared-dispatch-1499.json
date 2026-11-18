@@ -1,0 +1,170 @@
+{
+  "issue": 1499,
+  "status": "implemented_pending_independent_review",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/api.py": "11c2129b253bb7d244b9741c1a1738412860147226fb7575212270921a89af14",
+    "customizations/components/tianxuan/server/main.py": "1251ac045aad3e5d36c9711be9c345d835ee40e6420ee67a5f21887d918be80e",
+    "customizations/components/tianxuan/server/native_entry_api.py": "bbf82a3141e84ed5d9fa6be345b6276e9458c97c5b09f40b5f51798e894d5e75",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "167f3da15024f706adcfdf8b406f2227696b8468cff6c8e2f58afd472925f012",
+    "customizations/components/tianxuan/server/native_entry_review.py": "498a387ce050c7733eb1602f4a207917232e4d3075fa6e345e6c0f05a3a2b9ce",
+    "customizations/components/tianxuan/server/native_execution_host.py": "e34136139e6bd9aefaeaca247f8a95624f81ea4c34f9f4df5b7038b9f26eb481",
+    "customizations/components/tianxuan/server/native_installation.py": "1a7865cb4d13ce9127f1d276ec5bb9a1ec321faa83af5849c2d89095c260a416",
+    "customizations/components/tianxuan/server/test_native_entry.py": "f4facc098097df2c6a853c3e970501d29cfbf282bac6263bfe1df0ca7a28b9cf",
+    "customizations/components/tianxuan/server/test_native_entry_normal.py": "d449c5c3004b1558ba7186117f7cbb6b91cbe36e7c3cf378f5f820ecfe17eeb8",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "9f48bd4e5f774e3f84e9edc85d2b345fee562236ae1ccf3067e4e692196a06e9",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "c5b39fd8111ac6440a21a5cbc8e9e6a537908dff38d2ea52b1090c6774fa1287",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "3e83f5cc7e204a83b7a3fc31e63ea61ac34fdadbbab1c80f830ebe1528bb36e4",
+    "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "a3a57f9e629ed16c3c358bbf4618a8495bed98d654b48237ca510524f70c9ca3",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "f26421dccf41581de4d4dfbae933c9917a304f0368f3a02c6d4588642f54f11e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py": "213a234e9177809845ea8b5247f19ec41200747835b138ec87503d83aa810b71",
+    "customizations/components/tianxuan/server/native-entry-interface.md": "8ec544677d163692d6261fd2c08922c65cb4605dcd5dbf86af1b03fa27abefac",
+    "design-docs/native-production-entry-20261118.md": "a79e6f8c49e950b2aec16c07eee2093aa982b734d6ab4e568a848122c12bff4b",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "0ceddb65d6c5f21ced74a858d89b13a810d161a8cc4a0dd5e68e711ca4df9efc",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d35cfe7d9c5fc46da815cdf9d9405d615b8f51f247fcedb2b06e79731e0a14ea",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": "35829d59c350d4a637a0e4bafcea06e4251b4ed30c99c23f4b047423a8665e5c",
+    "customizations/components/tianxuan/server/test_native_shared_dispatch.py": "b4ae31ddaf97adf0629a58622e65d8495dece53a604b0eef59faf539c35b8c5e",
+    "customizations/components/tianxuan/server/test_native_installation_integrity.py": "aacee4cb41c65ed6ffab4a214d7e7a905385f0359d2ad4a5860a0fd5f8211e29"
+  },
+  "architecture": "One installed Node shared pipe; per-entry captured ContextVar and actor-bound WorkflowService; existing Sinan/workflow executes tasks concurrently. No new model client. Logical driver terminal distinct from physical shared process terminal. Unknown pipe failure sticky without replay.",
+  "limits": {
+    "logical_jobs": 1024,
+    "rpc": 4096,
+    "packet_bytes": 8388608,
+    "pending_input_bytes": 16777216,
+    "pending_output_bytes": 16777216,
+    "rss_bound": null
+  },
+  "tests": {
+    "shared_control_plane": {
+      "jobs": 250,
+      "processes": 1,
+      "barrier_reached_before_release": true,
+      "scope": "Real Node transport, synthetic empty board/no model or production tasks"
+    },
+    "pre_format_full_regression": {
+      "passed": 28,
+      "log": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\shared-dispatch-lifecycle-regression.log"
+    },
+    "final_python_format_regression": {
+      "passed": 35,
+      "skipped": 2,
+      "log": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-final-format-regression.log"
+    },
+    "final_js_indent_regression": {
+      "passed": 5,
+      "log": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\shared-dispatch-final-js-regression.log"
+    },
+    "normal_asgi_probes": [
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-shared-entry-probes-v2\\review-ready-conflict.json",
+        "sha256": "f0d28907e4789bfa380959fb136d183768f7a74b33cf00e45d5b22bc6fb30d80",
+        "dispatcher_terminal": {
+          "started": true,
+          "pid": 67176,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        }
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-shared-entry-probes-v2\\review-ready-dependencies.json",
+        "sha256": "0ea7795db6d85005efcc5091b041e70e4d4a0df037f7214986571e5f96649cc2",
+        "dispatcher_terminal": {
+          "started": true,
+          "pid": 63052,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        }
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-shared-entry-probes-v2\\review-ready-normal.json",
+        "sha256": "b5defc68b6397fb0e2977711f63b47f4c87c067b4dd60bf484f6f2c8f2fdedd7",
+        "dispatcher_terminal": {
+          "started": true,
+          "pid": 63496,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        }
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-shared-entry-probes-v2\\review-ready-restart.json",
+        "sha256": "b363c8956c7255feb4f7a4027b239de0f32d56d9c6a421189463d17de994d9df",
+        "dispatcher_terminal": {
+          "started": true,
+          "pid": 67776,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        }
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-shared-entry-probes-v2\\review-ready-seed.json",
+        "sha256": "932903483d89d5c0c6102def23239d4b149e9f2c7000e57923df4231e48d119a",
+        "dispatcher_terminal": {
+          "started": true,
+          "pid": 50636,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        }
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-shared-entry-probes-v2\\review-ready-startup.json",
+        "sha256": "beeda55f57fb66a1a64587ecb1e1746dc77b7dad9d503a8680317fa26e0581f2",
+        "dispatcher_terminal": {
+          "started": true,
+          "pid": 50752,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        }
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-shared-entry-probes-v2\\review-ready-withdrawal.json",
+        "sha256": "b3f8cdc88b42873b189a1e57d6c1af12afb16b51fb2f13187c600fbac10f7f44",
+        "dispatcher_terminal": {
+          "started": true,
+          "pid": 59132,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        }
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-shared-entry-progress-final\\adversarial-planned-progress.json",
+        "sha256": "3bbfa216620de518828f3170f62dbcad1c9dc6cf145648d3d415ae7884f760a8",
+        "dispatcher_terminal": {
+          "started": true,
+          "pid": 62280,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        }
+      }
+    ]
+  },
+  "format_alignment": {
+    "customizations/components/tianxuan/server/native_installation.py": {
+      "original_sha256": "dc17eb9afc5dfee8869c8fd77c05b1400a2aa8bd1a5a7e4b589afaee0b2704a5",
+      "current_sha256": "1a7865cb4d13ce9127f1d276ec5bb9a1ec321faa83af5849c2d89095c260a416",
+      "same_ast_ignoring_top_level_import_order": true
+    },
+    "customizations/components/tianxuan/server/test_native_installation_integrity.py": {
+      "original_sha256": "459dfb46ffccab76a06fd567f945d21f6c851d4a90822fb7682f2fc430218170",
+      "current_sha256": "aacee4cb41c65ed6ffab4a214d7e7a905385f0359d2ad4a5860a0fd5f8211e29",
+      "same_ast_ignoring_top_level_import_order": true
+    }
+  },
+  "normal_probe_scope": "Eight normal ASGI probes ran before Python formatting/import sorting and JS outer-block indentation. Actual original input hashes retained; final affected regressions rerun. Independent review must verify final source.",
+  "installation_report": "data-collection/native-installation-integrity-repair-1499.json",
+  "remaining": [
+    "Independent combined review",
+    "Linux production readonly mount/no writable alias provisioning",
+    "Real factory context/remote/resolver",
+    "Node/framework packaging on server",
+    "Actual ordinary-model250/server acceptance",
+    "Full goal P1 and AA"
+  ]
+}

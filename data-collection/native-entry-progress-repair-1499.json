@@ -1,0 +1,45 @@
+{
+  "issue": 1499,
+  "status": "root_repair_verified_pending_independent_review",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/api.py": "11c2129b253bb7d244b9741c1a1738412860147226fb7575212270921a89af14",
+    "customizations/components/tianxuan/server/main.py": "1251ac045aad3e5d36c9711be9c345d835ee40e6420ee67a5f21887d918be80e",
+    "customizations/components/tianxuan/server/native_entry_api.py": "bbf82a3141e84ed5d9fa6be345b6276e9458c97c5b09f40b5f51798e894d5e75",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "440765eb4c6ebb38d403ad6cda3c6585f402e735d5962e136e6384ff1d224e19",
+    "customizations/components/tianxuan/server/native_entry_review.py": "498a387ce050c7733eb1602f4a207917232e4d3075fa6e345e6c0f05a3a2b9ce",
+    "customizations/components/tianxuan/server/native_execution_host.py": "d3053bcf333681348f962cb9a650997e5dd44bbcc25119e19fac911e1529fb70",
+    "customizations/components/tianxuan/server/native_installation.py": "71d07a33a174db0b30356d2fa6d1dfe501e97f4abe2067ef6fc348f43869d01e",
+    "customizations/components/tianxuan/server/test_native_entry.py": "cdc10d387cd07fc7acadc57f0e0755b820d303c90089e84e4e6c625a6a2d48b5",
+    "customizations/components/tianxuan/server/test_native_entry_normal.py": "d449c5c3004b1558ba7186117f7cbb6b91cbe36e7c3cf378f5f820ecfe17eeb8",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "9f48bd4e5f774e3f84e9edc85d2b345fee562236ae1ccf3067e4e692196a06e9",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "c5b39fd8111ac6440a21a5cbc8e9e6a537908dff38d2ea52b1090c6774fa1287",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "3e83f5cc7e204a83b7a3fc31e63ea61ac34fdadbbab1c80f830ebe1528bb36e4",
+    "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "a3a57f9e629ed16c3c358bbf4618a8495bed98d654b48237ca510524f70c9ca3",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "b2efca2759b6d6bb30aa489ce863ba09d6726803c764f6e0875e73823d52d0d1",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py": "213a234e9177809845ea8b5247f19ec41200747835b138ec87503d83aa810b71",
+    "customizations/components/tianxuan/server/native-entry-interface.md": "46631b7a38b1912dc8945b8f1a4eef25564de3eb5453ee6905daf907a654df98",
+    "design-docs/native-production-entry-20261118.md": "a79e6f8c49e950b2aec16c07eee2093aa982b734d6ab4e568a848122c12bff4b",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "0ceddb65d6c5f21ced74a858d89b13a810d161a8cc4a0dd5e68e711ca4df9efc",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d35cfe7d9c5fc46da815cdf9d9405d615b8f51f247fcedb2b06e79731e0a14ea",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": "35829d59c350d4a637a0e4bafcea06e4251b4ed30c99c23f4b047423a8665e5c"
+  },
+  "change": "New authorized entry atomically reopens only completed aggregate parent and synchronizes progress; immutable child acceptance preserved. Idempotent replay/rejected/rolledback enqueue leaves prior completion intact.",
+  "normal_probe": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-repair-probes\\adversarial-planned-progress.json",
+    "sha256": "52a0d232ba40c7c7b6d719c7cf0a8398c49cddf8de960b9aa32000da74568a52",
+    "source_note": "Implementation unchanged since probe; subsequent sole test edit expects actual NotFound cross-tenant rejection instead of PermissionDenied."
+  },
+  "regression": {
+    "passed": 21,
+    "skipped": 1,
+    "log": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-repair-probes\\regression-corrected-expectation.log"
+  },
+  "original_test_failure": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-repair-probes\\regression.log",
+  "limitations": [
+    "Per-entry Node unbounded",
+    "Installation full hashing repeated",
+    "Resolver absent",
+    "Factory context/remote pending",
+    "Production package/server250 not accepted"
+  ]
+}

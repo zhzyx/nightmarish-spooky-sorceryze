@@ -1,0 +1,222 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-audit.json",
+    "path_base": "absolute current host audit archive",
+    "sha256": "908a14f412c5162826d92f81399188b54900acb72099524c8a4e2dd27c037aba"
+  },
+  "export": "Lossless value export of completed read-only audit; original source snapshot remains historical.",
+  "audit": {
+    "schema_version": 1,
+    "issue": 1499,
+    "parents": [
+      1444,
+      1382
+    ],
+    "scope": "read-only product source audit and design; only delegated report/design/probes written",
+    "baseline": "8da2ba2ef656cc352e69f286ed4f648eb25f2242",
+    "original_goal_complete": false,
+    "audit_complete": true,
+    "source_manifests": [
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\server\\main.py",
+        "sha256": "d8f211eb6dd27a126a59bf78489eef06a68f7b454ec4ab2b8a243a305ba76b14"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\server\\api.py",
+        "sha256": "e9cf3ea7ddf6041ff2b462dfa2ba0d341827e34b7600cac846a4d0dc2f09e8c7"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\server\\access_control.py",
+        "sha256": "4d1f5911bdf4e33aca95b6d73a166687202d0d36553c3d3e4d8082d4473b7ffd"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\server\\tianxuan_core.py",
+        "sha256": "fe4f5f081f73e46fef83855acc1a148f6685007039a8ebe9cb9ec202eb31a427"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\server\\native_api.py",
+        "sha256": "b234aaace839e2909674aa5d039809f5b3810acc44a9f295e71855c9b69efe43"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\server\\native_node_api.py",
+        "sha256": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\server\\native_remote_host.py",
+        "sha256": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_workflow.py",
+        "sha256": "54f2b6dbe759d6ae3e965d7399534ec600c07208be2422d9f0d924b932ddca64"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_dispatch.mjs",
+        "sha256": "df4d3944c5894980ae4f2f9fc7950b36e39809aeac3b8492a30fd2c871ce8b20"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_remote_worker.py",
+        "sha256": "e5267934543b8087d9d73cd3abac1dc49f199c450a8d5ee58b705db48b32c015"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_model_host.py",
+        "sha256": "6ea10fa9593ff47ba51df6c96d7cf84cc523b26b801c1fabbae002e9c3e55bfc"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\platforms\\process-management\\yuanheng-local\\sinan\\dispatch.mjs",
+        "sha256": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_model_producer.py",
+        "sha256": "678497caa907733894d7a582b14eb9229efe818f7085bd1a68a593bc441b76fa"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-model-producer-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native-model-producer.md",
+        "sha256": "a6a07335754aa6faa08186ee597ac87ef139a463e2c98743f242550caf6d566a"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-continuous-integration-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_continuous.py",
+        "sha256": "c44552e4bac7cbeb703a625bf43988df1e997a4ae40c3fc9cb76ed003a029c1c"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-continuous-integration-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_continuous_acceptance.py",
+        "sha256": "e848366c69c22887b919bc3adb7316c3a4b682c19910fc5810f30bacba1536e1"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-continuous-integration-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_dispatch.mjs",
+        "sha256": "97f149c125127bbbba3ce183fbaf6491a973ea47fa72f07b5bec41f9196933fb"
+      },
+      {
+        "path": "D:\\GongGong-work\\native-production-entry-20261118\\design-docs\\native-production-entry-20261118.md",
+        "sha256": "483cec72781183d10568e7cf578ac33bbb8597bee97de689a06ee7e1c700d1da"
+      }
+    ],
+    "candidate_heads": {
+      "D:\\GongGong-work\\native-production-entry-20261118": "8da2ba2ef656cc352e69f286ed4f648eb25f2242",
+      "D:\\GongGong-work\\native-model-producer-20261118": "9809d3410b643878229929d6aff423b1f6d909e9",
+      "D:\\GongGong-work\\native-continuous-integration-20261118": "ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079"
+    },
+    "candidate_warning": "continuous working index was staged and may change; manifests bind actual read bytes, not assumed main delivery",
+    "methods": [
+      {
+        "lesson": "await-terminal-observers",
+        "state": "verified",
+        "revision": 6
+      },
+      {
+        "lesson": "bind-consumer-release",
+        "state": "verified",
+        "revision": 21
+      },
+      {
+        "lesson": "reconstruct-worker-outcomes",
+        "state": "verified",
+        "revision": 3
+      },
+      {
+        "lesson": "review-context-and-source-evidence",
+        "state": "verified",
+        "revision": 4
+      }
+    ],
+    "candidate_method": {
+      "lesson": "verify-normal-product-entry",
+      "state": "proposed, not verified",
+      "source": "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-05ad0eebdcec9fde926ceddd04ffb24bca781ac04eb05b4ee37de56d3c588adf.json"
+    },
+    "probe": {
+      "type": "normal main module in-process ASGI, isolated local SQLite, no provider or network",
+      "users": [
+        {
+          "registration": 200,
+          "requirement": 200,
+          "issues": {
+            "issues": []
+          },
+          "workflow": 404
+        },
+        {
+          "registration": 200,
+          "requirement": 200,
+          "issues": {
+            "issues": []
+          },
+          "workflow": 404
+        }
+      ],
+      "workflow_route_present": false,
+      "native_task_table_present": false,
+      "process_terminal": "completed normally; no subprocess/model/server listener launched"
+    },
+    "commands": [
+      {
+        "command": "py -B -X utf8 probe.py",
+        "exit_code": 1,
+        "failure": "ModuleNotFoundError fastapi before DB initialization",
+        "resolution": "existing tx-venv discovered in source-bound historical validation receipt; no install"
+      },
+      {
+        "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 probe.py",
+        "exit_code": 0,
+        "provider_calls": 0,
+        "server_listeners": 0
+      }
+    ],
+    "findings": [
+      {
+        "id": "entry-not-installed",
+        "source": "server/main.py:83; server/api.py:315",
+        "result": "native workflow omitted from ordinary main; two authenticated requirements persist but no tasks/routes"
+      },
+      {
+        "id": "planning-not-connected",
+        "source": "server/api.py:566,579; server/tianxuan_core.py:1097,1543",
+        "result": "requirements write document; caller supplies ticket list; no admitted Yanshi runtime planning installation"
+      },
+      {
+        "id": "trusted-ports-unimplemented-at-entry",
+        "source": "sinan-workorders/native_workflow.py:30,553,609,616,665",
+        "result": "required host callbacks exist but normal entry supplies none"
+      },
+      {
+        "id": "consumer-not-started",
+        "source": "sinan-workorders/native_dispatch.mjs:40,155",
+        "result": "finite CLI-driven event consumer not started or woken by requirement mutation; durable outbox alone does not imply consumption"
+      },
+      {
+        "id": "producer-is-bounded-adapter",
+        "source": "producer native_model_producer.py:41,83,118",
+        "result": "existing runtime grant preparation and registration must be supplied by trusted task adapter; cannot ask user to author them"
+      },
+      {
+        "id": "continuous-not-product-flow",
+        "source": "continuous native_continuous_acceptance.py:24,29,35",
+        "result": "fixture setup proves mechanism, not ordinary entry"
+      },
+      {
+        "id": "strict-auth-different",
+        "source": "server/access_control.py:43,72,114",
+        "result": "strict deployment administrator managed accounts; nonstrict registration probe is not production onboarding evidence"
+      }
+    ],
+    "design": "D:\\GongGong-work\\native-production-entry-20261118\\design-docs\\native-production-entry-20261118.md",
+    "unresolved": [
+      "final accepted producer/continuous candidate and main readback",
+      "trusted installation with actual admitted roles and provider capability evaluation",
+      "strict production deployment and normal two-user delivery acceptance",
+      "independent review reconciliation and installed execution program",
+      "browser/Godot user entry UX"
+    ],
+    "process_terminal": {
+      "probe_exit": 0,
+      "running_children": [],
+      "production_changes": false,
+      "live_calls": false
+    },
+    "cleanup": {
+      "created": "probe script and isolated local DB/result files only",
+      "retained": "audit evidence pending parent acceptance; no cleanup claimed",
+      "branches_worktrees_created": false
+    },
+    "handoff": "Parent must review exact design before separately authorizing implementation; original goal remains incomplete."
+  }
+}

@@ -1,0 +1,290 @@
+{
+  "schema_version": 2,
+  "issue": 1499,
+  "baseline": "88a401d8a8498af36063eedbed3abc5657c52d90",
+  "complete": false,
+  "implementation_scope_complete": false,
+  "checkpoint": "Source frozen at root request; primary same-product multi-user parallel acceptance remains unmet",
+  "normal_main_asgi_acceptance": true,
+  "acceptance_classification": "Deterministic normal main/ASGI functional evidence only, not business/live-model/production acceptance",
+  "primary_unmet": {
+    "lock": "OrdinaryEntry.consume product_locks[tenant+requirement] spans all consume_product",
+    "effect": "Two user entries for the same requirement cannot overlap production. Only intra-entry DAG tasks use Sinan parallelism.",
+    "scope": "Second entry requires exact same aliases/modules as first receipt; disjoint additional scopes rejected",
+    "dependencies": "Local task IDs resolve only within current entry mapping; next_issues enumerates actor entries",
+    "instruction": "Root explicitly requested no expanded scheduling modification; retain source for independent review and follow-up",
+    "old_entry_revocation": "First-match authority callbacks may block new valid same-requirement credentials; not dynamically tested in this handoff."
+  },
+  "implemented": [
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "b051c77c1a60c5c96fd2074e572b07b386d5e23e9eec4aa855bcee572a5a9f19"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/main.py",
+      "sha256": "1251ac045aad3e5d36c9711be9c345d835ee40e6420ee67a5f21887d918be80e"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_entry_api.py",
+      "sha256": "2697cec47a6b0188b2baef96eca4464ab1220bc0d9b9efe2333f6d598ceffb73"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_entry_factory.py",
+      "sha256": "12e6fe8714c4daca042d641268b6cc501c0a626a23f0c0b10b925ab6e62a0b9f"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_entry_review.py",
+      "sha256": "498a387ce050c7733eb1602f4a207917232e4d3075fa6e345e6c0f05a3a2b9ce"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_execution_host.py",
+      "sha256": "8dc2ad8d47891a25d0789710278282ed2a2277362f20bb1e875d8a7fae325ea6"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_installation.py",
+      "sha256": "71d07a33a174db0b30356d2fa6d1dfe501e97f4abe2067ef6fc348f43869d01e"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_entry.py",
+      "sha256": "ce330a7e3520f1833e8ddc01117eaf1d4f74290387e4f2b96d47350797429d1d"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_entry_normal.py",
+      "sha256": "d449c5c3004b1558ba7186117f7cbb6b91cbe36e7c3cf378f5f820ecfe17eeb8"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "sha256": "33a656538adfc89da8b79516a4e496916434dcc241ffe09574b8d49561bd8dc4"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py",
+      "sha256": "c5b39fd8111ac6440a21a5cbc8e9e6a537908dff38d2ea52b1090c6774fa1287"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py",
+      "sha256": "3e83f5cc7e204a83b7a3fc31e63ea61ac34fdadbbab1c80f830ebe1528bb36e4"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py",
+      "sha256": "3abdb5a2262227b89362b9ab8ef78d2354dd01aa7284d77a4ded5b964352a883"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs",
+      "sha256": "b2efca2759b6d6bb30aa489ce863ba09d6726803c764f6e0875e73823d52d0d1"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py",
+      "sha256": "213a234e9177809845ea8b5247f19ec41200747835b138ec87503d83aa810b71"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native-entry-interface.md",
+      "sha256": "ef0d869d7559ca51d2541a4bf897c1ee46d2e53285565bdfccb9ed9093ba7e3f"
+    },
+    {
+      "path": "design-docs/native-production-entry-20261118.md",
+      "sha256": "15ceefbdcba11cce71591e6730d577ebefc85bcf0a8917104afc28a230068922"
+    }
+  ],
+  "behavior": [
+    "Normal main environment installation/API/lifespan; no ordinary user factory, grant or plan",
+    "Existing Sinan Node driver and NativeWorkflow/NativeIntegration/ContinuousIntegration",
+    "Namespaces for tenant/requirement finite outputs; sequential shared-requirement contribution/publication",
+    "Actual independent content review process with exact candidate, all original credentials, original criteria and object hashes",
+    "Strict production tenant/key admission; non-key prior sessions cannot gain production capability",
+    "Original credential/source/installation checks through worker/check/reviewer waits and before publication",
+    "OS coordinator ownership adjacent to native database; durable intent/plan/outbox and physical-terminal recovery",
+    "Read-only signed broker recovery from stored receipt/completed runtime; unknown running outcome never replayed",
+    "New producer signing bridge uses actual central budget tasks/jid and structured Diting work links",
+    "Trusted installed_worker/context_factory constructor seams; normal main local-only and context_tools=false"
+  ],
+  "tests": {
+    "total": 40,
+    "foundation": 17,
+    "normal_main_asgi": 1,
+    "regression_and_new_bridge": 22,
+    "runs": [
+      {
+        "name": "foundation-complete",
+        "exit_code": 0,
+        "elapsed_seconds": 1.0469999999913853,
+        "receipt": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\foundation-complete.txt",
+        "sha256": "8868288748826abec8109761786d6aa03edb9cd47d4693de3394d0bb16d8e2a3"
+      },
+      {
+        "name": "normal-main-complete",
+        "exit_code": 0,
+        "elapsed_seconds": 72.70300000000861,
+        "receipt": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\normal-main-complete.txt",
+        "sha256": "540d1420ea9dc9415ccaca5a721c1c052e2b90f6aff7003c12e24cedbfd28349"
+      },
+      {
+        "name": "regression-complete",
+        "exit_code": 0,
+        "elapsed_seconds": 35.437000000005355,
+        "receipt": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\regression-complete.txt",
+        "sha256": "734fa7ca9588a1d880054ae4e257c49cfeac9f454da3acd82f2c21cdd3ecf8fc"
+      }
+    ],
+    "complete_source_receipt": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\complete-source-results.json",
+      "sha256": "15060b07df8927bd0e87b3375594ab6af617eb6f88841aa1d3fd8cec66f0545a"
+    },
+    "normal_details": {
+      "tenants": 2,
+      "users": 3,
+      "successful_physical_producer_markers": 4,
+      "revoked_waiting_producers": 1,
+      "shared_requirement": "Sequential second-member contribution through share/session API and continuous publication",
+      "strict_mode": "Administrator-provisioned access key completes independent requirement after old session revocation; self-registration denied",
+      "source_and_process": "Fresh main restart does not replay accepted/revoked producers; exact physical closures checked",
+      "providers": "Installed deterministic programs only; no real models"
+    },
+    "new_bridge": "Actual native_entry_producer subprocess, signed registry, evaluated deterministic proposal process, central budget and Diting; synthetic framework admission only",
+    "review_limits": "100000 serialized UTF-8 bytes; rejection before broker invocation; no truncation; all originals rechecked",
+    "lint": "Ruff checks passed on all scoped Python source/tests; git diff --check passed"
+  },
+  "corrected_failures": [
+    {
+      "kind": "Shared SQLite connection misuse during overlapping independent entries",
+      "originals": [
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\normal-main-attempt1-failure.txt",
+          "sha256": "6810de0212f7e1cb694c2fb715ba82a3519c07d13f225c29ae3f93be02b14869"
+        },
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\normal-main-attempt2-concurrent-db-failure.txt",
+          "sha256": "4e1be143de57cb0a11ede0c2ae9192937f837bc8576da0d441097435d90878b9"
+        }
+      ],
+      "failing_source_hash_receipt": {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\complete-source-attempt1-failure.json",
+        "sha256": "d5072b7150e3e1084bc35d3794b0e8e3c184c78169c5893f7fb3373ab4f85bc7"
+      },
+      "fix": "Acquire domain._connection_lock around private _require_requirement calls; preserve host operation error stage; never replay original unknown execution",
+      "validation": "Fresh isolated normal concurrent ASGI installations pass on current frozen sources"
+    },
+    {
+      "kind": "New producer bridge central budget path and Diting work-link shape",
+      "original": {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\broker-work-link-failure-original.log",
+        "sha256": "abf7bbff4b54f43785f8269eb4fb32c0705a3b86a814c87d8b0167d3f4f4fed1"
+      },
+      "fix": "Reuse central_budget.state_dir/tasks/jid_for(task), require matching operator state root, emit structured id/kind/relation/certainty links",
+      "validation": "Actual new broker subprocess test passed; immutable source and exact contract are checked"
+    }
+  ],
+  "method_learning": {
+    "recalled_scope": "editor-dependency-handoff",
+    "applied": [
+      "bind-consumer-release",
+      "await-terminal-observers"
+    ],
+    "proposal": "Lock shared SQLite connections around private domain helpers during concurrent cancellation/API checks; do not substitute whole-production serialization for SQL correctness",
+    "counterexample": "Public decorated domain methods already own their connection boundary; the current product-wide lock still violates the separate parallel-production goal",
+    "routing": "Reported to root for #1445 correction intake; no writes outside assigned learning-record scope"
+  },
+  "pending": [
+    "Same-product multi-user parallel production, disjoint-scope planning and cross-entry coordination: root-requested frozen follow-up",
+    "Unverified root-flagged first-matching-old-entry behavior: revoked prior credential may block a new valid entry for the same requirement/product in requirement_authority/release_authority/module_authority. Existing strict-key test uses a different requirement, not this scenario; root requested frozen follow-up.",
+    "Independent source review and global build-impact/inventory/package/gates/CI/main/Issue lifecycle: root ownership",
+    "Production role configuration and live evaluated-model acceptance",
+    "Listening server and actual ordinary user/device acceptance; remote adapter is not mounted by normal main",
+    "#1501 context-tools v2 not integrated; reviewer remains bounded full-snapshot v1",
+    "Actual package update/rollback installation acceptance",
+    "Cleanup of retained task-owned test artifacts after review/approval limitation"
+  ],
+  "processes": {
+    "test_supervisor_exit": 0,
+    "all_test_subprocesses_waited": true,
+    "normal_workers_and_node_physically_closed": true,
+    "final_windows_process_readback": "No python/node command matching run-complete-source, test_native_entry, native_entry_driver or deterministic_installation remained",
+    "running_children": []
+  },
+  "models_called": 0,
+  "network_listeners": 0,
+  "commit": false,
+  "push": false,
+  "deploy": false,
+  "cleanup": {
+    "foundation_archive": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\foundation-implementation-1499-original.json",
+      "sha256": "a6071dee3c44dfcc456653c2dc35d818a54eab95b2ca40160d17c0f55009cfa6"
+    },
+    "normal_and_foundation_temporary_installs": "Final successful TemporaryDirectory contexts closed databases/files and cleaned their owned installs",
+    "retained": [
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\pytest-final-owned-20261118",
+        "reason": "Task-owned regression artifacts retained for root independent review; prior cleanup auto-review blocked by policy"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\pytest-final-owned-20261118-v2",
+        "reason": "Task-owned regression artifacts retained for root independent review; prior cleanup auto-review blocked by policy"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\pytest-final-owned-20261118-v3",
+        "reason": "Task-owned regression artifacts retained for root independent review; prior cleanup auto-review blocked by policy"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-implementation-probes\\pytest-final-owned-20261118-v4",
+        "reason": "Task-owned regression artifacts retained for root independent review; prior cleanup auto-review blocked by policy"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmp19kmnrdo",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmpq_n188qz",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmpgkjuah8_",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmpiw9oh4h8",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmpgeykkw7l",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmp98n1z5u3",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmp2ke2somp",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmptc0lh__7",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmpbi3evlc2",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmpdbv936g6",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmpaxccx7ip",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      },
+      {
+        "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\tmpo9fb_84g",
+        "reason": "Known failed-test SQLite remnants; not claimed cleaned; keep private for root cleanup/review"
+      }
+    ],
+    "approval_review_rejection": "Remove-Item of verified task-owned pytest-final-owned-20261118 was rejected: blocked by policy. No bypass deletion attempted.",
+    "preserved": [
+      "Current uncommitted source/worktree for root review and delivery",
+      "Original failure evidence and reproducible final logs",
+      "Other tasks and global metadata unchanged"
+    ],
+    "branches_created": false,
+    "worktrees_created": false,
+    "complete": false
+  }
+}

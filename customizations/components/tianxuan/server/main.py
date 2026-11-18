@@ -78,6 +78,20 @@ if os.environ.get("TIANXUAN_EVENT_RETENTION_DAYS"):
     except ValueError:
         pass
 
+_NATIVE_ENTRY = None
+if os.environ.get("TIANXUAN_NATIVE_INSTALLATION"):
+    if _MODE != "native":
+        raise RuntimeError("Native installation requires native storage mode")
+    from native_entry_factory import OrdinaryEntry
+
+    _NATIVE_ENTRY = OrdinaryEntry(
+        _STORE,
+        _NATIVE_STORE,
+        os.environ["TIANXUAN_NATIVE_INSTALLATION"],
+        os.environ["TIANXUAN_NATIVE_INSTALLATION_SHA256"],
+        os.environ["TIANXUAN_NATIVE_STATE"],
+    )
+
 app = create_app(
     _STORE,
     gateway=ModelGateway(_GATEWAY_DB),
@@ -87,4 +101,6 @@ app = create_app(
     required_checks=_REQUIRED_CHECKS,
     native_store=_NATIVE_STORE,
     native_only=_MODE == "native",
+    native_entry=_NATIVE_ENTRY,
+    native_workflow=_NATIVE_ENTRY.workflow if _NATIVE_ENTRY else None,
 )

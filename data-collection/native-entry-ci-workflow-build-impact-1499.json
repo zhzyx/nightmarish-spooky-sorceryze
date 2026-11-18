@@ -1,0 +1,107 @@
+{
+  "module": "customizations/components/tianxuan/sinan-workorders",
+  "request_id": "native-production-entry-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+  "input_blobs": {
+    "customizations/components/tianxuan/sinan-workorders/README.md": "98a30bbad5aafe2e8aa1713f8d2202d04045d3d3",
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": "9bbc6d468d36e1e0eae99d8a0baa1a95632572ab",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "82f55454d51c0ad863863e76d87260abd46c0c8a",
+    "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md": "24a1bd8b0d8f9bbf1c20439345230c171d5c4cd3",
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "55bf4ca23f011756a43a7acf765d2fef43c9c540",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "830dd85c670886f8cc7eab1d324b7fe904ad0fe5",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py": "4fd3fe19cd507b01424ff272cd3d28d02bcbd455",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "bf3f5a331116b17aadbdfd54e70535237fff380a",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "11bf76a8eac333eda63cefd8c446213d87d527cb",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "3ffb1d81d6781f3ed9b1c33e2e5fe8d8887b9ade",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "5a42d528200ccdd6ee56a105f948999ef3161c9c",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.md": "90e30cbb0dc2b9a3a848693e413d0e3b51351882",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "15bba305a38fe4317964f54e79792c03cb7b9d4b",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "c3cf568ef90d2e41925233da6f66c62695d09380",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c1145e092d0933dc555aecbeddbf67b68d2ea65c",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "46e30c77d38e4c4164c4a2c25cc828efe0e98bbf",
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "c69892d1df79c637a138089c112bcd4446c93d98",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "0b1dbc1519b474aec80be9bd9f9b0704c94146d0",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "7369bf9d27d00dda1bbdbcf7bb1dca9d659e95aa",
+    "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "d574dfd7ce4c314b83e8c9d90fe128821e8dae1a",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "9c7d26791ae0bef49822189856ceb485fd947d9c",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "97c2d4d42da7a8747f69145d0e52399fec5d1a60",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "135d686ba39874037ac7c15f942f4a5c2e7546ae",
+    "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py": "df3fdcbf266645a21ce2d83e2913266d4f1579d6",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": "ea837a59c1565eba4eb7bee06457786fb72a1d52",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py": "0595f273cab66c682b533cd39274a75c59552271",
+    "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": "0b7c208ad38f7fbaf1277f3b78c9ec9a71e952da",
+    "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": "7e6e2b92d62b5ae005bced258b558cbd9484142a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "99b892cfd2a36e7b20f4598650cbcbd25cd5ab2d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "13d54029b854e481b96fb0520d0401401cc7580c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "9af4359e5af67fc16e0806733f61fc6510c94cf8",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "d8c9502d46c1ff6e77091b75e61341ec403b447e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "b30d844caa1ebfb9f1d3524cbc5a486438f32722",
+    "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": "8c532b093c0466a2b198d6f67b2f1a327b616de8",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py": "e0fd9d7711d590131b5e85952a981253b9d8447c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py": "36bbc1c8be45f8521643b7edd7d266fb224a4e0e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "91819985bb3b9a839c409edb5aaadc96fd56b1cc",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": "2dc8e1232cfeb563f61c3996fe0aa034963516c4",
+    "customizations/platforms/ai-access/host-http/runtime/README.md": "f85321fcbdd652d332e05a058334e99ecd3b4535",
+    "customizations/platforms/ai-access/host-http/runtime/adapters.py": "110141e355307ddc80a877d7c125bf0d99540d68",
+    "customizations/platforms/ai-access/host-http/runtime/diting.py": "f4fa9b1d1af3170632b0a95b3a00bb605c36eb84",
+    "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "354e76e75e1125e27bf3062ac84de7a3a5c3fd35",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "85308fddec5012a343ea785233a3aeb6fa0bf6b0",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "8d2f7ffd42b751c548d3d3d03452e9dea799692b",
+    "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "0c6695fe8a9e6203c14d6cbfdd9f666e435e0b36",
+    "customizations/platforms/ai-access/host-http/runtime/test_adapters.py": "5cb0cc57fc69357dc8047eca480f4da1fbbd2112",
+    "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "374a01ea0609fe2a235b93aa4510e498e31c6829",
+    "customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs": "52465ea815f3cb0e6157f2f9c8d2aae421c9924a",
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": "c31da667a84b3dfe579bca4da0b7233b3f2d2495",
+    "customizations/platforms/process-management/yuanheng-local/sinan/module.json": "ceb9cc0604c9854c74107d2376bd61bf6baf06c1",
+    "customizations/platforms/process-management/yuanheng-local/sinan/parallel-dispatch.md": "be51dca791f09b7171722eda15dc104dfeb99f75",
+    "customizations/platforms/process-management/yuanheng-local/sinan/refresh.mjs": "44d9accf2f8d5b80e72a6b9464922f29ab83726f",
+    "customizations/platforms/process-management/yuanheng-local/sinan/runtime/registry.json": "46f47855d1ea7001645298b6f8a15fafd00b5693",
+    "customizations/platforms/process-management/yuanheng-local/sinan/sources.md": "5f9d6efd191f7d3d1e919429f3dd0bcd0e0682c4",
+    "customizations/platforms/process-management/yuanheng-local/sinan/test/dispatch.test.mjs": "7cff35c705f8fa37bdd494f4a671f3d3973588cc",
+    "customizations/platforms/process-management/yuanheng-local/sinan/test/generic-tracking.test.mjs": "b4b028afb7db2647568ef381c564f57276c0f792",
+    "customizations/platforms/process-management/yuanheng-local/sinan/test/refresh.test.mjs": "753e1da392836e028b0c93d5051b38bf99b0bb07",
+    "customizations/platforms/process-management/yuanheng-local/sinan/work-order-workflow.md": "94c5d4047d5ffece0c845224a64aebae20663dee",
+    "framework/framework-manifest.json": "d91d6f1d82961531ef657350ce94297c652926e0",
+    "tools/ainative/owned_process.py": "299243639ded6ce63066006df1055ee18021ad68",
+    "tools/native_host_inputs.json": "d5be866e3dee52c47498f894048f72fda2cbf2b3"
+  },
+  "checks": {
+    "host_behavior": {
+      "passed": true,
+      "command": "67 aligned pytest cases + three cache/host boundary test groups; independent resource/progress/cancellation/portability reviews. See linked receipts for exact commands, source hashes, skips and historical failures.",
+      "observed": "Current ordinary-entry/context regression:67 passed,2 platform/privilege skips. Shared250 logical jobs use one Node; independent cancellation isolation passes. Eight actual normal ASGI scenarios validated under prior resource review; only R5 changed production code afterward and passed independent original-failure replay. Updated Windows SCons has 9392 inputs, zero changed-host overlap; all three cache test groups passed. Host tool only; no live-model/server/AA acceptance."
+    }
+  },
+  "evidence": [
+    {
+      "path": "data-collection/native-entry-delivery-validation-1499.json",
+      "sha256": "ced828d306a1844995e1d00fb8f2fe61ac2ff07566e17614780be3723d976356"
+    },
+    {
+      "path": "data-collection/native-entry-aligned-host-boundary-1499.json",
+      "sha256": "ecc95b72d4703424738115f44e4bb33dac583dbde95b60e322089e23169e859f"
+    },
+    {
+      "path": "data-collection/native-entry-resource-review-1499.json",
+      "sha256": "048b44b9c28355304d3c060d743da933bb45b891c76e7eb210c20518df911e9c"
+    },
+    {
+      "path": "data-collection/native-entry-progress-review-1499.json",
+      "sha256": "3b3d71fba52f4abef7fd7a09ec8a6c05a12e3190dd07a13feab94966043e7222"
+    },
+    {
+      "path": "data-collection/native-entry-cancellation-review-1499.json",
+      "sha256": "ce437be268e9fd287fd4e134078335c1e647cd7f0a3b74b38062d54a5b0fe7b8"
+    },
+    {
+      "path": "data-collection/native-entry-portability-review-1499.json",
+      "sha256": "df3de11081cfa0cefab8fb43d87dfde2073a4db62849bb195ef0f6aa3838168c"
+    }
+  ],
+  "scope": "Input identity binds all module files; behavior coverage is explicitly limited to linked host tests/reviews, not every feature in this module or production activation.",
+  "ci_repair": {
+    "path": "data-collection/native-entry-ci-repair-1499.json",
+    "sha256": "054d82524760bdffbde8c43d4c0baf93d115931f441a6b694a365934c4a51d2c",
+    "scope": "Production unchanged; prior67passed scope retained; actual8test-only repair and full19file static check rerun."
+  }
+}
