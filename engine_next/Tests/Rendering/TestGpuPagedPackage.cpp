@@ -52,9 +52,9 @@ using EngineNext::Serialization::JsonValue;
 using EngineNext::Tests::Rendering::PackageFixture;
 
 #if defined(_WIN32)
-constexpr bool bTextureCookSupported = true;
+constexpr bool TEXTURE_COOK_SUPPORTED = true;
 #else
-constexpr bool bTextureCookSupported = false;
+constexpr bool TEXTURE_COOK_SUPPORTED = false;
 #endif
 
 std::vector<std::uint8_t> Bytes(const fs::path &stPath)
@@ -554,7 +554,7 @@ ENGINE_NEXT_TEST("Paged GPU budget failures preserve opened index and existing p
 
 ENGINE_NEXT_TEST("Paged GPU codec keeps legacy and prepared package entry points compatible")
 {
-	PackageFixture stFixture(bTextureCookSupported);
+	PackageFixture stFixture(TEXTURE_COOK_SUPPORTED);
 	if (!stFixture.bReady)
 	{
 		return;
@@ -679,7 +679,7 @@ ENGINE_NEXT_TEST("Paged GPU concurrent publication is atomic and interrupted sta
 
 ENGINE_NEXT_TEST("Paged normal entry verifies canonical source and preserves legacy loading")
 {
-	PackageFixture stFixture(bTextureCookSupported);
+	PackageFixture stFixture(TEXTURE_COOK_SUPPORTED);
 	if (!stFixture.bReady)
 	{
 		return;
