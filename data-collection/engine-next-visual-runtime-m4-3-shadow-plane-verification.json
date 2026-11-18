@@ -1,0 +1,398 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T07:24:23.957715+00:00",
+  "candidate": "shadow-receiver-plane-r6",
+  "source_base_commit": "2dbfc19fa30a70dc96be341a2b3eda47fb05683b",
+  "source_delta_from_base": "Two indentation-only lines in TestShadowSampling.cpp, bound by the current native-input digest.",
+  "delivery_base_commit": "8f0a8469db66a2496206b15587ae114feca757f2",
+  "native_key": "28d905de8f5b7ba3b7b2c589d74da08ce0c7b68266dc1f95bcf2d31e64ede56b",
+  "status": "scoped_local_verification_passed",
+  "stage_complete": false,
+  "issues_remaining_open": [
+    1343,
+    1323
+  ],
+  "native_input_count": 317,
+  "native_input_mismatches": [],
+  "msvc_build": {
+    "path": "build/engine_next/shadow-runtime-r6/VisualBuildReport.json",
+    "sha256": "2dcffbccf341428c714aa94e646950f1574c2a98ffac8db499f30a0ca986e7e4",
+    "size_bytes": 2520800
+  },
+  "historical_full_clang_cl_build_r5": {
+    "path": "build/engine_next/shadow-clang-cl-r5/Result.json",
+    "sha256": "8480801d9afa4b3f6dfc6ea9c0de9f144738b7ffb42aa8ae6084cd7d2d3a7b3f",
+    "size_bytes": 3030586
+  },
+  "current_clang_cl_and_msvc_scoped": {
+    "path": "build/engine_next/shadow-root-review-r6/Review.json",
+    "sha256": "36ca2c53cd9608427b881efb84f916ee4614b564ab807b9d29109e1ae63057cf",
+    "size_bytes": 7391
+  },
+  "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=420 checks=485430 failures=0",
+  "executables": [
+    {
+      "path": "build/engine_next/shadow-runtime-r6/next_rendering_tests.exe",
+      "sha256": "dd80c9df6d19f36b624e5b17a393285d59cd5c3f19daff2b0276e5e8154b2d80",
+      "size_bytes": 4018688
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/next_visual_client.exe",
+      "sha256": "2874819957322845ddffbbe4150dea7feae3315298b55ba3de0d78d6ded52ea9",
+      "size_bytes": 3437056
+    }
+  ],
+  "shaders": [
+    {
+      "path": "build/engine_next/shadow-runtime-r6/FixedMesh.vs.cso",
+      "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69",
+      "size_bytes": 4316
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/FixedMesh.ps.cso",
+      "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9",
+      "size_bytes": 4132
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/FixedMesh.cs.cso",
+      "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064",
+      "size_bytes": 3300
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Deferred.vs.cso",
+      "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225",
+      "size_bytes": 8272
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Deferred.ps.cso",
+      "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0",
+      "size_bytes": 9796
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/MaterialDeferred.ps.cso",
+      "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb",
+      "size_bytes": 10172
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Lighting.vs.cso",
+      "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018",
+      "size_bytes": 3052
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Lighting.ps.cso",
+      "sha256": "1f4c8b9458e5a55bfdc4895baf04252cdad353ee9aebf5d0de4cd4b44ddb8811",
+      "size_bytes": 79908
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/MaterialLighting.ps.cso",
+      "sha256": "f082e75cdd0418aac5d937656b1ccb7d8277d83b67a06d8a5373bfce6fcd22a4",
+      "size_bytes": 120644
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/ToneMap.ps.cso",
+      "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f",
+      "size_bytes": 6376
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Shadow.vs.cso",
+      "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4",
+      "size_bytes": 4648
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Shadow.ps.cso",
+      "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24",
+      "size_bytes": 4236
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Temporal.cs.cso",
+      "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f",
+      "size_bytes": 19880
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Histogram.cs.cso",
+      "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1",
+      "size_bytes": 5648
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Exposure.cs.cso",
+      "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c",
+      "size_bytes": 5804
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/BloomDown.cs.cso",
+      "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7",
+      "size_bytes": 43620
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/BloomUp.cs.cso",
+      "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c",
+      "size_bytes": 14672
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/ReflectionLighting.ps.cso",
+      "sha256": "835b114057a21d4961e4b29b01c4b0c3c8945f1ca90c42b76cd40515e0e502d8",
+      "size_bytes": 80424
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/MaterialReflectionLighting.ps.cso",
+      "sha256": "5c1510dfaf7430dad0c8dd1a043c18e6fdadc670e06352ecf9b051fdeab5b0ec",
+      "size_bytes": 121144
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/ReflectionColor.cs.cso",
+      "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7",
+      "size_bytes": 4928
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/ReflectionTrace.cs.cso",
+      "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051",
+      "size_bytes": 31880
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/MaterialReflectionTrace.cs.cso",
+      "sha256": "9964ad98771e172f329d2c82efc5e4f7028e09f799cf9730e37da6f6912b9648",
+      "size_bytes": 82680
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/ReflectionComposite.cs.cso",
+      "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4",
+      "size_bytes": 5100
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/ReflectionRadiance.cs.cso",
+      "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88",
+      "size_bytes": 4304
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/VolumeInject.cs.cso",
+      "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f",
+      "size_bytes": 8836
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/VolumeLight.cs.cso",
+      "sha256": "230fc27342821a56b3330e9b1c13162739c50e59ac186968aa3ce93859c4f638",
+      "size_bytes": 66428
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/VolumeTemporal.cs.cso",
+      "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057",
+      "size_bytes": 16000
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/VolumeIntegrate.cs.cso",
+      "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c",
+      "size_bytes": 7508
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/VolumeComposite.cs.cso",
+      "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523",
+      "size_bytes": 19948
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Transparent.vs.cso",
+      "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24",
+      "size_bytes": 7224
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/Transparent.ps.cso",
+      "sha256": "9701a4ef7d943bc79723cd4cdfc9722c1b51ae51fb08763bd31eaa7169a46b79",
+      "size_bytes": 99444
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/MaterialTransparent.ps.cso",
+      "sha256": "be1a8bf1b1ec204c8fe49c01c7fcd42e665fa6a1989f95785d33672f127d4d6b",
+      "size_bytes": 139900
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GiLighting.ps.cso",
+      "sha256": "eb33235d6a5371fae143c8afc902ea57f10b2aadceda4cebf0b888a945a09bbe",
+      "size_bytes": 116520
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GiMaterialLighting.ps.cso",
+      "sha256": "bf1f52a0c8964b32b2f42bcff0ab336cdb55a9f9c4d41014bb8a964919938204",
+      "size_bytes": 157544
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GiReflectionLighting.ps.cso",
+      "sha256": "1bbac940de542f4c63211b60c41176cb6c7cc0b41f88955c07d38b350b296091",
+      "size_bytes": 117012
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GiMaterialReflectionLighting.ps.cso",
+      "sha256": "c25cefd2f384862419bc95a0e28fdbbde75165b4a74bdabc6c010fa136ce33e0",
+      "size_bytes": 158040
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GiTransparent.ps.cso",
+      "sha256": "fa6b17faf18c5cf6dae2284114d5bc378f0877ed009bc45c3b7cdf5e4c1b975b",
+      "size_bytes": 136288
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GiMaterialTransparent.ps.cso",
+      "sha256": "5cd0afad4cf8fe09d3b6b71279d4d4978086b422e7079edb67c7f465bcb49f4a",
+      "size_bytes": 177260
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GiPrepare.cs.cso",
+      "sha256": "3458bebc9a1ad2e6ad3bf9a6e0ccb16c4d010682afbf61edf93482a4948f0ffe",
+      "size_bytes": 7008
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GiTrace.cs.cso",
+      "sha256": "319643e25123cda5f31d96e0ce559d84903ccb08809de88b2e37b3f36dd6e8f7",
+      "size_bytes": 132744
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GiIntegrate.cs.cso",
+      "sha256": "d62629d44c24aa5b1489f4a315c852a648e55d9837079c57e50acbf9a62f588d",
+      "size_bytes": 14104
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GeometryCull.cs.cso",
+      "sha256": "6cfdf85dab45264853e02250e07784dd0c69996c2dd07b776178582fd9a94891",
+      "size_bytes": 13484
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GeometryHiZCopy.cs.cso",
+      "sha256": "c7903bc86740ce6e76935cf58bc39a0c249eb93012074e198f14b2f06d890873",
+      "size_bytes": 3492
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GeometryHiZReduce.cs.cso",
+      "sha256": "de4f7c0219ea5bcde366580e2bd501e6e1ca3f991c8a607f4d8465e4b4ca7485",
+      "size_bytes": 3816
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GeometryDepth.vs.cso",
+      "sha256": "d512d92cfa83cf0c59ada91b855ee8dff3126a3057e6768face7e012a117905d",
+      "size_bytes": 4632
+    },
+    {
+      "path": "build/engine_next/shadow-runtime-r6/GeometryDepth.ps.cso",
+      "sha256": "e439f80592f6a4b0159be38a3438e153e87ccd79a44ce355b00804cbf3649759",
+      "size_bytes": 4236
+    }
+  ],
+  "gpu_cases": [
+    {
+      "case": "AOff",
+      "exit_code": 0,
+      "frames": 120,
+      "validation_errors": 0,
+      "elapsed_seconds": 7.561999999976251,
+      "pixels_equal_to_r4": true,
+      "report": {
+        "path": "build/engine_next/shadow-gpu-r6/AOff/Runtime.json",
+        "sha256": "706d635bf10dfcb28cd4c4562809cf43a13dabbb3e150ab19f9126791039cced"
+      },
+      "capture": {
+        "path": "build/engine_next/shadow-gpu-r6/AOff/Final.ppm",
+        "sha256": "2bca8f506319a4c79cbe3dd11cde7d4799ef1d4b8792fce05386c63e37e52e05"
+      }
+    },
+    {
+      "case": "ACombinedGeometry",
+      "exit_code": 0,
+      "frames": 48,
+      "validation_errors": 0,
+      "elapsed_seconds": 18.68699999997625,
+      "pixels_equal_to_r4": true,
+      "report": {
+        "path": "build/engine_next/shadow-gpu-r6/ACombinedGeometry/Runtime.json",
+        "sha256": "5e3f5ee954d7f890e99c23580cc212311cfbaf371b12503173c92166751901f5"
+      },
+      "capture": {
+        "path": "build/engine_next/shadow-gpu-r6/ACombinedGeometry/Final.ppm",
+        "sha256": "651fd9827a43a3619b993dbe417882399dac2c3835058044fa5fd12507b3b337"
+      }
+    },
+    {
+      "case": "BCombinedGeometry",
+      "exit_code": 0,
+      "frames": 48,
+      "validation_errors": 0,
+      "elapsed_seconds": 26.06200000003446,
+      "pixels_equal_to_r4": true,
+      "report": {
+        "path": "build/engine_next/shadow-gpu-r6/BCombinedGeometry/Runtime.json",
+        "sha256": "07c1fa8e298a7741fbaac6be05228a61d7a9b2250760e39921c62fba4b30fd26"
+      },
+      "capture": {
+        "path": "build/engine_next/shadow-gpu-r6/BCombinedGeometry/Final.ppm",
+        "sha256": "998d205b9389ac6fd8e641eb686ee98bf0aedc6652cb902b70ff60820e31bbf5"
+      }
+    }
+  ],
+  "gpu_matrix": {
+    "path": "build/engine_next/shadow-gpu-r6/Matrix.json",
+    "sha256": "ed85cc4388b4a28a0ab5f2f701175f08b6a5c802c2780fb79fd24868e21e1c7c",
+    "size_bytes": 1815
+  },
+  "current_source_and_shader_reconciliation": {
+    "path": "build/engine_next/shadow-root-review-r6/Review.json",
+    "sha256": "36ca2c53cd9608427b881efb84f916ee4614b564ab807b9d29109e1ae63057cf",
+    "size_bytes": 7391
+  },
+  "historical_r5_handoff": {
+    "path": "build/engine_next/shadow-acceptance-r5/Result.json",
+    "sha256": "605705d2828b4451212a5eee9178a9396c82aaf42cbdbdb99e5d9650a341d89b",
+    "size_bytes": 2831
+  },
+  "source_review": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-shadow-plane-source-review.json",
+    "sha256": "7f0a4c762fdd480c257281aa385e89734d13331d8fcd8796989da82a371af0eb",
+    "size_bytes": 2857
+  },
+  "build_impact": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-shadow-plane-build-impact.json",
+    "sha256": "d722fc934d79c1ff977836605ab8147af1d55b19f18f47d5ea9d1cada4cd91a4",
+    "size_bytes": 33271
+  },
+  "historical_comparison_r3": {
+    "path": "build/engine_next/shadow-capture-r3/Comparison/Comparison.json",
+    "sha256": "7771753b7f23755ab5a2bc09e3fa6a524707c98169837da001acd15027bc2046",
+    "size_bytes": 2924
+  },
+  "historical_capture_r3": {
+    "path": "build/engine_next/shadow-capture-r3/R3Freeze.json",
+    "sha256": "edd2e67b4a0bd20dafa498b5ae613a9ce8c410ee5470a13064c2693e848c32f1",
+    "size_bytes": 1399
+  },
+  "remaining": [
+    "Rough-sphere environment pattern remains visible with shadows disabled and needs a separate correction.",
+    "Full M4.3 and parent quality, UE A-F comparison, native 4K performance and long-duration acceptance remain open.",
+    "The detailed before/after HDR comparison belongs to R3; R6 has current GPU validation and byte-identical final pixels to R4."
+  ],
+  "root_regression": {
+    "path": "build/engine_next/shadow-root-regression-r5/Result.json",
+    "sha256": "bf1e947dad4e3cb6fd632618313aac89bdacaaa44f78b1ed274c25ab50900c52",
+    "size_bytes": 1592
+  },
+  "root_regression_counts": {
+    "current_msvc_tests": 420,
+    "current_msvc_checks": 485430,
+    "current_scoped_clang_cl_tests": 11,
+    "current_scoped_clang_cl_checks": 6119,
+    "historical_r5_full_clang_cl_tests": 420,
+    "historical_r5_full_clang_cl_checks": 485430,
+    "tool_tests": 22,
+    "contract_tests": 31,
+    "contract_skips": 1
+  },
+  "static_checks": {
+    "path": "build/engine_next/shadow-static-r6/Result.json",
+    "sha256": "bad9a5e542ab799cec4ad94ee2caaccb75e5c7f4c41cefeec0ee8fae116d15ec",
+    "size_bytes": 8218
+  },
+  "static_check_scope": "Eight applicable checks passed with zero file mutations. Header guards are inapplicable because this change adds no C++ header.",
+  "prior_static_failure": "R5 exposed two indentation-only lines in the test adapter and an empty header-guard invocation. The test indentation was fixed, R6 was rebuilt and GPU-tested, and the private script now omits the inapplicable empty invocation.",
+  "post_main_alignment": {
+    "native_inputs_checked": 317,
+    "mismatches": [],
+    "scope": "Latest main changes target host/context files and three exact historical data receipts; all 317 native inputs stay identical."
+  }
+}

@@ -1,0 +1,215 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review.json",
+    "sha256": "7bc36c982c046c284684b4cf59faf9a313d8ec4938b3151fb0c84d048b329994",
+    "path_base": "absolute private host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "schema_version": 1,
+    "issue": 1499,
+    "decision": "scoped_pass",
+    "scope": "R4-followup: aggregate progress on newly authorized entry only",
+    "independent_review_complete": true,
+    "scoped_repair_complete": true,
+    "business_acceptance": false,
+    "production_acceptance": false,
+    "live_model_acceptance": false,
+    "whole_issue_complete": false,
+    "findings": [],
+    "exact_candidate": {
+      "customizations/components/tianxuan/server/api.py": "11c2129b253bb7d244b9741c1a1738412860147226fb7575212270921a89af14",
+      "customizations/components/tianxuan/server/main.py": "1251ac045aad3e5d36c9711be9c345d835ee40e6420ee67a5f21887d918be80e",
+      "customizations/components/tianxuan/server/native_entry_api.py": "bbf82a3141e84ed5d9fa6be345b6276e9458c97c5b09f40b5f51798e894d5e75",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "440765eb4c6ebb38d403ad6cda3c6585f402e735d5962e136e6384ff1d224e19",
+      "customizations/components/tianxuan/server/native_entry_review.py": "498a387ce050c7733eb1602f4a207917232e4d3075fa6e345e6c0f05a3a2b9ce",
+      "customizations/components/tianxuan/server/native_execution_host.py": "d3053bcf333681348f962cb9a650997e5dd44bbcc25119e19fac911e1529fb70",
+      "customizations/components/tianxuan/server/native_installation.py": "71d07a33a174db0b30356d2fa6d1dfe501e97f4abe2067ef6fc348f43869d01e",
+      "customizations/components/tianxuan/server/test_native_entry.py": "cdc10d387cd07fc7acadc57f0e0755b820d303c90089e84e4e6c625a6a2d48b5",
+      "customizations/components/tianxuan/server/test_native_entry_normal.py": "d449c5c3004b1558ba7186117f7cbb6b91cbe36e7c3cf378f5f820ecfe17eeb8",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "9f48bd4e5f774e3f84e9edc85d2b345fee562236ae1ccf3067e4e692196a06e9",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "c5b39fd8111ac6440a21a5cbc8e9e6a537908dff38d2ea52b1090c6774fa1287",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "3e83f5cc7e204a83b7a3fc31e63ea61ac34fdadbbab1c80f830ebe1528bb36e4",
+      "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "a3a57f9e629ed16c3c358bbf4618a8495bed98d654b48237ca510524f70c9ca3",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "b2efca2759b6d6bb30aa489ce863ba09d6726803c764f6e0875e73823d52d0d1",
+      "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py": "213a234e9177809845ea8b5247f19ec41200747835b138ec87503d83aa810b71",
+      "customizations/components/tianxuan/server/native-entry-interface.md": "46631b7a38b1912dc8945b8f1a4eef25564de3eb5453ee6905daf907a654df98",
+      "design-docs/native-production-entry-20261118.md": "a79e6f8c49e950b2aec16c07eee2093aa982b734d6ab4e568a848122c12bff4b",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "0ceddb65d6c5f21ced74a858d89b13a810d161a8cc4a0dd5e68e711ca4df9efc",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d35cfe7d9c5fc46da815cdf9d9405d615b8f51f247fcedb2b06e79731e0a14ea",
+      "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": "35829d59c350d4a637a0e4bafcea06e4251b4ed30c99c23f4b047423a8665e5c"
+    },
+    "candidate_unchanged_before_after": true,
+    "repair_report_sha256": "b7916912baa59f3e20a8904453190279f667faf83a1705480cf4345d1e89bda1",
+    "original_R4_review_sha256": "89730f4f781266f90fc5c2a180aed64ec6e78ba60d9be56782cb43194d3495ab",
+    "tests": {
+      "regression": "21 passed, 1 skipped; exit 0. Skip explicit NATIVE_TEST_NODE foundation driver test; actual installed Node exercised by ordinary ASGI probe.",
+      "atomic": "exit 0; independent sqlite observer proves pending entry and reopened parent invisible before commit; injected after-enqueue and sync failures roll back all relevant rows; cross-tenant, credential, source and payload rejection; completed replay unchanged; generic parent/child terminal reopening forbidden",
+      "normal": "exit 0; fresh owned fixture; adapted normal-progress.py executed as standalone, never imported original top-level"
+    },
+    "observations": {
+      "pending": {
+        "entry": "958651fd5d857649b7d02e31889e4bc84d8eeddaed86e24bb3c2b8e12bb29e8f",
+        "tasks": [],
+        "policy": "092fea12b02fe7192e84de6e25bb57acc36731ba1ae2dd8a45c5031e655ca3e6",
+        "state": "held",
+        "progress": {
+          "total": 3,
+          "done": 2,
+          "percent": 67
+        },
+        "failures": []
+      },
+      "planned": {
+        "entry": "958651fd5d857649b7d02e31889e4bc84d8eeddaed86e24bb3c2b8e12bb29e8f",
+        "tasks": [
+          {
+            "task": "8cb88db3cb8caead3d979526035c5d02f48145e88bb668c1f96043d5eca6fd6e",
+            "state": "ready"
+          }
+        ],
+        "policy": "092fea12b02fe7192e84de6e25bb57acc36731ba1ae2dd8a45c5031e655ca3e6",
+        "state": "planned",
+        "progress": {
+          "total": 4,
+          "done": 2,
+          "percent": 50
+        },
+        "failures": []
+      },
+      "delivered": {
+        "entry": "958651fd5d857649b7d02e31889e4bc84d8eeddaed86e24bb3c2b8e12bb29e8f",
+        "tasks": [
+          {
+            "task": "8cb88db3cb8caead3d979526035c5d02f48145e88bb668c1f96043d5eca6fd6e",
+            "state": "accepted"
+          }
+        ],
+        "policy": "092fea12b02fe7192e84de6e25bb57acc36731ba1ae2dd8a45c5031e655ca3e6",
+        "state": "delivered",
+        "progress": {
+          "total": 4,
+          "done": 4,
+          "percent": 100
+        },
+        "failures": []
+      },
+      "parent_pending": [
+        {
+          "id": "iss_d7130049b5c547939b2c29c8d0f83400",
+          "status": "in-progress"
+        }
+      ],
+      "parent_planned": [
+        {
+          "id": "iss_d7130049b5c547939b2c29c8d0f83400",
+          "status": "in-progress"
+        }
+      ],
+      "parent_delivered": [
+        {
+          "id": "iss_d7130049b5c547939b2c29c8d0f83400",
+          "status": "done"
+        }
+      ],
+      "prior_native_acceptance_unchanged": true,
+      "physical_process_closure": true,
+      "consumer_failures": []
+    },
+    "code_review": [
+      {
+        "file": "customizations/components/tianxuan/server/native_execution_host.py",
+        "lines": "47-98",
+        "assessment": "Current requirement write authority and credential checked before old-key comparison; existing-key return precedes mutation; only new entry reopens canonical requirement parent and emits actor/entry-bound transition audit; sync_progress within caller-owned transaction."
+      },
+      {
+        "file": "customizations/components/tianxuan/server/tianxuan_core.py",
+        "lines": "291-320,1522-1540,1603-1621",
+        "assessment": "Connection lock and nested savepoint preserve outer transaction; generic done transition rules unchanged. Progress counts all issues including requirement parent: parent is one aggregate incomplete unit, not an entry count or effort estimate. Two accepted children plus reopened parent gives 67%; adding third ready child gives 50%; eventual parent+three children done gives 100%."
+      },
+      {
+        "file": "customizations/components/tianxuan/server/native_entry_factory.py",
+        "lines": "806-827",
+        "assessment": "Existing finalization checks receipt-less entries and related child completion before closing parent."
+      }
+    ],
+    "limitations": [
+      "Existing per-entry Node/admission P0 and repeated installation full hashing are outside this review.",
+      "Resolver, context, remote, packaging, production server250 and live-model acceptance remain pending.",
+      "Foundation corrected NotFound expectation is appropriate tenant concealment; preserved original implementation-owner regression failure is a test expectation error, not implementation failure.",
+      "No claim beyond the pinned 20-file R4 scope; R1-R3 unchanged work not broadly retested."
+    ],
+    "method_recall": {
+      "tenant": "gonggong-workspace",
+      "scope": "editor-dependency-handoff",
+      "verified": [
+        "await-terminal-observers revision6",
+        "bind-consumer-release revision22",
+        "reconstruct-worker-outcomes revision3",
+        "review-context-and-source-evidence revision4"
+      ],
+      "application": "Pin before/after source bytes and validate actual physical closure; deterministic results do not imply production/business acceptance."
+    },
+    "learning_feedback": {
+      "action": "applied_feedback_for_root",
+      "observation": "Fresh delayed increment after initial delivery reproduces 67% pending and 50% planned, then 100% delivery; rollback/source-mismatch probes preserve done state.",
+      "counterexample": "Immutable historical task acceptance stays unchanged while aggregate requirement reopens."
+    },
+    "cleanup": {
+      "source_edits": false,
+      "git_operations": false,
+      "listeners": false,
+      "models": false,
+      "agents_spawned": false,
+      "processes_closed": true,
+      "live_role_process_count": 0,
+      "retained": "Owned scripts, role fixtures, sqlite databases and logs retained as review evidence; tests cleaned their TemporaryDirectory resources. No branches/worktrees created. Root owns eventual evidence archival cleanup."
+    },
+    "evidence": [
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\adversarial-planned-progress.json",
+        "sha256": "f0d80f818ed5e3b43ba4576d160bd324345a15a457c471a68ed7950ba6a3b49f"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\atomic.json",
+        "sha256": "a45c14890ff50a45a2bec1699eb1b2895627a37fdeae0120e65523f757905407"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\atomic.log",
+        "sha256": "aea7b6832b9d40c92c32622376f8570bfc15422007e83437ded1494f941a15a3"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\atomic.py",
+        "sha256": "44562789d023a1c9d07ae63b02893b84b094d94995221b26ae9dfb2f6afca17b"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\atomic.sqlite",
+        "sha256": "8b694be4f15dcbeadb7e77e9594a2d408edab48d928123d1f49c0c650758b6ad"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\build-report.py",
+        "sha256": "f23cd31837c97418f218f837f8aaa7dc1a63f6205a4e0f225b1e7886fed5f085"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\hashes-after.json",
+        "sha256": "b283833b67eb939bf913f4f6e73ecaf0fd3add65a604ab33c89d84c87817a21d"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\hashes-before.json",
+        "sha256": "30fc20f944a0c0741525648f5f0ad5dd0a5e575e71a5f2e0dded24f6f0a8c66e"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\normal-progress.log",
+        "sha256": "6b69c270d9a4c112bc9e10423681e72d5c9016091a903a07f517888ce2872aec"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\normal-progress.py",
+        "sha256": "7c657d7ac73465271dcd52f938e9e1627d6906fc32f8435059a4fa1cefc4af56"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-progress-review-probes\\regression.log",
+        "sha256": "2e0711a4ba1d5cb8a4875889fba3aebde49f00eaefba5cf9f62fd22385acc2f2"
+      }
+    ]
+  }
+}

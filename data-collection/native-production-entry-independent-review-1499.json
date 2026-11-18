@@ -1,0 +1,137 @@
+{
+  "original_sha256": "b6b9bf3f8d6bf1122ecc5a1856e91a6421cd024f22fdb9b390ebacc8e5a52776",
+  "review": {
+    "schema_version": 1,
+    "issue": 1499,
+    "decision": "changes_required",
+    "independent_review_complete": true,
+    "goal_complete": false,
+    "business_acceptance": false,
+    "live_model_acceptance": false,
+    "production_acceptance": false,
+    "implementation_report_sha256": "a33cdd0de9cd34c9958837017b6b6b7d77c347b94ced418e8bdc6b74583f4e56",
+    "exact_candidate": {
+      "customizations/components/tianxuan/server/api.py": "b051c77c1a60c5c96fd2074e572b07b386d5e23e9eec4aa855bcee572a5a9f19",
+      "customizations/components/tianxuan/server/main.py": "1251ac045aad3e5d36c9711be9c345d835ee40e6420ee67a5f21887d918be80e",
+      "customizations/components/tianxuan/server/native_entry_api.py": "2697cec47a6b0188b2baef96eca4464ab1220bc0d9b9efe2333f6d598ceffb73",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "12e6fe8714c4daca042d641268b6cc501c0a626a23f0c0b10b925ab6e62a0b9f",
+      "customizations/components/tianxuan/server/native_entry_review.py": "498a387ce050c7733eb1602f4a207917232e4d3075fa6e345e6c0f05a3a2b9ce",
+      "customizations/components/tianxuan/server/native_execution_host.py": "8dc2ad8d47891a25d0789710278282ed2a2277362f20bb1e875d8a7fae325ea6",
+      "customizations/components/tianxuan/server/native_installation.py": "71d07a33a174db0b30356d2fa6d1dfe501e97f4abe2067ef6fc348f43869d01e",
+      "customizations/components/tianxuan/server/test_native_entry.py": "ce330a7e3520f1833e8ddc01117eaf1d4f74290387e4f2b96d47350797429d1d",
+      "customizations/components/tianxuan/server/test_native_entry_normal.py": "d449c5c3004b1558ba7186117f7cbb6b91cbe36e7c3cf378f5f820ecfe17eeb8",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "33a656538adfc89da8b79516a4e496916434dcc241ffe09574b8d49561bd8dc4",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "c5b39fd8111ac6440a21a5cbc8e9e6a537908dff38d2ea52b1090c6774fa1287",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "3e83f5cc7e204a83b7a3fc31e63ea61ac34fdadbbab1c80f830ebe1528bb36e4",
+      "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "3abdb5a2262227b89362b9ab8ef78d2354dd01aa7284d77a4ded5b964352a883",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "b2efca2759b6d6bb30aa489ce863ba09d6726803c764f6e0875e73823d52d0d1",
+      "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py": "213a234e9177809845ea8b5247f19ec41200747835b138ec87503d83aa810b71",
+      "customizations/components/tianxuan/server/native-entry-interface.md": "ef0d869d7559ca51d2541a4bf897c1ee46d2e53285565bdfccb9ed9093ba7e3f",
+      "design-docs/native-production-entry-20261118.md": "15ceefbdcba11cce71591e6730d577ebefc85bcf0a8917104afc28a230068922"
+    },
+    "candidate_unchanged_before_after": true,
+    "method_recall": {
+      "tenant": "gonggong-workspace",
+      "scope": "editor-dependency-handoff",
+      "applied": [
+        "bind-consumer-release revision 22: exact bytes and actual acceptance, not transport completion",
+        "await-terminal-observers revision 6: prove physical closure",
+        "reconstruct-worker-outcomes revision 3: unknown is not permission to replay"
+      ],
+      "counterexamples": "Synthetic process/fixture acceptance is not live product/model acceptance; other-task resources remain outside scope"
+    },
+    "validation": {
+      "normal_main_asgi": "New independent deterministic installation; real finite planner/producer/checker/reviewer and Node processes; no providers, network or listener",
+      "regression": "18 passed in 3.74s: test_native_entry.py and test_native_entry_producer.py",
+      "physical_processes_closed": true,
+      "final_windows_process_readback": "No python/node process matching independent probe path or native_entry_driver.mjs",
+      "models_called": 0,
+      "network_listeners": 0
+    },
+    "findings": [
+      {
+        "id": "R1",
+        "priority": "P1",
+        "file": "customizations/components/tianxuan/server/native_entry_factory.py",
+        "line": 442,
+        "title": "Same-product lock queues complete workflows; increment scopes prohibited",
+        "evidence": "Two different members submitted before either completed. Both delivered, but producer intervals 1794974550.8831778–1794974552.89037 and 1794974568.987239–1794974570.993733 never overlap. Extra installed scope rejected: Shared product scope revision requires separate requirement.",
+        "impact": "Main multi-user same-product parallel objective unmet; disjoint modules cannot be added to existing product. Identical-write example alone cannot prove disjoint conflict behavior; lock code plus explicit disjoint-scope refusal establish the broader blocker.",
+        "repair": "Plan outside product critical section. Hold short product/DB lock only while atomically reserving seed revisions and persisting exact entry/task mapping. Merge additive scope namespace with deterministic provenance. Launch independent workers after releasing lock; serialize only actual overlapping write contracts and channel publication CAS/integration conflicts. Do not merely delete lock."
+      },
+      {
+        "id": "R2",
+        "priority": "P1",
+        "file": "customizations/components/tianxuan/server/native_entry_factory.py",
+        "line": 295,
+        "title": "First historical authority match blocks valid new credentials",
+        "evidence": "After owner logout and fresh login, renewed entry authorize(key)=true but planning held with Entry credential withdrawn. Still-valid colleague new entry authorize(key)=true reaches planned then fails same error. Original owner entry authorize=false. Requirement callback matches old same-actor row; release configuration selects first product row. module_authority and continuous_policies have analogous first-row coupling.",
+        "impact": "Ordinary session logout/expiry can strand product for valid collaborators; new independent tasks and historical read rights are conflated with revoked old entry capabilities.",
+        "repair": "Pass exact entry mandate through planner/current and exact task/contribution provenance through mutable operations. Separate immutable accepted-publication/provenance facts and current same-tenant authorized read from current authorization for fresh effects. Fresh task may use its own valid entry and accepted immutable baseline; never replace revoked unfinished original contribution credentials with another entry grant. Review/publication of unfinished originals must recheck every original. Release configure/read authorization must bind intended current operation and product policy, not historical first entry."
+      },
+      {
+        "id": "R3",
+        "priority": "P1",
+        "file": "customizations/components/tianxuan/server/native_entry_factory.py",
+        "line": 398,
+        "title": "Continuous coordinator and dependency resolver remain historical and actor-local",
+        "evidence": "continuous_policies chooses first receipt coordinator/base for product. native_continuous.enqueue rejects changed lane actor/policy (lines 276–277), and _drive switches to fixed coordinator. plan resolves dependencies only inside receipt mapping; next_issues enumerates only actor entries. Existing event machinery is real, but factory does not supply product-wide cross-member dependency semantics.",
+        "impact": "Lock shortening alone does not produce shared global work graph or safe recovery when original coordinator loses access.",
+        "repair": "Store tenant/product task identities with exact accepted upstream contract/source revisions and original mandates; wake newly ready dependents on durable acceptance/source/credential/handoff events, including other members. Add explicit authorized coordinator transfer with old/new policy revisions and CAS, tenant/current write checks, reconciliation of in-flight physical publication before transfer, durable audit and wakeup. Unknown publishing ownership stays held; coordinator transfer cannot reauthorize revoked original contributions."
+      },
+      {
+        "id": "R4",
+        "priority": "P1",
+        "file": "customizations/components/tianxuan/server/native_entry_factory.py",
+        "line": 541,
+        "title": "Entry completion uses entire requirement progress",
+        "evidence": "consume_product enumerates all issues of requirement, including other entries, before completing current entry parent; then requires whole-requirement percent==100. Static finding also supplied by root; no redundant execution.",
+        "impact": "With real overlapping execution, a correctly completed entry can fail while another is still running; global requirement completion and entry delivery must be distinct.",
+        "repair": "Settle each entry only from its exact mapping and accepted/publication receipts. Keep requirement aggregate/overall parent incomplete until all required associated entries and original acceptance are met; do not report 100% just because one entry delivered."
+      }
+    ],
+    "positive_findings": [
+      "EntryLedger binds original credential and immutable requirement digest; original revocation is correctly denied in independent normal ASGI probe.",
+      "IndependentReview reads exact composition, all object hashes and original criteria, rechecks every original before/after; bound snapshot over 100000 bytes fails closed. Regression covers all originals and altered semantic receipts.",
+      "Broker verifies pinned config/framework/runtime/executables, role admission and signed grants; actual deterministic producer bridge regression passed central budget tasks/jid and structured work_items binding. This is not live provider evidence.",
+      "Consumer persists claimed intent, uses real event wakeups and preserves unknown without automatic replay; regression covers startup gap, concurrent unrelated entries, readonly broker recovery, OS coordinator handle and physical driver closure.",
+      "Tenant/credential and strict old-session/key rejection regressions pass. Production self-registration is intentionally forbidden; administrator provisioning and actual ordinary production onboarding remain unaccepted."
+    ],
+    "remaining_acceptance": [
+      "Normal ASGI disjoint-output members must demonstrate overlapping physical producer intervals for one requirement, correct deterministic integrated output, both exact entry receipts, and complete overall acceptance only at final required completion.",
+      "Same-module conflicting writes must serialize/reconcile at conflict or publication boundary without blocking unrelated modules.",
+      "Fresh same-actor login and existing collaborator must continue independent tasks after old session revocation; accepted historical release remains readable to currently authorized readers. Revoked unfinished originals cannot finish/check/review/publish under substituted grants.",
+      "Safe coordinator handoff after revocation, including idle, physically completed-but-unreconciled and unknown publication; no replay of unknown execution.",
+      "Cross-member accepted dependencies, source/credential withdrawal and wakeup; partial entry completion distinct from requirement completion.",
+      "Normal main remains local-only, context_tools=false. Remote adapter and #1501 context integration absent and unreviewed; no active #1501 tree accessed.",
+      "No live production model, listener/device, package update/rollback or full business acceptance established."
+    ],
+    "retained_implementation_history": "Original SQLite/API failures and budget/Worklink failures remain corrected implementation evidence in original implementation receipts; no unknown execution replay or cleanup-policy bypass attempted.",
+    "cleanup": {
+      "physical_processes_closed": true,
+      "artifacts_retained": "Independent probe source, fixture state, regression outputs and hashes retained at explicitly owned review path for root repair/review. No product changes, branches/worktrees, commits or deletion attempts.",
+      "complete": false
+    },
+    "learning_feedback": {
+      "action": "proposal_for_root",
+      "method": "For shared-product entry reviews, submit both members before completion, timestamp actual producer intervals, then revoke first session and prove independent renewed entry authority separately from factory authorization.",
+      "when": "Same-product multi-user normal entry delivery",
+      "counterexample": "Different tenants or sequential entry requests do not verify concurrent shared-product work; valid replacement grant must not authorize revoked unfinished original",
+      "observed": "Concurrent submissions serialized; fresh valid entry blocked by first historical revoked row."
+    },
+    "evidence": [
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-independent-review-probes\\probe.py",
+        "sha256": "dbacacce1e12bce6178c575bb540406e8e3c02393d0ce7c3b1f7f7450b97e74f"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-independent-review-probes\\normal-asgi-results.json",
+        "sha256": "43dbebc0bb85d7acb8830a4551c906a5fa289c0beeaac9392b124de8914aa316"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-independent-review-probes\\regression.log",
+        "sha256": "2521e95d82067009929c6baff25162f81d8ff73d3a6654ef79166c142e8c2c17"
+      }
+    ]
+  }
+}

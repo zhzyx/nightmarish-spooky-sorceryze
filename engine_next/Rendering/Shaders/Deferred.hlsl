@@ -225,30 +225,16 @@ float3 EvaluateLight(float3 Base, float Metallic, float Roughness, float3 N, flo
     float3 Specular = D * G * F / max(4 * NoV * NoL, 0.0001);
     return ((1 - F) * (1 - Metallic) * Base / 3.14159265 + Specular) * Radiance * NoL;
 }
-float SampleCascadeShadow(float3 Position, float3 N, uint Cascade)
+float SampleCascadeShadow(float3 Position, float3 N, float3 GeometricNormal, uint Cascade)
 {
     float4 ShadowPosition = mul(ShadowViewProjection[Cascade], float4(Position + N * ShadowParameters.w, 1));
     float3 Projected = ShadowPosition.xyz / ShadowPosition.w;
-    float2 Uv = Projected.xy * float2(0.5, -0.5) + 0.5;
-    if (any(Uv < 0) || any(Uv > 1) || Projected.z < 0 || Projected.z > 1)
-    {
-        return 1;
-    }
-    int Resolution = (int)round(1 / ShadowParameters.y);
-    int2 Center = int2(Uv * Resolution);
-    float Visibility = 0;
-    [unroll] for (int Y = -1; Y <= 1; ++Y)
-    {
-        [unroll] for (int X = -1; X <= 1; ++X)
-        {
-            int2 Pixel = clamp(Center + int2(X, Y), 0, Resolution - 1);
-            float Depth = DirectionalShadow.Load(int4(Pixel, Cascade, 0));
-            Visibility += Projected.z + ShadowParameters.z >= Depth ? 1 : 0;
-        }
-    }
-    return Visibility / 9;
+    float2 Gradient = ShadowReceiverGradient(ShadowViewProjection[Cascade][0].xyz,
+        ShadowViewProjection[Cascade][1].xyz, ShadowViewProjection[Cascade][2].xyz, GeometricNormal);
+    return SampleShadowMap(DirectionalShadow, Projected, Cascade, round(1 / ShadowParameters.y),
+        ShadowParameters.z, 0, float2(0, 0), true, false, 6, float3(0, 0, 0), Gradient);
 }
-float DirectionalVisibility(float3 Position, float3 N)
+float DirectionalVisibility(float3 Position, float3 N, float3 GeometricNormal)
 {
     float Distance = -mul(View, float4(Position, 1)).z;
     if (ShadowParameters.x < 0.5 || Distance > CascadeSplits.w)
@@ -258,7 +244,7 @@ float DirectionalVisibility(float3 Position, float3 N)
     uint Cascade = Distance > CascadeSplits.x ? 1 : 0;
     Cascade = Distance > CascadeSplits.y ? 2 : Cascade;
     Cascade = Distance > CascadeSplits.z ? 3 : Cascade;
-    float Visibility = SampleCascadeShadow(Position, N, Cascade);
+    float Visibility = SampleCascadeShadow(Position, N, GeometricNormal, Cascade);
     if (Cascade < 3)
     {
         float Start = Cascade == 0 ? 0 : CascadeSplits[Cascade - 1];
@@ -266,7 +252,7 @@ float DirectionalVisibility(float3 Position, float3 N)
         float Blend = saturate((Distance - (CascadeSplits[Cascade] - Width)) / max(Width, 0.001));
         if (Blend > 0)
         {
-            Visibility = lerp(Visibility, SampleCascadeShadow(Position, N, Cascade + 1), Blend);
+            Visibility = lerp(Visibility, SampleCascadeShadow(Position, N, GeometricNormal, Cascade + 1), Blend);
         }
     }
     return Visibility;
@@ -337,9 +323,9 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
     float4 Tangent = TangentBuffer.Load(int3(Pixel, 0));
     MaterialFrame Frame = MaterialBuildFrame(N, Tangent.xyz, Tangent.w, Extension.w);
     float3 Color = MaterialShadeLight(Base, Material.y, Material.x, Extension.z, Extension.x, Extension.y,
-        true, Frame, V, LightDirection.xyz, LightColor.rgb * Tint[0].rgb) * DirectionalVisibility(Position, N);
+        true, Frame, V, LightDirection.xyz, LightColor.rgb * Tint[0].rgb) * DirectionalVisibility(Position, N, GeometricNormal);
 #else
-    float3 Color = EvaluateLight(Base, Material.y, Material.x, N, V, LightDirection.xyz, LightColor.rgb * Tint[0].rgb) * DirectionalVisibility(Position, N);
+    float3 Color = EvaluateLight(Base, Material.y, Material.x, N, V, LightDirection.xyz, LightColor.rgb * Tint[0].rgb) * DirectionalVisibility(Position, N, GeometricNormal);
 #endif
     [loop] for (uint LightIndex = 0; LightIndex < (uint)LocalCounts.x; ++LightIndex)
     {

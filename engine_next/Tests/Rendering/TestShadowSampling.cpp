@@ -119,6 +119,11 @@ Float2 operator+(Float2 stLeft, float fRight)
 	return { stLeft.x + fRight, stLeft.y + fRight };
 }
 
+Float2 operator+(Float2 stLeft, Float2 stRight)
+{
+	return { stLeft.x + stRight.x, stLeft.y + stRight.y };
+}
+
 Float2 operator-(Float2 stLeft, int nRight)
 {
 	return { stLeft.x - static_cast<float>(nRight), stLeft.y - static_cast<float>(nRight) };
@@ -152,6 +157,13 @@ Float3 operator/(Float3 stLeft, float fRight)
 float dot(Float3 stLeft, Float3 stRight)
 {
 	return stLeft.x * stRight.x + stLeft.y * stRight.y + stLeft.z * stRight.z;
+}
+
+Float3 cross(Float3 stLeft, Float3 stRight)
+{
+	return { stLeft.y * stRight.z - stLeft.z * stRight.y,
+			 stLeft.z * stRight.x - stLeft.x * stRight.z,
+			 stLeft.x * stRight.y - stLeft.y * stRight.x };
 }
 
 float length(Float3 stValue)
@@ -256,6 +268,10 @@ struct TextureData
 	bool bRadialSphere = false;
 	float fSphereRadius = 5;
 	bool bPlane = false;
+	bool bOrthographicPlane = false;
+	Float2 stPlaneGradient{ 0, 0 };
+	float fPlaneConstant = 0.5F;
+	float fBlockerDepthOffset = 0;
 	std::vector<Int4> arrReads;
 };
 
@@ -281,6 +297,17 @@ struct Texture2DArray
 		if (!bInside)
 		{
 			return 0;
+		}
+		if (pData->bOrthographicPlane)
+		{
+			const float fClipX = (static_cast<float>(stPosition.stPixel.x) + 0.5F) * 2 / pData->nWidth - 1;
+			const float fClipY = 1 - (static_cast<float>(stPosition.stPixel.y) + 0.5F) * 2 / pData->nHeight;
+			if (pData->bHalfPlane && stPosition.stPixel.x >= static_cast<int>(pData->nWidth / 2))
+			{
+				return 0;
+			}
+			return pData->fPlaneConstant + pData->stPlaneGradient.x * fClipX +
+					pData->stPlaneGradient.y * fClipY + pData->fBlockerDepthOffset;
 		}
 		if (pData->bPlane)
 		{
@@ -339,6 +366,67 @@ int FilterRadius(const TextureData &stData)
 }
 
 } // namespace
+
+ENGINE_NEXT_TEST("Directional receiver plane handles scaled reflected and rotated shadow axes")
+{
+	const Float3 stNormal(1, 2, 4);
+	const Float2 stGradient = ShadowReceiverGradient(Float3(2, 0, 0), Float3(0, -3, 0), Float3(0, 0, -4), stNormal);
+	CheckNear(stGradient.x, 0.5F);
+	CheckNear(stGradient.y, -2.0F / 3);
+	const Float2 stFlipped = ShadowReceiverGradient(Float3(2, 0, 0), Float3(0, -3, 0), Float3(0, 0, -4), stNormal * -1.0F);
+	CheckNear(stFlipped.x, stGradient.x);
+	CheckNear(stFlipped.y, stGradient.y);
+	const Float2 stRotated = ShadowReceiverGradient(Float3(0, 2, 0), Float3(-3, 0, 0), Float3(0, 0, -4), stNormal);
+	CheckNear(stRotated.x, 1);
+	CheckNear(stRotated.y, -1.0F / 3);
+}
+
+ENGINE_NEXT_TEST("Directional receiver plane falls back for singular and grazing geometry")
+{
+	const Float3 stX(1, 0, 0);
+	const Float3 stY(0, 1, 0);
+	const Float3 stZ(0, 0, 1);
+	const float fNan = std::numeric_limits<float>::quiet_NaN();
+	for (const Float3 &stNormal : { Float3(0, 0, 0), Float3(1, 0, 0), Float3(1, 0, 1.0e-8F), Float3(fNan, 0, 1) })
+	{
+		const Float2 stGradient = ShadowReceiverGradient(stX, stY, stZ, stNormal);
+		ENGINE_NEXT_CHECK_EQ(stGradient.x, 0);
+		ENGINE_NEXT_CHECK_EQ(stGradient.y, 0);
+	}
+	const Float2 stSingular = ShadowReceiverGradient(stX, stY, stX, stZ);
+	ENGINE_NEXT_CHECK_EQ(stSingular.x, 0);
+	ENGINE_NEXT_CHECK_EQ(stSingular.y, 0);
+	const Float2 stInvalid = ShadowReceiverGradient(Float3(fNan, 0, 0), stY, stZ, stZ);
+	ENGINE_NEXT_CHECK_EQ(stInvalid.x, 0);
+	ENGINE_NEXT_CHECK_EQ(stInvalid.y, 0);
+	CheckNear(ShadowReceiverDepth(Float3(0, 0, 0.5F), Float2(0.1F, 0.1F), Float2(fNan, 0.0F), 0.001F), 0.501F);
+}
+
+ENGINE_NEXT_TEST("Directional PCF uses actual clamped texel centers on the receiver plane")
+{
+	TextureData stData;
+	stData.bOrthographicPlane = true;
+	stData.nWidth = 64;
+	stData.nHeight = 64;
+	stData.stPlaneGradient = Float2(0.15F, -0.2F);
+	Texture2DArray<float> stTexture{ &stData };
+	const Float2 stGradient = ShadowReceiverGradient(Float3(1, 0, 0), Float3(0, 1, 0), Float3(0, 0, 1), Float3(-0.15F, 0.2F, 1));
+	for (float fX : { -1.0F, -0.999F, -0.01F, 0.0F, 0.013F, 0.99F, 1.0F })
+	{
+		for (float fY : { -1.0F, -0.71F, 0.0F, 0.123F, 1.0F })
+		{
+			const Float3 stReceiver(fX, fY, stData.fPlaneConstant + stGradient.x * fX + stGradient.y * fY);
+			CheckNear(SampleShadowMap(stTexture, stReceiver, 0, 64, 1.0e-6F, 0, Float2(0, 0), true, false, 6, Float3(0, 0, 0), stGradient), 1);
+		}
+	}
+	const Float3 stCenter(0.013F, 0.123F, stData.fPlaneConstant + stGradient.x * 0.013F + stGradient.y * 0.123F);
+	ENGINE_NEXT_CHECK(SampleShadowMap(stTexture, stCenter, 0, 64, 1.0e-6F, 0, Float2(0, 0), true, false) < 1);
+	stData.fBlockerDepthOffset = 0.0005F;
+	CheckNear(SampleShadowMap(stTexture, stCenter, 0, 64, 1.0e-6F, 0, Float2(0, 0), true, false, 6, Float3(0, 0, 0), stGradient), 0);
+	stData.bHalfPlane = true;
+	const Float3 stBoundary(0, 0, stData.fPlaneConstant);
+	CheckNear(SampleShadowMap(stTexture, stBoundary, 0, 64, 1.0e-6F, 0, Float2(0, 0), true, false, 6, Float3(0, 0, 0), stGradient), 2.0F / 3);
+}
 
 ENGINE_NEXT_TEST("Shadow sampling reconstructs perspective and orthographic reverse depth")
 {

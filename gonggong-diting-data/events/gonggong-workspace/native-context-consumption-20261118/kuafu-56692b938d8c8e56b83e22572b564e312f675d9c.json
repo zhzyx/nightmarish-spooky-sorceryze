@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-56692b938d8c8e56b83e22572b564e312f675d9c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-context-consumption-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "542ec6af520f83c8001c0aae44ab09a13da545b06fc20b985dc2bf64de8f8f79",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "8b6b210be8aae3f36f7b457979e31964b44026ea",
+    "context_sha256": "49429a6d5f505b01e89543e3cdea1ecb6700655ee95ebc333ebe1aca7076069a",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+    "diagnosis": "Source alignment preparation failed git diff bad object8b6b210 before any product edit or model call: signed delivery object had not been fetched into local object database. Root reread actual PR1502 head, fetched that exact reviewed signed source, verified disjoint owned paths, then original alignment passed preserving all6owned files. Subsequent CI/main receipt accepted exact head. No resets, claims cleared or worker replay.",
+    "next_action": "Root owns preparation correction; retain original failure and verify actual consumer before business acceptance, continue scoped implementation/measurements and independent review.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T03:21:47.629315+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T03:22:07.795155+00:00",
+  "sha256": "0da3745ea3a721f4270ed4ad4da3e2bcd1395d6c85def6d1048d038e91bf7609"
+}

@@ -1,0 +1,48 @@
+{
+  "issue": 1499,
+  "before": "20fc244783835a3a81b3c5a67858c560cc5233a0",
+  "main": "88a401d8a8498af36063eedbed3abc5657c52d90",
+  "continuous_delivery": {
+    "pr": {
+      "headRefOid": "20fc244783835a3a81b3c5a67858c560cc5233a0",
+      "mergeCommit": {
+        "oid": "88a401d8a8498af36063eedbed3abc5657c52d90"
+      },
+      "mergedAt": "2026-11-18T02:54:12Z",
+      "mergedBy": {
+        "id": "U_kgDOFOKx7w",
+        "is_bot": false,
+        "login": "Sail-Li",
+        "name": ""
+      },
+      "state": "MERGED"
+    },
+    "remote_main": "88a401d8a8498af36063eedbed3abc5657c52d90",
+    "signed_head_ancestor": true,
+    "all_delivered_paths_match": true,
+    "delivery_log": "native-continuous-writer-submit.log",
+    "delivery_path_count": 52
+  },
+  "owned_preserved": {
+    "customizations/components/tianxuan/server/native-entry-interface.md": "23d91581396825362883733a25e5c2a4af9226a3e5176a91e1e527da8f130691",
+    "customizations/components/tianxuan/server/native_execution_host.py": "3f5a67d470e777bd1df6711aea137a6870ce129bcb5de1e3d2068ec2be088b3d",
+    "customizations/components/tianxuan/server/native_installation.py": "573c275a38e6061a2ec485d84f22c08eccf452bbd5e829d55b0577eab7ce26cd",
+    "customizations/components/tianxuan/server/test_native_entry.py": "2b8aed85b7a6216ca3ebf9bd17d98793ba082cfbb5b41de0a81f807af58bbcbf",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "b2efca2759b6d6bb30aa489ce863ba09d6726803c764f6e0875e73823d52d0d1",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "a9aaa28a49bff4759d1a604eb5481921287f5b81918a1d894ad38528a6ed09ec",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "4146b6541181128fdcdfd05b99f1a50528f9a9078f9b6a8239d2f7f9ab316167",
+    "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "0f83406837c8b07c865aa63c923fb39b4f1e02228c909e759fedc7c3f12b05cb",
+    "data-collection/native-entry-continuous-alignment-1499.json": "0414eafb9fdd6d564438db989077b560ff23a7a7df91693eef599d41a8cd444f",
+    "data-collection/native-production-entry-alignment-1499.json": "93dd8d0738f298bcef9493071db504c766750fd9ea4af4f01f77fc2c8dc65b89",
+    "data-collection/native-production-entry-audit-1499.json": "2dbf8a0c886405a4484aa791551d017cac24a4c1bcad749ed842f120dd282851",
+    "data-collection/native-production-entry-implementation-1499.json": "a6071dee3c44dfcc456653c2dc35d818a54eab95b2ca40160d17c0f55009cfa6",
+    "data-collection/requests/native-production-entry-20261118/0214d8c4-d927-4a9c-bfd5-4719d74255e8.json": "db69adddebc6ce5e8f90f195527c8779b6bdca576e7ea5de7032e114449e9c59",
+    "design-docs/native-production-entry-20261118.md": "483cec72781183d10568e7cf578ac33bbb8597bee97de689a06ee7e1c700d1da",
+    "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/codex-intake-1499-20261117.json": "ab6fbf7bfbeb7efe0d8ddffd826b40d265f1c50e022405ff5276a272c4d5b839",
+    "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-33ca6ea89bc448e0b96f00f3494d1c67.json": "373d1acc80e7915011ada9fa63640005b2e36771f2ff877591d6383fbd12b712",
+    "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-8ec2175af38c4fee9b495b71e83aef34.json": "b30ac1e70a34e96d4e379a855e2b4bcb13dbf92aeeec386e0d939512d17fe3aa",
+    "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-8f5913e8c3744ac58eb9499e5a18336d.json": "9c692d4f6fee00577e69d87fd9eadbbb1dbe4e154b013eb710598139db0dac94",
+    "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-b52f52627ec5425b8fd6cc37e76e8316.json": "09938e4245b3c8eb66ec74982f2e25043a40dd9af641f1ce4a980c425ddb4ae8"
+  },
+  "scope": "Foundation worker physically terminal and reconciled. Source dependency now accepted; no production installation switched."
+}

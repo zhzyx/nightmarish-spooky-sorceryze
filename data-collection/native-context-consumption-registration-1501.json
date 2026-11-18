@@ -1,0 +1,22 @@
+{
+  "issue": 1501,
+  "before_sha256": "2774eab46bea9b5cdb255758e3d369fb16af94ac4f2f514a37ee992cb2018133",
+  "after_sha256": "44ed2c191a5d21fbace97da9acf115ffafa2134ba9fa15d4c3db22cc7e5c7be5",
+  "only_changed_json_value": "host_packages/customizations/platforms/ai-access/host-http/runtime",
+  "changed": [
+    "native_proposal_adapter.py",
+    "runner.py"
+  ],
+  "command": [
+    "py",
+    "-X",
+    "utf8",
+    "tools/check_gonggong_distribution.py",
+    "--node",
+    "C:/Users/ROG/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe"
+  ],
+  "exit_code": 2,
+  "output": "usage: check_gonggong_distribution.py [-h] [--repo REPO] [--candidate]\ncheck_gonggong_distribution.py: error: unrecognized arguments: --node C:/Users/ROG/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe\n",
+  "input_count": 47,
+  "note": "Framework files, approvals and all other registrations preserved byte/value identity; independent metadata review still required."
+}

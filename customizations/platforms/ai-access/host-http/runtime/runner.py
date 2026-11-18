@@ -188,7 +188,7 @@ def validate_plan(p):
         require(step.get("output") in {"text", "json"}, "Output must be text or json")
         if step["output"] == "json":
             require(isinstance(step.get("schema"), dict), "Output schema required")
-        require(set(step.get("tools", [])) <= {"lookup_resource"}, "Unknown tool capability")
+        require(set(step.get("tools", [])) <= {"lookup_resource", "native_context"}, "Unknown tool capability")
         require(not step.get("tools") or t["mode"] == "autonomous", "Tools require autonomous mode")
 
 
@@ -295,19 +295,35 @@ def worker_lock(state):
                 fcntl.flock(stream, fcntl.LOCK_UN)
 
 
-def run(grant, root, state):
+def run(grant, root, state, context_resolver=None):
     verify_grant(grant, root, state)
     from task_budget import reservation
 
     with reservation(grant, state):
         with worker_lock(state):
-            return _run(grant, root, state)
+            from native_proposal_adapter import ContextTransport
+
+            transport = (
+                ContextTransport(context_resolver, grant["payload"]["limits"]["max_calls"])
+                if context_resolver
+                else None
+            )
+            try:
+                return _run(grant, root, state, context_resolver, transport)
+            finally:
+                if transport:
+                    transport.close()
 
 
-def _run(grant, root, state):
+def _run(grant, root, state, context_resolver=None, native_transport=None):
     p = verify_grant(grant, root, state)
     validate_plan(p)
     t = p["task"]
+    if context_resolver:
+        require(
+            context_resolver.binding["execution"] == t["id"] and context_resolver.binding["tenant"] == t["tenant_id"],
+            "Context resolver task/tenant mismatch",
+        )
     base = context(root, t)
     jid = jid_for(t)
     with closing(connect(state)) as cx:
@@ -342,7 +358,7 @@ def _run(grant, root, state):
                     + ". Required value format: "
                     + canonical({"output": step["output"], "schema": step.get("schema")})
                 )
-                if p["profiles"][0]["protocol"] == "codex-native-proposal":
+                if p["profiles"][0]["protocol"] == "codex-native-proposal" and context_resolver is None:
                     instruction = (
                         "Return only JSON for the fixed native proposal schema, without an action/value wrapper. "
                         "The installed transport wraps the validated proposal for the runtime. "
@@ -379,13 +395,25 @@ def _run(grant, root, state):
                                 {"model": model["id"], "reason": "context byte ceiling; no silent truncation"},
                             )
                             break
+                        if context_resolver:
+                            context_resolver.check("model_turn")
                         calls += 1
                         started = emit(
                             cx, jid, "call_start", {"call": calls, "step_id": step["id"], "profile_id": model["id"]}
                         )
                         try:
-                            response = call(model, messages, p["limits"]["max_output_tokens"])
+                            if context_resolver:
+                                context_resolver.delivery(calls, messages, "included_in_call")
+                            response = (
+                                native_transport.call
+                                if native_transport and model["protocol"] == "codex-native-proposal"
+                                else call
+                            )(model, messages, p["limits"]["max_output_tokens"])
+                            if context_resolver:
+                                context_resolver.delivery(calls, messages, "transport_received")
                         except TransportUnknown as error:
+                            if context_resolver:
+                                context_resolver.emit("unknown", {"call": calls, "evidence": error.evidence})
                             emit(
                                 cx,
                                 jid,
@@ -423,6 +451,32 @@ def _run(grant, root, state):
                             require(isinstance(action, dict), "Action object required")
                             if action.get("action") == "tool":
                                 require(set(action) == {"action", "name", "arguments"}, "Invalid tool envelope")
+                                if action["name"] == "native_context":
+                                    require(
+                                        context_resolver is not None and "native_context" in step.get("tools", []),
+                                        "Context tool not installed/authorized",
+                                    )
+                                    value = context_resolver.resolve(action["arguments"], calls)
+                                    emit(
+                                        cx,
+                                        jid,
+                                        "tool_result",
+                                        {
+                                            "step_id": step["id"],
+                                            "tool": "native_context",
+                                            "call": calls,
+                                            "result": value,
+                                        },
+                                    )
+                                    export(root, state, t, cx, jid)
+                                    messages.extend([
+                                        {"role": "assistant", "content": response["text"]},
+                                        {
+                                            "role": "user",
+                                            "content": canonical({"tool_result": value, "untrusted_data": True}),
+                                        },
+                                    ])
+                                    continue
                                 require(
                                     action["name"] in step.get("tools", []) and action["name"] == "lookup_resource",
                                     "Tool not authorized",
@@ -473,6 +527,9 @@ def _run(grant, root, state):
                                 {"step_id": step["id"], "call": calls, "reason": str(error)},
                             )
                             export(root, state, t, cx, jid)
+                            if context_resolver:
+                                set_status(cx, jid, "needs_reconciliation")
+                                return {"status": "needs_reconciliation", "reason": str(error)}
                             # Move to the next evaluated profile; no unlimited repair loop.
                             messages.append({
                                 "role": "user",

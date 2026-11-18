@@ -285,6 +285,68 @@ class ContinuousIntegration:
             )
         return lane
 
+    def handoff(self, actor, tenant, product, channel, expected_policy):
+        """Explicit same-tenant owner CAS; never relabel an active candidate."""
+        identity = self.w.domain.actor_context(actor)
+        if identity["tenant"] != tenant or identity["role"] not in {"admin", "editor"}:
+            raise NativeStoreError("Current same-tenant writer required")
+        lane = digest([tenant, product, channel])
+        path = Path(self.i.store.database).parent / "native-publish-locks" / (lane + ".lock")
+        with publisher_lock(path) as acquired:
+            if not acquired:
+                raise NativeStoreError("Physical publisher still owns lane")
+            with self.w._transaction() as db:
+                row = db.execute("SELECT * FROM native_continuous_lanes WHERE id=?", (lane,)).fetchone()
+                if row is None or digest(json.loads(row["policy"])) != expected_policy:
+                    raise NativeStoreError("Handoff policy CAS changed")
+                old = json.loads(row["policy"])
+                # Actual document access, not a different member's session grant.
+                for task_row in db.execute("SELECT task FROM native_tasks WHERE tenant=?", (tenant,)):
+                    task = json.loads(task_row[0])
+                    if task["product"] == product:
+                        self.w.domain.issue_snapshot(actor, task["issue"], write=True)
+                if row["active"]:
+                    batch = db.execute(
+                        "SELECT * FROM native_continuous_batches WHERE id=?", (row["active"],)
+                    ).fetchone()
+                    integration = db.execute(
+                        "SELECT * FROM native_integrations WHERE id=?", (batch["plan"],)
+                    ).fetchone()
+                    # A committed acceptance can be reconciled without performing
+                    # any original effect. Physical publication without accepted
+                    # originals remains held for its original owner.
+                    if not integration or not integration["acceptance"]:
+                        raise NativeStoreError("Active publication outcome unknown; original ownership retained")
+                    selected = json.loads(integration["acceptance"])
+                    historical = self.w.release.historical(tenant, actor, product, channel, selected["id"])
+                    if historical != selected:
+                        raise NativeStoreError("Physical publication reconciliation mismatch")
+                    db.execute(
+                        "UPDATE native_continuous_batches SET state='accepted',result=? WHERE id=?",
+                        (integration["acceptance"], batch["id"]),
+                    )
+                    db.execute("UPDATE native_continuous_queue SET state='accepted' WHERE batch=?", (batch["id"],))
+                new = {**old, "coordinator": actor}
+                changed = db.execute(
+                    "UPDATE native_continuous_lanes SET actor=?,policy=?,active=NULL,generation=generation+1 WHERE id=? AND policy=? AND generation=?",
+                    (actor, _json(new), lane, row["policy"], row["generation"]),
+                ).rowcount
+                if changed != 1:
+                    raise NativeStoreError("Handoff raced another publisher")
+                result = dict(
+                    lane=lane,
+                    old_policy=expected_policy,
+                    new_policy=digest(new),
+                    old_actor=row["actor"],
+                    actor=actor,
+                    reconciled=row["active"],
+                )
+                self.w.domain._event(tenant, "native.coordinator.handoff", actor, product, result)
+        callback = getattr(self.i, "on_accepted", None)
+        if callback is not None:
+            callback()
+        return result
+
     def ready(self, actor):
         result = []
         with self.w._transaction() as db:

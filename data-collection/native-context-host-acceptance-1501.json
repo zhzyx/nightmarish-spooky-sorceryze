@@ -1,0 +1,248 @@
+{
+  "issue": 1501,
+  "request_id": "native-context-consumption-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+  "status": "passed_scoped_host_behavior_with_explicit_gaps",
+  "classification": "host_tool",
+  "path_base": "repository root for input_blobs/evidence_refs; absolute host-private paths for private_evidence",
+  "input_blobs": {
+    "customizations/components/tianxuan/duobao/native_store.py": "6518739daaea3ecaf5b06bc3808e759aeceb2de0",
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py": "2a0b4ac60ba3634c1682e2f38de437aea44128a4",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "82f55454d51c0ad863863e76d87260abd46c0c8a",
+    "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md": "24a1bd8b0d8f9bbf1c20439345230c171d5c4cd3",
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "55bf4ca23f011756a43a7acf765d2fef43c9c540",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "c3cf568ef90d2e41925233da6f66c62695d09380",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c1145e092d0933dc555aecbeddbf67b68d2ea65c",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "46e30c77d38e4c4164c4a2c25cc828efe0e98bbf",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "f90f8c91fefa30a8c4526df96ccbcbce20fc8d93",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "00aa82fd781949146489d01709bd314148ab7102",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "99b892cfd2a36e7b20f4598650cbcbd25cd5ab2d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "13d54029b854e481b96fb0520d0401401cc7580c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "9af4359e5af67fc16e0806733f61fc6510c94cf8",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "85308fddec5012a343ea785233a3aeb6fa0bf6b0",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "8d2f7ffd42b751c548d3d3d03452e9dea799692b",
+    "tools/ainative/owned_process.py": "299243639ded6ce63066006df1055ee18021ad68",
+    "tools/codex_cli/content_preview.js": "f182afcd95b9c5dbc755f3ad97f166c5aba46ed5",
+    "tools/codex_cli/subscription_profile.py": "f585f1ddd38343767ab0d6aee8c82986ea1a2f9c",
+    "tools/codex_cli/subscription_session.js": "a72b9db2166016e1b08fefa4b5518847483cacfe"
+  },
+  "source_sha256_before": {
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "030a56626baeac81062149e3e6480d92e95d249a9fe38e0644133885c45fb017",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "4e2880b13171ace9d9e565cde5e5c7544b80c0c858bb4d334b338ce59b99ea56",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c84fe150265c829f17ae9e6b09ee2fa2f867fe7d541d82132e6ba262cac53de4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "0fd8fbd19388902d3e614e4bee604ea4229c6c8a73d0204fd5f5cb909391e19a",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "fb541596410617739b907d21a8ec26399993b657ab0f649b28bc8ac4d9636267",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "d5844822a892454166a610049222d6d6dad03e195a659510dd564f89f9533663",
+    "customizations/components/tianxuan/duobao/native_store.py": "69e2283effdc88e042c478d79fdb3efd2c102dd3df0cfcccf525785c10331748",
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py": "bb987a461258b16b7e901b3a5f520eeacf6483f98695d9cb50614f2f33f9252a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "ad6fba0acbe5cee94f31b9500cbe9e1af1aef0a7312263e43f473de055043a0d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "4122db587ecd67c24a1d5cef2a8cf17e78db240374a223f381d7911d89144e6a"
+  },
+  "source_sha256_after": {
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "030a56626baeac81062149e3e6480d92e95d249a9fe38e0644133885c45fb017",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "4e2880b13171ace9d9e565cde5e5c7544b80c0c858bb4d334b338ce59b99ea56",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "c84fe150265c829f17ae9e6b09ee2fa2f867fe7d541d82132e6ba262cac53de4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "0fd8fbd19388902d3e614e4bee604ea4229c6c8a73d0204fd5f5cb909391e19a",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "fb541596410617739b907d21a8ec26399993b657ab0f649b28bc8ac4d9636267",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "d5844822a892454166a610049222d6d6dad03e195a659510dd564f89f9533663",
+    "customizations/components/tianxuan/duobao/native_store.py": "69e2283effdc88e042c478d79fdb3efd2c102dd3df0cfcccf525785c10331748",
+    "customizations/components/tianxuan/duobao/test_native_context_storage.py": "bb987a461258b16b7e901b3a5f520eeacf6483f98695d9cb50614f2f33f9252a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "ad6fba0acbe5cee94f31b9500cbe9e1af1aef0a7312263e43f473de055043a0d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "4122db587ecd67c24a1d5cef2a8cf17e78db240374a223f381d7911d89144e6a"
+  },
+  "sources_unchanged": true,
+  "model_calls": 0,
+  "checks": {
+    "host_behavior": {
+      "passed": true,
+      "windows": "57 passed + 15 subtests; Node 33 passed; real v2 worker -> launch(registry, context_factory) -> signed runner -> Node/Subscription -> candidate; five-turn incremental session; v1 pipeline; physical closure, revocation and no unknown replay. Test-only validation probes/synthetic authority, not production factory.",
+      "installation_recovery": "Actual child launch rejects modified installed validation probe before model dispatch. Original bytes restored; distinct fresh v1 execution produces expected immutable output and physically closes. Old runtime/install/evaluation signed grant rejection tested. No retry of unknown execution.",
+      "linux": "30 passed +15 subtests; 11 Node-dependent context tests deselected. Real Python owned descendant success/fault/timeout/cancel/invalid-response closure included. Current exact Python host/context sources in disposable no-network read-only trusted-image container. Node unavailable."
+    }
+  },
+  "commands": {
+    "windows": [
+      "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\tmp-windows",
+      "--junitxml",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\windows.xml",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\test_acceptance.py",
+      "D:\\GongGong-work\\native-context-consumption-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_context.py",
+      "D:\\GongGong-work\\native-context-consumption-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_model_producer.py",
+      "D:\\GongGong-work\\native-context-consumption-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_model_host.py"
+    ],
+    "node": [
+      "C:/Users/ROG/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "--test",
+      "D:\\GongGong-work\\native-context-consumption-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\test_native_model_proposal.cjs"
+    ],
+    "linux": [
+      "ssh",
+      "-o",
+      "BatchMode=yes",
+      "tianxuan",
+      "docker run --rm --name native-context-1501-host-offline --network none --memory 192m --cpus 1 --read-only --tmpfs /tmp:rw,nosuid,nodev,size=64m --entrypoint /usr/local/bin/python3.12 -i sha256:75e3070e67ed3a116d0c0a9728e9aa16ee21d28714f8944a94216323d4f31bf3 -"
+    ]
+  },
+  "package_contract": {
+    "entry": "native_model_producer.launch(registry, context_factory=None)",
+    "inputs": "Immutable private registry; signed grant binding runtime/source/installation; owned NATIVE_CONTEXT and NATIVE_WORKSPACE; explicit trusted resolver factory for schema 2.",
+    "fallback": "Explicit schema 1 remains supported; restore admitted original installed bytes/config and authorize fresh execution. Unknown journals retained; no automatic fallback/retry.",
+    "update_rollback_gap": "No versioned context package manifest/ABI switch/atomic update-rollback manager exists in this entry. This is host behavior and configuration restoration evidence, not runtime_package hot update/rollback on an editor binary."
+  },
+  "gaps": [
+    "Ordinary #1499 factory installation and true actor/producer/doc/module authorization integration not accepted by this isolated fixture. Root owns continuation.",
+    "Trusted Linux image has no Node; Linux Node/Subscription protocol and v2 launcher chain not executed. No runtime downloaded or production service changed.",
+    "No production package switch, production grant, editor binary replacement or whole-Issue acceptance claimed."
+  ],
+  "live_readback": {
+    "report_sha256": "a6c0db9c51a238550750aa6557d8667605dc44241b791b2e64bc6e68535e29cb",
+    "review_sha256": "4e7f442034d56544f0a753c126c58268232f63749fe79d6f22987733a963ad16",
+    "interpretation": "Exact prior live report passes strict task but tool mode slower and higher billed tokens than baseline. No new model calls here; no efficiency win claimed."
+  },
+  "method_recall": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 19,
+    "application": "Classify by actual consumer; runtime_package requires true version switch/rollback, not suffix or fixture name."
+  },
+  "harness_corrections": [
+    "System Python and bundled Python had no pytest; used previously evidenced tx-venv interpreter. Failure records retained.",
+    "Linux transport quoting preflight failed before test; subsequent stdin transport used. Two isolated packaging attempts omitted configuration dependencies; retained failures, traced native_model_host.configuration source list and reran successfully. No product source changed."
+  ],
+  "cleanup": {
+    "windows_test_tree_removed": false,
+    "windows_process_readback": "Get-CimInstance filtered exact private evidence directory returned no processes after tests",
+    "linux_temporary_directory_removed": true,
+    "linux_container_readback": {
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "retained": "Private harness, immutable logs, JUnit and archived ledgers kept for independent review. No production configuration, installation or credentials copied.",
+    "windows_retention_reason": "Removal of resolved owned tmp-windows directory rejected by automatic approval: blocked by policy. No deletion performed; root notified for scoped cleanup continuation."
+  },
+  "evidence_refs": {
+    "data-collection/native-context-live-protocol-1501.json": "a6c0db9c51a238550750aa6557d8667605dc44241b791b2e64bc6e68535e29cb",
+    "data-collection/native-context-protocol-review-1501.json": "65730f3934414534b4cfc98a6b46b261eead8f7fd85e53de32a62615a1c5ba96",
+    "data-collection/native-context-protocol-build-impact-1501.json": "8398009501241d87fb6b3f15456a6f7b22941a2afb9020f40c38f352c76539aa",
+    "data-collection/native-context-protocol-host-boundary-1501.json": "a49e4c70d1155683f4361770294441ad0cbd856b52229614fc84450e79aff38a",
+    "data-collection/native-context-storage-linux-1501.json": "37c5747b24f46eedce88178fba0f59009f70ec4d2f9d30ac2f355691788465b4",
+    "data-collection/native-context-adversarial-linux-1501.json": "e87ee52ab970e4c8bc87270cbae87f9f7dcf6c06fe3d537d143e76b99fb877f2"
+  },
+  "private_evidence": {
+    "bundled-pytest-unavailable.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\bundled-pytest-unavailable.json",
+      "sha256": "db06e71aca5f5c147a4e199ca0c301f77f47f2c6697aee778c624bf784886031"
+    },
+    "bundled-pytest-unavailable.stderr": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\bundled-pytest-unavailable.stderr",
+      "sha256": "a18e1dad7b55aa8da886f801c5c6b2c23436904d5855819773c116f684fbca1b"
+    },
+    "linux-input.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux-input.py",
+      "sha256": "4992da1b41400c345c60e3c2cbd0182ec43c00d1cd7827f962684df8408ab1c0"
+    },
+    "linux-missing-profile-input.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux-missing-profile-input.py",
+      "sha256": "5b8e4f5b916fd8d9bd1b5c06311f0e10e8379ead26d2881f9600dfe5ab8b14a5"
+    },
+    "linux-missing-profile.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux-missing-profile.json",
+      "sha256": "610dbaf78accf68e45d04d677744770440b604e868cdb2e3ad7c6e98b000ec68"
+    },
+    "linux-missing-profile.stdout": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux-missing-profile.stdout",
+      "sha256": "4387ee3587dd26399e52a554eaa1d78c341e5e2119f8c98a955ab2404591cc5a"
+    },
+    "linux-missing-wrapper-input.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux-missing-wrapper-input.py",
+      "sha256": "aefc9ea31df7b84cd4386f5f53b4c0b78942eae97979df77b461d14dfb8108c9"
+    },
+    "linux-missing-wrapper.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux-missing-wrapper.json",
+      "sha256": "fac20483a0b646c6e6e15505066e8bd5f48165d5e461805b732311c3363675f3"
+    },
+    "linux-missing-wrapper.stdout": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux-missing-wrapper.stdout",
+      "sha256": "6263f6ee0ca0114496e0ac9d7da2b10f020fd2731fdc46692d23f51bf685d42d"
+    },
+    "linux.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux.json",
+      "sha256": "96ac0946b48a4c5e8ad6152023d727071135b3fa0c40408c265bfbc28aff5766"
+    },
+    "linux.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux.py",
+      "sha256": "6c356c1968a4c711e618049c4ff2660a9f8aa5600edd6ca554f41d14474a6cec"
+    },
+    "linux.stderr": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "linux.stdout": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\linux.stdout",
+      "sha256": "c834fbd66d542e20a54a3fedf8c07f81747a010bc600bb72b926b77c42a9d04c"
+    },
+    "node.stderr": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\node.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "node.stdout": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\node.stdout",
+      "sha256": "7e7f56ddeffce164eeb0a068ae645e17cc77b63fb0a3aeabe54f5d166e0e9441"
+    },
+    "python314-unavailable.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\python314-unavailable.json",
+      "sha256": "4305bc1ea4ba22a65115846f5953e5d10a46a880851584c5649ebccd3de2f8bf"
+    },
+    "python314-unavailable.stderr": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\python314-unavailable.stderr",
+      "sha256": "bf0eecd0a1effc01a5516549c687c8090a4d9337683fffe065e1884e54ed4fb2"
+    },
+    "restoration.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\restoration.json",
+      "sha256": "df1136952682c6eff0a708d71800487015dd38ab3f8e653d93f7a7d77be44759"
+    },
+    "run.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\run.py",
+      "sha256": "d36ecd99b2bdea211e6956988c11df7015abec917be9cce490416382a23e6a5e"
+    },
+    "test_acceptance.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\test_acceptance.py",
+      "sha256": "e874a0d98b84257abdc298a91339fdc8a5e2b59609877e58336e69789aa6557c"
+    },
+    "windows-ledgers.zip": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\windows-ledgers.zip",
+      "sha256": "ce06b5a1f97b0b81e6270442a586ff5fdee689385819fc2c6d0e478b5d12c04f"
+    },
+    "windows.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\windows.json",
+      "sha256": "fd4bcd55384849357b1672cc79dcc261ee95fa996995cd95918b241ad2b8d9ce"
+    },
+    "windows.stderr": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\windows.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "windows.stdout": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\windows.stdout",
+      "sha256": "4cb9d93136dfafc046cbf3b1fbadd1465bf8e7cfdd532d9deaffe45218738e3b"
+    },
+    "windows.xml": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-host-acceptance-1501\\windows.xml",
+      "sha256": "a317439017926e1c2bed47ec6643549a840fa2deb29ac0b00563cbce20bd9e70"
+    }
+  }
+}

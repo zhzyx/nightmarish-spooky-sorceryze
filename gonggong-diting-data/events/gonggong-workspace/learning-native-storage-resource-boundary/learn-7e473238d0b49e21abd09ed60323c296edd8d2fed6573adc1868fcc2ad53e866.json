@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-storage-resource-boundary",
+  "event_id": "learn-7e473238d0b49e21abd09ed60323c296edd8d2fed6573adc1868fcc2ad53e866",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+  "occurred_at": "2026-11-18T04:39:47.713027+00:00",
+  "evidence_refs": [
+    "kuafu-e28abf5e62694379563388cb1455b86be8a71045",
+    "learn-5510e233d3901935331bbc853e81839d26f641490f54befa52f5af25d4a71475"
+  ],
+  "payload": {
+    "scope": "native-storage-resource-boundary",
+    "lesson": "measure-source-io-before-context-admission",
+    "revision": 2,
+    "previous": "4fe0bc8b0b9fb5d8392a963aa8f616017f7035d425e9957f4e880837f79b86e9",
+    "action": "verify",
+    "details": {
+      "test": "Original declared SQLite source-byte experiment repeated on repaired exact source, independent adverse mutation and integrity probes, Windows focused regression plus Linux isolated 41 tests /29 subtests /4 platform skips and13 adverse tests /0 skips. No live model efficiency conclusion.",
+      "expected": "Two manifest pages for 120 x 64KiB objects read zero body bytes and one bounded metadata payload. Cold 2-byte range verifies complete 64KiB object plus touched blocks; warm same range reauthenticates only touched 8KiB blocks (two blocks for a boundary span). Corruption, missing/oversized/foreign source and changed identity are rejected. Counts are SQLite blob bytes, not physical disk I/O; metadata trust is per execution and SQLite cache target is not a total RSS promise.",
+      "observed": "Two manifest pages for 120 x 64KiB objects read zero body bytes and one bounded metadata payload. Cold 2-byte range verifies complete 64KiB object plus touched blocks; warm same range reauthenticates only touched 8KiB blocks (two blocks for a boundary span). Corruption, missing/oversized/foreign source and changed identity are rejected. Counts are SQLite blob bytes, not physical disk I/O; metadata trust is per execution and SQLite cache target is not a total RSS promise."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-context-consumption-repair-1501.json",
+        "sha256": "a23422775af872a54e3609a82bbbbe38a7055cf4bb1a577cc22c75cfb140a408"
+      },
+      {
+        "path": "data-collection/native-context-consumption-repair-review-1501.json",
+        "sha256": "ecc9d1dff13cbf30de383b1cfafd97f8ea5c2260aa254fa636a3180df0f60802"
+      },
+      {
+        "path": "data-collection/native-context-storage-linux-1501.json",
+        "sha256": "37c5747b24f46eedce88178fba0f59009f70ec4d2f9d30ac2f355691788465b4"
+      },
+      {
+        "path": "data-collection/native-context-adversarial-linux-1501.json",
+        "sha256": "e87ee52ab970e4c8bc87270cbae87f9f7dcf6c06fe3d537d143e76b99fb877f2"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-context-consumption-20261118/kuafu-e28abf5e62694379563388cb1455b86be8a71045.json",
+      "sha256": "bdeb8d000ea8ed033f75e13d6b9a54485006d5c7b6eed1f5c839d15cf0cc3a37"
+    }
+  },
+  "sha256": "06b1a5173492677709e52404a6cfd9b6f7ffbdf74667a70794bbd1702fb8ad87"
+}

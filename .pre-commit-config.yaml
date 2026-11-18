@@ -90,7 +90,7 @@ repos:
       - id: codespell
         # Preserve the immutable method event's original British spelling and digest.
         # The PR4 r7 evidence is immutable; r10 and later records append corrections.
-        exclude: ^(data-collection/native-remote-(final-review|review2)-1481\.json|tools/maliang_hunyuan/HUNYUAN-NOTICE|gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-d0f5f7cb3cb8f40b893ef245b74bd92266302362e4028e1354cb48b40c71adc1\.json|data-collection/engine-next-headless-runtime-m2-pr4-build-impact-r7\.json|engine_next/thirdparty/|data-collection/engine-next-visual-runtime-m4-1-capture-(20261115|final2-20261115)\.json|data-collection/engine-next-visual-runtime-m4-2-(capture|integration-review|network-verification)\.json)$
+        exclude: ^(data-collection/native-entry-cancellation-review-1499\.json|data-collection/native-remote-(final-review|review2)-1481\.json|tools/maliang_hunyuan/HUNYUAN-NOTICE|gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-d0f5f7cb3cb8f40b893ef245b74bd92266302362e4028e1354cb48b40c71adc1\.json|data-collection/engine-next-headless-runtime-m2-pr4-build-impact-r7\.json|engine_next/thirdparty/|data-collection/engine-next-visual-runtime-m4-1-capture-(20261115|final2-20261115)\.json|data-collection/engine-next-visual-runtime-m4-2-(capture|integration-review|network-verification)\.json)$
         additional_dependencies: [tomli]
         args: ["--ignore-words-list=ENXT"]
 
@@ -220,6 +220,11 @@ repos:
         exclude: |
           (?x)^(
             tools/maliang_hunyuan/HUNYUAN-NOTICE|
+            data\-collection/native\-installation\-integrity\-repair\-1499\.json|
+            data\-collection/native\-production\-entry\-implementation\-1499\.json|
+            data\-collection/native\-context\-consumption\-implementation\-1501\.json|
+            data\-collection/native\-context\-live\-validation\-1501\.json|
+            data\-collection/native\-context\-live\-protocol\-1501\.json|
             data\-collection/native\-continuous\-integration\-before\-1488\.json|
             data\-collection/native\-continuous\-integration\-fifty\-member250\-1488\.json|
             data\-collection/native\-continuous\-integration\-first250\-1488\.json|

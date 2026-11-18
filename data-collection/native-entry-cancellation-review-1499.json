@@ -1,0 +1,296 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-cancellation-review.json",
+    "sha256": "c0c80f1f0d7054e945d6f8d5434543080b8da15027a10e25077d370ac3e9cb28",
+    "path_base": "absolute private host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "issue": 1499,
+    "decision": "scoped_pass",
+    "scope": "Independent R5 cancellation repair review only",
+    "business_acceptance": false,
+    "production_acceptance": false,
+    "whole_issue_complete": false,
+    "source_sha256": {
+      "customizations/components/tianxuan/server/api.py": "11c2129b253bb7d244b9741c1a1738412860147226fb7575212270921a89af14",
+      "customizations/components/tianxuan/server/main.py": "1251ac045aad3e5d36c9711be9c345d835ee40e6420ee67a5f21887d918be80e",
+      "customizations/components/tianxuan/server/native_entry_api.py": "bbf82a3141e84ed5d9fa6be345b6276e9458c97c5b09f40b5f51798e894d5e75",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "167f3da15024f706adcfdf8b406f2227696b8468cff6c8e2f58afd472925f012",
+      "customizations/components/tianxuan/server/native_entry_review.py": "498a387ce050c7733eb1602f4a207917232e4d3075fa6e345e6c0f05a3a2b9ce",
+      "customizations/components/tianxuan/server/native_execution_host.py": "5519f250e867e42af364537de822e4bc6bacd68e1f89e1c6b94fa7bdf74cd1fa",
+      "customizations/components/tianxuan/server/native_installation.py": "1a7865cb4d13ce9127f1d276ec5bb9a1ec321faa83af5849c2d89095c260a416",
+      "customizations/components/tianxuan/server/test_native_entry.py": "f4facc098097df2c6a853c3e970501d29cfbf282bac6263bfe1df0ca7a28b9cf",
+      "customizations/components/tianxuan/server/test_native_entry_normal.py": "d449c5c3004b1558ba7186117f7cbb6b91cbe36e7c3cf378f5f820ecfe17eeb8",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "9f48bd4e5f774e3f84e9edc85d2b345fee562236ae1ccf3067e4e692196a06e9",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "c5b39fd8111ac6440a21a5cbc8e9e6a537908dff38d2ea52b1090c6774fa1287",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "3e83f5cc7e204a83b7a3fc31e63ea61ac34fdadbbab1c80f830ebe1528bb36e4",
+      "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "a3a57f9e629ed16c3c358bbf4618a8495bed98d654b48237ca510524f70c9ca3",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "f26421dccf41581de4d4dfbae933c9917a304f0368f3a02c6d4588642f54f11e",
+      "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py": "213a234e9177809845ea8b5247f19ec41200747835b138ec87503d83aa810b71",
+      "customizations/components/tianxuan/server/native-entry-interface.md": "b0137715bf54821ee286303e1e2964e016f57c2f59343c2b42a69fad88640ba4",
+      "design-docs/native-production-entry-20261118.md": "a79e6f8c49e950b2aec16c07eee2093aa982b734d6ab4e568a848122c12bff4b",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "0ceddb65d6c5f21ced74a858d89b13a810d161a8cc4a0dd5e68e711ca4df9efc",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d35cfe7d9c5fc46da815cdf9d9405d615b8f51f247fcedb2b06e79731e0a14ea",
+      "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": "35829d59c350d4a637a0e4bafcea06e4251b4ed30c99c23f4b047423a8665e5c",
+      "customizations/components/tianxuan/server/test_native_shared_dispatch.py": "8c740253b62a9a0c7617228ac36073ca874a06c12bdc0e348eb0c373e57363b8",
+      "customizations/components/tianxuan/server/test_native_installation_integrity.py": "aacee4cb41c65ed6ffab4a214d7e7a905385f0359d2ad4a5860a0fd5f8211e29"
+    },
+    "candidate_unchanged": true,
+    "changed_since_prior_review": [
+      "customizations/components/tianxuan/server/native_execution_host.py",
+      "customizations/components/tianxuan/server/native-entry-interface.md",
+      "customizations/components/tianxuan/server/test_native_shared_dispatch.py"
+    ],
+    "findings": [],
+    "closed_findings": [
+      "R5"
+    ],
+    "tests": {
+      "shared_and_normal": "8 passed, 0 skipped",
+      "independent_extra": "4 passed: cancellation during drain, real pipe send failure, cancellation after physical spawn with concurrent close, actual to_thread effect with cancellation and close",
+      "original_queued_send": {
+        "before": {
+          "jobs": 2,
+          "write_bytes": 25,
+          "pid": 59004
+        },
+        "peer_outcome": "success",
+        "terminal": {
+          "started": true,
+          "pid": 59004,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        "calls": [
+          "advance",
+          "inspect",
+          "advance",
+          "inspect"
+        ]
+      },
+      "unit_terminals": [
+        {
+          "started": true,
+          "pid": 67736,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 67736,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 66236,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 66236,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 67956,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 67956,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 65024,
+          "exit_code": 2,
+          "physical_terminal": true,
+          "failure": "Dispatcher closed/unknown; no replay"
+        },
+        {
+          "started": true,
+          "pid": 65024,
+          "exit_code": 2,
+          "physical_terminal": true,
+          "failure": "Dispatcher closed/unknown; no replay"
+        },
+        {
+          "started": true,
+          "pid": 58504,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 58504,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 66220,
+          "exit_code": 1,
+          "physical_terminal": true,
+          "failure": "Unknown dispatcher context"
+        },
+        {
+          "started": true,
+          "pid": 66220,
+          "exit_code": 1,
+          "physical_terminal": true,
+          "failure": "Unknown dispatcher context"
+        },
+        {
+          "started": true,
+          "pid": 67892,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 57840,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 68996,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        }
+      ],
+      "extra_terminals": [
+        {
+          "started": true,
+          "pid": 65556,
+          "exit_code": 1,
+          "physical_terminal": true,
+          "failure": "Coordinator closed with outstanding contexts; no replay"
+        },
+        {
+          "started": true,
+          "pid": 65556,
+          "exit_code": 1,
+          "physical_terminal": true,
+          "failure": "Coordinator closed with outstanding contexts; no replay"
+        },
+        {
+          "started": true,
+          "pid": 64556,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 64556,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 58144,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 58144,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 4016,
+          "exit_code": 1,
+          "physical_terminal": true,
+          "failure": "Dispatcher send unknown; no replay"
+        },
+        {
+          "started": true,
+          "pid": 4016,
+          "exit_code": 1,
+          "physical_terminal": true,
+          "failure": "Dispatcher send unknown; no replay"
+        }
+      ]
+    },
+    "review_observations": [
+      "Coordinator owns and shields single starting task; caller cancellation before admission does not create a job or replace process. close waits startup even after OS process exists but coroutine has not returned it.",
+      "Admitted sends are tracked and shielded; queued and draining cancellation do not fail peers. Each logical driver emits advance/inspect once; no replay or second process.",
+      "close with outstanding contexts intentionally fails those outcomes and kills transport; it then drains sends and replies, including actual to_thread effects. Cancelling API await is not durable task revocation.",
+      "Actual failed pipe remains sticky; unknown-context unit probe performs no dispatch and cannot restart.",
+      "WorkflowService checks current actor/entry authority before effect, inside synchronous call and after async waits; transport cancellation does not bypass it.",
+      "No source or Git edits. Full unrelated integrity/Linux and prior eight ASGI scenarios were not repeated. Existing prior evidence applies only to unchanged files/declared scope."
+    ],
+    "limitations": [
+      "Whole factory/context/remote/resolver/production and actual 250 model task acceptance remain with parent. 250 test uses synthetic contexts, not model workloads.",
+      "Shutdown itself cancelled by external owner or whole event-loop teardown is outside R5 caller cancellation review; runtime must preserve ownership until physical terminal."
+    ],
+    "method_learning": {
+      "recall": "gonggong-workspace/content-storage-integrity utf8-source-codepoint-guards revision 2 verified",
+      "applied": "Explicit UTF-8 probe adaptation; hashes verify source bytes independently.",
+      "feedback": "Original repro must await admitted cancelled caller internal logical terminal before graceful close; caller CancelledError does not prove logical completion. Proposal: exercise queue, drain, OS-spawn ownership and actual thread effects separately."
+    },
+    "cleanup": {
+      "processes": {
+        "checked_pids": [
+          67736,
+          66236,
+          67956,
+          65024,
+          58504,
+          66220,
+          67892,
+          57840,
+          68996,
+          65556,
+          64556,
+          58144,
+          4016,
+          59004
+        ],
+        "live": []
+      },
+      "resources": "Only authorized review directory/report written; unittest temporary fixtures cleaned automatically. Probe scripts and raw logs retained as necessary reproducible evidence; no worktree, branch, provider, model or listener created."
+    },
+    "prior_review_sha256": "236c7c7547ed7c5901d636e07c9a394be5955bb93f269f4da0fbb20dbc3897a6",
+    "evidence_sha256": {
+      "adapt.py": "b4bb68e0eb2a68fa2b4e8e3ed08c5027b8a491015a24d06c917fb4b3703f3c1a",
+      "cancel-during-send.json": "1103327152b3030cec666b3056869cca2985191a355dea6e1d663490f0bb5fda",
+      "cancel-during-send.log": "e5f9ee61b2816801030a7212ff542b49f6bd4f24f0aac0453558c50be3ba60b1",
+      "cancel-during-send.py": "52f4da7d687b23805edacac1d59d09d30593cf2dce3ed87e9720c641a46b75fd",
+      "extra-terminals.json": "a5d156dfcfad494a7008b5512c6b980bf09afc0e1f57077cc987f22165a49682",
+      "extra.log": "18bb1b42a45bc7b68aa76ca73ceb020872d590d1e1b72621bda61afc30316ce5",
+      "extra.py": "2e131c7e992658b1030faf15182043f1314abf9a0ff954de23b35720bb13a4f9",
+      "hashes-after.json": "787ce8256a65197a1ee9051dc771eac29978602ed46ee9b06510a2eee6af654a",
+      "hashes-before.json": "787ce8256a65197a1ee9051dc771eac29978602ed46ee9b06510a2eee6af654a",
+      "process-check.json": "2a9bcf2f4536de62fd723662d972c260c264cc740ca0654539fb00dfeb96595f",
+      "run-unit.py": "06e38e95b062b6b6a3d335bb3bfa8d2cbe2be8670baf18261ecf4de73e69f254",
+      "summarize.py": "0497b7d9bbee8f0ca39246fb7562a5568e4ee25ea8753ad72a7ae59e52b3d1c3",
+      "unit-terminals.json": "93e7e742ffdf6d8cdb20b782eda76180ae823821304aec5003956df5d6deb847",
+      "unit.log": "28a25e744acaa3e7e66d7d3ff9efcb2ffc23ea44120bfb787d0890131b855ad1"
+    }
+  }
+}

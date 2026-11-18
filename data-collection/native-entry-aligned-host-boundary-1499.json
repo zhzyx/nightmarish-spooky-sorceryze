@@ -1,0 +1,92 @@
+{
+  "issue": 1499,
+  "passed": true,
+  "native_sources": 9392,
+  "native_sources_sha256": "d99730749465b133ab44fdd8d1f1b719a906bf6336d098b6a7a297f5d2e528c0",
+  "changed_host_inputs": [
+    "customizations/components/tianxuan/server/api.py",
+    "customizations/components/tianxuan/server/main.py",
+    "customizations/components/tianxuan/server/native_entry_api.py",
+    "customizations/components/tianxuan/server/native_entry_factory.py",
+    "customizations/components/tianxuan/server/native_entry_review.py",
+    "customizations/components/tianxuan/server/native_execution_host.py",
+    "customizations/components/tianxuan/server/native_installation.py",
+    "customizations/components/tianxuan/server/test_native_entry.py",
+    "customizations/components/tianxuan/server/test_native_entry_normal.py",
+    "customizations/components/tianxuan/server/test_native_installation_integrity.py",
+    "customizations/components/tianxuan/server/test_native_shared_dispatch.py",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py",
+    "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py"
+  ],
+  "source_sha256": {
+    "customizations/components/tianxuan/server/api.py": "11c2129b253bb7d244b9741c1a1738412860147226fb7575212270921a89af14",
+    "customizations/components/tianxuan/server/main.py": "1251ac045aad3e5d36c9711be9c345d835ee40e6420ee67a5f21887d918be80e",
+    "customizations/components/tianxuan/server/native_entry_api.py": "bbf82a3141e84ed5d9fa6be345b6276e9458c97c5b09f40b5f51798e894d5e75",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "167f3da15024f706adcfdf8b406f2227696b8468cff6c8e2f58afd472925f012",
+    "customizations/components/tianxuan/server/native_entry_review.py": "498a387ce050c7733eb1602f4a207917232e4d3075fa6e345e6c0f05a3a2b9ce",
+    "customizations/components/tianxuan/server/native_execution_host.py": "5519f250e867e42af364537de822e4bc6bacd68e1f89e1c6b94fa7bdf74cd1fa",
+    "customizations/components/tianxuan/server/native_installation.py": "1a7865cb4d13ce9127f1d276ec5bb9a1ec321faa83af5849c2d89095c260a416",
+    "customizations/components/tianxuan/server/test_native_entry.py": "7f115037bb24ca248b4f5294a1dae25eab7e25a261ec1a30e2ed104ae556db39",
+    "customizations/components/tianxuan/server/test_native_entry_normal.py": "d36cb7574baeaadb7e77f187a2933c6046ed52b1792f4abf9358c8b5d2e11539",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "9f48bd4e5f774e3f84e9edc85d2b345fee562236ae1ccf3067e4e692196a06e9",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "c5b39fd8111ac6440a21a5cbc8e9e6a537908dff38d2ea52b1090c6774fa1287",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "3e83f5cc7e204a83b7a3fc31e63ea61ac34fdadbbab1c80f830ebe1528bb36e4",
+    "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "a3a57f9e629ed16c3c358bbf4618a8495bed98d654b48237ca510524f70c9ca3",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "f26421dccf41581de4d4dfbae933c9917a304f0368f3a02c6d4588642f54f11e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py": "213a234e9177809845ea8b5247f19ec41200747835b138ec87503d83aa810b71",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "0ceddb65d6c5f21ced74a858d89b13a810d161a8cc4a0dd5e68e711ca4df9efc",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d35cfe7d9c5fc46da815cdf9d9405d615b8f51f247fcedb2b06e79731e0a14ea",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": "35829d59c350d4a637a0e4bafcea06e4251b4ed30c99c23f4b047423a8665e5c",
+    "customizations/components/tianxuan/server/test_native_shared_dispatch.py": "3fb125dbf87b3eed36dd1705d71b61590cd6bcc9e8be61e1ecdcee1cc64ccb3a",
+    "customizations/components/tianxuan/server/test_native_installation_integrity.py": "aacee4cb41c65ed6ffab4a214d7e7a905385f0359d2ad4a5860a0fd5f8211e29"
+  },
+  "overlap": [],
+  "inventory_before": 194,
+  "inventory_after": 194,
+  "added_inventory": [],
+  "policy_sha256": "9d490d35d1fd6bbd1c24da42ae436df746b8648b22401a6028dbefee92b49cbb",
+  "checks": [
+    {
+      "command": "py -X utf8 tests/editor/test_native_host_inputs.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: invalid host input inventory\nFull-tree identity required: invalid host input inventory\n.....\n----------------------------------------------------------------------\nRan 5 tests in 13.546s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tests/editor/test_editor_native_cache.py",
+      "exit_code": 0,
+      "output": "...............\n----------------------------------------------------------------------\nRan 15 tests in 17.107s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tools/test_windows_editor_artifact.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\ns.........\n----------------------------------------------------------------------\nRan 10 tests in 0.715s\n\nOK (skipped=1)\n"
+    }
+  ],
+  "actual_scons_command": [
+    "py",
+    "-X",
+    "utf8",
+    "-m",
+    "SCons",
+    "-n",
+    "-Q",
+    "gonggong_native_probe=D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-aligned-scons-probe.json",
+    "accesskit=no",
+    "angle=no",
+    "d3d12=no",
+    "debug_symbols=no",
+    "dev_mode=yes",
+    "platform=windows",
+    "target=editor"
+  ],
+  "seconds": 36.18683749999036,
+  "compilation_performed": false,
+  "limits": "Actual Windows SCons consumer graph and cache regression only; Scoped shared dispatcher/installation and test portability independently reviewed; updated main graph verified; normalASGI tested separately, no live production/render/AA acceptance."
+}

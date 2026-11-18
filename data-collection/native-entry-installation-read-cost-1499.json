@@ -1,0 +1,46 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-installation-read-cost.json",
+    "sha256": "8956dadd98b2d504842741ab12c2905211eb5b0ea8cb07be1035ca406ea1867c",
+    "path_base": "absolute current host archive"
+  },
+  "report": {
+    "issue": 1499,
+    "source": {
+      "path": "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\server\\native_installation.py",
+      "sha256": "71d07a33a174db0b30356d2fa6d1dfe501e97f4abe2067ef6fc348f43869d01e"
+    },
+    "manifest": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-independent-review-probes\\normal-asgi\\installation.json",
+      "sha256": "534ca9aed03479b2603f0a88ef950c54d95aa207bd640571e0e484968749190b"
+    },
+    "verification_calls": 10,
+    "actual_read_bytes": 939972700,
+    "file_reads": {
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-independent-review-probes\\normal-asgi\\installation.json": {
+        "calls": 10,
+        "bytes": 26670
+      },
+      "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe": {
+        "calls": 10,
+        "bytes": 2778080
+      },
+      "C:\\Users\\ROG\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": {
+        "calls": 10,
+        "bytes": 937137120
+      },
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-independent-review-probes\\normal-asgi\\roles.py": {
+        "calls": 10,
+        "bytes": 19940
+      },
+      "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_entry_driver.mjs": {
+        "calls": 10,
+        "bytes": 10890
+      }
+    },
+    "wall_seconds": 0.44728500000201166,
+    "process_cpu_seconds": 0.4375,
+    "scope": "Actual existing InstallationManifest constructor plus9verify calls with Path.read_bytes instrumentation; no model, listener, task or source edits. Logical file-read bytes, not physical disk IO; old deterministic test installation has4pinned files, production has more. No claim of full end-to-end latency contribution.",
+    "source_unchanged": true
+  }
+}
