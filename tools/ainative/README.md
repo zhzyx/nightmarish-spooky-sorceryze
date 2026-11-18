@@ -161,6 +161,69 @@ front/right/back/left for four. A single explicitly marked three-view sheet is c
 into front/right/back panels before upload; it is not sent as one ordinary photograph.
 Cropping uses Pillow when that sheet mode is requested.
 
+Version 2 `image_to_mesh` adds a vision-guided review loop. Kimi inspects every input
+image independently, synthesizes one subject and rejects inconsistent references. The
+collection has no fixed size or semantic order: analyzed front views receive more weight
+than side views, and side views more than top views, while detail close-ups remain review
+evidence rather than being mislabeled as full-body inputs. Tripo's per-call limit only
+controls the dynamic selection for each generation attempt. Godot renders front, rear,
+both profiles, overhead and structural detail views; a separate review compares subject,
+anatomy/proportions, directional similarity and expected details against every original
+reference. Human and humanoid candidates additionally render `head_front`,
+`head_three_quarter` and `head_side` close-ups. Review schema V2 explicitly accepts a
+complete mouth/chin/lower face and a joined neck, a recognizable (not 1:1 replicated)
+facial identity, normal facial proportions, and geometry without visible blockers to
+later animation. A top view passes when its direction and gross layout are similar;
+its exact elevation angle and occluded fine details need not match. These allowances
+do not permit missing anatomy or contradictory layout. Animation readiness here is a
+visual geometry decision only, not evidence of a skeleton, skin weights or a played
+animation. Accepted human GLBs carry these V2 decisions and explicit unverified
+rigging/animation flags in `asset.extras.maliang_head_review` for the rigging gate.
+Legacy reviews are requested again on the same GLB and renders, never silently promoted.
+Completed API responses are recovered with their request/instruction hashes before any
+new request. Incomplete reports can merge only complementary views of the same renders;
+a conflicting verdict for the same view is rejected, never resolved by choosing a pass.
+Head/body merging separately
+requires source-bound `maliang_head_landmarks` with the neck base below the chin, rather
+than an unmarked fixed-Y face crop. Non-humanoid meshes do not use this human contract.
+The first attempt uses weighted image references. Subsequent supported appearance-only
+attempts use `model_adjust` / `texture_3d_model` with the immediately previous GLB as the
+required source, its latest review feedback, and recorded `parent_model_sha256` lineage.
+They never silently fall back to text-only full regeneration. A landmarked merged head
+with a complete face but a failed neck join may make one local `align_neck` attempt through
+`geometry_repair.py`: only the named head POSITION accessors move, the source is preserved,
+the old visual review is invalidated, and all review views must be rendered again. This
+branch uses no remote generation, upload or Blender. Missing anatomy, wrong proportions
+and other blocking structural failures stop further repair with `model3d_geometry_edit_unsupported`.
+Deferred geometry requests such as hair/body reshaping are excluded from texture prompts;
+they do not block independent material fixes. Appearance-supported failures continue the
+incremental loop. When no supported correction remains, the provider preserves the last
+reviewed GLB and finishes successfully with `capability_limited=true`,
+`visual_review_passed=false`, the complete rejected review, and every unresolved issue.
+The Workbench displays one native warning dialog for that run/node/model. Its title,
+button, body, status and issue summaries must be entirely in Chinese: do not expose
+raw English review prose or internal field names in the dialog. The original English
+review remains intact in the task record and artifact metadata as evidence; the dialog
+presents categorized Chinese issue summaries and explicitly says that visual review
+was not fully passed. This delivery is not a passed review and receives no accepted
+head/animation marker. Texture adjustment is
+not presented as geometry repair. Network, invalid-output, rendering, and vision/API
+uncertainty errors remain failures rather than capability-limited successes.
+Incremental prompts are bounded to 1000 characters. Only a fully accepted review can set
+`visual_review_passed=true` or attach the accepted human head-review metadata. Saved review
+responses can recover without replaying generation. The node prompt is used during visual
+analysis because the direct Tripo image route does not accept mixed image-plus-text constraints.
+This reviewed path requires `KIMI_API_KEY`.
+Each V2 review also identifies which rendered full-body view actually shows the subject's
+front. A failed review with a rotated front view triggers one bounded recovery on the same
+GLB: apply the corresponding yaw correction, render every view again, and request a new
+review. This recovery does not call generation or `model_adjust`, does not change geometry,
+and never repeats when the corrected review still fails. Accepted human GLBs record the
+confirmed review frame with the original geometry SHA. Only the corrected review decides
+whether publishing, incremental adjustment, or a structural stop is appropriate. Saved
+legacy reviews lacking the front-view decision are requested again on their original GLB
+and renders before recovery; no angle is inferred from their free-form prose.
+
 The direct service does not accept additional text constraints together with image or
 multiview input. Such requests fail explicitly instead of silently dropping the text.
 A three-view marker is used only to select sheet splitting. Generation model `v3.1` is
@@ -194,6 +257,23 @@ embed ordered source-model and guidance-image snapshots. The resulting Artifact 
 `operation=texture_3d_model`, source/new task IDs and hashes, guidance mode, geometry,
 `original_model_not_overwritten=true` and `blender_used=false`. Other generation modes reject this
 node explicitly instead of routing it to an incompatible provider.
+
+### Local geometry adjustment V2
+
+`model_adjust` V1 remains the appearance contract. V2 additionally declares `operation` and
+`repair`; the only operations are `align_neck` and `reshape_crown`. Local workers use the
+configured model Python rather than assuming that the host CLI Python contains NumPy.
+Every source is immutable and hash-bound, and output is a new GLB with its own receipt.
+`reshape_crown` requires explicit confirmation, a mesh name, the expected crown height,
+a hairline and blend band, bounded crown/front scales and a confirmed review-frame yaw.
+It changes only vertices above that hairline, preserves lower positions bit-for-bit,
+updates affected normals and never decimates or changes topology. Its geometry-buffer
+hash prevents applying an old recipe to changed geometry. This is not arbitrary face
+repair or inferred landmark placement. Local edits invalidate the previous head review
+and require all render views again. Camera positions use anatomical sides: a +Z-facing
+character's right view is taken from -X, not from screen-right. A confirmed review-frame
+yaw rotates only the render stage, never the source geometry. These branches submit no
+Tripo API generation, texture, segmentation or completion operation.
 
 ### Local configuration and credentials
 

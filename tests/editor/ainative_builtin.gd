@@ -96,12 +96,15 @@ func run():
 	verify_chinese_controls()
 	await verify_settings_navigation(dock)
 	await verify_generation_service_controls()
+	verify_capability_notice()
 	check(panel.rigging_panel.source_field!=null,'rigging exposes a local Mesh browser/input')
 	var tools = str(panel.get_meta('ainative_tools_dir',''))
 	check(panel.host_edit.text==tools.path_join('editor_host.py') and FileAccess.file_exists(panel.host_edit.text),'host comes from the engine bundle')
 	details.state_key = panel.state_dir.get_file()
+	details.state_root = panel.state_dir
 	details.host_sha256 = FileAccess.get_sha256(panel.host_edit.text)
 	var bundle = tools.get_base_dir()
+	details.bundle_root = bundle
 	details.bundle_version = bundle.get_file()
 	details.bundle_sha256 = {'manifest.json':FileAccess.get_sha256(bundle.path_join('manifest.json'))}
 	for folder in ['scripts', 'tools']:
@@ -253,7 +256,7 @@ func verify_file_pickers():
 	panel.generator_choice.select(3)
 	panel.add_generator()
 	data = panel.nodes.back()
-	check(data.type == 'model_adjust' and data.parameters.prompt.is_empty() and panel.output_kind(data) == 2, 'model adjustment starts with optional guidance and a Mesh output')
+	check(data.type == 'model_adjust' and data.version == '2' and data.parameters.prompt.is_empty() and panel.output_kind(data) == 2, 'model adjustment starts with optional guidance, local-operation V2 support and a Mesh output')
 	check(panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILE and panel.context_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES, 'model adjustment takes one source model and ordered reference images')
 	check(str(panel.source_picker.filters).contains('*.glb') and str(panel.source_picker.filters).contains('*.gltf') and not str(panel.source_picker.filters).contains('*.png'), 'model adjustment source picker accepts models rather than images')
 	var model_source = ProjectSettings.globalize_path('res://fixture.glb')
@@ -359,6 +362,24 @@ func verify_chinese_controls():
 	check(leftovers.is_empty(),'workbench-owned labels, actions and placeholders are Chinese or proper names')
 	var error = panel.diagnostic_error('测试操作失败','FileNotFoundError: synthetic diagnostic')
 	check(error.contains('失败') and not error.contains('FileNotFoundError') and FileAccess.get_file_as_string(panel.state_dir.path_join('diagnostics.log')).contains('FileNotFoundError'),'raw external failure details are retained locally behind a Chinese summary')
+
+func verify_capability_notice():
+	var artifact = {
+		'id':'capability-test','revision':'a'.repeat(64),'type':'mesh',
+		'payload':{'provenance':{'capability_limited':true,'visual_review_passed':false,'unresolved_issues':['Body proportions require unsupported geometry editing','Hair is too tall']}}
+	}
+	var state = {'state':'succeeded','result':{'artifacts':[artifact]}}
+	check(panel._capability_limited_artifact(state)==artifact,'capability-limited success is detected from mesh provenance')
+	var notice = panel._capability_notice_text(artifact)
+	check(notice.contains('成功结果交付') and notice.contains('视觉审核未完全通过') and notice.contains('整体或局部比例') and notice.contains('发型'),'capability notice distinguishes delivery from full review and lists Chinese issue summaries')
+	check(not notice.contains('review') and not notice.contains('SHA256') and not notice.contains('Body proportions') and not notice.contains('Hair is'),'capability dialog and status do not expose English review prose')
+	panel._show_capability_notice('synthetic-node',artifact)
+	check(panel.capability_notice_dialog.visible and panel.capability_notices.size()==1,'capability-limited delivery opens one native warning dialog')
+	panel.capability_notice_dialog.hide()
+	panel._show_capability_notice('synthetic-node',artifact)
+	check(panel.capability_notices.size()==1,'same run, node and model do not repeatedly open the warning')
+	state.result.artifacts[0].payload.provenance.capability_limited = false
+	check(panel._capability_limited_artifact(state).is_empty(),'ordinary fully reviewed success does not open a capability warning')
 
 func verify_importer_conversion():
 	var converter = load(panel.get_script().resource_path.get_base_dir().path_join('runtime_mesh.gd'))
@@ -476,6 +497,12 @@ func make_humanoid(path: String) -> bool:
 	for box in [
 		[Vector3(0,1.05,0),Vector3(.38,.62,.22)],
 		[Vector3(0,1.6,0),Vector3(.25,.35,.25)],
+		[Vector3(0,1.405,0),Vector3(.12,.12,.12)],
+		[Vector3(-.05,1.63,.126),Vector3(.04,.025,.015)],
+		[Vector3(.05,1.63,.126),Vector3(.04,.025,.015)],
+		[Vector3(0,1.585,.14),Vector3(.04,.06,.04)],
+		[Vector3(0,1.52,.127),Vector3(.075,.014,.012)],
+		[Vector3(0,1.46,.126),Vector3(.1,.035,.02)],
 		[Vector3(.55,1.28,0),Vector3(.8,.16,.16)],
 		[Vector3(-.55,1.28,0),Vector3(.8,.16,.16)],
 		[Vector3(.11,.38,0),Vector3(.16,.76,.18)],
@@ -495,7 +522,54 @@ func make_humanoid(path: String) -> bool:
 	var error = document.append_from_scene(scene,state)
 	if error==OK: error = document.write_to_filesystem(state,path)
 	scene.free()
-	return check(error==OK,'synthetic T-pose GLB fixture is encoded without AI inference')
+	if error != OK: return check(false,'synthetic T-pose GLB fixture is encoded without AI inference')
+	# This fixture has explicit eyes, nose, mouth, chin and an overlapping neck.
+	# Record only that synthetic geometry review, not a human identity verdict.
+	var file = FileAccess.open(path,FileAccess.READ)
+	if file == null: return check(false,'synthetic fixture GLB can be reopened')
+	var geometry_sha = FileAccess.get_sha256(path)
+	file.seek(12)
+	var length = file.get_32()
+	file.seek(20)
+	var json_document = JSON.parse_string(file.get_buffer(length).get_string_from_utf8())
+	var binary_size = file.get_32()
+	file.get_32()
+	var binary = file.get_buffer(binary_size)
+	file.close()
+	if not json_document is Dictionary: return check(false,'synthetic fixture GLB JSON is valid')
+	json_document.asset['extras'] = json_document.asset.get('extras',{})
+	json_document.asset.extras['maliang_head_review'] = {
+		'schema_version':1,
+		'mode':'manual',
+		'geometry_sha256':geometry_sha,
+		'head_geometry_mode':'integrated',
+		'passed':true,
+		'head_gate':{
+			'applicable':true,
+			'complete_face':true,
+			'neck_join_pass':true,
+			'observation':'Explicit synthetic eyes, nose, mouth, chin and overlapping neck; not a human identity assessment.'
+		},
+		'head_views':{'head_front':true,'head_three_quarter':true,'head_side':true},
+		'evidence':'synthetic_fixture_explicit_geometry_not_identity',
+		'rigging_verified':false,
+		'animation_verified':false
+	}
+	var encoded = JSON.stringify(json_document).to_utf8_buffer()
+	while encoded.size()%4 != 0: encoded.append(32)
+	var output = FileAccess.open(path,FileAccess.WRITE)
+	if output == null: return check(false,'synthetic fixture metadata can be written')
+	output.store_string('glTF')
+	output.store_32(2)
+	output.store_32(28+encoded.size()+binary_size)
+	output.store_32(encoded.size())
+	output.store_string('JSON')
+	output.store_buffer(encoded)
+	output.store_32(binary_size)
+	output.store_32(0x004E4942)
+	output.store_buffer(binary)
+	output.close()
+	return check(output.get_error()==OK,'synthetic T-pose GLB fixture is encoded without AI inference')
 
 func verify_rigging():
 	var rig = panel.rigging_panel

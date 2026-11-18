@@ -732,7 +732,7 @@ def prepare_provider(config, model, database, run_id):
         return registry, providers, _provider_snapshot(config["mode"], snapshots, provider_types)
 
     if config["mode"] == "kimi_native":
-        from kimi_provider import KimiNativeDirectProvider
+        from kimi_provider import DEFAULT_ENDPOINT, DEFAULT_MODEL, KimiNativeDirectProvider
         from kimi_work_image_provider import KimiWorkImageProvider
 
         report = _probe_kimi(config)
@@ -763,6 +763,11 @@ def prepare_provider(config, model, database, run_id):
                         storage=str(storage / "kimi-native-3d-state"),
                         model=selected,
                         texture_model=config.get("texture_model", "v3.5"),
+                        planner=dict(endpoint=DEFAULT_ENDPOINT, model=DEFAULT_MODEL, key_env="KIMI_API_KEY"),
+                        review_godot_path=config.get("godot_path", ""),
+                        review_script_path=str(Path(config["builder_path"]).with_name("mesh_review.gd"))
+                        if config.get("builder_path")
+                        else "",
                     )
                     provider_types[key] = "kimi_native"
                     providers[key] = KimiNativeDirectProvider(snapshots[key])

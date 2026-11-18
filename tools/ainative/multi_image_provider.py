@@ -5,7 +5,7 @@ owns version 2/3/4 image nodes, the unified generate_image node, and version 2
 image_to_mesh input expansion. Image outputs have independent durable children;
 image_to_mesh keeps its single Mesh result and ordered primary/reference mapping.
 Single-reference backends receive one deterministic labeled board; native
-multi-reference backends receive every ordered source.
+multi-reference backends receive ordered sources within their input contracts.
 """
 
 import base64
@@ -634,6 +634,8 @@ class MultiImageProvider(CodexProvider):
 
     def submit(self, request, manifest, idempotency_key):
         if request["node"] == "image_to_mesh" and request.get("version") == MESH_VERSION:
+            if hasattr(self.inner, "submit_reviewed"):
+                return self.inner.submit_reviewed(request, manifest, idempotency_key)
             return self.inner.submit(_mesh_request(request, manifest), manifest, idempotency_key)
         if not _is_batch_request(request):
             return self.inner.submit(request, manifest, idempotency_key)

@@ -4,11 +4,60 @@ extends RefCounted
 const NAMES = ['hips','spine','chest','neck','head','upper_arm_l','forearm_l','hand_l','upper_arm_r','forearm_r','hand_r','thigh_l','shin_l','foot_l','thigh_r','shin_r','foot_r','root']
 const PARENTS = [17,0,1,2,3,2,5,6,2,8,9,0,11,12,0,14,15,-1]
 
+static func source_extras(path: String) -> Dictionary:
+	if not FileAccess.file_exists(path): return {}
+	var file = FileAccess.open(path,FileAccess.READ)
+	if file == null or file.get_length()<28: return {}
+	if file.get_buffer(4).get_string_from_ascii()!='glTF': return {}
+	file.seek(12)
+	var length = file.get_32()
+	if length<=0 or 20+length>file.get_length(): return {}
+	file.seek(20)
+	var document = JSON.parse_string(file.get_buffer(length).get_string_from_utf8())
+	if not document is Dictionary: return {}
+	var asset = document.get('asset',{})
+	if not asset is Dictionary: return {}
+	var extras = asset.get('extras',{})
+	return extras if extras is Dictionary else {}
+
 static func defaults(path: String) -> Dictionary:
-	return {'source_sha256':FileAccess.get_sha256(path),'route':'standard','height_m':1.8,'yaw_degrees':0.0,'crop_below_y':-10000.0,'clean_faces':false,'reference_pose':'T','confirmed_humanoid':false,'joints':{},'weights':{},'weights_geometry':''}
+	var extras = source_extras(path)
+	return {'source_sha256':FileAccess.get_sha256(path),'route':'standard','height_m':1.8,'yaw_degrees':0.0,'auto_orient':true,'crop_below_y':-10000.0,'clean_faces':false,'reference_pose':'T','confirmed_humanoid':false,'joints':{},'weights':{},'weights_geometry':'','head_landmarks':extras.get('maliang_head_landmarks',{}),'head_review':extras.get('maliang_head_review',{})}
+
+static func head_contract_error(p: Dictionary) -> String:
+	var review = p.get('head_review',{})
+	if not review is Dictionary or review.get('passed')!=true: return '缺少通过的头脸多视角验收；请检查正面、斜侧面和侧面后再绑骨。'
+	if review.get('mode') not in ['automatic','manual'] or review.get('head_geometry_mode') not in ['integrated','merged']: return '头脸验收记录版本无效。'
+	var geometry_sha = str(review.get('geometry_sha256',''))
+	if geometry_sha.length()!=64 or not geometry_sha.is_valid_hex_number(false): return '头脸验收未绑定源几何。'
+	if review.has('source_sha256') and review.source_sha256!=p.get('source_sha256',''): return '头脸验收属于另一份模型。'
+	var gate = review.get('head_gate',{})
+	if not gate is Dictionary or gate.get('applicable')!=true or gate.get('complete_face')!=true or gate.get('neck_join_pass')!=true:
+		return '头脸门禁未通过：嘴、下巴和头颈衔接必须完整。'
+	var views = review.get('head_views',{})
+	if not views is Dictionary: return '头脸验收缺少多视角记录。'
+	for view in ['head_front','head_three_quarter','head_side']:
+		if views.get(view)!=true: return '头脸多视角验收缺少或未通过：'+view
+	if review.head_geometry_mode=='merged':
+		var marks = p.get('head_landmarks',{})
+		if not marks is Dictionary or marks.get('confirmed')!=true or marks.get('head_geometry_mode')!='merged': return '换头模型缺少确认的下巴和颈根标记。'
+		for key in ['body_neck_y','head_chin_y','head_neck_y']:
+			if not (marks.get(key) is float or marks.get(key) is int) or not is_finite(float(marks[key])): return '颈部标记必须为有限数值：'+key
+		if not marks.head_neck_y<marks.head_chin_y: return '颈根标记必须低于下巴，不能在脸部裁切。'
+	return ''
 
 static func geometry_key(p: Dictionary) -> String:
 	return JSON.stringify([p.source_sha256,p.height_m,p.yaw_degrees,p.crop_below_y,p.clean_faces,'anatomical-segments-v1']).sha256_text()
+
+static func fit_t_pose_yaw(source_bounds: AABB, p: Dictionary) -> float:
+	var yaw = float(p.get('yaw_degrees',0.0))
+	if not p.get('auto_orient',false) or not is_zero_approx(yaw): return yaw
+	if p.get('route')!='standard' or p.get('reference_pose')!='T': return yaw
+	# A T pose may be authored with its arms along Z. Align that dominant
+	# horizontal span to the template's X axis instead of placing arms in space.
+	if source_bounds.size.z>source_bounds.size.x*1.5 and source_bounds.size.z>source_bounds.size.y*.65:
+		return -90.0
+	return yaw
 
 static func build(path: String, p: Dictionary) -> Dictionary:
 	if not FileAccess.file_exists(path) or FileAccess.get_sha256(path) != p.get('source_sha256',''): return {'error':'源文件哈希不匹配；请重新打开源文件。'}
@@ -17,6 +66,8 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 		if not (p.get(key) is float or p.get(key) is int) or not is_finite(float(p[key])): return {'error':'参数必须为有限数值：'+key}
 	if p.height_m < 0.2 or p.height_m > 4.0: return {'error':'身高必须在 0.2–4 米之间。'}
 	if not p.get('joints') is Dictionary or not p.get('weights') is Dictionary: return {'error':'关节和权重修正必须为对象。'}
+	var head_problem = head_contract_error(p)
+	if not head_problem.is_empty(): return {'error':head_problem}
 	if not p.weights.is_empty() and p.get('weights_geometry','')!=geometry_key(p): return {'error':'权重修正属于另一份派生几何；请清除权重并载入新的标记 ID。'}
 	var doc = GLTFDocument.new()
 	var state = GLTFState.new()
@@ -29,6 +80,24 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 	var report = {'input_vertices':0,'input_faces':0,'removed_faces':0,'degenerate_faces':0,'duplicate_faces':0,'boundary_edges':0,'nonmanifold_edges':0,'warnings':[]}
 	var meshes = imported.find_children('*','MeshInstance3D',true,false)
 	if imported is MeshInstance3D: meshes.append(imported)
+	var source_bounds = AABB()
+	var source_bounds_found = false
+	for mi in meshes:
+		var source_transform = Transform3D.IDENTITY
+		var source_node = mi
+		while source_node != null and source_node is Node3D:
+			source_transform = source_node.transform * source_transform
+			source_node = source_node.get_parent()
+		var source_box = source_transform * mi.mesh.get_aabb()
+		source_bounds = source_bounds.merge(source_box) if source_bounds_found else source_box
+		source_bounds_found = true
+	var requested_yaw = float(p.yaw_degrees)
+	p.yaw_degrees = fit_t_pose_yaw(source_bounds,p)
+	report['applied_yaw_degrees'] = p.yaw_degrees
+	report['auto_orient_applied'] = not is_equal_approx(requested_yaw,p.yaw_degrees)
+	if not p.weights.is_empty() and p.get('weights_geometry','')!=geometry_key(p):
+		imported.free()
+		return {'error':'权重修正属于另一份派生几何；请清除权重并载入新的标记 ID。'}
 	for mi in meshes:
 		var transform = Transform3D.IDENTITY
 		var node = mi

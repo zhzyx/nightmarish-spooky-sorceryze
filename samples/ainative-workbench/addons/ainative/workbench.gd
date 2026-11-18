@@ -40,6 +40,8 @@ var mesh_focus := Vector3.ZERO
 var mesh_frame_distance := 1.0
 var preview_root: Node3D
 var dialog: ConfirmationDialog
+var capability_notice_dialog: AcceptDialog
+var capability_notices: Dictionary = {}
 var nodes: Array = []
 var edges: Array = []
 var selected_id = ""
@@ -193,6 +195,7 @@ func _is_image_kind(kind: String) -> bool:
 func _new_node_version(kind: String) -> String:
 	if kind == GENERATE_IMAGE: return "2"
 	if kind == "image_to_mesh": return "2"
+	if kind == "model_adjust": return "2"
 	return "4" if kind in ["text_to_image", "image_to_image"] else "1"
 
 func state_label(value: String) -> String:
@@ -264,8 +267,9 @@ func _set_node_file(field: String, selection):
 		if data.id != selected_id: continue
 		var other = "image_context" if field == "source" else "source"
 		var image_node = _is_image_kind(str(data.get("type", "copy"))) or _accepts_image_set(data)
+		var reviewed_mesh = data.get("type", "") == "image_to_mesh" and data.get("version", "1") == "2"
 		var total = paths.size() + _node_paths(data, other).size()
-		if paths.size() > 8 or (image_node and total > 8):
+		if not reviewed_mesh and (paths.size() > 8 or (image_node and total > 8)):
 			status.text = "源图与参考图合计每次最多 8 张"
 			return
 		data[field + "_paths"] = paths
@@ -612,6 +616,10 @@ func _ready():
 	dialog.cancel_button_text = "取消"
 	add_child(dialog)
 	dialog.confirmed.connect(confirm_publish)
+	capability_notice_dialog = AcceptDialog.new()
+	capability_notice_dialog.title = "模型已按能力受限结果交付"
+	capability_notice_dialog.ok_button_text = "知道了"
+	add_child(capability_notice_dialog)
 	status = Label.new()
 	status.text = "右键节点运行；真实生成请先在“设置 → AI”连接服务，并在各节点选择模型。" if builtin else "右键节点运行；真实生成请先在“本机设置”连接服务，并在各节点选择模型。"
 	if managed_comfy_panel.using_bundle() and _service_mode() in ['codex', 'local_mesh']:
@@ -1032,8 +1040,8 @@ func clear_embedded():
 				data.erase(field + "_snapshots")
 	status.text = "已清除内嵌源文件和参考图像，路径字段仍然有效"
 
-func _valid_input_snapshots(value) -> bool:
-	if not value is Array or value.size() > 8: return false
+func _valid_input_snapshots(value, uncapped: bool = false) -> bool:
+	if not value is Array or (not uncapped and value.size() > 8): return false
 	for snapshot in value:
 		if not snapshot is Dictionary: return false
 		for key in ["content_base64", "content_sha256", "extension"]:
@@ -1090,12 +1098,13 @@ func open_graph():
 		# Workflows saved before explicit node versions used the original batch
 		# contract on their first multi-image save, never the queue-only contract.
 		if n.get("type", "copy") in ["text_to_image", "image_to_image"] and not n.has("version"): n.version = "2"
+		var reviewed_mesh = n.get("type", "") == "image_to_mesh" and n.get("version", "1") == "2"
 		for field in ["source", "image_context"]:
 			var paths = n.get(field + "_paths", [])
-			if not paths is Array or paths.size() > 8 or paths.any(func(path): return not path is String):
+			if not paths is Array or (not reviewed_mesh and paths.size() > 8) or paths.any(func(path): return not path is String):
 				status.text = "输入路径列表无效"
 				return
-			if n.has(field + "_snapshots") and not _valid_input_snapshots(n[field + "_snapshots"]):
+			if n.has(field + "_snapshots") and not _valid_input_snapshots(n[field + "_snapshots"], reviewed_mesh):
 				status.text = "输入快照列表无效"
 				return
 			if not paths.is_empty() and not n.get(field + "_snapshots", []).is_empty() and paths.size() != n[field + "_snapshots"].size():
@@ -1206,6 +1215,65 @@ func _controller_failed(command: String, failure: Dictionary):
 	if command == "service-check": service_status.text = message
 	if command == "managed-comfy": managed_comfy_panel.failed(message)
 
+func _capability_limited_artifact(node_state: Dictionary) -> Dictionary:
+	if node_state.get("state") != "succeeded": return {}
+	var manifest = node_state.get("result", {})
+	if not manifest is Dictionary: return {}
+	for artifact in manifest.get("artifacts", []):
+		if not artifact is Dictionary or artifact.get("type") != "mesh": continue
+		var payload = artifact.get("payload", {})
+		if not payload is Dictionary: continue
+		var provenance = payload.get("provenance", {})
+		if provenance is Dictionary and provenance.get("capability_limited", false): return artifact
+	return {}
+
+func _capability_issue_summaries(issues: Array) -> PackedStringArray:
+	var summaries := PackedStringArray()
+	for issue in issues:
+		var value = str(issue).to_lower()
+		var summary = ""
+		if ["face","facial","skin","eye","nose","ear","brow","jaw","cheek","identity","面部","皮肤","眼睛"].any(func(term): return term in value):
+			summary = "面部身份、比例或肤质细节仍与参考图存在差异。"
+		elif ["proportion","anatomy","limb","比例","肢体"].any(func(term): return term in value):
+			summary = "整体或局部比例、解剖结构仍需人工检查。"
+		elif ["hair","头发","发型"].any(func(term): return term in value):
+			summary = "发型、头发体积或发丝细节仍与参考图存在差异。"
+		elif ["gem","宝石"].any(func(term): return term in value):
+			summary = "宝石或装饰镶嵌的颜色、形状及完整性仍需检查。"
+		elif ["glove","手套"].any(func(term): return term in value):
+			summary = "手套、腕部或手部细节未完整符合参考图。"
+		elif ["boot","shoe","靴","鞋"].any(func(term): return term in value):
+			summary = "靴鞋的结构、材质或装饰细节仍需检查。"
+		elif ["gold","metal","filigree","ornament","embroider","金属","纹饰","刺绣"].any(func(term): return term in value):
+			summary = "金属、刺绣或浮雕细节存在软化、缺失或变形。"
+		elif ["cloth","fabric","navy","ivory","color","leather","cloak","tabard","服装","布料","配色","材质"].any(func(term): return term in value):
+			summary = "服装配色、布料或材质质感仍与参考图存在差异。"
+		elif ["camera","view","视角","相机"].any(func(term): return term in value):
+			summary = "部分视图与参考图的对应关系仍需人工检查。"
+		else:
+			summary = "仍有其他模型质量或结构问题，请查看任务中的完整审核记录。"
+		if not summaries.has(summary): summaries.append(summary)
+	if summaries.is_empty(): summaries.append("存在未解决问题，请查看任务中的完整审核记录。")
+	return summaries
+
+func _capability_notice_text(artifact: Dictionary) -> String:
+	var provenance: Dictionary = artifact.get("payload", {}).get("provenance", {})
+	var lines := PackedStringArray()
+	lines.append("模型已保留并按成功结果交付，但视觉审核未完全通过。")
+	lines.append("这是能力受限交付，不代表完整审核通过。模型校验值：" + str(artifact.get("revision", "")))
+	var issues = provenance.get("unresolved_issues", [])
+	if issues is Array and not issues.is_empty():
+		lines.append("未解决问题的中文摘要（原始审核意见已完整保留在任务记录中）：")
+		for summary in _capability_issue_summaries(issues): lines.append("• " + summary)
+	return "\n".join(lines)
+
+func _show_capability_notice(node_id: String, artifact: Dictionary):
+	var key = run_id + "/" + node_id + "/" + str(artifact.get("revision", ""))
+	if capability_notices.has(key): return
+	capability_notices[key] = true
+	capability_notice_dialog.dialog_text = _capability_notice_text(artifact)
+	capability_notice_dialog.popup_centered(Vector2i(760, 480))
+
 func _controller_completed(command: String, data: Dictionary, request: Dictionary):
 	if command == "managed-comfy":
 		managed_comfy_panel.completed(data, request)
@@ -1222,6 +1290,10 @@ func _controller_completed(command: String, data: Dictionary, request: Dictionar
 		status.text = "运行状态：" + state_label(data.state) + " | 响应计数 " + str(heartbeat)
 		for id in data.nodes:
 			status.text += " | " + id + "：" + state_label(data.nodes[id].state) + "，尝试次数 " + str(data.nodes[id].attempt)
+			var limited = _capability_limited_artifact(data.nodes[id])
+			if not limited.is_empty():
+				status.text += "（能力受限交付：审核未完全通过，详见弹窗）"
+				_show_capability_notice(id, limited)
 			if data.nodes[id].state == "failed" and data.nodes[id].get("error") == "invalid_result":
 				status.text += "（生成结果未通过校验，已停止；请保留本次记录，修正问题后重新运行节点）"
 			if data.nodes[id].state == "failed" and managed_comfy_panel.using_bundle() and _service_mode() in ["codex", "local_mesh"]:
@@ -1598,7 +1670,8 @@ func node_run_blocker(id: String) -> String:
 			for path in _node_paths(data, field):
 				if not path.is_empty() and not FileAccess.file_exists(path):
 					return ("源文件" if field == "source" else "参考图像") + "不存在（" + str(next_id) + "）"
-		if (_is_image_kind(kind) or _accepts_image_set(data)) and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
+		var reviewed_mesh = kind == "image_to_mesh" and data.get("version", "1") == "2"
+		if not reviewed_mesh and (_is_image_kind(kind) or _accepts_image_set(data)) and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
 			return "源图与参考图合计每次最多 8 张（" + str(next_id) + "）"
 		var prompt = str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))
 		if kind == GENERATE_IMAGE and not has_images and prompt.strip_edges().is_empty():

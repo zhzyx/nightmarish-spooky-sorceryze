@@ -75,6 +75,8 @@ func run():
 	check(node(mesh).version == "2" and panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES, "image-to-Mesh exposes ordered multi-file input")
 	panel.source_picker.files_selected.emit(PackedStringArray([front, side]))
 	check(node(mesh).source_paths == [front, side], "image-to-Mesh stores multiple source images in order")
+	panel.source_picker.files_selected.emit(PackedStringArray([front, side, front, side, front, side, front, side, front]))
+	check(node(mesh).source_paths.size() == 9, "reviewed image-to-Mesh accepts every reference without a fixed collection-size cap")
 	panel.select_node(downstream)
 	var data = node(downstream)
 	if data.is_empty():
@@ -116,6 +118,7 @@ func run():
 	var saved_node = find_node(saved, downstream)
 	check(saved_node.source_paths == ["", ""] and saved_node.source_snapshots.size() == 2 and saved_node.image_context_snapshots.size() == 1, "save embeds all ordered source and reference snapshots")
 	check(saved_node.source_snapshots[0].content_sha256 == FileAccess.get_sha256(front) and saved_node.source_snapshots[1].content_sha256 == FileAccess.get_sha256(side) and saved_node.image_context_snapshots[0].content_sha256 == FileAccess.get_sha256(reference), "snapshot identities match original bytes in the chosen order")
+	check(find_node(saved, mesh).source_snapshots.size() == 9, "save retains the complete uncapped Mesh reference collection")
 	var original = saved.duplicate(true)
 	var corrupt = original.duplicate(true)
 	find_node(corrupt, downstream).source_paths = [front, 2]
@@ -136,6 +139,7 @@ func run():
 	data = node(downstream)
 	check(panel.selected_id == downstream and data.source_paths == ["", ""] and data.source_snapshots.size() == 2 and data.image_context_snapshots.size() == 1, "reopen restores ordered snapshots without source files or new generation")
 	check(data.parameters.prompt == "结合参考图生成雕塑，正面和三分之四侧面" and not panel.parameter_form.outputs_edit.visible, "reopen preserves the requirement and automatic output mode")
+	check(node(mesh).source_snapshots.size() == 9 and panel.node_run_blocker(mesh).is_empty(), "reopen accepts the complete Mesh reference collection")
 	check(panel.edges == original.edges and panel.run_id.is_empty() and panel.preview_token.is_empty(), "reopen preserves valid ports but clears old execution authority")
 	# Preview fixtures only test Godot's member selector. Host membership, publication
 	# and restore are exercised by the Python Executor integration test.

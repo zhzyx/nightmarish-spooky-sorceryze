@@ -1,0 +1,8 @@
+{
+  "cli": "ABSOLUTE_PATH/runtime/skintokens/build/bin/skintokens-cli",
+  "model_dir": "ABSOLUTE_PATH/runtime/skintokens/models/SkinTokens-GGUF/F16",
+  "device": "cpu",
+  "postprocess": false,
+  "timeout_seconds": 3600,
+  "fingerprint_weights": true
+}

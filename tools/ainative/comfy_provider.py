@@ -63,6 +63,25 @@ def register(registry):
                 capabilities=[kind],
             )
         )
+        if kind == "model_adjust":
+            # V1 remains the appearance/texture contract. V2 adds explicitly
+            # bounded local operations without accepting arbitrary GLB code.
+            local_props = dict(
+                props,
+                operation={"type": "string", "enum": ["align_neck", "reshape_crown"]},
+                repair={"type": "object"},
+            )
+            registry.register(
+                dict(
+                    id=kind,
+                    version="2",
+                    inputs=inputs,
+                    outputs={"result": {"types": ["mesh"], "required": True}},
+                    context_types=["text", "image"],
+                    parameters={"properties": local_props},
+                    capabilities=[kind],
+                )
+            )
 
 
 def digest(value):

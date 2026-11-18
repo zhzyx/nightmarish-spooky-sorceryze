@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-vision-review-loop-20261119",
+  "issue": 1544,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1544",
+  "occurred_at": "2026-11-19T01:26:31+08:00",
+  "state": "local_business_acceptance_passed",
+  "scope": "Maliang multi-view visual review, previous-model appearance adjustment, bounded local geometry repair, orientation evidence recovery, capability-limited Chinese delivery, human head gate and retained experimental SkinTokens route",
+  "real_generation_acceptance": {
+    "provider_job_id": "d633a8eb1f858501fa21b155a377d82aceb73d24f5ec2dbfd3a977b2c3afa361",
+    "terminal_state": "succeeded",
+    "model_revision": "fe3b4cac467ca61a43da866f9353f911f055caee729fe6eea1cf3fe716220daa",
+    "attempts": 2,
+    "capability_limited": true,
+    "visual_review_passed": false,
+    "unresolved_issues": 9,
+    "user_accepted": true,
+    "interpretation": "Successful capability-limited delivery with unresolved issues, not a fully passed visual review"
+  },
+  "python_regression": {
+    "command": "python -m unittest discover -s tools/ainative -p test_*.py",
+    "ran": 474,
+    "failed": 0,
+    "skipped": 62
+  },
+  "native_acceptance": {
+    "command": "python tests/editor/run_ainative_builtin.py --godot bin/godot.macos.editor.arm64",
+    "state": "passed",
+    "receipt_sha256": "a74caa2fd6834a4ff056e30927653656f9a38807447b9df21324c3e872e3b694",
+    "editor_sha256": "1fda2d4b7469bcfa9ada5d99c19b8e67c243b98e1621cc44ae87ee575bf29f6e",
+    "bundle_version": "a5e18cf3e1656c0376c631020d7872e027e46e9817820c51ae31564beb27a3c7",
+    "chinese_capability_dialog_checks_passed": true,
+    "portable_runtime_and_rigging_checks_passed": true
+  },
+  "skintokens": {
+    "retained_at_user_direction": true,
+    "upstream_source_revision": "43aac7b0fe45f5cd802365e6964c13bfc5e5fb52",
+    "upstream_files_byte_compared": 78,
+    "ggml_revision": "8c63e70982c95ceb862e3a1073a2c1beef75d60a",
+    "cmake_configure_and_build_passed": true,
+    "ctest_passed": 4,
+    "godot_route_acceptance_passed": true,
+    "adapter_tests_passed": true,
+    "real_learned_rig_inference_accepted": false,
+    "quality_boundary": "Adapter and native contracts are tested; learned rig quality still requires separate real-weight inference and deformation review"
+  },
+  "pruned": [
+    "Historical one-off reviewed-job recovery entry point; normal saved-review recovery remains",
+    "Incorrect project-local bundle/state assertions and related portable-scene changes",
+    "Retired modeling/sculpt mode tests and repository-local acceptance wrapper",
+    "Duplicate save-generated-artifact implementation already merged on origin/main",
+    "Duplicated project-local model3d tool and approximately 59000 lines of agent-gw/requests runtime",
+    "Generated previews, workflows, editor caches, private inputs and test artifacts"
+  ],
+  "limits": [
+    "Synthetic tests do not establish remote generation quality",
+    "Native tests retain existing engine shutdown leak diagnostics even though the acceptance wrapper passes",
+    "Private reference images, generated GLBs, workflows and credentials are not published"
+  ]
+}

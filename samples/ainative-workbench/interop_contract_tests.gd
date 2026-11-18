@@ -9,6 +9,27 @@ func check(value: bool, label: String):
 func _initialize(): run.call_deferred()
 
 func run():
+	var contract = {'source_sha256':'a'.repeat(64),'head_landmarks':{},'head_review':{
+		'passed':true,'mode':'manual','geometry_sha256':'a'.repeat(64),'source_sha256':'a'.repeat(64),'head_geometry_mode':'integrated',
+		'head_gate':{'applicable':true,'complete_face':true,'neck_join_pass':true,'observation':'contract fixture'},
+		'head_views':{'head_front':true,'head_three_quarter':true,'head_side':true}}}
+	check(Rig.head_contract_error(contract).is_empty(),'complete integrated head review accepted')
+	var broken = contract.duplicate(true)
+	broken.head_review.head_gate.complete_face = false
+	check(not Rig.head_contract_error(broken).is_empty(),'missing mouth or chin rejected')
+	broken = contract.duplicate(true)
+	broken.head_review.head_views.head_side = false
+	check(not Rig.head_contract_error(broken).is_empty(),'missing head side review rejected')
+	broken = contract.duplicate(true)
+	broken.head_review.source_sha256 = 'b'.repeat(64)
+	check(not Rig.head_contract_error(broken).is_empty(),'review from another model rejected')
+	broken = contract.duplicate(true)
+	broken.head_review.head_geometry_mode = 'merged'
+	broken.head_review.erase('source_sha256')
+	broken.head_landmarks = {'confirmed':true,'head_geometry_mode':'merged','body_neck_y':.34,'head_chin_y':.04,'head_neck_y':-.02}
+	check(Rig.head_contract_error(broken).is_empty(),'confirmed merged neck landmarks accepted')
+	broken.head_landmarks.head_neck_y = .12
+	check(not Rig.head_contract_error(broken).is_empty(),'face-level neck cut rejected')
 	var scene = Node3D.new()
 	root.add_child(scene)
 	var sk = Skeleton3D.new()

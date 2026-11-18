@@ -257,7 +257,7 @@ func _apply_cli_controls():
 			_raw_changed()
 	cli_hint.visible = (_cli_mode or instruction_mode) and generator
 	cli_hint.text = ('自选 API 返回严格规划，' + ('Blender' if _sculpt_mode else 'Godot') + ' 固定构造器生成网格；请预览检查形态与隐藏面。') if _api_mode else 'Kimi Work 独立图像服务根据提示词与可选参考图生成二维图片；下方宽高是实际请求尺寸，须为 16 的倍数。随机种子、采样步数和 denoise 不适用，不是 K3.1 Pro 直接输出图片。' if _kimi_image_mode() else 'Kimi Work 通过 Tripo API 根据描述、单图或 2–4 视图直接生成 GLB，无需 Blender 或 K3 原语规划；三视图整图按正面／右侧／背面裁切，额外图文混合约束会明确拒绝。' if _kimi_mode else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
-	if kind == 'model_adjust': cli_hint.text = '基于原模型和可选文字／图片上下文，通过 Tripo API texture_3d_model 输出新 GLB。原模型必须提供；文字+风格图需同时有文字，四图引导需包含全部视角。'
+	if kind == 'model_adjust': cli_hint.text = '默认通过 Tripo API texture_3d_model 输出新 GLB；开发者 JSON 也可选择受限本地几何修复。原模型必须提供且不会被覆盖；四图引导需包含全部视角。'
 	rows.prompt.text = '微调要求（可选）' if kind == 'model_adjust' else ('建模要求（可选，结合源图推断结构）' if instruction_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('生图要求（无图片时必填）' if kind == 'generate_image' else '图生图要求' if _kimi_image_mode() and kind == 'image_to_image' else '生图要求' if _kimi_image_mode() else '建模要求' if modeling_mesh else '提示词')
 	for key in ['width', 'height']:
 		rows[key].visible = generator and not modeling_mesh

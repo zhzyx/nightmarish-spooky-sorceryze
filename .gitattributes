@@ -32,6 +32,8 @@ framework/** -text whitespace=cr-at-eol
 # Preserve the reviewed upstream module's trailing blank line; the frozen snapshot hook checks exact bytes.
 framework/modules/sinan/refresh.mjs whitespace=cr-at-eol,-blank-at-eof
 integrations/godot/*.patch -whitespace
+# Preserve the pinned upstream SkinTokens source and GGML patch bytes.
+tools/skintokens.cpp/** -whitespace
 customizations/components/issue-workorders/review.json -text whitespace=cr-at-eol
 integrations/godot/verification*.json -text whitespace=cr-at-eol
 distribution/notices/* -text -whitespace

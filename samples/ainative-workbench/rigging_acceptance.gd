@@ -17,6 +17,19 @@ func run():
 		var parsed = JSON.parse_string(FileAccess.get_file_as_string(args[2]).trim_prefix('\ufeff'))
 		if not parsed is Dictionary: print('Invalid params JSON'); quit(2); return
 		p = parsed
+	var z_wide = AABB(Vector3(-.2,0,-.9),Vector3(.4,1.8,1.8))
+	var x_wide = AABB(Vector3(-.9,0,-.2),Vector3(1.8,1.8,.4))
+	var orientation = {'route':'standard','reference_pose':'T','auto_orient':true,'yaw_degrees':0.0}
+	check(is_equal_approx(Rig.fit_t_pose_yaw(z_wide,orientation),-90.0),'Z-axis T pose auto orientation')
+	check(is_zero_approx(Rig.fit_t_pose_yaw(x_wide,orientation)),'X-axis T pose remains unchanged')
+	orientation.auto_orient = false
+	check(is_zero_approx(Rig.fit_t_pose_yaw(z_wide,orientation)),'automatic orientation opt-out')
+	orientation.auto_orient = true
+	orientation.yaw_degrees = 90.0
+	check(is_equal_approx(Rig.fit_t_pose_yaw(z_wide,orientation),90.0),'manual yaw takes precedence')
+	orientation.yaw_degrees = 0.0
+	orientation.route = 'free'
+	check(is_zero_approx(Rig.fit_t_pose_yaw(z_wide,orientation)),'marked free meshes keep explicit orientation')
 	var result = Rig.build(args[0],p)
 	if result.has('error'): print(JSON.stringify(result)); quit(1); return
 	root.add_child(result.scene)

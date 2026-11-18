@@ -12,6 +12,7 @@
 | 仓库工单协作与状态规则 | [仓库协作入口](../../.github/CONTRIBUTING.md) | `workflow` |
 | C++ 项目级编码规范 | [项目 C++ 编码规范](../../CPP_CODING_STANDARD.md) | `code-style/cpp` |
 | AI 编辑器语义操作协议 | [AI 编辑器操作接入](../../tools/EDITOR_CONTROL.md) | `editor-control/ui-commands` |
+| 马良生成、视觉 review 与原模型增量修复契约 | [AINative 工具说明](../../tools/ainative/README.md) | `maliang` |
 | Engine Next 构建边界 | [Engine Next 构建契约](../../design-docs/engine-next-build-contract-20261112.md) | `build/engine-next` |
 | Gameplay 核心、会话、复制、相关性与预测 | [Gameplay Framework 设计](../../design-docs/gameplay-framework-20261106.md) | `gameplay` |
 | 引擎适配与迁移边界 | [引擎适配与迁移规范](../../framework/specs/engine-adapter.md) | `engine-core` |
