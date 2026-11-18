@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "collected_at": "2026-11-18T15:10:18.688471+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-4-20261118/kuafu-77eceeff9dea34cdb34a066d09d6a612256863d8.json",
+      "sha256": "22a77d191861f7d2f4a8dcb670feca5639930ebe925127b193fad3434723bf00",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-77eceeff9dea34cdb34a066d09d6a612256863d8",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-4-20261118/kuafu-99ee35460cf883281ba819e70817b9bf9c648125.json",
+      "sha256": "f9a9629885ad8e314e3da859c2cc0739cea4c8a893993709b1535120cedf4922",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-99ee35460cf883281ba819e70817b9bf9c648125",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-4-20261118/kuafu-e5e6d817fe2d9ba84e6ea8e83b8f066e0c3f859b.json",
+      "sha256": "2301286e41754520b3b66bc46eddb9f3bf2d29ae104fec2c62a750bc71ba85ba",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-e5e6d817fe2d9ba84e6ea8e83b8f066e0c3f859b",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-4-20261118/m44-geometry-r1-ci-spelling-correction-20261118.json",
+      "sha256": "911e8fc9c662dca6d2846afb324aa66cdc15fe2332ad37dd92997014e0fec2f9",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m44-geometry-r1-ci-spelling-correction-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-4-20261118/m44-geometry-r1-combination-accepted-20261118.json",
+      "sha256": "c2ae924bfd9776980bffdfc03604585f1e784997e3b5cf1c94db5aebac4e7122",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m44-geometry-r1-combination-accepted-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-4-20261118/m44-paged-r10-validation-20261118.json",
+      "sha256": "cb55ac05298bef4018d886ae8955d9da93826a2646480cf46c0da0d99b6a2ec8",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m44-paged-r10-validation-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-4-20261118/m44-paged-r11-portable-tests-20261118.json",
+      "sha256": "24a7750f1557facc7857523f0caf14fe76f8285a8e8e230dfaa99139363bcf46",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m44-paged-r11-portable-tests-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-4-20261118/m44-request-20261118.json",
+      "sha256": "0ef8527eeff5c5b2889434d61e946adb61e8b27db71c3c00f86f71b0d1150029",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m44-request-20261118",
+      "origin": "AGENTS.md"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1506,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506"
+}

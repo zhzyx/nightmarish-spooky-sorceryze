@@ -40,7 +40,8 @@
   "third_party_roots": [
     "engine_next/thirdparty/enet",
     "engine_next/thirdparty/zlib",
-    "engine_next/thirdparty/libjpeg-turbo"
+    "engine_next/thirdparty/libjpeg-turbo",
+    "engine_next/thirdparty/meshoptimizer"
   ],
   "allowed_angle_include_prefixes": [
     "enet/",
