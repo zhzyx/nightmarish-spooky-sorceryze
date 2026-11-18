@@ -73,16 +73,17 @@ int main(int nArgumentCount, char **ppArguments)
 		const std::string strOption = ppArguments[nIndex];
 		if (strOption == "--help")
 		{
-			std::cout << "next_visual_client [--width N] [--height N] [--frames N] [--validation] [--hidden] [--vsync] [--exercise-resize] [--deterministic] [--animation] [--shader-directory PATH] [--report PATH] [--capture PATH] [--asset-package PATH] [--gpu-package PATH] [--render-config PATH] [--connect --port N --client-id ID --server ADDRESS]\n";
+			std::cout << "next_visual_client [--width N] [--height N] [--frames N] [--validation] [--hidden] [--vsync] [--exercise-resize] [--exercise-projection] [--deterministic] [--animation] [--shader-directory PATH] [--report PATH] [--capture PATH] [--asset-package PATH] [--gpu-package PATH] [--render-config PATH] [--connect --port N --client-id ID --server ADDRESS]\n";
 			std::cout << "WASD moves camera or connected player. R reconnects a connected session. Escape closes.\n";
 			return 0;
 		}
-		if (strOption == "--validation" || strOption == "--hidden" || strOption == "--vsync" || strOption == "--exercise-resize" || strOption == "--deterministic" || strOption == "--connect" || strOption == "--animation")
+		if (strOption == "--validation" || strOption == "--hidden" || strOption == "--vsync" || strOption == "--exercise-resize" || strOption == "--exercise-projection" || strOption == "--deterministic" || strOption == "--connect" || strOption == "--animation")
 		{
 			stConfig.bValidation = stConfig.bValidation || strOption == "--validation";
 			stConfig.bHidden = stConfig.bHidden || strOption == "--hidden";
 			stConfig.bVsync = stConfig.bVsync || strOption == "--vsync";
 			stConfig.bExerciseResize = stConfig.bExerciseResize || strOption == "--exercise-resize";
+			stConfig.bExerciseProjection = stConfig.bExerciseProjection || strOption == "--exercise-projection";
 			stConfig.bDeterministic = stConfig.bDeterministic || strOption == "--deterministic";
 			stConfig.bAnimation = stConfig.bAnimation || strOption == "--animation";
 			stConfig.bConnect = stConfig.bConnect || strOption == "--connect";

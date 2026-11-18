@@ -854,6 +854,7 @@ private:
 	GpuDeformation stGpuDeformation;
 	DeformationFrame stDeformationFrame;
 	DeformationFrame stCommittedDeformation;
+	std::vector<AnimationMatrix> arrCommittedAnimationWorlds;
 	bool bAnimationActive = false;
 	bool bAnimationHistory = false;
 	std::uint32_t nPendingAnimationFrame = FRAME_COUNT;
@@ -2367,15 +2368,9 @@ bool VisualRuntime::PrepareGiFrame(std::uint32_t nFrame)
 	}
 	Assets::Diagnostics arrDiagnostics;
 	std::vector<GiGeometryChange> arrGeometryChanges;
-	if (bAnimationActive && bAnimationHistory && stTemporalFrame.bHistoryValid)
+	if (bAnimationActive && bAnimationHistory)
 	{
-		std::vector<AnimationMatrix> arrPreviousWorlds;
-		arrPreviousWorlds.reserve(stTemporalFrame.arrDraws.size());
-		for (const TemporalDrawFrame &stDraw : stTemporalFrame.arrDraws)
-		{
-			arrPreviousWorlds.push_back(stDraw.arrPreviousWorld);
-		}
-		if (!BuildDeformationGeometryChanges(stCommittedDeformation, stDeformationFrame, arrPreviousWorlds, arrWorlds,
+		if (!BuildDeformationGeometryChanges(stCommittedDeformation, stDeformationFrame, arrCommittedAnimationWorlds, arrWorlds,
 											 arrGeometryChanges, arrDiagnostics))
 		{
 			return Fail(arrDiagnostics.empty() ? "Build deformation GI changes" : arrDiagnostics.back().strMessage);
@@ -5676,6 +5671,12 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		if (bAnimationActive)
 		{
 			stCommittedDeformation = std::move(stDeformationFrame);
+			arrCommittedAnimationWorlds.clear();
+			arrCommittedAnimationWorlds.reserve(stTemporalFrame.arrDraws.size());
+			for (const TemporalDrawFrame &stDraw : stTemporalFrame.arrDraws)
+			{
+				arrCommittedAnimationWorlds.push_back(stDraw.arrCurrentWorld);
+			}
 			bAnimationHistory = true;
 		}
 		if (stRenderConfiguration.stTemporal.bEnabled)
@@ -5839,6 +5840,7 @@ bool VisualRuntime::CheckValidation()
 bool VisualRuntime::Run()
 {
 	(void)stWindow.ConsumeResize();
+	const double dOriginalFov = stRenderConfiguration.stCamera.dVerticalFovDegrees;
 	const std::chrono::steady_clock::time_point stStart = std::chrono::steady_clock::now();
 	while (!stWindow.ShouldClose() && (stConfig.nFrameLimit == 0 || nFrames < stConfig.nFrameLimit))
 	{
@@ -5981,6 +5983,12 @@ bool VisualRuntime::Run()
 			RECT stRect{ 0, 0, static_cast<LONG>(stConfig.nWidth + (nFrames == 3 ? 64 : 0)), static_cast<LONG>(stConfig.nHeight) };
 			(void)AdjustWindowRect(&stRect, WS_OVERLAPPEDWINDOW, FALSE);
 			(void)SetWindowPos(hWindow, nullptr, 0, 0, stRect.right - stRect.left, stRect.bottom - stRect.top, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+		}
+		if (stConfig.bExerciseProjection && (nFrames == 3 || nFrames == 6))
+		{
+			// Projection-only cuts exercise screen-history invalidation while
+			// world-space probe history remains owned by its geometry revisions.
+			stRenderConfiguration.stCamera.dVerticalFovDegrees = nFrames == 6 ? dOriginalFov : dOriginalFov * (dOriginalFov > 85 ? 0.9 : 1.1);
 		}
 	}
 	if (!stGraphics.Flush() || !stCompute.Flush())
@@ -6308,6 +6316,7 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["texture_upload_bytes"] = JsonValue(static_cast<std::int64_t>(nTextureUploadBytes));
 	mapReport["draw_instances"] = JsonValue(static_cast<std::int64_t>(arrDraws.size()));
 	mapReport["animation_enabled"] = JsonValue(bAnimationActive);
+	mapReport["projection_exercise"] = JsonValue(stConfig.bExerciseProjection);
 	mapReport["animation_deformed_draws"] = JsonValue(static_cast<std::int64_t>(arrDeformationRanges.size()));
 	mapReport["animation_resource_bytes"] = JsonValue(static_cast<std::int64_t>(stGpuDeformation.MemoryBytes()));
 	mapReport["animation_cpu_msec"] = JsonValue(dAnimationCpuMsec);
