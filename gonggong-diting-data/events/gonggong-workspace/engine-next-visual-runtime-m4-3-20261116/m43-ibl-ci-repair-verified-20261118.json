@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "event_id": "m43-ibl-ci-repair-verified-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-17T19:39:01.628409+00:00",
+  "agent": {
+    "id": "codex-environment-importance",
+    "version": "repository-instructions-23d4e05b",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-ibl-final-verified-20261118"
+  ],
+  "payload": {
+    "scope": "Repair Ubuntu rendering-test compilation after the first signed IBL candidate",
+    "original_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1464",
+    "original_head": "13ad882eca5aeecb51c984e13679e441811a751d",
+    "finding": "TestEnvironmentImportance omitted direct algorithm and vector includes. Ubuntu libstdc++ failed to declare std::clamp. The test now includes both standard headers.",
+    "candidate": "ibl-r4",
+    "native_key": "4706c1d402558c49f6e0f19c870bc97aad13ae06e856ca36242a3f49a9470b1b",
+    "validation": "Full 351 tests and 454018 checks pass. Both focused compilers pass 10 tests and 247552 checks. All 279 native input hashes match. Runtime PE text and 32 shader bytes match R3 exactly. R2 GPU and build-impact measurements retain their historical identities.",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-ibl-gpu-r4.json",
+      "data-collection/engine-next-visual-runtime-m4-3-ibl-source-review-r4.json",
+      "data-collection/engine-next-visual-runtime-m4-3-ibl-build-impact-r4.json",
+      "data-collection/engine-next-visual-runtime-m4-3-ibl-verification-r4.json"
+    ],
+    "remaining": "Corrected signed head requires full remote CI and main readback. Parent Issue 1343 remains open."
+  },
+  "sha256": "2b6bfd45a77e4b9b87093723cacdd143d755909f08da96ad3c5666c903d2a5fe"
+}

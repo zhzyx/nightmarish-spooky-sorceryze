@@ -1,0 +1,410 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T19:41:42.339335+00:00",
+  "status": "passed",
+  "candidate": "ibl-r4",
+  "actual_gpu_candidate": "ibl-r2",
+  "candidate_equivalence": {
+    "path": "build/engine_next/IblCandidateDelta.json",
+    "sha256": "11bc42a6b91517eaf81d0bb40316988425a6a437d6b8b52757b51888d4c652bb",
+    "bytes": 2893
+  },
+  "final_executable": {
+    "path": "build/engine_next/ibl-r4/next_visual_client.exe",
+    "sha256": "0d0791eb7fd49512859459a3794906fe6c56f41a71bb37aa22423500fc0001ef",
+    "bytes": 3228672
+  },
+  "scope": "Material environment integration, deterministic HDR quality comparison and a hidden 4K render target.",
+  "matrix": [
+    {
+      "name": "Default",
+      "frames": 16,
+      "validation_errors": 0,
+      "runtime": {
+        "path": "build/engine_next/ibl-gpu-r2/Default.json",
+        "sha256": "f22a013804b06b88e9221f2afb5247c78d3f72512fbaeeb4a6867619fc0ffb08",
+        "bytes": 45397
+      },
+      "capture": {
+        "path": "build/engine_next/ibl-gpu-r2/Default.ppm",
+        "sha256": "1f2e7be45a470c7f996db13f0578b1d637cd45f7706926a1eeb0bc46b543908f",
+        "bytes": 921615
+      }
+    },
+    {
+      "name": "ZeroOverrides",
+      "frames": 16,
+      "validation_errors": 0,
+      "runtime": {
+        "path": "build/engine_next/ibl-gpu-r2/ZeroOverrides.json",
+        "sha256": "b99081342772c268408010794f0d71906628184dca0dd19aed69ca7e61f7324f",
+        "bytes": 45400
+      },
+      "capture": {
+        "path": "build/engine_next/ibl-gpu-r2/ZeroOverrides.ppm",
+        "sha256": "1f2e7be45a470c7f996db13f0578b1d637cd45f7706926a1eeb0bc46b543908f",
+        "bytes": 921615
+      }
+    },
+    {
+      "name": "Clearcoat",
+      "frames": 16,
+      "validation_errors": 0,
+      "runtime": {
+        "path": "build/engine_next/ibl-gpu-r2/Clearcoat.json",
+        "sha256": "d80ca235066192e3dda266b27c8e8b7a65020b25737e1608a901948064886b0d",
+        "bytes": 47284
+      },
+      "capture": {
+        "path": "build/engine_next/ibl-gpu-r2/Clearcoat.ppm",
+        "sha256": "17bc64131d8af7df7f7b18339244dbe578fad2b96a1130fd1f224e17f016874e",
+        "bytes": 921615
+      }
+    },
+    {
+      "name": "Anisotropy",
+      "frames": 16,
+      "validation_errors": 0,
+      "runtime": {
+        "path": "build/engine_next/ibl-gpu-r2/Anisotropy.json",
+        "sha256": "84d846b571d65230a1f949db119c537038eb71b67310063ba9a515703b5ee969",
+        "bytes": 47294
+      },
+      "capture": {
+        "path": "build/engine_next/ibl-gpu-r2/Anisotropy.ppm",
+        "sha256": "2013655944d4238266eedcabb6609998e42b3f6c3290e6cb40a118b01c23cb67",
+        "bytes": 921615
+      }
+    },
+    {
+      "name": "AnisotropyRotated",
+      "frames": 16,
+      "validation_errors": 0,
+      "runtime": {
+        "path": "build/engine_next/ibl-gpu-r2/AnisotropyRotated.json",
+        "sha256": "be94540d23da867df7a92b946b65ebcec68dcf3a3b96a547411f05ad6e733dab",
+        "bytes": 47288
+      },
+      "capture": {
+        "path": "build/engine_next/ibl-gpu-r2/AnisotropyRotated.ppm",
+        "sha256": "740ea7f6a52e21d700817a8667bac6ed5ebef80f18d1fc3f6edcfee035bc86ac",
+        "bytes": 921615
+      }
+    },
+    {
+      "name": "Combined",
+      "frames": 16,
+      "validation_errors": 0,
+      "runtime": {
+        "path": "build/engine_next/ibl-gpu-r2/Combined.json",
+        "sha256": "343b33706f267a668bac3d0c376ae1d7b527bf7dd040573b05e4907055fd1c4a",
+        "bytes": 47284
+      },
+      "capture": {
+        "path": "build/engine_next/ibl-gpu-r2/Combined.ppm",
+        "sha256": "7dd6956369ab2740b9f4ad44b8f88193be260a7cdaddcd27ad1077988f08a070",
+        "bytes": 921615
+      }
+    },
+    {
+      "name": "EnvironmentOnly",
+      "frames": 16,
+      "validation_errors": 0,
+      "runtime": {
+        "path": "build/engine_next/ibl-gpu-r2/EnvironmentOnly.json",
+        "sha256": "6078d3e5306a0defb6ac65953932e3f07750d1c79c387af9dcc1b34f65b7437c",
+        "bytes": 47303
+      },
+      "capture": {
+        "path": "build/engine_next/ibl-gpu-r2/EnvironmentOnly.ppm",
+        "sha256": "7479a166b67391e47387b58e99c25ba5c491551753de82ee251d956931af86ac",
+        "bytes": 921615
+      }
+    },
+    {
+      "name": "SSRCombined",
+      "frames": 16,
+      "validation_errors": 0,
+      "runtime": {
+        "path": "build/engine_next/ibl-gpu-r2/SSRCombined.json",
+        "sha256": "5bd0a9fa766590be5bef7861aa7fdcd97d9820b1bc587f6d5c01e9db92051d08",
+        "bytes": 64207
+      },
+      "capture": {
+        "path": "build/engine_next/ibl-gpu-r2/SSRCombined.ppm",
+        "sha256": "7cc893d6f84c67cd0184778335d21133f8285a095625e3d080476740da9b4a6f",
+        "bytes": 921615
+      }
+    },
+    {
+      "name": "TAABloomCombined",
+      "frames": 40,
+      "validation_errors": 0,
+      "runtime": {
+        "path": "build/engine_next/ibl-gpu-r2/TAABloomCombined.json",
+        "sha256": "079bd8506c1b836fc4a5f12300f947baa25392fff3e7b2ad36ff8550f603a5d7",
+        "bytes": 138669
+      },
+      "capture": {
+        "path": "build/engine_next/ibl-gpu-r2/TAABloomCombined.ppm",
+        "sha256": "b14f871193354de03efd0fb1652981890051cda88e7831db56e0a67e2953247b",
+        "bytes": 921615
+      }
+    }
+  ],
+  "matrix_total_frames": 168,
+  "default_zero_pixels_exact": true,
+  "four_k": {
+    "width": 3840,
+    "height": 2160,
+    "frames": 12,
+    "validation_errors": 0,
+    "runtime": {
+      "path": "build/engine_next/ibl-gpu-r2/Composite4K/Runtime.json",
+      "sha256": "9bb94bd2bd744f4d24d403c779038370aacdd66d51e528d6d77b2425598cc8bb",
+      "bytes": 84436
+    },
+    "capture": {
+      "path": "build/engine_next/ibl-gpu-r2/Composite4K/Final.ppm",
+      "sha256": "acfab7b13cecaf354899e86bdacb146d0dc5d6587acb6f2b1cb7f697c04829d9",
+      "bytes": 24883217
+    },
+    "display_mode_verified": false
+  },
+  "quality_runs": [
+    {
+      "variant": "Low",
+      "frames": 120,
+      "validation_errors": 0,
+      "manifest": {
+        "path": "build/engine_next/ibl-capture-r2/Low/CaptureManifest.json",
+        "sha256": "d203436d6262310f64de0df63235ba8227bd7f1f1d731ff16607fc4018817e0d",
+        "bytes": 8578
+      },
+      "inspection": {
+        "path": "build/engine_next/ibl-capture-r2/Low/ReadbackStable/Inspection.json",
+        "sha256": "0d27c1a45f3d07f3ee4be94a2db524d978df78296640fdb30b94097deae8bc72",
+        "bytes": 32604
+      },
+      "analyzed_capture": {
+        "path": "build/engine_next/ibl-capture-r2/Low/EnvironmentOnly/Material_frame46.rdc",
+        "bytes": 9051976,
+        "sha256": "feb3aa6d51eae00e79e02c5674ab3ad0da3d0ccdbc690f2d14002d95f599b1fb"
+      }
+    },
+    {
+      "variant": "Mis",
+      "frames": 120,
+      "validation_errors": 0,
+      "manifest": {
+        "path": "build/engine_next/ibl-capture-r2/Mis/CaptureManifest.json",
+        "sha256": "aeb4ff3b6d4c65f535c733b284d6c94e5b1cfde5b5f983e30b23cd778ec2ee38",
+        "bytes": 8227
+      },
+      "inspection": {
+        "path": "build/engine_next/ibl-capture-r2/Mis/ReadbackFrame2/Inspection.json",
+        "sha256": "e5b503f828b1868249c9c05faac96860df035ce8e0b4621ae14a7e8bd278947e",
+        "bytes": 33401
+      },
+      "analyzed_capture": {
+        "path": "build/engine_next/ibl-capture-r2/Mis/EnvironmentOnly/Material_frame2.rdc",
+        "bytes": 4219020,
+        "sha256": "f5a9718e1421eb2df040d003c6d2b0e95922fbd64f487f3f97925bb55ddb391c"
+      }
+    },
+    {
+      "variant": "High",
+      "frames": 120,
+      "validation_errors": 0,
+      "manifest": {
+        "path": "build/engine_next/ibl-capture-r2/High/CaptureManifest.json",
+        "sha256": "0d93eb339aa49a10fe22613d88d5937796c77c0c309afd506316eb1116381861",
+        "bytes": 8616
+      },
+      "inspection": {
+        "path": "build/engine_next/ibl-capture-r2/High/ReadbackStable/Inspection.json",
+        "sha256": "7815e1b579cb4a4f83223260fb7dc904feaa6690f8ed69c930d0c3a56ab037fd",
+        "bytes": 32646
+      },
+      "analyzed_capture": {
+        "path": "build/engine_next/ibl-capture-r2/High/EnvironmentOnly/Material_frame1.rdc",
+        "bytes": 4176404,
+        "sha256": "79705f751ba852e651da9e18ee29326c3630c56117b8eda23cb12174f3ef50cb"
+      }
+    }
+  ],
+  "quality": {
+    "same_executable": true,
+    "same_configuration": true,
+    "same_gbuffer": true,
+    "same_frame_constants": true,
+    "actual_alias_buffer_matches_cpu": true,
+    "all_six_actual_mip0_faces_match_table_source": true,
+    "statistics": [
+      {
+        "variant": "Low",
+        "interior_pixels": 31052,
+        "isolated_bright_pixels": 24,
+        "maximum_neighbor_excess": 2.27067763671875,
+        "mean_luminance": 0.2222898880672934,
+        "per_object_spikes": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 2,
+          "5": 11,
+          "6": 9,
+          "7": 2
+        }
+      },
+      {
+        "variant": "Mis",
+        "interior_pixels": 31052,
+        "isolated_bright_pixels": 0,
+        "maximum_neighbor_excess": 1.1916707031249998,
+        "mean_luminance": 0.22131614300473423,
+        "per_object_spikes": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0,
+          "6": 0,
+          "7": 0
+        }
+      },
+      {
+        "variant": "High",
+        "interior_pixels": 31052,
+        "isolated_bright_pixels": 0,
+        "maximum_neighbor_excess": 0.8867185546875003,
+        "mean_luminance": 0.2215454224656388,
+        "per_object_spikes": {
+          "1": 0,
+          "2": 0,
+          "3": 0,
+          "4": 0,
+          "5": 0,
+          "6": 0,
+          "7": 0
+        }
+      }
+    ],
+    "rgb_rms_against_high_ndf": {
+      "Low": 0.09136585146188736,
+      "Mis": 0.03211193531751633
+    },
+    "metric": "luminance exceeds twice the eight-neighbour median plus 0.1, within an eroded object-ID 1..7 mask",
+    "reference_kind": "512/256/128 NDF samples, a denser reference with its own residual sampling error",
+    "inputs": [
+      {
+        "path": "build/engine_next/ibl-capture-r2/Low/ReadbackStable/Inspection.json",
+        "bytes": 32604,
+        "sha256": "0d27c1a45f3d07f3ee4be94a2db524d978df78296640fdb30b94097deae8bc72"
+      },
+      {
+        "path": "build/engine_next/ibl-capture-r2/Mis/ReadbackFrame2/Inspection.json",
+        "bytes": 33401,
+        "sha256": "e5b503f828b1868249c9c05faac96860df035ce8e0b4621ae14a7e8bd278947e"
+      },
+      {
+        "path": "build/engine_next/ibl-capture-r2/High/ReadbackStable/Inspection.json",
+        "bytes": 32646,
+        "sha256": "7815e1b579cb4a4f83223260fb7dc904feaa6690f8ed69c930d0c3a56ab037fd"
+      }
+    ]
+  },
+  "independent_hdr_review": {
+    "path": "build/engine_next/ibl-independent-r2.json",
+    "sha256": "0b12dbf2f106551d3c8347c0fcbe88082f39ba87c96aa0ba89e9c2faecd077b7",
+    "bytes": 3586
+  },
+  "quality_image": {
+    "path": "build/engine_next/ibl-tests-r2/LowMisHigh.png",
+    "sha256": "7f91c4a37a3b547f52714d9c203332bcd3442718a6aafb4dac2147de3e182b9c",
+    "bytes": 144941
+  },
+  "alias_source": {
+    "entries": 24576,
+    "stride_bytes": 16,
+    "bytes": 393216,
+    "expected_alias": {
+      "path": "build/engine_next/ibl-tests-r2/ExpectedAlias.bin",
+      "sha256": "60d2c78f9723b0be477c1e4f1a275160feda156e05491f2cb5fea93ea2ce05bb",
+      "bytes": 393216
+    },
+    "expected_faces": [
+      {
+        "path": "build/engine_next/ibl-tests-r2/ExpectedCubeFace0.bin",
+        "sha256": "45898380278934bf364ded812406c4e797a6efeda84685fcb58274d4b587054a",
+        "bytes": 65536
+      },
+      {
+        "path": "build/engine_next/ibl-tests-r2/ExpectedCubeFace1.bin",
+        "sha256": "45898380278934bf364ded812406c4e797a6efeda84685fcb58274d4b587054a",
+        "bytes": 65536
+      },
+      {
+        "path": "build/engine_next/ibl-tests-r2/ExpectedCubeFace2.bin",
+        "sha256": "7a0e1bc0c8072cd846d8308556c2247f9c3ac0f6eb69ba00ae5cf405437e2cf1",
+        "bytes": 65536
+      },
+      {
+        "path": "build/engine_next/ibl-tests-r2/ExpectedCubeFace3.bin",
+        "sha256": "7676734b4a0ec386e7aa501fd518b30cd5f6f598b71aa441b4aeca906871faf2",
+        "bytes": 65536
+      },
+      {
+        "path": "build/engine_next/ibl-tests-r2/ExpectedCubeFace4.bin",
+        "sha256": "45898380278934bf364ded812406c4e797a6efeda84685fcb58274d4b587054a",
+        "bytes": 65536
+      },
+      {
+        "path": "build/engine_next/ibl-tests-r2/ExpectedCubeFace5.bin",
+        "sha256": "45898380278934bf364ded812406c4e797a6efeda84685fcb58274d4b587054a",
+        "bytes": 65536
+      }
+    ]
+  },
+  "history": {
+    "candidate": "ibl-r1",
+    "status": "quality_failure_diagnosed",
+    "comparison": {
+      "path": "build/engine_next/ibl-tests-r1/ReadbackComparison.json",
+      "sha256": "8508737931a1600ebad22a2c6f2d6fb65a71429864bc294f26c7049aed69466c",
+      "bytes": 2647
+    },
+    "finding": "A 24-point midpoint sequence yields zero alias coin in a 24576-entry table. The corrected stratified first coordinate has independent within-stratum variation.",
+    "capture_tool_error": {
+      "path": "build/engine_next/ibl-capture-r2/Low/ReadbackFrame2/Inspection.error.txt",
+      "sha256": "302384248f9367d4b7218ca800dd59d40119f98700301798abcb8c8076c888a9",
+      "bytes": 302
+    }
+  },
+  "remaining": [
+    "Residual finite-sample error relative to the dense NDF reference",
+    "Physical 4K output and the full M4 performance and Unreal Engine comparison"
+  ],
+  "quality_calculation": {
+    "path": "build/engine_next/ibl-tests-r2/CompareReadback.py",
+    "sha256": "568bb72233528ffa457e69e17af62874eecf6e2738014a01c9ca8a99878989aa",
+    "bytes": 4419
+  },
+  "quality_result": {
+    "path": "build/engine_next/ibl-tests-r2/ReadbackComparison.json",
+    "sha256": "711490cefb5688398bd24ac79c90c36e3aacff83f62203385d2f44d027f6a7b7",
+    "bytes": 2312
+  },
+  "ci_correction": {
+    "path": "build/engine_next/ibl-tests-r4/CandidateDelta.json",
+    "sha256": "ec986cc62aa2579f5ec3ae290c195ff2a889aa55c100e39336b6170eab03a6a3",
+    "bytes": 2968
+  },
+  "supersedes_local_candidate_record": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-ibl-gpu.json",
+    "sha256": "238de745667db7a6a65e189b013c67b5c7b930f3aca2aa5262092ddff9068d35",
+    "bytes": 13751
+  }
+}

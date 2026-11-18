@@ -1,0 +1,259 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T19:41:54.647636+00:00",
+  "status": "verified_local_candidate",
+  "candidate": "ibl-r4",
+  "base_commit": "23d4e05bac6d469250327c8eaa1149021cff7ba0",
+  "native_key": "4706c1d402558c49f6e0f19c870bc97aad13ae06e856ca36242a3f49a9470b1b",
+  "native_input_count": 279,
+  "input_mismatches": [],
+  "build": {
+    "path": "build/engine_next/ibl-r4/VisualBuildReport.json",
+    "sha256": "966cceba9f10878d7b18843897a82151c1f8ebd6bb97f34b7bb2b073120dceb9",
+    "bytes": 2104937
+  },
+  "executable": {
+    "path": "build/engine_next/ibl-r4/next_visual_client.exe",
+    "sha256": "0d0791eb7fd49512859459a3794906fe6c56f41a71bb37aa22423500fc0001ef",
+    "bytes": 3228672
+  },
+  "cpu_summary": "MATERIAL_HEMISPHERE cases=72 minimum=0.184115 maximum=0.991663\r\nMATERIAL_ENVIRONMENT_FURNACE cases=72 minimum=0.184124 maximum=0.998307\r\nSTRATIFIED_ALIAS chi_squared=70.4851 old_zero_coins=24 new_zero_coins=0\r\nFREQUENCY chi_squared=101.887 bins=96\r\nWHITE -0.7 0 0.566173 0.564346\r\nWHITE -0.7 1 0.546969 0.546577\r\nWHITE 0.7 0 0.566173 0.566221\r\nWHITE 0.7 1 0.546969 0.546339\r\nSUN reference=0.770397094325 baseline_mean=0.774405358803 mis_mean=0.76875746176 baseline_mse=6.59234655954 mis_mse=0.0198964623669 ratio=0.00301811535349 baseline_variance=6.59233049335 mis_variance=0.0198937739719 mis_standard_error=0.000779172510674\r\nENGINE_NEXT_RENDERING_TEST_SUMMARY tests=351 checks=454018 failures=0",
+  "shaders": [
+    {
+      "entry": "VSMain",
+      "path": "build/engine_next/ibl-r4/FixedMesh.vs.cso",
+      "profile": "vs_6_0",
+      "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+    },
+    {
+      "entry": "PSMain",
+      "path": "build/engine_next/ibl-r4/FixedMesh.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+    },
+    {
+      "entry": "CSMain",
+      "path": "build/engine_next/ibl-r4/FixedMesh.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+    },
+    {
+      "entry": "VSMain",
+      "path": "build/engine_next/ibl-r4/Deferred.vs.cso",
+      "profile": "vs_6_0",
+      "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225"
+    },
+    {
+      "entry": "PSMain",
+      "path": "build/engine_next/ibl-r4/Deferred.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0"
+    },
+    {
+      "entry": "PSMain",
+      "path": "build/engine_next/ibl-r4/MaterialDeferred.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb"
+    },
+    {
+      "entry": "FullscreenVS",
+      "path": "build/engine_next/ibl-r4/Lighting.vs.cso",
+      "profile": "vs_6_0",
+      "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+    },
+    {
+      "entry": "LightingPS",
+      "path": "build/engine_next/ibl-r4/Lighting.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+    },
+    {
+      "entry": "LightingPS",
+      "path": "build/engine_next/ibl-r4/MaterialLighting.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "aac456cac58467287cc7ec17fe418c2856a4a76663893127956656d970b582ae"
+    },
+    {
+      "entry": "ToneMapPS",
+      "path": "build/engine_next/ibl-r4/ToneMap.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+    },
+    {
+      "entry": "ShadowVS",
+      "path": "build/engine_next/ibl-r4/Shadow.vs.cso",
+      "profile": "vs_6_0",
+      "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+    },
+    {
+      "entry": "ShadowPS",
+      "path": "build/engine_next/ibl-r4/Shadow.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+    },
+    {
+      "entry": "CSMain",
+      "path": "build/engine_next/ibl-r4/Temporal.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+    },
+    {
+      "entry": "HistogramBuildCS",
+      "path": "build/engine_next/ibl-r4/Histogram.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+    },
+    {
+      "entry": "ExposureAdaptCS",
+      "path": "build/engine_next/ibl-r4/Exposure.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+    },
+    {
+      "entry": "DownsampleCS",
+      "path": "build/engine_next/ibl-r4/BloomDown.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+    },
+    {
+      "entry": "UpsampleCS",
+      "path": "build/engine_next/ibl-r4/BloomUp.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+    },
+    {
+      "entry": "LightingPS",
+      "path": "build/engine_next/ibl-r4/ReflectionLighting.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8"
+    },
+    {
+      "entry": "LightingPS",
+      "path": "build/engine_next/ibl-r4/MaterialReflectionLighting.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "d8fdcb41b2ffe7b7101f1b2ca9e7b551ff5fe2f2d867093472ca3a55a0602a33"
+    },
+    {
+      "entry": "ColorMipCS",
+      "path": "build/engine_next/ibl-r4/ReflectionColor.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+    },
+    {
+      "entry": "TraceCS",
+      "path": "build/engine_next/ibl-r4/ReflectionTrace.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+    },
+    {
+      "entry": "TraceCS",
+      "path": "build/engine_next/ibl-r4/MaterialReflectionTrace.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "9964ad98771e172f329d2c82efc5e4f7028e09f799cf9730e37da6f6912b9648"
+    },
+    {
+      "entry": "CompositeCS",
+      "path": "build/engine_next/ibl-r4/ReflectionComposite.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+    },
+    {
+      "entry": "RadianceCS",
+      "path": "build/engine_next/ibl-r4/ReflectionRadiance.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+    },
+    {
+      "entry": "InjectCS",
+      "path": "build/engine_next/ibl-r4/VolumeInject.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+    },
+    {
+      "entry": "LightCS",
+      "path": "build/engine_next/ibl-r4/VolumeLight.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+    },
+    {
+      "entry": "TemporalCS",
+      "path": "build/engine_next/ibl-r4/VolumeTemporal.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+    },
+    {
+      "entry": "IntegrateCS",
+      "path": "build/engine_next/ibl-r4/VolumeIntegrate.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+    },
+    {
+      "entry": "CompositeCS",
+      "path": "build/engine_next/ibl-r4/VolumeComposite.cs.cso",
+      "profile": "cs_6_0",
+      "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+    },
+    {
+      "entry": "VSMain",
+      "path": "build/engine_next/ibl-r4/Transparent.vs.cso",
+      "profile": "vs_6_0",
+      "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24"
+    },
+    {
+      "entry": "PSMain",
+      "path": "build/engine_next/ibl-r4/Transparent.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f"
+    },
+    {
+      "entry": "PSMain",
+      "path": "build/engine_next/ibl-r4/MaterialTransparent.ps.cso",
+      "profile": "ps_6_0",
+      "sha256": "3044198db486b7a963f650e0d1d2bc06d8b4887ed1b4afff92e110d21d8c6321"
+    }
+  ],
+  "evidence": {
+    "gpu": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-ibl-gpu-r4.json",
+      "sha256": "f6a26909ab1d594c53379c979c46d6d4db25586b7384585bbfdad06dffe32cea",
+      "bytes": 14166
+    },
+    "source_review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-ibl-source-review-r4.json",
+      "sha256": "0eee0c4b51a5a69b32eb8fc131c96867971de58e6e993d4c0d783b9d888aaece",
+      "bytes": 15081
+    },
+    "build_impact": {
+      "path": "data-collection/engine-next-visual-runtime-m4-3-ibl-build-impact-r4.json",
+      "sha256": "9fff2af14dfa7f7a27fd355838c1ccafefd76178b47f882be18da8f65cffaca2",
+      "bytes": 83934
+    }
+  },
+  "static_checks": {
+    "path": "build/engine_next/ibl-static-r4/Result.json",
+    "sha256": "ce3b803cbed89411c2fdfc76fafa8a492112aa3539f1704150a2453ac7db602f",
+    "bytes": 8473
+  },
+  "candidate_delta": {
+    "path": "build/engine_next/IblCandidateDelta.json",
+    "sha256": "11bc42a6b91517eaf81d0bb40316988425a6a437d6b8b52757b51888d4c652bb",
+    "bytes": 2893
+  },
+  "remaining_parent_scope": [
+    "Dynamic GI and remaining material, geometry and animation increments",
+    "Full M4 performance, physical 4K output and UE reference comparison"
+  ],
+  "delivery_followup": "Signed candidate CI and remote main readback follow local verification. Parent Issue 1343 remains open.",
+  "ci_correction": {
+    "path": "build/engine_next/ibl-tests-r4/CandidateDelta.json",
+    "sha256": "ec986cc62aa2579f5ec3ae290c195ff2a889aa55c100e39336b6170eab03a6a3",
+    "bytes": 2968
+  },
+  "supersedes_local_candidate_record": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-ibl-verification.json",
+    "sha256": "5c4f1a52c50be9981ac502ea8cb8dce8bc88481532f45452043dc027feac1823",
+    "bytes": 9731
+  }
+}

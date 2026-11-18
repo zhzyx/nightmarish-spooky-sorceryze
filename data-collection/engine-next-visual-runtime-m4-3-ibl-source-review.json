@@ -1,0 +1,388 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "recorded_at_utc": "2026-11-17T18:42:47.322455+00:00",
+  "status": "passed",
+  "candidate": "ibl-r3",
+  "native_key": "3863fbe241f4f95aa96f5f621210fccc982ffe124fb6108a01dd7602f32a8cc1",
+  "native_input_count": 279,
+  "current_input_mismatches": [],
+  "build_report": {
+    "path": "build/engine_next/ibl-r3/VisualBuildReport.json",
+    "sha256": "3c1d234fbbd562df263e01d669a0d6db229961d56a3aa638c496d03daa53926b",
+    "bytes": 2104937
+  },
+  "implementation_role": "Codex material and runtime worker",
+  "independent_review_role": "Parent Codex agent, independently inspecting source and recompiling the production CPU and shared HLSLI tests",
+  "independent_review": {
+    "path": "build/engine_next/root-independent-r2/Review.json",
+    "sha256": "d191018ac720416ceb739f200cde1bc784162acdd7aed08877a83468868ae1d1",
+    "bytes": 149604
+  },
+  "reviewed_candidate_delta": {
+    "path": "build/engine_next/IblCandidateDelta.json",
+    "sha256": "11bc42a6b91517eaf81d0bb40316988425a6a437d6b8b52757b51888d4c652bb",
+    "bytes": 2893
+  },
+  "current_rendering_sources": [
+    {
+      "path": "engine_next/Rendering/CameraMatrices.cpp",
+      "sha256": "80837337110df3fb7958948a356d679f616eebdde3e19d634f4a8847d3753959",
+      "bytes": 9423
+    },
+    {
+      "path": "engine_next/Rendering/Cook/EnvironmentImportance.cpp",
+      "sha256": "33d0152affbca9d6cf94d0ac4283bede3947e1e90c901d98bd5744202ad9e6d2",
+      "bytes": 7419
+    },
+    {
+      "path": "engine_next/Rendering/Cook/EnvironmentImportance.h",
+      "sha256": "f580ccef3ff4f293e8ba4b339c2c14c20fc57ec9b2cce8ca14354d610752b599",
+      "bytes": 3723
+    },
+    {
+      "path": "engine_next/Rendering/Cook/EnvironmentLighting.cpp",
+      "sha256": "3b6d142dfd0d4b6ada50cfea44cba0ae7171d4713e050ddc9ff35ece4311a485",
+      "bytes": 14345
+    },
+    {
+      "path": "engine_next/Rendering/Cook/EnvironmentLighting.h",
+      "sha256": "483d0976d89024ceeb062f8f54b30ad3a875ea7b0ffd4b1f1406c29ed92a8ab8",
+      "bytes": 3744
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GltfDecoder.cpp",
+      "sha256": "3ff391b09aea9fbe0e4f3e403e1146dd5efdf0914945b55655f1326bf5426d81",
+      "bytes": 50185
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GltfDecoder.h",
+      "sha256": "137e4517003ee479e87442aff6540a574d6ac3fcd4554074fb0d042251c6b53b",
+      "bytes": 2773
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GpuPackage.cpp",
+      "sha256": "7b4a658bbdeaab56adeba092a84bebfc09fb54422b3209504302338d681d21ba",
+      "bytes": 47672
+    },
+    {
+      "path": "engine_next/Rendering/Cook/GpuPackage.h",
+      "sha256": "bb57d58e460ff2abcc74fc537c3253b34851056b1d300b3a26b279f6ffb6e7e2",
+      "bytes": 3918
+    },
+    {
+      "path": "engine_next/Rendering/Cook/ImageDecoder.cpp",
+      "sha256": "82f16c93b4797d7ddd453da1b9f2e7958cd446c82ce336222b75b7352c216cf7",
+      "bytes": 19722
+    },
+    {
+      "path": "engine_next/Rendering/Cook/ImageDecoder.h",
+      "sha256": "53506f1e4747d1ef1e6d20ad5d4f584756a6cf975703a81f256babdd6afcc29f",
+      "bytes": 3907
+    },
+    {
+      "path": "engine_next/Rendering/Cook/JpegValidation.c",
+      "sha256": "0b335908bf2c52dc08c2a396a1bed43395b290da713800f0a3e16698effa9a7f",
+      "bytes": 6503
+    },
+    {
+      "path": "engine_next/Rendering/Cook/JpegValidation.h",
+      "sha256": "aafd9120f17566547a35d46c990e1f742a06272f1ac6490f981baa6dc9fc96fe",
+      "bytes": 2570
+    },
+    {
+      "path": "engine_next/Rendering/Cook/MeshCluster.cpp",
+      "sha256": "0bdf8708899278407df15a7047d0bd7bb6218d98c273f6b78a4bdac76b051a67",
+      "bytes": 9561
+    },
+    {
+      "path": "engine_next/Rendering/Cook/MeshCluster.h",
+      "sha256": "ebcb7a0c0d039bcfbb25a287398ee192f8442570fd074116b783dba837b32a58",
+      "bytes": 3330
+    },
+    {
+      "path": "engine_next/Rendering/Cook/TextureCook.cpp",
+      "sha256": "f19492a36053e01d1a7dfc80c52dd5fea68a0e3dabd6ff670a2d419fe5073fcf",
+      "bytes": 9916
+    },
+    {
+      "path": "engine_next/Rendering/Cook/TextureCook.h",
+      "sha256": "cbd38236181781ca607234c303538acf5156bc9d2d0375ee73d1869a7824ccd3",
+      "bytes": 3471
+    },
+    {
+      "path": "engine_next/Rendering/FrameGraph.cpp",
+      "sha256": "20e25f0d35ab1f4812a983fea3d24f7c7427ba78dfb2ef2fd3f3ec77f4437e1a",
+      "bytes": 16009
+    },
+    {
+      "path": "engine_next/Rendering/LightTimeline.cpp",
+      "sha256": "b33135caf1c12b116a5679a4b2002253461eb96aa676b92e9970d28f2b29cd98",
+      "bytes": 6202
+    },
+    {
+      "path": "engine_next/Rendering/LocalShadowData.cpp",
+      "sha256": "f995b49c1a54ba75725eb43630778ce6d8c26ddf16f4a7a06529b9721ab03b5d",
+      "bytes": 9717
+    },
+    {
+      "path": "engine_next/Rendering/MaterialSettings.cpp",
+      "sha256": "220ace4afd646678e2f9b9cb7c2d3c39faf745da0ac6bdfa6bbfd40bc364efed",
+      "bytes": 11657
+    },
+    {
+      "path": "engine_next/Rendering/ParticleSettings.cpp",
+      "sha256": "07f91bc73ff76ac4127c7d2d786d946f35e3004df5b8131f25cf45b392be50e8",
+      "bytes": 12012
+    },
+    {
+      "path": "engine_next/Rendering/ParticleState.cpp",
+      "sha256": "47ef63740f1d628909bdd1bfca45fe5ffdd8027ca0cbd3273c0d67b7d614acec",
+      "bytes": 10261
+    },
+    {
+      "path": "engine_next/Rendering/PostProcessSettings.cpp",
+      "sha256": "a872c712b08bea9e0870df35f2605aa3e5648d80e07d7cd2225528565d4db832",
+      "bytes": 10249
+    },
+    {
+      "path": "engine_next/Rendering/ReflectionSettings.cpp",
+      "sha256": "04f8afc0935e30364a647710c4011824180cbb13650216ec5d923e9d812d5ba8",
+      "bytes": 3299
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "sha256": "81a05e12593517d11a6d594d896564d84c0779d2305f983aeb307784a975f18c",
+      "bytes": 33650
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "sha256": "a01dc7c157197ef59eefec84a4ae620562a181d57870f33cacbb5322cda54464",
+      "bytes": 27895
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "sha256": "a686b7aceb538b84d2b684f1fc0065ca2af820b7daf5a4ed8d44714d18215354",
+      "bytes": 7185
+    },
+    {
+      "path": "engine_next/Rendering/RenderScene.cpp",
+      "sha256": "f38b305bd9d598d0e2e38e2d29cfb1f2aee72c50631dfa9eb80ebbddd6f76127",
+      "bytes": 12157
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Bloom.hlsl",
+      "sha256": "5c5e8a93bc2929a91cfb879a1bc1ea10632950a85e1cfdda2d4b4c0f21822eb9",
+      "bytes": 1096
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/BloomSampling.hlsli",
+      "sha256": "642c7a51a93eb163254fbde23d345dc6fe6143a3c96ea2930a09be42d4f00182",
+      "bytes": 3442
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "sha256": "6d38ce614528fdbf8b1d88aaa46d72c8d5416ef079e517682f85aecf941e230d",
+      "bytes": 16660
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/EnvironmentImportance.hlsli",
+      "sha256": "40c11e8a84988c3aafb9a6d07675cba26ab61588bc89c484957b78108a907936",
+      "bytes": 11093
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Exposure.hlsl",
+      "sha256": "2870a6fdd17504baa73131bd4fa976ede3ba685cc0c7df8dbe0b4963d60f7766",
+      "bytes": 2143
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ExposureMath.hlsli",
+      "sha256": "ed72cb6d70f51b509dceb24a7ac13051287e712027bbc0263b138aa753b0f402",
+      "bytes": 5667
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/FixedMesh.hlsl",
+      "sha256": "82ee60e24fd25c6ea3d0d02fa077b899852350ae8c18d2a9523f48d1b516bc1f",
+      "bytes": 1643
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/MaterialEnvironment.hlsli",
+      "sha256": "b790be5ee54da820dd9e69b409d46fc850dbb4aef6161b4e1214d1c4cae72854",
+      "bytes": 7294
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/MaterialEnvironmentLighting.hlsli",
+      "sha256": "9bb27dd276e28c2d78a98a377e5951751ae8d821e3f3c27820791dd7c5577068",
+      "bytes": 5403
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/MaterialLobes.hlsli",
+      "sha256": "0423b27e9d0b199dc5871ed5ef18e6d578595c45388635f37ef9530a1d838c92",
+      "bytes": 9295
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Reflection.hlsl",
+      "sha256": "869acee9aa34079efc734c3a9a808eec127d72ea1f436725a975bd36c10fc4a5",
+      "bytes": 14668
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ReflectionSampling.hlsli",
+      "sha256": "494fd0332d6b07a2d1764fbf49b8b9ba32e97699bae86edccd1a85adc0889ab0",
+      "bytes": 5083
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ReflectionTrace.hlsli",
+      "sha256": "a0a9465d507d2cb09121454b083ba4cef96c6193fb1d26a5612d6197de845a8d",
+      "bytes": 10469
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Shadow.hlsl",
+      "sha256": "1347aab83aa23c69df4853a9671c9f72123895f1dcff920b57fad9befe782ddc",
+      "bytes": 1083
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
+      "sha256": "1e1a731fee2e9d821bc752e7a4db76bfb304f643d575125fdb5b2e9a1b221387",
+      "bytes": 11040
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/TemporalAA.hlsl",
+      "sha256": "b4f6b723a392dfd035db202c1553e6aa642fd507100b5e24297f2717cae9b69c",
+      "bytes": 5923
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/TemporalSampling.hlsli",
+      "sha256": "4c7115f3ec45a44d29a4e1bc8fb1b031df1a6f529fc7df393464cdbe670d5b87",
+      "bytes": 4680
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Transparent.hlsl",
+      "sha256": "efc0f2c643c03e49215381e9679e5ba09a2c7ff6b75cbcf1cb35f32deef2e417",
+      "bytes": 13156
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/TransparentMath.hlsli",
+      "sha256": "e43b410cc75a4831eecdd013eb68bafc67c278b439945a0eac365be2659584da",
+      "bytes": 1654
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Volume.hlsl",
+      "sha256": "f50ea13d6c965a031acbbbad1fb5d6646ee1b8308a8dae54177c9b1526d4521d",
+      "bytes": 7951
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeColor.hlsli",
+      "sha256": "8dee5693da669d587401ce905fdaa8c190f6658e43a92ca4e8d4eb3760301690",
+      "bytes": 558
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeCommon.hlsli",
+      "sha256": "0dc5fa434aa95297b4f881b46c94cd4640a689b58b74267a1bc7369560e8a0c2",
+      "bytes": 2050
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeComposite.hlsl",
+      "sha256": "c00fd02ac27c23bab733c8a4f5a190ed87b0cad2ffe79e5a608d886680f1a72c",
+      "bytes": 1076
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeMath.hlsli",
+      "sha256": "aa553436af96a070153e7a2c91ea970cb40c6d26001d5f4cedb20a95eaae6030",
+      "bytes": 7085
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeSampling.hlsli",
+      "sha256": "b927e93d2daf3350f40d88ff2e18230f848ce7cebd6b5dca492256d642993e7b",
+      "bytes": 3223
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeTemporal.hlsl",
+      "sha256": "1f3bc55cbc256e69fcc1d58d3103ea008fa2cccc28f33809d83f966ed3c69f42",
+      "bytes": 4327
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/VolumeTemporalMath.hlsli",
+      "sha256": "15fbd9a9780f43e97629e6c420cc6e1d20d569e787b80a5b7065d5375043281b",
+      "bytes": 1776
+    },
+    {
+      "path": "engine_next/Rendering/ShadowBounds.cpp",
+      "sha256": "3453b194ceff8da3a53954c0208de869aeb22d134175b10fc9e283d64c470dd6",
+      "bytes": 5563
+    },
+    {
+      "path": "engine_next/Rendering/ShadowBounds.h",
+      "sha256": "2cf031b674e2e03a95e037e23223cfd4a701fc478a13c6c174372d37dd16731d",
+      "bytes": 2980
+    },
+    {
+      "path": "engine_next/Rendering/ShadowData.cpp",
+      "sha256": "0b1594e46f52bb443868d7cf1d0b063c24cc6bc1da032fdbd318d63db527a10b",
+      "bytes": 12975
+    },
+    {
+      "path": "engine_next/Rendering/TemporalState.cpp",
+      "sha256": "f03c55580cf3556b06775384bdb3d5e78ef730cacf74f6ee5c34cca61c1bf1f7",
+      "bytes": 8388
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "8ff2ee1bcb4a888d28e988993d887e6402ed59d78d59c6c86e0fbf75e81a7075",
+      "bytes": 269503
+    },
+    {
+      "path": "engine_next/Rendering/VolumeGrid.cpp",
+      "sha256": "0a4e794889efcc11a28529e2b4f81505ebe54af8e8389442c6052ea696526914",
+      "bytes": 5556
+    },
+    {
+      "path": "engine_next/Rendering/VolumeSettings.cpp",
+      "sha256": "5b0a46273d0255c5c68df0fb744196cc68288bbc9b0b594b8e10ab79136b94d0",
+      "bytes": 13755
+    }
+  ],
+  "checks": [
+    "Six input faces use exact solid-angle luminance weights and quantized-threshold marginal probabilities.",
+    "Structured entries have an asserted 16-byte layout and validated metadata.",
+    "One immutable upload shares the source mip-zero cubemap and retires staging after the graphics fence.",
+    "Per-lobe MIS counts occur once in the denominator. Reflection preserves specular-only composition and pre-exposure.",
+    "Zero normalized material extensions retain the earlier shader route.",
+    "The formal regression detects the midpoint alias lattice and verifies the corrected stratified distribution."
+  ],
+  "tests": {
+    "msvc_tests": 351,
+    "checks": 454018,
+    "clang_full": {
+      "path": "build/engine_next/ibl-clang-cl-r2/Result.json",
+      "sha256": "29bfc83d9f5e5cb91a21e7551d69367066c86c8603c8dc81baa80dd3d117545b",
+      "bytes": 2351208
+    },
+    "independent_msvc_and_clang_tests": 10,
+    "independent_checks": 247552,
+    "shader_count": 32,
+    "build_tool_tests": {
+      "path": "build/engine_next/ibl-tests-r2/BuildTools.log",
+      "sha256": "565eb9e67e8e3dccc6e0c381dc0079417106e509f27300af9eda39c623b7b70b",
+      "bytes": 2326
+    }
+  },
+  "gpu": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-ibl-gpu.json",
+    "sha256": "238de745667db7a6a65e189b013c67b5c7b930f3aca2aa5262092ddff9068d35",
+    "bytes": 13751
+  },
+  "confirmed_open_findings": [],
+  "remaining": [
+    "Finite sampling still differs from the denser reference",
+    "Full M4 quality and performance acceptance remains on the parent milestone"
+  ],
+  "second_independent_review": {
+    "role": "Independent peer agent, source inspection and isolated MSVC/clang/DXC rerun",
+    "record": {
+      "path": "build/engine_next/ibl-cook-independent/IndependentReview.json",
+      "sha256": "e9652036c425da82f43d760d0260b02f513076b38fc46fe0be03e1751c79b3c4",
+      "bytes": 35544
+    }
+  }
+}
