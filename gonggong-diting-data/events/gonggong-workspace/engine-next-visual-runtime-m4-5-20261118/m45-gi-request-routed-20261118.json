@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "m45-gi-request-routed-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-18T03:35:40.288126+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1505",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "parent_issue": 1323,
+    "design": "design-docs/engine-next-dynamic-gi-20261117.md",
+    "authorization": "User authorized implementation of all Engine Next M4 and main delivery after testing.",
+    "routing": "Original requirements place dynamic GI in M4.5. Early experiments under M4.3 retain their original immutable identities.",
+    "current_increment": "Diffuse probe GI, clipmaps, hardware inline ray queries, SH9 and distance-moment history, deferred and forward receivers.",
+    "remaining": "Full specular indirect lighting, probe relocation and leak reduction, dynamic characters, final denoising and UE scene comparisons remain within the open stage issue."
+  },
+  "sha256": "9ccfc2e4f4032424763281db304597e55c13cf2478820d6965f8293c42ebb3a4"
+}

@@ -1,0 +1,385 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "issue_number": 1505,
+  "recorded_at_utc": "2026-11-18T03:15:14.920567+00:00",
+  "status": "passed",
+  "candidate": {
+    "name": "gi-runtime-r4",
+    "native_key": "d46099d52e117308f2e9c40288416799e9a05fc2cce1ec11b661ff85d68be503",
+    "build": {
+      "path": "build/engine_next/gi-runtime-r4/VisualBuildReport.json",
+      "sha256": "ca22b43c615f0eaab5e15897401b388b5f9816763494b50a7a4cfb792c602df0",
+      "bytes": 2282332
+    },
+    "executable": {
+      "path": "build/engine_next/gi-runtime-r4/next_visual_client.exe",
+      "sha256": "be2ead325720d5b4b5ec541dd24d14ccd577b5f39c1bce564345ac4811d407ea",
+      "bytes": 3329536
+    },
+    "server": {
+      "name": "input-window-runtime-final/next_server.exe",
+      "source_commit": "f39bc9028958e5395d8ec38c6bbcc0bc577a480e",
+      "sha256": "03097759e5aced39db68007897ff27adeadf2d8597cd2da2d9a8c8766f1092da"
+    }
+  },
+  "deployment": {
+    "manifest": {
+      "path": "build/engine_next/acceptance-live/Deployment.json",
+      "sha256": "b215e9409982cd05fb60336ac43ac5e74759e261a77245156f0d274ee3d0ba8b",
+      "bytes": 6783
+    },
+    "file_count": 42,
+    "all_original_and_deployed_hashes_match_after_completion": true
+  },
+  "scene": {
+    "identity": "Original frozen M3 F package",
+    "source_package_sha256": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+    "source_content_sha256": "2389697f70a88cda302cdd5374785d23864d9aa6fe4a79b2a2b22df6ca08fb19",
+    "package_files": [
+      {
+        "path": "build/engine_next/gi-network-r4/Scene.enpak/AssetManifest.json",
+        "sha256": "8911b44acd26da7a5e956305fda273bea5eb9f5575c03373627097cab12173ff",
+        "bytes": 793
+      },
+      {
+        "path": "build/engine_next/gi-network-r4/Scene.enpak/blobs/44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66",
+        "sha256": "44294fe69cbe9228acad0932ad791d8c0d1eb6ddca3c7c14e0d42c7f12410e66",
+        "bytes": 73932
+      },
+      {
+        "path": "build/engine_next/gi-network-r4/Scene.enpak/blobs/fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f",
+        "sha256": "fafa2c8640a73828d1231064fbe5f5677388ed0f2db988f2d6658ff48c74435f",
+        "bytes": 73924
+      },
+      {
+        "path": "build/engine_next/gi-network-r4/Scene.enpak/Scene.json",
+        "sha256": "2389697f70a88cda302cdd5374785d23864d9aa6fe4a79b2a2b22df6ca08fb19",
+        "bytes": 884
+      }
+    ],
+    "gpu_package_files": [
+      {
+        "path": "build/engine_next/gi-network-r4/Scene.engpu/blobs/302660c927e1b2e39c979883ac8cb82b4fa9f973a511ce9b6596a0dd1d3840ae",
+        "sha256": "302660c927e1b2e39c979883ac8cb82b4fa9f973a511ce9b6596a0dd1d3840ae",
+        "bytes": 624600
+      },
+      {
+        "path": "build/engine_next/gi-network-r4/Scene.engpu/GpuManifest.json",
+        "sha256": "cf7a2027b6f15bb8f203ec5fd0edac0bff5a3cabd67560ddb83ebcd57ae53bbf",
+        "bytes": 606
+      }
+    ],
+    "render_configuration": {
+      "path": "build/engine_next/gi-network-r4/Run3/RenderConfiguration.json",
+      "sha256": "7b39e1cb8f8631ba11812a438a09247c3036f3509f3ad5942beafa7019939c78",
+      "bytes": 3163
+    },
+    "configuration_overrides": "Four material overrides and a 2304-probe GI grid are carried in the separate render configuration.",
+    "geometry_changed": false
+  },
+  "input": {
+    "method": "Windows Computer Use through the selected visible A and B runtime windows",
+    "actions": {
+      "path": "build/engine_next/gi-network-r4/Run3/UIActions.json",
+      "sha256": "b7daa8aa9b54836b33ce5a0f6906af6f69d33424c4286ea96485e102a4d58eea",
+      "bytes": 8652
+    },
+    "successful_key_actions": {
+      "A": 13,
+      "B": 58
+    },
+    "keys": [
+      "W",
+      "A",
+      "S",
+      "D",
+      "Space",
+      "R"
+    ],
+    "minimized_evidence": [
+      {
+        "client": "A",
+        "ui_minimized_msec": 74196,
+        "sample_gap_msec": 74931,
+        "rendered_frame_delta": 30,
+        "confirmed_before": "3404",
+        "confirmed_after": "8087",
+        "peer_samples": 155,
+        "peer_input_samples": 23
+      }
+    ],
+    "each_client_reconnected": true
+  },
+  "checks": {
+    "A": {
+      "frames": 6092,
+      "validation_errors": 0,
+      "network_input_frames": 10,
+      "network_reconnect_requests": 1,
+      "local_shadow_views": 6,
+      "input_key_events": 30,
+      "resizes": 1,
+      "draw_position_max_error": 5.960464477539063e-08,
+      "largest_sample_gap_msec": 74931,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "14889",
+          "entity_id": "1",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            -0.48799991607666016,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "13754",
+          "entity_id": "2",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            -0.0240001380443573,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "temporal_epoch_starts": [
+        {
+          "frame_id": 0,
+          "epoch": 1
+        },
+        {
+          "frame_id": 4,
+          "epoch": 2
+        },
+        {
+          "frame_id": 2423,
+          "epoch": 5
+        },
+        {
+          "frame_id": 3219,
+          "epoch": 6
+        },
+        {
+          "frame_id": 3226,
+          "epoch": 7
+        }
+      ],
+      "temporal_resets": 6
+    },
+    "B": {
+      "frames": 8079,
+      "validation_errors": 0,
+      "network_input_frames": 56,
+      "network_reconnect_requests": 1,
+      "local_shadow_views": 6,
+      "input_key_events": 119,
+      "resizes": 0,
+      "draw_position_max_error": 5.960464477539063e-08,
+      "largest_sample_gap_msec": 1680,
+      "sample_gap_frames": 30,
+      "last_entities": [
+        {
+          "confirmed_sequence": "13758",
+          "entity_id": "2",
+          "interpolation": 0,
+          "local": true,
+          "position": [
+            -0.0240001380443573,
+            0.0,
+            0.0
+          ]
+        },
+        {
+          "confirmed_sequence": "14850",
+          "entity_id": "1",
+          "interpolation": 3,
+          "local": false,
+          "position": [
+            -0.48799991607666016,
+            0.0,
+            0.0
+          ]
+        }
+      ],
+      "temporal_epoch_starts": [
+        {
+          "frame_id": 0,
+          "epoch": 1
+        },
+        {
+          "frame_id": 4,
+          "epoch": 2
+        },
+        {
+          "frame_id": 3916,
+          "epoch": 3
+        },
+        {
+          "frame_id": 3924,
+          "epoch": 4
+        }
+      ],
+      "temporal_resets": 3
+    }
+  },
+  "global_illumination": {
+    "A": {
+      "gi_probe_count": 2304,
+      "gi_valid_probe_count": 2304,
+      "gi_peak_invalid_probe_count": 0,
+      "gi_submission_epoch": 6092,
+      "gi_trace_path": "dxr_inline_query"
+    },
+    "B": {
+      "gi_probe_count": 2304,
+      "gi_valid_probe_count": 2304,
+      "gi_peak_invalid_probe_count": 0,
+      "gi_submission_epoch": 8079,
+      "gi_trace_path": "dxr_inline_query"
+    }
+  },
+  "completion": {
+    "all_three_exit_codes_zero": true,
+    "notified": 2,
+    "acknowledged": 2,
+    "forced": 0,
+    "resumed": 2,
+    "final_authoritative_positions_equal": true
+  },
+  "artifacts": [
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/Live.json",
+      "sha256": "bc916f81e24630de270defd1e1cec18bda4474dfbefeb7813553e53f19b4c220",
+      "bytes": 7086
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/Completion.json",
+      "sha256": "f7126c2df18a8c3f3408f1bbaf1cffc6b2db649a3ef42962d5136431b8aa682d",
+      "bytes": 7214
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/A.json",
+      "sha256": "3f0c033d6a64bc748b371b2a65405d233b5581ac27d562fd34123b2fe0581172",
+      "bytes": 13754698
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/B.json",
+      "sha256": "edd8a50ee1c24217cf33c42ce4b8343292cb614c6638316af794266312f44fe5",
+      "bytes": 18269113
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/A.log",
+      "sha256": "36ba19cc3a4165fdf12a45b4b8471c267ca3e54e8e1073d354740ef3333b07fc",
+      "bytes": 4051
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/B.log",
+      "sha256": "21a1482f141f5fbbadc87bf9a885296fc824cade5de7c3a8f4e0a54adac0871b",
+      "bytes": 23857
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/server.log",
+      "sha256": "34aa7f628578366bbbbfe56cc6dcf90679146edeed30ccdf845867a43c1fa1f2",
+      "bytes": 1325
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/server.jsonl",
+      "sha256": "2185b96bc0f3f4d935417fa2737280510b75a644ef3c854ccb2ead5d0045cd53",
+      "bytes": 1103275
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/VerificationFinal.json",
+      "sha256": "214fc03198356d312948803650e8fae2e6862f8712f5318ebcd3f88598174b64",
+      "bytes": 5515
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/Verification.log",
+      "sha256": "50e498d5d51a38a2e414e63d45483116274612b03ed42017bc38ec0f1fa087ce",
+      "bytes": 2672
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/A.ppm",
+      "sha256": "8ac9630b43c55bd3b1715103615e42b31af8a31298a1a56586217356cff9bfdf",
+      "bytes": 1843215
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/Run3/B.ppm",
+      "sha256": "7fdd0606ff8270cbd91540b2fa56f27f023a8acf122f16fc884e4f95aa6dc399",
+      "bytes": 1843215
+    }
+  ],
+  "tools": [
+    {
+      "path": "build/engine_next/gi-network-r4/RunNetwork.py",
+      "sha256": "d2edeeca0df82e3cc85b334ae892a8034f177fe8210e6d1d9e6b22259b2c0d3f",
+      "bytes": 8212
+    },
+    {
+      "path": "build/engine_next/gi-network-r4/VerifyNetwork65.py",
+      "sha256": "a77e371e7ff65cbddcc5a66c6b923e2f2a769ca1998baccdaabd840215562cfc",
+      "bytes": 8394
+    }
+  ],
+  "video": {
+    "artifact": {
+      "path": "build/engine_next/gi-network-r4/Run3/Motion.mp4",
+      "sha256": "46f34aaa1f4ec9ca986e0c440204ff618360a5741417c20e03f58596f5abc3c9",
+      "bytes": 13616271
+    },
+    "metadata": {
+      "path": "build/engine_next/gi-network-r4/Run3/Motion.json",
+      "sha256": "68f79b663bba9c6396ade7e7134f23bca048f8d4b7078e77bd5c6de18e141431",
+      "bytes": 86800
+    },
+    "target": "Client B, PID 9256",
+    "frames": 900,
+    "nominal_fps": 20,
+    "started_at": "2026-11-18T03:09:13.371052+00:00",
+    "elapsed_seconds": 47.13887560000876,
+    "scope": "The recording overlaps A input at 03:09:34.953 through 03:09:36.427 UTC as observed by B. B's later 33-key sequence at 03:10:20 through 03:10:30 UTC occurred after the recording.",
+    "boundary": "The video covers a later portion of the session. The earlier minimized interval is verified from timestamped input records and both network reports. Input-method candidate overlays are visible in some captures."
+  },
+  "history": {
+    "partial_sessions": {
+      "path": "build/engine_next/gi-network-r4/PartialSessions.json",
+      "sha256": "5e6312ed7fdb7b63a6624b3132531a19fd4ab5ce2610413a06e8a6d84ea9a95d",
+      "bytes": 3775
+    },
+    "locked_session": {
+      "path": "build/engine_next/gi-network-r4/SessionStateLocked.json",
+      "sha256": "1b9419682f2be25b745626bb73637553f80610381e3231c0963253c520d75344",
+      "bytes": 290
+    },
+    "unlocked_session": {
+      "path": "build/engine_next/gi-network-r4/SessionStateUnlocked.json",
+      "sha256": "fc46007f3a04d04df8951daba1ba51de52704f1cd8b25329b35e1aef99af8134",
+      "bytes": 290
+    },
+    "run1": "The private B readiness wait expired before keyboard actions.",
+    "run2": "Both peers completed passive rendering and a clean drain. A locked desktop prevented keyboard activation, so real-input acceptance remained pending.",
+    "warmup": {
+      "timing": {
+        "path": "build/engine_next/gi-network-r4/Warmup/Timing.json",
+        "sha256": "aa727b81789e7af7703b852ec8503c118593e50e6954a2dffb5aa6d8089daf97",
+        "bytes": 158
+      },
+      "runtime": {
+        "path": "build/engine_next/gi-network-r4/Warmup/Runtime.json",
+        "sha256": "8cbf954a457ec60c50e8767278e4677102603492e5cbab0a3eb3e496dbe2115f",
+        "bytes": 78770
+      }
+    }
+  },
+  "remaining_parent_scope": "This session verifies GI-enabled network input, reconnect, minimized progress and rendered state. It does not complete full M4 performance, physical 4K output or the Unreal Engine comparison.",
+  "historical_test_context": {
+    "request_id": "engine-next-visual-runtime-m4-3-20261116",
+    "issue_number": 1343,
+    "candidate": "gi-runtime-r4",
+    "note": "Run1, Run2, Run3 and their raw artifacts retain the original test identity. This unpublished delivery record is assigned to the corrected M4.5 stage."
+  }
+}

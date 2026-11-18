@@ -37,6 +37,7 @@
 #include "engine_next/include/EngineNext/Rendering/VolumeSettings.h"
 #include "engine_next/include/EngineNext/Rendering/ParticleSettings.h"
 #include "engine_next/include/EngineNext/Rendering/MaterialSettings.h"
+#include "engine_next/include/EngineNext/Rendering/GlobalIlluminationSettings.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 
 #include <array>
@@ -128,6 +129,7 @@ struct RenderConfiguration
 	VolumeSettings stVolume;
 	std::vector<ParticleSettings> arrParticles;
 	MaterialSettings stMaterials;
+	GlobalIlluminationSettings stGlobalIllumination;
 	std::vector<PointLightSettings> arrPointLights{ PointLightSettings{} };
 	std::vector<SpotLightSettings> arrSpotLights;
 	double dExposure = 1;
@@ -163,6 +165,7 @@ struct RenderConfiguration
 // live particles, including disabled emitters.
 // Optional material_overrides selects source asset IDs and material indices.
 // Source existence is resolved against the loaded scene before GPU allocation.
+// Optional global_illumination controls the bounded clipmap probe renderer.
 // Both functions append diagnostics and leave the output unchanged on failure.
 [[nodiscard]] bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std::string &strExpectedDigest, RenderConfiguration &out_stConfiguration,
 											Assets::Diagnostics &out_arrDiagnostics);

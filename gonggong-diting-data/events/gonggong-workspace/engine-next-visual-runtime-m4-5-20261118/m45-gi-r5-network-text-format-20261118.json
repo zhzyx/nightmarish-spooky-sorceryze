@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "event_id": "m45-gi-r5-network-text-format-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "kind": "correction",
+  "occurred_at": "2026-11-18T04:49:56.431895+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1505",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m45-gi-r5-foundation-accepted-20261118"
+  ],
+  "payload": {
+    "correction": "Network evidence now uses repository LF line endings; its writer explicitly emits LF.",
+    "semantic_fields_equal": true,
+    "refreshed_json_fields": [
+      "recorded_at_utc",
+      "verification_tools"
+    ],
+    "current_network_proof": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-network-r5.json",
+      "sha256": "db686568d1bdf3ba9a0882c8a03b9434b18f885004451a141df12f76055c6a93",
+      "size_bytes": 24796
+    },
+    "original_network_proof": {
+      "path": "build/engine_next/gi-proof-history/NetworkR5-OriginalCRLF.json",
+      "sha256": "a78d95eda99d12d33d88b0eedb51311389f0d404e41400a738fa8e3011a3d289",
+      "size_bytes": 25556
+    },
+    "original_writer": {
+      "path": "build/engine_next/gi-proof-history/WriteNetworkEvidence-Original.py",
+      "sha256": "bb5da438bf0354fda1c0d909fe57aab5003b8f4c1f8d2837f9c483f83fbd448c",
+      "size_bytes": 9632
+    },
+    "current_writer": {
+      "path": "build/engine_next/gi-network-r5/WriteNetworkEvidence.py",
+      "sha256": "f06f48bf34990c12819a684e3a6cd82fd5e9880bc6912b33530a46d6e8b9c4ee",
+      "size_bytes": 9646
+    }
+  },
+  "sha256": "c867d74c0db963b6f07e6b5bfc75215d652e3388482a3c8a4a52cdbc1979f30f"
+}

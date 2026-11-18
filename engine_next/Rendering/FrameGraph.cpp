@@ -61,7 +61,12 @@ bool IsQueueValid(QueueType eQueue)
 
 bool IsStateValid(ResourceState eState)
 {
-	return eState >= ResourceState::Common && eState <= ResourceState::DepthRead;
+	return eState >= ResourceState::Common && eState <= ResourceState::GenericRead;
+}
+
+bool IsFixedState(ResourceState eState)
+{
+	return eState == ResourceState::AccelerationStructure || eState == ResourceState::GenericRead;
 }
 
 bool IsQueueStateSupported(QueueType eQueue, ResourceState eState)
@@ -74,12 +79,16 @@ bool IsQueueStateSupported(QueueType eQueue, ResourceState eState)
 	{
 		return true;
 	}
-	return eQueue == QueueType::Compute && (eState == ResourceState::NonPixelShaderRead || eState == ResourceState::UnorderedAccess);
+	if (eState == ResourceState::GenericRead)
+	{
+		return true;
+	}
+	return eQueue == QueueType::Compute && (eState == ResourceState::NonPixelShaderRead || eState == ResourceState::UnorderedAccess || eState == ResourceState::AccelerationStructure);
 }
 
 bool IsWriteState(ResourceState eState)
 {
-	return eState == ResourceState::RenderTarget || eState == ResourceState::DepthWrite || eState == ResourceState::CopyDestination || eState == ResourceState::UnorderedAccess;
+	return eState == ResourceState::RenderTarget || eState == ResourceState::DepthWrite || eState == ResourceState::CopyDestination || eState == ResourceState::UnorderedAccess || eState == ResourceState::AccelerationStructure;
 }
 
 std::uint32_t GetAccessCount(const ResourceAccess &stAccess, const ResourceDesc &stResource)
@@ -123,9 +132,13 @@ bool ValidatePass(const PassDesc &stPass, PassId nPass, const std::vector<Resour
 		const std::uint32_t nCount = GetAccessCount(stAccess, stResource);
 		if (nCount == 0 || nCount > stResource.nSubresourceCount - stAccess.nFirstSubresource || !IsStateValid(stAccess.eState) ||
 			(stAccess.bWrite && !IsWriteState(stAccess.eState)) || (stAccess.bReadBeforeWrite && !stAccess.bWrite) ||
-			(!stAccess.bWrite && IsWriteState(stAccess.eState) && stAccess.eState != ResourceState::UnorderedAccess))
+			(!stAccess.bWrite && IsWriteState(stAccess.eState) && stAccess.eState != ResourceState::UnorderedAccess && stAccess.eState != ResourceState::AccelerationStructure))
 		{
 			return Fail(out_stDiagnostic, GraphError::InvalidAccess, nPass, stAccess.nResource, "Resource access has an invalid range, state, or read/write mode.");
+		}
+		if ((IsFixedState(stResource.eInitialState) || IsFixedState(stAccess.eState)) && stResource.eInitialState != stAccess.eState)
+		{
+			return Fail(out_stDiagnostic, GraphError::InvalidAccess, nPass, stAccess.nResource, "Acceleration and generic-read resources retain their declared state.");
 		}
 		if (!IsQueueStateSupported(stPass.eQueue, stAccess.eState))
 		{
@@ -334,7 +347,7 @@ bool FrameGraph::Compile(CompiledGraph &out_stGraph, GraphDiagnostic &out_stDiag
 				{
 					return Fail(out_stDiagnostic, GraphError::UninitializedRead, nPass, stAccess.nResource, "Pass reads a transient subresource before its first write.");
 				}
-				if (stUsage.nLastPass != INVALID_PASS && arrPasses[stUsage.nLastPass].eQueue != stPass.eQueue)
+				if (stUsage.nLastPass != INVALID_PASS && arrPasses[stUsage.nLastPass].eQueue != stPass.eQueue && !IsFixedState(stUsage.eState))
 				{
 					CompiledPass &stProducer = stResult.arrPasses[arrPassIndices[stUsage.nLastPass]];
 					AddTransition(stProducer.arrAfterBarriers, stAccess.nResource, nSubresource, stUsage.eState, ResourceState::Common);
@@ -344,7 +357,7 @@ bool FrameGraph::Compile(CompiledGraph &out_stGraph, GraphDiagnostic &out_stDiag
 				{
 					return Fail(out_stDiagnostic, GraphError::UnsupportedQueueState, nPass, stAccess.nResource, "Initial resource state requires a release on a compatible queue before use.");
 				}
-				if (stUsage.eState == ResourceState::UnorderedAccess && stAccess.eState == ResourceState::UnorderedAccess && (stUsage.bLastWrite || stAccess.bWrite))
+				if ((stUsage.eState == ResourceState::UnorderedAccess || stUsage.eState == ResourceState::AccelerationStructure) && stAccess.eState == stUsage.eState && (stUsage.bLastWrite || stAccess.bWrite))
 				{
 					stPass.arrBeforeBarriers.push_back(ResourceBarrier{ BarrierKind::Uav, stAccess.nResource, nSubresource, stUsage.eState, stAccess.eState });
 				}

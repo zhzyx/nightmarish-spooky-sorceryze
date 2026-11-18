@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "event_id": "m45-gi-r5-foundation-accepted-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T04:46:59.323203+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1505",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m45-gi-r5-rendering-regression-20261118",
+    "m45-gi-r5-review-metadata-correction-20261118"
+  ],
+  "payload": {
+    "scope": "Accepted diffuse-probe GI foundation with current-candidate real input, reconnect and minimize/restore regression",
+    "candidate": "gi-runtime-r5",
+    "native_key": "f9abfc13850cce2065164a70ee1cc4d54b04cb034c2113436b12be769f37fee0",
+    "delivery_base_commit": "9acd30a77a168604a6d4c9572a70e345f5655b34",
+    "current_network_proof": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-network-r5.json",
+      "sha256": "a78d95eda99d12d33d88b0eedb51311389f0d404e41400a738fa8e3011a3d289"
+    },
+    "client_frame_counts": {
+      "A": 19448,
+      "B": 15343
+    },
+    "ui_key_counts": {
+      "A": 21,
+      "B": 23
+    },
+    "minimized_evidence": {
+      "client": "A",
+      "ui_minimized_msec": 77418,
+      "sample_gap_msec": 78169,
+      "rendered_frame_delta": 30,
+      "confirmed_before": "7641",
+      "confirmed_after": "12527",
+      "peer_samples": 153,
+      "peer_input_samples": 20
+    },
+    "test_server": {
+      "path": "build/engine_next/gi-network-r5/LongServer.exe",
+      "sha256": "685441a0ed2a596eee0c82259a50636213179811ae882305b368a301b1bb078c",
+      "original_runtime_library_sha256": "2a8abafab2655d74ca257cb72a1384227f6a81c96293c31ba39d0681c6cbe199",
+      "duration_override_msec": 1200000
+    },
+    "stage_complete": false,
+    "issues_remaining_open": [
+      1505,
+      1323
+    ],
+    "remaining": [
+      "Probe relocation and leak control",
+      "Specular indirect lighting and complete reflections",
+      "Dynamic characters",
+      "Full UE scene comparison and native-4K quality/performance/stability acceptance"
+    ]
+  },
+  "sha256": "fdb50a66d1de6ed9d4e8d5f0b1f48e50f83b5bd2da8f0f9c202594146b228684"
+}

@@ -308,17 +308,17 @@ High 与 Ultra 都启用 PBR、GI、反射、阴影、TAA、体积、透明和�
 
 | 阶段 | 本轮拟定产物和独立验收 | 依赖 / 状态 |
 | --- | --- | --- |
-| M4.0 | 本文、环境/依赖回读、自研场景规格、UE 基准采集和固定参数，设计 PR | 设计候选进行中；本机/自研场景已确认，UE 采集和技术设计确认待完成 |
-| M4.1 | 窗口/输入、RHI、frame graph、固定 mesh、GPU validation、干净目录与 GPU Capture | 子 Issue #1327；14 项测试/1208 检查、240帧GPU validation、实际RenderDoc回放与运动视频通过，正式交付中 |
-| M4.2 | GPU Cook、原包/Scene 消费、PBR/IBL/material、ClientSession/F 场景 | M4.1；资产错版/格式负例、M2/M3 回归 |
-| M4.3 | 阴影、后处理、volume/透明、初版反射、时域与动画基础 | M4.2；B/D/E 部分动态质量 |
-| M4.4 | hierarchical clusters、Hi-Z、indirect、streaming、虚拟 shadow pages | M4.3；C ≥1000 实例/1000 万三角形及 CPU/GPU/VRAM |
-| M4.5 | 动态多反弹 GI、完整反射、skin/morph 和收敛稳定性 | M4.4；A/B/D/E 全路径实测 |
+| M4.0 | 本文、环境/依赖回读、自研场景规格、UE 基准采集和固定参数，设计 PR | 设计与本机/自研场景已确认，UE 对照采集待完成 |
+| M4.1 | 窗口/输入、RHI、frame graph、固定 mesh、GPU validation、干净目录与 GPU Capture | 子 Issue #1327 已交付；原始测试与 GPU 证据保留 |
+| M4.2 | GPU Cook、原包/Scene 消费、PBR/IBL/material、ClientSession/F 场景 | 子 Issue #1334 已交付；后续材质扩展持续独立验证 |
+| M4.3 | 阴影、后处理、volume/透明、初版反射、时域与动画基础 | 子 Issue #1343；基础增量已交付，完整动态质量持续验收 |
+| M4.4 | hierarchical clusters、Hi-Z、indirect、streaming、虚拟 shadow pages | 子 Issue #1506；依赖 M4.3，C ≥1000 实例/1000 万三角形及 CPU/GPU/VRAM |
+| M4.5 | 动态多反弹 GI、完整反射、skin/morph 和收敛稳定性 | 子 Issue #1505；依赖 M4.4，A/B/D/E 全路径实测 |
 | M4.6 | 固定 A–F UE 对照、4K120/30min、4K144/60min 挑战、干净发布、全部回归 | 全部前项；每条最终验收有实际证据 |
 
-设计已确认，M4.1 子 Issue 为 https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1327，原生父子关系已回读。后续阶段按上表建立独立子 Issue。阶段共享接口由当前 Codex 主责，worker 只操作其隔离写入范围，审查回读精确候选。M4.0 设计交付与 M4 全部验收分别记录。
+设计已确认，各阶段沿上表的独立工单与 PR 交付。M4.4、M4.5 与父 #1323 的原生关系均已双向回读。阶段共享接口由当前 Codex 主责，worker 只操作其隔离写入范围，审查回读精确候选。早期挂在 #1343 下的 GI 与几何实验保留原始身份，后续正式增量分别追加 M4.5 与 M4.4 的交付关联。M4.0 设计交付与 M4 全部验收分别记录。
 
-本轮文档验证采用路径/链接/引用审查、原始需求完整性、`git diff --check`、独立设计审查与 tier0 正式门禁。渲染实现前需要用户确认本文的坐标/FrameGraph、DXR/probe GI + cluster/VSM 路线、附属 RenderConfiguration/GPU 包边界、质量与场景提案。4K 显示设备、UE 来源/可用性和同参采集的实际缺项继续留在 M4.0。
+本轮文档验证采用路径/链接/引用审查、原始需求完整性、`git diff --check`、独立设计审查与 tier0 正式门禁。用户已授权按本文路线落地实现并将验证完成的增量提交到 main。4K 显示设备、UE 来源/可用性和同参采集的实际缺项继续留在 M4.0。
 
 已召回 `editor-dependency-handoff` 的实际候选交接方法、`godot-build-placement` 的按消费者验证方法和 `github-issue-delivery` 的失败作业回读方法。它们分别用于 M1–M3 依赖证据、新增视觉发布边界和之后的精确 CI 复验；本轮只读设计无须复跑原二进制完整测试。
 

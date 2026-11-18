@@ -1,7 +1,7 @@
 {
   "placement": "mixed",
-  "reason": "Mixed native and offline-shader rendering. The native layer builds a luminance/solid-angle environment alias table, uploads the immutable structured buffer and binds it to material lighting and reflection. Shared shader functions sample that exact distribution with multiple importance sampling.",
-  "host_contract": "Windows x86_64 D3D12 visual client. The source cubemap, packed table and material shaders share one scene lifetime. Source M3 materials and textures retain their existing identities. The 16-byte alias ABI includes dimension and uniform-fallback metadata.",
-  "rollback": "Restore the original source and shader bundle, rebuild, then verify the native identity and deterministic capture. Shader replacement is checked using one unchanged executable and a source-bound scene.",
-  "evidence": "data-collection/engine-next-visual-runtime-m4-3-ibl-build-impact-r4.json"
+  "reason": "Independent C++ rendering builds a source-matched environment importance table, a hardware ray-tracing scene and bounded probe histories. Shared shaders integrate material environment lighting, trace radiance, update spherical harmonics and distance moments, and consume diffuse indirect light through explicit frame-graph dependencies.",
+  "host_contract": "Windows x86_64 D3D12 inline ray queries use one DIRECT queue with frame-owned uploads and retired descriptor updates. The renderer preserves M3 asset identities, keeps environment distributions matched to the uploaded source and changes probe history roles after successful submission. Public configuration and grid headers remain platform-independent.",
+  "rollback": "Restore the source and shader bundle, rebuild, then verify the native identity and deterministic capture. Verify source invalidation and restoration with clean builds, and verify changed shaders, exact rollback and malformed-shader rejection with one baseline executable.",
+  "evidence": "data-collection/engine-next-visual-runtime-m4-5-gi-build-impact.json"
 }

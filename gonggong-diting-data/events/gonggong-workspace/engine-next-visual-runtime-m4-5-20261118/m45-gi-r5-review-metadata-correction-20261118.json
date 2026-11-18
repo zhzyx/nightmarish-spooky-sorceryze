@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "m45-gi-r5-review-metadata-correction-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "kind": "correction",
+  "occurred_at": "2026-11-18T04:10:18.743882+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1505",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m45-gi-r5-rendering-regression-20261118"
+  ],
+  "payload": {
+    "corrects_event_id": "m45-gi-r5-rendering-regression-20261118",
+    "field": "payload.artifacts source-review reference",
+    "reason": "The regression event read the review immediately before its base-commit and update-timestamp metadata correction. Native source and test results did not change.",
+    "historical_review": {
+      "path": "build/engine_next/gi-proof-history/SourceReview-R5BeforeMetadataCorrection.json",
+      "sha256": "c588aef68480f3b3b9590935677efa40aa59b8218b81c71b6f3178be89e33d7d"
+    },
+    "current_review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-source-review.json",
+      "sha256": "7c2c97c7abc09421d6c9a32da01f2b1158135e2db513ebc3491f7289874cdf44"
+    },
+    "archive_verification": "Reversing the two metadata additions reconstructs bytes matching the original SHA-256 recorded by the reviewer and regression event."
+  },
+  "sha256": "98cdf9783da5ac8d33ca316fd5f1f96f794e22291bbac5cec829ee435ac5946d"
+}

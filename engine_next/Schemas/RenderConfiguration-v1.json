@@ -898,6 +898,84 @@
           }
         }
       }
+    },
+    "global_illumination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "world_bounds": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "minimum": {
+              "$ref": "#/$defs/vector3"
+            },
+            "maximum": {
+              "$ref": "#/$defs/vector3"
+            }
+          }
+        },
+        "probe_counts": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "integer",
+            "minimum": 2,
+            "maximum": 65536
+          }
+        },
+        "clipmap_levels": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 3
+        },
+        "updates_per_frame": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65536
+        },
+        "rays_per_probe": {
+          "type": "integer",
+          "minimum": 16,
+          "maximum": 1024
+        },
+        "trace_distance": {
+          "type": "number",
+          "minimum": 1.1754943508222875e-38
+        },
+        "hysteresis": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.99
+        },
+        "normal_bias": {
+          "type": "number",
+          "minimum": 0
+        },
+        "view_bias": {
+          "type": "number",
+          "minimum": 0
+        },
+        "bounce_strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "history_change_threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_gpu_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 536870912
+        }
+      }
     }
   },
   "$defs": {

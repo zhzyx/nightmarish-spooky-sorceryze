@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "issue_number": 1505,
+  "parent_issue_number": 1323,
+  "status": "verified_dynamic_readback",
+  "candidate": "gi-runtime-r4",
+  "executable": {
+    "path": "build/engine_next/gi-runtime-r4/next_visual_client.exe",
+    "sha256": "be2ead325720d5b4b5ec541dd24d14ccd577b5f39c1bce564345ac4811d407ea",
+    "bytes": 3329536
+  },
+  "build_report": {
+    "path": "build/engine_next/gi-runtime-r4/VisualBuildReport.json",
+    "sha256": "ca22b43c615f0eaab5e15897401b388b5f9816763494b50a7a4cfb792c602df0",
+    "bytes": 2282332
+  },
+  "source_snapshot": {
+    "path": "build/engine_next/gi-impact-r4/SourceVerification.json",
+    "sha256": "f14930e4b3184c2a6fb5a9dc176c2b42659fa39ce2590eaede985c67553c6493",
+    "bytes": 36756
+  },
+  "historical_build_context": {
+    "request_id": "engine-next-visual-runtime-m4-3-20261116",
+    "issue_number": 1343,
+    "note": "R4 build originated in the earlier task context; this exact-frame dynamic run is delivered under M4.5."
+  },
+  "runtime": {
+    "frames": 780,
+    "validation_errors": 0,
+    "actual_width": 640,
+    "actual_height": 480
+  },
+  "method": "Preloaded RenderDoc target control plus renderdoccmd launch and exact frame queues",
+  "requested_schedule": [
+    [
+      178,
+      5
+    ],
+    [
+      208,
+      1
+    ],
+    [
+      358,
+      5
+    ],
+    [
+      388,
+      1
+    ]
+  ],
+  "rows": [
+    {
+      "epoch": 178,
+      "seconds": 2.966666666666667,
+      "directional_radiance": [
+        0.15000000596046448,
+        0.15000000596046448,
+        0.15000000596046448
+      ],
+      "mean_sh_dc_luminance": 1.230320379602909,
+      "mean_hdr_luminance": 0.19006077869833013,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 1.8894514059120127e-05,
+      "maximum_moment_error": 1.4592791681700135e-05
+    },
+    {
+      "epoch": 179,
+      "seconds": 2.9833333333333334,
+      "directional_radiance": [
+        0.15000000596046448,
+        0.15000000596046448,
+        0.15000000596046448
+      ],
+      "mean_sh_dc_luminance": 1.2291292017698285,
+      "mean_hdr_luminance": 0.19005860369054475,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 2.1809556515872686e-05,
+      "maximum_moment_error": 5.989654270122102e-06
+    },
+    {
+      "epoch": 180,
+      "seconds": 3.0,
+      "directional_radiance": [
+        3.0,
+        3.0,
+        3.0
+      ],
+      "mean_sh_dc_luminance": 1.231729242193699,
+      "mean_hdr_luminance": 0.2838300442745636,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 2.4657526021654164e-05,
+      "maximum_moment_error": 1.1244037466773271e-05
+    },
+    {
+      "epoch": 181,
+      "seconds": 3.0166666666666666,
+      "directional_radiance": [
+        3.0,
+        3.0,
+        3.0
+      ],
+      "mean_sh_dc_luminance": 1.2497958990097044,
+      "mean_hdr_luminance": 0.28593006174106894,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 1.8823356541908254e-05,
+      "maximum_moment_error": 1.1950747486666469e-05
+    },
+    {
+      "epoch": 182,
+      "seconds": 3.033333333333333,
+      "directional_radiance": [
+        3.0,
+        3.0,
+        3.0
+      ],
+      "mean_sh_dc_luminance": 1.263251515352726,
+      "mean_hdr_luminance": 0.28596103752346336,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 1.9166344026697035e-05,
+      "maximum_moment_error": 1.3222608450491613e-05
+    },
+    {
+      "epoch": 208,
+      "seconds": 3.466666666666667,
+      "directional_radiance": [
+        3.0,
+        3.0,
+        3.0
+      ],
+      "mean_sh_dc_luminance": 1.309277102279663,
+      "mean_hdr_luminance": 0.30939536368120707,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 2.5555572250146597e-05,
+      "maximum_moment_error": 1.0142290076842198e-05
+    },
+    {
+      "epoch": 358,
+      "seconds": 5.966666666666667,
+      "directional_radiance": [
+        3.0,
+        3.0,
+        3.0
+      ],
+      "mean_sh_dc_luminance": 1.3121720579385756,
+      "mean_hdr_luminance": 0.31079329792095717,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 2.0040447224201063e-05,
+      "maximum_moment_error": 1.0361190512675478e-05
+    },
+    {
+      "epoch": 359,
+      "seconds": 5.983333333333333,
+      "directional_radiance": [
+        3.0,
+        3.0,
+        3.0
+      ],
+      "mean_sh_dc_luminance": 1.314901278042793,
+      "mean_hdr_luminance": 0.3108348435713251,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 2.231921333439857e-05,
+      "maximum_moment_error": 8.41265156248383e-06
+    },
+    {
+      "epoch": 360,
+      "seconds": 6.0,
+      "directional_radiance": [
+        0.15000000596046448,
+        0.15000000596046448,
+        0.15000000596046448
+      ],
+      "mean_sh_dc_luminance": 1.3156561800718307,
+      "mean_hdr_luminance": 0.2181506496649881,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 1.8073927636974574e-05,
+      "maximum_moment_error": 1.1291114013878278e-05
+    },
+    {
+      "epoch": 361,
+      "seconds": 6.016666666666667,
+      "directional_radiance": [
+        0.15000000596046448,
+        0.15000000596046448,
+        0.15000000596046448
+      ],
+      "mean_sh_dc_luminance": 1.2987152201414107,
+      "mean_hdr_luminance": 0.21599602734975018,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 1.2682225925875201e-05,
+      "maximum_moment_error": 1.1841230154852056e-05
+    },
+    {
+      "epoch": 362,
+      "seconds": 6.033333333333333,
+      "directional_radiance": [
+        0.15000000596046448,
+        0.15000000596046448,
+        0.15000000596046448
+      ],
+      "mean_sh_dc_luminance": 1.2845732472896576,
+      "mean_hdr_luminance": 0.2144069100108097,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 2.4272894470600548e-05,
+      "maximum_moment_error": 1.4192307348892541e-05
+    },
+    {
+      "epoch": 388,
+      "seconds": 6.466666666666667,
+      "directional_radiance": [
+        0.15000000596046448,
+        0.15000000596046448,
+        0.15000000596046448
+      ],
+      "mean_sh_dc_luminance": 1.2386273317337035,
+      "mean_hdr_luminance": 0.19051358722595868,
+      "valid_probes": 2304,
+      "invalid_probes": 0,
+      "maximum_sh_error": 1.3388577572381877e-05,
+      "maximum_moment_error": 1.2707792914845584e-05
+    }
+  ],
+  "bright_transition_sh_delta": 0.07895672267675402,
+  "dark_transition_sh_delta": -0.07354472620487207,
+  "history_reset_observed": false,
+  "artifacts": [
+    {
+      "path": "build/engine_next/gi-dynamic-capture-r4-queued/CaptureManifest.json",
+      "sha256": "d9081a7e3c16c32916f69ad6153e39771e29ccee9e6dca299782d97378d8994a",
+      "size_bytes": 12724
+    },
+    {
+      "path": "build/engine_next/gi-dynamic-capture-r4-queued/DynamicChecks.json",
+      "sha256": "a91820fca883dcf549de41ec48a12ec4c06a8371ae325dc1ea7a7121daddc20f",
+      "size_bytes": 6556
+    },
+    {
+      "path": "build/engine_next/gi-dynamic-capture-r4-queued/Readback/Inspection.json",
+      "sha256": "9ad634f02f4bc8cab52ab1d60b6ce9251ec236af80812f1c0f1a1ef4534c2de1",
+      "size_bytes": 548834
+    },
+    {
+      "path": "build/engine_next/gi-dynamic-capture-r4-queued/Readback/NumericalChecks.json",
+      "sha256": "655159edc42063e216105f6dd6f7f98b01d80a9a6aeaedbf585e39e30161ad3a",
+      "size_bytes": 11689
+    },
+    {
+      "path": "build/engine_next/gi-dynamic-capture-r4-queued/DynamicHdrPreview.png",
+      "sha256": "5a8896dfe991b696fd4a5275642910f16e51735819ffdfd0ce9e07789e66467b",
+      "size_bytes": 715870
+    }
+  ],
+  "quality_boundary": "Sparse exact-frame HDR previews and actual SH readback establish response to the configured directional-light timeline. Continuous-motion and final physical-display quality remain separate acceptance work."
+}
