@@ -161,6 +161,9 @@ Texture2D<float4> BloomBuffer : register(t1);
 StructuredBuffer<float4> PreviousExposure : register(t2);
 StructuredBuffer<float4> CurrentExposure : register(t3);
 SamplerState BloomSampler : register(s0);
+#if defined(SCREEN_EFFECTS_STAGE)
+#include "ScreenEffects.hlsli"
+#endif
 #else
 Texture2D<float4> BaseBuffer : register(t0);
 Texture2D<float4> NormalBuffer : register(t1);
@@ -195,12 +198,18 @@ FullscreenOutput FullscreenVS(uint Id : SV_VertexID)
 float4 ToneMapPS(FullscreenOutput Input) : SV_TARGET
 {
     float3 Color = HdrBuffer.Load(int3(int2(Input.Position.xy), 0)).rgb;
+#if defined(SCREEN_EFFECTS_STAGE)
+    Color = SharpenHdr(Input.Position.xy, Color);
+#endif
     [branch] if (Lighting.w > 0)
     {
         Color += BloomBuffer.SampleLevel(BloomSampler, Input.Texcoord, 0).rgb * Lighting.w;
     }
     float Ratio = CurrentExposure[0].x / max(PreviousExposure[0].x, 1.175494351e-38);
     Color = 1 - exp(-max(Color, 0) * Ratio);
+#if defined(SCREEN_EFFECTS_STAGE)
+    Color = GradeAndVignette(Color, Input.Position.xy);
+#endif
     return float4(pow(saturate(Color), 1.0 / 2.2), 1);
 }
 #else

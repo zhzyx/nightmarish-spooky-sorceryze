@@ -128,6 +128,7 @@ struct RenderConfiguration
 	TemporalSettings stTemporal;
 	ExposureSettings stExposure;
 	BloomSettings stBloom;
+	ScreenEffectsSettings stScreenEffects;
 	LightAnimationSettings stLightAnimation;
 	ReflectionSettings stReflections;
 	AmbientOcclusionSettings stAmbientOcclusion;
@@ -162,6 +163,8 @@ struct RenderConfiguration
 // Optional temporal_aa uses defaults when absent. Its history weight is [0, 0.99]
 // and relative depth threshold is [0.0001, 0.25], including when disabled.
 // Optional exposure_settings and bloom fields use PostProcessSettings defaults.
+// Optional screen_effects controls display-linear LUT grading, sharpening and
+// a vignette. LUT IDs resolve against the original M3 package before GPU work.
 // Numeric exposure remains required and supplies the legacy-mode multiplier.
 // Optional light_animation applies its timeline to directional illuminance.
 // Its omitted fields default to an empty, non-looping linear track.

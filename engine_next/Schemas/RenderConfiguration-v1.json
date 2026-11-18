@@ -484,7 +484,12 @@
           "default": 1
         },
         "sample_count": {
-          "enum": [8, 16, 32, 64],
+          "enum": [
+            8,
+            16,
+            32,
+            64
+          ],
           "default": 32
         }
       },
@@ -1084,6 +1089,43 @@
         },
         "start_seconds": {
           "type": "number"
+        }
+      }
+    },
+    "screen_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "sharpening": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "vignette_intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "vignette_inner_radius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "vignette_outer_radius": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 2
+        },
+        "lut_asset_id": {
+          "type": "string"
+        },
+        "lut_intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       }
     }

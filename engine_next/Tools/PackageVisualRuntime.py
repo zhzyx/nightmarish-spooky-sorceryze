@@ -21,6 +21,7 @@ SHADER_FILES = {
     "Lighting.ps.cso",
     "MaterialLighting.ps.cso",
     "ToneMap.ps.cso",
+    "ScreenEffects.ps.cso",
     "Shadow.vs.cso",
     "Shadow.ps.cso",
     "Temporal.cs.cso",

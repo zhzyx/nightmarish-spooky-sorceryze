@@ -34,6 +34,7 @@
 
 #include <array>
 #include <cstdint>
+#include <string>
 
 namespace EngineNext::Rendering
 {
@@ -73,6 +74,17 @@ struct BloomSettings
 	std::uint32_t nMipCount = 6;
 };
 
+struct ScreenEffectsSettings
+{
+	bool bEnabled = false;
+	double dSharpening = 0;
+	double dVignetteIntensity = 0;
+	double dVignetteInnerRadius = 0.4;
+	double dVignetteOuterRadius = 0.8;
+	std::string strLutAssetId;
+	double dLutIntensity = 1;
+};
+
 // Pure CPU calculations, callable on any thread with exclusive output access.
 // EV100 and auto limits are [-16,24], compensation is [-10,10], percentiles
 // satisfy 0 <= low < high <= 1, and half-lives are seconds in [0,10].
@@ -81,6 +93,10 @@ struct BloomSettings
 // Intensity is [0,10], threshold is linear exposed luminance in [0,65504],
 // soft knee is a fraction [0,1], and mip count is [1,6].
 [[nodiscard]] bool ValidateBloomSettings(const BloomSettings &stSettings, Assets::Diagnostics &out_arrDiagnostics);
+// Sharpening, vignette intensity and LUT intensity are fractions in [0,1].
+// Vignette radii use half the shorter viewport edge as one unit and satisfy
+// 0 <= inner < outer <= 2. An empty LUT asset uses identity color grading.
+[[nodiscard]] bool ValidateScreenEffectsSettings(const ScreenEffectsSettings &stSettings, Assets::Diagnostics &out_arrDiagnostics);
 // Legacy preserves the supplied multiplier [0.001,1000]. Manual uses
 // exp2(compensationEV - manualEV100) / 1.2, with no extra EV clipping.
 // Automatic meters 18% gray, applies compensation to the target EV, then
