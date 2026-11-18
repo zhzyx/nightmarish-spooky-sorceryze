@@ -1,0 +1,254 @@
+{
+  "schema_version": 1,
+  "path_base": "framework",
+  "resolution_note": "Invoke check_delivery.py with --framework-root set to this repository root.",
+  "stage": "candidate",
+  "delivery_kind": "source",
+  "model_mode": "none",
+  "candidate": {
+    "repository": ".",
+    "commit": "2cd46efa7a61c9682dbd7e49d300459416c6bc44",
+    "tree": "bd352d376ee59dbfc6ff6f508efee801076ce526"
+  },
+  "dependencies": [
+    {
+      "path": "SConstruct",
+      "sha256": "a256d926029a4a7d0ccc50a4e75a885d9772d76f08327311fd643e0bd344535c",
+      "version": "2cd46efa7a61c9682dbd7e49d300459416c6bc44",
+      "affects": [
+        "Godot Windows embedded Web workspace source/build"
+      ]
+    },
+    {
+      "path": "thirdparty/webview2/manifest.json",
+      "sha256": "0d14ad4bcfe28f099b1f9ebfce8ef33812deabd70fcac6adf7905a3053ed57c6",
+      "version": "2cd46efa7a61c9682dbd7e49d300459416c6bc44",
+      "affects": [
+        "Godot Windows embedded Web workspace source/build"
+      ]
+    },
+    {
+      "path": "apps/tianxuan/package-lock.json",
+      "sha256": "edb7dc6522baca8905a79a714b80fa597521e9deee987db4a7eda506b58684d7",
+      "version": "2cd46efa7a61c9682dbd7e49d300459416c6bc44",
+      "affects": [
+        "Godot Windows embedded Web workspace source/build"
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "id": ".github/scripts/windows_editor_artifact.py",
+      "role": "source",
+      "path": ".github/scripts/windows_editor_artifact.py",
+      "candidate_path": ".github/scripts/windows_editor_artifact.py",
+      "sha256": "0d290f507ad7c5c472062cae5e893070192f90257ff22fe700d014c87a74a2a8",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/.github/scripts/windows_editor_artifact.py"
+    },
+    {
+      "id": ".github/workflows/runner.yml",
+      "role": "source",
+      "path": ".github/workflows/runner.yml",
+      "candidate_path": ".github/workflows/runner.yml",
+      "sha256": "26c6267a05cd568fabee686d2597bc08350f0825adc6f390bb68e7b9afd26c1d",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/.github/workflows/runner.yml"
+    },
+    {
+      "id": ".github/workflows/windows_builds.yml",
+      "role": "source",
+      "path": ".github/workflows/windows_builds.yml",
+      "candidate_path": ".github/workflows/windows_builds.yml",
+      "sha256": "4ba3ff5434ecf1a9eaf9e72e2fd8753e732acbec6149f257dce1c20a135ae3cb",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/.github/workflows/windows_builds.yml"
+    },
+    {
+      "id": "customizations/components/godot-host/web-workbench.md",
+      "role": "source",
+      "path": "customizations/components/godot-host/web-workbench.md",
+      "candidate_path": "customizations/components/godot-host/web-workbench.md",
+      "sha256": "e5d6ffecf2653bbb41fa763eb95e00c0fb96e2741b0cb61b595f415cfeadd0a7",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/customizations/components/godot-host/web-workbench.md"
+    },
+    {
+      "id": "editor/docks/SCsub",
+      "role": "source",
+      "path": "editor/docks/SCsub",
+      "candidate_path": "editor/docks/SCsub",
+      "sha256": "85da9ac28bd3d0a85aa8544d62831400046c6fc845a38ae599e1f4aa391640c8",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/editor/docks/SCsub"
+    },
+    {
+      "id": "editor/docks/WebPlatformDock.cpp",
+      "role": "source",
+      "path": "editor/docks/WebPlatformDock.cpp",
+      "candidate_path": "editor/docks/WebPlatformDock.cpp",
+      "sha256": "669fa30caac188c50dac12d13f01a4b06764087f8a655b41c54b55b5092c96b9",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/editor/docks/WebPlatformDock.cpp"
+    },
+    {
+      "id": "editor/docks/WebPlatformNative.cpp",
+      "role": "source",
+      "path": "editor/docks/WebPlatformNative.cpp",
+      "candidate_path": "editor/docks/WebPlatformNative.cpp",
+      "sha256": "3d1947ad2c94bc337ebfc4aafbf388c329c31840d60a040c2a2960dff17edb3d",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/editor/docks/WebPlatformNative.cpp"
+    },
+    {
+      "id": "editor/docks/WebPlatformNative.h",
+      "role": "source",
+      "path": "editor/docks/WebPlatformNative.h",
+      "candidate_path": "editor/docks/WebPlatformNative.h",
+      "sha256": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/editor/docks/WebPlatformNative.h"
+    },
+    {
+      "id": "editor/docks/WebPlatformWindows.cpp",
+      "role": "source",
+      "path": "editor/docks/WebPlatformWindows.cpp",
+      "candidate_path": "editor/docks/WebPlatformWindows.cpp",
+      "sha256": "7dd791d227d7c19c90131900aba0b2315de32b8e66faf1f14fba203fb31e6085",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/editor/docks/WebPlatformWindows.cpp"
+    },
+    {
+      "id": "editor/docks/WebPlatformWindows.h",
+      "role": "source",
+      "path": "editor/docks/WebPlatformWindows.h",
+      "candidate_path": "editor/docks/WebPlatformWindows.h",
+      "sha256": "ad9f8913034d7b168624636d97bf6fd0bc712d45dfcfc8df2a20d94fcf5aea87",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/editor/docks/WebPlatformWindows.h"
+    },
+    {
+      "id": "tests/editor/TestWebPlatformWindows.cc",
+      "role": "source",
+      "path": "tests/editor/TestWebPlatformWindows.cc",
+      "candidate_path": "tests/editor/TestWebPlatformWindows.cc",
+      "sha256": "db40e578439b26705a386749160a709eaf90bd47469b769933e40256e4ac3587",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/tests/editor/TestWebPlatformWindows.cc"
+    },
+    {
+      "id": "tests/editor/test_editor_native_cache.py",
+      "role": "source",
+      "path": "tests/editor/test_editor_native_cache.py",
+      "candidate_path": "tests/editor/test_editor_native_cache.py",
+      "sha256": "7644f81b462c18d7fdf32aa1389c47f266f1e058fb9a4e7e8c61a9fd2bf4f0af",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/tests/editor/test_editor_native_cache.py"
+    },
+    {
+      "id": "thirdparty/webview2/.gitignore",
+      "role": "source",
+      "path": "thirdparty/webview2/.gitignore",
+      "candidate_path": "thirdparty/webview2/.gitignore",
+      "sha256": "8d545223cd502221f7efc88db3e3ab047c564f1c4645cc40ac47d57549e632cd",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/thirdparty/webview2/.gitignore"
+    },
+    {
+      "id": "thirdparty/webview2/LICENSE.txt",
+      "role": "source",
+      "path": "thirdparty/webview2/LICENSE.txt",
+      "candidate_path": "thirdparty/webview2/LICENSE.txt",
+      "sha256": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/thirdparty/webview2/LICENSE.txt"
+    },
+    {
+      "id": "thirdparty/webview2/NOTICE.txt",
+      "role": "source",
+      "path": "thirdparty/webview2/NOTICE.txt",
+      "candidate_path": "thirdparty/webview2/NOTICE.txt",
+      "sha256": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/thirdparty/webview2/NOTICE.txt"
+    },
+    {
+      "id": "thirdparty/webview2/README.md",
+      "role": "source",
+      "path": "thirdparty/webview2/README.md",
+      "candidate_path": "thirdparty/webview2/README.md",
+      "sha256": "3e5aebaca63e79aec9436eb33d08bbc802f121f1cc9756cd8c34013a2be9a23d",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/thirdparty/webview2/README.md"
+    },
+    {
+      "id": "thirdparty/webview2/manifest.json",
+      "role": "source",
+      "path": "thirdparty/webview2/manifest.json",
+      "candidate_path": "thirdparty/webview2/manifest.json",
+      "sha256": "0d14ad4bcfe28f099b1f9ebfce8ef33812deabd70fcac6adf7905a3053ed57c6",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/thirdparty/webview2/manifest.json"
+    },
+    {
+      "id": "tools/editor_native_cache.py",
+      "role": "source",
+      "path": "tools/editor_native_cache.py",
+      "candidate_path": "tools/editor_native_cache.py",
+      "sha256": "65cdd38d80d90f2bfbff5d431265ec932b85c145aec8cfce108bc93f75f78dbb",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/tools/editor_native_cache.py"
+    },
+    {
+      "id": "tools/install_webview2.py",
+      "role": "source",
+      "path": "tools/install_webview2.py",
+      "candidate_path": "tools/install_webview2.py",
+      "sha256": "b46f93d205bf74dd2ef85945531997a3736904330bb363443fbfecc1c07380b1",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/tools/install_webview2.py"
+    },
+    {
+      "id": "tools/stage_installed_editor.py",
+      "role": "source",
+      "path": "tools/stage_installed_editor.py",
+      "candidate_path": "tools/stage_installed_editor.py",
+      "sha256": "953cdde762dc2502b44612772d0f1412cc4beff32a49ff3df0b1e7e7eb1dcc30",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/tools/stage_installed_editor.py"
+    },
+    {
+      "id": "tools/test_installed_editor.py",
+      "role": "source",
+      "path": "tools/test_installed_editor.py",
+      "candidate_path": "tools/test_installed_editor.py",
+      "sha256": "fd5b6a0382bf1cc24e4e079b56c450e93f52d72e773e49449e3cba03a90876fd",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/tools/test_installed_editor.py"
+    },
+    {
+      "id": "tools/test_web_platform_windows.py",
+      "role": "source",
+      "path": "tools/test_web_platform_windows.py",
+      "candidate_path": "tools/test_web_platform_windows.py",
+      "sha256": "7d4bbffad0a3b1b0f404a177083466c528542d18f82317519287ddb95daaf82e",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/tools/test_web_platform_windows.py"
+    },
+    {
+      "id": "tools/test_windows_editor_artifact.py",
+      "role": "source",
+      "path": "tools/test_windows_editor_artifact.py",
+      "candidate_path": "tools/test_windows_editor_artifact.py",
+      "sha256": "5e3d0618666a8d08cbebe288efeda81db6ffa0b4329c51d4a651d1ec36bc0043",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/tools/test_windows_editor_artifact.py"
+    },
+    {
+      "id": ".github/workflows/native-cache.yml",
+      "role": "source",
+      "path": ".github/workflows/native-cache.yml",
+      "candidate_path": ".github/workflows/native-cache.yml",
+      "sha256": "08391128a3b67b7b6b4ecd6fd9324f4ddcc992471c7acd5295b7bedb21ec6992",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/.github/workflows/native-cache.yml"
+    },
+    {
+      "id": "tests/python_build/check_engine_build_scope.py",
+      "role": "source",
+      "path": "tests/python_build/check_engine_build_scope.py",
+      "candidate_path": "tests/python_build/check_engine_build_scope.py",
+      "sha256": "5c4f85affb87713d17a1dd162e063068142385e4b7b05f4080be20125a6f49bc",
+      "distribution": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/2cd46efa7a61c9682dbd7e49d300459416c6bc44/tests/python_build/check_engine_build_scope.py"
+    }
+  ],
+  "validation": {
+    "source": {
+      "path": "data-collection/godot-windows-web-1462-delivery-source.json",
+      "sha256": "e9e76d2f3810d4613af65de06626740d830d6284b58ca1635eec03155591c861"
+    }
+  },
+  "collection": {
+    "state": "configured",
+    "configured": {
+      "path": "data-collection/godot-windows-web-1462-delivery-collection.json",
+      "sha256": "cb193b4db93dc1e691198df12f0db169591f96751f3c9b8bee9001aadec52289"
+    }
+  }
+}

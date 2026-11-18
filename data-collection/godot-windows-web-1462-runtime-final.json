@@ -1,0 +1,28 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "source_candidate": "2cd46efa7a61c9682dbd7e49d300459416c6bc44",
+  "signed_candidate": "ef7629014765e11527c4e9eb7c272549f79d766f",
+  "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44200663078",
+  "artifact_id": 14381201951,
+  "artifact_file_sha256": "eb13a357930eaee95b3ecf382a63538f98ce411624cdf11766c3694e0da796a4",
+  "result": {
+    "compile": "passed",
+    "runtime": "passed",
+    "returncode": 0,
+    "hidden_hwnd": true,
+    "external_requests": [
+      "/frame"
+    ],
+    "navigation_policy_limit": "WebView2 may speculatively issue GET before cancellation; document/script rejection is checked, not network isolation.",
+    "stdout": "WEB_PLATFORM_WINDOWS_OK hidden_native=true persistence=true navigation=true renderer_retry=true lifecycle=true\n",
+    "stderr": "",
+    "manual_not_run": [
+      "real editor input and IME",
+      "native upload/download dialogs",
+      "visual DPI/modal layout"
+    ]
+  },
+  "compile_environment": "Actual Godot SCons uuid.lib link graph check, engine Windows header wrapper and strict MSVC settings; main .cjs cache classification integrated",
+  "scope": "Actual Windows x64 WebView2 backend compiled and ran in hidden HWND; complete editor CI tracked separately."
+}

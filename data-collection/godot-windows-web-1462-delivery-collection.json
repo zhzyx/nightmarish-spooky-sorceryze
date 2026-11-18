@@ -1,0 +1,20 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "candidate": {
+    "repository": ".",
+    "commit": "2cd46efa7a61c9682dbd7e49d300459416c6bc44",
+    "tree": "bd352d376ee59dbfc6ff6f508efee801076ce526"
+  },
+  "inputs_sha256": "1045e3518a005f67f8eb8f675f4c487ad23f2f2c7d71fe9d9ba87a514b5129a7",
+  "status": "passed",
+  "path_resolution_base": "repository root",
+  "kind": "collection.configured",
+  "binding": {
+    "path": "work-items.json",
+    "sha256": "f1fbc8c69ca7ed7e8838221b352c1b8fa2bab05f179e980e8adf3eab57ddc042"
+  },
+  "tenant": "gonggong-workspace",
+  "source_event": "gonggong-diting-data/events/gonggong-workspace/godot-windows-web-20261118/godot-windows-web-1462-request.json",
+  "state_scope": "Existing host binding; committed events separately checked; downstream consumption unknown."
+}

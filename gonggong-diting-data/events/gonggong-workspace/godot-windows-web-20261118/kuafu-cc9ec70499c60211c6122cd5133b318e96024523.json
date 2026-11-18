@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cc9ec70499c60211c6122cd5133b318e96024523",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b224db907b8a756f8dc98844f9218436198a0333c66d284b67ae39ee7695a600",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1467",
+    "action": "validation",
+    "detection_head": "e1e04081b421749b72de02a656273ee9d4ba0849",
+    "context_sha256": "61ec3605973ea7a67cdb5ceb4d0c07f931bb77dece4b7c3e308278584afcec4d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-windows",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1487",
+    "diagnosis": "Final signed ef7629014765e11527c4e9eb7c272549f79d766f passed all7 mandatory checks, actual WebView2 runtime and full Windows editor build/regressions. Artifact14384666119 verified loader/licenses with executable. PR1487 merged as0d25307990587113bd63a33442f402443853ccaf; remote main contains signed source. A private receipt helper initially used file paths where Diting requires event IDs; corrected to reference the actual request event and put file paths in payload, then recording and source-delivery validation passed.",
+    "next_action": "Commit final evidence and cleanup receipt, verify metadata main, close accepted Windows technical issue1462 and bug1467; parent1454 and manual acceptance1474 remain open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T21:58:12.567436+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T00:32:00.995482+00:00",
+  "sha256": "050ca52d0949f9aeee5f15ac6eb0be4a43674743301a1cf2ef7a7374d3544fca"
+}

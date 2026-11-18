@@ -1,0 +1,39 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "phase": "source-delivered; final telemetry delivery and worktree removal pending",
+  "path_resolution_base": "repository root",
+  "removed": [
+    ".worktrees/embedded-web-platforms-20261118/bin/obj",
+    ".worktrees/embedded-web-platforms-20261118",
+    "local branch codex/embedded-web-platforms-20261118",
+    ".worktrees/godot-web-mergecheck-20261118 (temporary clean latest-main integration check)",
+    ".worktrees/godot-windows-web-20261118/thirdparty/webview2/sdk",
+    ".worktrees/godot-windows-web-20261118/thirdparty/webview2/sdk.nupkg",
+    ".godot/task-tools-godot-web-1454/venv",
+    "private obsolete windows-editor-1484.zip",
+    "private duplicate final windows-editor.zip (verified archive retained)"
+  ],
+  "preserved": {
+    "macos_validated_binary": "data-collection/receipts/godot-web-platforms-20261118/validated-editor/godot.macos.editor.dev.arm64; exact validated acceptance candidate, not installed",
+    "macos_private_receipts": "Archived in original root data-collection/receipts/godot-web-platforms-20261118",
+    "task_worktrees": "Windows worktree and local branch retained only until final metadata reaches main; then normal removal and final private receipt.",
+    "pinned_sdk_manifest": "Local SDK/package removed; pinned official source, hashes and licenses remain tracked.",
+    "windows_validated_package": "data-collection/receipts/godot-windows-web-20261118/validated-editor/windows-editor-1487.zip in primary checkout; exact CI artifact SHA256 ca8a38b018a6f4afe7d4927ffee1b1813db16768ba69c3b4b5f7221b479c9b71"
+  },
+  "other_tasks_touched": false,
+  "scheduled_cleanup_added": false,
+  "removed_remote_branches": [
+    "codex/submit/Sail-Li/1454/9af92c7a8221f6a422627262acf856e449b2742a",
+    "codex/submit/Sail-Li/1454/dd0ac17406d2e568210f5c9236dd10d3661361ba",
+    "codex/submit/Sail-Li/1454/dfa37d397081f38020d45f6065c3729506cb7f91",
+    "codex/submit/Sail-Li/1462/b6d45dbd66bbd5c3ebd4ca99386f824029c7fdda",
+    "codex/submit/Sail-Li/1462/5d5296b58d2b40cfc5528b9da00d91a64bceb63c",
+    "codex/submit/Sail-Li/1462/25b07ca60f471094049387198a969adf118b365e",
+    "codex/submit/Sail-Li/1462/e1e04081b421749b72de02a656273ee9d4ba0849",
+    "codex/submit/Sail-Li/1462/6f3bb15bb2218ad1a248e206c9f4dad2e255c015",
+    "codex/submit/Sail-Li/1462/2cd46efa7a61c9682dbd7e49d300459416c6bc44"
+  ],
+  "workers": "All current task subagents completed; prior reconciled receipts retained.",
+  "effective_installation_changed": false
+}

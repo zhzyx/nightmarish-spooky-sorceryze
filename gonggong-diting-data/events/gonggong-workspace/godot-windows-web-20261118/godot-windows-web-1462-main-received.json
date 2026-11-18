@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-windows-web-1462-main-received",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T00:30:52.949971+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1462,
+    "action": "main_delivery_received",
+    "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1487",
+    "signed_candidate": "ef7629014765e11527c4e9eb7c272549f79d766f",
+    "merge_commit": "0d25307990587113bd63a33442f402443853ccaf",
+    "runtime": "passed",
+    "full_windows_editor": "passed",
+    "parent_acceptance": "remaining #1474; parent #1454 open",
+    "evidence_paths": [
+      "data-collection/godot-windows-web-1462-main-receipt.json",
+      "data-collection/godot-windows-web-1462-runtime-final.json"
+    ]
+  },
+  "evidence_refs": [
+    "godot-windows-web-1462-request"
+  ],
+  "sha256": "f1cd7104899aa8348ac1add00e23494a7c382232dabbc344fe323a3ed637b81b"
+}

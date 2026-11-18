@@ -23,7 +23,7 @@ placement=native：Godot 原生工作区、平台 WebView 宿主和链接依赖�
 
 执行授权：本聊天 2026-11-18 原始需求与最新“仅接入godot engine”。本会话负责实现、验证及交付，必要决定和实际环境缺口单列；不重复申请已授权步骤。
 
-## 当前候选的实现与未完成范围
+## 首个 macOS 候选的实现与未完成范围（历史分片）
 
 本候选实现 macOS 系统 WKWebView，来源策略和编辑器入口跨平台可编译，其他平台明确显示不支持。Windows WebView2 的后端、SDK/loader 与运行实测仍属未完成验收，不因 macOS 通过而计为完成。持久化实际使用 WebKit 按用户及应用身份隔离的数据存储，不是仓库内自建浏览器 profile。
 
@@ -36,3 +36,9 @@ placement=native：Godot 原生工作区、平台 WebView 宿主和链接依赖�
 PR #1459 已合入 main，提交 bf72c2dd4e36bc057c64cbdd5e9a060163b16526，源候选 dd0ac17406d2e568210f5c9236dd10d3661361ba，签发 ea6c3b9bc6d10e00aff548666b5702f6b53d8652。全部适用 CI（静态、工单关联、Windows 完整编辑器与会话恢复回归、Metal 相关编译）通过；这不把 Windows 构建兼容性计为网页后端完成。
 
 2026-11-18 用户再次明确“同时支持 Windows”。独立子项 #1462（godot-windows-web-20261118）承担 Windows WebView2 后端、依赖分发和实际 Windows 验证；GitHub 原生父子关系两侧已回读，设计在 `design-docs/godot-windows-web-20261118.md`（随子项交付）。原 #1454 继续管理双平台整体验收，不提前关闭。真实显示器交互和生产 HTTPS 会话仍须独立留证。源交付清单与 main 回读在 `data-collection/godot-web-platforms-1454-delivery-manifest.json` 和 `data-collection/godot-web-platforms-1454-main-receipt.json`。
+
+## 双平台剩余验收接续
+
+Windows 后端由 #1462 / PR #1487 交付；确切 CI 与 main 接收以 `data-collection/godot-windows-web-1462-main-receipt.json` 为准。真实 WebView2 隐藏窗口测试已验证页面、持久化、导航拒绝、渲染进程故障后的显式重试和生命周期，原始报告在 `data-collection/godot-windows-web-1462-runtime-final.json`。WebView2 取消导航前可能发出推测 GET；本实现限制文档导航与执行，不宣称网络隔离。
+
+双平台真实显示器交互和生产站点业务验收由原生子项 #1474（godot-web-platforms-acceptance-20261118）承接，逐条映射原验收 2–5，设计见 `design-docs/godot-web-platforms-acceptance-20261118.md`。#1454 保留开放；新子项不是原始验收已完成的证明。用户回执到达后继续修复和复验，不以拆单关闭原目标。
