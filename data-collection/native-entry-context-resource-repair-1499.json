@@ -1,0 +1,102 @@
+{
+  "schema": 1,
+  "issue": 1499,
+  "related": [
+    1501
+  ],
+  "status": "repair-verified-pending-independent-review-and-delivery",
+  "authority": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+  "worktree": "D:\\GongGong-work\\native-entry-runtime-integration-20261118",
+  "scope": [
+    "customizations/components/tianxuan/server/native_entry_context.py",
+    "customizations/components/tianxuan/server/test_native_entry_context_resources.py",
+    "customizations/components/tianxuan/sinan-workorders/native_context.py"
+  ],
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "applied": "Exact source handoff and physical terminal preservation; no completion claim from transport alone."
+  },
+  "baseline": {
+    "transport": "real loopback HTTP, local and remote assignment fixtures",
+    "object_bytes": 131072,
+    "requested_bytes": 32,
+    "storage_instances_for_manifest_and_two_reads": 3,
+    "first_read_body_bytes": 139264,
+    "second_read_body_bytes": 139264,
+    "cold_verifications": 2,
+    "raw_measurement": "RESOURCE_MEASUREMENT {\"instances\": 3, \"cold\": 139264, \"hot\": 139264, \"verifications\": 2}",
+    "concurrency": "Original call held domain._connection_lock across context creation/check/resolve/history; structural finding. No pre-edit concurrency timing captured."
+  },
+  "after": {
+    "transport": "real loopback HTTP, local and remote assignment fixtures",
+    "storage_instances_for_manifest_and_two_reads": 1,
+    "first_read_body_bytes": 139264,
+    "second_read_body_bytes": 8192,
+    "cold_verifications": 1,
+    "raw_measurement": "RESOURCE_MEASUREMENT {\"instances\": 1, \"cold\": 139264, \"hot\": 8192, \"verifications\": 1}",
+    "concurrency": "Second execution HTTP check completes within2seconds while first execution resolve is deliberately held pending release. Both local and remote pass.",
+    "cold_reconstruction": "Recreating EntryContexts from durable ledger creates fresh NativeContextStorage, repeats full authentication139264bytes; same OS process test, no OS restart claim."
+  },
+  "architecture": {
+    "contexts": 16,
+    "waiting_requests": 32,
+    "wait_timeout_seconds": 30,
+    "cache": "Execution-keyed idle LRU; one active lease per execution. Active entries cannot be evicted. Metadata only, durable ledgers and worker occupancy untouched. Condition never held during I/O. Saturation waits within same RPC.",
+    "authority": "Task source/binding/state, mandate, installation, module and remote assignment/token rechecked every operation and after result; physical closure checked before and after RPC.",
+    "memory": "Logical serialized revision metadata <=16MiB, <=65536 object metadata entries, <=2048 revisions, block hash count <=81920 (16*(8MiB/8192 +4096)). No retained body bytes. Python/RSS is not measured or promised. Metadata strings/objects incur representation overhead.",
+    "ledger": "New SQL aggregate budget avoids redundant full-history load for ordinary RPC gate. Existing resolve/delivery history logic unchanged; no prior predicate API existed. Events materialization is capped conservatively at262144logical encoded bytes.",
+    "capacity_timeout": "HTTP503 detail status=not_started reason=context_capacity before any NativeContext operation. No provider retries."
+  },
+  "verification": [
+    {
+      "suite": "Original11 + NativeContext + NativeContextStorage + first12resource tests",
+      "result": "56 passed, 1 existing Starlette deprecation warning",
+      "seconds": 46.1
+    },
+    {
+      "suite": "Final resource suite with capacity timeout and events bounds",
+      "result": "16 passed",
+      "seconds": 9.89
+    },
+    {
+      "suite": "ruff check --no-fix, ruff format --check, mypy --follow-imports=skip, codespell_lib, scoped git diff --check",
+      "result": "passed"
+    }
+  ],
+  "negative_cases": [
+    "waiting authority revoked",
+    "inflight authority revoked after durable started event",
+    "same-execution second request cannot replay unknown read",
+    "idle eviction preserves unknown ledger",
+    "physical closure denies operations and invalid closure cannot produce receipt",
+    "16 occupied slots wait then complete after release",
+    "capacity timeout does not write started and same request later succeeds",
+    "events response exceeds budget rejected while small check still works",
+    "original node enabled/tenant/package/cancel/policy/token/source authority tests"
+  ],
+  "failures_retained": [
+    {
+      "probe": "Baseline resource regression",
+      "result": "2expected assertion failures, hot139264 !=8192"
+    },
+    {
+      "probe": "First postrepair instrumentation",
+      "result": "2failed assertions: captured0instances because EntryContextClient binding had already warmed retained storage; test now clears idle cache before instrumentation. Existing8authority tests passed in same run."
+    },
+    {
+      "probe": "Initial source lookup",
+      "result": "native_store.py is under duobao, not sinan-workorders; located with rg --files; no edits at wrong path."
+    }
+  ],
+  "files": {
+    "customizations/components/tianxuan/server/native_entry_context.py": "5b2eef7176e3307909af8a84756bb75b5521f2c2e9664a57ca6273054988491a",
+    "customizations/components/tianxuan/server/test_native_entry_context_resources.py": "193236f7c55772a13184a4a399e40b39275b1e1dd441e9795e739df774285661",
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "0d63295903cc051019ff771cd4bf250a17cb93f656f0767aa609177390402c2e"
+  },
+  "cleanup": {
+    "temporary_scripts": "Inline Python/PowerShell only; no script files created.",
+    "fixtures": "pytest-managed temporary fixture directories retained for parent independent review; not claimed cleaned.",
+    "preserved": "Original frozen1499report, prior raw failures, sourcePR state, unrelated worktree files unchanged.",
+    "delivery": "No commit,push,provider calls or production network calls; parent owns independent review and delivery."
+  }
+}

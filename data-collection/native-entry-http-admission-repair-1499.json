@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "issue": 1499,
+  "status": "implemented-awaiting-independent-review",
+  "scope": "R1 HTTP context admission only",
+  "authority": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+  "source_hashes": {
+    "customizations/components/tianxuan/server/native_entry_context.py": "af865c9c832ce4cb93794535b6f5d46d11e3afb03e10e6cafc8095d0cf42bfb8",
+    "customizations/components/tianxuan/server/test_native_entry_context_admission.py": "ed3529d76654b1bfd353a072aa09eb92592e4a27a16c891c969c80d131931d5b",
+    "customizations/components/tianxuan/server/test_native_entry_context_resources.py": "806e94b2204e9d4fd2a6ce1b9e20249f9adf377bfc18af82d592ba9d7bf52735",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "3e1c7ad3b71a3cc83c1332ec7edfe967d85046c79e1a43b5e1a2b8b51c3a36e3"
+  },
+  "architecture": {
+    "capacity": "32 current-coordinator resident context RPC requests, covering input collection, parsed arguments, submitted and active workers; this is not a claim about 250 workflow tasks/models.",
+    "executor": "Dedicated 32 workers; no default/global executor submissions. HTTP admission rejects before reading body or submitting work. Worker completion callback releases occupancy even if HTTP handler was cancelled; outer ASGI lifespan joins all physical workers.",
+    "deadline": "One monotonic 30-second default start deadline from HTTP handler entry includes body/executor/lease delays. Lock arbitrates begin against expiration/disconnect. Started operations finish with existing durable unknown/closure semantics and never receive not_started due to deadline.",
+    "memory": "At most32 admitted request bodies, each262144 bytes before decode; at most16 metadata contexts with existing LRU/source bounds. ASGI/network transport buffers and response transmission are outside this input-residency bound; no RSS assertion.",
+    "authority": "Live installation/token/mandate/task/remote assignment checks before lease, every50ms while waiting, and existing per-operation and completed checks; no permission cache.",
+    "transport": "ContextNotStarted subclasses HTTPError only for exact503 JSON detail status not_started/reason context_capacity. No automatic retries. Unknown and all other responses preserve failure semantics."
+  },
+  "verification": {
+    "main": "39 passed, 1 existing Starlette deprecation warning in118.68s; includes12new admission,16resource,11initial focused tests.",
+    "extra": "4 passed: local/remote live revocation while all16cache slots remain occupied; slow-body shared admission deadline.",
+    "actual72": "Both local and remote:72 HTTP requests,40 immediate known-not-started503,32 admitted waiters, all32 complete after capacity release.",
+    "original35seconds": "Both local and remote:28 original blockers then resolve timeout35 returns503 at30.02/30.03s; no durable events before or after slot release.",
+    "delayedexecutor": "Actual _WorkItem.run delayed beyond deadline;32 requests return503, second burst rejected while physical futures still resident; after completion no started events and normal calls recover.",
+    "disconnect": "Real TCP close drains queued lease without started event; in-flight HTTP timeout keeps busy lease until actual work finishes and durable events remain.",
+    "cache": "Cold139264/hot8192 logical body bytes, one cold verification; restart, unknown, physical closure, events budget and independent peer remain covered.",
+    "static": "System Python ruff check --no-fix, ruff format --check, mypy --follow-imports=skip, codespell_lib with private write-changes=false TOML all pass for four owned sources.",
+    "termination": "All test commands terminal; HTTP fixture joins asserted; executor lifespan shutdown waits. Win32_Process found no python/node process referencing this evidence root.",
+    "shutdown_observation": "One uvicorn log Cancel 0 running task(s), timeout graceful shutdown exceeded in final suite; all fixture joins and39tests passed. Preserved verbatim for independent review."
+  },
+  "corrections": [
+    "First main run32passed3failed: remote burst sampled27waiters before all32 threads arrived; now awaits both40rejections and32waiters.",
+    "HTTPx Windows timeout/aclose did not produce observable server disconnect within3seconds; explicit real TCP writer.close validates disconnect. Deadline test retains actual35second HTTPx consumer semantics.",
+    "Slow-body first probe read only HTTP headers; fixed framed Content-Length63 response consumption; original failing log retained.",
+    "codespell --config rejects TOML; corrected to --toml with private config. No source mutation from spell checker."
+  ],
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "applied": [
+      "bind-consumer-release",
+      "reconstruct-worker-outcomes"
+    ],
+    "condition": "Exact candidate hashes and physical terminal outcomes govern handoff; HTTP/worker transport completion alone is not business acceptance.",
+    "trial": "Delayed physical executor work retains capacity and cannot start expired operations."
+  },
+  "remaining": [
+    "Independent review and parent delivery.",
+    "runner.py still handles typed admission exception as generic validation/needs_attention. Parent owns durable pending tool request recovery without repeating received model calls or unknown tool operations.",
+    "No250task/model throughput, package/deploy or production provider validation claimed."
+  ],
+  "cleanup": {
+    "removed": [],
+    "retained": [
+      "All original review reports and fixtures untouched",
+      "Own failed/successful fixtures, test transcripts, private static config/cache retained for exact independent review"
+    ],
+    "reason": "Evidence is pending independent review; no retry or alternative bypass of original automatic cleanup denial. Parent may clean owned temporary resources after delivery/worker terminal verification."
+  },
+  "provider_calls": 0,
+  "production_activation": false,
+  "evidence": {
+    "debug1.txt": "cfb3a3fafa3ef96c197860ee107a571306f9191a3bdd03f9f8afb68b4aff021b",
+    "debug4.txt": "c298a86afd265c80a460934b07d2816e6accc975d0da043e9ff0a630d59f590c",
+    "extra-final-tests.txt": "9fff5a9702a9a979b813115257f1f0db2c905d54531420b909b114d383c8db61",
+    "extra-tests.txt": "39e3e6ab67487af87e3b4923d8bb329f4728855152a539e1df15dc4655ce0de6",
+    "final-tests.txt": "1c33e5bae4ce28c94b5bbbb49103b5c305e8904e8487b87b8eec19f23ab01e9d",
+    "tests1.txt": "d3ef791c1bc78cdf6fe92241629ec66e080d2ad62f2045de44c838c8ccc0f411",
+    "tests2.txt": "f3f814fe87ff065e7657afbc8f8f3418d124759fdf64e07c9c6a72e42178e1f6",
+    "tests3.txt": "a7c3195dd90a68715dbbd38a8f531d6ec2639a2372a2ae46a1b00f1c81e705a8"
+  }
+}

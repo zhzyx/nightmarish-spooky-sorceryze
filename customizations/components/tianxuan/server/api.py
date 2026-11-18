@@ -1780,7 +1780,7 @@ def create_app(
                 "mode": installation["mode"] if installation else "unconfigured",
                 "execution_nodes": native_entry.execution_nodes if native_entry else None,
                 "entry_api": "/api/v1/native/entry" if native_entry else None,
-                "context_tools": False,
+                "context_tools": bool(native_entry and native_entry.runtime_installation is not None),
             },
             "git": not native_only,
         }

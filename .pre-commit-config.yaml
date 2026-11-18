@@ -234,6 +234,9 @@ repos:
             data\-collection/native\-model\-producer\-1486\.json|
             data\-collection/native\-model\-producer\-live\-review\-1486\.json|
             data\-collection/native\-model\-producer\-review\-1486\.json|
+            data-collection/native-entry-context-resource-repair-1499\.json|
+            data-collection/native-entry-http-admission-repair-1499\.json|
+            data-collection/native-entry-runtime-integration-1499\.json|
             data-collection/native-live-comparison-1486\.json|
             data\-collection/native\-progress\-after\-1481\.json|
             data\-collection/native\-progress\-before\-1481\.json|

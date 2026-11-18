@@ -129,3 +129,9 @@ data-collection/native-continuous-two-user-before-1488.json -text whitespace=cr-
 # Preserve exact ordinary-entry implementation and installation-integrity receipts.
 data-collection/native-installation-integrity-repair-1499.json -text whitespace=cr-at-eol
 data-collection/native-production-entry-implementation-1499.json -text whitespace=cr-at-eol
+
+data-collection/native-entry-context-resource-repair-1499.json -text whitespace=cr-at-eol
+
+data-collection/native-entry-http-admission-repair-1499.json -text whitespace=cr-at-eol
+
+data-collection/native-entry-runtime-integration-1499.json -text whitespace=cr-at-eol

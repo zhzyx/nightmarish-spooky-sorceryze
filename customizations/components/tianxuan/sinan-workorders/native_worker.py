@@ -28,6 +28,7 @@ class NativeWorker:
         authorize=None,
         limits=None,
         context_receipt_reader=None,
+        contract_registry=None,
     ):
         if not callable(verify_installation):
             raise NativeStoreError("Installation verifier required")
@@ -36,6 +37,7 @@ class NativeWorker:
         self.context_receipt_reader = context_receipt_reader
         if context_receipt_reader is not None and not callable(context_receipt_reader):
             raise NativeStoreError("Trusted context receipt reader required")
+        self.contract_registry = absolute(contract_registry) if contract_registry is not None else None
         self.store = store
         self.root = absolute(root, missing=True)
         self.root.mkdir(parents=True, exist_ok=True)
@@ -97,6 +99,20 @@ class NativeWorker:
         )
 
     def run(self, task, execution, cancel=None):
+        if self.contract_registry is not None:
+            self._contract(task, execution)
+            path = self.contract_registry / (execution + ".contract.json")
+            encoded = _json(task)
+            if path.exists():
+                if path.read_text(encoding="utf-8") != encoded:
+                    raise NativeStoreError("Producer contract rebound")
+            else:
+                import os
+
+                with path.open("x", encoding="utf-8") as stream:
+                    stream.write(encoded)
+                    stream.flush()
+                    os.fsync(stream.fileno())
         task = json.loads(_json(task))
         self._contract(task, execution)
         recovered = self.reconcile(task, execution)

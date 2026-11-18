@@ -1,0 +1,24 @@
+# Explicit native coordinator overlay. Review and validate an installation in an
+# isolated deployment before adding this file to the existing Compose command.
+# This file does not enroll users, nodes, models, or signing authorities.
+services:
+  api:
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=67108864,mode=1777
+    environment:
+      TIANXUAN_STORAGE_MODE: native
+      TIANXUAN_NATIVE_DB: /data/duobao-native.sqlite
+      TIANXUAN_NATIVE_STATE: /data/native-coordinator
+      TIANXUAN_NATIVE_INSTALLATION: "${TIANXUAN_NATIVE_INSTALLATION:?set the reviewed absolute container manifest path}"
+      TIANXUAN_NATIVE_INSTALLATION_SHA256: "${TIANXUAN_NATIVE_INSTALLATION_SHA256:?set the exact manifest SHA256}"
+      TIANXUAN_NATIVE_RUNTIME: "${TIANXUAN_NATIVE_RUNTIME:-}"
+      TIANXUAN_NATIVE_RUNTIME_SHA256: "${TIANXUAN_NATIVE_RUNTIME_SHA256:-}"
+    volumes:
+      - type: bind
+        source: "${TIANXUAN_NATIVE_INSTALLATION_ROOT:?set the existing reviewed host installation directory}"
+        target: /installation
+        read_only: true
+        bind:
+          create_host_path: false

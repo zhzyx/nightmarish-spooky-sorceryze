@@ -1,0 +1,113 @@
+{
+  "original_report_sha256": "f1812c58c00c71848df29b0b621d0e7add1e755057c373438b151eb7d5cc82b2",
+  "export": "Lossless JSON value export; original retained in private audit archive",
+  "review": {
+    "schema": 1,
+    "issue": 1501,
+    "status": "scoped_pass",
+    "worktree": "D:\\GongGong-work\\native-context-backpressure-20261118",
+    "authority": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "scope": "Independent read-only finite same-RPC admission continuation review; exact three files only. Inherited server R1/R2 accepted by exact unchanged hashes, not broadly re-reviewed.",
+    "source_hashes": {
+      "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "de4c8a8183839cfae927877cae7823c43cce39182914d56d4d9eaf7df3e8b1fd",
+      "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": "efc787046a18f7130c6c07d045c6e6eb93b362418438edffa63547c1e2ae0e0e",
+      "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "b8bd4394235ca07f078388774f7b11b313cd35aff43b7728af2ce9ab216abcdd"
+    },
+    "inherited_source_hashes": {
+      "customizations/components/tianxuan/server/api.py": "bbf8f673aee6e8f3fc4d16584b87022f8462468bc8a5b0ded212c63d03efac19",
+      "customizations/components/tianxuan/server/main.py": "c3fe9915b5aa011d55262b5fb1ca8810ac4d3dc2c6b4f870466e071da2497734",
+      "customizations/components/tianxuan/server/native_entry_api.py": "3e3c515f3d78130add945084114a81643071fdc1cb69eeb049a996e2ca67bb06",
+      "customizations/components/tianxuan/server/native_entry_context.py": "af865c9c832ce4cb93794535b6f5d46d11e3afb03e10e6cafc8095d0cf42bfb8",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "ba3888de3587be7c90a18432847d0f34aece9012d96a8a3e8af16cda93a75c1d",
+      "customizations/components/tianxuan/server/test_native_entry_broker_context.py": "29dde74671f44d7d84efa948473171bd90bb6745ee3cb5adf25bdbc178e27582",
+      "customizations/components/tianxuan/server/test_native_entry_context.py": "802c8ce92b2ceab1b16e2991e1878e6dd3b052f666e7021c484ee7fc0fec00ba",
+      "customizations/components/tianxuan/server/test_native_entry_remote_normal.py": "7a295143edf398b55cefd0c1c18953150fcdf9d4c14b87e9ae5caa2ce69ce79e",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "d07e0cd4dbf053a8179e3e7056165f6fc9c97628fcb7d75a28c162830749de19",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "0b44f7f7f385454729c5a6cd2cf38ef4113b4ee6526d6a0bbee6ee5ed68eb2b6",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "42986e21bb5c528c4dfbc342ff597613aee861ff0468bbb2c2d12b89453b4803",
+      "customizations/components/tianxuan/sinan-workorders/native_node.py": "bfafb68f372f91367878974d9e24c344cdaf8df0d766d1ab0b2b4d5afb7adb84",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "26ad8ef3f1d07faeb04ee7fa89ac266346806dade17d77514bb4744680b402c9",
+      "design-docs/native-production-entry-20261118.md": "c73edb616cb79621076693d563d76fd8c3838d873df0dc723e592502e38c46a2",
+      "customizations/components/tianxuan/server/test_native_entry_context_resources.py": "806e94b2204e9d4fd2a6ce1b9e20249f9adf377bfc18af82d592ba9d7bf52735",
+      "customizations/components/tianxuan/sinan-workorders/native_context.py": "0d63295903cc051019ff771cd4bf250a17cb93f656f0767aa609177390402c2e",
+      "customizations/components/tianxuan/server/test_native_entry_context_admission.py": "ed3529d76654b1bfd353a072aa09eb92592e4a27a16c891c969c80d131931d5b",
+      "customizations/components/tianxuan/server/test_native_entry_installation_lifecycle.py": "d1b701d66ca066df48670b47bd1b8dd6dd884aee8e527164eacbd0230ae19470"
+    },
+    "source_hashes_unchanged_before_after": true,
+    "blocking_findings": [],
+    "review": {
+      "identity": "Serialized JSON bytes and Request are constructed once before loop. Identical execution URL, args and call persist. Closed binding/check/resolve/delivery/emit/events set checked before networking.",
+      "refusal": "Only HTTP503 decoded exact detail={status:not_started,reason:context_capacity} becomes ContextNotStarted. Additional fields or malformed,401,409 and network/timeout/unknown propagate without retry. Error handles close in finally. No catch can replay admitted uncertain operation.",
+      "finite": "Default16 total attempts. Equal jitter starts0.125-0.25s and caps2-4s. Before each subsequent attempt reserve35s plus pending delay; recheck after sleep catches scheduling stalls. Exhaustion retains ContextNotStarted. First attempt unconditional.120s is admission scheduling budget;35s urllib timeout protects socket inactivity, not total response deadline. No claim of120s total wall time.",
+      "authority": "Actual local and remote live authority revocation/withdrawal during refusal result409 and no started/resolved ledger entries; release permits exactly one started/resolved.",
+      "broker": "Unchanged actual broker helper checks produced signed result, physical worker closure, output and grant. Injected one typed refusal results same resolve execution+args/call repeated, three synthetic model turns and one thread, exactly normal fixture count. No extra model turn caused by admission continuation.",
+      "cancellation": "Independent actual NativeWorker profile runs client in child process; cancellation after first typed refusal reaches retry sleep. Worker returns failed, process_closed true, later recovery returns identical terminal without relaunch; attempt count remains1. KeyboardInterrupt unit probe also propagates. This proves local physical process cancellation in this fixture, not remote provider cancellation.",
+      "fixture_correction": "Read implementation disclosure: original50ms artificial saturation deadline failed remote authority fixture;500ms is current fixture only. No production30s deadline changed. Original failed receipts remain; not classified production defect.",
+      "efficiency": "Independent250local RPC burst:1656attempts/250successes=6.624attempts per successful RPC;1406extra capacity refusals.250bodyreads shows pre-body rejection effectiveness for this fixture. No comparative baseline or cost saving inferred. Finite policy may exhaust with sustained contention; no universal250completion guarantee.",
+      "durability": "No durable pending tool/crash continuation implemented; outer runner behavior and explicit recovery unchanged."
+    },
+    "verification": {
+      "current_backpressure_suite": "24 passed49.41s, actual HTTP negatives, local/remote release/revoke/withdraw, elapsed/attempt exhaustion, default broker, burst",
+      "independent_suite": "2 passed2.14s: actual owned worker cancellation during sleep with physical closure and no relaunch; default16 attempts and scheduler stall reserve",
+      "ruff": "System py -B -X utf8 -m ruff check --no-fix --no-cache: passed on2Python files",
+      "broker": {
+        "duration_seconds": 7.156,
+        "synthetic_model_turns": 3,
+        "threads": 1,
+        "resolve_attempts": 3
+      },
+      "burst": {
+        "duration_seconds": 28.234,
+        "requests": 250,
+        "successful_tools": 250,
+        "started": 250,
+        "resolved": 250,
+        "rpc_attempts": 1656,
+        "body_reads": 250,
+        "model_calls": 0
+      },
+      "prior_regression": "Implementation report24existing tests and previous cache receipts read only; not rerun or counted as own tests."
+    },
+    "limitations": [
+      "Only this three-file finite live admission scope accepted; complete1501,1499 and parent acceptance remain separate.",
+      "No real model/provider calls, no250realmodel benchmark, no current production server throughput/cost claim.",
+      "No durable crash continuation, deployment, source/index mutation, commit/push/CI/main delivery or Issue closure.",
+      "Inherited18source hashes verified unchanged; original independent R1/R2 receipt remains scoped authority."
+    ],
+    "method_learning": {
+      "recall": "editor-dependency-handoff, verified await-terminal-observers/bind-consumer-release/reconstruct-worker-outcomes",
+      "application": "Pin exact source before/after; verify physical closure and immutable recovered terminal instead of relying on synthetic output alone.",
+      "counterexample": "Synthetic local burst completion is not real provider throughput or full business acceptance.",
+      "parent_followup": "No learning event append outside delegated paths; parent may record scoped reuse using this receipt."
+    },
+    "raw_failures": {
+      "tests": "No failures in own two pytest executions.",
+      "read_only_setup": [
+        "Initial Get-Content mistakenly searched server/test_native_workflow.py: path does not exist; corrected through rg --files to sinan-workorders/test_native_workflow.py.",
+        "PowerShell rg literal wildcard arguments data-collection/native-context* and test_native_worker*.py returned invalidfilename123; corrected by directory search and -g patterns. Raw tool outputs retained in chat; no source mutation."
+      ]
+    },
+    "cleanup": {
+      "commands_terminal": true,
+      "listeners_and_threads": "All fixtures joined listeners/threads; independent actual child physical closure asserted; final filtered Win32process readback found no owned python/node process.",
+      "removed": [],
+      "retained": "Private synthetic fixture files, databases, source probe and logs retained under delegated probe directory as review evidence. Parent owns final post-delivery cleanup; no existing cache/app rejection bypass or deletion claimed."
+    },
+    "receipt_bindings": {
+      "source_handoff": "79227f4871224c17916101e05309e61ba08c0f18fb61a7be1847a7ccb7bf7754",
+      "inherited_review": "0ea509ecb66e790a84ce8762ce8ba61c45a18fe661958d28c5103f85882bf9fc",
+      "implementation_report": "db7fa2afccbd4d6c7a62261043e56b74c3e76acc6ba4e772880261974563148d"
+    },
+    "evidence_base": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-backpressure-review-probes",
+    "evidence": {
+      "hashes-after.json": "ac61ce9dd973377af9f1796995bb758ebed3cc419f0469169e86fbd7f8be6705",
+      "hashes-before.json": "806ef19b0c0cc73babaa6717318c6575e721ee9274bfb2464c0971c1172d207a",
+      "independent-1.log": "63dfbdfc7c06c1d7ae2eff2a06b082b10b394d05d123eac038daadb67e4ac32a",
+      "method-recall.json": "87fa46f3f782375d32bb736689a02824f8e0a9fb44e8612c2ac3438866889c65",
+      "ruff.log": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0",
+      "tests-1.log": "3636ed756e36b1b8f01099ec94480ecc491790554236b4ef9ab12becf2cac4ff",
+      "test_independent.py": "452c7dea78d7e54486c2aea3df211c3332f82b9d327005c0bdad5abdca5f56f8",
+      "write_report.py": "c7514bd3ea4e40c266f2e2ec420761d16eea882f86f435e039cab587d0a0c913"
+    }
+  }
+}
