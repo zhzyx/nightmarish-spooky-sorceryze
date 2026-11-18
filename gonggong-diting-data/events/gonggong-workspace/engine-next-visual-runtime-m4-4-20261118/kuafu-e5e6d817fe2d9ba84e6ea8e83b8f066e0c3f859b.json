@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e5e6d817fe2d9ba84e6ea8e83b8f066e0c3f859b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0abaf25eb110b6d63f12ea3473b15429e644fdd52c9a57c0b7b4b28536752a60",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1512",
+    "action": "delivery",
+    "detection_head": "8984cadb07022079328f0362c68bc20bcd6926ee",
+    "context_sha256": "28614fc6a3b39e2ae529dc5ef79c8c7e7b5b033e43100945a5609a5a3ba673be",
+    "operator": "kaiyunxue",
+    "worker": "codex/root",
+    "authority_ref": "Current Codex user authorization to implement and deliver full Engine Next M4",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44247731094",
+    "diagnosis": "Root edited a previously committed data-collection verification while correcting a CI spelling false positive. issue_gate.check_collection correctly requires append-only evidence. Product source and all 316 native input hashes remain unchanged. Independent review confirmed the two-line typed-identifier dictionary exception.",
+    "next_action": "Restore the committed verification byte-for-byte, append a separately named CI correction verification and current static proof, rerun exact-candidate formal gate and signed PR CI, then close only the blocker after main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T05:56:36.279871+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T05:59:02.405139+00:00",
+  "sha256": "fb0f443031d5077782683bd3e9ade2f4fc9b00b1fc38cb2edb24a9b67b91e2c4"
+}

@@ -873,3 +873,60 @@ ENGINE_NEXT_TEST("RenderPipeline keeps optional material buffers absent in legac
 	ENGINE_NEXT_CHECK_EQ(stPipeline.arrMaterialBuffers[1], EngineNext::Rendering::INVALID_RESOURCE);
 	CheckReusableStates(stPipeline);
 }
+
+ENGINE_NEXT_TEST("Geometry pipeline preserves current depth and indirect dependencies")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, false, { true, true, 8 }));
+	const CompiledPass *pDepth = FindWork(stPipeline, PassWork::GeometryDepth);
+	const CompiledPass *pCull = FindWork(stPipeline, PassWork::GeometryCullColor);
+	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
+	const CompiledPass *pReadback = FindWork(stPipeline, PassWork::GeometryReadback);
+	ENGINE_NEXT_CHECK(pDepth != nullptr && pCull != nullptr && pGbuffer != nullptr && pReadback != nullptr);
+	ENGINE_NEXT_CHECK(HasAccess(*pDepth, stPipeline.nDepth, ResourceState::DepthWrite, true));
+	ENGINE_NEXT_CHECK(HasAccess(*pDepth, stPipeline.arrGeometryArguments[0], ResourceState::IndirectArgument, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pCull, stPipeline.nGeometryHiZ, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pGbuffer, stPipeline.arrGeometryArguments[1], ResourceState::IndirectArgument, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pReadback, stPipeline.arrGeometryCounters[1], ResourceState::CopySource, false));
+	for (std::uint32_t nMip = 0; nMip < 8; ++nMip)
+	{
+		ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::GeometryHiZ, nMip) != nullptr);
+	}
+	CheckReusableStates(stPipeline);
+}
+ENGINE_NEXT_TEST("Geometry disabled occlusion retains frustum submissions and original fixed path")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, false, false, 0, 0, {}, false, false, { true, false, 1 }));
+	ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::GeometryDepth) != nullptr);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nGeometryHiZ, EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::GeometryHiZ, 0) == nullptr);
+	CheckReusableStates(stPipeline);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic, 0, true, false, 0, 0, {}, false, false, { true, true, 8 }));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 4U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nGeometryClusters, EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, false, 0, 0, {}, false, false, { true, true, 16 }));
+}
+
+ENGINE_NEXT_TEST("RenderPipeline combines GI and geometry with reusable resources")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 28, true, true, 6, 6, { true, true }, true, true, { true, true, 15 }));
+	const CompiledPass *pGiUpdate = FindWork(stPipeline, PassWork::GiUpdate);
+	const CompiledPass *pCull = FindWork(stPipeline, PassWork::GeometryCullColor);
+	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
+	const CompiledPass *pLighting = FindWork(stPipeline, PassWork::DeferredLighting);
+	ENGINE_NEXT_CHECK(pGiUpdate != nullptr && pCull != nullptr && pGbuffer != nullptr && pLighting != nullptr);
+	if (pGiUpdate == nullptr || pCull == nullptr || pGbuffer == nullptr || pLighting == nullptr)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(pGiUpdate->nPass < pLighting->nPass);
+	ENGINE_NEXT_CHECK(pCull->nPass < pGbuffer->nPass);
+	ENGINE_NEXT_CHECK(HasAccess(*pGbuffer, stPipeline.arrGeometryArguments[1], ResourceState::IndirectArgument, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pLighting, stPipeline.arrGiWrite[0], ResourceState::ShaderRead, false));
+	CheckReusableStates(stPipeline);
+}

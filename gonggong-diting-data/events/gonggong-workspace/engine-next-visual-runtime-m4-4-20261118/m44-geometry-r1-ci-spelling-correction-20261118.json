@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "event_id": "m44-geometry-r1-ci-spelling-correction-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T05:54:52.686890+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1511",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m44-geometry-r1-combination-accepted-20261118"
+  ],
+  "payload": {
+    "failure": "PR1511 remote codespell rewrote a correctly spelled C++ array identifier and the aggregate explanation. The local command exception was absent from repository CI configuration.",
+    "failed_signed_commit": "9dc7832f5eb9cd00a114a8a7dfcdb21f6c7025a3",
+    "ci_log": {
+      "path": "build/engine_next/GeometryCiStaticFailure.log",
+      "sha256": "730f843aef3b66edd96bb2852e16316221f033f6f8df19079fdf2e571872e3ec",
+      "size_bytes": 304901
+    },
+    "correction": "The existing repository spelling dictionary now contains only that lowercase identifier. Source and runtime bytes retain their tested identities.",
+    "configuration": {
+      "path": "pyproject.toml",
+      "sha256": "1ae7c920b76cdb3cd750f1df5b63ce26b1fe6daa877e78457066a7a64c87359e",
+      "size_bytes": 5147
+    },
+    "scope": "Lint metadata only; current 316 native inputs and 46 compiled shaders retain the frozen candidate.",
+    "stage_complete": false,
+    "issues_remaining_open": [
+      1506,
+      1323
+    ]
+  },
+  "sha256": "e894b22fbf8a5375ea86d8ba849dba2f128e3e6e4f7b03f8b289ea83dd1e248b"
+}

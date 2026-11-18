@@ -59,7 +59,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry)
 {
 	if (nLocalShadowViews > 28)
 	{
@@ -74,6 +74,11 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 	if (nReflectionMips > 6)
 	{
 		out_stDiagnostic = { GraphError::CapacityExceeded, INVALID_PASS, INVALID_RESOURCE, "Reflection color-mip budget exceeded." };
+		return false;
+	}
+	if (bSceneMode && stGeometry.bEnabled && (stGeometry.nHiZMips == 0 || stGeometry.nHiZMips > 15))
+	{
+		out_stDiagnostic = { GraphError::InvalidAccess, INVALID_PASS, INVALID_RESOURCE, "Geometry Hi-Z supports 1..15 levels." };
 		return false;
 	}
 	FrameGraph stGraph;
@@ -176,6 +181,51 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			stGbuffer.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::ShaderRead, false });
 			stLighting.arrAccesses.push_back({ stPipeline.nExposureRead, ResourceState::ShaderRead, false });
 		}
+		if (stGeometry.bEnabled)
+		{
+			stPipeline.nGeometryClusters = stGraph.AddResource({ "GeometryClusters", ResourceState::Common, true });
+			stPipeline.nGeometryReadback = stGraph.AddResource({ "GeometryReadback", ResourceState::CopyDestination, true });
+			for (std::uint32_t nPhase = 0; nPhase < 2; ++nPhase)
+			{
+				stPipeline.arrGeometryArguments[nPhase] = stGraph.AddResource({ "GeometryArguments" + std::to_string(nPhase), ResourceState::Common, true });
+				stPipeline.arrGeometryCounters[nPhase] = stGraph.AddResource({ "GeometryCounters" + std::to_string(nPhase), ResourceState::Common, true });
+			}
+			if (!AddPipelinePass(stGraph, stPipeline, { "GeometryUpload", QueueType::Graphics, { { stPipeline.nGeometryClusters, ResourceState::CopyDestination, true } }, {} }, PassWork::GeometryUpload, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline, { "GeometryClearDepth", QueueType::Graphics, { { stPipeline.arrGeometryCounters[0], ResourceState::UnorderedAccess, true } }, {} }, PassWork::GeometryClearDepth, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline, { "GeometryCullDepth", QueueType::Graphics, { { stPipeline.nGeometryClusters, ResourceState::NonPixelShaderRead, false }, { stPipeline.arrGeometryArguments[0], ResourceState::UnorderedAccess, true }, { stPipeline.arrGeometryCounters[0], ResourceState::UnorderedAccess, true } }, {} }, PassWork::GeometryCullDepth, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline, { "GeometryDepth", QueueType::Graphics, { { stPipeline.arrGeometryArguments[0], ResourceState::IndirectArgument, false }, { stPipeline.arrGeometryCounters[0], ResourceState::IndirectArgument, false }, { stPipeline.nDepth, ResourceState::DepthWrite, true } }, {} }, PassWork::GeometryDepth, out_stDiagnostic))
+			{
+				return false;
+			}
+			if (stGeometry.bOcclusion)
+			{
+				stPipeline.nGeometryHiZ = stGraph.AddResource({ "GeometryHiZ", ResourceState::Common, true, stGeometry.nHiZMips });
+				for (std::uint32_t nMip = 0; nMip < stGeometry.nHiZMips; ++nMip)
+				{
+					PassDesc stHiZ{ "GeometryHiZ" + std::to_string(nMip), QueueType::Graphics, { { stPipeline.nGeometryHiZ, ResourceState::UnorderedAccess, true, nMip, 1 } }, {} };
+					stHiZ.arrAccesses.push_back(nMip == 0 ? ResourceAccess{ stPipeline.nDepth, ResourceState::DepthRead, false } : ResourceAccess{ stPipeline.nGeometryHiZ, ResourceState::NonPixelShaderRead, false, nMip - 1, 1 });
+					if (!AddPipelinePass(stGraph, stPipeline, stHiZ, PassWork::GeometryHiZ, out_stDiagnostic, nMip))
+					{
+						return false;
+					}
+				}
+			}
+			if (!AddPipelinePass(stGraph, stPipeline, { "GeometryClearColor", QueueType::Graphics, { { stPipeline.arrGeometryCounters[1], ResourceState::UnorderedAccess, true } }, {} }, PassWork::GeometryClearColor, out_stDiagnostic))
+			{
+				return false;
+			}
+			PassDesc stCullColor{ "GeometryCullColor", QueueType::Graphics, { { stPipeline.nGeometryClusters, ResourceState::NonPixelShaderRead, false }, { stPipeline.arrGeometryArguments[1], ResourceState::UnorderedAccess, true }, { stPipeline.arrGeometryCounters[1], ResourceState::UnorderedAccess, true } }, {} };
+			if (stGeometry.bOcclusion)
+			{
+				stCullColor.arrAccesses.push_back({ stPipeline.nGeometryHiZ, ResourceState::NonPixelShaderRead, false });
+			}
+			if (!AddPipelinePass(stGraph, stPipeline, stCullColor, PassWork::GeometryCullColor, out_stDiagnostic))
+			{
+				return false;
+			}
+			stGbuffer.arrAccesses.push_back({ stPipeline.arrGeometryArguments[1], ResourceState::IndirectArgument, false });
+			stGbuffer.arrAccesses.push_back({ stPipeline.arrGeometryCounters[1], ResourceState::IndirectArgument, false });
+		}
 		for (ResourceId nResource : stPipeline.arrGbuffer)
 		{
 			stGbuffer.arrAccesses.push_back({ nResource, ResourceState::RenderTarget, true });
@@ -209,6 +259,10 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		}
 		if (!AddPipelinePass(stGraph, stPipeline, stGbuffer, PassWork::GBuffer, out_stDiagnostic) ||
 			!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic))
+		{
+			return false;
+		}
+		if (stGeometry.bEnabled && !AddPipelinePass(stGraph, stPipeline, { "GeometryReadback", QueueType::Graphics, { { stPipeline.arrGeometryCounters[0], ResourceState::CopySource, false }, { stPipeline.arrGeometryCounters[1], ResourceState::CopySource, false }, { stPipeline.nGeometryReadback, ResourceState::CopyDestination, true } }, {} }, PassWork::GeometryReadback, out_stDiagnostic))
 		{
 			return false;
 		}
@@ -538,6 +592,19 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 						{} };
 	if (bSceneMode)
 	{
+		if (stGeometry.bEnabled)
+		{
+			stPresent.arrAccesses.push_back({ stPipeline.nGeometryClusters, ResourceState::Common, false });
+			for (std::uint32_t nPhase = 0; nPhase < 2; ++nPhase)
+			{
+				stPresent.arrAccesses.push_back({ stPipeline.arrGeometryArguments[nPhase], ResourceState::Common, false });
+				stPresent.arrAccesses.push_back({ stPipeline.arrGeometryCounters[nPhase], ResourceState::Common, false });
+			}
+			if (stGeometry.bOcclusion)
+			{
+				stPresent.arrAccesses.push_back({ stPipeline.nGeometryHiZ, ResourceState::Common, false });
+			}
+		}
 		stPresent.arrAccesses.push_back({ stPipeline.nDepth, ResourceState::DepthWrite, true, 0, ALL_SUBRESOURCES, true });
 		stPresent.arrAccesses.push_back({ stPipeline.nHdr, ResourceState::Common, false });
 		stPresent.arrAccesses.push_back({ stPipeline.nDirectionalShadow, ResourceState::DepthWrite, true, 0, ALL_SUBRESOURCES, true });

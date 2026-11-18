@@ -1,0 +1,1946 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "issue_number": 1506,
+  "related_issue_number": 1505,
+  "recorded_at": "2026-11-18T05:23:33.897142+00:00",
+  "placement": "mixed",
+  "source_manifest": {
+    "path": "build/engine_next/integrated-impact-r1/SourceManifest.json",
+    "bytes": 64329,
+    "sha256": "92e6105a7d7d2fb0e695cf1c729e00eaf8472ce794498a683315727aa8633a33"
+  },
+  "builds": {
+    "Baseline": {
+      "native_key": "c2311438b0133d044d29429b009dab2b1bb999aaa2baa5c315c8cc03defe7ba9",
+      "report": {
+        "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VisualBuildReport.json",
+        "bytes": 2642876,
+        "sha256": "423da5131a95ca452f3233d27de53ff0ed177c2f978e5762a1e797fdb5abaa81"
+      },
+      "summary": "MATERIAL_HEMISPHERE cases=72 minimum=0.184115 maximum=0.991663\r\nMATERIAL_ENVIRONMENT_FURNACE cases=72 minimum=0.184124 maximum=0.998307\r\nSTRATIFIED_ALIAS chi_squared=70.4851 old_zero_coins=24 new_zero_coins=0\r\nFREQUENCY chi_squared=101.887 bins=96\r\nWHITE -0.7 0 0.566173 0.564346\r\nWHITE -0.7 1 0.546969 0.546577\r\nWHITE 0.7 0 0.566173 0.566221\r\nWHITE 0.7 1 0.546969 0.546339\r\nSUN reference=0.770397094325 baseline_mean=0.774405358803 mis_mean=0.76875746176 baseline_mse=6.59234655954 mis_mse=0.0198964623669 ratio=0.00301811535349 baseline_variance=6.59233049335 mis_variance=0.0198937739719 mis_standard_error=0.000779172510674\r\nENGINE_NEXT_RENDERING_TEST_SUMMARY tests=417 checks=484987 failures=0",
+      "binary": {
+        "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/next_visual_client.exe",
+        "bytes": 3437056,
+        "sha256": "045b81cb0ddcd338a0e90e1782ba83c29f495e7cf6f6d5669e9dc1dc317af7fb"
+      },
+      "shader_files": [
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Deferred.vs.cso",
+          "bytes": 8272,
+          "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Deferred.ps.cso",
+          "bytes": 9796,
+          "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/MaterialDeferred.ps.cso",
+          "bytes": 10172,
+          "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/MaterialLighting.ps.cso",
+          "bytes": 117808,
+          "sha256": "aac456cac58467287cc7ec17fe418c2856a4a76663893127956656d970b582ae"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Temporal.cs.cso",
+          "bytes": 19880,
+          "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/BloomDown.cs.cso",
+          "bytes": 43620,
+          "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ReflectionLighting.ps.cso",
+          "bytes": 77608,
+          "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/MaterialReflectionLighting.ps.cso",
+          "bytes": 118312,
+          "sha256": "d8fdcb41b2ffe7b7101f1b2ca9e7b551ff5fe2f2d867093472ca3a55a0602a33"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ReflectionColor.cs.cso",
+          "bytes": 4928,
+          "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ReflectionTrace.cs.cso",
+          "bytes": 31880,
+          "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/MaterialReflectionTrace.cs.cso",
+          "bytes": 82680,
+          "sha256": "9964ad98771e172f329d2c82efc5e4f7028e09f799cf9730e37da6f6912b9648"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ReflectionComposite.cs.cso",
+          "bytes": 5100,
+          "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ReflectionRadiance.cs.cso",
+          "bytes": 4304,
+          "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VolumeInject.cs.cso",
+          "bytes": 8836,
+          "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VolumeLight.cs.cso",
+          "bytes": 66432,
+          "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VolumeTemporal.cs.cso",
+          "bytes": 16000,
+          "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VolumeIntegrate.cs.cso",
+          "bytes": 7508,
+          "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VolumeComposite.cs.cso",
+          "bytes": 19948,
+          "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Transparent.vs.cso",
+          "bytes": 7224,
+          "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Transparent.ps.cso",
+          "bytes": 96584,
+          "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/MaterialTransparent.ps.cso",
+          "bytes": 137108,
+          "sha256": "3044198db486b7a963f650e0d1d2bc06d8b4887ed1b4afff92e110d21d8c6321"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiLighting.ps.cso",
+          "bytes": 113696,
+          "sha256": "46ee6d5f0ba10cd7766274e39c6a3c32af36ef9b502139828a0b0d90aeeb1ce3"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiMaterialLighting.ps.cso",
+          "bytes": 154716,
+          "sha256": "c9e271296d355fdf9f3da0b568fed0e6789a6f4674f0c1014b3a6ac27e72caa0"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiReflectionLighting.ps.cso",
+          "bytes": 114200,
+          "sha256": "0dbd1862da9d7fa84fc03319c28f6a066c1b123fec26d0d18996ce61580629db"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiMaterialReflectionLighting.ps.cso",
+          "bytes": 155212,
+          "sha256": "a64178acc209cdda27ae9840d602d1b1da202722da0bad95a46b88e6e9d35c74"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiTransparent.ps.cso",
+          "bytes": 133420,
+          "sha256": "73c6c406206b3657160a3a84afb5ab843531e2421443880b58679ae630f55441"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiMaterialTransparent.ps.cso",
+          "bytes": 174428,
+          "sha256": "8b8132fb7d11fadb9c4c29b3cb34a794c4328d8a620383a16ace6021e6c6a328"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiPrepare.cs.cso",
+          "bytes": 7008,
+          "sha256": "3458bebc9a1ad2e6ad3bf9a6e0ccb16c4d010682afbf61edf93482a4948f0ffe"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiTrace.cs.cso",
+          "bytes": 132744,
+          "sha256": "319643e25123cda5f31d96e0ce559d84903ccb08809de88b2e37b3f36dd6e8f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiIntegrate.cs.cso",
+          "bytes": 14104,
+          "sha256": "d62629d44c24aa5b1489f4a315c852a648e55d9837079c57e50acbf9a62f588d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GeometryCull.cs.cso",
+          "bytes": 13484,
+          "sha256": "6cfdf85dab45264853e02250e07784dd0c69996c2dd07b776178582fd9a94891"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GeometryHiZCopy.cs.cso",
+          "bytes": 3492,
+          "sha256": "c7903bc86740ce6e76935cf58bc39a0c249eb93012074e198f14b2f06d890873"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GeometryHiZReduce.cs.cso",
+          "bytes": 3816,
+          "sha256": "de4f7c0219ea5bcde366580e2bd501e6e1ca3f991c8a607f4d8465e4b4ca7485"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GeometryDepth.vs.cso",
+          "bytes": 4632,
+          "sha256": "d512d92cfa83cf0c59ada91b855ee8dff3126a3057e6768face7e012a117905d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GeometryDepth.ps.cso",
+          "bytes": 4236,
+          "sha256": "e439f80592f6a4b0159be38a3438e153e87ccd79a44ce355b00804cbf3649759"
+        }
+      ],
+      "directory": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline"
+    },
+    "Changed": {
+      "native_key": "ef4efc213a8f12f03dd7003b6765b15bc000857809c07be175988dead26faa0a",
+      "report": {
+        "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VisualBuildReport.json",
+        "bytes": 2642175,
+        "sha256": "608750f2fa67630bdd946cf035b9f9048807404b58c6cd8fa9ae774dbabac3e0"
+      },
+      "summary": "MATERIAL_HEMISPHERE cases=72 minimum=0.184115 maximum=0.991663\r\nMATERIAL_ENVIRONMENT_FURNACE cases=72 minimum=0.184124 maximum=0.998307\r\nSTRATIFIED_ALIAS chi_squared=70.4851 old_zero_coins=24 new_zero_coins=0\r\nFREQUENCY chi_squared=101.887 bins=96\r\nWHITE -0.7 0 0.566173 0.564346\r\nWHITE -0.7 1 0.546969 0.546577\r\nWHITE 0.7 0 0.566173 0.566221\r\nWHITE 0.7 1 0.546969 0.546339\r\nSUN reference=0.770397094325 baseline_mean=0.774405358803 mis_mean=0.76875746176 baseline_mse=6.59234655954 mis_mse=0.0198964623669 ratio=0.00301811535349 baseline_variance=6.59233049335 mis_variance=0.0198937739719 mis_standard_error=0.000779172510674\r\nENGINE_NEXT_RENDERING_TEST_SUMMARY tests=417 checks=484987 failures=0",
+      "binary": {
+        "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/next_visual_client.exe",
+        "bytes": 3437056,
+        "sha256": "084d446c3f87b3e9413e1d7c188ee0a5eaf48788145ef2a03e1b6f2099e40acd"
+      },
+      "shader_files": [
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Deferred.vs.cso",
+          "bytes": 8272,
+          "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Deferred.ps.cso",
+          "bytes": 9796,
+          "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/MaterialDeferred.ps.cso",
+          "bytes": 10172,
+          "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/MaterialLighting.ps.cso",
+          "bytes": 117808,
+          "sha256": "aac456cac58467287cc7ec17fe418c2856a4a76663893127956656d970b582ae"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Temporal.cs.cso",
+          "bytes": 19880,
+          "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/BloomDown.cs.cso",
+          "bytes": 43620,
+          "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ReflectionLighting.ps.cso",
+          "bytes": 77608,
+          "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/MaterialReflectionLighting.ps.cso",
+          "bytes": 118312,
+          "sha256": "d8fdcb41b2ffe7b7101f1b2ca9e7b551ff5fe2f2d867093472ca3a55a0602a33"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ReflectionColor.cs.cso",
+          "bytes": 4928,
+          "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ReflectionTrace.cs.cso",
+          "bytes": 31880,
+          "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/MaterialReflectionTrace.cs.cso",
+          "bytes": 82680,
+          "sha256": "9964ad98771e172f329d2c82efc5e4f7028e09f799cf9730e37da6f6912b9648"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ReflectionComposite.cs.cso",
+          "bytes": 5100,
+          "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ReflectionRadiance.cs.cso",
+          "bytes": 4304,
+          "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VolumeInject.cs.cso",
+          "bytes": 8836,
+          "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VolumeLight.cs.cso",
+          "bytes": 66432,
+          "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VolumeTemporal.cs.cso",
+          "bytes": 16000,
+          "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VolumeIntegrate.cs.cso",
+          "bytes": 7508,
+          "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VolumeComposite.cs.cso",
+          "bytes": 19948,
+          "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Transparent.vs.cso",
+          "bytes": 7224,
+          "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Transparent.ps.cso",
+          "bytes": 96584,
+          "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/MaterialTransparent.ps.cso",
+          "bytes": 137108,
+          "sha256": "3044198db486b7a963f650e0d1d2bc06d8b4887ed1b4afff92e110d21d8c6321"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiLighting.ps.cso",
+          "bytes": 113736,
+          "sha256": "dfaae11c37dd7f4137c3a4aa7dbb5171a7506ec35cdce3cc97007c415fd68182"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiMaterialLighting.ps.cso",
+          "bytes": 154728,
+          "sha256": "cd5dbe0784f31a2302bcdc301f34cd0c1176901be9cf5940ded1547bd0d74b9a"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiReflectionLighting.ps.cso",
+          "bytes": 114240,
+          "sha256": "26fa1b11c19e533236bc26019ac226e90b0d02e4337e932bd491d847ce29bba2"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiMaterialReflectionLighting.ps.cso",
+          "bytes": 155224,
+          "sha256": "b590738dae600a8d2973f887208e6301dd7f8239eab5ba15ae5b4d066e27febd"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiTransparent.ps.cso",
+          "bytes": 133460,
+          "sha256": "a8bb722cf2d416aae0c52ca1e69164ade9707b7f5b138bfaae4bfc9aebfe272b"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiMaterialTransparent.ps.cso",
+          "bytes": 174440,
+          "sha256": "b8bf91a19641db437d0d78b253506791a6071fc475b8f7670413fdd70eb6c9c2"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiPrepare.cs.cso",
+          "bytes": 7008,
+          "sha256": "3458bebc9a1ad2e6ad3bf9a6e0ccb16c4d010682afbf61edf93482a4948f0ffe"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiTrace.cs.cso",
+          "bytes": 132744,
+          "sha256": "319643e25123cda5f31d96e0ce559d84903ccb08809de88b2e37b3f36dd6e8f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiIntegrate.cs.cso",
+          "bytes": 14104,
+          "sha256": "d62629d44c24aa5b1489f4a315c852a648e55d9837079c57e50acbf9a62f588d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GeometryCull.cs.cso",
+          "bytes": 13484,
+          "sha256": "6cfdf85dab45264853e02250e07784dd0c69996c2dd07b776178582fd9a94891"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GeometryHiZCopy.cs.cso",
+          "bytes": 3492,
+          "sha256": "c7903bc86740ce6e76935cf58bc39a0c249eb93012074e198f14b2f06d890873"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GeometryHiZReduce.cs.cso",
+          "bytes": 3816,
+          "sha256": "de4f7c0219ea5bcde366580e2bd501e6e1ca3f991c8a607f4d8465e4b4ca7485"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GeometryDepth.vs.cso",
+          "bytes": 4632,
+          "sha256": "d512d92cfa83cf0c59ada91b855ee8dff3126a3057e6768face7e012a117905d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GeometryDepth.ps.cso",
+          "bytes": 4236,
+          "sha256": "e439f80592f6a4b0159be38a3438e153e87ccd79a44ce355b00804cbf3649759"
+        }
+      ],
+      "directory": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed"
+    },
+    "Restored": {
+      "native_key": "c2311438b0133d044d29429b009dab2b1bb999aaa2baa5c315c8cc03defe7ba9",
+      "report": {
+        "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VisualBuildReport.json",
+        "bytes": 2642876,
+        "sha256": "6267938feba130c764033219fc03e2623e393cb9b2ac83bdc7cbadf4bf0f1db7"
+      },
+      "summary": "MATERIAL_HEMISPHERE cases=72 minimum=0.184115 maximum=0.991663\r\nMATERIAL_ENVIRONMENT_FURNACE cases=72 minimum=0.184124 maximum=0.998307\r\nSTRATIFIED_ALIAS chi_squared=70.4851 old_zero_coins=24 new_zero_coins=0\r\nFREQUENCY chi_squared=101.887 bins=96\r\nWHITE -0.7 0 0.566173 0.564346\r\nWHITE -0.7 1 0.546969 0.546577\r\nWHITE 0.7 0 0.566173 0.566221\r\nWHITE 0.7 1 0.546969 0.546339\r\nSUN reference=0.770397094325 baseline_mean=0.774405358803 mis_mean=0.76875746176 baseline_mse=6.59234655954 mis_mse=0.0198964623669 ratio=0.00301811535349 baseline_variance=6.59233049335 mis_variance=0.0198937739719 mis_standard_error=0.000779172510674\r\nENGINE_NEXT_RENDERING_TEST_SUMMARY tests=417 checks=484987 failures=0",
+      "binary": {
+        "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/next_visual_client.exe",
+        "bytes": 3437056,
+        "sha256": "d30e5b834069d429faf2ab60bf0e49aeb52eb320aaf6662b42afa52a9e494b18"
+      },
+      "shader_files": [
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Deferred.vs.cso",
+          "bytes": 8272,
+          "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Deferred.ps.cso",
+          "bytes": 9796,
+          "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/MaterialDeferred.ps.cso",
+          "bytes": 10172,
+          "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/MaterialLighting.ps.cso",
+          "bytes": 117808,
+          "sha256": "aac456cac58467287cc7ec17fe418c2856a4a76663893127956656d970b582ae"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Temporal.cs.cso",
+          "bytes": 19880,
+          "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/BloomDown.cs.cso",
+          "bytes": 43620,
+          "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ReflectionLighting.ps.cso",
+          "bytes": 77608,
+          "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/MaterialReflectionLighting.ps.cso",
+          "bytes": 118312,
+          "sha256": "d8fdcb41b2ffe7b7101f1b2ca9e7b551ff5fe2f2d867093472ca3a55a0602a33"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ReflectionColor.cs.cso",
+          "bytes": 4928,
+          "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ReflectionTrace.cs.cso",
+          "bytes": 31880,
+          "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/MaterialReflectionTrace.cs.cso",
+          "bytes": 82680,
+          "sha256": "9964ad98771e172f329d2c82efc5e4f7028e09f799cf9730e37da6f6912b9648"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ReflectionComposite.cs.cso",
+          "bytes": 5100,
+          "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ReflectionRadiance.cs.cso",
+          "bytes": 4304,
+          "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VolumeInject.cs.cso",
+          "bytes": 8836,
+          "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VolumeLight.cs.cso",
+          "bytes": 66432,
+          "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VolumeTemporal.cs.cso",
+          "bytes": 16000,
+          "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VolumeIntegrate.cs.cso",
+          "bytes": 7508,
+          "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VolumeComposite.cs.cso",
+          "bytes": 19948,
+          "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Transparent.vs.cso",
+          "bytes": 7224,
+          "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Transparent.ps.cso",
+          "bytes": 96584,
+          "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/MaterialTransparent.ps.cso",
+          "bytes": 137108,
+          "sha256": "3044198db486b7a963f650e0d1d2bc06d8b4887ed1b4afff92e110d21d8c6321"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiLighting.ps.cso",
+          "bytes": 113696,
+          "sha256": "46ee6d5f0ba10cd7766274e39c6a3c32af36ef9b502139828a0b0d90aeeb1ce3"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiMaterialLighting.ps.cso",
+          "bytes": 154716,
+          "sha256": "c9e271296d355fdf9f3da0b568fed0e6789a6f4674f0c1014b3a6ac27e72caa0"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiReflectionLighting.ps.cso",
+          "bytes": 114200,
+          "sha256": "0dbd1862da9d7fa84fc03319c28f6a066c1b123fec26d0d18996ce61580629db"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiMaterialReflectionLighting.ps.cso",
+          "bytes": 155212,
+          "sha256": "a64178acc209cdda27ae9840d602d1b1da202722da0bad95a46b88e6e9d35c74"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiTransparent.ps.cso",
+          "bytes": 133420,
+          "sha256": "73c6c406206b3657160a3a84afb5ab843531e2421443880b58679ae630f55441"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiMaterialTransparent.ps.cso",
+          "bytes": 174428,
+          "sha256": "8b8132fb7d11fadb9c4c29b3cb34a794c4328d8a620383a16ace6021e6c6a328"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiPrepare.cs.cso",
+          "bytes": 7008,
+          "sha256": "3458bebc9a1ad2e6ad3bf9a6e0ccb16c4d010682afbf61edf93482a4948f0ffe"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiTrace.cs.cso",
+          "bytes": 132744,
+          "sha256": "319643e25123cda5f31d96e0ce559d84903ccb08809de88b2e37b3f36dd6e8f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiIntegrate.cs.cso",
+          "bytes": 14104,
+          "sha256": "d62629d44c24aa5b1489f4a315c852a648e55d9837079c57e50acbf9a62f588d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GeometryCull.cs.cso",
+          "bytes": 13484,
+          "sha256": "6cfdf85dab45264853e02250e07784dd0c69996c2dd07b776178582fd9a94891"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GeometryHiZCopy.cs.cso",
+          "bytes": 3492,
+          "sha256": "c7903bc86740ce6e76935cf58bc39a0c249eb93012074e198f14b2f06d890873"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GeometryHiZReduce.cs.cso",
+          "bytes": 3816,
+          "sha256": "de4f7c0219ea5bcde366580e2bd501e6e1ca3f991c8a607f4d8465e4b4ca7485"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GeometryDepth.vs.cso",
+          "bytes": 4632,
+          "sha256": "d512d92cfa83cf0c59ada91b855ee8dff3126a3057e6768face7e012a117905d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GeometryDepth.ps.cso",
+          "bytes": 4236,
+          "sha256": "e439f80592f6a4b0159be38a3438e153e87ccd79a44ce355b00804cbf3649759"
+        }
+      ],
+      "directory": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored"
+    }
+  },
+  "same_binary_runs": [
+    {
+      "label": "Baseline",
+      "executable_sha256": "045b81cb0ddcd338a0e90e1782ba83c29f495e7cf6f6d5669e9dc1dc317af7fb",
+      "capture": {
+        "path": "build/engine_next/integrated-impact-r1/RunBaseline/Result.ppm",
+        "bytes": 921615,
+        "sha256": "664ba3fc85abb1a99a984607ed3ec82e6001532a46c92c42afb9eb0ef893aafa"
+      },
+      "report": {
+        "path": "build/engine_next/integrated-impact-r1/RunBaseline/Run.json",
+        "bytes": 103890,
+        "sha256": "e52ddf631e8b91b25a1a57230734757b595c054d44158c32be348fbcc3996df8"
+      },
+      "frames": 24,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Deferred.vs.cso",
+          "bytes": 8272,
+          "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Deferred.ps.cso",
+          "bytes": 9796,
+          "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/MaterialDeferred.ps.cso",
+          "bytes": 10172,
+          "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/MaterialLighting.ps.cso",
+          "bytes": 117808,
+          "sha256": "aac456cac58467287cc7ec17fe418c2856a4a76663893127956656d970b582ae"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Temporal.cs.cso",
+          "bytes": 19880,
+          "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/BloomDown.cs.cso",
+          "bytes": 43620,
+          "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ReflectionLighting.ps.cso",
+          "bytes": 77608,
+          "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/MaterialReflectionLighting.ps.cso",
+          "bytes": 118312,
+          "sha256": "d8fdcb41b2ffe7b7101f1b2ca9e7b551ff5fe2f2d867093472ca3a55a0602a33"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ReflectionColor.cs.cso",
+          "bytes": 4928,
+          "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ReflectionTrace.cs.cso",
+          "bytes": 31880,
+          "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/MaterialReflectionTrace.cs.cso",
+          "bytes": 82680,
+          "sha256": "9964ad98771e172f329d2c82efc5e4f7028e09f799cf9730e37da6f6912b9648"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ReflectionComposite.cs.cso",
+          "bytes": 5100,
+          "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/ReflectionRadiance.cs.cso",
+          "bytes": 4304,
+          "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VolumeInject.cs.cso",
+          "bytes": 8836,
+          "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VolumeLight.cs.cso",
+          "bytes": 66432,
+          "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VolumeTemporal.cs.cso",
+          "bytes": 16000,
+          "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VolumeIntegrate.cs.cso",
+          "bytes": 7508,
+          "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/VolumeComposite.cs.cso",
+          "bytes": 19948,
+          "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Transparent.vs.cso",
+          "bytes": 7224,
+          "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/Transparent.ps.cso",
+          "bytes": 96584,
+          "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/MaterialTransparent.ps.cso",
+          "bytes": 137108,
+          "sha256": "3044198db486b7a963f650e0d1d2bc06d8b4887ed1b4afff92e110d21d8c6321"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiLighting.ps.cso",
+          "bytes": 113696,
+          "sha256": "46ee6d5f0ba10cd7766274e39c6a3c32af36ef9b502139828a0b0d90aeeb1ce3"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiMaterialLighting.ps.cso",
+          "bytes": 154716,
+          "sha256": "c9e271296d355fdf9f3da0b568fed0e6789a6f4674f0c1014b3a6ac27e72caa0"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiReflectionLighting.ps.cso",
+          "bytes": 114200,
+          "sha256": "0dbd1862da9d7fa84fc03319c28f6a066c1b123fec26d0d18996ce61580629db"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiMaterialReflectionLighting.ps.cso",
+          "bytes": 155212,
+          "sha256": "a64178acc209cdda27ae9840d602d1b1da202722da0bad95a46b88e6e9d35c74"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiTransparent.ps.cso",
+          "bytes": 133420,
+          "sha256": "73c6c406206b3657160a3a84afb5ab843531e2421443880b58679ae630f55441"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiMaterialTransparent.ps.cso",
+          "bytes": 174428,
+          "sha256": "8b8132fb7d11fadb9c4c29b3cb34a794c4328d8a620383a16ace6021e6c6a328"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiPrepare.cs.cso",
+          "bytes": 7008,
+          "sha256": "3458bebc9a1ad2e6ad3bf9a6e0ccb16c4d010682afbf61edf93482a4948f0ffe"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiTrace.cs.cso",
+          "bytes": 132744,
+          "sha256": "319643e25123cda5f31d96e0ce559d84903ccb08809de88b2e37b3f36dd6e8f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GiIntegrate.cs.cso",
+          "bytes": 14104,
+          "sha256": "d62629d44c24aa5b1489f4a315c852a648e55d9837079c57e50acbf9a62f588d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GeometryCull.cs.cso",
+          "bytes": 13484,
+          "sha256": "6cfdf85dab45264853e02250e07784dd0c69996c2dd07b776178582fd9a94891"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GeometryHiZCopy.cs.cso",
+          "bytes": 3492,
+          "sha256": "c7903bc86740ce6e76935cf58bc39a0c249eb93012074e198f14b2f06d890873"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GeometryHiZReduce.cs.cso",
+          "bytes": 3816,
+          "sha256": "de4f7c0219ea5bcde366580e2bd501e6e1ca3f991c8a607f4d8465e4b4ca7485"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GeometryDepth.vs.cso",
+          "bytes": 4632,
+          "sha256": "d512d92cfa83cf0c59ada91b855ee8dff3126a3057e6768face7e012a117905d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/GeometryDepth.ps.cso",
+          "bytes": 4236,
+          "sha256": "e439f80592f6a4b0159be38a3438e153e87ccd79a44ce355b00804cbf3649759"
+        }
+      ]
+    },
+    {
+      "label": "Changed",
+      "executable_sha256": "045b81cb0ddcd338a0e90e1782ba83c29f495e7cf6f6d5669e9dc1dc317af7fb",
+      "capture": {
+        "path": "build/engine_next/integrated-impact-r1/RunChanged/Result.ppm",
+        "bytes": 921615,
+        "sha256": "1bd850ca389ef23b0966398219c74fab5fe87b2426bc17ab495fd3cd50ddc1df"
+      },
+      "report": {
+        "path": "build/engine_next/integrated-impact-r1/RunChanged/Run.json",
+        "bytes": 103897,
+        "sha256": "5e2c2a320be4431ece4405ae0a284ef9f417b60f212f6d2fd6675949efe2f272"
+      },
+      "frames": 24,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Deferred.vs.cso",
+          "bytes": 8272,
+          "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Deferred.ps.cso",
+          "bytes": 9796,
+          "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/MaterialDeferred.ps.cso",
+          "bytes": 10172,
+          "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/MaterialLighting.ps.cso",
+          "bytes": 117808,
+          "sha256": "aac456cac58467287cc7ec17fe418c2856a4a76663893127956656d970b582ae"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Temporal.cs.cso",
+          "bytes": 19880,
+          "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/BloomDown.cs.cso",
+          "bytes": 43620,
+          "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ReflectionLighting.ps.cso",
+          "bytes": 77608,
+          "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/MaterialReflectionLighting.ps.cso",
+          "bytes": 118312,
+          "sha256": "d8fdcb41b2ffe7b7101f1b2ca9e7b551ff5fe2f2d867093472ca3a55a0602a33"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ReflectionColor.cs.cso",
+          "bytes": 4928,
+          "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ReflectionTrace.cs.cso",
+          "bytes": 31880,
+          "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/MaterialReflectionTrace.cs.cso",
+          "bytes": 82680,
+          "sha256": "9964ad98771e172f329d2c82efc5e4f7028e09f799cf9730e37da6f6912b9648"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ReflectionComposite.cs.cso",
+          "bytes": 5100,
+          "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/ReflectionRadiance.cs.cso",
+          "bytes": 4304,
+          "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VolumeInject.cs.cso",
+          "bytes": 8836,
+          "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VolumeLight.cs.cso",
+          "bytes": 66432,
+          "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VolumeTemporal.cs.cso",
+          "bytes": 16000,
+          "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VolumeIntegrate.cs.cso",
+          "bytes": 7508,
+          "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/VolumeComposite.cs.cso",
+          "bytes": 19948,
+          "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Transparent.vs.cso",
+          "bytes": 7224,
+          "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/Transparent.ps.cso",
+          "bytes": 96584,
+          "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/MaterialTransparent.ps.cso",
+          "bytes": 137108,
+          "sha256": "3044198db486b7a963f650e0d1d2bc06d8b4887ed1b4afff92e110d21d8c6321"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiLighting.ps.cso",
+          "bytes": 113736,
+          "sha256": "dfaae11c37dd7f4137c3a4aa7dbb5171a7506ec35cdce3cc97007c415fd68182"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiMaterialLighting.ps.cso",
+          "bytes": 154728,
+          "sha256": "cd5dbe0784f31a2302bcdc301f34cd0c1176901be9cf5940ded1547bd0d74b9a"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiReflectionLighting.ps.cso",
+          "bytes": 114240,
+          "sha256": "26fa1b11c19e533236bc26019ac226e90b0d02e4337e932bd491d847ce29bba2"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiMaterialReflectionLighting.ps.cso",
+          "bytes": 155224,
+          "sha256": "b590738dae600a8d2973f887208e6301dd7f8239eab5ba15ae5b4d066e27febd"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiTransparent.ps.cso",
+          "bytes": 133460,
+          "sha256": "a8bb722cf2d416aae0c52ca1e69164ade9707b7f5b138bfaae4bfc9aebfe272b"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiMaterialTransparent.ps.cso",
+          "bytes": 174440,
+          "sha256": "b8bf91a19641db437d0d78b253506791a6071fc475b8f7670413fdd70eb6c9c2"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiPrepare.cs.cso",
+          "bytes": 7008,
+          "sha256": "3458bebc9a1ad2e6ad3bf9a6e0ccb16c4d010682afbf61edf93482a4948f0ffe"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiTrace.cs.cso",
+          "bytes": 132744,
+          "sha256": "319643e25123cda5f31d96e0ce559d84903ccb08809de88b2e37b3f36dd6e8f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GiIntegrate.cs.cso",
+          "bytes": 14104,
+          "sha256": "d62629d44c24aa5b1489f4a315c852a648e55d9837079c57e50acbf9a62f588d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GeometryCull.cs.cso",
+          "bytes": 13484,
+          "sha256": "6cfdf85dab45264853e02250e07784dd0c69996c2dd07b776178582fd9a94891"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GeometryHiZCopy.cs.cso",
+          "bytes": 3492,
+          "sha256": "c7903bc86740ce6e76935cf58bc39a0c249eb93012074e198f14b2f06d890873"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GeometryHiZReduce.cs.cso",
+          "bytes": 3816,
+          "sha256": "de4f7c0219ea5bcde366580e2bd501e6e1ca3f991c8a607f4d8465e4b4ca7485"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GeometryDepth.vs.cso",
+          "bytes": 4632,
+          "sha256": "d512d92cfa83cf0c59ada91b855ee8dff3126a3057e6768face7e012a117905d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed/GeometryDepth.ps.cso",
+          "bytes": 4236,
+          "sha256": "e439f80592f6a4b0159be38a3438e153e87ccd79a44ce355b00804cbf3649759"
+        }
+      ]
+    },
+    {
+      "label": "Restored",
+      "executable_sha256": "045b81cb0ddcd338a0e90e1782ba83c29f495e7cf6f6d5669e9dc1dc317af7fb",
+      "capture": {
+        "path": "build/engine_next/integrated-impact-r1/RunRestored/Result.ppm",
+        "bytes": 921615,
+        "sha256": "664ba3fc85abb1a99a984607ed3ec82e6001532a46c92c42afb9eb0ef893aafa"
+      },
+      "report": {
+        "path": "build/engine_next/integrated-impact-r1/RunRestored/Run.json",
+        "bytes": 103854,
+        "sha256": "2fe88e2a369fb9d776bbc1ce76b1d5c4b31b3998ac055651485f27aa9b0eaabb"
+      },
+      "frames": 24,
+      "validation_errors": 0,
+      "shader_files": [
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/FixedMesh.vs.cso",
+          "bytes": 4316,
+          "sha256": "033434ac0931d9675f7337036993015cd461c3da258461564aee5c1604b05d69"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/FixedMesh.ps.cso",
+          "bytes": 4132,
+          "sha256": "2447264440217ed569db8c3c1b3780d16d284c38afc5140f658d3b770607f7f9"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/FixedMesh.cs.cso",
+          "bytes": 3300,
+          "sha256": "e95013c862eb29c4467c5cfa13f144121a440eacfd5f861ed517cd5623c20064"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Deferred.vs.cso",
+          "bytes": 8272,
+          "sha256": "054ffc21eac34fe6b44738c0d70e3df72ca902910319d9583476b72a71e49225"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Deferred.ps.cso",
+          "bytes": 9796,
+          "sha256": "fdb405648278367112be514bb79bbabc9c021a6d30fa3f511bbd8fc574ab4fd0"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/MaterialDeferred.ps.cso",
+          "bytes": 10172,
+          "sha256": "6959b36adafbb94b0de26726a718fecb900052d7a301b16502770d9b4e448bcb"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Lighting.vs.cso",
+          "bytes": 3052,
+          "sha256": "35df7cdd5929a98d8e1633747bbc5359c8c46660a4bba56d1f0b6e09d63b5018"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Lighting.ps.cso",
+          "bytes": 77096,
+          "sha256": "1481cd0a33d6a1b892412518f703582a747bff85c39b2bf1e91acaab60593de8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/MaterialLighting.ps.cso",
+          "bytes": 117808,
+          "sha256": "aac456cac58467287cc7ec17fe418c2856a4a76663893127956656d970b582ae"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ToneMap.ps.cso",
+          "bytes": 6376,
+          "sha256": "8d85269ec77f19610164663d3d3d4cf3f0903885d042cbb8e333a6f3b0bb348f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Shadow.vs.cso",
+          "bytes": 4648,
+          "sha256": "a32c31e09fefae48df6ac8c5a28d4a9c3877fbf50f71ed454849e20f78ad1ee4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Shadow.ps.cso",
+          "bytes": 4236,
+          "sha256": "b2e0479b67a34dc98045e41c1b781915a1aeeed4a89477733183f02cbe47fc24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Temporal.cs.cso",
+          "bytes": 19880,
+          "sha256": "e53ebe5dbdf707f5ab5b4ce45c0f957d912954d0cefbac1793a0b35dafd4fd1f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Histogram.cs.cso",
+          "bytes": 5648,
+          "sha256": "8870a33bdac103af827e79f889058b0c02f63479ec2df04559af124c6653edf1"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Exposure.cs.cso",
+          "bytes": 5804,
+          "sha256": "1832eb85d201d1f67f0459970c902264ca7752698bbc1200c35ffe537959230c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/BloomDown.cs.cso",
+          "bytes": 43620,
+          "sha256": "fa18f32580c73e231eb50e11bbc2ad850449ddf7534401716bc454da24d982e7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/BloomUp.cs.cso",
+          "bytes": 14672,
+          "sha256": "faf4648644d8a7c64fd9674986a0faa337fc14eae5def4fb0f1b14fbdb972c9c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ReflectionLighting.ps.cso",
+          "bytes": 77608,
+          "sha256": "a5f56708b0e421294e3f50ad34eb65958eaeb3b53ec947c7b975b7513cb563a8"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/MaterialReflectionLighting.ps.cso",
+          "bytes": 118312,
+          "sha256": "d8fdcb41b2ffe7b7101f1b2ca9e7b551ff5fe2f2d867093472ca3a55a0602a33"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ReflectionColor.cs.cso",
+          "bytes": 4928,
+          "sha256": "57127b9749c6aa4bc8b866b4bd1c33c37bedfd76080980b27412bda188fc15f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ReflectionTrace.cs.cso",
+          "bytes": 31880,
+          "sha256": "44735daf65bb38b589b44a12e1e89024bc7bd74109ecc6b1b7d3164bf720d051"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/MaterialReflectionTrace.cs.cso",
+          "bytes": 82680,
+          "sha256": "9964ad98771e172f329d2c82efc5e4f7028e09f799cf9730e37da6f6912b9648"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ReflectionComposite.cs.cso",
+          "bytes": 5100,
+          "sha256": "62803c3c5d1dd9e5b1ae3057be8303a7f49fc14203e335e61404988fa24da6a4"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/ReflectionRadiance.cs.cso",
+          "bytes": 4304,
+          "sha256": "bd615c4dccbb3db3cf357866a1e591119a81fc4fc53ac06ee73131218a203b88"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VolumeInject.cs.cso",
+          "bytes": 8836,
+          "sha256": "7feb208dfc89395fa5fc96891cdc0232c87f2631544061e8a7c75bccac81718f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VolumeLight.cs.cso",
+          "bytes": 66432,
+          "sha256": "82676465834bdb850a78320915cbb4f467bd2090e322ed20a52128022e031ada"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VolumeTemporal.cs.cso",
+          "bytes": 16000,
+          "sha256": "e9886c8e36eee27fb650a2e8330fbfef5072840c61bb36c51b2c7f35b9cf2057"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VolumeIntegrate.cs.cso",
+          "bytes": 7508,
+          "sha256": "d54a1c36a794289e1c28b3be9636a43d224350b695db273e94606431aa62769c"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/VolumeComposite.cs.cso",
+          "bytes": 19948,
+          "sha256": "6f1b473169b8b3e09ae1efaa0a2ab71c428547bc686a3ff590460367fc250523"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Transparent.vs.cso",
+          "bytes": 7224,
+          "sha256": "8481c0885358157ced21fc22f30d74bf1feb598d768a9bf6b85f35ddf25a0c24"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/Transparent.ps.cso",
+          "bytes": 96584,
+          "sha256": "6aa1173db8669785ba5b057fb9bce0b1456c44760a7ed6a806bb5854a39d062f"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/MaterialTransparent.ps.cso",
+          "bytes": 137108,
+          "sha256": "3044198db486b7a963f650e0d1d2bc06d8b4887ed1b4afff92e110d21d8c6321"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiLighting.ps.cso",
+          "bytes": 113696,
+          "sha256": "46ee6d5f0ba10cd7766274e39c6a3c32af36ef9b502139828a0b0d90aeeb1ce3"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiMaterialLighting.ps.cso",
+          "bytes": 154716,
+          "sha256": "c9e271296d355fdf9f3da0b568fed0e6789a6f4674f0c1014b3a6ac27e72caa0"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiReflectionLighting.ps.cso",
+          "bytes": 114200,
+          "sha256": "0dbd1862da9d7fa84fc03319c28f6a066c1b123fec26d0d18996ce61580629db"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiMaterialReflectionLighting.ps.cso",
+          "bytes": 155212,
+          "sha256": "a64178acc209cdda27ae9840d602d1b1da202722da0bad95a46b88e6e9d35c74"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiTransparent.ps.cso",
+          "bytes": 133420,
+          "sha256": "73c6c406206b3657160a3a84afb5ab843531e2421443880b58679ae630f55441"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiMaterialTransparent.ps.cso",
+          "bytes": 174428,
+          "sha256": "8b8132fb7d11fadb9c4c29b3cb34a794c4328d8a620383a16ace6021e6c6a328"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiPrepare.cs.cso",
+          "bytes": 7008,
+          "sha256": "3458bebc9a1ad2e6ad3bf9a6e0ccb16c4d010682afbf61edf93482a4948f0ffe"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiTrace.cs.cso",
+          "bytes": 132744,
+          "sha256": "319643e25123cda5f31d96e0ce559d84903ccb08809de88b2e37b3f36dd6e8f7"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GiIntegrate.cs.cso",
+          "bytes": 14104,
+          "sha256": "d62629d44c24aa5b1489f4a315c852a648e55d9837079c57e50acbf9a62f588d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GeometryCull.cs.cso",
+          "bytes": 13484,
+          "sha256": "6cfdf85dab45264853e02250e07784dd0c69996c2dd07b776178582fd9a94891"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GeometryHiZCopy.cs.cso",
+          "bytes": 3492,
+          "sha256": "c7903bc86740ce6e76935cf58bc39a0c249eb93012074e198f14b2f06d890873"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GeometryHiZReduce.cs.cso",
+          "bytes": 3816,
+          "sha256": "de4f7c0219ea5bcde366580e2bd501e6e1ca3f991c8a607f4d8465e4b4ca7485"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GeometryDepth.vs.cso",
+          "bytes": 4632,
+          "sha256": "d512d92cfa83cf0c59ada91b855ee8dff3126a3057e6768face7e012a117905d"
+        },
+        {
+          "path": "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored/GeometryDepth.ps.cso",
+          "bytes": 4236,
+          "sha256": "e439f80592f6a4b0159be38a3438e153e87ccd79a44ce355b00804cbf3649759"
+        }
+      ]
+    }
+  ],
+  "invalid_shader": {
+    "report": {
+      "path": "build/engine_next/integrated-impact-r1/InvalidRun.json",
+      "bytes": 54301,
+      "sha256": "ff47960ec352e981d7e9d6248721b71dd07b300f0b7b7084320b4effe0f42239"
+    },
+    "exit_code": 1,
+    "frames": 0,
+    "failure": "Create lighting PSO (HRESULT -2147467259)",
+    "shader": {
+      "path": "build/engine_next/integrated-impact-r1/InvalidShaders/GiLighting.ps.cso",
+      "sha256": "c78d4374688c0031a71757f0c51c9919dd280ad142bb6ac448f5486f42c81c1e",
+      "bytes": 23
+    }
+  },
+  "checks": {
+    "native_invalidation": {
+      "command": "python build/engine_next/RunIntegratedBuildImpact.py --root . --output build/engine_next/integrated-impact-r1 --gpu-go build/engine_next/integrated-impact-r1/GpuGo",
+      "observed": "Three clean builds pass 417 tests and 484987 checks. Scaling the probe diffuse contribution changes the native key and source restoration restores it.",
+      "passed": true
+    },
+    "same_binary_update": {
+      "command": "The baseline executable renders 24 deterministic frames with each of three offline shader bundles.",
+      "observed": "The modified GI receiver shader changes rendered pixels. All three runs finish with zero GPU validation errors.",
+      "passed": true,
+      "before_executable": "045b81cb0ddcd338a0e90e1782ba83c29f495e7cf6f6d5669e9dc1dc317af7fb",
+      "after_executable": "045b81cb0ddcd338a0e90e1782ba83c29f495e7cf6f6d5669e9dc1dc317af7fb",
+      "before_package": "aa2117ecf713e5c94fec978be82c096ef62c14c4f738e57bc752a05f72975053",
+      "after_package": "2d67efed72a83a00094c8dfd8a69ef8d4b868d16940e8c231bd9c0cf256ec737"
+    },
+    "rollback": {
+      "command": "The same executable loads the restored shader bundle.",
+      "observed": "The native key and final capture match the baseline exactly.",
+      "passed": true
+    },
+    "incompatible_rejection": {
+      "command": "The same executable loads malformed GiLighting.ps.cso with GI enabled.",
+      "observed": "{\"exit_code\": 1, \"failure\": \"Create lighting PSO (HRESULT -2147467259)\", \"frames\": 0, \"report\": {\"bytes\": 54301, \"path\": \"build/engine_next/integrated-impact-r1/InvalidRun.json\", \"sha256\": \"ff47960ec352e981d7e9d6248721b71dd07b300f0b7b7084320b4effe0f42239\"}, \"shader\": {\"bytes\": 23, \"path\": \"build/engine_next/integrated-impact-r1/InvalidShaders/GiLighting.ps.cso\", \"sha256\": \"c78d4374688c0031a71757f0c51c9919dd280ad142bb6ac448f5486f42c81c1e\"}}",
+      "passed": true
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "python.exe",
+        "engine_next/Tools/ExportCleanSource.py",
+        "--repo",
+        ".",
+        "--output",
+        "build/engine_next/integrated-impact-r1/Source"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "build/engine_next/integrated-impact-r1/Export.log",
+        "bytes": 293,
+        "sha256": "ba29c77e5c2d20757e67516fc11bf26c654f587374001bb94378491424f663d4"
+      }
+    },
+    {
+      "command": [
+        "python.exe",
+        "build/engine_next/integrated-impact-r1/Source/engine_next/Tools/BuildVisualRuntime.py",
+        "--repo",
+        "build/engine_next/integrated-impact-r1/Source",
+        "--build-dir",
+        "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "build/engine_next/integrated-impact-r1/Baseline.log",
+        "bytes": 829,
+        "sha256": "e597237456f10ef87901772e46da43a9a5b2ff3d626a08a096603350bf54103b"
+      }
+    },
+    {
+      "command": [
+        "python.exe",
+        "build/engine_next/integrated-impact-r1/Source/engine_next/Tools/BuildVisualRuntime.py",
+        "--repo",
+        "build/engine_next/integrated-impact-r1/Source",
+        "--build-dir",
+        "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "build/engine_next/integrated-impact-r1/Changed.log",
+        "bytes": 828,
+        "sha256": "2629942574858f04d5e2f1fae7d490a0bfb26471d27eda6eb0ad6b5904e29bdb"
+      }
+    },
+    {
+      "command": [
+        "python.exe",
+        "build/engine_next/integrated-impact-r1/Source/engine_next/Tools/BuildVisualRuntime.py",
+        "--repo",
+        "build/engine_next/integrated-impact-r1/Source",
+        "--build-dir",
+        "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored",
+        "--compiler",
+        "msvc",
+        "--run-tests"
+      ],
+      "cwd": ".",
+      "exit_code": 0,
+      "log": {
+        "path": "build/engine_next/integrated-impact-r1/Restored.log",
+        "bytes": 829,
+        "sha256": "e8d3afe5953e55ea11d3354c88a919a6dd3098e9dca00155e2ec9d15ca50e940"
+      }
+    },
+    {
+      "command": [
+        "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.enpak",
+        "--gpu-package",
+        "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.engpu",
+        "--render-config",
+        "build/engine_next/integrated-gpu-r1/Configurations/ARoomOn.json",
+        "--shader-directory",
+        "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline",
+        "--report",
+        "build/engine_next/integrated-impact-r1/RunBaseline/Run.json",
+        "--validation",
+        "--capture",
+        "build/engine_next/integrated-impact-r1/RunBaseline/Result.ppm"
+      ],
+      "cwd": "build/engine_next/integrated-impact-r1/RunBaseline",
+      "exit_code": 0,
+      "log": {
+        "path": "build/engine_next/integrated-impact-r1/BaselineRuntime.log",
+        "bytes": 60,
+        "sha256": "1253783642bc19c1af19a3ff4956b7faa917791004b00fb1544e897fe16f7428"
+      },
+      "resource_snapshot": {
+        "path": "build/engine_next/integrated-impact-r1/BaselineResourceSnapshot.json",
+        "bytes": 240,
+        "sha256": "4ac8bd91793dd91200144fab86d6affb2c8432482198f57cefbff33edd22325c"
+      }
+    },
+    {
+      "command": [
+        "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.enpak",
+        "--gpu-package",
+        "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.engpu",
+        "--render-config",
+        "build/engine_next/integrated-gpu-r1/Configurations/ARoomOn.json",
+        "--shader-directory",
+        "build/engine_next/integrated-impact-r1/Source/build/engine_next/Changed",
+        "--report",
+        "build/engine_next/integrated-impact-r1/RunChanged/Run.json",
+        "--validation",
+        "--capture",
+        "build/engine_next/integrated-impact-r1/RunChanged/Result.ppm"
+      ],
+      "cwd": "build/engine_next/integrated-impact-r1/RunChanged",
+      "exit_code": 0,
+      "log": {
+        "path": "build/engine_next/integrated-impact-r1/ChangedRuntime.log",
+        "bytes": 60,
+        "sha256": "1253783642bc19c1af19a3ff4956b7faa917791004b00fb1544e897fe16f7428"
+      },
+      "resource_snapshot": {
+        "path": "build/engine_next/integrated-impact-r1/ChangedResourceSnapshot.json",
+        "bytes": 240,
+        "sha256": "60b8d1d25957d511decdf86a76e36b6925bd174c4d50961d793bab98ded0aa6d"
+      }
+    },
+    {
+      "command": [
+        "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.enpak",
+        "--gpu-package",
+        "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.engpu",
+        "--render-config",
+        "build/engine_next/integrated-gpu-r1/Configurations/ARoomOn.json",
+        "--shader-directory",
+        "build/engine_next/integrated-impact-r1/Source/build/engine_next/Restored",
+        "--report",
+        "build/engine_next/integrated-impact-r1/RunRestored/Run.json",
+        "--validation",
+        "--capture",
+        "build/engine_next/integrated-impact-r1/RunRestored/Result.ppm"
+      ],
+      "cwd": "build/engine_next/integrated-impact-r1/RunRestored",
+      "exit_code": 0,
+      "log": {
+        "path": "build/engine_next/integrated-impact-r1/RestoredRuntime.log",
+        "bytes": 60,
+        "sha256": "1253783642bc19c1af19a3ff4956b7faa917791004b00fb1544e897fe16f7428"
+      },
+      "resource_snapshot": {
+        "path": "build/engine_next/integrated-impact-r1/RestoredResourceSnapshot.json",
+        "bytes": 241,
+        "sha256": "3caf8527fef934cf88391865c6b6bba445ca5637deb81de6f28f3e2ecc2a9f27"
+      }
+    },
+    {
+      "command": [
+        "build/engine_next/integrated-impact-r1/Source/build/engine_next/Baseline/next_visual_client.exe",
+        "--hidden",
+        "--deterministic",
+        "--width",
+        "640",
+        "--height",
+        "480",
+        "--frames",
+        "24",
+        "--asset-package",
+        "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.enpak",
+        "--gpu-package",
+        "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.engpu",
+        "--render-config",
+        "build/engine_next/integrated-gpu-r1/Configurations/ARoomOn.json",
+        "--shader-directory",
+        "build/engine_next/integrated-impact-r1/InvalidShaders",
+        "--report",
+        "build/engine_next/integrated-impact-r1/InvalidRun.json"
+      ],
+      "cwd": "build/engine_next/integrated-impact-r1",
+      "exit_code": 1,
+      "log": {
+        "path": "build/engine_next/integrated-impact-r1/InvalidRuntime.log",
+        "bytes": 102,
+        "sha256": "caf9a2177cd372e83d6a1e7d46f7954351556b6707e8895d90c09259cbdcc5fb"
+      },
+      "resource_snapshot": {
+        "path": "build/engine_next/integrated-impact-r1/InvalidResourceSnapshot.json",
+        "bytes": 240,
+        "sha256": "31120b3373c4d008aedc40b0ebf956d89525282d9435ab8ef10e60439113ed49"
+      }
+    }
+  ],
+  "execution_context": "UE reference process remained alive while performing first shader compilation. Resource availability was checked before every runtime invocation. These runs establish API, pixel-change, rollback and exit behavior; no performance conclusion is made.",
+  "source_verification": {
+    "path": "build/engine_next/integrated-impact-r1/SourceVerification.json",
+    "sha256": "b1bb6abfa91e0e9ef1cc47fcb6a9d676b28ff00c3f7479b4a66c2c9882b134fd",
+    "bytes": 39180
+  },
+  "runtime_fixture_snapshot": [
+    {
+      "path": "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.enpak/AssetManifest.json",
+      "sha256": "f3e37c040e7fea406a5d1858b2070ea1a19ed1caa693737252f1dfd321813109",
+      "bytes": 485
+    },
+    {
+      "path": "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.enpak/blobs/e906de6f1b011c8880e3e2bdc68c2a2519c77bedcfc0d84f5e707b4abc2cfcb4",
+      "sha256": "e906de6f1b011c8880e3e2bdc68c2a2519c77bedcfc0d84f5e707b4abc2cfcb4",
+      "bytes": 88228
+    },
+    {
+      "path": "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.enpak/Scene.json",
+      "sha256": "6aa744b241c2863a239a83bf2fb2a81de78970011c7f6e71b9e042073da516a6",
+      "bytes": 498
+    },
+    {
+      "path": "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.engpu/blobs/cb4a1b40cd14e3aea599279df72f5fadd8da79e3d5c643349baa0bdf57598451",
+      "sha256": "cb4a1b40cd14e3aea599279df72f5fadd8da79e3d5c643349baa0bdf57598451",
+      "bytes": 217627
+    },
+    {
+      "path": "build/engine_next/integrated-impact-r1/ExternalInputs/GiRoom.engpu/GpuManifest.json",
+      "sha256": "f8effc1947ff9ae549ee9269acbdfe7a476624bc4cf753494f546f46fb0f1738",
+      "bytes": 609
+    }
+  ],
+  "gpu_runner": {
+    "path": "build/engine_next/RunIntegratedImpactGpu.py",
+    "sha256": "03da3ce642b6a2f55902d677a3ad5a797c983c0c09d74364dc12b925c2fcd3ab",
+    "bytes": 6031
+  },
+  "input_blobs": {
+    "engine_next/Platform/Windows/GpuGeometry.cpp": "65dde11b586605286cda7a4b5c396bf98d132457",
+    "engine_next/Platform/Windows/GpuGeometry.h": "231b362f32cc55358dd5a5d5063e93aa41a75a88",
+    "engine_next/Platform/Windows/GpuProbeGrid.cpp": "7b63e579502a7bd30a848698ee2a7922e7beb5ce",
+    "engine_next/Platform/Windows/GpuProbeGrid.h": "a1bddbe57f05872f70775293bec842d1f04f66cf",
+    "engine_next/Platform/Windows/RayTracingScene.cpp": "8d53caf2c140e02fdeb6c5d4bc673cd464eeca16",
+    "engine_next/Platform/Windows/RayTracingScene.h": "7597df963579b216c9fb6301ec54b175f9403075",
+    "engine_next/Platform/Windows/RhiComOwner.h": "c03c5b5e17efc9c51076a95c88a31306dd6827ae",
+    "engine_next/Rendering/CameraMatrices.cpp": "6052df8be7d3650c5883b18f6f842128eb7eda63",
+    "engine_next/Rendering/Cook/EnvironmentImportance.cpp": "9fd084dbf77759fe579aab02c564a9d06b0ce9c8",
+    "engine_next/Rendering/Cook/EnvironmentImportance.h": "61276b2d59d887a4876f762355294b2d81d4e29e",
+    "engine_next/Rendering/Cook/EnvironmentLighting.cpp": "dc508c2de6b0360a3e27c16b34710fba4319d002",
+    "engine_next/Rendering/Cook/EnvironmentLighting.h": "5fae4c4fd0ed1665eb37aa5388504c1a96855042",
+    "engine_next/Rendering/Cook/GltfDecoder.cpp": "f6e95f3ed33f940353938f308807ddb3e69ab284",
+    "engine_next/Rendering/Cook/GltfDecoder.h": "247efc4fefeddcbcccfd2e603dce85d49cbbf65f",
+    "engine_next/Rendering/Cook/GpuPackage.cpp": "b5722c38fd7e4981456d9ab55b71315816382ee7",
+    "engine_next/Rendering/Cook/GpuPackage.h": "8e7a77f6be3037f4d60c46bf60e2afd04275d8ba",
+    "engine_next/Rendering/Cook/ImageDecoder.cpp": "578baabdb174822b33d97ac27fe7565c0ae5440c",
+    "engine_next/Rendering/Cook/ImageDecoder.h": "653978338509693a5a1e770aa321c2fb048aa95f",
+    "engine_next/Rendering/Cook/JpegValidation.c": "b9a56518347d89390f8dc05be4ade9111ae26046",
+    "engine_next/Rendering/Cook/JpegValidation.h": "a817925671d5d1beca1f90fd20a10d1589f25f43",
+    "engine_next/Rendering/Cook/MeshCluster.cpp": "52f27f2a04ca3296ee26d3f4e0577fee21a1e85a",
+    "engine_next/Rendering/Cook/MeshCluster.h": "8d67ca934fa1f2989937ca5aa136b2bb5eafa1b5",
+    "engine_next/Rendering/Cook/TextureCook.cpp": "fc6d3d3069767ce7387ca5ffd0568251684ee7b2",
+    "engine_next/Rendering/Cook/TextureCook.h": "f1277775865a0a8115635a417f1a78e0897d5645",
+    "engine_next/Rendering/FrameGraph.cpp": "0fda740fa32a36908b79ec83c2baf320f4f6b386",
+    "engine_next/Rendering/GeometryCulling.cpp": "95e1e3921d946f028d7b73bc616bea8cad4173d1",
+    "engine_next/Rendering/GeometryScene.cpp": "82560674a975b86b92262ec88f2e1ce8ed09aa52",
+    "engine_next/Rendering/GeometrySettings.cpp": "de464e133ef2d96489871c63e6f256178a2f76b1",
+    "engine_next/Rendering/GlobalIlluminationSettings.cpp": "8521b81571eba4f4b022e3a583066c3cb40d2ca6",
+    "engine_next/Rendering/LightTimeline.cpp": "3adaa5e75f29fecf40ef753855be1b1564283028",
+    "engine_next/Rendering/LocalShadowData.cpp": "36225bd7b393d52b3a06d772cba455f8d4bd748a",
+    "engine_next/Rendering/MaterialSettings.cpp": "5cdabacae003a32375417d3582ea12356dfc8b0d",
+    "engine_next/Rendering/ParticleSettings.cpp": "48694a343f9b6ed607fc4bf1e187f30b806042e6",
+    "engine_next/Rendering/ParticleState.cpp": "944beb3cb6bcc65113a67fff7565c9945d544305",
+    "engine_next/Rendering/PostProcessSettings.cpp": "abe95d48f772e13969a5394644d66e41ef13a73f",
+    "engine_next/Rendering/ProbeGrid.cpp": "d39cea666785ed9d718bd8022558ab17a8053047",
+    "engine_next/Rendering/ReflectionSettings.cpp": "db2dd1bd351988231794a464e1fdb9a781135b7d",
+    "engine_next/Rendering/RenderConfiguration.cpp": "4ceb32efc32b8ef4a300164758252cd363ea9938",
+    "engine_next/Rendering/RenderPipeline.cpp": "36d112abd5e7ea2c9f9f8457bea1e997376f0ac4",
+    "engine_next/Rendering/RenderPipeline.h": "eca98be66c3fc0e7c7fa2f498ca220f5be3017d0",
+    "engine_next/Rendering/RenderScene.cpp": "c7ebfff90d9e0d67c705a2e960ae1b9d14acc57e",
+    "engine_next/Rendering/Shaders/Bloom.hlsl": "76d0f0bbc71cc930563ced63598d8ba36f71a16b",
+    "engine_next/Rendering/Shaders/BloomSampling.hlsli": "f45936284adc8befb586e5d516bb664bc93d5794",
+    "engine_next/Rendering/Shaders/Deferred.hlsl": "ee681e7b53dbe4c98b4b604de833d4f0e248246a",
+    "engine_next/Rendering/Shaders/EnvironmentImportance.hlsli": "a84af04c470629f65183008ed746a95a0a128523",
+    "engine_next/Rendering/Shaders/Exposure.hlsl": "7095a05a88dfb0eb92b4cf070edcb23b4986a89d",
+    "engine_next/Rendering/Shaders/ExposureMath.hlsli": "4bf2007dc18e4129bfc6ce1ea6eb12625747ee51",
+    "engine_next/Rendering/Shaders/FixedMesh.hlsl": "0e32bb1b8f794bd6ef3b8ede41f29ebf618fd60a",
+    "engine_next/Rendering/Shaders/GI.hlsl": "5a1fcd67398169be079ce199fcd1fc8973f7a236",
+    "engine_next/Rendering/Shaders/GILighting.hlsli": "126648dfa7dfa825152131d4f78de2706a2d6b65",
+    "engine_next/Rendering/Shaders/GISampling.hlsli": "eb89cc02899f6d6b640f788604944db66f770d63",
+    "engine_next/Rendering/Shaders/GISamplingMath.hlsli": "61c4fa1fc9a86ad9149d2d91bb1d56c6e5fa4476",
+    "engine_next/Rendering/Shaders/GeometryCull.hlsl": "34b3d1532ae24f8db80d26f6edcee40e4f65ff93",
+    "engine_next/Rendering/Shaders/GeometryDepth.hlsl": "87f8b0d6b97513b3cfd7698fab716d3ef29ec5c6",
+    "engine_next/Rendering/Shaders/GeometryHiZ.hlsl": "4105ae3edf5fed91fedc933bf3bbb50e0d250c83",
+    "engine_next/Rendering/Shaders/GeometryVisibility.hlsli": "b0778cd73a3b88b35dc7149f3b7ab554162dc024",
+    "engine_next/Rendering/Shaders/GiMaterialSampling.hlsli": "f9e3ab87a986be8b54eb5a3ac0441ac7aaa06ad4",
+    "engine_next/Rendering/Shaders/GiReceiver.hlsli": "763a81851416a0e9fd7043524326b7a977a36595",
+    "engine_next/Rendering/Shaders/MaterialEnvironment.hlsli": "0ce2a97cdcde81463365b24f0ea0a701855558f7",
+    "engine_next/Rendering/Shaders/MaterialEnvironmentLighting.hlsli": "d213927c187f80aeb0521e93a2f8ac47fb5cf57a",
+    "engine_next/Rendering/Shaders/MaterialLobes.hlsli": "8db597ff080470a6a7a3cd1ad5670bb20b54ccf8",
+    "engine_next/Rendering/Shaders/ProbeMath.hlsli": "026d363d5eeddabd87a816df8364891e58dfabcb",
+    "engine_next/Rendering/Shaders/RayTracingScene.hlsli": "21102b367c1e2dadcf83d577d740eaa908f53518",
+    "engine_next/Rendering/Shaders/Reflection.hlsl": "a2121cd0f80ccfb46c01da97118006d9ac7be34f",
+    "engine_next/Rendering/Shaders/ReflectionSampling.hlsli": "2992954bebced4b97df7425788698cc5e231e909",
+    "engine_next/Rendering/Shaders/ReflectionTrace.hlsli": "d0e9ca94a79b9bc02e6d03ae99428b9e48fbded4",
+    "engine_next/Rendering/Shaders/Shadow.hlsl": "626ef5e92768041e5fd96505c832670768d4de8a",
+    "engine_next/Rendering/Shaders/ShadowSampling.hlsli": "665209001be61d30bc7cc3108503f9aec52ce562",
+    "engine_next/Rendering/Shaders/TemporalAA.hlsl": "6ac223799baf5b41bf5ba49d3d6a57d56b4a03f5",
+    "engine_next/Rendering/Shaders/TemporalSampling.hlsli": "73fe510099519ba29bcc4772ae0a9baa7e1fb1f1",
+    "engine_next/Rendering/Shaders/Transparent.hlsl": "48e6f02bdd08068f5b845e364bfc33bd28d962c0",
+    "engine_next/Rendering/Shaders/TransparentMath.hlsli": "017548bc955237934e3e62b4f7f0243e3e4ca539",
+    "engine_next/Rendering/Shaders/Volume.hlsl": "a916d67e67c9aa70191d8f643983991b67704a03",
+    "engine_next/Rendering/Shaders/VolumeColor.hlsli": "097e0918de8d4425622269ad7aabd3605be7374f",
+    "engine_next/Rendering/Shaders/VolumeCommon.hlsli": "008a161bbd7e2a5b3b5fa39d94f6ea11d8c19af4",
+    "engine_next/Rendering/Shaders/VolumeComposite.hlsl": "abfaf3dacf4d9ef503270b266a48ee2d7b8d8278",
+    "engine_next/Rendering/Shaders/VolumeMath.hlsli": "556a1a31351c45d24823bcb9081fcc9656c5df6f",
+    "engine_next/Rendering/Shaders/VolumeSampling.hlsli": "bfcbf0d5b1561b92ba0a5a906b036d3848384824",
+    "engine_next/Rendering/Shaders/VolumeTemporal.hlsl": "703a8ecc49c3fdfc3f1b7d879d5de48616b7eb30",
+    "engine_next/Rendering/Shaders/VolumeTemporalMath.hlsli": "42f83c2ae18aad30f9ef240f62def9072d4e35b4",
+    "engine_next/Rendering/ShadowBounds.cpp": "8dd6c7dc95890506ed2996a3c10ddd30d15da6b9",
+    "engine_next/Rendering/ShadowBounds.h": "31a8703332f7c2fa172d1a16f7c08ece805abe2f",
+    "engine_next/Rendering/ShadowData.cpp": "c9772a4bf3cc51bee1f61314cd52232f0c6d1320",
+    "engine_next/Rendering/TemporalState.cpp": "0a3cd9520af76d8768108b3f0d8eb74d38f4d2d4",
+    "engine_next/Rendering/VisualRuntime.cpp": "e13eb95bc19bc7267100f65cc99791228b30c129",
+    "engine_next/Rendering/VolumeGrid.cpp": "c567d0a17e2da2d73098b2eab2a3efe451fce319",
+    "engine_next/Rendering/VolumeSettings.cpp": "aff162185732df7def950cb033f09161f2afc334",
+    "engine_next/Schemas/RenderConfiguration-v1.json": "e5ed0fc9f0352ef769cff61ea9e02f3cfbc28326",
+    "engine_next/Tools/BuildRuntime.py": "48ce0bf883eab16f0ab25f459d166c0feb2ad636",
+    "engine_next/Tools/BuildVisualRuntime.py": "a5f605fa90a3a35849cc47305b51e9b834dc2267",
+    "engine_next/Tools/GenerateGeometryBenchmark.py": "e4f8f60192cf3b400378a9dc344c7da20d3e429a",
+    "engine_next/Tools/GenerateGiBenchmark.py": "694d36d87c7f2154c51f59ea4e9c61137b66c63c",
+    "engine_next/Tools/PackageVisualRuntime.py": "f06e056d2884a08c7c9486beb0fa2038668f8eef",
+    "engine_next/include/EngineNext/Rendering/CameraMatrices.h": "4b3e16f3d4f2681a95bfc2248710d8c3c4fdc179",
+    "engine_next/include/EngineNext/Rendering/FrameGraph.h": "a9a3b85541dee6447268022448419a8ed1d6a2b6",
+    "engine_next/include/EngineNext/Rendering/GeometryCulling.h": "fdbb9fe99a81ba34a1ae74b3f3f572f332713c70",
+    "engine_next/include/EngineNext/Rendering/GeometryScene.h": "0733b5129dd3fdce33183762029b4575ec200f85",
+    "engine_next/include/EngineNext/Rendering/GeometrySettings.h": "cd6e6da0112184c3eb600a2859f5680345123713",
+    "engine_next/include/EngineNext/Rendering/GlobalIlluminationSettings.h": "34ebae3f2cf3982dcc4672451d35488491d8d7b9",
+    "engine_next/include/EngineNext/Rendering/ImageData.h": "72b58e43b007eb054d97969380b937cfc31f0eb8",
+    "engine_next/include/EngineNext/Rendering/LightTimeline.h": "6be7477ac36453dccbfd5c6ada545b68464827c0",
+    "engine_next/include/EngineNext/Rendering/LocalShadowData.h": "6935a1db0e451f6f560e4b6a22620eebf8869491",
+    "engine_next/include/EngineNext/Rendering/MaterialSettings.h": "17c7c10d4faf05ad2f8df059705636298b3541a6",
+    "engine_next/include/EngineNext/Rendering/MeshData.h": "c91147cab5a0b6c3eca0ed15ed48f103851a3941",
+    "engine_next/include/EngineNext/Rendering/ParticleSettings.h": "50b5bfa0ae2dce794a08b513bcc28aad7191b0e8",
+    "engine_next/include/EngineNext/Rendering/ParticleState.h": "c327904bf13f85dc00268cc1f6ac9ebf14419f19",
+    "engine_next/include/EngineNext/Rendering/PostProcessSettings.h": "9d6280803d41ea5e782094c0eee447b71658f3d5",
+    "engine_next/include/EngineNext/Rendering/ProbeGrid.h": "96f0b0ed9295e91409fc64624f8add6197dd52bb",
+    "engine_next/include/EngineNext/Rendering/ReflectionSettings.h": "447848f747b42f901c568f86f170caebc2339353",
+    "engine_next/include/EngineNext/Rendering/RenderConfiguration.h": "b93a6a2a4435c64e262657c133f64ff26c498aab",
+    "engine_next/include/EngineNext/Rendering/RenderScene.h": "5303769b2405f9c3506bcf78f3df49412d75bd6b",
+    "engine_next/include/EngineNext/Rendering/ShadowData.h": "9d01beb0bc860fee5adfe45a27407c4f80a77e0b",
+    "engine_next/include/EngineNext/Rendering/TemporalState.h": "e33205c340db68c5476bfe93a5c5c8931b8e1ddf",
+    "engine_next/include/EngineNext/Rendering/TextureData.h": "cc482d85a19ee40bd547362408523ae5ad2447e6",
+    "engine_next/include/EngineNext/Rendering/VisualRuntime.h": "22db326674728caf76474365547d70fd61daf6d0",
+    "engine_next/include/EngineNext/Rendering/VolumeGrid.h": "1b827065db0c313752c50a19a3936f48bce77527",
+    "engine_next/include/EngineNext/Rendering/VolumeSettings.h": "aec5c3e77300da4c389411243227f03eb1b44a94"
+  },
+  "original_report": {
+    "path": "build/engine_next/integrated-impact-r1/ImpactReport.json",
+    "sha256": "805a0e236ff73fed9b0e6b31f1f65f02b98debcfc049cf3ec6bd6fb466b5caac",
+    "size_bytes": 107170
+  },
+  "candidate_scope": {
+    "tested_build": "geometry-integrated-r1",
+    "current_build": "geometry-integrated-r1",
+    "module_inputs_equal": true,
+    "clean_export_native_inputs": {
+      "path": "build/engine_next/integrated-impact-r1/SourceVerification.json",
+      "sha256": "b1bb6abfa91e0e9ef1cc47fcb6a9d676b28ff00c3f7479b4a66c2c9882b134fd",
+      "size_bytes": 39180
+    },
+    "shaders_per_bundle": 46
+  },
+  "scope": "Combined GI, environment importance sampling and geometry module source. UE ran concurrently; only validation, pixels and exit behavior are assessed.",
+  "metadata_paths": "Published paths are repository-relative. Original private command records preserve the executed absolute paths."
+}

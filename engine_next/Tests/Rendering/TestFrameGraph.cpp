@@ -442,5 +442,19 @@ ENGINE_NEXT_TEST("FrameGraph rejects depth reads on compute and depth reads decl
 	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("InvalidDepthWrite", QueueType::Graphics, 0, ResourceState::DepthRead, true)), 0U);
 	ENGINE_NEXT_CHECK(!stGraph.Compile(stCompiled, stDiagnostic));
 	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::InvalidAccess);
-	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "UnknownState", static_cast<ResourceState>(13), true }), EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "UnknownState", static_cast<ResourceState>(14), true }), EngineNext::Rendering::INVALID_RESOURCE);
+}
+
+ENGINE_NEXT_TEST("FrameGraph orders UAV-generated indirect arguments before consumption")
+{
+	FrameGraph stGraph;
+	const ResourceId nArguments = stGraph.AddResource({ "Arguments", ResourceState::Common, true });
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("Generate", QueueType::Compute, nArguments, ResourceState::UnorderedAccess, true)), 0U);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("Execute", QueueType::Graphics, nArguments, ResourceState::IndirectArgument, false)), 1U);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("Retire", QueueType::Graphics, nArguments, ResourceState::Common, false)), 2U);
+	CompiledGraph stCompiled;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(stGraph.Compile(stCompiled, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers[0].eAfter, ResourceState::IndirectArgument);
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrResources[nArguments].arrFinalStates[0], ResourceState::Common);
 }

@@ -34,6 +34,7 @@
 #include "engine_next/include/EngineNext/Rendering/PostProcessSettings.h"
 #include "engine_next/include/EngineNext/Rendering/LightTimeline.h"
 #include "engine_next/include/EngineNext/Rendering/ReflectionSettings.h"
+#include "engine_next/include/EngineNext/Rendering/GeometrySettings.h"
 #include "engine_next/include/EngineNext/Rendering/VolumeSettings.h"
 #include "engine_next/include/EngineNext/Rendering/ParticleSettings.h"
 #include "engine_next/include/EngineNext/Rendering/MaterialSettings.h"
@@ -126,6 +127,7 @@ struct RenderConfiguration
 	BloomSettings stBloom;
 	LightAnimationSettings stLightAnimation;
 	ReflectionSettings stReflections;
+	GeometrySettings stGeometry;
 	VolumeSettings stVolume;
 	std::vector<ParticleSettings> arrParticles;
 	MaterialSettings stMaterials;
@@ -160,6 +162,7 @@ struct RenderConfiguration
 // Optional light_animation applies its timeline to directional illuminance.
 // Its omitted fields default to an empty, non-looping linear track.
 // Optional reflections uses disabled ReflectionSettings defaults when absent.
+// Optional geometry_culling preserves conventional rendering by default.
 // Optional volumetric_fog uses disabled VolumeSettings defaults. Optional
 // particles has at most sixteen uniquely identified emitters and 4096 combined
 // live particles, including disabled emitters.
