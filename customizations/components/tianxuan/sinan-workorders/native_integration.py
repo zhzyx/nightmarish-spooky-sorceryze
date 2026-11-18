@@ -195,9 +195,10 @@ class NativeIntegration:
         modules, _ = self.workspace.sources(task["tenant"], expected)
         with self.store._connection() as db:
             for module in set(modules) | set(task["selected"]):
-                self.candidates._allow(db, task["tenant"], task["producer"], module, "read")
+                if not historical:
+                    self.candidates._allow(db, task["tenant"], task["producer"], module, "read")
                 self.candidates._allow(db, task["tenant"], actor, module, "read")
-            for module in receipt["inputs"] if receipt else ():
+            for module in receipt["inputs"] if receipt and not historical else ():
                 self.candidates._allow(db, task["tenant"], task["producer"], module, "receive")
         if terminal["candidate"] != digest({"state": "candidate", "modules": modules}):
             raise NativeStoreError("Terminal does not bind original intake")
@@ -797,4 +798,7 @@ class NativeIntegration:
                         (task_id, plan["tenant"], _json(dict(type="dependency.changed", reference=task_id))),
                     )
                 db.execute("UPDATE native_integrations SET acceptance=? WHERE id=?", (acceptance, key))
+        callback = getattr(self, "on_accepted", None)
+        if callback is not None:
+            callback()
         return selected

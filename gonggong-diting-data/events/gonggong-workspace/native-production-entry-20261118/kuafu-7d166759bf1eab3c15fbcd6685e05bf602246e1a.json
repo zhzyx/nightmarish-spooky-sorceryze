@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7d166759bf1eab3c15fbcd6685e05bf602246e1a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-production-entry-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "63758d789fc3c8e3adc873c1ecd512504236340b14a7462492b0c01ea988dfad",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "88a401d8a8498af36063eedbed3abc5657c52d90",
+    "context_sha256": "7f61d7637a30fa9ea803767f35b232f02ec89ba69a2db439741863d9b668d914",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+    "diagnosis": "Root independently measured native_installation.py SHA71d07a33a174db0b30356d2fa6d1dfe501e97f4abe2067ef6fc348f43869d01e against original normal ASGI test installation: constructor plus9verify calls read939972700bytes,0.4375CPU seconds/0.447285wall seconds. Four pinned sources include93,713,712byte node.exe. Actual authorize/module/check/release call verify repeatedly; measurement shows avoidable repeated logical file reads, not physical disk IO or an end-to-end latency allocation. Source unchanged; no model/task/production launch. Current R1-R4 repair worker retains ownership and completes source freeze; root takes installed verification efficiency next, preserving exact integrity and current authority withdrawal. Do not fix by trusting filenames/mtime alone or weakening admission. Whole1499 acceptance remains incomplete.",
+    "next_action": "After exact repair handoff, optimize installed immutable content validation with adversarial mutation/replace/withdraw tests and actual read-count comparison; retain integrity and do not take over active worker files. Continue normal factory/remote/source integration.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T04:02:21.601184+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T04:48:28.832871+00:00",
+  "sha256": "929b490a0b0dec21eb48413c84088e888c8ab9d91313c3324c7c9b2fd43cea5a"
+}

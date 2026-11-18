@@ -1,7 +1,7 @@
 {
   "placement": "host_tool",
-  "reason": "Task-bound context and existing Subscription host transport remain excluded from native compilation. Actual SCons graph and three cache-boundary groups rechecked all12 current implementation/test inputs; rendering source unchanged.",
-  "host_contract": "Existing signed runner/NativeWorker with trusted context_factory injection. Strict bounded context tools and same-thread incremental Subscription passed offline and bounded real model validation. Current ordinary factory/remote integration remains pending.",
-  "rollback": "Disable schema2 admission and retain original verified installation, grants, source and unknown receipts; use v1 only for a fresh authorized execution. Actual tamper rejection and restore/new-v1-execution tested; no standalone package switch manager or automatic unknown replay.",
-  "evidence": "data-collection/native-context-ci-build-impact-1501.json"
+  "reason": "Installed Python/Node ordinary-entry and domain adapters run outside Godot; measured SCons graph excludes changed host inputs. Existing rendering and native ABI are unchanged.",
+  "host_contract": "Existing tenant/actor authority, Yanshi planning broker, Sinan dispatch and durable NativeWorkflow, Duobao exact candidates/check/release, independent reviewer. Event-driven shared dispatcher preserves logical task context and physical effect closure. Runtime/tool dependencies are installation-pinned; ordinary remote/context/resolver and production installation remain outstanding.",
+  "rollback": "Disable optional native installation, stop admitting new work and await known physical worker terminals. Preserve domain/native databases, installation, original grants, unknown executions and all durable receipts. Restore only verified prior installation after explicit handoff; never replay unknown external execution.",
+  "evidence": "data-collection/native-entry-workflow-build-impact-1499.json"
 }

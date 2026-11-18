@@ -1,0 +1,502 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review.json",
+    "sha256": "89730f4f781266f90fc5c2a180aed64ec6e78ba60d9be56782cb43194d3495ab",
+    "path_base": "absolute current host archive"
+  },
+  "review": {
+    "schema_version": 1,
+    "issue": 1499,
+    "decision": "changes_required",
+    "independent_review_complete": true,
+    "scoped_repair_complete": false,
+    "goal_complete": false,
+    "business_acceptance": false,
+    "production_acceptance": false,
+    "live_model_acceptance": false,
+    "repair_report_sha256": "5d2ac2cc49f132584025fb5099c60dfeaf356666115e95aed4919789541e244f",
+    "original_independent_review_sha256": "b6b9bf3f8d6bf1122ecc5a1856e91a6421cd024f22fdb9b390ebacc8e5a52776",
+    "exact_candidate": {
+      "customizations/components/tianxuan/server/api.py": "11c2129b253bb7d244b9741c1a1738412860147226fb7575212270921a89af14",
+      "customizations/components/tianxuan/server/native_entry_api.py": "bbf82a3141e84ed5d9fa6be345b6276e9458c97c5b09f40b5f51798e894d5e75",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "440765eb4c6ebb38d403ad6cda3c6585f402e735d5962e136e6384ff1d224e19",
+      "customizations/components/tianxuan/server/native_execution_host.py": "148be3c5937d79a9d890ec969b351dca2d7cf59a791f461e0d158efcbcb7ac9e",
+      "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "a3a57f9e629ed16c3c358bbf4618a8495bed98d654b48237ca510524f70c9ca3",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "9f48bd4e5f774e3f84e9edc85d2b345fee562236ae1ccf3067e4e692196a06e9",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d35cfe7d9c5fc46da815cdf9d9405d615b8f51f247fcedb2b06e79731e0a14ea",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "0ceddb65d6c5f21ced74a858d89b13a810d161a8cc4a0dd5e68e711ca4df9efc",
+      "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": "35829d59c350d4a637a0e4bafcea06e4251b4ed30c99c23f4b047423a8665e5c",
+      "customizations/components/tianxuan/server/native-entry-interface.md": "46631b7a38b1912dc8945b8f1a4eef25564de3eb5453ee6905daf907a654df98",
+      "design-docs/native-production-entry-20261118.md": "a79e6f8c49e950b2aec16c07eee2093aa982b734d6ab4e568a848122c12bff4b"
+    },
+    "candidate_unchanged_before_after": true,
+    "findings": [
+      {
+        "id": "R4-followup",
+        "priority": "P1",
+        "file": "customizations/components/tianxuan/server/native_entry_api.py",
+        "line": 49,
+        "title": "New increment retains completed shared parent and reports 100 percent before planning",
+        "reproduction": "Finish two ordinary entries sharing a requirement, enqueue a third legitimate extra-scope entry while delaying planner by 3 seconds, GET its status before planning and once its task appears ready.",
+        "unplanned": {
+          "entry": "717693c53ea717b2d1bf7b48bf917389d49e8246c28342f03a26b946fbfd7123",
+          "tasks": [],
+          "policy": "fedcb73f36081c1457792eeb91a79457b1e115ff0cbf6fb2b0c28b4d95294dba",
+          "state": "held",
+          "progress": {
+            "total": 3,
+            "done": 3,
+            "percent": 100
+          },
+          "failures": []
+        },
+        "parent_unplanned": [
+          {
+            "id": "iss_11d53e14e9284fc3817329e837825875",
+            "status": "done"
+          }
+        ],
+        "planned": {
+          "entry": "717693c53ea717b2d1bf7b48bf917389d49e8246c28342f03a26b946fbfd7123",
+          "tasks": [
+            {
+              "task": "1fb4c718760bf82c5e4b691be91298db1b0060a9da869682baa2efb21fa5f296",
+              "state": "ready"
+            }
+          ],
+          "policy": "fedcb73f36081c1457792eeb91a79457b1e115ff0cbf6fb2b0c28b4d95294dba",
+          "state": "planned",
+          "progress": {
+            "total": 4,
+            "done": 3,
+            "percent": 75
+          },
+          "failures": []
+        },
+        "parent_planned": [
+          {
+            "id": "iss_11d53e14e9284fc3817329e837825875",
+            "status": "done"
+          }
+        ],
+        "impact": "Normal entry status and shared parent falsely signal whole current requirement completion. Planned-stage percentage drops to75 but shared parent remains done. Old entry acceptance should remain immutable; newly accepted aggregate intent must invalidate whole-requirement completion.",
+        "repair": "At durable enqueue atomically account for outstanding unplanned entries and reopen/recompute shared parent completion for the current requirement. Planning and final acceptance must preserve that invariant; do not revoke immutable accepted historical entries.",
+        "evidence": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\adversarial-planned-progress.json"
+      }
+    ],
+    "scoped_observations": {
+      "R1": "Independent ordinary-ASGI producer overlap true; integrated text and extra output blobs read from actual native database and verified; short catalog/task lock; initiating seed reservation stable across cross-member native-submit/domain-receipt crash.",
+      "R2": "Fresh same-actor credentials and still-valid colleague accepted after original logout; revoked unfinished contribution remains stopped; accepted historical content and late accepted dependencies remain readable with current access. Installed data-plane principal remains tied to current entry.",
+      "R3": "Cross-entry dependencies bind exact contracts/sources and wait task acceptance. Withdrawal blocks dependent while independent task completes. Handoff CAS, unknown active owner retention and committed physical readback verified; extra mismatch and private-document denial probes pass. Late dependency delivered; no observed dependency bypass due to parent defect.",
+      "R4": "Early entry delivered with global25% while slow peer continues. Later increments expose blocker above.",
+      "race": "Real startup-delay ASGI probe ends two accepted tasks and one conflicted produced task. Driver closure counts 2,3,1; no runaway self retry observed in this interleaving. Source excludes own closure generation; active peer lookup same tenant, physical cross-entry observation only on global capacity full, publication lane same product. Finite tested schedules cannot prove universal starvation freedom."
+    },
+    "validation": {
+      "commands": [
+        {
+          "name": "normal",
+          "command": [
+            "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-normal.py"
+          ],
+          "exit_code": 0
+        },
+        {
+          "name": "dependencies",
+          "command": [
+            "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-dependencies.py"
+          ],
+          "exit_code": 0
+        },
+        {
+          "name": "conflict",
+          "command": [
+            "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-conflict.py"
+          ],
+          "exit_code": 0
+        },
+        {
+          "name": "withdrawal",
+          "command": [
+            "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-withdrawal.py"
+          ],
+          "exit_code": 0
+        },
+        {
+          "name": "seed",
+          "command": [
+            "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-seed.py"
+          ],
+          "exit_code": 0
+        },
+        {
+          "name": "startup",
+          "command": [
+            "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-startup.py"
+          ],
+          "exit_code": 0
+        },
+        {
+          "name": "restart",
+          "command": [
+            "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+            "-B",
+            "-X",
+            "utf8",
+            "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-restart.py"
+          ],
+          "exit_code": 0
+        }
+      ],
+      "regression": "22 passed in 8.49s; explicit NATIVE_TEST_NODE environment; pytest-node.log",
+      "independent_negatives": "2 passed in 2.42s; adversarial-private-handoff.log (physical publication mismatch retains owner+active; private same-tenant nonshared member denied)",
+      "progress_probes": [
+        "adversarial-progress.py exit0",
+        "adversarial-planned-progress.py exit0"
+      ],
+      "physical_processes_closed": true,
+      "process_readback": "process-readback.json empty: no matching live python/node processes",
+      "models_called": 0,
+      "network_listeners": 0,
+      "db_readback": "db-readback.json",
+      "normal_intervals": [
+        {
+          "start": {
+            "time": 1794979091.6160228,
+            "pid": 56996
+          },
+          "end": {
+            "time": 1794979093.6250193,
+            "pid": 56996
+          }
+        },
+        {
+          "start": {
+            "time": 1794979091.815669,
+            "pid": 49020
+          },
+          "end": {
+            "time": 1794979093.8221645,
+            "pid": 49020
+          }
+        }
+      ],
+      "dependency_intervals": [
+        {
+          "context": {
+            "acceptance": "output must equal deterministic accepted output",
+            "body_md": "Write deterministic accepted output",
+            "id": "iss_0ff8f3c93cdd4f9d8c44316548c07abc",
+            "parent_id": "iss_c3891c6d4d3d45ff81074e802ce3537b",
+            "requirement_id": "doc_c9f4c744250747b7ad19e831a30d462b",
+            "requirements": [
+              {
+                "body_md": "---\nrequest_id: same-product\nkind: requirement\nlang: zh\n---\n\n# Shared product\n\n## 目标\n\nOutput\n\n## 范围\n\nText\n\n## 验收\n\noutput must equal deterministic accepted output\n",
+                "id": "doc_c9f4c744250747b7ad19e831a30d462b",
+                "kind": "requirement",
+                "title": "Shared product"
+              },
+              {
+                "body_md": "---\nrequest_id: same-product\nkind: requirement\nlang: zh\n---\n\n# Shared product\n\n## 目标\n\nOutput\n\n## 范围\n\nText\n\n## 验收\n\noutput must equal deterministic accepted output\n",
+                "id": "doc_c9f4c744250747b7ad19e831a30d462b",
+                "kind": "requirement",
+                "title": "Shared product"
+              }
+            ],
+            "tenant_id": "ten_1ad8fa73e7ce4f83ab061833c81054b1",
+            "title": "Shared product text",
+            "type": "task"
+          },
+          "start": {
+            "time": 1794979092.093337,
+            "pid": 51224
+          },
+          "end": {
+            "time": 1794979094.1020129,
+            "pid": 51224
+          }
+        },
+        {
+          "context": {
+            "acceptance": "output must equal deterministic accepted output",
+            "body_md": "Write deterministic accepted output",
+            "id": "iss_b1e52e5f8a2a4d7baab7a66fc8d3cc26",
+            "parent_id": "iss_c3891c6d4d3d45ff81074e802ce3537b",
+            "requirement_id": "doc_c9f4c744250747b7ad19e831a30d462b",
+            "requirements": [
+              {
+                "body_md": "---\nrequest_id: same-product\nkind: requirement\nlang: zh\n---\n\n# Shared product\n\n## 目标\n\nOutput\n\n## 范围\n\nText\n\n## 验收\n\noutput must equal deterministic accepted output\n",
+                "id": "doc_c9f4c744250747b7ad19e831a30d462b",
+                "kind": "requirement",
+                "title": "Shared product"
+              },
+              {
+                "body_md": "---\nrequest_id: same-product\nkind: requirement\nlang: zh\n---\n\n# Shared product\n\n## 目标\n\nOutput\n\n## 范围\n\nText\n\n## 验收\n\noutput must equal deterministic accepted output\n",
+                "id": "doc_c9f4c744250747b7ad19e831a30d462b",
+                "kind": "requirement",
+                "title": "Shared product"
+              }
+            ],
+            "tenant_id": "ten_1ad8fa73e7ce4f83ab061833c81054b1",
+            "title": "Shared product extra",
+            "type": "task"
+          },
+          "start": {
+            "time": 1794979092.6002192,
+            "pid": 66412
+          },
+          "end": {
+            "time": 1794979117.605526,
+            "pid": 66412
+          }
+        },
+        {
+          "context": {
+            "acceptance": "output must equal deterministic accepted output",
+            "body_md": "Write deterministic accepted output",
+            "id": "iss_1c617befe8c24fa59bec7d3a547998d7",
+            "parent_id": "iss_c3891c6d4d3d45ff81074e802ce3537b",
+            "requirement_id": "doc_c9f4c744250747b7ad19e831a30d462b",
+            "requirements": [
+              {
+                "body_md": "---\nrequest_id: same-product\nkind: requirement\nlang: zh\n---\n\n# Shared product\n\n## 目标\n\nOutput\n\n## 范围\n\nText\n\n## 验收\n\noutput must equal deterministic accepted output\n",
+                "id": "doc_c9f4c744250747b7ad19e831a30d462b",
+                "kind": "requirement",
+                "title": "Shared product"
+              },
+              {
+                "body_md": "---\nrequest_id: same-product\nkind: requirement\nlang: zh\n---\n\n# Shared product\n\n## 目标\n\nOutput\n\n## 范围\n\nText\n\n## 验收\n\noutput must equal deterministic accepted output\n",
+                "id": "doc_c9f4c744250747b7ad19e831a30d462b",
+                "kind": "requirement",
+                "title": "Shared product"
+              }
+            ],
+            "tenant_id": "ten_1ad8fa73e7ce4f83ab061833c81054b1",
+            "title": "Shared product tail",
+            "type": "task"
+          },
+          "start": {
+            "time": 1794979119.8452146,
+            "pid": 60240
+          },
+          "end": {
+            "time": 1794979121.8516414,
+            "pid": 60240
+          }
+        }
+      ]
+    },
+    "limitations": [
+      "Per-entry Node processes remain unbounded by shared server admission; no250-entry capacity claim.",
+      "Installation verify repeats full pinned binary hashes.",
+      "NativeIntegration resolver remains lambda None; conflicting writes isolated, no automatic conflict resolution.",
+      "Remote ordinary entry, context #1501, actual models, production server and whole1499 remain pending.",
+      "Independent runs reuse seven implementer probe programs in separate directories; two directed progress programs and handoff negatives independently authored."
+    ],
+    "method_recall": {
+      "tenant": "gonggong-workspace",
+      "scope": "editor-dependency-handoff",
+      "verified": [
+        "await-terminal-observers revision5",
+        "bind-consumer-release revision15",
+        "review-context-and-source-evidence revision4"
+      ],
+      "application": "Bind actual source bytes, inspect native artifact blobs and actual physical closure; deterministic mechanisms are not business/model acceptance."
+    },
+    "harness_corrections": [
+      "Initial copied runner path replacement used Windows separators and mkdir failed before any original fixture write; fixed to as_posix before execution.",
+      "Initial pytest run lacked NATIVE_TEST_NODE:20passed1failed1skipped; corrected environment produced22passed.",
+      "Initial same-tenant nonshared fixture was tenant-visible and correctly allowed; changed fixture to private then denial passed. Original log retained; not a product finding."
+    ],
+    "learning_feedback": {
+      "action": "proposal_for_root",
+      "method": "After completing the initial batch, enqueue a delayed fresh increment and inspect aggregate completion both before and after planning; initial concurrent-batch tests miss stale completed parents.",
+      "observed": "Two real normal-ASGI reproductions retain parentdone; unplanned stage100%, planned stage75%.",
+      "counterexample": "Historical entry delivered should stay immutable even while aggregate requirement becomes incomplete."
+    },
+    "cleanup": {
+      "physical_processes_closed": true,
+      "sources_modified": false,
+      "branches_created": false,
+      "commits": false,
+      "retained": "All review scripts, finite role programs, DBs and logs retained as blocker/review evidence for root; no listeners/configuration/providers installed. Root owns final archival cleanup."
+    },
+    "evidence": [
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\adversarial-handoff.log",
+        "sha256": "e05945d245d4a8bee3a93677236c867b3fbd73f3737e55871afb4af1b5a5b625"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\adversarial-planned-progress.json",
+        "sha256": "c04fadaa61f72aede2315916364171e7235b65f6f16378c137708ee7673f3034"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\adversarial-planned-progress.log",
+        "sha256": "81eb3fe130ea17d12869ec0c60f8bcc3b194ac5819cf40591e7d0214f709c829"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\adversarial-planned-progress.py",
+        "sha256": "97a865006c34fb4be1d8a189756fa000c8958e5f8c3d47eb340ea6248b2ebfe2"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\adversarial-private-handoff.log",
+        "sha256": "077e1189c84680e27b7dcd1356e47994c6c7f220f1cd4e0b1d0d5c90f980846a"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\adversarial-progress.json",
+        "sha256": "f45956286a15bed5ce16876937a3d7e3edbbaa1ef9a40a826022f4bd00da0792"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\adversarial-progress.log",
+        "sha256": "715b915beeac5fe7991640add97d13f0bb727d8062fc48c5aa8e073f823233b8"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\adversarial-progress.py",
+        "sha256": "76c31b02281c1e4c92318837432ccdb8bf427139c376bba9415fbce38cbd46d3"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\build-review.py",
+        "sha256": "7b2de3ebf89800be660b992e6f0662e9f589fbc6738ac66f11736793e3e9ff5b"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\conflict.log",
+        "sha256": "5aacd358f18223bcddacec1b34bde7794dd60e17f0b7ea5ccb3ad55c1bce8061"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\db-readback.json",
+        "sha256": "7fbe053992a21f539cf67c46a67f165a771bea3aac227851267342dc6f7f7528"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\dependencies.log",
+        "sha256": "de96bdf8f08619cff83d585ca596fff1c067c82ec6595824f3967f2101fda070"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\exits.json",
+        "sha256": "402158f708202f320243c9d4af36ba1d1b7853aefc3328e622c4c1414dda60b8"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\hashes-after.json",
+        "sha256": "32e96130661cbe118d87d8ea12d397cd098d70ebcfee575d457ff20e871e5b77"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\hashes-before.json",
+        "sha256": "32e96130661cbe118d87d8ea12d397cd098d70ebcfee575d457ff20e871e5b77"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\normal.log",
+        "sha256": "c4be2356134a1eb22fbac5097918867b2a29690911d3d32aa3d2f11f7eb2f088"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\pytest-node.log",
+        "sha256": "ca1d202a4f1befba3814c596fef1d2acabd97348a056412246bc9992956a7634"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\pytest.log",
+        "sha256": "0327eed770b48c665b4a0fa04ded8737a76b3b1fc16aaa786c92bfe849d24043"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\restart.log",
+        "sha256": "4dd561bd9493302e4d6e3efa6deef22ab3da111d40adfade3e63ba347a09af69"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-conflict.py",
+        "sha256": "f11c7ca3d916233c5a3369a5a59c56727c6af42c9fe249379d6f887dd3babf65"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-dependencies.py",
+        "sha256": "11301d43d5aa92afd3a5462b0d2ae0a9698e85011749daf155df1fb04de38540"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-normal.py",
+        "sha256": "af95c3fb63df8aef72c2e7b98f5aab176499904e4a6345434a01bc62616a5b64"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-ready-conflict.json",
+        "sha256": "59e9b549d9a7957797cd00564a08fc333c33ba180e85a61af7552089249ccbf5"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-ready-dependencies.json",
+        "sha256": "23520b929a96d32373d773be19eaac7f38f36b4ff256e1e1da20e585b3f9aa14"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-ready-normal.json",
+        "sha256": "d1d3163ad576156e7038df14009b23a51ceb810462c5712c750b0a18658b1971"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-ready-restart.json",
+        "sha256": "9f17f1203daa0c7eac252cf3009a86bfa4ab8d01efe6e2b6590e521d56671650"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-ready-seed.json",
+        "sha256": "008068472171d2e1573b8317d295372b5a796b4f9e83c96adfd31318ed6b1d0b"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-ready-startup.json",
+        "sha256": "5329ef4d13f323dffba38476447e188338d8e380bdf8084f47b44a0fc8cf05b2"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-ready-withdrawal.json",
+        "sha256": "b41457a039b9c8ad74ddcce7c0b67aca8baedf5af5134dd38e0fc71348b60957"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-restart.py",
+        "sha256": "08b67e6f1b5e0ecb4c7a66dc9e2c4660d9e7b39930d9ce69fa406ee0c99586f5"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-seed.py",
+        "sha256": "2715bdfbe2a65c10e5271bfb1be103c73fbf0346248790f9cfc84627c4fe43e6"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-startup.py",
+        "sha256": "e9921e72d8b8f1fb0eb7699e6d133e857acb28c5af98601a7a3b9cdb7482dd97"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\review-withdrawal.py",
+        "sha256": "32b09bd5d43f24437cc71b192d8e8e5001b4b7ca1700cc37dc64113403ec0906"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\run_review.py",
+        "sha256": "3fb605fbdfce036bcc0e1581d1cf362e143ff513a1ecd5dc38229634253c91b3"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\seed.log",
+        "sha256": "26cbc6abbda76d0fbf9ff82f361c1aa8b43f7bc75e58d2dc900ad33caa90143d"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\startup.log",
+        "sha256": "25e841d9f44d3b22da8491ae3b7533477e45c9beba09bc44432160cf06993eb2"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\test_adversarial.py",
+        "sha256": "ddc81f733786a12b8e8bc0287e8585c96abfb6336008f414b1654663c4ee9ae4"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-review-probes\\withdrawal.log",
+        "sha256": "6425ef5050b60b5263c1805a2536d8a60f054137d67083ac718ed426441285fd"
+      }
+    ]
+  }
+}

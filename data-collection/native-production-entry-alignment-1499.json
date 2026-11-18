@@ -1,0 +1,14 @@
+{
+  "issue": 1499,
+  "before": "8da2ba2ef656cc352e69f286ed4f648eb25f2242",
+  "target": "ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079",
+  "local_source_only_pending_upstream_main": true,
+  "owned_preserved": {
+    "data-collection/requests/native-production-entry-20261118/0214d8c4-d927-4a9c-bfd5-4719d74255e8.json": "db69adddebc6ce5e8f90f195527c8779b6bdca576e7ea5de7032e114449e9c59",
+    "design-docs/native-production-entry-20261118.md": "483cec72781183d10568e7cf578ac33bbb8597bee97de689a06ee7e1c700d1da",
+    "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/codex-intake-1499-20261117.json": "ab6fbf7bfbeb7efe0d8ddffd826b40d265f1c50e022405ff5276a272c4d5b839",
+    "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-33ca6ea89bc448e0b96f00f3494d1c67.json": "373d1acc80e7915011ada9fa63640005b2e36771f2ff877591d6383fbd12b712",
+    "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-b52f52627ec5425b8fd6cc37e76e8316.json": "09938e4245b3c8eb66ec74982f2e25043a40dd9af641f1ce4a980c425ddb4ae8"
+  },
+  "scope": "Local dependency source preparation after audit worker actual final and reconciliation. No production or main-delivery claim; continuous source remains pending and must be integrated separately."
+}

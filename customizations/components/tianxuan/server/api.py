@@ -306,12 +306,40 @@ def create_app(
     native_store: Any | None = None,
     native_only: bool = False,
     native_workflow: Any | None = None,
+    native_entry: Any | None = None,
 ) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
-    app = FastAPI(title="Tianxuan API", version="0.1.0")
+    from contextlib import asynccontextmanager
+
+    @asynccontextmanager
+    async def lifespan(app):
+        if native_entry is not None:
+            await native_entry.start()
+        try:
+            yield
+        finally:
+            if native_entry is not None:
+                await native_entry.stop()
+
+    app = FastAPI(title="Tianxuan API", version="0.1.0", lifespan=lifespan)
     app.state.store = store
     app.state.native_only = native_only
     configure_access(app, store)
+    if native_entry is not None:
+        from native_entry_api import create_entry_router
+
+        app.state.native_entry = native_entry
+        app.include_router(create_entry_router(native_entry))
+
+        @app.middleware("http")
+        async def native_mutation_event(request, call_next):
+            response = await call_next(request)
+            # API mutations have committed before the response. Wake waiting
+            # dependency consumers for credential, source and sharing changes.
+            if request.method in {"POST", "PUT", "PATCH", "DELETE"} and response.status_code < 400:
+                native_entry.notify_dependency_change()
+            return response
+
     if native_workflow is not None:
         from native_api import create_native_workflow_router
 
@@ -1739,6 +1767,7 @@ def create_app(
 
     @app.get("/api/v1/capabilities")
     def capabilities() -> dict[str, Any]:
+        installation = native_entry.installation.verify() if native_entry is not None else None
         return {
             "mode": "native" if native_only else "git",
             "documents": True,
@@ -1746,6 +1775,13 @@ def create_app(
             "issues": True,
             "models": gateway is not None,
             "native_candidates": native_store is not None,
+            "native_execution": {
+                "enabled": installation is not None,
+                "mode": installation["mode"] if installation else "unconfigured",
+                "execution_nodes": native_entry.execution_nodes if native_entry else None,
+                "entry_api": "/api/v1/native/entry" if native_entry else None,
+                "context_tools": False,
+            },
             "git": not native_only,
         }
 

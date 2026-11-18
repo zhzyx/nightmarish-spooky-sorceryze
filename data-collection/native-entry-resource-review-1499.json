@@ -1,0 +1,334 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-resource-review.json",
+    "sha256": "236c7c7547ed7c5901d636e07c9a394be5955bb93f269f4da0fbb20dbc3897a6",
+    "path_base": "absolute private host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "issue": 1499,
+    "decision": "blocked",
+    "scope": "Independent exact-candidate shared dispatcher and installation integrity review",
+    "business_acceptance": false,
+    "production_acceptance": false,
+    "whole_issue_complete": false,
+    "source_sha256": {
+      "customizations/components/tianxuan/server/api.py": "11c2129b253bb7d244b9741c1a1738412860147226fb7575212270921a89af14",
+      "customizations/components/tianxuan/server/main.py": "1251ac045aad3e5d36c9711be9c345d835ee40e6420ee67a5f21887d918be80e",
+      "customizations/components/tianxuan/server/native_entry_api.py": "bbf82a3141e84ed5d9fa6be345b6276e9458c97c5b09f40b5f51798e894d5e75",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "167f3da15024f706adcfdf8b406f2227696b8468cff6c8e2f58afd472925f012",
+      "customizations/components/tianxuan/server/native_entry_review.py": "498a387ce050c7733eb1602f4a207917232e4d3075fa6e345e6c0f05a3a2b9ce",
+      "customizations/components/tianxuan/server/native_execution_host.py": "e34136139e6bd9aefaeaca247f8a95624f81ea4c34f9f4df5b7038b9f26eb481",
+      "customizations/components/tianxuan/server/native_installation.py": "1a7865cb4d13ce9127f1d276ec5bb9a1ec321faa83af5849c2d89095c260a416",
+      "customizations/components/tianxuan/server/test_native_entry.py": "f4facc098097df2c6a853c3e970501d29cfbf282bac6263bfe1df0ca7a28b9cf",
+      "customizations/components/tianxuan/server/test_native_entry_normal.py": "d449c5c3004b1558ba7186117f7cbb6b91cbe36e7c3cf378f5f820ecfe17eeb8",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "9f48bd4e5f774e3f84e9edc85d2b345fee562236ae1ccf3067e4e692196a06e9",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "c5b39fd8111ac6440a21a5cbc8e9e6a537908dff38d2ea52b1090c6774fa1287",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "3e83f5cc7e204a83b7a3fc31e63ea61ac34fdadbbab1c80f830ebe1528bb36e4",
+      "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "a3a57f9e629ed16c3c358bbf4618a8495bed98d654b48237ca510524f70c9ca3",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "f26421dccf41581de4d4dfbae933c9917a304f0368f3a02c6d4588642f54f11e",
+      "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py": "213a234e9177809845ea8b5247f19ec41200747835b138ec87503d83aa810b71",
+      "customizations/components/tianxuan/server/native-entry-interface.md": "8ec544677d163692d6261fd2c08922c65cb4605dcd5dbf86af1b03fa27abefac",
+      "design-docs/native-production-entry-20261118.md": "a79e6f8c49e950b2aec16c07eee2093aa982b734d6ab4e568a848122c12bff4b",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "0ceddb65d6c5f21ced74a858d89b13a810d161a8cc4a0dd5e68e711ca4df9efc",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d35cfe7d9c5fc46da815cdf9d9405d615b8f51f247fcedb2b06e79731e0a14ea",
+      "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": "35829d59c350d4a637a0e4bafcea06e4251b4ed30c99c23f4b047423a8665e5c",
+      "customizations/components/tianxuan/server/test_native_shared_dispatch.py": "b4ae31ddaf97adf0629a58622e65d8495dece53a604b0eef59faf539c35b8c5e",
+      "customizations/components/tianxuan/server/test_native_installation_integrity.py": "aacee4cb41c65ed6ffab4a214d7e7a905385f0359d2ad4a5860a0fd5f8211e29"
+    },
+    "candidate_unchanged": true,
+    "findings": [
+      {
+        "id": "R5",
+        "priority": "P1",
+        "file": "customizations/components/tianxuan/server/native_execution_host.py",
+        "line": 333,
+        "title": "Cancellation during shared send kills peer entries",
+        "trigger": "One real Node peer is already awaiting inspect; a second run waits on shared write_lock; cancel the second caller.",
+        "observed": {
+          "before": {
+            "jobs": 2,
+            "write_bytes": 25,
+            "pid": 57976
+          },
+          "peer_outcome": "Dispatcher send unknown; no replay",
+          "terminal": {
+            "started": true,
+            "pid": 57976,
+            "exit_code": 1,
+            "physical_terminal": true,
+            "failure": "Dispatcher send unknown; no replay"
+          }
+        },
+        "reason": "run catches BaseException from _send, including CancelledError before any packet write, and invokes process-wide _fail. This violates caller cancellation isolation and marks unaffected peer outcome unknown.",
+        "evidence": [
+          "native-entry-resource-review-probes/cancel-during-send.py",
+          "native-entry-resource-review-probes/cancel-during-send.json"
+        ],
+        "required": "Keep admitted send/logical job ownership independent of caller cancellation, preserve peer operation and no replay; cover cancellation before write and during drain."
+      }
+    ],
+    "tests": {
+      "current_unit": "37 run: 35 passed, 2 skipped (Linux mount and Windows symlink privilege)",
+      "normal_asgi": {
+        "review-ready-conflict.json": {
+          "sha256": "c5a1acf987586a24d7e29b281539b7f0cc136456b584cf1d55d3e696d5db646f",
+          "terminal": {
+            "started": true,
+            "pid": 61604,
+            "exit_code": 0,
+            "physical_terminal": true,
+            "failure": null
+          },
+          "all_processes_closed": true,
+          "producer_overlap": null
+        },
+        "review-ready-dependencies.json": {
+          "sha256": "e9dfb0c13a247b9757e862f7ef7be597fbdfa9ebd6455cc746c48081fff6ac69",
+          "terminal": {
+            "started": true,
+            "pid": 33244,
+            "exit_code": 0,
+            "physical_terminal": true,
+            "failure": null
+          },
+          "all_processes_closed": true,
+          "producer_overlap": null
+        },
+        "review-ready-normal.json": {
+          "sha256": "792272dbb1835c8a7657da5d2c078cf31cbeab6fa8216ae3f541fc109623f346",
+          "terminal": {
+            "started": true,
+            "pid": 50752,
+            "exit_code": 0,
+            "physical_terminal": true,
+            "failure": null
+          },
+          "all_processes_closed": true,
+          "producer_overlap": true
+        },
+        "review-ready-restart.json": {
+          "sha256": "420a5d90ebf4e3f8b335cb5f256fd6c8b440aa07e33839cbbb736037ee7292e7",
+          "terminal": {
+            "started": true,
+            "pid": 42012,
+            "exit_code": 0,
+            "physical_terminal": true,
+            "failure": null
+          },
+          "all_processes_closed": true,
+          "producer_overlap": null
+        },
+        "review-ready-seed.json": {
+          "sha256": "5a58058b9aed6ade2b7df50a7310096d6dbf305948bbcb5641671dd70f793727",
+          "terminal": {
+            "started": true,
+            "pid": 56356,
+            "exit_code": 0,
+            "physical_terminal": true,
+            "failure": null
+          },
+          "all_processes_closed": true,
+          "producer_overlap": null
+        },
+        "review-ready-startup.json": {
+          "sha256": "f1953cdb5e3f2f7f66ff17089c3d0dfe6f97f8350091c614166194ede2ea9a51",
+          "terminal": {
+            "started": true,
+            "pid": 69256,
+            "exit_code": 0,
+            "physical_terminal": true,
+            "failure": null
+          },
+          "all_processes_closed": true,
+          "producer_overlap": null
+        },
+        "review-ready-withdrawal.json": {
+          "sha256": "9a01a9218d0112302b810bb7688129fc8a6afdcad2d3d494eabc94e3e25a1ed6",
+          "terminal": {
+            "started": true,
+            "pid": 1788,
+            "exit_code": 0,
+            "physical_terminal": true,
+            "failure": null
+          },
+          "all_processes_closed": true,
+          "producer_overlap": null
+        },
+        "adversarial-planned-progress.json": {
+          "sha256": "49fd690c7ea029ba03965e7f1e039aec57c963238065bc0d58de2c998e8d1b53",
+          "terminal": {
+            "started": true,
+            "pid": 64952,
+            "exit_code": 0,
+            "physical_terminal": true,
+            "failure": null
+          },
+          "all_processes_closed": true,
+          "producer_overlap": true
+        }
+      },
+      "extra": "6 passed: duplicate RPC, premature terminal, actual to_thread effect after physical process death, start/close race, hardlink deny-write and identity withdrawal, parent rename/replace",
+      "extra_terminals": [
+        {
+          "started": true,
+          "pid": 68632,
+          "exit_code": 1,
+          "physical_terminal": true,
+          "failure": "Dispatcher closed/unknown; no replay"
+        },
+        {
+          "started": true,
+          "pid": 68632,
+          "exit_code": 1,
+          "physical_terminal": true,
+          "failure": "Dispatcher closed/unknown; no replay"
+        },
+        {
+          "started": true,
+          "pid": 59104,
+          "exit_code": 1,
+          "physical_terminal": true,
+          "failure": "Invalid or unbounded dispatcher request"
+        },
+        {
+          "started": true,
+          "pid": 65864,
+          "exit_code": 1,
+          "physical_terminal": true,
+          "failure": "Premature dispatcher terminal"
+        },
+        {
+          "started": true,
+          "pid": 49640,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        },
+        {
+          "started": true,
+          "pid": 49640,
+          "exit_code": 0,
+          "physical_terminal": true,
+          "failure": null
+        }
+      ],
+      "runs": [
+        {
+          "name": "current-unit",
+          "exit_code": 0
+        },
+        {
+          "name": "normal",
+          "exit_code": 0
+        },
+        {
+          "name": "restart",
+          "exit_code": 0
+        },
+        {
+          "name": "startup",
+          "exit_code": 0
+        },
+        {
+          "name": "dependencies",
+          "exit_code": 0
+        },
+        {
+          "name": "withdrawal",
+          "exit_code": 0
+        },
+        {
+          "name": "seed",
+          "exit_code": 0
+        },
+        {
+          "name": "conflict",
+          "exit_code": 0
+        },
+        {
+          "name": "progress",
+          "exit_code": 0
+        }
+      ]
+    },
+    "format_alignment": {
+      "native_installation.py": {
+        "old_sha256": "dc17eb9afc5dfee8869c8fd77c05b1400a2aa8bd1a5a7e4b589afaee0b2704a5",
+        "current_sha256": "1a7865cb4d13ce9127f1d276ec5bb9a1ec321faa83af5849c2d89095c260a416",
+        "same_ast_ignoring_top_level_import_order": true
+      },
+      "test_native_installation_integrity.py": {
+        "old_sha256": "459dfb46ffccab76a06fd567f945d21f6c851d4a90822fb7682f2fc430218170",
+        "current_sha256": "aacee4cb41c65ed6ffab4a214d7e7a905385f0359d2ad4a5860a0fd5f8211e29",
+        "same_ast_ignoring_top_level_import_order": true
+      }
+    },
+    "review_observations": [
+      "Per-entry ContextVar copied into each RPC task; asyncio.to_thread carries context; WorkflowService actor/entry authority checked before effects and after waits. 250 synthetic contexts reach barrier through one Node, without whole-task queue.",
+      "MAX_JOBS1024/MAX_RPC4096,8MiB packets and16MiB pending bytes checks constrain admitted transport; JSON serialization and readline line construction have transient allocations; no RSS bound or 250 real model claim.",
+      "Logical terminal retains Node until shutdown; broken transport sticky; close waits replies so started thread effects are not represented as cancelled.",
+      "NTFS retained SHARE_READ handles deny source writes/deletes, existing writers and writable mappings rejected. New hardlink changes metadata and causes fail-closed revalidation.",
+      "Manifest exact bytes rehashed and reparsed, source identity/reopened path checked; command dict mutation cannot poison command(); closed installation remains closed. Constructor and factory initialize/start exception paths close installation; normal stop closes dispatcher/worker/ownership/installation.",
+      "Linux caching requires actual held/current ST_RDONLY plus trusted immutable provisioning excluding writable aliases/mappings. Prior Linux evidence is pre-format; AST equivalence verified, no fresh Linux execution claimed. Writable/unknown platform uses streaming hashes.",
+      "Factory initialization policy reads public spec inside trusted process; hostile mutation of verifier object/process is outside declared boundary. Later path execution is not atomic with verification."
+    ],
+    "method_learning": {
+      "recall": "gonggong-workspace/content-storage-integrity revision2 verified",
+      "applied": "Explicit UTF-8 reads/writes for probe adaptation; no inference that encoding lesson proves binary integrity.",
+      "probe_correction": "Initial hardlink test expected verify success after link creation. Actual ctime identity changed: fail-closed result is correct. Retained extra-initial.log; revised expectation and reran6 successfully.",
+      "proposal": "Cancellation coverage must include shared write lock and drain, not only waiting for result."
+    },
+    "limitations": [
+      "Real resolver/context/remote/production packaging and actual250models excluded.",
+      "Candidate blocked on R5; no independent pass or whole Issue delivery claimed.",
+      "No additional Linux server execution; trusted immutable provisioning remains parent production acceptance."
+    ],
+    "cleanup": {
+      "processes": "All spawned probe commands exited; all reported sharedNode terminals physical; Get-CimInstance found no node/python with owned probe path after completion.",
+      "resources": "Owned temporary unittest fixtures automatically cleaned. ASGI databases/roles/scripts/logs retained in authorized evidence directory for reproduction; no branch/worktree created, no source edits, no listeners/models/providers invoked."
+    },
+    "evidence_sha256": {
+      "adversarial-planned-progress.json": "49fd690c7ea029ba03965e7f1e039aec57c963238065bc0d58de2c998e8d1b53",
+      "cancel-during-send.json": "a0ca9d273499c1b2bb36742481d07dee3ca77516a322e75da77cc14c2b804227",
+      "cancel-during-send.py": "e54700f2db12bda715b19fdf3fa66c61aefed742b9b3305ea00a4a7e15a55a4b",
+      "conflict.log": "04cd71a4504d053c9dbe0c4bce1dc6ca97ba9fcbb1438b4fbada6659f4ba2ee5",
+      "current-unit.log": "aabfc91e42b6634801ed952c6e87a80b41aee3fdc4208af7ccea89166add82c2",
+      "dependencies.log": "850b79d551328de453fe3106483393684552a8988a83c202ff0bca9356dafac9",
+      "duplicate.mjs": "175962165f7dde7c5af45c1bdf7e796e396aa8106ad09c3885a9b701a37d46a5",
+      "extra-initial.log": "a29ea7db5cb6f3f30c59f8a7c50ee8b2c564dde5d755755526f9dbf97e554583",
+      "extra-terminals.json": "ec9b3d830118678c79d9bc714fb2ded9313f9c011c7d613086f3a58b305d58af",
+      "extra.log": "dcceee9e78231165c2b9f170651deb9fa937ea1fe715439c47d5b1eccf24c2aa",
+      "extra.py": "7ff19eb30f5d1fb3bf22b3145921aa9d651f3ecd44dfb769b226187bf06cd0be",
+      "frozen-after.json": "414996ccc0129e2f3adaf1ade0ede283fd9e44f710a91ed5717512f1b05f5bed",
+      "frozen-before.json": "414996ccc0129e2f3adaf1ade0ede283fd9e44f710a91ed5717512f1b05f5bed",
+      "idle.mjs": "1e73e235d14dcea55318e099fc3ec05a32cc23e458d6713b0da37d77933a240f",
+      "normal.log": "f8aff1acb03e7db1d1ce6b4f10e9e709baab7312db1a8674ceec262d67417ace",
+      "premature.mjs": "3870e3203998572dae22f01dbd545c122ea550a4c5cce60cd82f6d68eccd64e2",
+      "progress.log": "2501c32f3710a8ff52cb0233112707caaaf33b16beea63aa5fb2722857c59e11",
+      "progress.py": "e0a9cefc2343d4f5f7804295a4a1001d3c01664fe42ad56f9d3f03f248d2315a",
+      "restart.log": "57996020835bde09aa9a304ee705f4b6909d60ea3165279985e0b06ee389f5b1",
+      "review-ready-conflict.json": "c5a1acf987586a24d7e29b281539b7f0cc136456b584cf1d55d3e696d5db646f",
+      "review-ready-conflict.py": "acdac2b26214e616291994dbed4016fcf1e903de4e3e8cad4599de11d89cd865",
+      "review-ready-dependencies.json": "e9dfb0c13a247b9757e862f7ef7be597fbdfa9ebd6455cc746c48081fff6ac69",
+      "review-ready-dependencies.py": "14f8cc8fcfcad2d7dc311fbf9497d4ceb69b36511400ab52ad4db3d35f5584da",
+      "review-ready-normal.json": "792272dbb1835c8a7657da5d2c078cf31cbeab6fa8216ae3f541fc109623f346",
+      "review-ready-normal.py": "7876839eafb5d8443f4c32ba20e74526388d82b4c1aa775d2bdb3cd0248c9032",
+      "review-ready-restart.json": "420a5d90ebf4e3f8b335cb5f256fd6c8b440aa07e33839cbbb736037ee7292e7",
+      "review-ready-restart.py": "1da098e2324297418947c77822c7d090d23ddb439b52a47e64cf56c296f876ea",
+      "review-ready-seed.json": "5a58058b9aed6ade2b7df50a7310096d6dbf305948bbcb5641671dd70f793727",
+      "review-ready-seed.py": "07c71c62678067fa8c6f151772a476216a67c6612608b5974e6511ecdc1ef3f8",
+      "review-ready-startup.json": "f1953cdb5e3f2f7f66ff17089c3d0dfe6f97f8350091c614166194ede2ea9a51",
+      "review-ready-startup.py": "3f9c2bb73299ecd3bb11500391ed439e390719d3229a80647a0f6d481b5f3114",
+      "review-ready-withdrawal.json": "9a01a9218d0112302b810bb7688129fc8a6afdcad2d3d494eabc94e3e25a1ed6",
+      "review-ready-withdrawal.py": "d6d645ea0a6dc974859cd7484ae9859d807825ae68daa5af5531b0b6b50200f5",
+      "run-review.py": "72376e45d531caf8adb535678354f5c16725cd03b9a7262dec56f762e0bed2ce",
+      "runs.json": "8990c6000855d6fc801d64bfac9a9fd1b7b0f811bccadcc980c3b860b9db46cf",
+      "seed.log": "588ddcd6f21dfd732f672077f500cb345d1ea17afaf183a0e87a4bf53b662c7b",
+      "startup.log": "749fc1315d0622263f2ba286c39c61daf6211e39687e71d67bb8f9e7ecf749ec",
+      "summarize.py": "3ae7f2956f7ac1c06b8498d7000c20880ec17ae3174a0518b59b1ea41aebc7aa",
+      "threadexit.mjs": "4741a36a14d115822285d408b32c0ca2463122ac385fec9db5fabeb45e9e931c",
+      "withdrawal.log": "7678892004b530b72629c69c5aa5567315ba36a1d5362f2b2d4b6f9383a7f4c4"
+    }
+  }
+}

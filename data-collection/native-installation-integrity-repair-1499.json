@@ -1,0 +1,133 @@
+{
+  "issue": 1499,
+  "recorded_at": "2026-11-18T06:02:25.900165+00:00",
+  "status": "source_implementation_and_scoped_tests_complete_pending_independent_review_and_parent_delivery",
+  "source_sha256": {
+    "native_installation.py": "dc17eb9afc5dfee8869c8fd77c05b1400a2aa8bd1a5a7e4b589afaee0b2704a5",
+    "test_native_installation_integrity.py": "459dfb46ffccab76a06fd567f945d21f6c851d4a90822fb7682f2fc430218170"
+  },
+  "design": {
+    "windows": "Local fixed-drive NTFS: retain SHARE_READ-only source handles; refuse existing write handles and writable mappings, writes and atomic replacement while admitted. Check current path and held handle identity every verification. Explicit close permanently ends admission and releases update locks. Constructor failure closes handles.",
+    "linux": "Cache only when fstatvfs(ST_RDONLY) on the source fd; recheck both held and newly opened fd flags and identity each call. Trusted provisioner must exclude writable aliases and pre-existing mappings and owns remount authority. Writable sources and unsupported platforms/filesystems stream-hash on every call.",
+    "common": "One MiB hash buffers, identity before/after hash and reopen path after hash, manifest exact hashed bytes parsed afresh every call, fresh command dictionary, serialized instance verification, no authorization/session cache."
+  },
+  "windows_io": {
+    "calls": 10,
+    "wall_seconds": 0.060346599988406524,
+    "cpu_seconds": 0.046875,
+    "file_reads": {
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installation-integrity-repair\\measurement-installation.json": {
+        "reads": 20,
+        "bytes": 26670
+      },
+      "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe": {
+        "reads": 2,
+        "bytes": 277808
+      },
+      "C:/Users/ROG/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe": {
+        "reads": 91,
+        "bytes": 93713712
+      },
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-independent-review-probes\\normal-asgi\\roles.py": {
+        "reads": 2,
+        "bytes": 1994
+      },
+      "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_entry_driver.mjs": {
+        "reads": 2,
+        "bytes": 3616
+      }
+    },
+    "logical_read_bytes": 94023800,
+    "retained_files": [
+      "D:\\GongGong-work\\tx-venv\\Scripts\\python.exe",
+      "C:/Users/ROG/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-independent-review-probes\\normal-asgi\\roles.py",
+      "D:\\GongGong-work\\native-production-entry-20261118\\customizations\\components\\tianxuan\\sinan-workorders\\native_entry_driver.mjs"
+    ],
+    "source_sha256": "dc17eb9afc5dfee8869c8fd77c05b1400a2aa8bd1a5a7e4b589afaee0b2704a5",
+    "manifest_sha256": "b5e3f09c624159cdd317ce2c1508b4d7f2e0e49df277fe3827cca861be40404d",
+    "scope": "Actual stream read bytes including manifest, not physical disk IO; no model/production invocation."
+  },
+  "historical_baseline": {
+    "source_sha256": "71d07a33a174db0b30356d2fa6d1dfe501e97f4abe2067ef6fc348f43869d01e",
+    "actual_logical_read_bytes": 939972700,
+    "node_bytes": 937137120,
+    "verification_calls": 10,
+    "comparison_limit": "Historical manifest pinned 1089-byte driver; measured current driver is 3616 bytes. Node bytes and node content are unchanged. Baseline counted Path.read_bytes manifest once and excluded second text read, whereas new probe counts all actual stream reads. Do not claim identical whole installation or physical disk IO."
+  },
+  "windows_validation": {
+    "passed": 29,
+    "skipped": 3,
+    "exit_code": 0,
+    "source_stable": true,
+    "modules": [
+      "test_native_installation_integrity.py",
+      "test_native_entry.py"
+    ],
+    "skips": "Linux-only read-only mount probe, Windows symlink privilege unavailable, existing foundation platform skip."
+  },
+  "linux_validation": {
+    "passed": 11,
+    "skipped": 3,
+    "exit_code": 0,
+    "image": "sha256:75e3070e67ed3a116d0c0a9728e9aa16ee21d28714f8944a94216323d4f31bf3",
+    "actual_readonly_mount_probe": "Container image executable had real ST_RDONLY; source hashed once across 10 verifies. Mutable tmpfs source full-hash fallback and symlink rejection passed. Simulated protection-withdrawal flag rejected.",
+    "isolation": "network none, 192MiB, 1CPU, read-only image, writable /tmp tmpfs, --rm",
+    "temp_removed": true
+  },
+  "limitations": [
+    "No production installation or server listener changed; current production mount topology and alias policy still need parent verification before asserting server optimization active.",
+    "Linux readonly bind mount alone does not establish absence of writable aliases; trusted host provision contract required.",
+    "No defense against OS administrator, kernel or verifier process compromise. Path-based later execution is not atomic with verification.",
+    "Manifest memory bound remains existing manifest policy; executable hash buffers are bounded.",
+    "Independent review and original Issue end-to-end acceptance belong to parent; no model invocation or end-to-end performance claim."
+  ],
+  "method_learning": {
+    "recall": "gonggong-workspace/content-storage-integrity: utf8-source-codepoint-guards revision2 verified",
+    "applied": "All source read/write explicitly UTF-8. Scope condition Windows source editing applies; binary integrity is not proved by text encoding lesson.",
+    "proposal_for_parent": "Cache integrity only when the host can demonstrate immutability at admission and revalidation; use real file-read instrumentation, writable mappings, exact replacement and mutable-volume counterexamples, and never infer immutability from mtime/size."
+  },
+  "artifacts": {
+    "linux-input.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installation-integrity-repair\\linux-input.py",
+      "sha256": "4d3cb9bba15886d8655151c983377dce4c2f82acea94fc3494b95b7803cd2e6d"
+    },
+    "linux-output.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installation-integrity-repair\\linux-output.json",
+      "sha256": "e063719ffecff83dd021cf10e0c012032ab98cb7c2b249f7cf82d73723ad5902"
+    },
+    "linux-stderr.txt": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installation-integrity-repair\\linux-stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "measure-windows.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installation-integrity-repair\\measure-windows.py",
+      "sha256": "0ebd4fd49a2782be9e8d4606ada2840b2ccbcfb5ac17ab1da72832aa1f72687d"
+    },
+    "measurement-installation.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installation-integrity-repair\\measurement-installation.json",
+      "sha256": "b5e3f09c624159cdd317ce2c1508b4d7f2e0e49df277fe3827cca861be40404d"
+    },
+    "run-linux.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installation-integrity-repair\\run-linux.py",
+      "sha256": "ce3f0bfba60582d6f4d4c207a702d1e503c1eeef0d904ff04a6dcfd7dfd78ecd"
+    },
+    "run-windows-tests.py": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installation-integrity-repair\\run-windows-tests.py",
+      "sha256": "1c506ce695fd4b99e8e920287af7e028df62dbdde2cb815d065a2f0e21cb2ee1"
+    },
+    "windows-io.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installation-integrity-repair\\windows-io.json",
+      "sha256": "8909d4733cbfbde3056df8cff549f752c8e7efe6c966d541e9bfc714c8dabf5f"
+    },
+    "windows-tests.json": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installation-integrity-repair\\windows-tests.json",
+      "sha256": "a3aee76af4a1e5628b9ebdd641d675d18f5bea868e171fd90f48c14f04ab1598"
+    }
+  },
+  "cleanup": {
+    "remote": "Owned temporary directory removed and --rm sandbox exited successfully.",
+    "local": "Probe scripts, fixture manifest and outputs retained as review/reproduction evidence under authorized receipt directory; no persistent process or temporary worktree created.",
+    "required_parent_actions": "Review installation.close lifecycle integration; inspect bytecode cache attribution before shared-root cleanup; complete independent review/normal entry/production mount verification."
+  }
+}

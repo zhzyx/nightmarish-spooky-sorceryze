@@ -1,0 +1,138 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-portability-review.json",
+    "sha256": "325a801db0f675b567960d85803ffa5847f944fb1a8f949a34464ceab13a0ed7",
+    "path_base": "absolute private host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "issue": 1499,
+    "decision": "scoped_pass",
+    "scope": "Independent narrow Node test portability review after R5 cancellation repair; Windows actual Node PATH and missing executable cases",
+    "business_acceptance": false,
+    "production_acceptance": false,
+    "whole_issue_complete": false,
+    "source_sha256": {
+      "customizations/components/tianxuan/server/api.py": "11c2129b253bb7d244b9741c1a1738412860147226fb7575212270921a89af14",
+      "customizations/components/tianxuan/server/main.py": "1251ac045aad3e5d36c9711be9c345d835ee40e6420ee67a5f21887d918be80e",
+      "customizations/components/tianxuan/server/native_entry_api.py": "bbf82a3141e84ed5d9fa6be345b6276e9458c97c5b09f40b5f51798e894d5e75",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "167f3da15024f706adcfdf8b406f2227696b8468cff6c8e2f58afd472925f012",
+      "customizations/components/tianxuan/server/native_entry_review.py": "498a387ce050c7733eb1602f4a207917232e4d3075fa6e345e6c0f05a3a2b9ce",
+      "customizations/components/tianxuan/server/native_execution_host.py": "5519f250e867e42af364537de822e4bc6bacd68e1f89e1c6b94fa7bdf74cd1fa",
+      "customizations/components/tianxuan/server/native_installation.py": "1a7865cb4d13ce9127f1d276ec5bb9a1ec321faa83af5849c2d89095c260a416",
+      "customizations/components/tianxuan/server/test_native_entry.py": "7f115037bb24ca248b4f5294a1dae25eab7e25a261ec1a30e2ed104ae556db39",
+      "customizations/components/tianxuan/server/test_native_entry_normal.py": "d36cb7574baeaadb7e77f187a2933c6046ed52b1792f4abf9358c8b5d2e11539",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "9f48bd4e5f774e3f84e9edc85d2b345fee562236ae1ccf3067e4e692196a06e9",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "c5b39fd8111ac6440a21a5cbc8e9e6a537908dff38d2ea52b1090c6774fa1287",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "3e83f5cc7e204a83b7a3fc31e63ea61ac34fdadbbab1c80f830ebe1528bb36e4",
+      "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "a3a57f9e629ed16c3c358bbf4618a8495bed98d654b48237ca510524f70c9ca3",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "f26421dccf41581de4d4dfbae933c9917a304f0368f3a02c6d4588642f54f11e",
+      "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py": "213a234e9177809845ea8b5247f19ec41200747835b138ec87503d83aa810b71",
+      "customizations/components/tianxuan/server/native-entry-interface.md": "b0137715bf54821ee286303e1e2964e016f57c2f59343c2b42a69fad88640ba4",
+      "design-docs/native-production-entry-20261118.md": "a79e6f8c49e950b2aec16c07eee2093aa982b734d6ab4e568a848122c12bff4b",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "0ceddb65d6c5f21ced74a858d89b13a810d161a8cc4a0dd5e68e711ca4df9efc",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d35cfe7d9c5fc46da815cdf9d9405d615b8f51f247fcedb2b06e79731e0a14ea",
+      "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": "35829d59c350d4a637a0e4bafcea06e4251b4ed30c99c23f4b047423a8665e5c",
+      "customizations/components/tianxuan/server/test_native_shared_dispatch.py": "3fb125dbf87b3eed36dd1705d71b61590cd6bcc9e8be61e1ecdcee1cc64ccb3a",
+      "customizations/components/tianxuan/server/test_native_installation_integrity.py": "aacee4cb41c65ed6ffab4a214d7e7a905385f0359d2ad4a5860a0fd5f8211e29"
+    },
+    "candidate_unchanged_during_review": true,
+    "changed_since_prior_review": [
+      "customizations/components/tianxuan/server/test_native_entry.py",
+      "customizations/components/tianxuan/server/test_native_entry_normal.py",
+      "customizations/components/tianxuan/server/test_native_shared_dispatch.py"
+    ],
+    "production_sources_unchanged_from_prior_review": true,
+    "findings": [],
+    "tests": {
+      "actual_node_path_no_override": {
+        "run": 9,
+        "passed": 9,
+        "skipped": 0,
+        "failures": 0,
+        "errors": 0
+      },
+      "missing_node_no_override": {
+        "run": 9,
+        "skipped": 9,
+        "reason": "Installed Node required",
+        "spawn_count": 0
+      },
+      "formatting_no_fix": {
+        "format": 0,
+        "lint": 0
+      }
+    },
+    "review_observations": [
+      "All 19 other candidate files match the prior independently passed source hashes exactly. Reverse-applying only the declared Node-discovery changes in memory reproduces prior SHA256 for each of the three tests, including original newline convention; assertions and acceptance checks were not weakened.",
+      "Each test uses explicit NATIVE_TEST_NODE first, otherwise shutil.which(node), and resolves selected path absolutely. Missing discovery skips explicitly. An invalid nonempty explicit override remains an error instead of silently passing/skipping.",
+      "PATH-only execution includes actual normal ASGI deterministic installed programs, single-driver physical terminal, 250 synthetic contexts, cancellation/authority/pipe-error cases. These are deterministic fixtures, not model or production acceptance.",
+      "Missing Node run skipped before normal installation fixture or process spawn. All actual process objects reached physical terminal and recorded PIDs no longer exist.",
+      "Initial tx-venv ruff invocation unavailable; system Python ruff completed check --no-fix and format --check successfully."
+    ],
+    "limitations": [
+      "No new whole-factory/context/remote/resolver/production acceptance; Linux not executed. Prior reports are not presented as new passes.",
+      "Explicit override priority and absolute resolution reviewed statically; new runtime evidence concerns installed PATH without override and absent Node."
+    ],
+    "cleanup": {
+      "processes": {
+        "live": [],
+        "checked_pids": [
+          30556,
+          33244,
+          41260,
+          41308,
+          43060,
+          50608,
+          51236,
+          52192,
+          53872,
+          59908,
+          62260,
+          64532,
+          65356,
+          65520,
+          65540,
+          65568,
+          65864,
+          65916,
+          65996,
+          66184,
+          66352,
+          66404,
+          67140,
+          68596,
+          68600,
+          68680,
+          68728,
+          68908,
+          69108,
+          69220,
+          69232
+        ]
+      },
+      "temp_directories_remaining": [],
+      "retained": "Review scripts, raw logs and JSON retained within assigned evidence directory for reproduction. No source/Git/model/provider/production edits; no branch/worktree created."
+    },
+    "method_learning": {
+      "recall": "gonggong-workspace/content-storage-integrity utf8-source-codepoint-guards revision 2 verified",
+      "application": "Read/write UTF-8 explicitly; use source-byte hashes and reconstruct prior test bytes to bound review delta."
+    },
+    "prior_review_sha256": "c0c80f1f0d7054e945d6f8d5434543080b8da15027a10e25077d370ac3e9cb28",
+    "evidence_sha256": {
+      "delta-reconstruction.json": "c4ad30018249ff31c455ba6318ac095dbfb45f534c5c77aac727f0f4ffd44b67",
+      "format-results.json": "502a03069ea85907d8366412002ed15363cb3ac196b73e90a2208f02505fe54d",
+      "hashes-before.json": "bca2f792656c9ed04fc408c02cadb0ed9e43d65b76db37c6ac0957fbe16eb389",
+      "missing-results.json": "8dd44f534aa17382f32e2ff27fab8ae5b360cb36d9aab6171e3bd5c831562d12",
+      "missing.log": "9eec57abf131d35e33d03e4db5244831cb94c6b2533a441c5a49fa0cf3b7584f",
+      "path-results.json": "9290bbb64b6eaac596cd2cb08e0741238f8e252eafadf9318e81f1aec7cb28ab",
+      "path.log": "4ada18d9c8a85647a55039e3a68cad312a7fa73494872cae14c59f3a11fd25d4",
+      "process-check.json": "2423c340dacc564c0377edf58a084eb5a5fbf2398b2e59e2f1d3fc171fc76198",
+      "reconstruct.py": "60b0bdabbe68755f4963e9f302df2ce2da3e13e3e7633450b280b6939bc122d5",
+      "ruff-check.log": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0",
+      "ruff-format.log": "81e0708af79a682467b0ecbd3453a0a33cfcbbe2812201b4d4f405f78ded2976",
+      "run.py": "fe5652c43d42fd1cb675e4199746b135ddfcf5ae81d603940dd70e1efe046687",
+      "summarize.py": "a44bdfa6bcbbc4e97a7257f2701ec2ad33df4eb6a9fbf7779565eb8e27b4ac65"
+    }
+  }
+}

@@ -1,0 +1,770 @@
+{
+  "schema_version": 1,
+  "issue": 1499,
+  "scoped_repair_complete": true,
+  "independent_review_complete": false,
+  "decision": "ready_for_independent_review",
+  "goal_complete": false,
+  "business_acceptance": false,
+  "live_model_acceptance": false,
+  "production_acceptance": false,
+  "original_implementation_sha256": "a33cdd0de9cd34c9958837017b6b6b7d77c347b94ced418e8bdc6b74583f4e56",
+  "original_independent_review_sha256": "b6b9bf3f8d6bf1122ecc5a1856e91a6421cd024f22fdb9b390ebacc8e5a52776",
+  "exact_candidate": {
+    "customizations/components/tianxuan/server/api.py": {
+      "sha256": "11c2129b253bb7d244b9741c1a1738412860147226fb7575212270921a89af14",
+      "lf_only": true
+    },
+    "customizations/components/tianxuan/server/native_entry_api.py": {
+      "sha256": "bbf82a3141e84ed5d9fa6be345b6276e9458c97c5b09f40b5f51798e894d5e75",
+      "lf_only": true
+    },
+    "customizations/components/tianxuan/server/native_entry_factory.py": {
+      "sha256": "440765eb4c6ebb38d403ad6cda3c6585f402e735d5962e136e6384ff1d224e19",
+      "lf_only": true
+    },
+    "customizations/components/tianxuan/server/native_execution_host.py": {
+      "sha256": "148be3c5937d79a9d890ec969b351dca2d7cf59a791f461e0d158efcbcb7ac9e",
+      "lf_only": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": {
+      "sha256": "a3a57f9e629ed16c3c358bbf4618a8495bed98d654b48237ca510524f70c9ca3",
+      "lf_only": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": {
+      "sha256": "9f48bd4e5f774e3f84e9edc85d2b345fee562236ae1ccf3067e4e692196a06e9",
+      "lf_only": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": {
+      "sha256": "d35cfe7d9c5fc46da815cdf9d9405d615b8f51f247fcedb2b06e79731e0a14ea",
+      "lf_only": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": {
+      "sha256": "0ceddb65d6c5f21ced74a858d89b13a810d161a8cc4a0dd5e68e711ca4df9efc",
+      "lf_only": true
+    },
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": {
+      "sha256": "35829d59c350d4a637a0e4bafcea06e4251b4ed30c99c23f4b047423a8665e5c",
+      "lf_only": true
+    },
+    "customizations/components/tianxuan/server/native-entry-interface.md": {
+      "sha256": "46631b7a38b1912dc8945b8f1a4eef25564de3eb5453ee6905daf907a654df98",
+      "lf_only": true
+    },
+    "design-docs/native-production-entry-20261118.md": {
+      "sha256": "a79e6f8c49e950b2aec16c07eee2093aa982b734d6ab4e568a848122c12bff4b",
+      "lf_only": true
+    }
+  },
+  "repairs": {
+    "R1": {
+      "implementation": "Finite installed catalog; durable initiating entry/actor/source reservation; stable installed seed principal and product request ID; short seed/task mapping lock; actual task scopes only; all planner/producer/check/review waits outside product lock.",
+      "producer_overlap": true,
+      "intervals": [
+        {
+          "start": {
+            "time": 1794978076.760846,
+            "pid": 56672
+          },
+          "end": {
+            "time": 1794978078.7672591,
+            "pid": 56672
+          }
+        },
+        {
+          "start": {
+            "time": 1794978076.9651427,
+            "pid": 67512
+          },
+          "end": {
+            "time": 1794978078.9718635,
+            "pid": 67512
+          }
+        }
+      ],
+      "integrated_artifacts": {
+        "entry-1abf0430dec5017e25aa58cb8027ca51574244f78032e49079896414e12a947f-extra": {
+          "revision": "a699fe4ad9ee5b5a970424ff99e36c76689bb81b63839ceca3b3ad039d82899f",
+          "output_sha256": "eb560f2cf9a66c825ef66d5621e893a1c34621577b271cca712155a30e1e26b7",
+          "bytes": 29
+        },
+        "entry-1abf0430dec5017e25aa58cb8027ca51574244f78032e49079896414e12a947f-text": {
+          "revision": "9fee2b5370865494e1a5cf76ac3f0ac5eb589fb8fba1dc40ed0012afcf83a0ba",
+          "output_sha256": "eb560f2cf9a66c825ef66d5621e893a1c34621577b271cca712155a30e1e26b7",
+          "bytes": 29
+        }
+      },
+      "conflict_entry_states": [
+        "planned",
+        "delivered",
+        "delivered"
+      ],
+      "startup_gap_entry_states": [
+        "delivered",
+        "planned",
+        "delivered"
+      ],
+      "seed_recovery": {
+        "exact_seed_reused": true,
+        "origin": {
+          "actor": "usr_164b87bdd1f44151b8ae2384fdb3ba4a",
+          "entry": "f25f12d8e87d368b76a471e065753d1d44379179ca9e4b3f6e0db7ff6f25eee1",
+          "modules": {
+            "extra": "entry-054b2b7d77678b272cacf7f861ad14e5f0850e816aa68a8a7a371e2c0115f5b1-extra",
+            "text": "entry-054b2b7d77678b272cacf7f861ad14e5f0850e816aa68a8a7a371e2c0115f5b1-text"
+          },
+          "principal": "test-producer",
+          "product": "entry-054b2b7d77678b272cacf7f861ad14e5f0850e816aa68a8a7a371e2c0115f5b1",
+          "requirement": "doc_46ee3abddd2a40f6aa0ed3ed6c5a9dce",
+          "scope_provenance": "8bf949238e58a21720abac0ceb5238bf16275386f6aa85f865988811267cd98c",
+          "source": "869b69ea6755a253a5aaf959de55c8a99dd583a1ef919983e3f75da7bd1e041f",
+          "tenant": "ten_bdc1dfc251f3427d9065ad6404788d7f"
+        },
+        "recovered": {
+          "entry": "69493fe5a09f219579756f276a1745f42a828fb0d6adfb2055eec43bb1d55e12",
+          "tasks": [
+            {
+              "task": "36914a6a48fc836bddc18e8e6d41fb9fa4a3b976e93cade2306afe3b198732bc",
+              "state": "accepted"
+            }
+          ],
+          "policy": "97ec703a8dc663377d32fa848ec89030a39ee520439f8354d73cd8671473b0c1",
+          "state": "delivered",
+          "progress": {
+            "total": 2,
+            "done": 1,
+            "percent": 50
+          },
+          "failures": []
+        }
+      }
+    },
+    "R2": {
+      "implementation": "Planner binds exact entry. ContextVar propagates through actual Sinan RPC asyncio.to_thread. Mutable originals preserve exact original entry checks; accepted history uses current tenant/document access. Candidate checks exclude unrelated accepted historical task grants.",
+      "renewed_owner": "delivered",
+      "valid_colleague": "delivered",
+      "revoked_original": {
+        "state": "stopped",
+        "acceptance": null
+      },
+      "independent_after_revocation": "delivered",
+      "historical_read_after_logout": "delivered"
+    },
+    "R3": {
+      "implementation": "Optional bounded existing-task references bind exact immutable contract/source to entry payload. Same shared requirement/current access checks prohibit forward-reference cycles/cross-tenant grants. Durable acceptance, credential/source API mutations, reservation/terminal and recorded driver closure events wake observers. Driver closure excludes self retry generation; live FIFO driver observation is tenant-scoped and publication observation product-scoped. No polling scheduler or unknown replay.",
+      "dependent": "delivered",
+      "dependency_withdrawal": {
+        "entry": "b260e70827fa983e6bd4805c486bb39dd32121fb371979f5fe027bae74792ab4",
+        "tasks": [],
+        "policy": null,
+        "state": "planned",
+        "progress": {
+          "total": 3,
+          "done": 0,
+          "percent": 0
+        },
+        "failures": [
+          {
+            "id": "b260e70827fa983e6bd4805c486bb39dd32121fb371979f5fe027bae74792ab4",
+            "error": "Entry credential withdrawn"
+          }
+        ]
+      },
+      "late_dependency": "delivered",
+      "cross_tenant_reference_status": 404,
+      "handoff": {
+        "lane": "f4a3649ee2cba057c408078704124ae7dda374504e47aec7c2f79d3c7af218d5",
+        "old_policy": "f77305cf361a5e349c838ee00071e489176b6b1e09e4c7f98e8a26d240e9bc8d",
+        "new_policy": "fc123e0e12e59d4749e64df2b9ab7615d8ba9351817cce4d6bc45356afadf2a2",
+        "old_actor": "usr_972d30c1a6154501a22626be4ab260a7",
+        "actor": "usr_7254b53ea7394df2a67b1b01541651bb",
+        "reconciled": null
+      },
+      "stale_policy_status": 409,
+      "handoff_regressions": "idle CAS; same-tenant write and cross-tenant denial; unknown active publication held; committed acceptance with unreconciled lane physically read back and transferred"
+    },
+    "R4": {
+      "implementation": "Exact per-entry task mapping settles independently. Shared parent waits for all mapped tasks and all still-unplanned entries; original global acceptance stays incomplete.",
+      "early_entry": {
+        "entry": "78d93c88de397eeac61fe5a7840d701254c576981d5a6d7857667f27bdc7289a",
+        "tasks": [
+          {
+            "task": "fdde6f539a17a7e01777378b42a02c55785fafcd9a4e634f5d91aeb95b12f789",
+            "state": "accepted"
+          }
+        ],
+        "policy": "f77305cf361a5e349c838ee00071e489176b6b1e09e4c7f98e8a26d240e9bc8d",
+        "state": "delivered",
+        "progress": {
+          "total": 4,
+          "done": 1,
+          "percent": 25
+        },
+        "failures": []
+      },
+      "final_peer": "delivered",
+      "seed_interrupted_aggregate": {
+        "total": 2,
+        "done": 1,
+        "percent": 50
+      }
+    }
+  },
+  "validation": {
+    "final_ordinary_asgi_probes": [
+      {
+        "probe": "review-ready-normal",
+        "exit_code": 0
+      },
+      {
+        "probe": "review-ready-dependencies",
+        "exit_code": 0
+      },
+      {
+        "probe": "review-ready-conflict",
+        "exit_code": 0
+      },
+      {
+        "probe": "review-ready-withdrawal",
+        "exit_code": 0
+      },
+      {
+        "probe": "review-ready-seed",
+        "exit_code": 0
+      },
+      {
+        "probe": "review-ready-startup",
+        "exit_code": 0
+      },
+      {
+        "probe": "review-ready-restart",
+        "exit_code": 0
+      }
+    ],
+    "final_affected_regression": "23 passed in review-ready-regression.log",
+    "broader_preceding_regression": "101 passed in terminal-regression.log; exact preceding hashes in terminal-source.json; final change confined to factory driver-close/FIFO observation",
+    "lf_only": true,
+    "ruff": "frozen-ruff.log plus review-ready-ruff.log",
+    "restart_no_replay": true,
+    "physical_processes_closed": true,
+    "models_called": 0,
+    "network_listeners": 0
+  },
+  "interfaces": {
+    "execute": "POST /api/v1/native/entry/execute: optional dependencies (0..32 unique existing task IDs); server binds exact contract/source",
+    "status": "GET /api/v1/native/entry/{key}: tasks and current policy digest; accepted history readable under current legitimate document access",
+    "handoff": "POST /api/v1/native/entry/handoff: requirement, expected_policy; exact old/new coordinator policy CAS and audit",
+    "planner": "RequirementPlanner authorization callback now receives actor, requirement, action, exact entry ID",
+    "factory": "OrdinaryEntry constructor/context_factory/installed_worker unchanged; context_tools remains false; local-only default unchanged",
+    "events": "Optional workflow.on_state_change and integration.on_accepted notifications; durable native.entry.driver_closed audit; no new model client"
+  },
+  "remaining_acceptance": [
+    "Independent exact-candidate review, root integration/build/package update/rollback and Git delivery remain root-owned.",
+    "P0 capacity limitation: one finite Node SinanProcess per in-flight entry remains; small deterministic tests do not establish 250 in-flight entries on the reported 1-vCPU/469224-kB server. Root will integrate shared installed dispatcher with isolated RPC context.",
+    "P0 efficiency limitation: InstallationManifest.verify still hashes all pinned files per call; no installation generation cache exists here, and credential revocation is never cached. Root owns integrity-preserving optimization.",
+    "Ordinary factory still passes lambda *_: None as NativeIntegration resolver. Conflicting writes stay conflicts_pending; isolation passed, automatic admitted Heqi model conflict resolution is NOT implemented or accepted.",
+    "Active publication without committed acceptance remains held; transfer only permits idle lanes or a physically validated committed acceptance with stale lane bookkeeping. No rebind of unknown candidate.",
+    "Existing legacy product receipts lacking finite catalog/scope provenance require explicit migration; no implicit base/policy mutation.",
+    "Remote ordinary-entry adapter integration, #1501 context/model integration, actual models, tenant provisioning/listeners/devices and complete business acceptance remain root scope."
+  ],
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "applied": [
+      "bind-consumer-release revision 22",
+      "await-terminal-observers revision 6",
+      "reconstruct-worker-outcomes revision 3"
+    ],
+    "counterexample": "Deterministic processes establish mechanism behavior, not live model quality or 250-entry production capacity"
+  },
+  "failure_history": "Original independent review/probes unchanged. Preliminary repair failures (scope fixture, nested transaction, unlocked private SQLite read, missing capacity startup observation, pre-start withdrawal closure classification) and all intermediate state/logs remain in the explicitly owned probe tree. Only review-ready evidence is claimed against final candidate.",
+  "learning_feedback": {
+    "action": "proposal_for_root",
+    "method": "Exercise durable FIFO before the earlier driver has entered physical execution, then force driver closure and require other entry wakeup without self-retry; reserve cross-store seed identity and originating mandate before native seed mutation.",
+    "when": "Multiple ordinary entries share product/module storage and independent dispatcher processes",
+    "counterexample": "Two producers already running do not test startup gap; seed receipt from same actor does not establish cross-member crash recovery",
+    "observed": "Explicit 2-second first-driver delay passes real ASGI conflict/unrelated-module probe; seed-after-native-before-domain crash recovers exact receipt with second member while preserving initiating actor."
+  },
+  "cleanup": {
+    "physical_processes_closed": true,
+    "artifacts_retained": "All source-bound probes, role programs, SQLite state, failed executions, process logs and test fixtures retained for independent review/root handoff. No production listener/provider or installed configuration was created.",
+    "branches_or_worktrees_created": false,
+    "commits_or_pushes": false,
+    "complete": false,
+    "remaining": "Root owns final evidence archival and temporary-resource cleanup after independent review/delivery; no ambiguous shared resource was deleted."
+  },
+  "evidence": [
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\build_report.py",
+      "sha256": "c2422704d8a88d11451e5240f1e5075fd9773d7d160e6b3e12d1402a8e7f0a05"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\capacity-diagnostic.json",
+      "sha256": "01e67d9bd135c596e3a62514c00a51586e4aa33ec493ff5e2ffc81139fa86739"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\capacity-diagnostic.log",
+      "sha256": "f0805b9c14f5b7e90fc7928efc00a23a15f1e049af6f84529940e2e93420116c"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\capacity_diagnostic.py",
+      "sha256": "6d255f6041df578fdf4b7e8e5c1fb842633f3b69d954364bfb4ce8d871cb98ae"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\conflict-2.log",
+      "sha256": "c20efc598a653b82409edb5b73b682b88b81a3f6351436d83995e8e0aedf1a37"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\conflict-3.log",
+      "sha256": "b3386a1079fc6d8e1c6a1a00aade31a7762582463cfb293579a6a789773c2bc6"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\conflict-4.log",
+      "sha256": "5dcd946226c978f596e05237910d984ada6a1524aa92dae31cf2db592f62ab15"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\conflict-results-4.json",
+      "sha256": "6c4d7417c38ef3be96e83a324db6caf457239ea0d680a180647919880dc74648"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\conflict.log",
+      "sha256": "9d026a8c6bd68a4042894ca4eafa00a6ba83b568d3a732426c20697ab6a51b35"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\conflict_probe.py",
+      "sha256": "85abf1b0f2d89439af5192d4c0fe79eceb324b57e73cbab3bb85e5785a3ec6e0"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\dependencies-2.log",
+      "sha256": "0fb92bd8994ff3a18607767ba5eca9861c1f2e2dab837d595966585e1fa14508"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\dependencies-3.log",
+      "sha256": "f5d474d89cd045b31aa849b4472fe6c54535dc6addccf35b06c1a69c22fb9ca0"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\dependencies-asgi-results-3.json",
+      "sha256": "2f254702e71b8c481fe4d11bca3173cf125c43386351f2fd02402548e967c46e"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\dependencies.log",
+      "sha256": "a664e389ee0099f588aab0e4e3b3003f300a873a31155a805ede1ee2c96fa8b2"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\dependencies_probe.py",
+      "sha256": "6f3ff212ab7b6706e859c28448c0d66cc38eb9e1578977255ef66d1e5aaa8678"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-conflict.json",
+      "sha256": "dfcb98ca0321a394d0fad8a60fd192b2896aaf93aec99df922f9b0cba21e8aa7"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-conflict.log",
+      "sha256": "16f7cc7ebef8a8dc86f88440bf0078da05a43753ff3780e4952b5cfbaf634d50"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-conflict.py",
+      "sha256": "f374fe79a710972b61ccaad747728a70e71e80bf9e932859e970d3cff865b339"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-dependencies.json",
+      "sha256": "ff1ce2100f5038d464ce29ee23a6850a7e94bf5c185ba12dc986fdcb5a571c9d"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-dependencies.log",
+      "sha256": "80298e0f07b06f7e2a4f4e6ca23c67b8424231e713e7585436b29a59bb93db26"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-dependencies.py",
+      "sha256": "28cd668bd796029b84186d102a9e8ea3c2d75814c5d840a9cdf6a65588932889"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-normal.json",
+      "sha256": "228e304d76dc15b8a77477f998f55e300e6828d7777517a9bd6d10d10bd9f387"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-normal.log",
+      "sha256": "90c33fb21f04051fe517640cddc5f5be33f3478822032fc30cb333dd0dba8c07"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-normal.py",
+      "sha256": "b66f661fb77e4490e565b05597da9cf434e0b907fc0d8deb9162adfd9680108e"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-probe-exits.json",
+      "sha256": "4ec331360e07f17fa588be877c343023d7572350808764a5517a9de9d9b5be46"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-regression.log",
+      "sha256": "7a2a708c8c66b9eac5e9ca055e41e9034a2a6378c3a0370e9a764dd4d24ac7b6"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-withdrawal-2.json",
+      "sha256": "da900cd5ab15fcad0e2f90e8b7687508a711815d84439d6b89a564c04e0f9bcb"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-withdrawal-2.log",
+      "sha256": "55612bd798fabaf92b1963364b74afd35db324f23f33ebad7378634adb88fee4"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-withdrawal-2.py",
+      "sha256": "838333d4702e71ad438e7bbdf2d1230c065599509e54c3d0b32e7895ca9c4fad"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-withdrawal.json",
+      "sha256": "7c36af19c27ee960a58ffb892caed75b834bac0716a60ed993b8661d04b6ce9c"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-withdrawal.log",
+      "sha256": "a79e8295c8c1e48a36d4669d3dab836fea9a774e06a255309a0803b575a3fc46"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\final-withdrawal.py",
+      "sha256": "70d1d1923f73d82374c45a939ff469f5fb99e3abf9025b4c41f3d6d450a7ff80"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-conflict.log",
+      "sha256": "2f4a597070203bed4943015bdae9c482a3b623b80d2ba43ab4a52173e9e01b2d"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-conflict.py",
+      "sha256": "6272cbae9aefe8771d13c6e82bd4074047411847953901cb9102316bda3c91e8"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-dependencies.json",
+      "sha256": "4f561b9231757b9a98a3ac1956fe0bcc89a2eda9c1162bda3fcba4916f6b227e"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-dependencies.log",
+      "sha256": "26c154392991c02c5f72c2a4fccbef62be331524b303f19baf2c356efaae8ab5"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-dependencies.py",
+      "sha256": "6b16e64f79e94a967feaf789e0885f24bed2f5437582eb3cb0e20214e3c9232c"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-normal.json",
+      "sha256": "ffb6837e62cbf42091f075b4db6504275097e7803dd99317125aef1e8ba7d48c"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-normal.log",
+      "sha256": "9761fd727b6303940b6e19cdcf36b95042f0ead3139669f8dfd65260cae63c27"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-normal.py",
+      "sha256": "c046183e5a5b9da51fcb6d0bc91078f8003a05e3e82a60afa7df40b6fdb1cf2e"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-probe-exits.json",
+      "sha256": "b674d1963243af3ec1f13ad65851d8d1e60397c25bed48c9aff0705586517df7"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-regression.log",
+      "sha256": "5e46d82ca44e4f6bd3097f5ec704456f75f6f43bfe14fb3ff5eaa57649579f2d"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-ruff.log",
+      "sha256": "29f20c3ee57f1f120dc768e38618eb81e56e89f005f4c1237d5b8be6d18d302b"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-seed.json",
+      "sha256": "1f80e13136ffa27a2e3c066fc824b1aa0665c77b7d54cbb8ce4e8f4a49342964"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-seed.log",
+      "sha256": "abae3a76f6826caacb9cde0290f8653599f43c0bc28bf2c4a9a70c1cb84ab76b"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-seed.py",
+      "sha256": "3738b66cabf63ea8bfcb548b0bc14cdf302d5710577b6d1813f2abd80b7c989f"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-source.json",
+      "sha256": "8f63ae98f5af5ffb63aae41e9543aeca26ff158067e1654e02d66227649f16d4"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-withdrawal.json",
+      "sha256": "96d75c0b0f56998cac165519ac1bf2b1eefd62a53e16e6a48685117e8bb6679f"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-withdrawal.log",
+      "sha256": "080ab7c529bebb9a56906b07d2a673a1dee8b8881589af00094eb986fb8bc0a6"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen-withdrawal.py",
+      "sha256": "dfd56c01a46ff21025cca487d25d5c0cc097fa42daa12e808f99a7ae36ecb42d"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\frozen_restart_probe.py",
+      "sha256": "d8d398b176b34970cb8cd06368f5c2e523ba291d171786cea3c30689560f7e9c"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\handoff.log",
+      "sha256": "e0b5c07bc3531e7c9633aa585b778d65b0334c1dac26e25fe04bc544132dad2c"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\integration-regression.log",
+      "sha256": "325727d1f2da346a6bd67bc6f7f8d61c7d9b64a4cd26d69673b96df50a33d5ba"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\normal-asgi-results-3.json",
+      "sha256": "1f880d65c16c681414ef8ff721772460123a4d5e998e07be6c8f965d3bbbbf0e"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\normal-asgi-results.json",
+      "sha256": "5779f2f8784f174242c8240f2947e886a752b7b200e01d360e022e8481b079a3"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\physical-process-readback.json",
+      "sha256": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\probe-2.log",
+      "sha256": "1b5d9295b808967694937e06578ec645664e5e5890b52cbf5a97c3c325f8e44a"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\probe-3.log",
+      "sha256": "56dd3deb50a6df3b7c387319dd342a28df77bbcf195095fa0bdfa2b906b83520"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\probe.log",
+      "sha256": "7671a9a68632cc70c989e98d29480c08e32cdaf023d0dfa9d10dc4a1add4b315"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\probe.py",
+      "sha256": "857fae39a4e6cae11f7fa17ad6cc3e4428f9daad75c6e0811c361b3ea502727e"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\restart-results.json",
+      "sha256": "0284b7930b4946c0d30a8b83b9df8fa8d3d2686b981f4cea647f78832acb14b3"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\restart.log",
+      "sha256": "5d813016d255a4755794eea6bcb96b7aa03004a16b0ffd0f11b6b61957248f1f"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\restart_probe.py",
+      "sha256": "d950b36a49586f7e55938402a469d495c3bca3b63913ec6478c8ea903b39c306"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-conflict.json",
+      "sha256": "40df27ced5c27c2e0b23bcfff6b4cab9927db9dcc4dc77c25d021ad5dc02b204"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-conflict.log",
+      "sha256": "df9a1cdb2bed807662af5aeb7d5b3cc92a10d98168a2f814d224b721599ae097"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-conflict.py",
+      "sha256": "fd0b25694b12d887649affe5b090518c9e701c38cb793aa1f9a787a913b948e8"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-dependencies.json",
+      "sha256": "8b5cebe255c81ed745da09129670928f55b657e7f675ffac568595891c67c7b8"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-dependencies.log",
+      "sha256": "43e06e8c5ca1acc6bb9e487253602f001e509fe7bfc51c0ce4147159b141757f"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-dependencies.py",
+      "sha256": "4cd8f6b9ee938d9b78ddfe0dcaa000e73613b6cd6b5416b68c15feee4f78f3a4"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-exits.json",
+      "sha256": "1f047cd3c9b52277846f91b106be3d5f1570738bc3118f892303ab5b6b02bd43"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-integrated-artifacts.json",
+      "sha256": "e3362976ee79045d9a709cc9da6ff92f7bed951c0855e2fb3bfe7827531e5e1b"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-normal.json",
+      "sha256": "794b85561a1676a9e0b812d2b6907d6412288d236ddb70315871f40a5e7c8f53"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-normal.log",
+      "sha256": "71cfa07ba19f6da7156dc414395f050bc08f0ca9baf9c46dd7c71536abbec405"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-normal.py",
+      "sha256": "d481ad204c8e48f004e81d07a658335995d2378aa9e7ab29786b74ee032c6cf3"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-regression.log",
+      "sha256": "5562429c2f1e0d473627141453ff28f3d2569694b5dffa1354c2efd0f513c534"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-restart.json",
+      "sha256": "d7a770c8d30d6d5c20e4d57ff87357ff7eced6adccb9e45df7757cccd0367329"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-restart.log",
+      "sha256": "4b31e190eaea2845ffbfdfe2edd580fd3ce1bb36e719d5063c6082eb296c3b53"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-restart.py",
+      "sha256": "59fb5fbb9924645c7a4d98485c8ee28f0a496e7ae937a6edc50dd29125e8bf19"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-ruff.log",
+      "sha256": "29f20c3ee57f1f120dc768e38618eb81e56e89f005f4c1237d5b8be6d18d302b"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-seed.json",
+      "sha256": "c7593eaffabb6c9b93ac345e3ac405c5d26dd852db2c404da64ab111aadc655a"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-seed.log",
+      "sha256": "54f780467b88645c3209a88db21b701d043b6197c09d63e4fda740896f9f0776"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-seed.py",
+      "sha256": "3254cc8f22156a12ebe22eafac0fb053f52726e5d990a7e35063a085755b7afc"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-source.json",
+      "sha256": "df29c4a018409b874da86540eb351cd7e91443220103378d5f5b21ced6248267"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-startup.json",
+      "sha256": "14c65253fbcab6a0631ac6bf4dc3696fb33b63b7acc92b42d77bc14dbb37ac02"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-startup.log",
+      "sha256": "25d56683f14b549286f3c88d305c6b35b378b2fcf2f3a05ecf8616cc11e8c72d"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-startup.py",
+      "sha256": "8f712a4c47425b06e816104f06d1580c07b2745c98ebae1bd4bb6e505c7fe5e5"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-withdrawal.json",
+      "sha256": "a025f76401b78e2a5c07a1c6f2ef0cbe7538d721a8abd6a66f6126616fe4b523"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-withdrawal.log",
+      "sha256": "3acb4c3883c7372c217dd8bf29c4057251ccd4f31562b2f7da57babea426ea49"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\review-ready-withdrawal.py",
+      "sha256": "cf10079c3a5f206935626e8cd545db2b0bd2915a28771a0cedb1ca8b4504301d"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\seed-recovery-results.json",
+      "sha256": "b2f118dca68d1cb08f9ae27851451bbd9edb8244b5e0a83d82a2d59ce890eda7"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\seed-recovery.log",
+      "sha256": "31cb6e900b39fc340d97c5800e33df70916918f4f66d0efb52086f8bb575f390"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\seed_recovery_probe.py",
+      "sha256": "33a624c48941e01611e162b91ee522325f1eff2e2c837ed3ac8f85a0334c7772"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\startup-gap-results.json",
+      "sha256": "dfe845f206287fbbfae02f84c9de0f8b9794c233de1fd5752ede2b0fe0895d81"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\startup-gap.log",
+      "sha256": "ad53f358d77cccd87c41d12d77041ac08c9d9d835c9ae62412f407b084c1ea7e"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\startup_gap_probe.py",
+      "sha256": "3b471f60fd5e40253be8e1f976602744b62b91ec3186aed035e579919f604ba9"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-conflict.json",
+      "sha256": "b4864561ae42f7eae61a98b712e24ef075671ed3652d6a449eee7162caa2b341"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-conflict.log",
+      "sha256": "fe08263d6156f1931653ae98fb3503cf5b16e4258b97a323de467e6a7e32ff66"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-conflict.py",
+      "sha256": "81ba14f0d8ac310a4b834f1294dac1d68db0e5ae44737af9e0db2602d7632469"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-dependencies.json",
+      "sha256": "685a936a10755bcd6c977f5bcfaef05ddeabf4a63e00f70bdda629a6cf403096"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-dependencies.log",
+      "sha256": "fb7410a9880c5a5866efaa60a15394c2f24265d52606361941b2aefb9ba1c93a"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-dependencies.py",
+      "sha256": "acde392f025e6292d601b118d05f38f80f3ad4a706c379814659ac1cf60ba3ba"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-normal.json",
+      "sha256": "16858e63bd6c291e754a560c0812320b89799d78d7e6f428cf38b2dd3495806b"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-normal.log",
+      "sha256": "cf391c7fab1c033a1a51e5132517cfe2bf65218264e4a1d417adf56294563e9d"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-normal.py",
+      "sha256": "39da958920cda996c5852597a5b9ad1249830301a583c36daba777f46448386e"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-probe-exits.json",
+      "sha256": "28e018fe69a7777850510a84c34c37fe293e2999be7a71f226d2c11372aefab3"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-regression.log",
+      "sha256": "328e7a7e5baecbe30d477866c12bf8b43c90318f4e0f774baeddcb88a215563e"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-ruff.log",
+      "sha256": "afa20b27dacc9bf0aba3c1d265964c21e04ab42f6e39e2dd4769718ceded003a"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-seed.json",
+      "sha256": "c3c7025e8eca773d79f5b3e0f1c1866d34e764672620b5adf9d1da80f66227f3"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-seed.log",
+      "sha256": "ca2c6151156995980a303d451fc30235136a24918db719effc1110fd7ce38ad2"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-seed.py",
+      "sha256": "029a4d9d6fea779dd3fce36f9b39b944738bcf035a984366ca73026633860594"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-source.json",
+      "sha256": "2cbb3118a93a81effcbeac7ab8fbd1d156b7217a96ae2a2d25eb6a1c64b67157"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-withdrawal.json",
+      "sha256": "43e6cf77126bcdc8eb8c9ac0a2b0a174a6273656b375867f6fa6c0c6ae0ef783"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-withdrawal.log",
+      "sha256": "0f884ea78b4d4211ebcecbc353fc73ee9463efa3184547c24ff058b615c35c66"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal-withdrawal.py",
+      "sha256": "7ad93c0739e01bc71f45eac2ccc0ce0e9cf5bbd72e6b22bdb450e330d408a162"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\terminal_restart_probe.py",
+      "sha256": "cb9d9e7c08a2b37f57bbf7409f5dd23aa539b90c8b8a56ef5a58f712de22e33b"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\withdrawal-results.json",
+      "sha256": "d0c044ae6da74a0eff8919aed5a5adcad105497b642f21c599726a57e3581c49"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\withdrawal.log",
+      "sha256": "c2b40b0b9fc8a219abed5b575f83a8861dbff1e584e0b72696a9697004041431"
+    },
+    {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-production-entry-parallel-repair-probes\\withdrawal_probe.py",
+      "sha256": "855f06c3218e118bf943d350a1420579418a9688663abbd49dda3d32bd6d3cde"
+    }
+  ]
+}

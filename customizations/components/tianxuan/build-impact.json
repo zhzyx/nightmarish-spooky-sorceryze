@@ -1,7 +1,7 @@
 {
   "placement": "host_tool",
-  "reason": "Tianxuan is a host-side online management module: its domain core and future FastAPI/Next.js adapters run in the host process, are not linked into the Godot engine, and are not a replaceable in-engine package.",
-  "host_contract": "GongGong host protocol v1 (tools/gonggong_bridge.py); framework agents yanshi/sinan/kuafu/diting/heqi; shared Diting receipt contract",
-  "rollback": "Disable module invocation; keep existing Issues, design docs and events; restore the previous verified server build before resuming writes; never delete data.",
-  "evidence": "distribution/verification-tianxuan-module-impact-20261114.json"
+  "reason": "Installed Python/Node ordinary-entry and domain adapters run outside Godot; measured SCons graph excludes changed host inputs. Existing rendering and native ABI are unchanged.",
+  "host_contract": "Existing tenant/actor authority, Yanshi planning broker, Sinan dispatch and durable NativeWorkflow, Duobao exact candidates/check/release, independent reviewer. Event-driven shared dispatcher preserves logical task context and physical effect closure. Runtime/tool dependencies are installation-pinned; ordinary remote/context/resolver and production installation remain outstanding.",
+  "rollback": "Disable optional native installation, stop admitting new work and await known physical worker terminals. Preserve domain/native databases, installation, original grants, unknown executions and all durable receipts. Restore only verified prior installation after explicit handoff; never replay unknown external execution.",
+  "evidence": "data-collection/native-entry-module-build-impact-1499.json"
 }

@@ -395,6 +395,9 @@ class NativeWorkflow:
             db.execute(
                 "UPDATE native_tasks SET state='reserved',assignment=? WHERE id=?", (_json(assignment), row["id"])
             )
+            callback = getattr(self, "on_state_change", None)
+            if callback is not None:
+                callback()
             return True
 
     async def await_terminal(self, actor, key):
@@ -435,6 +438,9 @@ class NativeWorkflow:
             with self.domain._connection_lock:
                 self._executions.pop(key, None)
                 event.set_result(None)
+            callback = getattr(self, "on_state_change", None)
+            if callback is not None:
+                callback()
 
     def _execute_owned(self, actor, key):
         self._dependencies_current(actor, key)
@@ -642,10 +648,13 @@ class NativeWorkflow:
         ):
             raise NativeStoreError("Required content checks failed; independent review not started")
         with self._transaction() as db:
-            if db.execute("SELECT 1 FROM native_workflow_reviews WHERE task=?", (key,)).fetchone():
-                raise NativeStoreError("Review outcome unknown; trusted reconciliation required")
-            db.execute("INSERT INTO native_workflow_reviews VALUES (?,NULL)", (key,))
-        if self.review_candidate(actor, task, terminal) is not True:
+            recovering = db.execute("SELECT 1 FROM native_workflow_reviews WHERE task=?", (key,)).fetchone() is not None
+            if not recovering:
+                db.execute("INSERT INTO native_workflow_reviews VALUES (?,NULL)", (key,))
+        review = getattr(self.review_candidate, "reconcile", None) if recovering else self.review_candidate
+        if not callable(review):
+            raise NativeStoreError("Review outcome unknown; trusted reconciliation required")
+        if review(actor, task, terminal) is not True:
             raise NativeStoreError("Independent candidate review not accepted")
         self._dependencies_current(actor, key)
         self._valid(actor, self.status(actor, key))
