@@ -1,0 +1,17 @@
+{
+  "issue": 1501,
+  "original_failed_preflight": {
+    "path": "D:\\GongGong-work\\native-context-consumption-20261118\\data-collection\\native-context-consumption-registration-1501.json",
+    "sha256": "e41245f8323ade327594639226c4f5a6a6d218002964281d15228b7fa25baa73"
+  },
+  "correction": "CLI accepts only --repo/--candidate, not --node; actual checker discovers existing Node via PATH. Original argument rejection occurred before checks or product execution. Registration byte changes retained and verified by this corrected call.",
+  "command": [
+    "py",
+    "-X",
+    "utf8",
+    "tools/check_gonggong_distribution.py"
+  ],
+  "exit_code": 0,
+  "output": "{\"agent_execution_authorized\": false, \"authority_authenticated\": false, \"diting_extension_syntax_checked\": true, \"frozen_files\": 256, \"live_upstream_verified\": false, \"ok\": true, \"scope\": \"offline_registered_snapshot_consistency_only\", \"syntax\": {\"javascript\": 16, \"json\": 158, \"python\": 27}}\n",
+  "registration_sha256": "44ed2c191a5d21fbace97da9acf115ffafa2134ba9fa15d4c3db22cc7e5c7be5"
+}

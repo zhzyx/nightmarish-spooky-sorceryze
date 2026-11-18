@@ -58,7 +58,11 @@ class UsageObserver {
             try { self.observe(packet); } finally { self.originalNotify?.call(this, packet); }
         };
         this.call = async function(method, params) {
-            if (method === 'turn/start') { self.current = null; self.events = []; }
+            if (method === 'turn/start') {
+                self.current = null; self.events = [];
+                const text = params.input?.[0]?.text;
+                self.wireInput = typeof text === 'string' ? {sha256: crypto.createHash('sha256').update(text).digest('hex'), bytes: Buffer.byteLength(text)} : null;
+            }
             const result = await self.originalCall.call(this, method, params);
             if (method === 'thread/start') {
                 self.model = typeof result.model === 'string' ? result.model : null;
@@ -175,7 +179,7 @@ class TimingObserver {
                 hasText = p.item.text.length > 0;
             } else if (!text(p.item.id, 256)) return;
         } else return;
-        const event = {turn, at: this.stamp(), terminal, hasText, completedItem};
+        const event = {turn, at: this.stamp(), terminal, status: terminal ? p.turn.status : null, hasText, completedItem};
         if (this.turn) this.apply(event);
         else if (!this.overflow) {
             if (this.early.length === 256) { this.early = []; this.overflow = true; }
@@ -199,7 +203,7 @@ class TimingObserver {
             this.mark('first_text', event.at);
             this.value.marks.last_text = event.at;
         }
-        if (event.terminal) this.mark('turn_completed', event.at);
+        if (event.terminal) { this.terminalStatus = event.status; this.mark('turn_completed', event.at); }
     }
     detach() {
         if (this.rpc && this.rpc.call === this.call) this.rpc.call = this.originalCall;
@@ -212,10 +216,11 @@ async function propose(request, installed, start = transport.start) {
     const timing = new TimingObserver();
     const r = requestSnapshot(request), inputDigest = digest(r), began = Date.now();
     if (!text(installed.model, 128) || !text(installed.config_digest, 64) || !/^[a-f0-9]{64}$/.test(installed.config_digest)) fail();
-    let session, observer;
+    let session, observer, phase = 'schema_preflight';
     const base = {request_id: r.request_id, input_digest: inputDigest, requested_model: installed.model,
         config_digest: installed.config_digest, execution_authority: false};
     try {
+        schemaPreflight(schema); phase = 'transport';
         session = await start(installed.entry, installed.python, installed.env);
         timing.mark('session_ready');
         observer = new UsageObserver(session.rpc);
@@ -226,6 +231,7 @@ async function propose(request, installed, start = transport.start) {
                 {role: 'user', content: JSON.stringify({input_digest: inputDigest, request: r})}
             ]};
         const result = await session.turn(input, inputDigest, schema, JSON.stringify, () => {});
+        phase = 'proposal_validation';
         const proposal = validateProposal(result.output, r, inputDigest);
         timing.mark('proposal_validated');
         // Bounded late-notification collection; no retry and no further model call.
@@ -236,12 +242,162 @@ async function propose(request, installed, start = transport.start) {
         return receipt;
     } catch {
         const receipt = {...base, status: 'unknown', proposal: null, output_digest: null,
-            usage: observer?.snapshot() || {raw: null, status: 'unknown'}, elapsed_ms: Date.now() - began, timing: timing.value};
+            diagnostic: diagnostic(timing, phase), usage: observer?.snapshot() || {raw: null, status: 'unknown'}, elapsed_ms: Date.now() - began, timing: timing.value};
         timing.mark('receipt_ready');
         return receipt;
     } finally { timing.detach(); observer?.detach(); session?.rpc.close(); }
 }
 module.exports = {propose, UsageObserver, TimingObserver, requestSnapshot, validateProposal, digest};
+// One host-owned mailbox and one Subscription for this supervised execution.
+async function contextSession(packet, start = transport.start) {
+    const fs = require('node:fs/promises'), path = require('node:path');
+    const {request, installed, mailbox, binding, max_calls} = packet;
+    const r = requestSnapshot(request), original = digest(r);
+    if (!text(binding, 64) || !Number.isInteger(max_calls) || max_calls < 1 || max_calls > 16) fail();
+    let session, observer, previous = [], count = 0;
+    const root = await fs.realpath(mailbox);
+    if (root !== path.resolve(mailbox)) fail();
+    const identity = await fs.stat(root);
+    const check = async () => {
+        const current = await fs.lstat(root);
+        if (current.isSymbolicLink() || current.ino !== identity.ino || current.dev !== identity.dev) fail();
+    };
+    try {
+        while (count < max_calls) {
+            await check();
+            const file = path.join(root, `${count + 1}.input.json`);
+            let bytes;
+            try {
+                const stat = await fs.lstat(file);
+                if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1048576) fail();
+                bytes = await fs.readFile(file);
+            } catch (error) {
+                if (error.code !== 'ENOENT') throw error;
+                if (await fs.stat(path.join(root, 'close')).then(() => true, () => false)) return;
+                await new Promise(resolve => setTimeout(resolve, 10));
+                continue;
+            }
+            const turn = JSON.parse(bytes);
+            if (!exact(turn, ['binding', 'sequence', 'messages', 'input_digest']) || turn.binding !== binding ||
+                turn.sequence !== count + 1 || digest(turn.messages) !== turn.input_digest || !Array.isArray(turn.messages) ||
+                previous.some((m, i) => digest(m) !== digest(turn.messages[i]))) fail();
+            if (session?.compacted) fail(); // Never replay full history after lost context.
+            const timing = new TimingObserver();
+            timing.thread = session?.thread;
+            let phase = 'schema_preflight';
+            const input = {model: installed.model, reasoning_effort: installed.reasoning_effort,
+                available_tools: [], tool_context: {binding}, messages: turn.messages};
+            let receipt;
+            try {
+                schemaPreflight(actionSchema); phase = 'transport';
+                if (!session) {
+                    session = await start(installed.entry, installed.python, installed.env);
+                    observer = new UsageObserver(session.rpc);
+                }
+                timing.mark('session_ready'); timing.attach(session.rpc);
+                const result = await session.turn(input, binding, actionSchema, JSON.stringify, () => {});
+                phase = 'proposal_validation';
+                const action = validateAction(result.output, r, original);
+                if (count > 0 && result.mode !== 'incremental') fail();
+                timing.mark('proposal_validated');
+                await new Promise(resolve => setTimeout(resolve, 50));
+                const assistant = {role: 'assistant', content: JSON.stringify(action)};
+                session.accepted(assistant);
+                previous = [...turn.messages, assistant];
+                timing.mark('receipt_ready');
+                receipt = {binding, sequence: turn.sequence, input_digest: turn.input_digest,
+                    original_request_digest: original, config_digest: installed.config_digest,
+                    status: action.action === 'tool' ? 'tool_requested' : 'final', action,
+                    output_digest: digest(action), usage: observer.snapshot(), timing: timing.value,
+                    mode: result.mode, inputTextBytes: result.inputTextBytes, rebuild: result.rebuild};
+                receipt.wire_input = observer.wireInput;
+            } catch {
+                timing.mark('receipt_ready');
+                receipt = {binding, sequence: turn.sequence, input_digest: turn.input_digest, status: 'unknown',
+                    diagnostic: diagnostic(timing, phase),
+                    usage: observer?.snapshot() || {raw: null, status: 'unknown'}, timing: timing.value};
+            } finally { timing.detach(); }
+            const output = JSON.stringify(receipt);
+            if (Buffer.byteLength(output) > 524288) fail();
+            await check();
+            const tmp = path.join(root, `${count + 1}.output.tmp`);
+            await fs.writeFile(tmp, output, {flag: 'wx'});
+            await fs.rename(tmp, path.join(root, `${count + 1}.output.json`));
+            count++;
+            if (receipt.status !== 'tool_requested') return;
+        }
+    } finally { observer?.detach(); session?.rpc.close(); }
+}
+const closed = properties => ({type: 'object', additionalProperties: false,
+    required: Object.keys(properties), properties});
+const string = {type: 'string'}, nullableString = {type: ['string', 'null']};
+const argumentSchemas = [
+    closed({op: {type: 'string', enum: ['manifest']}, cursor: nullableString}),
+    closed({op: {type: 'string', enum: ['read']}, module: string, revision: string,
+        name: string, object_digest: string, offset: {type: 'integer'}, length: {type: 'integer'},
+        cursor: nullableString, known_receipt: {type: 'null'}}),
+    closed({op: {type: 'string', enum: ['delta']}, module: string, before: string, after: string, cursor: nullableString})
+];
+// Root anyOf is unsupported by the provider. Inactive fields must be explicitly null.
+const actionSchema = closed({action: {type: 'string', enum: ['tool', 'final']},
+    name: {type: ['string', 'null'], enum: ['native_context', null]},
+    arguments: {anyOf: [...argumentSchemas, {type: 'null'}]},
+    value: {anyOf: [schema, {type: 'null'}]}});
+function schemaPreflight(root) {
+    if (!object(root) || root.type !== 'object' || root.anyOf) fail();
+    function visit(s) {
+        if (!object(s) || Object.keys(s).some(k => !['type', 'properties', 'required', 'additionalProperties', 'items', 'anyOf', 'enum'].includes(k))) fail();
+        if (s.anyOf) {
+            if (Object.keys(s).length !== 1 || !Array.isArray(s.anyOf) || !s.anyOf.length) fail();
+            s.anyOf.forEach(visit); return;
+        }
+        const types = Array.isArray(s.type) ? s.type : [s.type];
+        if (!types.length || types.some(t => !['object', 'array', 'string', 'integer', 'null'].includes(t))) fail();
+        if (types.includes('object')) {
+            if (s.additionalProperties !== false || !object(s.properties) || !Array.isArray(s.required) ||
+                new Set(s.required).size !== s.required.length ||
+                s.required.slice().sort().join('|') !== Object.keys(s.properties).sort().join('|')) fail();
+            Object.values(s.properties).forEach(visit);
+        }
+        if (types.includes('array')) visit(s.items);
+    }
+    visit(root);
+}
+function validateArguments(args) {
+    const shape = argumentSchemas.find(s => s.properties.op.enum[0] === args?.op);
+    if (!shape || !exact(args, shape.required)) fail();
+    for (const [key, spec] of Object.entries(shape.properties)) {
+        const value = args[key], types = Array.isArray(spec.type) ? spec.type : [spec.type];
+        if (!(value === null ? types.includes('null') :
+            typeof value === 'string' ? types.includes('string') && text(value, 8192) :
+            Number.isSafeInteger(value) && types.includes('integer'))) fail();
+    }
+    if (args.op === 'read' && (args.offset < 0 || args.length < 1)) fail();
+}
+function validateAction(output, request, original) {
+    if (typeof output !== 'string' || Buffer.byteLength(output) > 262144) fail();
+    const action = JSON.parse(output);
+    if (!exact(action, ['action', 'name', 'arguments', 'value'])) fail();
+    if (action.action === 'final' && action.name === null && action.arguments === null) {
+        validateProposal(JSON.stringify(action.value), request, original);
+        return {action: 'final', value: action.value};
+    }
+    if (action.action !== 'tool' || action.name !== 'native_context' || action.value !== null) fail();
+    validateArguments(action.arguments);
+    return {action: 'tool', name: 'native_context', arguments: action.arguments};
+}
+function diagnostic(timing, phase) {
+    const terminal = timing.overflow ? 'unknown' : timing.terminalStatus || 'unknown';
+    const reason = phase === 'schema_preflight' ? 'schema_preflight' :
+        ['failed', 'interrupted'].includes(terminal) ? 'terminal_failure' :
+        phase === 'proposal_validation' ? 'proposal_rejection' :
+        terminal === 'completed' && timing.value.marks.first_text === null ? 'missing_output' : 'unknown';
+    return {version: 1, phase, terminal, reason};
+}
+module.exports.actionSchema = actionSchema;
+module.exports.schemaPreflight = schemaPreflight;
+module.exports.contextSession = contextSession;
+module.exports.validateAction = validateAction;
 if (require.main === module) {
     let data = '';
     process.stdin.setEncoding('utf8');
@@ -249,6 +405,7 @@ if (require.main === module) {
     process.stdin.on('end', async () => {
         try {
             const packet = JSON.parse(data);
+            if (packet.schema === 2) { await contextSession(packet); return; }
             if (!exact(packet, ['request', 'installed'])) fail();
             process.stdout.write(JSON.stringify(await propose(packet.request, packet.installed)));
         } catch { process.exitCode = 2; }

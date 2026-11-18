@@ -1,0 +1,150 @@
+{
+  "issue": 1501,
+  "status": "offline_protocol_repair_verified_pending_independent_review_and_live_acceptance",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "0fd8fbd19388902d3e614e4bee604ea4229c6c8a73d0204fd5f5cb909391e19a",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "4e2880b13171ace9d9e565cde5e5c7544b80c0c858bb4d334b338ce59b99ea56",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "ad6fba0acbe5cee94f31b9500cbe9e1af1aef0a7312263e43f473de055043a0d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "4122db587ecd67c24a1d5cef2a8cf17e78db240374a223f381d7911d89144e6a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "fb541596410617739b907d21a8ec26399993b657ab0f649b28bc8ac4d9636267",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "d5844822a892454166a610049222d6d6dad03e195a659510dd564f89f9533663"
+  },
+  "checks": [
+    {
+      "command": [
+        "node",
+        "--test",
+        "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs"
+      ],
+      "exit_code": 0,
+      "log": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-protocol-repair-probes\\final-0.log",
+      "sha256": "045bda4a88c7c77346f358f157320e35fea9d21e45871422b5f3d95c70fc38ff"
+    },
+    {
+      "command": [
+        "D:/GongGong-work/tx-venv/Scripts/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "log": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-protocol-repair-probes\\final-1.log",
+      "sha256": "6a8b22d102b073658107ede990adeabbf16a14e9b7ae332f3e78b08eab09ce76"
+    },
+    {
+      "command": [
+        "py",
+        "-m",
+        "ruff",
+        "check",
+        "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+        "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py"
+      ],
+      "exit_code": 0,
+      "log": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-protocol-repair-probes\\final-2.log",
+      "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+    },
+    {
+      "command": [
+        "py",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+        "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py"
+      ],
+      "exit_code": 0,
+      "log": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-protocol-repair-probes\\final-3.log",
+      "sha256": "177f260a5645724013185e4b140c7045cc39e56c0c97b120f5cb23599f85f0de"
+    }
+  ],
+  "historical": {
+    "report": "D:/GongGong/data-collection/receipts/duobao-1382/native-context-live-validation-1501/final-report.json",
+    "sha256": "5d19d630f50836091a8415d252cb1ccc8c294e8c87823e14a65107651c75a053",
+    "calls": 11,
+    "underlying_cause": "unknown; historical no-text/no-usage terminal did not retain failure category; schema defect is independently established, not proven historical cause",
+    "new_provider_calls": 0,
+    "replays": 0
+  },
+  "schema": {
+    "before": "root anyOf; unconstrained arguments object",
+    "after": "closed root object with all action/name/arguments/value required; nullable inactive fields; closed typed manifest/read/delta alternatives; required nullable cursor and null-only known_receipt",
+    "provider_reference": "https://developers.openai.com/api/docs/guides/structured-outputs",
+    "local_preflight": "runs before transport.start; rejects incompatible object closure/required/root/subset; test mutates installed schema and proves zero starts",
+    "normalization": "wire validated exact four fields including inactive nulls; returns existing internal action; accepted assistant and subsequent adapter history both serialize normalized internal action; new-output instructions explicitly require four fields"
+  },
+  "diagnostics": {
+    "fields": [
+      "version",
+      "phase",
+      "terminal",
+      "reason"
+    ],
+    "phases": [
+      "schema_preflight",
+      "transport",
+      "proposal_validation"
+    ],
+    "terminals": [
+      "unknown",
+      "completed",
+      "failed",
+      "interrupted"
+    ],
+    "reasons": [
+      "schema_preflight",
+      "terminal_failure",
+      "proposal_rejection",
+      "missing_output",
+      "unknown"
+    ],
+    "privacy": "No prompt/body/token/error message in diagnostic; observer retains only bound terminal status; exception strings removed from context adapter evidence",
+    "flow": "wrapper receipt -> host validated diagnostic/model_unknown ledger -> adapter TransportUnknown bounded evidence; unknown remains no-replay"
+  },
+  "evidence": {
+    "node_tests": 33,
+    "python_tests": 41,
+    "python_subtests": 15,
+    "real_child": "five turns: manifest, read first page, read cursor page, delta, final; bootstrap then four incremental turns; one thread; physical closure; original runner and worker producer pipeline tests also pass",
+    "negative": "failed terminal, empty output, malformed JSON real child; exact/inactive/null/wrong typed arguments; preflight no start; malformed/duplicate usage binding retained existing tests"
+  },
+  "budgets": {
+    "changed": false,
+    "session": "NativeContextSession deadline begins at constructor and uses installation timeout (0<timeout<=600 seconds)",
+    "turn": "shared Subscription fixed 300000 ms timer; unchanged",
+    "gap": "installer cannot separately set per-turn and session timeout; current 180-second live session cap may be insufficient for multiple historically ~120-second turns; no budget increase or automatic replay authorized here"
+  },
+  "method_learning": {
+    "scope": "model-usage-evidence",
+    "recall": "no verified lessons and no unavailable entries",
+    "proposal": "For a structured-output failure without retained cause, first check actual sent schema against provider subset and actual incremental subprocess history; preserve historical unknown until independent live evidence. Counterexample: passing fake provider fixtures alone does not prove provider acceptance."
+  },
+  "preserved": [
+    "shared subscription_session.js unchanged",
+    "authority and cumulative call/byte/time budgets",
+    "usage identity binding and duplicate rejection",
+    "physical process ownership and closure",
+    "old reports and live unknown state"
+  ],
+  "remaining": [
+    "independent review on exact source hashes",
+    "root refresh package/build manifests",
+    "new separately authorized live validation (historical run must never replay)",
+    "factory integration, CI/main and whole-goal acceptance owned by root"
+  ],
+  "cleanup": {
+    "retained": "bounded probe logs/checks and report retained for review; pytest temp artifacts under pytest-managed temp paths retained for root cleanup audit",
+    "performed": "production session close cleans own mailboxes; standalone Node preflight test removes its own mkdtemp directory",
+    "created_production_resources": false
+  }
+}

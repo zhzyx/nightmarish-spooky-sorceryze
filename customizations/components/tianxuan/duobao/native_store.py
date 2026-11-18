@@ -343,3 +343,126 @@ class NativeStore:
             candidate = _digest(payload.encode("utf-8"))
             db.execute("INSERT OR IGNORE INTO native_compositions VALUES (?,?,?)", (tenant, candidate, payload))
             return {"id": candidate, **json.loads(payload)}
+
+
+class NativeContextStorage:
+    """Execution-local bounded index and authenticated ranges over immutable sources.
+
+    Cold verification reads a whole blob once in 8192-byte blocks. Only block
+    hashes survive; warm reads authenticate every touched block. No cache is
+    shared across contexts, tenants, revisions or database identities.
+    """
+
+    BLOCK = 8192
+    MAX_OBJECT = 2 * 1024 * 1024
+    MAX_SOURCE = 8 * 1024 * 1024
+    MAX_METADATA = 1024 * 1024
+    MAX_OBJECTS = 4096
+    MAX_REVISIONS = 128
+
+    def __init__(self, store, tenant, revisions, execution):
+        self.store, self.tenant, self.execution = store, _identifier(tenant), execution
+        self.owner = store.database.stat()
+        self.states, self.lengths, self.hashes = {}, {}, {}
+        self.io = {"metadata_bytes": 0, "body_bytes": 0, "cold_verifications": 0}
+        self.source_bytes = 0
+        revisions = sorted(set(revisions))
+        if len(revisions) > self.MAX_REVISIONS:
+            raise NativeStoreError("Context revision budget exceeded")
+        with store._connection() as db:
+            db.execute("PRAGMA cache_size=-256")
+            db.execute("PRAGMA mmap_size=0")
+            db.execute("BEGIN")
+            for module, revision in revisions:
+                _identifier(module)
+                _revision_id(revision)
+                size = db.execute(
+                    "SELECT length(CAST(payload AS BLOB)) FROM native_revisions WHERE tenant=? AND module=? AND id=?",
+                    (tenant, module, revision),
+                ).fetchone()
+                if size is None:
+                    raise NativeStoreError("Revision unavailable in this tenant/module")
+                if self.io["metadata_bytes"] + size[0] > self.MAX_METADATA:
+                    raise NativeStoreError("Context metadata budget exceeded")
+                self.io["metadata_bytes"] += size[0]
+                state = store._revision(db, tenant, module, revision)
+                if sum(len(s["objects"]) for s in self.states.values()) + len(state["objects"]) > self.MAX_OBJECTS:
+                    raise NativeStoreError("Context object count budget exceeded")
+                self.states[module, revision] = state
+                for name, sha in state["objects"].items():
+                    _object_name(name)
+                    row = db.execute(
+                        "SELECT length(content) FROM native_blobs WHERE tenant=? AND digest=?", (tenant, sha)
+                    ).fetchone()
+                    if row is None or row[0] > self.MAX_OBJECT:
+                        raise NativeStoreError("Context object budget exceeded or unavailable")
+                    self.source_bytes += row[0]
+                    if self.source_bytes > self.MAX_SOURCE:
+                        raise NativeStoreError("Context source budget exceeded")
+                    self.lengths[module, revision, name] = row[0]
+        self.manifest = [
+            dict(
+                module=m,
+                revision=r,
+                name=n,
+                object_digest=sha,
+                byte_length=self.lengths[m, r, n],
+                encoding_hint="unknown",
+            )
+            for (m, r), state in sorted(self.states.items())
+            for n, sha in sorted(state["objects"].items())
+        ]
+
+    def _identity(self):
+        now = self.store.database.stat()
+        if (now.st_dev, now.st_ino) != (self.owner.st_dev, self.owner.st_ino):
+            self.hashes.clear()
+            raise NativeStoreError("Context database identity changed")
+
+    def read_range(self, module, revision, name, offset, length):
+        self._identity()
+        key = (module, revision, name)
+        total = self.lengths[key]
+        if (
+            type(offset) is not int
+            or type(length) is not int
+            or not 0 <= offset <= total
+            or not 1 <= length <= self.BLOCK
+        ):
+            raise NativeStoreError("Invalid bounded range")
+        sha = self.states[module, revision]["objects"][name]
+        with self.store._connection() as db:
+            db.execute("PRAGMA cache_size=-256")
+            db.execute("PRAGMA mmap_size=0")
+            db.execute("BEGIN")
+            row = db.execute(
+                "SELECT rowid,length(content) FROM native_blobs WHERE tenant=? AND digest=?", (self.tenant, sha)
+            ).fetchone()
+            if row is None or row[1] != total:
+                self.hashes.pop(key, None)
+                raise NativeStoreError("Object identity/length changed")
+            with db.blobopen("native_blobs", "content", row[0], readonly=True) as blob:
+                if key not in self.hashes:
+                    whole, blocks = hashlib.sha256(), []
+                    for start in range(0, total, self.BLOCK):
+                        chunk = blob.read(min(self.BLOCK, total - start))
+                        self.io["body_bytes"] += len(chunk)
+                        whole.update(chunk)
+                        blocks.append(_digest(chunk))
+                    if whole.hexdigest() != sha:
+                        raise NativeStoreError("Object integrity failure")
+                    self.hashes[key] = blocks
+                    self.io["cold_verifications"] += 1
+                end = min(total, offset + length)
+                result = bytearray()
+                for index in range(offset // self.BLOCK, (end + self.BLOCK - 1) // self.BLOCK):
+                    start = index * self.BLOCK
+                    blob.seek(start)
+                    chunk = blob.read(min(self.BLOCK, total - start))
+                    self.io["body_bytes"] += len(chunk)
+                    if _digest(chunk) != self.hashes[key][index]:
+                        self.hashes.pop(key, None)
+                        raise NativeStoreError("Object chunk integrity failure")
+                    result.extend(chunk[max(offset - start, 0) : min(end - start, len(chunk))])
+        self._identity()
+        return bytes(result), total

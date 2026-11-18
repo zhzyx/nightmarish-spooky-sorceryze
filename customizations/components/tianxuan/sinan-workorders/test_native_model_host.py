@@ -220,3 +220,18 @@ class TimingContractTests(UsageContractTests):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class DiagnosticTests(unittest.TestCase):
+    def test_untrusted_diagnostic_cannot_add_payloads_or_unbounded_enums(self):
+        valid = dict(version=1, phase="transport", terminal="failed", reason="terminal_failure")
+        NativeModelHost._validate_diagnostic(valid)
+        for bad in (
+            {**valid, "message": "private"},
+            {**valid, "reason": "private"},
+            {**valid, "terminal": "private"},
+            {**valid, "phase": "private"},
+            {**valid, "version": True},
+        ):
+            with self.assertRaises(ValueError):
+                NativeModelHost._validate_diagnostic(bad)

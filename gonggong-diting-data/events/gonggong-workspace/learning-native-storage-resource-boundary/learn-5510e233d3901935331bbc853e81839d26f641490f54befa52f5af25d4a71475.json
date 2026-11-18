@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-storage-resource-boundary",
+  "event_id": "learn-5510e233d3901935331bbc853e81839d26f641490f54befa52f5af25d4a71475",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1501",
+  "occurred_at": "2026-11-18T03:55:54.393296+00:00",
+  "evidence_refs": [
+    "kuafu-e28abf5e62694379563388cb1455b86be8a71045"
+  ],
+  "payload": {
+    "scope": "native-storage-resource-boundary",
+    "lesson": "measure-source-io-before-context-admission",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Before admitting paginated/range model context tools, measure underlying source body bytes and verification cost on every page and cold/warm range, not only serialized response bytes. Use bounded metadata and integrity-preserving verified reads with explicit source budgets.",
+      "when": "A task-bound AI context adapter exposes immutable objects larger than each returned page/range from a host content store.",
+      "counterexample": "Small tool responses can still trigger full-body reads on each page. Skipping whole-object integrity to reduce reads is not an acceptable optimization; cold verification may legitimately read a whole bounded object once.",
+      "trial_plan": "Use the independent actual NativeStore 120x64KiB/two-page and2-byte-range reproduction. After repair require zero body reads for manifest pages, measured bounded first verification, no repeated whole-body verification for warm ranges, and rejection of corrupted/oversized/cross-tenant data; bind observations to exact repaired source."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-context-consumption-independent-review-1501.json",
+        "sha256": "a5c97e18645edfa891d14f271038342ee6d3b2c2e7a62da539f0ace4210ebd47"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-context-consumption-20261118/kuafu-e28abf5e62694379563388cb1455b86be8a71045.json",
+      "sha256": "bdeb8d000ea8ed033f75e13d6b9a54485006d5c7b6eed1f5c839d15cf0cc3a37"
+    }
+  },
+  "sha256": "4fe0bc8b0b9fb5d8392a963aa8f616017f7035d425e9957f4e880837f79b86e9"
+}

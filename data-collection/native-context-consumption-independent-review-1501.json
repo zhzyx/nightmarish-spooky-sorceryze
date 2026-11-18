@@ -1,0 +1,231 @@
+{
+  "original_sha256": "2d7e32b7d0cc5fc397372178fc671a7a10b58f963a78ef083d629260f81bf482",
+  "review": {
+    "issue": 1501,
+    "status": "BLOCKED_independent_review",
+    "source_root": "D:\\GongGong-work\\native-context-consumption-20261118",
+    "implementation_report_sha256": "46662c395ecba8167faf7cc6fd29aab8b3b2feeefb97dccd5f91cfccd849f3a6",
+    "source_sha256_before": {
+      "customizations/components/tianxuan/sinan-workorders/native_context.py": "91324f70549b21eef137d3fc5980e84b241ecd5c796a6a6dea22e3dd459f2906",
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "54ada57b24087bff5ac123274724108178da80205a39416c776f70b586fd3db4",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "4cf7af21c626ebe188df03829b489a21279a973e3c97f40e33cbd96f5bf41e64",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77a29da320e653ddf73c0204455a62f17709266fc9e7c66b6827de6ae435bcae",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+      "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "c03c426c5fc99d40ff89753f8a3cbb8ee638272c3efef53292e0cb014bb17e11",
+      "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+      "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "8a541d64c29eb83fa71e69d8d75eb68a6406394af0afc5f90398e14c63917b5c"
+    },
+    "source_sha256_after": {
+      "customizations/components/tianxuan/sinan-workorders/native_context.py": "91324f70549b21eef137d3fc5980e84b241ecd5c796a6a6dea22e3dd459f2906",
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "54ada57b24087bff5ac123274724108178da80205a39416c776f70b586fd3db4",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "4cf7af21c626ebe188df03829b489a21279a973e3c97f40e33cbd96f5bf41e64",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "77a29da320e653ddf73c0204455a62f17709266fc9e7c66b6827de6ae435bcae",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "197b16598ab09ca920e4dd358f54124979ba210023d82f8139aecda066aeca3d",
+      "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "c03c426c5fc99d40ff89753f8a3cbb8ee638272c3efef53292e0cb014bb17e11",
+      "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+      "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "8a541d64c29eb83fa71e69d8d75eb68a6406394af0afc5f90398e14c63917b5c"
+    },
+    "exact_bytes_unchanged": true,
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "applicable": [
+        "bind-consumer-release",
+        "await-terminal-observers",
+        "reconstruct-worker-outcomes"
+      ],
+      "application": "Pin exact candidate bytes; require physical process closure; passing transport or synthetic tests do not release live/factory acceptance."
+    },
+    "blockers": [
+      {
+        "id": "R1",
+        "priority": "P1",
+        "file": "customizations/components/tianxuan/sinan-workorders/native_context.py",
+        "lines": [
+          85,
+          95,
+          261,
+          269
+        ],
+        "title": "Historical revision authority is omitted at response and model-turn boundaries",
+        "reproduction": "selected={code:after}; allowed_delta_pairs contains before/after. authorize permits both, then revoke before during read. resolve(read of before) returns resolved content AAA= despite authority false. delta also returns before metadata after revocation. check(tool_response) and check(model_turn) enumerate only selected after.",
+        "impact": "Current authority of old revision is not rechecked before returning or delivering its content; revocation after a previous successful historical read is also missed before later turns reuse its history.",
+        "fix": "Track all actual source revisions in each response and retained model history, including both delta endpoints, historical range bodies, namespace/absence evidence. Reauthorize relevant union at response publication, each model turn and proposal application. A conservative selected plus all explicitly allowed delta endpoints check is acceptable if intentional; factory must query current actor/producer, original requirement document and module rights, not grant-only state."
+      },
+      {
+        "id": "R2",
+        "priority": "P1",
+        "file": "customizations/components/tianxuan/sinan-workorders/native_context.py",
+        "lines": [
+          148,
+          210
+        ],
+        "title": "Page/range limits bound output but not underlying whole-body reads",
+        "reproduction": "Actual NativeStore: 120 objects x 65536 bytes. Page 1 returns 63 entries/16384 JSON bytes but reads all 120 bodies (7864320 bytes). Page 2 returns 57 entries/14707 bytes and rereads all 120 (another 7864320 bytes). A 2-byte range reads all 65536 bytes.",
+        "impact": "Metadata pagination causes O(pages * selected body bytes) full blob verification and I/O. Range reads cause O(object bytes) allocation/hash per tiny chunk. NativeStore itself has no object-size/count limit; ordinary Worker does have 2MiB/object and 8MiB total defaults, but old delta endpoints are not bounded by current materialization. Response budgets alone cannot establish bounded host I/O/memory or efficiency.",
+        "fix": "Add trusted NativeStore bounded metadata length/pagination and exact byte-range API, and explicit source/operation budgets. Preserve whole-object SHA256 integrity: do not substitute unauthenticated SQL substr. Use bounded-memory streaming verification with identity-bound trusted validated cache/index and invalidation, or authenticated chunk design. Document cold full verification cost versus warm range cost. Manifest metadata must not read all bodies to calculate lengths; avoid rebuilding unlimited full revision metadata per page."
+      }
+    ],
+    "verified": [
+      "All eight bound source hashes match before and after independent execution.",
+      "83 pytest tests and 98 subtests passed; 30 Node tests passed. test_runtime.py was never collected.",
+      "Existing Subscription reused across five turns: one thread, bootstrap plus four incremental requests, fixture rejects full-history resend.",
+      "Exact UTF-8 split bytes via base64, source digest mismatch/path/cursor/cross-tenant refusal, explicit namespace and absence, fixed-pair metadata delta.",
+      "No known_receipt omission; delta explicitly marks content omitted; reads=None prevents unsafe dependency weakening.",
+      "Crash/flood fixtures physically close and refuse restart; timeout probe rejects delayed tool receipt and physically exits pid 51492 with code 143, mailbox removed.",
+      "Producer validates allowlist/file and proposal limits before applying output; oversized effective context rejected before process creation.",
+      "Usage remains raw per-turn last/total; cumulative totals are not summed."
+    ],
+    "limitations": [
+      "No production factory/installation ACL boundary established here. NativeContext requires an absolute ledger and checks inode identity; it does not itself enforce out-of-workspace location/ACL or authenticate rows against privileged in-place SQLite edits. Trusted storage isolation is a pending factory acceptance condition, not a demonstrated model exploit.",
+      "Completed receipt history is read back; started/unknown operations block restart. Cryptographic tamper resistance of ledger rows was not proven; no claim of full tamper coverage.",
+      "No real models/providers/network/production runs. No live token/time improvement, factory integration, build/package update rollback, remote main or business completion claim.",
+      "Python/host retains cumulative history internally; actual provider wire uses incremental prefix. Fixture evidence establishes mechanism, not general provider performance.",
+      "Original implementation test_runtime import failure remains documented in implementation report; tests ran clean without credential bypass."
+    ],
+    "physical_terminal": {
+      "independent_context_process_closures": [
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\pytest-temp\\test_actual_runner_loop_and_no0\\ledger.sqlite",
+          "closures": [
+            {
+              "exit_code": 0,
+              "physical": true
+            }
+          ]
+        },
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\pytest-temp\\test_authority_revoked_before_0\\ledger.sqlite",
+          "closures": [
+            {
+              "exit_code": 143,
+              "physical": true
+            }
+          ]
+        },
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\pytest-temp\\test_real_process_reuses_subsc0\\multi.sqlite",
+          "closures": [
+            {
+              "exit_code": 0,
+              "physical": true
+            }
+          ]
+        },
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\pytest-temp\\test_real_process_unknown_turn0\\ledger.sqlite",
+          "closures": [
+            {
+              "exit_code": 7,
+              "physical": true
+            }
+          ]
+        },
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\pytest-temp\\test_real_process_unknown_turn1\\ledger.sqlite",
+          "closures": [
+            {
+              "exit_code": 143,
+              "physical": true
+            }
+          ]
+        },
+        {
+          "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\pytest-temp\\test_real_worker_producer_cont0\\pipeline.sqlite",
+          "closures": [
+            {
+              "exit_code": 0,
+              "physical": true
+            }
+          ]
+        }
+      ],
+      "late_tool": {
+        "pid": 51492,
+        "exit_code": 143,
+        "reason": "Cumulative session deadline exceeded",
+        "terminal": "incomplete",
+        "mailbox_removed": true
+      }
+    },
+    "commands": [
+      {
+        "command": [
+          "D:/GongGong-work/tx-venv/Scripts/python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "pytest",
+          "customizations/components/tianxuan/sinan-workorders/test_native_context.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py",
+          "customizations/platforms/ai-access/host-http/runtime/test_adapters.py",
+          "-q",
+          "-p",
+          "no:cacheprovider",
+          "--basetemp",
+          "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\pytest-temp"
+        ],
+        "exit_code": 0,
+        "stdout": "......................................................... [ 68%]\n..........................                                    [100%]\n83 passed, 98 subtests passed in 66.75s (0:01:06)\n",
+        "stderr": "",
+        "elapsed": 67.15599999998813
+      },
+      {
+        "command": [
+          "C:/Users/ROG/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+          "--test",
+          "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs"
+        ],
+        "exit_code": 0,
+        "stdout": "✔ real Subscription early events retained, strict proposal bound, original notifications work (55.7442ms)\n✔ late update replaces raw snapshot without summing (61.4524ms)\n✔ duplicate fails usage closed (62.0447ms)\n✔ wrong_thread fails usage closed (62.0199ms)\n✔ wrong_turn fails usage closed (63.0399ms)\n✔ negative fails usage closed (60.9294ms)\n✔ wrong_type fails usage closed (62.0147ms)\n✔ overflow fails usage closed (62.0582ms)\n✔ missing usage remains unknown (61.9265ms)\n✔ unacknowledged turn never binds early usage or replays (0.5596ms)\n✔ malformed proposal retains independently bound usage without authority (0.2571ms)\n✔ failed proposal retains independently bound usage without authority (0.2397ms)\n✔ failed proposal retains invalid usage classification (0.1863ms)\n✔ request configuration injection and duplicate paths rejected before start (0.2078ms)\n✔ callback preserved and restored including compaction signal (0.0541ms)\n✔ context compaction forces existing Subscription to rebuild (0.1512ms)\n✔ strict output rejects wrong digest, duplicate paths, extra authority and outside path (0.1333ms)\n✔ replayed completed messages do not move last text, including before acknowledgement (0.2185ms)\n✔ identical text deltas and distinct completed items remain distinct output (0.0801ms)\n✔ completed message identities are required and bounded with unknown overflow (0.3191ms)\n✔ monotonic phase separation and terminal freeze without extra calls (0.143ms)\n✔ early notification timestamps bind only to acknowledged turn (0.0955ms)\n✔ malformed and unrelated notifications cannot fabricate timing (0.0965ms)\n✔ early overflow discards ambiguous timings without retaining payloads (0.1863ms)\n✔ observer preserves original rejection and callback exception (0.2521ms)\n✔ receipt timing accompanies proposed, failed and unacknowledged results and restores observers (58.3449ms)\n✔ startup failure produces unknown timing with no protocol calls (0.1915ms)\n✔ transport timeout after text stays unknown and closes without retry (0.3464ms)\n✔ out of range monotonic stamps remain unknown (0.0541ms)\n✔ duplicate RPC cannot be misreported as a single request (0.0557ms)\nℹ tests 30\nℹ suites 0\nℹ pass 30\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 674.0054\n",
+        "stderr": ""
+      },
+      {
+        "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\adversarial.py",
+        "exit_code": 0
+      },
+      {
+        "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\final_checks.py",
+        "exit_code": 0
+      }
+    ],
+    "cleanup": {
+      "processes": "All own subprocess commands terminal; context fake subprocesses physically closed in exported ledgers; delayed child closed with non-null exit code. No installed settings/branches/worktrees created.",
+      "retained": "Own private pytest fixture directory, SQLite stores, scripts and ledger exports retained as exact reproducible blocking evidence for root repair. No unrelated tree touched; retention is intentional and not represented as deletion."
+    },
+    "delivery": "No approval/signoff. Root owns #1445 repair routing, subsequent independent candidate review and remaining delivery.",
+    "evidence": [
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\adversarial-results.json",
+        "sha256": "46ef666d4be425dec3a2e30b89b5ff4681c43c3ee0668460d300d243392a39f4"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\hashes-after.json",
+        "sha256": "573347655575861b7e891e307275d24c2c4f54baefe8ddd1ded22b0d0b31641c"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\hashes-before.json",
+        "sha256": "573347655575861b7e891e307275d24c2c4f54baefe8ddd1ded22b0d0b31641c"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\independent-process-ledgers.json",
+        "sha256": "f33d754f1c2cf7e3ad3df09566fa00919461f7af45bfd7491234345e8c5b932e"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\late-tool-result.json",
+        "sha256": "91249b76f161e10c8fdf6f026a647fdeafd62d06d595b19fce30e79e03d07757"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\node-regression.json",
+        "sha256": "6f4fd1205987b71dd91c2b3a7589671e8c118673c55433f38ab6ac02c31447c9"
+      },
+      {
+        "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-consumption-independent-review-probes\\python-regression.json",
+        "sha256": "fa67aba9aed9eeb1f8382eff20466563d59862b7a83d74e279f719e61861341a"
+      }
+    ]
+  }
+}

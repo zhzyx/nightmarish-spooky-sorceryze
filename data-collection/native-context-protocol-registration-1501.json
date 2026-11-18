@@ -1,0 +1,18 @@
+{
+  "issue": 1501,
+  "before_sha256": "44ed2c191a5d21fbace97da9acf115ffafa2134ba9fa15d4c3db22cc7e5c7be5",
+  "after_sha256": "807d1d8d5f081b184e8feb263e19fef58e7fe8a6283d2da69802854fa46e82a1",
+  "changed_json_leaves": [
+    "host_packages/customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py"
+  ],
+  "command": [
+    "py",
+    "-X",
+    "utf8",
+    "tools/check_gonggong_distribution.py"
+  ],
+  "exit_code": 0,
+  "output": "{\"agent_execution_authorized\": false, \"authority_authenticated\": false, \"diting_extension_syntax_checked\": true, \"frozen_files\": 256, \"live_upstream_verified\": false, \"ok\": true, \"scope\": \"offline_registered_snapshot_consistency_only\", \"syntax\": {\"javascript\": 16, \"json\": 158, \"python\": 27}}\n",
+  "input_count": 47,
+  "note": "Frozen framework and all other registrations preserved; offline distribution check, no production admission or live acceptance."
+}
