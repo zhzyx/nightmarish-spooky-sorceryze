@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "godot-windows-web-1462-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-17T18:52:38.676858+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1462,
+    "parent_issue": 1454,
+    "scope": "User explicitly requires Windows native embedding as well as macOS; Godot only",
+    "authority_ref": "codex:user-request-20261118-godot-windows",
+    "base": "bf72c2dd4e36bc057c64cbdd5e9a060163b16526"
+  },
+  "evidence_refs": [],
+  "sha256": "05b9ed2dd11d5b61b5958b6647b7aa4aeda14b721b5572ad0aac50b599abb455"
+}

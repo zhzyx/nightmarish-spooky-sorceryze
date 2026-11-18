@@ -1,0 +1,165 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "issue_number": 1462,
+  "request_id": "godot-windows-web-20261118",
+  "reviewer": "codex-windows-alignment-review",
+  "native_worker": "/root/sinan_31fc3de41e4640da",
+  "authority_ref": "codex:user-request-20261118-godot-windows",
+  "timestamp_utc": "2026-11-17T23:31:17.799422+00:00",
+  "mode": "independent-read-only-main-integration-review",
+  "source_head": "6f3bb15bb2218ad1a248e206c9f4dad2e255c015",
+  "merge_head": "0bddf191f8329539aff9f87aac4556816ca97e8e",
+  "previous_main": "faf5425b9bee9d51f7e8ce8c00de7c1608430b65",
+  "candidate_state": "main merged in index; merge not committed at review; exact reviewed files match index",
+  "verdict": "no_actionable_integration_findings_new_candidate_ci_pending",
+  "findings": [],
+  "reviewed_file_sha256": {
+    ".github/scripts/windows_editor_artifact.py": "0d290f507ad7c5c472062cae5e893070192f90257ff22fe700d014c87a74a2a8",
+    ".github/workflows/runner.yml": "26c6267a05cd568fabee686d2597bc08350f0825adc6f390bb68e7b9afd26c1d",
+    ".github/workflows/windows_builds.yml": "4ba3ff5434ecf1a9eaf9e72e2fd8753e732acbec6149f257dce1c20a135ae3cb",
+    "customizations/components/godot-host/web-workbench.md": "e5d6ffecf2653bbb41fa763eb95e00c0fb96e2741b0cb61b595f415cfeadd0a7",
+    "editor/docks/SCsub": "85da9ac28bd3d0a85aa8544d62831400046c6fc845a38ae599e1f4aa391640c8",
+    "editor/docks/WebPlatformDock.cpp": "669fa30caac188c50dac12d13f01a4b06764087f8a655b41c54b55b5092c96b9",
+    "editor/docks/WebPlatformNative.cpp": "3d1947ad2c94bc337ebfc4aafbf388c329c31840d60a040c2a2960dff17edb3d",
+    "editor/docks/WebPlatformNative.h": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a",
+    "editor/docks/WebPlatformWindows.cpp": "7dd791d227d7c19c90131900aba0b2315de32b8e66faf1f14fba203fb31e6085",
+    "editor/docks/WebPlatformWindows.h": "ad9f8913034d7b168624636d97bf6fd0bc712d45dfcfc8df2a20d94fcf5aea87",
+    "tests/editor/TestWebPlatformWindows.cc": "db40e578439b26705a386749160a709eaf90bd47469b769933e40256e4ac3587",
+    "tests/editor/test_editor_native_cache.py": "7644f81b462c18d7fdf32aa1389c47f266f1e058fb9a4e7e8c61a9fd2bf4f0af",
+    "thirdparty/webview2/.gitignore": "8d545223cd502221f7efc88db3e3ab047c564f1c4645cc40ac47d57549e632cd",
+    "thirdparty/webview2/LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+    "thirdparty/webview2/NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+    "thirdparty/webview2/README.md": "3e5aebaca63e79aec9436eb33d08bbc802f121f1cc9756cd8c34013a2be9a23d",
+    "thirdparty/webview2/manifest.json": "0d14ad4bcfe28f099b1f9ebfce8ef33812deabd70fcac6adf7905a3053ed57c6",
+    "tools/editor_native_cache.py": "65cdd38d80d90f2bfbff5d431265ec932b85c145aec8cfce108bc93f75f78dbb",
+    "tools/install_webview2.py": "b46f93d205bf74dd2ef85945531997a3736904330bb363443fbfecc1c07380b1",
+    "tools/stage_installed_editor.py": "953cdde762dc2502b44612772d0f1412cc4beff32a49ff3df0b1e7e7eb1dcc30",
+    "tools/test_installed_editor.py": "fd5b6a0382bf1cc24e4e079b56c450e93f52d72e773e49449e3cba03a90876fd",
+    "tools/test_web_platform_windows.py": "7d4bbffad0a3b1b0f404a177083466c528542d18f82317519287ddb95daaf82e",
+    "tools/test_windows_editor_artifact.py": "5e3d0618666a8d08cbebe288efeda81db6ffa0b4329c51d4a651d1ec36bc0043",
+    ".github/workflows/native-cache.yml": "08391128a3b67b7b6b4ecd6fd9324f4ddcc992471c7acd5295b7bedb21ec6992",
+    "tests/python_build/check_engine_build_scope.py": "5c4f85affb87713d17a1dd162e063068142385e4b7b05f4080be20125a6f49bc"
+  },
+  "baseline_verification": {
+    "receipt": "data-collection/godot-windows-web-1462-independent-review-link.json",
+    "receipt_sha256": "3f780f5b5a21280e7d33022276d75053f79966e653d088e3e97059fe267242e1",
+    "file_count": 25,
+    "unchanged_count": 24,
+    "changed_files": [
+      "tools/editor_native_cache.py"
+    ],
+    "private_link_receipt_hash_map_identical": true
+  },
+  "checks": [
+    {
+      "name": "Exact overlapping source delta",
+      "result": "passed",
+      "detail": "Compared source HEAD 6f3bb15bb2218ad1a248e206c9f4dad2e255c015 with current bytes: precisely one addition of .cjs to HOST_INPUT_SUFFIXES. Main advance overlaps only tools/editor_native_cache.py among all 25 reviewed files. All 25 current bytes match index."
+    },
+    {
+      "name": "Cache host-input and WebView2 integration",
+      "result": "passed",
+      "detail": "The new suffix permits exact declared CommonJS host files; allowed prefixes, forbidden names, schema and exact inventory constraints remain. is_external_data checks actual native sources before the host inventory. WebView2 generated sidecars, manifest dependency, copy graph, explicit uuid.lib LINKFLAGS, expanded link graph/preflight, runtime harness and final distribution verification are unchanged."
+    },
+    {
+      "name": "Upstream interfaces and read dependencies",
+      "result": "passed_source_review",
+      "detail": "Inspected all upstream source changes and shared dependency sites. native_api adds integration/terminal routes and imports existing access_control.COOKIE; optional workflow router remains mounted by api.create_app only with an installed workflow and matching domain store. Existing receipt calls delegate compatibly to receipt_for. Workflow/dispatch integration and terminal operations remain Python/Node server functionality. New model host explicitly loads installed process helper and CommonJS subscription transport; it does not change WebPlatform native ABI, navigation policy, WebView2 SDK/header/runtime or build graph. WebPlatformDock connects through URL/browser navigation, not these Python method signatures or native workflow operation payloads. Existing tools/codex_cli read dependencies and access_control.py are unchanged in the main delta. Nine added explicit host inventory paths include the CommonJS wrapper and tests, explaining the necessary suffix admission."
+    },
+    {
+      "name": "Native cache regression",
+      "command": "PYTHONDONTWRITEBYTECODE=1 <existing-test-venv>/bin/python -B -m unittest discover -s tests/editor -p test_editor_native_cache.py -v",
+      "result": "passed",
+      "tests": 15,
+      "detail": "Includes loader and both license sidecars restored into empty bin, real SCons local rebuild, corruption, producer contention and exact consumer invalidation."
+    },
+    {
+      "name": "Host input regressions",
+      "command": "PYTHONDONTWRITEBYTECODE=1 <existing-test-venv>/bin/python -B -m unittest discover -s tests/editor -p test_native_host_inputs.py -v",
+      "result": "3_passed_1_host_platform_error",
+      "passed": [
+        "test_actual_generator_consumption_overrides_host_inventory",
+        "test_commonjs_generator_consumption_overrides_host_inventory",
+        "test_hosted_identity_uses_policy_and_actual_consumers_with_full_fallback"
+      ],
+      "error": {
+        "test": "test_repository_host_inventory_has_zero_overlap_with_actual_scons_graph",
+        "actual_stderr": "ERROR: Invalid target platform \"linuxbsd\". The following platforms are available: ios, macos, visionos.",
+        "cause": "Existing test selects linuxbsd for all non-Windows hosts; this reviewer runs on macOS."
+      }
+    },
+    {
+      "name": "Supplemental actual macOS SCons host inventory graph",
+      "result": "passed",
+      "options": {
+        "platform": "macos",
+        "target": "editor",
+        "dev_mode": "yes",
+        "debug_symbols": "no",
+        "accesskit": "no",
+        "angle": "no",
+        "vulkan": "no"
+      },
+      "native_source_count": 9400,
+      "host_input_count": 154,
+      "overlap": [],
+      "detail": "Read-only dry-run probe. Vulkan enabled initially rejected because this host has no MoltenVK SDK. Explicit Vulkan-disabled graph is supplemental and does not claim Linux/Windows/full-options coverage."
+    },
+    {
+      "name": "Windows artifact helper regressions",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B -m unittest discover -s tools -p test_windows_editor_artifact.py -v",
+      "result": "passed",
+      "tests": 10
+    },
+    {
+      "name": "Actions and WebView2 staging regressions",
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=tools python3 -B -m unittest test_installed_editor.ActionsStageTests test_installed_editor.WebView2StageTests -v",
+      "result": "passed",
+      "tests": 2,
+      "detail": "Includes local/Actions loader and license verification and rejection of altered distribution bytes."
+    },
+    {
+      "name": "AST parsing and staged whitespace validation",
+      "result": "passed",
+      "files": [
+        "tools/editor_native_cache.py",
+        "editor/docks/SCsub",
+        "tools/test_web_platform_windows.py"
+      ]
+    },
+    {
+      "name": "Merged candidate mandatory CI",
+      "result": "pending_not_run_by_reviewer"
+    }
+  ],
+  "environment": {
+    "host": "macOS",
+    "python": "3.14",
+    "scons": "4.10.1",
+    "existing_test_venv": "repository primary checkout .godot/task-tools-godot-web-1454/venv",
+    "environment_recovery": "Initial system Python lacked SCons: cache suite had 14 passed and 1 failed, host suite 1 passed and 3 skipped. Reused owner-provided existing venv and reran; full cache passed and generator checks passed. Reported host limits to parent, who owns Kuafu #1467; no Issue mutation by reviewer."
+  },
+  "prior_candidate_evidence": {
+    "source": "6f3bb15bb2218ad1a248e206c9f4dad2e255c015",
+    "signed": "fe942a1837340dcc1bf94d45e680daa2ca7c69fd",
+    "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44187287754",
+    "source_of_evidence": "Parent handoff and read-only local runtime/package 1484 receipts",
+    "scope": "Prior exact candidate CI/runtime/artifact evidence only; not evidence of merged candidate CI success."
+  },
+  "limits": [
+    "No new Windows build, Windows full graph, WebView2 runtime, remote CI readback or effective installation executed by reviewer. New candidate CI remains required.",
+    "This is integration-delta review, not complete re-review of unrelated upstream native production features. Their interface/read-dependency interaction with these Windows changes was inspected.",
+    "Existing visible-editor input/IME, native dialogs, visual DPI/modal, authentication and other architecture acceptance limits are unchanged.",
+    "No source edit, commit, push, Issue mutation or desktop interaction performed. Only specified private review receipt written. Parent may update unrelated evidence concurrently."
+  ],
+  "cleanup": {
+    "temporary_resources_created": "Regression fixtures/probe temporary directories automatically cleaned by their context managers; bytecode creation disabled.",
+    "retained": [
+      "Authorized private independent review receipt as evidence."
+    ],
+    "no_installation_or_new_environment_created": true
+  },
+  "path_resolution_base": "repository root; existing_test_venv explicitly relative to primary checkout",
+  "native_receipt_sha256": "edacfdfa84165010f58cc5a2adef16c5603c73c05a607409defc414889fa59dd"
+}

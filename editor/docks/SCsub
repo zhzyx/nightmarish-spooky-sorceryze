@@ -3,6 +3,28 @@ from misc.utility.scons_hints import *
 
 Import("env")
 
+if env["platform"] == "windows" and env.msvc and env["arch"] in ("x86_32", "x86_64", "arm64"):
+    from tools.install_webview2 import verify_installed
+
+    # Dependency acquisition is explicit; graph discovery never downloads software.
+    verify_installed()
+    sdk_root = "#thirdparty/webview2/sdk"
+    sdk_arch = {"x86_32": "x86", "x86_64": "x64", "arm64": "arm64"}[env["arch"]]
+    env.AppendUnique(CPPDEFINES=["WEB_PLATFORM_WEBVIEW2_ENABLED"])
+    env.AppendUnique(CPPPATH=[sdk_root + "/build/native/include"])
+    # System libraries must keep their SDK name despite Godot's custom LIBSUFFIX.
+    env.AppendUnique(LINKFLAGS=["uuid.lib"])
+    runtime_files = []
+    for source, target in (
+        (f"build/native/{sdk_arch}/WebView2Loader.dll", "WebView2Loader.dll"),
+        ("LICENSE.txt", "WebView2-LICENSE.txt"),
+        ("NOTICE.txt", "WebView2-NOTICE.txt"),
+    ):
+        copied = env.CommandNoCache("#bin/" + target, sdk_root + "/" + source, Copy("$TARGET", "$SOURCE"))
+        env.Depends(copied, "#thirdparty/webview2/manifest.json")
+        runtime_files.extend(copied)
+    env.Requires("#bin/godot${PROGSUFFIX}", runtime_files)
+
 env.add_source_files(env.editor_sources, "*.cpp")
 if env["platform"] == "macos":
     env.add_source_files(env.editor_sources, "WebPlatformMacOS.mm")

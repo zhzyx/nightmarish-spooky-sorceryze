@@ -1,0 +1,23 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "prior_source": "6f3bb15bb2218ad1a248e206c9f4dad2e255c015",
+  "prior_signed": "fe942a1837340dcc1bf94d45e680daa2ca7c69fd",
+  "prior_pr": 1484,
+  "prior_base": "faf5425b9bee9d51f7e8ce8c00de7c1608430b65",
+  "new_base": "0bddf191f8329539aff9f87aac4556816ca97e8e",
+  "prior_all_required_ci": "passed",
+  "prior_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44187287754",
+  "prior_runtime": "data-collection/godot-windows-web-1462-runtime-1484.json",
+  "prior_actual_package": "data-collection/godot-windows-web-1462-package-1484.json",
+  "overlap": [
+    "tools/editor_native_cache.py"
+  ],
+  "resolution": "Preserve upstream .cjs HOST_INPUT_SUFFIXES classification together with reviewed WebView2 sidecars and link graph probe; merge has no conflicts. Other24 reviewed source hashes unchanged.",
+  "local_validation": {
+    "native_cache_tests": 15,
+    "ruff": "passed",
+    "mypy": "passed"
+  },
+  "merged_candidate_verification": "Independent review passed (data-collection/godot-windows-web-1462-independent-review-alignment.json); exact new candidate CI pending."
+}

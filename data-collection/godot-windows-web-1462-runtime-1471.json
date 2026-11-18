@@ -1,0 +1,28 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "source_candidate": "5d5296b58d2b40cfc5528b9da00d91a64bceb63c",
+  "signed_candidate": "8d3676488421b934fa9dc9e1c46872afbfc26420",
+  "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44161791075",
+  "artifact_id": 14363094293,
+  "artifact_file_sha256": "eb13a357930eaee95b3ecf382a63538f98ce411624cdf11766c3694e0da796a4",
+  "result": {
+    "compile": "passed",
+    "runtime": "passed",
+    "returncode": 0,
+    "hidden_hwnd": true,
+    "external_requests": [
+      "/frame"
+    ],
+    "navigation_policy_limit": "WebView2 may speculatively issue GET before cancellation; document/script rejection is checked, not network isolation.",
+    "stdout": "WEB_PLATFORM_WINDOWS_OK hidden_native=true persistence=true navigation=true renderer_retry=true lifecycle=true\n",
+    "stderr": "",
+    "manual_not_run": [
+      "real editor input and IME",
+      "native upload/download dialogs",
+      "visual DPI/modal layout"
+    ]
+  },
+  "prior_failure": "data-collection/godot-windows-web-1462-runtime-first.json",
+  "scope": "Pre-main-alignment Windows x64 native runtime on PR #1471; unchanged reviewed backend. New aligned candidate still requires its own CI."
+}

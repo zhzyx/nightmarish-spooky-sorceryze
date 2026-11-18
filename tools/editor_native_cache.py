@@ -231,6 +231,7 @@ def write_probe(env, path, git_info):
             roots.append(str(env[key]))
     result = {
         "msvc": bool(env.msvc),
+        "link_flags": [str(flag) for flag in env.subst_list("$LINKFLAGS $_LIBFLAGS")[0]],
         "git_info": git_info,
         "roots": sorted(set(filter(None, roots))),
         "tools": tool_paths,
@@ -408,7 +409,14 @@ def identify(root, options, artifact, env, cancelled=None):
         if console not in generated:
             raise CacheUnavailable("console artifact not in configured graph")
         outputs.append(console)
-    outputs.extend(sorted(n for n in generated if n.startswith("bin/") and n.lower().endswith(".dll")))
+    outputs.extend(
+        sorted(
+            n
+            for n in generated
+            if n.startswith("bin/")
+            and (n.lower().endswith(".dll") or n in {"bin/WebView2-LICENSE.txt", "bin/WebView2-NOTICE.txt"})
+        )
+    )
     identity = {
         "version": 1,
         "options": {k: v for k, v in options.items() if k not in resources},

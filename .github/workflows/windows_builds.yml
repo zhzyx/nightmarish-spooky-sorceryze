@@ -59,6 +59,10 @@ jobs:
         run: |
           python tools/test_build_gonggong_editor.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m unittest discover -s tools -p test_installed_editor.py -k StageTests -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/editor/test_editor_native_cache.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/test_windows_editor_artifact.py
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/test_editor_provenance_process.py
@@ -100,6 +104,39 @@ jobs:
             echo "::warning::AccessKit SDK installation failed, building without AccessKit support."
             echo "ACCESSKIT_ENABLED=no" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Install pinned WebView2 SDK
+        if: matrix.target == 'editor' && matrix.compiler != 'gcc'
+        run: python tools/install_webview2.py --arch x64 --output-dir bin
+
+      - name: Validate native WebView2 in a hidden window
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor'
+        timeout-minutes: 10
+        shell: pwsh
+        run: |
+          # Test-runner setup only. The product never installs browser runtimes.
+          $installer = Join-Path $env:RUNNER_TEMP 'MicrosoftEdgeWebview2Setup.exe'
+          Invoke-WebRequest 'https://go.microsoft.com/fwlink/p/?LinkId=2124703' -OutFile $installer
+          $signature = Get-AuthenticodeSignature $installer
+          if ($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notmatch 'O=Microsoft Corporation') {
+            throw 'Untrusted WebView2 runtime installer'
+          }
+          $setup = Start-Process $installer -ArgumentList '/silent','/install' -Wait -PassThru
+          if ($setup.ExitCode -ne 0) { throw "WebView2 runtime installation failed: $($setup.ExitCode)" }
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
+          $vs = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if (-not $vs) { throw 'MSVC developer tools unavailable' }
+          $vcvars = Join-Path $vs 'VC/Auxiliary/Build/vcvars64.bat'
+          cmd /d /s /c "`"$vcvars`" && python tools/test_web_platform_windows.py --build-dir .godot/webview2-test --report webview2-report/runtime.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload WebView2 runtime report
+        if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor'
+        uses: actions/upload-artifact@v7
+        with:
+          name: webview2-native-runtime
+          path: webview2-report/*
+          if-no-files-found: warn
 
       - name: Configure reproducible MSVC editor metadata
         if: matrix.compiler == 'msvc' && matrix.target == 'editor'
@@ -147,6 +184,8 @@ jobs:
       - name: Package this checkout's Tianshu UI and record editor provenance
         if: matrix.compiler == 'msvc' && matrix.target == 'editor'
         run: |
+          python tools/install_webview2.py --arch x64 --output-dir bin
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/package_tianshu_ui.py --output bin/tianshu-ui.json
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python tools/package_tianshu_board.py --output bin/tianshu-board.json

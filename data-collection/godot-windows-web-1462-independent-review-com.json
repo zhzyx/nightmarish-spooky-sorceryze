@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "request_id": "godot-windows-web-20261118",
+  "reviewer": "codex-windows-com-review",
+  "authority_ref": "codex:user-request-20261118-godot-windows",
+  "mode": "independent-read-only-three-file-delta-review",
+  "timestamp_utc": "2026-11-17T20:53:35.444161+00:00",
+  "base_commit": "25b07ca60f471094049387198a969adf118b365e",
+  "verdict": "no_actionable_source_findings_windows_retest_pending",
+  "reviewed_file_sha256": {
+    ".github/scripts/windows_editor_artifact.py": "0d290f507ad7c5c472062cae5e893070192f90257ff22fe700d014c87a74a2a8",
+    ".github/workflows/runner.yml": "26c6267a05cd568fabee686d2597bc08350f0825adc6f390bb68e7b9afd26c1d",
+    ".github/workflows/windows_builds.yml": "4ba3ff5434ecf1a9eaf9e72e2fd8753e732acbec6149f257dce1c20a135ae3cb",
+    "customizations/components/godot-host/web-workbench.md": "e5d6ffecf2653bbb41fa763eb95e00c0fb96e2741b0cb61b595f415cfeadd0a7",
+    "editor/docks/SCsub": "5b267f163e77a31b002d3a8c7beb82763d4e7a5a5ca49c824c287cbee0994ded",
+    "editor/docks/WebPlatformDock.cpp": "669fa30caac188c50dac12d13f01a4b06764087f8a655b41c54b55b5092c96b9",
+    "editor/docks/WebPlatformNative.cpp": "3d1947ad2c94bc337ebfc4aafbf388c329c31840d60a040c2a2960dff17edb3d",
+    "editor/docks/WebPlatformNative.h": "e310fe4aa47cf5fffafe0c5d60eafbedf95c27e8e0f93532718a9be49378559a",
+    "editor/docks/WebPlatformWindows.cpp": "7dd791d227d7c19c90131900aba0b2315de32b8e66faf1f14fba203fb31e6085",
+    "editor/docks/WebPlatformWindows.h": "ad9f8913034d7b168624636d97bf6fd0bc712d45dfcfc8df2a20d94fcf5aea87",
+    "tests/editor/TestWebPlatformWindows.cc": "db40e578439b26705a386749160a709eaf90bd47469b769933e40256e4ac3587",
+    "tests/editor/test_editor_native_cache.py": "7644f81b462c18d7fdf32aa1389c47f266f1e058fb9a4e7e8c61a9fd2bf4f0af",
+    "thirdparty/webview2/.gitignore": "8d545223cd502221f7efc88db3e3ab047c564f1c4645cc40ac47d57549e632cd",
+    "thirdparty/webview2/LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+    "thirdparty/webview2/NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+    "thirdparty/webview2/README.md": "3e5aebaca63e79aec9436eb33d08bbc802f121f1cc9756cd8c34013a2be9a23d",
+    "thirdparty/webview2/manifest.json": "0d14ad4bcfe28f099b1f9ebfce8ef33812deabd70fcac6adf7905a3053ed57c6",
+    "tools/editor_native_cache.py": "59f8247e94497de5a888aecf67a2cc7964e1371091d0b57fe798b2efac517d0e",
+    "tools/install_webview2.py": "b46f93d205bf74dd2ef85945531997a3736904330bb363443fbfecc1c07380b1",
+    "tools/stage_installed_editor.py": "953cdde762dc2502b44612772d0f1412cc4beff32a49ff3df0b1e7e7eb1dcc30",
+    "tools/test_installed_editor.py": "fd5b6a0382bf1cc24e4e079b56c450e93f52d72e773e49449e3cba03a90876fd",
+    "tools/test_web_platform_windows.py": "5855c52ba2a92cf9d856ba53eca33eb970ffeb10439741b247dc653be657724e",
+    "tools/test_windows_editor_artifact.py": "5e3d0618666a8d08cbebe288efeda81db6ffa0b4329c51d4a651d1ec36bc0043",
+    ".github/workflows/native-cache.yml": "08391128a3b67b7b6b4ecd6fd9324f4ddcc992471c7acd5295b7bedb21ec6992",
+    "tests/python_build/check_engine_build_scope.py": "5c4f85affb87713d17a1dd162e063068142385e4b7b05f4080be20125a6f49bc"
+  },
+  "findings": [],
+  "baseline_verification": {
+    "receipt": "data-collection/receipts/godot-windows-web-20261118/independent-review-runtime.json",
+    "receipt_sha256": "086cd711546d14a96dfc637ee5351022f3c7d2fd983d2ff7661bc8f4eebd94ca",
+    "file_count": 25,
+    "unchanged_count": 22,
+    "changed_files": [
+      "editor/docks/WebPlatformWindows.cpp",
+      "tests/editor/TestWebPlatformWindows.cc",
+      "tools/test_web_platform_windows.py"
+    ],
+    "detail": "Independently recomputed all 25 SHA256 values. Exactly the three assigned source files differ; every other reviewed file retains its baseline hash. The transient pragma-once insertion is absent from the final reviewed source."
+  },
+  "original_failure": {
+    "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44167274020",
+    "raw_receipt": "data-collection/receipts/godot-windows-web-20261118/aligned-failure.log",
+    "raw_receipt_sha256": "6abbe969fd7229790594ae8dfad41c1a0e894755214c20f91b1927009140371b",
+    "observed": "Full Windows editor build reports C4430 and C2146 at WebView2.h(54), followed by further generated interface declaration errors.",
+    "interpretation": "The local SDK line 54 is typedef interface ICoreWebView2 ICoreWebView2. The actual platform/windows/windows.h defines WIN32_LEAN_AND_MEAN before including the system header. Missing explicit COM prerequisites is consistent with this failure; static review does not prove repaired compilation."
+  },
+  "checks": [
+    {
+      "name": "Explicit COM prerequisites and SDK include ordering",
+      "result": "source_review_passed_runtime_pending",
+      "detail": "Both translation units now include objbase.h and wrl.h before WebView2.h; backend retains shlobj.h before WebView2.h. This supplies explicit COM declarations despite the engine lean Windows wrapper. Microsoft Win32 guidance likewise places WRL/COM headers before WebView2.h. No SDK patch, preprocessor bypass or removal of the engine wrapper is introduced."
+    },
+    {
+      "name": "Real engine Windows wrapper resolution",
+      "result": "source_review_passed_compile_pending",
+      "detail": "The harness adds platform/windows before repository and SDK include directories, so windows.h resolves through the actual wrapper. Its MSVC branch resolves ../um/windows.h and retains engine lean/header macro behavior. This directly covers the include-path discrepancy identified in the failed full editor build."
+    },
+    {
+      "name": "MSVC compiler settings alignment",
+      "result": "source_review_passed_compile_pending",
+      "detail": "Compared with SConstruct and platform/windows/detect.py: C++17, /Zc:__cplusplus, /permissive-, /MT, /GR, /W4, /WX, _HAS_EXCEPTIONS=0, absence of /EHsc, WIN32/WINDOWS_ENABLED, Windows 10 API macros and NOMINMAX are consistent with the corresponding engine configuration. The eleven warning disables exactly match SConstruct; no new bespoke warning suppression was added. This is targeted compiler/header alignment, not equivalence to every SCons option, linker policy, architecture or full editor build."
+    },
+    {
+      "name": "C++ implementation and fixture semantics unchanged",
+      "result": "passed",
+      "detail": "Compared each current file to the assigned base commit: all content beginning at the first namespace, including all backend behavior and all C++ runtime assertions, is byte-identical. Only header prerequisites and comments change. Navigation cancellation, document-response rejection, popup/frame handling, lifecycle, storage and runtime checks were not weakened."
+    },
+    {
+      "name": "Python semantics outside assigned delta",
+      "result": "passed",
+      "detail": "AST comparison against the assigned base is identical after normalizing only the compiler command assignment and added ConnectionAbortedError catch. Request recording, external execution beacon, script markers and pass/fail assertions remain intact. The extra exception catches expected client abort only around fixture body writing and cannot turn a nonzero harness exit or observed execution-proof request into a pass."
+    },
+    {
+      "name": "Python AST parsing",
+      "result": "passed",
+      "files": [
+        "tools/test_web_platform_windows.py"
+      ]
+    },
+    {
+      "name": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "name": "Actual Windows compile and WebView2 runtime",
+      "result": "not_run_by_reviewer_pending_exact_candidate_retest"
+    }
+  ],
+  "api_references": [
+    "https://learn.microsoft.com/en-us/microsoft-edge/webview2/get-started/win32"
+  ],
+  "limits": [
+    "No Windows compiler, full SCons build, WebView2 runtime or desktop interaction was executed by this reviewer. The observed full Windows build failed; actual repaired Windows build and hidden-HWND runtime remain unknown and require exact-candidate retest.",
+    "Static include-order compatibility is not a compile or runtime pass. The production full editor build remains required even if the strengthened standalone harness succeeds.",
+    "Previous baseline runtime/manual limits remain. This review does not accept visible editor/input/IME, native dialogs, visual DPI/modal layout, production authentication or other architectures.",
+    "Only the assigned three-file delta was newly source-reviewed; the other 22 files were verified unchanged against the prior independent review. Any further byte changes require matching review.",
+    "No source edit, commit, push, Issue mutation or desktop action was performed. Only this authorized review receipt was written."
+  ],
+  "cleanup": {
+    "temporary_resources_created": [],
+    "retained": [
+      "Authorized review receipt retained as necessary independent evidence."
+    ]
+  },
+  "path_resolution_base": "repository root",
+  "native_worker": "/root/sinan_9617e8fc34ebea23",
+  "raw_receipt_sha256": "f12bce3b8c163719c4a7460ab5b95838be260534aa14d5e134c25877da5e36f9"
+}

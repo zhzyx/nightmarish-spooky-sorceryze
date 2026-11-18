@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-accfe3de8b29ee6dd015765edaa9a3cd799542ac",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "godot-windows-web-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5bfc3e80f87865edc657c0b381d1504533e9ee5727cbf8053fb12e9e3cb6c09f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1462",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1467",
+    "action": "validation",
+    "detection_head": "c6a88218a5ebb2d692e43742afb3a13cc9815938",
+    "context_sha256": "61ec3605973ea7a67cdb5ceb4d0c07f931bb77dece4b7c3e308278584afcec4d",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request-20261118-godot-windows",
+    "evidence": "data-collection/godot-windows-web-1462-independent-review.json",
+    "diagnosis": "Gate found a newly arrived native dispatch event not yet staged. Stage task events before exact candidate gate. Independent review R1-R3 also repaired: deferred visibility-gated script dialogs, complete verified installer files, cache license outputs. Installation tests and 15 cache regressions pass; independent final review underway.",
+    "next_action": "After final worker terminal receipt, stage final evidence, rerun gate, submit exact candidate and run Windows CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-17T19:22:29.849358+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-17T19:23:31.811642+00:00",
+  "sha256": "e58dfab8226aa1b43fcc2ba71c0d0b4040983debea05bf0fd73f52094d9d8033"
+}

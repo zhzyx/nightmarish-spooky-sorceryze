@@ -1,5 +1,6 @@
 """Exercise Windows installation and launcher compatibility from a linked checkout."""
 
+import hashlib
 import json
 import re
 import shutil
@@ -27,7 +28,7 @@ class ActionsStageTests(unittest.TestCase):
 
             def restore(run, repo, branch, inputs, folder, scratch):
                 folder.mkdir()
-                for name in (stage.GUI, stage.PACKAGE, "D3D12Core.dll", "d3d12SDKLayers.dll"):
+                for name in (stage.GUI, stage.PACKAGE, stage.BOARD, "D3D12Core.dll", "d3d12SDKLayers.dll"):
                     (folder / name).write_text(name)
                 (folder / stage.RECEIPT).write_text(
                     json.dumps({
@@ -43,10 +44,74 @@ class ActionsStageTests(unittest.TestCase):
                 {
                     stage.GUI,
                     stage.PACKAGE,
+                    stage.BOARD,
                     "D3D12Core.dll",
                     "d3d12SDKLayers.dll",
                 },
             )
+
+
+class WebView2StageTests(unittest.TestCase):
+    def test_local_and_actions_staging_verify_complete_runtime_files(self):
+        for use_actions in (False, True):
+            with self.subTest(actions=use_actions), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                folder = root / "build"
+                output = root / "output"
+                folder.mkdir()
+                output.mkdir()
+                revision = "1" * 40
+                (root / "work-items.json").write_text('{"repository":"fixture/repo"}')
+                mapping = {
+                    "WebView2Loader.dll": "build/native/x64/WebView2Loader.dll",
+                    "WebView2-LICENSE.txt": "LICENSE.txt",
+                    "WebView2-NOTICE.txt": "NOTICE.txt",
+                }
+                for name in (*stage.FILES, *mapping):
+                    (folder / name).write_text(name)
+                manifest = root / "thirdparty/webview2/manifest.json"
+                manifest.parent.mkdir(parents=True)
+                manifest.write_text(
+                    json.dumps({
+                        "files": {source: hashlib.sha256(name.encode()).hexdigest() for name, source in mapping.items()}
+                    })
+                )
+                (folder / stage.RECEIPT).write_text(json.dumps({"revision": revision}))
+                receipts = folder / "gonggong-build-receipts"
+                receipts.mkdir()
+                (receipts / "build.json").write_text(
+                    json.dumps(
+                        dict(
+                            revision=revision,
+                            clean_source=True,
+                            aichat="passed",
+                            native={"artifact_sha256": stage.digest(folder / stage.GUI)},
+                            console_sha256=stage.digest(folder / stage.CONSOLE),
+                            tianshu_sha256=stage.digest(folder / stage.PACKAGE),
+                            tianshu_board_sha256=stage.digest(folder / stage.BOARD),
+                        )
+                    )
+                )
+
+                def restore(run, repo, branch, inputs, destination, scratch):
+                    shutil.copytree(folder, destination)
+
+                with (
+                    patch.object(stage, "main_revision", return_value=revision),
+                    patch.object(stage, "restore", restore),
+                ):
+                    self.assertEqual(stage.stage(root, output, folder, "42" if use_actions else None), revision)
+                    for name in mapping:
+                        self.assertEqual((output / name).read_text(), name)
+                    for name in mapping:
+                        original = (folder / name).read_bytes()
+                        (folder / name).write_bytes(b"tampered")
+                        with self.assertRaisesRegex(ValueError, "unverified WebView2"):
+                            stage.stage(root, output, folder, "42" if use_actions else None)
+                        (folder / name).write_bytes(original)
+                    (folder / "WebView2Loader.dll").unlink()
+                    with self.assertRaisesRegex(ValueError, "unverified WebView2"):
+                        stage.stage(root, output, folder, "42" if use_actions else None)
 
 
 @unittest.skipUnless(shutil.which("powershell.exe"), "Windows launcher required")
@@ -96,6 +161,7 @@ class InstalledEditorTests(unittest.TestCase):
                     native={"artifact_sha256": stage.digest(self.build / stage.GUI)},
                     console_sha256=stage.digest(self.build / stage.CONSOLE),
                     tianshu_sha256=stage.digest(self.build / stage.PACKAGE),
+                    tianshu_board_sha256=stage.digest(self.build / stage.BOARD),
                 )
             )
         )

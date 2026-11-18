@@ -1,0 +1,22 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "worker": "codex-root",
+  "checks": {
+    "origin_policy_and_non_windows_backend_isolation": "passed real clang++ standalone execution WEB_PLATFORM_POLICY_OK",
+    "artifact_cache_regressions": "10 tests passed including SDK mutation invalidation",
+    "sdk_integrity": "all pinned files verified",
+    "mypy": "8 changed Python files passed",
+    "format": "ruff 0.17.1 and clang-format 22.1.5, copyright/include/header checks passed",
+    "installer_staging": "2 tests passed, local and Actions distribution and missing/tampered loader/license rejection",
+    "native_cache": "15 tests passed with SCons, including restore of loader and both license sidecars into empty bin"
+  },
+  "windows_compile": "not_run_locally_macOS_host",
+  "windows_runtime": "pending_remote_ci",
+  "desktop_interaction": "not_run_per_silent_convention",
+  "issue_number": 1462,
+  "earlier_failures": [
+    "Native cache suite first used system Python without SCons; rerun in existing test venv passed all 15.",
+    "Formal evidence initially used numeric issue instead of issue_number; corrected and formal gate passed.",
+    "Review R1-R3 fixed and independent re-review pending."
+  ]
+}

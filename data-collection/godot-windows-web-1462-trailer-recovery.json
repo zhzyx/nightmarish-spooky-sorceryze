@@ -1,0 +1,9 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "incident": "150c0d0c539ae13ab52d0fc6c064717ef61b8f5b746ab9ebbb56c364853ed43b",
+  "merged_source": "9705545ec59b73a67504567bcad2eba28c8cae49",
+  "gate": "passed",
+  "failure": "Writer refused noncontiguous Issue/Request trailer paragraphs in manually created merge commit.",
+  "resolution": "Append actual recovery evidence and let writer create canonical candidate commit; no source edit, force push or review bypass."
+}

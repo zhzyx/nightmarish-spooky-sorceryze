@@ -100,6 +100,33 @@ class WindowsEditorArtifactTests(unittest.TestCase):
         ):
             return artifact.restore("100", self.repo, "main", expected or self.inputs, destination, self.root)
 
+    def test_webview2_sdk_changes_invalidate_cached_editor(self):
+        sdk = self.root / "thirdparty/webview2/sdk"
+        sdk.mkdir(parents=True)
+        header = sdk / "WebView2.h"
+        header.write_bytes(b"original SDK")
+        env = dict(
+            ImageVersion="image",
+            ImageOS="win",
+            RUNNER_ARCH="X64",
+            CANDIDATE_REVISION="1" * 40,
+            GONGGONG_NATIVE_SOURCE_ARCHIVE="1",
+            BUILD_NAME="gh",
+            LOCALAPPDATA=str(self.root / "host"),
+            EDITOR_BUILD_FLAGS="platform=windows target=editor",
+        )
+        with (
+            patch.object(artifact.subprocess, "check_output", return_value="1" * 40),
+            patch.object(artifact, "source_identity", return_value="unchanged"),
+            patch.object(artifact, "version", return_value="test"),
+        ):
+            before, files = artifact.inputs(self.root, env)
+            header.write_bytes(b"changed SDK")
+            after, _ = artifact.inputs(self.root, env)
+        self.assertEqual(before["source"], after["source"])
+        self.assertNotEqual(before["sdk_sha256"], after["sdk_sha256"])
+        self.assertEqual(files[0][:2], ["webview2", "WebView2.h"])
+
     def test_verified_main_artifact_restored_by_id(self):
         result = self.restore()
         self.assertEqual(result["archive_sha256"], self.sha)

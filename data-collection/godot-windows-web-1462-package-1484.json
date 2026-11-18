@@ -1,0 +1,33 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "signed_candidate": "fe942a1837340dcc1bf94d45e680daa2ca7c69fd",
+  "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44187287754",
+  "artifact_id": 14378639849,
+  "archive_sha256": "4d8ed9cf13b8e1a365e4004c447226750860beac46970a0c2556d0c6786625c8",
+  "files": {
+    "WebView2Loader.dll": {
+      "archive_path": "WebView2Loader.dll",
+      "size": 160320,
+      "sha256": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+    },
+    "WebView2-LICENSE.txt": {
+      "archive_path": "WebView2-LICENSE.txt",
+      "size": 1487,
+      "sha256": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55"
+    },
+    "WebView2-NOTICE.txt": {
+      "archive_path": "WebView2-NOTICE.txt",
+      "size": 3894,
+      "sha256": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "editor": {
+      "archive_path": "godot.windows.editor.x86_64.exe",
+      "size": 186916864,
+      "sha256": "ccad848dca239534f48091a573b09b659e107a8abc780b52100ba8af70c33e31"
+    }
+  },
+  "status": "passed",
+  "scope": "Actual CI editor archive contains executable, pinned x64 loader and both license sidecars together. Archive inspected without executing or installing it.",
+  "handoff": "Exact PR1484 full Windows CI passed; latest-main integration requires new candidate verification. No effective installation."
+}

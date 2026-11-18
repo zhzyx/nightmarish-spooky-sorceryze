@@ -1,0 +1,19 @@
+{
+  "request_id": "godot-windows-web-20261118",
+  "issue_number": 1462,
+  "signed_candidate": "705a2b5f64172d95fe1fb55249f598687d315de4",
+  "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44167274020",
+  "job": 134336967685,
+  "native_runtime": "passed; separate report retained",
+  "full_editor": "failed compilation",
+  "first_error": "WebView2.h(54): C4430/C2146 at typedef interface ICoreWebView2",
+  "actual_environment": "SCons /Iplatform/windows resolves lean Godot wrapper; old harness omitted it",
+  "correction": "Explicit objbase/WRL before generated WebView2 header; harness matches actual wrapper and compiler policy",
+  "primary_include_example": "https://learn.microsoft.com/en-us/microsoft-edge/webview2/get-started/win32",
+  "local_checks": "ruff and mypy passed; clang-format 22.1.5 applied",
+  "actual_fixed_windows_validation": "pending",
+  "incident": "044645998cc13848346abca103cc9542ab88c6f46476e3d043080c8e06188ab5",
+  "failure_log_sha256": "6abbe969fd7229790594ae8dfad41c1a0e894755214c20f91b1927009140371b",
+  "recovery_base": "051f9af590dd3672a8885d2a64ce1f545a607e2a",
+  "independent_review": "data-collection/godot-windows-web-1462-independent-review-com.json"
+}

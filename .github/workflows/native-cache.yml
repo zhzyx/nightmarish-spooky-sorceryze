@@ -31,6 +31,9 @@ jobs:
       - uses: ./.github/actions/godot-deps
         with:
           python-version: "3.12"
+      - name: Install pinned WebView2 SDK for Windows graph audit
+        if: runner.os == 'Windows'
+        run: python tools/install_webview2.py
       - name: Verify cache identity, consumers and single producer
         shell: bash
         run: |
