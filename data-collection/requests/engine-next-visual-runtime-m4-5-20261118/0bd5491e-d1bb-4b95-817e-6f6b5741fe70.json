@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "collected_at": "2026-11-18T04:47:05.980912+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-5-20261118/m45-gi-r5-foundation-accepted-20261118.json",
+      "sha256": "2c13142669e21561fcfacbc16a4cccf0f6d137da5e6496c1c543acfcedb788f5",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m45-gi-r5-foundation-accepted-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-5-20261118/m45-gi-r5-rendering-regression-20261118.json",
+      "sha256": "7605c73a5eb563ceccfacc851d16dc731ef597d283f0b4a07f61be2a13f84801",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m45-gi-r5-rendering-regression-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-5-20261118/m45-gi-r5-review-metadata-correction-20261118.json",
+      "sha256": "fb680c7141e5ed2c0957e5df3b3578f57dc2daae36bea3263ba0acfcbf150062",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m45-gi-r5-review-metadata-correction-20261118",
+      "origin": "AGENTS.md"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/engine-next-visual-runtime-m4-5-20261118/m45-gi-request-routed-20261118.json",
+      "sha256": "0ffee3d8c42199655c8e593a0b6cc46d33aa71072a4f259260486b3f924167aa",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "m45-gi-request-routed-20261118",
+      "origin": "AGENTS.md"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1505,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1505"
+}

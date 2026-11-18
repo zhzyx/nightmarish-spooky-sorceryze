@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "issue_number": 1505,
+  "recorded_at_utc": "2026-11-18T03:06:49.233972+00:00",
+  "status": "reviewed_with_recorded_quality_boundaries",
+  "candidate": "gi-runtime-r5",
+  "native_key": "f9abfc13850cce2065164a70ee1cc4d54b04cb034c2113436b12be769f37fee0",
+  "review_roles": {
+    "capture_tools": "Authored GpuProbeGrid and capture/numerical-check tools. Those implementations are excluded from this author's independent source-review claims.",
+    "runtime_state_delta": "Independently inspected the root-authored R3 VisualRuntime change adding NON_PIXEL_SHADER_RESOURCE for GI material textures and explicit COMMON/COPY_DEST/IA transitions for fixed and scene mesh uploads.",
+    "independent_class_and_graph_review": "The shader/CPU owner reviewed GpuProbeGrid, VisualRuntime and graph files. The current-byte refresh includes the R4 identifier rename and R3 upload-state changes.",
+    "cpu_shader_and_ray_tracing_review": "The current R4 peer refresh checks 17 non-self-authored sources, repeats isolated CPU tests and strict shader compilation, and excludes the reviewer's receiver/build implementation.",
+    "numerical_review": "A separate reviewer copied and reran the host numerical checkers against the same actual R3 buffers. That reviewer authored GI shaders and does not claim independent shader source review or independent GPU capture.",
+    "merge_review": "Root independently reviewed the two R5 integration files edited by the network agent. The six imported IBL files match main exactly; current GpuProbeGrid remains covered by the prior independent source review."
+  },
+  "current_cpu_shader_and_ray_tracing_review": {
+    "path": "build/engine_next/gi-m43-drafts/GiFinalIndependentReviewR4-R4Paths.json",
+    "sha256": "9b7d29bfcdb1d19a05352682bb03cf2b869d04ce2a3321531639e3b6d8b35da1",
+    "size_bytes": 7760
+  },
+  "numerical_peer_review": {
+    "path": "build/engine_next/gi-numerical-independent/IndependentReview.json",
+    "sha256": "fd5c28938ecc598d21680543df7061fc686f0b71ed79c09b30353b133d01b9d4",
+    "size_bytes": 1991
+  },
+  "native_inputs_checked": 301,
+  "input_mismatches": [],
+  "resolved_findings": [
+    "The history clear CPU descriptor now belongs to a non-shader-visible heap with matching typed R32_UINT aliases.",
+    "PeakInvalidCount retains earlier invalid-probe observations across readback slots.",
+    "Material texture uploads include compute-read state when GI is enabled.",
+    "Fixed and scene mesh uploads use explicit COMMON to COPY_DEST transitions."
+  ],
+  "validation": {
+    "msvc": {
+      "path": "build/engine_next/gi-runtime-r5/VisualBuildReport.json",
+      "sha256": "3c02d87a69a613e0038a1040f29e6dae7e902812b5801d4e98498069c052fb46",
+      "size_bytes": 2313281
+    },
+    "clang_cl": {
+      "path": "build/engine_next/gi-clang-cl-r5/Result.json",
+      "sha256": "fbb437b49183f30b4e5b19972c398fd38e4662d7738bfe77e76b1ed32746a438",
+      "size_bytes": 2763232
+    },
+    "empty_grid_lifecycle": {
+      "path": "build/engine_next/gi-grid-micro/Result.json",
+      "sha256": "cb0fe7e7b5cd9235231e25868ad9388affc67c53e3faed1d90344fcf790d9bbc",
+      "size_bytes": 3491
+    },
+    "gpu_readback": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-readback.json",
+      "sha256": "13d3501465223e7d611898a36b0f9721fab70ec04c5008d0876cabe39760529a",
+      "size_bytes": 53853
+    },
+    "dynamic_readback": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-dynamic.json",
+      "sha256": "d1baf1aa37b9081e334daa9a32e34ee4915954c7465ea35c9e7b8a375a4586e8",
+      "size_bytes": 7992
+    },
+    "current_candidate_anchor": {
+      "path": "build/engine_next/gi-capture-r5/AnchorChecks.json",
+      "sha256": "5dfc179b815422de56d8426d1625975ec9cfc4f2ec8b8de50be9081a6baddf3b",
+      "size_bytes": 1136
+    }
+  },
+  "quality_boundaries": [
+    "62 sampled rays begin on a surface within 1e-5 meter. Forty CPU t=0 closest-hit outcomes differ from DXR continuation. They remain outside the 7186-ray nondegenerate occlusion result.",
+    "The 1024-resolution shadow fixture contains fine baseline stripes. GI changes contrast of that existing pattern. Final shadow image quality remains pending.",
+    "Exact-frame dynamic-light readback and the independent interactive network session are separately recorded. Physical native-4K display and full performance acceptance remain pending.",
+    "The R5 Combined cold first CPU frame took 321344.8889 ms with GPU validation enabled. Driver compiler and later destructor-join stacks are retained. This is an observed performance measurement. Acceptance uses the existing task criteria. The private loop experiment has a separate diagnostic record."
+  ],
+  "parent_issue_number": 1323,
+  "historical_test_context": {
+    "request_id": "engine-next-visual-runtime-m4-3-20261116",
+    "issue_number": 1343,
+    "candidates": [
+      "gi-runtime-r3",
+      "gi-runtime-r4"
+    ],
+    "note": "R3/R4 captured data, original build reports, ImpactReport and Diting records retain their original request identity and bytes."
+  },
+  "input_verification_boundary": "Current R5 source matches all 301 native inputs. R3/R4 execution evidence retains its original candidate identity.",
+  "historical_r4_candidate": {
+    "native_key": "d46099d52e117308f2e9c40288416799e9a05fc2cce1ec11b661ff85d68be503",
+    "note": "Prior current-byte and execution reviews preserve R4 identity."
+  },
+  "merge_review": {
+    "path": "build/engine_next/gi-runtime-r5/MergeIndependentReview.json",
+    "sha256": "3df56927cd8a07135f1af440c21d46b427168e2e9d2d81b69dfbcd481993fb83",
+    "size_bytes": 3307
+  },
+  "performance_observation": {
+    "path": "build/engine_next/GiColdStartR5.json",
+    "sha256": "b1edf1bfb261b846d1b50b6f54d8ee305a0c7105b95a28be233861250d8f0090",
+    "size_bytes": 909
+  },
+  "historical_r4_reviewed_runtime_source": {
+    "path": "build/engine_next/gi-impact-r4/Source/engine_next/Rendering/VisualRuntime.cpp",
+    "sha256": "db08f998243f48adc3af8deaeb70aa8fefb23712e6b6d43ff69fdfacc0df3d3d",
+    "size_bytes": 276860
+  },
+  "historical_r4_class_and_runtime_peer_review": {
+    "path": "build/engine_next/gi-m43-drafts/GiRuntimeFinalReview-R4Paths.json",
+    "sha256": "df3187403d16f31e7ff23b149aea6a6f0f98c61ab7c45ae38f919db9aec63858",
+    "size_bytes": 5245
+  },
+  "historical_r3_r4_candidate_delta": {
+    "path": "build/engine_next/gi-runtime-r4/CandidateDelta.json",
+    "sha256": "32c867886a23b85a413804b2fca2dab346f24905453b97e0f7bc96785c64705a",
+    "size_bytes": 4491
+  },
+  "base_commit": "3a160ec26725e2fc5c833cd10f9ff7b38ad534af",
+  "updated_at_utc": "2026-11-18T04:08:37.634042+00:00"
+}

@@ -71,6 +71,8 @@ enum class ResourceState : std::uint8_t
 	Present = 8,
 	NonPixelShaderRead = 9,
 	DepthRead = 10,
+	AccelerationStructure = 11,
+	GenericRead = 12,
 };
 
 enum class BarrierKind : std::uint8_t

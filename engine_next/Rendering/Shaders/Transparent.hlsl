@@ -9,6 +9,9 @@ float3 UnitDirection(float3 Direction, float3 Fallback)
 #if defined(MATERIAL_EXTENSION_STAGE)
 #include "MaterialEnvironmentLighting.hlsli"
 #endif
+#if defined(ENGINE_NEXT_GI)
+#include "GiReceiver.hlsli"
+#endif
 struct LocalLightConstants
 {
     float4 PositionRange;
@@ -280,16 +283,35 @@ TransparentOutput PSMain(VertexOutput Input, bool Front : SV_IsFrontFace)
     float3 Diffuse = Irradiance.SampleLevel(EnvironmentSampler, N, 0).rgb * Base.rgb / 3.14159265;
     float3 Prefiltered = PrefilteredEnvironment.SampleLevel(EnvironmentSampler, reflect(-V, N), Roughness * Lighting.y).rgb;
     float2 Brdf = BrdfLut.SampleLevel(EnvironmentSampler, float2(NoV, Roughness), 0).rg;
+#if defined(ENGINE_NEXT_GI)
+    float3 DiffuseEnvironment = (1 - F) * (1 - Metallic) * Diffuse;
+    float3 SpecularEnvironment = Prefiltered * (F0 * Brdf.x + Brdf.y);
+#else
     float3 EnvironmentLighting = (1 - F) * (1 - Metallic) * Diffuse + Prefiltered * (F0 * Brdf.x + Brdf.y);
+#endif
 #if defined(MATERIAL_EXTENSION_STAGE)
     [branch] if (!MaterialEnvironmentUsesLegacy(true, MaterialParameters.z, MaterialParameters.x))
     {
         MaterialEnvironmentLighting Environment = SampleMaterialEnvironment(PrefilteredEnvironment, EnvironmentSampler,
             Base.rgb, Metallic, Roughness, MaterialParameters, Frame, V);
+#if defined(ENGINE_NEXT_GI)
+        DiffuseEnvironment = Environment.Diffuse;
+        SpecularEnvironment = Environment.BaseSpecular + Environment.CoatSpecular;
+#else
         EnvironmentLighting = Environment.Diffuse + Environment.BaseSpecular + Environment.CoatSpecular;
+#endif
     }
 #endif
+#if defined(ENGINE_NEXT_GI)
+#if defined(MATERIAL_EXTENSION_STAGE)
+    DiffuseEnvironment = GiReceiverDiffuse(DiffuseEnvironment, Input.WorldPosition, N, V, Base.rgb, Metallic, Roughness, MaterialParameters, true);
+#else
+    DiffuseEnvironment = GiReceiverDiffuse(DiffuseEnvironment, Input.WorldPosition, N, V, Base.rgb, Metallic, Roughness, float4(0, 0, 0, 0), false);
+#endif
+    Color += (DiffuseEnvironment + SpecularEnvironment) * Ao;
+#else
     Color += EnvironmentLighting * Ao;
+#endif
     Color = (Color + EmissiveTexture.Sample(EmissiveSampler, Input.Texcoord).rgb * EmissiveMetallic.xyz) * ExposureState[0].x;
     Color = all(isfinite(Color)) ? clamp(Color, 0, 65504) : float3(0, 0, 0);
     if (FogParameters.w > 0.5f)

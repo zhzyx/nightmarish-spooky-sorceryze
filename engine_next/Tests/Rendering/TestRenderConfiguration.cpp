@@ -87,6 +87,7 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	stConfiguration.arrParticles = { EngineNext::Rendering::ParticleSettings{} };
 	stConfiguration.arrParticles[0].nEmitterId = 123;
 	stConfiguration.stMaterials.arrOverrides = { { "retained.asset", 7, {}, {} } };
+	stConfiguration.stGlobalIllumination.nRaysPerProbe = 256;
 	stConfiguration.arrPointLights.front().nId = 4321;
 	stConfiguration.arrSpotLights.push_back(EngineNext::Rendering::SpotLightSettings{});
 	EngineNext::Assets::Diagnostics arrDiagnostics;
@@ -116,6 +117,7 @@ void CheckRejected(const JsonValue &stValue, const std::string &strExpectedDiges
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stMaterials.arrOverrides.size(), 1U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stMaterials.arrOverrides[0].strAssetId, "retained.asset");
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.stMaterials.arrOverrides[0].nMaterialIndex, 7U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stGlobalIllumination.nRaysPerProbe, 256U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrPointLights.front().nId, 4321U);
 	ENGINE_NEXT_CHECK_EQ(stConfiguration.arrSpotLights.size(), 1U);
 }
@@ -1177,6 +1179,41 @@ ENGINE_NEXT_TEST("Render configuration rejects malformed material overrides tran
 	{
 		JsonValue stValue = ValidConfiguration();
 		(*stValue.GetObject())["material_overrides"] = stBad;
+		CheckRejected(stValue);
+	}
+}
+
+ENGINE_NEXT_TEST("Render configuration accepts bounded clipmap global illumination")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stConfiguration.stGlobalIllumination.bEnabled);
+	(*stValue.GetObject())["global_illumination"] = JsonValue::Object{
+		{ "enabled", true }, { "clipmap_levels", std::int64_t{ 2 } }, { "probe_counts", JsonValue::List{ std::int64_t{ 8 }, std::int64_t{ 8 }, std::int64_t{ 8 } } }, { "updates_per_frame", std::int64_t{ 128 } }, { "rays_per_probe", std::int64_t{ 32 } }, { "history_change_threshold", 0.0 }
+	};
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stGlobalIllumination.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stGlobalIllumination.nClipmapLevels, 2U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stGlobalIllumination.arrProbeCounts, (std::array<std::uint32_t, 3>{ 8, 8, 8 }));
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stGlobalIllumination.nUpdatesPerFrame, 128U);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stGlobalIllumination.dHistoryChangeThreshold, 0.0);
+	stValue.GetObject()->erase("global_illumination");
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stConfiguration.stGlobalIllumination.bEnabled);
+}
+
+ENGINE_NEXT_TEST("Render configuration rejects invalid GI even when disabled")
+{
+	for (const JsonValue &stBad : {
+				 JsonValue{}, JsonValue(JsonValue::List{}), JsonValue(true),
+				 JsonValue(JsonValue::Object{ { "unrecognized", 1.0 } }),
+				 JsonValue(JsonValue::Object{ { "enabled", false }, { "rays_per_probe", std::int64_t{ 0 } } }),
+				 JsonValue(JsonValue::Object{ { "enabled", false }, { "probe_counts", JsonValue::List{ std::int64_t{ 1 }, std::int64_t{ 8 }, std::int64_t{ 8 } } } }) })
+	{
+		JsonValue stValue = ValidConfiguration();
+		(*stValue.GetObject())["global_illumination"] = stBad;
 		CheckRejected(stValue);
 	}
 }

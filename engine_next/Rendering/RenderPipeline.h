@@ -69,6 +69,13 @@ enum class PassWork : std::uint8_t
 	ForwardCopy = 25,
 	Transparency = 26,
 	VolumePrepare = 27,
+	GiBuildScene = 28,
+	GiUpload = 29,
+	GiPrepare = 30,
+	GiRemap = 31,
+	GiTrace = 32,
+	GiUpdate = 33,
+	GiReadback = 34,
 };
 
 struct ForwardEffects
@@ -108,6 +115,14 @@ struct RenderPipeline
 	ResourceId nVolumeIntegral = INVALID_RESOURCE;
 	ResourceId nForwardHdr = INVALID_RESOURCE;
 	ResourceId nReactiveMask = INVALID_RESOURCE;
+	ResourceId nGiScene = INVALID_RESOURCE;
+	ResourceId nGiPositions = INVALID_RESOURCE;
+	ResourceId nGiUpload = INVALID_RESOURCE;
+	ResourceId nGiRays = INVALID_RESOURCE;
+	ResourceId nGiRayStatus = INVALID_RESOURCE;
+	ResourceId nGiReadback = INVALID_RESOURCE;
+	std::array<ResourceId, 3> arrGiRead{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
+	std::array<ResourceId, 3> arrGiWrite{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	// Additional reflection color levels 1..N-1. Before tracing, level zero is
 	// nReflectedHdr containing full lighting without screen-space reflections.
 	std::vector<ResourceId> arrReflectionMips;
@@ -139,9 +154,14 @@ struct RenderPipeline
 // finish in Common. Fixed-mesh mode ignores these optional forward effects.
 // Optional material attributes add two geometry targets used by lighting and
 // reflection tracing, then returned to Common. Fixed-mesh mode ignores them.
+// GI builds the frame-owned acceleration structure, remaps probe history,
+// traces a bounded update batch and integrates it before lighting receivers.
+// The host maps the read/write probe groups to disjoint allocations. Their
+// roles change only after successful submission. Acceleration structures and
+// upload buffers retain their immutable native states across frame boundaries.
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false);
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false);
 
 } // namespace EngineNext::Rendering

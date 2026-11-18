@@ -42,6 +42,15 @@ SHADER_FILES = {
     "Transparent.vs.cso",
     "Transparent.ps.cso",
     "MaterialTransparent.ps.cso",
+    "GiLighting.ps.cso",
+    "GiMaterialLighting.ps.cso",
+    "GiReflectionLighting.ps.cso",
+    "GiMaterialReflectionLighting.ps.cso",
+    "GiTransparent.ps.cso",
+    "GiMaterialTransparent.ps.cso",
+    "GiPrepare.cs.cso",
+    "GiTrace.cs.cso",
+    "GiIntegrate.cs.cso",
 }
 
 

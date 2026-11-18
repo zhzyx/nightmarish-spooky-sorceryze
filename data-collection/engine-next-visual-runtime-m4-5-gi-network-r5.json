@@ -1,0 +1,760 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "issue_number": 1505,
+  "recorded_at_utc": "2026-11-18T04:49:26.941419+00:00",
+  "status": "passed",
+  "scope": "Final GI R5 plus environment importance sampling: original M3 F, real keyboard input, session resume and minimized client networking",
+  "candidate": {
+    "name": "gi-runtime-r5",
+    "native_key": "f9abfc13850cce2065164a70ee1cc4d54b04cb034c2113436b12be769f37fee0",
+    "build": {
+      "path": "build/engine_next/gi-runtime-r5/VisualBuildReport.json",
+      "sha256": "3c02d87a69a613e0038a1040f29e6dae7e902812b5801d4e98498069c052fb46",
+      "bytes": 2313281
+    },
+    "executable": {
+      "path": "build/engine_next/gi-runtime-r5/next_visual_client.exe",
+      "sha256": "d2c9f5f8b9915c387b40151d570030eea68d5259670222b12825fa2692bc3ea8",
+      "bytes": 3358720
+    },
+    "deployment_manifest": {
+      "path": "build/engine_next/acceptance-live/Deployment-r5.json",
+      "sha256": "1a8cf428b064523d48296b78a1c82a71f9f3ca56707a8032a9b3fcdb180a6121",
+      "bytes": 6785
+    },
+    "deployed_files_checked_after_exit": 42,
+    "deployed_file_hashes_match_before_and_after": true,
+    "shader_count": 41,
+    "current_native_inputs_checked": 301,
+    "native_input_audit": {
+      "path": "build/engine_next/gi-network-r5/Run2/NativeInputAudit.json",
+      "sha256": "e17448ef794a5ff25c1baa0f77609765fe05839a7607b553a829a429bca79b26",
+      "bytes": 214
+    }
+  },
+  "test_server": {
+    "name": "LongServer.exe",
+    "executable": {
+      "path": "build/engine_next/gi-network-r5/LongServer.exe",
+      "sha256": "685441a0ed2a596eee0c82259a50636213179811ae882305b368a301b1bb078c",
+      "bytes": 785920
+    },
+    "source": {
+      "path": "build/engine_next/gi-network-r5/LongServerMain.cpp",
+      "sha256": "8cc1eaf366bca8fd4a18858d0ed3936ea683a14ce93a2c6db16f69bb85b9d820",
+      "bytes": 1415
+    },
+    "build_and_link_identity": {
+      "path": "build/engine_next/gi-network-r5/LongServerBuild.json",
+      "sha256": "9b48eebb8c5d6354f7a697ef584da55de808ad02b1a82d2dc3e71031a906e8a4",
+      "bytes": 28118
+    },
+    "original_runtime_build": {
+      "path": "build/engine_next/gi-network-r5/OriginalRuntimeBuildReport.json",
+      "sha256": "1a69d9c3c9c281470f2ba289016201e7147834f7a376a5e36cbeb8550f5e60ee",
+      "bytes": 282760
+    },
+    "original_source_commit": "f39bc9028958e5395d8ec38c6bbcc0bc577a480e",
+    "original_runtime_library_sha256": "2a8abafab2655d74ca257cb72a1384227f6a81c96293c31ba39d0681c6cbe199",
+    "original_source_input_count": 217,
+    "original_source_inputs_verified_unchanged_at_host_build": true,
+    "duration_override_msec": 1200000,
+    "requested_drain_after_msec": 600000,
+    "distinction": "This private host changes only host duration after the original argument parser. It calls the unchanged RunServer from the previously validated runtime library. The original CLI server's 300000 ms limit and production protocol are unchanged."
+  },
+  "scene": {
+    "identity": "Original frozen M3 F package; only the separate render configuration enables material overrides, GI and other renderer features",
+    "source_package_sha256": "2d75ccffae1d73cf633905c5460fa93b8be2e7a558a48acd23444d991891dd96",
+    "source_content_sha256": "2389697f70a88cda302cdd5374785d23864d9aa6fe4a79b2a2b22df6ca08fb19",
+    "configuration": {
+      "path": "build/engine_next/gi-network-r5/Run2/RenderConfiguration.json",
+      "sha256": "7b39e1cb8f8631ba11812a438a09247c3036f3509f3ad5942beafa7019939c78",
+      "bytes": 3163
+    },
+    "geometry_note": "The original F fixture has two players and no mirror floor. This validates GI-enabled rendering with network transforms, not moving-occluder GI quality or a mirror image."
+  },
+  "execution": {
+    "started_at_utc": "2026-11-18T04:30:28.995468+00:00",
+    "ready_at_utc": "2026-11-18T04:30:57.056247+00:00",
+    "completed_at_utc": "2026-11-18T04:40:31.326333+00:00",
+    "readiness_elapsed_seconds": 28.060779,
+    "readiness_note": "Derived from recorded UTC timestamps. The historical harness readiness_seconds field starts after both welcome events and does not represent complete startup latency.",
+    "exit_codes": {
+      "server": 0,
+      "A": 0,
+      "B": 0,
+      "harness": 0
+    },
+    "input_driver": "Computer Use sky.press_key against freshly selected task-owned visible windows; sky window activation and minimize control",
+    "key_events": {
+      "A": 21,
+      "B": 23
+    },
+    "clients": {
+      "A": {
+        "frames": 19448,
+        "validation_errors": 0,
+        "network_input_frames": 18,
+        "network_reconnect_requests": 1,
+        "local_shadow_views": 6,
+        "input_key_events": 52,
+        "resizes": 1,
+        "draw_position_max_error": 5.960464477539063e-08,
+        "largest_sample_gap_msec": 78169,
+        "sample_gap_frames": 30,
+        "last_entities": [
+          {
+            "confirmed_sequence": "36558",
+            "entity_id": "1",
+            "interpolation": 0,
+            "local": true,
+            "position": [
+              0.15200014412403107,
+              0.0,
+              -0.12800000607967377
+            ]
+          },
+          {
+            "confirmed_sequence": "35683",
+            "entity_id": "2",
+            "interpolation": 3,
+            "local": false,
+            "position": [
+              0.6159999370574951,
+              0.0,
+              0.12800000607967377
+            ]
+          }
+        ],
+        "temporal_epoch_starts": [
+          {
+            "frame_id": 0,
+            "epoch": 1
+          },
+          {
+            "frame_id": 4,
+            "epoch": 2
+          },
+          {
+            "frame_id": 3518,
+            "epoch": 5
+          },
+          {
+            "frame_id": 4142,
+            "epoch": 6
+          },
+          {
+            "frame_id": 4149,
+            "epoch": 7
+          }
+        ],
+        "temporal_resets": 6
+      },
+      "B": {
+        "frames": 15343,
+        "validation_errors": 0,
+        "network_input_frames": 20,
+        "network_reconnect_requests": 1,
+        "local_shadow_views": 6,
+        "input_key_events": 48,
+        "resizes": 0,
+        "draw_position_max_error": 4.470348358154297e-08,
+        "largest_sample_gap_msec": 1920,
+        "sample_gap_frames": 30,
+        "last_entities": [
+          {
+            "confirmed_sequence": "35691",
+            "entity_id": "2",
+            "interpolation": 0,
+            "local": true,
+            "position": [
+              0.6159999370574951,
+              0.0,
+              0.12800000607967377
+            ]
+          },
+          {
+            "confirmed_sequence": "36531",
+            "entity_id": "1",
+            "interpolation": 3,
+            "local": false,
+            "position": [
+              0.15200014412403107,
+              0.0,
+              -0.12800000607967377
+            ]
+          }
+        ],
+        "temporal_epoch_starts": [
+          {
+            "frame_id": 0,
+            "epoch": 1
+          },
+          {
+            "frame_id": 4,
+            "epoch": 2
+          },
+          {
+            "frame_id": 4971,
+            "epoch": 3
+          },
+          {
+            "frame_id": 4980,
+            "epoch": 4
+          }
+        ],
+        "temporal_resets": 3
+      }
+    },
+    "minimized_evidence": [
+      {
+        "client": "A",
+        "ui_minimized_msec": 77418,
+        "sample_gap_msec": 78169,
+        "rendered_frame_delta": 30,
+        "confirmed_before": "7641",
+        "confirmed_after": "12527",
+        "peer_samples": 153,
+        "peer_input_samples": 20
+      }
+    ],
+    "validation": {
+      "path": "build/engine_next/gi-network-r5/Run2/VerificationFinal.json",
+      "sha256": "50abb5f425c90fe9248548435d589759822c87e72e8e789689d2ad645cf9d880",
+      "bytes": 5989
+    }
+  },
+  "video": {
+    "recording": {
+      "path": "build/engine_next/gi-network-r5/Run2/Motion.mp4",
+      "sha256": "e5f8a49a8a1182512e6fbd8a34ba587632861c74d7204c63ea2b3058905e153e",
+      "bytes": 45452316
+    },
+    "metadata": {
+      "path": "build/engine_next/gi-network-r5/Run2/Motion.json",
+      "sha256": "3862c515bbab9df1ce8ba48f273ba0805a0a4a1724fd42a8bc5781733215f536",
+      "bytes": 287022
+    },
+    "method": "Exact task-owned client B PID, client-only PrintWindow capture; no recording-driven input",
+    "frames": 3000,
+    "encoded_fps": 20,
+    "encoded_duration_seconds": 150.0,
+    "actual_first_sample_utc": "2026-11-18T04:32:05.770743+00:00",
+    "actual_last_sample_utc": "2026-11-18T04:34:37.551943+00:00",
+    "all_recorded_ui_actions_inside_sample_interval": true,
+    "motion_measurements": {
+      "path": "build/engine_next/gi-network-r5/Run2/MotionMeasurements.json",
+      "sha256": "82469ae3993d59db01a59795ee743ba9954739296d84370e294323b25a32dbdc",
+      "bytes": 111081
+    },
+    "actions_with_nearest_video_frame": [
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:32:31.154Z",
+        "nearest_video_frame": 490,
+        "sample_elapsed_seconds": 25.419600100023672
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:32:31.378Z",
+        "nearest_video_frame": 494,
+        "sample_elapsed_seconds": 25.618828600039706
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:32:31.616Z",
+        "nearest_video_frame": 499,
+        "sample_elapsed_seconds": 25.854911000002176
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:32:31.850Z",
+        "nearest_video_frame": 503,
+        "sample_elapsed_seconds": 26.080306600022595
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:32:32.077Z",
+        "nearest_video_frame": 508,
+        "sample_elapsed_seconds": 26.350580600032117
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "w",
+        "at_utc": "2026-11-18T04:32:32.303Z",
+        "nearest_video_frame": 512,
+        "sample_elapsed_seconds": 26.55476800003089
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "w",
+        "at_utc": "2026-11-18T04:32:32.528Z",
+        "nearest_video_frame": 516,
+        "sample_elapsed_seconds": 26.767837000021245
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:32:32.750Z",
+        "nearest_video_frame": 521,
+        "sample_elapsed_seconds": 27.02631460002158
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "s",
+        "at_utc": "2026-11-18T04:32:32.972Z",
+        "nearest_video_frame": 525,
+        "sample_elapsed_seconds": 27.237891200056765
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "space",
+        "at_utc": "2026-11-18T04:32:33.200Z",
+        "nearest_video_frame": 529,
+        "sample_elapsed_seconds": 27.44805610005278
+      },
+      {
+        "client": "A",
+        "action": "minimize",
+        "at_utc": "2026-11-18T04:32:45.796Z",
+        "nearest_video_frame": 768,
+        "sample_elapsed_seconds": 40.02677220001351
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:33:05.242Z",
+        "nearest_video_frame": 1189,
+        "sample_elapsed_seconds": 59.465211000002455
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:33:05.497Z",
+        "nearest_video_frame": 1195,
+        "sample_elapsed_seconds": 59.75960460002534
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:33:05.770Z",
+        "nearest_video_frame": 1200,
+        "sample_elapsed_seconds": 60.015384100028314
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:33:06.025Z",
+        "nearest_video_frame": 1205,
+        "sample_elapsed_seconds": 60.27635190001456
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:33:06.298Z",
+        "nearest_video_frame": 1211,
+        "sample_elapsed_seconds": 60.57162460003747
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:33:06.556Z",
+        "nearest_video_frame": 1216,
+        "sample_elapsed_seconds": 60.821817800053395
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:33:06.826Z",
+        "nearest_video_frame": 1221,
+        "sample_elapsed_seconds": 61.07729790004669
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:33:07.086Z",
+        "nearest_video_frame": 1226,
+        "sample_elapsed_seconds": 61.312003700004425
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "s",
+        "at_utc": "2026-11-18T04:33:07.361Z",
+        "nearest_video_frame": 1232,
+        "sample_elapsed_seconds": 61.621863800042775
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "s",
+        "at_utc": "2026-11-18T04:33:07.613Z",
+        "nearest_video_frame": 1237,
+        "sample_elapsed_seconds": 61.86703950003721
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:33:07.884Z",
+        "nearest_video_frame": 1242,
+        "sample_elapsed_seconds": 62.11598150001373
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "w",
+        "at_utc": "2026-11-18T04:33:08.141Z",
+        "nearest_video_frame": 1247,
+        "sample_elapsed_seconds": 62.366422500053886
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "space",
+        "at_utc": "2026-11-18T04:33:08.415Z",
+        "nearest_video_frame": 1253,
+        "sample_elapsed_seconds": 62.672675500041805
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "r",
+        "at_utc": "2026-11-18T04:33:08.671Z",
+        "nearest_video_frame": 1258,
+        "sample_elapsed_seconds": 62.92225150001468
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:33:52.636Z",
+        "nearest_video_frame": 2137,
+        "sample_elapsed_seconds": 106.86022520001279
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:33:52.907Z",
+        "nearest_video_frame": 2143,
+        "sample_elapsed_seconds": 107.17290840001078
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:33:53.173Z",
+        "nearest_video_frame": 2148,
+        "sample_elapsed_seconds": 107.41245420003543
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:33:53.438Z",
+        "nearest_video_frame": 2153,
+        "sample_elapsed_seconds": 107.66640670003835
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:33:53.703Z",
+        "nearest_video_frame": 2159,
+        "sample_elapsed_seconds": 107.9768929000129
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "w",
+        "at_utc": "2026-11-18T04:33:53.962Z",
+        "nearest_video_frame": 2164,
+        "sample_elapsed_seconds": 108.21061790001113
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:33:54.236Z",
+        "nearest_video_frame": 2169,
+        "sample_elapsed_seconds": 108.47210730001098
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "s",
+        "at_utc": "2026-11-18T04:33:54.493Z",
+        "nearest_video_frame": 2174,
+        "sample_elapsed_seconds": 108.73549030005233
+      },
+      {
+        "client": "B",
+        "action": "key",
+        "key": "space",
+        "at_utc": "2026-11-18T04:33:54.768Z",
+        "nearest_video_frame": 2180,
+        "sample_elapsed_seconds": 109.01112610002747
+      },
+      {
+        "client": "A",
+        "action": "restore",
+        "at_utc": "2026-11-18T04:34:03.214Z",
+        "minimized_msec": 77418,
+        "nearest_video_frame": 2349,
+        "sample_elapsed_seconds": 117.50610140000936
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:34:16.045Z",
+        "nearest_video_frame": 2591,
+        "sample_elapsed_seconds": 130.30532280000625
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:34:16.325Z",
+        "nearest_video_frame": 2596,
+        "sample_elapsed_seconds": 130.5505502000451
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:34:16.610Z",
+        "nearest_video_frame": 2602,
+        "sample_elapsed_seconds": 130.86455700005172
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:34:16.884Z",
+        "nearest_video_frame": 2607,
+        "sample_elapsed_seconds": 131.1102433000342
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:34:17.169Z",
+        "nearest_video_frame": 2613,
+        "sample_elapsed_seconds": 131.4128700000001
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "d",
+        "at_utc": "2026-11-18T04:34:17.440Z",
+        "nearest_video_frame": 2618,
+        "sample_elapsed_seconds": 131.70165640005143
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "w",
+        "at_utc": "2026-11-18T04:34:17.733Z",
+        "nearest_video_frame": 2623,
+        "sample_elapsed_seconds": 131.9726317000459
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "a",
+        "at_utc": "2026-11-18T04:34:18.016Z",
+        "nearest_video_frame": 2629,
+        "sample_elapsed_seconds": 132.26909020001767
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "s",
+        "at_utc": "2026-11-18T04:34:18.311Z",
+        "nearest_video_frame": 2635,
+        "sample_elapsed_seconds": 132.57473380002193
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "space",
+        "at_utc": "2026-11-18T04:34:18.595Z",
+        "nearest_video_frame": 2640,
+        "sample_elapsed_seconds": 132.84164250001777
+      },
+      {
+        "client": "A",
+        "action": "key",
+        "key": "r",
+        "at_utc": "2026-11-18T04:34:18.883Z",
+        "nearest_video_frame": 2646,
+        "sample_elapsed_seconds": 133.14799730002414
+      }
+    ],
+    "coverage_note": "B remains visible during A minimization. The video shows B's local input and A's remote movement, session pauses and resumed movement. Minimize duration and continued authority progress are separately established by UI action timestamps and network samples."
+  },
+  "historical_runs": {
+    "r5_run1": {
+      "path": "build/engine_next/gi-network-r5/Run1/PassiveSummary.json",
+      "sha256": "2b3153aaf0d198349c447649e35b3c69f3d27a8454c89f4b934eca10b0c4eec2",
+      "bytes": 7067
+    },
+    "r5_run1_scope": "Successful passive connection and graceful drain with no keyboard input because a Windows firewall prompt blocked the UI. Not counted as keyboard acceptance.",
+    "r4_full_keyboard_record": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-network.json",
+      "sha256": "1d08f91fd0d829a70f0e84f2fb66b040eaa00b1dd6b3d86ba36c79b2223c3cb6",
+      "bytes": 12808
+    },
+    "r4_scope": "Earlier R4 candidate and its original partial runs remain separately identified and unchanged."
+  },
+  "limitations": [
+    "This run uses a private lifetime-only server host with an unchanged production runtime library.",
+    "960x640 window rendering does not establish physical 4K output or complete M4 performance acceptance.",
+    "This network fixture does not establish resolution of probe relocation, thin-wall light leaks or all GI quality boundaries."
+  ],
+  "artifacts": [
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/Live.json",
+      "sha256": "a7344768e197e1ac8e9c02474b64c04c70cce86b9f4c4bd70fa94ed048f379a3",
+      "bytes": 7055
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/Completion.json",
+      "sha256": "28cce0390871129957e7c630a63f11ee81afe6e32d446db602d9bb648916fba9",
+      "bytes": 7183
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/A.json",
+      "sha256": "9c90cb88479b703a3b56faae14dc5f2ef8fb739bbfc053ad8c3b5e49ad82b185",
+      "bytes": 43860812
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/B.json",
+      "sha256": "11e4f4d8da6a1d0a89d4bb781e71f5d8bc433537e0ab6abbd5cabbe498fb7d6d",
+      "bytes": 34614601
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/A.log",
+      "sha256": "5b357b69c75f04070248422e525c4cd05f42b5e9f0462c08507414d0592e701e",
+      "bytes": 18344
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/B.log",
+      "sha256": "a7695fb50b66dcf2b8069dd919051c85138a455871b8fe43222e7b1072e94fcf",
+      "bytes": 25019
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/server.log",
+      "sha256": "aeba6938abf2c3f3a9f60d33c09be0c30098a2f7c22121e69e061a91fa97dec4",
+      "bytes": 1354
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/server.jsonl",
+      "sha256": "cbd03172cab921c5746c812266bbd22b40a1a84c42b7676f60247acc7bb70e6d",
+      "bytes": 2817721
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/UIActions.json",
+      "sha256": "15c6a9132b03ae7f732bdba700f739d7fb7a41f099c10436014579764dbf0961",
+      "bytes": 5486
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/RenderConfiguration.json",
+      "sha256": "7b39e1cb8f8631ba11812a438a09247c3036f3509f3ad5942beafa7019939c78",
+      "bytes": 3163
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/VerificationFinal.json",
+      "sha256": "50abb5f425c90fe9248548435d589759822c87e72e8e789689d2ad645cf9d880",
+      "bytes": 5989
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/ProcessExitAudit.json",
+      "sha256": "885c61a63e9db9020d44a9baa35054bb7aa6d13483271b42026c099cb632ce1e",
+      "bytes": 193
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/NativeInputAudit.json",
+      "sha256": "e17448ef794a5ff25c1baa0f77609765fe05839a7607b553a829a429bca79b26",
+      "bytes": 214
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/Motion.json",
+      "sha256": "3862c515bbab9df1ce8ba48f273ba0805a0a4a1724fd42a8bc5781733215f536",
+      "bytes": 287022
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/Motion.mp4",
+      "sha256": "e5f8a49a8a1182512e6fbd8a34ba587632861c74d7204c63ea2b3058905e153e",
+      "bytes": 45452316
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/MotionMeasurements.json",
+      "sha256": "82469ae3993d59db01a59795ee743ba9954739296d84370e294323b25a32dbdc",
+      "bytes": 111081
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/UIActionsAtVideo.json",
+      "sha256": "15c6a9132b03ae7f732bdba700f739d7fb7a41f099c10436014579764dbf0961",
+      "bytes": 5486
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/Motion-0.png",
+      "sha256": "34df9115beb8431b945a1ef9e064a084c677c0930bfc92dfb35d2a3b66a5516a",
+      "bytes": 40778
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/Motion-1500.png",
+      "sha256": "42a9e1ee5a47ce61e3900ae1acc5449ce23cac8ed349db1cac31fe7456e686d1",
+      "bytes": 39235
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/Run2/Motion-2999.png",
+      "sha256": "b19009e0e6204ed62fa7845560bdcc7057391a02edf9159f445de1bcde2fc073",
+      "bytes": 38964
+    }
+  ],
+  "verification_tools": [
+    {
+      "path": "build/engine_next/gi-network-r5/RunNetwork.py",
+      "sha256": "d0157b3bbcd0b4a534aa802de21cfc590416259f1014bc5c6a18e8c240d4aa85",
+      "bytes": 8421
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/VerifyNetwork.py",
+      "sha256": "8238b7bf0db3ca179e8ae4a3e15a6539b81be687910764f7bb7c1afb72079442",
+      "bytes": 8517
+    },
+    {
+      "path": "build/engine_next/gi-network-r5/WriteNetworkEvidence.py",
+      "sha256": "f06f48bf34990c12819a684e3a6cd82fd5e9880bc6912b33530a46d6e8b9c4ee",
+      "bytes": 9646
+    }
+  ]
+}

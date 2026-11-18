@@ -59,7 +59,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination)
 {
 	if (nLocalShadowViews > 28)
 	{
@@ -109,6 +109,54 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		stPipeline.nHdr = stGraph.AddResource({ "HdrColor", ResourceState::Common, false });
 		PassDesc stGbuffer{ "GBuffer", QueueType::Graphics, {}, {} };
 		PassDesc stLighting{ "DeferredLighting", QueueType::Graphics, { { stPipeline.nTint, ResourceState::ShaderRead, false } }, {} };
+		if (bGlobalIllumination)
+		{
+			stPipeline.nGiScene = stGraph.AddResource({ "GiScene", ResourceState::AccelerationStructure, true });
+			stPipeline.nGiPositions = stGraph.AddResource({ "GiPositions", ResourceState::Common, true });
+			stPipeline.nGiUpload = stGraph.AddResource({ "GiUpload", ResourceState::GenericRead, true });
+			stPipeline.nGiRays = stGraph.AddResource({ "GiRays", ResourceState::Common, true });
+			stPipeline.nGiRayStatus = stGraph.AddResource({ "GiRayStatus", ResourceState::Common, true });
+			stPipeline.nGiReadback = stGraph.AddResource({ "GiReadback", ResourceState::CopyDestination, true });
+			const std::array<const char *, 3> arrNames{ "Coefficients", "Moments", "State" };
+			for (std::size_t nKind = 0; nKind < arrNames.size(); ++nKind)
+			{
+				stPipeline.arrGiRead[nKind] = stGraph.AddResource({ std::string("GiRead") + arrNames[nKind], ResourceState::Common, true });
+				stPipeline.arrGiWrite[nKind] = stGraph.AddResource({ std::string("GiWrite") + arrNames[nKind], ResourceState::Common, true });
+				stLighting.arrAccesses.push_back({ stPipeline.arrGiWrite[nKind], ResourceState::ShaderRead, false });
+			}
+			if (!AddPipelinePass(stGraph, stPipeline,
+								 { "GiBuildScene", QueueType::Graphics, { { stPipeline.nGiScene, ResourceState::AccelerationStructure, true } }, {} },
+								 PassWork::GiBuildScene, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline,
+								 { "GiUpload", QueueType::Graphics, { { stPipeline.nGiUpload, ResourceState::GenericRead, false }, { stPipeline.nGiPositions, ResourceState::CopyDestination, true } }, {} },
+								 PassWork::GiUpload, out_stDiagnostic))
+			{
+				return false;
+			}
+			PassDesc stPrepare{ "GiPrepare", QueueType::Graphics, {}, {} };
+			PassDesc stRemap{ "GiRemap", QueueType::Graphics, { { stPipeline.nGiUpload, ResourceState::GenericRead, false } }, {} };
+			PassDesc stTrace{ "GiTrace", QueueType::Graphics, { { stPipeline.nGiUpload, ResourceState::GenericRead, false }, { stPipeline.nGiScene, ResourceState::AccelerationStructure, false }, { stPipeline.nTint, ResourceState::NonPixelShaderRead, false }, { stPipeline.nGiPositions, ResourceState::NonPixelShaderRead, false }, { stPipeline.nDirectionalShadow, ResourceState::NonPixelShaderRead, false }, { stPipeline.nLocalShadow, ResourceState::NonPixelShaderRead, false }, { stPipeline.nGiRays, ResourceState::UnorderedAccess, true }, { stPipeline.nGiRayStatus, ResourceState::UnorderedAccess, true } }, {} };
+			PassDesc stUpdate{ "GiUpdate", QueueType::Graphics, { { stPipeline.nGiUpload, ResourceState::GenericRead, false }, { stPipeline.nGiRays, ResourceState::NonPixelShaderRead, false }, { stPipeline.nGiRayStatus, ResourceState::NonPixelShaderRead, false } }, {} };
+			for (std::size_t nKind = 0; nKind < arrNames.size(); ++nKind)
+			{
+				stPrepare.arrAccesses.push_back({ stPipeline.arrGiRead[nKind], ResourceState::UnorderedAccess, true, 0, ALL_SUBRESOURCES, true });
+				stRemap.arrAccesses.push_back({ stPipeline.arrGiRead[nKind], ResourceState::NonPixelShaderRead, false });
+				stRemap.arrAccesses.push_back({ stPipeline.arrGiWrite[nKind], ResourceState::UnorderedAccess, true });
+				stTrace.arrAccesses.push_back({ stPipeline.arrGiWrite[nKind], ResourceState::NonPixelShaderRead, false });
+				stUpdate.arrAccesses.push_back({ stPipeline.arrGiRead[nKind], ResourceState::NonPixelShaderRead, false });
+				stUpdate.arrAccesses.push_back({ stPipeline.arrGiWrite[nKind], ResourceState::UnorderedAccess, true });
+			}
+			if (!AddPipelinePass(stGraph, stPipeline, stPrepare, PassWork::GiPrepare, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline, stRemap, PassWork::GiRemap, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline, stTrace, PassWork::GiTrace, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline, stUpdate, PassWork::GiUpdate, out_stDiagnostic) ||
+				!AddPipelinePass(stGraph, stPipeline,
+								 { "GiReadback", QueueType::Graphics, { { stPipeline.arrGiWrite[2], ResourceState::CopySource, false }, { stPipeline.nGiReadback, ResourceState::CopyDestination, true } }, {} },
+								 PassWork::GiReadback, out_stDiagnostic))
+			{
+				return false;
+			}
+		}
 		if (bExposure)
 		{
 			stPipeline.nHistogram = stGraph.AddResource({ "ExposureHistogram", ResourceState::Common, true });
@@ -338,6 +386,13 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 				stTransparency.arrAccesses.push_back({ stPipeline.nVolumeIntegral, ResourceState::ShaderRead, false });
 				stTransparency.arrAccesses.push_back({ stPipeline.nVolumeHistoryWrite, ResourceState::ShaderRead, false });
 			}
+			if (bGlobalIllumination)
+			{
+				for (ResourceId nResource : stPipeline.arrGiWrite)
+				{
+					stTransparency.arrAccesses.push_back({ nResource, ResourceState::ShaderRead, false });
+				}
+			}
 			if (!AddPipelinePass(stGraph, stPipeline, stTransparency, PassWork::Transparency, out_stDiagnostic))
 			{
 				return false;
@@ -500,6 +555,18 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		}
 		stPresent.arrAccesses.push_back({ stPipeline.nMotion, ResourceState::Common, false });
 		stPresent.arrAccesses.push_back({ stPipeline.nObjectId, ResourceState::Common, false });
+		if (bGlobalIllumination)
+		{
+			for (std::size_t nKind = 0; nKind < stPipeline.arrGiRead.size(); ++nKind)
+			{
+				stPresent.arrAccesses.push_back({ stPipeline.arrGiRead[nKind], ResourceState::Common, false });
+				stPresent.arrAccesses.push_back({ stPipeline.arrGiWrite[nKind], ResourceState::Common, false });
+			}
+			for (ResourceId nResource : { stPipeline.nGiPositions, stPipeline.nGiRays, stPipeline.nGiRayStatus })
+			{
+				stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });
+			}
+		}
 		if (bTemporal)
 		{
 			for (std::size_t nHistory = 0; nHistory < stPipeline.arrHistoryRead.size(); ++nHistory)

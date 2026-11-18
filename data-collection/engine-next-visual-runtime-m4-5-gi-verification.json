@@ -1,0 +1,361 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "issue_number": 1505,
+  "recorded_at_utc": "2026-11-18T03:06:49.233972+00:00",
+  "status": "passed",
+  "base_commit": "3a160ec26725e2fc5c833cd10f9ff7b38ad534af",
+  "candidate": "gi-runtime-r5",
+  "native_key": "f9abfc13850cce2065164a70ee1cc4d54b04cb034c2113436b12be769f37fee0",
+  "native_input_count": 301,
+  "input_mismatches": [],
+  "build": {
+    "path": "build/engine_next/gi-runtime-r5/VisualBuildReport.json",
+    "sha256": "3c02d87a69a613e0038a1040f29e6dae7e902812b5801d4e98498069c052fb46",
+    "size_bytes": 2313281
+  },
+  "executable": {
+    "path": "build/engine_next/gi-runtime-r5/next_visual_client.exe",
+    "sha256": "d2c9f5f8b9915c387b40151d570030eea68d5259670222b12825fa2692bc3ea8",
+    "size_bytes": 3358720
+  },
+  "package": {
+    "path": "build/engine_next/gi-runtime-r5/Release/VisualPackage.json",
+    "sha256": "0476c7f13c84ee40e5421e95ff4d29240fbfb91d9bb533ef0325b5c7579946ec",
+    "size_bytes": 11624
+  },
+  "shader_count": 41,
+  "cpu_test_summary": "MATERIAL_HEMISPHERE cases=72 minimum=0.184115 maximum=0.991663\r\nMATERIAL_ENVIRONMENT_FURNACE cases=72 minimum=0.184124 maximum=0.998307\r\nSTRATIFIED_ALIAS chi_squared=70.4851 old_zero_coins=24 new_zero_coins=0\r\nFREQUENCY chi_squared=101.887 bins=96\r\nWHITE -0.7 0 0.566173 0.564346\r\nWHITE -0.7 1 0.546969 0.546577\r\nWHITE 0.7 0 0.566173 0.566221\r\nWHITE 0.7 1 0.546969 0.546339\r\nSUN reference=0.770397094325 baseline_mean=0.774405358803 mis_mean=0.76875746176 baseline_mse=6.59234655954 mis_mse=0.0198964623669 ratio=0.00301811535349 baseline_variance=6.59233049335 mis_variance=0.0198937739719 mis_standard_error=0.000779172510674\r\nENGINE_NEXT_RENDERING_TEST_SUMMARY tests=398 checks=484526 failures=0",
+  "clang_cl_regression": {
+    "path": "build/engine_next/gi-clang-cl-r5/Result.json",
+    "sha256": "fbb437b49183f30b4e5b19972c398fd38e4662d7738bfe77e76b1ed32746a438",
+    "size_bytes": 2763232
+  },
+  "tool_tests": {
+    "path": "build/engine_next/GiToolTestsR5Final.log",
+    "sha256": "cf55d3922f1eb7c08c85daf513e98372dddd39465cbb82ab61d785f417420eb4",
+    "size_bytes": 139,
+    "tests": 35,
+    "failures": 0
+  },
+  "contract_tests": {
+    "path": "build/engine_next/GiContractTestsR5.log",
+    "sha256": "1f6ce13fe416b7f73cf5b813ce7bd43177f26ea4b5d756d93259ee6642c7633f",
+    "size_bytes": 147,
+    "tests": 31,
+    "skipped": 1,
+    "failures": 0
+  },
+  "ai_regression": {
+    "path": "build/engine_next/GiAiTestsR5.log",
+    "sha256": "498f1c4e7e31f47d80a9e0d5853f508b0a39425df5f3c7dab8f7d430c500dd90",
+    "size_bytes": 565,
+    "tests": 445,
+    "skipped": 36,
+    "failures": 0,
+    "errors": 0
+  },
+  "evidence": {
+    "source_review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-source-review.json",
+      "sha256": "7c2c97c7abc09421d6c9a32da01f2b1158135e2db513ebc3491f7289874cdf44",
+      "size_bytes": 6715
+    },
+    "static_readback": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-readback.json",
+      "sha256": "13d3501465223e7d611898a36b0f9721fab70ec04c5008d0876cabe39760529a",
+      "size_bytes": 53853
+    },
+    "dynamic_readback": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-dynamic.json",
+      "sha256": "d1baf1aa37b9081e334daa9a32e34ee4915954c7465ea35c9e7b8a375a4586e8",
+      "size_bytes": 7992
+    },
+    "network": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-network-r5.json",
+      "sha256": "db686568d1bdf3ba9a0882c8a03b9434b18f885004451a141df12f76055c6a93",
+      "size_bytes": 24796
+    },
+    "merge_review": {
+      "path": "build/engine_next/gi-runtime-r5/MergeIndependentReview.json",
+      "sha256": "3df56927cd8a07135f1af440c21d46b427168e2e9d2d81b69dfbcd481993fb83",
+      "size_bytes": 3307
+    },
+    "cold_start": {
+      "path": "build/engine_next/GiColdStartR5.json",
+      "sha256": "b1edf1bfb261b846d1b50b6f54d8ee305a0c7105b95a28be233861250d8f0090",
+      "size_bytes": 909
+    },
+    "historical_r4_build_impact": {
+      "path": "build/engine_next/gi-m43-drafts/engine-next-visual-runtime-m4-3-gi-build-impact.json",
+      "sha256": "22d722ce5c138a90ba14baf2af86cf660f7b0fc5073ae86f5fdcddfc905dc39f",
+      "size_bytes": 83848
+    },
+    "historical_r3_r4_candidate_delta": {
+      "path": "build/engine_next/gi-runtime-r4/CandidateDelta.json",
+      "sha256": "32c867886a23b85a413804b2fca2dab346f24905453b97e0f7bc96785c64705a",
+      "size_bytes": 4491
+    },
+    "build_impact": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-build-impact.json",
+      "sha256": "f00afe8caaf57a88dfcce6f86064bcf2f0dc45b8f9e19e0e9654f6fcac41e825",
+      "size_bytes": 86175
+    },
+    "current_candidate_passive_network": {
+      "path": "build/engine_next/gi-network-r5/Run1/PassiveSummary.json",
+      "size_bytes": 7067,
+      "sha256": "2b3153aaf0d198349c447649e35b3c69f3d27a8454c89f4b934eca10b0c4eec2"
+    },
+    "historical_r4_network": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-network.json",
+      "sha256": "1d08f91fd0d829a70f0e84f2fb66b040eaa00b1dd6b3d86ba36c79b2223c3cb6",
+      "size_bytes": 12808
+    }
+  },
+  "completed_additional_gpu_runs": [
+    {
+      "candidate": "r3",
+      "case": "MultipleBounce",
+      "report": {
+        "path": "build/engine_next/gi-gpu-r3-first/MultipleBounce.json",
+        "sha256": "5b2a9c548aec5cd8a5558ec8af3e9b9fea4b1a413055b4213badd0aed208c8f6",
+        "size_bytes": 82765
+      },
+      "frames": 32,
+      "actual_width": 640,
+      "actual_height": 480,
+      "validation_errors": 0
+    },
+    {
+      "candidate": "r3",
+      "case": "DynamicLight",
+      "report": {
+        "path": "build/engine_next/gi-gpu-r3-dynamic/DynamicLight.json",
+        "sha256": "ab19b65faacd236135e63a1ac3d070f525589e18d71b29767bc095036d9be094",
+        "size_bytes": 1137174
+      },
+      "frames": 780,
+      "actual_width": 640,
+      "actual_height": 480,
+      "validation_errors": 0
+    },
+    {
+      "candidate": "r3",
+      "case": "StaticReference",
+      "report": {
+        "path": "build/engine_next/gi-gpu-r3-reference/StaticReference.json",
+        "sha256": "4fe7f1affb0ddafe7ca591cda8f4bf80b33eb4a13ae174a251b69758069840be",
+        "size_bytes": 127769
+      },
+      "frames": 64,
+      "actual_width": 640,
+      "actual_height": 480,
+      "validation_errors": 0
+    },
+    {
+      "candidate": "r4",
+      "case": "Default",
+      "report": {
+        "path": "build/engine_next/gi-composite-r4/Default.json",
+        "sha256": "50d0851292fd7d7a2f3dc9ef2db6005d0336566c32302dac68fbd62f28d61b31",
+        "size_bytes": 217671
+      },
+      "frames": 120,
+      "actual_width": 640,
+      "actual_height": 480,
+      "validation_errors": 0
+    },
+    {
+      "candidate": "r4",
+      "case": "Combined",
+      "report": {
+        "path": "build/engine_next/gi-composite-r4/Combined.json",
+        "sha256": "d3d379b32766539ebfbc128e6e60eb11bf02ceab2247cb1179a71637a10d5596",
+        "size_bytes": 219491
+      },
+      "frames": 120,
+      "actual_width": 640,
+      "actual_height": 480,
+      "validation_errors": 0
+    },
+    {
+      "candidate": "r4",
+      "case": "TAABloomCombined",
+      "report": {
+        "path": "build/engine_next/gi-composite-r4/TAABloomCombined.json",
+        "sha256": "09e2630af141d2d58413da83e3cd1803455781d458b3e9625d94fbb86fd9b589",
+        "size_bytes": 367716
+      },
+      "frames": 120,
+      "actual_width": 640,
+      "actual_height": 480,
+      "validation_errors": 0
+    },
+    {
+      "candidate": "r4",
+      "case": "TAABloomCombined",
+      "report": {
+        "path": "build/engine_next/gi-composite-r4-4k/TAABloomCombined.json",
+        "sha256": "396fe546cee0190b0061f48879df869d8b084114cac372e901da4c9a7f115f48",
+        "size_bytes": 112981
+      },
+      "frames": 12,
+      "actual_width": 3840,
+      "actual_height": 2160,
+      "validation_errors": 0
+    }
+  ],
+  "pending": {
+    "formal_delivery": "Final Diting/collection, final static checks, formal gate, signed-candidate CI and main readback remain with the parent agent."
+  },
+  "identity_boundary": "R3/R4 captures and R4 keyboard networking preserve their original executable identity. R5 imports the reviewed IBL implementation, changes seven material shader binaries, and retains 34 other binaries including all three GI compute shaders. Current R5 integrated GPU evidence is recorded separately.",
+  "quality_boundaries": [
+    "62 sampled rays begin on a surface within 1e-5 meter. Forty CPU t=0 closest-hit outcomes differ from DXR continuation. They remain outside the 7186-ray nondegenerate occlusion result.",
+    "The 1024-resolution shadow fixture contains fine baseline stripes. GI changes contrast of that existing pattern. Final shadow image quality remains pending.",
+    "Exact-frame dynamic-light readback and the independent interactive network session are separately recorded. Physical native-4K display and full performance acceptance remain pending.",
+    "The R5 Combined cold first CPU frame took 321344.8889 ms with GPU validation enabled. Driver compiler and later destructor-join stacks are retained. This is an observed performance measurement. Acceptance uses the existing task criteria. The private loop experiment has a separate diagnostic record."
+  ],
+  "remaining_parent_acceptance": [
+    "Probe placement on surfaces and final image quality",
+    "Physical native-4K output and performance",
+    "Remaining Engine Next M4 rendering features and complete UE comparison"
+  ],
+  "parent_issues_remain_open": [
+    1323
+  ],
+  "parent_issue_number": 1323,
+  "historical_test_context": {
+    "request_id": "engine-next-visual-runtime-m4-3-20261116",
+    "issue_number": 1343,
+    "candidates": [
+      "gi-runtime-r3",
+      "gi-runtime-r4"
+    ],
+    "note": "R3/R4 captured data, original build reports, ImpactReport and Diting records retain their original request identity and bytes.",
+    "base_commit": "cefa69ea2ee415c0b65d88506c85582f626fc673"
+  },
+  "input_verification_boundary": "Current frozen R5 source matches all 301 native inputs.",
+  "historical_static_checks": {
+    "path": "build/engine_next/gi-static-r4/Result.json",
+    "sha256": "6f63ddb4cc35873928715484f817ef12a3d8b94d1948f2839deb592b27e737fa",
+    "size_bytes": 21187
+  },
+  "static_checks": {
+    "path": "build/engine_next/gi-static-r5-final2/Result.json",
+    "sha256": "9baba94429cec72f50a27466e16867c8fd6a2b5b72188fb6b55f7f3de0feb83b",
+    "size_bytes": 29393
+  },
+  "module_placement_gate": {
+    "path": "build/engine_next/GiModuleGateR5.log",
+    "sha256": "9737f7edb42f17e96315b562618a90a2498e1d8085a4cacfb1666c1f7dcb8c52",
+    "size_bytes": 49
+  },
+  "visual_limitations": [
+    "The R5 3840x2160 hidden render target shows visible sphere banding/faceting and jagged ground shadow edges. The observation is retained without assigning a cause.",
+    "GPU validation success establishes API correctness for these runs. Final image-quality and UE comparison acceptance remain open."
+  ],
+  "stage_issue_remains_open": 1505,
+  "remaining_stage_acceptance": [
+    "Specular indirect illumination and complete reflection coverage",
+    "Dynamic character and deforming-geometry GI acceptance",
+    "Probe placement, light-leak suppression and denoising quality",
+    "A/B/D/E same-asset UE comparison and complete stage quality verification"
+  ],
+  "stage_design": {
+    "path": "design-docs/engine-next-dynamic-gi-20261117.md",
+    "sha256": "8cb383b9a92fe07451a19ddfbb295cfcbb19ce94896d15a729914c010ff54eeb",
+    "size_bytes": 9131
+  },
+  "updated_at_utc": "2026-11-18T04:51:49.239107+00:00",
+  "current_candidate_network": {
+    "status": "passed",
+    "real_keyboard_acceptance_passed": true,
+    "candidate": "gi-runtime-r5",
+    "frames": {
+      "A": 19448,
+      "B": 15343
+    },
+    "validation_errors": {
+      "A": 0,
+      "B": 0
+    },
+    "delivered_ui_key_actions": {
+      "A": 21,
+      "B": 23
+    },
+    "reconnect_requests": {
+      "A": 1,
+      "B": 1
+    },
+    "server_acks": 2,
+    "server_forced": 0,
+    "server_resumes": 2,
+    "minimized": [
+      {
+        "client": "A",
+        "ui_minimized_msec": 77418,
+        "sample_gap_msec": 78169,
+        "rendered_frame_delta": 30,
+        "confirmed_before": "7641",
+        "confirmed_after": "12527",
+        "peer_samples": 153,
+        "peer_input_samples": 20
+      }
+    ],
+    "exit_codes": {
+      "server": 0,
+      "A": 0,
+      "B": 0,
+      "harness": 0
+    },
+    "readiness_elapsed_seconds": 28.060779,
+    "server_host": "Private duration-only LongServer, linked to the unchanged production runtime library; complete identity is in the current network proof.",
+    "video_frames": 3000,
+    "video_target": "B",
+    "video_actual_first_sample_utc": "2026-11-18T04:32:05.770743+00:00",
+    "video_actual_last_sample_utc": "2026-11-18T04:34:37.551943+00:00"
+  },
+  "accepted_scope": "Basic diffuse-probe GI increment with R5 IBL integration, captured numerical readbacks, module replacement/rollback and actual two-client keyboard/minimize/reconnect acceptance.",
+  "stage_complete": false,
+  "delivery_base_commit": "9acd30a77a168604a6d4c9572a70e345f5655b34",
+  "historical_network_boundary": "R4 keyboard acceptance retains its original candidate identity. R5 Run1 connected and drained with zero delivered keyboard actions. R5 Run2 provides the current real keyboard, minimize/restore and reconnect proof.",
+  "network_text_format_history": {
+    "correction": "Network evidence now uses repository LF line endings; its writer explicitly emits LF.",
+    "semantic_fields_equal": true,
+    "refreshed_json_fields": [
+      "recorded_at_utc",
+      "verification_tools"
+    ],
+    "current_network_proof": {
+      "path": "data-collection/engine-next-visual-runtime-m4-5-gi-network-r5.json",
+      "sha256": "db686568d1bdf3ba9a0882c8a03b9434b18f885004451a141df12f76055c6a93",
+      "size_bytes": 24796
+    },
+    "original_network_proof": {
+      "path": "build/engine_next/gi-proof-history/NetworkR5-OriginalCRLF.json",
+      "sha256": "a78d95eda99d12d33d88b0eedb51311389f0d404e41400a738fa8e3011a3d289",
+      "size_bytes": 25556
+    },
+    "original_writer": {
+      "path": "build/engine_next/gi-proof-history/WriteNetworkEvidence-Original.py",
+      "sha256": "bb5da438bf0354fda1c0d909fe57aab5003b8f4c1f8d2837f9c483f83fbd448c",
+      "size_bytes": 9632
+    },
+    "current_writer": {
+      "path": "build/engine_next/gi-network-r5/WriteNetworkEvidence.py",
+      "sha256": "f06f48bf34990c12819a684e3a6cd82fd5e9880bc6912b33530a46d6e8b9c4ee",
+      "size_bytes": 9646
+    }
+  },
+  "initial_r5_static_checks": {
+    "path": "build/engine_next/gi-static-r5/Result.json",
+    "sha256": "885c481f52a0f940aedc007387d25fe8dda78d4b5814df35b72fdc03551893d1",
+    "size_bytes": 24445
+  },
+  "static_format_attempt": {
+    "path": "build/engine_next/gi-static-r5-final/Result.json",
+    "sha256": "2f63bed4eebab8f15a35b77aab4c58aab97d8352c675f1417f7391fb56f79fba",
+    "size_bytes": 28450
+  },
+  "static_format_resolution": "The network JSON writer now explicitly emits LF. Original CRLF evidence and its writer are archived; refreshed evidence retains matching test data."
+}

@@ -62,6 +62,64 @@ PassDesc MakePass(const char *pName, QueueType eQueue, ResourceId nResource, Res
 
 } // namespace
 
+ENGINE_NEXT_TEST("FrameGraph orders acceleration writes across queues without a state transition")
+{
+	FrameGraph stGraph;
+	const ResourceId nScene = stGraph.AddResource({ "SceneAS", ResourceState::AccelerationStructure, false });
+	const PassId nBuild = stGraph.AddPass(MakePass("BuildAS", QueueType::Compute, nScene, ResourceState::AccelerationStructure, true));
+	(void)stGraph.AddPass(MakePass("TraceAS", QueueType::Graphics, nScene, ResourceState::AccelerationStructure, false));
+	CompiledGraph stCompiled;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(stGraph.Compile(stCompiled, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses.size(), 2U);
+	if (stCompiled.arrPasses.size() != 2)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(stCompiled.arrPasses[0].arrAfterBarriers.empty());
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrWaits.size(), 1U);
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrWaits[0], nBuild);
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers.size(), 1U);
+	if (!stCompiled.arrPasses[1].arrBeforeBarriers.empty())
+	{
+		ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers[0].eKind, BarrierKind::Uav);
+		ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers[0].eBefore, ResourceState::AccelerationStructure);
+		ENGINE_NEXT_CHECK_EQ(stCompiled.arrPasses[1].arrBeforeBarriers[0].eAfter, ResourceState::AccelerationStructure);
+	}
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrResources[0].arrFinalStates[0], ResourceState::AccelerationStructure);
+}
+
+ENGINE_NEXT_TEST("FrameGraph keeps imported generic-read buffers immutable across queues")
+{
+	FrameGraph stGraph;
+	const ResourceId nUpload = stGraph.AddResource({ "Upload", ResourceState::GenericRead, true });
+	(void)stGraph.AddPass(MakePass("ComputeRead", QueueType::Compute, nUpload, ResourceState::GenericRead, false));
+	(void)stGraph.AddPass(MakePass("GraphicsRead", QueueType::Graphics, nUpload, ResourceState::GenericRead, false));
+	CompiledGraph stCompiled;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(stGraph.Compile(stCompiled, stDiagnostic));
+	for (const EngineNext::Rendering::CompiledPass &stPass : stCompiled.arrPasses)
+	{
+		ENGINE_NEXT_CHECK(stPass.arrBeforeBarriers.empty());
+		ENGINE_NEXT_CHECK(stPass.arrAfterBarriers.empty());
+	}
+	ENGINE_NEXT_CHECK_EQ(stCompiled.arrResources[0].arrFinalStates[0], ResourceState::GenericRead);
+}
+
+ENGINE_NEXT_TEST("FrameGraph rejects state changes on fixed-state resources")
+{
+	for (ResourceState eState : { ResourceState::AccelerationStructure, ResourceState::GenericRead })
+	{
+		FrameGraph stGraph;
+		const ResourceId nFixed = stGraph.AddResource({ "Fixed", eState, true });
+		(void)stGraph.AddPass(MakePass("InvalidTransition", QueueType::Graphics, nFixed, ResourceState::NonPixelShaderRead, false));
+		CompiledGraph stCompiled;
+		GraphDiagnostic stDiagnostic;
+		ENGINE_NEXT_CHECK(!stGraph.Compile(stCompiled, stDiagnostic));
+		ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::InvalidAccess);
+	}
+}
+
 ENGINE_NEXT_TEST("FrameGraph emits fixed mesh transitions and a compute handoff")
 {
 	FrameGraph stGraph;
@@ -384,5 +442,5 @@ ENGINE_NEXT_TEST("FrameGraph rejects depth reads on compute and depth reads decl
 	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("InvalidDepthWrite", QueueType::Graphics, 0, ResourceState::DepthRead, true)), 0U);
 	ENGINE_NEXT_CHECK(!stGraph.Compile(stCompiled, stDiagnostic));
 	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::InvalidAccess);
-	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "UnknownState", static_cast<ResourceState>(11), true }), EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "UnknownState", static_cast<ResourceState>(13), true }), EngineNext::Rendering::INVALID_RESOURCE);
 }

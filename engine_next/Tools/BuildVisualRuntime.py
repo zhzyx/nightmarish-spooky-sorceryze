@@ -30,6 +30,8 @@ CORE_SOURCES = [
     "engine_next/Rendering/ParticleSettings.cpp",
     "engine_next/Rendering/ParticleState.cpp",
     "engine_next/Rendering/MaterialSettings.cpp",
+    "engine_next/Rendering/GlobalIlluminationSettings.cpp",
+    "engine_next/Rendering/ProbeGrid.cpp",
     "engine_next/Rendering/ShadowBounds.cpp",
     "engine_next/Rendering/Cook/GltfDecoder.cpp",
     "engine_next/Rendering/Cook/ImageDecoder.cpp",
@@ -64,6 +66,8 @@ VISUAL_SOURCES = [
     "engine_next/Apps/NextVisualClientMain.cpp",
     "engine_next/Rendering/VisualRuntime.cpp",
     "engine_next/Platform/Windows/Window.cpp",
+    "engine_next/Platform/Windows/RayTracingScene.cpp",
+    "engine_next/Platform/Windows/GpuProbeGrid.cpp",
 ]
 TEST_SOURCES = [
     "engine_next/Tests/RenderingTestMain.cpp",
@@ -88,6 +92,11 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestMaterialSettings.cpp",
     "engine_next/Tests/Rendering/TestMaterialLobes.cpp",
     "engine_next/Tests/Rendering/TestMaterialEnvironment.cpp",
+    "engine_next/Tests/Rendering/TestGlobalIlluminationSettings.cpp",
+    "engine_next/Tests/Rendering/TestProbeGrid.cpp",
+    "engine_next/Tests/Rendering/TestProbeMath.cpp",
+    "engine_next/Tests/Rendering/TestGISampling.cpp",
+    "engine_next/Tests/Rendering/TestGiMaterialSampling.cpp",
     "engine_next/Tests/Rendering/TestTransparentMath.cpp",
     "engine_next/Tests/Rendering/TestSceneEntityTransforms.cpp",
     "engine_next/Tests/Rendering/TestReflectionTrace.cpp",
@@ -121,6 +130,8 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/ParticleSettings.h",
     "EngineNext/Rendering/ParticleState.h",
     "EngineNext/Rendering/MaterialSettings.h",
+    "EngineNext/Rendering/GlobalIlluminationSettings.h",
+    "EngineNext/Rendering/ProbeGrid.h",
     "EngineNext/Rendering/RenderScene.h",
     "EngineNext/Rendering/VisualRuntime.h",
 ]
@@ -178,6 +189,39 @@ SHADERS = [
         "MaterialTransparent.ps.cso",
         ["-D", "MATERIAL_EXTENSION_STAGE=1", "-D", "ENVIRONMENT_IMPORTANCE_STAGE=1"],
     ),
+    ("LightingPS", "ps_6_0", "GiLighting.ps.cso", ["-D", "ENGINE_NEXT_GI=1"]),
+    (
+        "LightingPS",
+        "ps_6_0",
+        "GiMaterialLighting.ps.cso",
+        ["-D", "ENGINE_NEXT_GI=1", "-D", "MATERIAL_EXTENSION_STAGE=1", "-D", "ENVIRONMENT_IMPORTANCE_STAGE=1"],
+    ),
+    ("LightingPS", "ps_6_0", "GiReflectionLighting.ps.cso", ["-D", "ENGINE_NEXT_GI=1", "-D", "REFLECTION_STAGE=1"]),
+    (
+        "LightingPS",
+        "ps_6_0",
+        "GiMaterialReflectionLighting.ps.cso",
+        [
+            "-D",
+            "ENGINE_NEXT_GI=1",
+            "-D",
+            "REFLECTION_STAGE=1",
+            "-D",
+            "MATERIAL_EXTENSION_STAGE=1",
+            "-D",
+            "ENVIRONMENT_IMPORTANCE_STAGE=1",
+        ],
+    ),
+    ("PSMain", "ps_6_0", "GiTransparent.ps.cso", ["-D", "ENGINE_NEXT_GI=1"]),
+    (
+        "PSMain",
+        "ps_6_0",
+        "GiMaterialTransparent.ps.cso",
+        ["-D", "ENGINE_NEXT_GI=1", "-D", "MATERIAL_EXTENSION_STAGE=1", "-D", "ENVIRONMENT_IMPORTANCE_STAGE=1"],
+    ),
+    ("PrepareCS", "cs_6_5", "GiPrepare.cs.cso", []),
+    ("TraceCS", "cs_6_5", "GiTrace.cs.cso", []),
+    ("UpdateCS", "cs_6_5", "GiIntegrate.cs.cso", []),
 ]
 
 
@@ -520,7 +564,9 @@ def compile_shaders(args, commands):
                 "FixedMesh.hlsl"
                 if name.startswith("FixedMesh")
                 else "Transparent.hlsl"
-                if name.startswith(("Transparent", "MaterialTransparent"))
+                if name.startswith(("Transparent", "MaterialTransparent", "GiTransparent", "GiMaterialTransparent"))
+                else "GI.hlsl"
+                if name in ("GiPrepare.cs.cso", "GiTrace.cs.cso", "GiIntegrate.cs.cso")
                 else "VolumeTemporal.hlsl"
                 if name == "VolumeTemporal.cs.cso"
                 else "VolumeComposite.hlsl"
@@ -657,7 +703,16 @@ def build(args):
                 "engine_next/Rendering/Shaders/MaterialEnvironment.hlsli",
                 "engine_next/Rendering/Shaders/MaterialEnvironmentLighting.hlsli",
                 "engine_next/Rendering/Shaders/EnvironmentImportance.hlsli",
+                "engine_next/Rendering/Shaders/ProbeMath.hlsli",
                 "engine_next/Rendering/Shaders/Transparent.hlsl",
+                "engine_next/Rendering/Shaders/GI.hlsl",
+                "engine_next/Rendering/Shaders/GILighting.hlsli",
+                "engine_next/Rendering/Shaders/GISampling.hlsli",
+                "engine_next/Rendering/Shaders/GISamplingMath.hlsli",
+                "engine_next/Rendering/Shaders/GiMaterialSampling.hlsli",
+                "engine_next/Rendering/Shaders/GiReceiver.hlsli",
+                "engine_next/Rendering/Shaders/RayTracingScene.hlsli",
+                "engine_next/Rendering/Shaders/ProbeMath.hlsli",
             ]
         ),
         *[

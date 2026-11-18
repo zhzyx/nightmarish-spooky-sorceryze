@@ -9,6 +9,9 @@ float3 UnitDirection(float3 Direction, float3 Fallback)
 #if defined(MATERIAL_EXTENSION_STAGE)
 #include "MaterialEnvironmentLighting.hlsli"
 #endif
+#if defined(ENGINE_NEXT_GI)
+#include "GiReceiver.hlsli"
+#endif
 struct LocalLightConstants
 {
     float4 PositionRange;
@@ -375,6 +378,13 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
         DiffuseEnvironment = Environment.Diffuse;
         SpecularEnvironment = Environment.BaseSpecular + Environment.CoatSpecular;
     }
+#endif
+#if defined(ENGINE_NEXT_GI)
+#if defined(MATERIAL_EXTENSION_STAGE)
+    DiffuseEnvironment = GiReceiverDiffuse(DiffuseEnvironment, Position, N, V, Base, Material.y, Material.x, Extension, true);
+#else
+    DiffuseEnvironment = GiReceiverDiffuse(DiffuseEnvironment, Position, N, V, Base, Material.y, Material.x, float4(0, 0, 0, 0), false);
+#endif
 #endif
 #if defined(REFLECTION_STAGE)
     Color += DiffuseEnvironment * Material.z;

@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "event_id": "m45-gi-r5-rendering-regression-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T04:08:37.572582+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1505",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m45-gi-request-routed-20261118"
+  ],
+  "payload": {
+    "candidate": "gi-runtime-r5",
+    "native_key": "f9abfc13850cce2065164a70ee1cc4d54b04cb034c2113436b12be769f37fee0",
+    "source_base": "3a160ec26725e2fc5c833cd10f9ff7b38ad534af",
+    "scope": "Completed native rendering integration regression and independent review",
+    "compiler_tests": {
+      "compilers": [
+        "MSVC",
+        "clang-cl"
+      ],
+      "tests_each": 398,
+      "checks_each": 484526
+    },
+    "gpu_regression": {
+      "cases": 5,
+      "frames": 600,
+      "validation_errors": 0
+    },
+    "four_k": {
+      "width": 3840,
+      "height": 2160,
+      "frames": 12,
+      "validation_errors": 0
+    },
+    "remaining": [
+      "Current-candidate real keyboard acceptance",
+      "Full M4.5 and M4 parent scope",
+      "Final image quality and performance targets"
+    ],
+    "cold_compilation": "The GBV material-plus-GI case recorded a 321344.8889 ms first frame and driver compiler activity. This remains a performance finding.",
+    "partial_attempt": "The first TAABloomCombined attempt was stopped during diagnosis and retained as an interrupted run. A separate complete 120-frame rerun passed.",
+    "artifacts": [
+      {
+        "path": "build/engine_next/gi-runtime-r5/VisualBuildReport.json",
+        "sha256": "3c02d87a69a613e0038a1040f29e6dae7e902812b5801d4e98498069c052fb46"
+      },
+      {
+        "path": "build/engine_next/gi-runtime-r5/MergeIndependentReview.json",
+        "sha256": "3df56927cd8a07135f1af440c21d46b427168e2e9d2d81b69dfbcd481993fb83"
+      },
+      {
+        "path": "build/engine_next/gi-clang-cl-r5/Result.json",
+        "sha256": "fbb437b49183f30b4e5b19972c398fd38e4662d7738bfe77e76b1ed32746a438"
+      },
+      {
+        "path": "build/engine_next/gi-static-r5/Result.json",
+        "sha256": "885c481f52a0f940aedc007387d25fe8dda78d4b5814df35b72fdc03551893d1"
+      },
+      {
+        "path": "build/engine_next/gi-composite-r5-final/Results.json",
+        "sha256": "b2bd14281d9c1883877cb2925736730e9d308048609e29f3f5d79ae1f37f4100"
+      },
+      {
+        "path": "build/engine_next/gi-composite-r5-remaining-TAABloomCombined/Results.json",
+        "sha256": "fb5642be20ef24dc9342ef82bb39e9a2f568d5e36ba5b83a22c675fdcc793b40"
+      },
+      {
+        "path": "build/engine_next/gi-composite-r5-4k/Results.json",
+        "sha256": "a98e8e7f3fa807346b07bc7e1d042c1d28ccd2414f2424eeb5e77ac084bbd4cf"
+      },
+      {
+        "path": "data-collection/engine-next-visual-runtime-m4-5-gi-readback.json",
+        "sha256": "13d3501465223e7d611898a36b0f9721fab70ec04c5008d0876cabe39760529a"
+      },
+      {
+        "path": "data-collection/engine-next-visual-runtime-m4-5-gi-build-impact.json",
+        "sha256": "f00afe8caaf57a88dfcce6f86064bcf2f0dc45b8f9e19e0e9654f6fcac41e825"
+      },
+      {
+        "path": "data-collection/engine-next-visual-runtime-m4-5-gi-source-review.json",
+        "sha256": "c588aef68480f3b3b9590935677efa40aa59b8218b81c71b6f3178be89e33d7d"
+      }
+    ]
+  },
+  "sha256": "0f350c80d84410870b15b4304cb0c0153c5cbc3b2d04e9140baf612c56aa95f8"
+}

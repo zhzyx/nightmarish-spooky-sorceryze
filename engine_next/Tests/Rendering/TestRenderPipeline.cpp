@@ -103,6 +103,58 @@ bool HasAccess(const CompiledPass &stPass, ResourceId nResource, ResourceState e
 
 } // namespace
 
+ENGINE_NEXT_TEST("RenderPipeline orders probe remapping tracing integration and receivers")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 6, true, true, 3, 6, { true, true }, true, true));
+	const std::array<PassWork, 7> arrGiWork{ PassWork::GiBuildScene, PassWork::GiUpload, PassWork::GiPrepare,
+											 PassWork::GiRemap, PassWork::GiTrace, PassWork::GiUpdate, PassWork::GiReadback };
+	PassId nPrevious = 0;
+	for (PassWork eWork : arrGiWork)
+	{
+		const CompiledPass *pPass = FindWork(stPipeline, eWork);
+		ENGINE_NEXT_CHECK(pPass != nullptr);
+		if (pPass == nullptr)
+		{
+			return;
+		}
+		ENGINE_NEXT_CHECK(pPass->nPass > nPrevious);
+		nPrevious = pPass->nPass;
+		ENGINE_NEXT_CHECK_EQ(pPass->eQueue, QueueType::Graphics);
+	}
+	const CompiledPass *pTrace = FindWork(stPipeline, PassWork::GiTrace);
+	const CompiledPass *pUpdate = FindWork(stPipeline, PassWork::GiUpdate);
+	const CompiledPass *pLighting = FindWork(stPipeline, PassWork::DeferredLighting);
+	const CompiledPass *pTransparency = FindWork(stPipeline, PassWork::Transparency);
+	ENGINE_NEXT_CHECK(pTrace != nullptr && pUpdate != nullptr && pLighting != nullptr && pTransparency != nullptr);
+	if (pTrace == nullptr || pUpdate == nullptr || pLighting == nullptr || pTransparency == nullptr)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(HasAccess(*pTrace, stPipeline.nGiScene, ResourceState::AccelerationStructure, false));
+	for (std::size_t nKind = 0; nKind < stPipeline.arrGiWrite.size(); ++nKind)
+	{
+		ENGINE_NEXT_CHECK(HasAccess(*pTrace, stPipeline.arrGiWrite[nKind], ResourceState::NonPixelShaderRead, false));
+		ENGINE_NEXT_CHECK(HasAccess(*pUpdate, stPipeline.arrGiRead[nKind], ResourceState::NonPixelShaderRead, false));
+		ENGINE_NEXT_CHECK(HasAccess(*pUpdate, stPipeline.arrGiWrite[nKind], ResourceState::UnorderedAccess, true));
+		ENGINE_NEXT_CHECK(HasAccess(*pLighting, stPipeline.arrGiWrite[nKind], ResourceState::ShaderRead, false));
+		ENGINE_NEXT_CHECK(HasAccess(*pTransparency, stPipeline.arrGiWrite[nKind], ResourceState::ShaderRead, false));
+	}
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("RenderPipeline ignores GI resources in fixed mesh mode")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic, 0, true, false, 0, 0, {}, false, true));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.stGraph.arrPasses.size(), 4U);
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nGiScene, EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::GiTrace) == nullptr);
+	CheckReusableStates(stPipeline);
+}
+
 ENGINE_NEXT_TEST("RenderPipeline preserves the fixed mesh compute and graphics plan")
 {
 	RenderPipeline stPipeline;
