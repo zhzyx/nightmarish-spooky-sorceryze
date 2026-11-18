@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "event_id": "m43-screen-effects-r5-verified-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T15:55:48.655578+00:00",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-4c450671",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116"
+  ],
+  "payload": {
+    "scope": "Display-linear LUT grading, HDR sharpening and vignette integrated with paged geometry and animation",
+    "native_key": "8f580f30dfc5a071026260c265a3e50fec7ab1078cd0e497bbc4ff0ca388cba5",
+    "tests": [
+      539,
+      1601221,
+      0
+    ],
+    "normal_gpu_frames": 512,
+    "capture_frames": 96,
+    "rdc_count": 4,
+    "module_gpu_frames": 144,
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-screen-effects-source-review.json",
+      "data-collection/engine-next-visual-runtime-m4-3-screen-effects-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-3-screen-effects-verification.json"
+    ],
+    "stage_complete": false
+  },
+  "sha256": "c5a4b73700543d455f2d4a2875a2c651ba153ecbb3d494ce6d429cb4f7f78f6a"
+}

@@ -39,3 +39,12 @@ CPU 与同源 HLSLI 测试覆盖曝光范围、分位裁剪、半衰期、有限
 GeneratePostProcessBenchmark.py 生成自研辐亮度 1 灰卡、小面积高亮块和黑色背景，通过现有 M3 构建请求与 GPU Cook 入口使用。灰卡在 EV100 约 2.210897 时应得到 0.18 的曝光后线性亮度，EV100 10 时应得到约 0.000813802。验收读取真实 GPU 纹理并允许单次 RGBA16F 舍入误差，Bloom 开关对照检查黑色邻域光晕。自动曝光的 241 帧明暗切换同时核对 GPU 计量、曝光适应、历史预曝光和 TAA 重置状态。
 
 初版显示曲线继续使用已验证的 exponential tone mapping 与 pow(1/2.2)。最终 UE 同参数对照、原生 4K 性能、完整体积和反射验收继续由父单跟踪。
+
+
+## Screen effects
+
+The optional `screen_effects` object selects `enabled`, `sharpening`, `vignette_intensity`, `vignette_inner_radius`, `vignette_outer_radius`, `lut_asset_id` and `lut_intensity`. Intensities are fractions in [0,1]. Vignette radii use half the shorter viewport edge as one unit and require `0 <= inner < outer <= 2`. The object defaults to disabled.
+
+Color grading loads an existing M3 image asset by ID from the source package and its validated scene dependency closure. The image stores an `N*N` by `N` horizontal strip, with `2 <= N <= 64`. Red varies across each tile, green varies down rows, and blue varies across tiles. RGB samples represent display-linear values and alpha is ignored. Loading reorders the samples into a bounded RGBA8 3D texture with trilinear sampling. An omitted asset uses an identity lookup.
+
+Sharpening uses a five-tap HDR unsharp filter after temporal resolve and before Bloom composition. A local-range bound limits overshoot. LUT grading and the vignette operate on tone-mapped linear color before the existing gamma encoding. The enabled path has a dedicated tone-mapping shader permutation, a read-only LUT resource in the frame graph and inline per-draw constants. The default path retains its existing shader.

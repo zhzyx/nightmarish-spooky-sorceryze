@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3772c9e5a7a64b748af6d6b05049693eadb0c593",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "db6c6a35de22aebc82cb4b32fc943a9c5651b63c9a0ede4e6e9e75ae2fbb19b7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1349",
+    "action": "delivery",
+    "detection_head": "97e93f60451b83f3421565debe801e42f51f312b",
+    "context_sha256": "0461a170a63be7d5f543d866b62ea512ebe3e51506abd23050c4c4f47b9fd151",
+    "operator": "kaiyunxue",
+    "worker": "codex/root",
+    "authority_ref": "User authorized complete M4 implementation testing and main delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/cb051bcc29801abae4c7e13cfd04ccc062a13083..b36efb37347d46dc9f72ddfa7d25b8aaaea25000",
+    "diagnosis": "Main advanced through six Godot-web documentation and telemetry paths. The complete delta is disjoint from the screen-effects write set and all364 measured native input paths. The tested native bytes and independent review remain identical.",
+    "next_action": "Run writer auto-integration with explicit measured native read dependencies, then verify the new signed tree, exact CI and main receipt.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T16:42:26.395135+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T16:45:37.190991+00:00",
+  "sha256": "f6691c57174b69f30065ee1ebd06fe1ec431921776480dcdeb77922d8f7e6c87"
+}

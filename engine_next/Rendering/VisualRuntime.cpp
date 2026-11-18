@@ -51,6 +51,7 @@
 #include "engine_next/Rendering/DeformationChanges.h"
 #include "engine_next/Platform/Windows/GpuDeformation.h"
 #include "engine_next/include/EngineNext/Rendering/TextureData.h"
+#include "engine_next/include/EngineNext/Rendering/ColorLut.h"
 #include "engine_next/include/EngineNext/Rendering/CameraMatrices.h"
 #include "engine_next/include/EngineNext/Rendering/RenderConfiguration.h"
 #include "engine_next/Rendering/RenderPipeline.h"
@@ -108,6 +109,7 @@ constexpr std::uint32_t FRAME_VIEW_COUNT = 232;
 constexpr std::uint32_t GI_VIEW_START = 152;
 constexpr std::uint32_t GEOMETRY_VIEW_START = 192;
 constexpr std::uint32_t AMBIENT_VIEW_START = 184;
+constexpr std::uint32_t SCREEN_EFFECTS_VIEW = 190;
 static_assert(GI_VIEW_START + 32 <= GEOMETRY_VIEW_START);
 static_assert(GI_VIEW_START + 32 <= AMBIENT_VIEW_START && AMBIENT_VIEW_START + 6 <= GEOMETRY_VIEW_START);
 static_assert(GEOMETRY_VIEW_START + 40 <= FRAME_VIEW_COUNT);
@@ -771,6 +773,7 @@ private:
 	void DrawShadows(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, bool bLocal);
 	bool UploadTexture(const std::vector<MipLevel> &arrLevels, bool bSrgb, std::uint32_t nView);
 	bool UploadFloatTexture(const std::vector<const FloatImage *> &arrImages, std::uint32_t nMips, std::uint32_t nView);
+	bool UploadColorLut();
 	bool UploadEnvironmentImportance(const EnvironmentImportance &stImportance);
 	bool CreateEnvironment();
 	void DrawScene(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame);
@@ -886,6 +889,9 @@ private:
 	std::array<ComOwner<ID3D12PipelineState>, 4> arrShadowPipelines;
 	ComOwner<ID3D12DescriptorHeap> stSamplerHeap;
 	std::vector<ComOwner<ID3D12Resource>> arrTextures;
+	ColorLut stColorLut;
+	ComOwner<ID3D12Resource> stColorLutTexture;
+	std::uint64_t nColorLutBytes = 0;
 	std::vector<ComOwner<ID3D12Resource>> arrTextureUploads;
 	std::vector<GpuDraw> arrDraws;
 	std::vector<DeformationRange> arrDeformationRanges;
@@ -1748,6 +1754,43 @@ bool VisualRuntime::LoadScene()
 	{
 		return Fail(arrDiagnostics.empty() ? "Load rendering configuration" : arrDiagnostics.front().strMessage);
 	}
+	if (stRenderConfiguration.stScreenEffects.bEnabled)
+	{
+		DecodedImage stLutImage;
+		const std::string &strLutId = stRenderConfiguration.stScreenEffects.strLutAssetId;
+		if (strLutId.empty())
+		{
+			stLutImage.nWidth = 4;
+			stLutImage.nHeight = 2;
+			stLutImage.arrRgba8 = { 0, 0, 0, 255, 255, 0, 0, 255, 0, 0, 255, 255, 255, 0, 255, 255,
+									0, 255, 0, 255, 255, 255, 0, 255, 0, 255, 255, 255, 255, 255, 255, 255 };
+		}
+		else
+		{
+			const Assets::AssetEntry *pLutAsset = nullptr;
+			for (const Assets::AssetEntry &stAsset : stSourcePackage.stManifest.arrAssets)
+			{
+				if (stAsset.strAssetId == strLutId)
+				{
+					pLutAsset = &stAsset;
+					break;
+				}
+			}
+			if (pLutAsset == nullptr || pLutAsset->strType != "image")
+			{
+				return Fail("Color LUT asset must reference an image in the source package");
+			}
+			const std::map<std::string, std::vector<std::uint8_t>>::const_iterator itBlob = stSourcePackage.mapBlobs.find(pLutAsset->strContentSha256);
+			if (itBlob == stSourcePackage.mapBlobs.end() || !DecodeImage(itBlob->second, pLutAsset->strMediaType, stLutImage, arrDiagnostics))
+			{
+				return Fail("Decode source-package color LUT");
+			}
+		}
+		if (!BuildColorLut(stLutImage, stColorLut, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.back().strMessage);
+		}
+	}
 	stRenderConfiguration.stAnimation.bEnabled = stRenderConfiguration.stAnimation.bEnabled || stConfig.bAnimation;
 	if (!(stRenderConfiguration.stAnimation.bEnabled ? BuildAnimatedRenderScene(stSourcePackage, stRenderScene, arrDiagnostics)
 													 : BuildRenderScene(stSourcePackage, stRenderScene, arrDiagnostics)))
@@ -1927,6 +1970,86 @@ bool VisualRuntime::UploadTexture(const std::vector<MipLevel> &arrLevels, bool b
 	const std::wstring strName = L"EngineNext.Texture." + std::to_wstring(nView);
 	(void)stTexture->SetName(strName.c_str());
 	arrTextures.push_back(std::move(stTexture));
+	arrTextureUploads.push_back(std::move(stUpload));
+	return true;
+}
+
+bool VisualRuntime::UploadColorLut()
+{
+	if (!stRenderConfiguration.stScreenEffects.bEnabled)
+	{
+		return true;
+	}
+	D3D12_RESOURCE_DESC stDescription{};
+	stDescription.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+	stDescription.Width = stColorLut.nSize;
+	stDescription.Height = stColorLut.nSize;
+	stDescription.DepthOrArraySize = static_cast<UINT16>(stColorLut.nSize);
+	stDescription.MipLevels = 1;
+	stDescription.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	stDescription.SampleDesc.Count = 1;
+	const D3D12_HEAP_PROPERTIES stDefault = HeapProperties(D3D12_HEAP_TYPE_DEFAULT);
+	if (FAILED(stDevice->CreateCommittedResource(&stDefault, D3D12_HEAP_FLAG_NONE, &stDescription, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(stColorLutTexture.Put()))))
+	{
+		return Fail("Create color LUT texture");
+	}
+	const D3D12_RESOURCE_ALLOCATION_INFO stAllocation = stDevice->GetResourceAllocationInfo(0, 1, &stDescription);
+	nColorLutBytes = stAllocation.SizeInBytes;
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT stFootprint{};
+	UINT64 nUploadBytes = 0;
+	stDevice->GetCopyableFootprints(&stDescription, 0, 1, 0, &stFootprint, nullptr, nullptr, &nUploadBytes);
+	if (nUploadBytes > MAX_TEXTURE_UPLOAD_BYTES - nTextureUploadBytes)
+	{
+		return Fail("Color LUT exceeds the texture upload budget");
+	}
+	ComOwner<ID3D12Resource> stUpload;
+	const D3D12_HEAP_PROPERTIES stUploadHeap = HeapProperties(D3D12_HEAP_TYPE_UPLOAD);
+	const D3D12_RESOURCE_DESC stUploadDescription = BufferDescription(nUploadBytes);
+	if (FAILED(stDevice->CreateCommittedResource(&stUploadHeap, D3D12_HEAP_FLAG_NONE, &stUploadDescription, D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stUpload.Put()))))
+	{
+		return Fail("Create color LUT upload buffer");
+	}
+	void *pMapped = nullptr;
+	const D3D12_RANGE stNoRead{ 0, 0 };
+	if (FAILED(stUpload->Map(0, &stNoRead, &pMapped)))
+	{
+		return Fail("Map color LUT upload buffer");
+	}
+	std::uint8_t *pBytes = static_cast<std::uint8_t *>(pMapped) + stFootprint.Offset;
+	for (std::uint32_t nDepth = 0; nDepth < stColorLut.nSize; ++nDepth)
+	{
+		for (std::uint32_t nRow = 0; nRow < stColorLut.nSize; ++nRow)
+		{
+			const std::size_t nSource = (static_cast<std::size_t>(nDepth) * stColorLut.nSize + nRow) * stColorLut.nSize * 4;
+			const std::size_t nTarget = (static_cast<std::size_t>(nDepth) * stColorLut.nSize + nRow) * stFootprint.Footprint.RowPitch;
+			std::memcpy(pBytes + nTarget, stColorLut.arrRgba8.data() + nSource, static_cast<std::size_t>(stColorLut.nSize) * 4);
+		}
+	}
+	stUpload->Unmap(0, nullptr);
+	D3D12_TEXTURE_COPY_LOCATION stSource{};
+	stSource.pResource = stUpload.Get();
+	stSource.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+	stSource.PlacedFootprint = stFootprint;
+	D3D12_TEXTURE_COPY_LOCATION stTarget{};
+	stTarget.pResource = stColorLutTexture.Get();
+	stTarget.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+	ID3D12GraphicsCommandList *pList = arrFrames[0].stGraphicsList.Get();
+	pList->CopyTextureRegion(&stTarget, 0, 0, 0, &stSource, nullptr);
+	D3D12_RESOURCE_BARRIER stBarrier{};
+	stBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	stBarrier.Transition.pResource = stColorLutTexture.Get();
+	stBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+	stBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE | D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
+	stBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	pList->ResourceBarrier(1, &stBarrier);
+	D3D12_SHADER_RESOURCE_VIEW_DESC stView{};
+	stView.Format = stDescription.Format;
+	stView.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE3D;
+	stView.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	stView.Texture3D.MipLevels = 1;
+	stDevice->CreateShaderResourceView(stColorLutTexture.Get(), &stView, View(SCREEN_EFFECTS_VIEW));
+	(void)stColorLutTexture->SetName(L"EngineNext.ColorGradingLut");
+	nTextureUploadBytes += nUploadBytes;
 	arrTextureUploads.push_back(std::move(stUpload));
 	return true;
 }
@@ -2419,7 +2542,7 @@ bool VisualRuntime::CreateSceneMesh()
 	{
 		stGpuDeformation.RecordInitialization(pList);
 	}
-	if (!CreateEnvironment())
+	if (!CreateEnvironment() || !UploadColorLut())
 	{
 		return false;
 	}
@@ -2999,7 +3122,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	}
 	const std::string strLightingShader = stRenderConfiguration.stAmbientOcclusion.bEnabled ? std::string("Ao") + pLightingShader : pLightingShader;
 	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, strLightingShader.c_str());
-	const std::vector<std::uint8_t> arrToneMap = ReadShader(stConfig.strShaderDirectory, "ToneMap.ps.cso");
+	const std::vector<std::uint8_t> arrToneMap = ReadShader(stConfig.strShaderDirectory, stRenderConfiguration.stScreenEffects.bEnabled ? "ScreenEffects.ps.cso" : "ToneMap.ps.cso");
 	if (arrVertex.empty() || arrPixel.empty() || arrFullscreen.empty() || arrLighting.empty() || arrToneMap.empty())
 	{
 		return Fail("Missing deferred shader bundle");
@@ -3223,11 +3346,12 @@ bool VisualRuntime::CreateDeferredPipeline()
 	{
 		return Fail("Create lighting PSO");
 	}
-	std::array<D3D12_DESCRIPTOR_RANGE, 4> arrToneRanges{};
-	std::array<D3D12_ROOT_PARAMETER, 5> arrToneParameters{};
+	std::array<D3D12_DESCRIPTOR_RANGE, 5> arrToneRanges{};
+	std::array<D3D12_ROOT_PARAMETER, 7> arrToneParameters{};
+	const std::uint32_t nToneViews = stRenderConfiguration.stScreenEffects.bEnabled ? 5U : 4U;
 	arrToneParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	arrToneParameters[0].Descriptor.ShaderRegister = 1;
-	for (std::uint32_t nRange = 0; nRange < 4; ++nRange)
+	for (std::uint32_t nRange = 0; nRange < nToneViews; ++nRange)
 	{
 		arrToneRanges[nRange].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrToneRanges[nRange].NumDescriptors = 1;
@@ -3236,6 +3360,9 @@ bool VisualRuntime::CreateDeferredPipeline()
 		arrToneParameters[nRange + 1].DescriptorTable.NumDescriptorRanges = 1;
 		arrToneParameters[nRange + 1].DescriptorTable.pDescriptorRanges = &arrToneRanges[nRange];
 	}
+	arrToneParameters[6].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	arrToneParameters[6].Constants.ShaderRegister = 2;
+	arrToneParameters[6].Constants.Num32BitValues = 8;
 	D3D12_STATIC_SAMPLER_DESC stToneSampler{};
 	stToneSampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
 	stToneSampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
@@ -3244,7 +3371,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	stToneSampler.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS;
 	stToneSampler.MaxLOD = D3D12_FLOAT32_MAX;
 	D3D12_ROOT_SIGNATURE_DESC stToneRoot{};
-	stToneRoot.NumParameters = static_cast<UINT>(arrToneParameters.size());
+	stToneRoot.NumParameters = stRenderConfiguration.stScreenEffects.bEnabled ? 7U : 5U;
 	stToneRoot.pParameters = arrToneParameters.data();
 	stToneRoot.NumStaticSamplers = 1;
 	stToneRoot.pStaticSamplers = &stToneSampler;
@@ -5322,6 +5449,18 @@ void VisualRuntime::DrawToneMap(ID3D12GraphicsCommandList *pList, std::uint32_t 
 	pList->SetGraphicsRootDescriptorTable(2, GpuView(nFrame * FRAME_VIEW_COUNT + 96));
 	pList->SetGraphicsRootDescriptorTable(3, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
 	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 27));
+	if (stRenderConfiguration.stScreenEffects.bEnabled)
+	{
+		const ScreenEffectsSettings &stEffects = stRenderConfiguration.stScreenEffects;
+		const std::array<float, 8> arrEffects{
+			static_cast<float>(nWidth), static_cast<float>(nHeight), static_cast<float>(stColorLut.nSize),
+			stEffects.strLutAssetId.empty() ? 0.0F : static_cast<float>(stEffects.dLutIntensity),
+			static_cast<float>(stEffects.dSharpening), static_cast<float>(stEffects.dVignetteIntensity),
+			static_cast<float>(stEffects.dVignetteInnerRadius), static_cast<float>(stEffects.dVignetteOuterRadius)
+		};
+		pList->SetGraphicsRootDescriptorTable(5, GpuView(SCREEN_EFFECTS_VIEW));
+		pList->SetGraphicsRoot32BitConstants(6, static_cast<UINT>(arrEffects.size()), arrEffects.data(), 0);
+	}
 	pList->DrawInstanced(3, 1, 0, 0);
 }
 
@@ -5433,7 +5572,7 @@ bool VisualRuntime::BuildGraph()
 	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, stRenderConfiguration.stAmbientOcclusion.bEnabled, bAnimationActive))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, stRenderConfiguration.stAmbientOcclusion.bEnabled, bAnimationActive, stRenderConfiguration.stScreenEffects.bEnabled))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -5642,6 +5781,10 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	stTiming.nHeight = nHeight;
 	std::vector<ID3D12Resource *> arrResources(stCompiled.arrResources.size());
 	arrResources[stRenderPipeline.nTint] = stFrame.stTint.Get();
+	if (stRenderPipeline.nColorLut != INVALID_RESOURCE)
+	{
+		arrResources[stRenderPipeline.nColorLut] = stColorLutTexture.Get();
+	}
 	arrResources[stRenderPipeline.nColor] = stFrame.stColor.Get();
 	arrResources[stRenderPipeline.nDepth] = stFrame.stDepth.Get();
 	arrResources[stRenderPipeline.nBackbuffer] = arrBackbuffers[nIndex].Get();
@@ -6695,6 +6838,9 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["material_overrides"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stMaterials.arrOverrides.size()));
 	mapReport["material_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nMaterialBytes));
 	mapReport["ambient_occlusion_enabled"] = JsonValue(bSceneMode && stRenderConfiguration.stAmbientOcclusion.bEnabled);
+	mapReport["screen_effects_enabled"] = JsonValue(bSceneMode && stRenderConfiguration.stScreenEffects.bEnabled);
+	mapReport["color_lut_size"] = JsonValue(static_cast<std::int64_t>(stColorLut.nSize));
+	mapReport["color_lut_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nColorLutBytes));
 	mapReport["ambient_occlusion_samples"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stAmbientOcclusion.nSampleCount));
 	mapReport["ambient_occlusion_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nAmbientBytes));
 	mapReport["material_parameter_format"] = JsonValue(bMaterialExtensions ? "R32G32B32A32_FLOAT" : "disabled");

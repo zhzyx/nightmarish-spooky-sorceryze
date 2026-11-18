@@ -59,7 +59,7 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bAmbientOcclusion, bool bDeformation)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bAmbientOcclusion, bool bDeformation, bool bScreenEffects)
 {
 	if (nLocalShadowViews > 28)
 	{
@@ -561,6 +561,11 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		PassDesc stToneMap{
 			"ToneMap", QueueType::Graphics, { { nToneMapSource, ResourceState::ShaderRead, false }, { stPipeline.nColor, ResourceState::RenderTarget, true } }, {}
 		};
+		if (bScreenEffects)
+		{
+			stPipeline.nColorLut = stGraph.AddResource({ "ColorGradingLut", ResourceState::ShaderRead, true });
+			stToneMap.arrAccesses.push_back({ stPipeline.nColorLut, ResourceState::ShaderRead, false });
+		}
 		if (bExposure)
 		{
 			if (!AddPipelinePass(stGraph, stPipeline,

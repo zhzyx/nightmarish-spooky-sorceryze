@@ -1005,6 +1005,26 @@ ENGINE_NEXT_TEST("Ambient occlusion reads the completed GBuffer and feeds indire
 	ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::AmbientOcclusion) == nullptr);
 }
 
+ENGINE_NEXT_TEST("Color grading LUT is an immutable input of the tone mapping pass")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, false, {}, false, false, false, true));
+	ENGINE_NEXT_CHECK(stPipeline.nColorLut != EngineNext::Rendering::INVALID_RESOURCE);
+	const CompiledPass *pToneMap = FindWork(stPipeline, PassWork::ToneMap);
+	ENGINE_NEXT_CHECK(pToneMap != nullptr);
+	if (pToneMap != nullptr)
+	{
+		ENGINE_NEXT_CHECK(HasAccess(*pToneMap, stPipeline.nColorLut, ResourceState::ShaderRead, false));
+	}
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nColorLut, EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, false, { true, true, 8, true }, false, false, false, true));
+	ENGINE_NEXT_CHECK(stPipeline.nColorLut != EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(stPipeline.nGeometryPages != EngineNext::Rendering::INVALID_RESOURCE);
+	CheckReusableStates(stPipeline);
+}
+
 ENGINE_NEXT_TEST("Paged geometry pool declares all physical upload draw and retirement states")
 {
 	RenderPipeline stPipeline;

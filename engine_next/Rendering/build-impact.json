@@ -1,7 +1,7 @@
 {
   "placement": "mixed",
-  "reason": "Native C++ paging, conservative LOD selection and D3D12 residency are compiled into the independent renderer; selected offline shader bundles are loaded by the same executable.",
-  "host_contract": "C++17 renderer and next_asset preserve M3/v1/v2 identities. Version3 pages are source-bound and verified on actual reads; GPU pages use bounded allocation, one DIRECT queue and explicit frame-graph transitions. Animated geometry retains complete deformed source buffers and conventional draws.",
-  "rollback": "Restore the native source and rebuild; restore the selected shader bundle on the unchanged executable. The current experiment verifies native key restoration, exact pixel recovery and rejection of malformed shader data.",
-  "evidence": "data-collection/engine-next-visual-runtime-m4-4-paged-ci-correction-r11.json"
+  "reason": "Native renderer resources and settings compile into the executable; selected offline shader bundles support same-executable replacement.",
+  "host_contract": "Independent C++17 renderer, source-bound M3 and GPU assets, immutable LUT uploads and fixed shader entry names.",
+  "rollback": "Restore native inputs and the selected shader bundle with deterministic image verification.",
+  "evidence": "data-collection/engine-next-visual-runtime-m4-3-screen-effects-build-impact.json"
 }
