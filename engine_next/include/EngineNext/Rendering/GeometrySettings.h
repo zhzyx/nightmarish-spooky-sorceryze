@@ -42,6 +42,12 @@ struct GeometrySettings
 	bool bEnabled = false;
 	bool bOcclusion = true;
 	std::uint32_t nMaxCommands = 262144;
+	bool bLodEnabled = true;
+	double dPixelError = 1;
+	double dLodHysteresis = .1;
+	std::uint64_t nPageGpuBytes = 128ULL * 1024 * 1024;
+	std::uint64_t nPageStagingBytes = 16ULL * 1024 * 1024;
+	std::uint32_t nMaxPageLoads = 16;
 };
 
 // A positive command capacity is an explicit upper bound. The renderer plans

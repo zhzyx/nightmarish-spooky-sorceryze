@@ -1019,4 +1019,32 @@ ENGINE_NEXT_TEST("Color grading LUT is an immutable input of the tone mapping pa
 	}
 	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic));
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nColorLut, EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, false, { true, true, 8, true }, false, false, false, true));
+	ENGINE_NEXT_CHECK(stPipeline.nColorLut != EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(stPipeline.nGeometryPages != EngineNext::Rendering::INVALID_RESOURCE);
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("Paged geometry pool declares all physical upload draw and retirement states")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 28, true, true, 6, 6, { true, true }, true, true, { true, true, 8, true }, true, true));
+	const CompiledPass *pUpload = FindWork(stPipeline, PassWork::GeometryUpload);
+	const CompiledPass *pDepth = FindWork(stPipeline, PassWork::GeometryDepth);
+	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
+	const CompiledPass *pPresent = FindWork(stPipeline, PassWork::Present);
+	ENGINE_NEXT_CHECK(pUpload && pDepth && pGbuffer && pPresent);
+	if (!pUpload || !pDepth || !pGbuffer || !pPresent)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(stPipeline.nGeometryPages != EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(HasAccess(*pUpload, stPipeline.nGeometryPages, ResourceState::CopyDestination, true));
+	ENGINE_NEXT_CHECK(HasAccess(*pDepth, stPipeline.nGeometryPages, ResourceState::VertexIndexRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pGbuffer, stPipeline.nGeometryPages, ResourceState::VertexIndexRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pPresent, stPipeline.nGeometryPages, ResourceState::Common, false));
+	CheckReusableStates(stPipeline);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, false, 0, 0, {}, false, false, { true, true, 8 }));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.nGeometryPages, EngineNext::Rendering::INVALID_RESOURCE);
 }

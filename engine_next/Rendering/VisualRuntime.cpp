@@ -45,6 +45,7 @@
 #include "engine_next/Rendering/Cook/EnvironmentLighting.h"
 #include "engine_next/Rendering/Cook/EnvironmentImportance.h"
 #include "engine_next/Rendering/Cook/GpuPackage.h"
+#include "engine_next/Rendering/Cook/GpuPagedPackage.h"
 #include "engine_next/include/EngineNext/Rendering/RenderScene.h"
 #include "engine_next/include/EngineNext/Rendering/DeformationFrame.h"
 #include "engine_next/Rendering/DeformationChanges.h"
@@ -55,6 +56,7 @@
 #include "engine_next/include/EngineNext/Rendering/RenderConfiguration.h"
 #include "engine_next/Rendering/RenderPipeline.h"
 #include "engine_next/Platform/Windows/GpuGeometry.h"
+#include "engine_next/Platform/Windows/GpuPagedGeometry.h"
 #include "engine_next/Platform/Windows/RhiComOwner.h"
 #include "engine_next/include/EngineNext/Rendering/ShadowData.h"
 #include "engine_next/Rendering/ShadowBounds.h"
@@ -299,6 +301,11 @@ struct FrameTiming
 	bool bVolumeHistoryValid = false;
 	std::uint32_t nVolumeHistoryRead = 0;
 	std::uint32_t nParticles = 0;
+	bool bPagedLod = false;
+	std::uint64_t nPageCandidates = 0;
+	std::uint64_t nPageTriangles = 0;
+	std::uint64_t nPageResidentBytes = 0;
+	std::uint64_t nPageReadRequests = 0;
 	double dCpuMsec = 0.0;
 	double dGraphicsMsec = 0.0;
 	double dComputeMsec = 0.0;
@@ -679,7 +686,8 @@ public:
 			{
 				// A live GPU may still reference every allocation. Process teardown
 				// is the only safe terminal outcome after retirement has failed.
-				std::cerr << "Fatal GPU retirement failure; live resources retained until process teardown\n";
+				std::cerr << "Fatal GPU retirement failure; live resources retained "
+							 "until process teardown\n";
 				std::abort();
 			}
 		}
@@ -798,6 +806,11 @@ private:
 
 	GeometryClusterSet stGeometryData;
 	GpuGeometry stGeometry;
+	GpuPagedGeometry stPagedGeometry;
+	GpuPageIndex stPagedIndex;
+	bool bPagedGeometryActive = false;
+	bool bPagedCommandsExecuted = false;
+	std::uint32_t nPendingPagedFrame = FRAME_COUNT;
 	bool bGeometryActive = false;
 	std::string strGeometryFallback;
 	std::uint32_t nPendingGeometryFrame = FRAME_COUNT;
@@ -898,11 +911,13 @@ private:
 	bool bMaterialExtensions = false;
 	std::uint64_t nMaterialBytes = 0;
 	RenderScene stRenderScene;
+	GpuPageReadStats stGpuPageStats;
 	RenderConfiguration stRenderConfiguration;
 	GpuProbeGrid stGi;
 	std::uint32_t nPendingGiFrame = FRAME_COUNT;
 	bool bGiCommandsExecuted = false;
 	CameraMatrices stCameraMatrices;
+	std::array<double, 3> arrFrameCameraPosition{};
 	ShadowData stShadowData;
 	LocalShadowData stLocalShadowData;
 	Assets::SceneDocument stNetworkScene;
@@ -1007,7 +1022,9 @@ bool VisualRuntime::Initialize()
 		const HRESULT nResult = D3D12GetDebugInterface(IID_PPV_ARGS(stDebug.Put()));
 		if (FAILED(nResult))
 		{
-			return Fail("GPU validation requested but Graphics Tools debug layer is unavailable", nResult);
+			return Fail("GPU validation requested but Graphics Tools debug layer is "
+						"unavailable",
+						nResult);
 		}
 		stDebug->EnableDebugLayer();
 		stDebug->SetEnableGPUBasedValidation(TRUE);
@@ -1724,7 +1741,8 @@ bool VisualRuntime::LoadScene()
 {
 	if (stConfig.strAssetPackagePath.empty())
 	{
-		return (stConfig.strGpuPackagePath.empty() && stConfig.strRenderConfigPath.empty()) || Fail("GPU package and render configuration require a source asset package");
+		return (stConfig.strGpuPackagePath.empty() && stConfig.strRenderConfigPath.empty()) || Fail("GPU package and render configuration require a source asset "
+																									"package");
 	}
 	Assets::Diagnostics arrDiagnostics;
 	Assets::PackageData stSourcePackage;
@@ -1782,13 +1800,9 @@ bool VisualRuntime::LoadScene()
 	if (!stConfig.strGpuPackagePath.empty())
 	{
 		RenderScene stCooked;
-		if (!LoadGpuPackage(stConfig.strGpuPackagePath, stRenderScene.strPackageDigest, stCooked, arrDiagnostics))
+		if (!LoadVerifiedGpuPackage(stConfig.strGpuPackagePath, stRenderScene, {}, stCooked, stGpuPageStats, arrDiagnostics))
 		{
-			return Fail(arrDiagnostics.empty() ? "Load GPU package" : arrDiagnostics.front().strMessage);
-		}
-		if (!VerifyCookedScene(stRenderScene, stCooked, arrDiagnostics))
-		{
-			return Fail(arrDiagnostics.empty() ? "Verify GPU source binding" : arrDiagnostics.front().strMessage);
+			return Fail(arrDiagnostics.empty() ? "Load and verify GPU package" : arrDiagnostics.front().strMessage);
 		}
 		if (stRenderConfiguration.stAnimation.bEnabled)
 		{
@@ -1835,6 +1849,11 @@ bool VisualRuntime::LoadScene()
 			return Fail(arrDiagnostics.empty() ? "Prepare geometry clusters" : arrDiagnostics.back().strMessage);
 		}
 		bGeometryActive = !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
+		bPagedGeometryActive = bGeometryActive && stRenderScene.nGpuFormatVersion == 3 && stRenderConfiguration.stGeometry.bLodEnabled;
+		if (bPagedGeometryActive && (!LoadGpuPageIndex(stConfig.strGpuPackagePath, stRenderScene.strPackageDigest, {}, stPagedIndex, arrDiagnostics) || !VerifyPagedScene(stRenderScene, stPagedIndex, arrDiagnostics)))
+		{
+			return Fail(arrDiagnostics.empty() ? "Bind paged geometry source" : arrDiagnostics.back().strMessage);
+		}
 		if (stGeometryData.bCapacityFallback)
 		{
 			strGeometryFallback = "command_capacity";
@@ -1848,6 +1867,7 @@ bool VisualRuntime::LoadScene()
 			// Keep complete conventional draws until the optional cluster path
 			// can update bounds and vertex offsets for deformed instances.
 			bGeometryActive = false;
+			bPagedGeometryActive = false;
 			strGeometryFallback = "animated_vertex_layout";
 		}
 	}
@@ -2323,7 +2343,7 @@ bool VisualRuntime::CreateSceneMesh()
 	{
 		const RenderAsset &stAsset = stRenderScene.arrAssets[nAssetIndex];
 		const std::uint32_t nMaterialBase = static_cast<std::uint32_t>(arrMaterials.size());
-		if (stRenderScene.nGpuFormatVersion == 2 && stAsset.stTextureCook.arrMaterials.size() != stAsset.stMesh.arrMaterials.size())
+		if (stRenderScene.nGpuFormatVersion >= 2 && stAsset.stTextureCook.arrMaterials.size() != stAsset.stMesh.arrMaterials.size())
 		{
 			return Fail("Cooked material texture bindings do not match source materials");
 		}
@@ -2355,7 +2375,7 @@ bool VisualRuntime::CreateSceneMesh()
 				if (nTexture >= 0)
 				{
 					const TextureData &stTexture = stAsset.stMesh.arrTextures[static_cast<std::size_t>(nTexture)];
-					if (stRenderScene.nGpuFormatVersion == 2)
+					if (stRenderScene.nGpuFormatVersion >= 2)
 					{
 						const std::int32_t nVariant = stAsset.stTextureCook.arrMaterials[nSourceMaterial].arrVariants[nSlot];
 						if (nVariant < 0 || static_cast<std::size_t>(nVariant) >= stAsset.stTextureCook.arrVariants.size())
@@ -2367,7 +2387,8 @@ bool VisualRuntime::CreateSceneMesh()
 						const TextureAlphaPolicy eExpectedAlpha = nSlot == 4 || (nSlot == 0 && stMaterial.eAlphaMode == AlphaMode::Opaque) ? TextureAlphaPolicy::Ignore : TextureAlphaPolicy::Preserve;
 						if (stVariant.nImage != stTexture.nImage || stVariant.eSemantic != eExpectedSemantic || stVariant.eAlphaPolicy != eExpectedAlpha || stVariant.arrMips.empty())
 						{
-							return Fail("Cooked texture variant semantics differ from its material slot");
+							return Fail("Cooked texture variant semantics differ from its "
+										"material slot");
 						}
 						pUploadMips = &stVariant.arrMips;
 					}
@@ -2779,6 +2800,27 @@ bool VisualRuntime::CreateGeometryResources()
 		stSettings.arrDepth[nFrame] = arrFrames[nFrame].stDepth.Get();
 	}
 	Assets::Diagnostics arrDiagnostics;
+	if (bPagedGeometryActive)
+	{
+		if (!stPagedGeometry.Initialize(stDevice.Get(), stRenderScene, stPagedIndex, stGeometryData, { stVertexView, stIndexView }, stRenderConfiguration.stGeometry, arrDiagnostics))
+		{
+			if (arrDiagnostics.empty() || arrDiagnostics.back().strCode != "geometry_allocation")
+			{
+				return Fail(arrDiagnostics.empty() ? "Initialize paged geometry" : arrDiagnostics.back().strMessage);
+			}
+			strGeometryFallback = arrDiagnostics.back().strMessage;
+			bPagedGeometryActive = false;
+			if (!BuildGraph())
+			{
+				return false;
+			}
+		}
+		else
+		{
+			stSettings.bPaged = true;
+			stSettings.nMaximumCandidates = stRenderConfiguration.stGeometry.nMaxCommands;
+		}
+	}
 	if (stGeometry.Initialize(stDevice.Get(), stGeometryData, stSettings, arrDiagnostics))
 	{
 		return true;
@@ -2788,6 +2830,11 @@ bool VisualRuntime::CreateGeometryResources()
 		return Fail(arrDiagnostics.empty() ? "Initialize GPU geometry" : arrDiagnostics.back().strMessage);
 	}
 	strGeometryFallback = arrDiagnostics.back().strMessage;
+	if (bPagedGeometryActive && !stPagedGeometry.Release(stGraphics.stFence->GetCompletedValue(), arrDiagnostics))
+	{
+		return Fail("Release unused paged geometry");
+	}
+	bPagedGeometryActive = false;
 	bGeometryActive = false;
 	return BuildGraph() && CreateFrameContexts() && CreateDeferredPipeline();
 }
@@ -2812,11 +2859,60 @@ bool VisualRuntime::PrepareGeometryFrame(std::uint32_t nFrame)
 		arrViewProjection[nElement] = static_cast<float>(stCameraMatrices.arrViewProjection[nElement]);
 	}
 	Assets::Diagnostics arrDiagnostics;
+	const GeometryClusterSet *pGeometry = nullptr;
+	std::uint64_t nPageViews = 0;
+	std::uint32_t nPageViewCount = 0;
+	if (bPagedGeometryActive)
+	{
+		LodView stView;
+		stView.arrPosition = arrFrameCameraPosition;
+		stView.arrForward = { -stCameraMatrices.arrView[2], -stCameraMatrices.arrView[6], -stCameraMatrices.arrView[10] };
+		stView.dProjectionPixels = .5 * std::max(std::abs(stCameraMatrices.arrProjection[0]) * nWidth, std::abs(stCameraMatrices.arrProjection[5]) * nHeight);
+		stView.dNearDistance = stRenderConfiguration.stCamera.dNearPlane;
+		stView.dMaximumErrorPixels = stRenderConfiguration.stGeometry.dPixelError;
+		if (!stPagedGeometry.Prepare(nFrame, arrWorlds, stView, stGraphics.stFence->GetCompletedValue(), nFrames, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Prepare paged geometry" : arrDiagnostics.back().strMessage);
+		}
+		nPendingPagedFrame = nFrame;
+		bPagedCommandsExecuted = false;
+		pGeometry = &stPagedGeometry.ActiveGeometry();
+		nPageViews = stPagedGeometry.PageViews(nFrame);
+		nPageViewCount = stPagedGeometry.PageViewCount();
+		if (stRenderConfiguration.stTemporal.bEnabled && !stPagedGeometry.ChangedDraws().empty())
+		{
+			void *pMapped = nullptr;
+			const D3D12_RANGE stNoRead{ 0, 0 };
+			if (FAILED(arrFrames[nFrame].stConstants->Map(0, &stNoRead, &pMapped)))
+			{
+				return Fail("Map retired constants for LOD history rejection");
+			}
+			// A different index cut changes pixel ownership even when the retained
+			// vertices have exact previous-world positions. Reject only those draws.
+			for (std::uint32_t nDraw : stPagedGeometry.ChangedDraws())
+			{
+				const std::uint32_t nInvalidHistory = 0;
+				std::memcpy(static_cast<std::uint8_t *>(pMapped) + FRAME_CONSTANT_BYTES +
+									static_cast<std::uint64_t>(nDraw) * DRAW_CONSTANT_BYTES + offsetof(DrawConstants, arrTemporal) + sizeof(std::uint32_t),
+							&nInvalidHistory, sizeof(nInvalidHistory));
+			}
+			arrFrames[nFrame].stConstants->Unmap(0, nullptr);
+		}
+	}
 	if (!stGeometry.PrepareFrame(nFrame, arrWorlds, arrViewProjection,
 								 arrFrames[nFrame].stConstants->GetGPUVirtualAddress() + FRAME_CONSTANT_BYTES, DRAW_CONSTANT_BYTES,
-								 stRenderConfiguration.stGeometry.bOcclusion, stGraphics.stFence->GetCompletedValue(), arrDiagnostics))
+								 stRenderConfiguration.stGeometry.bOcclusion, stGraphics.stFence->GetCompletedValue(), arrDiagnostics, pGeometry, nPageViews, nPageViewCount))
 	{
 		return Fail(arrDiagnostics.empty() ? "Prepare geometry frame" : arrDiagnostics.back().strMessage);
+	}
+	FrameTiming &stTiming = Timing(nFrames);
+	stTiming.bPagedLod = bPagedGeometryActive && stPagedGeometry.UsesLod();
+	stTiming.nPageCandidates = pGeometry != nullptr ? pGeometry->nCandidateCount : stGeometryData.nCandidateCount;
+	stTiming.nPageTriangles = pGeometry != nullptr ? pGeometry->nTriangleCount : stGeometryData.nTriangleCount;
+	if (bPagedGeometryActive)
+	{
+		stTiming.nPageResidentBytes = stPagedGeometry.Telemetry().nResidentBytes;
+		stTiming.nPageReadRequests = stPagedGeometry.IoStatistics().nReadRequests;
 	}
 	nPendingGeometryFrame = nFrame;
 	bGeometryCommandsExecuted = false;
@@ -2863,6 +2959,10 @@ bool VisualRuntime::RecordGeometryPass(ID3D12GraphicsCommandList *pList, std::ui
 	ID3D12DescriptorHeap *arrHeaps[]{ stViewHeap.Get(), stSamplerHeap.Get() };
 	pList->SetDescriptorHeaps(2, arrHeaps);
 	Assets::Diagnostics arrDiagnostics;
+	if (bPagedGeometryActive && eGeometryWork == GeometryWork::Upload && !stPagedGeometry.RecordUploads(pList, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Record paged geometry copies" : arrDiagnostics.back().strMessage);
+	}
 	return stGeometry.Record(nFrame, eGeometryWork, nMip, pList, arrDiagnostics) ||
 			Fail(arrDiagnostics.empty() ? "Record geometry pass" : arrDiagnostics.back().strMessage);
 }
@@ -2882,9 +2982,9 @@ void VisualRuntime::DrawGeometry(ID3D12GraphicsCommandList *pList, std::uint32_t
 	pList->SetGraphicsRootConstantBufferView(3, arrFrames[nFrame].stConstants->GetGPUVirtualAddress());
 	pList->SetGraphicsRootDescriptorTable(4, GpuView(nFrame * FRAME_VIEW_COUNT + 26));
 	const UINT nSamplerStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-	for (std::uint32_t nBucket = 0; nBucket < stGeometry.Buckets().size(); ++nBucket)
+	for (std::uint32_t nBucket = 0; nBucket < stGeometry.Buckets(nFrame).size(); ++nBucket)
 	{
-		const GeometryBucket &stBucket = stGeometry.Buckets()[nBucket];
+		const GeometryBucket &stBucket = stGeometry.Buckets(nFrame)[nBucket];
 		ID3D12PipelineState *pPipeline = arrGeometryDepthPipelines[stBucket.nFlags].Get();
 		if (!bDepthOnly)
 		{
@@ -2898,11 +2998,15 @@ void VisualRuntime::DrawGeometry(ID3D12GraphicsCommandList *pList, std::uint32_t
 		pList->SetGraphicsRootDescriptorTable(2, stSampler);
 		stGeometry.Execute(nFrame, bDepthOnly ? 0 : 1, nBucket, pList);
 	}
+	// ExecuteIndirect changes IA bindings for page draws. Subsequent forward and
+	// shadow work continues to use the unchanged complete source scene buffers.
+	pList->IASetVertexBuffers(0, 1, &stVertexView);
+	pList->IASetIndexBuffer(&stIndexView);
 }
 
 void VisualRuntime::ReleaseGeometryResources()
 {
-	if (stGeometry.MipCount() == 0)
+	if (stGeometry.MipCount() == 0 && !bPagedGeometryActive)
 	{
 		return;
 	}
@@ -2921,14 +3025,30 @@ void VisualRuntime::ReleaseGeometryResources()
 			bReleased = stGeometry.Discard(nPendingGeometryFrame, arrDiagnostics);
 		}
 	}
-	bReleased = bReleased && stGeometry.Release(nCompleted, arrDiagnostics);
+	if (nPendingPagedFrame < FRAME_COUNT)
+	{
+		if (!bPagedCommandsExecuted)
+		{
+			arrFrames[nPendingPagedFrame].stGraphicsList.Reset();
+		}
+		const bool bPageRetired = bPagedCommandsExecuted ? stPagedGeometry.Commit(nPendingPagedFrame, nCompleted, arrDiagnostics) : stPagedGeometry.Discard(nPendingPagedFrame, arrDiagnostics);
+		bReleased = bPageRetired && bReleased;
+	}
+	if (bPagedGeometryActive)
+	{
+		const bool bPageReleased = stPagedGeometry.Release(nCompleted, arrDiagnostics);
+		bReleased = bPageReleased && bReleased;
+	}
+	bReleased = stGeometry.Release(nCompleted, arrDiagnostics) && bReleased;
 	if (!bReleased && SUCCEEDED(stDevice->GetDeviceRemovedReason()))
 	{
 		std::cerr << "Fatal geometry retirement failure\n";
 		std::abort();
 	}
 	nPendingGeometryFrame = FRAME_COUNT;
+	nPendingPagedFrame = FRAME_COUNT;
 	bGeometryCommandsExecuted = false;
+	bPagedCommandsExecuted = false;
 }
 
 bool VisualRuntime::DiscardUnsubmittedFrames()
@@ -2938,7 +3058,8 @@ bool VisualRuntime::DiscardUnsubmittedFrames()
 		const bool bGiPending = nPendingGiFrame == nFrame && !bGiCommandsExecuted;
 		const bool bGeometryPending = nPendingGeometryFrame == nFrame && !bGeometryCommandsExecuted;
 		const bool bAnimationPending = nPendingAnimationFrame == nFrame && !bAnimationCommandsExecuted;
-		if (!bGiPending && !bGeometryPending && !bAnimationPending)
+		const bool bPagePending = nPendingPagedFrame == nFrame && !bPagedCommandsExecuted;
+		if (!bGiPending && !bGeometryPending && !bAnimationPending && !bPagePending)
 		{
 			continue;
 		}
@@ -2968,6 +3089,14 @@ bool VisualRuntime::DiscardUnsubmittedFrames()
 				return Fail(arrDiagnostics.empty() ? "Discard deformation frame" : arrDiagnostics.back().strMessage);
 			}
 			nPendingAnimationFrame = FRAME_COUNT;
+		}
+		if (bPagePending)
+		{
+			if (!stPagedGeometry.Discard(nFrame, arrDiagnostics))
+			{
+				return Fail(arrDiagnostics.empty() ? "Discard paged geometry frame" : arrDiagnostics.back().strMessage);
+			}
+			nPendingPagedFrame = FRAME_COUNT;
 		}
 	}
 	return true;
@@ -4932,6 +5061,7 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 	{
 		return Fail(arrDiagnostics.empty() ? "Prepare temporal frame" : arrDiagnostics.back().strMessage);
 	}
+	arrFrameCameraPosition = stCamera.arrPosition;
 	stCameraMatrices = stTemporalFrame.stCurrentUnjitteredCamera;
 	if (stRenderConfiguration.stTemporal.bEnabled)
 	{
@@ -5433,6 +5563,7 @@ bool VisualRuntime::BuildGraph()
 	}
 	GeometryFeatures stGeometryFeatures;
 	stGeometryFeatures.bEnabled = bGeometryActive;
+	stGeometryFeatures.bPaged = bPagedGeometryActive;
 	stGeometryFeatures.bOcclusion = stRenderConfiguration.stGeometry.bOcclusion;
 	stGeometryFeatures.nHiZMips = 1;
 	for (std::uint32_t nSize = 1; nSize < std::max(nWidth, nHeight); nSize *= 2)
@@ -5472,20 +5603,36 @@ void VisualRuntime::ApplyBarriers(ID3D12GraphicsCommandList *pList, const std::v
 {
 	for (const ResourceBarrier &stBarrier : arrBarriers)
 	{
-		D3D12_RESOURCE_BARRIER stNative{};
-		stNative.Type = stBarrier.eKind == BarrierKind::Uav ? D3D12_RESOURCE_BARRIER_TYPE_UAV : D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-		if (stNative.Type == D3D12_RESOURCE_BARRIER_TYPE_UAV)
+		const auto fnApply = [pList, &stBarrier](ID3D12Resource *pResource)
 		{
-			stNative.UAV.pResource = arrResources[stBarrier.nResource];
+			D3D12_RESOURCE_BARRIER stNative{};
+			stNative.Type = stBarrier.eKind == BarrierKind::Uav ? D3D12_RESOURCE_BARRIER_TYPE_UAV : D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+			if (stNative.Type == D3D12_RESOURCE_BARRIER_TYPE_UAV)
+			{
+				stNative.UAV.pResource = pResource;
+			}
+			else
+			{
+				stNative.Transition.pResource = pResource;
+				stNative.Transition.StateBefore = NativeState(stBarrier.eBefore);
+				stNative.Transition.StateAfter = NativeState(stBarrier.eAfter);
+				stNative.Transition.Subresource = stBarrier.nSubresource;
+			}
+			pList->ResourceBarrier(1, &stNative);
+		};
+		if (bPagedGeometryActive && stBarrier.nResource == stRenderPipeline.nGeometryPages)
+		{
+			// All physical pages start and finish Common. The pool declaration is
+			// expanded after Prepare, so this includes every newly allocated copy.
+			for (ID3D12Resource *pResource : stPagedGeometry.Resources())
+			{
+				fnApply(pResource);
+			}
 		}
 		else
 		{
-			stNative.Transition.pResource = arrResources[stBarrier.nResource];
-			stNative.Transition.StateBefore = NativeState(stBarrier.eBefore);
-			stNative.Transition.StateAfter = NativeState(stBarrier.eAfter);
-			stNative.Transition.Subresource = stBarrier.nSubresource;
+			fnApply(arrResources[stBarrier.nResource]);
 		}
-		pList->ResourceBarrier(1, &stNative);
 	}
 }
 
@@ -5651,7 +5798,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		}
 		if (bGeometryActive)
 		{
-			arrResources[stRenderPipeline.nGeometryClusters] = stGeometry.Clusters();
+			arrResources[stRenderPipeline.nGeometryClusters] = stGeometry.Clusters(nIndex);
 			arrResources[stRenderPipeline.nGeometryReadback] = stGeometry.Readback(nIndex);
 			for (std::uint32_t nPhase = 0; nPhase < 2; ++nPhase)
 			{
@@ -5986,6 +6133,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	bGiCommandsExecuted = nPendingGiFrame == nIndex;
 	bGeometryCommandsExecuted = nPendingGeometryFrame == nIndex;
 	bAnimationCommandsExecuted = nPendingAnimationFrame == nIndex;
+	bPagedCommandsExecuted = nPendingPagedFrame == nIndex;
 	stGraphics.stQueue->ExecuteCommandLists(1, &pGraphicsList);
 	const HRESULT nPresent = stSwapchain->Present(stConfig.bVsync ? 1 : 0, !stConfig.bVsync && bTearing ? DXGI_PRESENT_ALLOW_TEARING : 0);
 	if (!stGraphics.Signal(stFrame.nGraphicsFence))
@@ -6021,6 +6169,16 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		}
 		nPendingGeometryFrame = FRAME_COUNT;
 		bGeometryCommandsExecuted = false;
+	}
+	if (bPagedGeometryActive)
+	{
+		Assets::Diagnostics arrDiagnostics;
+		if (!stPagedGeometry.Commit(nIndex, stFrame.nGraphicsFence, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Commit paged geometry" : arrDiagnostics.back().strMessage);
+		}
+		nPendingPagedFrame = FRAME_COUNT;
+		bPagedCommandsExecuted = false;
 	}
 	if (FAILED(nPresent))
 	{
@@ -6131,6 +6289,7 @@ bool VisualRuntime::Resize()
 	}
 	++nResizes;
 	bGeometryActive = stRenderConfiguration.stGeometry.bEnabled && !bAnimationActive && !stGeometryData.bCapacityFallback && !stGeometryData.arrClusters.empty();
+	bPagedGeometryActive = bGeometryActive && stRenderScene.nGpuFormatVersion == 3 && stRenderConfiguration.stGeometry.bLodEnabled;
 	if (!ResetTemporalHistory() || !CreateTargets())
 	{
 		return false;
@@ -6315,8 +6474,8 @@ bool VisualRuntime::Run()
 		}
 		if (stConfig.bConnect && !bNetworkStartedAfterGpuWarmup)
 		{
-			// Driver validation can block the first draw for longer than a transport timeout.
-			// Retire that work before starting the peer's handshake clock.
+			// Driver validation can block the first draw for longer than a transport
+			// timeout. Retire that work before starting the peer's handshake clock.
 			if (!stGraphics.Flush() || !stCompute.Flush())
 			{
 				return Fail("Retire GPU warmup before network startup");
@@ -6428,7 +6587,8 @@ Serialization::JsonValue VisualRuntime::DescribeGraph() const
 	using Serialization::JsonValue;
 	JsonValue::Object mapGraph;
 	mapGraph["revision"] = JsonValue(std::int64_t{ 1 });
-	mapGraph["scope"] = JsonValue("Fixed pass structure shared by every recorded frame; native allocations vary by frame context and resize.");
+	mapGraph["scope"] = JsonValue("Fixed pass structure shared by every recorded frame; native "
+								  "allocations vary by frame context and resize.");
 	JsonValue::List arrPasses;
 	for (const CompiledPass &stPass : stCompiled.arrPasses)
 	{
@@ -6624,8 +6784,10 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 			nCookedMipLevels += stVariant.arrMips.size();
 		}
 	}
+	mapReport["gpu_page_read_requests"] = JsonValue(static_cast<std::int64_t>(stGpuPageStats.nReadRequests));
+	mapReport["gpu_page_bytes_read"] = JsonValue(static_cast<std::int64_t>(stGpuPageStats.nBytesRead));
 	mapReport["gpu_package_version"] = JsonValue(static_cast<std::int64_t>(stRenderScene.nGpuFormatVersion));
-	mapReport["texture_mip_source"] = JsonValue(!bSceneMode ? "none" : (stRenderScene.nGpuFormatVersion == 2 ? "cooked_gpu_package" : "runtime_decode"));
+	mapReport["texture_mip_source"] = JsonValue(!bSceneMode ? "none" : (stRenderScene.nGpuFormatVersion >= 2 ? "cooked_gpu_package" : "runtime_decode"));
 	mapReport["cooked_texture_mip_levels"] = JsonValue(static_cast<std::int64_t>(nCookedMipLevels));
 	mapReport["loaded_mesh_clusters"] = JsonValue(static_cast<std::int64_t>(nLoadedClusters));
 	mapReport["mesh_cluster_draw_path"] = JsonValue(bGeometryActive ? "gpu_cluster_indirect" : "indexed_primitive");
@@ -6635,6 +6797,35 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["geometry_fallback_reason"] = JsonValue(strGeometryFallback);
 	mapReport["geometry_candidates"] = JsonValue(static_cast<std::int64_t>(stGeometryData.nCandidateCount));
 	mapReport["geometry_buffer_bytes"] = JsonValue(static_cast<std::int64_t>(stGeometry.AllocatedBytes()));
+	mapReport["paged_geometry_active"] = JsonValue(bPagedGeometryActive);
+	mapReport["paged_geometry_uses_lod"] = JsonValue(bPagedGeometryActive && stPagedGeometry.UsesLod());
+	mapReport["geometry_indirect_stride"] = JsonValue(static_cast<std::int64_t>(bPagedGeometryActive ? 64 : 32));
+	const ResidencyTelemetry &stResidency = stPagedGeometry.Telemetry();
+	mapReport["paged_geometry_resident_bytes"] = JsonValue(static_cast<std::int64_t>(stResidency.nResidentBytes));
+	mapReport["paged_geometry_peak_gpu_bytes"] = JsonValue(static_cast<std::int64_t>(stResidency.nPeakGpuBytes));
+	mapReport["paged_geometry_peak_staging_bytes"] = JsonValue(static_cast<std::int64_t>(stResidency.nPeakStagingBytes));
+	mapReport["paged_geometry_view_bytes"] = JsonValue(static_cast<std::int64_t>(stPagedGeometry.OverheadBytes()));
+	mapReport["paged_geometry_loads"] = JsonValue(static_cast<std::int64_t>(stResidency.nLoadsStarted));
+	mapReport["paged_geometry_failures"] = JsonValue(static_cast<std::int64_t>(stResidency.nLoadFailures));
+	mapReport["paged_geometry_evictions"] = JsonValue(static_cast<std::int64_t>(stResidency.nEvictions));
+	mapReport["paged_geometry_budget_stalls"] = JsonValue(static_cast<std::int64_t>(stPagedGeometry.BudgetStalls()));
+	mapReport["paged_geometry_world_cache_bytes"] = JsonValue(
+			static_cast<std::int64_t>(stPagedGeometry.WorldCache().CachedBytes()));
+	mapReport["paged_geometry_world_cache_hits"] =
+			JsonValue(static_cast<std::int64_t>(stPagedGeometry.WorldCache().Hits()));
+	mapReport["paged_geometry_world_cache_misses"] = JsonValue(
+			static_cast<std::int64_t>(stPagedGeometry.WorldCache().Misses()));
+	mapReport["paged_geometry_active_reuses"] =
+			JsonValue(static_cast<std::int64_t>(stPagedGeometry.ActiveReuses()));
+	mapReport["paged_geometry_selection_reuses"] = JsonValue(static_cast<std::int64_t>(stPagedGeometry.SelectionReuses()));
+	mapReport["paged_geometry_camera_position"] = JsonValue(
+			JsonValue::List{ arrFrameCameraPosition[0], arrFrameCameraPosition[1],
+							 arrFrameCameraPosition[2] });
+	mapReport["paged_geometry_read_requests"] = JsonValue(static_cast<std::int64_t>(stPagedGeometry.IoStatistics().nReadRequests));
+	mapReport["paged_geometry_read_bytes"] = JsonValue(static_cast<std::int64_t>(stPagedGeometry.IoStatistics().nBytesRead));
+	mapReport["paged_geometry_last_error"] = JsonValue(stPagedGeometry.LastPageError());
+	mapReport["paged_geometry_event_hash"] = JsonValue(std::to_string(stResidency.nEventHash));
+
 	const GeometryGpuStatistics &stGeometryStats = stGeometry.Statistics();
 	mapReport["geometry_depth_commands"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nDepthCommands));
 	mapReport["geometry_depth_triangles"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nDepthTriangles));
@@ -6776,6 +6967,11 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 		mapTiming["volume_history_valid"] = JsonValue(stTiming.bVolumeHistoryValid);
 		mapTiming["volume_history_read_index"] = JsonValue(static_cast<std::int64_t>(stTiming.nVolumeHistoryRead));
 		mapTiming["particles"] = JsonValue(static_cast<std::int64_t>(stTiming.nParticles));
+		mapTiming["paged_lod"] = JsonValue(stTiming.bPagedLod);
+		mapTiming["page_candidates"] = JsonValue(static_cast<std::int64_t>(stTiming.nPageCandidates));
+		mapTiming["page_triangles"] = JsonValue(static_cast<std::int64_t>(stTiming.nPageTriangles));
+		mapTiming["page_resident_bytes"] = JsonValue(static_cast<std::int64_t>(stTiming.nPageResidentBytes));
+		mapTiming["page_read_requests"] = JsonValue(static_cast<std::int64_t>(stTiming.nPageReadRequests));
 		mapTiming["lighting_seconds"] = JsonValue(stTiming.dLightingSeconds);
 		mapTiming["directional_illuminance"] = JsonValue(stTiming.dDirectionalIlluminance);
 		mapTiming["animation_seconds"] = JsonValue(stTiming.dAnimationSeconds);
@@ -6819,7 +7015,10 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["frame_samples"] = JsonValue(std::move(arrSamples));
 	mapReport["first_recorded_frame_id"] = JsonValue(static_cast<std::int64_t>(nFirstFrame));
 	mapReport["discarded_old_frame_samples"] = JsonValue(static_cast<std::int64_t>(nFirstFrame));
-	mapReport["timing_scope"] = JsonValue("CPU frame includes event handling, fence waits and presentation; GPU pass intervals include their resource barriers. Present pass GPU time covers release barriers, not display scanout.");
+	mapReport["timing_scope"] = JsonValue(
+			"CPU frame includes event handling, fence waits and presentation; GPU "
+			"pass intervals include their resource barriers. Present pass GPU time "
+			"covers release barriers, not display scanout.");
 	mapReport["cpu_frame_msec"] = JsonValue(std::move(arrCpu));
 	mapReport["graphics_msec"] = JsonValue(std::move(arrGpu));
 	mapReport["compute_msec"] = JsonValue(std::move(arrCompute));

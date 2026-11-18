@@ -102,6 +102,7 @@ struct GeometryFeatures
 	bool bEnabled = false;
 	bool bOcclusion = true;
 	std::uint32_t nHiZMips = 1;
+	bool bPaged = false;
 };
 
 struct RenderPipeline
@@ -145,6 +146,8 @@ struct RenderPipeline
 	std::array<ResourceId, 3> arrGiRead{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	std::array<ResourceId, 3> arrGiWrite{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	ResourceId nGeometryClusters = INVALID_RESOURCE;
+	// The host expands each pool barrier to every resident and pending page buffer.
+	ResourceId nGeometryPages = INVALID_RESOURCE;
 	ResourceId nGeometryHiZ = INVALID_RESOURCE;
 	ResourceId nGeometryReadback = INVALID_RESOURCE;
 	ResourceId nDeformedVertices = INVALID_RESOURCE;

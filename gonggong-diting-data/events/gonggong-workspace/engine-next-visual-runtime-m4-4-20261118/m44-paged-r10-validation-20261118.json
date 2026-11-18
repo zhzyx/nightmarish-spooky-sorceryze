@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "event_id": "m44-paged-r10-validation-20261118",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-4-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T11:50:54.026505+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1506",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m44-request-20261118"
+  ],
+  "payload": {
+    "candidate": "paged-residency-r10",
+    "native_key": "e0897ff8aa4a2775392a44a95da4a963550374857c80052ac462d18937ce92e8",
+    "delivery_base_commit": "f539bd711fc623937350a7ea8d689bd929170ab5",
+    "scope": "Verified v3 mesh paging, closed-cut residency and current-frame selection reuse integrated with E animation fallback.",
+    "verification": {
+      "path": "data-collection/engine-next-visual-runtime-m4-4-paged-geometry-verification.json",
+      "sha256": "f04c30460ee2d42bffd289b76f97649d1c56bd487ca707d2aa7477afce1ac37d",
+      "size_bytes": 29922
+    },
+    "source_review": {
+      "path": "data-collection/engine-next-visual-runtime-m4-4-paged-source-review.json",
+      "sha256": "08d6175fac2fe081c7008dd6f6d89651c1a4013f8da66cedda7a883182682e8b",
+      "size_bytes": 5370
+    },
+    "module_build_impact": {
+      "path": "data-collection/engine-next-visual-runtime-m4-4-paged-build-impact.json",
+      "sha256": "1bf12a9f8a5dc4759723f0f7b39baeecddd9c780846324ae5388f663129428db",
+      "size_bytes": 38685
+    },
+    "normal_frames": 745,
+    "module_frames": 144,
+    "cpu_tests_per_compiler": 533,
+    "cpu_checks_per_compiler": 535844,
+    "gpu_validation_errors": 0,
+    "stage_complete": false,
+    "issues_remaining_open": [
+      1506,
+      1323
+    ],
+    "remaining": [
+      "Native4K quiet throughput comparison remains pending.",
+      "GPU texture residency, background page loading and remaining full M4.4 acceptance are not asserted complete.",
+      "Formal writer, remote CI and main delivery still pending for this increment."
+    ]
+  },
+  "sha256": "3c715442881051b5b377b6c865515cabfda981128f4f3ddda212f0b660cbaf47"
+}

@@ -68,7 +68,8 @@ struct RenderInstance
 
 struct RenderScene
 {
-	// Zero for source scenes, one for legacy layout packages, two for prepared GPU data.
+	// Zero for source scenes, one for legacy layout, two for prepared GPU data.
+	// Three identifies paged metadata whose geometry/image/mip bytes are external.
 	std::uint32_t nGpuFormatVersion = 0;
 	std::string strSceneId;
 	std::string strSceneRevision;
