@@ -41,6 +41,8 @@ The coarse per-frame shadow allocation can itself be reused only when its full p
 
 ## Required validation
 
-CPU tests cover bounded allocation, deterministic eviction, all-pinned overflow, invalid input transactions, page borders, reversed axes, conservative feedback reprojection, old/new caster invalidation, unchanged-bounds deformation, depth-only projection changes, cancellation, and commit.
+CPU tests cover bounded allocation, deterministic eviction, all-pinned overflow, invalid input transactions, page borders, reversed axes, conservative feedback reprojection, old/new caster invalidation, unchanged-bounds deformation, depth-only projection changes, cancellation, and commit. The physical pool is declared with its full array-layer count in FrameGraph, including a last-layer transition regression and a deliberately incorrect one-layer negative control.
+
+The offline `--exercise-shadow-updates` validation option changes the camera during frames 16..31, rotates the directional light during 48..63, and translates source node 1 during 80..95, restoring each state afterward. It is rejected for connected gameplay sessions. This lets GPU captures bind actual invalidation to deterministic movement without changing the authoritative simulation or requiring desktop input.
 
 Real GPU tests must compare feature off, enabled uncached, and cached results; exercise a static view, camera translation, changing light direction, moving rigid and skinned casters, alpha cutout, tiny pool overflow, resize/projection resets, and rollback. Actual depth pool/table/feedback bytes and draw dispatches must be read from captures. Static reuse must demonstrate reduced page draws without changing the image. High-detail imagery and pool pressure must be shown separately from any final 4K performance or UE quality conclusion.

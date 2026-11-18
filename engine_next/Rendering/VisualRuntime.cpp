@@ -1011,6 +1011,10 @@ D3D12_GPU_DESCRIPTOR_HANDLE VisualRuntime::GpuView(std::uint32_t nIndex) const
 
 bool VisualRuntime::Initialize()
 {
+	if (stConfig.bConnect && stConfig.bExerciseShadowUpdates)
+	{
+		return Fail("Shadow update validation is restricted to offline scenes");
+	}
 	std::string strWindowError;
 	if (!stWindow.Initialize(L"Engine Next - independent D3D12 runtime", stConfig.nWidth, stConfig.nHeight, stConfig.bHidden, strWindowError))
 	{
@@ -5047,9 +5051,10 @@ bool VisualRuntime::CreateConstantBuffers()
 bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 {
 	CameraSettings stCamera = stRenderConfiguration.stCamera;
-	stCamera.arrPosition[0] += fCameraX;
+	const double dExerciseCamera = stConfig.bExerciseShadowUpdates && nFrames >= 16 && nFrames < 32 ? 0.5 : 0;
+	stCamera.arrPosition[0] += fCameraX + dExerciseCamera;
 	stCamera.arrPosition[1] += fCameraY;
-	stCamera.arrTarget[0] += fCameraX;
+	stCamera.arrTarget[0] += fCameraX + dExerciseCamera;
 	stCamera.arrTarget[1] += fCameraY;
 	Assets::Diagnostics arrDiagnostics;
 	std::vector<TemporalDrawInput> arrTemporalDraws;
@@ -5316,6 +5321,10 @@ std::array<float, 16> VisualRuntime::DrawTransform(const GpuDraw &stDraw) const
 			}
 			break;
 		}
+	}
+	if (stConfig.bExerciseShadowUpdates && nFrames >= 80 && nFrames < 96 && stDraw.nSourceNode == 1)
+	{
+		arrWorld[12] += 0.5F;
 	}
 	return arrWorld;
 }
@@ -5882,6 +5891,11 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			}
 		}
 		stFrameLight = stRenderConfiguration.stDirectionalLight;
+		if (stConfig.bExerciseShadowUpdates && nFrames >= 48 && nFrames < 64)
+		{
+			const std::array<double, 3> arrDirection = stFrameLight.arrDirection;
+			stFrameLight.arrDirection = { -arrDirection[2], arrDirection[1], arrDirection[0] };
+		}
 		Assets::Diagnostics arrLightDiagnostics;
 		if (!EvaluateLightAnimation(stRenderConfiguration.stLightAnimation, stRenderConfiguration.stDirectionalLight.dIlluminance,
 									dSeconds, stFrameLight.dIlluminance, arrLightDiagnostics))
@@ -6750,6 +6764,7 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["shadow_resolution"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stShadows.nResolution));
 	mapReport["shadow_filter"] = JsonValue("pcf_3x3_cascade_blend");
 	mapReport["virtual_shadows_enabled"] = JsonValue(UseVirtualShadows());
+	mapReport["shadow_update_exercise"] = JsonValue(stConfig.bExerciseShadowUpdates);
 	mapReport["virtual_shadow_cache"] = JsonValue(stRenderConfiguration.stShadows.stVirtualPages.bCache);
 	mapReport["virtual_shadow_resolution"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stShadows.stVirtualPages.nResolution));
 	mapReport["virtual_shadow_physical_pages"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stShadows.stVirtualPages.nPhysicalPages));

@@ -46,6 +46,8 @@ struct VisualConfig
 	bool bVsync = false;
 	bool bExerciseResize = false;
 	bool bExerciseProjection = false;
+	// Offline validation: camera [16,32), light [48,64), source node 1 [80,96).
+	bool bExerciseShadowUpdates = false;
 	bool bDeterministic = false;
 	bool bAnimation = false;
 	std::string strShaderDirectory;
