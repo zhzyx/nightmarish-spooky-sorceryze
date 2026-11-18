@@ -1217,3 +1217,18 @@ ENGINE_NEXT_TEST("Render configuration rejects invalid GI even when disabled")
 		CheckRejected(stValue);
 	}
 }
+
+ENGINE_NEXT_TEST("Render configuration routes optional GPU geometry settings transactionally")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stConfiguration.stGeometry.bEnabled);
+	(*stValue.GetObject())["geometry_culling"] = JsonValue::Object{ { "enabled", true }, { "occlusion", false }, { "max_commands", std::int64_t{ 1 } } };
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stGeometry.bEnabled && !stConfiguration.stGeometry.bOcclusion && stConfiguration.stGeometry.nMaxCommands == 1);
+	(*(*stValue.GetObject())["geometry_culling"].GetObject())["unexpected"] = true;
+	ENGINE_NEXT_CHECK(!EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stGeometry.bEnabled && stConfiguration.stGeometry.nMaxCommands == 1);
+}

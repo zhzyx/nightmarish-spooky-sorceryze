@@ -51,6 +51,11 @@ SHADER_FILES = {
     "GiPrepare.cs.cso",
     "GiTrace.cs.cso",
     "GiIntegrate.cs.cso",
+    "GeometryCull.cs.cso",
+    "GeometryHiZCopy.cs.cso",
+    "GeometryHiZReduce.cs.cso",
+    "GeometryDepth.vs.cso",
+    "GeometryDepth.ps.cso",
 }
 
 

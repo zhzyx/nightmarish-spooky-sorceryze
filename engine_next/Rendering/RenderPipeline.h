@@ -76,12 +76,27 @@ enum class PassWork : std::uint8_t
 	GiTrace = 32,
 	GiUpdate = 33,
 	GiReadback = 34,
+	GeometryUpload = 40,
+	GeometryClearDepth = 41,
+	GeometryCullDepth = 42,
+	GeometryDepth = 43,
+	GeometryHiZ = 44,
+	GeometryClearColor = 45,
+	GeometryCullColor = 46,
+	GeometryReadback = 47,
 };
 
 struct ForwardEffects
 {
 	bool bVolume = false;
 	bool bTransparency = false;
+};
+
+struct GeometryFeatures
+{
+	bool bEnabled = false;
+	bool bOcclusion = true;
+	std::uint32_t nHiZMips = 1;
 };
 
 struct RenderPipeline
@@ -123,6 +138,11 @@ struct RenderPipeline
 	ResourceId nGiReadback = INVALID_RESOURCE;
 	std::array<ResourceId, 3> arrGiRead{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	std::array<ResourceId, 3> arrGiWrite{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
+	ResourceId nGeometryClusters = INVALID_RESOURCE;
+	ResourceId nGeometryHiZ = INVALID_RESOURCE;
+	ResourceId nGeometryReadback = INVALID_RESOURCE;
+	std::array<ResourceId, 2> arrGeometryArguments{ INVALID_RESOURCE, INVALID_RESOURCE };
+	std::array<ResourceId, 2> arrGeometryCounters{ INVALID_RESOURCE, INVALID_RESOURCE };
 	// Additional reflection color levels 1..N-1. Before tracing, level zero is
 	// nReflectedHdr containing full lighting without screen-space reflections.
 	std::vector<ResourceId> arrReflectionMips;
@@ -162,6 +182,6 @@ struct RenderPipeline
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false);
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {});
 
 } // namespace EngineNext::Rendering
