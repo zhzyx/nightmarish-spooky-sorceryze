@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "event_id": "m43-shadow-receiver-plane-r6-verified-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T07:24:37.932184+00:00",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-4c450671",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116"
+  ],
+  "payload": {
+    "scope": "Directional shadow receiver-plane comparison correction",
+    "native_key": "28d905de8f5b7ba3b7b2c589d74da08ce0c7b68266dc1f95bcf2d31e64ede56b",
+    "source_base_commit": "2dbfc19fa30a70dc96be341a2b3eda47fb05683b",
+    "delivery_base_commit": "eb6d6512ff14942e5f26e25264959a4c5600d37f",
+    "cpu": {
+      "current_msvc_tests": 420,
+      "current_msvc_checks": 485430,
+      "current_scoped_clang_cl_tests": 11,
+      "current_scoped_clang_cl_checks": 6119,
+      "historical_r5_full_clang_cl_tests": 420,
+      "historical_r5_full_clang_cl_checks": 485430,
+      "tool_tests": 22,
+      "contract_tests": 31,
+      "contract_skips": 1
+    },
+    "gpu": "Current R6 A Off 120 frames, A/B combined 48 frames each, zero GPU validation errors. Current images match R4 byte-for-byte.",
+    "module": "Three clean builds verify native invalidation and restoration. One baseline executable verifies changed shaders, exact pixel rollback, and malformed shader rejection at zero frames.",
+    "historical_comparison": "R3 actual readback matches original frame constants and reduces the measured floor stripe metric. Its binary identity remains explicitly historical.",
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-shadow-plane-source-review.json",
+      "data-collection/engine-next-visual-runtime-m4-3-shadow-plane-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-3-shadow-plane-verification.json"
+    ],
+    "stage_complete": false,
+    "remaining": "Rough-sphere environment pattern, full M4.3/parent features, UE A-F and native 4K performance/stability remain open. Formal CI and main delivery follow."
+  },
+  "sha256": "e4bc8c321c6b92fd1516d93e735f18e40eed4df4fe3c7f2c816fca21f7e6dd5c"
+}

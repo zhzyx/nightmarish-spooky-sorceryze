@@ -162,8 +162,8 @@ float dot(Float3 stLeft, Float3 stRight)
 Float3 cross(Float3 stLeft, Float3 stRight)
 {
 	return { stLeft.y * stRight.z - stLeft.z * stRight.y,
-		stLeft.z * stRight.x - stLeft.x * stRight.z,
-		stLeft.x * stRight.y - stLeft.y * stRight.x };
+			 stLeft.z * stRight.x - stLeft.x * stRight.z,
+			 stLeft.x * stRight.y - stLeft.y * stRight.x };
 }
 
 float length(Float3 stValue)
