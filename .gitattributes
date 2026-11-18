@@ -113,3 +113,11 @@ data-collection/native-model-producer-1486.json -text whitespace=cr-at-eol
 data-collection/native-model-producer-live-review-1486.json -text whitespace=cr-at-eol
 data-collection/native-model-producer-review-1486.json -text whitespace=cr-at-eol
 data-collection/native-live-comparison-1486.json -text whitespace=cr-at-eol
+
+# Preserve exact continuous integration trial receipts and their referenced hashes.
+data-collection/native-continuous-integration-before-1488.json -text whitespace=cr-at-eol
+data-collection/native-continuous-integration-fifty-member250-1488.json -text whitespace=cr-at-eol
+data-collection/native-continuous-integration-first250-1488.json -text whitespace=cr-at-eol
+data-collection/native-continuous-integration-history250-1488.json -text whitespace=cr-at-eol
+data-collection/native-continuous-integration-isolated-history250-1488.json -text whitespace=cr-at-eol
+data-collection/native-continuous-two-user-before-1488.json -text whitespace=cr-at-eol

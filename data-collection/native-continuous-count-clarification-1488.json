@@ -1,0 +1,17 @@
+{
+  "issue": 1488,
+  "scope": "Root implements exact count precision explicitly reported by final independent reviewer; no source, input blobs, test outputs or prior results change. Final reviewer original bytes remain retained; this wording delta is not represented as a new independent review.",
+  "review_sha256": "532120de96f1e8cb503425aa4867d644ddcde7cc5b9323a4f6085d848123f6b3",
+  "original_proof_sha256": "727b0bb4e6ed8e142b062fc73f627512a4fb8adae8a9f65bce483c93d4f87ee5",
+  "corrected_proof_sha256": "d4c6d8fb7e21602d43021e7b6cc8b721847e9f01731ff6b47a5927ec54c54510",
+  "independent_count": {
+    "pytest_summary": "94 passed, 1 skipped, 5 deselected, 4 subtests passed",
+    "report_call_rows": {
+      "passed": 98,
+      "skipped": 1
+    },
+    "interpretation": "98 passing call records includes4 subtests; not98 top-level pytest cases."
+  },
+  "original_observed": "Before producer dependency alignment:50 actual members,250 unique deterministic producer processes,36 publications with the six continuous source files unchanged from current review2; that run used the older NativeWorker without argv_sources fingerprints. After alignment:18 focused tests passed on current indexed Worker and continuous integration/cache/identity/fixed-group paths. The complete250 workload was not repeated after this dependency change. Independent review2 had41 focused passing tests and confirmed two original failure probes fixed. Historical Windows matrix100 plus4 subtests passed across fixture correction; Linux98 passed1 skipped with5 Node tests deselected before annotation-only changes. Exact evidence remains source-bound. No model or rendering quality claim.",
+  "corrected_observed": "Before producer dependency alignment:50 actual members,250 unique deterministic producer processes,36 publications with the six continuous source files unchanged from current review2; that run used the older NativeWorker without argv_sources fingerprints. After alignment:18 focused tests passed on current indexed Worker and continuous integration/cache/identity/fixed-group paths. The complete250 workload was not repeated after this dependency change. Independent review2 had41 focused passing tests and confirmed two original failure probes fixed. Historical Windows matrix100 plus4 subtests passed across fixture correction; Linux98 passing call records (94 pytest cases plus4 subtests),1 skipped with5 Node tests deselected before annotation-only changes. Exact evidence remains source-bound. No model or rendering quality claim."
+}

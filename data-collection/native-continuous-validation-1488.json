@@ -1,0 +1,454 @@
+{
+  "request_id": "native-continuous-integration-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1488",
+  "source_hashes": {
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "edbc573768f211891b8b9485ba8003611b534c52bc7aaf5f813ca25d0bcc9bc2",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "a8525bc1105d6d7e95deb2996a320ba1e52e014a8f3f399c333d603f3d32fc46",
+    "customizations/components/tianxuan/duobao/native_check_runner.py": "33cc2e31e3fb8cf52b48cb6aafc5c48c1fd8ac2d8ac3286093ab0a49aef82ec7",
+    "customizations/components/tianxuan/server/native_api.py": "553cca51525506f303e6ae334ee22675d44cb22d65d0102b734863725dfd7328",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "97f149c125127bbbba3ce183fbaf6491a973ea47fa72f07b5bec41f9196933fb",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py": "d13b18ecd7dc57236728c449c8849e36f3af1a3cc02572cbbcf70688a698ee85",
+    "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py": "debbab59c151b2adae76c3c726c9bdafde52ebbb97a416299f98d095bece0b4a"
+  },
+  "metrics": {
+    "members": 50,
+    "contributions": 250,
+    "actual_publications": 36,
+    "checks_by_state": {
+      "check:complete": 286,
+      "stable:complete": 1,
+      "stable:cached": 285
+    },
+    "max_history_refs_per_check": 2,
+    "per_batch": [
+      {
+        "batch": "5c8d5e1f0c7aa4d80974def57c8ee51010f40c0ba801588ea0dfb384f51a3a7a",
+        "size": 7,
+        "elapsed_seconds": 0.9876112937927246,
+        "finished": 1794961755.0226283,
+        "queue_seconds": 6.4406256675720215,
+        "started": 1794961754.035017,
+        "checks_seconds": 0.22815394401550293,
+        "publish_seconds": 0.02921319007873535
+      },
+      {
+        "batch": "a5c15186c14ec334c7f9799b6888604314293bac83cd7ee2973fb874d61008d9",
+        "size": 7,
+        "elapsed_seconds": 0.7044293880462646,
+        "finished": 1794961758.179085,
+        "queue_seconds": 7.0127198696136475,
+        "started": 1794961757.4746556,
+        "checks_seconds": 0.3330848217010498,
+        "publish_seconds": 0.04714345932006836
+      },
+      {
+        "batch": "bf578056553264a248b4c17ef231977b101ba2fc500ae6a199f82c7ebecf56fc",
+        "size": 7,
+        "elapsed_seconds": 0.8556830883026123,
+        "finished": 1794961762.0476935,
+        "queue_seconds": 7.6674485206604,
+        "started": 1794961761.1920104,
+        "checks_seconds": 0.4573500156402588,
+        "publish_seconds": 0.06469464302062988
+      },
+      {
+        "batch": "9a09f291afdf1c05342524413316165be291f5d7b653cd35be74ea1428d65e80",
+        "size": 7,
+        "elapsed_seconds": 0.8746097087860107,
+        "finished": 1794961766.350473,
+        "queue_seconds": 8.16744089126587,
+        "started": 1794961765.4758632,
+        "checks_seconds": 0.47557950019836426,
+        "publish_seconds": 0.06276273727416992
+      },
+      {
+        "batch": "32346642edba0ce62ced4d91580b4c671d08267a777a59e7b5d2576d33d2c203",
+        "size": 7,
+        "elapsed_seconds": 0.9114508628845215,
+        "finished": 1794961770.438804,
+        "queue_seconds": 8.541212558746338,
+        "started": 1794961769.527353,
+        "checks_seconds": 0.5045821666717529,
+        "publish_seconds": 0.06272053718566895
+      },
+      {
+        "batch": "f1dd82e4d5f3cfd57da296cb9956edbaf1b7ea931bcb03cf124275b08e675546",
+        "size": 7,
+        "elapsed_seconds": 0.9621865749359131,
+        "finished": 1794961774.7578592,
+        "queue_seconds": 8.600464820861816,
+        "started": 1794961773.7956727,
+        "checks_seconds": 0.5391771793365479,
+        "publish_seconds": 0.0640113353729248
+      },
+      {
+        "batch": "f578b303983c86f2f3b9c98d9618e31e3d0e6bf3d238562734be664c0626df5a",
+        "size": 7,
+        "elapsed_seconds": 1.3572535514831543,
+        "finished": 1794961779.165013,
+        "queue_seconds": 8.512425422668457,
+        "started": 1794961777.8077595,
+        "checks_seconds": 0.6665151119232178,
+        "publish_seconds": 0.0630795955657959
+      },
+      {
+        "batch": "2f976273fc57bfda34b38c108b2b19b73d67fc4a34b827c44ef747c07ced6af2",
+        "size": 7,
+        "elapsed_seconds": 1.473149061203003,
+        "finished": 1794961784.4852216,
+        "queue_seconds": 9.447557926177979,
+        "started": 1794961783.0120726,
+        "checks_seconds": 0.6490967273712158,
+        "publish_seconds": 0.3577842712402344
+      },
+      {
+        "batch": "95713fa0ae3b20da088ba20f6cb1d841c5558a326066df11f0c1f02248dc7524",
+        "size": 7,
+        "elapsed_seconds": 1.1563119888305664,
+        "finished": 1794961788.9038057,
+        "queue_seconds": 10.177221059799194,
+        "started": 1794961787.7474937,
+        "checks_seconds": 0.680046558380127,
+        "publish_seconds": 0.07104134559631348
+      },
+      {
+        "batch": "43de7a9b6964ff4e62f0b07b9bc0e10b755fda495150f9a502e98472ecf414a2",
+        "size": 7,
+        "elapsed_seconds": 1.5159544944763184,
+        "finished": 1794961794.0213182,
+        "queue_seconds": 10.096352577209473,
+        "started": 1794961792.5053637,
+        "checks_seconds": 0.7061042785644531,
+        "publish_seconds": 0.06607604026794434
+      },
+      {
+        "batch": "9962beab68e3ea0130faa01aa26a4c8893d69a4c0aee4d447e29ff6334dea2b0",
+        "size": 7,
+        "elapsed_seconds": 1.278780221939087,
+        "finished": 1794961798.9991488,
+        "queue_seconds": 10.265663146972656,
+        "started": 1794961797.7203686,
+        "checks_seconds": 0.7636990547180176,
+        "publish_seconds": 0.06893610954284668
+      },
+      {
+        "batch": "f3219eb915cd2bcba50becf1bd3f496303b6bd4c1e41ed21196913c46b1315a0",
+        "size": 7,
+        "elapsed_seconds": 1.4235577583312988,
+        "finished": 1794961804.3903368,
+        "queue_seconds": 10.737056732177734,
+        "started": 1794961802.966779,
+        "checks_seconds": 0.9160645008087158,
+        "publish_seconds": 0.06960248947143555
+      },
+      {
+        "batch": "0d63eff27d7caddf0abd7dcc5953e2e0169efbe92d41cfbf266d92afa3e8255f",
+        "size": 7,
+        "elapsed_seconds": 1.2636690139770508,
+        "finished": 1794961809.0820544,
+        "queue_seconds": 10.388749599456787,
+        "started": 1794961807.8183854,
+        "checks_seconds": 0.7901208400726318,
+        "publish_seconds": 0.0645148754119873
+      },
+      {
+        "batch": "4f456c511ac589f8c0ce8392c16c3df330027ad41bd0e99e5da483bf93a53774",
+        "size": 7,
+        "elapsed_seconds": 1.6094410419464111,
+        "finished": 1794961814.27074,
+        "queue_seconds": 10.223953247070312,
+        "started": 1794961812.661299,
+        "checks_seconds": 1.098905086517334,
+        "publish_seconds": 0.06701540946960449
+      },
+      {
+        "batch": "dd3a17eb204aded367b9ef2b2a9cd4e2f6718d593ff9d4fa9136244f4465aa07",
+        "size": 7,
+        "elapsed_seconds": 1.447636604309082,
+        "finished": 1794961819.4800718,
+        "queue_seconds": 10.494612216949463,
+        "started": 1794961818.0324352,
+        "checks_seconds": 0.9011566638946533,
+        "publish_seconds": 0.0674588680267334
+      },
+      {
+        "batch": "e2929cbe53ece6b86f7d3d3f5c0efb963dc26775112e00bf202b9c362ac3dfe6",
+        "size": 7,
+        "elapsed_seconds": 1.718980312347412,
+        "finished": 1794961825.2234066,
+        "queue_seconds": 11.147867441177368,
+        "started": 1794961823.5044262,
+        "checks_seconds": 1.1276333332061768,
+        "publish_seconds": 0.07068943977355957
+      },
+      {
+        "batch": "5fd2de7704c9ca96ee2c37a40dab6f3c933d72d50c7c02b39e95143b8e1c63cc",
+        "size": 7,
+        "elapsed_seconds": 1.8103551864624023,
+        "finished": 1794961830.9680934,
+        "queue_seconds": 11.452748537063599,
+        "started": 1794961829.1577382,
+        "checks_seconds": 1.254260778427124,
+        "publish_seconds": 0.07098746299743652
+      },
+      {
+        "batch": "d35c0310d0e8c7f1bb9bff355162f26f8175eba8b3ddf8c36e327fbe0a9ff07f",
+        "size": 7,
+        "elapsed_seconds": 1.5806658267974854,
+        "finished": 1794961836.3982668,
+        "queue_seconds": 11.745930910110474,
+        "started": 1794961834.817601,
+        "checks_seconds": 1.02205228805542,
+        "publish_seconds": 0.06855440139770508
+      },
+      {
+        "batch": "754621ac8931c60cce577e612edc61641d2a64b0fd4035360ea6250c63292495",
+        "size": 7,
+        "elapsed_seconds": 1.9420413970947266,
+        "finished": 1794961842.2723732,
+        "queue_seconds": 11.538202285766602,
+        "started": 1794961840.3303318,
+        "checks_seconds": 1.3382501602172852,
+        "publish_seconds": 0.06910181045532227
+      },
+      {
+        "batch": "821eff4587fbc9a8552dede2eda240d73c208e70c87b88e54c593dd55b3445cb",
+        "size": 7,
+        "elapsed_seconds": 1.727292537689209,
+        "finished": 1794961847.882007,
+        "queue_seconds": 11.681421041488647,
+        "started": 1794961846.1547143,
+        "checks_seconds": 1.0630950927734375,
+        "publish_seconds": 0.06748032569885254
+      },
+      {
+        "batch": "81bc178c9ff48e61521c253416adbb6385d332fa76e6fe849571cebb092a3344",
+        "size": 7,
+        "elapsed_seconds": 1.889859914779663,
+        "finished": 1794961853.746719,
+        "queue_seconds": 11.87755799293518,
+        "started": 1794961851.856859,
+        "checks_seconds": 1.1195964813232422,
+        "publish_seconds": 0.06633496284484863
+      },
+      {
+        "batch": "18b7ebe0eb46a03317c3146a3bb7f8271e7496f0ea50702d51283218d383f3bf",
+        "size": 7,
+        "elapsed_seconds": 1.9431726932525635,
+        "finished": 1794961859.4854991,
+        "queue_seconds": 11.758026599884033,
+        "started": 1794961857.5423265,
+        "checks_seconds": 1.3460872173309326,
+        "publish_seconds": 0.0681154727935791
+      },
+      {
+        "batch": "985d9f6a5eb969cbdcbe970650642ff9960e0bce7acdc355832d7d4d64b717bf",
+        "size": 7,
+        "elapsed_seconds": 2.1850783824920654,
+        "finished": 1794961865.3597932,
+        "queue_seconds": 11.685580968856812,
+        "started": 1794961863.1747148,
+        "checks_seconds": 1.5959405899047852,
+        "publish_seconds": 0.06895923614501953
+      },
+      {
+        "batch": "b74a13acf8c22b572ddabb5a665261b68a7845a69caacf032c8f493d09b04450",
+        "size": 7,
+        "elapsed_seconds": 1.8129990100860596,
+        "finished": 1794961870.9960353,
+        "queue_seconds": 12.007283210754395,
+        "started": 1794961869.1830363,
+        "checks_seconds": 1.208601713180542,
+        "publish_seconds": 0.06630134582519531
+      },
+      {
+        "batch": "b30b7e94ec6b72c012e6842e08300eb9f864fc4550ca2d8b04e843b862cdb489",
+        "size": 7,
+        "elapsed_seconds": 2.1997878551483154,
+        "finished": 1794961876.9384892,
+        "queue_seconds": 11.932032585144043,
+        "started": 1794961874.7387013,
+        "checks_seconds": 1.256763219833374,
+        "publish_seconds": 0.06995749473571777
+      },
+      {
+        "batch": "dd3b77b8da8aea38076dabbf449b528fdc661652f2ba4c87acd01306d41b1433",
+        "size": 7,
+        "elapsed_seconds": 1.8313941955566406,
+        "finished": 1794961882.4645503,
+        "queue_seconds": 11.86957335472107,
+        "started": 1794961880.633156,
+        "checks_seconds": 1.2429161071777344,
+        "publish_seconds": 0.06566166877746582
+      },
+      {
+        "batch": "3220f23a64c62c8c87d36747f1dc6dff8b0b002760359e535c97aa7f4ac039e8",
+        "size": 7,
+        "elapsed_seconds": 1.8506817817687988,
+        "finished": 1794961887.8338387,
+        "queue_seconds": 11.653725385665894,
+        "started": 1794961885.983157,
+        "checks_seconds": 1.2562222480773926,
+        "publish_seconds": 0.06580328941345215
+      },
+      {
+        "batch": "16d0bf107ec6bfc641c71496d14e245a06c00e228060d569cbd5734dfb27e9a8",
+        "size": 7,
+        "elapsed_seconds": 2.3209338188171387,
+        "finished": 1794961893.745266,
+        "queue_seconds": 11.410188436508179,
+        "started": 1794961891.4243321,
+        "checks_seconds": 1.485166311264038,
+        "publish_seconds": 0.06735730171203613
+      },
+      {
+        "batch": "9a421936363b818304e74ee418621bf0e840b1e5997dccc84c59d4544f62574c",
+        "size": 7,
+        "elapsed_seconds": 2.2205729484558105,
+        "finished": 1794961899.484396,
+        "queue_seconds": 11.675562381744385,
+        "started": 1794961897.263823,
+        "checks_seconds": 1.5760893821716309,
+        "publish_seconds": 0.07383847236633301
+      },
+      {
+        "batch": "1a6aed8a99d8c15bd10cca5ce696c92c5c4116d992a883895511e375df3ab6f6",
+        "size": 7,
+        "elapsed_seconds": 2.250147819519043,
+        "finished": 1794961905.1118689,
+        "queue_seconds": 11.851757049560547,
+        "started": 1794961902.861721,
+        "checks_seconds": 1.6318814754486084,
+        "publish_seconds": 0.06509113311767578
+      },
+      {
+        "batch": "f564a95f68e7816ac6157df180bcf37455765104151403e0c3e92b728d3fde49",
+        "size": 7,
+        "elapsed_seconds": 2.165916681289673,
+        "finished": 1794961911.1210601,
+        "queue_seconds": 12.112847566604614,
+        "started": 1794961908.9551435,
+        "checks_seconds": 1.5069231986999512,
+        "publish_seconds": 0.065704345703125
+      },
+      {
+        "batch": "44636c9a35a39685a98428754cea03ca0b6a0a589c2e3e8a731a11832111b0f1",
+        "size": 7,
+        "elapsed_seconds": 2.20283579826355,
+        "finished": 1794961916.726024,
+        "queue_seconds": 12.080147504806519,
+        "started": 1794961914.523188,
+        "checks_seconds": 1.5679986476898193,
+        "publish_seconds": 0.06580519676208496
+      },
+      {
+        "batch": "c17b8de8d0cdd6b0810792fea8f17fd36a23416a4f678c608dad4e382dc5cb42",
+        "size": 7,
+        "elapsed_seconds": 2.3012187480926514,
+        "finished": 1794961922.5040553,
+        "queue_seconds": 11.681361675262451,
+        "started": 1794961920.2028365,
+        "checks_seconds": 1.6644253730773926,
+        "publish_seconds": 0.06583762168884277
+      },
+      {
+        "batch": "a2022b4e58647aa982316c9563b3fd7809c9a6f0e3b83fab0e61bafd7343feb4",
+        "size": 7,
+        "elapsed_seconds": 2.4001052379608154,
+        "finished": 1794961928.1387296,
+        "queue_seconds": 11.651349544525146,
+        "started": 1794961925.7386243,
+        "checks_seconds": 1.740131139755249,
+        "publish_seconds": 0.06731271743774414
+      },
+      {
+        "batch": "2fc559dd06d1491e1d7339d6a9c472b32928caefe358abd8212be239e980c802",
+        "size": 7,
+        "elapsed_seconds": 2.2476282119750977,
+        "finished": 1794961932.6055043,
+        "queue_seconds": 10.590824365615845,
+        "started": 1794961930.357876,
+        "checks_seconds": 1.578559398651123,
+        "publish_seconds": 0.06783151626586914
+      },
+      {
+        "batch": "9ee4d1b883f52af2a0c933d6858108469b096d053a56f8cef4190bd17b12be47",
+        "size": 5,
+        "elapsed_seconds": 2.1374218463897705,
+        "finished": 1794961935.1949487,
+        "queue_seconds": 7.77276873588562,
+        "started": 1794961933.0575268,
+        "checks_seconds": 1.5319697856903076,
+        "publish_seconds": 0.06225109100341797
+      }
+    ]
+  },
+  "failures": [
+    {
+      "stage": "before-fixed-plan",
+      "observed": "Second distinct contribution remains produced after Channel changed CAS conflict",
+      "evidence": "data-collection/native-continuous-integration-before-1488.json",
+      "resolved_by": "automatic selected-base successor"
+    },
+    {
+      "stage": "windows-lock-matrix1",
+      "observed": "PermissionError reading an already byte-locked file; plus fixture nested transaction failure",
+      "resolved_by": "fstat lockfile size and corrected fixture"
+    },
+    {
+      "stage": "history250-in-progress",
+      "observed": "Authorized check installation changed after source was edited during execution",
+      "resolved_by": "preserved failed run, source frozen before subsequent complete runs"
+    },
+    {
+      "stage": "multiuser-review",
+      "observed": "Second legitimate tenant member rejected by first-actor lane ownership",
+      "evidence": "data-collection/native-continuous-two-user-before-1488.json",
+      "resolved_by": "installed coordinator and per-original source authority"
+    },
+    {
+      "stage": "observer-independent-review",
+      "observed": "Root reproduced response loss causing Node pump to end before late completion",
+      "resolved_by": "durable event receipts and authenticated actual driver observation"
+    },
+    {
+      "stage": "http-concurrency",
+      "observed": "Native task unavailable under shared SQLite access without domain lock",
+      "resolved_by": "all continuous domain reads protected by existing domain lock; no long check lock"
+    },
+    {
+      "stage": "test-only-updates",
+      "observed": "History tamper expected old error text after view separation; early manual fixture omitted installed provider",
+      "resolved_by": "corrected expected error and realistic installation ordering"
+    },
+    {
+      "stage": "test-resource-scope",
+      "observed": "Earlier legacy runner TemporaryDirectory used inherited system TEMP and fixture cleanup; no current residual claimed",
+      "resolved_by": "TEMP/TMP explicitly confined to owned probe directory for final regression"
+    }
+  ],
+  "verification": {
+    "full_regression": {
+      "passed": 67,
+      "subtests": 4,
+      "warnings": 1,
+      "seconds": 91.51,
+      "path": "work/native-continuous-integration-probes/delivery-regression"
+    },
+    "supplemental_business_prefix_deletion": {
+      "passed": 1
+    },
+    "ruff": "check --no-fix and format --check passed; Node syntax check passed",
+    "fifty_member_250_exit_code": 0
+  },
+  "remaining": [
+    "Root independent source review and exact-candidate delivery",
+    "Root acceptance and authorized cleanup of retained review evidence"
+  ],
+  "physical_closures": {
+    "count": 250,
+    "unique_executions": 250,
+    "all_digest_verified": true,
+    "all_exit_zero": true
+  }
+}

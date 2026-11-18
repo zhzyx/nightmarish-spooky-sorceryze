@@ -1,0 +1,156 @@
+{
+  "issue": 1488,
+  "request_id": "native-continuous-integration-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1488",
+  "passed": true,
+  "checks": [
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "check",
+        "--no-fix",
+        "customizations/components/tianxuan/duobao/native_check_runner.py",
+        "customizations/components/tianxuan/server/native_api.py",
+        "customizations/components/tianxuan/sinan-workorders/native_continuous.py",
+        "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py",
+        "customizations/components/tianxuan/sinan-workorders/native_integration.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.11349410000548232,
+      "stdout": "All checks passed!\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "customizations/components/tianxuan/duobao/native_check_runner.py",
+        "customizations/components/tianxuan/server/native_api.py",
+        "customizations/components/tianxuan/sinan-workorders/native_continuous.py",
+        "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py",
+        "customizations/components/tianxuan/sinan-workorders/native_integration.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.1078741999954218,
+      "stdout": "6 files already formatted\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "-m",
+        "mypy",
+        "--follow-imports=silent",
+        "--ignore-missing-imports",
+        "--cache-dir",
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\continuous-final-mypy",
+        "customizations/components/tianxuan/duobao/native_check_runner.py",
+        "customizations/components/tianxuan/server/native_api.py",
+        "customizations/components/tianxuan/sinan-workorders/native_continuous.py",
+        "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py",
+        "customizations/components/tianxuan/sinan-workorders/native_integration.py",
+        "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.21336530000553466,
+      "stdout": "Success: no issues found in 6 source files\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\final-source-qa.py",
+        "D:\\GongGong-work\\native-continuous-integration-20261118"
+      ],
+      "exit_code": 0,
+      "seconds": 0.8572184999939054,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "py",
+        "-X",
+        "utf8",
+        "tools/check_gonggong_distribution.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.6745373000012478,
+      "stdout": "{\"agent_execution_authorized\": false, \"authority_authenticated\": false, \"diting_extension_syntax_checked\": true, \"frozen_files\": 256, \"live_upstream_verified\": false, \"ok\": true, \"scope\": \"offline_registered_snapshot_consistency_only\", \"syntax\": {\"javascript\": 16, \"json\": 158, \"python\": 27}}\n",
+      "stderr": ""
+    },
+    {
+      "command": "file_format.py dry run on copies",
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "changed": [],
+      "temporary_directory_removed": true
+    }
+  ],
+  "source_sha256": {
+    "customizations/components/tianxuan/duobao/native_check_runner.py": "489cd45b840ca8bed917a9cee7471ed82ee26d4c931a1509c065384223958317",
+    "customizations/components/tianxuan/server/native_api.py": "553cca51525506f303e6ae334ee22675d44cb22d65d0102b734863725dfd7328",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "c44552e4bac7cbeb703a625bf43988df1e997a4ae40c3fc9cb76ed003a029c1c",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py": "e848366c69c22887b919bc3adb7316c3a4b682c19910fc5810f30bacba1536e1",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "970c5b3ebe10645671dcb426f8cf3f8ec97f23997637e6bde2fa2c0026069864",
+    "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py": "b9023179164a7f0d97b5b0ae4c88b4922a1a8c09cc056bc966a25a8651c478f5"
+  },
+  "format_selected": [
+    ".gitattributes",
+    ".pre-commit-config.yaml",
+    "customizations/components/tianxuan/duobao/native_check_runner.py",
+    "customizations/components/tianxuan/server/native_api.py",
+    "customizations/components/tianxuan/sinan-workorders/build-impact.json",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py",
+    "data-collection/native-continuous-aligned-boundary-1488.json",
+    "data-collection/native-continuous-aligned-validation-1488.json",
+    "data-collection/native-continuous-alignment-1488.json",
+    "data-collection/native-continuous-build-impact-1488.json",
+    "data-collection/native-continuous-final250-1488.json",
+    "data-collection/native-continuous-host-boundary-1488.json",
+    "data-collection/native-continuous-integration-1488.json",
+    "data-collection/native-continuous-linux-1488.json",
+    "data-collection/native-continuous-linux-repaired-1488.json",
+    "data-collection/native-continuous-method-applied-1488.json",
+    "data-collection/native-continuous-producer-alignment-1488.json",
+    "data-collection/native-continuous-repair-1488.json",
+    "data-collection/native-continuous-review-1488.json",
+    "data-collection/native-continuous-review2-1488.json",
+    "data-collection/native-continuous-source-normalization-1488.json",
+    "data-collection/native-continuous-source-preflight-1488.json",
+    "data-collection/native-continuous-validation-1488.json",
+    "data-collection/requests/native-continuous-integration-20261118/225585dd-048f-466e-85a1-ae830a7446a7.json",
+    "design-docs/native-continuous-integration-20261118.md",
+    "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-479f05e259e63850ca2569acd89ec756b33173eb517c997599ea4e7ca6dae46a.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/codex-intake-1488-20261117.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/dispatch-0fbf11dc59d947f69962a401c899263c.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/dispatch-0fd9c556d89346c4970a5b05eb99c2aa.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/dispatch-26855dc7ef864ffe84824eef4ca98995.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/dispatch-6690634172264ccd8f692e1481b21bd8.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/dispatch-7bfff757ee894b8aa1deab7ce2dad2cd.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/dispatch-94ecda5666d84850b68a4e2db6e3ad66.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/dispatch-a8864fcda6374af0bd3e6a70192ae0f3.json",
+    "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/dispatch-cc81c6c39c3a4ed092e16337b7c9626f.json",
+    "tools/native_host_inputs.json"
+  ]
+}

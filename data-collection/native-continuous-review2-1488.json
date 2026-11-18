@@ -1,0 +1,207 @@
+{
+  "original_report": {
+    "sha256": "33b6fce13335b0e38c910f2bb465cec05088937a844882b44ec7b8bae725d90d",
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-continuous-review2.json",
+    "path_base": "absolute current host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "issue": 1488,
+    "verdict": "passed_incremental_review",
+    "findings": [],
+    "source_hashes": {
+      "customizations/components/tianxuan/duobao/native_check_runner.py": "489cd45b840ca8bed917a9cee7471ed82ee26d4c931a1509c065384223958317",
+      "customizations/components/tianxuan/server/native_api.py": "553cca51525506f303e6ae334ee22675d44cb22d65d0102b734863725dfd7328",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "c44552e4bac7cbeb703a625bf43988df1e997a4ae40c3fc9cb76ed003a029c1c",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py": "e848366c69c22887b919bc3adb7316c3a4b682c19910fc5810f30bacba1536e1",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "970c5b3ebe10645671dcb426f8cf3f8ec97f23997637e6bde2fa2c0026069864",
+      "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py": "b9023179164a7f0d97b5b0ae4c88b4922a1a8c09cc056bc966a25a8651c478f5"
+    },
+    "source_matches_frozen_preflight": true,
+    "normalization": {
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": {
+        "archive_hash_verified": true,
+        "runtime_ast_equal_ignoring_annotations": true
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": {
+        "archive_hash_verified": true,
+        "runtime_ast_equal_ignoring_annotations": true
+      },
+      "customizations/components/tianxuan/duobao/native_check_runner.py": {
+        "archive_hash_verified": true,
+        "runtime_ast_equal_ignoring_annotations": true
+      },
+      "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py": {
+        "archive_hash_verified": true,
+        "runtime_ast_equal_ignoring_annotations": true
+      }
+    },
+    "acceptance_annotations_only": true,
+    "tests": {
+      "focused_pytest": {
+        "passed": 41,
+        "deselected": 14,
+        "seconds": 62.33,
+        "exit_code": 0
+      },
+      "original_atomic": {
+        "installed_group_tasks": [
+          "9e1e5013d7fbeff2c937fcf7f6719844336f2a11c353e59dea60023319238db6",
+          "6d0551e2b4ae80d63990ca0d783ae475b6bd57825a84a457d7dedfef4d6da14c"
+        ],
+        "installed_group_plan": "500ca4e3366496aad292ba087335f160ba2a1711c345b3da12b0da05e50effdf",
+        "discovered": {
+          "ready": [
+            {
+              "group": "atomic-required",
+              "key": "500ca4e3366496aad292ba087335f160ba2a1711c345b3da12b0da05e50effdf"
+            }
+          ],
+          "errors": [],
+          "continuous": [
+            {
+              "key": "dd2ab6f019a1d422a9d6b3ea6c68046a2e9c423753a87a763b71641c7ee71715",
+              "event": "dd2ab6f019a1d422a9d6b3ea6c68046a2e9c423753a87a763b71641c7ee71715:0:1"
+            }
+          ]
+        },
+        "receipt": {
+          "state": "idle",
+          "lane": "dd2ab6f019a1d422a9d6b3ea6c68046a2e9c423753a87a763b71641c7ee71715"
+        },
+        "states": [
+          "produced",
+          "produced"
+        ],
+        "atomic_group_split": false
+      },
+      "original_deletion": {
+        "first": {
+          "id": "0b8713548b48ab49cc61491ab674592ee5eff36672aa7e24b3102ffc480385fb",
+          "candidate": "1dbf5af057387568de1b90586fb64ac44ba08256f338fd00351fc85ce3d2ca2b",
+          "modules": {
+            "a": "0d1fcc4a2c7ede330486d148ecac7f47b6f5595fe67215099b3f00a05785ae31",
+            "integration-b9a6119b07cd994478254902ea4055fadbfe89e1265b5ce8823966f2d8fc2376": "e9f6ab2489e946b1d8075b8ef9f8b95126de23516e403cb3ecc321e2fd1797f3"
+          },
+          "policy": "de3abdbe49a006a97193e261822c4f9dbdf109bcca19b26e87d4a5b3fbde2982",
+          "recorded_at": 1794964049.7082958,
+          "request": {
+            "action": "publish",
+            "actor": "publisher",
+            "channel": "stable",
+            "expected": null,
+            "product": "joint",
+            "request_key": "integration-publish-b9a6119b07cd994478254902ea4055fadbfe89e1265b5ce8823966f2d8fc2376",
+            "review": "ceb919220440bb007a19610658b6f57f106286c02e4afebddc0662fceead5d27",
+            "tenant": "ten_beac2fa0ef6241d0b209c8044c6d2fc6"
+          },
+          "state": "content_selected",
+          "tenant": "ten_beac2fa0ef6241d0b209c8044c6d2fc6"
+        },
+        "second": {
+          "state": "held",
+          "batch": "c887fe3eed6edcb522bdaf7bcf58b1ab15bd4049de9bd3e18fcd3758fd267a1e",
+          "error": "Joint product checks failed"
+        },
+        "states": [
+          "accepted",
+          "produced"
+        ]
+      },
+      "failed_evidence": [
+        {
+          "state": "complete",
+          "outcome": "failed",
+          "exit_code": 0,
+          "reasons": [
+            "history_pollution"
+          ],
+          "actual_log_hash_verified": true
+        }
+      ],
+      "extra_edges": {
+        "same_candidate_different_run_keys": {
+          "runs": 4,
+          "states": [
+            "cached",
+            "cached",
+            "cached",
+            "cached"
+          ],
+          "launches": 0
+        },
+        "accepted_history_after_fixed_install": "usable",
+        "different_run_cache_miss": "FileNotFoundError",
+        "deleted_input_not_recreated": true,
+        "launches": 0
+      },
+      "extra_edges2": {
+        "late-check": {
+          "state": "held",
+          "release_events": 0
+        },
+        "scoped-cache": {
+          "states": [
+            "complete",
+            "cached"
+          ],
+          "same_evidence": true,
+          "history_bindings": [
+            {},
+            {}
+          ]
+        }
+      }
+    },
+    "source_review": {
+      "atomic": "Current caller, durable callers, original actor, coordinator and persisted memberships checked. Enqueue/freeze and active plan _load reject overlap; checks/review/publish revalidate. Fixed path publication and unrelated groups remain usable in focused tests. Already accepted history keeps immutable authority checks without applying new execution policy.",
+      "history": "Durable archive and candidate/check view claims precede first writes. Existing run and cache reuse validate with materialize=False; new run cache miss also cannot recreate claimed files. Postprocess errors retain actual exit/log as failed history_pollution evidence.",
+      "locks": "prepare/history use reentrant domain connection lock. First-input claims use independent short domain transactions; publication guard uses materialize=False, so no nested claim transaction. Native writer reservation closes before acquiring history/domain lock. History native accesses are WAL reads; inspected paths introduce no domain-to-native writer inversion. Four concurrent cache run keys completed; no exhaustive cross-process schedule proof.",
+      "cross_candidate_cache": "Actual scoped check reused evidence across two different candidates with empty history bindings. Unscoped bindings retain all module revision identities, including per-plan integration manifest, preventing unrelated continuation cache collision.",
+      "format_exclusions": "git diff contains exactly six added anchored raw-report file-format exclusions; no broad exclusion or validation disable added."
+    },
+    "historical_evidence": {
+      "repair": "96 passed + 4 fixture setup failures, then 4 corrected fixtures passed; combined coverage100, NOT one100-pass invocation. Four subtests preserved.",
+      "full250": "Previous250 accepted tasks/36 release receipts remain evidence for their original source only; no current-source250 execution claimed.",
+      "linux": "Inspected parent report:94 passed,1 skipped,5 Node HTTP deselected,4 subtests passed; predates annotation-only delta. Reviewer did not execute Linux.",
+      "host_boundary": "Inspected actual9392 SCons inputs,3 additional host paths/no overlap,3 boundary commands passed,1 skip; no binary compilation or renderer acceptance."
+    },
+    "method_learning": {
+      "scope": "editor-dependency-handoff",
+      "applied": [
+        "bind-consumer-release",
+        "await-terminal-observers",
+        "reconstruct-worker-outcomes"
+      ],
+      "feedback": "Exact source, terminal process and raw failure log verified; no new counterexample. Parent may record reuse within original workorder."
+    },
+    "limits": [
+      "Independent focused deterministic fixtures and real check subprocesses, no model quality or production admission assertion.",
+      "No new full250 or full100 run; no model/network/deploy/product edits/commit/push.",
+      "No exhaustive multi-process power-loss stress; interrupted first-materialization remains fail-closed and needs explicit recovery.",
+      "Parent1444/1382 business/render/model acceptance outside review scope."
+    ],
+    "resources": {
+      "processes": "All own Python/pytest/probe commands exited0; fixtures close domain DBs; own SQL handle closed; ThreadPoolExecutor joined four futures. No background workers/server started.",
+      "removed": [],
+      "retained": [
+        "Owned pytest fixture SQLite/check workspaces and probe fixtures retained with scripts/XML/logs for source-bound independent reproduction and failed exit/log audit.",
+        "Earlier reviewer blocked cleanup untouched and never retried."
+      ],
+      "branches_created": 0,
+      "worktrees_created": 0
+    },
+    "evidence_hashes": {
+      "probe.py": "131137869ad18f6bf410f7cdeed7d8870bd96543e508d04a00f89e1dcba17823",
+      "deletion.py": "832b2d23c835cb0b3b5d3848e2731bfabead6c101262397e90e26a8d869454eb",
+      "edges.py": "48ce0c8a826d91dbd52e8056970abf7833ea1315a5baa4f6811fcdcc758fe62c",
+      "edges2.py": "2d790a96b5494623968d550dcbef75d00895de76bff486895deaa00eb0698680",
+      "atomic-result.json": "b271ea87b6de20a10d8d500e58b5297e32fb75cc64cd3caf72e99cc0e7b37f54",
+      "deleted-history-result.json": "de57749d5b3cb9a29cbae3a21c4d97f20568c51d3551e9425115212d0b5f386f",
+      "edges-result.json": "7c8a63295bd9555d74f5dbb1279c48edc85178187643838d3692dc35af7a94b1",
+      "edges2-result.json": "d4d956c473019db947ca6867ae53763057a8a2962cf62697a67455826c0b8a44",
+      "tests.xml": "750da410393adeabd3be21b69619583ebfd6dec8f971c34e35711dfc6a93d339",
+      "tests.log": "82146f72ffc7f1f7909f256bced9f8e8f1f7c4d735ebea2dd4e41b8e3e21053b"
+    }
+  }
+}

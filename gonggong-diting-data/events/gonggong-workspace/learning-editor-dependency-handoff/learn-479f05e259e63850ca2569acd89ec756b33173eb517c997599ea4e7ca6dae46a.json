@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-479f05e259e63850ca2569acd89ec756b33173eb517c997599ea4e7ca6dae46a",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1488",
+  "occurred_at": "2026-11-18T00:33:59.205330+00:00",
+  "evidence_refs": [
+    "codex-intake-1488-20261117",
+    "learn-8afc936ec74f544cf9a074f9e38a54cea88e08047e1077ca9f33c2dd9a382628"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 22,
+    "previous": "eafac72e947a0c81c47f50bc380b0ee7182c08dd3db3d108ddba1d39fa9b070f",
+    "action": "applied",
+    "details": {
+      "task": "#1488 continuous same-product integration: verify actual members, immutable inputs, exact checks, real event ownership and independent-review boundary",
+      "observed": "50 current tenant members produced 250 immutable originals once; 36 selected releases with 286 real full checks, 1 scoped check and 285 exact cache hits; 250 digest-verified physical closures. Single-actor test success did not establish multi-member authority; lost response required actual completion observation. Root independent review/delivery remains explicit."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-continuous-validation-1488.json",
+        "sha256": "ad976acf99a3c4ce06b6c57b940e94b361d6178d8cfd0400178e931cfc34e77d"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/codex-intake-1488-20261117.json",
+      "sha256": "9f3c71a0ec3ec2f52c6823ca9cd7ce1318c3efbfe3c435818d5094daa9aa2a61"
+    }
+  },
+  "sha256": "96569a82e30e82a8426b3063868a790684317aeb29c177304e4e8cbed2626661"
+}

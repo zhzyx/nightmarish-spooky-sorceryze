@@ -1,0 +1,19 @@
+{
+  "origin": "gonggong-diting-data/events/gonggong-workspace/native-continuous-integration-20261118/codex-intake-1488-20261117.json",
+  "occurred_at": "2026-11-18T00:33:59.205330+00:00",
+  "scope": "editor-dependency-handoff",
+  "lesson": "bind-consumer-release",
+  "revision": 22,
+  "previous": "eafac72e947a0c81c47f50bc380b0ee7182c08dd3db3d108ddba1d39fa9b070f",
+  "evidence": [
+    {
+      "path": "data-collection/native-continuous-validation-1488.json",
+      "sha256": "ad976acf99a3c4ce06b6c57b940e94b361d6178d8cfd0400178e931cfc34e77d"
+    }
+  ],
+  "action": "applied",
+  "details": {
+    "task": "#1488 continuous same-product integration: verify actual members, immutable inputs, exact checks, real event ownership and independent-review boundary",
+    "observed": "50 current tenant members produced 250 immutable originals once; 36 selected releases with 286 real full checks, 1 scoped check and 285 exact cache hits; 250 digest-verified physical closures. Single-actor test success did not establish multi-member authority; lost response required actual completion observation. Root independent review/delivery remains explicit."
+  }
+}

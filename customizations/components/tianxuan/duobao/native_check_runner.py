@@ -47,6 +47,7 @@ class NativeCheckRunner:
     ):
         if not callable(authorize) or not callable(verify_installation) or not registry:
             raise NativeStoreError("Explicit authority and installation verifier required")
+        self.history_provider: Any | None = None
         self.cache = cache
         self.store = cache.store
         self.root = absolute(root)
@@ -108,6 +109,7 @@ class NativeCheckRunner:
                 "workspace_helpers": _digest(Path(__file__).with_name("native_workspace.py").read_bytes()),
                 "process_helper": self.helper.implementation_fingerprint(),
                 "runner": _digest(Path(__file__).read_bytes()),
+                **({"history_provider": self.history_provider.fingerprint()} if self.history_provider else {}),
             },
         }
 
@@ -179,11 +181,19 @@ class NativeCheckRunner:
                 db.execute("INSERT INTO native_check_runs VALUES (?,?,?,?)", (tenant, key, request, _json(value)))
                 previous = None
         if previous is not None:
+            if self.history_provider:
+                self.history_provider.prepare(tenant, actor, candidate, check, materialize=False)
             if previous["state"] == "result":
                 return self._record_result(tenant, key, previous)
             return previous
         try:
             hit = self.cache.lookup(tenant, candidate, check, **context)
+            history: dict[str, Any] = (
+                self.history_provider.prepare(tenant, actor, candidate, check, materialize=hit is None)
+                if self.history_provider
+                else dict(env={}, binding={})
+            )
+            value = self._save(tenant, key, {**value, "history_binding": history["binding"]})
             if hit is not None:
                 if hit["evidence"]["binding"] != binding["binding"]:
                     raise Conflict("Check policy changed during cache lookup")
@@ -197,7 +207,7 @@ class NativeCheckRunner:
             stamps = view.snapshot(inputs)
             value = self._save(tenant, key, {**value, "state": "running", "workspace": str(folder)})
             args = [arg.replace("{input}", str(inputs)).replace("{output}", str(outputs)) for arg in spec["argv"]]
-            env = dict(spec["env"], DUOBAO_INPUT=str(inputs), DUOBAO_OUTPUT=str(outputs))
+            env = dict(spec["env"], **history["env"], DUOBAO_INPUT=str(inputs), DUOBAO_OUTPUT=str(outputs))
             reasons: list[str] = []
 
             def active():
@@ -227,11 +237,18 @@ class NativeCheckRunner:
                 reasons.append("input_pollution")
             if self.verify_installation(check, json.loads(_json(spec))) is not True:
                 reasons.append("installation_changed")
+            if self.history_provider:
+                try:
+                    if self.history_provider.prepare(tenant, actor, candidate, check, materialize=False) != history:
+                        reasons.append("history_pollution")
+                except (OSError, NativeStoreError):
+                    reasons.append("history_pollution")
             outcome = "passed" if code == 0 and not reasons else "failed"
             # Bound the EvidenceCache envelope independently of arbitrary binary
             # output; the complete capped raw log remains in the owned workspace.
             facts = dict(
                 exit_code=code,
+                history_binding=history["binding"],
                 reasons=reasons,
                 raw_log_sha256=_digest(raw),
                 output_base64=base64.b64encode(raw[:600000]).decode("ascii"),

@@ -1,0 +1,191 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-continuous-repair.json",
+    "sha256": "e7144b36c2acdae91d4e110f7825da5eb13f402267484242d2f007bb63b9960a",
+    "path_base": "absolute current host archive"
+  },
+  "export": "Lossless JSON value export with repository LF; original bytes retained.",
+  "report": {
+    "issue": 1488,
+    "result": "repaired_pending_independent_parent_review",
+    "before_hashes": {
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "edbc573768f211891b8b9485ba8003611b534c52bc7aaf5f813ca25d0bcc9bc2",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "a8525bc1105d6d7e95deb2996a320ba1e52e014a8f3f399c333d603f3d32fc46",
+      "customizations/components/tianxuan/duobao/native_check_runner.py": "33cc2e31e3fb8cf52b48cb6aafc5c48c1fd8ac2d8ac3286093ab0a49aef82ec7",
+      "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py": "debbab59c151b2adae76c3c726c9bdafde52ebbb97a416299f98d095bece0b4a"
+    },
+    "source_hashes": {
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "aa97cae85a305861ecfb5e854aa67da9e074d4d15d070c1c8eb9f75ddce49e02",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "627aefa528a3278e32fd465573f5bcf4afd0dde4eb52d9058e6b0f487083ae45",
+      "customizations/components/tianxuan/duobao/native_check_runner.py": "e0bbb19cd24f47a2a33c70c335ac3cdfa4f39da4a58951e43860c4ccf745cc1a",
+      "customizations/components/tianxuan/server/native_api.py": "553cca51525506f303e6ae334ee22675d44cb22d65d0102b734863725dfd7328",
+      "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "97f149c125127bbbba3ce183fbaf6491a973ea47fa72f07b5bec41f9196933fb",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py": "d13b18ecd7dc57236728c449c8849e36f3af1a3cc02572cbbcf70688a698ee85",
+      "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py": "37670e48b95883f4fa06b544ba51b7e42df9daa45c76ab418cff2d2003cf0868"
+    },
+    "fixes": [
+      {
+        "defect": "P1 fixed atomic group split",
+        "behavior": "Installed membership for actual callers, original task actor and coordinator plus persisted memberships excludes only owned tasks from continuous routing. Automatic contribution check remains usable through fixed path. Explicit enqueue/freeze, active-plan load and release guard reject late overlap. Caller identity retained durably across coordinator delegation. Accepted historical plans retain existing bypass of current execution reauthorization."
+      },
+      {
+        "defect": "P2 deleted history input silently recreated",
+        "behavior": "Durable first-materialization claims for archives and candidate/check views; runner reserves ownership before initial preparation. Existing runs and cache reads validate with materialize=False. Post-process history exceptions become history_pollution failed evidence with actual exit_code and logs; no subprocess replay or recovery rematerialization."
+      }
+    ],
+    "tests": {
+      "matrix": {
+        "passed": 96,
+        "failed": 4,
+        "subtests_passed": 4,
+        "seconds": 139.85,
+        "files": [
+          "test_native_continuous.py",
+          "test_native_integration.py",
+          "test_native_joint_workflow.py",
+          "test_native_check_runner.py"
+        ],
+        "failure": "Only four added cross-principal fixtures used nonexistent users.tenant column before reaching production logic; replaced with established domain.add_member.",
+        "evidence": "native-continuous-repair-probes/tests2.xml"
+      },
+      "fixture_correction": {
+        "passed": 4,
+        "deselected": 51,
+        "seconds": 3.54,
+        "evidence": "native-continuous-repair-probes/tests3.xml"
+      },
+      "combined": "100 tests plus4 subtests passed across unchanged runtime source; only four fixture setup lines corrected between matrix and rerun",
+      "initial": {
+        "passed": 46,
+        "failed": 4,
+        "evidence": "native-continuous-repair-probes/tests1-result.json"
+      },
+      "ruff": "py -m ruff check --no-fix and format --check passed",
+      "original_atomic": {
+        "installed_group_tasks": [
+          "8214154853ac43131b4203735ccfdf0d43b2c6999750b6d5785ce22e8c701f0f",
+          "f2dd860e4ccbfabdb667d547c719b5953c3a9358ed231b9a6e52c22e9076db6f"
+        ],
+        "installed_group_plan": "7307e78e7e0fb995f7b9ccb1e78c59984b5bba8b8f93c89edfcc8e51971bf3bc",
+        "discovered": {
+          "ready": [
+            {
+              "group": "atomic-required",
+              "key": "7307e78e7e0fb995f7b9ccb1e78c59984b5bba8b8f93c89edfcc8e51971bf3bc"
+            }
+          ],
+          "errors": [],
+          "continuous": [
+            {
+              "key": "dd74cf40566f00728721b712d516af093d4ce0cf6da657b3dce2280c51c68490",
+              "event": "dd74cf40566f00728721b712d516af093d4ce0cf6da657b3dce2280c51c68490:0:1"
+            }
+          ]
+        },
+        "receipt": {
+          "state": "idle",
+          "lane": "dd74cf40566f00728721b712d516af093d4ce0cf6da657b3dce2280c51c68490"
+        },
+        "states": [
+          "produced",
+          "produced"
+        ],
+        "atomic_group_split": false
+      },
+      "original_deletion": {
+        "first": {
+          "id": "534eb846b33e1f94c4863fd65e50ffce82ee2343d4f7211164367db194ac14b0",
+          "candidate": "c32cd86de6797a7100e9245ccc9f290f54d0bff903bd578e8f15f8f3cd895ab0",
+          "modules": {
+            "a": "0d1fcc4a2c7ede330486d148ecac7f47b6f5595fe67215099b3f00a05785ae31",
+            "integration-d7992dab0ea6e0203742cd0b7ccdb928a8df26e8db2ac02164d6130311e4ccaa": "8a065f82493ceb5f98c207a2bc10a7a24e9dddc2e00da40a85a8aa6368f2d332"
+          },
+          "policy": "94f0297ef90476d89865079863987a3fd6461f2d713e432681b31047121fde5b",
+          "recorded_at": 1794963141.7482975,
+          "request": {
+            "action": "publish",
+            "actor": "publisher",
+            "channel": "stable",
+            "expected": null,
+            "product": "joint",
+            "request_key": "integration-publish-d7992dab0ea6e0203742cd0b7ccdb928a8df26e8db2ac02164d6130311e4ccaa",
+            "review": "473bbbfb0fc3be6dddfd7266433099b6e50e7edf3bae7657eabcb2da8cb28c71",
+            "tenant": "ten_1052b6a04460453eaf0adb02977211e6"
+          },
+          "state": "content_selected",
+          "tenant": "ten_1052b6a04460453eaf0adb02977211e6"
+        },
+        "second": {
+          "state": "held",
+          "batch": "b635ee84cced6c8dd9af0bd35081f3d7ae5dd88ab71ed34e6ef54c9a6f64dc64",
+          "error": "Joint product checks failed"
+        },
+        "states": [
+          "accepted",
+          "produced"
+        ]
+      },
+      "coverage": [
+        "fixed enqueue/freeze/persisted membership and fixed path complete publication",
+        "late installed group in review and actual publish wrapper",
+        "cross caller/original/coordinator and persisted other actor membership",
+        "unrelated fixed members do not disable continuous lane",
+        "real subprocess history write/delete/extra pollution, failed evidence retained",
+        "20 complete/result/running/cached x input/archive/view/extra/changed restart cases, cached reads rejected and launch count0",
+        "existing bounded history, scoped runner, unknown owner/review, CAS recovery, physical real joint workflow and Node event entry matrices"
+      ]
+    },
+    "original_probe_adaptations": "Original scripts copied to repair root only. Atomic probe unchanged except output root. Deletion uses same source-extracted subprocess unlink probe, passing new pollution parameter delete; original review evidence untouched.",
+    "scope": "No unchanged full250 rerun: original250/36publish receipts preserved. Delta limited to membership ownership and history preparation/revalidation; relevant continuous, fixed joint integration and check-runner matrices exercised. Parent owns independent review and current-source Linux/build-boundary/full delivery.",
+    "method_learning": {
+      "recalled_scope": "editor-dependency-handoff",
+      "applied": [
+        "bind-consumer-release",
+        "await-terminal-observers",
+        "reconstruct-worker-outcomes"
+      ],
+      "feedback": "Source-fingerprinted checks correctly reject source formatting during execution; freeze source through terminal, preserve failed receipts then rerun on stable source. Parent may append authorized method feedback from this report."
+    },
+    "remaining": [
+      "Independent parent re-review",
+      "current source Linux/build-boundary/formal delivery",
+      "parent issues and actual business acceptance remain incomplete"
+    ],
+    "resources": {
+      "terminal": "All pytest and copied executable probe processes exited; fixture domain databases closed by teardown; no background worker/server left by this task",
+      "removed": [],
+      "retained": [
+        "Owned tests1/tests2/tests3 fixture databases, logs and XML retained for failure reproduction and independent review",
+        "Copied original probes and original result comparisons",
+        "All original reviewer resources including blocked focused-tests untouched"
+      ],
+      "created_branches": 0,
+      "created_worktrees": 0,
+      "model_calls": 0,
+      "deployments": 0,
+      "commit_push": false
+    },
+    "runtimes": {
+      "python": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8",
+      "node": "C:/Users/ROG/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "temp": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-continuous-repair-probes"
+    },
+    "evidence_hashes": {
+      "before.json": "81de632569657975e86b3aa369e49562712dfa2c3b47b7118c876de593fc371e",
+      "atomic-result.json": "825df9dd4d41c8e7d89d3674d0bfe83fd34663ebb9e59bcb0a7dccf04e75d04c",
+      "deleted-history-result.json": "946bb65d319d14667e7a07f132fc405f13c18d96c276737e7cb27d16a2a14d45",
+      "tests1-result.json": "0d173a92c93a2ce2a9ecd4e0c42351b492d37b64ed0193e9a023a530a735906d",
+      "tests2.xml": "0f059274c009b9d2621553c0cae7dfbb0b8d4d1e723af270240bfa5157a68b1b",
+      "tests2.log": "f1670f6725551aae6e17c0e71e7f85b5c6b8896db768621ec26136ba2e202fce",
+      "tests3.xml": "aa4d6b9c1e62e5137782b09b9b1dd6df70642af66ccf55d28bde6793ffc3806c",
+      "tests3.log": "4cfb85bce9158fb0589f52037f57e7cb4c48feeeb06009c119d8dd6236baa3c9",
+      "probe.py": "6d8773e7ab5554020e47683e37e7b7b7c80ec67815bc929be3800280e5d9910e",
+      "deletion.py": "af84ec4e9b2630506603eb42666771a580dcc4ed74738198d89ab19cd977e8d4"
+    },
+    "original_evidence_unchanged": {
+      "atomic-result.json": true,
+      "deleted-history-result.json": true,
+      "sql-result.json": true
+    }
+  }
+}

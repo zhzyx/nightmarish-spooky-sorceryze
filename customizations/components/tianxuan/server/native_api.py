@@ -42,6 +42,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "await-terminal": {"key"},
             "check": {"key"},
             "integration-authorize": {"group"},
+            "integration-continue": {"key"},
+            "integration-await": {"key", "event"},
             "integration-contribution": {"key"},
             "integration-status": {"key"},
             "integration-execute": {"key"},
@@ -64,6 +66,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
             raise HTTPException(404, "workflow operation unavailable")
         optional = {
             "advance": {"exclude"},
+            "integration-continue": {"event"},
             "record": {"sourceReceipt", "receipt", "ticket", "key", "stage", "reason"},
         }
         _fields(payload, fields[operation], optional.get(operation))
@@ -76,6 +79,12 @@ def create_native_workflow_router(workflow) -> APIRouter:
         for key in {"key", "issue", "channel", "group"} & payload.keys():
             if not isinstance(payload[key], str) or not payload[key] or len(payload[key]) > 256:
                 raise HTTPException(422, "invalid workflow identifier")
+        if (
+            operation in {"integration-continue", "integration-await"}
+            and "event" in payload
+            and (not isinstance(payload["event"], str) or not payload["event"] or len(payload["event"]) > 512)
+        ):
+            raise HTTPException(422, "invalid publisher event")
         if operation == "revise" and (
             not isinstance(payload["expected"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["expected"])
         ):
@@ -97,6 +106,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 if integration is None:
                     raise NativeStoreError("Admitted integration installation unavailable")
                 method = operation.removeprefix("integration-")
+                if method == "continue":
+                    return integration.continue_lane(actor, payload["key"], payload.get("event"))
                 if method == "contribution":
                     return integration.check_contribution(actor, payload["key"])
                 return getattr(integration, method)(actor, payload["group" if method == "authorize" else "key"])
@@ -137,6 +148,16 @@ def create_native_workflow_router(workflow) -> APIRouter:
             return {"state": row["state"]}
 
         try:
+            if operation == "integration-await":
+                if not isinstance(payload["event"], str) or len(payload["event"]) > 512:
+                    raise HTTPException(422, "invalid publisher event")
+                integration = getattr(workflow, "integration", None)
+                if integration is None or integration.continuous is None:
+                    raise NativeStoreError("Continuous installation unavailable")
+                result = await integration.continuous.await_lane(actor, payload["key"], payload["event"])
+                if _identity(request, refresh=True)[1] != actor:
+                    raise HTTPException(401, "publisher observer identity changed")
+                return result
             if operation == "await-terminal":
                 result = await workflow.await_terminal(actor, payload["key"])
                 # Sessions may have been revoked while the observer was asleep.

@@ -1,0 +1,166 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-continuous-review.json",
+    "sha256": "17b7b364d9200a6a56df9a03a131e4308a3f7a3e9e20d200db4b9a0ba11dc169",
+    "path_base": "absolute current host archive"
+  },
+  "export": "Lossless JSON value export with repository LF; original bytes retained.",
+  "report": {
+    "issue": 1488,
+    "reviewer": "/root/sinan_750eb4bc51848f14",
+    "verdict": "changes_required",
+    "source_hashes": {
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "edbc573768f211891b8b9485ba8003611b534c52bc7aaf5f813ca25d0bcc9bc2",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "a8525bc1105d6d7e95deb2996a320ba1e52e014a8f3f399c333d603f3d32fc46",
+      "customizations/components/tianxuan/duobao/native_check_runner.py": "33cc2e31e3fb8cf52b48cb6aafc5c48c1fd8ac2d8ac3286093ab0a49aef82ec7",
+      "customizations/components/tianxuan/server/native_api.py": "553cca51525506f303e6ae334ee22675d44cb22d65d0102b734863725dfd7328",
+      "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "97f149c125127bbbba3ce183fbaf6491a973ea47fa72f07b5bec41f9196933fb",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py": "d13b18ecd7dc57236728c449c8849e36f3af1a3cc02572cbbcf70688a698ee85",
+      "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py": "debbab59c151b2adae76c3c726c9bdafde52ebbb97a416299f98d095bece0b4a"
+    },
+    "source_unchanged_at_finish": true,
+    "findings": [
+      {
+        "priority": "P1",
+        "title": "Continuous publication splits installed fixed groups",
+        "file": "customizations/components/tianxuan/sinan-workorders/native_continuous.py",
+        "line": 225,
+        "description": "enqueue/freeze ignore installed fixed group membership. discover exposes complete installed two-member group and continuous lane together. max_batch=1 publishes first member and marks accepted while second remains produced.",
+        "evidence": "native-continuous-review-probes/atomic-result.json",
+        "probe": "native-continuous-review-probes/probe.py",
+        "expected": "Reject fixed-group overlap at enqueue/freeze/publish including installation after enqueue; preserve complete group delivery."
+      },
+      {
+        "priority": "P2",
+        "title": "Post-check materialization conceals deleted history inputs",
+        "file": "customizations/components/tianxuan/duobao/native_check_runner.py",
+        "line": 238,
+        "description": "Post-check prepare defaults materialize=True. Real check subprocess unlinks required history JSON; prepare recreates it and second batch is accepted. Both tasks became accepted.",
+        "evidence": "native-continuous-review-probes/deleted-history-result.json",
+        "probe": "native-continuous-review-probes/deletion.py",
+        "expected": "Verify frozen history without materialization after execution and on replay/cache validation; reject deletion without silent rebuilding."
+      }
+    ],
+    "verified_sql": {
+      "users": 50,
+      "task_actors": 50,
+      "all_actors_real": true,
+      "tasks": 250,
+      "task_states": {
+        "accepted": 250
+      },
+      "batch_count": 36,
+      "batch_states": {
+        "accepted": 36
+      },
+      "batch_sizes": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        5
+      ],
+      "release_events": 36,
+      "checks": {
+        "check:complete": 286,
+        "stable:complete": 1,
+        "stable:cached": 285
+      },
+      "stable_all_history_empty": true,
+      "stable_binding_keys": 1,
+      "max_history_refs": 2,
+      "first_and_predecessor_all_match": true,
+      "queue_accepted": 250,
+      "physical_closure_count": 250,
+      "terminal_count": 250,
+      "launch_markers": 250,
+      "report_batches_equal": true,
+      "check_payloads_equal": true
+    },
+    "focused_regression": {
+      "passed": 5,
+      "deselected": 18,
+      "seconds": 5.81,
+      "selection": "busy_observer_binds or restart_does_not_replay or frozen_member_invalidation",
+      "cache": "disabled",
+      "temp": "owned review-probes/focused-tests"
+    },
+    "source_review": {
+      "coordinator": "Explicit installed coordinator; same tenant editor/admin checks, original source principals and per-original authority retained.",
+      "serialization": "Per tenant/product/channel OS lock; producer enqueue does not acquire publisher lock. Short domain transactions surround state reads/writes.",
+      "fifo": "FIFO seq bounded max_batch, active frozen batch unaffected by new arrivals, invalid prefreeze rows classified blocked.",
+      "unknown": "True Future owned until durable result/unknown; follower owner alias. Observer restart does not launch producers. Unknown check/review/resolver blocks invalid-member isolation.",
+      "cas": "Successor uses actual selected base after Channel changed and known review; originals unchanged; no producer rerun in continuous driver.",
+      "history": "Exact manifest identity/content/dependency checks, explicit bounded history refs, no total publication cap. SQL verified first/predecessor refs across36 publications. Historical accepted receipts bypass routine progress invalidation while retaining current read authority.",
+      "check_cache": "Scoped reads return empty history env/binding. SQL stable runs all have empty history bindings and one cache binding key.",
+      "publication_guard": "Current contracts, principals, source ACL, check installation and history bytes rechecked before publish; during-check deletion concealed as P2."
+    },
+    "author_evidence": {
+      "validation": "Author reports67 tests+4 subtests and supplemental1; reviewer did not rerun full suite.",
+      "linux": "Read-only inspected data-collection/native-continuous-linux-1488.json; exit0/pass, reviewer did not execute remote runtime."
+    },
+    "method_learning": {
+      "scope": "editor-dependency-handoff",
+      "recalled": [
+        "await-terminal-observers",
+        "bind-consumer-release",
+        "reconstruct-worker-outcomes",
+        "review-context-and-source-evidence"
+      ],
+      "application": "Exact-source hash binding and actual terminal observation applied; findings constitute feedback for root-authorized repair."
+    },
+    "limits": [
+      "250 producers are deterministic subprocess fixtures, not250 model calls or production authority.",
+      "Acceptance reviewer callback returns True, not production independent model/approval admission.",
+      "No provider call, production server, commit/push or full250 rerun by reviewer.",
+      "Atomic probe uses existing terminal-adapter fixture with real SQLite/check/publish path.",
+      "Parent#1444/#1382, model and render AA acceptance remain incomplete."
+    ],
+    "cleanup": {
+      "released": "All probes exited; fixture generator closed domain databases; read-only SQL handles closed; no background worker/server started.",
+      "removed": [],
+      "retained": [
+        "atomic-group and deleted-history DB/check workspaces retained for finding reproduction and repair",
+        "focused-tests cleanup attempted but exec rejected by host policy before execution; retained, not retried",
+        "probe scripts and JSON receipts retained as review evidence"
+      ],
+      "failure": "Automatic approval/policy rejected owned focused-tests cleanup command: blocked by policy. No cleanup retried elsewhere."
+    },
+    "evidence_hashes": {
+      "atomic-result.json": "e3e1bab44349ae06dbcc095b972c64f9ce92317ea76a79628516567a7d2f6bee",
+      "deleted-history-result.json": "2a9358f36094a4763faa260de2a913c71be7bbd1b2bf3760cd4add158f19f976",
+      "sql-result.json": "f0702ee9a4277699c46dcb4a3fdf0785a23ca26ef5cb5e71586a22bd55781f30"
+    }
+  }
+}
