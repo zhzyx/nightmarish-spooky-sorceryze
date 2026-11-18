@@ -36,9 +36,11 @@
 #include "engine_next/include/EngineNext/Serialization/Sha256.h"
 #include <atomic>
 #include <chrono>
+#include <cstdint>
 #include <cstring>
 #include <filesystem>
 #include <string>
+#include <system_error>
 #include <vector>
 namespace EngineNext::Tests::Rendering
 {
