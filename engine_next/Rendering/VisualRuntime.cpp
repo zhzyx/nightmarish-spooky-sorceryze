@@ -35,6 +35,7 @@
 #include "engine_next/Platform/Windows/RhiComOwner.h"
 #include "engine_next/Platform/Windows/RayTracingScene.h"
 #include "engine_next/Platform/Windows/GpuProbeGrid.h"
+#include "engine_next/Platform/Windows/GpuRayReflections.h"
 #include "engine_next/Client/ClientSession.h"
 #include "engine_next/include/EngineNext/Runtime/Clock.h"
 #include "engine_next/include/EngineNext/Runtime/RuntimeConfig.h"
@@ -105,7 +106,8 @@ namespace
 {
 
 constexpr std::uint32_t FRAME_COUNT = 3;
-constexpr std::uint32_t FRAME_VIEW_COUNT = 232;
+constexpr std::uint32_t RAY_REFLECTION_VIEW_START = 232;
+constexpr std::uint32_t FRAME_VIEW_COUNT = RAY_REFLECTION_VIEW_START + RAY_REFLECTION_VIEWS;
 constexpr std::uint32_t GI_VIEW_START = 152;
 constexpr std::uint32_t GEOMETRY_VIEW_START = 192;
 constexpr std::uint32_t AMBIENT_VIEW_START = 184;
@@ -691,6 +693,7 @@ public:
 				std::abort();
 			}
 		}
+		ReleaseRayReflections();
 		ReleaseGiResources();
 		ReleaseGeometryResources();
 	}
@@ -711,6 +714,10 @@ private:
 	bool PrepareGiFrame(std::uint32_t nFrame);
 	bool RecordGiPass(std::uint32_t nFrame, PassWork eWork);
 	void ReleaseGiResources();
+	bool CreateRayReflections();
+	bool PrepareRayReflections(std::uint32_t nFrame);
+	bool RecordRayReflections(std::uint32_t nFrame, PassWork eWork, std::uint32_t nPass);
+	void ReleaseRayReflections();
 	bool CreateGeometryResources();
 	bool PrepareGeometryFrame(std::uint32_t nFrame);
 	bool RecordGeometryPass(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork, std::uint32_t nMip);
@@ -914,6 +921,10 @@ private:
 	GpuPageReadStats stGpuPageStats;
 	RenderConfiguration stRenderConfiguration;
 	GpuProbeGrid stGi;
+	GpuRayReflections stRayReflections;
+	std::uint32_t nPendingRayFrame = FRAME_COUNT;
+	bool bRayCommandsExecuted = false;
+	std::array<ID3D12Resource *, 3> arrEnvironmentResources{};
 	std::uint32_t nPendingGiFrame = FRAME_COUNT;
 	bool bGiCommandsExecuted = false;
 	CameraMatrices stCameraMatrices;
@@ -1136,7 +1147,7 @@ bool VisualRuntime::Initialize()
 	nDsvStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	nViewStride = stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	return LoadScene() && BuildGraph() && CreateFrameContexts() && CreateTargets() && CreatePipeline() &&
-			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline() && CreateReflectionPipeline() && CreateVolumePipeline())) && (bSceneMode ? (CreateSceneMesh() && CreateGeometryResources() && CreateGiResources() && CreateParticleMesh() && (!stForwardEffects.bTransparency || CreateTransparencyPipeline())) : CreateMesh()) && CreateConstantBuffers();
+			(!bSceneMode || (CreateDeferredPipeline() && CreateShadowPipeline() && CreateTemporalPipeline() && CreatePostProcessPipeline() && CreateReflectionPipeline() && CreateVolumePipeline())) && (bSceneMode ? (CreateSceneMesh() && CreateGeometryResources() && CreateGiResources() && CreateRayReflections() && CreateParticleMesh() && (!stForwardEffects.bTransparency || CreateTransparencyPipeline())) : CreateMesh()) && CreateConstantBuffers();
 }
 
 bool VisualRuntime::CreateFrameContexts()
@@ -1157,7 +1168,7 @@ bool VisualRuntime::CreateFrameContexts()
 		{
 			return Fail("Close initial command lists");
 		}
-		if (stRenderConfiguration.stGlobalIllumination.bEnabled &&
+		if ((stRenderConfiguration.stGlobalIllumination.bEnabled || stRenderConfiguration.stReflections.stRayTracing.bEnabled) &&
 			FAILED(stFrame.stGraphicsList->QueryInterface(IID_PPV_ARGS(stFrame.stRayTracingList.Put()))))
 		{
 			return Fail("Query hardware ray tracing command list");
@@ -1828,6 +1839,7 @@ bool VisualRuntime::LoadScene()
 			bMaterialExtensions = bMaterialExtensions || stMaterial.fClearcoatFactor > 0 || stMaterial.fAnisotropyStrength != 0;
 		}
 	}
+	bMaterialExtensions = bMaterialExtensions || stRenderConfiguration.stReflections.stRayTracing.bEnabled;
 	if (stRenderConfiguration.stExposure.eMode != ExposureMode::Automatic &&
 		!ComputeExposureMultiplier(stRenderConfiguration.stExposure, stRenderConfiguration.dExposure, 0, dManualExposure, arrDiagnostics))
 	{
@@ -1955,7 +1967,7 @@ bool VisualRuntime::UploadTexture(const std::vector<MipLevel> &arrLevels, bool b
 	stBarrier.Transition.pResource = stTexture.Get();
 	stBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 	stBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE;
-	if (stRenderConfiguration.stGlobalIllumination.bEnabled)
+	if (stRenderConfiguration.stGlobalIllumination.bEnabled || stRenderConfiguration.stReflections.stRayTracing.bEnabled)
 	{
 		stBarrier.Transition.StateAfter |= D3D12_RESOURCE_STATE_NON_PIXEL_SHADER_RESOURCE;
 	}
@@ -2136,6 +2148,10 @@ bool VisualRuntime::UploadFloatTexture(const std::vector<const FloatImage *> &ar
 		stSrv.Texture2D.MipLevels = nMips;
 	}
 	stDevice->CreateShaderResourceView(stTexture.Get(), &stSrv, View(nView));
+	if (nView >= ENVIRONMENT_VIEW_START && nView < ENVIRONMENT_VIEW_START + arrEnvironmentResources.size())
+	{
+		arrEnvironmentResources[nView - ENVIRONMENT_VIEW_START] = stTexture.Get();
+	}
 	const std::wstring strName = L"EngineNext.Texture." + std::to_wstring(nView);
 	(void)stTexture->SetName(strName.c_str());
 	arrTextures.push_back(std::move(stTexture));
@@ -2682,6 +2698,172 @@ bool VisualRuntime::CreateGiResources()
 	return true;
 }
 
+bool VisualRuntime::CreateRayReflections()
+{
+	if (!stRenderConfiguration.stReflections.stRayTracing.bEnabled)
+	{
+		return true;
+	}
+	ComOwner<ID3D12Device5> stRayDevice;
+	Assets::Diagnostics arrDiagnostics;
+	if (FAILED(stDevice->QueryInterface(IID_PPV_ARGS(stRayDevice.Put()))))
+	{
+		return Fail("Query ray reflection device");
+	}
+	std::array<RayReflectionDescriptors, FRAME_COUNT> arrDescriptors{};
+	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
+	{
+		const std::uint32_t nView = nFrame * FRAME_VIEW_COUNT + RAY_REFLECTION_VIEW_START;
+		arrDescriptors[nFrame] = { View(nView), GpuView(nView), nViewStride };
+	}
+	std::vector<std::array<float, 4>> arrExtensions;
+	for (const GpuMaterial &stMaterial : arrMaterials)
+	{
+		arrExtensions.push_back(stMaterial.arrLobes);
+	}
+	const RayTracingScene *pBorrowed = stRenderConfiguration.stGlobalIllumination.bEnabled ? &stGi.RayScene() : nullptr;
+	if (!stRayReflections.Initialize(stRayDevice.Get(), stRenderConfiguration.stReflections, nWidth, nHeight, stRenderScene,
+									 arrExtensions, pBorrowed, std::filesystem::u8path(stConfig.strShaderDirectory), arrDescriptors,
+									 stGraphics.stFence->GetCompletedValue(), arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Create ray reflections" : arrDiagnostics.back().strMessage);
+	}
+	const std::vector<RayTracingIdentity> &arrIdentities = stRayReflections.RayScene().Identities();
+	if (arrIdentities.size() != arrDraws.size())
+	{
+		return Fail("Ray reflection draw count differs from rasterization");
+	}
+	for (std::size_t nDraw = 0; nDraw < arrDraws.size(); ++nDraw)
+	{
+		const GpuDraw &stDraw = arrDraws[nDraw];
+		const RayTracingIdentity &stIdentity = arrIdentities[nDraw];
+		if (stIdentity.nEntityId != stDraw.nEntityId || stIdentity.nAsset != stDraw.nSourceAsset ||
+			stIdentity.nPrimitive != stDraw.nSourcePrimitive || stIdentity.nNode != stDraw.nSourceNode)
+		{
+			return Fail("Ray reflection draw identity differs from rasterization");
+		}
+	}
+	return true;
+}
+
+bool VisualRuntime::PrepareRayReflections(std::uint32_t nFrame)
+{
+	if (!stRenderConfiguration.stReflections.stRayTracing.bEnabled)
+	{
+		return true;
+	}
+	RayReflectionConstants stConstants;
+	stConstants.arrViewport = { static_cast<float>(nWidth), static_cast<float>(nHeight), 0, 0 };
+	stConstants.arrProjection = { static_cast<float>(stCameraMatrices.arrProjection[0]), static_cast<float>(stCameraMatrices.arrProjection[5]),
+								  static_cast<float>(-stCameraMatrices.arrProjection[8]), static_cast<float>(-stCameraMatrices.arrProjection[9]) };
+	stConstants.arrTraceRange = { static_cast<float>(stRenderConfiguration.stCamera.dNearPlane), static_cast<float>(stRenderConfiguration.stCamera.dFarPlane), 0, 0 };
+	stConstants.arrSettings[3] = 1;
+	stConstants.arrFilter[1] = stRenderConfiguration.stGlobalIllumination.bEnabled ? 1.0F : 0.0F;
+	if (stRenderConfiguration.stTemporal.bEnabled)
+	{
+		stConstants.arrJitter = { static_cast<float>(stTemporalFrame.arrJitterPixels[0]), static_cast<float>(stTemporalFrame.arrJitterPixels[1]), 0, 0 };
+	}
+	std::vector<std::array<double, 16>> arrWorlds;
+	for (const TemporalDrawFrame &stDraw : stTemporalFrame.arrDraws)
+	{
+		arrWorlds.push_back(stDraw.arrCurrentWorld);
+	}
+	Assets::Diagnostics arrDiagnostics;
+	if (!stRayReflections.PrepareFrame(nFrame, stConstants, arrWorlds, stGraphics.stFence->GetCompletedValue(), arrDiagnostics,
+									   bAnimationActive ? &stDeformationFrame : nullptr))
+	{
+		return Fail(arrDiagnostics.empty() ? "Prepare ray reflections" : arrDiagnostics.back().strMessage);
+	}
+	nPendingRayFrame = nFrame;
+	bRayCommandsExecuted = false;
+	return true;
+}
+
+bool VisualRuntime::RecordRayReflections(std::uint32_t nFrame, PassWork eWork, std::uint32_t nPass)
+{
+	const std::array<RayReflectionPass, 7> arrPasses{ RayReflectionPass::BuildScene, RayReflectionPass::Prepare, RayReflectionPass::Trace,
+													  RayReflectionPass::Temporal, RayReflectionPass::Spatial, RayReflectionPass::Composite, RayReflectionPass::Readback };
+	const std::size_t nKind = static_cast<std::size_t>(eWork) - static_cast<std::size_t>(PassWork::RayReflectionBuildScene);
+	if (nKind >= arrPasses.size())
+	{
+		return Fail("Unknown ray reflection graph work");
+	}
+	FrameContext &stFrame = arrFrames[nFrame];
+	RayReflectionBindings stBindings;
+	stBindings.nFrameConstants = stFrame.stConstants->GetGPUVirtualAddress();
+	stBindings.stMaterials = GpuView(MATERIAL_VIEW_START);
+	stBindings.stSamplers = stSamplerHeap->GetGPUDescriptorHandleForHeapStart();
+	stBindings.arrResources[5] = stFrame.arrGbuffer[0].Get();
+	stBindings.arrResources[6] = stFrame.arrGbuffer[1].Get();
+	stBindings.arrResources[7] = stFrame.arrGbuffer[2].Get();
+	stBindings.arrResources[8] = stFrame.stDepth.Get();
+	stBindings.arrResources[9] = stFrame.stMotion.Get();
+	stBindings.arrResources[10] = stFrame.stObjectId.Get();
+	stBindings.arrResources[11] = stFrame.arrMaterialBuffers[0].Get();
+	stBindings.arrResources[12] = stFrame.arrMaterialBuffers[1].Get();
+	stBindings.arrResources[13] = arrEnvironmentResources[1];
+	stBindings.arrResources[14] = arrEnvironmentResources[0];
+	stBindings.arrResources[15] = stEnvironmentAlias.Get();
+	stBindings.arrResources[22] = arrExposure[nExposureRead].Get();
+	stBindings.arrResources[23] = stFrame.stReflectedHdr.Get();
+	stBindings.arrResources[24] = stFrame.stHdr.Get();
+	stBindings.arrResources[25] = stFrame.stEnvironmentSpecular.Get();
+	stBindings.arrResources[30] = stFrame.stTint.Get();
+	if (stRenderConfiguration.stGlobalIllumination.bEnabled)
+	{
+		stBindings.nGiConstants = stGi.ConstantsGpu(nFrame);
+		for (std::uint32_t nKindIndex = 0; nKindIndex < 3; ++nKindIndex)
+		{
+			stBindings.arrResources[16 + nKindIndex] = stGi.History(true, static_cast<GiHistoryKind>(nKindIndex));
+		}
+	}
+	ID3D12DescriptorHeap *arrHeaps[] = { stViewHeap.Get(), stSamplerHeap.Get() };
+	stFrame.stGraphicsList->SetDescriptorHeaps(2, arrHeaps);
+	Assets::Diagnostics arrDiagnostics;
+	if (!stRayReflections.Record(nFrame, arrPasses[nKind], nPass, stFrame.stRayTracingList.Get(), stBindings, arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Record ray reflections" : arrDiagnostics.back().strMessage);
+	}
+	if (eWork == PassWork::RayReflectionReadback && !stRayReflections.OwnsScene() &&
+		!stGi.FinishSceneReads(nFrame, stFrame.stRayTracingList.Get(), arrDiagnostics))
+	{
+		return Fail(arrDiagnostics.empty() ? "Finish shared ray-scene reads" : arrDiagnostics.back().strMessage);
+	}
+	return true;
+}
+
+void VisualRuntime::ReleaseRayReflections()
+{
+	if (stRayReflections.AllocatedBytes() == 0)
+	{
+		return;
+	}
+	const std::uint64_t nCompleted = stGraphics.stFence->GetCompletedValue();
+	Assets::Diagnostics arrDiagnostics;
+	bool bReleased = true;
+	if (nPendingRayFrame < FRAME_COUNT)
+	{
+		if (bRayCommandsExecuted)
+		{
+			bReleased = stRayReflections.Submit(nPendingRayFrame, nCompleted, arrDiagnostics);
+		}
+		else
+		{
+			arrFrames[nPendingRayFrame].stRayTracingList.Reset();
+			arrFrames[nPendingRayFrame].stGraphicsList.Reset();
+			bReleased = stRayReflections.Discard(nPendingRayFrame, arrDiagnostics);
+		}
+	}
+	bReleased = bReleased && stRayReflections.Release(nCompleted, arrDiagnostics);
+	if (!bReleased && SUCCEEDED(stDevice->GetDeviceRemovedReason()))
+	{
+		std::cerr << "Fatal ray reflection retirement failure\n";
+		std::abort();
+	}
+	nPendingRayFrame = FRAME_COUNT;
+	bRayCommandsExecuted = false;
+}
+
 bool VisualRuntime::PrepareGiFrame(std::uint32_t nFrame)
 {
 	nAnimationGiChangedDraws = 0;
@@ -2741,6 +2923,7 @@ bool VisualRuntime::RecordGiPass(std::uint32_t nFrame, PassWork eWork)
 	stBindings.stMaterials = GpuView(MATERIAL_VIEW_START);
 	stBindings.stSamplers = stSamplerHeap->GetGPUDescriptorHandleForHeapStart();
 	stBindings.stTint = GpuView(nFrame * FRAME_VIEW_COUNT);
+	stBindings.bDeferSceneFinish = stRenderConfiguration.stReflections.stRayTracing.bEnabled;
 	ID3D12DescriptorHeap *arrHeaps[] = { stViewHeap.Get(), stSamplerHeap.Get() };
 	arrFrames[nFrame].stGraphicsList->SetDescriptorHeaps(2, arrHeaps);
 	Assets::Diagnostics arrDiagnostics;
@@ -3059,13 +3242,22 @@ bool VisualRuntime::DiscardUnsubmittedFrames()
 		const bool bGeometryPending = nPendingGeometryFrame == nFrame && !bGeometryCommandsExecuted;
 		const bool bAnimationPending = nPendingAnimationFrame == nFrame && !bAnimationCommandsExecuted;
 		const bool bPagePending = nPendingPagedFrame == nFrame && !bPagedCommandsExecuted;
-		if (!bGiPending && !bGeometryPending && !bAnimationPending && !bPagePending)
+		const bool bRayPending = nPendingRayFrame == nFrame && !bRayCommandsExecuted;
+		if (!bGiPending && !bGeometryPending && !bAnimationPending && !bPagePending && !bRayPending)
 		{
 			continue;
 		}
 		arrFrames[nFrame].stRayTracingList.Reset();
 		arrFrames[nFrame].stGraphicsList.Reset();
 		Assets::Diagnostics arrDiagnostics;
+		if (bRayPending)
+		{
+			if (!stRayReflections.Discard(nFrame, arrDiagnostics))
+			{
+				return Fail(arrDiagnostics.empty() ? "Discard ray reflection frame" : arrDiagnostics.back().strMessage);
+			}
+			nPendingRayFrame = FRAME_COUNT;
+		}
 		if (bGiPending)
 		{
 			if (!stGi.Discard(nFrame, arrDiagnostics))
@@ -4429,6 +4621,7 @@ bool VisualRuntime::ResetTemporalHistory()
 	bExposureReady = false;
 	bVolumeHistoryReady = false;
 	stGi.InvalidateHistory();
+	stRayReflections.InvalidateHistory();
 	++nHistoryResets;
 	return true;
 }
@@ -5572,7 +5765,8 @@ bool VisualRuntime::BuildGraph()
 	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, stRenderConfiguration.stAmbientOcclusion.bEnabled, bAnimationActive, stRenderConfiguration.stScreenEffects.bEnabled))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, stRenderConfiguration.stAmbientOcclusion.bEnabled,
+							 bAnimationActive, stRenderConfiguration.stScreenEffects.bEnabled, { stRenderConfiguration.stReflections.stRayTracing.bEnabled, stRenderConfiguration.stReflections.stRayTracing.nSpatialPasses }))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -5750,6 +5944,15 @@ bool VisualRuntime::CollectTiming(FrameContext &stFrame)
 			return Fail(arrDiagnostics.empty() ? "Collect geometry" : arrDiagnostics.back().strMessage);
 		}
 	}
+	if (stRenderConfiguration.stReflections.stRayTracing.bEnabled)
+	{
+		Assets::Diagnostics arrDiagnostics;
+		const std::uint32_t nFrame = static_cast<std::uint32_t>(&stFrame - arrFrames.data());
+		if (!stRayReflections.Collect(nFrame, stGraphics.stFence->GetCompletedValue(), arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Collect ray reflection counters" : arrDiagnostics.back().strMessage);
+		}
+	}
 	stTiming.bGpuReady = true;
 	stFrame.bTimingPending = false;
 	return true;
@@ -5891,7 +6094,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		stTiming.dLightingSeconds = dSeconds;
 		stTiming.dDirectionalIlluminance = stFrameLight.dIlluminance;
 		if (!PrepareAnimation(dSeconds) || !UpdateEffectTransforms() || !UpdateConstantBuffer(stFrame) || !PrepareAnimationUpload(nIndex) ||
-			!UpdateVolumeParameters(nIndex) || !UpdateParticleBuffers(nIndex, dSeconds) || !PrepareGiFrame(nIndex) || !PrepareGeometryFrame(nIndex))
+			!UpdateVolumeParameters(nIndex) || !UpdateParticleBuffers(nIndex, dSeconds) || !PrepareGiFrame(nIndex) || !PrepareGeometryFrame(nIndex) || !PrepareRayReflections(nIndex))
 		{
 			(void)DiscardUnsubmittedFrames();
 			return false;
@@ -5917,6 +6120,29 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			{
 				arrResources[stRenderPipeline.arrGiRead[nKind]] = stGi.History(false, static_cast<GiHistoryKind>(nKind));
 				arrResources[stRenderPipeline.arrGiWrite[nKind]] = stGi.History(true, static_cast<GiHistoryKind>(nKind));
+			}
+		}
+		if (stRenderConfiguration.stReflections.stRayTracing.bEnabled)
+		{
+			arrResources[stRenderPipeline.nRayScene] = stRayReflections.Scene(nIndex);
+			arrResources[stRenderPipeline.nRayUpload] = stRayReflections.Upload(nIndex);
+			arrResources[stRenderPipeline.nRayCounters] = stRayReflections.Counters(nIndex);
+			arrResources[stRenderPipeline.nRayReadback] = stRayReflections.Readback(nIndex);
+			for (std::uint32_t nImage = 0; nImage < 3; ++nImage)
+			{
+				arrResources[stRenderPipeline.arrRayRaw[nImage]] = stRayReflections.Raw(nImage);
+			}
+			for (std::uint32_t nImage = 0; nImage < 7; ++nImage)
+			{
+				arrResources[stRenderPipeline.arrRayHistoryRead[nImage]] = stRayReflections.History(false, nImage);
+				arrResources[stRenderPipeline.arrRayHistoryWrite[nImage]] = stRayReflections.History(true, nImage);
+			}
+			if (stRenderConfiguration.stReflections.stRayTracing.nSpatialPasses != 0)
+			{
+				for (std::uint32_t nImage = 0; nImage < 2; ++nImage)
+				{
+					arrResources[stRenderPipeline.arrRayScratch[nImage]] = stRayReflections.Scratch(nImage);
+				}
 			}
 		}
 		stTiming.nTemporalEpoch = stTemporalFrame.nEpoch;
@@ -5985,6 +6211,13 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			if (!stGpuDeformation.Record(nIndex, pList, stVertices.Get(), arrDiagnostics))
 			{
 				return Fail(arrDiagnostics.empty() ? "Record deformation upload" : arrDiagnostics.back().strMessage);
+			}
+		}
+		else if (eWork >= PassWork::RayReflectionBuildScene && eWork <= PassWork::RayReflectionReadback)
+		{
+			if (!RecordRayReflections(nIndex, eWork, stRenderPipeline.arrPassMipIndex[stPass.nPass]))
+			{
+				return false;
 			}
 		}
 		else if (eWork >= PassWork::GiBuildScene && eWork <= PassWork::GiReadback)
@@ -6134,6 +6367,7 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 	bGeometryCommandsExecuted = nPendingGeometryFrame == nIndex;
 	bAnimationCommandsExecuted = nPendingAnimationFrame == nIndex;
 	bPagedCommandsExecuted = nPendingPagedFrame == nIndex;
+	bRayCommandsExecuted = nPendingRayFrame == nIndex;
 	stGraphics.stQueue->ExecuteCommandLists(1, &pGraphicsList);
 	const HRESULT nPresent = stSwapchain->Present(stConfig.bVsync ? 1 : 0, !stConfig.bVsync && bTearing ? DXGI_PRESENT_ALLOW_TEARING : 0);
 	if (!stGraphics.Signal(stFrame.nGraphicsFence))
@@ -6149,6 +6383,16 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 		}
 		nPendingAnimationFrame = FRAME_COUNT;
 		bAnimationCommandsExecuted = false;
+	}
+	if (stRenderConfiguration.stReflections.stRayTracing.bEnabled)
+	{
+		Assets::Diagnostics arrDiagnostics;
+		if (!stRayReflections.Submit(nIndex, stFrame.nGraphicsFence, arrDiagnostics))
+		{
+			return Fail(arrDiagnostics.empty() ? "Commit ray reflection frame" : arrDiagnostics.back().strMessage);
+		}
+		nPendingRayFrame = FRAME_COUNT;
+		bRayCommandsExecuted = false;
 	}
 	if (stRenderConfiguration.stGlobalIllumination.bEnabled)
 	{
@@ -6246,6 +6490,7 @@ bool VisualRuntime::Resize()
 			return false;
 		}
 	}
+	ReleaseRayReflections();
 	ReleaseGeometryResources();
 	for (std::uint32_t nIndex = 0; nIndex < FRAME_COUNT; ++nIndex)
 	{
@@ -6296,9 +6541,9 @@ bool VisualRuntime::Resize()
 	}
 	if (stRenderConfiguration.stGeometry.bEnabled)
 	{
-		return BuildGraph() && CreateFrameContexts() && CreateDeferredPipeline() && CreateGeometryResources();
+		return BuildGraph() && CreateFrameContexts() && CreateDeferredPipeline() && CreateGeometryResources() && CreateRayReflections();
 	}
-	return true;
+	return CreateRayReflections();
 }
 
 bool VisualRuntime::ReadCapture()
@@ -6835,6 +7080,19 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["geometry_invalid"] = JsonValue(static_cast<std::int64_t>(stGeometryStats.nInvalid));
 	mapReport["materials"] = JsonValue(static_cast<std::int64_t>(arrMaterials.size()));
 	mapReport["material_extensions"] = JsonValue(bMaterialExtensions);
+	mapReport["ray_reflections"] = JsonValue(stRenderConfiguration.stReflections.stRayTracing.bEnabled);
+	mapReport["ray_reflection_width"] = JsonValue(static_cast<std::int64_t>(stRayReflections.Budget().nWidth));
+	mapReport["ray_reflection_height"] = JsonValue(static_cast<std::int64_t>(stRayReflections.Budget().nHeight));
+	mapReport["ray_reflection_bytes"] = JsonValue(static_cast<std::int64_t>(stRayReflections.AllocatedBytes()));
+	mapReport["ray_reflection_epoch"] = JsonValue(static_cast<std::int64_t>(stRayReflections.SubmissionEpoch()));
+	mapReport["ray_reflection_primary"] = JsonValue(static_cast<std::int64_t>(stRayReflections.Statistics().nPrimary));
+	mapReport["ray_reflection_screen_hits"] = JsonValue(static_cast<std::int64_t>(stRayReflections.Statistics().nScreenHits));
+	mapReport["ray_reflection_scene_hits"] = JsonValue(static_cast<std::int64_t>(stRayReflections.Statistics().nSceneHits));
+	mapReport["ray_reflection_misses"] = JsonValue(static_cast<std::int64_t>(stRayReflections.Statistics().nMisses));
+	mapReport["ray_reflection_invalid"] = JsonValue(static_cast<std::int64_t>(stRayReflections.Statistics().nInvalid));
+	mapReport["ray_reflection_witness_rays"] = JsonValue(static_cast<std::int64_t>(stRayReflections.Statistics().nWitnessRays));
+	mapReport["ray_reflection_peak_invalid"] = JsonValue(static_cast<std::int64_t>(stRayReflections.PeakInvalidCount()));
+	mapReport["ray_reflection_counter_scope"] = JsonValue("latest_retired_frame");
 	mapReport["material_overrides"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stMaterials.arrOverrides.size()));
 	mapReport["material_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nMaterialBytes));
 	mapReport["ambient_occlusion_enabled"] = JsonValue(bSceneMode && stRenderConfiguration.stAmbientOcclusion.bEnabled);

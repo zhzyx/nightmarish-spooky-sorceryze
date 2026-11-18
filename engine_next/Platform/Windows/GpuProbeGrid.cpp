@@ -725,7 +725,7 @@ bool GpuProbeGrid::Record(std::uint32_t nFrame, GiPass ePass, ID3D12GraphicsComm
 	{
 		pList->CopyBufferRegion(arrFrames[nFrame].stReadback.Get(), 0, arrHistory[1 - nReadHistory].arrBuffers[2].Get(), 0,
 								static_cast<std::uint64_t>(stPendingGrid.stBudget.nProbeCount) * stPendingGrid.stBudget.nStateStride);
-		if (!stScene.FinishDeformationReads(nFrame, pList, out_arrDiagnostics))
+		if (!stBindings.bDeferSceneFinish && !stScene.FinishDeformationReads(nFrame, pList, out_arrDiagnostics))
 		{
 			return false;
 		}
@@ -768,6 +768,16 @@ bool GpuProbeGrid::Record(std::uint32_t nFrame, GiPass ePass, ID3D12GraphicsComm
 	}
 	nRecordedPasses |= nBit;
 	return true;
+}
+
+bool GpuProbeGrid::FinishSceneReads(std::uint32_t nFrame, ID3D12GraphicsCommandList4 *pList, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::uint32_t nReadbackBit = 1U << static_cast<std::uint32_t>(GiPass::Readback);
+	if (!IsOwner() || !bInitialized || nFrame >= GI_PENDING_FRAMES || nPendingFrame != nFrame || (nRecordedPasses & nReadbackBit) == 0)
+	{
+		return Error(out_arrDiagnostics, "The final ray consumer must finish the recorded GI frame before submission.");
+	}
+	return stScene.FinishDeformationReads(nFrame, pList, out_arrDiagnostics);
 }
 
 bool GpuProbeGrid::Submit(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics)
@@ -1100,6 +1110,11 @@ void GpuProbeGrid::Swap(GpuProbeGrid &stOther) noexcept
 	swap(arrGeometryRevisions, stOther.arrGeometryRevisions);
 	swap(arrPendingGeometryRevisions, stOther.arrPendingGeometryRevisions);
 	swap(stMemory, stOther.stMemory);
+}
+
+const RayTracingScene &GpuProbeGrid::RayScene() const noexcept
+{
+	return stScene;
 }
 
 } // namespace EngineNext::Rendering

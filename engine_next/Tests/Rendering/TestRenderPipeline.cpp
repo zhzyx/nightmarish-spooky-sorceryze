@@ -103,6 +103,68 @@ bool HasAccess(const CompiledPass &stPass, ResourceId nResource, ResourceState e
 
 } // namespace
 
+ENGINE_NEXT_TEST("Ray reflection graph separates lobe histories and preserves barriers")
+{
+	for (bool bGi : { false, true })
+	{
+		for (std::uint32_t nSpatial = 0; nSpatial <= 3; ++nSpatial)
+		{
+			RenderPipeline stPipeline;
+			GraphDiagnostic stDiagnostic;
+			ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 1, {}, true, bGi, {}, bGi, false, false, false, { true, nSpatial }));
+			const CompiledPass *pTrace = FindWork(stPipeline, PassWork::RayReflectionTrace);
+			const CompiledPass *pTemporal = FindWork(stPipeline, PassWork::RayReflectionTemporal);
+			const CompiledPass *pComposite = FindWork(stPipeline, PassWork::RayReflectionComposite);
+			const CompiledPass *pReadback = FindWork(stPipeline, PassWork::RayReflectionReadback);
+			ENGINE_NEXT_CHECK(pTrace != nullptr && pTemporal != nullptr && pComposite != nullptr && pReadback != nullptr);
+			ENGINE_NEXT_CHECK(pTrace->nPass < pTemporal->nPass && pTemporal->nPass < pComposite->nPass && pComposite->nPass < pReadback->nPass);
+			ENGINE_NEXT_CHECK((FindWork(stPipeline, PassWork::RayReflectionBuildScene) == nullptr) == bGi);
+			ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::ReflectionTrace) == nullptr);
+			ENGINE_NEXT_CHECK(HasAccess(*pTrace, stPipeline.nRayScene, ResourceState::AccelerationStructure, false));
+			for (std::uint32_t nImage = 0; nImage < 7; ++nImage)
+			{
+				ENGINE_NEXT_CHECK(stPipeline.arrRayHistoryRead[nImage] != stPipeline.arrRayHistoryWrite[nImage]);
+				ENGINE_NEXT_CHECK(HasAccess(*pTemporal, stPipeline.arrRayHistoryRead[nImage], ResourceState::NonPixelShaderRead, false));
+				ENGINE_NEXT_CHECK(HasAccess(*pTemporal, stPipeline.arrRayHistoryWrite[nImage], ResourceState::UnorderedAccess, true));
+			}
+			for (std::uint32_t nIndex = 0; nIndex < 3; ++nIndex)
+			{
+				ENGINE_NEXT_CHECK((FindWork(stPipeline, PassWork::RayReflectionSpatial, nIndex) != nullptr) == (nIndex < nSpatial));
+			}
+			CheckReusableStates(stPipeline);
+		}
+	}
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, true, true, {}, false, false, false, false, { true, 1 }));
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 1, {}, false, true, {}, false, false, false, false, { true, 1 }));
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 1, {}, true, true, {}, false, false, false, false, { true, 4 }));
+}
+
+ENGINE_NEXT_TEST("Ray reflection graph retains animated raster and shared scene ordering")
+{
+	for (bool bGi : { false, true })
+	{
+		RenderPipeline stPipeline;
+		GraphDiagnostic stDiagnostic;
+		ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 1, {}, true, bGi, {}, bGi, true, true, false, { true, 2 }));
+		const CompiledPass *pUpload = FindWork(stPipeline, PassWork::DeformationUpload);
+		const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
+		const CompiledPass *pTrace = FindWork(stPipeline, PassWork::RayReflectionTrace);
+		const CompiledPass *pReadback = FindWork(stPipeline, PassWork::RayReflectionReadback);
+		ENGINE_NEXT_CHECK(pUpload != nullptr && pGbuffer != nullptr && pTrace != nullptr && pReadback != nullptr);
+		ENGINE_NEXT_CHECK(pUpload->nPass < pGbuffer->nPass && pGbuffer->nPass < pTrace->nPass && pTrace->nPass < pReadback->nPass);
+		ENGINE_NEXT_CHECK(HasAccess(*pGbuffer, stPipeline.nDeformedVertices, ResourceState::VertexIndexRead, false));
+		if (bGi)
+		{
+			const CompiledPass *pGiReadback = FindWork(stPipeline, PassWork::GiReadback);
+			ENGINE_NEXT_CHECK(pGiReadback != nullptr && pGiReadback->nPass < pTrace->nPass);
+			ENGINE_NEXT_CHECK(stPipeline.nRayScene == stPipeline.nGiScene);
+		}
+		CheckReusableStates(stPipeline);
+	}
+}
+
 ENGINE_NEXT_TEST("RenderPipeline orders probe remapping tracing integration and receivers")
 {
 	RenderPipeline stPipeline;
@@ -141,6 +203,31 @@ ENGINE_NEXT_TEST("RenderPipeline orders probe remapping tracing integration and 
 		ENGINE_NEXT_CHECK(HasAccess(*pLighting, stPipeline.arrGiWrite[nKind], ResourceState::ShaderRead, false));
 		ENGINE_NEXT_CHECK(HasAccess(*pTransparency, stPipeline.arrGiWrite[nKind], ResourceState::ShaderRead, false));
 	}
+	CheckReusableStates(stPipeline);
+}
+
+ENGINE_NEXT_TEST("Paged geometry ray reflections and screen effects preserve their combined graph")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 6, true, true, 6, 6,
+										  { true, true }, true, true, { true, true, 8, true }, true, true, false, true, { true, 2 }));
+	const CompiledPass *pUpload = FindWork(stPipeline, PassWork::GeometryUpload);
+	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
+	const CompiledPass *pRay = FindWork(stPipeline, PassWork::RayReflectionComposite);
+	const CompiledPass *pForward = FindWork(stPipeline, PassWork::Transparency);
+	const CompiledPass *pTemporal = FindWork(stPipeline, PassWork::TemporalResolve);
+	const CompiledPass *pTone = FindWork(stPipeline, PassWork::ToneMap);
+	ENGINE_NEXT_CHECK(pUpload != nullptr && pGbuffer != nullptr && pRay != nullptr && pForward != nullptr && pTemporal != nullptr && pTone != nullptr);
+	if (pUpload == nullptr || pGbuffer == nullptr || pRay == nullptr || pForward == nullptr || pTemporal == nullptr || pTone == nullptr)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(pUpload->nPass < pGbuffer->nPass && pGbuffer->nPass < pRay->nPass && pRay->nPass < pForward->nPass && pForward->nPass < pTemporal->nPass && pTemporal->nPass < pTone->nPass);
+	ENGINE_NEXT_CHECK(HasAccess(*pTone, stPipeline.nColorLut, ResourceState::ShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pTone, stPipeline.arrHistoryWrite[0], ResourceState::ShaderRead, false));
+	ENGINE_NEXT_CHECK(stPipeline.nRayScene == stPipeline.nGiScene);
+	ENGINE_NEXT_CHECK(stPipeline.nGeometryPages != EngineNext::Rendering::INVALID_RESOURCE);
 	CheckReusableStates(stPipeline);
 }
 

@@ -34,6 +34,7 @@ CORE_SOURCES = [
     "engine_next/Rendering/LightTimeline.cpp",
     "engine_next/Rendering/ReflectionSettings.cpp",
     "engine_next/Rendering/AmbientOcclusionSettings.cpp",
+    "engine_next/Rendering/RayReflectionSettings.cpp",
     "engine_next/Rendering/GeometrySettings.cpp",
     "engine_next/Rendering/GeometryCulling.cpp",
     "engine_next/Rendering/GeometryScene.cpp",
@@ -86,6 +87,7 @@ VISUAL_SOURCES = [
     "engine_next/Platform/Windows/RayTracingScene.cpp",
     "engine_next/Platform/Windows/GpuProbeGrid.cpp",
     "engine_next/Platform/Windows/GpuDeformation.cpp",
+    "engine_next/Platform/Windows/GpuRayReflections.cpp",
     "engine_next/Platform/Windows/GpuGeometry.cpp",
     "engine_next/Platform/Windows/GpuPagedGeometry.cpp",
 ]
@@ -110,6 +112,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestLightTimeline.cpp",
     "engine_next/Tests/Rendering/TestReflectionSettings.cpp",
     "engine_next/Tests/Rendering/TestAmbientOcclusionSettings.cpp",
+    "engine_next/Tests/Rendering/TestRayReflections.cpp",
     "engine_next/Tests/Rendering/TestGeometrySettings.cpp",
     "engine_next/Tests/Rendering/TestGeometryCulling.cpp",
     "engine_next/Tests/Rendering/TestGeometryScene.cpp",
@@ -164,6 +167,7 @@ PUBLIC_HEADERS = [
     "EngineNext/Rendering/LightTimeline.h",
     "EngineNext/Rendering/ReflectionSettings.h",
     "EngineNext/Rendering/AmbientOcclusionSettings.h",
+    "EngineNext/Rendering/RayReflectionSettings.h",
     "EngineNext/Rendering/GeometrySettings.h",
     "EngineNext/Rendering/GeometryCulling.h",
     "EngineNext/Rendering/GeometryScene.h",
@@ -221,6 +225,10 @@ SHADERS = [
     ),
     ("CompositeCS", "cs_6_0", "ReflectionComposite.cs.cso", ["-D", "COMPOSITE_STAGE=1"]),
     ("RadianceCS", "cs_6_0", "ReflectionRadiance.cs.cso", ["-D", "RADIANCE_STAGE=1"]),
+    ("TraceCS", "cs_6_5", "RayReflectionTrace.cs.cso", ["-D", "RAY_REFLECTION_TRACE=1"]),
+    ("TemporalCS", "cs_6_5", "RayReflectionTemporal.cs.cso", ["-D", "RAY_REFLECTION_TEMPORAL=1"]),
+    ("SpatialCS", "cs_6_5", "RayReflectionSpatial.cs.cso", ["-D", "RAY_REFLECTION_SPATIAL=1"]),
+    ("CompositeCS", "cs_6_5", "RayReflectionComposite.cs.cso", ["-D", "RAY_REFLECTION_COMPOSITE=1"]),
     ("InjectCS", "cs_6_0", "VolumeInject.cs.cso", ["-D", "VOLUME_INJECT_STAGE=1"]),
     ("LightCS", "cs_6_0", "VolumeLight.cs.cso", ["-D", "VOLUME_LIGHT_STAGE=1"]),
     ("TemporalCS", "cs_6_0", "VolumeTemporal.cs.cso", []),
@@ -643,6 +651,8 @@ def compile_shaders(args, commands):
                 else "Reflection.hlsl"
                 if (name.startswith("Reflection") and name != "ReflectionLighting.ps.cso")
                 or name == "MaterialReflectionTrace.cs.cso"
+                else "RayReflections.hlsl"
+                if name.startswith("RayReflection")
                 else "Shadow.hlsl"
                 if name.startswith("Shadow")
                 else "Exposure.hlsl"
@@ -759,6 +769,8 @@ def build(args):
                 "engine_next/Rendering/Shaders/Bloom.hlsl",
                 "engine_next/Rendering/Shaders/BloomSampling.hlsli",
                 "engine_next/Rendering/Shaders/Reflection.hlsl",
+                "engine_next/Rendering/Shaders/RayReflections.hlsl",
+                "engine_next/Rendering/Shaders/RayReflectionSampling.hlsli",
                 "engine_next/Rendering/Shaders/GeometryVisibility.hlsli",
                 "engine_next/Rendering/Shaders/GeometryCull.hlsl",
                 "engine_next/Rendering/Shaders/GeometryHiZ.hlsl",
