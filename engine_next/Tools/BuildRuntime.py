@@ -87,6 +87,11 @@ APP_SOURCES = {
         "engine_next/Rendering/Animation.cpp",
         "engine_next/Rendering/MeshBasis.cpp",
         "engine_next/Rendering/Cook/GpuPackage.cpp",
+        "engine_next/Rendering/Cook/GpuPagedPackage.cpp",
+        "engine_next/Rendering/Cook/GeometryLod.cpp",
+        "engine_next/Rendering/LodSelection.cpp",
+        "engine_next/thirdparty/meshoptimizer/simplifier.cpp",
+        "engine_next/thirdparty/meshoptimizer/allocator.cpp",
         "engine_next/Rendering/Cook/ImageDecoder.cpp",
         "engine_next/Rendering/Cook/MeshCluster.cpp",
         "engine_next/Rendering/Cook/TextureCook.cpp",
@@ -644,6 +649,7 @@ def build_native_identity(args, library_sources):
         "engine_next/Rendering/Cook/GltfDecoder.h",
         "engine_next/Rendering/Cook/GpuPackage.h",
         "engine_next/Rendering/MeshBasis.h",
+        "engine_next/include/EngineNext/Rendering/GeometryLod.h",
         "engine_next/include/EngineNext/Rendering/MeshData.h",
         "engine_next/include/EngineNext/Rendering/ImageData.h",
         "engine_next/include/EngineNext/Rendering/TextureData.h",
@@ -659,7 +665,7 @@ def build_native_identity(args, library_sources):
         "engine_next/Tools/PackageVisualRuntime.py",
         *[
             path.relative_to(args.repo).as_posix()
-            for name in ("zlib", "libjpeg-turbo")
+            for name in ("zlib", "libjpeg-turbo", "meshoptimizer")
             for path in (args.repo / "engine_next/thirdparty" / name).rglob("*")
             if path.is_file()
         ],

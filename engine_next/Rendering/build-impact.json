@@ -1,7 +1,7 @@
 {
   "placement": "mixed",
-  "reason": "Independent rendering builds include full-resolution SSAO and shared neutral-visibility filtering alongside probe placement, environment irradiance and the existing geometry pipeline.",
-  "host_contract": "Windows x86_64 D3D12 inline ray queries use one DIRECT queue with frame-owned uploads and retired descriptor updates. The renderer preserves M3 asset identities, keeps environment distributions matched to the uploaded source and changes probe history roles after successful submission. Public configuration and grid headers remain platform-independent. GI and geometry use disjoint per-frame descriptor ranges and the same retired-frame ownership rules.",
-  "rollback": "Restore the source and shader bundle, rebuild, then verify the native identity and deterministic capture. Verify source invalidation and restoration with clean builds, and verify changed shaders, exact rollback and malformed-shader rejection with one baseline executable.",
-  "evidence": "data-collection/engine-next-visual-runtime-m4-3-ambient-occlusion-build-impact.json"
+  "reason": "Native C++ paging, conservative LOD selection and D3D12 residency are compiled into the independent renderer; selected offline shader bundles are loaded by the same executable.",
+  "host_contract": "C++17 renderer and next_asset preserve M3/v1/v2 identities. Version3 pages are source-bound and verified on actual reads; GPU pages use bounded allocation, one DIRECT queue and explicit frame-graph transitions. Animated geometry retains complete deformed source buffers and conventional draws.",
+  "rollback": "Restore the native source and rebuild; restore the selected shader bundle on the unchanged executable. The current experiment verifies native key restoration, exact pixel recovery and rejection of malformed shader data.",
+  "evidence": "data-collection/engine-next-visual-runtime-m4-4-paged-build-impact.json"
 }

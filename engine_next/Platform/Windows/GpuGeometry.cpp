@@ -155,7 +155,7 @@ bool Pipelines(ID3D12Device *pDevice, const GeometryGpuConfig &stConfig, ComOwne
 	std::array<D3D12_DESCRIPTOR_RANGE, 2> arrRanges{};
 	arrRanges[0] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 4, 0, 0, 0 };
 	arrRanges[1] = { D3D12_DESCRIPTOR_RANGE_TYPE_UAV, 2, 0, 0, 0 };
-	std::array<D3D12_ROOT_PARAMETER, 3> arrParameters{};
+	std::array<D3D12_ROOT_PARAMETER, 4> arrParameters{};
 	arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	arrParameters[0].Descriptor.ShaderRegister = 0;
 	for (std::size_t nIndex = 0; nIndex < 2; ++nIndex)
@@ -164,7 +164,9 @@ bool Pipelines(ID3D12Device *pDevice, const GeometryGpuConfig &stConfig, ComOwne
 		arrParameters[nIndex + 1].DescriptorTable = { 1, &arrRanges[nIndex] };
 	}
 	D3D12_ROOT_SIGNATURE_DESC stDescription{};
-	stDescription.NumParameters = 3;
+	arrParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_SRV;
+	arrParameters[3].Descriptor.ShaderRegister = 4;
+	stDescription.NumParameters = stConfig.bPaged ? 4 : 3;
 	stDescription.pParameters = arrParameters.data();
 	if (!Root(pDevice, stDescription, out_stCull))
 	{
@@ -178,19 +180,29 @@ bool Pipelines(ID3D12Device *pDevice, const GeometryGpuConfig &stConfig, ComOwne
 	{
 		return false;
 	}
-	std::array<D3D12_INDIRECT_ARGUMENT_DESC, 2> arrArguments{};
+	std::array<D3D12_INDIRECT_ARGUMENT_DESC, 4> arrArguments{};
 	arrArguments[0].Type = D3D12_INDIRECT_ARGUMENT_TYPE_CONSTANT_BUFFER_VIEW;
 	arrArguments[0].ConstantBufferView.RootParameterIndex = 0;
-	arrArguments[1].Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED;
+	if (stConfig.bPaged)
+	{
+		arrArguments[1].Type = D3D12_INDIRECT_ARGUMENT_TYPE_VERTEX_BUFFER_VIEW;
+		arrArguments[1].VertexBuffer.Slot = 0;
+		arrArguments[2].Type = D3D12_INDIRECT_ARGUMENT_TYPE_INDEX_BUFFER_VIEW;
+		arrArguments[3].Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED;
+	}
+	else
+	{
+		arrArguments[1].Type = D3D12_INDIRECT_ARGUMENT_TYPE_DRAW_INDEXED;
+	}
 	D3D12_COMMAND_SIGNATURE_DESC stCommands{};
-	stCommands.ByteStride = sizeof(GeometryIndirectCommand);
-	stCommands.NumArgumentDescs = static_cast<UINT>(arrArguments.size());
+	stCommands.ByteStride = stConfig.bPaged ? sizeof(GeometryPagedIndirectCommand) : sizeof(GeometryIndirectCommand);
+	stCommands.NumArgumentDescs = stConfig.bPaged ? 4 : 2;
 	stCommands.pArgumentDescs = arrArguments.data();
 	if (FAILED(pDevice->CreateCommandSignature(&stCommands, stConfig.pDrawRoot, IID_PPV_ARGS(out_stCommands.Put()))))
 	{
 		return false;
 	}
-	const std::array<const char *, 3> arrNames{ "GeometryCull.cs.cso", "GeometryHiZCopy.cs.cso", "GeometryHiZReduce.cs.cso" };
+	const std::array<const char *, 3> arrNames{ stConfig.bPaged ? "GeometryPagedCull.cs.cso" : "GeometryCull.cs.cso", "GeometryHiZCopy.cs.cso", "GeometryHiZReduce.cs.cso" };
 	for (std::size_t nIndex = 0; nIndex < arrNames.size(); ++nIndex)
 	{
 		std::vector<std::uint8_t> arrBytes;
@@ -245,7 +257,15 @@ bool GpuGeometry::Initialize(ID3D12Device *pDevice, const GeometryClusterSet &st
 	stCandidate.nWidth = stConfig.nWidth;
 	stCandidate.nHeight = stConfig.nHeight;
 	stCandidate.nDrawCount = stSource.nDrawCount;
-	stCandidate.nCandidateCount = static_cast<std::uint32_t>(stSource.nCandidateCount);
+	stCandidate.bPaged = stConfig.bPaged;
+	stCandidate.nCandidateCount = stConfig.bPaged ? stConfig.nMaximumCandidates : static_cast<std::uint32_t>(stSource.nCandidateCount);
+	if (stCandidate.nCandidateCount < stSource.nCandidateCount || stCandidate.nCandidateCount == 0)
+	{
+		return Error(out_arrDiagnostics, "Paged geometry capacity cannot fit its complete fallback.");
+	}
+	stCandidate.nCommandStride = stConfig.bPaged ? sizeof(GeometryPagedIndirectCommand) : sizeof(GeometryIndirectCommand);
+	stCandidate.nClusterUploadOffset = (INSTANCE_OFFSET + static_cast<std::uint64_t>(stCandidate.nDrawCount) * sizeof(GeometryGpuInstance) + 63) & ~std::uint64_t{ 63 };
+	stCandidate.nBucketUploadOffset = stCandidate.nClusterUploadOffset + static_cast<std::uint64_t>(stCandidate.nCandidateCount) * sizeof(GeometryCluster);
 	stCandidate.arrBuckets = stSource.arrBuckets;
 	stCandidate.nCounterCount = COUNTER_HEADER + static_cast<std::uint32_t>(stSource.arrBuckets.size());
 	stCandidate.arrDescriptors = stConfig.arrDescriptors;
@@ -270,13 +290,16 @@ bool GpuGeometry::Initialize(ID3D12Device *pDevice, const GeometryClusterSet &st
 	}
 	const std::uint64_t nClusterBytes = stSource.arrClusters.size() * sizeof(GeometryCluster);
 	const std::uint64_t nBucketBytes = stSource.arrBuckets.size() * sizeof(GeometryBucket);
-	if (!Buffer(pDevice, nClusterBytes, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_NONE, stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stCandidate.stClusters) ||
-		!Buffer(pDevice, nClusterBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_FLAG_NONE, stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stCandidate.stClusterUpload) ||
-		!Buffer(pDevice, nBucketBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_FLAG_NONE, stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stCandidate.stBucketUpload) ||
-		!Fill(stCandidate.stClusterUpload.Get(), stSource.arrClusters.data(), static_cast<std::size_t>(nClusterBytes)) ||
-		!Fill(stCandidate.stBucketUpload.Get(), stSource.arrBuckets.data(), static_cast<std::size_t>(nBucketBytes)))
+	if (!stConfig.bPaged)
 	{
-		return Error(out_arrDiagnostics, "Geometry static allocation exceeded its memory budget.", "geometry_allocation");
+		if (!Buffer(pDevice, nClusterBytes, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_NONE, stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stCandidate.stClusters) ||
+			!Buffer(pDevice, nClusterBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_FLAG_NONE, stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stCandidate.stClusterUpload) ||
+			!Buffer(pDevice, nBucketBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_FLAG_NONE, stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stCandidate.stBucketUpload) ||
+			!Fill(stCandidate.stClusterUpload.Get(), stSource.arrClusters.data(), static_cast<std::size_t>(nClusterBytes)) ||
+			!Fill(stCandidate.stBucketUpload.Get(), stSource.arrBuckets.data(), static_cast<std::size_t>(nBucketBytes)))
+		{
+			return Error(out_arrDiagnostics, "Geometry static allocation exceeded its memory budget.", "geometry_allocation");
+		}
 	}
 	D3D12_DESCRIPTOR_HEAP_DESC stClearDescription{};
 	stClearDescription.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
@@ -289,15 +312,19 @@ bool GpuGeometry::Initialize(ID3D12Device *pDevice, const GeometryClusterSet &st
 	{
 		Frame &stFrame = stCandidate.arrFrames[nFrame];
 		const GeometryDescriptorBlock &stBlock = stCandidate.arrDescriptors[nFrame];
-		const std::uint64_t nUploadBytes = INSTANCE_OFFSET + static_cast<std::uint64_t>(stCandidate.nDrawCount) * sizeof(GeometryGpuInstance);
+		const std::uint64_t nUploadBytes = stConfig.bPaged ? stCandidate.nBucketUploadOffset + nBucketBytes : INSTANCE_OFFSET + static_cast<std::uint64_t>(stCandidate.nDrawCount) * sizeof(GeometryGpuInstance);
 		if (!Buffer(pDevice, nUploadBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_FLAG_NONE, stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stFrame.stUpload) ||
 			!Buffer(pDevice, static_cast<std::uint64_t>(stCandidate.nCounterCount) * 8, D3D12_HEAP_TYPE_READBACK, D3D12_RESOURCE_FLAG_NONE, stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stFrame.stReadback))
 		{
 			return Error(out_arrDiagnostics, "Geometry frame upload or readback allocation failed.", "geometry_allocation");
 		}
+		if (stConfig.bPaged && !Buffer(pDevice, static_cast<std::uint64_t>(stCandidate.nCandidateCount) * sizeof(GeometryCluster), D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_NONE, stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stFrame.stClusters))
+		{
+			return Error(out_arrDiagnostics, "Paged cluster frame allocation exceeds its memory budget.", "geometry_allocation");
+		}
 		for (std::uint32_t nPhase = 0; nPhase < 2; ++nPhase)
 		{
-			if (!Buffer(pDevice, static_cast<std::uint64_t>(stCandidate.nCandidateCount) * sizeof(GeometryIndirectCommand), D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
+			if (!Buffer(pDevice, static_cast<std::uint64_t>(stCandidate.nCandidateCount) * stCandidate.nCommandStride, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
 						stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stFrame.arrArguments[nPhase]) ||
 				!Buffer(pDevice, static_cast<std::uint64_t>(stCandidate.nCounterCount) * 4, D3D12_HEAP_TYPE_DEFAULT, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS,
 						stConfig.nMaxBytes, stCandidate.nAllocatedBytes, stFrame.arrCounters[nPhase]))
@@ -307,7 +334,7 @@ bool GpuGeometry::Initialize(ID3D12Device *pDevice, const GeometryClusterSet &st
 			D3D12_UNORDERED_ACCESS_VIEW_DESC stUav{};
 			stUav.ViewDimension = D3D12_UAV_DIMENSION_BUFFER;
 			stUav.Buffer.NumElements = stCandidate.nCandidateCount;
-			stUav.Buffer.StructureByteStride = sizeof(GeometryIndirectCommand);
+			stUav.Buffer.StructureByteStride = stCandidate.nCommandStride;
 			pDevice->CreateUnorderedAccessView(stFrame.arrArguments[nPhase].Get(), nullptr, &stUav, Cpu(stBlock, 4 + nPhase * 2));
 			CounterUav(pDevice, stFrame.arrCounters[nPhase].Get(), stCandidate.nCounterCount, Cpu(stBlock, 5 + nPhase * 2));
 			D3D12_CPU_DESCRIPTOR_HANDLE stClear = stCandidate.stClearHeap->GetCPUDescriptorHandleForHeapStart();
@@ -327,9 +354,11 @@ bool GpuGeometry::Initialize(ID3D12Device *pDevice, const GeometryClusterSet &st
 		{
 			return Error(out_arrDiagnostics, "Hi-Z texture allocation failed or exceeded its budget.", "geometry_allocation");
 		}
-		StructuredSrv(pDevice, stCandidate.stClusters.Get(), stCandidate.nCandidateCount, sizeof(GeometryCluster), Cpu(stBlock, 0));
+		StructuredSrv(pDevice, stConfig.bPaged ? stFrame.stClusters.Get() : stCandidate.stClusters.Get(), stCandidate.nCandidateCount, sizeof(GeometryCluster), Cpu(stBlock, 0));
 		StructuredSrv(pDevice, stFrame.stUpload.Get(), stCandidate.nDrawCount, sizeof(GeometryGpuInstance), Cpu(stBlock, 1), INSTANCE_OFFSET / sizeof(GeometryGpuInstance));
-		StructuredSrv(pDevice, stCandidate.stBucketUpload.Get(), static_cast<std::uint32_t>(stCandidate.arrBuckets.size()), sizeof(GeometryBucket), Cpu(stBlock, 3));
+		StructuredSrv(pDevice, stConfig.bPaged ? stFrame.stUpload.Get() : stCandidate.stBucketUpload.Get(),
+					  static_cast<std::uint32_t>(stCandidate.arrBuckets.size()), sizeof(GeometryBucket), Cpu(stBlock, 3),
+					  stConfig.bPaged ? stCandidate.nBucketUploadOffset / sizeof(GeometryBucket) : 0);
 		D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
 		stSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
 		stSrv.Format = DXGI_FORMAT_R32_FLOAT;
@@ -354,7 +383,8 @@ bool GpuGeometry::Initialize(ID3D12Device *pDevice, const GeometryClusterSet &st
 
 bool GpuGeometry::PrepareFrame(std::uint32_t nFrame, const std::vector<std::array<float, 16>> &arrWorlds,
 							   const std::array<float, 16> &arrViewProjection, std::uint64_t nDrawConstants, std::uint64_t nDrawStride,
-							   bool bOcclusion, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics)
+							   bool bOcclusion, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics,
+							   const GeometryClusterSet *pDynamic, std::uint64_t nPageViews, std::uint32_t nPageViewCount)
 {
 	if (!IsOwner() || nCandidateCount == 0 || nFrame >= GEOMETRY_FRAME_COUNT || nPendingFrame != GEOMETRY_FRAME_COUNT ||
 		arrWorlds.size() != nDrawCount || nCompletedFence == UINT64_MAX || arrFrames[nFrame].nFence > nCompletedFence ||
@@ -365,6 +395,23 @@ bool GpuGeometry::PrepareFrame(std::uint32_t nFrame, const std::vector<std::arra
 	if (nDrawCount > 1 && (nDrawStride > UINT64_MAX / (nDrawCount - 1) || nDrawConstants > UINT64_MAX - nDrawStride * (nDrawCount - 1)))
 	{
 		return Error(out_arrDiagnostics, "Draw constant address range overflows.");
+	}
+	if (bPaged && (pDynamic == nullptr || pDynamic->nDrawCount != nDrawCount || pDynamic->bCapacityFallback || pDynamic->arrClusters.empty() || pDynamic->arrClusters.size() != pDynamic->nCandidateCount || pDynamic->arrClusters.size() > nCandidateCount || pDynamic->arrBuckets.size() != arrBuckets.size() || nPageViews == 0 || nPageViewCount == 0))
+	{
+		return Error(out_arrDiagnostics, "Paged geometry requires a complete bounded active cut and page views.");
+	}
+	const std::uint32_t nActiveCount = bPaged ? static_cast<std::uint32_t>(pDynamic->arrClusters.size()) : nCandidateCount;
+	if (bPaged)
+	{
+		for (std::size_t nBucket = 0; nBucket < arrBuckets.size(); ++nBucket)
+		{
+			const GeometryBucket &stBucket = pDynamic->arrBuckets[nBucket];
+			if (stBucket.nMaterial != arrBuckets[nBucket].nMaterial || stBucket.nFlags != arrBuckets[nBucket].nFlags ||
+				stBucket.nFirstCommand > nActiveCount || stBucket.nCommandCapacity > nActiveCount - stBucket.nFirstCommand)
+			{
+				return Error(out_arrDiagnostics, "Paged material buckets changed identity or exceed the active command range.");
+			}
+		}
 	}
 	std::vector<GeometryGpuInstance> arrInstances(nDrawCount);
 	for (std::uint32_t nDraw = 0; nDraw < nDrawCount; ++nDraw)
@@ -390,8 +437,8 @@ bool GpuGeometry::PrepareFrame(std::uint32_t nFrame, const std::vector<std::arra
 	{
 		return false;
 	}
-	stConstants.arrViewport = { nWidth, nHeight, 0, 0 };
-	stConstants.arrCounts = { nCandidateCount, static_cast<std::uint32_t>(arrBuckets.size()), nMipCount, 0 };
+	stConstants.arrViewport = { nWidth, nHeight, bPaged ? nPageViewCount : 0, 0 };
+	stConstants.arrCounts = { nActiveCount, static_cast<std::uint32_t>(arrBuckets.size()), nMipCount, 0 };
 	stConstants.arrParameters = { 0.00001F, 0, 0, 0 };
 	Frame &stFrame = arrFrames[nFrame];
 	if (!Collect(nFrame, nCompletedFence, out_arrDiagnostics))
@@ -405,12 +452,20 @@ bool GpuGeometry::PrepareFrame(std::uint32_t nFrame, const std::vector<std::arra
 		return Error(out_arrDiagnostics, "Could not map retired geometry parameters.");
 	}
 	std::uint8_t *pBytes = static_cast<std::uint8_t *>(pMapped);
-	std::memset(pBytes, 0, static_cast<std::size_t>(stFrame.stUpload->GetDesc().Width));
+	std::memset(pBytes, 0, INSTANCE_OFFSET);
 	std::memcpy(pBytes, &stConstants, sizeof(stConstants));
 	stConstants.arrCounts[3] = bOcclusion ? 1U : 0U;
 	std::memcpy(pBytes + 256, &stConstants, sizeof(stConstants));
 	std::memcpy(pBytes + INSTANCE_OFFSET, arrInstances.data(), arrInstances.size() * sizeof(GeometryGpuInstance));
+	if (bPaged)
+	{
+		std::memcpy(pBytes + nClusterUploadOffset, pDynamic->arrClusters.data(), pDynamic->arrClusters.size() * sizeof(GeometryCluster));
+		std::memcpy(pBytes + nBucketUploadOffset, pDynamic->arrBuckets.data(), pDynamic->arrBuckets.size() * sizeof(GeometryBucket));
+	}
 	stFrame.stUpload->Unmap(0, nullptr);
+	stFrame.nActiveCount = nActiveCount;
+	stFrame.nPageViews = nPageViews;
+	stFrame.arrBuckets = bPaged ? pDynamic->arrBuckets : arrBuckets;
 	stFrame.bOcclusion = bOcclusion;
 	stFrame.nWorkMask = 0;
 	stFrame.nNextMip = 0;
@@ -439,7 +494,12 @@ bool GpuGeometry::Record(std::uint32_t nFrame, GeometryWork eWork, std::uint32_t
 	const GeometryDescriptorBlock &stBlock = arrDescriptors[nFrame];
 	if (eWork == GeometryWork::Upload)
 	{
-		if (!bUploaded)
+		if (bPaged)
+		{
+			pList->CopyBufferRegion(stFrame.stClusters.Get(), 0, stFrame.stUpload.Get(), nClusterUploadOffset,
+									static_cast<std::uint64_t>(stFrame.nActiveCount) * sizeof(GeometryCluster));
+		}
+		else if (!bUploaded)
 		{
 			pList->CopyBufferRegion(stClusters.Get(), 0, stClusterUpload.Get(), 0, static_cast<std::uint64_t>(nCandidateCount) * sizeof(GeometryCluster));
 		}
@@ -468,7 +528,11 @@ bool GpuGeometry::Record(std::uint32_t nFrame, GeometryWork eWork, std::uint32_t
 		pList->SetComputeRootConstantBufferView(0, stFrame.stUpload->GetGPUVirtualAddress() + nPhase * 256);
 		pList->SetComputeRootDescriptorTable(1, Gpu(stBlock, 0));
 		pList->SetComputeRootDescriptorTable(2, Gpu(stBlock, 4 + nPhase * 2));
-		const std::uint32_t nGroups = (nCandidateCount + 63) / 64;
+		if (bPaged)
+		{
+			pList->SetComputeRootShaderResourceView(3, stFrame.nPageViews);
+		}
+		const std::uint32_t nGroups = (stFrame.nActiveCount + 63) / 64;
 		pList->Dispatch(std::min(nGroups, MAX_GROUPS), (nGroups + MAX_GROUPS - 1) / MAX_GROUPS, 1);
 	}
 	else if (eWork == GeometryWork::HiZ)
@@ -506,9 +570,9 @@ bool GpuGeometry::Record(std::uint32_t nFrame, GeometryWork eWork, std::uint32_t
 
 void GpuGeometry::Execute(std::uint32_t nFrame, std::uint32_t nPhase, std::uint32_t nBucket, ID3D12GraphicsCommandList *pList) const
 {
-	const GeometryBucket &stBucket = arrBuckets[nBucket];
+	const GeometryBucket &stBucket = arrFrames[nFrame].arrBuckets[nBucket];
 	pList->ExecuteIndirect(stCommands.Get(), stBucket.nCommandCapacity, arrFrames[nFrame].arrArguments[nPhase].Get(),
-						   static_cast<std::uint64_t>(stBucket.nFirstCommand) * sizeof(GeometryIndirectCommand), arrFrames[nFrame].arrCounters[nPhase].Get(),
+						   static_cast<std::uint64_t>(stBucket.nFirstCommand) * nCommandStride, arrFrames[nFrame].arrCounters[nPhase].Get(),
 						   static_cast<std::uint64_t>(COUNTER_HEADER + nBucket) * sizeof(std::uint32_t));
 }
 
@@ -568,14 +632,14 @@ bool GpuGeometry::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, A
 	stNext.nVisibleTriangles = pValues[nCounterCount + 3];
 	stNext.nOverflow = pValues[1] + pValues[nCounterCount + 1];
 	stNext.nInvalid = pValues[2] + pValues[nCounterCount + 2];
-	bool bValid = stNext.nDepthCommands <= nCandidateCount && stNext.nVisibleCommands <= stNext.nDepthCommands;
+	bool bValid = stNext.nDepthCommands <= stFrame.nActiveCount && stNext.nVisibleCommands <= stNext.nDepthCommands;
 	for (std::uint32_t nPhase = 0; nPhase < 2; ++nPhase)
 	{
 		std::uint64_t nSum = 0;
-		for (std::size_t nBucket = 0; nBucket < arrBuckets.size(); ++nBucket)
+		for (std::size_t nBucket = 0; nBucket < stFrame.arrBuckets.size(); ++nBucket)
 		{
 			const std::uint32_t nValue = pValues[nPhase * nCounterCount + COUNTER_HEADER + nBucket];
-			bValid = bValid && nValue <= arrBuckets[nBucket].nCommandCapacity;
+			bValid = bValid && nValue <= stFrame.arrBuckets[nBucket].nCommandCapacity;
 			nSum += nValue;
 		}
 		bValid = bValid && nSum == pValues[nPhase * nCounterCount];
@@ -613,6 +677,10 @@ ID3D12Resource *GpuGeometry::Clusters() const noexcept
 {
 	return stClusters.Get();
 }
+ID3D12Resource *GpuGeometry::Clusters(std::uint32_t nFrame) const noexcept
+{
+	return bPaged && nFrame < GEOMETRY_FRAME_COUNT ? arrFrames[nFrame].stClusters.Get() : stClusters.Get();
+}
 ID3D12Resource *GpuGeometry::Arguments(std::uint32_t nFrame, std::uint32_t nPhase) const noexcept
 {
 	return nFrame < GEOMETRY_FRAME_COUNT && nPhase < 2 ? arrFrames[nFrame].arrArguments[nPhase].Get() : nullptr;
@@ -646,12 +714,21 @@ const std::vector<GeometryBucket> &GpuGeometry::Buckets() const noexcept
 	return arrBuckets;
 }
 
+const std::vector<GeometryBucket> &GpuGeometry::Buckets(std::uint32_t nFrame) const noexcept
+{
+	return nFrame < GEOMETRY_FRAME_COUNT ? arrFrames[nFrame].arrBuckets : arrBuckets;
+}
+
 void GpuGeometry::Swap(GpuGeometry &stOther) noexcept
 {
 	using std::swap;
 	swap(nOwnerThread, stOther.nOwnerThread);
 	swap(nPendingFrame, stOther.nPendingFrame);
 	swap(bUploaded, stOther.bUploaded);
+	swap(bPaged, stOther.bPaged);
+	swap(nCommandStride, stOther.nCommandStride);
+	swap(nClusterUploadOffset, stOther.nClusterUploadOffset);
+	swap(nBucketUploadOffset, stOther.nBucketUploadOffset);
 	swap(nMipCount, stOther.nMipCount);
 	swap(nWidth, stOther.nWidth);
 	swap(nHeight, stOther.nHeight);

@@ -32,6 +32,7 @@
 #include "engine_next/Assets/AssetValidation.h"
 
 #include <initializer_list>
+#include <cmath>
 #include <limits>
 #include <string>
 
@@ -39,9 +40,13 @@ namespace EngineNext::Rendering
 {
 bool ValidateGeometrySettings(const GeometrySettings &stSettings, Assets::Diagnostics &out_arrDiagnostics)
 {
-	if (stSettings.nMaxCommands == 0)
+	if (stSettings.nMaxCommands == 0 || !std::isfinite(stSettings.dPixelError) || stSettings.dPixelError <= 0 ||
+		!std::isfinite(stSettings.dLodHysteresis) || stSettings.dLodHysteresis < 0 || stSettings.dLodHysteresis >= 1 ||
+		stSettings.nPageGpuBytes < 65536 || stSettings.nPageGpuBytes > 2ULL * 1024 * 1024 * 1024 ||
+		stSettings.nPageStagingBytes < 65536 || stSettings.nPageStagingBytes > 256ULL * 1024 * 1024 ||
+		stSettings.nMaxPageLoads == 0 || stSettings.nMaxPageLoads > 256)
 	{
-		Assets::AddDiagnostic(out_arrDiagnostics, "geometry_capacity", "$.geometry_culling.max_commands", "A positive command capacity is required.");
+		Assets::AddDiagnostic(out_arrDiagnostics, "geometry_capacity", "$.geometry_culling.max_commands", "Geometry command, LOD tolerance, upload count or physical memory budget is invalid.");
 		return false;
 	}
 	return true;
@@ -55,16 +60,16 @@ bool ParseGeometrySettings(const Serialization::JsonValue &stValue, GeometrySett
 		return false;
 	}
 	Serialization::JsonValue::Object mapFields = *pObject;
-	for (const char *pField : { "enabled", "occlusion", "max_commands" })
+	for (const char *pField : { "enabled", "occlusion", "max_commands", "lod_enabled", "pixel_error", "lod_hysteresis", "page_gpu_bytes", "page_staging_bytes", "max_page_loads" })
 	{
 		mapFields.emplace(pField, Serialization::JsonValue{});
 	}
-	if (!Assets::Fields(mapFields, { "enabled", "occlusion", "max_commands" }, "$.geometry_culling", out_arrDiagnostics))
+	if (!Assets::Fields(mapFields, { "enabled", "occlusion", "max_commands", "lod_enabled", "pixel_error", "lod_hysteresis", "page_gpu_bytes", "page_staging_bytes", "max_page_loads" }, "$.geometry_culling", out_arrDiagnostics))
 	{
 		return false;
 	}
 	GeometrySettings stCandidate;
-	for (const char *pField : { "enabled", "occlusion" })
+	for (const char *pField : { "enabled", "occlusion", "lod_enabled" })
 	{
 		const Serialization::JsonValue::Object::const_iterator it = pObject->find(pField);
 		bool bValue = false;
@@ -79,9 +84,13 @@ bool ParseGeometrySettings(const Serialization::JsonValue &stValue, GeometrySett
 			{
 				stCandidate.bEnabled = bValue;
 			}
-			else
+			else if (std::string(pField) == "occlusion")
 			{
 				stCandidate.bOcclusion = bValue;
+			}
+			else
+			{
+				stCandidate.bLodEnabled = bValue;
 			}
 		}
 	}
@@ -95,6 +104,52 @@ bool ParseGeometrySettings(const Serialization::JsonValue &stValue, GeometrySett
 			return false;
 		}
 		stCandidate.nMaxCommands = static_cast<std::uint32_t>(nCapacity);
+	}
+	for (const char *pField : { "pixel_error", "lod_hysteresis" })
+	{
+		const Serialization::JsonValue::Object::const_iterator it = pObject->find(pField);
+		double dValue = 0;
+		if (it != pObject->end())
+		{
+			if (!it->second.GetNumber(dValue))
+			{
+				Assets::AddDiagnostic(out_arrDiagnostics, "geometry_number", std::string("$.geometry_culling.") + pField, "Expected a finite number.");
+				return false;
+			}
+			if (std::string(pField) == "pixel_error")
+			{
+				stCandidate.dPixelError = dValue;
+			}
+			else
+			{
+				stCandidate.dLodHysteresis = dValue;
+			}
+		}
+	}
+	for (const char *pField : { "page_gpu_bytes", "page_staging_bytes", "max_page_loads" })
+	{
+		const Serialization::JsonValue::Object::const_iterator it = pObject->find(pField);
+		std::int64_t nValue = 0;
+		if (it != pObject->end())
+		{
+			if (!it->second.GetInteger(nValue) || nValue < 0 || (std::string(pField) == "max_page_loads" && nValue > 256))
+			{
+				Assets::AddDiagnostic(out_arrDiagnostics, "geometry_budget", std::string("$.geometry_culling.") + pField, "Expected a bounded nonnegative integer.");
+				return false;
+			}
+			if (std::string(pField) == "page_gpu_bytes")
+			{
+				stCandidate.nPageGpuBytes = static_cast<std::uint64_t>(nValue);
+			}
+			else if (std::string(pField) == "page_staging_bytes")
+			{
+				stCandidate.nPageStagingBytes = static_cast<std::uint64_t>(nValue);
+			}
+			else
+			{
+				stCandidate.nMaxPageLoads = static_cast<std::uint32_t>(nValue);
+			}
+		}
 	}
 	if (!ValidateGeometrySettings(stCandidate, out_arrDiagnostics))
 	{
