@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "request_id": "godot-web-platforms-20261118",
+  "issue_number": 1454,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1454",
+  "bug": 1540,
+  "authority_ref": "codex:user-request-20261118-existing-web-server",
+  "observed_at": "2026-11-18T15:44:46.243786+00:00",
+  "scope": "Connect the already installed macOS Godot Web workbench to the existing server supplied by the user; no local or production redeployment",
+  "state": "server_entry_configured_personal_key_login_unresolved",
+  "root_cause": "EditorSettings had no saved network/web_platform/url. The installed browser host was ready but had no site to navigate to. Earlier installed-status wording overstated immediate platform availability.",
+  "canonical_origin_sha256": "cda653b92210eb0b7845de3231edaa99001124af51eac4658c0124be066eb692",
+  "address_policy": "Actual host, URL and user-profile paths remain in private host receipts and user configuration, following the existing production deployment record.",
+  "connection_checks": [
+    {
+      "name": "Existing server HTTP entry",
+      "result": "301 to canonical HTTPS hostname"
+    },
+    {
+      "name": "Canonical HTTPS TLS and root entry",
+      "result": "System-trusted curl validation passed; root 302 to same-origin /login; certificate validation not disabled"
+    },
+    {
+      "name": "Actual native backend hidden window",
+      "result": "/login, Tianxuan page title, login form and input present; connected status; hidden window; exit 0",
+      "log_sha256": "c019e23be09d2bbffb3534b45b38c8275dace8ce26d1f5d9d1354b3bfc72c780",
+      "source_sha256": "0058ff7ed4591315dd5106ca9f795f8c0b3556ab1b98a0247ded12f3c6c45535"
+    },
+    {
+      "name": "Installed Godot actual user project",
+      "result": "Original launcher reopened the project on Tianxuan; read-only accessibility and screenshot show production /login, personal-Key login form and existing navigation inside editor",
+      "observation": "cua_repl read-only AX and screenshot; no pointer, keyboard or focus-driving actions"
+    }
+  ],
+  "changes": [
+    {
+      "target": "Current user EditorSettings",
+      "key": "network/web_platform/url",
+      "result": "Canonical HTTPS origin saved with all other settings preserved"
+    },
+    {
+      "target": "Existing project editor layout",
+      "key": "dock_12_selected_tab_idx",
+      "result": "Selected existing WebPlatformMainScreen; preserved peer order and scene/project files"
+    }
+  ],
+  "engine_binary_changed": false,
+  "server_changed": false,
+  "credentials_copied": false,
+  "authentication_bypass": false,
+  "fixture_correction": "Initial private native probe omitted releasedWhenClosed=NO and faulted at NSWindow teardown after successful page load. Matched the existing checked-in fixture ownership setting and reran; successful process exit is required and recorded. Product backend unchanged.",
+  "source_reuse": {
+    "installed_native_source": "dd0ac17406d2e568210f5c9236dd10d3661361ba",
+    "native_macos_source_unchanged": true,
+    "native_macos_sha256": "90dc4a139e5c9de2f9d0997ad3b3171cda5947b32cd39ca3d6a41af65a2c42cf",
+    "prior_binary_binding": "data-collection/godot-web-platforms-1454-local-install.json"
+  },
+  "acceptance_update": {
+    "server_address": "provided privately by user; resolved and configured",
+    "production_login_page": "verified in hidden native view and actual installed editor",
+    "authenticated_login_and_business": "User reports personal-Key rejection. Synthetic invalid-key HTTP control returns 401. Actual personal-Key validity and successful authenticated session remain unverified; no authorized server administration channel is available on this host.",
+    "real_display_IME_focus_Escape_file_dialogs": "not exercised",
+    "parent1454": "keep open",
+    "remaining_issue1474": "keep open with corrected server-availability status",
+    "bug1540": "keep open: entry fixed, reported personal-Key login failure unresolved"
+  },
+  "cleanup": {
+    "test_bundle_and_temp_directory": "removed",
+    "isolated_WebKit_profile_and_cache": "removed if created",
+    "effective_installation_profile_and_settings": "retained",
+    "rollback_settings_and_layout": "retained privately",
+    "task_worktree_and_branch": "remove after main acceptance",
+    "login_probe_bundle_profile_cache": "removed after process exit and log archive"
+  },
+  "login_investigation": {
+    "user_report": "Key invalid or insufficient permission",
+    "http_negative_control": {
+      "synthetic_noncredential": true,
+      "status": 401,
+      "body_detail": "invalid or revoked key"
+    },
+    "health": "status ok",
+    "personal_key_accessed": false,
+    "successful_login_verified": false,
+    "root_cause": "unknown; cannot infer expiry, revocation, role or tenant from a generic login rejection",
+    "server_administration": "No authorized administration connection available on this Mac. Existing production deployment record was produced on another host. Need server-side account/key metadata and rejection reason, not a Key pasted in chat.",
+    "native_negative_control": {
+      "result": "passed",
+      "status": 401,
+      "invalid_key_message": true,
+      "hidden_window": true,
+      "exit_code": 0,
+      "method": "Isolated actual native backend; invoke deployed React password onChange and enclosing login form onSubmit with synthetic invalid key. No user desktop input or personal credentials.",
+      "log_sha256": "412e40ccc45f6d64f31235c449b6089ac72ac7ed28d2fb2181bf88c2e55b2b3c",
+      "probe_sha256": "742cf8d5d814cff160825a3b3011bdaf749ac33020b15a17d85ae94795389433",
+      "limitation": "Does not test real user input, valid key, successful cookie issuance or authenticated navigation."
+    },
+    "probe_correction": "Initial selector chose the first form (global search), not the password login form. Those attempts did not validate login. Corrected to password input enclosing form; final test returned expected 401 and exited 0."
+  }
+}
