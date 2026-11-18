@@ -681,6 +681,7 @@ def build(args):
                 "engine_next/Rendering/Shaders/Deferred.hlsl",
                 "engine_next/Rendering/Shaders/Shadow.hlsl",
                 "engine_next/Rendering/Shaders/ShadowSampling.hlsli",
+                "engine_next/Rendering/Shaders/ShadowReceiverPlane.hlsli",
                 "engine_next/Rendering/Shaders/TemporalAA.hlsl",
                 "engine_next/Rendering/Shaders/TemporalSampling.hlsli",
                 "engine_next/Rendering/Shaders/Exposure.hlsl",

@@ -2,6 +2,8 @@
 #ifndef ENGINE_NEXT_SHADOW_SAMPLING_HLSLI
 #define ENGINE_NEXT_SHADOW_SAMPLING_HLSLI
 
+#include "ShadowReceiverPlane.hlsli"
+
 #ifdef __cplusplus
 #define ENGINE_NEXT_SHADOW_UNROLL
 #else
@@ -165,7 +167,8 @@ float SamplePointShadow(Texture2DArray<float> ShadowMap, float3 Projected, uint 
 // PCSS models a finite disc emitter at light-view distance zero. Directional PCF
 // does not use LightRadius or NearFar. Radius saturation bounds all reads to 32 texels.
 float SampleShadowMap(Texture2DArray<float> ShadowMap, float3 Projected, uint Slice,
-    float Resolution, float DepthBias, float LightRadius, float2 NearFar, bool Orthographic, bool Pcss, uint PointFace = 6, float3 ReceiverNormal = float3(0, 0, 0))
+    float Resolution, float DepthBias, float LightRadius, float2 NearFar, bool Orthographic, bool Pcss, uint PointFace = 6,
+    float3 ReceiverNormal = float3(0, 0, 0), float2 ReceiverGradient = float2(0, 0))
 {
     if (!all(isfinite(Projected)) || !isfinite(Resolution) || !isfinite(DepthBias) ||
         Resolution < 1 || any(abs(Projected.xy) > 1) || Projected.z < 0 || Projected.z > 1)
@@ -201,8 +204,11 @@ float SampleShadowMap(Texture2DArray<float> ShadowMap, float3 Projected, uint Sl
         {
             ENGINE_NEXT_SHADOW_UNROLL for (int X = -1; X <= 1; ++X)
             {
-                float Depth = ShadowMap.Load(int4(clamp(Center + int2(X, Y), int2(0, 0), int2((int)Width - 1, (int)Height - 1)), Slice, 0));
-                Visibility += ReceiverDepth >= Depth ? 1 : 0;
+                int2 Pixel = clamp(Center + int2(X, Y), int2(0, 0), int2((int)Width - 1, (int)Height - 1));
+                float Depth = ShadowMap.Load(int4(Pixel, Slice, 0));
+                float2 TexelClip = (float2(Pixel.x, Pixel.y) + 0.5) * float2(2.0 / Resolution, -2.0 / Resolution) + float2(-1, 1);
+                float TapReceiverDepth = ShadowReceiverDepth(Projected, TexelClip, ReceiverGradient, DepthBias);
+                Visibility += TapReceiverDepth >= Depth ? 1 : 0;
             }
         }
         return Visibility / 9;
