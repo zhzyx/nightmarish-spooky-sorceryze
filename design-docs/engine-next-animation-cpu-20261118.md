@@ -1,0 +1,47 @@
+# M4.5 animation and deforming mesh runtime
+
+This increment belongs to request `engine-next-visual-runtime-m4-5-20261118`, issue #1505. It provides explicit CPU animation decoding and a normal runtime path for skin, node animation and morph data. The static loading entry retains its existing rejection behavior. The E candidate below has actual GPU evidence at 640 × 480; full M4 quality and performance acceptance still requires the integrated renderer.
+
+## Data and compatibility
+
+`DecodeAnimatedGlb` and `DecodeGlb` use the same `GltfDecoder` implementation, M3 blob validation, accessor readers, material parsing, selected-scene traversal and vertex expansion. The new entry returns a `DecodedMesh` and a separately owned `AnimationData` transactionally. The old entry still returns `gltf_unsupported` for skins, animations, morph targets and joint/weight attributes. Existing `MeshVertex`, `MaterialData`, asset references, manifest fields, source revisions, source hashes and GPU package formats do not change.
+
+`AnimationData.h` stores column-major double matrices and the existing `Assets::Transform` TRS representation. Node indices retain glTF numbering, including nodes outside the selected scene. Primitive deformation entries follow the decoded primitive and expanded-vertex numbering. Missing inverse binds become identity matrices. Missing node weights use mesh weights; missing mesh weights become zero. Node-free static or morph meshes retain the existing decoder's implicit-instance convention.
+
+`EvaluateAnimation` samples one explicitly selected clip at a time; clip `-1` selects the bind pose. Time is seconds. The default mode clamps each channel before and after its key range. Explicit looping wraps the interval from the earliest key to the latest key, excluding the latter endpoint; a constant clip remains constant. Channels not present in the clip retain their bind values. Duplicate node/property channels, cycles, non-finite values, unsupported representations and invalid indices fail without replacing the caller's output.
+
+## Supported semantics
+
+- `JOINTS_0`: unsigned byte or unsigned short `VEC4`; `WEIGHTS_0`: float or normalized unsigned byte/short `VEC4`. Positive float weights are normalized; integer weights must sum to the encoding's unit before normalization. Duplicate nonzero joint contributions are rejected.
+- Skins retain joint order, optional skeleton root and float `MAT4` inverse binds. An inverse-bind accessor may have unused trailing matrices. Every joint must be in range and share a hierarchy root; an instantiated skin's joints must belong to its selected scene.
+- Animation `STEP`, `LINEAR` and `CUBICSPLINE` support translation, rotation, scale and packed morph weights. Rotation uses shortest-arc spherical interpolation for linear channels. Cubic channels use the glTF incoming/value/outgoing layout and multiply derivatives by the key interval. Quaternion results are normalized; quantized quaternion keys are normalized after conversion.
+- Morph `POSITION`, `NORMAL` and `TANGENT` use float `VEC3` deltas, before skinning. Every delta semantic must exist in the base mesh. Tangent handedness is not displaced. Missing normals trigger flat-normal reconstruction using morphed positions. The pre-existing generated tangent implementation is shared through `MeshBasis`; this increment does not claim a new MikkTSpace implementation.
+- `DeformAnimation` produces CPU vertices in mesh-node local space plus a single instance matrix. The joint palette is `inverse(mesh world) * joint world * inverse bind`, so applying the returned instance transform does not apply the mesh transform twice. Normals use the inverse transpose of the blended linear transform; tangents are transformed, made orthogonal and normalized. Mirrored skin transforms reverse tangent handedness.
+
+## Limits and failures
+
+The original 64 MiB GLB limit, internal single BIN requirement, triangle topology, non-sparse accessor support and unsupported-extension behavior remain. Extra joint sets, morph texture coordinates/colors and other extensions fail explicitly. Array counts are bounded by the existing 65,536-item limits; deformation arrays are charged against the decoder's existing 256 MiB logical decoded-data budget. Pose and CPU deformation outputs have separately bounded 256 MiB budgets, including basis scratch data when used. These are logical payload budgets, not a claim that allocator overhead or aggregate process memory equals 256 MiB.
+
+Matrices and stored output components must be finite and representable in binary32. Initial node transforms retain the static decoder's nonsingular affine-transform restriction. A sampled singular transform needed for inverse-transpose skinning fails explicitly. Source inputs remain immutable. Diagnostics are appended; mesh/deformation/pose/output replacements occur only after complete success.
+
+## Runtime playback and submission
+
+An optional `animation` render-configuration object selects `enabled`, `clip`, `loop`, `speed` and `start_seconds`. `--animation` enables this path from the ordinary visual-client CLI. Clip `-1` selects the bind pose; speed zero holds the selected time and negative speed reverses playback. Sampling uses the same `RenderFrame` time as the rest of the renderer. Deterministic runs use the existing 60 Hz clock.
+
+`BuildAnimatedRenderScene` retains each M3 entity transform separately from the selected glTF mesh-instance index. `BuildDeformationFrame` owns one deformed vertex array for each rendered instance, samples each asset once and composes the entity and animated mesh-node transforms once. Separate draw ranges prevent instances with different skins or node transforms from overwriting each other.
+
+The raster vertex layout remains 48 bytes. Previous local positions use a separate 12-byte vertex stream, which is bound only by the animated G-buffer stage. Current and previous uploads use three frame slots that require a retired graphics fence before CPU writes. The frame graph records the copies before vertex reads; initialization and frame completion explicitly restore the reusable COMMON state. Failed unsubmitted frames are canceled, and submitted CPU pose history advances only after successful presentation and temporal commit. Resize/history resets use the current pose for both streams.
+
+Shadow bounds use the current deformed vertices. The DXR backend allocates a separate BLAS geometry for every deforming draw, stages its current vertices in a retired upload slot, rebuilds that BLAS and updates the frame's TLAS on the same ordered DIRECT queue. Its vertex buffer is released after the final GI read. Static geometry still shares its existing BLAS. Logical deformation output, raster duplication and aligned GPU staging allocations have explicit budgets.
+
+Animated draws currently use the complete conventional raster path. If optional geometry culling is requested, the runtime reports `animated_vertex_layout` as its fallback reason rather than using stale cluster bounds or page vertices. M3 scene/entity/asset identities remain unchanged.
+
+## Validation and remaining work
+
+Self-authored triangle, joint and morph fixtures exercise independent expected positions, analytic quaternion sweeps, cubic time scaling, packed weights, normalized integer accessors, negative and nonuniform scale, implicit instances, invalid references and transactional failure. The isolated runner uses both MSVC and clang-cl with C++17, disabled exceptions and warnings as errors. The full portable renderer test target also retains the old static decode and scene tests. Actual command/results and exact file hashes are recorded under `build/engine_next/animation-cpu`; test results must be read from that candidate's final report rather than inferred from this document.
+
+The first E GPU candidate uses the self-authored r3 fixture: 16 joints, 5,200 vertices, 8,448 triangles and a two-second skin/morph clip. At 640 × 480, seven captured poses verified every current raster vertex and previous position against the CPU result. GI captures verified the ray-query vertex buffer against the same current poses and showed per-frame dynamic BLAS builds. Normal playback, bind pose, paused/reverse playback, CLI activation, TAA and resize recovery passed GPU validation. The R5 runtime has an immutable native-input archive and separate capture/verification manifests; its native key is `831deb0a533c30d7ad5f21a38778c1bef370f9be92f0f090e3afd6942a997df4`. A subsequent test-only regression exercises the real animated scene loader with two entities and two mesh nodes, including corrupt-source rollback. It passes 449 tests / 491,383 checks on MSVC and clang-cl without changing the captured runtime.
+
+This evidence does not establish final 4K quality or frame time. Final integration must retain the current main-branch shadow and environment fixes, connect old/new deformed world bounds to probe invalidation/relocation, and verify the combined renderer. Animated page/cluster geometry, actor/network clip selection and the UE E counterpart remain separate work. BLAS rebuilding is the current implementation; refit optimization requires its own measurement and validation.
+
+Normative reference: [Khronos glTF 2.0 specification](https://registry.khronos.org/glTF/specs/2.0/glTF-2.0.html), sections 3.7.2.2, 3.7.3 and 3.11, appendix C. The formulas and fixtures are independently implemented; no external character assets are included.

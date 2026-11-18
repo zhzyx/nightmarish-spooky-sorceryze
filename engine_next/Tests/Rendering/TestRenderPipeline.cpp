@@ -930,3 +930,24 @@ ENGINE_NEXT_TEST("RenderPipeline combines GI and geometry with reusable resource
 	ENGINE_NEXT_CHECK(HasAccess(*pLighting, stPipeline.arrGiWrite[0], ResourceState::ShaderRead, false));
 	CheckReusableStates(stPipeline);
 }
+
+ENGINE_NEXT_TEST("RenderPipeline orders deformation copies before vertex consumers")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, true, {}, true));
+	const CompiledPass *pUpload = FindWork(stPipeline, PassWork::DeformationUpload);
+	const CompiledPass *pShadow = FindWork(stPipeline, PassWork::DirectionalShadow);
+	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
+	ENGINE_NEXT_CHECK(pUpload != nullptr && pShadow != nullptr && pGbuffer != nullptr);
+	if (pUpload == nullptr || pShadow == nullptr || pGbuffer == nullptr)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(pUpload->nPass < pShadow->nPass && pShadow->nPass < pGbuffer->nPass);
+	ENGINE_NEXT_CHECK(HasTransition(*pUpload, stPipeline.nDeformedVertices, ResourceState::Common, ResourceState::CopyDestination));
+	ENGINE_NEXT_CHECK(HasTransition(*pShadow, stPipeline.nDeformedVertices, ResourceState::CopyDestination, ResourceState::VertexIndexRead));
+	ENGINE_NEXT_CHECK(HasTransition(*pGbuffer, stPipeline.nPreviousPositions, ResourceState::CopyDestination, ResourceState::VertexIndexRead));
+	ENGINE_NEXT_CHECK(HasAccess(*pGbuffer, stPipeline.nDeformedVertices, ResourceState::VertexIndexRead, false));
+	CheckReusableStates(stPipeline);
+}

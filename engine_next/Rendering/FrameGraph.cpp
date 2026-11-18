@@ -61,7 +61,7 @@ bool IsQueueValid(QueueType eQueue)
 
 bool IsStateValid(ResourceState eState)
 {
-	return eState >= ResourceState::Common && eState <= ResourceState::IndirectArgument;
+	return eState >= ResourceState::Common && eState <= ResourceState::VertexIndexRead;
 }
 
 bool IsFixedState(ResourceState eState)

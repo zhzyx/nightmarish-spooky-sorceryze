@@ -46,6 +46,7 @@ struct VisualConfig
 	bool bVsync = false;
 	bool bExerciseResize = false;
 	bool bDeterministic = false;
+	bool bAnimation = false;
 	std::string strShaderDirectory;
 	std::string strReportPath;
 	std::string strCapturePath;

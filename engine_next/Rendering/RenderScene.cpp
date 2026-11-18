@@ -117,6 +117,68 @@ bool WorldMatrix(std::int64_t nEntity, const std::map<std::int64_t, const Assets
 	return true;
 }
 
+bool ChargeAnimation(const AnimationData &stAnimation, std::size_t nLimit, std::size_t &out_nBytes)
+{
+	const auto fnCharge = [nLimit, &out_nBytes](std::size_t nCount, std::size_t nStride)
+	{
+		if (out_nBytes > nLimit || nCount > (nLimit - out_nBytes) / nStride)
+		{
+			return false;
+		}
+		out_nBytes += nCount * nStride;
+		return true;
+	};
+	if (!fnCharge(stAnimation.arrNodes.size(), sizeof(AnimationNode)) || !fnCharge(stAnimation.arrSkins.size(), sizeof(SkinData)) ||
+		!fnCharge(stAnimation.arrPrimitives.size(), sizeof(PrimitiveDeformation)) || !fnCharge(stAnimation.arrClips.size(), sizeof(AnimationClip)))
+	{
+		return false;
+	}
+	for (const AnimationNode &stNode : stAnimation.arrNodes)
+	{
+		if (!fnCharge(stNode.arrWeights.size(), sizeof(double)))
+		{
+			return false;
+		}
+	}
+	for (const SkinData &stSkin : stAnimation.arrSkins)
+	{
+		if (!fnCharge(stSkin.arrJoints.size(), sizeof(std::uint32_t)) || !fnCharge(stSkin.arrInverseBindMatrices.size(), sizeof(AnimationMatrix)))
+		{
+			return false;
+		}
+	}
+	for (const PrimitiveDeformation &stPrimitive : stAnimation.arrPrimitives)
+	{
+		if (!fnCharge(stPrimitive.arrInfluences.size(), sizeof(SkinInfluence)) || !fnCharge(stPrimitive.arrMorphTargets.size(), sizeof(MorphTarget)))
+		{
+			return false;
+		}
+		for (const MorphTarget &stTarget : stPrimitive.arrMorphTargets)
+		{
+			if (!fnCharge(stTarget.arrPositions.size(), sizeof(std::array<float, 3>)) || !fnCharge(stTarget.arrNormals.size(), sizeof(std::array<float, 3>)) ||
+				!fnCharge(stTarget.arrTangents.size(), sizeof(std::array<float, 3>)))
+			{
+				return false;
+			}
+		}
+	}
+	for (const AnimationClip &stClip : stAnimation.arrClips)
+	{
+		if (!fnCharge(stClip.strName.size(), sizeof(char)) || !fnCharge(stClip.arrChannels.size(), sizeof(AnimationChannel)))
+		{
+			return false;
+		}
+		for (const AnimationChannel &stChannel : stClip.arrChannels)
+		{
+			if (!fnCharge(stChannel.arrTimes.size(), sizeof(double)) || !fnCharge(stChannel.arrValues.size(), sizeof(double)))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 } // namespace
 
 bool BuildSceneEntityTransforms(const Assets::SceneDocument &stScene, std::map<std::uint64_t, std::array<double, 16>> &out_mapTransforms,
@@ -157,7 +219,9 @@ bool BuildSceneEntityTransforms(const Assets::SceneDocument &stScene, std::map<s
 	return true;
 }
 
-bool BuildRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics)
+namespace
+{
+bool BuildScene(const Assets::PackageData &stPackage, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics, bool bAllowAnimation)
 {
 	if (!Assets::ValidateSceneDocument(stPackage.stScene, out_arrDiagnostics) ||
 		!Assets::ValidateAssetManifest(stPackage.stManifest, stPackage.stScene, out_arrDiagnostics))
@@ -210,7 +274,28 @@ bool BuildRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stS
 		}
 		RenderAsset stRenderAsset;
 		stRenderAsset.stIdentity = { stAsset.strAssetId, stAsset.strRevision, stAsset.strContentSha256 };
-		if (!DecodeGlb(it->second, stRenderAsset.stMesh, out_arrDiagnostics))
+		if (bAllowAnimation)
+		{
+			if (!DecodeAnimatedGlb(it->second, stRenderAsset.stMesh, stRenderAsset.stAnimation, out_arrDiagnostics))
+			{
+				return false;
+			}
+			stRenderAsset.bAnimated = !stRenderAsset.stAnimation.arrClips.empty() || !stRenderAsset.stAnimation.arrSkins.empty();
+			for (const PrimitiveDeformation &stPrimitive : stRenderAsset.stAnimation.arrPrimitives)
+			{
+				stRenderAsset.bAnimated = stRenderAsset.bAnimated || !stPrimitive.arrMorphTargets.empty();
+			}
+			if (stRenderAsset.bAnimated && !ChargeAnimation(stRenderAsset.stAnimation, MAX_DECODED_BYTES, nDecodedBytes))
+			{
+				Assets::AddDiagnostic(out_arrDiagnostics, "render_animation", stAsset.strAssetId, "Animation exceeds the scene memory budget");
+				return false;
+			}
+			if (!stRenderAsset.bAnimated)
+			{
+				stRenderAsset.stAnimation = {};
+			}
+		}
+		else if (!DecodeGlb(it->second, stRenderAsset.stMesh, out_arrDiagnostics))
 		{
 			return false;
 		}
@@ -260,8 +345,10 @@ bool BuildRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stS
 			{
 				return false;
 			}
-			for (const MeshInstance &stInstance : stScene.arrAssets[it->second].stMesh.arrInstances)
+			const std::vector<MeshInstance> &arrMeshInstances = stScene.arrAssets[it->second].stMesh.arrInstances;
+			for (std::size_t nInstance = 0; nInstance < arrMeshInstances.size(); ++nInstance)
 			{
+				const MeshInstance &stInstance = arrMeshInstances[nInstance];
 				if (stScene.arrInstances.size() >= 65536)
 				{
 					Assets::AddDiagnostic(out_arrDiagnostics, "render_instance_budget", stEntity.strName, "Expanded render instance budget exceeded");
@@ -277,7 +364,7 @@ bool BuildRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stS
 					}
 				}
 				const Matrix &arrEntity = mapWorld.at(stEntity.nEntityId);
-				stScene.arrInstances.push_back({ static_cast<std::uint64_t>(stEntity.nEntityId), it->second, stInstance.nPrimitive, stInstance.nNode, arrWorld, { arrEntity[12], arrEntity[13], arrEntity[14] } });
+				stScene.arrInstances.push_back({ static_cast<std::uint64_t>(stEntity.nEntityId), it->second, stInstance.nPrimitive, stInstance.nNode, arrWorld, { arrEntity[12], arrEntity[13], arrEntity[14] }, arrEntity, static_cast<std::uint32_t>(nInstance) });
 			}
 		}
 	}
@@ -289,11 +376,28 @@ bool BuildRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stS
 	out_stScene = std::move(stScene);
 	return true;
 }
+} // namespace
+
+bool BuildRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics)
+{
+	return BuildScene(stPackage, out_stScene, out_arrDiagnostics, false);
+}
+
+bool BuildAnimatedRenderScene(const Assets::PackageData &stPackage, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics)
+{
+	return BuildScene(stPackage, out_stScene, out_arrDiagnostics, true);
+}
 
 bool LoadRenderScene(const std::string &strPath, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics)
 {
 	Assets::PackageData stPackage;
 	return Assets::LoadPackage(strPath, stPackage, out_arrDiagnostics) && BuildRenderScene(stPackage, out_stScene, out_arrDiagnostics);
+}
+
+bool LoadAnimatedRenderScene(const std::string &strPath, RenderScene &out_stScene, Assets::Diagnostics &out_arrDiagnostics)
+{
+	Assets::PackageData stPackage;
+	return Assets::LoadPackage(strPath, stPackage, out_arrDiagnostics) && BuildAnimatedRenderScene(stPackage, out_stScene, out_arrDiagnostics);
 }
 
 } // namespace EngineNext::Rendering

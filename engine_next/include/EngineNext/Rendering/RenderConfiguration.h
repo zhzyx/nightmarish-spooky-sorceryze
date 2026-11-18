@@ -31,6 +31,7 @@
 #pragma once
 
 #include "engine_next/include/EngineNext/Assets/Types.h"
+#include "engine_next/include/EngineNext/Rendering/AnimationData.h"
 #include "engine_next/include/EngineNext/Rendering/PostProcessSettings.h"
 #include "engine_next/include/EngineNext/Rendering/LightTimeline.h"
 #include "engine_next/include/EngineNext/Rendering/ReflectionSettings.h"
@@ -119,6 +120,7 @@ struct TemporalSettings
 
 struct RenderConfiguration
 {
+	AnimationPlayback stAnimation;
 	CameraSettings stCamera;
 	DirectionalLightSettings stDirectionalLight;
 	ShadowSettings stShadows;

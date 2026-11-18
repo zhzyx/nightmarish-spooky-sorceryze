@@ -84,6 +84,8 @@ APP_SOURCES = {
     "next_asset": [
         "engine_next/Apps/NextAssetMain.cpp",
         "engine_next/Rendering/Cook/GltfDecoder.cpp",
+        "engine_next/Rendering/Animation.cpp",
+        "engine_next/Rendering/MeshBasis.cpp",
         "engine_next/Rendering/Cook/GpuPackage.cpp",
         "engine_next/Rendering/Cook/ImageDecoder.cpp",
         "engine_next/Rendering/Cook/MeshCluster.cpp",
@@ -94,6 +96,7 @@ APP_SOURCES = {
     "EngineNextRuntimeTests": TEST_SOURCES,
 }
 PUBLIC_HEADERS = [
+    "EngineNext/Rendering/AnimationData.h",
     "EngineNext/Serialization/Json.h",
     "EngineNext/Serialization/Sha256.h",
     "EngineNext/Assets/Types.h",
@@ -615,6 +618,61 @@ def run_acceptance(args, targets):
     }
 
 
+def build_native_identity(args, library_sources):
+    third_party_inputs = sorted(
+        path.relative_to(args.repo).as_posix()
+        for path in (args.repo / "engine_next/thirdparty/enet").rglob("*")
+        if path.is_file()
+    )
+    fixture_inputs = sorted(
+        path.relative_to(args.repo).as_posix()
+        for path in (args.repo / "engine_next/Tests/Fixtures").rglob("*")
+        if path.is_file()
+    )
+    native_inputs = sorted([
+        *library_sources,
+        *third_party_inputs,
+        *fixture_inputs,
+        *TEST_SOURCES,
+        *APP_SOURCES["next_server"],
+        *APP_SOURCES["next_client"],
+        *APP_SOURCES["next_asset"],
+        *["engine_next/include/" + header for header in PUBLIC_HEADERS],
+        "ai_core/Runtime.h",
+        "engine_next/Assets/AssetValidation.h",
+        "engine_next/Client/ClientSession.h",
+        "engine_next/Rendering/Cook/GltfDecoder.h",
+        "engine_next/Rendering/Cook/GpuPackage.h",
+        "engine_next/Rendering/MeshBasis.h",
+        "engine_next/include/EngineNext/Rendering/MeshData.h",
+        "engine_next/include/EngineNext/Rendering/ImageData.h",
+        "engine_next/include/EngineNext/Rendering/TextureData.h",
+        "engine_next/include/EngineNext/Rendering/RenderScene.h",
+        "engine_next/Schemas/AiAssetRun-v1.json",
+        "engine_next/Schemas/AssetManifest-v1.json",
+        "engine_next/Schemas/SceneDocument-v1.json",
+        "engine_next/Tests/TestFramework.h",
+        "engine_next/Tests/Assets/FixtureSupport.h",
+        "engine_next/Tests/AI/SyntheticProvider.py",
+        *BUILD_SUPPORT_SOURCES,
+        "engine_next/Tools/BuildVisualRuntime.py",
+        "engine_next/Tools/PackageVisualRuntime.py",
+        *[
+            path.relative_to(args.repo).as_posix()
+            for name in ("zlib", "libjpeg-turbo")
+            for path in (args.repo / "engine_next/thirdparty" / name).rglob("*")
+            if path.is_file()
+        ],
+        *[path.relative_to(args.repo).as_posix() for path in (args.repo / "engine_next/Rendering/Cook").glob("*.h")],
+    ])
+    native_identity = {
+        "compiler": args.compiler,
+        "sanitize": args.sanitize,
+        "inputs": {name: BuildSupport.digest(args.repo / name) for name in native_inputs},
+    }
+    return native_identity
+
+
 def build(args):
     args.repo = args.repo.resolve()
     args.build_dir = args.build_dir.resolve()
@@ -686,56 +744,7 @@ def build(args):
         }
     )
 
-    third_party_inputs = sorted(
-        path.relative_to(args.repo).as_posix()
-        for path in (args.repo / "engine_next/thirdparty/enet").rglob("*")
-        if path.is_file()
-    )
-    fixture_inputs = sorted(
-        path.relative_to(args.repo).as_posix()
-        for path in (args.repo / "engine_next/Tests/Fixtures").rglob("*")
-        if path.is_file()
-    )
-    native_inputs = sorted([
-        *library_sources,
-        *third_party_inputs,
-        *fixture_inputs,
-        *TEST_SOURCES,
-        *APP_SOURCES["next_server"],
-        *APP_SOURCES["next_client"],
-        *APP_SOURCES["next_asset"],
-        *["engine_next/include/" + header for header in PUBLIC_HEADERS],
-        "ai_core/Runtime.h",
-        "engine_next/Assets/AssetValidation.h",
-        "engine_next/Client/ClientSession.h",
-        "engine_next/Rendering/Cook/GltfDecoder.h",
-        "engine_next/Rendering/Cook/GpuPackage.h",
-        "engine_next/include/EngineNext/Rendering/MeshData.h",
-        "engine_next/include/EngineNext/Rendering/ImageData.h",
-        "engine_next/include/EngineNext/Rendering/TextureData.h",
-        "engine_next/include/EngineNext/Rendering/RenderScene.h",
-        "engine_next/Schemas/AiAssetRun-v1.json",
-        "engine_next/Schemas/AssetManifest-v1.json",
-        "engine_next/Schemas/SceneDocument-v1.json",
-        "engine_next/Tests/TestFramework.h",
-        "engine_next/Tests/Assets/FixtureSupport.h",
-        "engine_next/Tests/AI/SyntheticProvider.py",
-        *BUILD_SUPPORT_SOURCES,
-        "engine_next/Tools/BuildVisualRuntime.py",
-        "engine_next/Tools/PackageVisualRuntime.py",
-        *[
-            path.relative_to(args.repo).as_posix()
-            for name in ("zlib", "libjpeg-turbo")
-            for path in (args.repo / "engine_next/thirdparty" / name).rglob("*")
-            if path.is_file()
-        ],
-        *[path.relative_to(args.repo).as_posix() for path in (args.repo / "engine_next/Rendering/Cook").glob("*.h")],
-    ])
-    native_identity = {
-        "compiler": args.compiler,
-        "sanitize": args.sanitize,
-        "inputs": {name: BuildSupport.digest(args.repo / name) for name in native_inputs},
-    }
+    native_identity = build_native_identity(args, library_sources)
     native_key = hashlib.sha256(json.dumps(native_identity, sort_keys=True).encode("utf-8")).hexdigest()
     host_tool_inputs = {name: BuildSupport.digest(args.repo / name) for name in ExportCleanSource.AI_HOST_FILES}
     host_tool_key = hashlib.sha256(json.dumps(host_tool_inputs, sort_keys=True).encode("utf-8")).hexdigest()

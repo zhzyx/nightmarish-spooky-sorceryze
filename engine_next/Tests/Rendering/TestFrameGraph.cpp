@@ -442,7 +442,7 @@ ENGINE_NEXT_TEST("FrameGraph rejects depth reads on compute and depth reads decl
 	ENGINE_NEXT_CHECK_EQ(stGraph.AddPass(MakePass("InvalidDepthWrite", QueueType::Graphics, 0, ResourceState::DepthRead, true)), 0U);
 	ENGINE_NEXT_CHECK(!stGraph.Compile(stCompiled, stDiagnostic));
 	ENGINE_NEXT_CHECK_EQ(stDiagnostic.eError, GraphError::InvalidAccess);
-	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "UnknownState", static_cast<ResourceState>(14), true }), EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK_EQ(stGraph.AddResource({ "UnknownState", static_cast<ResourceState>(15), true }), EngineNext::Rendering::INVALID_RESOURCE);
 }
 
 ENGINE_NEXT_TEST("FrameGraph orders UAV-generated indirect arguments before consumption")
