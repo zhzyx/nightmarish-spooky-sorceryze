@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T15:55:31.464092+00:00",
+  "candidate": "screen-effects-paged-integration-r5",
+  "native_key": "8f580f30dfc5a071026260c265a3e50fec7ab1078cd0e497bbc4ff0ca388cba5",
+  "source_commit": "97e93f60451b83f3421565debe801e42f51f312b",
+  "base_commit": "cb051bcc29801abae4c7e13cfd04ccc062a13083",
+  "status": "functional_increment_verified",
+  "stage_complete": false,
+  "issues_remaining_open": [
+    1343,
+    1323
+  ],
+  "native_input_count": 364,
+  "shader_count": 60,
+  "msvc_build": {
+    "path": "build/engine_next/screen-effects-r5/VisualBuildReport.json",
+    "sha256": "0c9b97e5a5108f0b9c27b881e012f823eb887444de1a1b29052d780dcab7f0d6",
+    "size_bytes": 3068900
+  },
+  "full_clang_cl_build": {
+    "path": "build/engine_next/screen-effects-clang-r5/Result.json",
+    "sha256": "2971248726ad2b454ed56ba8fb2e68b56774c77f691ebcecd0ffcb8a50ae52e2",
+    "size_bytes": 3855237
+  },
+  "test_summary": "ENGINE_NEXT_RENDERING_TEST_SUMMARY tests=539 checks=1601221 failures=0",
+  "source_archive": {
+    "path": "build/engine_next/screen-effects-source-r5/Manifest.json",
+    "sha256": "55a425580e26fe08cf90a4fdfc47773b0ea2d1b9cfb61f34df5645a5a75b7edc",
+    "size_bytes": 45297
+  },
+  "source_review": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-screen-effects-source-review.json",
+    "sha256": "dbb179fffd877dc82de7c723c26a84e91ad51684cfa686a72ecbb88c1becb112",
+    "size_bytes": 5135
+  },
+  "build_impact": {
+    "path": "data-collection/engine-next-visual-runtime-m4-3-screen-effects-build-impact.json",
+    "sha256": "639a3e8b8dbd0891db1a246e1d9997b8b66579a44e4bfbe554753492d6cfca36",
+    "size_bytes": 43592
+  },
+  "static_checks": {
+    "path": "build/engine_next/screen-effects-static-final-r5b/Result.json",
+    "sha256": "116bb0ee4ca800074d6f5661804cc36e0d749829edb5861e4735d69584e07618",
+    "size_bytes": 15059
+  },
+  "normal_gpu": {
+    "path": "build/engine_next/screen-effects-gpu-r5/Result.json",
+    "sha256": "c8e575023c824a1e3dc6fc91bcbe731ded9b0f935aa671c46c826c64c23e8fe1",
+    "size_bytes": 4637
+  },
+  "current_normal_frames": 308,
+  "prior_executable_comparison_frames": 24,
+  "integrated_gpu": {
+    "path": "build/engine_next/screen-effects-integration-r5/Result.json",
+    "sha256": "abb4897c68b66838b33130e33749481269900be38f32d71a44839556a6915d2a",
+    "size_bytes": 2638
+  },
+  "integrated_frames": 204,
+  "integration_scope": "Source-bound v3 paged geometry with grading and AO, GI, TAA and bloom; animated conventional fallback with the same screen effects; resize and functional native 4K output.",
+  "capture_manifests": [
+    {
+      "path": "build/engine_next/screen-effects-capture-r5/CaptureIdentity/CaptureManifest.json",
+      "sha256": "9bc033cd12985fa8cecf69092b32c1f479707d2adc41beaf5cc587a6f893e3ce",
+      "size_bytes": 4609
+    },
+    {
+      "path": "build/engine_next/screen-effects-capture-r5/CaptureSwap/CaptureManifest.json",
+      "sha256": "82db39b063cfa5df216e48cdc96362043f68abe35c1f708f9907030db27c0129",
+      "size_bytes": 4584
+    },
+    {
+      "path": "build/engine_next/screen-effects-capture-r5/CaptureVignette/CaptureManifest.json",
+      "sha256": "ca66b27494b851cdffde790b98dea2b2b555c32abe5e882a01671766cec32044",
+      "size_bytes": 4609
+    },
+    {
+      "path": "build/engine_next/screen-effects-capture-r5/CaptureCombined/CaptureManifest.json",
+      "sha256": "8e8ea8d18a431b542b5a4a56e2898b9107db8cf9d5221810936966a91ac6af92",
+      "size_bytes": 4610
+    }
+  ],
+  "capture_frames": 96,
+  "rdc_count": 4,
+  "actual_gpu_readback": {
+    "path": "build/engine_next/screen-effects-capture-r5/NumericalChecks.json",
+    "sha256": "d0466903e1adab78a06d45e30771beefe21d930b6aedcdfd0a301c0b0ff32f07",
+    "size_bytes": 898
+  },
+  "module_frames": 144,
+  "shader_compatibility": {
+    "path": "build/engine_next/ScreenShaderCompatibilityR5.json",
+    "sha256": "37c686c39052f177f4fe28a2d375139bf2365ee377148ee426aeaec57535d959",
+    "size_bytes": 133
+  },
+  "main_integration": {
+    "path": "build/engine_next/ScreenPagesMetadataIntegrationR5.json",
+    "sha256": "eb758a4c80b270cbc9913a20ea290e5dbe8aee10e46b0e5aa4acdd337c590585",
+    "size_bytes": 469
+  },
+  "historical_r3": {
+    "path": "build/engine_next/ScreenEvidenceR3.json",
+    "sha256": "a4531280b79bc1a21a10eb3d4e0ddfdf45786fd06d857b033c2924cdbb5241d6",
+    "size_bytes": 6336
+  },
+  "results": [
+    "Default, disabled and neutral screen effects preserve exact pixels. The identity LUT, channel-swapped LUT and vignette numeric comparisons have maximum one-byte error.",
+    "Actual GPU readback matches all 3D LUT texels and all eight inline root constants. Captured HDR values are finite.",
+    "All 59 pre-existing shader binaries match the paged geometry baseline byte-for-byte. ScreenEffects.ps.cso is the sole additional shader."
+  ],
+  "remaining": [
+    "Native 4K cases verify functionality. Full-quality target frame rates and long-duration stability remain pending.",
+    "Final UE comparisons, continuous benchmark videos and complete M4 integration remain pending.",
+    "R3 evidence retains its original candidate identity. Its earlier Combined configuration had GI and TAA disabled; current R5 combined configurations explicitly enable both."
+  ],
+  "static_scope": "The aggregate verification record is excluded from the static input hash manifest to avoid a circular digest."
+}

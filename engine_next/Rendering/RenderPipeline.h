@@ -108,6 +108,7 @@ struct GeometryFeatures
 struct RenderPipeline
 {
 	CompiledGraph stGraph;
+	ResourceId nColorLut = INVALID_RESOURCE;
 	// Indexed by the stable PassId, independently of the compiled execution order.
 	std::vector<PassWork> arrWorkByPass;
 	// Indexed by PassId. Bloom and reflection color-mip passes have valid indices.
@@ -195,6 +196,6 @@ struct RenderPipeline
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false, bool bDeformation = false);
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false, bool bDeformation = false, bool bScreenEffects = false);
 
 } // namespace EngineNext::Rendering

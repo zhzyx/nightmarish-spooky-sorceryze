@@ -93,6 +93,21 @@ bool ValidateBloomSettings(const BloomSettings &stSettings, Assets::Diagnostics 
 	return true;
 }
 
+bool ValidateScreenEffectsSettings(const ScreenEffectsSettings &stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	if (!InRange(stSettings.dSharpening, 0, 1) || !InRange(stSettings.dVignetteIntensity, 0, 1) ||
+		!InRange(stSettings.dLutIntensity, 0, 1) || !InRange(stSettings.dVignetteInnerRadius, 0, 2) ||
+		!InRange(stSettings.dVignetteOuterRadius, 0, 2) || stSettings.dVignetteInnerRadius >= stSettings.dVignetteOuterRadius)
+	{
+		return Fail("screen_effects_range", "$.screen_effects", "Screen effects require bounded intensities and increasing vignette radii.", out_arrDiagnostics);
+	}
+	if (!stSettings.strLutAssetId.empty() && !Assets::IsIdentity(stSettings.strLutAssetId))
+	{
+		return Fail("screen_effects_asset", "$.screen_effects.lut_asset_id", "LUT asset ID is invalid.", out_arrDiagnostics);
+	}
+	return true;
+}
+
 bool ComputeExposureMultiplier(const ExposureSettings &stSettings, double dLegacyMultiplier, double dMeteredLuminance,
 							   double &out_dMultiplier, Assets::Diagnostics &out_arrDiagnostics)
 {

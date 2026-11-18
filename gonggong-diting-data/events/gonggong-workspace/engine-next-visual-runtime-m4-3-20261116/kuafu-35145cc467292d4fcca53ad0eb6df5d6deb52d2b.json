@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-35145cc467292d4fcca53ad0eb6df5d6deb52d2b",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c8c97b299acafcb5531169431716e9972d0bfa53af9e5990690568f375e1f438",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1349",
+    "action": "validation",
+    "detection_head": "97e93f60451b83f3421565debe801e42f51f312b",
+    "context_sha256": "0461a170a63be7d5f543d866b62ea512ebe3e51506abd23050c4c4f47b9fd151",
+    "operator": "kaiyunxue",
+    "worker": "codex/root",
+    "authority_ref": "User authorized complete M4 implementation testing and main delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44348266966",
+    "diagnosis": "The owned sparse worktree omitted frozen registration and historical Olympus telemetry. Trusted validation treated missing working files as deletions although the index retained them. Adding the existing tracked directories restored the exact files, and the standalone history validator now passes without product or historical data changes.",
+    "next_action": "Collect this observation and rerun formal gate and signed CI. Keep unrelated issue1349 incidents under their own verification.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T16:31:33.639333+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T16:39:23.897723+00:00",
+  "sha256": "4c12cf41ae2910c12d1a4001a6a41b2bbc47ca35ac050a790f5e8a7d2e91795b"
+}
