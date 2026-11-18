@@ -3,10 +3,13 @@
 #include "RayTracingScene.hlsli"
 #include "GILighting.hlsli"
 #include "GiMaterialSampling.hlsli"
+#include "ProbePlacementMath.hlsli"
 
 cbuffer GiConstants : register(b0)
 {
 	GiGridParameters Grid;
+	float4 PlacementLimits;
+	uint4 PlacementInfo;
 }
 struct GiVertex
 {
@@ -33,6 +36,7 @@ StructuredBuffer<float4> RayResults : register(t14);
 StructuredBuffer<uint4> RayStatus : register(t15);
 StructuredBuffer<float4> MaterialExtensions : register(t16);
 StructuredBuffer<float4> DirectionalTint : register(t17);
+StructuredBuffer<uint> PlacementRevisions : register(t18);
 RWStructuredBuffer<float4> WriteRayResults : register(u0);
 RWStructuredBuffer<uint4> WriteRayStatus : register(u1);
 RWStructuredBuffer<float4> WriteSh : register(u2);
@@ -50,10 +54,16 @@ SamplerState EnvironmentSampler : register(s0);
 		return;
 	}
 	uint Old = RemapIndices[Probe];
+	uint Destination = GiStateIndex(Probe, Grid);
+	uint Source = GiStateIndex(Old, Grid);
 	bool Valid = false;
 	if (Grid.History.z > 0.5 && Old < Grid.WorkInfo.x)
 	{
-		Valid = ReadState[Old].x != 0;
+		Valid = ReadState[Source].x != 0;
+		if (Grid.Counts.w != 0)
+		{
+			Valid = Valid && ReadState[Source + 2].x == PROBE_ACTIVE && ReadState[Source + 2].y == PlacementRevisions[Probe];
+		}
 	}
 	[unroll] for (uint Term = 0; Term < 9; ++Term)
 	{
@@ -63,7 +73,13 @@ SamplerState EnvironmentSampler : register(s0);
 	{
 		WriteMoments[Probe * 64 + Texel] = Valid ? ReadMoments[Old * 64 + Texel] : float2(0, 0);
 	}
-	WriteState[Probe] = Valid ? ReadState[Old] : uint4(0, 0, 0, 0);
+	WriteState[Destination] = Valid ? ReadState[Source] : uint4(0, 0, 0, 0);
+	if (Grid.Counts.w != 0)
+	{
+		bool HasPlacement = Grid.History.z > 0.5 && Old < Grid.WorkInfo.x;
+		WriteState[Destination + 1] = HasPlacement ? ReadState[Source + 1] : uint4(0, 0, 0, 0);
+		WriteState[Destination + 2] = HasPlacement ? ReadState[Source + 2] : uint4(0, 0, 0, 0);
+	}
 }
 
 float4 GiTexture(uint Material, uint Slot, float2 Uv)
@@ -107,6 +123,116 @@ float2 GiTriangleUv(uint3 Vertex, float2 Bary)
 	return Vertices[Vertex.x].Texcoord * (1 - Bary.x - Bary.y) + Vertices[Vertex.y].Texcoord * Bary.x + Vertices[Vertex.z].Texcoord * Bary.y;
 }
 
+RelocationSummary ObservePlacementRay(RelocationSummary Summary, float3 Center, uint Index)
+{
+	bool Proximity = Index >= PlacementInfo.x;
+	float3 Direction = RelocationDirection(Proximity ? Index - PlacementInfo.x : Index, PlacementInfo.x);
+	RayDesc Ray;
+	Ray.Origin = Center - (Proximity ? Direction * PlacementLimits.x : 0);
+	Ray.Direction = Direction;
+	Ray.TMin = 0;
+	Ray.TMax = Proximity ? 2 * PlacementLimits.x : Grid.Sampling.x;
+	RayQuery<RAY_FLAG_FORCE_NON_OPAQUE | RAY_FLAG_SKIP_PROCEDURAL_PRIMITIVES> Query;
+	Query.TraceRayInline(Scene, RAY_FLAG_NONE, 255, Ray);
+	uint Candidates = 0;
+	[loop] while (Query.Proceed())
+	{
+		if (++Candidates > 4096)
+		{
+			Query.Abort();
+			Summary.Invalid += 1;
+			return Summary;
+		}
+		if (Query.CandidateType() == CANDIDATE_NON_OPAQUE_TRIANGLE)
+		{
+			RayTracingDraw Draw;
+			uint3 Vertex;
+			if (!GiTriangle(Query.CandidateInstanceID(), Query.CandidatePrimitiveIndex(), Draw, Vertex))
+			{
+				Query.Abort();
+				Summary.Invalid += 1;
+				return Summary;
+			}
+			float2 Uv = GiTriangleUv(Vertex, Query.CandidateTriangleBarycentrics());
+			if (RayTracingAlphaAccept(Materials[Draw.Material], GiTexture(Draw.Material, 0, Uv).a))
+			{
+				Query.CommitNonOpaqueTriangleHit();
+			}
+		}
+	}
+	float Distance = Grid.Sampling.x;
+	float3 Normal = 0;
+	uint Kind = Proximity ? PROBE_PROXIMITY_MISS : PROBE_MISS;
+	if (Query.CommittedStatus() == COMMITTED_TRIANGLE_HIT)
+	{
+		RayTracingDraw Draw;
+		uint3 Vertex;
+		if (!GiTriangle(Query.CommittedInstanceID(), Query.CommittedPrimitiveIndex(), Draw, Vertex))
+		{
+			Summary.Invalid += 1;
+			return Summary;
+		}
+		float3 ObjectNormal = cross(Vertices[Vertex.y].Position - Vertices[Vertex.x].Position,
+			Vertices[Vertex.z].Position - Vertices[Vertex.x].Position);
+		Normal = GiDirection(mul(ObjectNormal, (float3x3)Query.CommittedWorldToObject3x4()));
+		Distance = Query.CommittedRayT();
+		if (Proximity)
+		{
+			float3 Hit = Ray.Origin + Direction * Distance;
+			float SignedDistance = dot(Center - Hit, Normal);
+			Direction = Normal * (SignedDistance >= 0 ? -1 : 1);
+			Distance = abs(SignedDistance);
+			Kind = SignedDistance >= 0 ? PROBE_FRONT_PROXIMITY : PROBE_BACK_PROXIMITY;
+		}
+		else
+		{
+			Kind = dot(Direction, Normal) < 0 ? PROBE_FRONT : PROBE_BACK;
+		}
+	}
+	return RelocationObserve(Summary, Direction, Distance, Normal, Kind);
+}
+
+[numthreads(64, 1, 1)] void RelocateCS(uint3 Thread : SV_DispatchThreadID)
+{
+	if (Grid.Counts.w == 0 || Thread.x >= Grid.WorkInfo.y)
+	{
+		return;
+	}
+	uint Probe = UpdateIndices[Thread.x];
+	if (Probe >= Grid.WorkInfo.x)
+	{
+		return;
+	}
+	uint State = GiStateIndex(Probe, Grid);
+	float4 Offset = asfloat(WriteState[State + 1]);
+	uint4 Metadata = WriteState[State + 2];
+	RelocationState Previous = { Offset.xyz, Offset.w, Metadata.x, Metadata.y, Metadata.z, Metadata.w };
+	RelocationSummary Summary = RelocationBegin(Grid.Sampling.x);
+	float3 Center = ProbePositions[Probe].xyz + Previous.Offset;
+	[loop] for (uint Ray = 0; Ray < PlacementInfo.x + 6; ++Ray)
+	{
+		Summary = ObservePlacementRay(Summary, Center, Ray);
+	}
+	uint Level = min(uint(ProbePositions[Probe].w), Grid.GridInfo.w - 1);
+	float3 Spacing = 1 / Grid.InverseSpacing[Level].xyz;
+	RelocationParameters Settings = { PlacementLimits.x, PlacementLimits.y, PlacementLimits.z, PlacementInfo.x, PlacementInfo.y };
+	RelocationDecision Decision = RelocationEvaluate(Settings, Spacing, Previous, Summary, PlacementRevisions[Probe]);
+	WriteState[State + 1] = asuint(float4(Decision.State.Offset, Decision.State.Clearance));
+	WriteState[State + 2] = uint4(Decision.State.Classification, Decision.State.SceneRevision, Decision.State.StableUpdates, Decision.State.OffsetRevision);
+	if (Decision.ResetHistory != 0)
+	{
+		WriteState[State] = Summary.Invalid != 0 ? uint4(0, Grid.WorkInfo.w, Grid.WorkInfo.z, 1) : uint4(0, 0, 0, 0);
+		[unroll] for (uint Term = 0; Term < 9; ++Term)
+		{
+			WriteSh[Probe * 9 + Term] = 0;
+		}
+		[loop] for (uint Texel = 0; Texel < 64; ++Texel)
+		{
+			WriteMoments[Probe * 64 + Texel] = 0;
+		}
+	}
+}
+
 [numthreads(64, 1, 1)] void TraceCS(uint3 Thread : SV_DispatchThreadID)
 {
 	uint RayIndex = GiRayLinearIndex(Thread.x, Thread.y, Grid.Counts.z);
@@ -122,9 +248,15 @@ float2 GiTriangleUv(uint3 Vertex, float2 Bary)
 		WriteRayStatus[RayIndex] = uint4(2, 0, 0, 0);
 		return;
 	}
+	if (Grid.Counts.w != 0 && ReadState[GiStateIndex(Probe, Grid) + 2].x != PROBE_ACTIVE)
+	{
+		WriteRayResults[RayIndex] = 0;
+		WriteRayStatus[RayIndex] = uint4(1, 0xffffffffu, 0, 0);
+		return;
+	}
 	float3 Direction = GiRayDirection(RayIndex % Grid.WorkInfo.z, Grid.WorkInfo.z, Probe, Grid.WorkInfo.w);
 	RayDesc Ray;
-	Ray.Origin = ProbePositions[Probe].xyz;
+	Ray.Origin = ProbePositions[Probe].xyz + GiPlacementOffset(Probe, Grid, ReadState);
 	Ray.Direction = Direction;
 	Ray.TMin = 0;
 	Ray.TMax = Grid.Sampling.x;
@@ -241,6 +373,11 @@ float2 GiTriangleUv(uint3 Vertex, float2 Bary)
 		return;
 	}
 	uint RayCount = Grid.WorkInfo.z;
+	uint State = GiStateIndex(Probe, Grid);
+	if (Grid.Counts.w != 0 && WriteState[State + 2].x != PROBE_ACTIVE)
+	{
+		return;
+	}
 	GiSh9 Current = GiZeroSh();
 	bool Valid = true;
 	[loop] for (uint Ray = 0; Ray < RayCount; ++Ray)
@@ -252,14 +389,22 @@ float2 GiTriangleUv(uint3 Vertex, float2 Bary)
 	}
 	if (!Valid)
 	{
-		WriteState[Probe] = uint4(0, Grid.WorkInfo.w, RayCount, 1);
+		WriteState[State] = uint4(0, Grid.WorkInfo.w, RayCount, 1);
 		return;
 	}
 	uint Old = RemapIndices[Probe];
 	bool HistoryValid = false;
 	if (Grid.History.z > 0.5 && Old < Grid.WorkInfo.x)
 	{
-		HistoryValid = ReadState[Old].x != 0;
+		uint PriorState = GiStateIndex(Old, Grid);
+		HistoryValid = ReadState[PriorState].x != 0;
+		if (Grid.Counts.w != 0)
+		{
+			uint4 PreviousPlacement = ReadState[PriorState + 2];
+			uint4 CurrentPlacement = WriteState[State + 2];
+			HistoryValid = HistoryValid && PreviousPlacement.x == PROBE_ACTIVE &&
+				PreviousPlacement.y == CurrentPlacement.y && PreviousPlacement.w == CurrentPlacement.w;
+		}
 	}
 	GiSh9 Previous = GiZeroSh();
 	if (HistoryValid)
@@ -298,5 +443,5 @@ float2 GiTriangleUv(uint3 Vertex, float2 Bary)
 		}
 		WriteMoments[Probe * 64 + Texel] = Moments;
 	}
-	WriteState[Probe] = uint4(1, Grid.WorkInfo.w, RayCount, 0);
+	WriteState[State] = uint4(1, Grid.WorkInfo.w, RayCount, 0);
 }

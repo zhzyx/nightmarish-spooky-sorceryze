@@ -2217,8 +2217,8 @@ bool VisualRuntime::PrepareGiFrame(std::uint32_t nFrame)
 
 bool VisualRuntime::RecordGiPass(std::uint32_t nFrame, PassWork eWork)
 {
-	constexpr std::array<GiPass, 7> arrPasses{ GiPass::BuildScene, GiPass::Upload, GiPass::InitializeHistory,
-											   GiPass::Remap, GiPass::Trace, GiPass::Update, GiPass::Readback };
+	constexpr std::array<GiPass, 8> arrPasses{ GiPass::BuildScene, GiPass::Upload, GiPass::InitializeHistory,
+											   GiPass::Remap, GiPass::Relocate, GiPass::Trace, GiPass::Update, GiPass::Readback };
 	const std::size_t nPass = static_cast<std::size_t>(eWork) - static_cast<std::size_t>(PassWork::GiBuildScene);
 	if (nPass >= arrPasses.size())
 	{
@@ -4907,7 +4907,7 @@ bool VisualRuntime::BuildGraph()
 	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -6051,6 +6051,12 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["gi_valid_probe_count"] = JsonValue(static_cast<std::int64_t>(stGi.ValidCount()));
 	mapReport["gi_invalid_probe_count"] = JsonValue(static_cast<std::int64_t>(stGi.InvalidCount()));
 	mapReport["gi_peak_invalid_probe_count"] = JsonValue(static_cast<std::int64_t>(stGi.PeakInvalidCount()));
+	mapReport["gi_placement_enabled"] = JsonValue(stGi.ProbeCount() != 0 && stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled);
+	mapReport["gi_placement_state_stride"] = JsonValue(static_cast<std::int64_t>(stGi.ProbeCount() == 0 ? 0 : (stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled ? 48 : 16)));
+	mapReport["gi_placement_active_count"] = JsonValue(static_cast<std::int64_t>(stGi.PlacementActiveCount()));
+	mapReport["gi_placement_pending_count"] = JsonValue(static_cast<std::int64_t>(stGi.PlacementPendingCount()));
+	mapReport["gi_placement_inactive_count"] = JsonValue(static_cast<std::int64_t>(stGi.PlacementInactiveCount()));
+	mapReport["gi_relocated_count"] = JsonValue(static_cast<std::int64_t>(stGi.RelocatedCount()));
 	mapReport["gi_submission_epoch"] = JsonValue(static_cast<std::int64_t>(stGi.SubmissionEpoch()));
 	mapReport["gi_resource_bytes"] = JsonValue(static_cast<std::int64_t>(stGi.Memory().nTotalBytes));
 	mapReport["gi_default_bytes"] = JsonValue(static_cast<std::int64_t>(stGi.Memory().nDefaultBytes));

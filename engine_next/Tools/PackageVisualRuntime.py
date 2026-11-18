@@ -49,6 +49,7 @@ SHADER_FILES = {
     "GiTransparent.ps.cso",
     "GiMaterialTransparent.ps.cso",
     "GiPrepare.cs.cso",
+    "GiRelocate.cs.cso",
     "GiTrace.cs.cso",
     "GiIntegrate.cs.cso",
     "GeometryCull.cs.cso",

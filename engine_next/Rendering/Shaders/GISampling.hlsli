@@ -14,6 +14,16 @@ struct GiGridParameters
 	uint4 Counts;
 };
 
+uint GiStateIndex(uint Probe, GiGridParameters Grid)
+{
+	return Probe * (Grid.Counts.w != 0 ? 3u : 1u);
+}
+
+float3 GiPlacementOffset(uint Probe, GiGridParameters Grid, StructuredBuffer<uint4> States)
+{
+	return Grid.Counts.w != 0 ? asfloat(States[GiStateIndex(Probe, Grid) + 1].xyz) : float3(0, 0, 0);
+}
+
 float2 GiReadDistanceMoments(uint Probe, float3 Direction, StructuredBuffer<float2> Moments)
 {
 	float2 Uv = GiOctEncode(Direction);
@@ -54,10 +64,12 @@ float4 GiSampleIrradianceBands(float3 Position, float3 Normal, float3 ViewDirect
 			uint3 Cell = Base + Offset;
 			uint Probe = Level * LevelSize + (Cell.z * Grid.GridInfo.y + Cell.y) * Grid.GridInfo.x + Cell.x;
 			float3 ProbePosition = Grid.Minimum[Level].xyz + float3(Cell) / Grid.InverseSpacing[Level].xyz;
+			ProbePosition += GiPlacementOffset(Probe, Grid, States);
 			float3 ToProbe = ProbePosition - Biased;
 			float Weight = GiTrilinearWeight(Fraction, Corner) * GiProbeNormalWeight(ToProbe, N);
 			TotalWeight += Weight;
-			if (Probe >= Grid.WorkInfo.x || States[Probe].x == 0)
+			if (Probe >= Grid.WorkInfo.x || States[GiStateIndex(Probe, Grid)].x == 0 ||
+				(Grid.Counts.w != 0 && States[GiStateIndex(Probe, Grid) + 2].x != 1))
 			{
 				continue;
 			}

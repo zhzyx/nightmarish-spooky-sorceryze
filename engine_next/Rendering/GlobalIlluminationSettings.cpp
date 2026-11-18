@@ -111,10 +111,52 @@ bool Vector(const Serialization::JsonValue::Object &mapObject, const char *pName
 	}
 	return true;
 }
+
+bool Placement(const Serialization::JsonValue &stValue, ProbeRelocationSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, GI_PATH, out_arrDiagnostics);
+	if (pObject == nullptr || !OptionalFields(*pObject, { "enabled", "minimum_clearance", "maximum_offset_fraction", "backface_threshold", "rays_per_probe", "stable_updates" }, out_arrDiagnostics))
+	{
+		return false;
+	}
+	ProbeRelocationSettings stSettings;
+	const Serialization::JsonValue::Object::const_iterator itEnabled = pObject->find("enabled");
+	if (itEnabled != pObject->end() && !itEnabled->second.GetBool(stSettings.bEnabled))
+	{
+		return Fail(out_arrDiagnostics, "Placement enabled must be boolean.");
+	}
+	double dClearance = stSettings.fMinimumClearance;
+	double dOffset = stSettings.fMaximumOffsetFraction;
+	double dBackfaces = stSettings.fBackfaceThreshold;
+	std::uint64_t nRays = stSettings.nMinimumRays;
+	std::uint64_t nStable = stSettings.nRequiredStableUpdates;
+	if (!Number(*pObject, "minimum_clearance", dClearance, out_arrDiagnostics) || !Number(*pObject, "maximum_offset_fraction", dOffset, out_arrDiagnostics) ||
+		!Number(*pObject, "backface_threshold", dBackfaces, out_arrDiagnostics) || !Integer(*pObject, "rays_per_probe", nRays, out_arrDiagnostics) ||
+		!Integer(*pObject, "stable_updates", nStable, out_arrDiagnostics) || !FloatValue(dClearance) || !FloatValue(dOffset) || !FloatValue(dBackfaces) || nRays > 1024 || nStable > 64)
+	{
+		return Fail(out_arrDiagnostics, "Invalid placement numeric setting.");
+	}
+	stSettings.fMinimumClearance = static_cast<float>(dClearance);
+	stSettings.fMaximumOffsetFraction = static_cast<float>(dOffset);
+	stSettings.fBackfaceThreshold = static_cast<float>(dBackfaces);
+	stSettings.nMinimumRays = static_cast<std::uint32_t>(nRays);
+	stSettings.nRequiredStableUpdates = static_cast<std::uint32_t>(nStable);
+	if (!ValidateProbeRelocationSettings(stSettings))
+	{
+		return Fail(out_arrDiagnostics, "Invalid placement clearance, offset, rays or stable update count.");
+	}
+	out_stSettings = stSettings;
+	return true;
+}
 } // namespace
 
 bool BuildGlobalIlluminationBudget(const GlobalIlluminationSettings &stSettings, GlobalIlluminationBudget &out_stBudget, Assets::Diagnostics &out_arrDiagnostics)
 {
+	ProbeRelocationSettings stPlacement = stSettings.stPlacement;
+	if (!ValidateProbeRelocationSettings(stPlacement))
+	{
+		return Fail(out_arrDiagnostics, "Probe placement settings must be finite and bounded; enabled clearance must fit the trace distance.");
+	}
 	if (stSettings.nClipmapLevels == 0 || stSettings.nClipmapLevels > MAX_GI_CLIPMAP_LEVELS || stSettings.nUpdatesPerFrame == 0 || stSettings.nUpdatesPerFrame > MAX_GI_PROBES || stSettings.nRaysPerProbe < 16 || stSettings.nRaysPerProbe > 1024)
 	{
 		return Fail(out_arrDiagnostics, "Expected 1..3 clipmaps, 1..65536 updates and 16..1024 rays per updated probe.");
@@ -137,6 +179,10 @@ bool BuildGlobalIlluminationBudget(const GlobalIlluminationSettings &stSettings,
 		return Fail(out_arrDiagnostics, "Trace distance must be a positive normal binary32 value.");
 	}
 	const float fTrace = static_cast<float>(stSettings.dTraceDistance);
+	if (stPlacement.bEnabled && fTrace < stPlacement.fMinimumClearance)
+	{
+		return Fail(out_arrDiagnostics, "Enabled placement clearance must fit the trace distance.");
+	}
 	if (static_cast<double>(fTrace) * fTrace > std::numeric_limits<float>::max())
 	{
 		return Fail(out_arrDiagnostics, "Squared binary32 trace distance must remain finite.");
@@ -190,11 +236,16 @@ bool BuildGlobalIlluminationBudget(const GlobalIlluminationSettings &stSettings,
 	stBudget.nProbeCount = static_cast<std::uint32_t>(nPerLevel * stSettings.nClipmapLevels);
 	stBudget.nUpdateCount = std::min(stSettings.nUpdatesPerFrame, stBudget.nProbeCount);
 	stBudget.nRayCount = stBudget.nUpdateCount * stSettings.nRaysPerProbe;
-	const std::uint64_t nHistoryStride = GI_SH_STRIDE + GI_DISTANCE_RESOLUTION * GI_DISTANCE_RESOLUTION * GI_MOMENTS_STRIDE + GI_STATE_STRIDE;
+	stBudget.nStateStride = stPlacement.bEnabled ? GI_STATE_STRIDE + sizeof(ProbePlacement) : GI_STATE_STRIDE;
+	const std::uint64_t nHistoryStride = GI_SH_STRIDE + GI_DISTANCE_RESOLUTION * GI_DISTANCE_RESOLUTION * GI_MOMENTS_STRIDE + stBudget.nStateStride;
 	stBudget.nHistoryBytes = 2 * nHistoryStride * stBudget.nProbeCount;
 	stBudget.nPositionBytes = static_cast<std::uint64_t>(GI_POSITION_STRIDE) * stBudget.nProbeCount;
 	stBudget.nRayBytes = static_cast<std::uint64_t>(GI_PENDING_FRAMES) * (GI_RAY_RESULT_STRIDE + GI_RAY_STATUS_STRIDE) * stBudget.nRayCount;
 	stBudget.nUpdateBytes = static_cast<std::uint64_t>(GI_PENDING_FRAMES) * sizeof(std::uint32_t) * stBudget.nUpdateCount;
+	if (stPlacement.bEnabled)
+	{
+		stBudget.nUpdateBytes += static_cast<std::uint64_t>(GI_PENDING_FRAMES) * sizeof(std::uint32_t) * stBudget.nProbeCount;
+	}
 	stBudget.nTotalBytes = stBudget.nHistoryBytes + stBudget.nPositionBytes + stBudget.nRayBytes + stBudget.nUpdateBytes;
 	if (stSettings.nMaxGpuBytes == 0 || stSettings.nMaxGpuBytes > MAX_GI_GPU_BYTES || stBudget.nTotalBytes > stSettings.nMaxGpuBytes)
 	{
@@ -213,7 +264,7 @@ bool ValidateGlobalIlluminationSettings(const GlobalIlluminationSettings &stSett
 bool ParseGlobalIlluminationSettings(const Serialization::JsonValue &stValue, GlobalIlluminationSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
 {
 	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, GI_PATH, out_arrDiagnostics);
-	if (pObject == nullptr || !OptionalFields(*pObject, { "enabled", "world_bounds", "probe_counts", "clipmap_levels", "updates_per_frame", "rays_per_probe", "trace_distance", "hysteresis", "normal_bias", "view_bias", "bounce_strength", "history_change_threshold", "max_gpu_bytes" }, out_arrDiagnostics))
+	if (pObject == nullptr || !OptionalFields(*pObject, { "enabled", "world_bounds", "probe_counts", "clipmap_levels", "updates_per_frame", "rays_per_probe", "trace_distance", "hysteresis", "normal_bias", "view_bias", "bounce_strength", "history_change_threshold", "max_gpu_bytes", "placement" }, out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -260,6 +311,11 @@ bool ParseGlobalIlluminationSettings(const Serialization::JsonValue &stValue, Gl
 	stSettings.nClipmapLevels = static_cast<std::uint32_t>(nLevels);
 	stSettings.nUpdatesPerFrame = static_cast<std::uint32_t>(nUpdates);
 	stSettings.nRaysPerProbe = static_cast<std::uint32_t>(nRays);
+	const Serialization::JsonValue::Object::const_iterator itPlacement = pObject->find("placement");
+	if (itPlacement != pObject->end() && !Placement(itPlacement->second, stSettings.stPlacement, out_arrDiagnostics))
+	{
+		return false;
+	}
 	if (!ValidateGlobalIlluminationSettings(stSettings, out_arrDiagnostics))
 	{
 		return false;

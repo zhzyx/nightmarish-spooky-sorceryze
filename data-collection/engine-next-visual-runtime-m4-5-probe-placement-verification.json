@@ -1,0 +1,424 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-5-20261118",
+  "issue_number": 1505,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T08:46:02.902258+00:00",
+  "candidate": "probe-placement-r5",
+  "native_key": "b61296d58bd7ad5da960758f54e4bcef9b8f2bceae7fbe1712979dfb5e601218",
+  "status": "functional_increment_passed_final_delivery_pending",
+  "base_commit": "a6705231c1eb7568a02de905282a497e744d4a15",
+  "delivery_base_commit": "29d4fb25324b4727fb3e26fc9ce9b785d0ee8520",
+  "build_report": {
+    "path": "build/engine_next/probe-placement-r5/VisualBuildReport.json",
+    "sha256": "6a3444caf6524a4d5b652abdea5f73f42d6439f93015b8f7ca63ebf799b0ab65",
+    "size_bytes": 2576857
+  },
+  "native_input_count": 321,
+  "native_inputs_match": true,
+  "shader_count": 47,
+  "executable": {
+    "path": "build/engine_next/probe-placement-r5/next_visual_client.exe",
+    "sha256": "2d3339222b52f58f99d329d7737b37d0cbc79566c15081f11bbe35f2fb0c1888",
+    "size_bytes": 3466752
+  },
+  "source_snapshot": {
+    "path": "build/engine_next/probe-placement-integration/FinalFrozenInputsR5.json",
+    "sha256": "e3fc27aaa7bddce51fa392384ef2f5f298f5d5be7f392eb5b3fb008d3b1f28b3",
+    "size_bytes": 62459
+  },
+  "tests": {
+    "msvc": [
+      440,
+      490117,
+      0
+    ],
+    "clang_cl": [
+      440,
+      490117,
+      0
+    ],
+    "clang_cl_scope": "All 88 CORE, TEST and Windows VISUAL C++ translation units; unchanged C support archive from current MSVC build.",
+    "clang_result": {
+      "path": "build/engine_next/probe-placement-clang-cl-r5/Result.json",
+      "sha256": "c8e8159fade9f464eaafbb83d082818604c4479d13e35095390d50ff4fb71540",
+      "size_bytes": 155159
+    },
+    "static_result": {
+      "path": "build/engine_next/probe-placement-static-r5/Result.json",
+      "sha256": "51ceeb7916e9639b2c16db4a8b22e61b5e15f5ed66175d9d967de4f70a3edf2b",
+      "size_bytes": 14290
+    },
+    "tool_tests": {
+      "path": "build/engine_next/probe-placement-tool-tests-r5.log",
+      "sha256": "977c1791084fe5025fc86153da417c81973ffa8337f82384e8dc8cbbef88920b",
+      "size_bytes": 119
+    }
+  },
+  "current_gpu_cases": [
+    {
+      "name": "AOff",
+      "frames": 120,
+      "dimensions": [
+        640,
+        480
+      ],
+      "validation_messages": [],
+      "first_cpu_frame_msec": 5317.8361,
+      "result": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/AOff/Result.json",
+        "sha256": "801cc359a9510a40e5eab8050204213deb9b0eabea6d2da88b0843b191c47547",
+        "size_bytes": 941
+      },
+      "prepared": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/AOff/Prepared.json",
+        "sha256": "d52c299685fef45c31995608801cb161158fc1e5b14f2a3dfc77fb386ceb6030",
+        "size_bytes": 3536
+      },
+      "runtime": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/AOff/Runtime.json",
+        "sha256": "4b5e4abada3c0ba26373e4bd0df99d34f9ae4a8224cb2210435546d9a78c2fd3",
+        "size_bytes": 161886
+      },
+      "image": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/AOff/Final.ppm",
+        "sha256": "107e85ab51535a823c3149164f2759e9215447ee3129c21cc32bc6a14fb42f72",
+        "size_bytes": 921615
+      }
+    },
+    {
+      "name": "APlacement",
+      "frames": 64,
+      "dimensions": [
+        640,
+        480
+      ],
+      "validation_messages": [
+        "ID3D12CommandQueue::ExecuteCommandLists: Execution of Command List 0x000001CEC0ACFC20:'Unnamed ID3D12GraphicsCommandList Object', contains a shader op (Draw/Dispatch/ExecuteIndirect) recorded while using Shader Patch Mode NONE, or contains an ExecuteIndirect that changes VB/IB/Root bindings. Hence, all further GPU-based validation may undervalidate or produce true GBV errors with imprecise tracked state (labelled with 'Possibly imprecise') for resources in the COMMON state or Promoted-from-COMMON state at the time of execute."
+      ],
+      "first_cpu_frame_msec": 142788.9845,
+      "result": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/APlacement/Result.json",
+        "sha256": "a92070863c5f556224a23ad20f6f986d564a9869f6f1c6299ddcab54f443c574",
+        "size_bytes": 960
+      },
+      "prepared": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/APlacement/Prepared.json",
+        "sha256": "b66690bd31ee3b299afddc479b976a4ee09ddc3f6fd6695a56f33a9709557ebf",
+        "size_bytes": 3578
+      },
+      "runtime": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/APlacement/Runtime.json",
+        "sha256": "619bec53b0a90a88c155a0e66b322a63d2e9aaa74d0459e306bbb49f030205e1",
+        "size_bytes": 220739
+      },
+      "image": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/APlacement/Final.ppm",
+        "sha256": "b5d904ebf18dfaba1b35e47c32c26253e25de852ce6236b863a802a6ee663638",
+        "size_bytes": 921615
+      }
+    },
+    {
+      "name": "BPlacement",
+      "frames": 48,
+      "dimensions": [
+        640,
+        480
+      ],
+      "validation_messages": [
+        "ID3D12CommandQueue::ExecuteCommandLists: Execution of Command List 0x000001D07EEC4150:'Unnamed ID3D12GraphicsCommandList Object', contains a shader op (Draw/Dispatch/ExecuteIndirect) recorded while using Shader Patch Mode NONE, or contains an ExecuteIndirect that changes VB/IB/Root bindings. Hence, all further GPU-based validation may undervalidate or produce true GBV errors with imprecise tracked state (labelled with 'Possibly imprecise') for resources in the COMMON state or Promoted-from-COMMON state at the time of execute."
+      ],
+      "first_cpu_frame_msec": 263376.3753,
+      "result": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/BPlacement/Result.json",
+        "sha256": "fc630a44ae58cd2de46a6f4562060e07c03402b053e2f670e74db4f9413f8aa6",
+        "size_bytes": 959
+      },
+      "prepared": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/BPlacement/Prepared.json",
+        "sha256": "c087b0d071c99ca560ede5536bd3ef7abcc59620ce991100ac833f677ea09797",
+        "size_bytes": 3662
+      },
+      "runtime": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/BPlacement/Runtime.json",
+        "sha256": "3ae0fbbace776853a9125faf0a186801d30dedd64b3e80efb1445b8a24e650a1",
+        "size_bytes": 164315
+      },
+      "image": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/BPlacement/Final.ppm",
+        "sha256": "9674bbbff231fcbc6e9d2127653bb245e47b62a84b6af8f35ca75af2f6241741",
+        "size_bytes": 921615
+      }
+    },
+    {
+      "name": "BEffects4K",
+      "frames": 12,
+      "dimensions": [
+        3840,
+        2160
+      ],
+      "validation_messages": [
+        "ID3D12CommandQueue::ExecuteCommandLists: Execution of Command List 0x0000029EAB012020:'Unnamed ID3D12GraphicsCommandList Object', contains a shader op (Draw/Dispatch/ExecuteIndirect) recorded while using Shader Patch Mode NONE, or contains an ExecuteIndirect that changes VB/IB/Root bindings. Hence, all further GPU-based validation may undervalidate or produce true GBV errors with imprecise tracked state (labelled with 'Possibly imprecise') for resources in the COMMON state or Promoted-from-COMMON state at the time of execute."
+      ],
+      "first_cpu_frame_msec": 60372.8568,
+      "result": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/BEffects4K/Result.json",
+        "sha256": "34805d3c113ac9ea542c07210e4d273676c635d2b799cbd78dc63a360385e3ea",
+        "size_bytes": 961
+      },
+      "prepared": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/BEffects4K/Prepared.json",
+        "sha256": "1cb4781787b4e5fc1526f07002ceca8cfe0fc096039df72a15f4beef227b04ad",
+        "size_bytes": 3723
+      },
+      "runtime": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/BEffects4K/Runtime.json",
+        "sha256": "a1a99f9b23bb069fd6653818df796b8ae0fc6ec53f59662b857f8f34603f32cc",
+        "size_bytes": 141938
+      },
+      "image": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/BEffects4K/Final.ppm",
+        "sha256": "6dbffbdaf38399712ec2895fe9fdd431d10d4c42386dd62adfc8c89b330e155f",
+        "size_bytes": 24883217
+      }
+    },
+    {
+      "name": "AResize",
+      "frames": 24,
+      "dimensions": [
+        640,
+        480
+      ],
+      "validation_messages": [
+        "ID3D12CommandQueue::ExecuteCommandLists: Execution of Command List 0x0000020CE6B084D0:'Unnamed ID3D12GraphicsCommandList Object', contains a shader op (Draw/Dispatch/ExecuteIndirect) recorded while using Shader Patch Mode NONE, or contains an ExecuteIndirect that changes VB/IB/Root bindings. Hence, all further GPU-based validation may undervalidate or produce true GBV errors with imprecise tracked state (labelled with 'Possibly imprecise') for resources in the COMMON state or Promoted-from-COMMON state at the time of execute."
+      ],
+      "first_cpu_frame_msec": 12415.1593,
+      "result": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/AResize/Result.json",
+        "sha256": "cffa40fd9e79efd398ff1857fe9d1f6d49b0e7a20c6d0781c81fec38e8f4603e",
+        "size_bytes": 950
+      },
+      "prepared": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/AResize/Prepared.json",
+        "sha256": "80f39005b2e7964b2a1119e8330e3d694827c6ed15a378de282b5b401a40cf28",
+        "size_bytes": 3588
+      },
+      "runtime": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/AResize/Runtime.json",
+        "sha256": "14c96736d7e34926c5f3867389f7f6588dc3430c2795908400661d0b7155978f",
+        "size_bytes": 127066
+      },
+      "image": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Combined-r5/AResize/Final.ppm",
+        "sha256": "33b7ace03d8a1a106fde1c56a33455bc06d14c79a2b29eaf29c11ce4452fedac",
+        "size_bytes": 921615
+      }
+    },
+    {
+      "name": "Default",
+      "frames": 12,
+      "dimensions": [
+        640,
+        480
+      ],
+      "result": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Controls-r5/Default.result.json",
+        "sha256": "aa97cac67a42b9a07aaebc20c3fab29664c6bd7a6f98d432f0be51378718adae",
+        "size_bytes": 1621
+      },
+      "runtime": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Controls-r5/Default.json",
+        "sha256": "2f5d2ccffd59ab8a70937e52a0b4c056ecaae9995342958d94a846f3cbe6420d",
+        "size_bytes": 55364
+      },
+      "image": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Controls-r5/Default.ppm",
+        "sha256": "d4877efdd04de06772620f5c4ce62fdc1dd5d328c657c00c4de73a9c01ed708a",
+        "size_bytes": 921615
+      }
+    },
+    {
+      "name": "Disabled",
+      "frames": 12,
+      "dimensions": [
+        640,
+        480
+      ],
+      "result": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Controls-r5/Disabled.result.json",
+        "sha256": "a02060bb797234fe3225d1eed52c926947f2f02acc53c4828a32f86f794c5d0a",
+        "size_bytes": 1625
+      },
+      "runtime": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Controls-r5/Disabled.json",
+        "sha256": "592e6faf618dcca0ee7f95932b689f37a12bb561a821b79524117e06721953c9",
+        "size_bytes": 55352
+      },
+      "image": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/Controls-r5/Disabled.ppm",
+        "sha256": "d4877efdd04de06772620f5c4ce62fdc1dd5d328c657c00c4de73a9c01ed708a",
+        "size_bytes": 921615
+      }
+    }
+  ],
+  "current_readback": [
+    {
+      "name": "A-Current-r5b",
+      "frames": 120,
+      "rdc_count": 3,
+      "runtime": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Current-r5b/Runtime.json",
+        "sha256": "5bc3cdf7f8e2690cb60500e40e585ac10b12c3a6c037339d5b1bb0e24b27741f",
+        "size_bytes": 349447
+      },
+      "manifest": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Current-r5b/CaptureManifest.json",
+        "sha256": "c7e70d3ad08cb8b0c1960cade90638b71f8b23e06f88956c7efb55b58b6f3606",
+        "size_bytes": 3520
+      },
+      "inspection": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Current-r5b/Readback/Inspection.json",
+        "sha256": "d47ea8e9620aaf9294a8d7b403585c452cca24082072c4a75ae580d23db7a833",
+        "size_bytes": 130899
+      },
+      "numerical_checks": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Current-r5b/NumericalChecks.json",
+        "sha256": "9d50cc49a2084e58a17d7d11a67a203a3bfe91c2389405eeb5a47d7c4c5a1e27",
+        "size_bytes": 3030
+      },
+      "captures": [
+        {
+          "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Current-r5b/Initial_frame0.rdc",
+          "sha256": "357bd4977d3ba297e76cae08276e547652fdf138b0fd9662d7684457c3f78c0f",
+          "size_bytes": 4292706
+        },
+        {
+          "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Current-r5b/Initial_frame1.rdc",
+          "sha256": "660c28ba5ae837e0b57b36044cc1a7014dca90973c873ad967bdd5578b7b78f2",
+          "size_bytes": 5007846
+        },
+        {
+          "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Current-r5b/Initial_frame2.rdc",
+          "sha256": "9ea9d2879d60f02fa88c4a6fed5081b6598b788499d09cf0071827105c1bf8cf",
+          "size_bytes": 5032808
+        }
+      ]
+    },
+    {
+      "name": "A-Mature-r5",
+      "frames": 600,
+      "rdc_count": 6,
+      "runtime": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Mature-r5/Runtime.json",
+        "sha256": "e080f096afdb9359a352ce6271a3b858a16581e1122789f32545129744fc1b0b",
+        "size_bytes": 1466783
+      },
+      "manifest": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Mature-r5/CaptureManifest.json",
+        "sha256": "dd404ae26839574cc9d12736430d194d7aada0b9a766c22d3eec330229fdbff0",
+        "size_bytes": 4354
+      },
+      "inspection": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Mature-r5/Readback/Inspection.json",
+        "sha256": "3d022ffcd4108d3c45e8bf456e8db148dfcc72ea5cda92edde97e4b7bf38b055",
+        "size_bytes": 297277
+      },
+      "numerical_checks": {
+        "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Mature-r5/NumericalChecks.json",
+        "sha256": "07dee1d0ddb6eba9ea9963a0fd053d7d6f15eec9a75693ff4e530298d374dcb4",
+        "size_bytes": 32030
+      },
+      "captures": [
+        {
+          "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Mature-r5/Initial_frame0.rdc",
+          "sha256": "a06afcfecc4fa38d6db05689e6d1eb5da7541734511816aa71b89c6c618977c8",
+          "size_bytes": 4293414
+        },
+        {
+          "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Mature-r5/Initial_frame1.rdc",
+          "sha256": "cb53981b64bca8080a5229a72a031c1c876adc72ca3a6a2628857dbdb748d54c",
+          "size_bytes": 5009492
+        },
+        {
+          "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Mature-r5/Initial_frame2.rdc",
+          "sha256": "effd91e24cf20ab7eb030c5412a9824e0a0869cf3b4f2370b150d1ecb7eccf66",
+          "size_bytes": 5031613
+        },
+        {
+          "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Mature-r5/Mature_frame449.rdc",
+          "sha256": "7e9de8e63382681701a3c640fcd03bc787f1fcb4e1bb7488f371b9d7df562215",
+          "size_bytes": 24940552
+        },
+        {
+          "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Mature-r5/Mature_frame450.rdc",
+          "sha256": "44dc17f6035f85d7312fac7055df45423094f229b13c6e8783eeb301c17748d8",
+          "size_bytes": 24924751
+        },
+        {
+          "path": "build/engine_next/probe-placement-final-evidence/Files/Gpu/A-Mature-r5/Mature_frame451.rdc",
+          "sha256": "45746408cdf1267d7386e326458af712b0f59975ccb93c11abffc9f1276dceb3",
+          "size_bytes": 24894747
+        }
+      ]
+    }
+  ],
+  "main_executable_frames": 1012,
+  "same_binary_module_frames": 72,
+  "current_rdc_count": 9,
+  "build_impact": {
+    "path": "data-collection/engine-next-visual-runtime-m4-5-probe-placement-build-impact.json",
+    "sha256": "aeccbc74ed8598f6f3b29bfc46609673b42bce3a840965efb768380f3815d6e4",
+    "size_bytes": 81614
+  },
+  "source_review": {
+    "path": "data-collection/engine-next-visual-runtime-m4-5-probe-placement-source-review.json",
+    "sha256": "c5d6e3570ec9d878643de2104e6f020fac63714fa64f3b2631aa9eca0476143a",
+    "size_bytes": 4294
+  },
+  "historical_r2_evidence": {
+    "path": "build/engine_next/probe-placement-evidence-r2/GpuEvidence.json",
+    "sha256": "68689d268f2e38da9a8da06d82f6a058dd2a7ae108f18bc1df83d9fe85a43b8e",
+    "size_bytes": 38739
+  },
+  "r2_to_r5_shader_delta": {
+    "path": "build/engine_next/probe-placement-integration/R2ToR5ShaderDelta.json",
+    "sha256": "0723344915f604e036640555e8ba4c31018bdd4114bed72c7102ab055b3fb979",
+    "size_bytes": 1626
+  },
+  "standalone_irradiance_readback": {
+    "path": "build/engine_next/probe-placement-final-evidence/Files/Irradiance/AOffReadback/NumericalChecks.json",
+    "sha256": "dec11e0d51c437b556a68c7cb7662a62367a75b4339ed85fd41d4e141efbe23c",
+    "size_bytes": 29552
+  },
+  "handoff": {
+    "path": "build/engine_next/probe-placement-final-evidence/FinalEvidence.json",
+    "sha256": "abe029c59b97b6208d4eb99f4d08425327822ceaf3541b7d9b4d57a255be49cc",
+    "size_bytes": 17866
+  },
+  "remaining": [
+    "Full M4.5 and parent acceptance remain open under issues 1505 and 1323.",
+    "The explicit deformation-bounds API has CPU coverage. Combined E dynamic-BLAS and placement GPU validation remains pending.",
+    "R2 and standalone irradiance captures retain their original identities. Current R5 mature probes have separate readback evidence.",
+    "Affected reports retain the D3D12 ExecuteIndirect validation-tracking warning. This limits the coverage of counted GBV results.",
+    "The 3840x2160 render-target checks ran on a 2560x1440 physical display. Native 4K output, target frame rates, long-duration stability and final visual quality remain pending.",
+    "Cold startup and cleanup measurements are retained. Performance acceptance remains pending.",
+    "The historical 62-ray boundary report and current sampled anchors cover the recorded cases. Broader geometry boundary coverage remains pending.",
+    "Formal gate, signing, exact-head CI and main readback follow this local verification record."
+  ],
+  "issues_remain_open": [
+    1505,
+    1323
+  ],
+  "delivery_pending": [
+    "Parent final source review",
+    "Final formal gate and signed submission",
+    "Required CI and main readback"
+  ],
+  "metadata_paths": "Repository-relative references; snapshots retain the bytes of historical/private records without rewriting their original identities.",
+  "final_static_checks": {
+    "path": "build/engine_next/probe-static-delivery-r5/Result.json",
+    "sha256": "99dfb2c28f06164f7ab14d3ac7dead978ee8220edbc8a59d2e55d64a57bcfeb3",
+    "size_bytes": 16401
+  },
+  "final_static_scope": "Nine applicable checks cover the complete candidate, with the aggregate verification file excluded from its own hash manifest. Zero source mutations."
+}
