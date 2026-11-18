@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "event_id": "m43-ambient-occlusion-r6-verified-20261118",
+  "kind": "step",
+  "occurred_at": "2026-11-18T09:37:01.281580+00:00",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-4c450671",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m43-request-20261116"
+  ],
+  "payload": {
+    "scope": "Full-resolution SSAO and bilateral filtering integrated with probe placement",
+    "native_key": "069cc40a5140d03da1528b864b0a00618d1ec5bce20f43c5d55f623f68eb0465",
+    "tests": [
+      446,
+      491776,
+      0
+    ],
+    "normal_gpu_frames": 436,
+    "capture_frames": 240,
+    "rdc_count": 6,
+    "module_gpu_frames": 120,
+    "records": [
+      "data-collection/engine-next-visual-runtime-m4-3-ambient-occlusion-source-review.json",
+      "data-collection/engine-next-visual-runtime-m4-3-ambient-occlusion-build-impact.json",
+      "data-collection/engine-next-visual-runtime-m4-3-ambient-occlusion-verification.json"
+    ],
+    "stage_complete": false
+  },
+  "sha256": "08bb110633370900154d5cc307cfa3b41ef7c20b5a2ae18aa2c873f892f55e9c"
+}

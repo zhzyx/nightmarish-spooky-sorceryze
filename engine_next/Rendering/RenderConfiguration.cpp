@@ -325,6 +325,34 @@ bool ParseReflections(const Serialization::JsonValue &stValue, ReflectionSetting
 			ValidateReflectionSettings(out_stSettings, out_arrDiagnostics);
 }
 
+bool ParseAmbientOcclusion(const Serialization::JsonValue &stValue, AmbientOcclusionSettings &out_stSettings, Assets::Diagnostics &out_arrDiagnostics)
+{
+	const std::string strPath = "$.ambient_occlusion";
+	const Serialization::JsonValue::Object *pObject = Assets::Object(stValue, strPath, out_arrDiagnostics);
+	if (pObject == nullptr || !RequiredFields(*pObject, {}, { "enabled", "radius", "normal_bias", "intensity", "sample_count" }, strPath, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itEnabled = pObject->find("enabled");
+	if (itEnabled != pObject->end() && !itEnabled->second.GetBool(out_stSettings.bEnabled))
+	{
+		return Fail("type", strPath + ".enabled", "Expected a boolean.", out_arrDiagnostics);
+	}
+	if (pObject->find("sample_count") != pObject->end())
+	{
+		std::int64_t nSamples = 0;
+		if (!Assets::Integer(*pObject, "sample_count", strPath, nSamples, out_arrDiagnostics) || nSamples < 8 || nSamples > MAX_OCCLUSION_SAMPLES)
+		{
+			return Fail("ambient_occlusion_settings", strPath + ".sample_count", "Expected an integer sample count in [8,64].", out_arrDiagnostics);
+		}
+		out_stSettings.nSampleCount = static_cast<std::uint32_t>(nSamples);
+	}
+	return OptionalNumber(*pObject, "radius", strPath, out_stSettings.dRadius, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "normal_bias", strPath, out_stSettings.dNormalBias, out_arrDiagnostics) &&
+			OptionalNumber(*pObject, "intensity", strPath, out_stSettings.dIntensity, out_arrDiagnostics) &&
+			ValidateAmbientOcclusionSettings(out_stSettings, out_arrDiagnostics);
+}
+
 bool ParseDirectionalLight(const Serialization::JsonValue &stValue, DirectionalLightSettings &out_stLight, Assets::Diagnostics &out_arrDiagnostics)
 {
 	const std::string strPath = "$.directional_light";
@@ -592,7 +620,7 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 							  Assets::Diagnostics &out_arrDiagnostics)
 {
 	const Serialization::JsonValue::Object *pRoot = Assets::Object(stValue, "$", out_arrDiagnostics);
-	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "light_animation", "reflections", "volumetric_fog", "particles", "material_overrides", "global_illumination", "geometry_culling" }, "$", out_arrDiagnostics))
+	if (pRoot == nullptr || !RequiredFields(*pRoot, { "schema_version", "source_package_sha256", "camera", "exposure" }, { "directional_light", "shadows", "point_lights", "spot_lights", "temporal_aa", "exposure_settings", "bloom", "light_animation", "reflections", "ambient_occlusion", "volumetric_fog", "particles", "material_overrides", "global_illumination", "geometry_culling" }, "$", out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -683,6 +711,11 @@ bool ParseRenderConfiguration(const Serialization::JsonValue &stValue, const std
 	}
 	const Serialization::JsonValue::Object::const_iterator itReflections = pRoot->find("reflections");
 	if (itReflections != pRoot->end() && !ParseReflections(itReflections->second, stConfiguration.stReflections, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const Serialization::JsonValue::Object::const_iterator itOcclusion = pRoot->find("ambient_occlusion");
+	if (itOcclusion != pRoot->end() && !ParseAmbientOcclusion(itOcclusion->second, stConfiguration.stAmbientOcclusion, out_arrDiagnostics))
 	{
 		return false;
 	}

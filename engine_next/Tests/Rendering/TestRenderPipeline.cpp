@@ -956,3 +956,30 @@ ENGINE_NEXT_TEST("RenderPipeline relocates probes between remap and radiance tra
 	ENGINE_NEXT_CHECK(FindWork(stLegacy, PassWork::GiRelocate) == nullptr);
 	CheckReusableStates(stPipeline);
 }
+
+ENGINE_NEXT_TEST("Ambient occlusion reads the completed GBuffer and feeds indirect lighting")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, false, {}, false, true));
+	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
+	const CompiledPass *pAmbient = FindWork(stPipeline, PassWork::AmbientOcclusion);
+	const CompiledPass *pHorizontal = FindWork(stPipeline, PassWork::AmbientBlurHorizontal);
+	const CompiledPass *pVertical = FindWork(stPipeline, PassWork::AmbientBlurVertical);
+	const CompiledPass *pLighting = FindWork(stPipeline, PassWork::DeferredLighting);
+	ENGINE_NEXT_CHECK(pGbuffer != nullptr && pAmbient != nullptr && pHorizontal != nullptr && pVertical != nullptr && pLighting != nullptr);
+	if (pGbuffer == nullptr || pAmbient == nullptr || pHorizontal == nullptr || pVertical == nullptr || pLighting == nullptr)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(pGbuffer->nPass < pAmbient->nPass && pAmbient->nPass < pHorizontal->nPass && pHorizontal->nPass < pVertical->nPass && pVertical->nPass < pLighting->nPass);
+	ENGINE_NEXT_CHECK(HasAccess(*pAmbient, stPipeline.nDepth, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pAmbient, stPipeline.arrGbuffer[1], ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pHorizontal, stPipeline.arrAmbientOcclusion[0], ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pVertical, stPipeline.arrAmbientOcclusion[1], ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pLighting, stPipeline.arrAmbientOcclusion[2], ResourceState::ShaderRead, false));
+	CheckReusableStates(stPipeline);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic, 0, true, false, 0, 0, {}, false, false, {}, false, true));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrAmbientOcclusion[0], EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::AmbientOcclusion) == nullptr);
+}
