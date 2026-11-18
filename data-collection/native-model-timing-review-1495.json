@@ -1,0 +1,83 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-review.json",
+    "sha256": "a4279a35d56aff36e03ada23fac77e291639d460450d3fe4b6e29d5710bb887b",
+    "path_base": "absolute current host audit archive"
+  },
+  "export": "Lossless JSON value export; original bytes retained.",
+  "review": {
+    "issue": 1495,
+    "reviewer": "sinan_dbc4b9205d0e4d6d",
+    "scope": "Independent bounded source review; no model/provider/network calls; no product edits",
+    "decision": "changes_requested",
+    "source_root": "D:/GongGong-work/native-model-latency-20261118",
+    "source_sha256": {
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "81a7fd88dcaa7f5f9531074de3cf950b0d30af2a32ff6bf6067fc3a5bfdd50b0",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "d35838939c868776f34cc3e1c0a19f294e2449a7c9c0eaaf7d9b725a71f33a83",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "b512a5fe35544edf48a59bf8dcdf87a8a061fe78c7e150f34a3a550cab6a99a1",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "06b3141481a78bc18fd3c5cda6bccdd6aba9bde8f73f5735274343e73bb28f43",
+      "tools/codex_cli/subscription_session.js": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2",
+      "tools/codex_cli/content_preview.js": "160cad8dcedfddeb31b5db37108edcb90c74311af02f74bb219dab2c2794e99b",
+      "tools/codex_cli/subscription_profile.py": "869ddbf0568befe87e6d2fb076a070b02326f11ef2e4d6a22d6989019c6d282c",
+      "design-docs/native-model-latency-20261118.md": "f75ee8a0a1bc98ec65c90a9bcc1f5903508753da0d7f544bcb5e7c8bb7775d75",
+      "data-collection/native-model-timing-root-validation-1495.json": "23065488e769c5712c1696cfbfb5d1bfe52dff954583bb7a977a7d993a96b429"
+    },
+    "probe_sha256": {
+      "review.cjs": "fb9b59fd0ce8b10d6b821de0a6f83b24775e6868ef1ab181d776f562715018a7",
+      "review.py": "fbdf02666b6ee8d028f7b5575532a481f4d1725763857f3363d0f5241c10e44d"
+    },
+    "findings": [
+      {
+        "reproduction": "review.cjs: identical item/completed id=message-1 at 10 and 90; last_text changes 10 to 90, terminal=100.",
+        "expected": "Repeated identified completed item must not advance text timing; retain bounded metadata and preserve valid identical delta chunks.",
+        "file": "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs",
+        "problem": "Repeated completion notification for the same agentMessage advances last_text, even though no new text is observed. This can misattribute late notification/replay delay as model text emission.",
+        "priority": "P2",
+        "id": "R1",
+        "lines": "177-188"
+      },
+      {
+        "reproduction": "review.py: first_response=90, turn_completed=40, first_text=last_text=null, receipt_ready=100 accepted.",
+        "expected": "Reject known first_response > known turn_completed, retaining early notification before acknowledgement support.",
+        "file": "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+        "problem": "Strict timing validator accepts first_response later than turn_completed when text marks are null.",
+        "priority": "P2",
+        "id": "R2",
+        "lines": "330-340"
+      }
+    ],
+    "independent_probes": {
+      "actual_terminal": "Both tool-launched foreground probe processes completed; no running session returned.",
+      "python": {
+        "process_exit_code": 0,
+        "result": "Reproduced R2. Duplicate RPC sentinel=2 correctly rejected."
+      },
+      "node": {
+        "process_exit_code": 0,
+        "result": "Reproduced R1. Terminal freezes subsequent text; 4 callbacks preserved; exactly 2 mock RPC calls; usage/timing observer stack restores both original functions; no payload in timing value."
+      }
+    },
+    "reviewed_invariants": [
+      "Early events bind to acknowledged thread and turn; unmatched turns discarded; overflow keeps later event timing unknown.",
+      "Timing observer issues no protocol request itself. Existing Subscription transport unchanged by candidate.",
+      "Timing then UsageObserver detach order restores wrappers. Original callbacks receive notifications.",
+      "Host validates optional bounded timing schema; legacy timingless receipts remain accepted.",
+      "Python owned-process closure mark is recorded only after helper return; host origin separate from JS protocol elapsed.",
+      "Configuration digest reads Python host, JS wrapper, subscription transport, content preview, subscription profile, executables and process helper fingerprint. Old qualification cannot approve new bytes.",
+      "Root evidence reports 27 JS tests and aligned 30 Python tests / 15 subtests. Reviewed tests cover startup, failure, unacknowledged turn, cancellation, descendant closure, invalid envelopes, no replay, payload bounds. Those suite counts are supplied root evidence, not repeated reviewer executions."
+    ],
+    "method_learning": {
+      "scope": "editor-dependency-handoff",
+      "application": "Pin exact source/evidence hashes; actual probe process terminals; scope evidence to current candidate. Optional timing does not establish business completion or remote cancellation.",
+      "recall": "verified lessons returned; unavailable empty"
+    },
+    "limitations": [
+      "No actual-model timing diagnostic or provider behavior validated.",
+      "No CI/main delivery or production cutover approved.",
+      "Original whole-task acceptance remains parent responsibility.",
+      "No product files changed. Probe source retained as reproducible evidence, not temporary debris.",
+      "Two reproduced blockers require root correction and exact-source focused re-review before diagnostic."
+    ],
+    "recorded_at": "2026-11-18T09:50:45.6546992+08:00"
+  }
+}

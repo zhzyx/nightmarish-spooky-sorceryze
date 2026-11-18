@@ -1,0 +1,39 @@
+{
+  "issue": 1495,
+  "request_id": "native-model-latency-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+  "before": "8da2ba2ef656cc352e69f286ed4f648eb25f2242",
+  "target": "ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079",
+  "local_source_only_pending_upstream_main": true,
+  "overlap": [
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py"
+  ],
+  "resolution": "Clean three-way merge: retain incoming installed-environment and request validation, add independent timing validation and host-owned closure timings. No public subscription transport change.",
+  "before_sha256": {
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-f932d237e16d46b6ba8bfda9b479d1ee.json": "08566915c4c6b6481d0139c5c96ea47fdd3bc8b4d47e12e865302027768000f4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "c5fccee6d444ee57cd13a2c873d29358cd227594ef036cbbc87c8a5f92c7d86c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "b512a5fe35544edf48a59bf8dcdf87a8a061fe78c7e150f34a3a550cab6a99a1",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/kuafu-66860482fa4c97177e6844872958af35941c49c2.json": "c1aa235c44ad51e8a9512679b95a752cba838789ba796e093ab3e5901a510fe5",
+    "data-collection/requests/native-model-latency-20261118/0358cbc4-3159-4db8-aaaf-1945b64c9f38.json": "72bb3d4b8119115f010a0d4a82bda2551f7074d5c9dd4cd0cfea4799c39057a7",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "d35838939c868776f34cc3e1c0a19f294e2449a7c9c0eaaf7d9b725a71f33a83",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-d1ae096c154848439b95041503fbd3a9.json": "120bb6eb5949ba319d77f2d2185958d33fc501762d5380dfb3082285fe57da5e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "06b3141481a78bc18fd3c5cda6bccdd6aba9bde8f73f5735274343e73bb28f43",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/codex-intake-1495-20261117.json": "243ce5d52c56ef215bc64d0ef17a67b9e45598062f0d150430d21e736479e58b",
+    "data-collection/native-model-timing-js-1495.json": "fb66fc81bf208a6cbbb870bec377d282027ca2b3953edab9ab2a1a994c06a6e6",
+    "design-docs/native-model-latency-20261118.md": "f75ee8a0a1bc98ec65c90a9bcc1f5903508753da0d7f544bcb5e7c8bb7775d75"
+  },
+  "after_sha256": {
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-f932d237e16d46b6ba8bfda9b479d1ee.json": "08566915c4c6b6481d0139c5c96ea47fdd3bc8b4d47e12e865302027768000f4",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "81a7fd88dcaa7f5f9531074de3cf950b0d30af2a32ff6bf6067fc3a5bfdd50b0",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "b512a5fe35544edf48a59bf8dcdf87a8a061fe78c7e150f34a3a550cab6a99a1",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/kuafu-66860482fa4c97177e6844872958af35941c49c2.json": "c1aa235c44ad51e8a9512679b95a752cba838789ba796e093ab3e5901a510fe5",
+    "data-collection/requests/native-model-latency-20261118/0358cbc4-3159-4db8-aaaf-1945b64c9f38.json": "72bb3d4b8119115f010a0d4a82bda2551f7074d5c9dd4cd0cfea4799c39057a7",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "d35838939c868776f34cc3e1c0a19f294e2449a7c9c0eaaf7d9b725a71f33a83",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-d1ae096c154848439b95041503fbd3a9.json": "120bb6eb5949ba319d77f2d2185958d33fc501762d5380dfb3082285fe57da5e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "06b3141481a78bc18fd3c5cda6bccdd6aba9bde8f73f5735274343e73bb28f43",
+    "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/codex-intake-1495-20261117.json": "243ce5d52c56ef215bc64d0ef17a67b9e45598062f0d150430d21e736479e58b",
+    "data-collection/native-model-timing-js-1495.json": "fb66fc81bf208a6cbbb870bec377d282027ca2b3953edab9ab2a1a994c06a6e6",
+    "design-docs/native-model-latency-20261118.md": "f75ee8a0a1bc98ec65c90a9bcc1f5903508753da0d7f544bcb5e7c8bb7775d75"
+  },
+  "policy": "Isolated source integration only; no writer submission or production cutover until exact upstream source is accepted and main read back."
+}

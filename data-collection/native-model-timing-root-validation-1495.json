@@ -1,0 +1,38 @@
+{
+  "issue": 1495,
+  "request_id": "native-model-latency-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "81a7fd88dcaa7f5f9531074de3cf950b0d30af2a32ff6bf6067fc3a5bfdd50b0",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "d35838939c868776f34cc3e1c0a19f294e2449a7c9c0eaaf7d9b725a71f33a83",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "b512a5fe35544edf48a59bf8dcdf87a8a061fe78c7e150f34a3a550cab6a99a1",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "06b3141481a78bc18fd3c5cda6bccdd6aba9bde8f73f5735274343e73bb28f43"
+  },
+  "tests": {
+    "native-model-timing-python-tests.log": {
+      "sha256": "0af3039f741e4923b0da66b76ece5b05090d11be2963eaf714344296306bbd0d",
+      "output": "...............                                           [100%]\n15 passed, 15 subtests passed in 6.87s\n"
+    },
+    "native-model-timing-aligned-python-tests.log": {
+      "sha256": "76e36335ed1bef07432dda0b24c726c0fbc939b1a92db1f20fe77f5de1ab3319",
+      "output": "..............................                            [100%]\n30 passed, 15 subtests passed in 29.52s\n"
+    },
+    "native-model-timing-js-root-tests.log": {
+      "sha256": "2b90348db5209125cd6abc6044178538cf63ec3f0301366445f61f9b96e29595",
+      "output": "✔ real Subscription early events retained, strict proposal bound, original notifications work (60.853ms)\n✔ late update replaces raw snapshot without summing (61.4459ms)\n✔ duplicate fails usage closed (61.2501ms)\n✔ wrong_thread fails usage closed (61.3713ms)\n✔ wrong_turn fails usage closed (61.36ms)\n✔ negative fails usage closed (60.7366ms)\n✔ wrong_type fails usage closed (61.9124ms)\n✔ overflow fails usage closed (63.1324ms)\n✔ missing usage remains unknown (62.007ms)\n✔ unacknowledged turn never binds early usage or replays (0.502ms)\n✔ malformed proposal retains independently bound usage without authority (0.2285ms)\n✔ failed proposal retains independently bound usage without authority (0.1454ms)\n✔ failed proposal retains invalid usage classification (0.132ms)\n✔ request configuration injection and duplicate paths rejected before start (0.1792ms)\n✔ callback preserved and restored including compaction signal (0.0509ms)\n✔ context compaction forces existing Subscription to rebuild (0.2619ms)\n✔ strict output rejects wrong digest, duplicate paths, extra authority and outside path (0.2569ms)\n✔ monotonic phase separation and terminal freeze without extra calls (0.23ms)\n✔ early notification timestamps bind only to acknowledged turn (0.0692ms)\n✔ malformed and unrelated notifications cannot fabricate timing (0.1013ms)\n✔ early overflow discards ambiguous timings without retaining payloads (0.2309ms)\n✔ observer preserves original rejection and callback exception (0.3751ms)\n✔ receipt timing accompanies proposed, failed and unacknowledged results and restores observers (59.6991ms)\n✔ startup failure produces unknown timing with no protocol calls (0.2035ms)\n✔ transport timeout after text stays unknown and closes without retry (0.3825ms)\n✔ out of range monotonic stamps remain unknown (0.0575ms)\n✔ duplicate RPC cannot be misreported as a single request (0.066ms)\nℹ tests 27\nℹ suites 0\nℹ pass 27\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 690.6671\n"
+    }
+  },
+  "static": "Ruff check, Ruff format --check and mypy pass on both changed Python files.",
+  "root_corrections": [
+    "A repeated protocol RPC is counted with an invalid sentinel2 rather than silently clamped to1; host rejects the invalid envelope. Observer never issues a request by itself.",
+    "After early-event buffer overflow all turn-event timing remains unknown, including later events; late events must not be mislabeled first response. Original callback still receives every packet."
+  ],
+  "contract": "Optional strict monotonic timing; legacy receipts accepted. Host-owned process closure and validated receipt times use separate origin, do not infer remote cancellation or authorize retries.",
+  "live_calls": 0,
+  "remaining": [
+    "Independent source review",
+    "One newly planned actual diagnostic with current installed-source binding",
+    "Build boundary and final source delivery",
+    "Actual bottleneck assessment and any evidence-backed correction"
+  ]
+}

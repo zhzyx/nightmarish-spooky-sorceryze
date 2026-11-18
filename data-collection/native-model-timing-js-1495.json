@@ -1,0 +1,86 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+  "request_id": "native-model-latency-20261118",
+  "responsibility": "JS protocol timing and deterministic tests only",
+  "sources": [
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs",
+      "sha256": "5df93cb44b40111860668963cbb62842985dbb949aee1799f56e956ac6bd6a46"
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs",
+      "sha256": "fc666314a943cd7327a4be4ec680bb93d98c2ba49115f2a5a1a71b7d9e665e43"
+    }
+  ],
+  "test": {
+    "command": "node --test customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs",
+    "node": "C:/Users/ROG/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "exit_code": 0,
+    "tests": 26,
+    "passed": 26,
+    "output": [
+      "✔ real Subscription early events retained, strict proposal bound, original notifications work (58.2231ms)",
+      "✔ late update replaces raw snapshot without summing (60.7059ms)",
+      "✔ duplicate fails usage closed (61.3704ms)",
+      "✔ wrong_thread fails usage closed (60.971ms)",
+      "✔ wrong_turn fails usage closed (59.8964ms)",
+      "✔ negative fails usage closed (61.922ms)",
+      "✔ wrong_type fails usage closed (62.4309ms)",
+      "✔ overflow fails usage closed (61.6682ms)",
+      "✔ missing usage remains unknown (61.608ms)",
+      "✔ unacknowledged turn never binds early usage or replays (0.5216ms)",
+      "✔ malformed proposal retains independently bound usage without authority (0.2273ms)",
+      "✔ failed proposal retains independently bound usage without authority (0.15ms)",
+      "✔ failed proposal retains invalid usage classification (0.1351ms)",
+      "✔ request configuration injection and duplicate paths rejected before start (0.191ms)",
+      "✔ callback preserved and restored including compaction signal (0.0579ms)",
+      "✔ context compaction forces existing Subscription to rebuild (0.3781ms)",
+      "✔ strict output rejects wrong digest, duplicate paths, extra authority and outside path (0.2508ms)",
+      "✔ monotonic phase separation and terminal freeze without extra calls (0.2168ms)",
+      "✔ early notification timestamps bind only to acknowledged turn (0.5496ms)",
+      "✔ malformed and unrelated notifications cannot fabricate timing (0.1525ms)",
+      "✔ early overflow discards ambiguous timings without retaining payloads (0.2319ms)",
+      "✔ observer preserves original rejection and callback exception (0.3125ms)",
+      "✔ receipt timing accompanies proposed, failed and unacknowledged results and restores observers (58.2443ms)",
+      "✔ startup failure produces unknown timing with no protocol calls (0.1941ms)",
+      "✔ transport timeout after text stays unknown and closes without retry (0.3482ms)",
+      "✔ out of range monotonic stamps remain unknown (0.0567ms)",
+      "ℹ tests 26",
+      "ℹ suites 0",
+      "ℹ pass 26",
+      "ℹ fail 0",
+      "ℹ cancelled 0",
+      "ℹ skipped 0",
+      "ℹ todo 0",
+      "ℹ duration_ms 662.4871"
+    ]
+  },
+  "implementation": [
+    "Optional version 1 monotonic timing on proposed and unknown receipts; existing elapsed_ms retained",
+    "Only observed recognized turn/item notifications with matching acknowledged thread and turn set response/text/terminal marks",
+    "Pre-ack notification summaries bounded to 256, overflow drops all early timing; no text or full packet retained",
+    "First marks immutable; terminal freezes subsequent text and completion updates; original handlers and errors forwarded",
+    "No model calls added or retried; UsageObserver remains independent; detach restores handlers before existing close"
+  ],
+  "correction": "Initial new startup-failure test exposed unattached TimingObserver.detach undefined comparison; fixed explicit rpc presence guard; complete focused suite passed afterward",
+  "limits": [
+    "No actual provider or network invocation; independent review and real single diagnostic belong to root",
+    "JS close is not physical process closure; host records closure independently",
+    "first_response means first recognized validated correlated turn/item notification, not raw socket data or all protocol methods",
+    "Notification timestamps may precede turn ack; pre-ack overflow and missing phases remain null",
+    "Tests use deterministic synthetic close callback equivalent to transport timeout, not a five-minute real timeout",
+    "Repeated text deltas remain observed text arrivals; identical deltas can legitimately occur, first and terminal timestamps remain fixed"
+  ],
+  "cleanup": {
+    "test_process": "exited with recorded exit code",
+    "protocol_sessions": "fake sessions only, close and observer restoration asserted",
+    "temporary_files": [],
+    "probes_created": [],
+    "retained": [
+      "two authorized source/test files",
+      "this evidence receipt",
+      "dispatch report"
+    ]
+  },
+  "delivery": "JS subtask ready for root review; not overall issue acceptance or main delivery"
+}

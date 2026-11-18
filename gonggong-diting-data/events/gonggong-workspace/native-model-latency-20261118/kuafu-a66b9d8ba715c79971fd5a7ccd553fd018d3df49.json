@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a66b9d8ba715c79971fd5a7ccd553fd018d3df49",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-model-latency-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5a9d571482dba17b1299daf331f157ad56f550ac725bfed4aa0f60a0dab7e4ee",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079",
+    "context_sha256": "32961e679a3e4e0d69c5a64c252566eba2185ba5c79ff294e93b2c0f293d9080",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+    "diagnosis": "Independent reviewer reproduced completed agent-message notification replay shifting last_text10to90 and trusted host accepting first_response90 after terminal40 when text unknown. Original native-model-timing-review.json and probes retained. Root fixed bounded stable completed-item identity dedupe after turn binding and missing first_response-to-terminal ordering edge;30JS and31Python15subtests pass. Independent narrow repair review pending; zero new model calls and stale old installation not reused.",
+    "next_action": "Preserve original failure, validate actual current operation and source; independent review and upstream CI/main delivery remain required.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T02:00:15.511331+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T02:00:37.853605+00:00",
+  "sha256": "84922a00d37bfc98446f697f54e75b3131ed64915b64f34702aa0d170396024a"
+}

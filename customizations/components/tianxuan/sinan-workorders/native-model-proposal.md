@@ -15,3 +15,13 @@ Python 外层将 Node 及其 app-server 后代交给现有 owned_process 所有�
 验证入口：`node --test customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs`；`py -X utf8 -m unittest discover -s customizations/components/tianxuan/sinan-workorders -p test_native_model_host.py -v`。JS 使用真实 Subscription 与确定性假 RPC；Python 使用显式测试安装探针生成真实后代，验证成功、故障、超时和取消都阻止延迟写入。这些均不是实际模型收益或生产准入证明。真实试验及独立审查由根责任者记录。停用新宿主入口即可回退，保留已发生请求回执，不重发 unknown 请求。
 
 失败提案与用量证据分开判断：已确认 thread/turn 的有效原始用量在格式错误或已绑定回合失败时保留，提案仍为 unknown、无内容、无执行权限；turn/start 未确认的早到通知不得推断绑定。强制终止、超时或取消而未返回有效私有回执时，用量仍可能未知。50ms 观察窗口仅保留最后有效快照，完整性未知；不是完整计费账本或最终计费证明。
+
+## 可选阶段观测（#1495）
+
+私有回执可带 `timing`：版本 1、`monotonic` 时钟、有界 `marks` 与 `rpc` 计数。阶段为 `session_ready`、`thread_start_sent/received`、`turn_start_sent/received`、`first_response`、`first_text`、`last_text`、`turn_completed`、`proposal_validated`、`receipt_ready`；值为从本次观察器创建开始的整数毫秒，未知为 null，最大 86400000。首个响应可能只是 turn/started，不表示模型已经输出文本。早到事件按收到时刻记录，只有真实回执确认 thread/turn 后采用，因此事件可能早于 turn/start 回复。
+
+观察器只保留最多 256 个早到事件描述及 256 个完成消息 ID，不保留文本。重复完成消息不能推进末次文本时间，相同内容的合法增量仍分别计时；未知身份、其他回合、已结束后的通知被忽略，追踪溢出保留未知。原始协议回调仍完整接收通知。每类启动调用最多允许一次，额外调用用无效计数 2 显示并由宿主拒绝，观察器自身不新增请求。
+
+Python 校验字段、范围、调用绑定及因果顺序，缺失文本不能放宽首次响应与结束时序。旧的不含 timing 的回执仍可验证。宿主独立产生 `host_timing`，其时钟起点是安装验证完成之后：`owned_process_closed_ms` 来自 owned-process 返回，`receipt_validated_ms` 来自成功验证，`protocol_elapsed_ms` 保留旧协议计时，`total_ms` 为宿主总耗时；JS 不能自报这些字段。两个时钟起点不同，不可直接相减冒充某一网络或推理阶段。强制终止未返回有效回执时协议阶段可全部未知，宿主仍记录自身观察。
+
+计时不授予内容执行、验收、模型切换或自动重试权限；首文本不能代替回合及进程终态。实施改变安装摘要，旧评测或 grant 不能授权新实现。真实试验只支持其固定安装与任务，不将服务返回的 token 数当作完整计费或等待根因。

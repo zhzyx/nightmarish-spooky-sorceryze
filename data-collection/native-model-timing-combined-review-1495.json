@@ -1,0 +1,109 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-combined-review.json",
+    "sha256": "4a85ebf7c9db986349f0b0b27797ef8f1748f1c100d9c150ecde85ebb97fb2b1",
+    "path_base": "absolute current host audit archive"
+  },
+  "export": "Lossless JSON value export; original reviewer bytes retained.",
+  "review": {
+    "issue": 1495,
+    "reviewer": "sinan_1925f674311c638b",
+    "decision": "scoped_pass",
+    "findings": [],
+    "scope": "Bounded independent metadata/dependency/index review only. No new runtime suites, SCons, model calls, network, private profiles, product edits, commit or deployment.",
+    "source_root": "D:/GongGong-work/native-model-latency-20261118",
+    "current_head": "20fc244783835a3a81b3c5a67858c560cc5233a0",
+    "prior_review_sha256": "f2582c328b5e9b107abe36da8651e1ed435ffad7407da61d97dd22b20cbf9945",
+    "source_metadata_sha256": {
+      "customizations/components/tianxuan/sinan-workorders/build-impact.json": "6abf339c5c460c5a0697f1c6697e6fb4c0961fab9e0d9cc6d3e5ccd51fc03501",
+      "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md": "739781e2bd671c4a3c166efc0efba2fc59d86c1f8e8263d83ca84453e88802a1",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "c44552e4bac7cbeb703a625bf43988df1e997a4ae40c3fc9cb76ed003a029c1c",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "970c5b3ebe10645671dcb426f8cf3f8ec97f23997637e6bde2fa2c0026069864",
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "26c7693abd4599bf2272ca32591ec61e490f04b782e7d5c3f02c105689feaa01",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "678497caa907733894d7a582b14eb9229efe818f7085bd1a68a593bc441b76fa",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "2e59e59fa33409a3e875d4f3453123774497722d8a542c7f7900595090b56fc2",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "eb9b022cf7715e99e0ce72cd808b09fee8a652bbbf08325b921f7a7ef465db39",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "a997698699eacd272159555ea21cd785929c9a43c6416ebbb1afe23f445225f5",
+      "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa",
+      "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156",
+      "customizations/platforms/ai-access/host-http/runtime/runner.py": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5",
+      "data-collection/native-continuous-aligned-boundary-1488.json": "0c33d92bfd801a38a3b87986f5098fc228428dc4eb99ea8537efaf28b35b8151",
+      "data-collection/native-continuous-build-impact-1488.json": "d4c6d8fb7e21602d43021e7b6cc8b721847e9f01731ff6b47a5927ec54c54510",
+      "data-collection/native-model-timing-alignment-1495.json": "724a9498d5ec64a925dc0245dcef58c9786df0030ecef29894e8f1cd08247d02",
+      "data-collection/native-model-timing-boundary-1495.json": "cce9264ba7524e2911aae41def22bcc6490aa4661c8adca201b8e5c561471f65",
+      "data-collection/native-model-timing-build-impact-1495.json": "6f1d6cf3f1a8f7dfb4cecb6732711dd828385c10e3e8c26a20eb8c6fc2b4eafb",
+      "data-collection/native-model-timing-combined-build-impact-1495.json": "e2bc21181dcb6a8a66ada1392a15f9fbfb5dcb4eed31513d568e1bf975d32754",
+      "data-collection/native-model-timing-combined-validation-1495.json": "a671973476d8cc5bc983eadd943b2be99fe08780fefcf65d850a210fe8db4895",
+      "data-collection/native-model-timing-final-review-1495.json": "cf2e20faeebcf0f12d95a1c83ed92a14751998314074429c52e9ffbd59200298",
+      "data-collection/native-model-timing-js-1495.json": "fb66fc81bf208a6cbbb870bec377d282027ca2b3953edab9ab2a1a994c06a6e6",
+      "data-collection/native-model-timing-live-1495.json": "308d64ce10bddc11ce19b297ebaa5b564886e3ac3136b65b4f2c3f549dd508fe",
+      "data-collection/native-model-timing-method-applied-1495.json": "e5d1fb5c5bb26b331d2057ca4d0180a146e321d411e8ecc5d2b65a6daa2397dc",
+      "data-collection/native-model-timing-repair-1495.json": "bc1dd4b77640fe9c770ac31b5c05ed6546f9baab2c49b5482c5ebc0a67c75d1f",
+      "data-collection/native-model-timing-repair-review-1495.json": "7a54aa5891ad173f563c55aa56a01991380d3824fb1734db2ed7d25de750fefb",
+      "data-collection/native-model-timing-review-1495.json": "731dcb67683b9c125f59f061171d7b899c75d3d4e5c56b757285e8d6e4e85f16",
+      "data-collection/native-model-timing-root-validation-1495.json": "23065488e769c5712c1696cfbfb5d1bfe52dff954583bb7a977a7d993a96b429",
+      "data-collection/native-model-timing-source-preflight-1495.json": "7b2a8b10102ede63e4603f639d7eb11fa5e02ff99c145bb813b5b54c5513540b",
+      "data-collection/native-timing-continuous-alignment-1495.json": "da1e0bc3a5ada0f36d364775f312b0f1a5930b324307b88ccffd1cecc194eacb",
+      "data-collection/requests/native-model-latency-20261118/0358cbc4-3159-4db8-aaaf-1945b64c9f38.json": "72bb3d4b8119115f010a0d4a82bda2551f7074d5c9dd4cd0cfea4799c39057a7",
+      "design-docs/native-model-latency-20261118.md": "f75ee8a0a1bc98ec65c90a9bcc1f5903508753da0d7f544bcb5e7c8bb7775d75",
+      "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-6c6a1fa119685f352a2d0397486ca13a6c0df42961e57abba049f35c586b0a2b.json": "a9f7daf5645dff4505e917e270b1266271c03a6979e5aa02b53da07d5829f4a5",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/codex-intake-1495-20261117.json": "243ce5d52c56ef215bc64d0ef17a67b9e45598062f0d150430d21e736479e58b",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-13302404571a4addafd9cfd96be73a85.json": "c118c543aa2789bbb980fa6234e876f8a82412b686c400da1e9e41ad96b3b29b",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-1d6f483b4d334e6c84b1cd97ad0a970b.json": "930dd25884d7d585e62f2a26e7214226f5a3ce2725a9ddd69bcc346a4f25a919",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-467e40a4d33f48a2a5948abe289ab409.json": "89f4a20455e2eca1bc1c1aa87493c5bc3e3060a521ee64cdadf8c0365b2042d9",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-9e132cae81a7448b9d966d724e07023e.json": "1968c2571476381edfe0d843e6f537f47e63354215f8306d308d500d24f55554",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-ca1410c9cb15436b8c0f22f9263bdf53.json": "013b424f6df6697a921359a6661aebc172ea6fa9c0bd5f49656dcb53300e5505",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-d1ae096c154848439b95041503fbd3a9.json": "120bb6eb5949ba319d77f2d2185958d33fc501762d5380dfb3082285fe57da5e",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-da65b23a796946c48e7dbbfb57f9718d.json": "db8fc08c5381e777ade82623fec84791bfe0aea0802e71574e0f1b85522f0f4b",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-f932d237e16d46b6ba8bfda9b479d1ee.json": "08566915c4c6b6481d0139c5c96ea47fdd3bc8b4d47e12e865302027768000f4",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/kuafu-66860482fa4c97177e6844872958af35941c49c2.json": "c1aa235c44ad51e8a9512679b95a752cba838789ba796e093ab3e5901a510fe5",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/kuafu-7c86eb4d744a09359d4a0ca56421b91fdaedaef5.json": "258fa7d58d9959a83b511d1539dc51c07391ff052cc0c1f5eb8972bd1c979101",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/kuafu-a66b9d8ba715c79971fd5a7ccd553fd018d3df49.json": "67c50d113c9a1df2936f0bb55e50377c63815070c963eaed9d8d25d1b63305e6",
+      "tools/codex_cli/content_preview.js": "160cad8dcedfddeb31b5db37108edcb90c74311af02f74bb219dab2c2794e99b",
+      "tools/codex_cli/subscription_profile.py": "869ddbf0568befe87e6d2fb076a070b02326f11ef2e4d6a22d6989019c6d282c",
+      "tools/codex_cli/subscription_session.js": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2",
+      "tools/native_host_inputs.json": "06d72705aade8be872c65949b99d421dc802dd009d2767cbea8305bc1251c251"
+    },
+    "independent_checks": {
+      "count": 159,
+      "passed": true,
+      "process_exit_code": 0,
+      "process_session_id": null,
+      "evidence": "native-model-timing-combined-review-probes/checks.json",
+      "sha256": "2dc7722dcb205cba7ebc353f2f93a93b54c80efc8fe2c2fdec206d3a6868921f",
+      "script_sha256": "d6829f0177e468b1ea5e05963fe94c5dac2eeab1c39072a973da668285667e9e"
+    },
+    "review_evidence": [
+      "Prior final review original bytes match f2582c328b5e9b107abe36da8651e1ed435ffad7407da61d97dd22b20cbf9945; repository review export preserves every JSON value. All original source_metadata_sha256 unchanged except build-impact declaration.",
+      "Incoming host contract, rollback and host placement preserved. Timing reason and final combined proof pointer present. All 41 current Git input blobs match both worktree and index; incoming external runner/API input blobs retained. Original36-input proof unchanged and historical.",
+      "All ten original live diagnostic source bindings match current bytes. Original171.15838410001015-second one-attempt evidence remains unchanged; installation digest ece3ad3ff32ac1c28e3fec608adae4e612743d2b0c17f01170f9613e068bc279 agrees with new validation record. Installation itself not reread or independently recalculated under this scope.",
+      "Post-alignment record contains actual successful exit0 for two deterministic producer/integration and unknown-no-replay tests (2 passed in7.97s); six bound source hashes agree. These terminals are read from retained evidence, not rerun by reviewer.",
+      "Incoming176-host inventory count and policy bytes match aligned boundary record. Historical timing and incoming SCons reports agree on9392 input graph digest and zero overlap; all recorded incoming cache suite exits0. Four timing paths remain in current host inventory. Raw SCons inventory not reread and graph not rerun.",
+      "Every staged file matches worktree Git blob; changed JSON parsed. Complete index entries and status snapshot retained in probe evidence. Untracked dispatch39c858635cb34493bc15b8d69dbaed7c is outside staged candidate and was not altered."
+    ],
+    "historical_alignment_note": {
+      "recorded_intermediate_declaration_sha256": "0a80e2722171907bb6066fdf252c6501915ab5b19edd8c66f595660ce01323d1",
+      "current_declaration_sha256": "6abf339c5c460c5a0697f1c6697e6fb4c0961fab9e0d9cc6d3e5ccd51fc03501",
+      "explanation": "Alignment owned_after is the state before regenerating combined evidence. Replacing only the final combined evidence pointer with the previous timing proof pointer reproduces the historical declaration bytes/hash exactly. First probe assumed the alignment was final and returned1; investigation resolved this assumption with exact reconstruction. Retained checks-first-pass.json records it."
+    },
+    "limitations": [
+      "Continuous20fc2447 is locally integrated source; CI/main acceptance remains parent responsibility. Producer main604fd44d is recorded by alignment; no network verification in this delegation.",
+      "Historical original suites, SCons and real call retain their original source contexts. No latest250 rerun, provider savings, renderer acceptance, whole-product acceptance or production cutover asserted.",
+      "1499 and parent1444/1382 remaining acceptance stay outside this narrow pass."
+    ],
+    "method_learning": {
+      "scope": "editor-dependency-handoff",
+      "recalled": [
+        "await-terminal-observers",
+        "bind-consumer-release",
+        "reconstruct-worker-outcomes",
+        "review-context-and-source-evidence"
+      ],
+      "applied": "Bound release to current source/index bytes and actual recorded terminals; kept historical evidence and candidate acceptance separate. No learning writes outside delegated scope."
+    },
+    "terminal": "Final verification foreground process exited0 with no session_id. First probe exit1 was a historical-vs-current metadata assumption, resolved by exact pointer-only reconstruction; no pending process remains.",
+    "cleanup": "Only assigned report and probe directory written. Verification script, final checks and first-pass evidence retained as review evidence; no temporary install, branch, worktree, model worker or test settings created.",
+    "recorded_at": "2026-11-18T02:45:14.400175+00:00"
+  }
+}

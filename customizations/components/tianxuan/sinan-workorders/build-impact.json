@@ -1,7 +1,7 @@
 {
   "placement": "host_tool",
-  "reason": "Explicit optional Tianxuan host tools. Actual SCons9392 native inputs are disjoint from three new exact host files; renderer and generated native assets unchanged.",
+  "reason": "Existing four host protocol/test inputs remain disjoint from actual SCons9392 native graph; pinned WebView2 SDK verified. Timing adds bounded host observations without changes to renderer/native consumers.",
   "host_contract": "Existing trusted native workflow installation, optional bounded model proposal runtime and remote node transport; installed product/channel coordinator adds immutable FIFO contribution batches, native release APIs, durable completion observation and authenticated historical check views.",
   "rollback": "Disable optional continuous installation and retain original contributions, history, pending batches, model call reservations, node outbox and unknown occupancy. Restore only verified installations and fixed plans after explicit in-flight handoff; never replay unknown execution.",
-  "evidence": "data-collection/native-continuous-build-impact-1488.json"
+  "evidence": "data-collection/native-model-timing-combined-build-impact-1495.json"
 }

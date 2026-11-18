@@ -1,0 +1,113 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-final-review.json",
+    "path_base": "absolute current host audit archive",
+    "sha256": "f2582c328b5e9b107abe36da8651e1ed435ffad7407da61d97dd22b20cbf9945"
+  },
+  "export": "Lossless JSON value export; original retained. Later continuous dependency alignment reviewed separately.",
+  "review": {
+    "issue": 1495,
+    "reviewer": "sinan_7c65141d2fd91539",
+    "decision": "scoped_pass",
+    "scope": "Bounded independent current source/metadata and retained evidence review; no model calls, private profile reads, product mutations, runtime suite repeats, network, commits or deployments.",
+    "source_root": "D:/GongGong-work/native-model-latency-20261118",
+    "current_head": "ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079",
+    "findings": [],
+    "source_metadata_sha256": {
+      "customizations/components/tianxuan/sinan-workorders/build-impact.json": "4c67f4c26ece8db58cf0561a50d81843d2a1f8a33d7f57e0ef1acfd30c5ec1d4",
+      "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md": "739781e2bd671c4a3c166efc0efba2fc59d86c1f8e8263d83ca84453e88802a1",
+      "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "26c7693abd4599bf2272ca32591ec61e490f04b782e7d5c3f02c105689feaa01",
+      "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "2e59e59fa33409a3e875d4f3453123774497722d8a542c7f7900595090b56fc2",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "eb9b022cf7715e99e0ce72cd808b09fee8a652bbbf08325b921f7a7ef465db39",
+      "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "a997698699eacd272159555ea21cd785929c9a43c6416ebbb1afe23f445225f5",
+      "data-collection/native-model-timing-alignment-1495.json": "724a9498d5ec64a925dc0245dcef58c9786df0030ecef29894e8f1cd08247d02",
+      "data-collection/native-model-timing-boundary-1495.json": "cce9264ba7524e2911aae41def22bcc6490aa4661c8adca201b8e5c561471f65",
+      "data-collection/native-model-timing-build-impact-1495.json": "6f1d6cf3f1a8f7dfb4cecb6732711dd828385c10e3e8c26a20eb8c6fc2b4eafb",
+      "data-collection/native-model-timing-js-1495.json": "fb66fc81bf208a6cbbb870bec377d282027ca2b3953edab9ab2a1a994c06a6e6",
+      "data-collection/native-model-timing-live-1495.json": "308d64ce10bddc11ce19b297ebaa5b564886e3ac3136b65b4f2c3f549dd508fe",
+      "data-collection/native-model-timing-method-applied-1495.json": "e5d1fb5c5bb26b331d2057ca4d0180a146e321d411e8ecc5d2b65a6daa2397dc",
+      "data-collection/native-model-timing-repair-1495.json": "bc1dd4b77640fe9c770ac31b5c05ed6546f9baab2c49b5482c5ebc0a67c75d1f",
+      "data-collection/native-model-timing-repair-review-1495.json": "7a54aa5891ad173f563c55aa56a01991380d3824fb1734db2ed7d25de750fefb",
+      "data-collection/native-model-timing-review-1495.json": "731dcb67683b9c125f59f061171d7b899c75d3d4e5c56b757285e8d6e4e85f16",
+      "data-collection/native-model-timing-root-validation-1495.json": "23065488e769c5712c1696cfbfb5d1bfe52dff954583bb7a977a7d993a96b429",
+      "data-collection/native-model-timing-source-preflight-1495.json": "7b2a8b10102ede63e4603f639d7eb11fa5e02ff99c145bb813b5b54c5513540b",
+      "data-collection/requests/native-model-latency-20261118/0358cbc4-3159-4db8-aaaf-1945b64c9f38.json": "72bb3d4b8119115f010a0d4a82bda2551f7074d5c9dd4cd0cfea4799c39057a7",
+      "design-docs/native-model-latency-20261118.md": "f75ee8a0a1bc98ec65c90a9bcc1f5903508753da0d7f544bcb5e7c8bb7775d75",
+      "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-6c6a1fa119685f352a2d0397486ca13a6c0df42961e57abba049f35c586b0a2b.json": "a9f7daf5645dff4505e917e270b1266271c03a6979e5aa02b53da07d5829f4a5",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/codex-intake-1495-20261117.json": "243ce5d52c56ef215bc64d0ef17a67b9e45598062f0d150430d21e736479e58b",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-13302404571a4addafd9cfd96be73a85.json": "c118c543aa2789bbb980fa6234e876f8a82412b686c400da1e9e41ad96b3b29b",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-1d6f483b4d334e6c84b1cd97ad0a970b.json": "930dd25884d7d585e62f2a26e7214226f5a3ce2725a9ddd69bcc346a4f25a919",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-467e40a4d33f48a2a5948abe289ab409.json": "89f4a20455e2eca1bc1c1aa87493c5bc3e3060a521ee64cdadf8c0365b2042d9",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-9e132cae81a7448b9d966d724e07023e.json": "1968c2571476381edfe0d843e6f537f47e63354215f8306d308d500d24f55554",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-ca1410c9cb15436b8c0f22f9263bdf53.json": "013b424f6df6697a921359a6661aebc172ea6fa9c0bd5f49656dcb53300e5505",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-d1ae096c154848439b95041503fbd3a9.json": "120bb6eb5949ba319d77f2d2185958d33fc501762d5380dfb3082285fe57da5e",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/dispatch-f932d237e16d46b6ba8bfda9b479d1ee.json": "08566915c4c6b6481d0139c5c96ea47fdd3bc8b4d47e12e865302027768000f4",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/kuafu-66860482fa4c97177e6844872958af35941c49c2.json": "c1aa235c44ad51e8a9512679b95a752cba838789ba796e093ab3e5901a510fe5",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/kuafu-7c86eb4d744a09359d4a0ca56421b91fdaedaef5.json": "258fa7d58d9959a83b511d1539dc51c07391ff052cc0c1f5eb8972bd1c979101",
+      "gonggong-diting-data/events/gonggong-workspace/native-model-latency-20261118/kuafu-a66b9d8ba715c79971fd5a7ccd553fd018d3df49.json": "67c50d113c9a1df2936f0bb55e50377c63815070c963eaed9d8d25d1b63305e6"
+    },
+    "private_original_sha256": {
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-live-1495-v2\\plan.json": "d223e6153183b041bdf95957a5bdc3771afd75b93bbbffda9198c688b8c0b372",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-live-1495-v2\\intent.json": "25ff209b1388005630a950fa3d1f846335d4c476fff9a1047372985a96c53015",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-live-1495-v2\\raw.json": "7e70e38a12da6d1ec8f5fe5cd4804f14e6fab937c96906967de1db3aed2d644d",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-live-1495-v2\\summary.json": "81696626f965c5bcd81ebb3bbd3148c17b5499089f1fb3f6559374cbdcb16c5b",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-timing-live-1495-v2\\quality.json": "447285eafebfb5e4ecbdee67292aa8fb4ae51ec3417074cb9648d4d2e61c8ef3"
+    },
+    "private_review_sha256": {
+      "native-model-timing-review.json": "a4279a35d56aff36e03ada23fac77e291639d460450d3fe4b6e29d5710bb887b",
+      "native-model-timing-repair-review.json": "f246d75d4c7f51c06d84110837b860c34375df1ba9986bc4e0e430e5f125b0c7",
+      "native-live-comparison.json": "20faee9ed72a9f9146cb723c5908ac705dae5ef79e5b06188d342b0189661778"
+    },
+    "comparison_probe_sha256": {
+      "common.py": "667553d43159f50240805e55887636b9cf28c1db3d6cd796491f65da0deda69a",
+      "git_run.py": "ad7b6713b38b56193530da725c1cac9d36f0901b15c6c1d7bce8b0bf217a880f",
+      "native_run.py": "561291a74d8e87ed58781f4be2a4d3ef459122487c4161f0abd3298fdde30dfc"
+    },
+    "independent_checks": {
+      "count": 103,
+      "passed": true,
+      "process_exit_code": 0,
+      "process_session_id": null,
+      "evidence": "native-model-timing-final-review-probes/checks.json",
+      "sha256": "65421b9405b052e9a8e999ffa65c582baf5c90f8797de2b0f01c18490ff6dcbf"
+    },
+    "review_evidence": [
+      "Original and repaired independent reviews are lossless JSON exports with preserved original byte hashes. Four reviewed source/test bytes unchanged from f246d75d4c7f51c06d84110837b860c34375df1ba9986bc4e0e430e5f125b0c7.",
+      "Original plan/intent/raw/summary/quality hashes match repository export. One attempt, no retries, one thread/start and one turn/start; source, profile, installation and suite identifiers agree.",
+      "Exact proposal object, output digest, content digest and parsed semantics match; effective/original/governance input bindings agree with quality evidence. Installation config_digest agrees with plan and summary. No private profile read or independent reconstruction of private input/installation digest performed.",
+      "Physical owned-tree close is true with process exit 0 and empty process reasons. Host-owned closure precedes validated receipt; protocol and host clocks remain separate. Remote cancellation stays unknown.",
+      "171.15838410001015 seconds overall; phase arithmetic independently recomputed. First response is a turn notification, not evidence of inference start. Raw observed 8621 input,180 output,8801 total and zero cache/reasoning counts retained without normalization or cost inference.",
+      "36 current module input Git blobs match; four changed host paths belong to unchanged173-input inventory, whose policy hash matches. Retained actual SCons report records9392 native inputs and zero overlap. Three actual cache suites have successful recorded terminals, with one recorded skip. Raw SCons list is outside delegated read scope; no independent graph rerun.",
+      "Static/source-preflight records successful Ruff,format,mypy,source QA,offline distribution and format checks. Current bound Python source hashes match. Updated interface describes optional marks, duplicate IDs, no-text bounds, physical closure and unknown/retry limits.",
+      "Read-only prior comparison probes use common configure_key and grant_for with shared profile and native producer/NativeWorker route. Current adapter loads NativeModelHost. No separate Git model transport is evidenced; historical timing difference cannot establish storage/transport cause. Probe modules never imported/executed.",
+      "All changed JSON files parse; normalized repository exports preserve original review values. Historical root-validation and alignment hashes intentionally describe earlier revisions and are superseded by repair review/live source bindings."
+    ],
+    "phase_arithmetic": {
+      "session_ready_ms": 3193,
+      "thread_start_roundtrip_ms": 78,
+      "turn_start_roundtrip_ms": 6,
+      "first_response_after_turn_sent_ms": 6,
+      "first_text_after_turn_sent_ms": 163522,
+      "text_span_ms": 2789,
+      "terminal_after_last_text_ms": 456,
+      "receipt_after_terminal_ms": 61
+    },
+    "remaining": [
+      "Upstream source-only producer ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079 remains explicitly pending authoritative main acceptance; parent handles exact candidate gate,CI/main and issue lifecycle.",
+      "1499 normal-entry gap and parent1444/1382 whole-product acceptance remain open; no production cutover, server-cause inference, token/time savings or general model quality established."
+    ],
+    "method_learning": {
+      "scope": "editor-dependency-handoff",
+      "recalled": [
+        "await-terminal-observers",
+        "bind-consumer-release",
+        "reconstruct-worker-outcomes",
+        "review-context-and-source-evidence"
+      ],
+      "applied": "Checked actual foreground terminals and exact candidate byte evidence; historical or transport-only success does not release business acceptance. Existing parent method-applied evidence retained; no learning writes outside scope."
+    },
+    "terminal": "Verification foreground process returned exit_code=0 with no session_id; no background workers or model processes started. Read-only grep search with no matches returned1 during discovery; subsequent explicit file read resolved lookup, not a validation failure.",
+    "cleanup": "Only assigned report and probe directory written. Retained verify.py, checks.json and report.py as reproducible evidence; no temporary installation,branch,worktree,background process or test settings created.",
+    "recorded_at": "2026-11-18T02:24:37.845127+00:00"
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7c86eb4d744a09359d4a0ca56421b91fdaedaef5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-model-latency-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "21fad764e289920290928790f482f09dccc3fa5182a008406f9ca86a68ce8fac",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079",
+    "context_sha256": "32961e679a3e4e0d69c5a64c252566eba2185ba5c79ff294e93b2c0f293d9080",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495",
+    "diagnosis": "Actual1495 SCons graph failed before build because current main requires pinned WebView2 SDK absent in this fresh tree. Original native-model-timing-scons-missing-sdk.log retained. Official installed acquisition completed successfully exit0; subsequent reuse guard found all6files already present and verified exact manifest/source/target SHA256 without copying. Actual original SCons graph rerun passed9392native inputs with zero intersection against4changed host files; all3cache/boundary groups pass. No disabling WebView2, native build source edits or renderer quality claim.",
+    "next_action": "Preserve original failure, validate actual current operation and source; independent review and upstream CI/main delivery remain required.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T02:16:38.961755+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T02:16:58.423659+00:00",
+  "sha256": "60abde464aa9f3ed052699481d2a8bec71a8f57a62f302a858a29a719a363cc4"
+}

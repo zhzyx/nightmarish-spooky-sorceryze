@@ -117,6 +117,9 @@ class NativeModelHost:
             "execution_authority": False,
         }
         reasons = []
+        owned_closed_ms = None
+        validated_ms = None
+        protocol_elapsed_ms = None
         private = {"request": request, "installed": {k: v for k, v in profile.items() if k not in {"node", "timeout"}}}
         private["installed"]["config_digest"] = binding
         with tempfile.TemporaryFile() as source, tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as err:
@@ -135,6 +138,7 @@ class NativeModelHost:
                 cwd=self.wrapper.parent,
             )
             # run_owned has closed and verified the owned tree before any successful return.
+            owned_closed_ms = round((time.monotonic() - started) * 1000)
             terminal["process_tree_closed"] = True
             terminal["process_exit_code"] = code
             terminal["process_reasons"] = reasons
@@ -148,9 +152,21 @@ class NativeModelHost:
                     if self.configuration()[1] != binding:
                         raise ValueError("Installation changed")
                     terminal.update(candidate)
+                    protocol_elapsed_ms = candidate["elapsed_ms"]
+                    validated_ms = round((time.monotonic() - started) * 1000)
                 except (ValueError, KeyError, TypeError):
                     terminal["process_reasons"].append("response_contract")
         terminal["elapsed_ms"] = round((time.monotonic() - started) * 1000)
+        # This clock starts after installation validation, separately from the JS clock.
+        # Only the owned-process helper can establish physical closure.
+        terminal["host_timing"] = {
+            "clock": "monotonic",
+            "origin": "after_installation_validation",
+            "owned_process_closed_ms": owned_closed_ms,
+            "receipt_validated_ms": validated_ms,
+            "protocol_elapsed_ms": protocol_elapsed_ms,
+            "total_ms": terminal["elapsed_ms"],
+        }
         terminal["remote_cancellation"] = "unknown"
         return terminal
 
@@ -170,7 +186,7 @@ class NativeModelHost:
         }
         if (
             not isinstance(candidate, dict)
-            or set(candidate) != keys
+            or not keys <= set(candidate) <= keys | {"timing"}
             or candidate["request_id"] != request["request_id"]
             or candidate["input_digest"] != digest(request)
             or candidate["config_digest"] != binding
@@ -184,6 +200,8 @@ class NativeModelHost:
             or not 0 <= candidate["elapsed_ms"] <= 86400000
         ):
             raise ValueError("Invalid response metadata")
+        if "timing" in candidate:
+            NativeModelHost._validate_timing(candidate["timing"])
         p = candidate["proposal"]
         usage = candidate["usage"]
         if (
@@ -260,3 +278,71 @@ class NativeModelHost:
             ):
                 raise ValueError("Proposal file rejected")
             seen.add(f["path"])
+
+    @staticmethod
+    def _validate_timing(timing):
+        names = {
+            "session_ready",
+            "thread_start_sent",
+            "thread_start_received",
+            "turn_start_sent",
+            "turn_start_received",
+            "first_response",
+            "first_text",
+            "last_text",
+            "turn_completed",
+            "proposal_validated",
+            "receipt_ready",
+        }
+        if (
+            not isinstance(timing, dict)
+            or set(timing) != {"version", "clock", "marks", "rpc"}
+            or type(timing["version"]) is not int
+            or timing["version"] != 1
+            or timing["clock"] != "monotonic"
+            or not isinstance(timing["marks"], dict)
+            or set(timing["marks"]) != names
+            or not isinstance(timing["rpc"], dict)
+            or set(timing["rpc"]) != {"thread_start_calls", "turn_start_calls"}
+        ):
+            raise ValueError("Invalid timing envelope")
+        marks = timing["marks"]
+        if any(
+            value is not None and (type(value) is not int or not 0 <= value <= 86400000) for value in marks.values()
+        ):
+            raise ValueError("Invalid timing mark")
+        if any(type(value) is not int or not 0 <= value <= 1 for value in timing["rpc"].values()):
+            raise ValueError("Invalid timing call count")
+        ready = marks["receipt_ready"]
+        if ready is None or any(value is not None and value > ready for value in marks.values()):
+            raise ValueError("Timing extends beyond receipt")
+        for phase in ("thread", "turn"):
+            sent = marks[phase + "_start_sent"]
+            received = marks[phase + "_start_received"]
+            count = timing["rpc"][phase + "_start_calls"]
+            if (sent is not None) != (count == 1) or (received is not None and sent is None):
+                raise ValueError("Timing request binding missing")
+        # Notifications may arrive before the turn/start reply. Compare them to
+        # the request, never require receipt order to match event order.
+        edges = (
+            ("session_ready", "thread_start_sent"),
+            ("thread_start_sent", "thread_start_received"),
+            ("thread_start_received", "turn_start_sent"),
+            ("turn_start_sent", "turn_start_received"),
+            ("turn_start_sent", "first_response"),
+            ("turn_start_sent", "first_text"),
+            ("turn_start_sent", "turn_completed"),
+            ("first_response", "first_text"),
+            ("first_response", "turn_completed"),
+            ("first_text", "last_text"),
+            ("last_text", "turn_completed"),
+            ("turn_completed", "proposal_validated"),
+        )
+        for before, after in edges:
+            if marks[before] is not None and marks[after] is not None and marks[before] > marks[after]:
+                raise ValueError("Timing marks out of order")
+        if any(marks[name] is not None for name in ("first_response", "first_text", "last_text", "turn_completed")):
+            if marks["turn_start_sent"] is None:
+                raise ValueError("Timing event has no request")
+        if (marks["first_text"] is None) != (marks["last_text"] is None):
+            raise ValueError("Incomplete text timing bounds")
