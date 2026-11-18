@@ -1,0 +1,85 @@
+{
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1486",
+  "verdict": "no findings within reviewed frozen deterministic host-tool scope; not production admission",
+  "scope": "Independent source-bound model producer/runtime review, same-user trusted installed host; no hostile OS sandbox claim",
+  "source_root": "D:\\gonggong-work\\native-model-producer-20261118",
+  "head": "0bddf191f8329539aff9f87aac4556816ca97e8e",
+  "local_main_readback": "7d164e2804f2736d001b638ca8f479a7536dedbb",
+  "source_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "9cdd447f8d3a9d75f462baab326c8f112ffaeacfe360da64b595a7eedd441010",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "7c5a463017a8fcf605a1cc3082dd20b5885abada8085b07cd1816e9183529441",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "a32bc1a7c3ab72f2b7d8ac02c0d4bba714f4fd1b526189ef4d3c4d091dc4e48e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "ccd4c01dde99dfa16aa9b91c2e2dfb398312fc2f21e3e9cc89b33cdb0a9a6316",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "ce9f9577af769d2c32277e4f889896f6f8ed02ffc4ed2a8945246486d2d74ebb",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "fb59c3e4c8f02cd013a895a81bdab0b68f4954259ca5548579052a8e021b18ad",
+    "customizations/platforms/ai-access/host-http/runtime/adapters.py": "b3fef23b8595c699fdaeb819c0f0c1426dc9e746956096f39ade1bc6f583466a",
+    "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "4f3f3788fe070ed14f57f9b3fd04d0d260cad1d5eb6edd72ab6d84c980030261",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "98f3864a26ffff48359400c95fd389def735c01a51a5af30c13180a1f9bc591c",
+    "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
+    "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "224502a920c656b94e8326bbceaa7daf31c7fb951fac1d99dc4867f1652396e7"
+  },
+  "manifest_sha256": "22f580e8e2e6dc43fa7741aa5cb059daf6a6cb826e2a205652cad0a7942b5a0f",
+  "findings": [],
+  "verified": [
+    "Public prepare_inputs, installed_profile, build_request independently exercised without private test helpers; register exercised by existing full NativeWorkflow tests with synthetic framework authority. These APIs require actual root-owned installation, live representative evaluation, admitted role and signed grant before real production.",
+    "Captured actual stdin passed to owned-process boundary contains bounded original task/files plus system and step governance once; native_binding and authority key are absent. Original/governance/effective digests independently compared.",
+    "NativeModelHost independently computes effective input digest and validates private response/proposal against it. Adapter retains this trusted terminal in call_end. Launcher checks original_request_digest and proposal input_digest against trusted call_end input_digest. This is not only model-authored metadata; launcher does not reconstruct effective messages a second time.",
+    "Canonical installation identity stable across mapping order; installation/runtime/evaluation drift and old grants rejected by source-bound checks. Authority key excluded by environment name and value. Request bounds reject before owned-process dispatch.",
+    "Explicit validation_probe rejected for production even with evaluation scope live; synthetic evaluation cannot authorize a non-validation task. Live label alone is not proof of provider use or external admission.",
+    "NativeWorker owns launcher process tree; helper closure precedes output collection. Cancellation and nonzero/partial application yield no accepted candidate. Existing full-chain test verifies two concurrent tasks, physical closure, independent candidate checking and NativeIntegration; usage terminal remains null.",
+    "Central SQLite transactions reserve task maximum calls permanently and lease concurrent execution. Independent actual os._exit(23) after reservation leaves active lease; replay, another concurrent task and alternate directory rejected. Existing tests verify reauthorization cannot reset budget and separate-task execution works.",
+    "Unknown native result retains valid confirmed raw usage in protocol_evidence, enters reconciliation, and does not retry/fallback. Existing tests verify one call_start and unchanged failed raw last/total; no invented normalized CLI counters or observed model.",
+    "Existing HTTP semantics and executable runtime scenarios pass; frozen framework and subscription transport not edited by this review."
+  ],
+  "validation": [
+    {
+      "command": "python -B -X utf8 -m pytest -p no:cacheprovider test_native_model_producer.py test_native_model_host.py test_native_worker_intake.py test_adapters.py -q --basetemp=<probes>/pytest-temp",
+      "result": "52 passed, 83 subtests passed in 45.99s",
+      "log": "pytest.log"
+    },
+    {
+      "command": "python -B -X utf8 <source>/customizations/platforms/ai-access/host-http/runtime/test_runtime.py",
+      "cwd": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-producer-review-probes",
+      "result": "13 synthetic scenarios passed; only loopback fixture HTTP, no provider calls",
+      "log": "runtime.log",
+      "source_transformation": "none; BASE is Path.cwd(), so launching in probes confines generated files without editing source"
+    },
+    {
+      "command": "node --test customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs",
+      "result": "17 passed",
+      "log": "node.log"
+    },
+    {
+      "command": "python -B -X utf8 <probes>/independent.py",
+      "result": "all independent probes passed",
+      "log": "independent.log"
+    }
+  ],
+  "limitations": [
+    "No live model call, real installed production grant, deployment, remote merge, equal-task Git comparison, 250-task throughput or whole-goal acceptance established.",
+    "Old #1480 real call is not admission for changed #1486 source.",
+    "Host registry, signing key, grant/evaluation and budget files must remain host-owned and outside model write scopes. Same-user administrators can alter them; this is intentionally not an arbitrary hostile OS isolation boundary.",
+    "Output-token ceiling unsupported for CLI; process time/byte/call limits are explicit. Remote cancellation remains unknown.",
+    "Crash lease intentionally requires trusted reconciliation; no automatic reclaim. Invalid or unconfirmed usage remains unknown; retained raw evidence covers valid confirmed failed envelopes.",
+    "Public APIs are usable for root live preparation but review used deterministic transport and synthetic authority only; actual installation/admission remains roots responsibility."
+  ],
+  "method_learning": {
+    "scope": "editor-dependency-handoff",
+    "recall": "verified bind-consumer-release, observe-worker-terminal and reconstruct-worker-outcomes applied: exact source hashes and actual physical closures checked; no source change or downstream production release inferred from transport completion"
+  },
+  "failures": [],
+  "cleanup": {
+    "actual": "Removed own pytest-temp after test process exit; retained independent probes, synthetic crash budget DB, logs and 13-scenario result as necessary audit evidence. No branches/worktrees created."
+  },
+  "original_author_evidence": "Read-only; data-collection/native-model-producer-1486.json retained unmodified with original failure history.",
+  "evidence_sha256": {
+    "crash-grant.json": "4f966fc7d1569147169a77f6428bf24341bc1d8e65b246706a77f8b924208968",
+    "independent-results.json": "17d762dbf5dbbcfef045267f428cdcdb222461a7e0600dfd41373fc466d0f13b",
+    "independent.log": "a0208881df294af8671a23c5602134079f49293ad5fef3f12ea951192883572c",
+    "independent.py": "27ec387c29226844e70737133cb7cd7a5cb406e816a84431189737040b59534e",
+    "node.log": "174e1e7afa2c6e68da2824a9533a6854454d3f67842ac82e2920722f708da042",
+    "pytest.log": "38b1312d4136cbaac403f851ed1aeb8700b402a08c522906f2612ef6b2734bfc",
+    "report.py": "7b2705efc37daa59422c93c61447cd3563d9718a895b77c77580745cd9d9880b",
+    "runtime.log": "923445d617fdc85a720a82cf3fb0192e33f0bf51fe0f3d47c3175186dafa4ae4"
+  }
+}

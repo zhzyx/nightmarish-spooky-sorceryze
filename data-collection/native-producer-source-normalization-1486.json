@@ -1,0 +1,83 @@
+{
+  "issue": 1486,
+  "request_id": "native-model-producer-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1486",
+  "reason": "After explicit actual consumer terminal handoff, normalize source CRLF to repository LF; original evaluated/tested bytes archived unchanged.",
+  "source_mapping": [
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/README.md",
+      "work_sha256": "6387402582fb66b6d5b334c0f4f8f9d7602a61b0af16bd93ff1b5e5f67366593",
+      "index_sha256": "7f05a53a364ab2227b52197901888a4de51482267f84e9d475238fe2dd5751e9",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native-model-producer.md",
+      "work_sha256": "ce9f9577af769d2c32277e4f889896f6f8ed02ffc4ed2a8945246486d2d74ebb",
+      "index_sha256": "a6a07335754aa6faa08186ee597ac87ef139a463e2c98743f242550caf6d566a",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+      "work_sha256": "9cdd447f8d3a9d75f462baab326c8f112ffaeacfe360da64b595a7eedd441010",
+      "index_sha256": "60142028e8b5488924c6b6ad81912c702e14229db8054af30351b3692a660976",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_model_producer.py",
+      "work_sha256": "a32bc1a7c3ab72f2b7d8ac02c0d4bba714f4fd1b526189ef4d3c4d091dc4e48e",
+      "index_sha256": "1bbe5ee37926589986cc0a714453851fb66ff0f88d16228c5b2970b8413c191d",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/native_worker.py",
+      "work_sha256": "7c5a463017a8fcf605a1cc3082dd20b5885abada8085b07cd1816e9183529441",
+      "index_sha256": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py",
+      "work_sha256": "ccd4c01dde99dfa16aa9b91c2e2dfb398312fc2f21e3e9cc89b33cdb0a9a6316",
+      "index_sha256": "456647641eb36a70991e582f75abbbe8d576d60f642e5a1376e539881ec56df8",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/platforms/ai-access/host-http/runtime/README.md",
+      "work_sha256": "64c7dd098a04c15f529b5cf677521660857e7f2796877724037ea752c727215f",
+      "index_sha256": "5face9479b06526b12a74ac6b38c733eed54d3d28f802e445e3e9ad11a7cdcf8",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/platforms/ai-access/host-http/runtime/adapters.py",
+      "work_sha256": "b3fef23b8595c699fdaeb819c0f0c1426dc9e746956096f39ade1bc6f583466a",
+      "index_sha256": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/platforms/ai-access/host-http/runtime/evaluate.py",
+      "work_sha256": "4f3f3788fe070ed14f57f9b3fd04d0d260cad1d5eb6edd72ab6d84c980030261",
+      "index_sha256": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py",
+      "work_sha256": "98f3864a26ffff48359400c95fd389def735c01a51a5af30c13180a1f9bc591c",
+      "index_sha256": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/platforms/ai-access/host-http/runtime/runner.py",
+      "work_sha256": "fb59c3e4c8f02cd013a895a81bdab0b68f4954259ca5548579052a8e021b18ad",
+      "index_sha256": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5",
+      "only_crlf": true
+    },
+    {
+      "path": "customizations/platforms/ai-access/host-http/runtime/test_runtime.py",
+      "work_sha256": "224502a920c656b94e8326bbceaa7daf31c7fb951fac1d99dc4867f1652396e7",
+      "index_sha256": "0fb66513ba9856bdaf5b0d097ede8d44243284a25fcd79e9bb7d9bc9028c6883",
+      "only_crlf": true
+    }
+  ],
+  "source_archive": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\producer-pre-normalization-source",
+  "path_base": "absolute current host audit archive",
+  "limits": "Prior live reports retain their original exact installation/source hashes. They are not approval for new source digests or permission to replay unknown tasks. New installations require matching grants and applicable admission."
+}

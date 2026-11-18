@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1486-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-model-producer-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-17T22:55:14.680513+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1486",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1486,
+    "title": "原生模型生产：固定任务、能力路由与真实调用账本接入",
+    "body": "<!-- gonggong-request:native-model-producer-20261118 -->\n\n# 固定输入的原生模型生产链路\n\n需求 ID：native-model-producer-20261118；父 #1444。承接用户已授权的 AI 原生引擎与多 Agent 工作流，最高优先级是减少无效上下文、重复生产、等待和实际调用消耗。路径均以仓库根解析。\n\n已交付 #1480 提供受信宿主的结构化模型提案和实际观察用量，尚未进入原生生产链路。本项在已安装的现有模型运行时、司南能力路由和 NativeWorker 基础上接入，不另建计划器，也不改 #951 控制器或 subscription_session 公共实现。\n\n1. 新增 host_tool 原生模型生产适配器。固定原始任务、所选模块文件、宿主签发的允许写入范围与验收进入模型；模型不能选择 executable、环境、密钥、权限或审批者。使用现有 NativeModelHost 受控进程和严格提案契约，不将模型输出当物理关闭或可信发布凭证。\n2. 复用现有 host-http runtime 的计划、能力评测、profile 排序、授权与恢复。允许实现明确的可选 CLI 协议适配，不复制整个运行时，不改冻结框架/治理原件。现有 HTTP API 路径保持可用。新适配器实现、安装配置及评测绑定摘要；旧 grant 不可加载新实现。live 评测未完成前只允许 validation_only 测试，不以之前一次函数提案代替正式准入。\n3. 状态目录按任务隔离，宿主统一约束任务并发和调用预算，避免全部任务争同一运行时锁。每次调用先持久记录 intent；结果未知不自动补发或切换模型。恢复、取消、进程关闭、提案采用和实际发布分别留证。任务 ID 与原执行绑定，不能换目录重置预算。\n4. 保留已确认 thread/turn 的失败调用原始用量，与提案接受分离。未确认的归属保持未知；不将原始 last/total 相加，不把字节或请求型号冒充实际 token/模型。CLI 未有可验证输出 token 上限时明确能力不支持，不能假传 max_output_tokens；可用调用数、时间、响应字节约束须显式进入签名契约，不削弱 HTTP 现有语义。\n5. 提案由可信宿主完整验证后应用到本次已物化且所有权明确的工作区，保留原输入绑定。使用已有 NativeWorkspace 路径/所有权保障；不能部分失败后仍接受候选，不能让提案写执行账本/凭据。生产输出经过既有 NativeWorker 物理关闭、候选、检查、独立审批和 NativeIntegration。原终态 usage 不能凭模型自报改写；独立真实调用回执须能关联原执行与安装。\n6. 用确定性协议替身验证完整任务链和两个任务不共用全局锁；故障覆盖未知调用不重发、重放无新调用、撤权/超时/取消、路径逃逸/部分应用失败、旧安装/评测/grant 拒绝、已知失败用量保留。随后根责任者执行独立审查、真实代表任务评测、实际 CLI 与已有 API 能力边界及原生完整链路试验。\n7. 等任务对比使用现有真实 GitService/MergeQueue；已有 Git 路径能在 main 无关更新时复用原分支，不伪造旧链路模型重做。分别记录调用、检查、物化、等待和验收结果。未完成实际对比不声称节约比例或全链路生产准入。\n\n构建类型 host_tool，输入为已安装模型协议、签名计划、固定任务/模块；宿主接口为现有运行时、NativeWorker/NativeWorkspace。停用新入口可回退，保留所有实际调用账本、旧安装与未知执行，不重复生产。需要源绑定测试、实际构建消费边界、独立审查及 main 留底。250 在途任务、云文档/UI 和 AA 渲染不是本子工单完成声明。\n\n授权：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "updated_at": "2026-11-17T22:55:07Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "2cf4852d6706d95ed9ba7a836e964d9cd0c0ed62e469c25e247fa71b711c003d"
+}

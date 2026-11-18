@@ -220,6 +220,10 @@ repos:
         exclude: |
           (?x)^(
             tools/maliang_hunyuan/HUNYUAN-NOTICE|
+            data\-collection/native\-model\-producer\-1486\.json|
+            data\-collection/native\-model\-producer\-live\-review\-1486\.json|
+            data\-collection/native\-model\-producer\-review\-1486\.json|
+            data-collection/native-live-comparison-1486\.json|
             data\-collection/native\-progress\-after\-1481\.json|
             data\-collection/native\-progress\-before\-1481\.json|
             data\-collection/native\-remote\-final\-review\-1481\.json|

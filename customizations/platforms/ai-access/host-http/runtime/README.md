@@ -60,3 +60,11 @@ plan含task/profiles/limits；task含id/tenant_id/project_id/agent_id/outcome/au
 ## 在途计划交接
 
 已签发的计划继续由原受信安装核验与结清。迁移时保留原安装、状态目录与回执，先回读在途调用。确需切换时，由有权方核实旧计划终态与剩余工作，再按新运行时摘要重新签发；回执未知不得重复调用。
+
+## 可选原生提案 CLI
+
+`codex-native-proposal` 复用本运行时的授权、评测、路由与恢复，具体安装和
+输入契约见 [原生生产宿主](../../../../components/tianxuan/sinan-workorders/native-model-producer.md)。
+该协议不支持可验证输出 token 上限，必须显式使用 null/unsupported；原始 CLI
+用量单独留在 protocol_evidence，不能冒充 HTTP 归一计量。需要签名中央预算与
+独立任务目录；原 HTTP 协议及其 token 上限语义保持有效。

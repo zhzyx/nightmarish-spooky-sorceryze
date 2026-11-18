@@ -107,3 +107,9 @@ data-collection/native-remote-review-1481.json -text whitespace=cr-at-eol
 data-collection/native-remote-review2-1481.json -text whitespace=cr-at-eol
 data-collection/native-remote-shutdown-before-1481.json -text whitespace=cr-at-eol
 data-collection/native-live-comparison-1481.json -text whitespace=cr-at-eol
+
+# Preserve exact producer implementation/review receipts and their referenced hashes.
+data-collection/native-model-producer-1486.json -text whitespace=cr-at-eol
+data-collection/native-model-producer-live-review-1486.json -text whitespace=cr-at-eol
+data-collection/native-model-producer-review-1486.json -text whitespace=cr-at-eol
+data-collection/native-live-comparison-1486.json -text whitespace=cr-at-eol

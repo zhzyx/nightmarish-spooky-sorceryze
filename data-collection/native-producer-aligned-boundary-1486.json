@@ -1,0 +1,61 @@
+{
+  "issue": 1486,
+  "passed": true,
+  "native_sources": 9392,
+  "native_sources_sha256": "d99730749465b133ab44fdd8d1f1b719a906bf6336d098b6a7a297f5d2e528c0",
+  "module_inputs": [
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py",
+    "customizations/platforms/ai-access/host-http/runtime/README.md",
+    "customizations/platforms/ai-access/host-http/runtime/adapters.py",
+    "customizations/platforms/ai-access/host-http/runtime/diting.py",
+    "customizations/platforms/ai-access/host-http/runtime/evaluate.py",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py",
+    "customizations/platforms/ai-access/host-http/runtime/task_budget.py",
+    "customizations/platforms/ai-access/host-http/runtime/test_adapters.py",
+    "customizations/platforms/ai-access/host-http/runtime/test_runtime.py"
+  ],
+  "overlap": [],
+  "inventory_before": 173,
+  "inventory_after": 173,
+  "policy_sha256": "1c220da2088799d11725f1ddffae5b24a2e967777f3c1e43f37dabc8a3dc7c39",
+  "checks": [
+    {
+      "command": "py -X utf8 tests/editor/test_native_host_inputs.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: invalid host input inventory\nFull-tree identity required: invalid host input inventory\n.....\n----------------------------------------------------------------------\nRan 5 tests in 13.494s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tests/editor/test_editor_native_cache.py",
+      "exit_code": 0,
+      "output": "...............\n----------------------------------------------------------------------\nRan 15 tests in 16.633s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tools/test_windows_editor_artifact.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\ns.........\n----------------------------------------------------------------------\nRan 10 tests in 0.727s\n\nOK (skipped=1)\n"
+    }
+  ],
+  "actual_scons_command": [
+    "py",
+    "-X",
+    "utf8",
+    "-m",
+    "SCons",
+    "-n",
+    "-Q",
+    "gonggong_native_probe=D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-producer-aligned-scons-probe.json",
+    "accesskit=no",
+    "angle=no",
+    "d3d12=no",
+    "debug_symbols=no",
+    "dev_mode=yes",
+    "platform=windows",
+    "target=editor"
+  ],
+  "seconds": 35.63359680000576,
+  "compilation_performed": false,
+  "limits": "Windows actual SCons consumer graph and cache regression; no renderer performance or AA-quality acceptance."
+}

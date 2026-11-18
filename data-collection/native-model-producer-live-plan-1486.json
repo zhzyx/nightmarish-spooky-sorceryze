@@ -1,0 +1,61 @@
+{
+  "issue": 1486,
+  "state": "predeclared; no provider calls made for this suite",
+  "role": "heqi",
+  "authority": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+  "task_type": "native-text-integration",
+  "model_candidate": "gpt-6.2-sol",
+  "reasoning_effort": "low",
+  "selection_basis": "Actually listed available by existing authenticated CLI model/list; first routine integration candidate for measured qualification, not a claim about price or quality. Sinan production routing still requires accepted live task-type evidence.",
+  "limits": {
+    "evaluation_calls": 3,
+    "production_comparison_calls": 2,
+    "maximum_calls": 5,
+    "per_call_timeout_seconds": 180,
+    "output_token_limit": "unsupported by observed CLI contract; do not fabricate a provider token cap",
+    "automatic_retry": false,
+    "unknown_call_replay": false
+  },
+  "prerequisites": [
+    "Source frozen and independently reviewed, including governance-context preservation, actual owned process closure, binding and failed-usage retention",
+    "Installed source/configuration digests bound to new profile; prior #1480 call is not new profile admission",
+    "Actual heqi definition context verified, current mandate and task-isolated signed authority; no synthetic passes in real evaluation",
+    "Evaluation records every attempt and failure; production calls occur only after representative evaluation passes and separate host admission"
+  ],
+  "evaluation_cases": [
+    {
+      "id": "disjoint-lighting-contributions",
+      "base": {"light": {"intensity": 2, "color": "warm"}, "fog": {"density": 0.03}, "version": 1},
+      "contribution_a": {"light": {"intensity": 3, "color": "warm"}, "fog": {"density": 0.03}, "version": 1},
+      "contribution_b": {"light": {"intensity": 2, "color": "warm"}, "fog": {"density": 0.06}, "version": 1},
+      "instruction": "Integrate both independently accepted changes against the common base; preserve unrelated fields. Return the full integrated JSON file.",
+      "expected": {"light": {"intensity": 3, "color": "warm"}, "fog": {"density": 0.06}, "version": 1}
+    },
+    {
+      "id": "explicit-overlap-resolution",
+      "base": {"streaming": {"radius": 8, "budget": 256}, "audio": {"reverb": "hall"}},
+      "contribution_a": {"streaming": {"radius": 10, "budget": 256}, "audio": {"reverb": "hall"}},
+      "contribution_b": {"streaming": {"radius": 12, "budget": 384}, "audio": {"reverb": "hall"}},
+      "instruction": "The owner resolved the radius conflict: use contribution A's radius. Preserve contribution B's budget change and all unrelated values. Return the full integrated JSON file.",
+      "expected": {"streaming": {"radius": 10, "budget": 384}, "audio": {"reverb": "hall"}}
+    },
+    {
+      "id": "deletion-and-added-object",
+      "base": {"modules": {"legacy": {"enabled": false}, "render": {"api": 3}}, "title": "沉浸式场景"},
+      "contribution_a": {"modules": {"render": {"api": 3}}, "title": "沉浸式场景"},
+      "contribution_b": {"modules": {"legacy": {"enabled": false}, "render": {"api": 3}, "audio": {"api": 2}}, "title": "沉浸式场景"},
+      "instruction": "Integrate A's removal of the disabled legacy entry and B's addition of audio. Preserve rendering API and the Unicode title exactly. Return the full integrated JSON file.",
+      "expected": {"modules": {"render": {"api": 3}, "audio": {"api": 2}}, "title": "沉浸式场景"}
+    }
+  ],
+  "quality": "Only authorized output path; strict JSON with unique keys and finite values, semantic equality to expected object, preservation of unrelated source files, matching request/input/configuration, actual process closure; no renderer quality/performance claim from these configuration fixtures.",
+  "comparison": {
+    "shared_control": "Same admitted model boundary, fixed input, installed model/effort, checks and reviewer criteria. A new held-out integration case is identical across variants.",
+    "git": "Actual existing GitService and MergeQueue with unrelated main update and original candidate retained; no fabricated rebase/model rerun.",
+    "native": "Actual NativeWorkflow/NativeWorker/NativeIntegration, unrelated module update, exact native release and issue completion.",
+    "scope": "Controlled storage/integration comparison using the same new model boundary; not a claim to reproduce all legacy editor/#951 agent orchestration. Full historical UI orchestration remains separately bounded by its actual owner and available acceptance.",
+    "ordering": "Run Git then native once; retain provider/cache/order limitations. No repeated pairs merely to obtain favorable results.",
+    "measurements": ["actual model calls and observed raw usage", "quality", "production/check/publication/queue timings", "actual rereads and reruns", "exact outputs and issue outcomes"],
+    "claims": "Report zero savings if observed; unknown billing or usage stays unknown. A five-call suite cannot establish general AI efficiency or 250 concurrent model capacity."
+  }
+}

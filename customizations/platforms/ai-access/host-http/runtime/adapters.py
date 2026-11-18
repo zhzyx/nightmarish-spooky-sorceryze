@@ -48,6 +48,10 @@ def model_provenance(profile, observed: object = None) -> ModelProvenance:
 class TransportUnknown(RuntimeError):
     """Request may have reached the provider. Never automatically retry."""
 
+    def __init__(self, message, evidence=None):
+        super().__init__(message)
+        self.evidence = evidence or {}
+
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, *args, **kwargs):
@@ -59,6 +63,10 @@ def canonical(value):
 
 
 def call(profile, messages, output_limit):
+    if profile["protocol"] == "codex-native-proposal":
+        from native_proposal_adapter import call_native
+
+        return call_native(profile, messages, output_limit)
     provenance = model_provenance(profile)
     protocol = profile["protocol"]
     endpoint = profile["endpoint"]

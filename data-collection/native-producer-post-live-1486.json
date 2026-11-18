@@ -1,0 +1,28 @@
+{
+  "issue": 1486,
+  "request_id": "native-model-producer-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1486",
+  "source_sha256": {
+    ".gitattributes": "690754255d939f647bfcb85523ae8ca61823b03daa1e412ed68a01b2f1b30d98",
+    ".pre-commit-config.yaml": "e8ba40a2fc38d8e52cca922d9bf1de23133b3ee496db439d59c66052fe57fd6c",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "60142028e8b5488924c6b6ad81912c702e14229db8054af30351b3692a660976",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "678497caa907733894d7a582b14eb9229efe818f7085bd1a68a593bc441b76fa",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "c8c6076f352c3f8e26431a1724bf8df4a7c406c84ae210fa91842c8d49733eb6",
+    "customizations/platforms/ai-access/host-http/runtime/adapters.py": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08",
+    "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5",
+    "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
+    "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "0fb66513ba9856bdaf5b0d097ede8d44243284a25fcd79e9bb7d9bc9028c6883",
+    "tests/editor/test_native_host_inputs.py": "7550127c6050d0597440f00a2c2d2cb3f9b660fe5c1c1f6ee1453a18bb2374b9",
+    "tools/editor_native_cache.py": "822223ccf963ee95645db54aaecc5117a18658d607ff37a38ca1fa090a834fea",
+    "tools/native_host_inputs.json": "c13971a00aca1a792340154fff73d6d212115dc6d2c4c1a04be25fc54d46dcc9"
+  },
+  "test_log": ".....................................................         [100%]\n53 passed, 83 subtests passed in 54.57s\n",
+  "source_normalization": "data-collection/native-producer-source-normalization-1486.json",
+  "build_boundary": "data-collection/native-producer-host-boundary-complete-1486.json",
+  "live_before_delta": "data-collection/native-live-comparison-1486.json",
+  "limits": "Prior live source/evaluation bindings remain historical. Source delta independently tested; no live grant or acceptance moved to changed bytes. Need current-source admission before new production usage.",
+  "change": "Write exact UTF-8 proposal bytes, preserving LF/CRLF/bareCR/Unicode; actual Windows pre-fix mismatch retained, new real Worker/intake hash regression passed."
+}

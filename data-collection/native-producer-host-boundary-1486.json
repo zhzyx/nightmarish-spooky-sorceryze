@@ -1,0 +1,53 @@
+{
+  "issue": 1486,
+  "passed": true,
+  "native_sources": 9382,
+  "native_sources_sha256": "b0a22fa56b3b57595b5afe483066bc4f710a5362b092e10ebe02e90566d6a772",
+  "module_inputs": [
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py",
+    "customizations/platforms/ai-access/host-http/runtime/task_budget.py"
+  ],
+  "overlap": [],
+  "inventory_before": 158,
+  "inventory_after": 158,
+  "policy_sha256": "613c63d04d8b5e9ce92cc2da8bef789df7187a5e90aab01e22ac8236bbd87edf",
+  "checks": [
+    {
+      "command": "py -X utf8 tests/editor/test_native_host_inputs.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: invalid host input inventory\nFull-tree identity required: invalid host input inventory\n.....\n----------------------------------------------------------------------\nRan 5 tests in 13.642s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tests/editor/test_editor_native_cache.py",
+      "exit_code": 0,
+      "output": "..............\n----------------------------------------------------------------------\nRan 14 tests in 16.406s\n\nOK\n"
+    },
+    {
+      "command": "py -X utf8 tools/test_windows_editor_artifact.py",
+      "exit_code": 0,
+      "output": "Full-tree identity required: Invalid SCons dependency inventory\nFull-tree identity required: Invalid SCons dependency inventory\ns........\n----------------------------------------------------------------------\nRan 9 tests in 0.732s\n\nOK (skipped=1)\n"
+    }
+  ],
+  "actual_scons_command": [
+    "py",
+    "-X",
+    "utf8",
+    "-m",
+    "SCons",
+    "-n",
+    "-Q",
+    "gonggong_native_probe=D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-producer-scons-probe.json",
+    "accesskit=no",
+    "angle=no",
+    "d3d12=no",
+    "debug_symbols=no",
+    "dev_mode=yes",
+    "platform=windows",
+    "target=editor"
+  ],
+  "seconds": 35.43843530000595,
+  "compilation_performed": false,
+  "limits": "Windows actual SCons consumer graph and cache regression; no renderer performance or AA-quality acceptance."
+}
