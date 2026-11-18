@@ -1,0 +1,19 @@
+{
+  "origin": "gonggong-diting-data/events/gonggong-workspace/native-remote-execution-20261118/codex-intake-1481-20261117.json",
+  "occurred_at": "2026-11-17T22:27:54.606953+00:00",
+  "scope": "editor-dependency-handoff",
+  "lesson": "reconstruct-worker-outcomes",
+  "revision": 3,
+  "previous": "837aee645aaa0c3244476848a720a5d0179b3d6f7f58da270aa763bb08c1cc82",
+  "evidence": [
+    {
+      "path": "data-collection/native-remote-repair-1481.json",
+      "sha256": "0cd07b88a1ca0619f606326d4125a37d53308278603c800b07bf5065c30d375c"
+    }
+  ],
+  "action": "applied",
+  "details": {
+    "task": "#1481 independent R1/R2/R3 repair",
+    "observed": "Original three defect reproductions pinned unchanged; repair contracts prove minimal revocation no-launch, actual recovered process-tree cancellation, unknown-intent non-relaunch, and actor-revoked physical-only capacity settlement without candidate admission. Combined 28 tests passed. Does not establish cross-machine/model acceptance."
+  }
+}

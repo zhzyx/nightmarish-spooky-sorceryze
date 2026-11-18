@@ -73,6 +73,35 @@ class TianxuanCoreTests(unittest.TestCase):
         self.assertEqual(progress["percent"], 33)
         self.assertEqual(self.tx.get_doc(requirement["id"])["progress"]["done"], 1)
 
+    def test_progress_requires_all_items_even_above_rounding_threshold(self):
+        requirement = self.tx.create_requirement(
+            self.actor, "progress-250", "Many contributors", "Accurate completion", "Parent and children", "All done"
+        )
+        issues = self.tx.plan_tickets(
+            self.actor,
+            requirement["id"],
+            [
+                dict(title=f"Child {n}", type="task", acceptance="Accepted", priority="normal", body_md="")
+                for n in range(250)
+            ],
+            call_id="create-250",
+        )
+        for issue in issues[1:]:
+            for status in ("planned", "in-progress", "in-review", "done"):
+                self.tx.transition_issue(self.actor, issue["id"], status)
+        self.assertEqual(self.tx.get_issue(issues[0]["id"])["status"], "backlog")
+        self.assertEqual(self.tx.get_doc(requirement["id"])["progress"], {"total": 251, "done": 250, "percent": 99})
+        for status in ("planned", "in-progress", "in-review", "done"):
+            self.tx.transition_issue(self.actor, issues[0]["id"], status)
+        self.assertEqual(self.tx.get_doc(requirement["id"])["progress"], {"total": 251, "done": 251, "percent": 100})
+        self.tx.plan_tickets(
+            self.actor,
+            requirement["id"],
+            [dict(title="New remaining scope", type="task", acceptance="Accepted", priority="normal", body_md="")],
+            call_id="add-remaining",
+        )
+        self.assertEqual(self.tx.get_doc(requirement["id"])["progress"], {"total": 252, "done": 251, "percent": 99})
+
     def test_transition_rejects_illegal_edge(self):
         issue = self.tx.create_issue(self.actor, "非法迁移")
         with self.assertRaises(TransitionRejected):

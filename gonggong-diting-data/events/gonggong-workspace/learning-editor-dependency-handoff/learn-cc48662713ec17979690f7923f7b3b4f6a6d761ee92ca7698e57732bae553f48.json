@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-cc48662713ec17979690f7923f7b3b4f6a6d761ee92ca7698e57732bae553f48",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1481",
+  "occurred_at": "2026-11-17T22:27:54.606953+00:00",
+  "evidence_refs": [
+    "codex-intake-1481-20261117",
+    "learn-44abedba913cf8f845c4b73a247c7dc2f9f822292fd8aaa20773d490235e45db"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "reconstruct-worker-outcomes",
+    "revision": 3,
+    "previous": "837aee645aaa0c3244476848a720a5d0179b3d6f7f58da270aa763bb08c1cc82",
+    "action": "applied",
+    "details": {
+      "task": "#1481 independent R1/R2/R3 repair",
+      "observed": "Original three defect reproductions pinned unchanged; repair contracts prove minimal revocation no-launch, actual recovered process-tree cancellation, unknown-intent non-relaunch, and actor-revoked physical-only capacity settlement without candidate admission. Combined 28 tests passed. Does not establish cross-machine/model acceptance."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-remote-repair-1481.json",
+        "sha256": "0cd07b88a1ca0619f606326d4125a37d53308278603c800b07bf5065c30d375c"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-remote-execution-20261118/codex-intake-1481-20261117.json",
+      "sha256": "32b6d55d14daee62cc76733e269e3cf64277eebdcc7e60c8f1be7085a5b8a4b0"
+    }
+  },
+  "sha256": "65e9a39353dd16edf660e35289c414c0d451fe2f10ec154f2651cb89fbe422ac"
+}

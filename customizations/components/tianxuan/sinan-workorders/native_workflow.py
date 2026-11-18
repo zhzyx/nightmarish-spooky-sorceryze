@@ -382,16 +382,25 @@ class NativeWorkflow:
                     continue
                 if not self._schedulable(waiting_task):
                     continue
+                available_node = getattr(self.worker, "available_node", None)
+                if available_node is not None and available_node(db, waiting_task) is None:
+                    continue
                 return False  # Durable FIFO, including competing dispatcher processes.
             expected = {"source": row["id"], "revision": task["source"]["revision"]}
             if assignment["sourceSnapshot"] != expected or assignment["model"]["id"] != task["profile"]:
                 raise NativeStoreError("Untrusted assignment")
+            reserve_worker = getattr(self.worker, "reserve", None)
+            if reserve_worker is not None and not reserve_worker(db, task, row["id"]):
+                return False
             db.execute(
                 "UPDATE native_tasks SET state='reserved',assignment=? WHERE id=?", (_json(assignment), row["id"])
             )
             return True
 
     async def await_terminal(self, actor, key):
+        remote_wait = getattr(self.worker, "wait_terminal", None)
+        if remote_wait is not None:
+            return await remote_wait(actor, key)
         # Registration and execution ownership use the same domain lock. A
         # completed execution is recovered from durable state, not cached events.
         with self.domain._connection_lock:
@@ -439,6 +448,8 @@ class NativeWorkflow:
             self.domain._event(task["tenant"], "native.started", actor, row["issue"], {"task": key})
         try:
             terminal = self.worker.run(task, key)
+            if terminal is None:
+                return self.status(actor, key)
         except BaseException:
             with self._transaction() as db:
                 db.execute("UPDATE native_tasks SET state='held' WHERE id=?", (key,))
@@ -473,6 +484,24 @@ class NativeWorkflow:
             )
             if current != accepted:
                 raise NativeStoreError("Dependency historical release invalid")
+
+    def _settle_physical(self, worker, key):
+        """Installed adapter only: release ownership, without reading/admitting output.
+
+        No actor identity substitution and no task/issue content returned. The
+        persisted exact physical record, not a timeout, is the release evidence.
+        """
+        if worker is not self.worker:
+            raise NativeStoreError("Physical settlement requires installed worker")
+        with self._transaction() as db:
+            row = self._row(db, key)
+            task = json.loads(row["task"])
+            if not worker.process_closed(task, key):
+                raise NativeStoreError("Physical closure required")
+            if row["state"] in {"reserved", "running", "held", "closed-unresolved"}:
+                db.execute("UPDATE native_tasks SET state='stopped' WHERE id=?", (key,))
+                return "stopped"
+            return row["state"]
 
     def reconcile(self, actor, key):
         row = self.status(actor, key)

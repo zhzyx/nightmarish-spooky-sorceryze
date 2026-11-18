@@ -91,3 +91,19 @@ data-collection/duobao-native-review-original-1386.json -text whitespace=cr-at-e
 data-collection/duobao-native-review-fixed-1386.json -text whitespace=cr-at-eol
 data-collection/duobao-native-processes-1386.json -text whitespace=cr-at-eol
 data-collection/native-workflow-revisions-1456.json -text whitespace=cr-at-eol
+
+# Preserve exact remote implementation/review receipts and their referenced hashes.
+data-collection/native-progress-after-1481.json -text whitespace=cr-at-eol
+data-collection/native-progress-before-1481.json -text whitespace=cr-at-eol
+data-collection/native-remote-final-review-1481.json -text whitespace=cr-at-eol
+data-collection/native-remote-line-ending-1481.json -text whitespace=cr-at-eol
+data-collection/native-remote-load-audit-1481.json -text whitespace=cr-at-eol
+data-collection/native-remote-repair-1481.json -text whitespace=cr-at-eol
+data-collection/native-remote-repair-e2e.txt -text whitespace=cr-at-eol
+data-collection/native-remote-repair-learning.json -text whitespace=cr-at-eol
+data-collection/native-remote-repair-original-probes.txt -text whitespace=cr-at-eol
+data-collection/native-remote-repair-tests.txt -text whitespace=cr-at-eol
+data-collection/native-remote-review-1481.json -text whitespace=cr-at-eol
+data-collection/native-remote-review2-1481.json -text whitespace=cr-at-eol
+data-collection/native-remote-shutdown-before-1481.json -text whitespace=cr-at-eol
+data-collection/native-live-comparison-1481.json -text whitespace=cr-at-eol

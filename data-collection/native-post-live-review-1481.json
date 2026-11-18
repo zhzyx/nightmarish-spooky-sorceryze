@@ -1,0 +1,253 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-post-live-review.json",
+    "sha256": "156eb83e863e83b9e4c047f30b40b9b70f496eee398fd0f194a273610910c99d",
+    "path_base": "absolute current host audit archive"
+  },
+  "export": "Lossless JSON value export with repository LF; original reviewer bytes preserved at stated source.",
+  "review": {
+    "issue": 1486,
+    "related_issue": 1481,
+    "reviewer": "independent Codex child /root/sinan_e5a547b244e55072",
+    "reviewed_at": "2026-11-18T00:13:41.986730+00:00",
+    "status": "passed-scoped-post-live-incremental-review",
+    "findings": [],
+    "source_sha256": {
+      "producer": {
+        ".gitattributes": "690754255d939f647bfcb85523ae8ca61823b03daa1e412ed68a01b2f1b30d98",
+        ".pre-commit-config.yaml": "e8ba40a2fc38d8e52cca922d9bf1de23133b3ee496db439d59c66052fe57fd6c",
+        "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "60142028e8b5488924c6b6ad81912c702e14229db8054af30351b3692a660976",
+        "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "678497caa907733894d7a582b14eb9229efe818f7085bd1a68a593bc441b76fa",
+        "customizations/components/tianxuan/sinan-workorders/native_worker.py": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf",
+        "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "c8c6076f352c3f8e26431a1724bf8df4a7c406c84ae210fa91842c8d49733eb6",
+        "customizations/platforms/ai-access/host-http/runtime/adapters.py": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08",
+        "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa",
+        "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156",
+        "customizations/platforms/ai-access/host-http/runtime/runner.py": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5",
+        "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
+        "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "0fb66513ba9856bdaf5b0d097ede8d44243284a25fcd79e9bb7d9bc9028c6883",
+        "tests/editor/test_native_host_inputs.py": "7550127c6050d0597440f00a2c2d2cb3f9b660fe5c1c1f6ee1453a18bb2374b9",
+        "tools/editor_native_cache.py": "822223ccf963ee95645db54aaecc5117a18658d607ff37a38ca1fa090a834fea",
+        "tools/native_host_inputs.json": "c13971a00aca1a792340154fff73d6d212115dc6d2c4c1a04be25fc54d46dcc9"
+      },
+      "remote": {
+        ".gitattributes": "6167adb7e1741e46c1747bb4d23b4eab041f53eaf5b682026fe1b721ca2b6a95",
+        ".pre-commit-config.yaml": "350a3932b8a4659ca77cfc92d522dc367df531008d38bae366239d21fb3e9472",
+        "customizations/components/tianxuan/server/native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+        "customizations/components/tianxuan/server/native_remote_host.py": "d6086312e6ef055068a64338d516e20b49386ff6f43c30b94ad65b5495713cd1",
+        "customizations/components/tianxuan/server/test_tianxuan_core.py": "8ba19b1ba2f0f5122bf37906fbcac00273f8a6326355b3d16f4df37f3f1ea95b",
+        "customizations/components/tianxuan/server/tianxuan_core.py": "fe4f5f081f73e46fef83855acc1a148f6685007039a8ebe9cb9ec202eb31a427",
+        "customizations/components/tianxuan/sinan-workorders/native_node.py": "75fa74d0850c9aa6424c048aa7d474b506dba4ae6b734e543507753ecdb6c273",
+        "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "e5267934543b8087d9d73cd3abac1dc49f199c450a8d5ee58b705db48b32c015",
+        "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "54f2b6dbe759d6ae3e965d7399534ec600c07208be2422d9f0d924b932ddca64",
+        "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "c28c50b2a7fff9efdce1cd682200619e7c7bcee427eb4cb30b144b989998a9e5",
+        "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "eb79a77915e6abbfe5ae69cc83b7e60bfa985e243189eb98a5a825995485d961",
+        "tools/native_host_inputs.json": "0771548bc112e33b0987437f88b275261f96383455d84f087865bdeee5fab043"
+      }
+    },
+    "source_mapping": {
+      "producer": [
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/README.md",
+          "old": "6387402582fb66b6d5b334c0f4f8f9d7602a61b0af16bd93ff1b5e5f67366593",
+          "normalized": "7f05a53a364ab2227b52197901888a4de51482267f84e9d475238fe2dd5751e9",
+          "current": "7f05a53a364ab2227b52197901888a4de51482267f84e9d475238fe2dd5751e9"
+        },
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/native-model-producer.md",
+          "old": "ce9f9577af769d2c32277e4f889896f6f8ed02ffc4ed2a8945246486d2d74ebb",
+          "normalized": "a6a07335754aa6faa08186ee597ac87ef139a463e2c98743f242550caf6d566a",
+          "current": "a6a07335754aa6faa08186ee597ac87ef139a463e2c98743f242550caf6d566a"
+        },
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/native_model_host.py",
+          "old": "9cdd447f8d3a9d75f462baab326c8f112ffaeacfe360da64b595a7eedd441010",
+          "normalized": "60142028e8b5488924c6b6ad81912c702e14229db8054af30351b3692a660976",
+          "current": "60142028e8b5488924c6b6ad81912c702e14229db8054af30351b3692a660976"
+        },
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/native_model_producer.py",
+          "old": "a32bc1a7c3ab72f2b7d8ac02c0d4bba714f4fd1b526189ef4d3c4d091dc4e48e",
+          "normalized": "1bbe5ee37926589986cc0a714453851fb66ff0f88d16228c5b2970b8413c191d",
+          "current": "678497caa907733894d7a582b14eb9229efe818f7085bd1a68a593bc441b76fa"
+        },
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/native_worker.py",
+          "old": "7c5a463017a8fcf605a1cc3082dd20b5885abada8085b07cd1816e9183529441",
+          "normalized": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf",
+          "current": "20fa9703eff144dce134d9b49897167a14754385dadf5af3b5a0abfb0e163bdf"
+        },
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py",
+          "old": "ccd4c01dde99dfa16aa9b91c2e2dfb398312fc2f21e3e9cc89b33cdb0a9a6316",
+          "normalized": "456647641eb36a70991e582f75abbbe8d576d60f642e5a1376e539881ec56df8",
+          "current": "c8c6076f352c3f8e26431a1724bf8df4a7c406c84ae210fa91842c8d49733eb6"
+        },
+        {
+          "path": "customizations/platforms/ai-access/host-http/runtime/README.md",
+          "old": "64c7dd098a04c15f529b5cf677521660857e7f2796877724037ea752c727215f",
+          "normalized": "5face9479b06526b12a74ac6b38c733eed54d3d28f802e445e3e9ad11a7cdcf8",
+          "current": "5face9479b06526b12a74ac6b38c733eed54d3d28f802e445e3e9ad11a7cdcf8"
+        },
+        {
+          "path": "customizations/platforms/ai-access/host-http/runtime/adapters.py",
+          "old": "b3fef23b8595c699fdaeb819c0f0c1426dc9e746956096f39ade1bc6f583466a",
+          "normalized": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08",
+          "current": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08"
+        },
+        {
+          "path": "customizations/platforms/ai-access/host-http/runtime/evaluate.py",
+          "old": "4f3f3788fe070ed14f57f9b3fd04d0d260cad1d5eb6edd72ab6d84c980030261",
+          "normalized": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa",
+          "current": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa"
+        },
+        {
+          "path": "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py",
+          "old": "98f3864a26ffff48359400c95fd389def735c01a51a5af30c13180a1f9bc591c",
+          "normalized": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156",
+          "current": "780888e1d1f1b0bc1be959ae8965a7855e7ce7a48a1b3d0fae1eccb5669f8156"
+        },
+        {
+          "path": "customizations/platforms/ai-access/host-http/runtime/runner.py",
+          "old": "fb59c3e4c8f02cd013a895a81bdab0b68f4954259ca5548579052a8e021b18ad",
+          "normalized": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5",
+          "current": "2419beccb14e5b47c9c0389582f5beeed6795d377a1141d76eaa1999b68477a5"
+        },
+        {
+          "path": "customizations/platforms/ai-access/host-http/runtime/test_runtime.py",
+          "old": "224502a920c656b94e8326bbceaa7daf31c7fb951fac1d99dc4867f1652396e7",
+          "normalized": "0fb66513ba9856bdaf5b0d097ede8d44243284a25fcd79e9bb7d9bc9028c6883",
+          "current": "0fb66513ba9856bdaf5b0d097ede8d44243284a25fcd79e9bb7d9bc9028c6883"
+        }
+      ],
+      "remote": [
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/native_node.py",
+          "old": "f76311827cbf99586d536007e10ed554399338d7d704d8de08c66320a1d215f4",
+          "normalized": "75fa74d0850c9aa6424c048aa7d474b506dba4ae6b734e543507753ecdb6c273",
+          "current": "75fa74d0850c9aa6424c048aa7d474b506dba4ae6b734e543507753ecdb6c273"
+        },
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/native_remote.md",
+          "old": "f1cd6820b0ead4335c63df76af416a7c9115dcb33c7bc5322a047041ca6aaab6",
+          "normalized": "55538cdc687046e98d26e505e5febd443af172dc8259ea56ee729f9002ec5713",
+          "current": "55538cdc687046e98d26e505e5febd443af172dc8259ea56ee729f9002ec5713"
+        },
+        {
+          "path": "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py",
+          "old": "07f4f48401b070d6e653c0bd5cc981345918a0fa2b63466c2a413ed292a3782f",
+          "normalized": "eb79a77915e6abbfe5ae69cc83b7e60bfa985e243189eb98a5a825995485d961",
+          "current": "eb79a77915e6abbfe5ae69cc83b7e60bfa985e243189eb98a5a825995485d961"
+        }
+      ]
+    },
+    "source_unchanged_at_completion": true,
+    "incremental_behavior": "Only normalized source behavior delta is write_text(content, encoding=utf-8) -> write_bytes(content.encode(utf-8)); new regression exercises actual Windows Worker closure and candidate intake with LF, CRLF, bare CR and Unicode. Remote normalized files have no semantic diff.",
+    "build_boundary": {
+      "runtime_inventory": [
+        "customizations/platforms/ai-access/host-http/runtime/adapters.py",
+        "customizations/platforms/ai-access/host-http/runtime/diting.py",
+        "customizations/platforms/ai-access/host-http/runtime/evaluate.py",
+        "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py",
+        "customizations/platforms/ai-access/host-http/runtime/README.md",
+        "customizations/platforms/ai-access/host-http/runtime/runner.py",
+        "customizations/platforms/ai-access/host-http/runtime/task_budget.py",
+        "customizations/platforms/ai-access/host-http/runtime/test_adapters.py",
+        "customizations/platforms/ai-access/host-http/runtime/test_runtime.py"
+      ],
+      "actual_new_test": "HostInputTests.test_model_runtime_generator_consumption_overrides_host_inventory passed independently (2.808s); actual SCons consumed runtime source overrides explicit inventory exclusion",
+      "full_graph_evidence": "Both source-bound boundary reports show 9382 actual Windows SCons inputs, zero host overlap, all three applicable boundary check groups passed. Existing full graph not rerun; no compilation or renderer performance claim.",
+      "policy": "Only exact host-http/runtime prefix added; explicit inventory membership remains required and native consumer takes precedence."
+    },
+    "validation": {
+      "independent_worker_regression": "1 passed,14 deselected,2.83s",
+      "reported_full_windows_suites": "Producer53 passed+83subtests; remote14 passed; reports hash-bound to current sources; unchanged suites not redundantly rerun",
+      "old_profile_rejection": "Native installation changed; reevaluate and reauthorize"
+    },
+    "immutable_evidence": {
+      "git_clean_filter_exact_bytes_verified": {
+        "producer": [
+          "data-collection/native-candidate-intake-1451.json",
+          "data-collection/native-workflow-revisions-1456.json",
+          "data-collection/native-model-producer-1486.json",
+          "data-collection/native-model-producer-live-review-1486.json",
+          "data-collection/native-model-producer-review-1486.json",
+          "data-collection/native-live-comparison-1486.json"
+        ],
+        "remote": [
+          "data-collection/native-candidate-intake-1451.json",
+          "data-collection/native-workflow-revisions-1456.json",
+          "data-collection/native-progress-after-1481.json",
+          "data-collection/native-progress-before-1481.json",
+          "data-collection/native-remote-final-review-1481.json",
+          "data-collection/native-remote-line-ending-1481.json",
+          "data-collection/native-remote-load-audit-1481.json",
+          "data-collection/native-remote-repair-1481.json",
+          "data-collection/native-remote-repair-e2e.txt",
+          "data-collection/native-remote-repair-learning.json",
+          "data-collection/native-remote-repair-original-probes.txt",
+          "data-collection/native-remote-repair-tests.txt",
+          "data-collection/native-remote-review-1481.json",
+          "data-collection/native-remote-review2-1481.json",
+          "data-collection/native-remote-shutdown-before-1481.json",
+          "data-collection/native-live-comparison-1481.json"
+        ]
+      },
+      "format_policy": "Exact evidence paths only; remote codespell exception anchored to native-remote-(final-review|review2)-1481.json only. No old report edited.",
+      "prior_live_sources_verified": {
+        "producer": true,
+        "remote": true
+      }
+    },
+    "comparison_audit": {
+      "git": {
+        "one_start_one_end": true,
+        "closed": true,
+        "elapsed_ms": 18016,
+        "raw_total": 9472,
+        "output_sha256": "5b4c4b8605101eb682b463f6c37339a849bc6ff8a88a8aaff345bc56ebb37f36"
+      },
+      "native": "Sealed candidate canonical digest, check binding, input/output bytes, local and archived server blob hashes independently checked. Archived domain issue done and native task accepted.",
+      "actual_git_objects": "Original candidate and advanced main are merge parents; final main equals queue merge; original input bytes and unrelated advanced-main changes retained.",
+      "calls": "Original call_start/call_end events show one Git and one native call, closed process trees; prior qualification review documents three additional calls, five total. No replay in this review.",
+      "budget": "Actual central SQLite two reservations of1call each, both active0.",
+      "review_independence": "Root business reviews hash-match retained files and bound seal/runtime; native original bytes and Git objects match root accepted inputs before publication.",
+      "limitations": "Sequential Git/native ordering, provider latency/cache/context metadata variability prevent general efficiency inference. Raw counters separate from normalized/billing unknown. Fixture principals/checks are sandbox only; actual Linux coordinator + Windows NativeNode.execute/Worker/Integration one task does not qualify full persistent serve,250 model concurrency,or continuous same-product publication."
+    },
+    "admission_boundary": "Original three qualification plus two production calls evaluated OLD exact source; original evaluated bytes archived and hashes verified. Current normalized/fixed source requires fresh bounded admission; this source review creates no grant, evaluation or production admission. Actual installed old profile rejects changed source.",
+    "failure_retention": "Original output LF-to-CRLF product bug and Git harness read_text normalization failure remain in live comparison; resumed original closed worker without provider replay. Cleanup rejection is retained-cleanup-rejected, never called cleaned.",
+    "resource_closure": "Original report records pool closed, container absent, tunnel/server terminal; review audits saved evidence, does not re-query remote host. Own targeted subprocesses exited0. No model/network call, product write,or further agent.",
+    "cleanup": {
+      "removed": [
+        "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-post-live-review-probes\\pytest-bytes"
+      ],
+      "retained": "Review scripts, logs and audit JSON retained as reproducibility evidence; no other task resources touched."
+    },
+    "evidence_sha256": {
+      "D:\\GongGong-work\\native-model-producer-20261118\\data-collection\\native-producer-post-live-1486.json": "de80159e29d4b2dc4e03b36b29402c6d2bbe74f7c04e58b99448d21f4715e5ad",
+      "D:\\GongGong-work\\native-model-producer-20261118\\data-collection\\native-producer-source-normalization-1486.json": "4267b469d5a3a745c5fb42621e302e20d47ce414aca38dc87afddb37c0d9f9cd",
+      "D:\\GongGong-work\\native-model-producer-20261118\\data-collection\\native-producer-host-boundary-complete-1486.json": "c6c2f4c37458f2a5ec33940f897e7f3cabd8a652550421b5f2cf2c2c8832059d",
+      "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-post-live-1481.json": "f3d09598d8d55edc717373c90c27d1f64d39059fabbd53b8cf9c0486a852f728",
+      "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-source-normalization-1481.json": "6f4fd930ff4297f4ba4a68ad1710f0ebb143d285d7226c2ff1b8c0cce1c3ff51",
+      "D:\\GongGong-work\\native-remote-execution-20261118\\data-collection\\native-remote-host-boundary-complete-1481.json": "341f7a0865c6f2819ea7b0a9e86c65b00720016bbad65960e9cb71b2bed63c3d",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-comparison.json": "20faee9ed72a9f9146cb723c5908ac705dae5ef79e5b06188d342b0189661778",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-git-business-review.json": "fd3b1da539c6d2e5b557c196c45fcd2f6229d1c80335784adeaa80d86d58b0c9",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-live-native-business-review.json": "4236e8f3b69a5f20f57b1bd4a5b3b157e866612c33a751026db7a845cef6617f",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-live-review.json": "ae7c828afa7049b16445983e2749ee742b63ac05f3f1811e40d7e7288a2d8d5c",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-model-producer-review.json": "1761c383e723c693645be910d5e80527442a73f8e59550367b4dd1bd016d3788",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-remote-final-review.json": "a60218fa6e3d8d1c6dae982fd98f533fa976c5d5d35efeb9c5cdb0c3ef0638ca"
+    },
+    "probes": {
+      "audit.json": "f5ce275a6b6d83be6793b95efdec6142f99e215176b603e4488d1bc82e6e3525",
+      "audit.py": "d1fa3f4b9f78eea3ba589ee8b844aa16547be2d2cfca9e371e96670389d5212a",
+      "boundary-test.log": "32d6e9fb936663925047d43fb2e36dd6e02f1c16fc218c08320a4a128557c2f7",
+      "business-audit.json": "0c43b9c9daf18f8d34d970441abc59a292d81b644017bdbae4ee831d4b1f772c",
+      "business-audit.py": "ebe1f2f3d301552cfcd53ad8f1b1e4323c6c85d52e632de3796701cb3ae04099",
+      "bytes-test.log": "9ccdee035071b28372d2537ec6736376083dc6134e4996a6a43e12e83d69bddf",
+      "finalize-review.py": "4c825a606702778a2923c77906af2f27ad7483408eacd4198a33b3b5406fae55",
+      "producer-policy.diff": "9eee79b4c7aa637210f795ef1a068749ed801622cb6fefb1af0b70d96525cd32",
+      "remote-policy.diff": "78f429edd25d25d4c98bedc630210552353f4113988878a12432aeac0fc11d51"
+    },
+    "terminal": "complete; source consumers released after this final report; no remaining scoped high-severity findings; parent owns fresh admission, delivery and overall business acceptance."
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "issue": 1481,
+  "before_sha256": "2615a8683dbbb69fd208c92cf3e27eb1af06337fe9e91500bc8290ed83d3fae6",
+  "after_sha256": "54f2b6dbe759d6ae3e965d7399534ec600c07208be2422d9f0d924b932ddca64",
+  "change": "CRLF to repository LF only; source tokens unchanged"
+}

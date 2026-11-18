@@ -1,0 +1,21 @@
+{
+  "issue": 1481,
+  "scope": "Deterministic pending-long-poll versus five-second test join; original lost child stderr remains unknown",
+  "source_sha256": {
+    "sinan-workorders\\native_remote_worker.py": "1d34f1b716639a81f411d33ad4b27d03ecc8426ede43c98abc18992f2d270146",
+    "server\\native_node_api.py": "20f6f4bc62d8a5394d43c3b121e5bff80c2bb6ce1998603d714b0f3eece6e742",
+    "sinan-workorders\\test_native_remote.py": "4b368d3fe63a7d2143a4595cd0c14bc591976a7ee2e7e0d6912f6de57c2aa647"
+  },
+  "old_thread_alive_after_five_second_join": true,
+  "new_coordinator_bind": "PermissionError: [Errno 13] Permission denied",
+  "shutdown_seconds": 25.062000000005355,
+  "old_thread_final_closed": true,
+  "long_poll_status": 200,
+  "bind_after_actual_shutdown": "accepted",
+  "status": "reproduced-test-handoff-race",
+  "cleanup": {
+    "owned_server_closed": true,
+    "fixture_retained_for_diagnosis": true,
+    "source_modified": false
+  }
+}

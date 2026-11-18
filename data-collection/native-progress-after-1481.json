@@ -1,0 +1,15 @@
+{
+  "scope": "actual public domain planning and legal transitions; no native approval bypass tested",
+  "source_sha256": "fe4f5f081f73e46fef83855acc1a148f6685007039a8ebe9cb9ec202eb31a427",
+  "partial": {
+    "total": 251,
+    "done": 250,
+    "percent": 99
+  },
+  "parent_before": "backlog",
+  "complete": {
+    "total": 251,
+    "done": 251,
+    "percent": 100
+  }
+}
