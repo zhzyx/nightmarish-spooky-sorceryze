@@ -59,8 +59,13 @@ bool AddPipelinePass(FrameGraph &stGraph, RenderPipeline &stPipeline, const Pass
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bDeformation, bool bVirtualShadows)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bAmbientOcclusion, bool bDeformation, bool bVirtualShadows, std::uint32_t nShadowPageCount)
 {
+	if (bSceneMode && bVirtualShadows && (nShadowPageCount < 16 || nShadowPageCount > 2048))
+	{
+		out_stDiagnostic = { GraphError::CapacityExceeded, INVALID_PASS, INVALID_RESOURCE, "Physical shadow page count must be in [16,2048]." };
+		return false;
+	}
 	if (nLocalShadowViews > 28)
 	{
 		out_stDiagnostic = { GraphError::CapacityExceeded, INVALID_PASS, INVALID_RESOURCE, "Local shadow view budget exceeded." };
@@ -106,7 +111,7 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		}
 		if (bVirtualShadows)
 		{
-			stPipeline.nShadowPagePool = stGraph.AddResource({ "ShadowPhysicalPages", ResourceState::Common, true });
+			stPipeline.nShadowPagePool = stGraph.AddResource({ "ShadowPhysicalPages", ResourceState::Common, true, nShadowPageCount });
 			stPipeline.nShadowPageTable = stGraph.AddResource({ "ShadowPageTable", ResourceState::Common, true });
 			stPipeline.nShadowPageUpload = stGraph.AddResource({ "ShadowPageUpload", ResourceState::GenericRead, true });
 			stPipeline.nShadowPageFeedback = stGraph.AddResource({ "ShadowPageFeedback", ResourceState::Common, true });
@@ -328,6 +333,26 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 			}
 			stLighting.arrAccesses.push_back({ stPipeline.nShadowPagePool, ResourceState::ShaderRead, false });
 			stLighting.arrAccesses.push_back({ stPipeline.nShadowPageTable, ResourceState::ShaderRead, false });
+		}
+		if (bAmbientOcclusion)
+		{
+			stPipeline.nAmbientConstants = stGraph.AddResource({ "AmbientConstants", ResourceState::GenericRead, true });
+			const std::array<const char *, 3> arrNames{ "AmbientRaw", "AmbientHorizontal", "AmbientFiltered" };
+			const std::array<PassWork, 3> arrWork{ PassWork::AmbientOcclusion, PassWork::AmbientBlurHorizontal, PassWork::AmbientBlurVertical };
+			for (std::size_t nStage = 0; nStage < arrNames.size(); ++nStage)
+			{
+				stPipeline.arrAmbientOcclusion[nStage] = stGraph.AddResource({ arrNames[nStage], ResourceState::Common, true });
+				PassDesc stPass{ arrNames[nStage], QueueType::Graphics, { { stPipeline.nAmbientConstants, ResourceState::GenericRead, false }, { stPipeline.nDepth, ResourceState::NonPixelShaderRead, false }, { stPipeline.arrGbuffer[1], ResourceState::NonPixelShaderRead, false }, { stPipeline.arrAmbientOcclusion[nStage], ResourceState::UnorderedAccess, true } }, {} };
+				if (nStage != 0)
+				{
+					stPass.arrAccesses.push_back({ stPipeline.arrAmbientOcclusion[nStage - 1], ResourceState::NonPixelShaderRead, false });
+				}
+				if (!AddPipelinePass(stGraph, stPipeline, stPass, arrWork[nStage], out_stDiagnostic))
+				{
+					return false;
+				}
+			}
+			stLighting.arrAccesses.push_back({ stPipeline.arrAmbientOcclusion.back(), ResourceState::ShaderRead, false });
 		}
 		if (!AddPipelinePass(stGraph, stPipeline, stLighting, PassWork::DeferredLighting, out_stDiagnostic))
 		{
@@ -702,6 +727,13 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 		}
 		stPresent.arrAccesses.push_back({ stPipeline.nMotion, ResourceState::Common, false });
 		stPresent.arrAccesses.push_back({ stPipeline.nObjectId, ResourceState::Common, false });
+		if (bAmbientOcclusion)
+		{
+			for (ResourceId nResource : stPipeline.arrAmbientOcclusion)
+			{
+				stPresent.arrAccesses.push_back({ nResource, ResourceState::Common, false });
+			}
+		}
 		if (bGlobalIllumination)
 		{
 			for (std::size_t nKind = 0; nKind < stPipeline.arrGiRead.size(); ++nKind)

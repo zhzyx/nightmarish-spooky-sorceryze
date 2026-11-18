@@ -1257,3 +1257,39 @@ ENGINE_NEXT_TEST("Render configuration validates optional bounded virtual shadow
 	mapVirtual["unexpected"] = true;
 	CheckRejected(stValue);
 }
+
+ENGINE_NEXT_TEST("Render configuration routes ambient occlusion settings")
+{
+	JsonValue stValue = ValidConfiguration();
+	EngineNext::Rendering::RenderConfiguration stConfiguration;
+	EngineNext::Assets::Diagnostics arrDiagnostics;
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(!stConfiguration.stAmbientOcclusion.bEnabled);
+	(*stValue.GetObject())["ambient_occlusion"] = JsonValue::Object{
+		{ "enabled", true }, { "radius", 2.0 }, { "normal_bias", 0.03 }, { "intensity", 0.75 }, { "sample_count", std::int64_t{ 64 } }
+	};
+	ENGINE_NEXT_CHECK(EngineNext::Rendering::ParseRenderConfiguration(stValue, strSourceDigest, stConfiguration, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stConfiguration.stAmbientOcclusion.bEnabled);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stAmbientOcclusion.dRadius, 2.0);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stAmbientOcclusion.dNormalBias, 0.03);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stAmbientOcclusion.dIntensity, 0.75);
+	ENGINE_NEXT_CHECK_EQ(stConfiguration.stAmbientOcclusion.nSampleCount, 64U);
+}
+
+ENGINE_NEXT_TEST("Render configuration rejects invalid ambient occlusion transactionally")
+{
+	for (const JsonValue &stBad : {
+				 JsonValue{}, JsonValue(true), JsonValue(JsonValue::List{}),
+				 JsonValue(JsonValue::Object{ { "enabled", "yes" } }),
+				 JsonValue(JsonValue::Object{ { "radius", 0.0 } }),
+				 JsonValue(JsonValue::Object{ { "normal_bias", 1.0 } }),
+				 JsonValue(JsonValue::Object{ { "intensity", -1.0 } }),
+				 JsonValue(JsonValue::Object{ { "sample_count", 16.5 } }),
+				 JsonValue(JsonValue::Object{ { "sample_count", std::int64_t{ 12 } } }),
+				 JsonValue(JsonValue::Object{ { "unexpected", true } }) })
+	{
+		JsonValue stValue = ValidConfiguration();
+		(*stValue.GetObject())["ambient_occlusion"] = stBad;
+		CheckRejected(stValue);
+	}
+}

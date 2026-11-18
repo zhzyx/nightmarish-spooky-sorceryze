@@ -321,7 +321,7 @@ bool GpuShadowPages::Prepare(std::uint32_t nFrame, std::uint64_t nCompletedFence
 
 bool GpuShadowPages::RecordUpload(std::uint32_t nFrame, ID3D12GraphicsCommandList *pList, Assets::Diagnostics &out_arrDiagnostics)
 {
-	if (!bInitialized || !IsOwner() || nFrame != nPendingFrame || nRecordedStage != 0 || pList == nullptr)
+	if (!bInitialized || !IsOwner() || nFrame >= SHADOW_PAGE_FRAME_COUNT || nFrame != nPendingFrame || nRecordedStage != 0 || pList == nullptr)
 	{
 		return Error(out_arrDiagnostics, "Upload requires the first record of the prepared owner frame.");
 	}
@@ -333,7 +333,7 @@ bool GpuShadowPages::RecordUpload(std::uint32_t nFrame, ID3D12GraphicsCommandLis
 
 bool GpuShadowPages::RecordFeedback(std::uint32_t nFrame, ID3D12GraphicsCommandList *pList, ID3D12Resource *pDepth, Assets::Diagnostics &out_arrDiagnostics)
 {
-	if (!bInitialized || !IsOwner() || nFrame != nPendingFrame || nRecordedStage != 1 || pList == nullptr || pDepth == nullptr)
+	if (!bInitialized || !IsOwner() || nFrame >= SHADOW_PAGE_FRAME_COUNT || nFrame != nPendingFrame || nRecordedStage != 1 || pList == nullptr || pDepth == nullptr)
 	{
 		return Error(out_arrDiagnostics, "Feedback requires the uploaded owner frame and its depth resource.");
 	}
@@ -355,7 +355,7 @@ bool GpuShadowPages::RecordFeedback(std::uint32_t nFrame, ID3D12GraphicsCommandL
 
 bool GpuShadowPages::RecordReadback(std::uint32_t nFrame, ID3D12GraphicsCommandList *pList, Assets::Diagnostics &out_arrDiagnostics)
 {
-	if (!bInitialized || !IsOwner() || nFrame != nPendingFrame || nRecordedStage != 2 || pList == nullptr)
+	if (!bInitialized || !IsOwner() || nFrame >= SHADOW_PAGE_FRAME_COUNT || nFrame != nPendingFrame || nRecordedStage != 2 || pList == nullptr)
 	{
 		return Error(out_arrDiagnostics, "Readback requires completed feedback recording once.");
 	}
@@ -366,7 +366,7 @@ bool GpuShadowPages::RecordReadback(std::uint32_t nFrame, ID3D12GraphicsCommandL
 
 bool GpuShadowPages::Submit(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics)
 {
-	if (!bInitialized || !IsOwner() || nPendingFrame != nFrame || nRecordedStage != 3 || nFence <= nPreparedFence || !stCache.Commit())
+	if (!bInitialized || !IsOwner() || nFrame >= SHADOW_PAGE_FRAME_COUNT || nPendingFrame != nFrame || nRecordedStage != 3 || nFence <= nPreparedFence || !stCache.Commit())
 	{
 		return Error(out_arrDiagnostics, "Submit requires a prepared complete frame and a new fence.");
 	}
@@ -413,19 +413,19 @@ ID3D12Resource *GpuShadowPages::Pool() const noexcept
 }
 ID3D12Resource *GpuShadowPages::Table(std::uint32_t nFrame) const noexcept
 {
-	return arrFrames[nFrame].stTable.Get();
+	return nFrame < SHADOW_PAGE_FRAME_COUNT ? arrFrames[nFrame].stTable.Get() : nullptr;
 }
 ID3D12Resource *GpuShadowPages::Feedback(std::uint32_t nFrame) const noexcept
 {
-	return arrFrames[nFrame].stFeedback.Get();
+	return nFrame < SHADOW_PAGE_FRAME_COUNT ? arrFrames[nFrame].stFeedback.Get() : nullptr;
 }
 ID3D12Resource *GpuShadowPages::Upload(std::uint32_t nFrame) const noexcept
 {
-	return arrFrames[nFrame].stUpload.Get();
+	return nFrame < SHADOW_PAGE_FRAME_COUNT ? arrFrames[nFrame].stUpload.Get() : nullptr;
 }
 ID3D12Resource *GpuShadowPages::Readback(std::uint32_t nFrame) const noexcept
 {
-	return arrFrames[nFrame].stReadback.Get();
+	return nFrame < SHADOW_PAGE_FRAME_COUNT ? arrFrames[nFrame].stReadback.Get() : nullptr;
 }
 std::uint64_t GpuShadowPages::AllocatedBytes() const noexcept
 {
@@ -437,18 +437,25 @@ std::array<std::uint32_t, 4> GpuShadowPages::FeedbackStatistics() const noexcept
 }
 D3D12_GPU_DESCRIPTOR_HANDLE GpuShadowPages::Receiver(std::uint32_t nFrame) const noexcept
 {
-	return Gpu(arrDescriptors[nFrame], 0);
+	return nFrame < SHADOW_PAGE_FRAME_COUNT ? Gpu(arrDescriptors[nFrame], 0) : D3D12_GPU_DESCRIPTOR_HANDLE{};
 }
 D3D12_GPU_VIRTUAL_ADDRESS GpuShadowPages::Constants(std::uint32_t nFrame) const noexcept
 {
-	return Upload(nFrame)->GetGPUVirtualAddress();
+	ID3D12Resource *pUpload = Upload(nFrame);
+	return pUpload != nullptr ? pUpload->GetGPUVirtualAddress() : 0;
 }
 D3D12_GPU_VIRTUAL_ADDRESS GpuShadowPages::PageConstants(std::uint32_t nFrame, std::uint32_t nUpdate) const noexcept
 {
-	return Constants(nFrame) + nPageConstantsOffset + nUpdate * PAGE_CONSTANT_STRIDE;
+	return nFrame < SHADOW_PAGE_FRAME_COUNT && nUpdate < stCache.Plan().arrRender.size()
+			? Constants(nFrame) + nPageConstantsOffset + nUpdate * PAGE_CONSTANT_STRIDE
+			: 0;
 }
 D3D12_CPU_DESCRIPTOR_HANDLE GpuShadowPages::Dsv(std::uint32_t nPage) const noexcept
 {
+	if (nPage >= stSettings.nPhysicalPages || stDsvHeap.Get() == nullptr || stDevice.Get() == nullptr)
+	{
+		return {};
+	}
 	D3D12_CPU_DESCRIPTOR_HANDLE stHandle = stDsvHeap->GetCPUDescriptorHandleForHeapStart();
 	stHandle.ptr += static_cast<SIZE_T>(nPage) * stDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
 	return stHandle;

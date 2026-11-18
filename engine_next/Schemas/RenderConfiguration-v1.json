@@ -471,6 +471,38 @@
       },
       "$comment": "Missing fields use disabled reflections, maximum distance 100, thickness 0.1, normal bias 0.02, 128 steps, maximum perceptual roughness 0.8. Positive GPU values must remain normal binary32. All fields are validated when disabled."
     },
+    "ambient_occlusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": false
+        },
+        "radius": {
+          "type": "number",
+          "minimum": 1.1754943508222875e-38,
+          "maximum": 100,
+          "default": 1
+        },
+        "normal_bias": {
+          "type": "number",
+          "minimum": 0,
+          "default": 0.02
+        },
+        "intensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "default": 1
+        },
+        "sample_count": {
+          "enum": [8, 16, 32, 64],
+          "default": 32
+        }
+      },
+      "$comment": "Normal bias must remain smaller than radius. Disabled settings receive the same validation."
+    },
     "volumetric_fog": {
       "type": "object",
       "additionalProperties": false,

@@ -59,6 +59,9 @@ SHADER_FILES = {
     "GeometryDepth.vs.cso",
     "GeometryDepth.ps.cso",
 }
+SHADER_FILES |= {"AmbientOcclusion.cs.cso", "AmbientOcclusionBlur.cs.cso"} | {
+    "Ao" + name for name in SHADER_FILES if name.endswith("Lighting.ps.cso")
+}
 SHADER_FILES |= {
     "Virtual" + name
     for name in SHADER_FILES

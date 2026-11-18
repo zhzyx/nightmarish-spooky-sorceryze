@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "issue_number": 1343,
+  "parent_issue_number": 1323,
+  "recorded_at_utc": "2026-11-18T09:36:47.248271+00:00",
+  "candidate": "ambient-occlusion-r6",
+  "native_key": "069cc40a5140d03da1528b864b0a00618d1ec5bce20f43c5d55f623f68eb0465",
+  "base_commit": "489fddc0b40979219f89214dfb430e4d632607e0",
+  "status": "no_confirmed_finding_in_reviewed_scope",
+  "implementer": "codex/root",
+  "reviewer": "codex/m42_cook_review",
+  "source_files": [
+    {
+      "path": "engine_next/Rendering/AmbientOcclusionSettings.cpp",
+      "sha256": "9ffa3d55592493c94447a8637249cfa03a86dcd3aa8b4db52a8d03bfedbd59a0",
+      "size_bytes": 4730
+    },
+    {
+      "path": "engine_next/Rendering/RenderConfiguration.cpp",
+      "sha256": "c0b1839c45e2d53e1fcb1f6a1865aa5e321b10a00ded4841ff455a8960957bed",
+      "size_bytes": 36075
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.cpp",
+      "sha256": "1c16604b21fd293f64d86dd374cfbfa385b113ac53a9353a604460aec2f6a840",
+      "size_bytes": 39920
+    },
+    {
+      "path": "engine_next/Rendering/RenderPipeline.h",
+      "sha256": "334425ac85d76095f4534783fa93644e97c4cdf847e82e38e52d128a92cbd3f0",
+      "size_bytes": 9131
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/AmbientOcclusion.hlsl",
+      "sha256": "98f4d38af9be79856a47715faf0833616f0ebe624cf0f92474412353a9738df8",
+      "size_bytes": 5312
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/AmbientOcclusionMath.hlsli",
+      "sha256": "2e1f29fd6a4d01732efcd04b4f6d37ec25a8182c47ff8f06da4b1c051c3e238e",
+      "size_bytes": 500
+    },
+    {
+      "path": "engine_next/Rendering/Shaders/Deferred.hlsl",
+      "sha256": "52e077494c77f5b8bfd10f3dc38b2f115966f934c59a4aa6a0094e63624fd394",
+      "size_bytes": 17119
+    },
+    {
+      "path": "engine_next/Rendering/VisualRuntime.cpp",
+      "sha256": "006d87c291ffc630bc6b07b7171d93be641a72308b50d79c8bb6498c14cf1964",
+      "size_bytes": 308588
+    },
+    {
+      "path": "engine_next/Schemas/RenderConfiguration-v1.json",
+      "sha256": "862c1af0f4b74154a1b7fc23e6fa1f182205746f55d514c42aded2fcdf444564",
+      "size_bytes": 27274
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestAmbientOcclusionSettings.cpp",
+      "sha256": "b9c64b6db316ace4c4254606b81c480b6cbb26b81966a68abdf04d8e8b008232",
+      "size_bytes": 6918
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderConfiguration.cpp",
+      "sha256": "3289ec418adff1ceb3fe67998e3851277c3a8d90361a333599fb910b70f7ce15",
+      "size_bytes": 68008
+    },
+    {
+      "path": "engine_next/Tests/Rendering/TestRenderPipeline.cpp",
+      "sha256": "bd10d6cb1aa8914f17ffcc143f2c4b01bbaa8306a623f5b459770e3d58323560",
+      "size_bytes": 57408
+    },
+    {
+      "path": "engine_next/Tools/BuildVisualRuntime.py",
+      "sha256": "0b86b4d7f60607dd71ae5ed579741a665b3ce5eb662d01f6ec9ce0d05ed6804c",
+      "size_bytes": 38031
+    },
+    {
+      "path": "engine_next/Tools/PackageVisualRuntime.py",
+      "sha256": "9c76fbf1ae2a24feda4062523dd94118a9545d8d7dae81670f68e4c937b773f4",
+      "size_bytes": 7965
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/AmbientOcclusionSettings.h",
+      "sha256": "f493e8694ee3e34c2ef75234b34b0153ad2345cca8a1dd0ed6f9176c8fb80c26",
+      "size_bytes": 3403
+    },
+    {
+      "path": "engine_next/include/EngineNext/Rendering/RenderConfiguration.h",
+      "sha256": "ef6a4d5b885c900f2b07dcaa260622246550794d92996773a5866717e67014ab",
+      "size_bytes": 8384
+    }
+  ],
+  "independent_review": {
+    "path": "build/engine_next/AmbientOcclusionIndependentReview.json",
+    "sha256": "b9aca0b0c4aae90a0036737896d8aef0fcba537bfca8436dd001dbb465f4fcf8",
+    "size_bytes": 8310
+  },
+  "integration_review": {
+    "path": "build/engine_next/AmbientOcclusionIntegrationReview.json",
+    "sha256": "bd3e272cb597f3911c183e81bc3d9f3885b6d2511a81a943f7711642be1c6142",
+    "size_bytes": 2080
+  },
+  "scope": "SSAO settings and kernel, signed GBuffer normal sampling, shared neutral-visibility filter math, configuration and packaging, frame-owned resources, lighting binding and placement integration.",
+  "resolved_findings": [
+    "The sampler now uses the GBuffer signed world normal directly.",
+    "Filtering accumulates occlusion so fully visible input stays exactly one.",
+    "The D3D12 format query uses explicit zero initialization and field assignment under clang-cl /W4 /WX."
+  ]
+}

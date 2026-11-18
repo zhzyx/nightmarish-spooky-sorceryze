@@ -935,7 +935,7 @@ ENGINE_NEXT_TEST("RenderPipeline orders deformation copies before vertex consume
 {
 	RenderPipeline stPipeline;
 	GraphDiagnostic stDiagnostic;
-	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, true, {}, false, true));
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, true, {}, false, false, true));
 	const CompiledPass *pUpload = FindWork(stPipeline, PassWork::DeformationUpload);
 	const CompiledPass *pShadow = FindWork(stPipeline, PassWork::DirectionalShadow);
 	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
@@ -982,7 +982,7 @@ ENGINE_NEXT_TEST("RenderPipeline orders bounded shadow uploads feedback and rece
 {
 	RenderPipeline stPipeline;
 	GraphDiagnostic stDiagnostic;
-	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 6, true, true, 0, 0, { false, true }, false, false, {}, false, true, true));
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 6, true, true, 0, 0, { false, true }, false, false, {}, false, true, true, true, 17));
 	const CompiledPass *pUpload = FindWork(stPipeline, PassWork::ShadowPageUpload);
 	const CompiledPass *pRender = FindWork(stPipeline, PassWork::ShadowPageRender);
 	const CompiledPass *pFeedback = FindWork(stPipeline, PassWork::ShadowPageFeedback);
@@ -1002,8 +1002,47 @@ ENGINE_NEXT_TEST("RenderPipeline orders bounded shadow uploads feedback and rece
 	ENGINE_NEXT_CHECK(HasTransition(*pReadback, stPipeline.nShadowPageFeedback, ResourceState::UnorderedAccess, ResourceState::CopySource));
 	ENGINE_NEXT_CHECK(HasAccess(*pLighting, stPipeline.nShadowPagePool, ResourceState::ShaderRead, false));
 	ENGINE_NEXT_CHECK(HasAccess(*pTransparent, stPipeline.nShadowPageTable, ResourceState::ShaderRead, false));
+	ENGINE_NEXT_CHECK(stPipeline.stGraph.arrResources[stPipeline.nShadowPagePool].stDescription.nSubresourceCount == 17);
+	bool bLastDepth = false;
+	bool bLastReceiver = false;
+	for (const ResourceBarrier &stBarrier : pRender->arrBeforeBarriers)
+	{
+		bLastDepth = bLastDepth || (stBarrier.nResource == stPipeline.nShadowPagePool && stBarrier.nSubresource == 16 && stBarrier.eBefore == ResourceState::Common && stBarrier.eAfter == ResourceState::DepthWrite);
+	}
+	for (const ResourceBarrier &stBarrier : pLighting->arrBeforeBarriers)
+	{
+		bLastReceiver = bLastReceiver || (stBarrier.nResource == stPipeline.nShadowPagePool && stBarrier.nSubresource == 16 && stBarrier.eBefore == ResourceState::DepthWrite && stBarrier.eAfter == ResourceState::ShaderRead);
+	}
+	ENGINE_NEXT_CHECK(bLastDepth && bLastReceiver);
 	CheckReusableStates(stPipeline);
 	RenderPipeline stFixed;
-	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stFixed, stDiagnostic, 0, false, false, 0, 0, {}, false, false, {}, false, false, true));
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stFixed, stDiagnostic, 0, false, false, 0, 0, {}, false, false, {}, false, false, false, true));
 	ENGINE_NEXT_CHECK(FindWork(stFixed, PassWork::ShadowPageUpload) == nullptr);
+}
+
+ENGINE_NEXT_TEST("Ambient occlusion reads the completed GBuffer and feeds indirect lighting")
+{
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, false, {}, false, true));
+	const CompiledPass *pGbuffer = FindWork(stPipeline, PassWork::GBuffer);
+	const CompiledPass *pAmbient = FindWork(stPipeline, PassWork::AmbientOcclusion);
+	const CompiledPass *pHorizontal = FindWork(stPipeline, PassWork::AmbientBlurHorizontal);
+	const CompiledPass *pVertical = FindWork(stPipeline, PassWork::AmbientBlurVertical);
+	const CompiledPass *pLighting = FindWork(stPipeline, PassWork::DeferredLighting);
+	ENGINE_NEXT_CHECK(pGbuffer != nullptr && pAmbient != nullptr && pHorizontal != nullptr && pVertical != nullptr && pLighting != nullptr);
+	if (pGbuffer == nullptr || pAmbient == nullptr || pHorizontal == nullptr || pVertical == nullptr || pLighting == nullptr)
+	{
+		return;
+	}
+	ENGINE_NEXT_CHECK(pGbuffer->nPass < pAmbient->nPass && pAmbient->nPass < pHorizontal->nPass && pHorizontal->nPass < pVertical->nPass && pVertical->nPass < pLighting->nPass);
+	ENGINE_NEXT_CHECK(HasAccess(*pAmbient, stPipeline.nDepth, ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pAmbient, stPipeline.arrGbuffer[1], ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pHorizontal, stPipeline.arrAmbientOcclusion[0], ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pVertical, stPipeline.arrAmbientOcclusion[1], ResourceState::NonPixelShaderRead, false));
+	ENGINE_NEXT_CHECK(HasAccess(*pLighting, stPipeline.arrAmbientOcclusion[2], ResourceState::ShaderRead, false));
+	CheckReusableStates(stPipeline);
+	ENGINE_NEXT_CHECK(BuildRenderPipeline(false, stPipeline, stDiagnostic, 0, true, false, 0, 0, {}, false, false, {}, false, true));
+	ENGINE_NEXT_CHECK_EQ(stPipeline.arrAmbientOcclusion[0], EngineNext::Rendering::INVALID_RESOURCE);
+	ENGINE_NEXT_CHECK(FindWork(stPipeline, PassWork::AmbientOcclusion) == nullptr);
 }
