@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c6817fcf611d42a097c67c306aa48641d4b94173",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-3-20261116",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2f5f30240209be112136ec08b8c48f80b7a937aeb87659cb6d25e5b06250761a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1343",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1349",
+    "action": "validation",
+    "detection_head": "489fddc0b40979219f89214dfb430e4d632607e0",
+    "context_sha256": "601195a5248f7c0b7ce1552f94d521c9cadc6e258b7281fdb6e6772f0f45fb53",
+    "operator": "kaiyunxue",
+    "worker": "codex/root",
+    "authority_ref": "User authorized Engine Next M4 implementation and tested main delivery in this conversation.",
+    "evidence": "data-collection/engine-next-visual-runtime-m4-3-ambient-occlusion-build-impact.json",
+    "diagnosis": "The AO proof encoded check results as boolean summaries. The module gate requires measured check objects with commands, observations, and exact executable and bundle identities. The proof now binds the existing successful runs in that schema; renderer source is unchanged.",
+    "next_action": "Rerun the full formal gate, signed candidate CI, and main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T09:39:04.141815+00:00",
+    "attempted": "The corrected module-impact-only gate passed on the current index.",
+    "repair_owner": "codex/root",
+    "continuable": "Rendering implementation and other M4 verification continue."
+  },
+  "occurred_at": "2026-11-18T09:44:34.577981+00:00",
+  "sha256": "c6e94ac823ec13b0473faa363d68a2d76e13e60bb141e07d65dc61b847310169"
+}

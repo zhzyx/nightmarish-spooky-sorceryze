@@ -85,6 +85,9 @@ enum class PassWork : std::uint8_t
 	GeometryClearColor = 45,
 	GeometryCullColor = 46,
 	GeometryReadback = 47,
+	AmbientOcclusion = 64,
+	AmbientBlurHorizontal = 65,
+	AmbientBlurVertical = 66,
 };
 
 struct ForwardEffects
@@ -142,6 +145,8 @@ struct RenderPipeline
 	ResourceId nGeometryClusters = INVALID_RESOURCE;
 	ResourceId nGeometryHiZ = INVALID_RESOURCE;
 	ResourceId nGeometryReadback = INVALID_RESOURCE;
+	ResourceId nAmbientConstants = INVALID_RESOURCE;
+	std::array<ResourceId, 3> arrAmbientOcclusion{ INVALID_RESOURCE, INVALID_RESOURCE, INVALID_RESOURCE };
 	std::array<ResourceId, 2> arrGeometryArguments{ INVALID_RESOURCE, INVALID_RESOURCE };
 	std::array<ResourceId, 2> arrGeometryCounters{ INVALID_RESOURCE, INVALID_RESOURCE };
 	// Additional reflection color levels 1..N-1. Before tracing, level zero is
@@ -183,6 +188,6 @@ struct RenderPipeline
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false);
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false);
 
 } // namespace EngineNext::Rendering

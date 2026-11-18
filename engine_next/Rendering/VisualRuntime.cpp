@@ -59,6 +59,7 @@
 #include "engine_next/include/EngineNext/Rendering/LightTimeline.h"
 #include "engine_next/include/EngineNext/Rendering/VolumeGrid.h"
 #include "engine_next/include/EngineNext/Rendering/ParticleState.h"
+#include "engine_next/include/EngineNext/Rendering/AmbientOcclusionSettings.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -101,7 +102,9 @@ constexpr std::uint32_t FRAME_COUNT = 3;
 constexpr std::uint32_t FRAME_VIEW_COUNT = 232;
 constexpr std::uint32_t GI_VIEW_START = 152;
 constexpr std::uint32_t GEOMETRY_VIEW_START = 192;
+constexpr std::uint32_t AMBIENT_VIEW_START = 184;
 static_assert(GI_VIEW_START + 32 <= GEOMETRY_VIEW_START);
+static_assert(GI_VIEW_START + 32 <= AMBIENT_VIEW_START && AMBIENT_VIEW_START + 6 <= GEOMETRY_VIEW_START);
 static_assert(GEOMETRY_VIEW_START + 40 <= FRAME_VIEW_COUNT);
 constexpr std::uint32_t VOLUME_MEDIUM_VIEW = 120;
 constexpr std::uint32_t VOLUME_EMISSION_VIEW = 122;
@@ -247,6 +250,8 @@ struct FrameContext
 	std::array<ComOwner<ID3D12Resource>, 2> arrMaterialBuffers;
 	ComOwner<ID3D12Resource> stMotion;
 	ComOwner<ID3D12Resource> stObjectId;
+	std::array<ComOwner<ID3D12Resource>, 3> arrAmbientOcclusion;
+	ComOwner<ID3D12Resource> stAmbientConstants;
 	ComOwner<ID3D12Resource> stHistogram;
 	std::array<ComOwner<ID3D12Resource>, 6> arrBloomDown;
 	std::array<ComOwner<ID3D12Resource>, 6> arrBloomUp;
@@ -412,6 +417,19 @@ static_assert(offsetof(FrameConstants, arrCascadeSplits) == 480);
 static_assert(offsetof(FrameConstants, arrShadowParameters) == 528);
 constexpr std::uint64_t DRAW_CONSTANT_BYTES = (sizeof(DrawConstants) + CONSTANT_BUFFER_ALIGNMENT - 1) & ~(CONSTANT_BUFFER_ALIGNMENT - 1);
 constexpr std::uint64_t FRAME_CONSTANT_BYTES = (sizeof(FrameConstants) + CONSTANT_BUFFER_ALIGNMENT - 1) & ~(CONSTANT_BUFFER_ALIGNMENT - 1);
+
+struct AmbientConstants
+{
+	std::array<float, 16> arrViewProjection{};
+	std::array<float, 16> arrInverseViewProjection{};
+	std::array<float, 4> arrCamera{};
+	std::array<float, 4> arrParameters{};
+	std::array<std::uint32_t, 4> arrCounts{};
+	OcclusionKernel arrKernel{};
+};
+static_assert(sizeof(AmbientConstants) == 1200);
+static_assert(offsetof(AmbientConstants, arrKernel) == 176);
+constexpr std::uint64_t AMBIENT_CONSTANT_BYTES = (sizeof(AmbientConstants) + CONSTANT_BUFFER_ALIGNMENT - 1) & ~(CONSTANT_BUFFER_ALIGNMENT - 1);
 
 D3D12_HEAP_PROPERTIES HeapProperties(D3D12_HEAP_TYPE eType)
 {
@@ -675,6 +693,10 @@ private:
 	std::uint32_t nPeakParticles = 0;
 	bool CreateReflectionTargets();
 	bool CreateReflectionPipeline();
+	bool CreateAmbientOcclusionTargets();
+	bool CreateAmbientOcclusionPipeline();
+	bool UpdateAmbientOcclusionConstants(FrameContext &stFrame, const FrameConstants &stConstants);
+	void DrawAmbientOcclusion(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork);
 	void DrawReflections(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork, std::uint32_t nMip);
 	bool CreateForwardTargets();
 	bool CreateVolumeTargets();
@@ -747,6 +769,10 @@ private:
 	ComOwner<ID3D12RootSignature> stComputeRoot;
 	ComOwner<ID3D12RootSignature> stDeferredRoot;
 	ComOwner<ID3D12RootSignature> stLightingRoot;
+	ComOwner<ID3D12RootSignature> stAmbientRoot;
+	std::array<ComOwner<ID3D12PipelineState>, 2> arrAmbientPipelines;
+	OcclusionKernel arrAmbientKernel{};
+	std::uint64_t nAmbientBytes = 0;
 	ComOwner<ID3D12RootSignature> stToneMapRoot;
 	ComOwner<ID3D12PipelineState> stGraphicsPipeline;
 	ComOwner<ID3D12PipelineState> stComputePipeline;
@@ -1281,7 +1307,7 @@ bool VisualRuntime::CreateTargets()
 	{
 		return false;
 	}
-	if (!CreatePostProcessTargets() || !CreateReflectionTargets() || !CreateForwardTargets() || !CreateVolumeTargets())
+	if (!CreatePostProcessTargets() || !CreateReflectionTargets() || !CreateForwardTargets() || !CreateVolumeTargets() || !CreateAmbientOcclusionTargets())
 	{
 		return false;
 	}
@@ -1293,6 +1319,173 @@ bool VisualRuntime::CreateTargets()
 		return Fail("Create image readback");
 	}
 	return true;
+}
+
+bool VisualRuntime::CreateAmbientOcclusionTargets()
+{
+	nAmbientBytes = 0;
+	if (!bSceneMode || !stRenderConfiguration.stAmbientOcclusion.bEnabled)
+	{
+		return true;
+	}
+	Assets::Diagnostics arrDiagnostics;
+	if (!BuildAmbientOcclusionKernel(stRenderConfiguration.stAmbientOcclusion, arrAmbientKernel, arrDiagnostics))
+	{
+		return Fail("Invalid ambient occlusion kernel");
+	}
+	D3D12_FEATURE_DATA_FORMAT_SUPPORT stSupport{};
+	stSupport.Format = DXGI_FORMAT_R16_FLOAT;
+	if (FAILED(stDevice->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT, &stSupport, sizeof(stSupport))) ||
+		(stSupport.Support2 & D3D12_FORMAT_SUPPORT2_UAV_TYPED_STORE) == 0)
+	{
+		return Fail("Ambient occlusion requires R16_FLOAT UAV stores");
+	}
+	D3D12_RESOURCE_DESC stTexture{};
+	stTexture.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	stTexture.Width = nWidth;
+	stTexture.Height = nHeight;
+	stTexture.DepthOrArraySize = 1;
+	stTexture.MipLevels = 1;
+	stTexture.SampleDesc.Count = 1;
+	stTexture.Format = DXGI_FORMAT_R16_FLOAT;
+	stTexture.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+	const D3D12_RESOURCE_DESC stBuffer = BufferDescription(AMBIENT_CONSTANT_BYTES);
+	const D3D12_HEAP_PROPERTIES stDefault = HeapProperties(D3D12_HEAP_TYPE_DEFAULT);
+	const D3D12_HEAP_PROPERTIES stUpload = HeapProperties(D3D12_HEAP_TYPE_UPLOAD);
+	const std::uint64_t nTextureBytes = stDevice->GetResourceAllocationInfo(0, 1, &stTexture).SizeInBytes;
+	const std::uint64_t nConstantBytes = stDevice->GetResourceAllocationInfo(0, 1, &stBuffer).SizeInBytes;
+	if (nTextureBytes == 0 || nTextureBytes == UINT64_MAX || nConstantBytes == 0 || nConstantBytes > UINT64_MAX / FRAME_COUNT ||
+		nTextureBytes > (UINT64_MAX / FRAME_COUNT - nConstantBytes) / 3)
+	{
+		return Fail("Ambient occlusion allocations exceed the device address range");
+	}
+	for (std::uint32_t nFrame = 0; nFrame < FRAME_COUNT; ++nFrame)
+	{
+		FrameContext &stFrame = arrFrames[nFrame];
+		if (FAILED(stDevice->CreateCommittedResource(&stUpload, D3D12_HEAP_FLAG_NONE, &stBuffer,
+													 D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(stFrame.stAmbientConstants.Put()))))
+		{
+			return Fail("Create ambient occlusion constants");
+		}
+		nAmbientBytes += nConstantBytes;
+		for (std::uint32_t nTarget = 0; nTarget < stFrame.arrAmbientOcclusion.size(); ++nTarget)
+		{
+			ComOwner<ID3D12Resource> &stTarget = stFrame.arrAmbientOcclusion[nTarget];
+			if (FAILED(stDevice->CreateCommittedResource(&stDefault, D3D12_HEAP_FLAG_NONE, &stTexture,
+														 D3D12_RESOURCE_STATE_COMMON, nullptr, IID_PPV_ARGS(stTarget.Put()))))
+			{
+				return Fail("Create ambient occlusion target");
+			}
+			nAmbientBytes += nTextureBytes;
+			const std::wstring strName = L"EngineNext.AmbientOcclusion." + std::to_wstring(nFrame) + L"." + std::to_wstring(nTarget);
+			(void)stTarget->SetName(strName.c_str());
+			D3D12_SHADER_RESOURCE_VIEW_DESC stSrv{};
+			stSrv.Format = stTexture.Format;
+			stSrv.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+			stSrv.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+			stSrv.Texture2D.MipLevels = 1;
+			D3D12_UNORDERED_ACCESS_VIEW_DESC stUav{};
+			stUav.Format = stTexture.Format;
+			stUav.ViewDimension = D3D12_UAV_DIMENSION_TEXTURE2D;
+			const std::uint32_t nView = nFrame * FRAME_VIEW_COUNT + AMBIENT_VIEW_START + nTarget * 2;
+			stDevice->CreateShaderResourceView(stTarget.Get(), &stSrv, View(nView));
+			stDevice->CreateUnorderedAccessView(stTarget.Get(), nullptr, &stUav, View(nView + 1));
+		}
+	}
+	return true;
+}
+
+bool VisualRuntime::CreateAmbientOcclusionPipeline()
+{
+	if (!bSceneMode || !stRenderConfiguration.stAmbientOcclusion.bEnabled)
+	{
+		return true;
+	}
+	std::array<D3D12_ROOT_PARAMETER, 6> arrParameters{};
+	arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	arrParameters[0].Descriptor.ShaderRegister = 0;
+	arrParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
+	arrParameters[1].Constants.ShaderRegister = 1;
+	arrParameters[1].Constants.Num32BitValues = 2;
+	std::array<D3D12_DESCRIPTOR_RANGE, 4> arrRanges{};
+	for (std::uint32_t nRange = 0; nRange < arrRanges.size(); ++nRange)
+	{
+		arrRanges[nRange].RangeType = nRange == 3 ? D3D12_DESCRIPTOR_RANGE_TYPE_UAV : D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+		arrRanges[nRange].NumDescriptors = 1;
+		arrRanges[nRange].BaseShaderRegister = nRange == 3 ? 0 : nRange;
+		arrParameters[nRange + 2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+		arrParameters[nRange + 2].DescriptorTable.NumDescriptorRanges = 1;
+		arrParameters[nRange + 2].DescriptorTable.pDescriptorRanges = &arrRanges[nRange];
+	}
+	D3D12_ROOT_SIGNATURE_DESC stRoot{};
+	stRoot.NumParameters = static_cast<UINT>(arrParameters.size());
+	stRoot.pParameters = arrParameters.data();
+	ComOwner<ID3DBlob> stSerialized;
+	ComOwner<ID3DBlob> stErrors;
+	if (FAILED(D3D12SerializeRootSignature(&stRoot, D3D_ROOT_SIGNATURE_VERSION_1, stSerialized.Put(), stErrors.Put())) ||
+		FAILED(stDevice->CreateRootSignature(0, stSerialized->GetBufferPointer(), stSerialized->GetBufferSize(), IID_PPV_ARGS(stAmbientRoot.Put()))))
+	{
+		return Fail("Create ambient occlusion root signature");
+	}
+	const std::array<const char *, 2> arrNames{ "AmbientOcclusion.cs.cso", "AmbientOcclusionBlur.cs.cso" };
+	for (std::size_t nShader = 0; nShader < arrNames.size(); ++nShader)
+	{
+		const std::vector<std::uint8_t> arrShader = ReadShader(stConfig.strShaderDirectory, arrNames[nShader]);
+		if (arrShader.empty())
+		{
+			return Fail("Missing ambient occlusion shader");
+		}
+		D3D12_COMPUTE_PIPELINE_STATE_DESC stPipeline{};
+		stPipeline.pRootSignature = stAmbientRoot.Get();
+		stPipeline.CS = { arrShader.data(), arrShader.size() };
+		if (FAILED(stDevice->CreateComputePipelineState(&stPipeline, IID_PPV_ARGS(arrAmbientPipelines[nShader].Put()))))
+		{
+			return Fail("Create ambient occlusion compute pipeline");
+		}
+	}
+	return true;
+}
+
+bool VisualRuntime::UpdateAmbientOcclusionConstants(FrameContext &stFrame, const FrameConstants &stConstants)
+{
+	if (!stRenderConfiguration.stAmbientOcclusion.bEnabled)
+	{
+		return true;
+	}
+	AmbientConstants stAmbient;
+	stAmbient.arrViewProjection = stConstants.arrViewProjection;
+	stAmbient.arrInverseViewProjection = stConstants.arrInverseViewProjection;
+	stAmbient.arrCamera = stConstants.arrCamera;
+	const AmbientOcclusionSettings &stSettings = stRenderConfiguration.stAmbientOcclusion;
+	stAmbient.arrParameters = { static_cast<float>(stSettings.dRadius), static_cast<float>(stSettings.dNormalBias), static_cast<float>(stSettings.dIntensity), 0 };
+	stAmbient.arrCounts = { nWidth, nHeight, stSettings.nSampleCount, stRenderConfiguration.stTemporal.bEnabled ? stTemporalFrame.nSampleIndex : 0U };
+	stAmbient.arrKernel = arrAmbientKernel;
+	void *pMapped = nullptr;
+	const D3D12_RANGE stNoRead{ 0, 0 };
+	if (stFrame.stAmbientConstants.Get() == nullptr || FAILED(stFrame.stAmbientConstants->Map(0, &stNoRead, &pMapped)))
+	{
+		return Fail("Map retired ambient occlusion constants");
+	}
+	std::memcpy(pMapped, &stAmbient, sizeof(stAmbient));
+	stFrame.stAmbientConstants->Unmap(0, nullptr);
+	return true;
+}
+
+void VisualRuntime::DrawAmbientOcclusion(ID3D12GraphicsCommandList *pList, std::uint32_t nFrame, PassWork eWork)
+{
+	const std::uint32_t nStage = static_cast<std::uint32_t>(eWork) - static_cast<std::uint32_t>(PassWork::AmbientOcclusion);
+	const std::uint32_t nStart = nFrame * FRAME_VIEW_COUNT;
+	const std::array<std::uint32_t, 2> arrAxis{ nStage == 1 ? 1U : 0U, nStage == 2 ? 1U : 0U };
+	const std::uint32_t nSource = nStage == 0 ? 6 : AMBIENT_VIEW_START + (nStage - 1) * 2;
+	pList->SetComputeRootSignature(stAmbientRoot.Get());
+	pList->SetPipelineState(arrAmbientPipelines[nStage == 0 ? 0 : 1].Get());
+	pList->SetComputeRootConstantBufferView(0, arrFrames[nFrame].stAmbientConstants->GetGPUVirtualAddress());
+	pList->SetComputeRoot32BitConstants(1, 2, arrAxis.data(), 0);
+	pList->SetComputeRootDescriptorTable(2, GpuView(nStart + 6));
+	pList->SetComputeRootDescriptorTable(3, GpuView(nStart + 3));
+	pList->SetComputeRootDescriptorTable(4, GpuView(nStart + nSource));
+	pList->SetComputeRootDescriptorTable(5, GpuView(nStart + AMBIENT_VIEW_START + nStage * 2 + 1));
+	pList->Dispatch((nWidth + 7) / 8, (nHeight + 7) / 8, 1);
 }
 
 bool VisualRuntime::CreatePipeline()
@@ -2494,7 +2687,8 @@ bool VisualRuntime::CreateDeferredPipeline()
 			pLightingShader = stRenderConfiguration.stReflections.bEnabled ? "GiMaterialReflectionLighting.ps.cso" : "GiMaterialLighting.ps.cso";
 		}
 	}
-	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, pLightingShader);
+	const std::string strLightingShader = stRenderConfiguration.stAmbientOcclusion.bEnabled ? std::string("Ao") + pLightingShader : pLightingShader;
+	const std::vector<std::uint8_t> arrLighting = ReadShader(stConfig.strShaderDirectory, strLightingShader.c_str());
 	const std::vector<std::uint8_t> arrToneMap = ReadShader(stConfig.strShaderDirectory, "ToneMap.ps.cso");
 	if (arrVertex.empty() || arrPixel.empty() || arrFullscreen.empty() || arrLighting.empty() || arrToneMap.empty())
 	{
@@ -2502,7 +2696,7 @@ bool VisualRuntime::CreateDeferredPipeline()
 	}
 	for (std::uint32_t nPipeline = 0; nPipeline < 2; ++nPipeline)
 	{
-		std::array<D3D12_DESCRIPTOR_RANGE, 9> arrDescriptorRanges{};
+		std::array<D3D12_DESCRIPTOR_RANGE, 10> arrDescriptorRanges{};
 		arrDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 		arrDescriptorRanges[0].NumDescriptors = 5;
 		arrDescriptorRanges[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
@@ -2526,7 +2720,8 @@ bool VisualRuntime::CreateDeferredPipeline()
 		arrDescriptorRanges[7].NumDescriptors = 1;
 		arrDescriptorRanges[7].BaseShaderRegister = 15;
 		arrDescriptorRanges[8] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 3, 16, 0, 0 };
-		std::array<D3D12_ROOT_PARAMETER, 10> arrParameters{};
+		arrDescriptorRanges[9] = { D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 31, 0, 0 };
+		std::array<D3D12_ROOT_PARAMETER, 11> arrParameters{};
 		arrParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 		arrParameters[0].Descriptor.ShaderRegister = nPipeline == 0 ? 0 : 1;
 		arrParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -2566,6 +2761,12 @@ bool VisualRuntime::CreateDeferredPipeline()
 				arrParameters[nGiRoot + 1].Descriptor.ShaderRegister = 4;
 				arrParameters[nGiRoot + 1].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 				stRoot.NumParameters += 2;
+			}
+			if (stRenderConfiguration.stAmbientOcclusion.bEnabled)
+			{
+				arrParameters[stRoot.NumParameters] = arrParameters[2];
+				arrParameters[stRoot.NumParameters].DescriptorTable.pDescriptorRanges = &arrDescriptorRanges[9];
+				++stRoot.NumParameters;
 			}
 		}
 		else
@@ -2748,7 +2949,11 @@ bool VisualRuntime::CreateDeferredPipeline()
 	stPipeline.NumRenderTargets = 1;
 	stPipeline.RTVFormats[1] = DXGI_FORMAT_UNKNOWN;
 	stPipeline.RTVFormats[0] = COLOR_FORMAT;
-	return SUCCEEDED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(stToneMapPipeline.Put()))) || Fail("Create tone mapping PSO");
+	if (FAILED(stDevice->CreateGraphicsPipelineState(&stPipeline, IID_PPV_ARGS(stToneMapPipeline.Put()))))
+	{
+		return Fail("Create tone mapping PSO");
+	}
+	return CreateAmbientOcclusionPipeline();
 }
 
 ID3D12Resource *VisualRuntime::CurrentHdrResource(std::uint32_t nFrame) const
@@ -4623,7 +4828,7 @@ bool VisualRuntime::UpdateConstantBuffer(FrameContext &stFrame)
 		std::memcpy(pBytes + (nView + 4) * CONSTANT_BUFFER_ALIGNMENT, stConstants.arrLocalShadowMatrices[nView].data(), 16 * sizeof(float));
 	}
 	stFrame.stShadowConstants->Unmap(0, nullptr);
-	return true;
+	return UpdateAmbientOcclusionConstants(stFrame, stConstants);
 }
 
 std::array<float, 16> VisualRuntime::DrawTransform(const GpuDraw &stDraw) const
@@ -4718,6 +4923,11 @@ void VisualRuntime::DrawLighting(ID3D12GraphicsCommandList *pList, std::uint32_t
 		const UINT nGiRoot = bMaterialExtensions ? 8U : 6U;
 		pList->SetGraphicsRootDescriptorTable(nGiRoot, stGi.ReceiverGpu(nFrame));
 		pList->SetGraphicsRootConstantBufferView(nGiRoot + 1, stGi.ConstantsGpu(nFrame));
+	}
+	if (stRenderConfiguration.stAmbientOcclusion.bEnabled)
+	{
+		const UINT nAmbientRoot = 6U + (bMaterialExtensions ? 2U : 0U) + (stRenderConfiguration.stGlobalIllumination.bEnabled ? 2U : 0U);
+		pList->SetGraphicsRootDescriptorTable(nAmbientRoot, GpuView(nFrame * FRAME_VIEW_COUNT + AMBIENT_VIEW_START + 4));
 	}
 	pList->DrawInstanced(3, 1, 0, 0);
 }
@@ -4907,7 +5117,7 @@ bool VisualRuntime::BuildGraph()
 	}
 	GraphDiagnostic stDiagnostic;
 	if (!BuildRenderPipeline(bSceneMode, stRenderPipeline, stDiagnostic, static_cast<std::uint32_t>(stLocalShadowData.arrViews.size()), stRenderConfiguration.stTemporal.bEnabled, true, stRenderConfiguration.stBloom.bEnabled ? stRenderConfiguration.stBloom.nMipCount : 0,
-							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled))
+							 stRenderConfiguration.stReflections.bEnabled ? REFLECTION_MIP_COUNT : 0, stForwardEffects, bMaterialExtensions, stRenderConfiguration.stGlobalIllumination.bEnabled, stGeometryFeatures, stRenderConfiguration.stGlobalIllumination.stPlacement.bEnabled, stRenderConfiguration.stAmbientOcclusion.bEnabled))
 	{
 		return Fail("FrameGraph compilation failed: " + stDiagnostic.strMessage);
 	}
@@ -5120,6 +5330,14 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			}
 		}
 		arrResources[stRenderPipeline.nHdr] = stFrame.stHdr.Get();
+		if (stRenderConfiguration.stAmbientOcclusion.bEnabled)
+		{
+			arrResources[stRenderPipeline.nAmbientConstants] = stFrame.stAmbientConstants.Get();
+			for (std::size_t nTarget = 0; nTarget < stFrame.arrAmbientOcclusion.size(); ++nTarget)
+			{
+				arrResources[stRenderPipeline.arrAmbientOcclusion[nTarget]] = stFrame.arrAmbientOcclusion[nTarget].Get();
+			}
+		}
 		if (stRenderConfiguration.stReflections.bEnabled)
 		{
 			arrResources[stRenderPipeline.nEnvironmentSpecular] = stFrame.stEnvironmentSpecular.Get();
@@ -5342,6 +5560,10 @@ bool VisualRuntime::RenderFrame(double dSeconds, bool bCapture)
 			pList->IASetVertexBuffers(0, 1, &stVertexView);
 			pList->IASetIndexBuffer(&stIndexView);
 			pList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+		}
+		else if (eWork == PassWork::AmbientOcclusion || eWork == PassWork::AmbientBlurHorizontal || eWork == PassWork::AmbientBlurVertical)
+		{
+			DrawAmbientOcclusion(pList, nIndex, eWork);
 		}
 		else if (eWork == PassWork::GBuffer)
 		{
@@ -6043,6 +6265,9 @@ bool VisualRuntime::WriteReport(bool bSuccess)
 	mapReport["material_extensions"] = JsonValue(bMaterialExtensions);
 	mapReport["material_overrides"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stMaterials.arrOverrides.size()));
 	mapReport["material_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nMaterialBytes));
+	mapReport["ambient_occlusion_enabled"] = JsonValue(bSceneMode && stRenderConfiguration.stAmbientOcclusion.bEnabled);
+	mapReport["ambient_occlusion_samples"] = JsonValue(static_cast<std::int64_t>(stRenderConfiguration.stAmbientOcclusion.nSampleCount));
+	mapReport["ambient_occlusion_resource_bytes"] = JsonValue(static_cast<std::int64_t>(nAmbientBytes));
 	mapReport["material_parameter_format"] = JsonValue(bMaterialExtensions ? "R32G32B32A32_FLOAT" : "disabled");
 	mapReport["dynamic_global_illumination"] = JsonValue(bSceneMode && stRenderConfiguration.stGlobalIllumination.bEnabled);
 	mapReport["gi_trace_path"] = JsonValue(stGi.ProbeCount() != 0 ? "dxr_inline_query" : "disabled");

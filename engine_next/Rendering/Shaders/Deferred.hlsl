@@ -39,6 +39,9 @@ cbuffer FrameConstants : register(b1)
     column_major float4x4 PreviousViewProjection;
 };
 StructuredBuffer<float4> ExposureState : register(t11);
+#if defined(AMBIENT_OCCLUSION_STAGE)
+Texture2D<float> AmbientVisibility : register(t31);
+#endif
 #if defined(GEOMETRY_STAGE)
 cbuffer DrawConstants : register(b0)
 {
@@ -371,6 +374,9 @@ float4 LightingPS(FullscreenOutput Input) : SV_TARGET
 #else
     DiffuseEnvironment = GiReceiverDiffuse(DiffuseEnvironment, Position, N, V, Base, Material.y, Material.x, float4(0, 0, 0, 0), false);
 #endif
+#endif
+#if defined(AMBIENT_OCCLUSION_STAGE)
+    DiffuseEnvironment *= saturate(AmbientVisibility.Load(int3(Pixel, 0)));
 #endif
 #if defined(REFLECTION_STAGE)
     Color += DiffuseEnvironment * Material.z;
