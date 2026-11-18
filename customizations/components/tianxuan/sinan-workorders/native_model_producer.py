@@ -28,6 +28,7 @@ def source_digest():
     paths = [
         Path(__file__),
         Path(__file__).with_name("native_context.py"),
+        Path(__file__).with_name("native_entry_context_client.py"),
         HOST,
         HELPER,
         Path(__file__).with_name("native_worker.py"),

@@ -119,3 +119,9 @@ write paths use the existing ASCII portable proposal dialect (<=512 bytes,
 to the aggregate request/response limits above. Host role/capability admission
 must be verified before calling evaluate with `scope="live"`; that label itself
 is not independent proof of a real provider or permission.
+
+### Ordinary installed runtime transport
+
+Ordinary main can select local or existing RemoteNativeWorker execution through the digest-pinned runtime sidecar described in `design-docs/native-production-entry-20261118.md` (repository-root relative). Its context policy is served over `/native-context/{execution}` to the installed broker, and is never writable through the ordinary request API. Producer configuration may add `context_transport` with an HTTPS server origin and private absolute `token_file`; node configuration also sets an absolute existing `contract_registry` matching the producer's registry argument. The existing signed template must admit the context tool and call budget when demand context is selected. Small tasks retain bounded full inputs. Historical delta pairs require a separately admitted policy and are denied by this sidecar.
+
+Server-owned context receipts are read only after real worker closure; node-local copies cannot establish current server authority. Transport or model outcomes that are unknown retain their original intent. Deterministic HTTP/node tests are not production model acceptance or a universal cost-saving measurement.

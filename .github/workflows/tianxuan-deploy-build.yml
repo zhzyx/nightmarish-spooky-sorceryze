@@ -6,6 +6,13 @@ on:
       - "deploy/**"
       - "apps/tianxuan/**"
       - "customizations/components/tianxuan/**"
+      - "framework/**"
+      - "customizations/platforms/ai-access/host-http/runtime/**"
+      - "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs"
+      - "tools/ainative/owned_process.py"
+      - "tools/codex_cli/subscription_session.js"
+      - "tools/codex_cli/content_preview.js"
+      - "tools/codex_cli/subscription_profile.py"
       - ".github/workflows/tianxuan-deploy-build.yml"
   workflow_dispatch:
 
@@ -21,6 +28,22 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build API image
         run: docker build --pull -f deploy/Dockerfile.api -t tianxuan-api:ci .
+      - name: Native package execution and context
+        run: |
+          docker run --rm --network none --read-only --memory 192m --cpus 1 \
+            --tmpfs /tmp:rw,nosuid,nodev,size=67108864,mode=1777 \
+            -e NATIVE_TEST_NODE=/usr/local/bin/node \
+            --workdir /app tianxuan-api:ci \
+            python -B -m pytest -q -p no:cacheprovider \
+            customizations/components/tianxuan/server/test_native_entry_normal.py \
+            customizations/components/tianxuan/server/test_native_shared_dispatch.py \
+            customizations/components/tianxuan/server/test_native_entry_installation_lifecycle.py \
+            customizations/components/tianxuan/server/test_native_entry_context.py \
+            customizations/components/tianxuan/server/test_native_entry_broker_context.py \
+            customizations/components/tianxuan/server/test_native_entry_remote_normal.py \
+            customizations/components/tianxuan/server/test_native_entry_context_resources.py \
+            customizations/components/tianxuan/server/test_native_entry_context_admission.py \
+            customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py
       - name: Build Web image
         run: docker build --pull -f deploy/Dockerfile.web -t tianxuan-web:ci apps/tianxuan
       - name: Report image sizes

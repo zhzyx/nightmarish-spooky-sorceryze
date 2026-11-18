@@ -1,0 +1,16 @@
+{
+  "issue": 1499,
+  "related_bug": 1445,
+  "original_package_report_sha256": "a7192f95fa2dcadd2e82a2c5dfa42488d16525a8ac6758e87f4cb37b177f55a9",
+  "source_sha256": {
+    "deploy/Dockerfile.api": "6ea2eaaffcb337ea8434dd20fb530e526d99cd2ddc31b35b9bd1d5e0293743da",
+    "deploy/Dockerfile.api.dockerignore": "320a2fcc12a3cd2bd7111ea36dc0fb50ab2ffd3f6c23ace2353515fa2b4605fc",
+    "deploy/README.md": "4c76936ed40fb8dbf5b5dc900ed909d60ccef99c471f5bda684cb13ece910b16",
+    "deploy/nginx.conf": "858543b7a2c5d646ee4698c4379e97275b3af509007751dd4149a2bfb3cc45b7",
+    "deploy/production/nginx.gate.conf.example": "6c120344f4852e18e232a6abd97c1a02ec194f4d95b7f85f0d620b03277e7d57",
+    "deploy/docker-compose.native.yml.example": "cece5a53345fb2f99277fbb6e7a85c27a2abc5fbd6493cc1705a788eae67b47b",
+    ".github/workflows/tianxuan-deploy-build.yml": "74f4ed903be06d2560dfc128434b8b336c31a86cf9c5fa1e23335c9ed91c6dbe"
+  },
+  "review_correction": "Independent reviewer found missing path triggers for newly copied dependencies. CI now includes all seven new dependency roots/files. Dockerfile installs requirements before copying business sources, so routine source changes can reuse dependency layer. Full normal Dockerfile CI still pending.",
+  "unchanged_remaining_source_files": true
+}

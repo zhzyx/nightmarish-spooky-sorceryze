@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-9ab78b162c13544f0abd4033d5e6f31733a75e1acfddba08f52f0d3e18aa1b1f",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+  "occurred_at": "2026-11-18T09:22:41.452224+00:00",
+  "evidence_refs": [
+    "dispatch-402da973dc6d462fafbf5a927a00fa59",
+    "learn-479f05e259e63850ca2569acd89ec756b33173eb517c997599ea4e7ca6dae46a"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 23,
+    "previous": "96569a82e30e82a8426b3063868a790684317aeb29c177304e4e8cbed2626661",
+    "action": "applied",
+    "details": {
+      "task": "1499 runtime R1/R2 and package independent handoff, current candidate metadata before delivery",
+      "observed": "Actual worker completion was reconciled separately from business acceptance. Original timeout/late-start and installation rebinding failures reproduced and fixed; exact27-source runtime/package reviews accepted with normal Docker CI still pending. Final receiver found3 frozen CRLF report blobs had remained LF after attribute edits; explicit restaging restored exact raw hashes, original finding retained and independent recheck passed. Source tests do not establish production, AA or250real-model acceptance."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-entry-runtime-repair-review-1499.json",
+        "sha256": "b6ede33c23708f1837db7a6b1191bec412c62c0c4646f11be016d40f855f5ffb"
+      },
+      {
+        "path": "data-collection/native-entry-package-review-1499.json",
+        "sha256": "63fd9ade76be388e90f11ac0e991a1ade3407b0c01bdab15dcdc820b83525f05"
+      },
+      {
+        "path": "data-collection/native-entry-runtime-host-boundary-1499.json",
+        "sha256": "02faf55367e365f7927f96e3774b2e6b29d309f26ffec41312922ace5303426d"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-402da973dc6d462fafbf5a927a00fa59.json",
+      "sha256": "077afe7a80cf4b86a5ab711af3f01648677c55398ae9cb802962026f79703ce1"
+    }
+  },
+  "sha256": "ab42a88db3abe3bc689394fe7bcd4ba50def3ad0ac4670af903bad8eb491045f"
+}

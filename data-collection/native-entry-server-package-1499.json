@@ -1,0 +1,221 @@
+{
+  "schema": 1,
+  "issue": 1499,
+  "related": [
+    1501,
+    1445
+  ],
+  "status": "integrated-package-candidate-awaiting-independent-review-and-normal-Dockerfile-CI",
+  "source_sha256": {
+    "deploy/Dockerfile.api": "b426b62e8b0ebf88a35e6bfcf9eb2443de884aa024a1b1b5ff37fa2e8d0e07be",
+    "deploy/Dockerfile.api.dockerignore": "320a2fcc12a3cd2bd7111ea36dc0fb50ab2ffd3f6c23ace2353515fa2b4605fc",
+    "deploy/README.md": "4c76936ed40fb8dbf5b5dc900ed909d60ccef99c471f5bda684cb13ece910b16",
+    "deploy/nginx.conf": "858543b7a2c5d646ee4698c4379e97275b3af509007751dd4149a2bfb3cc45b7",
+    "deploy/production/nginx.gate.conf.example": "6c120344f4852e18e232a6abd97c1a02ec194f4d95b7f85f0d620b03277e7d57",
+    "deploy/docker-compose.native.yml.example": "cece5a53345fb2f99277fbb6e7a85c27a2abc5fbd6493cc1705a788eae67b47b",
+    ".github/workflows/tianxuan-deploy-build.yml": "c3735cc5ccf96c35062016c82d245c7c37b68c706eeb3092cf527dd55087960e"
+  },
+  "architecture": {
+    "runtime": "Existing Tianxuan native domain, Sinan workflow, frozen framework, signed host runtime and exact process transport dependencies; official Debian Node executable only, no npm/provider credentials or model installation.",
+    "optional_overlay": "Read-only root and installation bind, persistent native DB/coordinator state on existing data volume; separately digest-pinned installation/runtime sidecar. Existing HTTPS/key/organization policy unchanged.",
+    "proxy": "Both HTTP and production TLS configurations route /native-context/ to API with execution bearer and256KiB ceiling; no browser login redirect.",
+    "build_context": "Positive COPY input allowlist with exclusions reapplied below traversal-only parent directories; real BuildKit export matches441archivedsourcefiles and excludes8synthetic private/engine/irrelevant sentinels."
+  },
+  "validation": {
+    "derivative_build": {
+      "command": [
+        "docker",
+        "build",
+        "--pull=false",
+        "--network=none",
+        "--memory=201326592",
+        "--cpu-period=100000",
+        "--cpu-quota=100000",
+        "-f",
+        "Dockerfile.native-sandbox",
+        "-t",
+        "gonggong-native-package:1499-20261118",
+        "."
+      ],
+      "exit_code": 0,
+      "seconds": 33.64012219599681,
+      "base": "sha256:75e3070e67ed3a116d0c0a9728e9aa16ee21d28714f8944a94216323d4f31bf3",
+      "tag": "gonggong-native-package:1499-20261118",
+      "free_before": 724434944,
+      "free_after": 284913664,
+      "production_containers_unchanged": true,
+      "production_changed": false,
+      "image": {
+        "id": "sha256:4eb4d88323f584fecbf61a1b8e9ed28523751a41b07b29de309a5462c6d6f044",
+        "size": 152740741,
+        "labels": {
+          "org.gonggong.purpose": "isolated-validation",
+          "org.gonggong.task": "1499-native-package"
+        }
+      }
+    },
+    "ordinary_container": {
+      "image": "sha256:4eb4d88323f584fecbf61a1b8e9ed28523751a41b07b29de309a5462c6d6f044",
+      "exit_code": 0,
+      "seconds": 59.570712894026656,
+      "production_containers_unchanged": true,
+      "test_container_removed": true,
+      "free_after": 459579392
+    },
+    "ordinary_tests": "9passed49.97s, networknone/read-only/192MiB/1CPU; earlier source46f43closure only",
+    "same_image_installation_cycle": {
+      "image": "sha256:6dd4ae38433e93be91bf1a6820506c53ad5663b4f2906a5fb60f7677affff3f9",
+      "script_sha256": "00394a21b95c4b7d15d20803d2b21fc45a4ae79ce9ca92eb07cde16eb5ffb111",
+      "phases": [
+        {
+          "phase": [
+            "1",
+            "v1"
+          ],
+          "exit_code": 0,
+          "seconds": 13.468533603008837,
+          "container_removed": true,
+          "output": "{\"phase\": 1, \"installation\": \"v1\", \"manifest_sha256\": \"2a2d252f7eb110cd11ca1362740cab3d3385771473186096874395186fa9ce07\", \"accepted_entries\": 1, \"old_receipts_unchanged\": true, \"physical_producer_markers\": 1, \"provider_calls\": 0, \"scope\": \"Same immutable image, separate OS container lifetimes, same durable state; deterministic admitted roles\"}\n",
+          "stderr": "/usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n"
+        },
+        {
+          "phase": [
+            "2",
+            "v2"
+          ],
+          "exit_code": 0,
+          "seconds": 12.241604173032101,
+          "container_removed": true,
+          "output": "{\"phase\": 2, \"installation\": \"v2\", \"manifest_sha256\": \"b0e600f515374d8ef79d4e4d179182491f6ee45a98d246dab3df293bef56ca5f\", \"accepted_entries\": 2, \"old_receipts_unchanged\": true, \"physical_producer_markers\": 2, \"provider_calls\": 0, \"scope\": \"Same immutable image, separate OS container lifetimes, same durable state; deterministic admitted roles\"}\n",
+          "stderr": "/usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n"
+        },
+        {
+          "phase": [
+            "3",
+            "v1"
+          ],
+          "exit_code": 0,
+          "seconds": 10.447168969956692,
+          "container_removed": true,
+          "output": "{\"phase\": 3, \"installation\": \"v1\", \"manifest_sha256\": \"2a2d252f7eb110cd11ca1362740cab3d3385771473186096874395186fa9ce07\", \"accepted_entries\": 3, \"old_receipts_unchanged\": true, \"physical_producer_markers\": 3, \"provider_calls\": 0, \"scope\": \"Same immutable image, separate OS container lifetimes, same durable state; deterministic admitted roles\"}\n",
+          "stderr": "/usr/local/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n  from starlette.testclient import TestClient as TestClient  # noqa\n"
+        }
+      ],
+      "production_containers_unchanged": true,
+      "free_after": 447275008,
+      "scope": "same exact image all3 phases, same durable state, installed program v1-v2-v1; no real model calls"
+    },
+    "proxy": {
+      "source_sha256": {
+        "deploy/nginx.conf": "858543b7a2c5d646ee4698c4379e97275b3af509007751dd4149a2bfb3cc45b7",
+        "deploy/production/nginx.gate.conf.example": "6c120344f4852e18e232a6abd97c1a02ec194f4d95b7f85f0d620b03277e7d57",
+        "deploy/docker-compose.yml": "ff92fbcf27e5dddfa8393bdc7415e2e00ea85110c6f25dc6a1fcb6cb15bfa9c9",
+        "deploy/docker-compose.native.yml.example": "cece5a53345fb2f99277fbb6e7a85c27a2abc5fbd6493cc1705a788eae67b47b"
+      },
+      "nginx_image": "sha256:fed7e14be83cbd2661a75cdc5b872d936cf155d46c327084d30b8df19ae88d72",
+      "upstream_image": "sha256:6dd4ae38433e93be91bf1a6820506c53ad5663b4f2906a5fb60f7677affff3f9",
+      "cases": [
+        {
+          "mode": "http",
+          "syntax_exit": 0,
+          "checks": [
+            {
+              "bytes": 28,
+              "auth": true,
+              "status": 200
+            },
+            {
+              "bytes": 2,
+              "auth": false,
+              "status": 401
+            },
+            {
+              "bytes": 262145,
+              "auth": true,
+              "status": 413
+            }
+          ]
+        },
+        {
+          "mode": "https",
+          "syntax_exit": 0,
+          "checks": [
+            {
+              "bytes": 28,
+              "auth": true,
+              "status": 200
+            },
+            {
+              "bytes": 2,
+              "auth": false,
+              "status": 401
+            },
+            {
+              "bytes": 262145,
+              "auth": true,
+              "status": 413
+            }
+          ]
+        }
+      ],
+      "compose_normalization": true,
+      "production_containers_unchanged": true,
+      "owned_resources_removed": [
+        "gonggong-native1499-proxy-api",
+        "gonggong-native1499-proxy-net"
+      ],
+      "scope": "Actual nginx HTTP and TLS forwarding to synthetic upstream; app authority independently tested, no production changes",
+      "free_after": 447025152
+    },
+    "context_allowlist": {
+      "policy_sha256": "320a2fcc12a3cd2bd7111ea36dc0fb50ab2ffd3f6c23ace2353515fa2b4605fc",
+      "exact_files": 441,
+      "source_context_sha256": "98ea563a84ce94093d9f93ea9d91501ef7d6adf1d837d404a09d7c9232f27576",
+      "excluded_sentinels": [
+        "p/private_fixture.txt",
+        "bin/editor.exe",
+        ".git/config",
+        "framework/.env",
+        "customizations/components/tianxuan/server/.env.private",
+        "customizations/components/tianxuan/server/__pycache__/private.pyc",
+        "tools/unrelated.py",
+        "customizations/platforms/ai-access/host-http/private-token.txt"
+      ],
+      "image": "sha256:0621a3973b126432f1dca4bc3fd938eddc180bf725adeef070fb0c6eec6e09fd",
+      "size": 807069,
+      "test_image_and_never_started_container_removed": true,
+      "production_containers_unchanged": true,
+      "free_after": 410025984,
+      "scope": "Actual BuildKit Dockerfile-adjacent ignore evaluation and exported COPY contents; source closure from archived initial441files, not full normal Dockerfile build"
+    }
+  },
+  "normalization": "Proxy/Compose test copies were UTF-8 with LF after read_text normalization. source_sha256 binds current raw workspace bytes; CI/index normalization must match tested LF bytes. Docker context policy already LF.",
+  "ci": "Updated existing Tianxuan deploy workflow builds normal Dockerfile then executes9 test modules in a no-network/read-only192MiB/1CPU container before existing web/Compose checks. Not run yet; no fresh normalimage success claim.",
+  "limits": [
+    "Server derivative uses exactexisting APIbase75e3070; initialsource441files46f43 andsourceonlyR2 patch do not contain full newer context/runtime.",
+    "Fresh image v1-v2-v1 proves samebinary installed deterministic roles update/rollback on sameDB, not liveprovider or arbitraryschema migration.",
+    "Proxy uses actual nginx and TLS with syntheticupstream to isolate routing; application authority independently validated by runtime tests.",
+    "No production change, registration/personal-key organization migration andactualresolver remain pending. No250realmodels or wholeAIefficiency/AAclaim."
+  ],
+  "failures_retained": [
+    "Docker build overhead exceeded estimate; only own SHAverified Node download duplicates removed, freeheadroom restored.",
+    "SSH nonroot chown rejected before lifecyclelaunch; isolated root fixture preparation fixed ownership, all actual test runs uid10001.",
+    "Fixture reused actor call ID; correctedafteractualknownnotstartedreadback. Actual installationR2 thenfoundandfixed separately.",
+    "Rawsha256 Docker FROM resolved as repository name; corrected only after confirming no candidateimage/containers, verifiedlocaltag beforebuild.",
+    "Compose canonicaloutput omits false create_host_path; testharness firstfailed after HTTP/TLS cases thennormalizedassertfixed, owncontainers/networkreadbackremoved before newcase.",
+    "Firstallowlist restored parentdirectories recursively and included2synthetic unmatched files; actualexportcaught443vs441. Explicit parent-childdenials now441exact,8sentinelsabsent. Both ownedfailed andpassing neverstartedcontainers/imagesremoved.",
+    "Two JavaScript patch assembly syntax errors rejected before anywrite; corrected literalstrings, finaldiffchecked."
+  ],
+  "cleanup": "All exercised server testcontainers andowned internalproxynetwork removed; context-onlyscratchimagesremoved. Two validatednative sandboximages, manifests/states, originalfailedlogs andsourcearchivesretained for pendingreview/fullintegration; no production/rollback images or unrelatedcachepruned. Windows priorautomaticcleanuprejections remain retained separately.",
+  "evidence": {
+    "server-build-result.json": "4649a9c9d2d2781b02071caad7a94d05510f4ed45e214e291351cc49e03349f0",
+    "server-test-result.json": "bc9727cabc085b10b7a7adc9c2339d51d78375a8b09da7f90d651ef99958f7ce",
+    "server-lifecycle-repaired-result.json": "b85711222434435a154cea8de5d2a655c6c2e1435fe1f9cadc8de3df0b8721fe",
+    "server-lifecycle-fresh-result.json": "1f7fd9061d0a91de8ecb815dd19fe6fe2791466ed986c44fc057887ead18cec5",
+    "server-proxy-result.json": "4c8107d55f2c44ab6c901085172b08f64eeffcdd2bd9e1eb5a8a536478a49f69",
+    "server-context-allowlist-result.json": "822eb2498c6a08b21ea549bbf016c3b9bc4870a52dc9c7606bb195f68c824e5e",
+    "server-after-lifecycle.json": "3b7d0f22f944e88092ffe8cff44c94e91d11a27fccfc0a813e6cd401e26e4b0b",
+    "server-context-allowlist-failed-readback.json": "3d9e17e4b20b492af8274d6411ca6da0b6432310063a295c52f71fa3a424741c",
+    "proxy-first-readback.json": "56235bb035f589d9ac149d61ce9fa2dffc83af125a3807dd5d71cedf407a4277"
+  }
+}

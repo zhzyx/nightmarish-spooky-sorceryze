@@ -28,7 +28,7 @@ def load_config(path, digest):
     runner.require(hashlib.sha256(raw).hexdigest() == digest, "Broker configuration changed")
     config = json.loads(raw)
     runner.require(
-        set(config)
+        set(config) - {"context_transport"}
         == {
             "template",
             "template_sha256",
