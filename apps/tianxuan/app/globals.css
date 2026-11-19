@@ -9387,9 +9387,15 @@ body { background: var(--ink); }
 }
 
 .workspace-execution h3 { margin: 0; font-size: 15px; }
+.workspace-execution h4 { margin-top: 12px; font-size: 14px; }
 .workspace-execution > :is(p, details) { margin-top: 8px; }
 .workspace-execution details summary { cursor: pointer; }
 .workspace-execution .workspace-item-details { align-items: baseline; }
+.workspace-execution-observation { border-top: 1px solid var(--line); padding-block: 8px; }
+.workspace-execution-observation dl { margin: 4px 0 0; }
+.workspace-execution-observation dt { color: var(--paper-72); font-size: 12px; }
+.workspace-execution-observation dd { margin-inline-start: 0; }
+.workspace-execution-observation dd + dt { margin-top: 4px; }
 .workspace-execution fieldset { min-inline-size: 0; padding: 8px 0 0; border: 0; }
 .workspace-execution-scopes { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 12px; }
 .workspace-execution-scopes label { display: inline-flex; align-items: center; gap: 6px; }

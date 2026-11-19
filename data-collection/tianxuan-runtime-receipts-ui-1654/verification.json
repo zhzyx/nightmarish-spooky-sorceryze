@@ -1,0 +1,88 @@
+{
+  "request_id": "tianxuan-runtime-receipts-ui-20261120",
+  "issue_number": 1654,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1654",
+  "parent_issue_number": 1550,
+  "related_issues": [
+    1581,
+    1551
+  ],
+  "checks": {
+    "dependency_install": "npm ci succeeded with the checked-in lockfile.",
+    "production_build": "Next.js 14.2.35 build and TypeScript checks passed. The existing migration CSS Autoprefixer warning was present.",
+    "workspace_render": {
+      "environment": "Built Next.js workspace in headless Chromium with an isolated loopback API fixture.",
+      "fixture_provenance": "Complete case uses allowlisted observation fields from #1581's signed ordinary-entry sample. Legacy, partial, absent and explicit null responses are generated fixtures.",
+      "desktop_chinese": {
+        "observed_model": "gpt-6.2-astra",
+        "observation_source": "codex-cli",
+        "last_total_tokens": {
+          "yanshi": 9534,
+          "reviewer": 17853,
+          "production": 9244
+        },
+        "latest_and_session_cumulative_reports_verified": true
+      },
+      "mobile_390px_english": "Partial counts, genuine zero tokens, and missing model and usage each displayed correctly. The execution section fit the viewport.",
+      "legacy_receipt": "The observed model and valid counts remained visible without the task source. Distinct latest and cumulative values stayed separate.",
+      "missing_evidence": "Absent fields and explicit null displayed unavailable states without substituting the selected model profile.",
+      "field_visibility": "The selected model profile was separately labeled in execution details. Synthetic private path, digest and session markers did not appear in the execution DOM.",
+      "refresh": "Manual refresh only requested the active saved native entry, with no request for earlier entries.",
+      "browser_runtime_errors": 0
+    },
+    "main_standalone_rehearsal": {
+      "main_base": "a21fd6e0bbea0dac2af1ce1e9d3d37c81ff9ffba",
+      "runtime": "Next.js 14.2.35 standalone server.js with generated static files, started outside the app checkout directory",
+      "provider_evidence": "Two local signed ordinary-entry samples from #1581, replayed through a loopback API with only displayable model and usage fields",
+      "sample_order": [
+        "yanshi",
+        "reviewer",
+        "production"
+      ],
+      "typecheck": "passed",
+      "samples": {
+        "original": {
+          "chinese_desktop_observed_tasks_roles_and_native_reports": true,
+          "sample": "original",
+          "matched_latest_real_sample_total_tokens": [
+            9534,
+            17853,
+            9244
+          ],
+          "matched_models": [
+            "gpt-6.2-astra",
+            "gpt-6.2-astra",
+            "gpt-6.2-astra"
+          ],
+          "english_390px_cumulative_zero_and_partial": true,
+          "legacy_missing_source_retains_model_and_counts": true,
+          "withheld_private_fields_and_selected_profile_disclosure_check": true,
+          "missing_and_null_receipts": true,
+          "refresh_read_only_saved_entry": true,
+          "browser_runtime_errors": 0
+        },
+        "multimodel": {
+          "chinese_desktop_observed_tasks_roles_and_native_reports": true,
+          "sample": "multimodel",
+          "matched_latest_real_sample_total_tokens": [
+            9502,
+            17846,
+            9232
+          ],
+          "matched_models": [
+            "gpt-6.2-astra",
+            "gpt-6.2-astra",
+            "gpt-6.2-sol"
+          ],
+          "english_390px_cumulative_zero_and_partial": true,
+          "legacy_missing_source_retains_model_and_counts": true,
+          "withheld_private_fields_and_selected_profile_disclosure_check": true,
+          "missing_and_null_receipts": true,
+          "refresh_read_only_saved_entry": true,
+          "browser_runtime_errors": 0
+        }
+      }
+    }
+  },
+  "acceptance_boundary": "Browser verification used recorded sample observations and generated edge cases. It did not invoke a production service, provider, or new CLI session."
+}

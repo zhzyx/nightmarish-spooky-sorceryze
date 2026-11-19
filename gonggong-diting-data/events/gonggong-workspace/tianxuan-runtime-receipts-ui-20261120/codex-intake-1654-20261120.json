@@ -1,0 +1,28 @@
+{
+  "event_id": "codex-intake-1654-20261120",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-runtime-receipts-ui-20261120",
+  "kind": "request",
+  "occurred_at": "2026-11-19T17:15:51Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1654",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "payload": {
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9",
+    "title": "A7：天璇执行页回显真实模型与供应方用量",
+    "body": "<!-- gonggong-request:tianxuan-runtime-receipts-ui-20261120 -->\n<!-- gonggong-host-git:Sail-Li -->\n\n父工单 #1550 的 A7 验收。关联 #1581 的运行证据回收、#1551 的对话工作区。需求设计见 [主线 A7](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/tianxuan-unified-platform-20261119.md)。\n执行授权来源（经当前 Codex 宿主核实）：codex:01a1f26b-ddf0-7102-aefd-8324e79523f9\n\n### 交付验收\n- 从当前保存的执行状态显示偃师、审查者与生产工单各自实际观测到的模型、来源、供应方原始令牌用量，区分最近一次与累计回报。\n- 兼容旧的 GET 回执、部分字段及 null，明确无法取得的观测；只显示实际回传的数据，不从选择的档案推断模型，不计算规范化用量，不展示内部摘要、凭据、路径或会话标识。\n- 用隔离浏览器复验完整和旧回执，确保刷新仍绑定保存的执行条目。仅改天璇前端回显，本工单不改变 API、部署或两项关联工单的范围。",
+    "updated_at": "2026-11-19T17:15:51Z",
+    "operator": "Sail-Li",
+    "issue_number": 1654,
+    "parent_issue": 1550,
+    "assignment_event": 36678752086,
+    "scope": "A7 天璇工作台真实运行证据回显"
+  },
+  "evidence_refs": [],
+  "schema_version": 1,
+  "sha256": "73aac1c86e46171109a481b91365162b6891b5b73a7cf35349d80a060a110374"
+}
