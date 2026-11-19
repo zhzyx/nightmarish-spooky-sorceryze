@@ -75,14 +75,16 @@ def webview2_files(workspace, folder):
     return list(mapping)
 
 
-def stage(workspace, output, folder, run):
+def stage(workspace, output, folder, run, archive=None):
+    if archive is not None and not run:
+        raise ValueError("An Actions archive requires its run ID")
     revision = main_revision(workspace)
     with tempfile.TemporaryDirectory(dir=output) as tmp:
         scratch = Path(tmp)
         if run:
             repo = json.loads((workspace / "work-items.json").read_text(encoding="utf-8"))["repository"]
             folder = scratch / "artifact"
-            restore(run, repo, "main", None, folder, scratch)
+            restore(run, repo, "main", None, folder, scratch, local_archive=archive)
             receipt = json.loads((folder / RECEIPT).read_text(encoding="utf-8"))
             if receipt["revision"] != revision:
                 raise ValueError("Actions run does not match the current main revision")
@@ -109,5 +111,6 @@ if __name__ == "__main__":
     inputs = parser.add_mutually_exclusive_group(required=True)
     inputs.add_argument("--build-directory", type=Path)
     inputs.add_argument("--actions-run")
+    parser.add_argument("--actions-archive", type=Path, help="Previously downloaded archive for the identified run")
     args = parser.parse_args()
-    print(stage(args.workspace, args.stage, args.build_directory, args.actions_run))
+    print(stage(args.workspace, args.stage, args.build_directory, args.actions_run, args.actions_archive))

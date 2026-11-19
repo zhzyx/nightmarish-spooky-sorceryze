@@ -2,6 +2,7 @@
 param(
     [Parameter(ParameterSetName='Local')][string]$BuildDirectory,
     [Parameter(Mandatory,ParameterSetName='Actions')][string]$ActionsRun,
+    [Parameter(ParameterSetName='Actions')][string]$ActionsArchive,
     [string]$Python = $env:GONGGONG_PYTHON
 )
 $ErrorActionPreference = 'Stop'
@@ -22,6 +23,7 @@ $cleanup = $true
 try {
     New-Item -ItemType Directory -Path $stage | Out-Null
     $sourceArgs = if ($ActionsRun) { @('--actions-run', $ActionsRun) } else { @('--build-directory', $BuildDirectory) }
+    if ($ActionsArchive) { $sourceArgs += @('--actions-archive', (Resolve-Path -LiteralPath $ActionsArchive).Path) }
     $revision = & $runtime.python (Join-Path $PSScriptRoot 'stage_installed_editor.py') --workspace $workspace --stage $stage @sourceArgs
     if ($LASTEXITCODE -ne 0 -or $revision -notmatch '^[a-f0-9]{40}$') { throw 'Main editor staging failed.' }
     $records = @()
