@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any
+from typing import Any, cast
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -46,10 +46,10 @@ class ProductionAccess:
             tenant = os.environ.get("TIANXUAN_TENANT_ID")
             if actor:
                 if tenant and self.store.actor_context(actor)["tenant"] == tenant:
-                    return actor
+                    return cast(str, actor)
                 return None
-            return self.store.user_for_token(token)
-        return self.store.user_for_access_key(token)
+            return cast(str | None, self.store.user_for_token(token))
+        return cast(str | None, self.store.user_for_access_key(token))
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] not in {"http", "websocket"}:
@@ -88,12 +88,21 @@ class ProductionAccess:
         role = self.store.role_of(actor)
         if self.accounts and self.store.actor_context(actor)["tenant"] != tenant:
             document_roots = (
-                "/api/v1/docs", "/api/v1/comments", "/api/v1/users",
-                "/api/v1/invites", "/api/v1/models", "/api/v1/ws/docs",
+                "/api/v1/docs",
+                "/api/v1/comments",
+                "/api/v1/users",
+                "/api/v1/invites",
+                "/api/v1/models",
+                "/api/v1/ws/docs",
             )
             document_paths = {
-                "/api/v1/auth/me", "/api/v1/auth/logout", "/api/v1/auth/key-logout",
-                "/api/v1/search", "/api/v1/events", "/api/v1/capabilities", "/api/v1/tools",
+                "/api/v1/auth/me",
+                "/api/v1/auth/logout",
+                "/api/v1/auth/key-logout",
+                "/api/v1/search",
+                "/api/v1/events",
+                "/api/v1/capabilities",
+                "/api/v1/tools",
             }
             allowed = path in document_paths or any(
                 path == root or path.startswith(root + "/") for root in document_roots
@@ -192,7 +201,10 @@ def configure_access(app: FastAPI, store: Tianxuan) -> None:
         if not allow_identity_attempt("access-key", request.client.host if request.client else "unknown"):
             raise HTTPException(429, "too many login attempts")
         actor = store.user_for_access_key(payload.key)
-        if not actor or ((strict or mode == "accounts") and store.actor_context(actor)["tenant"] != os.environ.get("TIANXUAN_TENANT_ID")):
+        if not actor or (
+            (strict or mode == "accounts")
+            and store.actor_context(actor)["tenant"] != os.environ.get("TIANXUAN_TENANT_ID")
+        ):
             raise HTTPException(401, "invalid or revoked key")
         response = JSONResponse({"user_id": actor, "role": store.role_of(actor)})
         response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="strict")

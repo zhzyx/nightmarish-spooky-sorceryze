@@ -27,10 +27,14 @@ def test_account_registration_cookie_and_isolation(monkeypatch):
         assert client.post("/api/v1/auth/logout", headers=headers).status_code == 200
         assert client.get("/api/v1/docs").status_code == 401
         other = {"email": "two@example.com", "password": "long-password"}
-        assert client.post("/api/v1/auth/register", headers=headers, json={**other, "tenant_name": "Two"}).status_code == 200
+        assert (
+            client.post("/api/v1/auth/register", headers=headers, json={**other, "tenant_name": "Two"}).status_code
+            == 200
+        )
         assert client.post("/api/v1/auth/session", headers=headers, json=other).status_code == 200
         assert client.get(f"/api/v1/docs/{doc.json()['id']}").status_code in {403, 404}
     store.db.close()
+
 
 def test_account_mode_preserves_admitted_personal_keys(monkeypatch):
     monkeypatch.setenv("TIANXUAN_AUTH_MODE", "accounts")
@@ -41,7 +45,9 @@ def test_account_mode_preserves_admitted_personal_keys(monkeypatch):
     key = store.issue_access_key(owner["user_id"], owner["user_id"], "existing")["key"]
     monkeypatch.setenv("TIANXUAN_TENANT_ID", owner["tenant_id"])
     with TestClient(create_app(store), base_url="https://testserver") as client:
-        assert client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {key}"}).json()["id"] == owner["user_id"]
+        assert (
+            client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {key}"}).json()["id"] == owner["user_id"]
+        )
         response = client.post("/api/v1/auth/key-login", headers={"Origin": "https://testserver"}, json={"key": key})
         assert response.status_code == 200
         assert client.get("/api/v1/auth/me").json()["id"] == owner["user_id"]
@@ -49,16 +55,23 @@ def test_account_mode_preserves_admitted_personal_keys(monkeypatch):
         other_key = store.issue_access_key(other["user_id"], other["user_id"], "other")["key"]
         assert client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {other_key}"}).status_code == 401
         switched = client.post(
-            "/api/v1/auth/session", headers={"Origin": "https://testserver"},
+            "/api/v1/auth/session",
+            headers={"Origin": "https://testserver"},
             json={"email": "other@example.com", "password": "long-password"},
         )
         assert switched.status_code == 200
         assert "__Host-tianxuan_key" not in client.cookies
         assert client.get("/api/v1/auth/me").json()["id"] == other["user_id"]
-        assert client.post("/api/v1/auth/key-login", headers={"Origin": "https://testserver"}, json={"key": key}).status_code == 200
+        assert (
+            client.post(
+                "/api/v1/auth/key-login", headers={"Origin": "https://testserver"}, json={"key": key}
+            ).status_code
+            == 200
+        )
         assert "__Host-tianxuan_session" not in client.cookies
         assert client.get("/api/v1/auth/me").json()["id"] == owner["user_id"]
     store.db.close()
+
 
 def test_explicit_keys_mode_requires_production_configuration(monkeypatch):
     monkeypatch.setenv("TIANXUAN_AUTH_MODE", "keys")

@@ -1,8 +1,9 @@
 """Budgeted document reads and replay-safe AI patches."""
+
 import pytest
-from fastapi.testclient import TestClient
 from api import create_app
-from tianxuan_core import Tianxuan, PermissionDenied, VersionConflict, NotFound
+from fastapi.testclient import TestClient
+from tianxuan_core import NotFound, PermissionDenied, Tianxuan, VersionConflict
 
 
 @pytest.fixture
@@ -50,7 +51,9 @@ def test_cross_tenant_and_search(scenario):
     with pytest.raises(NotFound):
         store.dispatch_tool(other, "doc.read", {"doc_id": doc["id"]})
     with pytest.raises(NotFound):
-        store.dispatch_tool(other, "doc.patch", {"doc_id": doc["id"], "expected_version": 1, "patches": []}, call_id="x")
+        store.dispatch_tool(
+            other, "doc.patch", {"doc_id": doc["id"], "expected_version": 1, "patches": []}, call_id="x"
+        )
 
 
 def test_http_budget_and_patch_retry(scenario):
@@ -110,22 +113,35 @@ def test_public_http_tools_viewer_and_workspace_boundary(scenario, monkeypatch):
     ):
         response = client.post("/api/v1/tools", headers=headers, json={"name": name, "payload": payload})
         assert response.status_code == 200, response.text
-    denied = client.post("/api/v1/tools", headers=headers, json={
-        "name": "doc.create", "payload": {"title": "denied"}, "call_id": "viewer",
-    })
+    denied = client.post(
+        "/api/v1/tools",
+        headers=headers,
+        json={
+            "name": "doc.create",
+            "payload": {"title": "denied"},
+            "call_id": "viewer",
+        },
+    )
     assert denied.status_code == 403
     owner_headers = {"Authorization": "Bearer " + store.issue_session(owner)}
-    denied = client.post("/api/v1/tools", headers=owner_headers, json={
-        "name": "issue.create", "payload": {"title": "denied"},
-    })
+    denied = client.post(
+        "/api/v1/tools",
+        headers=owner_headers,
+        json={
+            "name": "issue.create",
+            "payload": {"title": "denied"},
+        },
+    )
     assert denied.status_code == 403
     payload = {
-        "name": "doc.patch", "call_id": "http-tool",
+        "name": "doc.patch",
+        "call_id": "http-tool",
         "payload": {"doc_id": doc["id"], "expected_version": 1, "patches": [{"find": "alpha", "replace": "new"}]},
     }
     first = client.post("/api/v1/tools", headers=owner_headers, json=payload)
     retry = client.post("/api/v1/tools", headers=owner_headers, json=payload)
     assert first.status_code == retry.status_code == 200
     assert first.json() == retry.json()
-    assert client.post("/api/v1/tools", headers=owner_headers,
-                       json={"name": "doc.read", "payload": {}}).status_code == 422
+    assert (
+        client.post("/api/v1/tools", headers=owner_headers, json={"name": "doc.read", "payload": {}}).status_code == 422
+    )

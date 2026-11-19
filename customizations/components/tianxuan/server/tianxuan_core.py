@@ -20,7 +20,9 @@ from datetime import datetime, timedelta, timezone
 from functools import wraps
 from threading import RLock
 from typing import Any, Concatenate, ParamSpec, TypeVar, cast
-from wenqu_bridge import build_ai_index, search as search_documents
+
+from wenqu_bridge import build_ai_index
+from wenqu_bridge import search as search_documents
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS tenants (
