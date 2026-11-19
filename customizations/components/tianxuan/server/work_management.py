@@ -23,7 +23,7 @@ def empty_plan():
 
 
 @_connection_call
-def roadmap(store, actor):
+def roadmap(store, actor) -> dict[str, Any]:
     if not store.db.in_transaction:
         store.db.execute("BEGIN")
     items = []
@@ -45,7 +45,7 @@ def roadmap(store, actor):
     return {"items": items}
 
 
-def snapshot(store, actor, issue_id, through_version=2**63 - 1):
+def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any]:
     state = dict(
         id=issue_id,
         version=0,
@@ -120,7 +120,7 @@ _KEYS = {
 
 
 @_connection_call
-def execute(store, actor: str, name: str, payload: dict[str, Any], *, call_id=None, human=False):
+def execute(store, actor: str, name: str, payload: dict[str, Any], *, call_id=None, human=False) -> dict[str, Any]:
     payload = dict(payload)
     if "call_id" in payload:
         embedded = payload.pop("call_id")
