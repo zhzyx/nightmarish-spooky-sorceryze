@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2125b3099d0860efe30e1537d1f58fd47ff0a92f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-agent-docs-split-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1619",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fb31028b34f309b2ec4a71ae8048d36dc3752832603ea9c9df4cf0f9fe341991",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1619",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1620",
+    "action": "delivery",
+    "detection_head": "3138f031010dc106c8bab750a8882daf9130eb77",
+    "context_sha256": "25adf9b6f9888987367cc3bd4307d2cae9f8a8e409dd0a38f5b7968ca003c502",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-host",
+    "authority_ref": "kimi-work:user:20261119:maliang-agent-docs-split-and-deliver",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44556919560",
+    "diagnosis": "本机 Apple Git 2.39.5 不支持 writer_submit 使用的 git merge-tree --merge-base 参数；自动整合因此在参数解析阶段失败，实际工作树没有内容冲突。",
+    "next_action": "仅在隔离工作树先用标准 git commit 和 git merge 对齐 FETCH_HEAD，再 soft reset 到最新 main 并保留合并后的 index，随后不加 auto-integrate 重跑原门禁与签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T15:37:32.583878+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T15:40:45.758107+00:00",
+  "sha256": "72aeaeb5eb8579a2e47c019a30cae413f2406072f7939e8004a2d89e36d58fc6"
+}

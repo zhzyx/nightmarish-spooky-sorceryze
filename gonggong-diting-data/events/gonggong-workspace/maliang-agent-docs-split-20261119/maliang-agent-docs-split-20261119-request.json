@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-agent-docs-split-20261119-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-agent-docs-split-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-19T15:31:28Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1619",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261119",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "payload": {
+    "intent": "Split the Maliang Agent documentation into image/Mesh and skeleton generation workflows, preserve the existing image/Mesh rules, route both workflows through the Maliang README from the root AGENTS.md, validate the links, and deliver the exact documentation candidate to main through the repository PR process.",
+    "authorization_ref": "kimi-work:user:20261119:maliang-agent-docs-split-and-deliver",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "32504383b67ce787431516cc6938cc49238a197b83c77aab5d652ce4c3f5f910"
+}

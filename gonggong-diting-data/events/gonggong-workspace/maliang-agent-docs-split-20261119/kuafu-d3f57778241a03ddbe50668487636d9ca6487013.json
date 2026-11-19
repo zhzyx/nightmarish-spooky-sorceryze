@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d3f57778241a03ddbe50668487636d9ca6487013",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-agent-docs-split-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1619",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f1467f6bd4976164f238a7c59943867ee96ec41ae71e0021560451738672b79d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1619",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1620",
+    "action": "delivery",
+    "detection_head": "3138f031010dc106c8bab750a8882daf9130eb77",
+    "context_sha256": "25adf9b6f9888987367cc3bd4307d2cae9f8a8e409dd0a38f5b7968ca003c502",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-host",
+    "authority_ref": "kimi-work:user:20261119:maliang-agent-docs-split-and-deliver",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/compare/3138f031010dc106c8bab750a8882daf9130eb77..7e3b781f62f60d89e6679f2aae846fc1c34a8764",
+    "diagnosis": "签发前回读发现 main 新增 3 个提交；差异仅为另一工单的数据采集与谛听事件，和本候选没有写入路径重叠，不需要文档内容返工。",
+    "next_action": "使用 writer_submit --auto-integrate 对齐最新 main，重跑正式门禁和签发，再核对精确 PR 候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T15:34:20.128849+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T15:35:29.807321+00:00",
+  "sha256": "5d09a28b8ff93787fe105ab5a47479a82fab1982989308161efc682e79297068"
+}
