@@ -524,6 +524,17 @@ func verify_mesh():
 	if not await wait_idle(): return
 	check(FileAccess.get_sha256(panel.target_edit.text)==published and panel.status.text.contains('失败'),'Mesh publication cannot overwrite an existing version')
 	check(FileAccess.get_sha256(source)==before,'offline run and publication preserve source Mesh bytes')
+	var result_node = panel.selected_id
+	panel.path_edit.text = panel.state_dir.path_join('generated-workflow.json')
+	panel.save_graph()
+	var saved_workflow = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
+	check(saved_workflow.get('output_history',{}).get(result_node,[]).size()==1,'builtin workflow embeds the generated GLB after execution')
+	panel.open_graph()
+	panel.select_node(result_node)
+	print('OUTPUT_PERSISTENCE_STATUS ',panel.status.text,' RUN ',panel.run_id,' HISTORY ',panel.preview_history.keys(),' PATH ',panel.preview_source_path)
+	check(panel.run_id.is_empty() and panel.preview_history.get(result_node,[]).size()==1,'builtin workflow restores generated-result history without another Executor run')
+	check(panel.preview_source_path.begins_with(panel.path_edit.text+'.assets/') and FileAccess.get_sha256(panel.preview_source_path)==before,'builtin restored GLB is a durable byte-identical content-addressed file')
+	check(is_instance_valid(panel.preview_scene),'builtin restored GLB decodes into the existing Mesh preview')
 	panel.native_buttons.other.pressed.emit()
 	await process_frame
 	check(panel.native_sections.split.is_visible_in_tree() and panel.mesh_container.is_visible_in_tree(),'other tools retain the shared Mesh preview viewport')
