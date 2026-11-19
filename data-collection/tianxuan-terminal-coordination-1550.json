@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-unified-platform-20261119",
+  "issue_number": 1550,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+  "scope": "Worker terminal verification and integration dependencies; no full-platform acceptance",
+  "terminals": [
+    {
+      "issue_number": 1552,
+      "worker_id": "01a1f28e-4bc6-7d32-9471-fba869469a32",
+      "turn_id": "01a1f2ea-82c5-75d2-af88-e0abc96e1a55",
+      "cursor": "cdbd7e4a-a040-43da-aecc-f2f2188aa474:8",
+      "host_state": "completed",
+      "dispatch_state": "terminal_verified",
+      "event": "gonggong-diting-data/events/gonggong-workspace/tianxuan-unified-workflows-20261119/dispatch-806300bc46554bcd8687b73556792002.json"
+    },
+    {
+      "issue_number": 1568,
+      "worker_id": "01a1f2d5-8d3d-7153-b190-2637f8db26ff",
+      "turn_id": "01a1f324-0c0d-77f0-8004-80bfaa11c393",
+      "cursor": "ab599e63-16da-4ec1-abef-975bfbc4cdec:4",
+      "host_state": "completed",
+      "dispatch_state": "terminal_verified",
+      "event": "gonggong-diting-data/events/gonggong-workspace/tianxuan-collaboration-recovery-20261119/dispatch-8291bdd99a094005aba155d62b19d97d.json"
+    }
+  ],
+  "web_package_merge": "0a6611c14a45529fcbe1b879afe57e340082b267",
+  "platform_acceptance": "remaining",
+  "historical_open_godot_business": "record only"
+}

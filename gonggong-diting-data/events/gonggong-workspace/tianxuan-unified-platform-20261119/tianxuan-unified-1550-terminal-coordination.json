@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "event_id": "tianxuan-unified-1550-terminal-coordination",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-platform-20261119",
+  "kind": "step",
+  "occurred_at": "2026-11-19T13:28:13.5548589+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+  "agent": {
+    "origin": "external-authorized-host",
+    "definition_sha256": "87b82d26b741a04d787155b012076b32cdf14fcbec3ff51823fe83751ce89462",
+    "id": "codex-current-operator-host",
+    "version": "0.1.0"
+  },
+  "payload": {
+    "operator": "Sail-Li",
+    "record": "data-collection/tianxuan-terminal-coordination-1550.json",
+    "scope": "Reconciled actual completed workers 1552 and 1568 and preserved pending platform acceptance"
+  },
+  "evidence_refs": [],
+  "sha256": "9a49f1de62bd25a1a01bd980ec486fcaa2681c377ffc3b4732a9ca7074041cf1"
+}
