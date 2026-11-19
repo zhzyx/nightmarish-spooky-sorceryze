@@ -8,19 +8,18 @@ import { useIdentity } from "@/components/IdentityProvider";
 import { ApiStatus } from "@/components/ApiStatus";
 import { useI18n } from "@/lib/i18n-client";
 import { routeTitleKey, type MessageKey } from "@/lib/i18n";
-import { spaces } from "@/lib/data";
+import { ThemeSelect } from "@/components/ThemeSelect";
 
 interface NavItem {
   href: string;
   key: MessageKey;
   icon: IconName;
-  badge?: string;
 }
 
 const primaryNav: NavItem[] = [
   { href: "/", key: "nav.home", icon: "home" },
   { href: "/docs", key: "nav.docs", icon: "docs" },
-  { href: "/issues", key: "nav.issues", icon: "issues", badge: "3" },
+  { href: "/issues", key: "nav.issues", icon: "issues" },
   { href: "/repos", key: "nav.repos", icon: "repos" },
   { href: "/requirements", key: "nav.requirements", icon: "requirements" },
 ];
@@ -57,12 +56,6 @@ export function AppShell({ children }: { children: ReactNode }) {
       <a className="skip-link" href="#main-content">
         {t("shell.skip")}
       </a>
-      <div className="ambient" aria-hidden="true">
-        <span className="ambient-orbit ambient-orbit-one" />
-        <span className="ambient-orbit ambient-orbit-two" />
-        <span className="ambient-grid" />
-      </div>
-
       <div className="app-frame">
         <aside
           aria-label={t("shell.navAria")}
@@ -76,7 +69,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               </span>
               <span className="brand-wordmark">
                 <strong>天璇</strong>
-                <small>TIANXUAN</small>
               </span>
             </Link>
             <button
@@ -88,18 +80,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Icon name="close" size={18} />
             </button>
           </div>
-
-          <Link href="/accounts" className="btn btn-ghost">{locale === "zh" ? "账号与访问 Key" : "Accounts & access keys"}</Link>
-          <button className="workspace-switch" type="button">
-            <span className="workspace-avatar" aria-hidden="true">
-              共
-            </span>
-            <span className="workspace-copy">
-              <strong>{t("shell.workspaceName")}</strong>
-              <small>{t("shell.workspaceMeta")}</small>
-            </span>
-            <Icon className="workspace-chevron" name="chevronDown" size={14} />
-          </button>
 
           <nav aria-label={t("shell.navAria")} className="sidebar-nav">
             <p className="sidebar-label">{t("shell.workspace")}</p>
@@ -116,7 +96,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                     <Icon name={item.icon} size={18} />
                   </span>
                   <span>{t(item.key)}</span>
-                  {item.badge ? <span className="nav-badge">{item.badge}</span> : null}
                 </Link>
               );
             })}
@@ -140,33 +119,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          <div className="sidebar-spaces">
-            <div className="sidebar-label-row">
-              <p className="sidebar-label">{t("shell.spaces")}</p>
-              <Link aria-label={t("shell.browseSpacesAria")} className="quiet-icon-link" href="/docs">
-                <Icon name="plus" size={14} />
-              </Link>
-            </div>
-            {spaces.slice(0, 3).map((space) => (
-              <Link className="space-shortcut" href="/docs" key={space.id}>
-                <span className={`space-dot tone-${space.tone}`} aria-hidden="true" />
-                <span>{space.short}</span>
-                <span className="space-count">{space.pages}</span>
-              </Link>
-            ))}
-          </div>
-
           <div className="sidebar-footer">
-            <div className="usage-card">
-              <div className="usage-card-head">
-                <span>{t("shell.usageTitle")}</span>
-                <strong>34%</strong>
-              </div>
-              <div className="meter" aria-hidden="true">
-                <span style={{ width: "34%" }} />
-              </div>
-              <small>{t("shell.usageNote")}</small>
-            </div>
             <ApiStatus />
             <Link className="profile-card" href="/accounts">
               <span className="avatar avatar-jade">{profileInitial}</span>
@@ -230,10 +183,7 @@ export function AppShell({ children }: { children: ReactNode }) {
               >
                 {locale === "zh" ? "EN" : "中"}
               </button>
-              <button aria-label={t("shell.notificationsAria")} className="icon-button notification-button" type="button">
-                <Icon name="bell" size={19} />
-                <span className="notification-dot" aria-hidden="true" />
-              </button>
+              <ThemeSelect />
               <Link className="topbar-avatar" href="/settings" aria-label={t("shell.settingsAria")}>
                 <span className="avatar avatar-jade">{profileInitial}</span>
               </Link>

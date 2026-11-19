@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1551-20261119",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-19T07:01:47.2815298+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "agent": {
+    "version": "not-observed",
+    "definition_sha256": "15dc82d98874b169be4c367f66db6f68dbe45096a7ff034f6289fb621f09018a",
+    "id": "codex-current-operator-host",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "title": "天璇整合：对话与待办工作区及主题体验",
+    "updated_at": "2026-11-19T06:56:51Z",
+    "operator": "Sail-Li",
+    "scope": "Actual GitHub Issue readback and authorized handoff intake",
+    "body": "<!-- gonggong-request:tianxuan-unified-experience-20261119 -->\r\n\r\n父工单 #1550。设计 v1 已由用户定版并授权跨聊天并行，未结 Godot 工单仅记录。\r\n\r\n负责 apps/tianxuan 的首页、AppShell、globals.css、主题组件和原生仓库展示。排除 docs/login/identity 文件和工单业务页（另有负责人）。用真实 API 驱动首页，移除演示指标，接通实际 AI 对话入口及待办，系统浅深色切换，Apple 官网风格，Godot 嵌入适配。后台 API 缺口先形成明确接口交给主责。独立工作树内实施并验证构建和实际交互，保留截图。\r\n\r\n设计位于 design-docs/tianxuan-unified-platform-20261119.md，当前确认副本 D:/GongGong-work/tianxuan-unified-20261119。按原验收持续推进，独立提交/审查/门禁/PR/main 后由整合主责接受，全平台部署由主责协调。每阶段留下实际候选、检查、剩余项和接口。\r\n\r\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+    "issue_number": 1551
+  },
+  "evidence_refs": [],
+  "sha256": "04cf8ff3aaefbd19c735751baec9532b7fbd9dfdd803958e2ef630412fd96aa6"
+}
