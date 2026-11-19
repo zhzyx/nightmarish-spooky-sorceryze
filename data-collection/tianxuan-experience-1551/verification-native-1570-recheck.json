@@ -1,0 +1,29 @@
+{
+  "issue_number": 1551,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "observed_at": "2026-11-19T08:45:32.122223+00:00",
+  "prior_signed_head": "c4f758e707dc85c0b36da421ef13b6762a585bc1",
+  "accepted_upstream": {
+    "pr_number": 1570,
+    "signed_head": "8b2014ebeec232dfa409b3b3e121941a367a7fb5",
+    "main_merge": "3e4f05e5ed3b8f3526ffc0ef2434c8c8911e5d34",
+    "scope": "v1/v2 transport, tested API image archive and explicit manual burst gate",
+    "docker": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44487316174/job/135433904001"
+  },
+  "rebased_product_commit": "021b8bcc720aabd7d6ef99eeb50395adef75b743",
+  "checks": {
+    "range_diff": "Same patch on the verified main. All 26 #1551 paths are byte-identical to the prior candidate.",
+    "frontend": "Next 14.2.35 production build passed on the new base.",
+    "regression": "33 gateway and native API tests passed.",
+    "browser": "Isolated HTTPS Chrome verification passed on rebuilt Next and actual local FastAPI: personal-key login, live work orders, two controlled upstream turns, theme synchronization and persistence, IME, compact navigation, and native revision browsing."
+  },
+  "retained_evidence": "data-collection/tianxuan-experience-1551/verification.json",
+  "integration_remaining": [
+    "Production model and Godot WebView2",
+    "Persistent conversation handoff",
+    "Worker-run listing",
+    "Native module enumeration",
+    "Separate upstream resolver v3 and #1567 verification"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a23de1c88fa0cc6919c3af9a7038da8cb5ff0265",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2b1851cbf38a540b138a89ef968791e0d46113fce7c661d4484e78702406ef5c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1555",
+    "action": "delivery",
+    "detection_head": "ac8d1376d0a03678b625cbe4bd9b09ea18120475",
+    "context_sha256": "4d2d986c222951965cf69ed7ea2c6048c9d458b50d8aff8cdd316e043ddf218b",
+    "operator": "Sail-Li",
+    "worker": "codex-1551",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44478565796",
+    "diagnosis": "Git HTTPS fetch failed with exit 128 before local commit. A direct read-only ls-remote received a port 443 connection timeout, while the same main ref and operator were readable via GitHub CLI.",
+    "next_action": "Preserve the validated candidate with a local commit and check the available Git transport before retrying publication. No PR existed on readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T07:18:10.257939+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T07:20:12.266523+00:00",
+  "sha256": "bc6881021a4889c7a0542acad0b3565fdf2b4edcab29dab2850471cc3d7467fe"
+}
