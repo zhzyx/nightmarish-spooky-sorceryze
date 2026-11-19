@@ -1,0 +1,91 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-artifact-review.json",
+    "sha256": "ff855b34ce285eec248777433638deeb66f8e9b09bf99f109c8946a2f588bf4e",
+    "path_base": "absolute private host evidence archive"
+  },
+  "export": "Lossless JSON value export; original retained.",
+  "report": {
+    "issue": 1529,
+    "result": "pass-scoped-source-review",
+    "reviewer": "independent native subagent /root/sinan_07623235afe981de",
+    "base_head": "84d62281f0c7179369aec4352047a9ba414582a7",
+    "index_entries_sha256": "d4d8afab41ce17cf7ee2beb9a26c42b577aa2c4e66799ddc17e56369106518ad",
+    "cached_binary_diff_sha256": "d222ed63b847b49d241025d8092350b250193d6e2be97b19555b046972218452",
+    "sources": {
+      ".github/workflows/tianxuan-deploy-build.yml": {
+        "worktree_sha256": "92cf300b6f3f3c7f9ffcecb6a921bc06956c9fa76551d7b671511fd4f88698af",
+        "index_blob_sha256": "92cf300b6f3f3c7f9ffcecb6a921bc06956c9fa76551d7b671511fd4f88698af"
+      },
+      "data-collection/native-runtime-artifact-local-validation-1529.json": {
+        "worktree_sha256": "60093b51a894f9505c70527c14f99c582fde52ebe4781873390c07f9f96c3a42",
+        "index_blob_sha256": "60093b51a894f9505c70527c14f99c582fde52ebe4781873390c07f9f96c3a42"
+      },
+      "deploy/README.md": {
+        "worktree_sha256": "c6cd4f4aca38fcf33806ce23d3ec91fb7a01d63f2bc20710045250e18d21383b",
+        "index_blob_sha256": "c6cd4f4aca38fcf33806ce23d3ec91fb7a01d63f2bc20710045250e18d21383b"
+      },
+      "design-docs/native-runtime-artifact-20261118.md": {
+        "worktree_sha256": "b7ad0a322ec34544d307cb174fa59f3c51274ccc5656e17bdf4e763cc9f606c1",
+        "index_blob_sha256": "b7ad0a322ec34544d307cb174fa59f3c51274ccc5656e17bdf4e763cc9f606c1"
+      }
+    },
+    "probes": {
+      "success": {
+        "exit": 0,
+        "manifest_stage_reached": true,
+        "stderr": ""
+      },
+      "inspect-fail": {
+        "exit": 1,
+        "manifest_stage_reached": false,
+        "stderr": ""
+      },
+      "identity-change": {
+        "exit": 1,
+        "manifest_stage_reached": false,
+        "stderr": ""
+      },
+      "save-fail": {
+        "exit": 23,
+        "manifest_stage_reached": false,
+        "stderr": ""
+      },
+      "files-fail": {
+        "exit": 24,
+        "manifest_stage_reached": false,
+        "stderr": ""
+      }
+    },
+    "checks": [
+      "exact ID used for both native test budgets and saved image",
+      "functional steps precede success-only export/upload",
+      "original image save excludes mutable containers, volumes and deploy/.env; Dockerfile ignore excludes env inputs",
+      "run plus attempt artifact name, exact artifact ID required by instructions",
+      "archive bytes/hash and image-file hashes recorded",
+      "actual merge checkout/tree distinct from candidate head",
+      "public/private local report exact equality and hashes verified",
+      "embedded Python manifest tested independently with synthetic inputs",
+      "index stable during review"
+    ],
+    "observations": [
+      "Compose tests rebuild tianxuan-api:local separately; package is the immutable tianxuan-api:ci ID tested by the two native stages. This does not prove Compose ran the exported ID.",
+      "Build image capture uses echo command substitution, so inspect failure is not immediately propagated there, but empty image causes following native docker runs to fail and blocks export. Export inspect mismatch/failure and save pipeline failure are explicitly rejected."
+    ],
+    "findings": [],
+    "probe_setup_notes": "Bundled shell initially lacked utilities on PATH; corrected PATH, then found gzip absent. Pipeline tests use a successful cat-backed gzip stub, and test save-stage failure propagation only, not real gzip/Docker. Earlier setup-failure evidence retained.",
+    "limits": [
+      "No actual Docker save/load/upload/download or server execution performed.",
+      "No provider calls or CI/main status acceptance performed.",
+      "Full #1529 and #1499 remain open pending actual CI/main and server acceptance.",
+      "Appending evidence/events requires parent to bind final candidate; business-source changes require renewed review."
+    ],
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "lesson": "bind-consumer-release",
+      "revision": 23,
+      "application": "Pin actual producer source bytes and index; review completion does not release business acceptance."
+    },
+    "cleanup": "Synthetic probe artifacts retained as review evidence within explicitly owned directory; no production or repository writes."
+  }
+}

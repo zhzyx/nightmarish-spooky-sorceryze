@@ -1,0 +1,124 @@
+{
+  "request_id": "native-production-entry-20261118",
+  "issue_number": 1499,
+  "original_sha256": "95961774955d5274707c91a5f7b4114efb21761dee18aa948430f839bdb60efb",
+  "export": "Lossless JSON value export of actual independently reconciled worker report.",
+  "review": {
+    "issue": 1499,
+    "context_issue": 1501,
+    "bug": 1445,
+    "reviewer": "independent Codex child /root/sinan_cba5d8b68540296d",
+    "review_date": "2026-11-19",
+    "verdict": "passed_bounded_transport_review_no_blocking_findings",
+    "candidate_root": "D:/GongGong-work/native-entry-assembled-20261118",
+    "scope": "Only native_entry_context_client.py and test_native_entry_context_backpressure.py. Other resolver/CI/accepted slices not reviewed or frozen.",
+    "sources": {
+      "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "2b23d56d4860c5ff4309b52d43026e0348bec0c1041df649fe92bde27746c026",
+      "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": "4e8d463648971873d3f39502543a83e3844f0eb4512aa7ee00313a0ee8df407a",
+      "data-collection/native-context-transport-cost-repair-1445.json": "4ad8521b92140828f8f5c8c560334ceefcce1dc328ce7c992e05818beede0c7a"
+    },
+    "source_verification": "Get-FileHash before testing matched handoff. Final digest recheck included below in evidence-manifest.json.",
+    "method_recall": {
+      "commands": [
+        "py -X utf8 framework/tools/method_learning.py --tenant gonggong-workspace recall editor-dependency-handoff",
+        "py -X utf8 framework/tools/method_learning.py --tenant gonggong-workspace recall native-http-input-boundary"
+      ],
+      "applied": "bind-consumer-release revision23: exact current bytes, explicit acceptance and source difference checked; earlier report alone cannot release changed tests.",
+      "native_http_result": "No verified/unavailable lessons returned.",
+      "persistence": "No learning-event writes authorized; review evidence returned to parent for authorized application recording."
+    },
+    "validation": [
+      {
+        "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 -m pytest -q -p no:cacheprovider --basetemp D:/GongGong/data-collection/receipts/duobao-1382/native-entry-transport-review-20261119-probes/bounded-tmp customizations/components/tianxuan/server/test_native_entry_context_backpressure.py -k \"lazy_tls or unknown or elapsed or exhaustion or saturated\"",
+        "exit_code": 0,
+        "result": "33 passed, 3 deselected in 28.51s",
+        "log": "D:/GongGong/data-collection/receipts/duobao-1382/native-entry-transport-review-20261119-probes/bounded.log"
+      },
+      {
+        "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 -m pytest -q -p no:cacheprovider --basetemp D:/GongGong/data-collection/receipts/duobao-1382/native-entry-transport-review-20261119-probes/independent-tmp D:/GongGong/data-collection/receipts/duobao-1382/native-entry-transport-review-20261119-probes/test_independent.py -k \"not lazy_tls_real_transport\"",
+        "exit_code": 0,
+        "result": "12 passed, 10 deselected in 2.21s",
+        "log": "D:/GongGong/data-collection/receipts/duobao-1382/native-entry-transport-review-20261119-probes/independent.log"
+      },
+      {
+        "command": "py -m ruff check --no-fix --no-cache customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py customizations/components/tianxuan/server/test_native_entry_context_backpressure.py",
+        "result": {
+          "status": "fulfilled",
+          "value": {
+            "chunk_id": "1fb0b7",
+            "wall_time_seconds": 0.262434,
+            "exit_code": 0,
+            "original_token_count": 5,
+            "output": "All checks passed!\n"
+          }
+        }
+      },
+      {
+        "command": "py -m ruff format --check --no-cache customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py customizations/components/tianxuan/server/test_native_entry_context_backpressure.py",
+        "result": {
+          "status": "fulfilled",
+          "value": {
+            "chunk_id": "662c63",
+            "wall_time_seconds": 0.2390377,
+            "exit_code": 0,
+            "original_token_count": 7,
+            "output": "2 files already formatted\n"
+          }
+        }
+      },
+      {
+        "command": "py -m mypy --cache-dir D:/GongGong/data-collection/receipts/duobao-1382/native-entry-transport-review-20261119-probes/mypy-cache --follow-imports skip --ignore-missing-imports customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py",
+        "result": {
+          "status": "fulfilled",
+          "value": {
+            "chunk_id": "1fc668",
+            "wall_time_seconds": 0.8587308,
+            "exit_code": 0,
+            "original_token_count": 11,
+            "output": "Success: no issues found in 1 source file\r\n"
+          }
+        }
+      }
+    ],
+    "environment": {
+      "cwd": "D:/GongGong-work/native-entry-assembled-20261118",
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "customizations/components/tianxuan/server;customizations/components/tianxuan/sinan-workorders;customizations/components/tianxuan/duobao;customizations/components/tianxuan/wenqu"
+    },
+    "findings": [],
+    "review_assertions": [
+      "Lazy handler subclasses HTTPSHandler so build_opener suppresses eager default; AbstractHTTPHandler initializes dispatch state, HTTPSHandler.__init__ is called at https_open. HTTP creates zero default contexts; each HTTPS attempt receives a fresh default verified context. No global trust override or reuse introduced.",
+      "Current real TLS tests assert CERT_REQUIRED and check_hostname; untrusted certificate and hostname mismatch fail before HTTP request receipt, including mismatch via CONNECT. Success works both direct and proxy.",
+      "Fresh Request preserves logical URL/body/header items/method and discards ProxyHandler's mutated routing. Current HTTPS capacity tests use three connections/tunnels with identical body and origin-form targets; independent HTTP proxy capacity cases confirm absolute-form proxy target across retries.",
+      "NoRedirect rejects supported redirect methods. Current real 302 test proves no redirected request and peer close; independent unit probes verify 301/302/303/307/308 exception and body close. These latter probes directly exercise redirect_request rather than full network redirect dispatch.",
+      "Successful response context closes before decode and response size check. HTTPError finally closes including exact typed503, malformed503 and redirects. Independent stream tests verify malformed, oversize, read-timeout and unknown503 closures without replay.",
+      "Only exact structured503 context_capacity not_started becomes ContextNotStarted; all other HTTP errors, resets, disconnects, timeouts and malformed bodies propagate without retry. Retry attempt/time bounds unchanged. Cancellation propagates and no model-turn replay added.",
+      "Latest TLS closure fixture accepts only EOF, ConnectionResetError or BrokenPipeError as observed closure; socket timeout is not accepted. Server threads join and assertions require closed entries for each successful/requested response."
+    ],
+    "prior_report": {
+      "report": "data-collection/native-context-transport-cost-repair-1445.json",
+      "old_test_sha256": "9fe95906ece5bf5dadbf3d03af254185fcf4ec5d9309a3472e820f0fe89330fc",
+      "current_test_sha256": "4e8d463648971873d3f39502543a83e3844f0eb4512aa7ee00313a0ee8df407a",
+      "reuse": "Historical 33-pass report is contextual evidence only; same implementation hash but different test bytes. Current 33 tests independently rerun above. Historical performance numbers not rerun or accepted here."
+    },
+    "limitations": [
+      "High-concurrency testing explicitly deferred by user: no test_250_local_tool_burst or equivalent trial run.",
+      "No Linux, Docker, provider, production server, CI or deployment validation. Local test HTTP/TLS fixtures only.",
+      "No 50-user x 5-task throughput, latency, capacity or performance acceptance claimed.",
+      "Entire parent1499 acceptance, precise candidate admission, Git delivery and remaining issues are parent-owned.",
+      "TLS proxy fixture terminates CONNECT locally; does not exercise a production forwarding proxy or its independent TLS trust/configuration."
+    ],
+    "cleanup": {
+      "status": "blocked_by_automatic_approval_policy",
+      "attempt": "Remove-Item -LiteralPath for previously resolved and root-validated newly-created bounded-tmp, independent-tmp, mypy-cache only",
+      "result": "exec_command rejected before execution: blocked by policy. No deletion or bypass; cleanup incomplete.",
+      "retained": [
+        "D:/GongGong/data-collection/receipts/duobao-1382/native-entry-transport-review-20261119-probes/bounded-tmp",
+        "D:/GongGong/data-collection/receipts/duobao-1382/native-entry-transport-review-20261119-probes/independent-tmp",
+        "D:/GongGong/data-collection/receipts/duobao-1382/native-entry-transport-review-20261119-probes/mypy-cache"
+      ],
+      "evidence_retained": "test_independent.py, logs and evidence manifest intentionally retained for review reproducibility.",
+      "others": "No source/index/Git mutation or older retained fixture deletion. No worker subprocess or test server remains; test processes exited0."
+    }
+  }
+}
