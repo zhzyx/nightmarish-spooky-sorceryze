@@ -3,7 +3,8 @@
 from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
-from work_management import execute
+from fastapi.responses import Response
+from work_management import execute, read_approved_asset
 
 
 def create_work_router(store, actor_dependency):
@@ -17,6 +18,21 @@ def create_work_router(store, actor_dependency):
     @router.get("/issues/{issue_id}/work")
     def read(issue_id: str, actor: str = actor_dep):
         return store.dispatch_tool(actor, "work.read", {"issue_id": issue_id})
+
+    @router.get("/issues/{issue_id}/work/approved-asset", response_class=Response)
+    def approved_asset(
+        issue_id: str, kind: Literal["concept", "model"], module: str, revision: str, path: str, actor: str = actor_dep
+    ):
+        content = read_approved_asset(store, actor, issue_id, kind, module, revision, path)
+        return Response(
+            content,
+            media_type="application/octet-stream",
+            headers={
+                "Cache-Control": "private, no-store",
+                "X-Content-Type-Options": "nosniff",
+                "Content-Disposition": "attachment",
+            },
+        )
 
     @router.post("/issues/{issue_id}/work/{operation}")
     def mutate(

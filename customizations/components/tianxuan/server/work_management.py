@@ -78,6 +78,43 @@ def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any
     return state
 
 
+@_connection_call
+def read_approved_asset(store, actor, issue_id, kind, module, revision, path) -> bytes:
+    """Resolve a pinned input against one snapshot of the current issue and ACL."""
+    if kind not in ("concept", "model") or not all(bounded_text(v) for v in (issue_id, module, revision, path)):
+        raise TianxuanError("invalid asset binding")
+    if not store.db.in_transaction:
+        store.db.execute("BEGIN")
+    store._require_tenant_issue(actor, issue_id)
+    module_read(store, actor, module)
+    rows = store.db.execute(
+        "SELECT action, data FROM issue_work_events WHERE issue_id=? AND action IN ('work.submit_asset','work.decide') "
+        "AND json_extract(data, '$.kind')=? ORDER BY version DESC LIMIT 2",
+        (issue_id, kind),
+    ).fetchall()
+    if [row["action"] for row in rows] != ["work.decide", "work.submit_asset"]:
+        raise VersionConflict("asset has no current approval")
+    decision, submission = (json.loads(row["data"]) for row in rows)
+    binding = dict(kind=kind, module=module, revision=revision, path=path)
+    if (
+        decision.get("decision") != "approved"
+        or submission.get("decision") != "pending"
+        or any(event.get(key) != value for event in (decision, submission) for key, value in binding.items())
+        or decision.get("digest") != submission.get("digest")
+    ):
+        raise VersionConflict("asset approval does not match current submission")
+    native = getattr(store, "work_native_store", None)
+    if native is None:
+        raise TianxuanError("native asset store unavailable")
+    try:
+        content: bytes = native.read(store._tenant_of(actor), module, revision, path)
+    except ValueError as exc:
+        raise TianxuanError("native asset unavailable") from exc
+    if hashlib.sha256(content).hexdigest() != decision.get("digest"):
+        raise VersionConflict("approved asset digest changed")
+    return content
+
+
 def bounded_text(value, limit=512, *, empty=False):
     return isinstance(value, str) and len(value) <= limit and (empty or bool(value.strip()))
 

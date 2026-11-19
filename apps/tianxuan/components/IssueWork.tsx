@@ -3,10 +3,11 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { authHeaders } from "@/lib/auth";
 import { useActor } from "@/lib/use-actor";
+import { AssetPreview, objectPath, type ReviewAsset as Asset } from "./AssetPreview";
 import styles from "./IssueWork.module.css";
 
 type Kind = "concept" | "model";
-type Asset = { kind: Kind; module: string; revision: string; path: string; decision: string };
+
 type Plan = { iteration?: string; milestone?: string; roadmap?: string; status?: string; estimated_minutes?: number; custom_fields?: Record<string, unknown> };
 type Work = { id: string; version: number; plan: Plan; logged_minutes: number; assets: Partial<Record<Kind, Asset>>; logs: {minutes: number; note: string}[]; history: unknown[] };
 type Pending = { action: string; data: Record<string, unknown> };
@@ -90,8 +91,7 @@ export function IssueWork({ id }: { id: string }) {
 
   async function download(asset: Asset) {
     try {
-      const path = asset.path.split("/").map(encodeURIComponent).join("/");
-      const response = await fetch("/api/v1/native/modules/" + encodeURIComponent(asset.module) + "/revisions/" + encodeURIComponent(asset.revision) + "/objects/" + path, { headers: authHeaders(actor) });
+      const response = await fetch(objectPath(asset), { headers: authHeaders(actor) });
       if (!response.ok) throw Error("下载失败（" + response.status + "）");
       const url = URL.createObjectURL(await response.blob());
       const link = document.createElement("a");
@@ -128,6 +128,7 @@ export function IssueWork({ id }: { id: string }) {
       </form>
       {Object.values(work.assets).filter((asset): asset is Asset => Boolean(asset)).map(asset => <article key={asset.kind}>
         <h3>{kinds[asset.kind]} · {asset.decision}</h3><p>{asset.module} / {asset.path}<br /><code>{asset.revision}</code></p>
+        <AssetPreview asset={asset} actor={actor} />
         <button type="button" onClick={() => void download(asset)}>下载此修订</button>
         {asset.decision === "pending" && <form onSubmit={event => submit(event, "decide", asset)}>
           <label>人工结论<select name="decision" required defaultValue=""><option disabled value="">选择结论</option><option value="approved">确认通过</option><option value="changes_requested">要求修改</option></select></label>

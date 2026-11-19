@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "request-a8-asset-review-1602",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-a8-asset-review",
+  "kind": "request",
+  "occurred_at": "2026-11-19T14:29:09.5628810Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1602",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "origin": "external-authorized-host",
+    "version": "0.1.0",
+    "definition_sha256": "87b82d26b741a04d787155b012076b32cdf14fcbec3ff51823fe83751ce89462"
+  },
+  "payload": {
+    "protocol": "customizations/components/codex-dispatch/HOST_PROTOCOL.md",
+    "issue_readback": {
+      "body": "<!-- gonggong-request:tianxuan-a8-asset-review -->\n\n需求文档：`design-docs/tianxuan-a8-asset-review.md`\n\n[查看主线设计（合入后可用）](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/tianxuan-a8-asset-review.md)\n\n# A8 工单资产预览和当前批准输入读取\n\n父工单 #1550，承接已交付 #1552 的 A8 联调缺口。责任人 Sail-Li。\n\n在工单确认区展示固定修订的真实概念图与可查看模型，保留下载。领域只读入口 read_approved_asset(store, actor, issue_id, kind, module, revision, path) 返回核验后的原生字节；认证 GET /api/v1/issues/{issue_id}/work/approved-asset 使用同名查询参数 kind、module、revision、path。以当前类型的最新提交和人工决定为准，重新读取同租户原生对象并验证摘要；失败拒绝交出字节。原生 head 前进不撤销固定修订，一旦工单改提新修订立即拒绝旧批准对象。\n\n写范围为工单详情确认区、专属预览组件、work_management.py、work_management_api.py 与相关测试、工单文档及证据。#1581 负责执行核心的实际消费，#1577 独占生产写入，用户负责视觉签收。使用真实 PNG/GLB 验证预览、授权、摘要、旧版拒绝。沿用既有服务与 Web 安装入口，回退可恢复前一版本，无新数据表。\n\n\n执行授权来源（由调用宿主核实，不代替候选准入）：codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119\n\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+      "number": 1602,
+      "state": "OPEN",
+      "title": "A8：工单资产预览和当前批准修订读取",
+      "updatedAt": "2026-11-19T14:24:49Z",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1602"
+    },
+    "operator": "Sail-Li",
+    "base": "f820c687083ff12db1a122bb27675d79bbdebc46"
+  },
+  "evidence_refs": [],
+  "sha256": "acf393b70d1107c48dbba5fa6ff77c0494b85da36fe19b729b385b876d4f71de"
+}

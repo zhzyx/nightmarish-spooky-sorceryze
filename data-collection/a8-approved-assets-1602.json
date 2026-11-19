@@ -1,0 +1,30 @@
+{
+  "issue_number": 1602,
+  "request_id": "tianxuan-a8-asset-review",
+  "baseline": "f820c687083ff12db1a122bb27675d79bbdebc46",
+  "python_regression": "27 passed: test_work_management, test_native_api, test_approved_asset",
+  "mypy": "3 changed Python files pass",
+  "web": "Next production build and tsc pass",
+  "browser": "Edge with production Next app and native API",
+  "png": "tests/data/images/icon.png",
+  "png_dimensions": [
+    256,
+    256
+  ],
+  "model": "tests/data/models/suzanne.glb",
+  "model_bounds": [
+    2.734375,
+    1.96875,
+    1.703125
+  ],
+  "browser_actions": [
+    "view PNG",
+    "load and rotate GLB",
+    "verify fixed revision after native head advances",
+    "digest mismatch refuses preview",
+    "retry restores image",
+    "download pinned revision"
+  ],
+  "observed_revision": "dbe2f8688508629eda5e24ea7ffb3299cd79870e1363ea53d75e297d4ae3f669",
+  "scope": "isolated technical verification; user visual acceptance and production deployment pending with parent"
+}
