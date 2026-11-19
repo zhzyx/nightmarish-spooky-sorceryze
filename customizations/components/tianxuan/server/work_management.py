@@ -1,7 +1,9 @@
 """Issue planning projections and revision-bound art decisions in the domain transaction."""
 
 import hashlib
+import io
 import json
+import zipfile
 from typing import Any
 
 from issue_flow import definition
@@ -125,6 +127,47 @@ def read_approved_asset(store, actor, issue_id, kind, module, revision, path) ->
     if hashlib.sha256(content).hexdigest() != decision.get("digest"):
         raise VersionConflict("approved asset digest changed")
     return content
+
+
+@_connection_call
+def godot_inputs(store, actor, issue_id) -> bytes:
+    """Build one import project from every current issue asset in one ACL snapshot."""
+    if not store.db.in_transaction:
+        store.db.execute("BEGIN")
+    store._require_tenant_issue(actor, issue_id)
+    rows = store.db.execute(
+        "SELECT data, version FROM issue_work_events WHERE issue_id=? AND action='work.submit_asset' "
+        "AND version IN (SELECT MAX(version) FROM issue_work_events WHERE issue_id=? AND action='work.submit_asset' "
+        "GROUP BY json_extract(data, '$.kind')) ORDER BY version",
+        (issue_id, issue_id),
+    ).fetchall()
+    if not rows:
+        raise VersionConflict("issue has no submitted Godot inputs")
+    entries = {
+        "project.godot": b'config_version=5\n[application]\nconfig/name="Approved issue assets"\n[rendering]\nrenderer/rendering_method="gl_compatibility"\n'
+    }
+    bindings = []
+    for row in rows:
+        submission = json.loads(row["data"])
+        kind = submission["kind"]
+        module, revision, path = (submission[k] for k in ("module", "revision", "path"))
+        content = read_approved_asset(store, actor, issue_id, kind, module, revision, path)
+        if kind == "concept" and content.startswith(b"\x89PNG\r\n\x1a\n"):
+            name = "assets/concept.png"
+        elif kind == "model" and content.startswith(b"glTF"):
+            name = "assets/model.glb"
+        else:
+            raise TianxuanError("Godot issue input requires a PNG concept or GLB model")
+        if len(content) > 8 * 1024 * 1024:
+            raise TianxuanError("Godot input exceeds native file limit")
+        entries[name] = content
+        bindings.append([kind, module, revision, path, row["version"]])
+    result = io.BytesIO()
+    with zipfile.ZipFile(result, "w") as archive:
+        archive.comment = hashlib.sha256(json.dumps(bindings).encode()).hexdigest().encode("ascii")
+        for name, data in entries.items():
+            archive.writestr(zipfile.ZipInfo(name), data)
+    return result.getvalue()
 
 
 def bounded_text(value, limit=512, *, empty=False):

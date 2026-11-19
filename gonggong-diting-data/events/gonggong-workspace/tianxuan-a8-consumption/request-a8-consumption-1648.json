@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "event_id": "request-a8-consumption-1648",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-a8-consumption",
+  "kind": "request",
+  "occurred_at": "2026-11-19T17:00:03.5475988Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1648",
+  "agent": {
+    "definition_sha256": "87b82d26b741a04d787155b012076b32cdf14fcbec3ff51823fe83751ce89462",
+    "id": "codex-current-operator-host",
+    "origin": "external-authorized-host",
+    "version": "0.1.0"
+  },
+  "payload": {
+    "base": "dbe917571d393091e815f4c4a83d80f4b6de7dd0",
+    "issue_readback": {
+      "body": "<!-- gonggong-request:tianxuan-a8-consumption -->\n\n需求文档：`design-docs/tianxuan-a8-consumption.md`\n\n[查看主线设计（合入后可用）](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/tianxuan-a8-consumption.md)\n\n# A8 原生消费当前批准的工单资产\n\n父 #1550，承接 #1602 已交付审批字节契约。Sail-Li 负责；#1581 原作者已交出此窄范围。独立原生资产输入或实际 Godot 导入消费者需逐次用 read_approved_asset 取得当前工单、类型、模块、精确修订与路径的原始字节；普通流程可消费当前批准，改提、拒绝、撤权、摘要不符时阻止旧输入。真实 PNG/GLB 通过正常消费入口验证。复用既有输入或导入能力，保留原无绑定工作流。测试工单隔离，生产写入 #1577，用户视觉签收留给父单。避开角色启动与执行核心。对齐基线、门禁、独立审查和 main 接收。\n\n\n执行授权来源（由调用宿主核实，不代替候选准入）：codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119\n\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+      "number": 1648,
+      "state": "OPEN",
+      "title": "A8：原生工作流消费当前获批工单资产",
+      "updatedAt": "2026-11-19T16:56:50Z",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1648"
+    },
+    "operator": "Sail-Li"
+  },
+  "evidence_refs": [],
+  "sha256": "6a22fdbafab434f2b9683f26c7c47eac05e9f85e1f732477ab1b92aef69283a3"
+}

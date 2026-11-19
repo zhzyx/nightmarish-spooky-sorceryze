@@ -2,10 +2,10 @@
 
 from typing import Literal
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response
 from issue_flow import execute_flow
-from work_management import execute, read_approved_asset
+from work_management import execute, godot_inputs, read_approved_asset
 
 
 def create_work_router(store, actor_dependency):
@@ -19,6 +19,20 @@ def create_work_router(store, actor_dependency):
     @router.get("/issues/{issue_id}/work")
     def read(issue_id: str, actor: str = actor_dep):
         return store.dispatch_tool(actor, "work.read", {"issue_id": issue_id})
+
+    @router.get("/issues/{issue_id}/work/godot-inputs", response_class=Response)
+    def current_godot_inputs(issue_id: str, request: Request, actor: str = actor_dep):
+        if request.query_params:
+            raise HTTPException(422, "Godot inputs are determined by the current issue")
+        return Response(
+            godot_inputs(store, actor, issue_id),
+            media_type="application/zip",
+            headers={
+                "Cache-Control": "private, no-store",
+                "Content-Disposition": "attachment",
+                "X-Content-Type-Options": "nosniff",
+            },
+        )
 
     @router.get("/issues/{issue_id}/work/approved-asset", response_class=Response)
     def approved_asset(
