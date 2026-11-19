@@ -107,7 +107,7 @@ def trusted(run, repo, branch):
     )
 
 
-def restore(run_id, repo, branch, expected, destination, scratch):
+def restore(run_id, repo, branch, expected, destination, scratch, *, local_archive=None):
     if not str(run_id).isdecimal():
         raise ValueError("Numeric build run required")
     run = api(f"repos/{repo}/actions/runs/{run_id}")
@@ -121,13 +121,17 @@ def restore(run_id, repo, branch, expected, destination, scratch):
         raise ValueError("Expected one immutable editor artifact")
     item = matches[0]
     archive = scratch / "editor.zip"
-    with archive.open("wb") as out:
-        subprocess.run(
-            [github_runtime.resolve_gh(), "api", f"repos/{repo}/actions/artifacts/{int(item['id'])}/zip"],
-            stdout=out,
-            check=True,
-            timeout=600,
-        )
+    if local_archive is not None:
+        # Verify and unpack the same private copy even if the caller replaces its file.
+        shutil.copyfile(local_archive, archive)
+    else:
+        with archive.open("wb") as out:
+            subprocess.run(
+                [github_runtime.resolve_gh(), "api", f"repos/{repo}/actions/artifacts/{int(item['id'])}/zip"],
+                stdout=out,
+                check=True,
+                timeout=600,
+            )
     checksum = "sha256:" + digest(archive)
     if item.get("digest") != checksum:
         raise ValueError("Artifact archive failed SHA-256 verification")

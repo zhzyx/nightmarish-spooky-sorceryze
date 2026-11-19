@@ -7,7 +7,7 @@
 
 Git 工作区的普通 Windows 启动器（包括 `tools/launch_latest_editor.ps1`、桌面快捷方式和根目录的 .NET 示例入口）共用主检出目录的安装，位置按 Git common directory 解析。启动前校验安装清单中的编辑器、控制台和天枢包摘要。原有 v1 清单需重新安装。
 
-安装时主检出 HEAD 须与远端 main 一致。本地构建请从该提交的干净工作树运行构建脚本，再以 `-BuildDirectory <构建输出>` 安装，或通过 `tools/install_gonggong_editor.ps1 -ActionsRun <运行编号>` 安装该提交的成功 Windows Actions 产物。安装器核验来源与摘要并整体替换。候选工作树的 bin 用于开发验证。标准构建禁用 Mono，C# 示例的脚本执行需要具备 Mono 支持的编辑器。
+安装时主检出 HEAD 须与远端 main 一致。本地构建请从该提交的干净工作树运行构建脚本，再以 `-BuildDirectory <构建输出>` 安装，或通过 `tools/install_gonggong_editor.ps1 -ActionsRun <运行编号>` 安装该提交的成功 Windows Actions 产物。已预先下载该运行的原始 Windows Actions ZIP 时，可在同一命令附加 `-ActionsArchive <归档路径>`。安装器重新读取 GitHub 的运行和官方摘要，在私有暂存目录核验归档及内部回执，回读当前 main 后整体替换。候选工作树的 bin 用于开发验证。标准构建禁用 Mono，C# 示例的脚本执行需要具备 Mono 支持的编辑器。
 
 二进制和本地安装清单不进入源码 Git。新检出仓库后，执行 `tools/build_gonggong_editor.ps1 -Python <构建Python路径>`，然后执行 `tools/install_gonggong_editor.ps1`，即可生成此目录的可运行内容。构建需符合仓库 Windows 构建依赖；构建 Python 需安装 SCons，并支持 zstd。
 

@@ -26,7 +26,8 @@ class ActionsStageTests(unittest.TestCase):
             output.mkdir()
             revision = "1" * 40
 
-            def restore(run, repo, branch, inputs, folder, scratch):
+            def restore(run, repo, branch, inputs, folder, scratch, *, local_archive=None):
+                self.assertEqual(local_archive, root / "download.zip")
                 folder.mkdir()
                 for name in (stage.GUI, stage.PACKAGE, stage.BOARD, "D3D12Core.dll", "d3d12SDKLayers.dll"):
                     (folder / name).write_text(name)
@@ -38,7 +39,9 @@ class ActionsStageTests(unittest.TestCase):
                 )
 
             with patch.object(stage, "main_revision", return_value=revision), patch.object(stage, "restore", restore):
-                self.assertEqual(stage.stage(root, output, None, "42"), revision)
+                self.assertEqual(stage.stage(root, output, None, "42", root / "download.zip"), revision)
+            with self.assertRaisesRegex(ValueError, "requires its run ID"):
+                stage.stage(root, output, root, None, root / "download.zip")
             self.assertEqual(
                 {p.name for p in output.iterdir()},
                 {
@@ -93,7 +96,7 @@ class WebView2StageTests(unittest.TestCase):
                     )
                 )
 
-                def restore(run, repo, branch, inputs, destination, scratch):
+                def restore(run, repo, branch, inputs, destination, scratch, *, local_archive=None):
                     shutil.copytree(folder, destination)
 
                 with (
@@ -139,6 +142,9 @@ class InstalledEditorTests(unittest.TestCase):
         artifact = Path(__file__).resolve().parents[1] / ".github/scripts/windows_editor_artifact.py"
         (self.root / ".github/scripts").mkdir(parents=True)
         shutil.copyfile(artifact, self.root / ".github/scripts" / artifact.name)
+        runtime = Path("customizations/components/issue-workorders/github_runtime.py")
+        (self.root / runtime.parent).mkdir(parents=True)
+        shutil.copyfile(Path(__file__).resolve().parents[1] / runtime, self.root / runtime)
         (self.root / ".gitignore").write_text("project/runtime/git/\n")
         self.git("add", ".")
         self.git("commit", "-m", "fixture")

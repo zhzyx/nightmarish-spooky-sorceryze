@@ -1,0 +1,20 @@
+{
+  "issue_number": 1635,
+  "request_id": "windows-editor-verified-archive-20261120",
+  "source_failure": {
+    "run_id": 44562087036,
+    "artifact_id": 14551232733,
+    "archive_bytes": 85234526,
+    "observed": "gh api ZIP transfer timed out after 600 seconds during official staging; current installation unchanged"
+  },
+  "local_validation": {
+    "artifact_suite": "11 passed, 1 POSIX-only test skipped on Windows",
+    "installed_editor_suite": "4 passed on Windows including installation, stale main rejection, release packaging, extraction and launcher",
+    "new_cases": [
+      "verified local archive does not redownload",
+      "tampering rejected before extraction",
+      "stage forwards archive path",
+      "archive requires run ID"
+    ]
+  }
+}
