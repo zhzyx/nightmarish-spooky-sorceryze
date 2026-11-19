@@ -426,6 +426,42 @@ def _header(request: Request, name: str) -> str:
     return (request.headers.get(name) or "").strip()
 
 
+def workspace_actor(request: Request, *, write: bool = False) -> str:
+    store = request.app.state.store
+    actor = getattr(request.state, "verified_actor", None)
+    if not actor:
+        scheme, _, token = request.headers.get("authorization", "").partition(" ")
+        key = token.strip() if scheme.lower() == "bearer" else request.cookies.get(COOKIE, "")
+        actor = store.user_for_access_key(key) if key else None
+    if not actor:
+        raise HTTPException(401, "personal access key required")
+    if write and store.role_of(actor) == "viewer":
+        raise HTTPException(403, "read-only account")
+    if write and request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
+        raise HTTPException(415, "application/json required")
+    return str(actor)
+
+
+def workspace_reply(
+    gateway: ModelGateway | None, tenant: str, actor: str, messages: list[dict[str, Any]]
+) -> dict[str, str]:
+    model = os.environ.get("TIANXUAN_CHAT_MODEL")
+    base_url = os.environ.get("TIANXUAN_CHAT_BASE_URL")
+    model_key = os.environ.get("TIANXUAN_CHAT_MODEL_KEY")
+    if gateway is None or not model or not base_url or not model_key:
+        raise HTTPException(503, "workspace chat is not configured")
+    try:
+        result = gateway.chat(tenant, actor, model, messages, api_key=model_key, base_url=base_url, max_tokens=2048)
+    except BudgetExceeded as exc:
+        raise HTTPException(429, "workspace model budget exhausted") from exc
+    except (MissingCredential, InvalidRequest, UpstreamError, httpx.HTTPError) as exc:
+        raise HTTPException(502, "workspace model did not return a reply") from exc
+    content = result["content"]
+    if not content.strip() or len(content) > 16000:
+        raise HTTPException(502, "workspace model did not return a bounded reply")
+    return {"model": result["model"], "content": content}
+
+
 def create_model_router(gateway: ModelGateway) -> APIRouter:
     """创建模型网关路由；调用方自行 ``app.include_router(...)``。"""
 
@@ -488,27 +524,9 @@ def create_model_router(gateway: ModelGateway) -> APIRouter:
             raise HTTPException(status_code=502, detail="upstream model request failed") from exc
 
     @router.post("/workspace/chat")
-    async def workspace_chat(body: WorkspaceChat, request: Request) -> dict[str, str]:
-        if request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
-            raise HTTPException(415, "application/json required")
-        store = request.app.state.store
-        actor = getattr(request.state, "verified_actor", None)
-        if not actor:
-            scheme, _, token = request.headers.get("authorization", "").partition(" ")
-            key = token.strip() if scheme.lower() == "bearer" else request.cookies.get(COOKIE, "")
-            actor = await run_in_threadpool(store.user_for_access_key, key) if key else None
-        if not actor:
-            raise HTTPException(401, "personal access key required")
-        context = await run_in_threadpool(store.actor_context, actor)
-        if context["role"] == "viewer":
-            raise HTTPException(403, "read-only account")
-
-        model = os.environ.get("TIANXUAN_CHAT_MODEL")
-        base_url = os.environ.get("TIANXUAN_CHAT_BASE_URL")
-        model_key = os.environ.get("TIANXUAN_CHAT_MODEL_KEY")
-        if not model or not base_url or not model_key:
-            raise HTTPException(503, "workspace chat is not configured")
-
+    def workspace_chat(body: WorkspaceChat, request: Request) -> dict[str, str]:
+        actor = workspace_actor(request, write=True)
+        context = request.app.state.store.actor_context(actor)
         messages = body.messages
         if messages[-1].role != "user" or any(
             message.role != ("assistant" if index % 2 else "user")
@@ -518,22 +536,7 @@ def create_model_router(gateway: ModelGateway) -> APIRouter:
         ):
             raise HTTPException(400, "messages must alternate and end with a user message")
 
-        try:
-            result = await run_in_threadpool(
-                gateway.chat,
-                context["tenant"],
-                actor,
-                model,
-                [message.model_dump() for message in messages],
-                api_key=model_key,
-                base_url=base_url,
-                max_tokens=2048,
-            )
-        except BudgetExceeded as exc:
-            raise HTTPException(429, "workspace model budget exhausted") from exc
-        except (MissingCredential, InvalidRequest, UpstreamError, httpx.HTTPError) as exc:
-            raise HTTPException(502, "workspace model did not return a reply") from exc
-        return {"model": result["model"], "content": result["content"]}
+        return workspace_reply(gateway, context["tenant"], actor, [message.model_dump() for message in messages])
 
     @router.get("/models/usage")
     def usage(request: Request) -> dict[str, Any]:

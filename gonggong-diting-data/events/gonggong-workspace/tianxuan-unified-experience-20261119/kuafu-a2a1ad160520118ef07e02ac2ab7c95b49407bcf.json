@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a2a1ad160520118ef07e02ac2ab7c95b49407bcf",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ab779cb6f5c5229c54ba9af692a31d4284ed1fbc9b71ec0dd00d98ab6be0efec",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1555",
+    "action": "validation",
+    "detection_head": "f820c687083ff12db1a122bb27675d79bbdebc46",
+    "context_sha256": "e3f8d5bfb72e8892c9625580aa11dd1d8e2f6a699356543434a5390b4877a9be",
+    "operator": "Sail-Li",
+    "worker": "codex:01a1f28d-a13d-7611-b551-3e8e54830f5c",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44541828879/job/135621889440",
+    "diagnosis": "PR #1600 eagerly acquired a write transaction and created workspace schema in create_app. This changed database dumps before unrelated authorization checks and failed app construction during an external writer lock.",
+    "next_action": "Provision conversation tables only during first authorized creation. Keep startup and reads schema-write-free. Run the original tenant rejection and lock-retry cases unchanged against the replacement, then verify the exact full suite.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T14:40:56.480815+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T14:41:32.552716+00:00",
+  "sha256": "a0562fc0b5b9e3e8617d03102d8cae447a3bb2ccfb904510a94507b449d0a3c4"
+}

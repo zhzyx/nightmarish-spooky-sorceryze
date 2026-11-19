@@ -12,5 +12,5 @@ export function generateMetadata(): Metadata {
 export default async function DashboardPage() {
   const actor = await currentActor();
   const issues = actor ? await fetchIssues(actor).catch(() => null) : null;
-  return <DashboardWorkspace issues={issues} signedIn={Boolean(actor)} />;
+  return <DashboardWorkspace key={actor || "signed-out"} issues={issues} signedIn={Boolean(actor)} />;
 }
