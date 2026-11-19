@@ -1,0 +1,76 @@
+{
+  "issue_number": 1551,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "scope": "Workspace source accepted. Production integration remains tracked by #1581 and #1577.",
+  "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1607",
+  "superseded_pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1600",
+  "operator": "Sail-Li",
+  "signed_head": "22c0701ff22a3cebb845e4d86a2fc0ee2853d56a",
+  "source_commit": "2bcaad91f6ee19582a100dd4b906de49e995203a",
+  "signed_tree": "340c19bb64ee81f99ff2b18f918d6987f01b11ef",
+  "reviewed_product_tree": "ac64f408db4b284fd4a65b9f2a5d37d27d2dc7cf",
+  "observed_main": "3138f031010dc106c8bab750a8882daf9130eb77",
+  "merged_tree": "84eef851f1fa194407a30f5a0eb65016dcddf833",
+  "merged_at": "2026-11-19T15:09:33Z",
+  "read_back_at": "2026-11-19T15:14:27.049110+00:00",
+  "product_paths_verified": 26,
+  "disjoint_main_paths": [
+    "data-collection/maliang-image-only-mesh-20261119-validation.json",
+    "design-docs/maliang-image-only-mesh-20261119.md",
+    "gonggong-diting-data/events/gonggong-workspace/maliang-image-only-mesh-20261119/maliang-image-only-mesh-20261119-request.json",
+    "samples/ainative-workbench/addons/ainative/parameter_form.gd",
+    "samples/ainative-workbench/addons/ainative/workbench.gd",
+    "samples/ainative-workbench/generation_service_acceptance.gd",
+    "samples/ainative-workbench/parameter_form_acceptance.gd",
+    "tests/editor/ainative_builtin.gd"
+  ],
+  "checks": [
+    {
+      "name": "issue-association",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44547650546/job/135642453949"
+    },
+    {
+      "name": "Docker images",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44547649925/job/135645609749"
+    },
+    {
+      "name": "Module and web tests",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44547649937/job/135642450655"
+    },
+    {
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44547650247/job/135642452905"
+    },
+    {
+      "name": "🏁 Windows / Editor (target=editor)",
+      "conclusion": "SUCCESS",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44547650247/job/135642662726"
+    }
+  ],
+  "local_full_windows_tests": {
+    "passed": 1252,
+    "skipped": 10,
+    "deselected": 2,
+    "subtests_passed": 203
+  },
+  "source_input": {
+    "path": "customizations/components/tianxuan/server/workspace_conversations.py",
+    "sha256": "ee1c53f628692e5f29f981e60b1c530c2fdff137b5531d7e7e07cd1a23831e58",
+    "function": "require_workspace_approval"
+  },
+  "recovery": {
+    "tracker": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1555",
+    "static_and_tenant_regression": "Superseded by the accepted source after passing the original checks.",
+    "docker_attempt_1": "The native package container terminated with exit 137 under the 192 MiB limit. The log gives no confirmed root cause.",
+    "docker_attempt_2": "Identical signed head and limits passed on a targeted retry."
+  },
+  "open_acceptance": [
+    1581,
+    1577
+  ]
+}

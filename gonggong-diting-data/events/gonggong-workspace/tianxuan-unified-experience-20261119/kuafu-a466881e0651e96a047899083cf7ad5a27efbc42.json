@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a466881e0651e96a047899083cf7ad5a27efbc42",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c9471aed4135a350207e7c66b33461c7b0186cbc62d83d247c29a025903e366a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1555",
+    "action": "validation",
+    "detection_head": "2bcaad91f6ee19582a100dd4b906de49e995203a",
+    "context_sha256": "e3f8d5bfb72e8892c9625580aa11dd1d8e2f6a699356543434a5390b4877a9be",
+    "operator": "Sail-Li",
+    "worker": "codex:01a1f28d-a13d-7611-b551-3e8e54830f5c",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44547649925/job/135642450576",
+    "diagnosis": "The signed API image built; its isolated 192 MiB native package test terminated with exit 137 after eight tests. The predecessor native package job had passed. Resource termination is suspected; the log contains no test traceback or measured peak.",
+    "next_action": "Observe one targeted same-head retry under the unchanged memory and CPU limit. If it repeats, identify the failing case and compare an isolated baseline before changing code or resource policy.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T14:52:37.866001+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T14:57:26.630285+00:00",
+  "sha256": "26c7e02e7a0b339ac1c76ba7fdb3075d68dab1da7aaf4b2aab5d42a4f21e3f6b"
+}
