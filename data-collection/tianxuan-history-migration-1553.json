@@ -1,0 +1,18 @@
+{
+  "issue": 1553,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1553",
+  "request_id": "tianxuan-unified-migration-20261119",
+  "evidence": [
+    {
+      "path": "customizations/components/tianxuan/migration/inventory-report.json",
+      "sha256": "7ec876d05c0cf912e41b89016ffd95dad40b88ae66d0936647eb6ee84d5bdcea"
+    },
+    {
+      "path": "customizations/components/tianxuan/migration/rehearsal-report.json",
+      "sha256": "98fb492be19ab151723425be55b61b68443ecd6daf5ee60344730601a643e967"
+    }
+  ],
+  "module_placement": "existing Tianxuan host_tool, Python CLI and standalone report viewer",
+  "production_import": false,
+  "acceptance": "8744 source rows, 21301 resolved relationships after native restore. Existing host and Git executable used; default routing, opt-in and rollback verified in isolation."
+}
