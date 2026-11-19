@@ -6,11 +6,39 @@ import { workspaceEntryStatus, workspaceRunStatus } from "@/components/Workspace
 import { useI18n } from "@/lib/i18n-client";
 import { workspaceRequest, type Conversation } from "@/lib/workspace-conversations";
 
+const tokenFields = [
+  ["totalTokens", "总令牌", "Total tokens"],
+  ["inputTokens", "输入", "Input"],
+  ["cachedInputTokens", "缓存输入", "Cached input"],
+  ["cacheWriteInputTokens", "缓存写入", "Cache write input"],
+  ["outputTokens", "输出", "Output"],
+  ["reasoningOutputTokens", "推理输出", "Reasoning output"],
+] as const;
+
+type TokenCounts = Partial<Record<typeof tokenFields[number][0], number | null>>;
+type ReportedUsage = { last?: TokenCounts | null; total?: TokenCounts | null };
+type ExecutionTask = {
+  task: string;
+  state: string;
+  issue_id?: string;
+  title?: string;
+  observed_model?: string | null;
+  observation_source?: string | null;
+  usage?: ReportedUsage | null;
+};
+type RoleCall = {
+  role: string;
+  observed_model?: string | null;
+  source?: string | null;
+  reported_usage?: ReportedUsage | null;
+};
+
 type EntryStatus = {
   entry: string;
   state: string;
   progress: { total: number; done: number; percent: number };
-  tasks: { task: string; state: string; issue_id?: string; title?: string }[];
+  tasks: ExecutionTask[];
+  role_calls?: RoleCall[] | null;
   failures: unknown[];
 };
 
@@ -22,6 +50,43 @@ const finalTaskStates = new Set(["accepted", "failed", "stopped", "superseded", 
 function isSettled(status: EntryStatus) {
   return status.state === "delivered" && status.tasks.length > 0 &&
     status.tasks.every(({ state }) => finalTaskStates.has(state));
+}
+
+function formatCounts(counts: TokenCounts | null | undefined, zh: boolean) {
+  return tokenFields.flatMap(([field, chinese, english]) => {
+    const count = counts?.[field];
+    return typeof count === "number" && Number.isSafeInteger(count) && count >= 0
+      ? [`${zh ? chinese : english} ${count.toLocaleString(zh ? "zh-CN" : "en-US")}`]
+      : [];
+  }).join(" · ");
+}
+
+function ExecutionObservation({ model, source, usage, zh }: {
+  model?: string | null;
+  source?: string | null;
+  usage?: ReportedUsage | null;
+  zh: boolean;
+}) {
+  const last = formatCounts(usage?.last, zh);
+  const total = formatCounts(usage?.total, zh);
+  const notReported = zh ? "未回报" : "Not reported";
+  return <>
+    <dl className="workspace-item-details">
+      <div><dt>{zh ? "观测模型" : "Observed model"}</dt>
+        <dd>{model?.trim() || (zh ? "未观测" : "Not observed")}</dd></div>
+      <div><dt>{zh ? "观测来源" : "Observation source"}</dt>
+        <dd>{source?.trim() || notReported}</dd></div>
+    </dl>
+    {last || total ? <details>
+      <summary>{zh ? "供应方原始用量（令牌）" : "Provider-reported usage (tokens)"}</summary>
+      <dl>
+        <dt>{zh ? "最近一次回报" : "Most recent report"}</dt>
+        <dd>{last || notReported}</dd>
+        <dt>{zh ? "会话累计回报" : "Cumulative session report"}</dt>
+        <dd>{total || notReported}</dd>
+      </dl>
+    </details> : <p>{zh ? "供应方原始用量未回报。" : "Provider usage was not reported."}</p>}
+  </>;
 }
 
 type Props = {
@@ -49,6 +114,7 @@ export function WorkspaceExecution({ conversation, editable, busy, change }: Pro
   const [reviewRefresh, setReviewRefresh] = useState(0);
   const reviewPath = `/${conversation.id}/requirement-review`;
   const needsReview = review && review.version !== review.approved_version;
+  const roleCalls = status?.role_calls?.filter(({ role }) => role === "yanshi" || role === "reviewer") ?? [];
 
   useEffect(() => {
     let active = true;
@@ -207,21 +273,37 @@ export function WorkspaceExecution({ conversation, editable, busy, change }: Pro
             ? `需求工单 ${status.progress.done}/${status.progress.total} 已完成`
             : `${status.progress.done}/${status.progress.total} requirement work orders complete`}</p>
           {status.failures.length > 0 && <p role="alert">{zh ? "执行服务报告异常。" : "The execution service reported an error."}</p>}
-          {status.tasks.length > 0 && <ul className="workspace-items">
-            {status.tasks.map(({ task, state, issue_id, title }, index) => {
-              const name = title ?? (zh ? `执行工单 ${index + 1}` : `Execution work order ${index + 1}`);
-              return <li className="workspace-item-details" key={task}>
-                {issue_id ? <Link className="text-link" href={`/issues/${encodeURIComponent(issue_id)}`}>{name}</Link>
-                  : <span>{name}</span>}
-                <span>{workspaceRunStatus(state, zh)}</span>
-              </li>;
-            })}
-          </ul>}
+          {status.tasks.length > 0 && <>
+            <h4>{zh ? "生产工单" : "Production work orders"}</h4>
+            <ul className="workspace-items">
+              {status.tasks.map(({ task, state, issue_id, title, observed_model, observation_source, usage }, index) => {
+                const name = title ?? (zh ? `执行工单 ${index + 1}` : `Execution work order ${index + 1}`);
+                return <li className="workspace-execution-observation" key={task}>
+                  <div className="workspace-item-details">
+                    {issue_id ? <Link className="text-link" href={`/issues/${encodeURIComponent(issue_id)}`}>{name}</Link>
+                      : <span>{name}</span>}
+                    <span>{workspaceRunStatus(state, zh)}</span>
+                  </div>
+                  <ExecutionObservation model={observed_model} source={observation_source} usage={usage} zh={zh} />
+                </li>;
+              })}
+            </ul>
+          </>}
+          <h4>{zh ? "角色调用" : "Role calls"}</h4>
+          {roleCalls.length ? <ul className="workspace-items">
+            {roleCalls.map(({ role, observed_model, source, reported_usage }, index) => (
+              <li className="workspace-execution-observation" key={`${role}-${index}`}>
+                <strong>{role === "yanshi" ? (zh ? "偃师" : "Yanshi") : (zh ? "审查者" : "Reviewer")}</strong>
+                <ExecutionObservation model={observed_model} source={source} usage={reported_usage} zh={zh} />
+              </li>
+            ))}
+          </ul> : <p>{zh ? "暂无角色调用的观测回执。" : "No role-call observations are available."}</p>}
         </>}
         <details>
           <summary>{zh ? "执行详情" : "Execution details"}</summary>
           <p><span>{zh ? "执行编号" : "Execution ID"}</span> <code>{entry}</code></p>
-          <p>{execution.scopes.join(" · ")}{execution.model && ` · ${execution.model}`}</p>
+          <p>{execution.scopes.join(" · ")}</p>
+          {execution.model && <p>{zh ? "所选模型档案" : "Selected model profile"} {execution.model}</p>}
           {status && status.entry === entry && status.tasks.length > 0 && <ul className="workspace-items">
             {status.tasks.map(({ task, title }, index) => <li key={task}>
               <span>{title ?? (zh ? `工单 ${index + 1}` : `Work order ${index + 1}`)}</span> <code>{task}</code>
