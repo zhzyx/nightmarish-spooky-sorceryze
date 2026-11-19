@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-build-validation",
+  "event_id": "learn-187810a952333c8f0f0be9a5f6aca4d3fefc161e4e02e234877b971c76da5862",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1623",
+  "occurred_at": "2026-11-19T18:49:20.9265538+00:00",
+  "evidence_refs": [
+    "codex-intake-1623-20261120",
+    "learn-18755ae31d7eaf86613f52bb9b0410f452c35894721d404d45eb1caa8d6a4fe6"
+  ],
+  "payload": {
+    "scope": "build-validation",
+    "lesson": "validate-whole-signed-candidate",
+    "revision": 4,
+    "previous": "d79efa029058ebfa9db30e3b3b0e804ed6d2c8d1df90cbe11a490a8552496f24",
+    "action": "applied",
+    "details": {
+      "task": "GitHub #1623 and signed PR #1657",
+      "observed": "Whole-PR independent review and five CI checks verified the precise signed head. Linux artifacts shared one source tree and were hashed and run in two isolated environments. A subsequent main advance affected only the editor installer, tools, docs and evidence. A complete raw diff confirmed the production OCI inputs stayed byte-identical. Independent review and exact combined-tree tests verified affected editor archive tools before merge, and remote main matched the expected tree."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianxuan-web-standalone-1623/verification.json",
+        "sha256": "ec1f8ee5ee377a10f4ed29f84859fb181c4f8243318afc5fa90020db234e27c4"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-web-standalone-package-20261119/codex-intake-1623-20261120.json",
+      "sha256": "90769e366af7fbd90f93b643dee5e9e27c86eedbfaaed71f535eacbafe08fde9"
+    }
+  },
+  "sha256": "0377f915506efa22d1693976d1ad494909ec54b593bfb287d764c8bfb8f6a234"
+}
