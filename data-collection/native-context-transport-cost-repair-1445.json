@@ -1,0 +1,163 @@
+{
+  "request_id": "native-context-consumption-20261118",
+  "issue_number": 1501,
+  "original_sha256": "4ad8521b92140828f8f5c8c560334ceefcce1dc328ce7c992e05818beede0c7a",
+  "export": "Lossless original implementation report. Current source/test revision and independent review are bound separately.",
+  "report": {
+    "issue": 1501,
+    "related_bug": 1445,
+    "artifact_issue": 1529,
+    "base_head": "e97cdb7ebccb83c1db8ccaef2c7dc49d5d61cfbf",
+    "signed_prior_pr": 1532,
+    "scope": "Local bounded HTTP transport repair; independent Linux, candidate admission and delivery remain parent-owned.",
+    "intake": {
+      "command": "./tools/run_issue_gate.ps1 -Issue 1501 -RequestId native-context-consumption-20261118 -IntakeOnly",
+      "result": "passed; issue in progress"
+    },
+    "method_recall": {
+      "command": "py -X utf8 framework/tools/method_learning.py --tenant gonggong-workspace recall native-http-input-boundary",
+      "result": "No verified lessons or unavailable records"
+    },
+    "original_ci": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-artifact-ci-docker-1532.log",
+      "sha256": "3b7df247daa2ab53f9f95eadd541f29d979a3eeae8da45e20eebdb9e16b5e7fe",
+      "lines_read": 959,
+      "outcome": "2 failed in 164.18s, both TimeoutError reading HTTP response; preceding 77 nonburst passed in 293.41s"
+    },
+    "sources": [
+      {
+        "path": "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py",
+        "original_sha256": "5ad989ae05b4dd4859107e4fddea3bd47316aadd9ccb16c1ed988a7a7ad169b1",
+        "candidate_sha256": "2b23d56d4860c5ff4309b52d43026e0348bec0c1041df649fe92bde27746c026"
+      },
+      {
+        "path": "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py",
+        "original_sha256": "5526a7315faca9867b3cad70ea8626faea3dcab05ac8acb49c400047d8d047ed",
+        "candidate_sha256": "9fe95906ece5bf5dadbf3d03af254185fcf4ec5d9309a3472e820f0fe89330fc"
+      }
+    ],
+    "measurement": {
+      "original": {
+        "exit": 0,
+        "elapsed": 39.82515630000853,
+        "cpu": 35.75,
+        "contexts": 2755,
+        "context_thread_cpu_sum": 18.0,
+        "context_wall_sum": 388.0147988998506,
+        "peak_working_set": 0,
+        "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]"
+      },
+      "candidate": {
+        "exit": 0,
+        "elapsed": 24.069265300000552,
+        "cpu": 14.234375,
+        "contexts": 0,
+        "context_thread_cpu_sum": 0,
+        "context_wall_sum": 0,
+        "peak_working_set": 0,
+        "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]"
+      },
+      "final-candidate": {
+        "exit": 0,
+        "elapsed": 23.439180599991232,
+        "cpu": 14.59375,
+        "contexts": 0,
+        "context_thread_cpu_sum": 0,
+        "context_wall_sum": 0,
+        "peak_working_set": 0,
+        "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]"
+      }
+    },
+    "interpretation": [
+      "Original Windows actual250 HTTP workload created 2755 unused default TLS contexts. Context thread CPU sum18.0s / process35.75s establishes material avoidable CPU cost.",
+      "Final candidate actual250 both modes passed23.32s, process14.59375s, zero default TLS contexts. Each mode still250 concurrent requests, unchanged transport/admission bounds.",
+      "Concurrent context wall durations overlap and must not be interpreted as elapsed time. Different retry counts and host scheduling prevent attribution of all elapsed improvement to TLS setup.",
+      "peak_working_set=0 is an invalid Windows ctypes measurement, not zero memory usage. No usable local peak memory result.",
+      "Parent Linux isolated100 HTTPSHandler construction2.279495s vs prebuilt context0.0001469s only supports setup cost, not actual RPC timeout causality."
+    ],
+    "implementation": [
+      "Attempt-private HTTPSHandler defers standard-library initialization until https_open; HTTP skips unused trust loading. HTTPS still creates fresh default context with hostname and certificate verification, including proxy CONNECT.",
+      "Fresh transport Request each attempt preserves URL/body/headers/method and avoids urllib ProxyHandler mutable routing leaking across typed503 retries. No shared opener, global cache, pooling, TLS context reuse, budget increase or unknown replay."
+    ],
+    "regression_found": {
+      "initial_test": "targeted.log:26 passed,1 failed",
+      "observation": "HTTPS proxy typed503 retry changed request target to absolute URL due to Request routing mutation. No claim of observed plaintext credential exposure.",
+      "fix": "Fresh per-attempt Request; regression now tests two admission refusals then third success, TLS socket type, exact body identity, request target, auth and EOF each attempt."
+    },
+    "validation": [
+      {
+        "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-transport-cost-repair-probes\\burst_probe.py original",
+        "result": "2 passed39.69s"
+      },
+      {
+        "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-transport-cost-repair-probes\\burst_probe.py final-candidate",
+        "result": "2 passed23.32s; 34 deselected"
+      },
+      {
+        "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 -m pytest -q -p no:cacheprovider --basetemp D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-transport-cost-repair-probes\\final-targeted-tmp customizations/components/tianxuan/server/test_native_entry_context_backpressure.py -k \"lazy_tls or unknown or elapsed or exhaustion or saturated\"",
+        "environment": {
+          "PYTHONPATH": "customizations/components/tianxuan/server;customizations/components/tianxuan/sinan-workorders;customizations/components/tianxuan/duobao;customizations/components/tianxuan/wenqu"
+        },
+        "result": "33 passed28.45s; 3 deselected"
+      },
+      {
+        "command": "py -m ruff check --no-fix customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py customizations/components/tianxuan/server/test_native_entry_context_backpressure.py",
+        "result": "passed"
+      },
+      {
+        "command": "py -m ruff format --check customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py customizations/components/tianxuan/server/test_native_entry_context_backpressure.py",
+        "result": "passed"
+      },
+      {
+        "command": "py -m mypy --follow-imports skip --ignore-missing-imports customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py",
+        "result": "passed"
+      },
+      {
+        "command": "git diff --check",
+        "result": "passed"
+      }
+    ],
+    "test_dependencies": "Only stdlib and existing pytest. Public test-only localhost cert/key embedded; no openssl or cryptography runtime requirement.",
+    "limitations": [
+      "No local Docker; Windows results do not establish constrained Linux success. Parent performs actual Linux and CI.",
+      "No provider or production server calls, commits, pushes or deployment by this worker.",
+      "Original and final Windows successes do not reproduce Linux timeout; causal contribution measured, unique cause unproven."
+    ],
+    "process_terminal": "All pytest exec sessions exited0 except preserved initial proxy regression exited1; test server threads joined and socket closure asserted. No subprocess left running by worker.",
+    "cleanup": {
+      "state": "blocked_by_automatic_approval_policy",
+      "action": "Remove own explicitly enumerated resolved probe-root temporary test directories and generated cert/key/template",
+      "result": "Tool rejected before execution; no deletion occurred; no bypass attempted. Existing other task resources untouched.",
+      "retained_root": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-transport-cost-repair-probes",
+      "retained": "original-tmp, candidate-tmp, targeted-tmp, targeted-fixed-tmp, final-targeted-tmp, final-candidate-tmp, cert.pem, key.pem, tests_template.txt, mypy-cache; logs/scripts/json retained as evidence"
+    },
+    "learning_proposal": {
+      "scope": "native-http-input-boundary",
+      "method": "Instrument real transport setup CPU and default-context counts before changing concurrency or timeout budgets; test proxy retries with fresh per-attempt routing.",
+      "when": "urllib per-request openers under constrained concurrency with loopback HTTP and HTTPS proxy support.",
+      "counterexample": "TLS network/server/DB contention can dominate independently; Windows success does not establish Linux budget acceptance.",
+      "trial": "Exact Linux candidate under original budgets and unchanged250 load; retain failure and phase metrics.",
+      "persistence": "Parent may append learning event; worker authorization only permits this report."
+    },
+    "private_evidence_root": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-context-transport-cost-repair-probes",
+    "private_evidence_sha256": {
+      "burst_probe.py": "bd60755e1ccfe9428514e66b6e07ee57b5ad3899cb150193e686572c9a363cb3",
+      "candidate.json": "0bf32f25db076649d60fc09bbf827efd8384a1a03b85e885b939525b22255798",
+      "candidate.log": "e6ed59513a97d6d428f7c75947bee150cfb9540be18205bed44ca21729faa004",
+      "cert.pem": "6cd9d66a9c21eac6b09829a2cd075a255764ee59f81bf590572ecb1b22728d51",
+      "diff-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "final-candidate.json": "810f47aed0e11136d23c2469c17fbb492832f6409f1afd4553ce624dea1addd5",
+      "final-candidate.log": "7944f4bc29cebdd57c2ab49f4ae40654106509352e4e310612315aba5a9edfa7",
+      "final-targeted.log": "74296c57cafd5563a0a8287fb63a2cb83fc79880b641d27df0400da3d24ad9f0",
+      "format.log": "97d85b4b6c185a05396e2d09a3c304ff0f7cc77f8b7b7bb7989ec6cd875b3898",
+      "key.pem": "a39857834eddd61ddc4a3fe04ac7a81a2baf6dd26cb5d69494764ece77a2e30a",
+      "mypy.log": "8e63ae22e8213e327a5e9cbd584067681681bd8ef7f25c869877887ccdcfc4ff",
+      "original.json": "2edcbf41e9946afa3e694d9f0ce182dea5d415a37b3332678b8c3b6a3bcd2cc8",
+      "original.log": "0753cc899e0fd16481fbd1d1f6d1d7788db50f4681f2c6267ef244b6f5fcd70a",
+      "ruff.log": "a4443afdcfb6d7363adb285762515ccf7cf50473b1a05c20c1a50f6bed4d26b0",
+      "targeted-fixed.log": "a1ebd32e3f82783cc879e07fec3f832ee0dc70efbd3e2967ac52276dc480601e",
+      "targeted.log": "45ef2d1d8c3c4b2a0ec2144528b8b04711f50239fd78103d44b0ff55e0a4e591",
+      "tests_template.txt": "9762b72d7a0d3c4b0152109a68410c9773c051269c1ae00dfe1836aaa5fa99ee"
+    }
+  }
+}

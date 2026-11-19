@@ -1,0 +1,230 @@
+{
+  "request_id": "native-production-entry-20261118",
+  "issue_number": 1499,
+  "original_sha256": "3e98278ca316281f568146bbcd54c73baa1c85dfc7f6aa82b0524152064c8043",
+  "export": "Lossless JSON value export of actual independently reconciled review; original private bytes retained.",
+  "review": {
+    "schema": "native-transport-slice-independent-review/1",
+    "issue": 1499,
+    "reviewer": "independent Codex child /root/sinan_c45bfd1b8a37a32c",
+    "reviewed_at": "2026-11-19T08:21:09.772457+00:00",
+    "status": "passed_scoped_source_slice_review",
+    "blocking_findings": [],
+    "index_tree": "1080a885983bb01bd9bb7e6cc12f4f8030d8c721",
+    "index_entries_sha256": "20dfa56a1fddd02801a76aee031e38cecd40d8990921a56deaa476357b2208d7",
+    "source_hashes": {
+      ".github/workflows/tianxuan-deploy-build.yml": "876944099b26fe432c201cf1b71ea4d3e975a2d5417e77363e7d38ed626225d7",
+      ".github/workflows/tianxuan-tests.yml": "f27cae24db8881a344621786e9fd0e6bd874cebed0e27fbbcb7c86878f115537",
+      "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": "8e800d8cd1ef12007bd59a81cb7d490959f4d5135e133699bd8284a441ff8947",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "2b23d56d4860c5ff4309b52d43026e0348bec0c1041df649fe92bde27746c026",
+      "deploy/README.md": "0d0c610af5557ebc89d2e965e91b9ddf4f8dd80e1ffe2b9bba338ced7f3750e4",
+      "design-docs/native-production-entry-20261118.md": "98ff7ac0c63d1badb5e1461aea8aea75935704e2a281ca93774faf4a5fbb8711"
+    },
+    "staged_blobs": {
+      ".github/workflows/tianxuan-deploy-build.yml": {
+        "blob": "894381f267da7e1558e8f01f76a430306ce942bc",
+        "sha256": "876944099b26fe432c201cf1b71ea4d3e975a2d5417e77363e7d38ed626225d7",
+        "worktree_sha256": "876944099b26fe432c201cf1b71ea4d3e975a2d5417e77363e7d38ed626225d7"
+      },
+      ".github/workflows/tianxuan-tests.yml": {
+        "blob": "a6070b6cf3a8fc57e949b42a3945a484f68ae112",
+        "sha256": "f27cae24db8881a344621786e9fd0e6bd874cebed0e27fbbcb7c86878f115537",
+        "worktree_sha256": "f27cae24db8881a344621786e9fd0e6bd874cebed0e27fbbcb7c86878f115537"
+      },
+      "customizations/components/tianxuan/build-impact.json": {
+        "blob": "2718f7945a875b2f37ef7879f20a5ffba5d0033c",
+        "sha256": "317086cda6933d273888058771e5b9baac525bf4ae6a581a0681638edeb67038",
+        "worktree_sha256": "317086cda6933d273888058771e5b9baac525bf4ae6a581a0681638edeb67038"
+      },
+      "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": {
+        "blob": "624d78d737f232c91187574e44ce9eaee37e2a1e",
+        "sha256": "8e800d8cd1ef12007bd59a81cb7d490959f4d5135e133699bd8284a441ff8947",
+        "worktree_sha256": "8e800d8cd1ef12007bd59a81cb7d490959f4d5135e133699bd8284a441ff8947"
+      },
+      "customizations/components/tianxuan/sinan-workorders/build-impact.json": {
+        "blob": "6558113aaa163ced572e6467fc5fd151969fecca",
+        "sha256": "e8a945e5e24d64256c91a921f7b840bd1e7d32891a3846408645b3bc90e1db73",
+        "worktree_sha256": "e8a945e5e24d64256c91a921f7b840bd1e7d32891a3846408645b3bc90e1db73"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": {
+        "blob": "cddf436ae951b7b8bf824910a950ba0fb7abeab3",
+        "sha256": "2b23d56d4860c5ff4309b52d43026e0348bec0c1041df649fe92bde27746c026",
+        "worktree_sha256": "2b23d56d4860c5ff4309b52d43026e0348bec0c1041df649fe92bde27746c026"
+      },
+      "data-collection/native-context-transport-cost-repair-1445.json": {
+        "blob": "8b2ace19c87380cb285a3fc02733740c18ebb215",
+        "sha256": "2de6551125a5717e1287bc1203215d73fba2fb1a47ed5bc638a6e276682a4c30",
+        "worktree_sha256": "2de6551125a5717e1287bc1203215d73fba2fb1a47ed5bc638a6e276682a4c30"
+      },
+      "data-collection/native-entry-transport-review-1499.json": {
+        "blob": "7c07a1a23774cebc5c2af252bd02d2c4a2041e16",
+        "sha256": "f3d12c6dc4f8109a3dabdd1b2bb3378cf7fc5efe5655b70fa5a99b4fab9170cb",
+        "worktree_sha256": "f3d12c6dc4f8109a3dabdd1b2bb3378cf7fc5efe5655b70fa5a99b4fab9170cb"
+      },
+      "data-collection/native-runtime-artifact-local-validation-1529.json": {
+        "blob": "bbb85fded0a2e0c0571d4dabdbd951ff95f972f4",
+        "sha256": "60093b51a894f9505c70527c14f99c582fde52ebe4781873390c07f9f96c3a42",
+        "worktree_sha256": "60093b51a894f9505c70527c14f99c582fde52ebe4781873390c07f9f96c3a42"
+      },
+      "data-collection/native-runtime-artifact-review-1529.json": {
+        "blob": "c2ddafa6e3dbbd3ef42493ffa83b99b93185bfac",
+        "sha256": "cd868bfd4853d490a685785a2cfa7482c36b563a87761fecf0cdd3bf69ce6ebd",
+        "worktree_sha256": "cd868bfd4853d490a685785a2cfa7482c36b563a87761fecf0cdd3bf69ce6ebd"
+      },
+      "data-collection/native-runtime-artifact-static-1529.json": {
+        "blob": "c941e8cccb3cf447e38ea7003b30ca16f47f8109",
+        "sha256": "2b12d6a2305c2e5886ebc667ff26d7f696fd8de937b9342d29f280478a11db45",
+        "worktree_sha256": "2b12d6a2305c2e5886ebc667ff26d7f696fd8de937b9342d29f280478a11db45"
+      },
+      "data-collection/native-transport-slice-delivery-1499.json": {
+        "blob": "717f5b0ce9a32f7c23d55156b7307c9d3dcfb823",
+        "sha256": "2d1bdb6818b97a67679e0d9306e1d900f871f73fda77787885dd55c8f235b0b6",
+        "worktree_sha256": "2d1bdb6818b97a67679e0d9306e1d900f871f73fda77787885dd55c8f235b0b6"
+      },
+      "data-collection/native-transport-slice-module-build-impact-1499.json": {
+        "blob": "97e334b1daa7b310733bc1687db015bc51726c2e",
+        "sha256": "46a2f103fd0626cdaad6eaacd0f846747a4b3e7975fed1bb161b8d5eedb1421b",
+        "worktree_sha256": "46a2f103fd0626cdaad6eaacd0f846747a4b3e7975fed1bb161b8d5eedb1421b"
+      },
+      "data-collection/native-transport-slice-workflow-build-impact-1499.json": {
+        "blob": "b1f5181f2644798df6eee05d47d35eb95ae08264",
+        "sha256": "553460339bf401843dff6d17696c862fd1612b70ba7d1d2d49d8092667370bb8",
+        "worktree_sha256": "553460339bf401843dff6d17696c862fd1612b70ba7d1d2d49d8092667370bb8"
+      },
+      "deploy/README.md": {
+        "blob": "f618da00928b961fc12b8fd49e81afee8137d584",
+        "sha256": "0d0c610af5557ebc89d2e965e91b9ddf4f8dd80e1ffe2b9bba338ced7f3750e4",
+        "worktree_sha256": "0d0c610af5557ebc89d2e965e91b9ddf4f8dd80e1ffe2b9bba338ced7f3750e4"
+      },
+      "design-docs/native-production-entry-20261118.md": {
+        "blob": "f811969afc932a9d6dc1bd58bc829c50881e99d1",
+        "sha256": "98ff7ac0c63d1badb5e1461aea8aea75935704e2a281ca93774faf4a5fbb8711",
+        "worktree_sha256": "98ff7ac0c63d1badb5e1461aea8aea75935704e2a281ca93774faf4a5fbb8711"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-278c8989e90545b38cda9dd8b9458305.json": {
+        "blob": "fcb788a319a77e1785459c86dd3d436f56c05b1d",
+        "sha256": "ba6faa341e794831ad74cb2d93beef2a48eec0849da9c2fec59d90d0fa203715",
+        "worktree_sha256": "ba6faa341e794831ad74cb2d93beef2a48eec0849da9c2fec59d90d0fa203715"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-8034a624faff4d3bb67b60c3f178979a.json": {
+        "blob": "f8f060829086402b9dbcc239f198f2294b2a5f89",
+        "sha256": "dbed9e05baf5a70da3ace844384ba020c50ab3ddde91de4215f0d6f365f7cb7d",
+        "worktree_sha256": "dbed9e05baf5a70da3ace844384ba020c50ab3ddde91de4215f0d6f365f7cb7d"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-99bb175d2b22861c66b19b3b5d10fc0419dace63.json": {
+        "blob": "5e2186c9910d35262a08604da886e14f533c0a97",
+        "sha256": "17237ddaedf6b8f3c04d4243ff6d73c07ed4f206bc8c1202f44c7fe2590cf490",
+        "worktree_sha256": "17237ddaedf6b8f3c04d4243ff6d73c07ed4f206bc8c1202f44c7fe2590cf490"
+      }
+    },
+    "checks": {
+      "expected_index_tree": true,
+      "trusted_main_base": true,
+      "19_staged_paths": true,
+      "index_matches_worktree:.github/workflows/tianxuan-deploy-build.yml": true,
+      "index_matches_worktree:.github/workflows/tianxuan-tests.yml": true,
+      "index_matches_worktree:customizations/components/tianxuan/build-impact.json": true,
+      "index_matches_worktree:customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": true,
+      "index_matches_worktree:customizations/components/tianxuan/sinan-workorders/build-impact.json": true,
+      "index_matches_worktree:customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": true,
+      "index_matches_worktree:data-collection/native-context-transport-cost-repair-1445.json": true,
+      "index_matches_worktree:data-collection/native-entry-transport-review-1499.json": true,
+      "index_matches_worktree:data-collection/native-runtime-artifact-local-validation-1529.json": true,
+      "index_matches_worktree:data-collection/native-runtime-artifact-review-1529.json": true,
+      "index_matches_worktree:data-collection/native-runtime-artifact-static-1529.json": true,
+      "index_matches_worktree:data-collection/native-transport-slice-delivery-1499.json": true,
+      "index_matches_worktree:data-collection/native-transport-slice-module-build-impact-1499.json": true,
+      "index_matches_worktree:data-collection/native-transport-slice-workflow-build-impact-1499.json": true,
+      "index_matches_worktree:deploy/README.md": true,
+      "index_matches_worktree:design-docs/native-production-entry-20261118.md": true,
+      "index_matches_worktree:gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-278c8989e90545b38cda9dd8b9458305.json": true,
+      "index_matches_worktree:gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-8034a624faff4d3bb67b60c3f178979a.json": true,
+      "index_matches_worktree:gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-99bb175d2b22861c66b19b3b5d10fc0419dace63.json": true,
+      "delivery_source:.github/workflows/tianxuan-deploy-build.yml": true,
+      "delivery_source:.github/workflows/tianxuan-tests.yml": true,
+      "delivery_source:customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": true,
+      "delivery_source:customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": true,
+      "delivery_source:deploy/README.md": true,
+      "delivery_source:design-docs/native-production-entry-20261118.md": true,
+      "no_deleted_accepted_files": true,
+      "retained_main:customizations/components/tianxuan/server/native_entry_factory.py": true,
+      "retained_main:customizations/components/tianxuan/server/native_installation.py": true,
+      "retained_main:customizations/components/tianxuan/sinan-workorders/native_continuous.py": true,
+      "retained_main:customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": true,
+      "retained_main:customizations/components/tianxuan/sinan-workorders/native_integration.py": true,
+      "resolver_absent:customizations/components/tianxuan/server/native_entry_resolver.py": true,
+      "resolver_absent:customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": true,
+      "prior_review_exact:customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": true,
+      "prior_review_exact:customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": true,
+      "prior_review_exact:.github/workflows/tianxuan-tests.yml": true,
+      "prior_review_exact:deploy/README.md": true,
+      "certificate_comment_only": true,
+      "original_workflow_still_reviewed": true,
+      "workflow_only_drops_unaccepted_new_resolver_test": true,
+      "accepted_workflow_test_paths_retained": true,
+      "inputs_bound:module": {
+        "count": 253,
+        "mismatches": []
+      },
+      "evidence_bound:module": {
+        "count": 21,
+        "mismatches": []
+      },
+      "complete_module_inputs:module": {
+        "count": 217,
+        "missing": []
+      },
+      "declaration_pointer:module": true,
+      "inputs_bound:workflow": {
+        "count": 86,
+        "mismatches": []
+      },
+      "evidence_bound:workflow": {
+        "count": 21,
+        "mismatches": []
+      },
+      "complete_module_inputs:workflow": {
+        "count": 39,
+        "missing": []
+      },
+      "declaration_pointer:workflow": true,
+      "source_syntax": true,
+      "cached_diff_check": true,
+      "index_stable": true
+    },
+    "reused_reviews": {
+      "transport": "data-collection/native-entry-transport-review-1499.json",
+      "artifact": "data-collection/native-runtime-artifact-review-1529.json",
+      "assembled_report_sha256": "1932bd7c702a0ddaab9595e41617ab1cff811a14e4b9ce1e9b2aa689db3e7eeb"
+    },
+    "validation": {
+      "new": "Static input/blob/evidence/AST/source-split probes only; no functional suite rerun.",
+      "root_report": {
+        "command": "pytest -q -p no:cacheprovider test_native_entry_broker_context.py test_native_entry_remote_normal.py",
+        "result": "...                                                                      [100%]\n============================== warnings summary ===============================\n..\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n3 passed, 1 warning in 16.71s\n",
+        "exit_code": 0,
+        "log_sha256": "ce341b2a219bc378a2d0394f1765b46c56359dcecf87882672d9c1eb8163acf2",
+        "scope": "Exact extracted slice ordinary signed broker local/remote context and remote-entry integration. No pressure/provider/deployment; prior exact transport33+12 validation retained."
+      },
+      "reused": "Exact prior transport33 tests+12probes; certificate comment AST-equivalent. Export block unchanged from prior assembled review, including manifest false/true and shell inspect/mismatch/save/files failure probes."
+    },
+    "review_conclusions": [
+      "All accepted main source and test paths retained; resolver/factory/install/integration/runtime v3 candidate excluded. Existing v1/v2 entry preserved.",
+      "Immutable tested API ID is used for native tests, archive and image-files export. Export/upload follow success-only gates; set -euo pipefail rejects inspect mismatch and save/enumeration failures. Prior independently exercised exact export block reused.",
+      "workflow_dispatch optional boolean defaults false; ordinary suite excludes only test_250_local_tool_burst. Manifest distinguishes deferred/passed synthetic burst and always marks production capacity not_accepted.",
+      "Compose rebuild uses separate image; neither its pass nor this review claims exported image deployment acceptance.",
+      "Input binding covers complete declared modules and all listed evidence; current 3 normal test results are parent-reported, not independent reruns."
+    ],
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "lesson": "bind-consumer-release revision23",
+      "application": "Rechecked actual candidate bytes, immutable exports and acceptance boundaries; no learning-event writes authorized."
+    },
+    "limitations": [
+      "Formal gate, CI, exact candidate admission and main delivery remain parent-owned.",
+      "No high-concurrency/provider/server/production validation performed.",
+      "No acceptance of PR1564 failed resolver or full #1499/#1529 platform objectives."
+    ],
+    "cleanup": "Only owned review script and final receipt created, retained as required evidence. No source/index changes, caches, services or temporary installs."
+  }
+}

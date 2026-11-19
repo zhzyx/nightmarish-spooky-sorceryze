@@ -136,3 +136,14 @@ For small selected materializations, the broker retains the bounded full-context
 The resolver implements the existing NativeContext interface (including durable events and identity); it is a transport adapter, not an LLM client. Model-host closure is recorded separately from worker closure. Only the worker receipt reader, after checking the actual immutable process/output records, appends the final physical process closure. A closed worker rejects later context RPCs. Unknown read/model intents remain durable and cannot be replayed. Context reads remain `reads:null`, not merge read-sets.
 
 Validation uses deterministic admitted fixture programs, actual ASGI main, loopback HTTP, the existing Node runtime and separate node storage. Ordinary remote execution reaches delivered/100%; signed local and remote broker tests run actual multi-turn context tooling and retain final context receipts. This does not establish production activation, model quality, organization identity resolution or WAN deployment readiness. No model/provider request was made. The earlier small trial (tools 157s versus full 127s) remains a counterexample to universal context savings; threshold policy is boundedness/fit policy, not a performance claim. Root retains installation packaging closure, independent review, production admission and Git delivery responsibility.
+
+
+## 2026-11-19 已完成源码分片提交与保留验收
+
+用户要求提交已完成的部分，高并发实测继续延期。联合候选 PR #1564 的普通 Docker112项通过，但完整模块套件1236通过、3项合契普通入口停在planned/67%，故该联合候选未准入main。原提交与失败记录保留，合契v3源码和验收由 #1526 / #1499 原责任者继续持有。
+
+本分片从可信main ac8d1376d0a03678b625cbe4bd9b09ea18120475 独立提取已审查的上下文HTTP惰性TLS、每次已知未启动重试的新Request、受测镜像导出和摘要清单。传输适配仍连接已交付v1/v2普通入口与原生上下文，不依赖未接收的v3 resolver；不新增或替换模型、调度、工单存储或渲染层。有效服务器安装未变，回退保留原安装、授权、未知执行与原始回执。
+
+两份常规工作流显式排除 test_250_local_tool_burst，原测试保留在部署构建的手动布尔输入 run_context_burst（默认false）。普通功能、安全、撤权、恢复仍为必需检查；归档明确记录not_run_user_deferred，不宣称高并发容量或token收益。该决定不把历史失败改写为成功。
+
+#1529正常归档下载/身份核验/服务器安装及同包更新回退、#1501完整生产集成、#1526合契失步原因与剩余恢复场景、整个多组织平台及AA渲染目标继续未验收。此分片main交付后各原发布者按自己的候选复验，不能提前释放依赖resolver的整体验收。
