@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "wenqu-cloud-1548-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "wenqu-cloud-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-19T07:25:58.391304+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1548",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "15dc82d98874b169be4c367f66db6f68dbe45096a7ff034f6289fb621f09018a",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "Continue Tianxuan/Wenqu cloud documents, registration, editing and efficient AI tools",
+    "authorization_ref": "codex-user-20261119-continue-tianxuan-wenqu",
+    "operator": "Sail-Li",
+    "design": "design-docs/wenqu-cloud-20261119.md",
+    "production_coordination": "1550 integration owner controls production authentication switch"
+  },
+  "evidence_refs": [],
+  "sha256": "2526fe82736d03df37ac5953e815a0efbed18988862391d8ea8e7a15a7751b9c"
+}
