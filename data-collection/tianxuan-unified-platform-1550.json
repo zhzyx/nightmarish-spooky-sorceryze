@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-unified-platform-20261119",
+  "issue_number": 1550,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+  "design": "design-docs/tianxuan-unified-platform-20261119.md",
+  "operator": "Sail-Li",
+  "scope": "Approved design, actual child dispatch records and partial acceptance map; parent remains in progress",
+  "source_main": "3e1bb937a8635b2f1acd0f2adfb49b7b1e370210",
+  "github_event": 36650305233,
+  "child_issues": [1551, 1552, 1553, 1568, 1577, 1581],
+  "accepted_child_slices": [1571, 1572, 1578, 1580],
+  "overall_acceptance": "remaining",
+  "historical_open_godot_issues": "record only; no business execution or closure authorized by this integration",
+  "production_deployer_issue": 1577,
+  "source_index_limit": "work_items collect indexes events but only infers Issue identity from request events. This explicit binding is based on the actual GitHub event and intake-only readback."
+}
