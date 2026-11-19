@@ -1,0 +1,64 @@
+{
+  "issue_number": 1581,
+  "source": "3e1bb937a8635b2f1acd0f2adfb49b7b1e370210",
+  "cli": "codex-cli 0.169.0-alpha.11.1",
+  "invocation": "ephemeral read-only direct CLI",
+  "prompt": "Compute 1382 plus 199. Reply with the decimal result only. Do not call tools.",
+  "output": "1581",
+  "final_event": "turn.completed",
+  "usage": {
+    "input_tokens": 18651,
+    "cached_input_tokens": 15104,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 6,
+    "reasoning_output_tokens": 0
+  },
+  "raw_event_sha256": "6e0a941ab8d36f233796e330a77db27ab827d9a068eb4dc5d4efeb4d25ffa8d4",
+  "exit_code": 0,
+  "platform_entry_verified": false,
+  "request_id": "tianxuan-runtime-closure-20261119",
+  "node_probe": {
+    "protocol": "loopback HTTP; separate coordinator and node process",
+    "producer": "isolated test profile invoking installed Codex CLI read-only",
+    "entry_mode": "workflow fixture; no production authority",
+    "execution": "baaf869b4fbcd1e03f6cdf37717bef169b7f87c1c2674239e0b8f3f814f08428",
+    "terminal_node_journal": "acknowledged",
+    "task_state": "produced",
+    "restart": "same journal, second node process exited 0; exclusive CLI launch marker unchanged",
+    "output": "1581",
+    "usage": {
+      "input_tokens": 18855,
+      "cached_input_tokens": 15104,
+      "cache_write_input_tokens": 0,
+      "output_tokens": 6,
+      "reasoning_output_tokens": 0
+    },
+    "observed_model": null,
+    "events_sha256": "8341b88378d201727feb3caf9e43723f37e2cfc6870040a127dbd10f159b7950"
+  },
+  "approval_integration": {
+    "consumer": "EntryLedger.enqueue and authorize",
+    "helper_sha256": "b1ed2b8c67026ffc43c7bf39edf7f006d862b324bbac8bcb0bfe23cbf7bb66f4",
+    "database": "isolated SQLite",
+    "accepted": [
+      "persisted three-stage approval",
+      "retry returns original entry"
+    ],
+    "rejected": [
+      "other tenant",
+      "different actor with shared write permission",
+      "edited requirement at enqueue",
+      "edited requirement at reauthorization"
+    ]
+  },
+  "node_source_package": {
+    "source": "3e1bb937a8635b2f1acd0f2adfb49b7b1e370210",
+    "sha256": "3b12897c67ca91cadc6e9895f15e23a327b05127989d5f404247434723439cf7",
+    "validation": "extracted native_node.py --help imports on Windows"
+  },
+  "approval_reconfirmation": {
+    "helper_sha256": "eb4ac0baca2d440a9f78511195e6f150a7b2850857542b25999836498a8912df",
+    "same_content_new_version": "previous entry rejected",
+    "after_explicit_reconfirmation": "new entry admitted; old entry still denied"
+  }
+}

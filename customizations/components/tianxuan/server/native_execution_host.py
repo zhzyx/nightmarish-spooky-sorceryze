@@ -8,12 +8,34 @@ startup never replays it. The caller must own the domain transaction for enqueue
 import asyncio
 import contextvars
 import json
+import re
 from contextlib import contextmanager
 from datetime import datetime, timezone
 
 from native_requirement_plan import requirement_digest
 from native_store import NativeStoreError, _digest, _json
 from tianxuan_core import _token_hash
+
+
+def entry_key(tenant, actor, call_id):
+    if not isinstance(call_id, str) or not 1 <= len(call_id) <= 128:
+        raise NativeStoreError("Bounded idempotency key required")
+    return _digest(_json([tenant, actor, call_id]).encode())
+
+
+def workspace_approval(domain, actor, document):
+    if not re.fullmatch(r"workspace-[0-9a-f]{64}", document.get("request_id") or ""):
+        return None
+    try:
+        from workspace_conversations import require_workspace_approval
+    except ModuleNotFoundError as error:
+        if error.name != "workspace_conversations":
+            raise
+        raise NativeStoreError("Workspace approval reader is not installed") from None
+    approval = require_workspace_approval(domain, actor, document["id"], document["version"])
+    if not approval:
+        raise NativeStoreError("Confirmed workspace design required")
+    return approval
 
 
 class EntryLedger:
@@ -54,9 +76,7 @@ class EntryLedger:
         document = self.domain.get_doc_shared(actor, requirement)
         tenant = self.domain.actor_context(actor)["tenant"]
         source = requirement_digest(document)
-        if not isinstance(call_id, str) or not 1 <= len(call_id) <= 128:
-            raise NativeStoreError("Bounded idempotency key required")
-        key = _digest(_json([tenant, actor, call_id]).encode())
+        key = entry_key(tenant, actor, call_id)
         if self.domain.user_for_token(credential) != actor:
             raise NativeStoreError("Current authenticated credential required")
         token_hash = _token_hash(credential)
@@ -64,9 +84,17 @@ class EntryLedger:
             db.execute("SELECT 1 FROM access_keys WHERE token_hash=? AND revoked_at IS NULL", (token_hash,)).fetchone()
             is not None
         )
-        payload = _json(dict(requirement=requirement, source=source, choices=choices))
+        intent = dict(requirement=requirement, source=source, choices=choices)
+        approval = workspace_approval(self.domain, actor, document)
+        if approval is not None:
+            intent["approval"] = approval
+        payload = _json(intent)
         old = db.execute("SELECT * FROM native_entry_intents WHERE id=?", (key,)).fetchone()
         if old:
+            if approval and "approval" not in json.loads(old["payload"]):
+                raise NativeStoreError(
+                    "Historical entry predates version approval; recover its status before a new call"
+                )
             if old["payload"] != payload:
                 raise NativeStoreError("Entry idempotency key rebound")
             self.authorize(key)
@@ -122,9 +150,13 @@ class EntryLedger:
             ):
                 raise NativeStoreError("Entry access key withdrawn")
             self.domain._require_requirement(row["actor"], row["requirement"], write=True)
-            source = self.domain.db.execute("SELECT source FROM native_entry_intents WHERE id=?", (key,)).fetchone()[0]
+            intent = self.domain.db.execute(
+                "SELECT source,payload FROM native_entry_intents WHERE id=?", (key,)
+            ).fetchone()
             document = self.domain.get_doc_shared(row["actor"], row["requirement"])
-            if requirement_digest(document) != source:
+            if workspace_approval(self.domain, row["actor"], document) != json.loads(intent["payload"]).get("approval"):
+                raise NativeStoreError("Workspace approval changed")
+            if requirement_digest(document) != intent["source"]:
                 raise NativeStoreError("Entry source revision withdrawn")
             return True
 
