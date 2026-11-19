@@ -1,0 +1,10 @@
+{
+  "issue_number": 1551,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "prior_receipt": "data-collection/tianxuan-experience-1551/verification.json",
+  "prior_head": "2c1cd14ab5db64725a36b2927c2bf9b8025718dd",
+  "failed_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44479254001/job/135407204786",
+  "test_blob_after_ruff": "fd2b2d578006b2ca6cdb6695f4236eda1d84f2d8",
+  "verification": "Only test_api_gateway.py needed formatting. Its blob matches the CI formatter diff, independent AST comparison is equal, and all 33 regression tests passed again."
+}
