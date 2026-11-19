@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e98968078004e559a7770eb407536a370f417b63",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-deployment-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1577",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0d8f4569e9e329fdad677af31746f40dfc4c417eec5ea42b17a756744a885106",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1577",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1582",
+    "action": "validation",
+    "detection_head": "3e1bb937a8635b2f1acd0f2adfb49b7b1e370210",
+    "context_sha256": "02290708d7bc70bff013c81003859f4132c9588949fd28c493e5aa90f45ee9e3",
+    "operator": "Sail-Li",
+    "worker": "codex-webpackage-1577",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "evidence": "data-collection/tianxuan-web-package-1577.json",
+    "diagnosis": "The candidate lacked its matching issue-bound data collection file. Windows CRLF then differed from staged LF bytes.",
+    "next_action": "Normalize source bytes and rerun the same candidate gate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T12:53:50.320495+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T12:55:44.187012+00:00",
+  "sha256": "eacb946bd69b8c008af77ffc8bef0ae1d32b40f0699a5d15b115a9f0e0984b25"
+}

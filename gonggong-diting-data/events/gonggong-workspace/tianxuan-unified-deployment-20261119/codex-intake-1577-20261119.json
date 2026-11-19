@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1577-20261119",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-deployment-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-19T12:53:28.323716+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1577",
+  "agent": {
+    "version": "not-observed",
+    "definition_sha256": "15dc82d98874b169be4c367f66db6f68dbe45096a7ff034f6289fb621f09018a",
+    "id": "codex-current-operator-host",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "title": "天璇整合：平台联调与私有部署验收",
+    "updated_at": "2026-11-19T09:30:31Z",
+    "issue_number": 1577,
+    "scope": "Private deployment integration and verified Web package preparation"
+  },
+  "evidence_refs": [],
+  "sha256": "c4eadef640485356393312ac47397c44d0ad6c13343d4d88e587746b1d0a5590"
+}
