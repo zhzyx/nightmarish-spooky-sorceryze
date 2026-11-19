@@ -1,0 +1,12 @@
+.panel { padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--line-strong); border-radius: 16px; }
+.panel h2 { margin-top: 0; }
+.panel dl > div { display: flex; gap: 1rem; margin: .45rem 0; }
+.panel dt { min-width: 6rem; }
+.panel dd { margin: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.panel .counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: .25rem 1.5rem; }
+.counts div { justify-content: space-between; border-bottom: 1px solid var(--line-strong); }
+.panel form, .choice { display: flex; flex-wrap: wrap; align-items: end; gap: 1rem; margin-top: 1rem; }
+.panel label { display: grid; gap: .35rem; }
+.panel input, .panel select, .panel button { padding: .45rem .7rem; color: inherit; background: var(--glass); border: 1px solid var(--line-strong); border-radius: 6px; font: inherit; }
+.panel button:disabled { opacity: .55; }
+.panel button:enabled { cursor: pointer; }

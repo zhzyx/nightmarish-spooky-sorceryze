@@ -1,11 +1,14 @@
 import json
+import sqlite3
 import tempfile
 import unittest
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from pathlib import Path
 from threading import Barrier
 
 from importer import NativeStore, canonical, digest, import_inventory, restore_inventory, write_verified
+from migration_status import publish_import, read_import_status
 
 
 class ArchiveTests(unittest.TestCase):
@@ -29,7 +32,7 @@ class ArchiveTests(unittest.TestCase):
                 self.assertEqual(futures[0].result(), futures[1].result())
 
     def test_retry_readback_and_invalid_input(self):
-        with tempfile.TemporaryDirectory() as temp:
+        with tempfile.TemporaryDirectory(dir=Path.cwd()) as temp:
             root = Path(temp)
             source = {"state": "open", "body": "旧任务"}
             row = dict(
@@ -54,11 +57,23 @@ class ArchiveTests(unittest.TestCase):
             binary = root / "sample.bin"
             binary.write_bytes(bytes(range(256)))
             artifacts = {"sample": (binary, digest(binary.read_bytes()))}
-            db = root / "native.db"
+            db = (root / "native.db").relative_to(Path.cwd())
             args = manifest, db, "tenant", "migration"
             first = import_inventory(*args, artifacts=artifacts)
             self.assertEqual(first, import_inventory(*args, artifacts=artifacts))
-            store = NativeStore(db)
+            self.assertIsNone(read_import_status(db, "tenant", "owner/project"))
+            status_args = db, "tenant", "owner/project", "migration", first["module"], first["revision"]
+            with self.assertRaisesRegex(ValueError, "project"):
+                publish_import(db, "tenant", "../project", "migration", first["module"], first["revision"])
+            published = publish_import(*status_args)
+            self.assertIsNotNone(published["imported_at"])
+            self.assertEqual(first, import_inventory(*args, artifacts=artifacts))
+            self.assertEqual(published, read_import_status(db, "tenant", "owner/project"))
+            self.assertEqual(published, publish_import(*status_args))
+            self.assertIsNone(read_import_status(db, "other", "owner/project"))
+            self.assertIsNone(read_import_status(db, "tenant", "hidden"))
+            self.assertEqual(published["source_revision"], "sample")
+            store = NativeStore(db.resolve())
 
             def read(ref, key):
                 return store.read("tenant", ref["module"], ref["revision"], key)
@@ -81,6 +96,12 @@ class ArchiveTests(unittest.TestCase):
             (root / "records.jsonl").write_bytes(canonical(row))
             with self.assertRaisesRegex(ValueError, "Invalid"):
                 import_inventory(*args)
+            with closing(sqlite3.connect(db)) as connection, connection:
+                connection.execute(
+                    "UPDATE native_blobs SET content=? WHERE digest=?", (b"bad", published["catalog_sha256"])
+                )
+            with self.assertRaisesRegex(ValueError, "checksum"):
+                read_import_status(db, "tenant", "owner/project")
 
 
 if __name__ == "__main__":

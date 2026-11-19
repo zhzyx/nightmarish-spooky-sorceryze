@@ -25,6 +25,7 @@ const primaryNav: NavItem[] = [
 ];
 
 const utilityNav: NavItem[] = [
+  { href: "/migration", key: "nav.migration", icon: "history" },
   { href: "/search", key: "nav.search", icon: "search" },
   { href: "/settings", key: "nav.settings", icon: "settings" },
 ];

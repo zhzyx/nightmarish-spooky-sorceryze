@@ -64,8 +64,16 @@ if __name__ == "__main__":
     parser.add_argument("--tenant", required=True)
     parser.add_argument("--actor", required=True)
     parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument("--publish-project", help="Explicit visibility binding for this tenant and project")
     args = vars(parser.parse_args())
+    project = args.pop("publish_project")
     receipt = args.pop("receipt")
     result = archive(**args)
+    if project is not None:
+        from migration_status import publish_import
+
+        result["publication"] = publish_import(
+            args["database"].resolve(), args["tenant"], project, args["actor"], result["module"], result["revision"]
+        )
     receipt.write_text(json.dumps(result, indent=2), encoding="utf-8")
     print(json.dumps(result))

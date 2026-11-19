@@ -9,3 +9,15 @@
 5. 新建任务入口在创建前调用 routing.select_entry(database, project, requirement)。项目默认 existing，显式项目配置可选 tianxuan，需求配置优先；历史条目传 historical=True 后直接返回 archive。可使用 `python routing.py DATABASE PROJECT --set tianxuan`，需求加 `--requirement ID`。回退时选 existing。入口选择只返回宿主应使用的入口，任务创建仍由宿主负责。
 
 这些脚本属于天璇外置 Python 宿主工具，使用现有 git_service 与 native_store 接口。更新和回退随宿主脚本版本切换，保留源清单、目标数据库、内容摘要及既有修订。Git 引用与 GitHub 元数据分别采集，报告须注明两个来源的覆盖范围。Git bundle 仅包含 Git 对象，外部内容需要单独核验。
+
+## 发布原生目录回执
+
+在归档命令中指定 `--publish-project OWNER/REPO`，经办人将该目录的摘要、计数及来源修订发布给所选租户下的项目。省略参数时，归档继续作为私有目录保存。HTTP 宿主从认证会话取得租户，通过 `migration_status.read_import_status(database, tenant, project)` 读取项目最新发布的回执。每次读取重新核验原生修订及目录字节摘要。
+
+历史 v1 目录可由经授权的管理入口调用 `migration_status.publish_import(database, tenant, project, actor, module, revision)` 单独登记。回执的 `published_at` 记录首次向该项目发布的时间，`imported_at` 记录已取得证据的导入完成时间。旧目录缺少导入时间时此字段为 null。重新发布同一目录保留原有时点。
+
+## 平台迁移入口
+
+从侧栏进入 `/migration`。管理员在此按项目或需求保存入口。编辑和管理员可提交新任务；天璇入口创建 backlog 工单，GitHub 项目保留原入口时返回预填的新建链接。新任务以 call_id 去重，原生目录中的历史记录仅供查阅。
+
+已认证客户端通过 GET `/api/v1/migration/status?project=OWNER/REPO` 查看已发布的来源、计数、导入及发布时间。GET/PUT `/api/v1/migration/entry` 接受 project 和可选 requirement 文档 ID，PUT 的 JSON 包含 entry。POST `/api/v1/migration/tasks` 接受 project、可选 requirement、title、call_id。AI 可通过现有 `/api/v1/tools` 调用 migration.status、migration.entry、migration.start。在线入口配置存于天璇领域库，离线管理使用 `python routing.py DOMAIN_DB PROJECT --tenant TENANT --set tianxuan`，HTTP 与 CLI 共用租户规则。旧式无租户规则只用于本地独立入口；如需启用，管理员从旧库读出指定项目和需求的有效值，再明确绑定至对应租户。
