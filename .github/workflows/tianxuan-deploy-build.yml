@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: dee99e9904988fb65960a97d639fb0b244ab6e4d
+          ref: ${{ github.sha }}
       - name: Build exact 1548 candidate
         run: |
           git rev-parse HEAD

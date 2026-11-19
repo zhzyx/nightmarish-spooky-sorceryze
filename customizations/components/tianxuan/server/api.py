@@ -22,7 +22,6 @@ from typing import Annotated, Any, cast
 from urllib.parse import quote
 
 from access_control import configure_access
-from docx_export import render_docx
 from duobao_bridge import (
     GitService,
     GitServiceError,
@@ -39,7 +38,6 @@ from gateway import ModelGateway, create_model_router
 from gitea_bridge import GiteaClient, GiteaError
 from identity import allow_identity_attempt, get_identity_adapter
 from markdown_render import render_markdown
-from pdf_export import render_pdf
 from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
@@ -600,10 +598,14 @@ def create_app(
             media_type = "text/html; charset=utf-8"
             extension = "html"
         elif fmt == "docx":
+            from docx_export import render_docx
+
             content = render_docx(title, body_md)
             media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             extension = "docx"
         else:
+            from pdf_export import render_pdf
+
             content = render_pdf(title, body_md)
             media_type = "application/pdf"
             extension = "pdf"
