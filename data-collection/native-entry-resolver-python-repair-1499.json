@@ -1,0 +1,24 @@
+{
+  "request_id": "native-production-entry-20261118",
+  "issue_number": 1499,
+  "related_bug": 1445,
+  "source_sha256": {
+    "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": "6bddbabe137866e21ee7d9b88e6d79a8180b4cbb9ed1e12f148ffc1896194a57"
+  },
+  "prior_candidate": "d3af68093c16fe8d2cae9916a542d9eb2f2a9b73",
+  "failure": {
+    "pr": 1547,
+    "run": 44472180029,
+    "job": 135384062899,
+    "observed": "110 passed, two signed resolver tests failed while installing /usr/local/bin/python symlink; 250-client cases deselected. Archive not exported.",
+    "raw_log_sha256": "de3af70468cf47082e81ef1ee553aac31145d6795ad3fa6bf152ecb39112860f"
+  },
+  "repair": "Resolve signed fixture Python executable once; use identical resolved path in broker command, config and hash. Product code and regular-file/symlink validation remain unchanged.",
+  "validation": {
+    "command": "pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_native_entry_resolver_normal.py -k \"ordinary_installed_conflict and signed\"",
+    "environment": "Windows, actual Node and deterministic signed loopback broker; no real provider",
+    "result": "..                                                                       [100%]\n============================== warnings summary ===============================\n..\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n2 passed, 23 deselected, 1 warning in 15.32s\n",
+    "exit_code": 0
+  },
+  "scope": "Fixture-only portability correction. Prior production-source reviews remain valid; fresh exact Linux container CI and final main delivery required. High-concurrency remains deferred; original full business goal not completed."
+}

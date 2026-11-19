@@ -447,6 +447,7 @@ def signed_broker(tmp_path):
         key = tmp_path / "key"
         key.write_text("synthetic-test-only-signing-key-material-1526", encoding="utf-8", newline="\n")
         node = str(Path(os.environ["NATIVE_TEST_NODE"]).resolve())
+        python = str(Path(sys.executable).resolve())
         config = dict(
             template=str(template_path),
             template_sha256=hashlib.sha256(template_path.read_bytes()).hexdigest(),
@@ -455,8 +456,8 @@ def signed_broker(tmp_path):
             runtime_sha256=runner.runtime_digest(),
             node=node,
             node_sha256=hashlib.sha256(Path(node).read_bytes()).hexdigest(),
-            python=sys.executable,
-            python_sha256=hashlib.sha256(Path(sys.executable).read_bytes()).hexdigest(),
+            python=python,
+            python_sha256=hashlib.sha256(Path(python).read_bytes()).hexdigest(),
             state=str(tmp_path / "broker-state"),
             key_file=str(key),
             authority_ref="synthetic",
@@ -464,7 +465,7 @@ def signed_broker(tmp_path):
         config_path = tmp_path / "broker.json"
         config_path.write_text(runner.canonical(config), encoding="utf-8", newline="\n")
         argv = [
-            sys.executable,
+            python,
             "-B",
             "-X",
             "utf8",

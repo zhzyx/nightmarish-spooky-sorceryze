@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-runtime-package",
+  "event_id": "learn-8cf1048d03c5cc9f30377cae37b3634f4764cb07d068df922fa5bce493537ff3",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+  "occurred_at": "2026-11-19T06:40:51.374302+00:00",
+  "evidence_refs": [
+    "kuafu-e07bb8e88407f74e7666bc4753bb8616981ac73a"
+  ],
+  "payload": {
+    "scope": "native-runtime-package",
+    "lesson": "bind-resolved-test-interpreter",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Construct every nested signed test installation from one resolved executable path and use it consistently for argv, broker configuration, and digest. Keep production regular-file and symlink guards intact.",
+      "when": "A deterministic runtime fixture signs an interpreter installation and the host may expose sys.executable through a symbolic link, including normal Python containers.",
+      "counterexample": "Resolving only the outer ordinary-entry interpreter leaves a nested signed-broker argv/config alias invalid. Windows success with a regular executable does not prove the Linux alias case. Production unknown or writable source must not be accepted by relaxing validation.",
+      "trial_plan": "Run the two actual signed and completed-runtime-recovery cases in the normal Linux package from the symlinked interpreter entry; require successful installation, one signed provider-fixture execution and preserved strict installation rejection. Keep old110pass2fail evidence; do not mark this method verified until the exact fixed Linux package passes."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/native-entry-resolver-python-repair-1499.json",
+        "sha256": "2b212f66f1bd29cf64d4e8181fd987b5c1a8df4388e848b4c8989241ce791040"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-e07bb8e88407f74e7666bc4753bb8616981ac73a.json",
+      "sha256": "1241087c7e31389c06e2449fc453f7a00a6a8062099746e1be358bd915fa954f"
+    }
+  },
+  "sha256": "f222640aeef78f2c51c90679f7dc8eec0c503230caf61da82aa356a0bdcc74d0"
+}

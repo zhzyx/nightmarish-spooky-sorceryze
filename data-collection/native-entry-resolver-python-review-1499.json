@@ -1,0 +1,83 @@
+{
+  "request_id": "native-production-entry-20261118",
+  "issue_number": 1499,
+  "original_sha256": "ab8353e93ddfc6233271f47066087e852b046883f1fa6c0aade13aa9519c6bff",
+  "export": "Lossless JSON value export of actual independently reconciled review; original private bytes retained.",
+  "review": {
+    "index_tree": "2ccbd7a3ff148a3b50e6105d499523094a2f021a",
+    "head": "a4649d10e6a0e8ecd2ae4c5d7346d47f6160bf2c",
+    "source_hashes": {
+      "customizations/components/tianxuan/build-impact.json": "a5cb419a48a13dc68fc2bce705563c9a49100a422e4ea134feaa050e19b6ec66",
+      "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": "6bddbabe137866e21ee7d9b88e6d79a8180b4cbb9ed1e12f148ffc1896194a57",
+      "customizations/components/tianxuan/sinan-workorders/build-impact.json": "25686cf54d4991f578d5ee733d44b07db31eb13bb40ece8af48b7ea8c19ec3b0",
+      "data-collection/native-entry-assembled-ci-repair-module-build-impact-1499.json": "a5fbc29441bedad02a933d6c39eec729f43df47bcf995c0662db2353991ddb51",
+      "data-collection/native-entry-assembled-ci-repair-workflow-build-impact-1499.json": "d909382d1f8265afa46e25e1ddc0fb013528b520487bd1850bfcd6c3c0970ac9",
+      "data-collection/native-entry-resolver-python-repair-1499.json": "2b212f66f1bd29cf64d4e8181fd987b5c1a8df4388e848b4c8989241ce791040",
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-e07bb8e88407f74e7666bc4753bb8616981ac73a.json": "3fe6418462830ff0083ca52adf87e9a7382508281796e5c323ff7b42fccba4ae",
+      "customizations/components/tianxuan/server/native_installation.py": "ec4c0326d613c3dcdb7320cb9adddb7246740914faad9a7cbfec6716238dc362",
+      ".github/workflows/tianxuan-deploy-build.yml": "aa8e766633c295d8d499c65db94a71abf59dc43d027458fdd1037ac79bbb93df",
+      ".github/workflows/tianxuan-tests.yml": "f27cae24db8881a344621786e9fd0e6bd874cebed0e27fbbcb7c86878f115537"
+    },
+    "staged_blobs": {
+      "customizations/components/tianxuan/build-impact.json": "1908feae60c6b94796d7f67f117c040324725724",
+      "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": "0e814a5c4eaf8086d5df4203b215d0dfb6fb5bb3",
+      "customizations/components/tianxuan/sinan-workorders/build-impact.json": "3dd9476dd6b65934dbef3d7ed94a41351f75a73f",
+      "data-collection/native-entry-assembled-ci-repair-module-build-impact-1499.json": "eda8578e6c04829d55ce562eba2eff1605558e88",
+      "data-collection/native-entry-assembled-ci-repair-workflow-build-impact-1499.json": "43feffe6033569fb4599a1528055a8fcbc48427b",
+      "data-collection/native-entry-resolver-python-repair-1499.json": "91cb7a462da0bd5e02c8da2223ac21dabdd0b929",
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-e07bb8e88407f74e7666bc4753bb8616981ac73a.json": "143590b74a3e7f53436f773b62a60ae028c1de6b"
+    },
+    "module_proofs": [
+      {
+        "proof": "data-collection/native-entry-assembled-ci-repair-module-build-impact-1499.json",
+        "module": "customizations/components/tianxuan",
+        "input_count": 255,
+        "required_module_files": 220,
+        "evidence_count": 24,
+        "all_exact": true
+      },
+      {
+        "proof": "data-collection/native-entry-assembled-ci-repair-workflow-build-impact-1499.json",
+        "module": "customizations/components/tianxuan/sinan-workorders",
+        "input_count": 89,
+        "required_module_files": 39,
+        "evidence_count": 24,
+        "all_exact": true
+      }
+    ],
+    "fixture_inverse_ast_equal": true,
+    "raw_linux_failure_sha256": "de3af70468cf47082e81ef1ee553aac31145d6795ad3fa6bf152ecb39112860f",
+    "unstaged_diff": [],
+    "status": "passed_scoped_fixture_review",
+    "blocking_findings": [],
+    "issue_number": 1499,
+    "pr_number": 1547,
+    "reviewer": "independent-native-agent",
+    "scope": "Fixture-only signed broker interpreter canonicalization and exact module proof refresh; unchanged product-source review reused from a4649d10/d3af6809.",
+    "findings": [
+      "Original Linux CI remains a real failure: 2 failed, 110 passed, 2 deselected. Both signed ordinary-conflict variants failed at O_NOFOLLOW opening /usr/local/bin/python with ELOOP; regular-file protection correctly rejected its final symlink.",
+      "Fixture resolves sys.executable once into python, uses that exact string as broker argv[0] and config.python, and hashes Path(python).read_bytes() for config.python_sha256. Existing outer ordinary setup already resolves its interpreter. This removes the nested path mismatch without weakening any guard.",
+      "Inverse of the four-line fixture correction is AST-identical to previously reviewed source. No test assertion, parameter, skip, production source, or CI workflow changed.",
+      "All 255 module and 89 workflow input blobs match the candidate index, covering all 220 and 39 required module files respectively. Each of 24 linked evidence SHA256 values in each proof matches actual staged bytes. Worktree and index bytes agree for all source_hashes.",
+      "Provided Windows test receipt records the two affected signed/recovery cases passing with actual Node and deterministic loopback broker. Independent review did static/AST/hash probes only and did not repeat server tests or claim a Linux rerun."
+    ],
+    "source_guardrails": [
+      "Production native_installation.py remains byte-identical: O_NOFOLLOW on POSIX, Windows deny-write/delete and reparse protection, regular-file identity, digest validation and reopen check are unchanged.",
+      "Linux retained digest reuse requires read-only mount descriptors; privileged mount changes, pre-existing writable aliases and mappings remain host provisioning constraints. Path-based subprocess launch is not made atomic by this fixture change."
+    ],
+    "platform_limits": [
+      "Fresh exact-candidate Linux container CI remains required to verify portability and delivery; Windows success is not Linux success.",
+      "High-concurrency tests remain deferred; no Docker/server/provider/high-concurrency calls were executed by this reviewer.",
+      "No production deployment, organization onboarding, real-provider or overall business acceptance is granted."
+    ],
+    "staged_binding_policy": "Exact writer must preserve listed source hashes and staged blobs. Additional actual incident/dispatch/proposed-method receipts require writer verification and fresh tree binding; any source/proof change invalidates this scoped review.",
+    "method_recall": {
+      "scope": "native-runtime-package",
+      "lessons": [],
+      "unavailable": []
+    },
+    "cleanup": "Retained only owned report and probe directory as evidence. Probe script was briefly created with a sibling .py suffix, then moved after absolute-path verification into authorized probe directory; no residual sibling or source/index modifications remain.",
+    "probe_sha256": "6cdd9c6d2c82d977b60f648fd2d81fc298a8f61970bf7ed318b102ae49f89857",
+    "final_index_tree_observed": "2ccbd7a3ff148a3b50e6105d499523094a2f021a"
+  }
+}
