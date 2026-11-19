@@ -111,7 +111,7 @@ def settings(value):
         "image_board_builder_path",
     }:
         raise ServiceError("service_config_invalid")
-    result = dict(schema_version=1, mode="offline", endpoint="http://127.0.0.1:8188", image_model="", mesh_model="")
+    result = dict(schema_version=1, mode="comfy", endpoint="http://127.0.0.1:8188", image_model="", mesh_model="")
     result.update(value)
     if (
         result["schema_version"] != 1
@@ -119,7 +119,6 @@ def settings(value):
         or result["mode"]
         not in (
             *RETIRED_MODELING_MODES,
-            "offline",
             "comfy",
             "codex",
             "kimi_native",
@@ -338,18 +337,6 @@ def _probe_service(value):
             return _probe_kimi(config), {}
         if config["mode"] == "codex":
             return _probe_codex(config)
-        if config["mode"] == "offline":
-            return dict(
-                mode="offline",
-                connected=False,
-                models={"image": [], "mesh": []},
-                capabilities={
-                    kind: dict(ready=False, code="service_not_configured", message=MESSAGES["service_not_configured"])
-                    for kind in KINDS
-                },
-                backend_revision="",
-                message="当前为离线复制演示；未连接真实生成服务。",
-            ), {}
         info = read_endpoint(config["endpoint"], "/object_info")
         if not isinstance(info, dict) or not info or not any(key in info for key in IMAGE_NODES | MESH_NODES):
             raise ServiceError("service_protocol_invalid")
@@ -632,8 +619,6 @@ def _migrate_node_models(node, config):
     """Accept legacy graphs once; new empty node choices never consult other nodes."""
     kind = node["type"]
     mode = config["mode"]
-    if mode == "offline" and "model" not in node:
-        return
     mesh_kind = kind.endswith("mesh") or kind == "model_adjust"
     if "model" not in node:
         if mode in ("api_modeling", "api_sculpt"):
@@ -690,7 +675,7 @@ def prepare_provider(config, model, database, run_id):
     if any(node["type"] == "model_adjust" and config["mode"] != "kimi_native" for node in generated):
         raise ServiceError("node_unsupported")
     if not generated:
-        return registry, providers, {"mode": "offline"}
+        return registry, providers, {"mode": "local_copy"}
     for node in generated:
         _migrate_node_models(node, config)
     snapshots, provider_types = {}, {}

@@ -113,7 +113,7 @@ def main():
             environment[name] = str(private_path)
         environment["AINATIVE_PYTHON"] = sys.executable
         environment["AINATIVE_TEST_TRANSFER"] = str(transfer)
-        # Provider selection is explicitly offline for this test, regardless of the user's environment.
+        # Use the local demo factory for Copy fixtures, regardless of the user's environment.
         environment["AINATIVE_PROVIDER_FACTORY"] = "editor_demo:factory"
 
         def run(name, project, mode, editor=True, screenshot=None):

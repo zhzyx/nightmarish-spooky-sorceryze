@@ -309,7 +309,7 @@ class KimiServiceTests(unittest.TestCase):
         with self.assertRaises(ServiceError):
             settings({**self.value, "texture_model": "v3.1"})
         with self.assertRaises(ServiceError) as error:
-            prepare_provider(settings({"mode": "offline"}), model, self.root / "offline.sqlite", "0" * 32)
+            prepare_provider(settings({"mode": "comfy"}), model, self.root / "unsupported.sqlite", "0" * 32)
         self.assertEqual(error.exception.code, "node_unsupported")
 
     def test_model_adjust_file_compile_and_optional_prompt(self):

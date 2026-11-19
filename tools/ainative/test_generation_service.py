@@ -205,7 +205,7 @@ class ServiceTests(unittest.TestCase):
         self.assertNotEqual(
             snapshot["provider"]["backend_revision"], run_service(self.args.db, second)["provider"]["backend_revision"]
         )
-        self.file.write_text(json.dumps({"mode": "offline"}))
+        self.file.write_text(json.dumps({"mode": "removed-after-create"}))
         self.args.command = "step"
         state = dispatch(self.args, {"run": first})
         self.assertEqual(state["nodes"]["gen"]["state"], "queued")
@@ -214,13 +214,16 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(state["nodes"]["gen"]["state"], "running")
         self.assertEqual([route for method, route in self.requests if method == "POST"], ["/prompt"])
 
-    def test_reloaded_config_without_environment_and_offline_copy(self):
+    def test_reloaded_config_without_environment_and_local_copy(self):
         with patch.dict(os.environ, {}, clear=True):
             self.assertEqual(load_settings(self.file), self.config)
             run = dispatch(self.args, {"model": self.model()})["run_id"]
             self.assertTrue(run)
-        self.file.write_text(json.dumps({"mode": "offline"}))
-        with self.assertRaisesRegex(ServiceError, "真实生成服务"):
+        with self.assertRaises(ServiceError) as retired:
+            settings({"mode": "offline"})
+        self.assertEqual(retired.exception.code, "service_config_invalid")
+        self.file.write_text(json.dumps({"mode": "comfy", "endpoint": "http://127.0.0.1:1"}))
+        with self.assertRaisesRegex(ServiceError, "无法连接"):
             dispatch(self.args, {"model": self.model()})
         image = self.root / "copy.png"
         image.write_bytes(b"\x89PNG\r\n\x1a\nfixture")

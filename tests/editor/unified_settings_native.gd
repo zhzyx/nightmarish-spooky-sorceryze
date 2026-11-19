@@ -210,7 +210,7 @@ func verify_existing_values():
 	check(workbench.python_edit.text == OS.get_environment('UNIFIED_ART_PYTHON'), 'existing distinct artist Python is retained')
 	check(field('CodexEntry').text == OS.get_environment('UNIFIED_CHAT_CLI') and workbench.cli_path_edit.text == OS.get_environment('UNIFIED_ART_CLI'), 'existing distinct chat and image CLI paths are retained')
 	check(field('GongGongPython').text == OS.get_environment('UNIFIED_FRAMEWORK_PYTHON'), 'existing framework Python is retained independently')
-	check(workbench._service_mode() == 'offline' and not workbench.managed_comfy_panel.autostart.button_pressed, 'settings navigation never starts generation or local model autostart')
+	check(workbench._service_mode() == 'comfy' and not workbench.managed_comfy_panel.autostart.button_pressed, 'settings navigation never starts generation or local model autostart')
 
 func verify_navigation(tabs: TabContainer, artist: Control, planner: Control):
 	for item in [['AdvancedToggle','ai'], ['EnvironmentSettings','environment'], ['GongGongEnvironmentSettingsButton','environment']]:
