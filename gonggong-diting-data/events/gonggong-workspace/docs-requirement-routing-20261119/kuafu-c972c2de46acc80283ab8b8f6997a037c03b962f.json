@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c972c2de46acc80283ab8b8f6997a037c03b962f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "docs-requirement-routing-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1597",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2cf8c6bca6c9cace202997bd03a3f082f25234935d93ff17e4faf8a405ab7a75",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1597",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1603",
+    "action": "delivery",
+    "detection_head": "f820c687083ff12db1a122bb27675d79bbdebc46",
+    "context_sha256": "2c7299395718af54645cfeb552ffe8206450ab3d87bbf2dedf37894516497080",
+    "operator": "kaiyunxue",
+    "worker": "kimi-current-operator-host",
+    "authority_ref": "用户 2026-11-19：请继续。",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44545061300",
+    "diagnosis": "请求事件已记录，但候选缺少同 request_id 和 Issue 关联的 data-collection 来源索引，正式门禁在提交前拒绝；未创建提交或推送。",
+    "next_action": "已通过 work_items.py collect 生成匹配来源索引并暂存，重跑同一提交入口核验。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T14:33:34.291255+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T14:34:59.641866+00:00",
+  "sha256": "1ea8891f932eb2983559bf156719ca93e0a9250d98778e8c7174011ebd120879"
+}
