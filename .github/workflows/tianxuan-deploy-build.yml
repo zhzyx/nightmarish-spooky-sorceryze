@@ -191,22 +191,41 @@ jobs:
           if-no-files-found: error
           compression-level: 0
           retention-days: 14
+      - name: Select Web package export
+        id: web-export
+        if: (github.event_name == 'workflow_dispatch' && inputs.release_revision != '') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+        env:
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == pull_request ]]; then
+            git fetch --quiet --depth=1 origin "$PR_BASE"
+            changed=$(git diff --name-only "$PR_BASE" HEAD -- \
+              deploy/Dockerfile.web deploy/Dockerfile.web.dockerignore apps/tianxuan/next.config.mjs)
+            [[ -n "$changed" ]] || exit 0
+          fi
+          echo 'enabled=true' >> "$GITHUB_OUTPUT"
       - name: Export smoke-tested Web image
-        if: github.event_name == 'workflow_dispatch' && inputs.release_revision != ''
+        if: steps.web-export.outputs.enabled == 'true'
+        env:
+          CANDIDATE_HEAD: ${{ github.event.pull_request.head.sha || inputs.release_revision || github.sha }}
         run: |
           set -euo pipefail
           mkdir web-package
           container=$(cd deploy && docker compose ps -q web)
           image=$(docker inspect --format '{{.Image}}' "$container")
+          bytes=$(docker image inspect --format '{{.Size}}' "$image")
           docker save "$image" | gzip -n > web-package/web-image.tar.gz
           cd web-package
           jq -n --arg source "$(git rev-parse HEAD)" --arg tree "$(git rev-parse 'HEAD^{tree}')" \
             --arg image "$image" --arg digest "$(sha256sum web-image.tar.gz | cut -d' ' -f1)" \
             --arg workflow "$GITHUB_SHA" --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" \
+            --arg candidate "$CANDIDATE_HEAD" --arg event "$GITHUB_EVENT_NAME" --argjson image_bytes "$bytes" \
             '{schema:1, source_commit:$source, source_tree:$tree, workflow_commit:$workflow, image_id:$image, run_id:$run,
-              run_attempt:$attempt, files:{"web-image.tar.gz":{sha256:$digest}}}' > manifest.json
+              run_attempt:$attempt, candidate_head:$candidate, event:$event, image_bytes:$image_bytes,
+              files:{"web-image.tar.gz":{sha256:$digest}}}' > manifest.json
       - name: Upload tested Web package
-        if: github.event_name == 'workflow_dispatch' && inputs.release_revision != ''
+        if: steps.web-export.outputs.enabled == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: tianxuan-web-${{ github.run_id }}-${{ github.run_attempt }}

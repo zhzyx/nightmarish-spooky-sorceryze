@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1623-20261120",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-web-standalone-package-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-19T16:02:53.722950+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1623",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "payload": {
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9",
+    "title": "天璇部署：Next.js standalone Web 最小运行包与回退验收",
+    "body": "<!-- gonggong-request:tianxuan-web-standalone-package-20261119 -->\n\n父 #1550（A10 产品部署），与 #1577 部署、#1581 后台运行协同。授权来源 `codex:01a1f26b-ddf0-7102-aefd-8324e79523f9` 的本次实际派发。源码责任、Git 签发与精确验证由 Sail-Li 当前 Codex 工作者认领。生产服务器写入由 #1577 负责。\n\n采用现有 Next.js 14 standalone 打包，降低 Web 部署卷占用。保留 public、.next/static、非 root 启动、启动参数、现有环境和重写语义，以及静态/动态页面、登录、API 代理和实时协作路径。范围是 Web Docker 身份及构建层、Next 配置、现有构建说明和必要的窄范围 CI 制品验收。产品交互、权限、路由、API 与历史 Godot 工单保持原工作单责任。\n\n按实际 Linux 容器验证候选 Web 镜像与原回退镜像。列出精确源码、镜像 ID、OCI blob 与实际快照分配，按现有生产容量回读计算稳态与冷峰；不能把 npm build 或推测节省当验收。独立审查、正式门禁、CI 与 main 回读齐备后，向父级及部署负责人交接精确制品与回退。\n\n<!-- gonggong-host-git:Sail-Li -->",
+    "updated_at": "2026-11-19T15:55:17Z",
+    "operator": "Sail-Li",
+    "issue_number": 1623,
+    "parent_issue": 1550,
+    "assignment_event": 36670173289,
+    "scope": "Authorized packaging intake, assigned issue and linked parent read back from GitHub"
+  },
+  "evidence_refs": [],
+  "sha256": "90769e366af7fbd90f93b643dee5e9e27c86eedbfaaed71f535eacbafe08fde9"
+}

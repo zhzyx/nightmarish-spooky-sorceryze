@@ -1,0 +1,46 @@
+{
+  "issue_number": 1623,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1623",
+  "request_id": "tianxuan-web-standalone-package-20261119",
+  "product_review": {
+    "base": "7358ee22fa3df88f60f848f0fb1e83c19f275eb3",
+    "tree": "78da0f405a55431fdb23535bf22998dc1b4bf744",
+    "reviewer": "codex-native:/root/review1551"
+  },
+  "windows_standalone_precheck": {
+    "next": "14.2.35",
+    "typecheck": "passed",
+    "outside_source_tree": true,
+    "checks": [
+      "Generated CSS and JS",
+      "Login page",
+      "Authenticated dynamic SSR and anonymous response",
+      "Baked rewrite through an isolated HTTP fixture"
+    ],
+    "scope": "Windows runtime precheck. Linux artifacts and native proxy paths are verified separately."
+  },
+  "linux_f820_web_baseline": {
+    "image": "sha256:3b03a7598d2ba4d4fe7e3c79149404efc37cb750ad5f0191dc05d6c10b516060",
+    "archive_sha256": "d1aac9815cc966b718b5575b62a9bd692127eb4d32d4976b7d0f1e965db0db31",
+    "kernel": "6.6.152 x86_64",
+    "docker": "28.5.2",
+    "snapshotter": "containerd overlayfs",
+    "content_allocated_delta_bytes": 139976704,
+    "snapshot_allocated_delta_bytes": 502435840,
+    "all_containerd_allocated_delta_bytes": 642523136,
+    "load_seconds": 53.16,
+    "login_health_cold_seconds": 11.95,
+    "proof_log_sha256": "46fb2d69fe0033de0b3562742ac7121b16ba7d45502c672596ae0acb578699d4",
+    "checks": [
+      "Two independent fixture keys",
+      "HTTPS home and assets",
+      "Dynamic document and API",
+      "Two-session WebSocket snapshot and update"
+    ]
+  },
+  "pending": [
+    "Candidate Linux archive verification and precise disk comparison",
+    "Rollback to the verified earlier Web image",
+    "Production capacity admission by the deployment owner"
+  ]
+}
