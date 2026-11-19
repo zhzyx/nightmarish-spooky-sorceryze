@@ -27,3 +27,26 @@
 在项目的迁移页按原编号、标题或路径搜索，打开记录可查看正文、所属评论和来源关联。代码历史支持按原提交和仓库相对路径读取文本文件（最大 1 MiB）；单项附件下载上限为 8 MiB。
 
 已认证客户端可调用 `GET /api/v1/migration/history/{search,detail,body,commits,file,attachment}`，AI 对应工具为 `migration.history.<操作名>`。用 `project` 选项目，用可选的 `revision` 固定发布目录版本；读取 Git 提交时另传 `commit`。列表用 `offset` 与 `limit` 翻页，AI 附件按返回的 `next_offset` 传入下一次的 `byte_offset`。API 服务需要在原生数据库旁写入 `<数据库文件名>.history-index` 和 `.migration-history-cache`，以便复用检索索引和只读 Git 镜像。
+
+## 在小磁盘目标启用 Git 历史
+
+部署者可以在可信准备机上为已发布的完整 SHA-1 bundle 生成预热件。准备机需要容纳原 bundle 与校验用镜像。命令中的脚本相对于仓库根，变量均由部署回执提供。
+
+```sh
+python customizations/components/tianxuan/migration/prewarm_prepare.py \
+  "$PREPARED_NATIVE_DB" "$TENANT" "$PROJECT" "$CATALOG_REVISION" "$NEW_KIT_DIRECTORY"
+```
+
+输出目录只含 `manifest.json` 和 `index.idx`。记录命令返回的清单 SHA-256，经可信交接渠道发给目标部署者。目录修订、来源仓库、租户和项目需与目标发布回执一致。源库路径可与目标不同。缺少完整历史的增量 bundle 和其他不支持的格式由准备入口拒绝。
+
+在目标服务所见的文件系统命名空间内，以 API 服务账号对已经发布、已静止的 staged 原生库运行下列命令。使用部署审批所绑定的目标数据库绝对路径、实际文件 SHA-256 和独立取得的清单 SHA-256。物理数据库摘要要求 WAL 为空。目标卷需同时容纳数据库、一份 Git pack、索引及文件系统临时分配；普通查询还会生成记录检索索引。
+
+```sh
+python customizations/components/tianxuan/migration/history_prewarm.py \
+  --database "$TIANXUAN_NATIVE_DB" --tenant "$TENANT" --project "$PROJECT" \
+  --revision "$CATALOG_REVISION" --prepared-dir "$KIT_DIRECTORY" \
+  --expected-manifest-sha256 "$APPROVED_MANIFEST_SHA256" \
+  --expected-db-sha256 "$STAGED_DATABASE_SHA256"
+```
+
+目标从原生库读取已校验的 bundle 块，仅将 pack 落盘。采纳入口核对索引、对象、原引用和来源提交，通过后在原缓存锁内发布镜像。保留返回的数据库身份、目录修订、来源摘要及镜像路径，随后用已认证账号在迁移页按原提交读取文件。重复执行会核验已有镜像；首次采纳失败时可修正输入重试，或在磁盘足够时由既有冷建路径恢复。历史记录与业务工单均由原数据库持有。
