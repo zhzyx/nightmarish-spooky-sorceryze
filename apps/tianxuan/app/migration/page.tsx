@@ -5,11 +5,13 @@ import { useIdentity } from "@/components/IdentityProvider";
 import { authHeaders } from "@/lib/auth";
 import { useActor } from "@/lib/use-actor";
 import { useI18n } from "@/lib/i18n-client";
+import HistoryBrowser from "./HistoryBrowser";
 import styles from "./page.module.css";
 
 type Entry = "existing" | "tianxuan";
 type Snapshot = {
   available: boolean;
+  catalog_revision?: string;
   source?: string;
   revision?: string;
   imported_at?: string | null;
@@ -191,6 +193,7 @@ export default function MigrationPage() {
         </>}
       <button onClick={() => setReload(reload + 1)}>{zh ? "刷新状态" : "Refresh status"}</button>
     </section>
+    {snapshot?.available && snapshot.catalog_revision && <HistoryBrowser key={[actor,statusProject,snapshot.catalog_revision].join("|")} project={statusProject} revision={snapshot.catalog_revision} actor={actor} zh={zh} />}
     <section className={styles.panel}>
       <h2>{zh ? "新任务入口" : "New task entry"}</h2>
       <p>{zh ? "按项目或需求选择入口。历史未结工单仅作记录。" : "Choose an entry per project or requirement. Historical open issues remain records."}</p>

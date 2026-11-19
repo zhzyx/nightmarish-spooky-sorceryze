@@ -10,3 +10,7 @@
 .panel input, .panel select, .panel button { padding: .45rem .7rem; color: inherit; background: var(--glass); border: 1px solid var(--line-strong); border-radius: 6px; font: inherit; }
 .panel button:disabled { opacity: .55; }
 .panel button:enabled { cursor: pointer; }
+.body { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 32rem; overflow: auto; }
+.paging { display: flex; gap: .6rem; align-items: center; margin-block: .75rem; }
+.panel li, .panel small { overflow-wrap: anywhere; }
+.paging button[aria-pressed="true"] { font-weight: 700; border-color: currentColor; }
