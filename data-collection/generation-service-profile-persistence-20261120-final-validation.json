@@ -1,0 +1,30 @@
+{
+  "request_id": "generation-service-profile-persistence-20261120",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1624",
+  "state": "passed",
+  "acceptance": {
+    "OFFLINE": {
+      "state": "passed",
+      "evidence": "Service choices and backend validation reject offline; local Copy and publication remain available without a generator service."
+    },
+    "PROFILES": {
+      "state": "passed",
+      "evidence": "Kimi, Codex and ComfyUI drafts persist independently and restore correct endpoints, models and tool paths after switching and reopening."
+    },
+    "DRAFT": {
+      "state": "passed",
+      "evidence": "Unsaved drafts persist before service startup or explicit activation; only explicit save activates the runtime generation-service configuration."
+    },
+    "COMPAT": {
+      "state": "passed",
+      "evidence": "Legacy configuration migration, asynchronous discovery, workflow isolation and unified settings reopen checks pass."
+    },
+    "DELIVERY": {
+      "state": "local_validation_passed",
+      "evidence": "489 AINative Python tests pass with 62 skips; isolated native workbench, 113 service GUI checks, multi-image and node-preview workflow checks pass; editor and actual bundle hashes verified. Formal PR, CI and main readback remain delivery steps."
+    }
+  },
+  "editor_sha256": "f856b7bdba39f04a0ba989e788df359b8fcb47e06175a34363668f08b6cc15a7",
+  "bundle_version": "e23e75f74c15b902db876006135ff73a60a4d1ea53c052fb65661e0325362258",
+  "combined_validation": "data-collection/maliang-stability-batch-20261120-validation.json"
+}

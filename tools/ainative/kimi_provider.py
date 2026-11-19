@@ -1607,9 +1607,7 @@ class KimiNativeDirectProvider(ModelingProvider):
             # operators use the already configured/validated model runtime;
             # remote generation keeps its existing interpreter behavior.
             worker_python = (
-                self.config["pythonw_path"]
-                if plan.get("operation") in LOCAL_GEOMETRY_OPERATIONS
-                else sys.executable
+                self.config["pythonw_path"] if plan.get("operation") in LOCAL_GEOMETRY_OPERATIONS else sys.executable
             )
             directory = self.storage / key
             directory.mkdir(exist_ok=False)
@@ -1647,8 +1645,7 @@ class KimiNativeDirectProvider(ModelingProvider):
         latest = attempts[-1]
         review = latest["review"]
         require(
-            previous_model.get("revision") == latest.get("model_sha256")
-            and review.get("passed") is False,
+            previous_model.get("revision") == latest.get("model_sha256") and review.get("passed") is False,
             "model3d_result_unknown",
         )
         model = mesh_vision.attach_capability_review(previous_model, review)
@@ -1665,7 +1662,8 @@ class KimiNativeDirectProvider(ModelingProvider):
             reference_ids_analyzed=[source["asset"]["id"] for source in sources],
             generation_reference_ids=latest.get("generation_reference_ids", []),
             prompt_application="reference_analysis_and_generated_mesh_review",
-            review_policy="subject_proportions_directions_details_head_gate_v2",
+            visual_review_plan=mesh_vision.get_review_plan(analysis),
+            review_policy="reference_driven_dynamic_review_plan_v1",
         )
         self.write(
             key,
@@ -1707,7 +1705,7 @@ class KimiNativeDirectProvider(ModelingProvider):
         corrected_render = render_directory.with_name(render_directory.name + "-orientation-corrected")
         corrected_request = review_directory.with_name(review_directory.name + "-orientation-corrected")
         corrected = mesh_vision.render_corrected_review_views(
-            self, key, model_path, corrected_render, yaw
+            self, key, model_path, corrected_render, yaw, mesh_vision.get_review_plan(analysis)
         )
         if corrected is None:
             return None, None
@@ -1747,7 +1745,9 @@ class KimiNativeDirectProvider(ModelingProvider):
             if analyzed is None:
                 return
             analysis = analyzed["document"]
-            self.write(key, visual_analysis=analysis)
+            review_plan = mesh_vision.get_review_plan(analysis)
+            self.write(key, visual_analysis=analysis, visual_review_plan=review_plan)
+        review_plan = mesh_vision.get_review_plan(analysis)
         if not self._active(key, "reference_analyzed"):
             return
         attempts = list(record.get("review_attempts", []))
@@ -1794,7 +1794,7 @@ class KimiNativeDirectProvider(ModelingProvider):
                 manual_review = directory / "review-request" / "manual-review.json"
                 review_path = api_review if api_review.is_file() else manual_review
                 require(model_path.is_file() and review_path.is_file(), "model3d_result_unknown")
-                generated = mesh_vision.load_review_views(model_path, directory / "review-render")
+                generated = mesh_vision.load_review_views(model_path, directory / "review-render", review_plan)
                 saved_review = json.loads(review_path.read_text(encoding="utf-8"))
                 # Legacy evidence must be reviewed again under the current V2
                 # contract on the same GLB and renders; missing orientation
@@ -1898,7 +1898,7 @@ class KimiNativeDirectProvider(ModelingProvider):
                     return
                 self.write(key, model3d_stage=model)
                 generated = mesh_vision.render_review_views(
-                    self, key, model_path, directory / "review-render"
+                    self, key, model_path, directory / "review-render", review_plan=review_plan
                 )
                 if generated is None:
                     return
@@ -1934,6 +1934,7 @@ class KimiNativeDirectProvider(ModelingProvider):
                     model_sha256=model["revision"],
                     geometry_sha256=provenance.get("geometry_sha256", model["revision"]),
                     generation_reference_ids=[asset["id"] for asset in selected],
+                    review_plan=review_plan,
                     review=review,
                 )
             )
@@ -1947,7 +1948,8 @@ class KimiNativeDirectProvider(ModelingProvider):
                 reference_ids_analyzed=[source["asset"]["id"] for source in sources],
                 generation_reference_ids=[asset["id"] for asset in selected],
                 prompt_application="reference_analysis_and_generated_mesh_review",
-                review_policy="subject_proportions_directions_details_head_gate_v2",
+                visual_review_plan=review_plan,
+                review_policy="reference_driven_dynamic_review_plan_v1",
             )
             self.write(
                 key,

@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-stability-batch-20261120-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-stability-batch-20261120",
+  "kind": "request",
+  "occurred_at": "2026-11-19T16:10:00Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1625",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261120",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "payload": {
+    "intent": "Deliver the combined MaLiang stability candidate: input-driven dynamic review planning and targeted evidence recovery, durable workflow generated outputs, and per-provider generation-service persistence without an offline mode. Preserve shared workbench behavior and complete the required PR and main delivery path.",
+    "authorization_ref": "kimi-work:user:20261120:maliang-stability-batch-submit-main",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "92dfdba648a967539ae4cf171a824a29c3f9d53f534de44e24e5e320bfb17ba0"
+}

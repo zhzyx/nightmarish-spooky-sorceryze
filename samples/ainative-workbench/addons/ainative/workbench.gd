@@ -1015,6 +1015,17 @@ func model() -> Dictionary:
 		if data.get("type", "copy") in ["text_to_image", "image_to_image"] and not data.has("version"): data.version = "4"
 	return {"format": 1, "nodes": nodes, "edges": edges}
 
+func _snapshot_file(path: String) -> Dictionary:
+	var input = FileAccess.open(path, FileAccess.READ)
+	if input == null: return {}
+	var bytes = input.get_buffer(input.get_length())
+	var valid = not bytes.is_empty() and input.get_error() == OK
+	input.close()
+	if not valid: return {}
+	var hash_context = HashingContext.new()
+	if hash_context.start(HashingContext.HASH_SHA256) != OK or hash_context.update(bytes) != OK: return {}
+	return {"content_base64": Marshalls.raw_to_base64(bytes), "content_sha256": hash_context.finish().hex_encode(), "extension": "." + path.get_extension().to_lower()}
+
 func _snapshot_inputs(data: Dictionary, field: String) -> bool:
 	var paths = _node_paths(data, field)
 	var previous: Array = data.get(field + "_snapshots", []).duplicate()
@@ -1026,22 +1037,129 @@ func _snapshot_inputs(data: Dictionary, field: String) -> bool:
 			if not snapshot is Dictionary or snapshot.is_empty(): return false
 			snapshots.append(snapshot)
 			continue
-		var input = FileAccess.open(path, FileAccess.READ)
-		if input == null: return false
-		var bytes = input.get_buffer(input.get_length())
-		var valid = not bytes.is_empty() and input.get_error() == OK
-		input.close()
-		if not valid: return false
-		var hash_context = HashingContext.new()
-		hash_context.start(HashingContext.HASH_SHA256)
-		hash_context.update(bytes)
-		snapshots.append({"content_base64": Marshalls.raw_to_base64(bytes), "content_sha256": hash_context.finish().hex_encode(), "extension": "." + path.get_extension().to_lower()})
+		var snapshot = _snapshot_file(path)
+		if snapshot.is_empty(): return false
+		snapshots.append(snapshot)
 		paths[index] = ""
 	data[field + "_paths"] = paths
 	data[field + "_snapshots"] = snapshots
 	data[field] = ""
 	data.erase(field + "_snapshot")
 	return true
+
+func _snapshot_output_entry(entry: Dictionary, node_id: String) -> Dictionary:
+	var snapshot = _snapshot_file(str(entry.get("path", "")))
+	if snapshot.is_empty(): return {}
+	var saved = {
+		"type": str(entry.get("type", "")),
+		"preview_token": str(entry.get("token", "")),
+		"run": str(entry.get("run", "")),
+		"node": node_id,
+		"description": str(entry.get("description", "")),
+		"artifact": {"id": str(entry.get("artifact", {}).get("id", "")), "revision": str(entry.get("artifact", {}).get("revision", ""))},
+		"snapshot": snapshot
+	}
+	if entry.has("images"):
+		if not entry.images is Array or entry.images.is_empty(): return {}
+		var images: Array = []
+		for item in entry.images:
+			if not item is Dictionary or item.has("images"): return {}
+			var saved_item = _snapshot_output_entry(item, node_id)
+			if saved_item.is_empty(): return {}
+			saved_item["label"] = str(item.get("label", "独立图片"))
+			images.append(saved_item)
+		saved["images"] = images
+	return saved
+
+func _result_artifact(manifest: Dictionary, reference: Dictionary) -> Dictionary:
+	for artifact in manifest.get("artifacts", []):
+		if artifact is Dictionary and artifact.get("id") == reference.get("id") and artifact.get("revision") == reference.get("revision"):
+			return artifact
+	return {}
+
+func _snapshot_result_artifact(result_run: String, node_id: String, reference: Dictionary, artifact: Dictionary) -> Dictionary:
+	var payload = artifact.get("payload", {})
+	if not payload is Dictionary: return {}
+	var snapshot = {
+		"content_base64": payload.get("content_base64", ""),
+		"content_sha256": payload.get("content_sha256", ""),
+		"extension": payload.get("extension", "")
+	}
+	if not _valid_input_snapshots([snapshot]): return {}
+	var hash_context = HashingContext.new()
+	if hash_context.start(HashingContext.HASH_SHA256) != OK: return {}
+	if hash_context.update(JSON.stringify([result_run, reference, artifact], "", true, true).to_utf8_buffer()) != OK: return {}
+	return {
+		"type": str(artifact.get("type", "")),
+		"preview_token": hash_context.finish().hex_encode(),
+		"run": result_run,
+		"node": node_id,
+		"artifact": {"id": str(reference.get("id", "")), "revision": str(reference.get("revision", ""))},
+		"snapshot": snapshot
+	}
+
+func _snapshot_current_result(node_id: String, state: Dictionary) -> Dictionary:
+	var job = state.get("job", {})
+	var manifest = state.get("result", {})
+	if not job is Dictionary or not manifest is Dictionary: return {}
+	var outputs = job.get("outputs", {})
+	if not outputs is Dictionary: return {}
+	var references: Array = []
+	var labels: Array = []
+	var image_set = outputs.get("image_set", {})
+	if not image_set.is_empty():
+		if not image_set is Dictionary: return {}
+		var collection = _result_artifact(manifest, image_set)
+		var items = collection.get("payload", {}).get("items", [])
+		if not items is Array or items.is_empty(): return {}
+		for item in items:
+			if not item is Dictionary or not item.get("artifact", {}) is Dictionary: return {}
+			references.append(item.artifact)
+			labels.append(str(item.get("label", "独立图片")))
+	elif outputs.get("result", {}) is Dictionary and not outputs.get("result", {}).is_empty():
+		references.append(outputs.result)
+		labels.append("")
+	else:
+		return {}
+	var images: Array = []
+	for index in references.size():
+		var artifact = _result_artifact(manifest, references[index])
+		if artifact.is_empty(): return {}
+		var saved = _snapshot_result_artifact(run_id, node_id, references[index], artifact)
+		if saved.is_empty(): return {}
+		saved["label"] = labels[index]
+		images.append(saved)
+	var primary: Dictionary = images[0].duplicate(true)
+	primary.erase("label")
+	primary["description"] = JSON.stringify(state.get("request", {}), "  ", true, true)
+	if references.size() > 1 or not image_set.is_empty(): primary["images"] = images
+	return primary
+
+func _snapshot_outputs():
+	var saved: Dictionary = {}
+	for node_id in preview_history:
+		if not nodes.any(func(node): return node.id == node_id): continue
+		var history: Array = []
+		for entry in preview_history[node_id]:
+			if not entry is Dictionary: return null
+			var snapshot = _snapshot_output_entry(entry, str(node_id))
+			if snapshot.is_empty(): return null
+			history.append(snapshot)
+		saved[node_id] = history
+	for node_id in current.get("nodes", {}):
+		var state = current.nodes[node_id]
+		if not state is Dictionary or state.get("state") != "succeeded": continue
+		var snapshot = _snapshot_current_result(str(node_id), state)
+		if snapshot.is_empty(): return null
+		var history: Array = saved.get(node_id, [])
+		if not history.any(func(entry): return entry.preview_token == snapshot.preview_token): history.append(snapshot)
+		saved[node_id] = history
+	return saved
+
+func _output_version_count(history: Dictionary) -> int:
+	var count = 0
+	for versions in history.values(): count += versions.size()
+	return count
 
 func save_graph():
 	if not apply_fields(): return
@@ -1060,6 +1178,11 @@ func save_graph():
 			if not _snapshot_inputs(n, field):
 				status.text = "无法读取输入并建立有序快照，已保留原工作流"
 				return
+	var output_history = _snapshot_outputs()
+	if output_history == null:
+		status.text = "无法读取全部生成物，已保留原工作流"
+		return
+	if not output_history.is_empty(): portable["output_history"] = output_history
 	var temporary = path_edit.text + "." + str(Time.get_ticks_usec()) + ".tmp"
 	var f = FileAccess.open(temporary, FileAccess.WRITE)
 	if f == null:
@@ -1074,6 +1197,7 @@ func save_graph():
 		status.text = "无法替换工作流，已保留原工作流"
 		return
 	status.text = "已保存工作流及全部有序输入快照"
+	if not output_history.is_empty(): status.text += "，已内嵌 " + str(_output_version_count(output_history)) + " 个生成结果版本"
 
 func clear_embedded():
 	for data in nodes:
@@ -1096,6 +1220,83 @@ func _valid_input_snapshots(value, uncapped: bool = false) -> bool:
 		if hash_context.start(HashingContext.HASH_SHA256) != OK: return false
 		if hash_context.update(bytes) != OK or hash_context.finish().hex_encode() != snapshot.content_sha256: return false
 	return true
+
+func _valid_artifact_reference(value) -> bool:
+	return value is Dictionary and value.get("id") is String and value.get("revision") is String and not value.id.is_empty() and not value.revision.is_empty()
+
+func _valid_output_entry(entry, node_id: String) -> bool:
+	if not entry is Dictionary or not entry.has_all(["type", "preview_token", "run", "node", "description", "artifact", "snapshot"]): return false
+	for key in ["type", "preview_token", "run", "node", "description"]:
+		if not entry.get(key) is String: return false
+	if entry.node != node_id or entry.preview_token.is_empty() or not _valid_artifact_reference(entry.artifact): return false
+	if not _valid_input_snapshots([entry.snapshot]): return false
+	var image = entry.type == "image" and entry.snapshot.extension.to_lower() in [".png", ".jpg", ".jpeg"]
+	var mesh = entry.type == "mesh" and entry.snapshot.extension.to_lower() in [".glb", ".gltf"]
+	if not image and not mesh: return false
+	if entry.has("images"):
+		if not entry.images is Array or entry.images.is_empty(): return false
+		for item in entry.images:
+			if not item is Dictionary or item.has("images") or not item.get("label") is String or not _valid_output_entry(item, node_id): return false
+	return true
+
+func _valid_output_history(value, by_id: Dictionary) -> bool:
+	if not value is Dictionary: return false
+	for node_id in value:
+		if not node_id is String or not by_id.has(node_id) or not value[node_id] is Array: return false
+		for entry in value[node_id]:
+			if not _valid_output_entry(entry, node_id): return false
+	return true
+
+func _materialize_output_snapshot(snapshot: Dictionary, directory: String) -> String:
+	var bytes = Marshalls.base64_to_raw(snapshot.content_base64)
+	var path = directory.path_join(snapshot.content_sha256 + snapshot.extension.to_lower())
+	if FileAccess.file_exists(path): return path if FileAccess.get_sha256(path) == snapshot.content_sha256 else ""
+	var temporary = path + "." + str(Time.get_ticks_usec()) + ".tmp"
+	var output = FileAccess.open(temporary, FileAccess.WRITE)
+	if output == null: return ""
+	output.store_buffer(bytes)
+	output.flush()
+	var failed = output.get_error() != OK
+	output.close()
+	if not failed and DirAccess.rename_absolute(temporary, path) == OK: return path
+	DirAccess.remove_absolute(temporary)
+	return path if FileAccess.file_exists(path) and FileAccess.get_sha256(path) == snapshot.content_sha256 else ""
+
+func _restore_output_entry(saved: Dictionary, directory: String):
+	var path = _materialize_output_snapshot(saved.snapshot, directory)
+	if path.is_empty(): return null
+	var entry = {
+		"type": saved.type,
+		"token": saved.preview_token,
+		"run": saved.run,
+		"node": saved.node,
+		"description": saved.description,
+		"artifact": saved.artifact.duplicate(true),
+		"path": path
+	}
+	if saved.has("images"):
+		var images: Array = []
+		for item in saved.images:
+			var restored = _restore_output_entry(item, directory)
+			if restored == null: return null
+			restored["label"] = item.label
+			images.append(restored)
+		entry["images"] = images
+	return entry
+
+func _restore_output_history(saved: Dictionary, workflow_path: String):
+	if saved.is_empty(): return {}
+	var directory = workflow_path + ".assets"
+	if DirAccess.make_dir_recursive_absolute(directory) != OK: return null
+	var restored: Dictionary = {}
+	for node_id in saved:
+		var history: Array = []
+		for entry in saved[node_id]:
+			var item = _restore_output_entry(entry, directory)
+			if item == null: return null
+			history.append(item)
+		restored[node_id] = history
+	return restored
 
 func _valid_workflow_edge(edge: Dictionary, by_id: Dictionary) -> bool:
 	if not edge.has_all(["from", "to"]) or not edge.from is String or not edge.to is String: return false
@@ -1163,16 +1364,27 @@ func open_graph():
 			status.text = "连接端点或端口无效"
 			return
 		destinations.append(e.to)
-	preview_history.clear()
+	var saved_outputs = value.get("output_history", {})
+	if not _valid_output_history(saved_outputs, by_id):
+		status.text = "生成物快照无效"
+		return
+	var restored_history = _restore_output_history(saved_outputs, path_edit.text)
+	if restored_history == null:
+		status.text = "无法恢复生成物，已保留当前工作流"
+		return
+	preview_history = restored_history
 	controller.reset()
 	clear_preview()
 	nodes = value.nodes
 	var legacy = service_draft()
 	for data in nodes: _migrate_node_models(data, legacy)
 	edges = value.edges
+	selected_id = ""
 	rebuild()
 	if not nodes.is_empty(): select_node(nodes[0].id)
 	status.text = RETIRED_GPT_MESH_NOTICE if nodes.any(_retired_mesh_node) else "已重新打开工作流"
+	if not saved_outputs.is_empty() and not nodes.any(_retired_mesh_node):
+		status.text += "，已恢复 " + str(_output_version_count(saved_outputs)) + " 个生成结果版本，无需重新运行"
 
 func run_node_preview(id: String):
 	if is_graph_busy():
@@ -2150,7 +2362,7 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	button(actions, "保存生成服务设置", save_service_settings)
 	service_status = Label.new()
 	service_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	service_status.text = "离线复制可用；真实生成需要运行中的服务和已安装的模型。"
+	service_status.text = "请选择生成服务；本机复制节点始终可用，配置草稿会自动保存。"
 	service_fields.add_child(service_status)
 	for kind in NODE_KINDS:
 		var label = Label.new()
@@ -2363,8 +2575,8 @@ func _service_draft_for_mode(mode: String) -> Dictionary:
 		value['image_pythonw_path'] = kimi_image_pythonw_edit.text.strip_edges()
 		value['model3d_tool_path'] = model3d_tool_edit.text.strip_edges()
 		value['model3d_pythonw_path'] = model3d_pythonw_edit.text.strip_edges()
-		value['model3d_model'] = str(service_saved.get('model3d_model', 'v3.1'))
-		value['texture_model'] = str(service_saved.get('texture_model', 'v3.5'))
+		value['model3d_model'] = str(profile.get('model3d_model', 'v3.1'))
+		value['texture_model'] = str(profile.get('texture_model', 'v3.5'))
 	if value.mode == 'api_sculpt':
 		value.mesh_model = ''
 		value['blender_path'] = blender_path_edit.text.strip_edges()
@@ -2372,8 +2584,8 @@ func _service_draft_for_mode(mode: String) -> Dictionary:
 	if value.mode in ['api_modeling', 'api_sculpt']:
 		value.image_model = ''
 		# Retain the old value only to migrate unopened legacy workflows.
-		if service_saved.has('api_model'): value['api_model'] = service_saved.api_model
-		value['api_key_env'] = str(service_saved.get('api_key_env', 'AINATIVE_API_KEY'))
+		if profile.has('api_model'): value['api_model'] = profile.api_model
+		value['api_key_env'] = str(profile.get('api_key_env', 'AINATIVE_API_KEY'))
 	if value.mode == 'local_mesh': value.image_model = ''
 	return value
 
@@ -2562,7 +2774,7 @@ func save_service_settings():
 		_show_run_problem("服务配置已写入，但运行环境设置保存失败，请检查用户目录。")
 		return
 	_update_service_summary()
-	service_status.text = ('已保存自选 API 设置；' + ('Blender' if draft.mode == 'api_sculpt' else 'Godot') + ' 构造网格。') if draft.mode in ['api_modeling', 'api_sculpt'] else '已保存本机图生网格设置；无需 CLI。' if draft.mode == 'local_mesh' else '已保存 Kimi 复合设置；Mesh 由 Tripo API 直接生成且无需 Blender，二维由独立 Kimi Work 图像服务生成；本机路径不进入工作流。' if draft.mode == 'kimi_native' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
+	service_status.text = ('已保存自选 API 设置；' + ('Blender' if draft.mode == 'api_sculpt' else 'Godot') + ' 构造网格。') if draft.mode in ['api_modeling', 'api_sculpt'] else '已保存本机图生网格设置；无需 CLI。' if draft.mode == 'local_mesh' else '已保存 Kimi 复合设置；Mesh 由 Tripo API 直接生成且无需 Blender，二维由独立 Kimi Work 图像服务生成；本机路径不进入工作流。' if draft.mode == 'kimi_native' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。"
 	if status != null: status.text = service_status.text
 	if service_config_link != null: service_config_link.hide()
 
