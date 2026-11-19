@@ -2196,11 +2196,13 @@ class Tianxuan:
 
             if payload or call_id is not None:
                 raise TianxuanError("invalid roadmap arguments")
-            return roadmap(self, actor)
+            roadmap_result: dict[str, Any] = roadmap(self, actor)
+            return roadmap_result
         if name in {"work.read", "work.plan", "work.log", "work.submit_asset"}:
             from work_management import execute
 
-            return execute(self, actor, name, payload, call_id=call_id)
+            work_result: dict[str, Any] = execute(self, actor, name, payload, call_id=call_id)
+            return work_result
         writes: dict[str, Callable[..., Any]] = {
             "doc.create": self.create_doc,
             "doc.update": self.update_doc,
