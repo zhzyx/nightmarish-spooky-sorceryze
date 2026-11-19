@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "generation-service-profile-persistence-20261120-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "generation-service-profile-persistence-20261120",
+  "kind": "request",
+  "occurred_at": "2026-11-19T16:06:44Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1624",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261120",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "payload": {
+    "intent": "Remove the generation-service offline mode while retaining local Copy, persist independent drafts for every provider to an atomic local file before service startup or explicit activation, restore them across provider switches and editor reopen, and submit only this scoped candidate through the required PR path.",
+    "authorization_ref": "kimi-work:user:20261120:generation-service-profile-persistence-submit-main",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "828078860a3fd81753aaee73f884326afabd75dca0f8d8e249d222bcf46dc257"
+}

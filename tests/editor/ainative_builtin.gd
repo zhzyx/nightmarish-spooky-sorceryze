@@ -145,15 +145,16 @@ func verify_generation_service_controls():
 	if not check(panel.get("service_choice") is OptionButton and panel.has_method("check_service"), 'bundled editor exposes generation service setup controls'): return
 	var service_modes: Array = []
 	for i in panel.service_choice.item_count: service_modes.append(panel.service_choice.get_item_metadata(i))
-	check(service_modes == ["offline", "comfy", "legacy", "codex", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"], 'bundled service picker preserves the eight supported service modes')
+	check(service_modes == ["comfy", "legacy", "codex", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"], 'bundled service picker removes offline and preserves seven supported choices')
 	check(panel.get('cli_path_edit') is LineEdit and panel.get('managed_comfy_panel') is VBoxContainer, 'bundled CLI and local Mesh management controls are installed')
 	check(panel.service_config_path.get_base_dir() == panel.state_dir and panel.service_config_path.get_file() == "generation-service.json", 'bundled service configuration is private machine state')
-	check(panel._service_mode() == "offline" and panel.service_saved.is_empty(), 'fresh native project does not claim a real generation service')
+	check(panel._service_mode() == "comfy" and panel.service_saved.is_empty(), 'fresh native project does not claim a real generation service')
+	panel.endpoint_edit.text = 'http://127.0.0.1:1'
 	var serial = panel.serial
 	panel.check_service()
 	if not await wait_idle(): return
-	check(panel.serial == serial + 1 and panel.service_report.get("mode") == "offline" and not panel.service_report.get("connected", true), 'bundled read-only service check reaches its Python implementation')
-	check(not panel.service_report.get("capabilities", {}).get("text_to_image", {}).get("ready", true) and not FileAccess.file_exists(panel.service_config_path), 'checking offline mode neither invents generation readiness nor writes configuration')
+	check(panel.serial == serial + 1 and panel.service_report.get("mode") == "comfy" and not panel.service_report.get("connected", true), 'bundled read-only service check reaches its Python implementation')
+	check(not panel.service_report.get("capabilities", {}).get("text_to_image", {}).get("ready", true) and not FileAccess.file_exists(panel.service_config_path), 'checking an unconfigured service neither invents readiness nor activates configuration')
 	panel.select_service_mode('kimi_native')
 	panel.service_choice.item_selected.emit(panel.service_choice.selected)
 	panel.kimi_model_edit.text = 'obsolete-language-model'
@@ -182,15 +183,26 @@ func verify_generation_service_controls():
 	restored.hide()
 	await process_frame
 	check(restored._service_mode() == 'kimi_native' and restored.service_saved == draft and restored.service_saved.endpoint.is_empty() and not restored.service_saved.has('kimi_model') and not restored.endpoint_edit.visible and restored.model3d_tool_edit.text == draft.model3d_tool_path and restored.model3d_pythonw_edit.text == draft.model3d_pythonw_path, 'Kimi Native settings survive a real Workbench reopen')
+	restored.select_service_mode('codex')
+	restored.service_choice.item_selected.emit(restored.service_choice.selected)
+	restored.cli_path_edit.text = 'unsaved-native-codex'
+	restored.select_service_mode('comfy')
+	restored.service_choice.item_selected.emit(restored.service_choice.selected)
+	restored.endpoint_edit.text = 'http://127.0.0.1:65432'
+	restored.select_service_mode('kimi_native')
+	restored.service_choice.item_selected.emit(restored.service_choice.selected)
+	check(restored.model3d_tool_edit.text == draft.model3d_tool_path and restored.model3d_pythonw_edit.text == draft.model3d_pythonw_path and restored.service_saved == draft, 'native service switching restores Kimi without replacing the active saved provider')
+	var profiles = JSON.parse_string(FileAccess.get_file_as_string(restored.service_profiles_path))
+	check(profiles is Dictionary and profiles.get('profiles', {}).get('codex', {}).get('cli_path') == 'unsaved-native-codex' and profiles.get('profiles', {}).get('comfy', {}).get('endpoint') == 'http://127.0.0.1:65432', 'native unsaved provider settings persist before service startup')
 	restored.queue_free()
 	await process_frame
 	panel.service_choice.select(0)
 	panel.service_choice.item_selected.emit(0)
 	# Changing the draft picker does not replace the saved provider used by jobs.
-	# Restore the controlled offline fixture before any actual Mesh execution.
+	# Save a controlled local configuration before the Mesh Copy execution.
 	panel.save_service_settings()
-	var offline = JSON.parse_string(FileAccess.get_file_as_string(panel.service_config_path))
-	check(panel._service_mode() == 'offline' and panel.service_saved.get('mode') == 'offline' and offline is Dictionary and offline.get('mode') == 'offline', 'service setup fixture restores the saved offline provider before execution')
+	var active = JSON.parse_string(FileAccess.get_file_as_string(panel.service_config_path))
+	check(panel._service_mode() == 'comfy' and panel.service_saved.get('mode') == 'comfy' and active is Dictionary and active.get('mode') == 'comfy', 'service setup saves a real provider choice without an offline mode')
 
 func verify_context_controls():
 	check(panel.get("context_menu") is PopupMenu and panel.has_method("show_context_menu"), 'bundled editor exposes contextual editing')
@@ -512,6 +524,17 @@ func verify_mesh():
 	if not await wait_idle(): return
 	check(FileAccess.get_sha256(panel.target_edit.text)==published and panel.status.text.contains('失败'),'Mesh publication cannot overwrite an existing version')
 	check(FileAccess.get_sha256(source)==before,'offline run and publication preserve source Mesh bytes')
+	var result_node = panel.selected_id
+	panel.path_edit.text = panel.state_dir.path_join('generated-workflow.json')
+	panel.save_graph()
+	var saved_workflow = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
+	check(saved_workflow.get('output_history',{}).get(result_node,[]).size()==1,'builtin workflow embeds the generated GLB after execution')
+	panel.open_graph()
+	panel.select_node(result_node)
+	print('OUTPUT_PERSISTENCE_STATUS ',panel.status.text,' RUN ',panel.run_id,' HISTORY ',panel.preview_history.keys(),' PATH ',panel.preview_source_path)
+	check(panel.run_id.is_empty() and panel.preview_history.get(result_node,[]).size()==1,'builtin workflow restores generated-result history without another Executor run')
+	check(panel.preview_source_path.begins_with(panel.path_edit.text+'.assets/') and FileAccess.get_sha256(panel.preview_source_path)==before,'builtin restored GLB is a durable byte-identical content-addressed file')
+	check(is_instance_valid(panel.preview_scene),'builtin restored GLB decodes into the existing Mesh preview')
 	panel.native_buttons.other.pressed.emit()
 	await process_frame
 	check(panel.native_sections.split.is_visible_in_tree() and panel.mesh_container.is_visible_in_tree(),'other tools retain the shared Mesh preview viewport')

@@ -151,6 +151,21 @@ func run():
 	check(panel.current_images.size() == 2 and panel.result_choice.item_count == 2 and panel.result_choice.is_visible_in_tree(), "two independent images have individual preview choices")
 	panel.show_result(1)
 	check(panel.preview_artifact.id == "second" and panel.preview_token == "second-token" and panel.texture.texture != null, "selecting the second member updates bytes, identity and confirmation token")
+	var generated = panel.preview_history.get(downstream, [])
+	if generated.is_empty():
+		generated = [{"type":"image", "path":front, "token":"first-token", "run":"preview-fixture", "node":downstream, "description":"multi-image fixture", "artifact":{"id":"first", "revision":"1".repeat(64)}, "images":[
+			{"type":"image", "path":front, "label":"正面", "token":"first-token", "run":"preview-fixture", "node":downstream, "description":"", "artifact":{"id":"first", "revision":"1".repeat(64)}},
+			{"type":"image", "path":side, "label":"三分之四侧面", "token":"second-token", "run":"preview-fixture", "node":downstream, "description":"", "artifact":{"id":"second", "revision":"2".repeat(64)}}
+		]}]
+		panel.preview_history[downstream] = generated
+	panel.save_graph()
+	var with_outputs = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text))
+	check(with_outputs.output_history[downstream][0].images.size() == 2 and with_outputs.output_history[downstream][0].images[0].snapshot.content_sha256 == FileAccess.get_sha256(front) and with_outputs.output_history[downstream][0].images[1].snapshot.content_sha256 == FileAccess.get_sha256(side), "save embeds every ordered image-set member and its original bytes")
+	panel.open_graph()
+	panel.select_node(downstream)
+	check(panel.current_images.size() == 2 and panel.result_choice.item_count == 2 and panel.preview_history[downstream][0].images[0].path != front and panel.preview_history[downstream][0].images[1].path != side, "reopen restores the complete image set from durable copies without rerunning generation")
+	panel.show_result(1)
+	check(panel.preview_artifact.id == "second" and panel.preview_token == "second-token" and panel.texture.texture != null, "restored image-set members retain independent identity selection and preview")
 	panel.show_native_section("other")
 	check(not panel.result_choice.is_visible_in_tree(), "image member selector stays on the generation page")
 	panel.show_native_section("mesh")

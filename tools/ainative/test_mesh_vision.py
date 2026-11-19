@@ -9,10 +9,13 @@ from pathlib import Path
 from unittest.mock import patch
 
 from mesh_vision import (
+    analysis_prompt,
     complete_review,
     corrected_review_yaw,
+    get_review_plan,
     review,
     review_prompt,
+    review_view_definitions,
     review_yaw_correction,
     select_generation_request,
     select_retry_adjust_request,
@@ -44,6 +47,21 @@ def analysis(entries):
         coherent=True,
         synthesis="one subject",
     )
+
+
+def detail(region, views, source="detail", goal=None):
+    return dict(
+        region=region,
+        views=views,
+        source_image_ids=[source],
+        goal=goal or "compare the requested " + region,
+    )
+
+
+def planned_analysis(entries, details, head_gate=False):
+    document = analysis(entries)
+    document["review_plan"] = dict(schema_version=1, details=details, head_gate=head_gate)
+    return document
 
 
 ACCEPTANCE = dict(
@@ -296,10 +314,31 @@ class MeshVisionTests(unittest.TestCase):
         self.assertTrue(rejected["review_incomplete"])
         self.assertIn("Missing required rendered view: right", rejected["issues"])
 
-    def test_incomplete_report_rereviews_the_same_model(self):
-        generated = [dict(image_id="generated-front", label="generated front", path=Path("front.jpg"))]
-        first = dict(passed=False, review_incomplete=True, issues=["Missing required rendered view: head_side"])
-        second = dict(passed=True, issues=[])
+    def test_incomplete_report_rereviews_only_missing_views_on_the_same_model(self):
+        generated = [
+            dict(image_id="generated-" + view, label="generated " + view, path=Path(view + ".jpg"))
+            for view in ("front", "head_front", "head_three_quarter", "head_side")
+        ]
+        missing = ["head_front", "head_three_quarter", "head_side"]
+        first = reviewed_document(
+            passed=False,
+            review_incomplete=True,
+            subject_match=True,
+            proportions_pass=True,
+            details_pass=True,
+            views=[dict(view="front", similar=True, observation="front")],
+            issues=["Missing required rendered view: " + view for view in missing],
+            retry_guidance="",
+        )
+        second = reviewed_document(
+            passed=True,
+            subject_match=True,
+            proportions_pass=True,
+            details_pass=True,
+            views=[dict(view=view, similar=True, observation="complete " + view) for view in missing],
+            issues=[],
+            retry_guidance="",
+        )
         with patch("mesh_vision.review", side_effect=[first, second]) as review_call:
             result = complete_review(
                 object(), "a" * 64, analysis([]), [], generated, [], Path("review-request")
@@ -307,8 +346,10 @@ class MeshVisionTests(unittest.TestCase):
         self.assertTrue(result["passed"])
         self.assertEqual(review_call.call_count, 2)
         self.assertIs(review_call.call_args_list[0].args[4], generated)
-        self.assertIs(review_call.call_args_list[1].args[4], generated)
-        self.assertIn("Missing required rendered view: head_side", review_call.call_args_list[1].args[5])
+        self.assertEqual(review_call.call_args_list[1].args[4], generated[1:])
+        self.assertTrue(review_call.call_args_list[1].kwargs["partial"])
+        for view in missing:
+            self.assertIn("Missing required rendered view: " + view, review_call.call_args_list[1].args[5])
         self.assertEqual(review_call.call_args_list[1].args[6].name, "review-request-incomplete-retry")
 
     def test_complementary_reviews_complete_evidence_without_another_request(self):
@@ -385,6 +426,60 @@ class MeshVisionTests(unittest.TestCase):
                     object(), "a" * 64, analysis([]), [], generated, [], Path("review-request")
                 )
 
+    def test_legacy_incomplete_retry_does_not_block_targeted_recovery(self):
+        generated = [
+            dict(image_id="generated-" + view, label="generated " + view, path=Path(view + ".png"))
+            for view in ("front", "head_front", "head_three_quarter", "head_side")
+        ]
+        first = reviewed_document(
+            passed=False,
+            review_incomplete=True,
+            subject_match=True,
+            proportions_pass=True,
+            details_pass=True,
+            views=[dict(view="front", similar=True, observation="front")],
+            issues=["Missing required rendered view: head_front"],
+            retry_guidance="",
+        )
+        targeted = reviewed_document(
+            passed=True,
+            subject_match=True,
+            proportions_pass=True,
+            details_pass=True,
+            views=[
+                dict(view=view, similar=True, observation="complete " + view)
+                for view in ("head_front", "head_three_quarter", "head_side")
+            ],
+            issues=[],
+            retry_guidance="",
+        )
+        from extensions import canonical
+
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+
+            def save(directory, document):
+                directory.mkdir(parents=True)
+                (directory / "api-plan.json").write_text(canonical(document), encoding="utf-8")
+                (directory / "api-request.json").write_bytes(b"{}")
+                receipt = dict(
+                    request_sha256=hashlib.sha256(b"{}").hexdigest(),
+                    instructions_sha256=hashlib.sha256(canonical(document).encode()).hexdigest(),
+                )
+                (directory / "api-receipt.json").write_text(canonical(receipt), encoding="utf-8")
+
+            save(root / "review-request", first)
+            save(root / "review-request-incomplete-retry", first)
+            with patch("mesh_vision.review", return_value=targeted) as request:
+                result = complete_review(
+                    object(), "a" * 64, analysis([]), [], generated, [], root / "review-request"
+                )
+            self.assertTrue(result["passed"])
+            self.assertEqual(request.call_count, 1)
+            self.assertEqual(request.call_args.args[4], generated[1:])
+            self.assertTrue(request.call_args.kwargs["partial"])
+            self.assertEqual(request.call_args.args[6].name, "review-request-incomplete-targeted-retry")
+
     def test_v2_allows_approximate_top_but_requires_face_and_animation_geometry(self):
         generated = [
             dict(image_id="generated-" + view, label="generated " + view, path=Path(view + ".png"))
@@ -421,6 +516,89 @@ class MeshVisionTests(unittest.TestCase):
         self.assertIn("not a 1:1", prompt)
         self.assertIn("elevation angle differs moderately", prompt)
         self.assertIn("never claim that a skeleton", prompt)
+
+
+    def test_hand_detail_plan_drives_render_and_review_without_head_views(self):
+        document = planned_analysis(
+            [analyzed("hand", "detail", "detail")],
+            [
+                detail("hand_left", ["front", "back"], "hand", "compare fingers and palm"),
+                detail("hand_right", ["front"], "hand", "compare fingers and dorsal surface"),
+            ],
+        )
+        plan = get_review_plan(document)
+        definitions = review_view_definitions(plan)
+        names = [item["view"] for item in definitions]
+        self.assertEqual(names[:5], ["front", "right", "back", "left", "top"])
+        self.assertEqual(names[5:], ["hand_left_front", "hand_left_back", "hand_right_front"])
+        self.assertFalse(any(name.startswith("head_") for name in names))
+        self.assertFalse(plan["head_gate"])
+        generated = [
+            dict(image_id="generated-" + name, label="generated " + name, path=Path(name + ".png"))
+            for name in names
+        ]
+        accepted = reviewed_document(
+            passed=True,
+            subject_match=True,
+            proportions_pass=True,
+            details_pass=True,
+            head_gate=head_gate(applicable=False, complete_face=False, neck_join_pass=False),
+            views=[dict(view=name, similar=True, observation="matching hand evidence") for name in names],
+            issues=[],
+            retry_guidance="",
+        )
+        with patch("mesh_vision._request_json", return_value=copy.deepcopy(accepted)):
+            result = review(object(), "a" * 64, document, [], generated, [], Path("unused"))
+        self.assertTrue(result["passed"])
+        prompt = review_prompt(document, [])
+        self.assertIn("compare fingers and palm", prompt)
+        self.assertIn("Never invent a missing reference view", prompt)
+
+    def test_armor_and_object_plans_use_supported_regions_not_character_template(self):
+        armor = planned_analysis(
+            [analyzed("armor", "detail", "detail")],
+            [detail("upper_body", ["front", "three_quarter"], "armor", "compare chest armor relief")],
+        )
+        names = [item["view"] for item in review_view_definitions(get_review_plan(armor))]
+        self.assertEqual(names[5:], ["detail_upper_front", "detail_upper_three_quarter"])
+        self.assertNotIn("head_front", names)
+        vase = planned_analysis(
+            [analyzed("vase", "detail", "detail")],
+            [detail("object_detail", ["front", "side"], "vase", "compare engraved ornament")],
+        )
+        vase["subject"]["category"] = "ceramic vase"
+        names = [item["view"] for item in review_view_definitions(get_review_plan(vase))]
+        self.assertEqual(names[5:], ["object_detail_front", "object_detail_side"])
+        self.assertFalse(get_review_plan(vase)["head_gate"])
+
+    def test_head_gate_requires_the_complete_dynamic_head_capability(self):
+        document = planned_analysis(
+            [analyzed("face", "detail", "detail")],
+            [detail("head", ["front"], "face")],
+            head_gate=True,
+        )
+        with self.assertRaisesRegex(ValueError, "vision_output_invalid"):
+            get_review_plan(document)
+        document["review_plan"]["details"][0]["views"] = ["front", "three_quarter", "side"]
+        self.assertTrue(get_review_plan(document)["head_gate"])
+        document["review_plan"]["details"][0]["source_image_ids"] = ["unknown"]
+        with self.assertRaisesRegex(ValueError, "vision_output_invalid"):
+            get_review_plan(document)
+
+    def test_analysis_goal_and_review_recovery_share_the_same_dynamic_contract(self):
+        prompt = analysis_prompt(self.request([asset("hand", "hand")]), [dict(image_id="hand", label="source")])
+        self.assertIn("review_plan", prompt)
+        self.assertIn("hand_left or hand_right for hand goals", prompt)
+        self.assertIn("Do not add head views", prompt)
+        recovery = review_prompt(
+            analysis([]),
+            [],
+            required_views=["hand_left_front"],
+            recovery_context={"rendered_front_view": "front"},
+        )
+        self.assertIn('["hand_left_front"]', recovery)
+        self.assertIn("targeted evidence recovery", recovery)
+        self.assertIn("do not invent entries for unattached views", recovery)
 
 
 class ReviewLoopTests(unittest.TestCase):
@@ -532,7 +710,8 @@ class ReviewLoopTests(unittest.TestCase):
             self.assertEqual(attempts[1]["iteration_mode"], "incremental_model_adjust")
             self.assertEqual(attempts[1]["parent_model_sha256"], model["revision"])
             provenance = provider.result_manifest(key)["artifacts"][-1]["payload"]["provenance"]
-            self.assertEqual(provenance["review_policy"], "subject_proportions_directions_details_head_gate_v2")
+            self.assertEqual(provenance["review_policy"], "reference_driven_dynamic_review_plan_v1")
+            self.assertEqual(provenance["visual_review_plan"], get_review_plan(document))
 
     def test_camera_mismatch_rereviews_same_model_without_model_adjust(self):
         from kimi_provider import KimiNativeDirectProvider
@@ -624,7 +803,7 @@ class ReviewLoopTests(unittest.TestCase):
                 rendered_front_view="front",
             )
 
-            def initial_render(_provider, _key, model_path, directory):
+            def initial_render(_provider, _key, model_path, directory, **_kwargs):
                 Path(model_path).write_bytes(data)
                 directory.mkdir(parents=True)
                 (directory / "views.json").write_text('{"yaw_degrees": 0.0}', encoding="utf-8")
@@ -731,7 +910,7 @@ class ReviewLoopTests(unittest.TestCase):
                 rendered_front_view="front",
             )
 
-            def initial_render(_provider, _key, model_path, directory):
+            def initial_render(_provider, _key, model_path, directory, **_kwargs):
                 Path(model_path).write_bytes(data)
                 directory.mkdir(parents=True)
                 (directory / "views.json").write_text('{"yaw_degrees": 0.0}', encoding="utf-8")

@@ -166,23 +166,28 @@ image independently, synthesizes one subject and rejects inconsistent references
 collection has no fixed size or semantic order: analyzed front views receive more weight
 than side views, and side views more than top views, while detail close-ups remain review
 evidence rather than being mislabeled as full-body inputs. Tripo's per-call limit only
-controls the dynamic selection for each generation attempt. Godot renders front, rear,
-both profiles, overhead and structural detail views; a separate review compares subject,
-anatomy/proportions, directional similarity and expected details against every original
-reference. Human and humanoid candidates additionally render `head_front`,
-`head_three_quarter` and `head_side` close-ups. Review schema V2 explicitly accepts a
-complete mouth/chin/lower face and a joined neck, a recognizable (not 1:1 replicated)
-facial identity, normal facial proportions, and geometry without visible blockers to
-later animation. A top view passes when its direction and gross layout are similar;
-its exact elevation angle and occluded fine details need not match. These allowances
-do not permit missing anatomy or contradictory layout. Animation readiness here is a
-visual geometry decision only, not evidence of a skeleton, skin weights or a played
-animation. Accepted human GLBs carry these V2 decisions and explicit unverified
-rigging/animation flags in `asset.extras.maliang_head_review` for the rigging gate.
-Legacy reviews are requested again on the same GLB and renders, never silently promoted.
-Completed API responses are recovered with their request/instruction hashes before any
-new request. Incomplete reports can merge only complementary views of the same renders;
-a conflicting verdict for the same view is rejected, never resolved by choosing a pass.
+controls the dynamic selection for each generation attempt. The analysis also creates a
+task-specific `review_plan`: base front/rear/profile/overhead evidence checks the generated
+3D subject, while detail regions and directions come from the actual references and user
+intent. The renderer implements explicit head, upper/lower body, left/right hand and generic
+object-detail regions; the plan never claims an unsupported camera capability. Human subjects
+do not automatically receive a head contract. Only a plan with `head_gate=true` renders and
+requires `head_front`, `head_three_quarter` and `head_side`; accepted GLBs then carry the V2
+head decisions and explicit unverified rigging/animation flags in
+`asset.extras.maliang_head_review`. Review schema V2 accepts a complete mouth/chin/lower
+face and joined neck, recognizable (not 1:1 replicated) identity, normal facial proportions,
+and geometry without visible animation blockers. A top view passes when direction and gross
+layout are similar; its exact elevation angle and occluded fine details need not match. Input
+references are compared only for directions/details they actually contain, and missing input
+directions are never invented. These allowances do not permit missing anatomy or contradictory
+layout. Animation readiness is a visual geometry decision only, not evidence of a skeleton,
+skin weights or a played animation. The plan, model SHA, render receipt, review prompt and
+validator stay bound to the same view set. Legacy reviews are requested again on the same GLB
+and renders, never silently promoted. Completed API responses are recovered with their
+request/instruction hashes before any new request. Incomplete reports trigger a targeted
+request containing only the missing rendered views; complementary evidence can then merge,
+while a conflicting verdict for the same view is rejected rather than resolved by choosing
+a pass.
 Head/body merging separately
 requires source-bound `maliang_head_landmarks` with the neck base below the chin, rather
 than an unmarked fixed-Y face crop. Non-humanoid meshes do not use this human contract.

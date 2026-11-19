@@ -31,6 +31,38 @@ VIEW_WEIGHTS = {
 }
 
 
+def review_plan_schema():
+    detail = dict(
+        type="object",
+        properties=dict(
+            region=dict(
+                type="string",
+                enum=["head", "upper_body", "lower_body", "hand_left", "hand_right", "object_detail"],
+            ),
+            views=dict(
+                type="array",
+                minItems=1,
+                maxItems=3,
+                items=dict(type="string", enum=["front", "three_quarter", "side", "back"]),
+            ),
+            source_image_ids=dict(type="array", minItems=1, items=dict(type="string")),
+            goal=dict(type="string"),
+        ),
+        required=["region", "views", "source_image_ids", "goal"],
+        additionalProperties=False,
+    )
+    return dict(
+        type="object",
+        properties=dict(
+            schema_version=dict(type="integer", const=1),
+            details=dict(type="array", maxItems=4, items=detail),
+            head_gate=dict(type="boolean"),
+        ),
+        required=["schema_version", "details", "head_gate"],
+        additionalProperties=False,
+    )
+
+
 def analysis_schema():
     image = dict(
         type="object",
@@ -65,8 +97,9 @@ def analysis_schema():
             images=dict(type="array", items=image),
             coherent=dict(type="boolean"),
             synthesis=dict(type="string"),
+            review_plan=review_plan_schema(),
         ),
-        required=["subject", "images", "coherent", "synthesis"],
+        required=["subject", "images", "coherent", "synthesis", "review_plan"],
         additionalProperties=False,
     )
 
@@ -247,42 +280,61 @@ def analysis_prompt(request, entries):
         "all images together and determine the single subject to model (for example a human, dwarf, animal, vase, or "
         "another object), its anatomy or structure, proportions, materials, and expected details. Reject conflicting "
         "subjects honestly. The labels are lineage only, not visual evidence. Return one entry per listed image_id with "
-        "no omissions or duplicates. User modeling intent is context, not permission to ignore visible evidence.\n"
+        "no omissions or duplicates. User modeling intent is context, not permission to ignore visible evidence. "
+        "Also create review_plan for THIS request, not a generic character template. Base front/right/back/left/top "
+        "model evidence is implicit and must not be listed as detail. Add detail entries only for details actually "
+        "requested by the user or visible in the references. Supported regions are head, upper_body, lower_body, "
+        "hand_left, hand_right and object_detail; supported detail views are front, three_quarter, side and back. "
+        "Use head only for face/head goals, hand_left or hand_right for hand goals, upper_body or lower_body for "
+        "armor/clothing/body-region goals, and object_detail for other localized details. Link every detail to the "
+        "actual source_image_ids that establish the goal and write a concrete comparison goal. Do not add head views "
+        "merely because the subject is human. Set head_gate=true only when complete head and animation-geometry "
+        "acceptance is required and the head detail requests front, three_quarter and side views; otherwise false.\n"
         "User intent:\n" + "\n".join([prompt] + contexts).strip() + "\nImage lineage:\n" + listing
     )
 
 
-def review_prompt(analysis, previous_issues):
-    return (
+def review_prompt(analysis, previous_issues, required_views=None, recovery_context=None):
+    plan = get_review_plan(analysis)
+    expected = [item["view"] for item in review_view_definitions(plan)] if required_views is None else required_views
+    partial = required_views is not None
+    prompt = (
         "Review the generated 3D model against ALL attached original references and the attached rendered model views. "
-        "First decide whether the model is the same category and subject established by the reference analysis. For a "
-        "character inspect every visible organ, limb, head, torso, hands, feet and their proportions; for other subjects "
-        "inspect the equivalent structural parts. Compare every available generated direction with the closest original "
-        "view and identify mismatches. Finally compare face, materials, clothing, ornaments, surface and other expected "
-        "details. The generated head_front, head_three_quarter and head_side images are mandatory close-range evidence. "
+        "First decide whether the model is the same category and subject established by the reference analysis. Compare "
+        "generated evidence only with actual available reference directions and details. Never invent a missing "
+        "reference view or fail a model merely because the input has no matching reference direction; base generated "
+        "views still establish the model's own three-dimensional structure. Follow the task-specific review_plan for "
+        "detail goals. Return exactly one views entry for every required generated view ID listed below, using the ID "
+        "verbatim with no omissions or duplicates. A head_gate narrative never substitutes for a views entry. "
         "Set rendered_front_view to the full-body generated view label (front, right, back or left) whose image actually "
         "shows the subject's anatomical or reference front. Use front when generated-front is correct. Determine this "
-        "from visible evidence, never from filenames or render order; it describes camera evidence and does not relax "
-        "any geometry or detail requirement. "
-        "For every human or humanoid set head_gate.applicable=true and independently verify that the mouth, chin and "
-        "lower face are complete, that no horizontal crop crosses the face, and that the head joins a complete neck at "
-        "the collar without a gap or mask-like seam. Set complete_face=true and neck_join_pass=true only after all "
-        "three head views support those conclusions. For non-humanoid subjects set applicable=false and the other "
-        "head-gate booleans=false; do not invent human anatomy. Use schema_version=2 and the exact acceptance constants "
-        "in the schema. The top view is approximate: set its similar=true when its direction and gross visible layout "
-        "are consistent even if its elevation angle differs moderately or fine details are hidden. Do not require an "
-        "identical top-view camera, but reject a wrong subject, missing anatomy, or contradictory layout. For a human "
-        "face, identity_pass means the same person remains recognizable from the supplied face evidence, not a 1:1 "
-        "photogrammetry replica. Judge identity together with normal feature placement and proportions; set "
-        "face_proportions_pass independently. Set animation_geometry_pass only when the visible face, mouth, eyes and "
-        "neck have no obvious geometric blocker to later jaw, eye and neck deformation. This is geometry readiness "
-        "only: never claim that a skeleton, skin weights or an actual animation has been verified by this visual gate. "
-        "passed=true only when subject_match, proportions_pass, every direction comparison, details_pass and the "
-        "applicable head gate all pass with no obvious defect. Do not pass merely because a GLB or a plausible render "
-        "exists. If anything fails, set passed=false, list concrete issues, and provide retry_guidance for a supported "
-        "incremental correction. Do not assume a direction from render order: each render is explicitly named before "
-        "its image. If a label does not match the visible direction, report a camera-label protocol issue rather than "
-        "pretending that the wrong reference comparison passed.\nReference analysis:\n"
+        "from visible evidence, never from filenames or render order. "
+        "Set head_gate.applicable=true only when review_plan.head_gate=true. In that case independently verify complete "
+        "mouth/chin/lower face, an uncropped face, a joined neck, recognizable identity with normal proportions, and "
+        "geometry without visible animation blockers from all three planned head views. Otherwise set applicable=false "
+        "and all other head-gate booleans=false; do not invent a head requirement for humans, hands, armor or objects. "
+        "Use schema_version=2 and the exact acceptance constants in the schema. The top view is approximate: set its "
+        "similar=true when its direction and gross visible layout are consistent even if its elevation angle differs "
+        "moderately or fine details are hidden. Identity is not a 1:1 photogrammetry replica requirement. Animation "
+        "readiness is visual geometry only: never claim that a skeleton, skin weights or an actual animation has been "
+        "verified. passed=true only when subject_match, proportions_pass, every required comparison, details_pass and "
+        "the applicable head gate all pass with no obvious defect. If anything fails, set passed=false, list concrete "
+        "issues and provide retry_guidance for a supported incremental correction. If a label does not match the "
+        "visible direction, report a camera-label protocol issue rather than pretending the comparison passed.\n"
+        "Required generated view IDs for this response:\n" + canonical(expected)
+    )
+    if partial:
+        prompt += (
+            "\nThis is a targeted evidence recovery. Review only the attached missing generated views in the views "
+            "array; do not invent entries for unattached views. Preserve the prior global verdict and orientation "
+            "metadata unless this new evidence directly contradicts them.\nPrior review context:\n"
+            + canonical(recovery_context or {})
+        )
+    return (
+        prompt
+        + "\nTask-specific review plan:\n"
+        + canonical(plan)
+        + "\nReference analysis:\n"
         + canonical(analysis)
         + "\nPrevious rejected-attempt issues:\n"
         + canonical(previous_issues)
@@ -362,7 +414,8 @@ def analyze(provider, key, request, sources, directory):
     )
     if document is None:
         return None
-    require(set(document) == {"subject", "images", "coherent", "synthesis"}, "vision_output_invalid")
+    require(set(document) == {"subject", "images", "coherent", "synthesis", "review_plan"}, "vision_output_invalid")
+    get_review_plan(document)
     expected = {entry["image_id"] for entry in entries}
     observed = [item.get("image_id") for item in document["images"]]
     require(
@@ -597,7 +650,7 @@ def select_retry_adjust_request(request, analysis, previous_model, previous_revi
     return child, []
 
 
-def render_review_views(provider, key, model_path, directory, yaw_override=None):
+def render_review_views(provider, key, model_path, directory, yaw_override=None, review_plan=None):
     directory.mkdir(parents=True, exist_ok=False)
     project = directory / "project"
     project.mkdir()
@@ -617,10 +670,15 @@ def render_review_views(provider, key, model_path, directory, yaw_override=None)
         and -180.0 <= yaw <= 180.0,
         "review_render_failed",
     )
+    plan = copy.deepcopy(review_plan) if review_plan is not None else None
+    definitions = review_view_definitions(plan) if plan is not None else legacy_review_view_definitions()
     config = dict(
         model=str(model_path),
         output=str(directory),
         yaw_degrees=float(yaw),
+        review_plan=plan,
+        review_plan_sha256=hashlib.sha256(canonical(plan).encode()).hexdigest() if plan is not None else "",
+        render_views=[dict(view=item["view"], region=item["region"], direction=item["direction"]) for item in definitions],
         script_sha256=hashlib.sha256(Path(provider.config["review_script_path"]).read_bytes()).hexdigest(),
     )
     request = directory / "render-request.json"
@@ -648,7 +706,7 @@ def render_review_views(provider, key, model_path, directory, yaw_override=None)
     if code is None:
         return None
     require(code == 0, "review_render_failed")
-    return load_review_views(model_path, directory)
+    return load_review_views(model_path, directory, plan)
 
 
 def review_yaw_correction(review):
@@ -672,15 +730,18 @@ def corrected_review_yaw(directory, review):
     return (float(current) + correction + 180.0) % 360.0 - 180.0
 
 
-def render_corrected_review_views(provider, key, model_path, directory, yaw):
+def render_corrected_review_views(provider, key, model_path, directory, yaw, review_plan=None):
     report_path = Path(directory) / "views.json"
     if report_path.is_file():
         report = json.loads(report_path.read_text(encoding="utf-8"))
         require(report.get("yaw_degrees") == float(yaw), "review_render_failed")
-        return load_review_views(model_path, directory)
-    return render_review_views(provider, key, model_path, directory, yaw_override=yaw)
+        return load_review_views(model_path, directory, review_plan)
+    return render_review_views(provider, key, model_path, directory, yaw_override=yaw, review_plan=review_plan)
 
 
+BASE_REVIEW_VIEWS = ("front", "right", "back", "left", "top")
+DETAIL_REVIEW_REGIONS = ("head", "upper_body", "lower_body", "hand_left", "hand_right", "object_detail")
+DETAIL_REVIEW_DIRECTIONS = ("front", "three_quarter", "side", "back")
 HEAD_REVIEW_VIEWS = frozenset(("head_front", "head_three_quarter", "head_side"))
 HUMANOID_TERMS = (
     "human",
@@ -699,30 +760,155 @@ HUMANOID_TERMS = (
 )
 
 
-def head_gate_required(analysis):
+def legacy_head_gate_required(analysis):
     category = str(analysis.get("subject", {}).get("category", "")).casefold()
     return any(term in category for term in HUMANOID_TERMS)
 
 
-def load_review_views(model_path, directory):
+def get_review_plan(analysis):
+    """Return the task-bound plan; pre-plan records retain their legacy contract."""
+    if "review_plan" not in analysis:
+        details = [
+            dict(region="upper_body", views=["front"], source_image_ids=[], goal="legacy upper-body detail"),
+            dict(region="lower_body", views=["front"], source_image_ids=[], goal="legacy lower-body detail"),
+        ]
+        if legacy_head_gate_required(analysis):
+            details.append(
+                dict(
+                    region="head",
+                    views=["front", "three_quarter", "side"],
+                    source_image_ids=[],
+                    goal="legacy complete head review",
+                )
+            )
+        return dict(schema_version=1, details=details, head_gate=legacy_head_gate_required(analysis))
+    plan = analysis["review_plan"]
+    require(
+        isinstance(plan, dict)
+        and set(plan) == {"schema_version", "details", "head_gate"}
+        and plan["schema_version"] == 1
+        and isinstance(plan["details"], list)
+        and len(plan["details"]) <= 4
+        and isinstance(plan["head_gate"], bool),
+        "vision_output_invalid",
+    )
+    image_ids = {item.get("image_id") for item in analysis.get("images", [])}
+    regions = set()
+    result = copy.deepcopy(plan)
+    for detail in result["details"]:
+        require(
+            isinstance(detail, dict)
+            and set(detail) == {"region", "views", "source_image_ids", "goal"}
+            and detail["region"] in DETAIL_REVIEW_REGIONS
+            and detail["region"] not in regions
+            and isinstance(detail["views"], list)
+            and 1 <= len(detail["views"]) <= 3
+            and len(set(detail["views"])) == len(detail["views"])
+            and all(view in DETAIL_REVIEW_DIRECTIONS for view in detail["views"])
+            and isinstance(detail["source_image_ids"], list)
+            and detail["source_image_ids"]
+            and len(set(detail["source_image_ids"])) == len(detail["source_image_ids"])
+            and set(detail["source_image_ids"]) <= image_ids
+            and isinstance(detail["goal"], str)
+            and bool(detail["goal"].strip()),
+            "vision_output_invalid",
+        )
+        regions.add(detail["region"])
+    if result["head_gate"]:
+        head = next((item for item in result["details"] if item["region"] == "head"), None)
+        require(
+            legacy_head_gate_required(analysis)
+            and head is not None
+            and set(head["views"]) == {"front", "three_quarter", "side"},
+            "vision_output_invalid",
+        )
+    return result
+
+
+def review_view_definitions(plan):
+    definitions = [dict(view=view, region="full_subject", direction=view, goal="base model evidence") for view in BASE_REVIEW_VIEWS]
+    for detail in plan["details"]:
+        region = detail["region"]
+        for direction in detail["views"]:
+            if region == "head":
+                name = "head_" + direction
+            elif region in ("upper_body", "lower_body"):
+                name = "detail_" + region.removesuffix("_body") + "_" + direction
+            else:
+                name = region + "_" + direction
+            definitions.append(
+                dict(
+                    view=name,
+                    region=region,
+                    direction=direction,
+                    goal=detail["goal"],
+                    source_image_ids=list(detail["source_image_ids"]),
+                )
+            )
+    require(len({item["view"] for item in definitions}) == len(definitions), "vision_output_invalid")
+    return definitions
+
+
+def legacy_review_view_definitions():
+    plan = dict(
+        schema_version=1,
+        details=[
+            dict(region="upper_body", views=["front"], source_image_ids=[], goal="legacy upper-body detail"),
+            dict(region="lower_body", views=["front"], source_image_ids=[], goal="legacy lower-body detail"),
+            dict(
+                region="head",
+                views=["front", "three_quarter", "side"],
+                source_image_ids=[],
+                goal="legacy complete head review",
+            ),
+        ],
+        head_gate=True,
+    )
+    return review_view_definitions(plan)
+
+
+def head_gate_required(analysis):
+    return get_review_plan(analysis)["head_gate"]
+
+
+def load_review_views(model_path, directory, review_plan=None):
     directory = Path(directory).resolve()
     report = json.loads((directory / "views.json").read_text(encoding="utf-8"))
     require(report["model_sha256"] == hashlib.sha256(Path(model_path).read_bytes()).hexdigest(), "review_render_failed")
+    saved_plan = report.get("review_plan")
+    if saved_plan is None and review_plan is not None:
+        # Pre-plan render receipts are recoverable only with the legacy analysis
+        # fallback; a new dynamic render must always bind its explicit plan.
+        require(all(not item["source_image_ids"] for item in review_plan["details"]), "review_render_failed")
+    elif review_plan is not None:
+        require(saved_plan == review_plan, "review_render_failed")
+    plan = saved_plan
+    definitions = review_view_definitions(plan) if plan is not None else legacy_review_view_definitions()
+    by_view = {item["view"]: item for item in definitions}
     entries = []
     for item in report["views"]:
         path = Path(item["path"]).resolve()
         require(path.is_relative_to(directory) and path.is_file() and not path.is_symlink(), "review_render_failed")
         data = path.read_bytes()
         require(validate_png(data) and hashlib.sha256(data).hexdigest() == item["sha256"], "review_render_failed")
-        entries.append(dict(image_id="generated-" + item["view"], label="generated " + item["view"], path=path))
+        definition = by_view.get(item["view"], {})
+        label = "generated " + item["view"]
+        if definition.get("goal"):
+            label += "; goal: " + definition["goal"]
+        if definition.get("source_image_ids"):
+            label += "; references: " + ", ".join(definition["source_image_ids"])
+        entries.append(dict(image_id="generated-" + item["view"], label=label, path=path))
     observed = {entry["image_id"].removeprefix("generated-") for entry in entries}
     require(len(entries) == len(observed), "review_render_failed")
-    required = {"front", "right", "back", "left", "top"} | HEAD_REVIEW_VIEWS
+    required = set(by_view) if plan is not None else set(BASE_REVIEW_VIEWS) | HEAD_REVIEW_VIEWS
     require(required <= observed, "review_render_failed")
+    if plan is not None:
+        expected_sha = hashlib.sha256(canonical(plan).encode()).hexdigest()
+        require(report.get("review_plan_sha256") == expected_sha and observed == required, "review_render_failed")
     return entries
 
 
-def validate_review(document, generated_entries, require_head=None):
+def validate_review(document, generated_entries, require_head=None, partial=False):
     expected = {entry["image_id"].removeprefix("generated-") for entry in generated_entries}
     observed = []
     for item in document["views"]:
@@ -767,8 +953,8 @@ def validate_review(document, generated_entries, require_head=None):
         document["review_incomplete"] = True
         document["issues"] = list(document["issues"]) + ["Missing required rendered view: " + view for view in missing]
         document["issues"] += ["Duplicate rendered view: " + view for view in duplicates]
-    required = head["applicable"] if require_head is None else bool(require_head or head["applicable"])
-    if require_head:
+    required = False if partial else (head["applicable"] if require_head is None else bool(require_head or head["applicable"]))
+    if require_head and not partial:
         require(head["applicable"], "vision_output_invalid")
         require(HEAD_REVIEW_VIEWS <= expected, "vision_output_invalid")
     head_views_pass = all(
@@ -934,19 +1120,30 @@ def attach_capability_review(model, review_document):
     return result
 
 
-def review(provider, key, analysis, original_entries, generated_entries, previous_issues, directory):
+def review(
+    provider,
+    key,
+    analysis,
+    original_entries,
+    generated_entries,
+    previous_issues,
+    directory,
+    partial=False,
+    recovery_context=None,
+):
+    required_views = [entry["image_id"].removeprefix("generated-") for entry in generated_entries] if partial else None
     document = _request_json(
         provider,
         key,
         directory,
         "generated_mesh_review",
-        review_prompt(analysis, previous_issues),
+        review_prompt(analysis, previous_issues, required_views, recovery_context),
         review_schema(),
         list(original_entries) + list(generated_entries),
     )
     if document is None:
         return None
-    return validate_review(document, generated_entries, head_gate_required(analysis))
+    return validate_review(document, generated_entries, head_gate_required(analysis), partial=partial)
 
 
 def merge_incomplete_reviews(first, second, generated_entries, require_head):
@@ -970,12 +1167,12 @@ def merge_incomplete_reviews(first, second, generated_entries, require_head):
     )
     for key in head_keys:
         require(first["head_gate"][key] == second["head_gate"][key], "vision_output_invalid")
-    issues = [
+    issues = list(dict.fromkeys(
         issue
         for document in documents
         for issue in document["issues"]
         if not str(issue).startswith(("Missing required rendered view:", "Duplicate rendered view:"))
-    ]
+    ))
     ordered = [views[name] for name in expected]
     ordered.extend(item for name, item in views.items() if name not in expected)
     merged = copy.deepcopy(second)
@@ -996,7 +1193,7 @@ def merge_incomplete_reviews(first, second, generated_entries, require_head):
     return result
 
 
-def recover_saved_review(directory, generated_entries, require_head):
+def recover_saved_review(directory, generated_entries, require_head, partial=False):
     """Read a completed API response without issuing another network request."""
     directory = Path(directory)
     path = directory / "api-plan.json"
@@ -1009,7 +1206,7 @@ def recover_saved_review(directory, generated_entries, require_head):
         and receipt["instructions_sha256"] == hashlib.sha256(canonical(document).encode()).hexdigest(),
         "vision_output_invalid",
     )
-    return validate_review(document, generated_entries, require_head)
+    return validate_review(document, generated_entries, require_head, partial=partial)
 
 
 def complete_review(
@@ -1022,7 +1219,7 @@ def complete_review(
     directory,
     document=None,
 ):
-    """Recover/retry review evidence on the same GLB, never a new model."""
+    """Recover only missing evidence on the same GLB, never a new model."""
     directory = Path(directory)
     if document is not None and "schema_version" not in document:
         # V1 evidence has no explicit approximate-top or animation-readiness
@@ -1035,24 +1232,62 @@ def complete_review(
         document = review(provider, key, analysis, original_entries, generated_entries, previous_issues, directory)
     if document is None or not document.get("review_incomplete"):
         return document
+    expected = {entry["image_id"].removeprefix("generated-") for entry in generated_entries}
+    observed = {item["view"] for item in document["views"]}
+    missing = expected - observed
+    retry_entries = [entry for entry in generated_entries if entry["image_id"].removeprefix("generated-") in missing]
+    partial = bool(retry_entries)
+    if not partial:
+        retry_entries = generated_entries
+    recovery_context = {
+        key: copy.deepcopy(document[key])
+        for key in ("rendered_front_view", "head_gate", "subject_match", "proportions_pass", "details_pass")
+    }
     retry_directory = directory.with_name(directory.name + "-incomplete-retry")
-    retried = recover_saved_review(retry_directory, generated_entries, head_gate_required(analysis))
+    retried = recover_saved_review(retry_directory, retry_entries, head_gate_required(analysis), partial=partial)
+    saved_retry = retried is not None
     if retried is None:
         retried = review(
             provider,
             key,
             analysis,
             original_entries,
-            generated_entries,
+            retry_entries,
             list(previous_issues) + list(document["issues"]),
             retry_directory,
+            partial=partial,
+            recovery_context=recovery_context,
         )
     if retried is None:
         return None
+    if partial and saved_retry and retried.get("review_incomplete"):
+        merged = merge_incomplete_reviews(document, retried, generated_entries, head_gate_required(analysis))
+        if merged is not None:
+            return merged
+        # A legacy whole-report retry may still miss the same entries. Its saved
+        # failure must not block one new request containing only the missing views.
+        retry_directory = directory.with_name(directory.name + "-incomplete-targeted-retry")
+        retried = recover_saved_review(retry_directory, retry_entries, head_gate_required(analysis), partial=True)
+        if retried is None:
+            retried = review(
+                provider,
+                key,
+                analysis,
+                original_entries,
+                retry_entries,
+                list(previous_issues) + list(document["issues"]),
+                retry_directory,
+                partial=True,
+                recovery_context=recovery_context,
+            )
+        if retried is None:
+            return None
+    if partial:
+        merged = merge_incomplete_reviews(document, retried, generated_entries, head_gate_required(analysis))
+        require(merged is not None, "model3d_review_incomplete")
+        return merged
     if retried.get("review_incomplete"):
-        merged = merge_incomplete_reviews(
-            document, retried, generated_entries, head_gate_required(analysis)
-        )
+        merged = merge_incomplete_reviews(document, retried, generated_entries, head_gate_required(analysis))
         if merged is not None:
             return merged
     require(not retried.get("review_incomplete"), "model3d_review_incomplete")

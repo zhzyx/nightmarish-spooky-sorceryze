@@ -140,6 +140,10 @@ var cli_billing: Label
 var service_status: Label
 var service_capability_labels: Dictionary = {}
 var service_config_path = ""
+var service_profiles_path = ""
+var service_profiles: Dictionary = {}
+var service_profile_mode = "comfy"
+var service_control_defaults: Dictionary = {}
 var cli_path_edit: LineEdit
 var cli_fields: VBoxContainer
 var blender_fields: VBoxContainer
@@ -156,6 +160,7 @@ var service_settings_section = 'ai'
 var service_fields: VBoxContainer
 var service_advanced: VBoxContainer
 var service_ui_loading = false
+const SERVICE_PROFILE_MODES = ["comfy", "codex", "kimi_native", "local_mesh", "api_modeling", "api_sculpt"]
 const CONTEXT_ADD = 1
 const CONTEXT_RUN = 2
 const CONTEXT_PREVIEW = 3
@@ -755,9 +760,8 @@ func add_generator():
 func _migrate_node_models(data: Dictionary, legacy: Dictionary):
 	var kind = str(data.get('type', 'copy'))
 	var mode = _service_mode()
-	# Offline nodes have no service default yet. Let the first saved service
-	# migrate them once, while preserving any model explicitly entered offline.
-	if kind == 'copy' or _retired_mesh_node(data) or _using_legacy_service() or (mode == 'offline' and not data.has('model')): return
+	# Nodes created before the first saved service inherit once on that first save.
+	if kind == 'copy' or _retired_mesh_node(data) or _using_legacy_service() or (service_saved.is_empty() and not data.has('model')): return
 	var cli_mode = mode == 'codex'
 	var mesh_kind = _is_mesh_kind(kind)
 	var legacy_image = str(legacy.get('image_model', ''))
@@ -1011,6 +1015,17 @@ func model() -> Dictionary:
 		if data.get("type", "copy") in ["text_to_image", "image_to_image"] and not data.has("version"): data.version = "4"
 	return {"format": 1, "nodes": nodes, "edges": edges}
 
+func _snapshot_file(path: String) -> Dictionary:
+	var input = FileAccess.open(path, FileAccess.READ)
+	if input == null: return {}
+	var bytes = input.get_buffer(input.get_length())
+	var valid = not bytes.is_empty() and input.get_error() == OK
+	input.close()
+	if not valid: return {}
+	var hash_context = HashingContext.new()
+	if hash_context.start(HashingContext.HASH_SHA256) != OK or hash_context.update(bytes) != OK: return {}
+	return {"content_base64": Marshalls.raw_to_base64(bytes), "content_sha256": hash_context.finish().hex_encode(), "extension": "." + path.get_extension().to_lower()}
+
 func _snapshot_inputs(data: Dictionary, field: String) -> bool:
 	var paths = _node_paths(data, field)
 	var previous: Array = data.get(field + "_snapshots", []).duplicate()
@@ -1022,22 +1037,129 @@ func _snapshot_inputs(data: Dictionary, field: String) -> bool:
 			if not snapshot is Dictionary or snapshot.is_empty(): return false
 			snapshots.append(snapshot)
 			continue
-		var input = FileAccess.open(path, FileAccess.READ)
-		if input == null: return false
-		var bytes = input.get_buffer(input.get_length())
-		var valid = not bytes.is_empty() and input.get_error() == OK
-		input.close()
-		if not valid: return false
-		var hash_context = HashingContext.new()
-		hash_context.start(HashingContext.HASH_SHA256)
-		hash_context.update(bytes)
-		snapshots.append({"content_base64": Marshalls.raw_to_base64(bytes), "content_sha256": hash_context.finish().hex_encode(), "extension": "." + path.get_extension().to_lower()})
+		var snapshot = _snapshot_file(path)
+		if snapshot.is_empty(): return false
+		snapshots.append(snapshot)
 		paths[index] = ""
 	data[field + "_paths"] = paths
 	data[field + "_snapshots"] = snapshots
 	data[field] = ""
 	data.erase(field + "_snapshot")
 	return true
+
+func _snapshot_output_entry(entry: Dictionary, node_id: String) -> Dictionary:
+	var snapshot = _snapshot_file(str(entry.get("path", "")))
+	if snapshot.is_empty(): return {}
+	var saved = {
+		"type": str(entry.get("type", "")),
+		"preview_token": str(entry.get("token", "")),
+		"run": str(entry.get("run", "")),
+		"node": node_id,
+		"description": str(entry.get("description", "")),
+		"artifact": {"id": str(entry.get("artifact", {}).get("id", "")), "revision": str(entry.get("artifact", {}).get("revision", ""))},
+		"snapshot": snapshot
+	}
+	if entry.has("images"):
+		if not entry.images is Array or entry.images.is_empty(): return {}
+		var images: Array = []
+		for item in entry.images:
+			if not item is Dictionary or item.has("images"): return {}
+			var saved_item = _snapshot_output_entry(item, node_id)
+			if saved_item.is_empty(): return {}
+			saved_item["label"] = str(item.get("label", "独立图片"))
+			images.append(saved_item)
+		saved["images"] = images
+	return saved
+
+func _result_artifact(manifest: Dictionary, reference: Dictionary) -> Dictionary:
+	for artifact in manifest.get("artifacts", []):
+		if artifact is Dictionary and artifact.get("id") == reference.get("id") and artifact.get("revision") == reference.get("revision"):
+			return artifact
+	return {}
+
+func _snapshot_result_artifact(result_run: String, node_id: String, reference: Dictionary, artifact: Dictionary) -> Dictionary:
+	var payload = artifact.get("payload", {})
+	if not payload is Dictionary: return {}
+	var snapshot = {
+		"content_base64": payload.get("content_base64", ""),
+		"content_sha256": payload.get("content_sha256", ""),
+		"extension": payload.get("extension", "")
+	}
+	if not _valid_input_snapshots([snapshot]): return {}
+	var hash_context = HashingContext.new()
+	if hash_context.start(HashingContext.HASH_SHA256) != OK: return {}
+	if hash_context.update(JSON.stringify([result_run, reference, artifact], "", true, true).to_utf8_buffer()) != OK: return {}
+	return {
+		"type": str(artifact.get("type", "")),
+		"preview_token": hash_context.finish().hex_encode(),
+		"run": result_run,
+		"node": node_id,
+		"artifact": {"id": str(reference.get("id", "")), "revision": str(reference.get("revision", ""))},
+		"snapshot": snapshot
+	}
+
+func _snapshot_current_result(node_id: String, state: Dictionary) -> Dictionary:
+	var job = state.get("job", {})
+	var manifest = state.get("result", {})
+	if not job is Dictionary or not manifest is Dictionary: return {}
+	var outputs = job.get("outputs", {})
+	if not outputs is Dictionary: return {}
+	var references: Array = []
+	var labels: Array = []
+	var image_set = outputs.get("image_set", {})
+	if not image_set.is_empty():
+		if not image_set is Dictionary: return {}
+		var collection = _result_artifact(manifest, image_set)
+		var items = collection.get("payload", {}).get("items", [])
+		if not items is Array or items.is_empty(): return {}
+		for item in items:
+			if not item is Dictionary or not item.get("artifact", {}) is Dictionary: return {}
+			references.append(item.artifact)
+			labels.append(str(item.get("label", "独立图片")))
+	elif outputs.get("result", {}) is Dictionary and not outputs.get("result", {}).is_empty():
+		references.append(outputs.result)
+		labels.append("")
+	else:
+		return {}
+	var images: Array = []
+	for index in references.size():
+		var artifact = _result_artifact(manifest, references[index])
+		if artifact.is_empty(): return {}
+		var saved = _snapshot_result_artifact(run_id, node_id, references[index], artifact)
+		if saved.is_empty(): return {}
+		saved["label"] = labels[index]
+		images.append(saved)
+	var primary: Dictionary = images[0].duplicate(true)
+	primary.erase("label")
+	primary["description"] = JSON.stringify(state.get("request", {}), "  ", true, true)
+	if references.size() > 1 or not image_set.is_empty(): primary["images"] = images
+	return primary
+
+func _snapshot_outputs():
+	var saved: Dictionary = {}
+	for node_id in preview_history:
+		if not nodes.any(func(node): return node.id == node_id): continue
+		var history: Array = []
+		for entry in preview_history[node_id]:
+			if not entry is Dictionary: return null
+			var snapshot = _snapshot_output_entry(entry, str(node_id))
+			if snapshot.is_empty(): return null
+			history.append(snapshot)
+		saved[node_id] = history
+	for node_id in current.get("nodes", {}):
+		var state = current.nodes[node_id]
+		if not state is Dictionary or state.get("state") != "succeeded": continue
+		var snapshot = _snapshot_current_result(str(node_id), state)
+		if snapshot.is_empty(): return null
+		var history: Array = saved.get(node_id, [])
+		if not history.any(func(entry): return entry.preview_token == snapshot.preview_token): history.append(snapshot)
+		saved[node_id] = history
+	return saved
+
+func _output_version_count(history: Dictionary) -> int:
+	var count = 0
+	for versions in history.values(): count += versions.size()
+	return count
 
 func save_graph():
 	if not apply_fields(): return
@@ -1056,6 +1178,11 @@ func save_graph():
 			if not _snapshot_inputs(n, field):
 				status.text = "无法读取输入并建立有序快照，已保留原工作流"
 				return
+	var output_history = _snapshot_outputs()
+	if output_history == null:
+		status.text = "无法读取全部生成物，已保留原工作流"
+		return
+	if not output_history.is_empty(): portable["output_history"] = output_history
 	var temporary = path_edit.text + "." + str(Time.get_ticks_usec()) + ".tmp"
 	var f = FileAccess.open(temporary, FileAccess.WRITE)
 	if f == null:
@@ -1070,6 +1197,7 @@ func save_graph():
 		status.text = "无法替换工作流，已保留原工作流"
 		return
 	status.text = "已保存工作流及全部有序输入快照"
+	if not output_history.is_empty(): status.text += "，已内嵌 " + str(_output_version_count(output_history)) + " 个生成结果版本"
 
 func clear_embedded():
 	for data in nodes:
@@ -1092,6 +1220,83 @@ func _valid_input_snapshots(value, uncapped: bool = false) -> bool:
 		if hash_context.start(HashingContext.HASH_SHA256) != OK: return false
 		if hash_context.update(bytes) != OK or hash_context.finish().hex_encode() != snapshot.content_sha256: return false
 	return true
+
+func _valid_artifact_reference(value) -> bool:
+	return value is Dictionary and value.get("id") is String and value.get("revision") is String and not value.id.is_empty() and not value.revision.is_empty()
+
+func _valid_output_entry(entry, node_id: String) -> bool:
+	if not entry is Dictionary or not entry.has_all(["type", "preview_token", "run", "node", "description", "artifact", "snapshot"]): return false
+	for key in ["type", "preview_token", "run", "node", "description"]:
+		if not entry.get(key) is String: return false
+	if entry.node != node_id or entry.preview_token.is_empty() or not _valid_artifact_reference(entry.artifact): return false
+	if not _valid_input_snapshots([entry.snapshot]): return false
+	var image = entry.type == "image" and entry.snapshot.extension.to_lower() in [".png", ".jpg", ".jpeg"]
+	var mesh = entry.type == "mesh" and entry.snapshot.extension.to_lower() in [".glb", ".gltf"]
+	if not image and not mesh: return false
+	if entry.has("images"):
+		if not entry.images is Array or entry.images.is_empty(): return false
+		for item in entry.images:
+			if not item is Dictionary or item.has("images") or not item.get("label") is String or not _valid_output_entry(item, node_id): return false
+	return true
+
+func _valid_output_history(value, by_id: Dictionary) -> bool:
+	if not value is Dictionary: return false
+	for node_id in value:
+		if not node_id is String or not by_id.has(node_id) or not value[node_id] is Array: return false
+		for entry in value[node_id]:
+			if not _valid_output_entry(entry, node_id): return false
+	return true
+
+func _materialize_output_snapshot(snapshot: Dictionary, directory: String) -> String:
+	var bytes = Marshalls.base64_to_raw(snapshot.content_base64)
+	var path = directory.path_join(snapshot.content_sha256 + snapshot.extension.to_lower())
+	if FileAccess.file_exists(path): return path if FileAccess.get_sha256(path) == snapshot.content_sha256 else ""
+	var temporary = path + "." + str(Time.get_ticks_usec()) + ".tmp"
+	var output = FileAccess.open(temporary, FileAccess.WRITE)
+	if output == null: return ""
+	output.store_buffer(bytes)
+	output.flush()
+	var failed = output.get_error() != OK
+	output.close()
+	if not failed and DirAccess.rename_absolute(temporary, path) == OK: return path
+	DirAccess.remove_absolute(temporary)
+	return path if FileAccess.file_exists(path) and FileAccess.get_sha256(path) == snapshot.content_sha256 else ""
+
+func _restore_output_entry(saved: Dictionary, directory: String):
+	var path = _materialize_output_snapshot(saved.snapshot, directory)
+	if path.is_empty(): return null
+	var entry = {
+		"type": saved.type,
+		"token": saved.preview_token,
+		"run": saved.run,
+		"node": saved.node,
+		"description": saved.description,
+		"artifact": saved.artifact.duplicate(true),
+		"path": path
+	}
+	if saved.has("images"):
+		var images: Array = []
+		for item in saved.images:
+			var restored = _restore_output_entry(item, directory)
+			if restored == null: return null
+			restored["label"] = item.label
+			images.append(restored)
+		entry["images"] = images
+	return entry
+
+func _restore_output_history(saved: Dictionary, workflow_path: String):
+	if saved.is_empty(): return {}
+	var directory = workflow_path + ".assets"
+	if DirAccess.make_dir_recursive_absolute(directory) != OK: return null
+	var restored: Dictionary = {}
+	for node_id in saved:
+		var history: Array = []
+		for entry in saved[node_id]:
+			var item = _restore_output_entry(entry, directory)
+			if item == null: return null
+			history.append(item)
+		restored[node_id] = history
+	return restored
 
 func _valid_workflow_edge(edge: Dictionary, by_id: Dictionary) -> bool:
 	if not edge.has_all(["from", "to"]) or not edge.from is String or not edge.to is String: return false
@@ -1159,16 +1364,27 @@ func open_graph():
 			status.text = "连接端点或端口无效"
 			return
 		destinations.append(e.to)
-	preview_history.clear()
+	var saved_outputs = value.get("output_history", {})
+	if not _valid_output_history(saved_outputs, by_id):
+		status.text = "生成物快照无效"
+		return
+	var restored_history = _restore_output_history(saved_outputs, path_edit.text)
+	if restored_history == null:
+		status.text = "无法恢复生成物，已保留当前工作流"
+		return
+	preview_history = restored_history
 	controller.reset()
 	clear_preview()
 	nodes = value.nodes
 	var legacy = service_draft()
 	for data in nodes: _migrate_node_models(data, legacy)
 	edges = value.edges
+	selected_id = ""
 	rebuild()
 	if not nodes.is_empty(): select_node(nodes[0].id)
 	status.text = RETIRED_GPT_MESH_NOTICE if nodes.any(_retired_mesh_node) else "已重新打开工作流"
+	if not saved_outputs.is_empty() and not nodes.any(_retired_mesh_node):
+		status.text += "，已恢复 " + str(_output_version_count(saved_outputs)) + " 个生成结果版本，无需重新运行"
 
 func run_node_preview(id: String):
 	if is_graph_busy():
@@ -2003,6 +2219,7 @@ func _default_python_path(builtin: bool) -> String:
 
 func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	service_config_path = state_dir.path_join("generation-service.json")
+	service_profiles_path = state_dir.path_join("generation-service-profiles.json")
 	service_fields = VBoxContainer.new()
 	machine.add_child(service_fields)
 	var title = Label.new()
@@ -2012,7 +2229,7 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	service_choice.fit_to_longest_item = false
 	service_choice.clip_text = true
 	service_choice.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
-	for choice in [["offline", "离线复制演示（不调用模型）"], ["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）'], ['kimi_native', 'Kimi Native 直接 3D（Tripo API）+ Kimi Work 二维图像'], ['local_mesh', '本机图生网格（无需 CLI）'], ['api_modeling', '自选 API 语义建模（Godot）'], ['api_sculpt', '自选 API 语义建模（Blender）']]:
+	for choice in [["comfy", "ComfyUI 图像与网格生成"], ["legacy", "兼容已有服务配置（高级）"], ['codex', 'Codex CLI 图像 + 本机网格（沿用当前登录额度）'], ['kimi_native', 'Kimi Native 直接 3D（Tripo API）+ Kimi Work 二维图像'], ['local_mesh', '本机图生网格（无需 CLI）'], ['api_modeling', '自选 API 语义建模（Godot）'], ['api_sculpt', '自选 API 语义建模（Blender）']]:
 		service_choice.add_item(choice[1])
 		service_choice.set_item_metadata(service_choice.item_count - 1, choice[0])
 	service_fields.add_child(service_choice)
@@ -2145,7 +2362,7 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	button(actions, "保存生成服务设置", save_service_settings)
 	service_status = Label.new()
 	service_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	service_status.text = "离线复制可用；真实生成需要运行中的服务和已安装的模型。"
+	service_status.text = "请选择生成服务；本机复制节点始终可用，配置草稿会自动保存。"
 	service_fields.add_child(service_status)
 	for kind in NODE_KINDS:
 		var label = Label.new()
@@ -2157,62 +2374,129 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	guide.text = "请先启动你已有的 ComfyUI 服务，再填写地址、检测并保存接入配置。检测只查询连接、节点和模型列表，不生成内容、不下载模型。各节点在检查器中独立选择模型；图像生成网格需要源图与网格模型，可选重绘提示词还需要图像模型，文字生成网格需要两类模型。"
 	guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	service_fields.add_child(guide)
-	service_choice.item_selected.connect(func(_index): _service_settings_changed())
+	service_control_defaults = {
+		"cli_path": cli_path_edit.text,
+		"blender_path": blender_path_edit.text,
+		"image_tool_path": kimi_image_tool_edit.text,
+		"image_pythonw_path": kimi_image_pythonw_edit.text,
+		"model3d_tool_path": model3d_tool_edit.text,
+		"model3d_pythonw_path": model3d_pythonw_edit.text,
+	}
+	service_choice.item_selected.connect(_service_mode_selected)
 	endpoint_edit.text_changed.connect(func(_text): _service_settings_changed())
 	kimi_model_edit.text_changed.connect(func(_text): _service_settings_changed())
 	image_model_choice.item_selected.connect(func(_index): _service_settings_changed())
 	mesh_model_choice.item_selected.connect(func(_index): _service_settings_changed())
 	if settings.get_value("service", "mode", "") == "legacy": select_service_mode('legacy')
 
+func _normalize_service_profile(loaded: Dictionary) -> Dictionary:
+	if loaded.get("schema_version") != 1: return {}
+	var mode = str(loaded.get("mode", ""))
+	if mode in RETIRED_GPT_MESH_MODES:
+		loaded = {"schema_version":1, "mode":"codex", "image_model":"builtin", "cli_path":loaded.get("cli_path", "codex")}
+		mode = "codex"
+	if mode not in SERVICE_PROFILE_MODES: return {}
+	var value = {"schema_version":1, "mode":mode, "endpoint":str(loaded.get("endpoint", "http://127.0.0.1:8188")), "image_model":str(loaded.get("image_model", "")), "mesh_model":str(loaded.get("mesh_model", ""))}
+	if mode in ['comfy', 'codex']:
+		# Resolve trusted bundled tools again after an engine move.
+		value.merge(_image_board_runtime(), true)
+	if mode == 'codex': value['cli_path'] = str(loaded.get('cli_path', service_control_defaults.get('cli_path', 'codex')))
+	if mode in ['kimi_native', 'api_modeling']:
+		value.mesh_model = ''
+		value['godot_path'] = str(loaded.get('godot_path', OS.get_executable_path()))
+		value['builder_path'] = str(loaded.get('builder_path', ProjectSettings.globalize_path(get_script().resource_path.get_base_dir().path_join('modeling_builder.gd'))))
+	if mode == 'kimi_native':
+		value.image_model = ''
+		value.endpoint = ''
+		for field in ['image_tool_path', 'image_pythonw_path', 'model3d_tool_path', 'model3d_pythonw_path']:
+			var fallback = value.get('image_pythonw_path', service_control_defaults.get(field, '')) if field == 'model3d_pythonw_path' else service_control_defaults.get(field, '')
+			value[field] = str(loaded.get(field, fallback))
+		value['model3d_model'] = str(loaded.get('model3d_model', 'v3.1'))
+		value['texture_model'] = str(loaded.get('texture_model', 'v3.5'))
+	if mode == 'api_sculpt':
+		value.mesh_model = ''
+		value['blender_path'] = str(loaded.get('blender_path', service_control_defaults.get('blender_path', 'blender')))
+		value['builder_path'] = str(loaded.get('builder_path', str(get_meta('ainative_tools_dir', '')).path_join('sculpt_builder.py') if get_meta('ainative_builtin', false) else ProjectSettings.globalize_path('res://../../tools/ainative/sculpt_builder.py')))
+	if mode in ['api_modeling', 'api_sculpt']:
+		value.image_model = ''
+		if loaded.has('api_model'): value['api_model'] = loaded.api_model
+		value['api_key_env'] = str(loaded.get('api_key_env', 'AINATIVE_API_KEY'))
+	if mode == 'local_mesh': value.image_model = ''
+	return value
+
+func _default_service_profile(mode: String) -> Dictionary:
+	return _normalize_service_profile({"schema_version":1, "mode":mode})
+
+func _apply_service_profile(profile: Dictionary):
+	var mode = str(profile.get('mode', ''))
+	if mode not in SERVICE_PROFILE_MODES: return
+	service_profile_mode = mode
+	select_service_mode(mode)
+	endpoint_edit.text = str(profile.get('endpoint', ''))
+	if mode == 'codex': cli_path_edit.text = str(profile.get('cli_path', 'codex'))
+	if mode == 'api_sculpt': blender_path_edit.text = str(profile.get('blender_path', ''))
+	if mode == 'kimi_native':
+		kimi_image_tool_edit.text = str(profile.get('image_tool_path', ''))
+		kimi_image_pythonw_edit.text = str(profile.get('image_pythonw_path', ''))
+		model3d_tool_edit.text = str(profile.get('model3d_tool_path', ''))
+		model3d_pythonw_edit.text = str(profile.get('model3d_pythonw_path', ''))
+	_set_model_options(image_model_choice, [], str(profile.get('image_model', '')), false)
+	_set_model_options(mesh_model_choice, [], str(profile.get('mesh_model', '')), false)
+
+func _load_service_profiles() -> String:
+	service_profiles = {}
+	if not FileAccess.file_exists(service_profiles_path): return ''
+	var loaded = JSON.parse_string(FileAccess.get_file_as_string(service_profiles_path))
+	if not loaded is Dictionary or loaded.get('schema_version') != 1 or not loaded.get('profiles') is Dictionary: return ''
+	for mode in SERVICE_PROFILE_MODES:
+		var candidate = loaded.profiles.get(mode, {})
+		if candidate is Dictionary:
+			var profile = _normalize_service_profile(candidate)
+			if not profile.is_empty(): service_profiles[mode] = profile
+	var selected = str(loaded.get('selected_mode', ''))
+	return selected if selected in SERVICE_PROFILE_MODES else ''
+
+func _persist_service_profiles() -> bool:
+	var selected = _service_mode() if _service_mode() in SERVICE_PROFILE_MODES else service_profile_mode
+	var document = {"schema_version":1, "selected_mode":selected, "profiles":service_profiles}
+	var temporary = service_profiles_path + '.tmp-' + str(Time.get_ticks_usec())
+	var output = FileAccess.open(temporary, FileAccess.WRITE)
+	if output == null: return false
+	output.store_string(JSON.stringify(document, '  '))
+	output.flush()
+	var failed = output.get_error() != OK
+	output.close()
+	if not failed and DirAccess.rename_absolute(temporary, service_profiles_path) == OK: return true
+	DirAccess.remove_absolute(temporary)
+	return false
+
+func _store_service_profile(mode: String):
+	if mode in SERVICE_PROFILE_MODES: service_profiles[mode] = _service_draft_for_mode(mode)
+
 func _restore_service_settings(settings: ConfigFile):
 	service_ui_loading = true
+	var selected = _load_service_profiles()
 	if FileAccess.file_exists(service_config_path):
 		var loaded = JSON.parse_string(FileAccess.get_file_as_string(service_config_path))
-		if loaded is Dictionary and loaded.get("schema_version") == 1 and loaded.get("mode") in RETIRED_GPT_MESH_MODES:
-			settings.set_value("managed_comfy", "autostart", false)
-			loaded = {"schema_version": 1, "mode": "codex", "image_model": "builtin", "cli_path": loaded.get("cli_path", "codex")}
-		if loaded is Dictionary and loaded.get("schema_version") == 1 and loaded.get("mode") != "legacy" and select_service_mode(str(loaded.get("mode", ""))):
-			service_saved = {"schema_version":1, "mode":loaded.mode, "endpoint":str(loaded.get("endpoint", "http://127.0.0.1:8188")), "image_model":str(loaded.get("image_model", "")), "mesh_model":str(loaded.get("mesh_model", ""))}
-			if service_saved.mode == 'codex':
-				service_saved['cli_path'] = str(loaded.get('cli_path', 'codex'))
-				cli_path_edit.text = service_saved.cli_path
-			if service_saved.mode in ['comfy', 'codex']:
-				# Resolve the trusted bundled board builder again after an engine move.
-				service_saved.merge(_image_board_runtime(), true)
-			if service_saved.mode == 'api_sculpt':
-				service_saved['blender_path'] = str(loaded.get('blender_path', blender_path_edit.text))
-				service_saved['builder_path'] = str(loaded.get('builder_path', ''))
-				blender_path_edit.text = service_saved.blender_path
-			if service_saved.mode in ['kimi_native', 'api_modeling']:
-				service_saved['godot_path'] = str(loaded.get('godot_path', ''))
-				service_saved['builder_path'] = str(loaded.get('builder_path', ''))
-			if service_saved.mode == 'kimi_native':
-				# Old route fields do not select the SDK tools or authenticate them.
-				service_saved.endpoint = ''
-			if service_saved.mode in ['api_modeling', 'api_sculpt']:
-				if loaded.has('api_model'): service_saved['api_model'] = loaded.api_model
-				service_saved['api_key_env'] = str(loaded.get('api_key_env', 'AINATIVE_API_KEY'))
-			if service_saved.mode == 'kimi_native':
-				for field in ['image_tool_path', 'image_pythonw_path']:
-					var control: LineEdit = kimi_image_tool_edit if field == 'image_tool_path' else kimi_image_pythonw_edit
-					service_saved[field] = str(loaded.get(field, control.text))
-					control.text = service_saved[field]
-				for field in ['model3d_tool_path', 'model3d_pythonw_path']:
-					var control: LineEdit = model3d_tool_edit if field == 'model3d_tool_path' else model3d_pythonw_edit
-					var fallback = service_saved.get('image_pythonw_path', control.text) if field == 'model3d_pythonw_path' else control.text
-					service_saved[field] = str(loaded.get(field, fallback))
-					control.text = service_saved[field]
-				service_saved['model3d_model'] = str(loaded.get('model3d_model', 'v3.1'))
-				service_saved['texture_model'] = str(loaded.get('texture_model', 'v3.5'))
-			endpoint_edit.text = service_saved.endpoint
-			_set_model_options(image_model_choice, [], service_saved.image_model, false)
-			_set_model_options(mesh_model_choice, [], service_saved.mesh_model, false)
-		else:
-			service_status.text = "已保存的生成服务设置无效。请重新选择服务、检测并保存。"
-	if settings.get_value("service", "mode", "") == "legacy" or not factory_edit.text in ["editor_demo:factory", "comfy_provider:factory"] or (service_saved.is_empty() and OS.has_environment("AINATIVE_COMFY_CONFIG")):
+		if loaded is Dictionary and loaded.get('mode') in RETIRED_GPT_MESH_MODES:
+			settings.set_value('managed_comfy', 'autostart', false)
+			selected = 'codex'
+			service_profiles.erase('codex')
+		if loaded is Dictionary:
+			service_saved = _normalize_service_profile(loaded)
+			if not service_saved.is_empty() and not service_profiles.has(service_saved.mode):
+				service_profiles[service_saved.mode] = service_saved.duplicate(true)
+		if service_saved.is_empty(): service_status.text = '已保存的生成服务设置无效或已下线，请重新选择服务、检测并保存。'
+	if selected.is_empty(): selected = str(service_saved.get('mode', 'comfy'))
+	if selected not in SERVICE_PROFILE_MODES: selected = 'comfy'
+	var profile = service_profiles.get(selected, _default_service_profile(selected))
+	service_profiles[selected] = profile.duplicate(true)
+	_apply_service_profile(profile)
+	if settings.get_value('service', 'mode', '') == 'legacy' or not factory_edit.text in ['editor_demo:factory', 'comfy_provider:factory'] or (service_saved.is_empty() and OS.has_environment('AINATIVE_COMFY_CONFIG')):
 		select_service_mode('legacy')
-		if OS.has_environment("AINATIVE_COMFY_CONFIG") and factory_edit.text == "editor_demo:factory": factory_edit.text = "comfy_provider:factory"
+		if OS.has_environment('AINATIVE_COMFY_CONFIG') and factory_edit.text == 'editor_demo:factory': factory_edit.text = 'comfy_provider:factory'
 	service_ui_loading = false
+	_persist_service_profiles()
 	_update_service_summary()
 
 func _retired_mesh_node(data: Dictionary) -> bool:
@@ -2253,7 +2537,7 @@ func select_service_mode(mode: String) -> bool:
 	return false
 
 func _service_mode() -> String:
-	if service_choice == null or service_choice.selected < 0: return "offline"
+	if service_choice == null or service_choice.selected < 0: return "comfy"
 	return str(service_choice.get_item_metadata(service_choice.selected))
 
 func _model_name(choice: OptionButton) -> String:
@@ -2270,7 +2554,11 @@ func _image_board_runtime() -> Dictionary:
 	return {'image_board_godot_path':OS.get_executable_path(), 'image_board_builder_path':builder}
 
 func service_draft() -> Dictionary:
-	var value = {"schema_version":1, "mode":_service_mode(), "endpoint":endpoint_edit.text.strip_edges(), "image_model":_model_name(image_model_choice), "mesh_model":_model_name(mesh_model_choice)}
+	return _service_draft_for_mode(_service_mode())
+
+func _service_draft_for_mode(mode: String) -> Dictionary:
+	var value = {"schema_version":1, "mode":mode, "endpoint":endpoint_edit.text.strip_edges(), "image_model":_model_name(image_model_choice), "mesh_model":_model_name(mesh_model_choice)}
+	var profile: Dictionary = service_profiles.get(mode, {})
 	if value.mode in ['comfy', 'codex']:
 		value.merge(_image_board_runtime(), true)
 	if value.mode == 'codex':
@@ -2287,8 +2575,8 @@ func service_draft() -> Dictionary:
 		value['image_pythonw_path'] = kimi_image_pythonw_edit.text.strip_edges()
 		value['model3d_tool_path'] = model3d_tool_edit.text.strip_edges()
 		value['model3d_pythonw_path'] = model3d_pythonw_edit.text.strip_edges()
-		value['model3d_model'] = str(service_saved.get('model3d_model', 'v3.1'))
-		value['texture_model'] = str(service_saved.get('texture_model', 'v3.5'))
+		value['model3d_model'] = str(profile.get('model3d_model', 'v3.1'))
+		value['texture_model'] = str(profile.get('texture_model', 'v3.5'))
 	if value.mode == 'api_sculpt':
 		value.mesh_model = ''
 		value['blender_path'] = blender_path_edit.text.strip_edges()
@@ -2296,8 +2584,8 @@ func service_draft() -> Dictionary:
 	if value.mode in ['api_modeling', 'api_sculpt']:
 		value.image_model = ''
 		# Retain the old value only to migrate unopened legacy workflows.
-		if service_saved.has('api_model'): value['api_model'] = service_saved.api_model
-		value['api_key_env'] = str(service_saved.get('api_key_env', 'AINATIVE_API_KEY'))
+		if profile.has('api_model'): value['api_model'] = profile.api_model
+		value['api_key_env'] = str(profile.get('api_key_env', 'AINATIVE_API_KEY'))
 	if value.mode == 'local_mesh': value.image_model = ''
 	return value
 
@@ -2316,11 +2604,31 @@ func _set_model_options(choice: OptionButton, names: Array, selected_name: Strin
 		chosen = choice.item_count - 1
 	choice.select(chosen)
 
+func _service_mode_selected(_index: int):
+	if service_ui_loading: return
+	var mode = _service_mode()
+	if service_profile_mode in SERVICE_PROFILE_MODES and service_profile_mode != mode:
+		# The option has already changed, but the controls still hold the previous service.
+		_store_service_profile(service_profile_mode)
+	if mode in SERVICE_PROFILE_MODES:
+		service_ui_loading = true
+		var profile = service_profiles.get(mode, _default_service_profile(mode))
+		service_profiles[mode] = profile.duplicate(true)
+		_apply_service_profile(profile)
+		service_ui_loading = false
+	_service_settings_changed()
+
 func _service_settings_changed():
 	if service_ui_loading: return
+	var mode = _service_mode()
+	if mode in SERVICE_PROFILE_MODES:
+		service_profile_mode = mode
+		_store_service_profile(mode)
 	service_report = {}
 	service_report_draft = ""
 	_update_service_summary()
+	if not _persist_service_profiles():
+		service_status.text = '配置草稿无法写入本机文件，请检查用户目录是否可写。'
 
 func _update_service_summary():
 	if service_choice == null: return
@@ -2349,7 +2657,7 @@ func _update_service_summary():
 	endpoint_edit.visible = not cli_mode and not kimi_mode
 	endpoint_edit.editable = mode in ['comfy', 'local_mesh', 'api_modeling', 'api_sculpt']
 	kimi_model_label.text = 'Kimi 模型'
-	kimi_auth_label.text = '凭据环境变量：' + str(service_saved.get('api_key_env', 'AINATIVE_API_KEY')) + '；模型请在各节点检查器中选择。检测仅核对本机配置，运行时验证接口。' if mode in ['api_modeling', 'api_sculpt'] else 'Tripo API 与 Kimi Work 凭据由 agent-gw SDK 管理。检测仅核对本机工具；账号授权、额度与网络尚未验证，以实际任务回执为准。无需配置 Kimi 语言模型地址或模型。'
+	kimi_auth_label.text = '凭据环境变量：' + str(service_profiles.get(mode, {}).get('api_key_env', 'AINATIVE_API_KEY')) + '；模型请在各节点检查器中选择。检测仅核对本机配置，运行时验证接口。' if mode in ['api_modeling', 'api_sculpt'] else 'Tripo API 与 Kimi Work 凭据由 agent-gw SDK 管理。检测仅核对本机工具；账号授权、额度与网络尚未验证，以实际任务回执为准。无需配置 Kimi 语言模型地址或模型。'
 	kimi_model_label.hide()
 	kimi_model_edit.hide()
 	kimi_auth_label.visible = kimi_mode or api_mode
@@ -2364,9 +2672,7 @@ func _update_service_summary():
 			if data.id == selected_id:
 				_sync_node_model_controls(data)
 				break
-	if mode == 'offline':
-		service_status.text = '当前为离线复制演示；不提供图像或网格生成。请选择生成方式并保存。'
-	elif mode == 'legacy':
+	if mode == 'legacy':
 		service_status.text = '正在兼容已有的高级服务配置。'
 	elif service_report.is_empty():
 		if service_draft() != service_saved:
@@ -2380,7 +2686,6 @@ func _update_service_summary():
 	for kind in service_capability_labels:
 		var label: Label = service_capability_labels[kind]
 		if kind == 'copy': label.text = node_label(kind) + '：可用，不调用模型'
-		elif mode == 'offline': label.text = node_label(kind) + '：不可用，尚未连接真实生成服务'
 		elif mode == 'legacy': label.text = node_label(kind) + '：由已有高级配置检查'
 		elif api_mode:
 			label.text = node_label(kind) + ('：待核对配置 · 自选 API 与 ' + ('Blender' if sculpt_mode else 'Godot') if kind.ends_with('mesh') else '：不可用 · 语义规划仅生成网格')
@@ -2452,6 +2757,11 @@ func save_service_settings():
 		_show_run_problem("无法替换生成服务设置，已保留上一次配置。")
 		return
 	service_saved = draft.duplicate(true)
+	service_profiles[draft.mode] = draft.duplicate(true)
+	service_profile_mode = draft.mode
+	if not _persist_service_profiles():
+		_show_run_problem('运行配置已写入，但分服务配置库保存失败，请检查用户目录。')
+		return
 	# An explicit GUI save chooses this service over legacy host configuration.
 	factory_edit.text = "editor_demo:factory"
 	# Nodes created before service setup inherit once; explicit choices stay independent.
@@ -2464,7 +2774,7 @@ func save_service_settings():
 		_show_run_problem("服务配置已写入，但运行环境设置保存失败，请检查用户目录。")
 		return
 	_update_service_summary()
-	service_status.text = ('已保存自选 API 设置；' + ('Blender' if draft.mode == 'api_sculpt' else 'Godot') + ' 构造网格。') if draft.mode in ['api_modeling', 'api_sculpt'] else '已保存本机图生网格设置；无需 CLI。' if draft.mode == 'local_mesh' else '已保存 Kimi 复合设置；Mesh 由 Tripo API 直接生成且无需 Blender，二维由独立 Kimi Work 图像服务生成；本机路径不进入工作流。' if draft.mode == 'kimi_native' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。" if draft.mode == "comfy" else "已保存离线复制模式；该模式不调用生成模型。"
+	service_status.text = ('已保存自选 API 设置；' + ('Blender' if draft.mode == 'api_sculpt' else 'Godot') + ' 构造网格。') if draft.mode in ['api_modeling', 'api_sculpt'] else '已保存本机图生网格设置；无需 CLI。' if draft.mode == 'local_mesh' else '已保存 Kimi 复合设置；Mesh 由 Tripo API 直接生成且无需 Blender，二维由独立 Kimi Work 图像服务生成；本机路径不进入工作流。' if draft.mode == 'kimi_native' else '已保存 CLI 图像与本机网格设置；图像沿用当前 CLI 登录额度。' if draft.mode == 'codex' else "已保存生成服务设置；检测通过后可明确查看各类生成能力。"
 	if status != null: status.text = service_status.text
 	if service_config_link != null: service_config_link.hide()
 
@@ -2480,7 +2790,8 @@ func check_service():
 
 func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
 	if checked_draft != service_draft():
-		_show_run_problem("检测期间设置已改变，请重新检测当前设置。")
+		service_status.text = "检测期间设置已改变，请重新检测当前设置。"
+		_show_run_problem(service_status.text)
 		return
 	service_ui_loading = true
 	var models: Dictionary = data.get("models", {})
@@ -2504,8 +2815,8 @@ func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 	if _is_mesh_kind(kind) and managed_comfy_panel != null and _service_mode() in ['codex', 'local_mesh']:
 		var bundle_problem: String = managed_comfy_panel.bundled_mesh_blocker()
 		if not bundle_problem.is_empty(): return bundle_problem
-	if _service_mode() not in ['comfy', 'codex', 'kimi_native', 'local_mesh', 'api_modeling', 'api_sculpt']:
-		return "当前为离线复制模式，无法生成图像或网格。请点击“配置生成服务”连接真实服务。"
+	if _service_mode() not in SERVICE_PROFILE_MODES:
+		return "请选择一种生成服务，再保存配置。"
 	if kind == 'model_adjust' and _service_mode() != 'kimi_native':
 		return '模型调整目前使用 Kimi Native / Tripo API，请先在 AI 设置中选择 Kimi Native。'
 	if service_saved.is_empty() or service_draft() != service_saved:

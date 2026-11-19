@@ -1,0 +1,60 @@
+{
+  "request_id": "maliang-stability-batch-20261120",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1625",
+  "related_issues": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1624"
+  ],
+  "state": "passed",
+  "editor_sha256": "de9480aab3a1d3e406d625c8bc909c1b7b24fd30edfd19adcdd9ceebfa7b865b",
+  "bundle_version": "1614f818d1da43ba9c196b7e1ab4fb7dfda67e39edf92bae4a109188bfeb27cf",
+  "checks": {
+    "ainative_python": {
+      "command": "python3 -m unittest discover -s tools/ainative -p 'test_*.py'",
+      "state": "passed",
+      "tests": 489,
+      "skipped": 62
+    },
+    "editor_build": {
+      "command": "$HOME/.local/venvs/godot-build/bin/python -m SCons platform=macos target=editor arch=arm64 use_volk=yes accesskit=no -j8",
+      "state": "passed",
+      "editor_sha256": "de9480aab3a1d3e406d625c8bc909c1b7b24fd30edfd19adcdd9ceebfa7b865b",
+      "note": "The first full build hit the 900-second task limit; incremental resume completed successfully."
+    },
+    "native_workbench": {
+      "command": "python3 tests/editor/run_ainative_builtin.py --godot bin/godot.macos.editor.arm64 --report .kimi-input/delivery/native-acceptance.json",
+      "state": "passed",
+      "runs": [
+        {"name": "mesh-and-rig", "checks": 164},
+        {"name": "independent-project", "checks": 108},
+        {"name": "sample-addon-compatibility", "checks": 22},
+        {"name": "relocated-runtime", "checks": 5}
+      ]
+    },
+    "service_gui": {
+      "command": "AINATIVE_GUI_TEST_GODOT=$PWD/bin/godot.macos.editor.arm64 PYTHONPATH=tools/ainative python3 -m unittest test_generation_service_gui",
+      "state": "passed",
+      "checks": 113,
+      "transport": "read-only HTTP fixtures; no model inference"
+    },
+    "multi_image_workflow": {
+      "state": "passed",
+      "checks": 36,
+      "coverage": "ordered image-set snapshots, durable copies, independent member preview and no regeneration on reopen"
+    },
+    "node_preview_workflow": {
+      "state": "passed",
+      "checks": 49,
+      "coverage": "image and GLB result history, durable content-addressed outputs and direct preview on reopen"
+    },
+    "dynamic_review_bundle": {
+      "state": "passed",
+      "bundle_version": "1614f818d1da43ba9c196b7e1ab4fb7dfda67e39edf92bae4a109188bfeb27cf",
+      "mesh_vision_sha256": "1718c1bb4d40fa3ab862f3ac8cc350aa453517731cb1d293bff92bb1031d3f54",
+      "mesh_review_sha256": "0ad977435774b5f926c79b28568df43675c17af55cc4f3ea1217d05653136e21",
+      "review_plan_sha256": "d3a5358a1fd17670846c3e8fb19d962859a17b715707f958ef9cc80e1a57b806",
+      "views": ["front", "right", "back", "left", "top", "hand_right_front", "hand_right_back", "detail_lower_front"],
+      "head_gate": false
+    }
+  },
+  "evidence_boundary": "Synthetic fixtures and real Godot rendering were used; no real AI inference or new model generation was performed. A repeated entry check using a previously contaminated test project was not counted as evidence; the clean isolated runner passed."
+}
