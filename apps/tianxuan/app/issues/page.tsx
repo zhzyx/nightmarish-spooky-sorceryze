@@ -28,7 +28,7 @@ function collectColumnIssues(
   const seen = new Set<string>();
   const collected: ApiIssue[] = [];
   for (const status of statuses) {
-    for (const issue of board[status] ?? []) {
+    for (const issue of Object.hasOwn(board, status) ? board[status] : []) {
       if (!seen.has(issue.id)) {
         seen.add(issue.id);
         collected.push(issue);
@@ -132,6 +132,11 @@ export default async function IssuesPage() {
     } catch {
       live = null;
     }
+  }
+
+  const knownStatuses = new Set(liveColumns.flatMap(column => column.statuses));
+  for (const status of new Set(live?.issues.map(issue => issue.status))) {
+    if (!knownStatuses.has(status)) liveColumns.push({ id: "custom-" + status, label: status, hint: "", statuses: [status] });
   }
 
   const liveCounts = live

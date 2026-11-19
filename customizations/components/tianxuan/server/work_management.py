@@ -4,6 +4,7 @@ import hashlib
 import json
 from typing import Any
 
+from issue_flow import definition
 from tianxuan_core import PermissionDenied, TianxuanError, VersionConflict, _connection_call, _now
 
 
@@ -40,7 +41,18 @@ def roadmap(store, actor) -> dict[str, Any]:
                 plan.update(data["plan"])
             else:
                 logged += data["minutes"]
-        items.append(dict(id=issue["id"], title=issue["title"], plan=plan, logged_minutes=logged))
+        _, _, stages, _ = definition(store, issue["id"])
+        progress = next((s["progress"] for s in stages if s["id"] == issue["status"]), 0)
+        items.append(
+            dict(
+                id=issue["id"],
+                title=issue["title"],
+                status=issue["status"],
+                progress=progress,
+                plan=plan,
+                logged_minutes=logged,
+            )
+        )
     items.sort(key=lambda item: tuple(item["plan"][k] for k in ("roadmap", "milestone", "iteration")))
     return {"items": items}
 
