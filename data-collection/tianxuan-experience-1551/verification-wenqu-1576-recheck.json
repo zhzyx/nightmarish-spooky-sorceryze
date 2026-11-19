@@ -1,0 +1,29 @@
+{
+  "issue_number": 1551,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "observed_at": "2026-11-19T09:31:58.265869+00:00",
+  "prior_signed_head": "e41d59e41b49843ea9d56d501314de0f5f9d2419",
+  "prior_docker_failure": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44490631722/job/135445030818",
+  "accepted_wenqu": {
+    "pr": 1576,
+    "signed_head": "422f52e8bebe9828d7f551f5b0fc29ce155cb03f",
+    "merge": "137e37821d983bbb5e415fde2c9800320d3537b7",
+    "scope": "Accepted Wenqu source and lazy DOCX/PDF rendering imports, with work orders and migration already on main."
+  },
+  "rebased_product_commit": "f8095f4a89e1d994f3379377641951aa78bccb57",
+  "checks": {
+    "independent_review": "Both #1551 commits compare equal in range-diff. server-api.ts preserves upstream session then personal-key fallback plus workspace repository capabilities. API lazy imports exactly match main.",
+    "frontend": "Next.js 14.2.35 production build passed, including typecheck.",
+    "regression": "50 gateway, personal-key and account mode, native API, requirement export, and work management tests passed.",
+    "browser": "Isolated HTTPS Chrome verification passed on rebuilt Next and actual local FastAPI. The test followed the accepted login flow to /docs before verifying personal-key use on the workspace, live work orders, two controlled upstream turns, theme synchronization and persistence, IME, compact navigation, and native revision retrieval."
+  },
+  "remaining": [
+    "Exact-candidate CI and main readback",
+    "Production model and Godot WebView2",
+    "Persistent conversation handoff",
+    "Worker-run listing",
+    "Native module enumeration",
+    "Separate upstream resolver v3 acceptance"
+  ]
+}
