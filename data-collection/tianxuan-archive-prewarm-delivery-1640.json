@@ -1,0 +1,51 @@
+{
+  "issue": 1640,
+  "parent": 1553,
+  "receiving_deployment": 1577,
+  "pr": 1649,
+  "signed": "397da9488cc1aaf8d58ce92af49850fae9742020",
+  "reviewed_tree": "bc66c3baab1c7f84b38b7c0644a652aa2bf46aaf",
+  "merge": "14b9b3c16e989cefbc32c825637cee72158efd30",
+  "merged_at": "2026-11-19T17:17:40Z",
+  "remote_main": "14b9b3c16e989cefbc32c825637cee72158efd30",
+  "verified_blobs": {
+    "customizations/components/tianxuan/migration/README.md": "ecd9022104ce2a640e3f4f5d9d6066f557c014d5",
+    "customizations/components/tianxuan/migration/history_git.py": "0df8f5d7f5fe74c4724d858de09149844890e1f3",
+    "customizations/components/tianxuan/migration/history_prewarm.py": "7a49274f07bda4579431571edd61df4cb6c9399c",
+    "customizations/components/tianxuan/migration/prewarm_prepare.py": "6de789df859c92bafb8e8a9109c34294bf0ca8b3",
+    "customizations/components/tianxuan/migration/test_history_prewarm.py": "1d9d620089200700a90a6cb5671f3255d9fbe6b1",
+    "data-collection/requests/archive-git-cache-prewarm-20261120/edd282e3-8b1c-4411-903b-b8005a250b6b.json": "7aaec1283c70ceeff63d9171b62a86ca21cbeeef",
+    "data-collection/tianxuan-archive-prewarm-1640.json": "82167b41fdff0880381d57a94849a2c81ace57bd",
+    "design-docs/archive-git-cache-prewarm-20261120.md": "abbeb51180f1b2ae335cb183a0435e056563a335",
+    "gonggong-diting-data/events/gonggong-workspace/archive-git-cache-prewarm-20261120/archive-prewarm-1640-request.json": "7606de1c14018416906e6b28f5f4ea61e8d04629"
+  },
+  "checks": {
+    "issue-association": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44571794757/job/135728552451",
+    "Docker images": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44571794640/job/135728550753",
+    "Module and web tests": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44571794645/job/135728551047",
+    "📊 Static checks / Code style, file formatting, and docs": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44571795088/job/135728555131",
+    "🏁 Windows / Editor (target=editor)": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44571795088/job/135730575715"
+  },
+  "ci_run": "44571794640",
+  "artifacts": [
+    {
+      "id": 14555960223,
+      "name": "tianxuan-api-44571794640-1",
+      "digest": "sha256:da7cca29c2bbb800ddc3d46ac719439f1c285d5ff0e541e9c8fee24937a491d8",
+      "workflow_run": {
+        "id": 44571794640,
+        "repository_id": 1441270901,
+        "head_repository_id": 1441270901,
+        "head_branch": "codex/submit/Sail-Li/1640/78b448829c641c8e9bd93d63f9b33018793b39d5",
+        "head_sha": "397da9488cc1aaf8d58ce92af49850fae9742020"
+      }
+    }
+  ],
+  "manifest_sha256": "c9f1c3d3814df674f88dd37e8f898b439594ccddb76f59ae3099a2d76140b80b",
+  "production_acceptance": false,
+  "request_id": "archive-git-cache-prewarm-20261120",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1640",
+  "deployment_handoff": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1577#issuecomment-7016510821",
+  "measurement": "data-collection/tianxuan-archive-prewarm-1640.json",
+  "method_proposal": "measure-native-git-cache-adoption"
+}
