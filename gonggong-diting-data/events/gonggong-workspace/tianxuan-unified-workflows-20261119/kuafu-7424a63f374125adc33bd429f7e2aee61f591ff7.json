@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-7424a63f374125adc33bd429f7e2aee61f591ff7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-workflows-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1552",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "cc6b123f84d423f3643313c235ce432c9619789f2f89edabffb4aebdaaa057fb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1552",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1556",
+    "action": "delivery",
+    "detection_head": "d90a4235fd9899f43be90c7804a54a59309eab31",
+    "context_sha256": "56e29ca34b3a7f71593a326d16ae9a4f7f0820162599683f7daefff0eab92f43",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/commit/d90a4235fd9899f43be90c7804a54a59309eab31",
+    "diagnosis": "Initial authenticated Git push exited 128 before creating the candidate ref. The same operator subsequently created that exact ref using GitHub CLI credentials; the specific transport cause is unknown.",
+    "next_action": "Resume exact candidate signature and PR creation, verify remote candidate CI and delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T07:04:05.771933+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T07:06:42.891970+00:00",
+  "sha256": "2144690cd90dc2a04c37b10a0586db882c3ea21ed5fa2335d7c0ab829588ddc2"
+}
