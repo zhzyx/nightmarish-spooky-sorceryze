@@ -1,0 +1,44 @@
+{
+  "issue": 1568,
+  "commit": "ac8d1376d0a03678b625cbe4bd9b09ea18120475",
+  "level": "isolated Wenqu merge with editor reload inputs",
+  "base": "first\nsecond\n",
+  "draft": "first\nB offline\n",
+  "head": "A saved\nsecond\n",
+  "results": {
+    "original_base": {
+      "merged": "A saved\nB offline\n",
+      "conflicts": [],
+      "keeps_A": true,
+      "keeps_B": true
+    },
+    "reloaded_base": {
+      "merged": "first\nB offline\n",
+      "conflicts": [],
+      "keeps_A": false,
+      "keeps_B": true
+    }
+  },
+  "core_reopened_sqlite": {
+    "expected_version_on_reload": 2,
+    "bodies_by_version": [
+      "first\nsecond\n",
+      "A saved\nsecond\n",
+      "first\nB offline\n"
+    ]
+  },
+  "same_line_with_original_base": {
+    "stale_write_error": "expected version 1, found 2",
+    "merge_conflicts": [
+      "conflict at lines 1-1: local 1 line(s), remote 1 line(s)"
+    ],
+    "reopened_versions": [
+      1,
+      2
+    ],
+    "reopened_bodies": [
+      "base\n",
+      "writer A\n"
+    ]
+  }
+}

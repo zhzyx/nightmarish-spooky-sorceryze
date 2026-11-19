@@ -4,7 +4,7 @@ import { useActor } from "@/lib/use-actor";
 
 import { useCallback, useEffect, useState } from "react";
 import { Icon } from "@/components/Icon";
-import { fetchDocDiff, fetchVersions, type ApiVersion } from "@/lib/api";
+import { fetchDocDiff, fetchVersions, MergeConflict, restoreDocVersion, type ApiVersion } from "@/lib/api";
 import { formatMessage } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n-client";
 
@@ -95,6 +95,9 @@ export function DocVersions({ docId }: DocVersionsProps) {
   const [diffState, setDiffState] = useState<DiffState>("idle");
   const [diffError, setDiffError] = useState("");
 
+  const [restoring, setRestoring] = useState(false);
+  const [restoreNote, setRestoreNote] = useState("");
+
   const resetDiff = useCallback(() => {
     setDiff("");
     setDiffState("idle");
@@ -131,6 +134,29 @@ export function DocVersions({ docId }: DocVersionsProps) {
   useEffect(() => {
     void loadVersions();
   }, [loadVersions]);
+
+  async function restore(sourceVersion: number, expectedVersion: number) {
+    if (!actor || restoring) return;
+    const prompt = formatMessage(t("versions.confirmRestore"), { sourceVersion, expectedVersion });
+    if (!window.confirm(prompt)) return;
+    setRestoring(true);
+    setRestoreNote("");
+    try {
+      const updated = await restoreDocVersion(docId, actor, sourceVersion, expectedVersion);
+      window.dispatchEvent(new CustomEvent("tianxuan:doc-updated", { detail: updated }));
+      setRestoreNote(formatMessage(t("versions.restored"), { version: updated.version }));
+      await loadVersions();
+    } catch (error) {
+      if (error instanceof MergeConflict) {
+        setRestoreNote(t("versions.restoreConflict"));
+        await loadVersions();
+      } else {
+        setRestoreNote(t("versions.restoreError"));
+      }
+    } finally {
+      setRestoring(false);
+    }
+  }
 
   async function loadDiff() {
     if (!actor || fromVersion === null || toVersion === null) {
@@ -192,6 +218,12 @@ export function DocVersions({ docId }: DocVersionsProps) {
       </div>
 
       <div style={panelBodyStyle}>
+        {restoreNote && <p className="section-note" role="status">{restoreNote}</p>}
+        {loadState === "ready" && (
+          <button type="button" className="btn btn-ghost btn-sm" disabled={restoring} onClick={() => void loadVersions()}>
+            {t("versions.reload")}
+          </button>
+        )}
         {loadState === "loading" ? <p className="section-note">{t("versions.loading")}</p> : null}
 
         {loadState === "error" ? (
@@ -226,7 +258,16 @@ export function DocVersions({ docId }: DocVersionsProps) {
                   </span>
                   {item.version === latestVersion ? (
                     <span className="kind-tag">{t("versions.latest")}</span>
-                  ) : null}
+                  ) : latestVersion !== null && (
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      disabled={restoring}
+                      onClick={() => void restore(item.version, latestVersion)}
+                    >
+                      {formatMessage(t("versions.restore"), { version: item.version })}
+                    </button>
+                  )}
                 </li>
               ))}
             </ul>

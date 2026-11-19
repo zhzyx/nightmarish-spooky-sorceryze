@@ -263,6 +263,25 @@ export async function fetchVersions(docId: string, actor: string): Promise<ApiVe
   return body.versions ?? [];
 }
 
+export async function restoreDocVersion(
+  docId: string,
+  actor: string,
+  sourceVersion: number,
+  expectedVersion: number,
+): Promise<ApiDocDetail> {
+  const response = await fetch(
+    `${apiBase()}/api/v1/docs/${encodeURIComponent(docId)}/versions/${sourceVersion}/restore`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...authHeaders(actor) },
+      body: JSON.stringify({ expected_version: expectedVersion }),
+    },
+  );
+  if (response.status === 409) throw new MergeConflict([]);
+  if (!response.ok) throw new Error(`restore failed: ${response.status}`);
+  return response.json() as Promise<ApiDocDetail>;
+}
+
 export async function fetchDocDiff(
   docId: string,
   actor: string,

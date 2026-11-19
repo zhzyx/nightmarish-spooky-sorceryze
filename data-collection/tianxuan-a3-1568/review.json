@@ -1,0 +1,36 @@
+{
+  "issue": 1568,
+  "upstream": "2feaa971e018db17f57fea18ab2255925ba7cc43",
+  "reviewers": [
+    {
+      "worker": "versions",
+      "result": "Reverified after fixing persisted baseline validation, room member departure during broadcast, and redundant editor notification",
+      "scope": "editor and server",
+      "tests": "14 merge and AI tests, disconnect during broadcast, TypeScript"
+    },
+    {
+      "worker": "editor",
+      "result": "Confirmed expected version binding, conflict refresh and renewed consent, success notification, TypeScript",
+      "scope": "DocVersions, api.ts, i18n.ts"
+    }
+  ],
+  "product_and_test_blobs": {
+    "apps/tianxuan/components/DocEditor.tsx": "d16efb13d1fd7814e9eb8a2cd4ec9d55e6cb1ef7",
+    "apps/tianxuan/components/DocVersions.tsx": "6d168ffaf5ca48ffcca4c04524aeeef9480431c2",
+    "apps/tianxuan/lib/api.ts": "47bb038ce3fc40e6946d757f9d95d5fe1d9e9e3e",
+    "apps/tianxuan/lib/i18n.ts": "a89f2a5ca274e1c21efe047fa320549d49005d32",
+    "customizations/components/tianxuan/server/api.py": "5f1c31319d08fe87138de87bf23a6b4add627f1e",
+    "customizations/components/tianxuan/server/schemas.py": "d1290a0597246044f166cf36410f21f9bab14d49",
+    "customizations/components/tianxuan/server/test_ai_document_tools.py": "d41ca14d6f65f847c8e0068a7594d765c12d05fc",
+    "customizations/components/tianxuan/server/test_api_merge.py": "ec8e81e31ff0b7a83d05b31fdbc20c54b1a3e124",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "da9ea103e98b3bb1f714206695404b119c2740ad"
+  },
+  "verification": [
+    "26 targeted server tests, ruff, mypy",
+    "two independently authenticated Chrome browser contexts and two distinct users in isolated personal-key mode",
+    "WebSocket snapshot, two-user presence and changed frames",
+    "HTTP and AI stale restore both returned 409; accepted requests appended v12 and v13"
+  ],
+  "environment": "Isolated Windows HTTPS loopback; browser actions driven by Playwright",
+  "remaining": "Production deployment and integration acceptance owned by #1550"
+}

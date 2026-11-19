@@ -1095,6 +1095,20 @@ class Tianxuan:
             body = body.replace(find, operation["replace"], 1)
         return self.update_doc(actor, doc_id, body, expected_version)
 
+    @_connection_call
+    @_replayable("doc.restore")
+    def restore_doc(
+        self, actor: str, doc_id: str, version: int, expected_version: int, *, call_id: str | None = None
+    ) -> dict[str, Any]:
+        if any(type(number) is not int or number < 1 for number in (version, expected_version)):
+            raise TianxuanError("version and expected_version must be positive integers")
+        self._require_editor(actor)
+        self._require_tenant_doc(actor, doc_id)
+        document = self.get_doc_shared(actor, doc_id, write=True)
+        self._require_field_write(actor, document, "body_md")
+        body = self.version(doc_id, version)["body_md"]
+        return self.update_doc(actor, doc_id, body, expected_version)
+
     def _version(self, doc_id: str, version: int, body_md: str, author: str) -> None:
         self.db.execute(
             "INSERT INTO doc_versions (id, doc_id, version, body_md, author, created_at) VALUES (?, ?, ?, ?, ?, ?)",
@@ -2202,10 +2216,10 @@ class Tianxuan:
             return
         if name == "doc.create" and payload["space_id"] is not None:
             self._require_tenant_object(actor, "spaces", payload["space_id"])
-        if name in ("doc.update", "doc.patch"):
+        if name in ("doc.update", "doc.patch", "doc.restore"):
             self._require_tenant_doc(actor, payload["doc_id"])
             document = self.get_doc_shared(actor, payload["doc_id"], write=True)
-            if name == "doc.patch":
+            if name in ("doc.patch", "doc.restore"):
                 self._require_field_write(actor, document, "body_md")
         if name == "requirement.plan":
             self._require_requirement(actor, payload["requirement_id"], write=True)
@@ -2222,7 +2236,7 @@ class Tianxuan:
                 raise TransitionRejected("native managed completion requires trusted workflow acceptance")
         if result is None:
             return
-        if name in ("doc.create", "doc.update", "doc.patch", "requirement.create"):
+        if name in ("doc.create", "doc.update", "doc.patch", "doc.restore", "requirement.create"):
             self._require_tenant_doc(actor, result["id"])
             self.get_doc_shared(actor, result["id"], write=True)
         else:
@@ -2299,6 +2313,7 @@ class Tianxuan:
             "doc.create": self.create_doc,
             "doc.update": self.update_doc,
             "doc.patch": self.patch_doc,
+            "doc.restore": self.restore_doc,
             "requirement.create": self.create_requirement,
             "requirement.plan": self.plan_tickets,
             "issue.create": self.create_issue,
