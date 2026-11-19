@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e2f04e1fdf5afcc3f3082cb172d524a64122d2b8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-web-standalone-package-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1623",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b4957c35de9138fbea5da9c8390fdf2e8a4f3eea67299d72055309b7bad409a9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1623",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1631",
+    "action": "validation",
+    "detection_head": "03c73d19ff6511a8d05de9dd6c0956d1acc0e48a",
+    "context_sha256": "1fccab31c9220b8a77ee62bec41b4c472c28c819912c4cc4b6477d4ae052f837",
+    "operator": "Sail-Li",
+    "worker": "codex:01a1f28d-a13d-7611-b551-3e8e54830f5c",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44569834855/job/135721534139",
+    "diagnosis": "The Docker API build succeeded. The existing constrained native package suite terminated with exit 137 before the Web stage on the #1616-based signed candidate. No test assertion or definitive memory event was logged.",
+    "next_action": "Rerun only the failing job on the identical signed head under the unchanged limit, then validate the exact exported images.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T16:50:54.707847+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T16:51:13.938095+00:00",
+  "sha256": "4287ce840c91a39d419f027a9ea2ae06f2115aa2302eca34e548f88f869196f8"
+}
