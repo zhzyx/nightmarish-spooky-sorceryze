@@ -1,0 +1,228 @@
+{
+  "issue_number": 1548,
+  "request_id": "wenqu-cloud-20261119",
+  "reviewer": "codex-native-editor_flow",
+  "state": "targeted_mitigation_verified_formal_ci_pending",
+  "runs": [
+    {
+      "run_id": "44486124788",
+      "checkout": "dee99e9904988fb65960a97d639fb0b244ab6e4d",
+      "image_id": "sha256:1262bc11991f0b0d98a0f65e9229a3f86a95e5c0649682ee81aa5d8322834cae",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": true,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 137,
+        "Error": "",
+        "StartedAt": "2026-11-19T08:16:41.217559913Z",
+        "FinishedAt": "2026-11-19T08:16:48.803947072Z"
+      },
+      "limits": {
+        "Memory": 201326592,
+        "MemorySwap": 402653184,
+        "NanoCpus": 1000000000,
+        "NetworkMode": "none",
+        "ReadonlyRootfs": true,
+        "Tmpfs": {
+          "/tmp": "rw,nosuid,nodev,size=67108864,mode=1777"
+        }
+      },
+      "base_images": [
+        "docker.io/library/node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee",
+        "docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b"
+      ],
+      "pip_packages": [
+        "annotated-doc-0.0.7",
+        "annotated-types-0.8.0",
+        "anyio-4.16.0",
+        "certifi-2026.10.23",
+        "charset-normalizer-3.5.2",
+        "click-8.5.1",
+        "fastapi-0.165.0",
+        "h11-0.16.0",
+        "httpcore-1.0.9",
+        "httpx-0.28.1",
+        "idna-3.20",
+        "iniconfig-2.3.1",
+        "lxml-6.1.3",
+        "opentelemetry-api-1.45.2",
+        "packaging-26.3",
+        "pillow-13.0.0",
+        "pluggy-1.7.0",
+        "pydantic-2.14.3",
+        "pydantic-core-2.50.4",
+        "pygments-2.21.0",
+        "pytest-9.2.0",
+        "python-docx-1.2.0",
+        "reportlab-4.5.1",
+        "starlette-1.10.0",
+        "typing-extensions-4.16.0",
+        "typing-inspection-0.4.5",
+        "uvicorn-0.54.0",
+        "websockets-17.4"
+      ],
+      "sampled_peak_bytes": 181018624,
+      "last_memory_events": "memory.events low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 0",
+      "evidence": [
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44486124788.log",
+          "sha256": "3f0e5c5fc43dd696d642379cae1d0681e9ebab1b483e7b5b3cedb755889a2efa"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44486124788/cgroup.txt",
+          "sha256": "75f038609caeb17e58cb58a1e916d20e1ce736ac274503458adfb5e89aac6914"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44486124788/image.txt",
+          "sha256": "fb3b43756ba12cd0f2a340743e3462221d93f971884a337df6d4a996ccd9e4f5"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44486124788/limits.json",
+          "sha256": "89eb6e0ae66c9f5cbac2f0c8864bc72c26965bbaa4fad1bc402914c774ea898b"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44486124788/state.json",
+          "sha256": "40e2d27c09dedbd70a9f39eb9f565e495db243363dbd40c924b8460fa24d0847"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44486124788/stats.jsonl",
+          "sha256": "faf300c272efcf48b42fa08713703df3314d54c07dde9bfbdacd71e7cdc035ef"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44486124788/tests.log",
+          "sha256": "718a780c9f74a1d41fb05c787ff8644f63757ebd2b9a39f5ae29df989a49f6e2"
+        }
+      ]
+    },
+    {
+      "run_id": "44487065465",
+      "checkout": "3c0460a7eceb3861576f57a9ac9de4a23521794d",
+      "image_id": "sha256:df2faf5b3e612266c8e911d436924f5fe11dcf26ec60e1c3efb53e24e0bcc9a5",
+      "state": {
+        "Status": "exited",
+        "Running": false,
+        "Paused": false,
+        "Restarting": false,
+        "OOMKilled": false,
+        "Dead": false,
+        "Pid": 0,
+        "ExitCode": 0,
+        "Error": "",
+        "StartedAt": "2026-11-19T08:23:14.880230312Z",
+        "FinishedAt": "2026-11-19T08:28:06.31760408Z"
+      },
+      "limits": {
+        "Memory": 201326592,
+        "MemorySwap": 402653184,
+        "NanoCpus": 1000000000,
+        "NetworkMode": "none",
+        "ReadonlyRootfs": true,
+        "Tmpfs": {
+          "/tmp": "rw,nosuid,nodev,size=67108864,mode=1777"
+        }
+      },
+      "base_images": [
+        "docker.io/library/node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee",
+        "docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b"
+      ],
+      "pip_packages": [
+        "annotated-doc-0.0.7",
+        "annotated-types-0.8.0",
+        "anyio-4.16.0",
+        "certifi-2026.10.23",
+        "charset-normalizer-3.5.2",
+        "click-8.5.1",
+        "fastapi-0.165.0",
+        "h11-0.16.0",
+        "httpcore-1.0.9",
+        "httpx-0.28.1",
+        "idna-3.20",
+        "iniconfig-2.3.1",
+        "lxml-6.1.3",
+        "opentelemetry-api-1.45.2",
+        "packaging-26.3",
+        "pillow-13.0.0",
+        "pluggy-1.7.0",
+        "pydantic-2.14.3",
+        "pydantic-core-2.50.4",
+        "pygments-2.21.0",
+        "pytest-9.2.0",
+        "python-docx-1.2.0",
+        "reportlab-4.5.1",
+        "starlette-1.10.0",
+        "typing-extensions-4.16.0",
+        "typing-inspection-0.4.5",
+        "uvicorn-0.54.0",
+        "websockets-17.4"
+      ],
+      "sampled_peak_bytes": 201326592,
+      "last_memory_events": "memory.events low 0\nhigh 0\nmax 1330\noom 0\noom_kill 0\noom_group_kill 0\nsock_throttled 97",
+      "evidence": [
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44487065465.log",
+          "sha256": "395102f082e1145a32e0d27057d2efb04ba78caeb98f0780b2880edf1b62461d"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44487065465/cgroup.txt",
+          "sha256": "e970f07feb40dfd0f2dd1ace8496bc01b813077dba861ea8d0656787deccce2d"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44487065465/image.txt",
+          "sha256": "692d90d7355be66dccafa2d4f317ff1e7a08b9704f22e07e8ebfca7ca90b4b9e"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44487065465/limits.json",
+          "sha256": "89eb6e0ae66c9f5cbac2f0c8864bc72c26965bbaa4fad1bc402914c774ea898b"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44487065465/state.json",
+          "sha256": "311c55147f42c00eea048d92696ac07c7fcedc63d79e2657772104321d1b2494"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44487065465/stats.jsonl",
+          "sha256": "a595a3ce1ca23dfc8c0ecf9a54ad58d7359a8037fe7b798f93ce7657408087ce"
+        },
+        {
+          "path": "data-collection/receipts/wenqu-cloud-1548/diagnostic-44487065465/tests.log",
+          "sha256": "45e3b70d8d6e01601bd3ff8943296e2d3d869336b1bcd4c4cf01858c1e88f389"
+        }
+      ]
+    }
+  ],
+  "comparison": {
+    "same_base_image_digests": true,
+    "same_reported_pip_package_versions": true,
+    "same_container_limits": true,
+    "full_images_equal": false
+  },
+  "candidate": {
+    "path": "customizations/components/tianxuan/server/api.py",
+    "sha256": "bead135f8951504844cbc9b45a6fe20e157c08c2966f1d49b67ac937027aa20b",
+    "matches_successful_diagnostic_api_bytes": true,
+    "change": "Move docx_export and pdf_export imports to their format-specific branches; rendering calls and arguments unchanged."
+  },
+  "independent_regression": {
+    "command": "python -m pytest customizations/components/tianxuan/server/test_api_export.py -q",
+    "runtime": ".venv-wenqu/Scripts/python.exe, Windows",
+    "result": "9 passed, 1 warning in 1.93s",
+    "exit_code": 0
+  },
+  "observations": [
+    "Original run logged 8 passed before lifecycle test and State.OOMKilled=true, ExitCode=137.",
+    "Lazy-import run completed 77 passed, 2 deselected, 1 warning in 288.76s; State.OOMKilled=false, ExitCode=0.",
+    "Successful sampled peak reached 201326592 bytes and memory.events max=1330, oom=0, oom_kill=0."
+  ],
+  "conclusion": "Targeted mitigation verified in the measured ordinary suite at unchanged limits. Formal signed candidate CI must still repeat the affected check.",
+  "limits": [
+    "Adequate capacity headroom is not established because the successful run reached the full 192 MiB limit.",
+    "Failure cgroup sampling ended before OOM; container State is the termination evidence.",
+    "Base image digests and pip versions match, but full apt manifests were not independently captured.",
+    "Single before/after executions; host scheduling and rebuild variation remain possible.",
+    "No production capacity or complete root cause claim.",
+    "Historical evidence files were not modified."
+  ]
+}

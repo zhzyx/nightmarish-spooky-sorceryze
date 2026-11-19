@@ -1,0 +1,23 @@
+{
+  "issue_number": 1548,
+  "request_id": "wenqu-cloud-20261119",
+  "upstream_main": "3e4f05e5ed3b8f3526ffc0ef2434c8c8911e5d34",
+  "tests": {
+    "command": "python -m pytest customizations/components/tianxuan/server/test_native_entry_context_backpressure.py customizations/components/tianxuan/server/test_api_export.py -q -k 'not test_250_local_tool_burst'",
+    "passed": 43,
+    "deselected": 2,
+    "seconds": 36.98,
+    "warnings": 1
+  },
+  "environment": "Windows task-local Python; explicit PYTHONPATH matches four image import roots; installed Node path",
+  "initial_attempt": "Collection failed because local targeted command lacked sinan-workorders PYTHONPATH; recovered by supplying existing Docker import roots. No product changes needed.",
+  "review": "data-collection/wenqu-cloud-1548-integration-review.json",
+  "documentation_delta": "After independent index review, updated design status to record upstream main receipt; product bytes unchanged.",
+  "remaining": "Exact signed candidate CI and production acceptance pending",
+  "baseline_alignment": {
+    "prior_head": "225e3a160893e003ca68ef25fe838f98d438b1fc",
+    "target": "3e4f05e5ed3b8f3526ffc0ef2434c8c8911e5d34",
+    "preserved_tree": "38066a19d0b0bfe53e49299eeeb074f83047b44c",
+    "reason": "Uncommitted merge left old merge-base; same reviewed index aligned to accepted main and formal gate passed. Old branch retained."
+  }
+}

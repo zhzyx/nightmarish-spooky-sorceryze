@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import os
-from typing import Any
+from typing import Any, cast
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
@@ -15,6 +15,7 @@ from starlette.websockets import WebSocketDisconnect
 from tianxuan_core import Tianxuan
 
 COOKIE = "__Host-tianxuan_key"
+SESSION_COOKIE = "__Host-tianxuan_session"
 
 
 class KeyLogin(BaseModel):
@@ -37,6 +38,18 @@ class ProductionAccess:
     def __init__(self, app: ASGIApp, store: Tianxuan) -> None:
         self.app = app
         self.store = store
+        self.accounts = os.environ.get("TIANXUAN_AUTH_MODE") == "accounts"
+
+    def resolve(self, token: str) -> str | None:
+        if self.accounts:
+            actor = self.store.user_for_access_key(token)
+            tenant = os.environ.get("TIANXUAN_TENANT_ID")
+            if actor:
+                if tenant and self.store.actor_context(actor)["tenant"] == tenant:
+                    return cast(str, actor)
+                return None
+            return cast(str | None, self.store.user_for_token(token))
+        return cast(str | None, self.store.user_for_access_key(token))
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         if scope["type"] not in {"http", "websocket"}:
@@ -44,14 +57,22 @@ class ProductionAccess:
             return
         connection = HTTPConnection(scope)
         path = scope["path"]
-        if scope["type"] == "http" and path in {"/api/v1/health", "/api/v1/auth/key-login"}:
+        public = {"/api/v1/health", "/api/v1/auth/config", "/api/v1/auth/key-login"}
+        if self.accounts:
+            public.update({"/api/v1/auth/register", "/api/v1/auth/session"})
+        else:
+            public.add("/api/v1/auth/key-login")
+        if scope["type"] == "http" and path in public:
             await self.app(scope, receive, send)
             return
         authorization = connection.headers.get("authorization", "")
         scheme, _, bearer = authorization.partition(" ")
         uses_bearer = scheme.lower() == "bearer"
-        token = bearer.strip() if uses_bearer else connection.cookies.get(COOKIE, "")
-        actor = self.store.user_for_access_key(token) if token else None
+        cookie_token = connection.cookies.get(COOKIE, "")
+        if self.accounts:
+            cookie_token = connection.cookies.get(SESSION_COOKIE, "") or cookie_token
+        token = bearer.strip() if uses_bearer else cookie_token
+        actor = self.resolve(token) if token else None
 
         async def reject(status: int, detail: str) -> None:
             if scope["type"] == "websocket":
@@ -62,16 +83,39 @@ class ProductionAccess:
         if not actor:
             return await reject(401, "a valid personal access key is required")
         tenant = os.environ.get("TIANXUAN_TENANT_ID", "")
-        if not tenant or self.store.actor_context(actor)["tenant"] != tenant:
+        if not self.accounts and (not tenant or self.store.actor_context(actor)["tenant"] != tenant):
             return await reject(403, "account is not admitted to this deployment")
         role = self.store.role_of(actor)
+        if self.accounts and self.store.actor_context(actor)["tenant"] != tenant:
+            document_roots = (
+                "/api/v1/docs",
+                "/api/v1/comments",
+                "/api/v1/users",
+                "/api/v1/invites",
+                "/api/v1/models",
+                "/api/v1/ws/docs",
+            )
+            document_paths = {
+                "/api/v1/auth/me",
+                "/api/v1/auth/logout",
+                "/api/v1/auth/key-logout",
+                "/api/v1/search",
+                "/api/v1/events",
+                "/api/v1/capabilities",
+                "/api/v1/tools",
+            }
+            allowed = path in document_paths or any(
+                path == root or path.startswith(root + "/") for root in document_roots
+            )
+            if not allowed:
+                return await reject(403, "this workspace is limited to cloud document operations")
         method = scope.get("method", "GET")
         origin = connection.headers.get("origin", "")
         expected = os.environ.get("TIANXUAN_PUBLIC_ORIGIN", "").rstrip("/")
         if scope["type"] == "websocket" or method not in {"GET", "HEAD", "OPTIONS"}:
             if (not uses_bearer or origin) and (not expected or origin != expected):
                 return await reject(403, "same-origin request required")
-        if path in {
+        if not self.accounts and path in {
             "/api/v1/auth/register",
             "/api/v1/auth/login",
             "/api/v1/auth/session",
@@ -79,7 +123,8 @@ class ProductionAccess:
             "/api/v1/invites/accept",
         }:
             return await reject(403, "account access is managed by the administrator")
-        if role == "viewer" and method not in {"GET", "HEAD", "OPTIONS"} and path != "/api/v1/auth/key-logout":
+        viewer_post_paths = {"/api/v1/auth/key-logout", "/api/v1/auth/logout", "/api/v1/tools"}
+        if role == "viewer" and method not in {"GET", "HEAD", "OPTIONS"} and path not in viewer_post_paths:
             return await reject(403, "read-only account")
         if path.startswith("/api/v1/models") and role != "admin":
             return await reject(403, "model gateway administration requires admin")
@@ -92,13 +137,13 @@ class ProductionAccess:
 
             async def checked_receive() -> Message:
                 message = await receive()
-                if self.store.user_for_access_key(token) != actor:
+                if self.resolve(token) != actor:
                     await send({"type": "websocket.close", "code": 4401})
                     raise AccessExpired()
                 return message
 
             async def checked_send(message: Message) -> None:
-                if message["type"] == "websocket.send" and self.store.user_for_access_key(token) != actor:
+                if message["type"] == "websocket.send" and self.resolve(token) != actor:
                     await send({"type": "websocket.close", "code": 4401})
                     raise AccessExpired()
                 await send(message)
@@ -113,6 +158,23 @@ class ProductionAccess:
 
 def configure_access(app: FastAPI, store: Tianxuan) -> None:
     strict = os.environ.get("TIANXUAN_REQUIRE_KEYS") == "1"
+    mode = os.environ.get("TIANXUAN_AUTH_MODE", "keys" if strict else "legacy")
+    if mode not in {"keys", "accounts", "legacy"}:
+        raise RuntimeError("invalid TIANXUAN_AUTH_MODE")
+    if strict and mode == "accounts":
+        raise RuntimeError("account mode requires TIANXUAN_REQUIRE_KEYS=0")
+    if strict and mode == "legacy":
+        raise RuntimeError("legacy mode conflicts with required key access")
+    strict = strict or mode == "keys"
+    if mode == "accounts":
+        if not os.environ.get("TIANXUAN_PUBLIC_ORIGIN", "").startswith("https://"):
+            raise RuntimeError("account mode requires HTTPS public origin")
+        app.add_middleware(ProductionAccess, store=store)
+
+    @app.get("/api/v1/auth/config")
+    def auth_config() -> dict[str, str]:
+        return {"mode": mode}
+
     if strict:
         if not os.environ.get("TIANXUAN_TENANT_ID") or not os.environ.get("TIANXUAN_PUBLIC_ORIGIN", "").startswith(
             "https://"
@@ -134,22 +196,29 @@ def configure_access(app: FastAPI, store: Tianxuan) -> None:
     def login(payload: KeyLogin, request: Request) -> JSONResponse:
         origin = request.headers.get("origin", "")
         expected = os.environ.get("TIANXUAN_PUBLIC_ORIGIN", "").rstrip("/")
-        if strict and origin != expected:
+        if (strict or mode == "accounts") and origin != expected:
             raise HTTPException(403, "same-origin request required")
         if not allow_identity_attempt("access-key", request.client.host if request.client else "unknown"):
             raise HTTPException(429, "too many login attempts")
         actor = store.user_for_access_key(payload.key)
-        if not actor or (strict and store.actor_context(actor)["tenant"] != os.environ["TIANXUAN_TENANT_ID"]):
+        if not actor or (
+            (strict or mode == "accounts")
+            and store.actor_context(actor)["tenant"] != os.environ.get("TIANXUAN_TENANT_ID")
+        ):
             raise HTTPException(401, "invalid or revoked key")
         response = JSONResponse({"user_id": actor, "role": store.role_of(actor)})
+        response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="strict")
         response.set_cookie(COOKIE, payload.key, max_age=86400, secure=True, httponly=True, samesite="strict", path="/")
         response.headers["Cache-Control"] = "no-store"
         return response
 
     @app.post("/api/v1/auth/key-logout")
-    def logout() -> JSONResponse:
+    def logout(request: Request) -> JSONResponse:
+        if mode == "accounts":
+            store.revoke_session(request.cookies.get(SESSION_COOKIE, ""))
         response = JSONResponse({"ok": True})
         response.delete_cookie(COOKIE, path="/", secure=True, httponly=True, samesite="strict")
+        response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="strict")
         return response
 
     @app.get("/api/v1/auth/me")

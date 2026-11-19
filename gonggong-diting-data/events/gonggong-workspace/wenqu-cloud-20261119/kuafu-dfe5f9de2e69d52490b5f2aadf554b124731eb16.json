@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-dfe5f9de2e69d52490b5f2aadf554b124731eb16",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "wenqu-cloud-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1548",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7ae07e62ca2dae7ca2257706a35f04be65343fea9bac71b9bce5f2ed11ce4176",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1548",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1549",
+    "action": "validation",
+    "detection_head": "ba72e1ffd40c6cdb1c3e39a6626c7cf24cc8eb61",
+    "context_sha256": "e9c9e5a601dba30713f8a10f50e3a89acf72a052903409d8165bdd7241551af1",
+    "operator": "Sail-Li",
+    "worker": "codex-root-wenqu",
+    "authority_ref": "codex-user-20261119-continue-tianxuan-wenqu",
+    "evidence": "data-collection/wenqu-cloud-1548-review.json",
+    "diagnosis": "CI required Ruff formatting and explicit typed returns at dynamic store boundaries. Ruff0.17.1 and Mypy2.4.0 now pass six changed Python files; independent review confirms no runtime semantic change.",
+    "next_action": "Sign corrected candidate and verify same remote static job before merge.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T07:43:38.083370+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T07:45:51.166067+00:00",
+  "sha256": "5d075c0a7bfe1680a75f0f33fce825d3ecb92f2f99fd4e60e2d461d03a18c62c"
+}

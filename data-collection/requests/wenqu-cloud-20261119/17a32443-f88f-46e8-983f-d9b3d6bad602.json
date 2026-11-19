@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "wenqu-cloud-20261119",
+  "collected_at": "2026-11-19T07:27:01.666141+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/github-b3eac7058f51451d958cfd5d34f9499ab09c2f5525bc2b08d32e4b10e2e02948.json",
+      "sha256": "54e275119fe9eb9897ce76c0e4f003710fb048c419bd518105bee6a52e745829",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "github-b3eac7058f51451d958cfd5d34f9499ab09c2f5525bc2b08d32e4b10e2e02948",
+      "origin": "explicit-github-issue-event-intake"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/kuafu-897f8c7637b428f2d0a46b4cbf6838a5e0007da7.json",
+      "sha256": "e2cb83add1c929f3f5138668d2f1ae611534ec34f06b22893616366345cfe7d0",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-897f8c7637b428f2d0a46b4cbf6838a5e0007da7",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/wenqu-cloud-20261119/wenqu-cloud-1548-request.json",
+      "sha256": "72a2c8dcf4f5c440bfb67d128e2978dd5fa6b81884253284b49f093dac29a81d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "wenqu-cloud-1548-request",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1548,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1548"
+}

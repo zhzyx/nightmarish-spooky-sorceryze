@@ -10,7 +10,7 @@ export interface Identity { id: string; name: string; email: string; role: strin
 
 async function read<T>(path: string): Promise<T> {
   const base = process.env.TIANXUAN_INTERNAL_API_BASE ?? process.env.NEXT_PUBLIC_TIANXUAN_API_BASE ?? "http://127.0.0.1:8000";
-  const key = cookies().get("__Host-tianxuan_key")?.value;
+  const key = cookies().get("__Host-tianxuan_session")?.value ?? cookies().get("__Host-tianxuan_key")?.value;
   const headers: Record<string, string> = key ? { Authorization: `Bearer ${key}` } : {};
   if (!key && process.env.TIANXUAN_REQUIRE_KEYS !== "1" && process.env.TIANXUAN_ACTOR) headers["X-Actor"] = process.env.TIANXUAN_ACTOR;
   const response = await fetch(`${base.replace(/\/$/, "")}${path}`, { headers, cache: "no-store" });
