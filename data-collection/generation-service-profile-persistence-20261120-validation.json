@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "request_id": "generation-service-profile-persistence-20261120",
+  "issue_number": 1624,
+  "state": "candidate_validation_passed",
+  "recorded_at": "2026-11-19T16:29:30Z",
+  "platform": "macOS arm64",
+  "base_commit": "0abaed9fb19b968335e6b3f8caa046ec588e078e",
+  "candidate_isolation": "Detached clean worktree containing only this issue's scoped source changes, then switched to kimi/generation-service-profile-persistence-1624. Unrelated working-tree image/mesh changes are excluded.",
+  "input_sha256": {
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "0f4380e1db6a857e4787accb1205a56927540cd64d665d232281bd53cc5cf8e1",
+    "samples/ainative-workbench/generation_service_acceptance.gd": "1194ab93f649f32ddee1571ee4c162f9017872fcb6a970a03246bb0fecf6a34a",
+    "tests/editor/ainative_builtin.gd": "82ee87ca5e23e41fe6e468de130436e11c4671d69028bc32b8249811ab8ec863",
+    "tests/editor/run_ainative_builtin.py": "26fab5e543de6466213d2a5272cfadd816271690d4cd9486e6cee51a7e2bb86f",
+    "tests/editor/unified_settings_native.gd": "538217c7b03ebc245501698311868ac1e40ed541779b6750da556d39baf38ca1",
+    "tools/ainative/generation_service.py": "336762435565623329c5d5668c62b9f2c6b18fbfff0b852bb63dfad7bbfdce44",
+    "tools/ainative/test_api_node_models.py": "4ce422c2e490864aa9641b5faceff66fef1e521d47fe72bcd6855314294fc83b",
+    "tools/ainative/test_generation_service.py": "207f933e7a275a83cb8eb8aba9091164fd66bb8f46dad99e78990a1447e26c9d",
+    "tools/ainative/test_kimi_service.py": "14ddaf5aa77eaec07082acd2abe746f46706b94b1c8a51e6a67c87b348cf6719"
+  },
+  "validation": {
+    "python": {
+      "command": "python3 -m unittest discover -s . -p test_*.py",
+      "cwd": "tools/ainative",
+      "state": "passed",
+      "tests": 484,
+      "skipped": 62,
+      "seconds": 467.087
+    },
+    "service_gui": {
+      "command": "AINATIVE_GUI_TEST_GODOT=<editor> python3 test_generation_service_gui.py",
+      "state": "passed",
+      "checks": 113,
+      "failures": 0,
+      "scope": "Synthetic settings and read-only HTTP fixtures; provider switches, unsaved file persistence, reopen and local Copy; no model inference or upload"
+    },
+    "native_build": {
+      "command": "python3 -m SCons -j8 vulkan=no accesskit=no",
+      "state": "passed",
+      "editor_sha256": "22e12afd6453833f20de6b73208c28177e54232c7f8e4bfa136478b66a02ef0d",
+      "bundle_entries": 84,
+      "bundle_matches_source": true
+    },
+    "native_workbench": {
+      "command": "python3 tests/editor/run_ainative_builtin.py --godot <candidate-editor> --report <private-report>",
+      "state": "passed",
+      "runs": 4,
+      "checks": 295,
+      "installed_bundle_matches_source": true
+    },
+    "unified_settings": {
+      "command": "python3 tests/editor/run_unified_settings_native.py --godot <candidate-editor> --report <private-report>",
+      "state": "passed",
+      "runs": 2,
+      "checks": 275
+    }
+  },
+  "acceptance": {
+    "OFFLINE": "passed: offline is absent from the service picker and rejected by backend settings; local Copy preview and publication pass",
+    "PROFILES": "passed: Kimi, Codex and ComfyUI drafts restore independently across switches without replacing the explicitly activated provider",
+    "DRAFT": "passed: unsaved provider settings are atomically written before service startup and restored after Workbench reopen",
+    "COMPAT": "passed: retired Codex migration, asynchronous check binding, workflow settings exclusion and unified settings reopen are covered",
+    "DELIVERY": "pending: formal submission, PR/CI and remote-main readback"
+  },
+  "evidence_limits": "Synthetic configurations, HTTP fixtures and local Copy do not prove real model inference. No credentials are persisted or included in the candidate."
+}
