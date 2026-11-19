@@ -19,7 +19,7 @@ from native_requirement_plan import RequirementPlanner
 from native_store import NativeStoreError, _digest, _json
 from native_worker import NativeWorker
 from native_workflow import NativeWorkflow
-from tianxuan_core import PermissionDenied
+from tianxuan_core import NotFound, PermissionDenied
 
 
 def domain_locked(method):
@@ -373,7 +373,10 @@ class OrdinaryEntry:
         raise NativeStoreError("Requirement entry authority unavailable")
 
     def authorize(self, actor, issue, action):
-        self.installation.verify()
+        if action == "read":
+            self.installation.verify_manifest()
+        else:
+            self.installation.verify()
         if self.runtime_installation is not None:
             self.runtime_installation.verify()
         with self.domain._connection_lock:
@@ -388,7 +391,10 @@ class OrdinaryEntry:
 
     @domain_locked
     def module_authority(self, db, tenant, actor, module, action):
-        self.installation.verify()
+        if action == "read":
+            self.installation.verify_manifest()
+        else:
+            self.installation.verify()
         require(action in {"read", "receive"}, "Producer authority denied")
         # Module callbacks authorize the installed data plane. Exact mutable task
         # authority is independently checked before/after every workflow effect.
@@ -439,7 +445,10 @@ class OrdinaryEntry:
 
     @domain_locked
     def release_authority(self, db, tenant, actor, product, action):
-        self.installation.verify()
+        if action == "read":
+            self.installation.verify_manifest()
+        else:
+            self.installation.verify()
         if action == "evidence:record":
             return self.check_authority(tenant, actor, product, "record")
         for row in self.entries():
@@ -465,7 +474,8 @@ class OrdinaryEntry:
         used = {receipt["modules"][p.split("/", 1)[0]] for p in task["outputs"]}
         selected = {m: r for m, r in receipt["selected"].items() if m in used}
         dependencies = {}
-        for ref in json.loads(row["payload"])["choices"].get("dependencies", []):
+        choices = json.loads(row["payload"])["choices"]
+        for ref in choices.get("dependencies", []):
             previous = self.workflow.status(actor, ref["task"])
             require(
                 previous["acceptance"] and _digest(previous["task"].encode()) == ref["contract"],
@@ -493,6 +503,8 @@ class OrdinaryEntry:
             for m in self.installation.spec["catalog"]
             if m.get("available") is True and set(task["capabilities"]) <= set(m.get("capabilities", []))
         ]
+        if "model" in choices:
+            models = [model for model in models if model["id"] == choices["model"]]
         require(models, "No admitted model capability")
         return dict(
             selected=selected,
@@ -540,14 +552,30 @@ class OrdinaryEntry:
                 policies[product] = json.loads(existing[0])
         return list(policies.values())
 
-    def task_references(self, key):
+    def task_references(self, key, actor):
         with self.domain._connection_lock:
-            return [
-                dict(task=r["id"], state=r["state"])
-                for r in self.domain.db.execute(
-                    "SELECT id,state FROM native_tasks WHERE json_extract(task,'$.mandate')=?", (key,)
+            result = []
+            for row in self.domain.db.execute(
+                "SELECT * FROM native_tasks WHERE json_extract(task,'$.mandate')=?", (key,)
+            ):
+                try:
+                    self.workflow._read_allowed(actor, row)
+                except (NotFound, PermissionDenied):
+                    continue
+                contract = json.loads(row["task"])
+                terminal = json.loads(row["terminal"]) if row["terminal"] else {}
+                result.append(
+                    dict(
+                        observed_model=terminal.get("provider_model"),
+                        usage=terminal.get("usage"),
+                        task=row["id"],
+                        state=row["state"],
+                        issue_id=row["issue"],
+                        title=contract["source"]["definition"]["title"],
+                        selected_profile=contract["profile"],
+                    )
                 )
-            ]
+            return result
 
     def policy_reference(self, actor, requirement):
         tenant = self.domain.actor_context(actor)["tenant"]
@@ -725,6 +753,18 @@ class OrdinaryEntry:
             receipt = json.loads(row["receipt"])
         else:
             tasks = await self.planner.propose(row, recover=row["state"] == "held")
+            pinned = json.loads(row["payload"])["choices"].get("model")
+            if pinned is not None:
+                require(
+                    any(
+                        model["id"] == pinned
+                        and model.get("available") is True
+                        and "agent" in model.get("targets", [])
+                        and all(set(task["capabilities"]) <= set(model.get("capabilities", [])) for task in tasks)
+                        for model in self.installation.verify()["catalog"]
+                    ),
+                    "Selected model profile cannot execute the approved plan",
+                )
             # The installed finite catalog is reserved once. Planning and all
             # physical worker/check/review waits occur outside this short lock.
             lock = self.product_locks.setdefault(self.product(row), asyncio.Lock())

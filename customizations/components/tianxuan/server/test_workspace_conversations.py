@@ -85,7 +85,7 @@ def test_conversation_and_confirmations_are_private_durable_and_idempotent(tmp_p
         start=idle,
         stop=idle,
         entries=entries,
-        task_references=lambda _: [],
+        task_references=lambda key, actor: [],
         policy_reference=lambda *_: None,
         consumer=SimpleNamespace(notify=notify, failures=[]),
         installation=SimpleNamespace(

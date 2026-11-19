@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-989dd1515b00e350798e4914bd3cc50a1ddd0c5c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-runtime-closure-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1581",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "558cea56ec4ef6f63c5a55900a7a24e34b9d38b53cc1008428030d46a858817c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1581",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1586",
+    "action": "validation",
+    "detection_head": "3e1bb937a8635b2f1acd0f2adfb49b7b1e370210",
+    "context_sha256": "8dd6618bff3accff0083aabba43fd00e9dcc5d97bef009b038fd748c66c456ce",
+    "operator": "Sail-Li",
+    "worker": "codex:01a1f3d9-8b5b-7353-a143-34d14f065ee9",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "evidence": "issue-1581 local gate index delta 4ad2e015b46e87ba925fb2fcc96a01b11bd9f026b12d67109fef07f5facd0669",
+    "diagnosis": "Source intake had no persisted Diting request event. The subsequent evidence binding also required issue_number or an exact issue URL.",
+    "next_action": "Rerun the gate for the reviewed candidate, then verify PR and main independently.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T13:09:24.392551+00:00",
+    "attempted": "Recorded the source issue event and bound the CLI receipt with request_id and issue_number; local gate passed.",
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T13:49:08.843963+00:00",
+  "sha256": "9dedd82d00f02245480c9ae9e508673ba06051fd45ac0e67153f175a93756613"
+}

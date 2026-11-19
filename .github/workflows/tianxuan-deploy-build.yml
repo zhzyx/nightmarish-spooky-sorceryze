@@ -52,11 +52,16 @@ jobs:
           echo "GONGGONG_TESTED_API_IMAGE=$(docker image inspect tianxuan-api:ci --format '{{.Id}}')" >> "$GITHUB_ENV"
       - name: Native package execution and context
         run: |
-          docker run --rm --network none --read-only --memory 192m --cpus 1 \
+          docker create --name native-package --network none --read-only --memory 192m --cpus 1 \
             --tmpfs /tmp:rw,nosuid,nodev,size=67108864,mode=1777 \
             -e NATIVE_TEST_NODE=/usr/local/bin/node \
             --workdir /app "$GONGGONG_TESTED_API_IMAGE" \
-            python -B -m pytest -q -p no:cacheprovider -k 'not test_250_local_tool_burst' \
+            sh -ec '
+              for test_module do
+                python -B -m pytest -v -p no:cacheprovider --basetemp=/tmp/native-pytest \
+                  -k "not test_250_local_tool_burst" "$test_module"
+              done
+            ' native-package \
             customizations/components/tianxuan/server/test_native_entry_normal.py \
             customizations/components/tianxuan/server/test_native_shared_dispatch.py \
             customizations/components/tianxuan/server/test_native_entry_installation_lifecycle.py \
@@ -67,6 +72,37 @@ jobs:
             customizations/components/tianxuan/server/test_native_entry_context_admission.py \
             customizations/components/tianxuan/server/test_native_entry_context_backpressure.py \
             customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py
+          trap 'docker rm -f native-package >/dev/null' EXIT
+          docker start native-package
+          pid=$(docker inspect -f '{{.State.Pid}}' native-package)
+          group=$(awk -F: '$1=="0" {print $3}' "/proc/$pid/cgroup" 2>/dev/null || true)
+          (
+            while [[ -n "$group" && -r "/sys/fs/cgroup$group/memory.current" ]]; do
+              root="/sys/fs/cgroup$group"
+              date -u --iso-8601=ns
+              printf 'memory.current=%s memory.peak=%s events=%s\n' \
+                "$(cat "$root/memory.current")" "$(cat "$root/memory.peak")" "$(xargs < "$root/memory.events")"
+              pids=$(paste -sd, "$root/cgroup.procs")
+              if [[ -n "$pids" ]]; then ps -o pid,ppid,rss,comm -p "$pids" || true; fi
+              sleep 0.5
+            done
+          ) > "$RUNNER_TEMP/native-package-memory.log" 2>&1 &
+          observer=$!
+          code=$(docker wait native-package)
+          kill "$observer" 2>/dev/null || true
+          wait "$observer" || true
+          docker logs --timestamps native-package > "$RUNNER_TEMP/native-package-tests.log" 2>&1
+          cat "$RUNNER_TEMP/native-package-tests.log"
+          docker inspect --format 'OOMKilled={{.State.OOMKilled}} ExitCode={{.State.ExitCode}}' native-package | tee "$RUNNER_TEMP/native-package-exit.log"
+          tail -n 100 "$RUNNER_TEMP/native-package-memory.log"
+          exit "$code"
+      - name: Preserve native package memory and test timeline
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: native-package-measurements
+          path: ${{ runner.temp }}/native-package-*.log
+          if-no-files-found: warn
       # This budget includes 250 test-client threads plus the coordinator.
       # It is a functional burst check, not a production capacity measurement.
       - name: Native context burst with isolated test-driver budget

@@ -201,6 +201,12 @@ class InstallationManifest:
             require(not self._closed, "Installation admission closed")
             return self._verify()
 
+    def verify_manifest(self):
+        """Validate installed policy identity for a read without admitting executable use."""
+        with self._lock:
+            require(not self._closed, "Installation admission closed")
+            _verified_source(self.path, self.sha256)
+
     def _verify(self):
         # Parse the exact bytes hashed, and never expose cached trusted dictionaries.
         spec = json.loads(_verified_source(self.path, self.sha256, collect=True).decode("utf-8"))
