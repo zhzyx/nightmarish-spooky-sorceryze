@@ -778,8 +778,8 @@ func _sync_node_model_controls(data: Dictionary):
 	node_model_label.visible = generating
 	node_model_choice.visible = generating and _service_mode() not in ['api_modeling', 'api_sculpt']
 	node_model_edit.visible = generating
-	var secondary_image = generating and kind in ['image_to_mesh', 'text_to_mesh'] and _service_mode() not in ['kimi_native', 'api_modeling', 'api_sculpt']
-	node_image_model_label.text = '本节点重绘图像模型' if kind == 'image_to_mesh' else '本节点文字生成图像模型'
+	var secondary_image = generating and kind == 'text_to_mesh' and _service_mode() not in ['kimi_native', 'api_modeling', 'api_sculpt']
+	node_image_model_label.text = '本节点文字生成图像模型'
 	node_image_model_label.visible = secondary_image
 	node_image_model_choice.visible = secondary_image
 	node_image_model_edit.visible = secondary_image
@@ -892,12 +892,20 @@ func _merged_requirements(primary: String, supplementary: String) -> String:
 	if extra.is_empty(): return main
 	return main + "\n" + extra
 
+func _clear_image_mesh_text(data: Dictionary):
+	if str(data.get("type", "")) != "image_to_mesh": return
+	data.text = ""
+	var parameters: Dictionary = data.get("parameters", {})
+	parameters["prompt"] = ""
+	data.parameters = parameters
+
 func select_node(id: String):
 	var changed = selected_id != id
 	selected_id = id
 	var selected_kind = "copy"
 	for data in nodes:
 		if data.id == id:
+			_clear_image_mesh_text(data)
 			selected_kind = data.get("type", "copy")
 			_sync_node_model_controls(data)
 			_sync_node_files(data)
@@ -934,7 +942,7 @@ func apply_fields() -> bool:
 				var primary_name = node_model_edit.text.strip_edges()
 				if _service_mode() in ['api_modeling', 'api_sculpt']: primary_name = node_model_edit.text
 				if data.has('model') or not primary_name.is_empty(): data.model = primary_name
-				if data.get('type', '') in ['image_to_mesh', 'text_to_mesh']:
+				if data.get('type', '') == 'text_to_mesh':
 					var secondary_name = node_image_model_edit.text.strip_edges()
 					if data.has('image_model') or not secondary_name.is_empty(): data.image_model = secondary_name
 			_sync_node_files(data)
@@ -946,6 +954,7 @@ func apply_fields() -> bool:
 				params["prompt"] = _merged_requirements(str(params.get("prompt", "")), text_edit.text)
 				data.text = ""
 			data.parameters = params
+			_clear_image_mesh_text(data)
 	_update_service_summary()
 	return true
 
@@ -997,6 +1006,7 @@ func delete_node():
 
 func model() -> Dictionary:
 	for data in nodes:
+		_clear_image_mesh_text(data)
 		_sync_node_files(data)
 		if data.get("type", "copy") in ["text_to_image", "image_to_image"] and not data.has("version"): data.version = "4"
 	return {"format": 1, "nodes": nodes, "edges": edges}
@@ -1710,6 +1720,7 @@ func node_run_blocker(id: String) -> String:
 		var matching = nodes.filter(func(n): return n.id == next_id)
 		if matching.is_empty(): return "缺少必要的上游节点"
 		var data: Dictionary = matching[0]
+		_clear_image_mesh_text(data)
 		var kind: String = data.get("type", "copy")
 		if _retired_mesh_node(data): return RETIRED_GPT_MESH_NOTICE
 		var incoming = edges.filter(func(edge): return edge.to == next_id)
@@ -1776,7 +1787,8 @@ func show_context_menu(local_position: Vector2):
 		context_menu.add_submenu_item("预览历史", "ContextHistory", CONTEXT_HISTORY)
 		context_menu.set_item_disabled(context_menu.item_count - 1, history.is_empty())
 		if history.is_empty(): context_menu.set_item_tooltip(context_menu.item_count - 1, "本次会话暂无该节点的预览版本")
-		_context_item("编辑提示词与参数", CONTEXT_EDIT)
+		var context_kind = str(nodes.filter(func(n): return n.id == id)[0].get("type", "copy"))
+		_context_item("编辑参数" if context_kind == "image_to_mesh" else "编辑提示词与参数", CONTEXT_EDIT)
 		_context_item("重试节点", CONTEXT_RETRY, _retry_blocker(id))
 		context_menu.add_separator()
 		_context_item("复制节点", CONTEXT_DUPLICATE, busy_reason)
@@ -1826,8 +1838,9 @@ func _context_action(action: int):
 		CONTEXT_EDIT:
 			if context_node_ids.size() == 1:
 				if parameter_form.prompt_edit.is_visible_in_tree(): parameter_form.prompt_edit.grab_focus()
-				else: text_edit.grab_focus()
-				status.text = "在右侧编辑提示词与参数，完成后右键选择“运行并预览”"
+				elif text_edit.is_visible_in_tree(): text_edit.grab_focus()
+				else: parameter_form.advanced_toggle.grab_focus()
+				status.text = "在右侧编辑参数，完成后右键选择“运行并预览”"
 		CONTEXT_RETRY:
 			if context_node_ids.size() == 1:
 				var reason = _retry_blocker(context_node_ids[0])
@@ -2219,7 +2232,6 @@ func _generator_description(data: Dictionary) -> String:
 	if kind == 'copy': return '本机离线复制'
 	var selected_model = str(data.get('model', '')) if not _using_legacy_service() else '高级自定义服务'
 	var description = node_label(kind) + ' · ' + (selected_model if not selected_model.is_empty() else 'CLI 默认／待选择模型')
-	if kind == 'image_to_mesh' and not str(data.get('image_model', '')).is_empty(): description += ' · 重绘 ' + str(data.image_model)
 	if _service_mode() in ['api_modeling', 'api_sculpt']: description += ' · 自选 API 语义规划'
 	elif _service_mode() == 'local_mesh': description += ' · 本机网格'
 	elif _service_mode() == 'kimi_native': description += ' · Tripo API 直接 3D' if _is_mesh_kind(kind) else ' · Kimi Work 图像服务'

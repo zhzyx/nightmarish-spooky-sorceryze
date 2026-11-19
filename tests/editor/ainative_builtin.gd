@@ -248,6 +248,10 @@ func verify_file_pickers():
 	panel.add_generator()
 	data = panel.nodes.back()
 	check(data.type == 'image_to_mesh' and data.version == '2' and panel.source_picker.file_mode == FileDialog.FILE_MODE_OPEN_FILES, 'image-to-Mesh accepts multiple source images')
+	data.parameters.prompt = 'legacy hidden requirement'
+	data.text = 'legacy hidden node text'
+	panel.select_node(data.id)
+	check(not panel.parameter_form.prompt_edit.is_visible_in_tree() and not panel.node_image_model_edit.is_visible_in_tree() and data.parameters.prompt.is_empty() and data.text.is_empty(), 'bundled image-to-Mesh is image-only and clears legacy text without a redraw model')
 	panel.source_picker.files_selected.emit(PackedStringArray([source, source]))
 	check(data.source_paths.size() == 2, 'image-to-Mesh preserves picked source ordering')
 	panel.delete_node()

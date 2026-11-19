@@ -248,31 +248,32 @@ func run():
 	check(panel.service_report.capabilities.text_to_image.ready and panel.service_report.capabilities.image_to_mesh.ready, "capability detection does not depend on a model being selected")
 	await configure_valid()
 	check(panel._service_blocker("text_to_image", {"model":image_model}).is_empty() and panel._service_blocker("image_to_mesh", {"model":mesh_model}).is_empty(), "corrected detected settings and explicit node models recover service eligibility without restarting")
-	# A mesh-only configuration is sufficient until an explicit redraw prompt is supplied.
+	# Image-to-Mesh is image-only and needs no auxiliary redraw model or text.
 	select_model(panel.image_model_choice, "")
 	panel.save_service_settings()
 	panel.check_service()
 	await idle()
 	panel.show_native_section("mesh")
 	set_node("image_to_mesh", ProjectSettings.globalize_path("res://fixtures/sample.png"))
-	check(panel.node_run_blocker("fixture").is_empty() and panel.service_report.capabilities.image_to_mesh.ready, "mesh-only settings allow image-to-mesh without an optional redraw prompt")
-	panel.parameter_form.prompt_edit.text = "redraw this source before mesh generation"
-	panel.parameter_form.prompt_edit.text_changed.emit()
-	panel.apply_fields()
-	check(panel.node_run_blocker("fixture").contains("图像模型"), "an explicit image-to-mesh redraw prompt requires an image model")
-	panel.path_edit.text = state_path.path_join("existing-redraw-workflow.json")
+	check(panel.node_run_blocker("fixture").is_empty() and panel.service_report.capabilities.image_to_mesh.ready, "mesh-only settings allow image-to-mesh without an image model or prompt")
+	check(not panel.parameter_form.prompt_edit.is_visible_in_tree(), "image-to-mesh has no text input")
+	panel.nodes[0].parameters.prompt = "legacy hidden redraw requirement"
+	panel.nodes[0].text = "legacy hidden node text"
+	panel.select_node("fixture")
+	check(panel.nodes[0].parameters.prompt.is_empty() and panel.nodes[0].text.is_empty() and panel.node_run_blocker("fixture").is_empty(), "legacy image-to-mesh text is cleared instead of triggering a hidden redraw")
+	panel.path_edit.text = state_path.path_join("existing-image-only-workflow.json")
 	panel.save_graph()
 	panel.open_graph()
 	panel.select_node("fixture")
-	check(panel.nodes[0].parameters.prompt == "redraw this source before mesh generation" and panel.parameter_form.prompt_edit.text == panel.nodes[0].parameters.prompt, "existing saved image-to-mesh prompts remain intact and visible")
+	check(panel.nodes[0].parameters.prompt.is_empty() and not panel.parameter_form.prompt_edit.is_visible_in_tree(), "saved image-to-mesh workflows reopen without text input or residual prompts")
 	for i in panel.generator_choice.item_count:
 		if panel.generator_choice.get_item_metadata(i) == "image_to_mesh": panel.generator_choice.select(i)
 	panel.add_generator()
-	check(panel.nodes.back().parameters.prompt.is_empty(), "new image-to-mesh nodes start without silently requesting image redraw")
+	check(panel.nodes.back().parameters.prompt.is_empty(), "new image-to-mesh nodes start with an empty prompt")
 	var count_before_context = panel.nodes.size()
 	panel.graph.popup_request.emit(panel.graph.size - Vector2(10,10))
 	panel.create_context_node("image_to_mesh")
-	check(panel.nodes.size() == count_before_context + 1 and panel.nodes.back().parameters.prompt.is_empty(), "context-created image-to-mesh nodes also start with an empty optional prompt")
+	check(panel.nodes.size() == count_before_context + 1 and panel.nodes.back().parameters.prompt.is_empty(), "context-created image-to-mesh nodes also start with an empty prompt")
 	panel.context_menu.hide()
 	# The original defect swallowed create exceptions. A fixture which becomes
 	# unavailable after discovery proves the actual create reply is actionable.
