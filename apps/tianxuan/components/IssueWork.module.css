@@ -8,3 +8,5 @@
 .work article { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid currentColor; }
 .work pre { white-space: pre-wrap; }
 .road { display: flex; gap: 2rem; flex-wrap: wrap; padding-inline-start: 1.5rem; }
+.work article img { display: block; max-width: 100%; max-height: 30rem; object-fit: contain; }
+.work article model-viewer { display: block; width: 100%; height: clamp(16rem, 48vh, 32rem); }

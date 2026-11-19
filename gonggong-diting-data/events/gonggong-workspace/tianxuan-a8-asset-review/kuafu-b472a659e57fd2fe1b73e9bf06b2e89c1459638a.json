@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b472a659e57fd2fe1b73e9bf06b2e89c1459638a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-a8-asset-review",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1602",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7ba3f4238dbc196cf76eb180898e64220ecdad09248a17c6b66c61bb671a9c50",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1602",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1605",
+    "action": "delivery",
+    "detection_head": "f820c687083ff12db1a122bb27675d79bbdebc46",
+    "context_sha256": "1c5072d7dff7f297bb7f7c3f222ed049ee92fc8d3281eb62cd58cb023c25e392",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1605",
+    "diagnosis": "Git HTTPS fetch to github.com:443 failed before formal gate. No candidate commit or PR was created. Subsequent HTTP/1.1 ls-remote returned current main.",
+    "next_action": "Integrate current main after verifying disjoint paths and repeat signed delivery with HTTP/1.1.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T14:39:53.249318+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T14:43:22.121279+00:00",
+  "sha256": "150b3132356eabd3a1d106f7c94a4d6ea428ca50832661f7b84838dae3d5df78"
+}
