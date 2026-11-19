@@ -1,11 +1,12 @@
 """Archive a captured inventory, Git bundle and attachments into a selected native DB."""
+
 import argparse
 import hashlib
 import json
 from pathlib import Path
-from importer import import_inventory
-from git_archive import git, verify_bundle_relations
 
+from git_archive import git, verify_bundle_relations
+from importer import import_inventory
 
 
 def archive(inventory, git_dir, attachment_dir, database, tenant, actor):
@@ -13,14 +14,19 @@ def archive(inventory, git_dir, attachment_dir, database, tenant, actor):
     mirror = git_dir / "archive.git"
     history = json.loads((git_dir / "git-report.json").read_bytes())
     source = manifest["source"]
-    if history["source"] != f"https://github.com/{source}.git" or git(mirror, "remote", "get-url", "origin") != history["source"]:
+    if (
+        history["source"] != f"https://github.com/{source}.git"
+        or git(mirror, "remote", "get-url", "origin") != history["source"]
+    ):
         raise ValueError("Inventory and Git mirror have different sources")
     bundle = (git_dir / "history.bundle").resolve()
     git(mirror, "bundle", "verify", str(bundle))
-    refs = dict(line.split(" ", 1) for line in git(
-        mirror, "for-each-ref", "--format=%(refname) %(objectname)").splitlines())
-    archived_refs = dict(line.split(" ", 1)[::-1] for line in git(
-        mirror, "bundle", "list-heads", str(bundle)).splitlines())
+    refs = dict(
+        line.split(" ", 1) for line in git(mirror, "for-each-ref", "--format=%(refname) %(objectname)").splitlines()
+    )
+    archived_refs = dict(
+        line.split(" ", 1)[::-1] for line in git(mirror, "bundle", "list-heads", str(bundle)).splitlines()
+    )
     archived_head = archived_refs.pop("HEAD", None)
     if refs != archived_refs or refs != history["refs"] or archived_head != history["head"]:
         raise ValueError("Git mirror, report and bundle differ")

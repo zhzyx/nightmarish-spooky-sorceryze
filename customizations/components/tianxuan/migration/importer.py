@@ -1,11 +1,12 @@
 """Archive inventory records and supplied binaries in immutable Duobao revisions."""
+
 from __future__ import annotations
 
-from collections import Counter
 import hashlib
 import json
-from pathlib import Path
 import sys
+from collections import Counter
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "duobao"))
 from native_store import Conflict, NativeStore
@@ -14,8 +15,7 @@ BLOCK_SIZE = 4 * 1024 * 1024
 
 
 def canonical(value):
-    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"),
-                      allow_nan=False).encode("utf-8")
+    return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8")
 
 
 def digest(value):
@@ -28,9 +28,7 @@ def write_verified(store, tenant, actor, edits):
     revision = store.head(tenant, module)
     if revision is None:
         try:
-            receipt = store.submit(tenant, actor, module, [
-                dict(module=module, base=None, reads=[], edits=edits)
-            ])
+            receipt = store.submit(tenant, actor, module, [dict(module=module, base=None, reads=[], edits=edits)])
             revision = receipt["revisions"][module]
         except Conflict:
             revision = store.head(tenant, module)
@@ -64,9 +62,13 @@ def import_inventory(manifest_path, database, tenant, actor, *, artifacts=None):
             row = json.loads(line)
             source_id = row["source_id"]
             prefix = "github:" + report["source"] + "/" + row["kind"] + "/"
-            if (source_id in sources or not source_id.startswith(prefix)
-                    or source_id == prefix or row["mode"] != "record_only"
-                    or digest(canonical(row["content"])) != row["sha256"]):
+            if (
+                source_id in sources
+                or not source_id.startswith(prefix)
+                or source_id == prefix
+                or row["mode"] != "record_only"
+                or digest(canonical(row["content"])) != row["sha256"]
+            ):
                 raise ValueError("Invalid or duplicate inventory record")
             sources.add(source_id)
             counts[row["kind"]] += 1
@@ -92,8 +94,11 @@ def import_inventory(manifest_path, database, tenant, actor, *, artifacts=None):
             raise ValueError("Binary source checksum mismatch")
         binaries[source_id] = {"sha256": expected, "blocks": blocks}
     catalog = {"version": 1, "report": report, "record_batches": batches, "binaries": binaries}
-    return dict(write_verified(store, tenant, actor, {"catalog.json": canonical(catalog)}),
-                counts=dict(counts), binary_count=len(binaries))
+    return dict(
+        write_verified(store, tenant, actor, {"catalog.json": canonical(catalog)}),
+        counts=dict(counts),
+        binary_count=len(binaries),
+    )
 
 
 def restore_inventory(database, tenant, module, revision, output):
@@ -124,9 +129,11 @@ def restore_inventory(database, tenant, module, revision, output):
                 for name in batch["order"]:
                     line = read(batch, name)
                     row = json.loads(line)
-                    if (digest(row["source_id"].encode()) != name
-                            or row["mode"] != "record_only"
-                            or digest(canonical(row["content"])) != row["sha256"]):
+                    if (
+                        digest(row["source_id"].encode()) != name
+                        or row["mode"] != "record_only"
+                        or digest(canonical(row["content"])) != row["sha256"]
+                    ):
                         raise ValueError("Archived record identity or contents differ")
                     counts[row["kind"]] += 1
                     checksum.update(line)

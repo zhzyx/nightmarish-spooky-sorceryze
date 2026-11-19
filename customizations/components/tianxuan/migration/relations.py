@@ -1,4 +1,5 @@
 """Verify historical references against the inventory and the supplied Git object store."""
+
 import json
 import re
 import subprocess
@@ -60,8 +61,14 @@ def verify_relations(records_path, mirror_path):
                             ref = content.get(role) or {}
                             if ref.get("sha") == key:
                                 remote = (ref.get("repo") or {}).get("full_name")
-                                refs.append(dict(role=role, ref=ref.get("ref"), repository=remote,
-                                                 fork=(remote.casefold() != scope) if remote else None))
+                                refs.append(
+                                    dict(
+                                        role=role,
+                                        ref=ref.get("ref"),
+                                        repository=remote,
+                                        fork=(remote.casefold() != scope) if remote else None,
+                                    )
+                                )
                         if content.get("merge_commit_sha") == key:
                             refs.append({"role": "merge_commit_sha"})
                         edge["historical_refs"] = refs
@@ -70,10 +77,20 @@ def verify_relations(records_path, mirror_path):
                     unresolved.append(dict(edge, reason="inventory_target_absent"))
 
     ids = sorted({key for key, _, _ in pending})
-    found = subprocess.run(["git", "--no-replace-objects", "-C", str(mirror_path), "cat-file",
-                            "--batch-check=%(objectname) %(objecttype)"],
-                           input="".join(key + "\n" for key in ids), text=True,
-                           capture_output=True, check=True).stdout.splitlines()
+    found = subprocess.run(
+        [
+            "git",
+            "--no-replace-objects",
+            "-C",
+            str(mirror_path),
+            "cat-file",
+            "--batch-check=%(objectname) %(objecttype)",
+        ],
+        input="".join(key + "\n" for key in ids),
+        text=True,
+        capture_output=True,
+        check=True,
+    ).stdout.splitlines()
     types = {}
     for key, answer in zip(ids, found, strict=True):
         returned, kind = answer.split()
@@ -82,8 +99,13 @@ def verify_relations(records_path, mirror_path):
         types[key] = kind
     for key, expected, edge in pending:
         if types[key] != expected:
-            unresolved.append(dict(edge, reason="git_object_absent_or_wrong_type",
-                                   observed=types[key], expected=expected))
-    return dict(complete=not unresolved, checked=checked,
-                resolved=checked-len(unresolved)-len(external),
-                unresolved=unresolved, external=external)
+            unresolved.append(
+                dict(edge, reason="git_object_absent_or_wrong_type", observed=types[key], expected=expected)
+            )
+    return dict(
+        complete=not unresolved,
+        checked=checked,
+        resolved=checked - len(unresolved) - len(external),
+        unresolved=unresolved,
+        external=external,
+    )

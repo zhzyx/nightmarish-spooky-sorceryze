@@ -1,12 +1,13 @@
 """Capture and verify one Git mirror for the historical migration."""
+
 import argparse
 import hashlib
 import json
-from pathlib import Path
 import re
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "duobao"))
 from git_service import GitService
@@ -18,13 +19,13 @@ def git(repo, *args):
 
 def verify_bundle_relations(bundle, records):
     from relations import verify_relations
+
     with tempfile.TemporaryDirectory(dir=bundle.parent) as temp:
         restored = Path(temp) / "archive.git"
-        subprocess.run(["git", "clone", "--quiet", "--mirror", "--", str(bundle.resolve()),
-                        str(restored)], check=True)
+        subprocess.run(["git", "clone", "--quiet", "--mirror", "--", str(bundle.resolve()), str(restored)], check=True)
         result = verify_relations(records, restored)
         if not result["complete"]:
-            raise ValueError(f'Unresolved bundled relations: {result["unresolved"][:5]}')
+            raise ValueError(f"Unresolved bundled relations: {result['unresolved'][:5]}")
         return result
 
 
@@ -37,10 +38,14 @@ def capture(source, output, reference=None, records=None):
     if not mirror.exists() and reference is not None:
         common = git(reference, "rev-parse", "--path-format=absolute", "--git-common-dir")
         import tempfile
+
         with tempfile.TemporaryDirectory(dir=output) as staging:
             staged = Path(staging) / "archive.git"
-            subprocess.run(["git", "clone", "--mirror", "--reference", common, "--dissociate",
-                            "--", url, str(staged)], check=True, timeout=3600)
+            subprocess.run(
+                ["git", "clone", "--mirror", "--reference", common, "--dissociate", "--", url, str(staged)],
+                check=True,
+                timeout=3600,
+            )
             staged.rename(mirror)
     if not mirror.exists():
         GitService().import_repo(output, mirror.name, url, allowed_hosts=["github.com"], timeout=3600)
@@ -48,30 +53,35 @@ def capture(source, output, reference=None, records=None):
         raise ValueError("checkpoint source mismatch")
     if records is not None:
         from supplemental import supplement
+
         if (output / "history.bundle").exists():
             # Never change an already-published snapshot when new records arrive.
             from relations import verify_relations
+
             if not verify_relations(records, mirror)["complete"]:
                 raise ValueError("New historical references require a new snapshot directory")
         else:
             result = supplement(records, mirror, url)
             if result["still_missing"]:
-                raise ValueError(f'Unresolved historical commits: {result["still_missing"]}')
+                raise ValueError(f"Unresolved historical commits: {result['still_missing']}")
     git(mirror, "fsck", "--full", "--no-dangling")
-    refs = dict(line.split(" ", 1) for line in git(
-        mirror, "for-each-ref", "--format=%(refname) %(objectname)").splitlines())
+    refs = dict(
+        line.split(" ", 1) for line in git(mirror, "for-each-ref", "--format=%(refname) %(objectname)").splitlines()
+    )
     bundle = output / "history.bundle"
     if not bundle.exists():
         # A killed pack writer must never publish a partial bundle as a checkpoint.
         import tempfile
+
         with tempfile.TemporaryDirectory(dir=output) as temporary:
             staged = Path(temporary) / bundle.name
             git(mirror, "bundle", "create", str(staged.resolve()), "--all")
             git(mirror, "bundle", "verify", str(staged.resolve()))
             staged.replace(bundle)
     git(mirror, "bundle", "verify", str(bundle.resolve()))
-    bundled = dict(line.split(" ", 1)[::-1] for line in git(
-        mirror, "bundle", "list-heads", str(bundle.resolve())).splitlines())
+    bundled = dict(
+        line.split(" ", 1)[::-1] for line in git(mirror, "bundle", "list-heads", str(bundle.resolve())).splitlines()
+    )
     if any(bundled.get(name) != oid for name, oid in refs.items()):
         raise ValueError("bundle refs differ from mirror")
     if records is not None:
@@ -91,10 +101,17 @@ def capture(source, output, reference=None, records=None):
         with path.open("rb") as stream:
             if hashlib.file_digest(stream, "sha256").hexdigest() != oid:
                 raise ValueError("LFS content mismatch")
-    report = {"source": url, "head": git(mirror, "rev-parse", "HEAD"), "refs": refs,
-              "commit_count": int(git(mirror, "rev-list", "--count", "--all")),
-              "bundle": bundle.name, "bundle_sha256": digest, "bytes": bundle.stat().st_size,
-              "lfs_objects": sorted(lfs_ids), "submodule_repositories": "not verified"}
+    report = {
+        "source": url,
+        "head": git(mirror, "rev-parse", "HEAD"),
+        "refs": refs,
+        "commit_count": int(git(mirror, "rev-list", "--count", "--all")),
+        "bundle": bundle.name,
+        "bundle_sha256": digest,
+        "bytes": bundle.stat().st_size,
+        "lfs_objects": sorted(lfs_ids),
+        "submodule_repositories": "not verified",
+    }
     path = output / "git-report.json"
     path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     return path

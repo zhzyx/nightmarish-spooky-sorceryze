@@ -1,4 +1,5 @@
 """Collect referenced GitHub uploads without forwarding credentials to linked sites."""
+
 import argparse
 import hashlib
 import json
@@ -6,14 +7,19 @@ import os
 import tempfile
 from pathlib import Path
 from urllib.parse import urlsplit
-from urllib.request import build_opener, HTTPRedirectHandler
+from urllib.request import HTTPRedirectHandler, build_opener
 
 
 def checked_url(url):
     parsed = urlsplit(url)
     host = parsed.hostname or ""
-    if (parsed.scheme != "https" or parsed.username or parsed.password or parsed.port not in (None, 443)
-            or not (host == "github.com" or host.endswith(".githubusercontent.com"))):
+    if (
+        parsed.scheme != "https"
+        or parsed.username
+        or parsed.password
+        or parsed.port not in (None, 443)
+        or not (host == "github.com" or host.endswith(".githubusercontent.com"))
+    ):
         raise ValueError("unexpected attachment host")
     return url
 
@@ -55,8 +61,10 @@ def capture(manifest, output):
                             if hashlib.file_digest(stream, "sha256").hexdigest() == sha:
                                 records[key] = entry
                                 continue
-                with opener.open(url, timeout=40) as response, tempfile.NamedTemporaryFile(
-                        dir=output, delete=False) as stream:
+                with (
+                    opener.open(url, timeout=40) as response,
+                    tempfile.NamedTemporaryFile(dir=output, delete=False) as stream,
+                ):
                     temp = Path(stream.name)
                     if response.headers.get_content_type() == "text/html":
                         raise ValueError("received HTML instead of attachment")
@@ -71,7 +79,7 @@ def capture(manifest, output):
                         raise ValueError("incomplete response")
                 name = digest.hexdigest()
                 os.replace(temp, output / name)
-                records[key] = {"sha256":name, "bytes":size}
+                records[key] = {"sha256": name, "bytes": size}
             except (OSError, ValueError) as exc:
                 failures[key] = type(exc).__name__ + " " + str(getattr(exc, "code", ""))
             finally:
@@ -90,5 +98,5 @@ if __name__ == "__main__":
     parser.add_argument("output", type=Path)
     args = parser.parse_args()
     result = capture(args.records, args.output)
-    print(json.dumps({key:len(items) for key,items in result.items()}))
+    print(json.dumps({key: len(items) for key, items in result.items()}))
     raise SystemExit(bool(result["failures"]))

@@ -1,10 +1,10 @@
 import hashlib
 import io
 import json
-from email.message import Message
-from pathlib import Path
 import tempfile
 import unittest
+from email.message import Message
+from pathlib import Path
 from unittest.mock import patch
 
 from attachments import capture, checked_url
@@ -20,8 +20,13 @@ class UploadCapture(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp, patch("attachments.build_opener") as opener:
             root = Path(tmp)
             manifest = root / "records.jsonl"
-            manifest.write_text(json.dumps({"kind":"attachment","source_id":"sample",
-                                "content":{"url":"https://github.com/user-attachments/assets/test"}}))
+            manifest.write_text(
+                json.dumps({
+                    "kind": "attachment",
+                    "source_id": "sample",
+                    "content": {"url": "https://github.com/user-attachments/assets/test"},
+                })
+            )
             opener.return_value.open.return_value = response
             dest = root / "captures"
             first = capture(manifest, dest)

@@ -1,4 +1,5 @@
 """Select the entry for newly created tasks. Archived imports never enter a queue."""
+
 import argparse
 import json
 import sqlite3
@@ -12,9 +13,7 @@ def select_entry(database, project, requirement=None, *, historical=False):
     if not Path(database).is_file():
         return "existing"
     with closing(sqlite3.connect(database)) as connection:
-        if not connection.execute(
-            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='routing'"
-        ).fetchone():
+        if not connection.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='routing'").fetchone():
             return "existing"
         for key in (requirement, ""):
             if key is None:
@@ -52,5 +51,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.set:
         configure(args.database, args.project, args.requirement, args.set)
-    print(json.dumps({"entry": select_entry(args.database, args.project, args.requirement,
-                                             historical=args.historical)}))
+    print(
+        json.dumps({"entry": select_entry(args.database, args.project, args.requirement, historical=args.historical)})
+    )
