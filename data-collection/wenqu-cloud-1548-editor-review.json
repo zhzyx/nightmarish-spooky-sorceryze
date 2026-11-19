@@ -1,0 +1,44 @@
+{
+  "request_id": "wenqu-cloud-20261119",
+  "issue_number": 1548,
+  "reviewer": "codex-native-agent/auth_flow",
+  "review_type": "independent_source_review",
+  "reviewed_at": "2026-11-19T07:26:02.616751+00:00",
+  "result": "pass",
+  "findings": [],
+  "files": [
+    {
+      "path": "apps/tianxuan/components/CreateDoc.tsx",
+      "sha256": "194c3c1804c751b951a2841fa28dc013f4c424532c233a63a794b8e0f3048f2e"
+    },
+    {
+      "path": "apps/tianxuan/app/docs/page.tsx",
+      "sha256": "64e3a60870884bcfd44e700bdeaf1db32752c28ac81da0265831fbdfcda067fb"
+    },
+    {
+      "path": "apps/tianxuan/components/DocEditor.tsx",
+      "sha256": "1c15386ed51a66602d868aff3f94bd5086a647d89bf95e57c7f39e43039bb7bc"
+    },
+    {
+      "path": "apps/tianxuan/lib/api.ts",
+      "sha256": "5372e2599a5c9283c8d79719cb47bc9ec4c13943d45df692f67b3342e0552bef"
+    }
+  ],
+  "checks": [
+    "CreateDoc uses authenticated same-origin requests and reuses a call_id after failure for the same title; double submit is guarded.",
+    "Document list shows authenticated API records, empty state, and loading failure without demonstration fallback.",
+    "Editor retains per-user drafts, tracks body/title/version base after successful merge, persists title with expected_version, and detects competing title changes.",
+    "Saving is guarded against overlapping saves and edits; failed title writes retain merged body and the pending title for retry.",
+    "Legacy drafts lacking version base are copied into a separate recovery record with Markdown export, avoiding automatic stale-body merge.",
+    "Recovery storage failures preserve the original draft by blocking overwrite/removal; successful server saves distinguish synced state from local draft state."
+  ],
+  "verification_limits": [
+    "This agent performed source review only and did not independently execute browser scenarios.",
+    "Root reported real-browser create/edit/refresh and second save/refresh success; those are root-owned evidence and are not claimed as reviewer executions.",
+    "Title and body use separate version-checked requests, so a title failure can leave body already persisted; UI preserves title for retry."
+  ],
+  "byte_normalization": {
+    "by": "root integration owner",
+    "change": "CRLF to LF only after independent review; hashes refreshed for exact Git bytes"
+  }
+}

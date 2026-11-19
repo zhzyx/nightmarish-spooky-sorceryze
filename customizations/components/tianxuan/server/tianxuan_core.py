@@ -21,6 +21,9 @@ from functools import wraps
 from threading import RLock
 from typing import Any, Concatenate, ParamSpec, TypeVar, cast
 
+from wenqu_bridge import build_ai_index
+from wenqu_bridge import search as search_documents
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS tenants (
   id TEXT PRIMARY KEY, name TEXT NOT NULL, slug TEXT UNIQUE NOT NULL, created_at TEXT NOT NULL
@@ -991,9 +994,28 @@ class Tianxuan:
         if _ROLE_RANK.get(self.role_of(actor), 0) < _ROLE_RANK.get(str(row["min_role"]), 0):
             raise PermissionDenied(f"{field} requires {row['min_role']} role")
 
-    def ai_view(self, doc_id: str) -> dict[str, Any]:
+    @_connection_call
+    def ai_view(
+        self,
+        doc_id: str,
+        *,
+        include_body: bool = True,
+        start_line: int = 1,
+        max_lines: int | None = None,
+        max_chars: int | None = None,
+        expected_version: int | None = None,
+    ) -> dict[str, Any]:
+        if not isinstance(include_body, bool):
+            raise TianxuanError("include_body must be boolean")
+        if type(start_line) is not int or start_line < 1:
+            raise TianxuanError("start_line must be a positive integer")
+        for value in (start_line, max_lines, max_chars, expected_version):
+            if value is not None and (type(value) is not int or value < 1):
+                raise TianxuanError("reading limits and version must be positive integers")
         doc = self.get_doc(doc_id)
-        return {
+        if expected_version is not None and doc["version"] != expected_version:
+            raise VersionConflict("document changed since requested version")
+        result = {
             "id": doc["id"],
             "title": doc["title"],
             "kind": doc["kind"],
@@ -1001,9 +1023,77 @@ class Tianxuan:
             "request_id": doc["request_id"],
             "tags": doc["tags"],
             "version": doc["version"],
-            "machine": machine_view(doc["body_md"]),
-            "body_md": doc["body_md"],
+            "machine": build_ai_index(doc["body_md"]),
         }
+        if include_body:
+            lines = doc["body_md"].splitlines(keepends=True)
+            stop = None if max_lines is None else start_line - 1 + max_lines
+            body = "".join(lines[start_line - 1 : stop])
+            result["body_md"] = body if max_chars is None else body[:max_chars]
+            result["range"] = {
+                "start_line": start_line,
+                "total_lines": len(lines),
+                "returned_chars": len(result["body_md"]),
+                "truncated": result["body_md"] != doc["body_md"],
+            }
+        return result
+
+    @_connection_call
+    def search_docs(self, actor: str, q: str, limit: int = 20) -> dict[str, Any]:
+        if not isinstance(q, str) or not q.strip():
+            raise TianxuanError("search query must not be empty")
+        if type(limit) is not int or not 1 <= limit <= 100:
+            raise TianxuanError("limit must be between 1 and 100")
+        documents = [self.get_doc(row["id"]) for row in self.list_docs(actor)]
+        by_id = {document["id"]: document for document in documents}
+        return {
+            "results": [
+                {
+                    **item,
+                    "title": by_id[item["id"]]["title"],
+                    "kind": by_id[item["id"]]["kind"],
+                }
+                for item in search_documents(documents, q)[:limit]
+            ]
+        }
+
+    @_connection_call
+    @_replayable("doc.patch", legacy=False)
+    def patch_doc(
+        self,
+        actor: str,
+        doc_id: str,
+        expected_version: int,
+        patches: list[dict[str, str]],
+        *,
+        call_id: str | None = None,
+    ) -> dict[str, Any]:
+        if type(expected_version) is not int or expected_version < 1:
+            raise TianxuanError("expected_version must be a positive integer")
+        self._require_tenant_doc(actor, doc_id)
+        document = self.get_doc_shared(actor, doc_id, write=True)
+        if document["version"] != expected_version:
+            raise VersionConflict(f"version mismatch: expected {expected_version}, current {document['version']}")
+        if not isinstance(patches, list):
+            raise TianxuanError("patches must be a list")
+        body = document["body_md"]
+        for operation in patches:
+            if (
+                not isinstance(operation, dict)
+                or set(operation) != {"find", "replace"}
+                or any(not isinstance(value, str) for value in operation.values())
+            ):
+                raise TianxuanError("patch requires find and replace strings")
+            find = operation["find"]
+            if not find:
+                raise TianxuanError("patch find must not be empty")
+            occurrences = body.count(find)
+            if occurrences == 0:
+                raise TianxuanError(f"patch target not found: {find!r}")
+            if occurrences > 1:
+                raise TianxuanError(f"patch target is ambiguous ({occurrences} matches): {find!r}")
+            body = body.replace(find, operation["replace"], 1)
+        return self.update_doc(actor, doc_id, body, expected_version)
 
     def _version(self, doc_id: str, version: int, body_md: str, author: str) -> None:
         self.db.execute(
@@ -2112,9 +2202,11 @@ class Tianxuan:
             return
         if name == "doc.create" and payload["space_id"] is not None:
             self._require_tenant_object(actor, "spaces", payload["space_id"])
-        if name == "doc.update":
+        if name in ("doc.update", "doc.patch"):
             self._require_tenant_doc(actor, payload["doc_id"])
-            self.get_doc_shared(actor, payload["doc_id"], write=True)
+            document = self.get_doc_shared(actor, payload["doc_id"], write=True)
+            if name == "doc.patch":
+                self._require_field_write(actor, document, "body_md")
         if name == "requirement.plan":
             self._require_requirement(actor, payload["requirement_id"], write=True)
         if name == "issue.create":
@@ -2130,7 +2222,7 @@ class Tianxuan:
                 raise TransitionRejected("native managed completion requires trusted workflow acceptance")
         if result is None:
             return
-        if name in ("doc.create", "doc.update", "requirement.create"):
+        if name in ("doc.create", "doc.update", "doc.patch", "requirement.create"):
             self._require_tenant_doc(actor, result["id"])
             self.get_doc_shared(actor, result["id"], write=True)
         else:
@@ -2206,6 +2298,7 @@ class Tianxuan:
         writes: dict[str, Callable[..., Any]] = {
             "doc.create": self.create_doc,
             "doc.update": self.update_doc,
+            "doc.patch": self.patch_doc,
             "requirement.create": self.create_requirement,
             "requirement.plan": self.plan_tickets,
             "issue.create": self.create_issue,
@@ -2244,7 +2337,9 @@ class Tianxuan:
         if name == "doc.read":
             self._require_tenant_doc(actor, payload["doc_id"])
             self.get_doc_shared(actor, payload["doc_id"])
-            return self.ai_view(payload["doc_id"])
+            return self.ai_view(**payload)
+        if name == "doc.search":
+            return self.search_docs(actor, **payload)
         if name == "doc.list":
             return {"docs": self.list_docs(actor, payload.get("kind"))}
         if name == "issue.list":

@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+from typing import Any
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -197,11 +199,20 @@ class DocPatchOperation(BaseModel):
     replace: str
 
 
+class ToolCallRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str
+    payload: dict[str, Any]
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
+
+
 class DocPatchRequest(BaseModel):
     """按版本号对文档做结构化补丁，供 AI 以最小 token 编辑。"""
 
     expected_version: int
     patches: list[DocPatchOperation]
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
 class DocVisibilityRequest(BaseModel):
