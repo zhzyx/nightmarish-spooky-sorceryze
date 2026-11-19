@@ -27,6 +27,14 @@ pnpm build
 pnpm start
 ```
 
+### 容器运行包
+
+Web 容器从本目录构建，由仓库内 `deploy/Dockerfile.web` 启用 Next.js standalone。构建输入由 `deploy/Dockerfile.web.dockerignore` 限定。最终镜像使用 Node 自带的 `node` 用户运行 `node server.js`，包含追踪到的生产依赖、`.next/static` 和存在时的 `public`。
+
+监听仍由 `HOSTNAME` 和 `PORT` 控制，默认 `0.0.0.0:3000`。`NEXT_PUBLIC_TIANXUAN_API_BASE` 和 `NEXT_PUBLIC_TIANXUAN_ACTOR` 保持原构建参数。Next 的 `TIANXUAN_API_ORIGIN` 重写在构建时确定，服务端读取的 `TIANXUAN_INTERNAL_API_BASE` 仍可在运行时配置。同源 `/api/` 与实时文档 WebSocket 仍经现有 Nginx 转发。
+
+部署验收应加载绑定源码修订的 OCI 制品，冷启动检查登录、静态资源及动态页面，并验证 WebSocket。回退使用原已验证的 Web 镜像 ID，复用同一代理、API 和数据卷。构建日志不包含目标卷的 blob 去重或快照占用，容量以制品和目标卷回读为准。
+
 ## 静态预览
 
 直接双击 `preview/index.html`，或将文件拖入浏览器。样张不依赖构建、网络、外部字体或图片。
