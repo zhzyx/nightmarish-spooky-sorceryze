@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { WorkspaceReleases } from "@/components/WorkspaceReleases";
 import { useEffect, useRef, useState } from "react";
 import { workspaceEntryStatus, workspaceRunStatus } from "@/components/WorkspaceRuns";
 import { useI18n } from "@/lib/i18n-client";
@@ -202,6 +203,7 @@ export function WorkspaceExecution({ conversation, editable, busy, change }: Pro
         ? (zh ? "无法回读执行状态。" : "Could not load execution status.")
         : (zh ? "无法读取已准入的执行范围。" : "Could not load installed scopes.")}</p>}
       {execution ? <>
+        {entry && <WorkspaceReleases key={entry} entry={entry} editable={editable && !busy} zh={zh} />}
         {status && status.entry === entry && <>
           <p role="status">{workspaceEntryStatus(status.state, zh)} · {zh
             ? `需求工单 ${status.progress.done}/${status.progress.total} 已完成`

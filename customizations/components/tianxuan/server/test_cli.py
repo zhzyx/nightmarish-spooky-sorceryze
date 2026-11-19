@@ -396,6 +396,9 @@ def test_connection_failure_raises_cli_error() -> None:
             "execute",
             {"requirement": "req1", "call_id": "run2", "scopes": ["text"], "model": ""},
         ),
+        (["releases", "entry1", "--after", "17", "--limit", "3"], "GET", "entry1/releases", None),
+        (["rollback", "entry1", "--call-id", "restore1", "--selection", "a" * 64, "--expected", "b" * 64],
+         "POST", "entry1/rollback", {"call_id": "restore1", "selection": "a" * 64, "expected": "b" * 64}),
         (["lookup", "call/1"], "POST", "calls/status", {"call_id": "call/1"}),
         (["status", "entry1"], "GET", "entry1", None),
     ],
@@ -407,6 +410,8 @@ def test_runs_commands(arguments, method, path, body, monkeypatch, capsys):
     (request,) = seen
     assert request.method == method
     assert request.url.path == "/api/v1/native/entry/" + path
+    if arguments[0] == "releases":
+        assert dict(request.url.params) == {"after": "17", "limit": "3"}
     assert request.headers["authorization"] == "Bearer txs_fixture"
     assert (_json(request) if request.content else None) == body
     assert json.loads(capsys.readouterr().out) == {"state": "observed"}
