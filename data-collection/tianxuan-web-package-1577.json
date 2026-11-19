@@ -1,0 +1,8 @@
+{
+  "issue_number": 1577,
+  "request_id": "tianxuan-unified-deployment-20261119",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1577",
+  "release_revision": "3e1bb937a8635b2f1acd0f2adfb49b7b1e370210",
+  "observed": "Upstream workflow builds and smoke-tests Web but uploads only API. The deployment host needs the exact Web image archive from CI.",
+  "acceptance": "Verify archive manifest and image ID from manual CI after workflow delivery."
+}

@@ -16,6 +16,10 @@ on:
       - ".github/workflows/tianxuan-deploy-build.yml"
   workflow_dispatch:
     inputs:
+      release_revision:
+        description: "Export the smoke-tested Web image for this full main commit SHA"
+        type: string
+        required: false
       run_context_burst:
         description: "Run the deferred synthetic 250-client burst (not production capacity acceptance)"
         type: boolean
@@ -31,6 +35,17 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - name: Select delivered source for Web export
+        if: github.event_name == 'workflow_dispatch' && inputs.release_revision != ''
+        env:
+          REVISION: ${{ inputs.release_revision }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          [[ "$REVISION" =~ ^[0-9a-f]{40}$ ]]
+          git fetch --quiet --unshallow origin main
+          git rev-list --first-parent "$GITHUB_SHA" | grep -Fx "$REVISION" >/dev/null
+          git checkout --quiet --detach "$REVISION"
       - name: Build API image
         run: |
           docker build --pull -f deploy/Dockerfile.api -t tianxuan-api:ci .
@@ -109,7 +124,7 @@ jobs:
           PY
       - name: Export tested API package
         env:
-          CANDIDATE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+          CANDIDATE_HEAD: ${{ github.event.pull_request.head.sha || inputs.release_revision || github.sha }}
           CONTEXT_BURST_REQUESTED: ${{ github.event_name == 'workflow_dispatch' && inputs.run_context_burst }}
         run: |
           set -euo pipefail
@@ -165,6 +180,29 @@ jobs:
         with:
           name: tianxuan-api-${{ github.run_id }}-${{ github.run_attempt }}
           path: native-api-package/
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 14
+      - name: Export smoke-tested Web image
+        if: github.event_name == 'workflow_dispatch' && inputs.release_revision != ''
+        run: |
+          set -euo pipefail
+          mkdir web-package
+          container=$(cd deploy && docker compose ps -q web)
+          image=$(docker inspect --format '{{.Image}}' "$container")
+          docker save "$image" | gzip -n > web-package/web-image.tar.gz
+          cd web-package
+          jq -n --arg source "$(git rev-parse HEAD)" --arg tree "$(git rev-parse 'HEAD^{tree}')" \
+            --arg image "$image" --arg digest "$(sha256sum web-image.tar.gz | cut -d' ' -f1)" \
+            --arg workflow "$GITHUB_SHA" --arg run "$GITHUB_RUN_ID" --arg attempt "$GITHUB_RUN_ATTEMPT" \
+            '{schema:1, source_commit:$source, source_tree:$tree, workflow_commit:$workflow, image_id:$image, run_id:$run,
+              run_attempt:$attempt, files:{"web-image.tar.gz":{sha256:$digest}}}' > manifest.json
+      - name: Upload tested Web package
+        if: github.event_name == 'workflow_dispatch' && inputs.release_revision != ''
+        uses: actions/upload-artifact@v7
+        with:
+          name: tianxuan-web-${{ github.run_id }}-${{ github.run_attempt }}
+          path: web-package/
           if-no-files-found: error
           compression-level: 0
           retention-days: 14
