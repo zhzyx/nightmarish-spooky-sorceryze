@@ -39,3 +39,9 @@ python -m unittest discover -s customizations/components/tianxuan/server -p "tes
 - 密码使用 PBKDF2-SHA256 + 随机盐；不存明文。
 - 身份与权限由宿主/平台校验，领域层只做范围检查。
 - 事件用于谛听回执与审计；不把凭据、提示词原文或本机路径写入事件。
+
+### 普通工单依赖与人工阶段
+
+工单页进入「工单流程」维护前置工单和阶段图。读取 `GET /api/v1/issues/{id}/work/flow` 可获取真实状态、进度、允许的边及依赖验收状态。向同一路径下的 `configure`、`dependencies`、`advance`、`judge` 提交变更，每次带当前 `expected_version` 和稳定 `call_id`。配置阶段使用 `{id, progress, human}`，流转边使用 `{from, to}`。阶段进度为 0–100，完成阶段 `done` 为 100。离开人工阶段须由用户明确选择目标并确认。
+
+AI 工具 `flow.read`、`flow.configure`、`flow.dependencies`、`flow.advance` 与页面读取同一工单记录。前置工单状态和当前访问权在流转时重新核对；原生托管前置还须有验收记录。旧工单沿用原始流程，新增依赖也约束既有 `issue.transition` 入口。可在隔离任务中先绑定未完成前置、验证推进被拒，再验收前置并确认推进，最后在人工阶段验证退回及完成操作。

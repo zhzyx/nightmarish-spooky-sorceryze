@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "event_id": "request-a4-workflow-1629",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-a4-workflow",
+  "kind": "request",
+  "occurred_at": "2026-11-19T16:13:27.5053767Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1629",
+  "agent": {
+    "version": "0.1.0",
+    "id": "codex-current-operator-host",
+    "origin": "external-authorized-host",
+    "definition_sha256": "87b82d26b741a04d787155b012076b32cdf14fcbec3ff51823fe83751ce89462"
+  },
+  "payload": {
+    "issue_readback": {
+      "body": "<!-- gonggong-request:tianxuan-a4-workflow -->\n\n需求文档：`design-docs/tianxuan-a4-workflow.md`\n\n[查看主线设计（合入后可用）](https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/main/design-docs/tianxuan-a4-workflow.md)\n\n# A4 普通工单依赖和可配置流程\n\n父工单 #1550，原 #1552 已完成且保留。Sail-Li 承接 coverage-audit A4-dependencies 与 A4-process。普通非代码工单可以编辑、回读依赖，前置未验收时阻止前进，完成后释放；拒绝循环、自依赖和跨权限泄漏。支持配置真实阶段、前进和退回边、人工判断节点及进度。普通 HTTP、AI 和 Web 入口调用同一领域逻辑。保持既有无配置数据的状态流与同租户及祖先可见性；不放宽原生批准和资产确认门禁。依赖编辑、流程决策和推进需验证并发、重试、旧版及权限。\n\n改动限现有天璇领域、工单 API、工具、工单页面和验收证据。生产由 #1577，平台验收由 #1550，不执行历史工单。回退可恢复原服务及 Web 并保留数据库。\n\n\n执行授权来源（由调用宿主核实，不代替候选准入）：codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119\n\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+      "number": 1629,
+      "state": "OPEN",
+      "title": "A4：普通工单依赖与可配置人工流程",
+      "updatedAt": "2026-11-19T16:09:44Z",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1629"
+    },
+    "base": "7358ee22fa3df88f60f848f0fb1e83c19f275eb3",
+    "operator": "Sail-Li",
+    "audit_sha256": "487b1833a28c7f5ba39d979a076a06cb5854ba22d66bcbc7cb7433dc543313a2"
+  },
+  "evidence_refs": [],
+  "sha256": "eff19b64bc41d49d2009e7623bfa5defd5a2a6eadf17f4d5d77421952e3ebda3"
+}
