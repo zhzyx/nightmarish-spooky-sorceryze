@@ -7,7 +7,7 @@ import re
 import sqlite3
 import subprocess
 import tempfile
-from contextlib import closing
+from contextlib import closing, contextmanager
 from pathlib import Path
 
 from migration_status import read_import_status
@@ -48,22 +48,45 @@ def _git(repo, *args, data=None):
     return result.stdout
 
 
-def _mirror(database, tenant, project, revision, cache_dir):
-    # Always re-check visibility, including on cache hits.
+def _publication(database, tenant, project, revision):
     status = read_import_status(database, tenant, project)
     if not status or status["revision"] != revision:
         raise LookupError("Git history catalog is not published for this project")
+    return status
+
+
+def _cache_root(database, tenant, project, revision, cache_dir):
     database = Path(database).resolve()
     root = Path(cache_dir) if cache_dir else database.parent / ".migration-history-cache"
     key = hashlib.sha256(json.dumps([str(database), tenant, project, revision]).encode()).hexdigest()
     root = root.resolve() / key
     root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    return root
+
+
+@contextmanager
+def _cache_lock(root):
+    with closing(sqlite3.connect(root / "initialization.lock", timeout=300)) as lock:
+        lock.execute("BEGIN IMMEDIATE")
+        yield
+        lock.commit()
+
+
+def _promote(database, tenant, project, revision, staged, mirror):
+    _publication(database, tenant, project, revision)
+    if mirror.exists():
+        raise FileExistsError("History cache already exists")
+    staged.rename(mirror)
+
+
+def _mirror(database, tenant, project, revision, cache_dir):
+    # Re-check project visibility on every access, including an existing cache.
+    status = _publication(database, tenant, project, revision)
+    root = _cache_root(database, tenant, project, revision, cache_dir)
     mirror = root / "archive.git"
     if mirror.is_dir():
         return mirror
-    # A SQLite writer lock is cross-process and releases automatically on crashes.
-    with closing(sqlite3.connect(root / "initialization.lock", timeout=300)) as lock:
-        lock.execute("BEGIN IMMEDIATE")
+    with _cache_lock(root):
         if not mirror.is_dir():
             from history_records import export_binary
 
@@ -71,12 +94,10 @@ def _mirror(database, tenant, project, revision, cache_dir):
                 stage = Path(temp)
                 bundle = stage / "history.bundle"
                 export_binary(database, tenant, project, revision, f"github:{status['source']}/history.bundle", bundle)
-                # export_binary verifies the content digest while streaming to disk.
                 staged = stage / "archive.git"
                 _git(stage, "clone", "--mirror", "--template=", "--quiet", "--", str(bundle), str(staged))
                 _git(staged, "bundle", "verify", str(bundle))
-                staged.rename(mirror)
-        lock.commit()
+                _promote(database, tenant, project, revision, staged, mirror)
     return mirror
 
 
