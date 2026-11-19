@@ -97,6 +97,7 @@ func run():
 	await verify_settings_navigation(dock)
 	await verify_generation_service_controls()
 	verify_capability_notice()
+	verify_failure_dialog()
 	check(panel.rigging_panel.source_field!=null,'rigging exposes a local Mesh browser/input')
 	var tools = str(panel.get_meta('ainative_tools_dir',''))
 	check(panel.host_edit.text==tools.path_join('editor_host.py') and FileAccess.file_exists(panel.host_edit.text),'host comes from the engine bundle')
@@ -380,6 +381,30 @@ func verify_capability_notice():
 	check(panel.capability_notices.size()==1,'same run, node and model do not repeatedly open the warning')
 	state.result.artifacts[0].payload.provenance.capability_limited = false
 	check(panel._capability_limited_artifact(state).is_empty(),'ordinary fully reviewed success does not open a capability warning')
+
+func verify_failure_dialog():
+	var previous_run = panel.run_id
+	var previous_link = panel.service_config_link.visible
+	panel.run_id = 'synthetic-failure-run'
+	var reason = 'Kimi 视觉理解与复核缺少 KIMI_API_KEY；合成测试未提交生成。'
+	var failed = {'state':'failed','nodes':{'broken':{'state':'failed','attempt':0,'error':'provider_failed','public_error':reason,'job':{'error':'provider_failed'}}}}
+	panel._controller_completed('status',failed,{})
+	check(panel.failure_dialog.visible and panel.failure_text.text.contains(reason) and panel.failure_text.text.contains('broken'),'failed node opens a dialog containing the actual provider reason')
+	check(not panel.failure_text.editable and panel.failure_text.selecting_enabled and panel.failure_copy_button.text=='复制全部报错','failure dialog provides selectable text and an explicit copy action')
+	var notice_count = panel.failure_notices.size()
+	panel._controller_completed('status',failed,{})
+	check(panel.failure_notices.size()==notice_count,'automatic polling does not repeatedly open the same node failure')
+	panel.failure_copy_button.pressed.emit()
+	if DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):
+		check(DisplayServer.clipboard_get()==panel.failure_text.text and panel.failure_copy_hint.text.contains('已复制'),'copy action places the complete failure on the clipboard')
+	else:
+		check(panel.failure_copy_hint.text.contains('手动选择文本复制'),'unsupported display offers manual selection instead of a false clipboard success')
+	panel.failure_dialog.hide()
+	panel._show_run_problem('服务配置无效：合成测试','ai')
+	check(panel.failure_dialog.visible and panel.failure_text.text.contains('服务配置无效'),'service and validation failures use the same copyable dialog')
+	panel.failure_dialog.hide()
+	panel.run_id = previous_run
+	panel.service_config_link.visible = previous_link
 
 func verify_importer_conversion():
 	var converter = load(panel.get_script().resource_path.get_base_dir().path_join('runtime_mesh.gd'))

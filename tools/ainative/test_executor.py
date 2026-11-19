@@ -219,6 +219,22 @@ class ExecutorTests(unittest.TestCase):
         self.finish(run)
         self.assertEqual(self.provider.submits, 2)
 
+    def test_public_failure_summary_is_whitelisted_and_cleared_on_retry(self):
+        run = self.create()
+        self.provider.fail = True
+        self.provider.public_failure_message = (
+            lambda snapshot: "安全的中文失败原因" if snapshot.get("error") == "secret-error" else None
+        )
+        self.executor.step(run)
+        status = self.executor.step(run)
+        node = status["nodes"]["first"]
+        self.assertIsNone(node["error"])
+        self.assertEqual(node["job"]["error"], "provider_failed")
+        self.assertEqual(node["public_error"], "安全的中文失败原因")
+        self.assertNotIn("secret-error", json.dumps(status, ensure_ascii=False))
+        self.executor.retry(run, "first")
+        self.assertIsNone(self.executor.status(run)["nodes"]["first"]["public_error"])
+
     def test_dag_merge_and_cycle(self):
         second = copy.deepcopy(self.graph[0])
         second["id"] = "second"

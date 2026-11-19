@@ -432,6 +432,11 @@ class MultiImageProvider(CodexProvider):
         result["capabilities"] = sorted(capabilities)
         return result
 
+    def public_failure_message(self, snapshot):
+        if hasattr(self.inner, "public_failure_message"):
+            return self.inner.public_failure_message(snapshot)
+        return None
+
     def _prepare(self, request, manifest, key):
         require(_is_batch_request(request), "invalid_image_batch")
         sources = _sources(request, manifest)

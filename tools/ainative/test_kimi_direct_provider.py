@@ -171,6 +171,39 @@ class Direct3DTests(unittest.TestCase):
         self.assertIn("--description", arguments)
         self.assertNotIn("--multiview", arguments)
 
+    def test_reviewed_mesh_missing_vision_key_is_explicit_and_does_not_start_worker(self):
+        config = dict(
+            self.config,
+            planner=dict(endpoint="https://api.kimi.com/coding/v1", model="k3.1-pro", key_env="KIMI_API_KEY"),
+            review_godot_path=str(self.tool),
+            review_script_path=str(self.launcher),
+        )
+        provider = KimiNativeDirectProvider(config)
+        source = self.artifact(png_bytes(), "ordinary")
+        request = dict(
+            node="image_to_mesh",
+            version="2",
+            inputs={"source": {"id": "ordinary", "revision": source["revision"]}},
+            parameters={"prompt": ""},
+            context=[],
+        )
+        with patch.dict(os.environ, {"KIMI_API_KEY": ""}):
+            terminal = provider.submit_reviewed(request, dict(schema_version=1, artifacts=[source]), KEY)
+        self.assertEqual(terminal["state"], "failed")
+        self.assertEqual(terminal["error"], provider.MESSAGES["api_key_missing"])
+        self.assertIn("KIMI_API_KEY", terminal["error"])
+        self.assertNotEqual(terminal["error"], provider.MESSAGES["worker_failed"])
+        self.assertEqual(provider.public_failure_message(terminal), terminal["error"])
+        self.assertEqual(
+            provider.public_failure_message({"error": "raw external response must not escape"}),
+            provider.MESSAGES["model3d_result_unknown"],
+        )
+        from multi_image_provider import MultiImageProvider
+
+        adapter = MultiImageProvider(provider, self.root / "adapter")
+        self.assertEqual(adapter.public_failure_message(terminal), terminal["error"])
+        self.assertFalse((self.root / "state" / KEY).exists())
+
     def test_three_view_sheet_is_cropped_and_uploaded_in_front_right_back_order(self):
         from PIL import Image
 

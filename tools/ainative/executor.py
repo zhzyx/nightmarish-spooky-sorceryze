@@ -161,7 +161,7 @@ class Executor:
                     set(source[link["port"]]["types"]) <= set(definition["inputs"][port]["types"]),
                     "incompatible linked types",
                 )
-            node.update(state="pending", attempt=0, job=None, result=None, error=None)
+            node.update(state="pending", attempt=0, job=None, result=None, error=None, public_error=None)
             node["provider_manifest"] = provider_manifest(self.providers[node["provider"]].describe())
             node["definition"] = definition
         while pending:
@@ -223,7 +223,7 @@ class Executor:
                 not run["cancelled"] and node["state"] == "failed" and node["job"] and node["job"]["state"] == "failed",
                 "only confirmed provider failure can retry",
             )
-            node.update(state="pending", attempt=node["attempt"] + 1, job=None, error=None, result=None)
+            node.update(state="pending", attempt=node["attempt"] + 1, job=None, error=None, result=None, public_error=None)
             self._write(run)
 
     def export(self, run_id):
@@ -311,6 +311,7 @@ class Executor:
             # Cancel remains local and the next step can notify other providers.
             return self.status(run_id)
         snapshot, result, error = None, None, None
+        public_error = None
         raw = None
         validating_result = False
         try:
@@ -338,6 +339,12 @@ class Executor:
                 validate_job(raw, node["job"])
                 snapshot = copy.deepcopy(raw)
                 if snapshot["state"] == "failed":
+                    if hasattr(provider, "public_failure_message"):
+                        public_error = provider.public_failure_message(snapshot)
+                        require(
+                            public_error is None or isinstance(public_error, str) and len(public_error) <= 4000,
+                            "invalid public failure summary",
+                        )
                     snapshot["error"] = "provider_failed"  # Never persist provider error text.
                 if snapshot["state"] == "succeeded":
                     result = provider.result_manifest(snapshot["job_id"])
@@ -362,6 +369,7 @@ class Executor:
             if current["attempt"] != node["attempt"] or current["state"] in ("succeeded", "failed", "cancelled"):
                 return self.status(run_id)
             current["error"] = error
+            current["public_error"] = public_error
             if snapshot is not None:
                 # Persist a known job even if fetching/validating its result failed.
                 if error:

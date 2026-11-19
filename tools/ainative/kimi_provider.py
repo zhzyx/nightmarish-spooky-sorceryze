@@ -513,6 +513,7 @@ MODEL3D_MESSAGES = dict(
     invalid_input="输入图片、文字或三维生成参数无效。",
     unsupported_multiple_image_constraints="Tripo API 直接生成最多支持四张独立视角图片。",
     unsupported_context_semantics="当前直接三维生成支持节点级文字说明和参考图。",
+    api_key_missing="Kimi 视觉理解与复核缺少 KIMI_API_KEY。请将该变量加入引擎启动环境并重启编辑器；本次未提交生成，也不会自动重发。",
     worker_failed="Tripo API 工作进程失败；私有回执已保留，未自动重复生成。",
     model3d_review_not_configured="视觉理解与复核需要 Kimi 视觉模型、Godot 和 mesh_review.gd，请检查本机配置。",
     vision_request_too_large="视觉分析图片总量过大；未提交生成，请减少单图分辨率后重试。",
@@ -663,6 +664,11 @@ class KimiNativeDirectProvider(ModelingProvider):
             context_types=["text", "image"],
             available=True,
         )
+
+    def public_failure_message(self, snapshot):
+        """Expose only our reviewed Chinese summaries, never raw service responses."""
+        message = snapshot.get("error")
+        return message if message in set(self.MESSAGES.values()) else self.MESSAGES["model3d_result_unknown"]
 
     def finish(self, key, state, code=None, result=None):
         outputs = {"result": {k: result["artifacts"][-1][k] for k in ("id", "revision")}} if result else None

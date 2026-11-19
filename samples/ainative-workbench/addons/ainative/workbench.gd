@@ -42,6 +42,11 @@ var preview_root: Node3D
 var dialog: ConfirmationDialog
 var capability_notice_dialog: AcceptDialog
 var capability_notices: Dictionary = {}
+var failure_dialog: AcceptDialog
+var failure_text: TextEdit
+var failure_copy_button: Button
+var failure_copy_hint: Label
+var failure_notices: Dictionary = {}
 var nodes: Array = []
 var edges: Array = []
 var selected_id = ""
@@ -620,6 +625,30 @@ func _ready():
 	capability_notice_dialog.title = "模型已按能力受限结果交付"
 	capability_notice_dialog.ok_button_text = "知道了"
 	add_child(capability_notice_dialog)
+	failure_dialog = AcceptDialog.new()
+	failure_dialog.title = "操作失败"
+	failure_dialog.ok_button_text = "关闭"
+	failure_dialog.exclusive = false
+	var failure_box = VBoxContainer.new()
+	failure_text = TextEdit.new()
+	failure_text.editable = false
+	failure_text.selecting_enabled = true
+	failure_text.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	failure_text.custom_minimum_size = Vector2(680, 250)
+	failure_text.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	failure_box.add_child(failure_text)
+	var failure_actions = HBoxContainer.new()
+	failure_copy_button = Button.new()
+	failure_copy_button.text = "复制全部报错"
+	failure_copy_button.pressed.connect(_copy_failure_text)
+	failure_actions.add_child(failure_copy_button)
+	failure_copy_hint = Label.new()
+	failure_copy_hint.text = "也可直接选择文本复制。"
+	failure_copy_hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	failure_actions.add_child(failure_copy_hint)
+	failure_box.add_child(failure_actions)
+	failure_dialog.add_child(failure_box)
+	add_child(failure_dialog)
 	status = Label.new()
 	status.text = "右键节点运行；真实生成请先在“设置 → AI”连接服务，并在各节点选择模型。" if builtin else "右键节点运行；真实生成请先在“本机设置”连接服务，并在各节点选择模型。"
 	if managed_comfy_panel.using_bundle() and _service_mode() in ['codex', 'local_mesh']:
@@ -897,7 +926,7 @@ func select_node(id: String):
 func apply_fields() -> bool:
 	var params = parameter_form.parameters()
 	if not params is Dictionary or not safe(params):
-		status.text = parameter_form.error_label.text if not params is Dictionary else "参数含有禁止填写的凭据字段"
+		_show_run_problem(parameter_form.error_label.text if not params is Dictionary else "参数含有禁止填写的凭据字段")
 		return false
 	for data in nodes:
 		if data.id == selected_id:
@@ -1274,6 +1303,18 @@ func _show_capability_notice(node_id: String, artifact: Dictionary):
 	capability_notice_dialog.dialog_text = _capability_notice_text(artifact)
 	capability_notice_dialog.popup_centered(Vector2i(760, 480))
 
+func _node_failure_text(node_id: String, state: Dictionary) -> String:
+	var reason_value = state.get("public_error")
+	var has_public_reason = reason_value != null and not str(reason_value).is_empty()
+	if not has_public_reason: reason_value = state.get("error")
+	var reason = str(reason_value) if reason_value != null else "未知错误"
+	var node_job = state.get("job", {})
+	if not has_public_reason and node_job is Dictionary and not str(node_job.get("error", "")).is_empty():
+		reason = str(node_job.error)
+	if reason == "invalid_result":
+		reason = "生成结果未通过校验，已停止；请保留本次记录，修正问题后重新运行节点。"
+	return "节点 " + node_id + " 执行失败。\n原因：" + reason + "\n运行 ID：" + run_id
+
 func _controller_completed(command: String, data: Dictionary, request: Dictionary):
 	if command == "managed-comfy":
 		managed_comfy_panel.completed(data, request)
@@ -1288,19 +1329,29 @@ func _controller_completed(command: String, data: Dictionary, request: Dictionar
 		if Engine.is_editor_hint(): EditorInterface.get_resource_filesystem().scan()
 	elif command != "create":
 		status.text = "运行状态：" + state_label(data.state) + " | 响应计数 " + str(heartbeat)
+		var failure_messages := PackedStringArray()
 		for id in data.nodes:
-			status.text += " | " + id + "：" + state_label(data.nodes[id].state) + "，尝试次数 " + str(data.nodes[id].attempt)
-			var limited = _capability_limited_artifact(data.nodes[id])
+			var node_state: Dictionary = data.nodes[id]
+			status.text += " | " + id + "：" + state_label(node_state.state) + "，尝试次数 " + str(node_state.attempt)
+			var limited = _capability_limited_artifact(node_state)
 			if not limited.is_empty():
 				status.text += "（能力受限交付：审核未完全通过，详见弹窗）"
 				_show_capability_notice(id, limited)
-			if data.nodes[id].state == "failed" and data.nodes[id].get("error") == "invalid_result":
+			if node_state.state == "failed" and node_state.get("error") == "invalid_result":
 				status.text += "（生成结果未通过校验，已停止；请保留本次记录，修正问题后重新运行节点）"
-			if data.nodes[id].state == "failed" and managed_comfy_panel.using_bundle() and _service_mode() in ["codex", "local_mesh"]:
-				var job_result = data.nodes[id].get("job")
-				var details = {"run": run_id, "node": id, "error": data.nodes[id].get("error"), "job_error": job_result.get("error") if job_result is Dictionary else null, "model_log": managed_comfy_panel.last_report.get("log_path", "")}
+			if node_state.state == "failed":
+				var failure_message = _node_failure_text(id, node_state)
+				var failure_key = run_id + "/" + id + "/" + str(node_state.get("attempt", 0)) + "/" + failure_message
+				if not failure_notices.has(failure_key):
+					failure_notices[failure_key] = true
+					failure_messages.append(failure_message)
+			if node_state.state == "failed" and managed_comfy_panel.using_bundle() and _service_mode() in ["codex", "local_mesh"]:
+				var job_result = node_state.get("job")
+				var details = {"run": run_id, "node": id, "error": node_state.get("error"), "job_error": job_result.get("error") if job_result is Dictionary else null, "model_log": managed_comfy_panel.last_report.get("log_path", "")}
 				status.text = diagnostic_error(status.text, details)
 		if data.state == "reconcile": status.text += " | 提交结果未知，已暂停。点击“继续运行”查询一次结果，避免重复提交。"
+		if not failure_messages.is_empty():
+			_show_run_problem("生成任务失败，可复制以下报错：\n\n" + "\n\n".join(failure_messages))
 
 func request_preview():
 	if creating:
@@ -2417,7 +2468,7 @@ func check_service():
 
 func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
 	if checked_draft != service_draft():
-		service_status.text = "检测期间设置已改变，请重新检测当前设置。"
+		_show_run_problem("检测期间设置已改变，请重新检测当前设置。")
 		return
 	service_ui_loading = true
 	var models: Dictionary = data.get("models", {})
@@ -2433,6 +2484,8 @@ func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
 		var capability: Dictionary = data.get("capabilities", {}).get(kind, {})
 		service_capability_labels[kind].text = node_label(kind) + "：" + ("就绪" if capability.get("ready", false) else "不可用") + " · " + str(capability.get("message", "服务未提供该能力"))
 	if status != null: status.text = service_status.text
+	if not data.get("connected", false):
+		_show_run_problem(service_status.text)
 
 func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 	if kind == "copy" or _using_legacy_service(): return ""
@@ -2488,12 +2541,27 @@ func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 		if not capability.get("ready", false): return str(capability.get("message", "当前服务不具备该节点所需能力，请重新检测并修正设置。"))
 	return ""
 
+func _copy_failure_text():
+	if failure_text == null: return
+	if DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):
+		DisplayServer.clipboard_set(failure_text.text)
+		failure_copy_hint.text = "已复制全部报错内容。"
+	else:
+		failure_copy_hint.text = "当前环境不支持系统剪贴板，请手动选择文本复制。"
+
+func _show_failure_dialog(message: String):
+	if failure_dialog == null: return
+	failure_text.text = message
+	failure_copy_hint.text = "也可直接选择文本复制。"
+	failure_dialog.popup_centered(Vector2i(760, 400))
+
 func _show_run_problem(message: String, section: String = 'ai'):
 	if status != null: status.text = message
 	service_settings_section = section
 	if service_config_link != null:
 		service_config_link.text = '配置运行环境' if section == 'environment' else '配置生成服务'
 		service_config_link.show()
+	_show_failure_dialog(message)
 
 func open_service_settings():
 	if get_meta('ainative_builtin', false):
