@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import Link from "next/link";
 import { Icon, type IconName } from "@/components/Icon";
 import { IdentityBindings } from "@/components/IdentityBindings";
+import { ThemeSelect } from "@/components/ThemeSelect";
 import { fetchGiteaStatus, fetchHealth, type ApiGiteaStatus } from "@/lib/server-api";
 import { LOCALE_COOKIE, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
@@ -166,78 +167,10 @@ export default async function SettingsPage() {
 
           <section className="panel settings-card" id="appearance" aria-labelledby="appearance-title">
             <header className="settings-card-head">
-              <div>
-                <p className="section-kicker">APPEARANCE</p>
-                <h2 id="appearance-title">{t("settings.appearanceTitle")}</h2>
-                <p>{t("settings.appearanceDesc")}</p>
-              </div>
-              <span className="settings-tag">{t("settings.darkFirst")}</span>
+              <h2 id="appearance-title">{t("settings.appearanceTitle")}</h2>
             </header>
-
-            <div className="theme-options">
-              <label className="theme-option is-selected">
-                <input defaultChecked name="theme" type="radio" value="ink" />
-                <span className="theme-preview theme-preview-dark">
-                  <span className="theme-preview-side" />
-                  <span className="theme-preview-main">
-                    <span />
-                    <span />
-                    <span />
-                  </span>
-                </span>
-                <span className="theme-option-copy">
-                  <strong>{t("settings.ink")}</strong>
-                  <small>{t("settings.inkNote")}</small>
-                </span>
-                <span className="theme-check">
-                  <Icon name="check" size={12} />
-                </span>
-              </label>
-
-              <label className="theme-option">
-                <input name="theme" type="radio" value="warm" />
-                <span className="theme-preview theme-preview-warm">
-                  <span className="theme-preview-side" />
-                  <span className="theme-preview-main">
-                    <span />
-                    <span />
-                    <span />
-                  </span>
-                </span>
-                <span className="theme-option-copy">
-                  <strong>{t("settings.warm")}</strong>
-                  <small>{t("settings.warmNote")}</small>
-                </span>
-              </label>
-
-              <label className="theme-option is-disabled">
-                <input disabled name="theme" type="radio" value="paper" />
-                <span className="theme-preview theme-preview-paper">
-                  <span className="theme-preview-side" />
-                  <span className="theme-preview-main">
-                    <span />
-                    <span />
-                    <span />
-                  </span>
-                </span>
-                <span className="theme-option-copy">
-                  <strong>{t("settings.paper")}</strong>
-                  <small>{t("settings.paperNote")}</small>
-                </span>
-                <span className="theme-lock">
-                  <Icon name="lock" size={12} />
-                </span>
-              </label>
-            </div>
-
-            <div className="accent-row">
-              <span className="settings-label">{t("settings.accentLabel")}</span>
-              <span className="accent-swatch accent-ink" title={t("settings.inkSwatch")} />
-              <span className="accent-swatch accent-paper" title={t("settings.paperSwatch")} />
-              <span className="accent-swatch accent-cinnabar" title={t("settings.cinnabarSwatch")} />
-              <span className="accent-swatch accent-jade" title={t("settings.jadeSwatch")} />
-              <span className="accent-swatch accent-gold" title={t("settings.goldSwatch")} />
-              <span className="accent-caption">{t("settings.accentCaption")}</span>
+            <div className="settings-theme-control">
+              <ThemeSelect />
             </div>
           </section>
 

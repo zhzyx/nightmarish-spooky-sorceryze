@@ -42,3 +42,7 @@ export async function fetchBoard(_actor: string): Promise<Record<string, ApiIssu
 export async function fetchRequirements(_actor: string): Promise<ApiRequirement[]> { return (await read<{docs: ApiRequirement[]}>("/api/v1/docs?kind=requirement")).docs; }
 export async function fetchRequirementProgress(_actor: string, id: string): Promise<ApiRequirement> { return read(`/api/v1/docs/${encodeURIComponent(id)}`); }
 export async function fetchSearch(_actor: string, q: string, limit=20): Promise<ApiSearchResult[]> { return (await read<{results: ApiSearchResult[]}>(`/api/v1/search?${new URLSearchParams({q,limit:String(limit)})}`)).results; }
+
+export async function fetchRepoCapabilities(): Promise<{ git: boolean; native_candidates: boolean }> {
+  return read("/api/v1/capabilities");
+}
