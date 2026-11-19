@@ -1843,13 +1843,19 @@ def create_app(
     @app.post("/api/v1/tools")
     def call_tool(payload: ToolCallRequest, actor: ActorDep) -> dict[str, Any]:
         document_tools = {"doc.read", "doc.list", "doc.search", "doc.create", "doc.update", "doc.patch", "doc.restore"}
-        available_tools = document_tools | {
-            "requirement.create",
-            "requirement.plan",
-            "issue.create",
-            "issue.transition",
-            "issue.list",
-        }
+        from issue_flow import TOOLS as FLOW_TOOLS
+
+        available_tools = (
+            document_tools
+            | FLOW_TOOLS
+            | {
+                "requirement.create",
+                "requirement.plan",
+                "issue.create",
+                "issue.transition",
+                "issue.list",
+            }
+        )
         migration_tools = {"migration.entry", "migration.status", "migration.start"}
         if payload.name not in available_tools | migration_tools:
             raise HTTPException(status_code=400, detail="unknown tool")

@@ -4,6 +4,7 @@ from typing import Literal
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response
+from issue_flow import execute_flow
 from work_management import execute, read_approved_asset
 
 
@@ -32,6 +33,23 @@ def create_work_router(store, actor_dependency):
                 "X-Content-Type-Options": "nosniff",
                 "Content-Disposition": "attachment",
             },
+        )
+
+    @router.get("/issues/{issue_id}/work/flow")
+    def read_flow(issue_id: str, actor: str = actor_dep):
+        return store.dispatch_tool(actor, "flow.read", {"issue_id": issue_id})
+
+    @router.post("/issues/{issue_id}/work/flow/{operation}")
+    def mutate_flow(
+        issue_id: str,
+        operation: Literal["configure", "dependencies", "advance", "judge"],
+        body: dict,
+        actor: str = actor_dep,
+    ):
+        if "issue_id" in body:
+            raise HTTPException(422, "issue_id belongs in the request path")
+        return execute_flow(
+            store, actor, f"flow.{operation}", {**body, "issue_id": issue_id}, human=operation == "judge"
         )
 
     @router.post("/issues/{issue_id}/work/{operation}")

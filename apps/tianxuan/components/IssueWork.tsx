@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { authHeaders } from "@/lib/auth";
 import { useActor } from "@/lib/use-actor";
 import { AssetPreview, objectPath, type ReviewAsset as Asset } from "./AssetPreview";
+import { IssueFlow } from "./IssueFlow";
 import styles from "./IssueWork.module.css";
 
 type Kind = "concept" | "model";
@@ -104,6 +105,7 @@ export function IssueWork({ id }: { id: string }) {
 
   return <section className={styles.work}>
     <header><h1>工单计划与美术确认</h1><small>{id}{work && " · v" + work.version}</small></header>
+    <IssueFlow id={id} actor={actor} />
     <p role="status">{message}</p>
     {pending && <button disabled={busy} onClick={() => void send(pending)}>重试同一次保存</button>}
     {!work && <button onClick={() => setReload(value => value + 1)}>重新读取工单</button>}

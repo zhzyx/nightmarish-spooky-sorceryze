@@ -6,7 +6,7 @@ import { authHeaders } from "@/lib/auth";
 import { useActor } from "@/lib/use-actor";
 import styles from "@/components/IssueWork.module.css";
 
-type Item = { id: string; title: string; logged_minutes: number; plan: {
+type Item = { id: string; title: string; status: string; progress: number; logged_minutes: number; plan: {
   roadmap: string; milestone: string; iteration: string; status: string; estimated_minutes: number;
 } };
 
@@ -50,6 +50,7 @@ export default function Roadmap() {
       {Array.from(milestones, ([milestone, tickets]) => <article key={milestone}>
         <h3>{milestone}</h3>
         <ul>{tickets.map(item => <li key={item.id}><Link href={"/issues/" + encodeURIComponent(item.id)}>{item.title}</Link>
+          <p>当前阶段 {item.status} · {item.progress}%</p>
           <p>{[item.plan.iteration, item.plan.status].filter(Boolean).join(" · ")}　已登记 {item.logged_minutes} / 预计 {item.plan.estimated_minutes} 分钟</p>
         </li>)}</ul>
       </article>)}

@@ -93,6 +93,17 @@ CREATE TABLE IF NOT EXISTS import_jobs (
   path TEXT, error TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_import_jobs_tenant ON import_jobs(tenant_id, created_at);
+CREATE TABLE IF NOT EXISTS issue_flows (
+    issue_id TEXT PRIMARY KEY REFERENCES issues(id), version INTEGER NOT NULL, definition TEXT
+);
+CREATE TABLE IF NOT EXISTS issue_dependencies (
+    issue_id TEXT NOT NULL REFERENCES issues(id), dependency TEXT NOT NULL REFERENCES issues(id),
+    PRIMARY KEY(issue_id,dependency)
+);
+CREATE TRIGGER IF NOT EXISTS native_excludes_ordinary_flow BEFORE INSERT ON native_managed_issues
+WHEN EXISTS (SELECT 1 FROM issue_flows WHERE issue_id=NEW.issue_id AND definition IS NOT NULL)
+  OR EXISTS (SELECT 1 FROM issue_dependencies WHERE issue_id=NEW.issue_id)
+BEGIN SELECT RAISE(ABORT, 'ordinary workflow owns this issue'); END;
 CREATE TABLE IF NOT EXISTS issue_work_events (
     issue_id TEXT NOT NULL REFERENCES issues(id), version INTEGER NOT NULL,
     action TEXT NOT NULL, data TEXT NOT NULL, actor TEXT NOT NULL, created_at TEXT NOT NULL,
@@ -1631,6 +1642,8 @@ class Tianxuan:
     def transition_issue(
         self, actor: str, issue_id: str, to_status: str, *, call_id: str | None = None
     ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
         self._require_editor(actor)
         issue = self._require_tenant_issue(actor, issue_id, write=True)
         if (
@@ -1638,13 +1651,9 @@ class Tianxuan:
             and self.db.execute("SELECT 1 FROM native_managed_issues WHERE issue_id=?", (issue_id,)).fetchone()
         ):
             raise TransitionRejected("native managed completion requires trusted workflow acceptance")
-        current = issue["status"]
-        if to_status not in ISSUE_TRANSITIONS.get(current, set()):
-            raise TransitionRejected(f"{current} -> {to_status} is not allowed")
-        self.db.execute("UPDATE issues SET status = ?, updated_at = ? WHERE id = ?", (to_status, _now(), issue_id))
-        self._event(issue["tenant_id"], "issue.transitioned", actor, issue_id, {"from": current, "to": to_status})
-        if issue["requirement_id"]:
-            self.sync_progress(issue["requirement_id"], actor=actor)
+        from issue_flow import transition
+
+        transition(self, actor, issue, to_status)
         return self.get_issue(issue_id)
 
     @_connection_call
@@ -2209,6 +2218,11 @@ class Tianxuan:
 
     def _authorize_tool(self, actor: str, name: str, payload: dict[str, Any], result: Any = None) -> None:
         self._require_editor(actor)
+        if name.startswith("flow."):
+            from issue_flow import authorize
+
+            authorize(self, actor, payload, result)
+            return
         if name.startswith("work."):
             from work_management import authorize
 
@@ -2297,6 +2311,12 @@ class Tianxuan:
     def dispatch_tool(
         self, actor: str, name: str, payload: dict[str, Any], *, call_id: str | None = None
     ) -> dict[str, Any]:
+        from issue_flow import TOOLS as FLOW_TOOLS
+        from issue_flow import execute_flow
+
+        if name in FLOW_TOOLS:
+            flow_result: dict[str, Any] = execute_flow(self, actor, name, payload, call_id=call_id)
+            return flow_result
         if name == "work.roadmap":
             from work_management import roadmap
 
