@@ -98,7 +98,7 @@ class RequirementPlanner:
             document = self.current(row)
         choices = json.loads(row["payload"])["choices"]
         require(
-            isinstance(choices, dict) and set(choices) in ({"scopes"}, {"scopes", "dependencies"}),
+            isinstance(choices, dict) and {"scopes"} <= choices.keys() <= {"scopes", "dependencies", "model"},
             "Only necessary scope choices are accepted",
         )
         selected = choices["scopes"]

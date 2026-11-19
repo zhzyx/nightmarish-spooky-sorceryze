@@ -14,6 +14,8 @@ import sys
 import time
 from pathlib import Path
 
+from native_model_host import executable_sha256
+
 ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT / "customizations/platforms/ai-access/host-http/runtime"))
 import runner  # noqa: E402
@@ -52,12 +54,12 @@ def load_config(path, digest):
         hashlib.sha256(template.read_bytes()).hexdigest() == config["template_sha256"], "Broker template changed"
     )
     runner.require(
-        hashlib.sha256(Path(config["node"]).read_bytes()).hexdigest() == config["node_sha256"],
+        executable_sha256(config["node"]) == config["node_sha256"],
         "Admitted Node executable changed",
     )
     runner.require(Path(config["node"]).name.lower() in {"node", "node.exe"}, "Direct Node executable required")
     runner.require(
-        hashlib.sha256(Path(config["python"]).read_bytes()).hexdigest() == config["python_sha256"],
+        executable_sha256(config["python"]) == config["python_sha256"],
         "Admitted Python executable changed",
     )
     runner.require(runner.runtime_digest() == config["runtime_sha256"], "Host runtime changed")

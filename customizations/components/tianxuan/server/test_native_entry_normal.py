@@ -18,6 +18,8 @@ HERE = Path(__file__).resolve().parent
 for folder in (HERE, HERE.parent / "duobao", HERE.parent / "sinan-workorders"):
     sys.path.insert(0, str(folder))
 
+from native_model_host import executable_sha256  # noqa: E402
+
 PROGRAM = r"""
 import base64, hashlib, json, os, pathlib, sys
 role = sys.argv[1]
@@ -57,7 +59,7 @@ class NormalEntryTests(unittest.TestCase):
             python = str(Path(sys.executable).resolve())
             driver = str(HERE.parent / "sinan-workorders" / "native_entry_driver.mjs")
             environment = {k: v for k, v in os.environ.items() if k.upper() in {"SYSTEMROOT", "WINDIR"}}
-            files = {p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in (python, node, str(program), driver)}
+            files = {p: executable_sha256(p) for p in (python, node, str(program), driver)}
             commands = {
                 r: dict(argv=[python, "-X", "utf8", str(program), r], env=environment)
                 for r in ("planner", "producer", "checker", "reviewer")
@@ -129,10 +131,22 @@ class NormalEntryTests(unittest.TestCase):
                             response = client.post(
                                 "/api/v1/native/entry/execute",
                                 headers=headers,
-                                json=dict(requirement=requirement, call_id="execute", scopes=["text"]),
+                                json=dict(
+                                    requirement=requirement,
+                                    call_id="execute",
+                                    scopes=["text"],
+                                    **({"model": "installed"} if i else {}),
+                                ),
                             )
                             self.assertEqual(response.status_code, 200, response.text)
-                            entries.append((response.json()["entry"], headers))
+                            key = response.json()["entry"]
+                            recovered = client.post(
+                                "/api/v1/native/entry/calls/status", headers=headers, json={"call_id": "execute"}
+                            )
+                            self.assertEqual(recovered.status_code, 200, recovered.text)
+                            self.assertEqual(recovered.json()["entry"], key)
+                            self.assertEqual(recovered.json()["requested_profile"], "installed" if i else None)
+                            entries.append((key, headers))
                         deadline = time.monotonic() + 90
                         for key, headers in entries:
                             while time.monotonic() < deadline:
@@ -226,6 +240,13 @@ class NormalEntryTests(unittest.TestCase):
                         self.assertTrue(list((root / "state" / "workers").rglob("revoke-wait")))
                         self.assertTrue(client.post("/api/v1/auth/logout", headers=headers).json()["revoked"])
                         self.assertEqual(client.get("/api/v1/native/entry/" + key, headers=headers).status_code, 401)
+                        new_session = client.post(
+                            "/api/v1/auth/session", json={"email": "person1@example.invalid", "password": "password123"}
+                        ).json()
+                        renewed = {"Authorization": "Bearer " + new_session["token"]}
+                        observed = client.get("/api/v1/native/entry/" + key, headers=renewed)
+                        self.assertEqual(observed.status_code, 200, observed.text)
+                        self.assertEqual(observed.json()["entry"], key)
                         deadline = time.monotonic() + 15
                         while time.monotonic() < deadline and not any(
                             f["id"] == key for f in main._NATIVE_ENTRY.consumer.failures

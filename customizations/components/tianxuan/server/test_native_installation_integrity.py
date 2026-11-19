@@ -83,6 +83,17 @@ class InstallationIntegrityTests(unittest.TestCase):
         with self.assertRaises(NativeStoreError):
             install.command("planner")
 
+    def test_read_projection_does_not_admit_changed_executable(self):
+        with patch.object(ni, "_retainable", return_value=False):
+            install = self.install()
+            self.source.write_bytes(b"changed after initial admission")
+            install.verify_manifest()
+            with self.assertRaises(NativeStoreError):
+                install.command("producer")
+            self.manifest.write_bytes(self.manifest.read_bytes() + b" ")
+            with self.assertRaises(NativeStoreError):
+                install.verify_manifest()
+
     def test_manifest_change_is_detected_even_with_restored_mtime(self):
         install = self.install()
         stamp = self.manifest.stat()

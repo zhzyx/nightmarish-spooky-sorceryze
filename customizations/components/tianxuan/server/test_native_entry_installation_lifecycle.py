@@ -11,6 +11,7 @@ from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
+from native_model_host import executable_sha256
 from test_native_entry_normal import PROGRAM
 
 
@@ -35,7 +36,7 @@ def test_installation_update_and_rollback_preserve_accepted_tasks(tmp_path, monk
             version=2,
             mode="deterministic-test",
             identity="lifecycle-" + version,
-            files={p: hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in (python, node, str(program), driver)},
+            files={p: executable_sha256(p) for p in (python, node, str(program), driver)},
             commands=commands,
             principals={role: "test-" + role for role in ("producer", "checker", "reviewer", "publisher")},
             scopes={"text": {"outputs": ["text/output"]}},

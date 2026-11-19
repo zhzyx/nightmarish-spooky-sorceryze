@@ -44,6 +44,24 @@ class EntryTests(unittest.IsolatedAsyncioTestCase):
             )
         return key, requirement
 
+    async def test_workspace_requires_installed_confirmation_reader(self):
+        from unittest.mock import patch
+
+        requirement = self.domain.create_requirement(
+            self.actor, "workspace-" + "a" * 64, "Design", "Approved output", "scope", "checks"
+        )
+        with patch.dict(sys.modules, {"workspace_conversations": None}):
+            with self.assertRaisesRegex(NativeStoreError, "approval reader"):
+                with self.ledger.transaction():
+                    self.ledger.enqueue(
+                        self.actor,
+                        requirement["id"],
+                        "direct",
+                        {"scopes": ["text"]},
+                        credential=self.tokens[self.actor],
+                    )
+        self.assertFalse(self.ledger.pending())
+
     async def test_atomic_rollback_and_cross_tenant(self):
         with self.assertRaises(RuntimeError):
             with self.ledger.transaction():

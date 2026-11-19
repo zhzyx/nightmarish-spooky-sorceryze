@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "request-1581-cli-runtime",
+  "request_id": "tianxuan-runtime-closure-20261119",
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "occurred_at": "2026-11-19T13:12:18.279847+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1581",
+  "agent": {
+    "id": "codex-1581",
+    "version": "not-reported-by-host",
+    "definition_sha256": "15dc82d98874b169be4c367f66db6f68dbe45096a7ff034f6289fb621f09018a",
+    "origin": "repository-task-instructions"
+  },
+  "payload": {
+    "operator": "Sail-Li",
+    "parent_issue": 1550,
+    "source_updated_at": "2026-11-19T13:09:51Z",
+    "source_body_sha256": "6b9ca1a70d56d5ceb4e4d112e00d6b15b8b91ac3e85fbab3d405d08f4e5b94b7",
+    "design": "design-docs/tianxuan-runtime-closure-20261119.md"
+  },
+  "evidence_refs": [],
+  "sha256": "d560b197cea0a6717b7dd8504ee0ed7abdd77ab3b5ff28d44909afe9755aa274"
+}

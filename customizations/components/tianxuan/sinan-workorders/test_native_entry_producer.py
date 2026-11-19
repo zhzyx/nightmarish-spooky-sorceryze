@@ -15,6 +15,7 @@ from pathlib import Path
 import native_entry_producer as bridge
 import pytest
 import runner
+from native_model_host import executable_sha256
 from test_native_model_producer import SCHEMA, framework, installed
 from test_native_workflow import fixture, reserve  # noqa: F401
 
@@ -62,9 +63,9 @@ def test_actual_broker_signs_exact_finite_task_and_uses_central_budget(fixture, 
         framework_sha256=hashlib.sha256((framework_root / "framework-manifest.json").read_bytes()).hexdigest(),
         runtime_sha256=runner.runtime_digest(),
         node=str(node),
-        node_sha256=hashlib.sha256(node.read_bytes()).hexdigest(),
+        node_sha256=executable_sha256(node),
         python=sys.executable,
-        python_sha256=hashlib.sha256(Path(sys.executable).read_bytes()).hexdigest(),
+        python_sha256=executable_sha256(sys.executable),
         state=central["state_dir"],
         key_file=str(key_file),
         authority_ref="synthetic",
