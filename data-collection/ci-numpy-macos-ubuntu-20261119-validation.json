@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "request_id": "ci-numpy-macos-ubuntu-20261119",
+  "issue_number": 1614,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1614",
+  "scope": "CI dependency declaration only; no business code or test assertion changes",
+  "change": {
+    "workflow": ".github/workflows/engine_next_contract.yml",
+    "job": "source-contract",
+    "matrix": ["windows-latest", "macos-26", "ubuntu-latest"],
+    "python": "3.12",
+    "dependencies": ["pillow==12.1.1", "numpy==2.4.4"]
+  },
+  "validation": [
+    {
+      "name": "Workflow YAML parse",
+      "state": "passed",
+      "evidence": "yaml.safe_load completed"
+    },
+    {
+      "name": "python -m unittest discover -s tools/ainative -p test_*.py",
+      "state": "passed",
+      "tests": 484,
+      "skipped": 62,
+      "failures": 0,
+      "errors": 0,
+      "numpy": "2.4.4"
+    },
+    {
+      "name": "git diff --check",
+      "state": "passed"
+    }
+  ],
+  "required_remote_acceptance": [
+    "No Godot source or link dependencies (macos-26)",
+    "No Godot source or link dependencies (ubuntu-latest)",
+    "No Godot source or link dependencies (windows-latest)",
+    "Windows / Editor (target=editor)"
+  ],
+  "remote_acceptance_state": "pending",
+  "main_merged": false
+}

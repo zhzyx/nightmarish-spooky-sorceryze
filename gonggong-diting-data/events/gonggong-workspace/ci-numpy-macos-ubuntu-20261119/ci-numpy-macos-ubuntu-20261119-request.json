@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "ci-numpy-macos-ubuntu-20261119-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ci-numpy-macos-ubuntu-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-19T15:11:36Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1614",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261119",
+    "origin": "external-authorized-host",
+    "definition_sha256": "8557875119f3a68cf75706a8058fd5781547c21c1848558e512a540ab87e5307"
+  },
+  "payload": {
+    "intent": "Fix the macOS and Ubuntu CI test environments by declaring the NumPy dependency required by the existing AINative tests, without changing business code, weakening tests, or altering the Windows build path.",
+    "authorization_ref": "kimi-work:user:20261119:fix-ci-numpy-environments-as-bug",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "647c9a050cb04c14c6ba067d3a1f3c28ab86e321255d14660869aa8e803d1607"
+}
