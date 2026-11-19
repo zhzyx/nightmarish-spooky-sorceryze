@@ -7,7 +7,8 @@ import { LocalGitRepos } from "@/components/LocalGitRepos";
 import { MergeQueuePanel } from "@/components/MergeQueuePanel";
 import { RepoPulls } from "@/components/RepoPulls";
 import { RepoTree } from "@/components/RepoTree";
-import { fetchRepos, type ApiRepo } from "@/lib/server-api";
+import { fetchRepoCapabilities, fetchRepos } from "@/lib/server-api";
+import { NativeRepoBrowser } from "@/components/NativeRepoBrowser";
 import { LOCALE_COOKIE, normalizeLocale, translate, type MessageKey } from "@/lib/i18n";
 
 export function generateMetadata(): Metadata {
@@ -21,33 +22,21 @@ export default async function ReposPage() {
   const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);
   const t = (key: MessageKey) => translate(locale, key);
   const actor = await currentActor();
-  let liveRepos: ApiRepo[] | null = null;
-  if (actor) {
-    try {
-      liveRepos = await fetchRepos(actor);
-    } catch {
-      liveRepos = null;
-    }
-  }
+  const capabilities = actor ? await fetchRepoCapabilities().catch(() => null) : null;
+  const showGit = capabilities?.git !== false;
+  const liveRepos = actor && showGit ? await fetchRepos(actor).catch(() => null) : null;
 
   return (
     <div className="page-stack repos-page">
       <header className="page-header">
         <div className="page-title-group">
-          <p className="eyebrow">
-            <span className="eyebrow-rule" aria-hidden="true" />
-            DUOBAO · CODE &amp; MERGE
-          </p>
           <h1>
             {t("repos.title")}
             {locale === "zh" ? <span className="title-period">。</span> : null}
           </h1>
-          <p className="page-lede">{t("repos.lede")}</p>
         </div>
         <div className="page-actions">
-          <Link className="btn btn-ghost" href="/login">
-            {t("repos.login")}
-          </Link>
+          {!actor && <Link className="btn btn-ghost" href="/login">{t("repos.login")}</Link>}
           <Link className="btn btn-ghost" href="/docs/duobao-git">
             <Icon name="docs" size={16} />
             {t("repos.guide")}
@@ -59,13 +48,16 @@ export default async function ReposPage() {
         </div>
       </header>
 
-      <LocalGitRepos />
+      {capabilities?.native_candidates && <NativeRepoBrowser />}
 
-      <RepoTree />
-
-      <MergeQueuePanel />
-
-      <RepoPulls />
+      {showGit && (
+        <>
+          <LocalGitRepos />
+          <RepoTree />
+          <MergeQueuePanel />
+          <RepoPulls />
+        </>
+      )}
 
       {liveRepos && liveRepos.length > 0 ? (
         <section className="panel" aria-labelledby="live-repos-title">

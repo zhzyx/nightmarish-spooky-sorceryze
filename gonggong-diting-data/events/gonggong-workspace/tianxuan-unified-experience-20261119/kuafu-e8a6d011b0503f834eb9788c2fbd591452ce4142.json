@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e8a6d011b0503f834eb9788c2fbd591452ce4142",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "644084dce99ff6e30c097ae187d15f59743f1c97926be9e92205e90096e700e6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1555",
+    "action": "validation",
+    "detection_head": "ac8d1376d0a03678b625cbe4bd9b09ea18120475",
+    "context_sha256": "4d2d986c222951965cf69ed7ea2c6048c9d458b50d8aff8cdd316e043ddf218b",
+    "operator": "Sail-Li",
+    "worker": "codex-1551",
+    "authority_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44475808944",
+    "diagnosis": "WORKTREE_UNSTAGED: preflight was invoked before the task index was populated.",
+    "next_action": "The task owner staged the scoped source and intake, checks the candidate tree, and reruns the original validation.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T06:56:11.576206+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T07:03:52.062826+00:00",
+  "sha256": "2cd92b8091ffd0cf0c74ae7d3ccb427045b29148896a8ba0f6903422a33fc29e"
+}
