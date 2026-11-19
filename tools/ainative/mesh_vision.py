@@ -130,8 +130,13 @@ def review_schema():
             observation=dict(type="string"),
         ),
         required=[
-            "applicable", "complete_face", "neck_join_pass", "identity_pass",
-            "face_proportions_pass", "animation_geometry_pass", "observation",
+            "applicable",
+            "complete_face",
+            "neck_join_pass",
+            "identity_pass",
+            "face_proportions_pass",
+            "animation_geometry_pass",
+            "observation",
         ],
         additionalProperties=False,
     )
@@ -161,8 +166,17 @@ def review_schema():
             rendered_front_view=dict(type="string", enum=list(REVIEW_FRONT_YAW)),
         ),
         required=[
-            "schema_version", "passed", "subject_match", "proportions_pass", "views",
-            "details_pass", "head_gate", "acceptance", "issues", "retry_guidance", "rendered_front_view",
+            "schema_version",
+            "passed",
+            "subject_match",
+            "proportions_pass",
+            "views",
+            "details_pass",
+            "head_gate",
+            "acceptance",
+            "issues",
+            "retry_guidance",
+            "rendered_front_view",
         ],
         additionalProperties=False,
     )
@@ -475,16 +489,48 @@ def issue_geometry_scope(issue):
     value = str(issue).casefold()
     if str(issue).startswith(("Missing required rendered view:", "Duplicate rendered view:")):
         return "protocol"
-    if any(term in value for term in (
-        "missing arm", "missing leg", "missing limb", "arms are missing", "legs are missing",
-        "full-body", "full body", "bust", "duplicated figure", "duplicate figure", "pose",
-    )):
+    if any(
+        term in value
+        for term in (
+            "missing arm",
+            "missing leg",
+            "missing limb",
+            "arms are missing",
+            "legs are missing",
+            "full-body",
+            "full body",
+            "bust",
+            "duplicated figure",
+            "duplicate figure",
+            "pose",
+        )
+    ):
         return "blocking"
-    if any(term in value for term in (
-        "geometry", "topology", "neck", "chin", "mouth", "silhouette", "hairstyle", "haircut",
-        "hair geometry", "hair volume", "pompadour", "helmet-like hair", "breadth", "projection",
-        "facial identity", "face identity", "facial geometry", "eye shape", "nose shape", "lip shape",
-    )):
+    if any(
+        term in value
+        for term in (
+            "geometry",
+            "topology",
+            "neck",
+            "chin",
+            "mouth",
+            "silhouette",
+            "hairstyle",
+            "haircut",
+            "hair geometry",
+            "hair volume",
+            "pompadour",
+            "helmet-like hair",
+            "breadth",
+            "projection",
+            "facial identity",
+            "face identity",
+            "facial geometry",
+            "eye shape",
+            "nose shape",
+            "lip shape",
+        )
+    ):
         return "deferred"
     return "appearance"
 
@@ -493,9 +539,16 @@ def geometry_edit_required(review):
     if not review.get("subject_match", False) or not review.get("proportions_pass", False):
         return True
     head = review.get("head_gate", {})
-    if head.get("applicable") and any(head.get(key) is False for key in (
-        "complete_face", "neck_join_pass", "identity_pass", "face_proportions_pass", "animation_geometry_pass",
-    )):
+    if head.get("applicable") and any(
+        head.get(key) is False
+        for key in (
+            "complete_face",
+            "neck_join_pass",
+            "identity_pass",
+            "face_proportions_pass",
+            "animation_geometry_pass",
+        )
+    ):
         return True
     return any(issue_geometry_scope(issue) in ("blocking", "deferred") for issue in review.get("issues", []))
 
@@ -525,7 +578,23 @@ def neck_repair_parameters(previous_model, previous_review):
         return None
     for issue in previous_review.get("issues", []):
         value = str(issue).casefold()
-        if any(term in value for term in ("hair", "arm", "leg", "bust", "proportion", "pose", "mouth", "chin", "full-body", "full body", "duplicate figure", "duplicated figure")):
+        if any(
+            term in value
+            for term in (
+                "hair",
+                "arm",
+                "leg",
+                "bust",
+                "proportion",
+                "pose",
+                "mouth",
+                "chin",
+                "full-body",
+                "full body",
+                "duplicate figure",
+                "duplicated figure",
+            )
+        ):
             return None
     try:
         data = base64.b64decode(previous_model["payload"]["content_base64"], validate=True)
@@ -678,7 +747,9 @@ def render_review_views(provider, key, model_path, directory, yaw_override=None,
         yaw_degrees=float(yaw),
         review_plan=plan,
         review_plan_sha256=hashlib.sha256(canonical(plan).encode()).hexdigest() if plan is not None else "",
-        render_views=[dict(view=item["view"], region=item["region"], direction=item["direction"]) for item in definitions],
+        render_views=[
+            dict(view=item["view"], region=item["region"], direction=item["direction"]) for item in definitions
+        ],
         script_sha256=hashlib.sha256(Path(provider.config["review_script_path"]).read_bytes()).hexdigest(),
     )
     request = directory / "render-request.json"
@@ -722,9 +793,7 @@ def corrected_review_yaw(directory, review):
     report = json.loads((Path(directory) / "views.json").read_text(encoding="utf-8"))
     current = report.get("yaw_degrees", 0.0)
     require(
-        isinstance(current, (int, float))
-        and not isinstance(current, bool)
-        and -180.0 <= current <= 180.0,
+        isinstance(current, (int, float)) and not isinstance(current, bool) and -180.0 <= current <= 180.0,
         "review_render_failed",
     )
     return (float(current) + correction + 180.0) % 360.0 - 180.0
@@ -826,7 +895,9 @@ def get_review_plan(analysis):
 
 
 def review_view_definitions(plan):
-    definitions = [dict(view=view, region="full_subject", direction=view, goal="base model evidence") for view in BASE_REVIEW_VIEWS]
+    definitions = [
+        dict(view=view, region="full_subject", direction=view, goal="base model evidence") for view in BASE_REVIEW_VIEWS
+    ]
     for detail in plan["details"]:
         region = detail["region"]
         for direction in detail["views"]:
@@ -928,8 +999,12 @@ def validate_review(document, generated_entries, require_head=None, partial=Fals
     duplicates = sorted(view for view in expected if observed.count(view) > 1)
     head = document.get("head_gate")
     head_booleans = (
-        "applicable", "complete_face", "neck_join_pass", "identity_pass",
-        "face_proportions_pass", "animation_geometry_pass",
+        "applicable",
+        "complete_face",
+        "neck_join_pass",
+        "identity_pass",
+        "face_proportions_pass",
+        "animation_geometry_pass",
     )
     acceptance = {
         "top_view": "approximate_allowed",
@@ -953,17 +1028,18 @@ def validate_review(document, generated_entries, require_head=None, partial=Fals
         document["review_incomplete"] = True
         document["issues"] = list(document["issues"]) + ["Missing required rendered view: " + view for view in missing]
         document["issues"] += ["Duplicate rendered view: " + view for view in duplicates]
-    required = False if partial else (head["applicable"] if require_head is None else bool(require_head or head["applicable"]))
+    required = (
+        False if partial else (head["applicable"] if require_head is None else bool(require_head or head["applicable"]))
+    )
     if require_head and not partial:
         require(head["applicable"], "vision_output_invalid")
         require(HEAD_REVIEW_VIEWS <= expected, "vision_output_invalid")
-    head_views_pass = all(
-        any(item["view"] == view and item["similar"] for item in document["views"])
-        for view in HEAD_REVIEW_VIEWS
-    ) if required else True
-    head_pass = not required or (
-        all(head[key] for key in head_booleans if key != "applicable") and head_views_pass
+    head_views_pass = (
+        all(any(item["view"] == view and item["similar"] for item in document["views"]) for view in HEAD_REVIEW_VIEWS)
+        if required
+        else True
     )
+    head_pass = not required or (all(head[key] for key in head_booleans if key != "applicable") and head_views_pass)
     passed = (
         document["passed"]
         and document["subject_match"]
@@ -998,9 +1074,7 @@ def attach_head_review(model, review_document, analysis):
     document = json.loads(data[20 : 20 + json_size])
     binary_chunk = data[20 + json_size :]
     views = {
-        item["view"]: bool(item["similar"])
-        for item in review_document["views"]
-        if item["view"] in HEAD_REVIEW_VIEWS
+        item["view"]: bool(item["similar"]) for item in review_document["views"] if item["view"] in HEAD_REVIEW_VIEWS
     }
     require(set(views) == HEAD_REVIEW_VIEWS and all(views.values()), "vision_output_invalid")
     extras = document.setdefault("asset", {}).setdefault("extras", {})
@@ -1054,7 +1128,10 @@ def attach_head_review(model, review_document, analysis):
 
 def attach_capability_review(model, review_document):
     """Deliver the last reviewed GLB with explicit unresolved capability evidence."""
-    require(review_document.get("passed") is False and isinstance(review_document.get("issues"), list), "vision_output_invalid")
+    require(
+        review_document.get("passed") is False and isinstance(review_document.get("issues"), list),
+        "vision_output_invalid",
+    )
     result = copy.deepcopy(model)
     payload = result["payload"]
     data = base64.b64decode(payload["content_base64"], validate=True)
@@ -1162,17 +1239,23 @@ def merge_incomplete_reviews(first, second, generated_entries, require_head):
     if not set(expected) <= set(views):
         return None
     head_keys = (
-        "applicable", "complete_face", "neck_join_pass", "identity_pass",
-        "face_proportions_pass", "animation_geometry_pass",
+        "applicable",
+        "complete_face",
+        "neck_join_pass",
+        "identity_pass",
+        "face_proportions_pass",
+        "animation_geometry_pass",
     )
     for key in head_keys:
         require(first["head_gate"][key] == second["head_gate"][key], "vision_output_invalid")
-    issues = list(dict.fromkeys(
-        issue
-        for document in documents
-        for issue in document["issues"]
-        if not str(issue).startswith(("Missing required rendered view:", "Duplicate rendered view:"))
-    ))
+    issues = list(
+        dict.fromkeys(
+            issue
+            for document in documents
+            for issue in document["issues"]
+            if not str(issue).startswith(("Missing required rendered view:", "Duplicate rendered view:"))
+        )
+    )
     ordered = [views[name] for name in expected]
     ordered.extend(item for name, item in views.items() if name not in expected)
     merged = copy.deepcopy(second)

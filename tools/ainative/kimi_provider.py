@@ -1607,9 +1607,7 @@ class KimiNativeDirectProvider(ModelingProvider):
             # operators use the already configured/validated model runtime;
             # remote generation keeps its existing interpreter behavior.
             worker_python = (
-                self.config["pythonw_path"]
-                if plan.get("operation") in LOCAL_GEOMETRY_OPERATIONS
-                else sys.executable
+                self.config["pythonw_path"] if plan.get("operation") in LOCAL_GEOMETRY_OPERATIONS else sys.executable
             )
             directory = self.storage / key
             directory.mkdir(exist_ok=False)
@@ -1647,8 +1645,7 @@ class KimiNativeDirectProvider(ModelingProvider):
         latest = attempts[-1]
         review = latest["review"]
         require(
-            previous_model.get("revision") == latest.get("model_sha256")
-            and review.get("passed") is False,
+            previous_model.get("revision") == latest.get("model_sha256") and review.get("passed") is False,
             "model3d_result_unknown",
         )
         model = mesh_vision.attach_capability_review(previous_model, review)

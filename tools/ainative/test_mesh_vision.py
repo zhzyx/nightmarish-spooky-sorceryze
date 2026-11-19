@@ -206,13 +206,36 @@ class MeshVisionTests(unittest.TestCase):
         document = analysis([analyzed("front", "front")])
         previous = dict(id="previous-model", revision="c" * 64, type="mesh")
         cases = [
-            dict(subject_match=False, proportions_pass=True, head_gate=head_gate(applicable=True, complete_face=True, neck_join_pass=True), issues=[]),
-            dict(subject_match=True, proportions_pass=False, head_gate=head_gate(applicable=True, complete_face=True, neck_join_pass=True), issues=[]),
-            dict(subject_match=True, proportions_pass=True, head_gate=head_gate(applicable=True, complete_face=True, neck_join_pass=False), issues=[]),
-            dict(subject_match=True, proportions_pass=True, head_gate=head_gate(applicable=True, complete_face=True, neck_join_pass=True), issues=["both arms are missing"]),
+            dict(
+                subject_match=False,
+                proportions_pass=True,
+                head_gate=head_gate(applicable=True, complete_face=True, neck_join_pass=True),
+                issues=[],
+            ),
+            dict(
+                subject_match=True,
+                proportions_pass=False,
+                head_gate=head_gate(applicable=True, complete_face=True, neck_join_pass=True),
+                issues=[],
+            ),
+            dict(
+                subject_match=True,
+                proportions_pass=True,
+                head_gate=head_gate(applicable=True, complete_face=True, neck_join_pass=False),
+                issues=[],
+            ),
+            dict(
+                subject_match=True,
+                proportions_pass=True,
+                head_gate=head_gate(applicable=True, complete_face=True, neck_join_pass=True),
+                issues=["both arms are missing"],
+            ),
         ]
         for rejected in cases:
-            with self.subTest(rejected=rejected), self.assertRaisesRegex(ValueError, "model3d_geometry_edit_unsupported"):
+            with (
+                self.subTest(rejected=rejected),
+                self.assertRaisesRegex(ValueError, "model3d_geometry_edit_unsupported"),
+            ):
                 select_retry_adjust_request(self.request(sources), document, previous, rejected)
 
     def test_review_requires_every_dimension_and_every_rendered_view(self):
@@ -228,9 +251,12 @@ class MeshVisionTests(unittest.TestCase):
             views=[
                 dict(view="generated " + view, similar=True, observation="same")
                 for view in ("front", "head_front", "head_three_quarter", "head_side")
-            ] + [dict(view="actual rear comparison", similar=True, observation="supplemental evidence")],
+            ]
+            + [dict(view="actual rear comparison", similar=True, observation="supplemental evidence")],
             details_pass=True,
-            head_gate=head_gate(applicable=True, complete_face=True, neck_join_pass=True, observation="complete head and neck"),
+            head_gate=head_gate(
+                applicable=True, complete_face=True, neck_join_pass=True, observation="complete head and neck"
+            ),
             issues=[],
             retry_guidance="",
         )
@@ -253,9 +279,14 @@ class MeshVisionTests(unittest.TestCase):
             passed=True,
             subject_match=True,
             proportions_pass=True,
-            views=[dict(view=view, similar=True, observation="visible") for view in ("head_front", "head_three_quarter", "head_side")],
+            views=[
+                dict(view=view, similar=True, observation="visible")
+                for view in ("head_front", "head_three_quarter", "head_side")
+            ],
             details_pass=True,
-            head_gate=head_gate(applicable=True, complete_face=False, neck_join_pass=True, observation="mouth and chin are cut"),
+            head_gate=head_gate(
+                applicable=True, complete_face=False, neck_join_pass=True, observation="mouth and chin are cut"
+            ),
             issues=[],
             retry_guidance="",
         )
@@ -276,7 +307,9 @@ class MeshVisionTests(unittest.TestCase):
             proportions_pass=True,
             views=[dict(view="front", similar=True, observation="same vase")],
             details_pass=True,
-            head_gate=head_gate(applicable=False, complete_face=False, neck_join_pass=False, observation="not a person"),
+            head_gate=head_gate(
+                applicable=False, complete_face=False, neck_join_pass=False, observation="not a person"
+            ),
             issues=[],
             retry_guidance="",
         )
@@ -300,7 +333,9 @@ class MeshVisionTests(unittest.TestCase):
                 dict(view="generated-right compared with source front", similar=True, observation="same"),
             ],
             details_pass=True,
-            head_gate=head_gate(applicable=False, complete_face=False, neck_join_pass=False, observation="not applicable"),
+            head_gate=head_gate(
+                applicable=False, complete_face=False, neck_join_pass=False, observation="not applicable"
+            ),
             issues=[],
             retry_guidance="",
         )
@@ -340,9 +375,7 @@ class MeshVisionTests(unittest.TestCase):
             retry_guidance="",
         )
         with patch("mesh_vision.review", side_effect=[first, second]) as review_call:
-            result = complete_review(
-                object(), "a" * 64, analysis([]), [], generated, [], Path("review-request")
-            )
+            result = complete_review(object(), "a" * 64, analysis([]), [], generated, [], Path("review-request"))
         self.assertTrue(result["passed"])
         self.assertEqual(review_call.call_count, 2)
         self.assertIs(review_call.call_args_list[0].args[4], generated)
@@ -388,9 +421,7 @@ class MeshVisionTests(unittest.TestCase):
             retry_guidance="",
         )
         with patch("mesh_vision.review", side_effect=[first, second]) as review_call:
-            result = complete_review(
-                object(), "a" * 64, analysis([]), [], generated, [], Path("review-request")
-            )
+            result = complete_review(object(), "a" * 64, analysis([]), [], generated, [], Path("review-request"))
         self.assertTrue(result["passed"])
         self.assertEqual(result["evidence_recovery"], "merged_incomplete_reviews_same_model")
         self.assertEqual(review_call.call_count, 2)
@@ -422,9 +453,7 @@ class MeshVisionTests(unittest.TestCase):
         conflict["views"].append(dict(view="top", similar=False, observation="contradictory top"))
         with patch("mesh_vision.review", side_effect=[first, conflict]):
             with self.assertRaisesRegex(ValueError, "vision_output_invalid"):
-                complete_review(
-                    object(), "a" * 64, analysis([]), [], generated, [], Path("review-request")
-                )
+                complete_review(object(), "a" * 64, analysis([]), [], generated, [], Path("review-request"))
 
     def test_legacy_incomplete_retry_does_not_block_targeted_recovery(self):
         generated = [
@@ -471,9 +500,7 @@ class MeshVisionTests(unittest.TestCase):
             save(root / "review-request", first)
             save(root / "review-request-incomplete-retry", first)
             with patch("mesh_vision.review", return_value=targeted) as request:
-                result = complete_review(
-                    object(), "a" * 64, analysis([]), [], generated, [], root / "review-request"
-                )
+                result = complete_review(object(), "a" * 64, analysis([]), [], generated, [], root / "review-request")
             self.assertTrue(result["passed"])
             self.assertEqual(request.call_count, 1)
             self.assertEqual(request.call_args.args[4], generated[1:])
@@ -492,7 +519,8 @@ class MeshVisionTests(unittest.TestCase):
             views=[
                 dict(view=view, similar=True, observation="same layout")
                 for view in ("front", "head_front", "head_three_quarter", "head_side")
-            ] + [dict(view="top", similar=True, observation="Similar layout; a slightly different elevation is allowed")],
+            ]
+            + [dict(view="top", similar=True, observation="Similar layout; a slightly different elevation is allowed")],
             details_pass=True,
             issues=[],
             retry_guidance="",
@@ -517,7 +545,6 @@ class MeshVisionTests(unittest.TestCase):
         self.assertIn("elevation angle differs moderately", prompt)
         self.assertIn("never claim that a skeleton", prompt)
 
-
     def test_hand_detail_plan_drives_render_and_review_without_head_views(self):
         document = planned_analysis(
             [analyzed("hand", "detail", "detail")],
@@ -534,8 +561,7 @@ class MeshVisionTests(unittest.TestCase):
         self.assertFalse(any(name.startswith("head_") for name in names))
         self.assertFalse(plan["head_gate"])
         generated = [
-            dict(image_id="generated-" + name, label="generated " + name, path=Path(name + ".png"))
-            for name in names
+            dict(image_id="generated-" + name, label="generated " + name, path=Path(name + ".png")) for name in names
         ]
         accepted = reviewed_document(
             passed=True,
@@ -813,7 +839,9 @@ class ReviewLoopTests(unittest.TestCase):
                 patch("mesh_vision.analyze", return_value=dict(document=document, entries=entries)),
                 patch("mesh_vision.select_generation_request", return_value=(child, [selected])),
                 patch("mesh_vision.render_review_views", side_effect=initial_render),
-                patch("mesh_vision.render_corrected_review_views", return_value=["corrected evidence"]) as corrected_render,
+                patch(
+                    "mesh_vision.render_corrected_review_views", return_value=["corrected evidence"]
+                ) as corrected_render,
                 patch("mesh_vision.review", side_effect=[rejected, accepted]) as review_call,
                 patch("mesh_vision.attach_head_review", side_effect=lambda model, _review, _analysis: model),
                 patch.object(provider, "_cli", return_value=copy.deepcopy(model)) as cli,
