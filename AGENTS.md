@@ -19,7 +19,7 @@
 | 测试选择、回归验证、验收证据与结果记录 | `Markdown/testing/README.md` |
 | C++ 命名、格式、API、内存、并发与代码评审 | `Markdown/code-style/README.md` |
 | UI 输入命令化、编辑器语义操作、外部 CLI／HTTP 接入 | `Markdown/editor-control/README.md` |
-| 马良图像／网格生成、视觉 review、原模型增量修复与运行包验收 | `Markdown/maliang/README.md` |
+| 马良图像／网格／骨骼生成、视觉 review、原模型增量修复与运行包验收 | `Markdown/maliang/README.md` |
 | Gameplay 对象、生命周期、会话、专服、复制、相关性与预测 | `Markdown/gameplay/README.md` |
 | EngineCore 核心架构、AI 公共运行契约、引擎适配与迁移边界 | `Markdown/engine-core/README.md` |
 | 查找原始规范、项目记忆、需求设计与历史验收资料 | `Markdown/sources/README.md` |

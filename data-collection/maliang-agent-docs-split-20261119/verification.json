@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-agent-docs-split-20261119",
+  "issue_number": 1619,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1619",
+  "base_commit": "7e3b781f62f60d89e6679f2aae846fc1c34a8764",
+  "scope": "Root-to-Maliang routing and image/Mesh versus skeleton workflow documentation only; no generator, rigging, editor, or runtime code changes",
+  "validation": [
+    {
+      "name": "root_to_maliang_routing",
+      "state": "passed",
+      "evidence": "AGENTS.md routes to Markdown/maliang/README.md, whose two relative links resolve to existing workflow documents"
+    },
+    {
+      "name": "markdown_relative_links",
+      "state": "passed",
+      "evidence": "All local Markdown links in the Maliang index and both child workflow documents resolve to existing files"
+    },
+    {
+      "name": "git_diff_check",
+      "state": "passed",
+      "evidence": "The exact staged documentation and evidence candidate passes git diff --cached --check"
+    },
+    {
+      "name": "issue_gate_intake",
+      "state": "passed",
+      "evidence": "Issue #1619 was read back as type:documentation and status:in-progress under tenant gonggong-workspace"
+    }
+  ],
+  "real_image_mesh_skeleton_or_animation_acceptance": false,
+  "main_merged": false
+}
