@@ -9,6 +9,7 @@ const zh = {
   "nav.docs": "文档",
   "nav.issues": "工单",
   "nav.repos": "代码仓库",
+  "nav.migration": "历史迁移",
   "nav.requirements": "需求",
   "nav.search": "全局搜索",
   "nav.settings": "设置",
@@ -829,6 +830,7 @@ const en: Record<MessageKey, string> = {
   "nav.docs": "Documents",
   "nav.issues": "Issues",
   "nav.repos": "Repositories",
+  "nav.migration": "History migration",
   "nav.requirements": "Requirements",
   "nav.search": "Search",
   "nav.settings": "Settings",
@@ -1670,6 +1672,8 @@ export function routeTitleKey(pathname: string): MessageKey {
       return "nav.docs";
     case "issues":
       return "nav.issues";
+    case "migration":
+      return "nav.migration";
     case "repos":
       return "nav.repos";
     case "requirements":

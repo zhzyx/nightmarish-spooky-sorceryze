@@ -1,0 +1,67 @@
+{
+  "issue": 1553,
+  "request_id": "tianxuan-unified-migration-20261119",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1553",
+  "verified_at": "2026-11-19T12:57:00.148956+00:00",
+  "production_import": false,
+  "environment": "Windows isolated native database from the 1553 migration rehearsal",
+  "catalog_readback": {
+    "source": "zhzyx/nightmarish-spooky-sorceryze",
+    "source_revision": "ac8d1376d0a03678b625cbe4bd9b09ea18120475",
+    "records_sha256": "8e0d6129a094ba229f9118e80cd675fc94d84259203858acaa55d9c62a2b5368",
+    "counts": {
+      "commit": 1813,
+      "issue": 698,
+      "issue_comment": 4120,
+      "pull": 857,
+      "pull_issue_projection": 857,
+      "requirement": 399
+    },
+    "binary_count": 2,
+    "catalog_sha256": "fff38ecd1642cf79e6d97ebc4c002986a1828896ea477365e7a8bce3ebfe7352",
+    "module": "migration-1bda0751dc87026dc33836a7e80ffbf9b94c70f79e5a3dce50c6eab829aa3e6a",
+    "revision": "2c0b73f43a81da33110cf10ce27a63f0a47c152f046b6eb7c060301adf85dd8c",
+    "historical_policy": "record_only",
+    "tenant": "gonggong-workspace",
+    "project": "zhzyx/nightmarish-spooky-sorceryze",
+    "published_by": "Sail-Li",
+    "published_at": "2026-11-19T12:55:49.701830+00:00",
+    "imported_at": null
+  },
+  "source_rows": 8744,
+  "checks": [
+    {
+      "command": "py -B -m unittest discover -s customizations/components/tianxuan/migration",
+      "passed": 7
+    },
+    {
+      "kind": "native catalog integrity and visibility",
+      "outcome": "Project-bound readback matched the immutable catalog; other project and tenant absent; altered native bytes rejected in an isolated test."
+    },
+    {
+      "kind": "small restore",
+      "outcome": "Original record line and binary bytes recovered from the native catalog in an empty directory. Repeated import returned identical revision and registration retained its first timestamp."
+    },
+    {
+      "kind": "legacy timeline",
+      "outcome": "Read existing v1 catalog without rewriting history. Original import time unavailable; project publication time recorded separately."
+    }
+  ],
+  "http_rehearsal": {
+    "reported_by": "current integration owner, migration-1553",
+    "transport": "FastAPI TestClient through create_app",
+    "source_rows": 8744,
+    "consecutive_archive_and_publish_runs": 2,
+    "identical_receipts": true,
+    "imported_at": "2026-11-19T13:01:53.630859+00:00",
+    "restored_records_sha256": "8e0d6129a094ba229f9118e80cd675fc94d84259203858acaa55d9c62a2b5368",
+    "get_status_matches_ai_tool": true,
+    "other_project_visible": false,
+    "business_issues_created_by_archive": 0,
+    "task_routing_test": "test_migration_api exercised HTTP and AI creation, call-id deduplication and tenant isolation."
+  },
+  "static_validation": {
+    "mypy_changed_python_files": 4,
+    "outcome": "passed"
+  }
+}

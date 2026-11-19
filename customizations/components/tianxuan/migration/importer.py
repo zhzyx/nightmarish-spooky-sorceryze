@@ -45,6 +45,7 @@ def write_verified(store, tenant, actor, edits):
 
 def import_inventory(manifest_path, database, tenant, actor, *, artifacts=None):
     """Return a verified catalog pointer. Incomplete runs leave reusable private blocks."""
+    database = Path(database).resolve()
     manifest_path = Path(manifest_path)
     report = json.loads(manifest_path.read_bytes())
     if report["historical_policy"] != "record_only":
@@ -94,8 +95,16 @@ def import_inventory(manifest_path, database, tenant, actor, *, artifacts=None):
             raise ValueError("Binary source checksum mismatch")
         binaries[source_id] = {"sha256": expected, "blocks": blocks}
     catalog = {"version": 1, "report": report, "record_batches": batches, "binaries": binaries}
+    catalog_bytes = canonical(catalog)
+    module = "migration-" + digest(canonical({"catalog.json": digest(catalog_bytes)}))
+    from migration_status import prepare_import, stamp_import
+
+    prepare_import(database, tenant, module)
+    pointer = write_verified(store, tenant, actor, {"catalog.json": catalog_bytes})
+
+    stamp_import(database, tenant, **pointer)
     return dict(
-        write_verified(store, tenant, actor, {"catalog.json": canonical(catalog)}),
+        pointer,
         counts=dict(counts),
         binary_count=len(binaries),
     )
@@ -108,7 +117,8 @@ def restore_inventory(database, tenant, module, revision, output):
     output = Path(output).resolve()
     if output.exists():
         raise FileExistsError(output)
-    if not Path(database).is_file():
+    database = Path(database).resolve()
+    if not database.is_file():
         raise FileNotFoundError(database)
     store = NativeStore(database)
 

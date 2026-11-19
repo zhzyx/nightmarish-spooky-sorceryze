@@ -11,6 +11,8 @@ customizations/components/*
 customizations/components/tianxuan/*
 !customizations/components/tianxuan/server/
 !customizations/components/tianxuan/server/**
+!customizations/components/tianxuan/migration/
+!customizations/components/tianxuan/migration/**
 !customizations/components/tianxuan/wenqu/
 !customizations/components/tianxuan/wenqu/**
 !customizations/components/tianxuan/duobao/

@@ -331,6 +331,10 @@ def create_app(
 
     store.work_native_store = native_store
     app.include_router(create_work_router(store, _require_actor))
+    from migration_api import migration_routes
+
+    migration_router, migration_tool = migration_routes(store, _require_actor, native_store)
+    app.include_router(migration_router)
     configure_access(app, store)
     if native_entry is not None:
         from native_entry_api import create_entry_router
@@ -1841,7 +1845,8 @@ def create_app(
             "issue.transition",
             "issue.list",
         }
-        if payload.name not in available_tools:
+        migration_tools = {"migration.entry", "migration.status", "migration.start"}
+        if payload.name not in available_tools | migration_tools:
             raise HTTPException(status_code=400, detail="unknown tool")
         public_workspace = os.environ.get("TIANXUAN_AUTH_MODE") == "accounts" and store.actor_context(actor)[
             "tenant"
@@ -1849,6 +1854,8 @@ def create_app(
         if public_workspace and payload.name not in document_tools:
             raise HTTPException(status_code=403, detail="this workspace is limited to document tools")
         try:
+            if payload.name in migration_tools:
+                return cast(dict[str, Any], migration_tool(actor, payload.name, payload.payload, payload.call_id))
             result = cast(
                 dict[str, Any], store.dispatch_tool(actor, payload.name, payload.payload, call_id=payload.call_id)
             )
