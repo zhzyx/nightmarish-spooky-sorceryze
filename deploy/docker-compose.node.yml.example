@@ -1,0 +1,28 @@
+# Standalone outbound worker. The reviewed image contains the native node and
+# the producer executables referenced by the operator's pinned profiles.
+services:
+  node:
+    image: "${TIANXUAN_NODE_IMAGE:?set the verified node image digest or local image ID}"
+    pull_policy: never
+    init: true
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=67108864,mode=1777
+    command:
+      - python
+      - /app/customizations/components/tianxuan/sinan-workorders/native_node.py
+      - --config
+      - /installation/node.json
+    volumes:
+      - type: bind
+        source: "${TIANXUAN_NODE_INSTALLATION:?set the existing private installation directory}"
+        target: /installation
+        read_only: true
+        bind:
+          create_host_path: false
+      - type: bind
+        source: "${TIANXUAN_NODE_STATE:?set the existing node-owned journal and work directory}"
+        target: /data
+        bind:
+          create_host_path: false

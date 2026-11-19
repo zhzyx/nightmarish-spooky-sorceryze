@@ -17,6 +17,11 @@ import time
 from pathlib import Path
 
 
+def executable_sha256(path):
+    with Path(path).open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
 class NativeContextSession:
     """Private bounded mailbox; the existing owned-process helper owns all children."""
 
@@ -249,9 +254,7 @@ class NativeModelHost:
         binding = digest({
             "profile": profile,
             "sources": [hashlib.sha256(p.read_bytes()).hexdigest() for p in sources],
-            "executables": [
-                hashlib.sha256(Path(profile[k]).read_bytes()).hexdigest() for k in ("node", "entry", "python")
-            ],
+            "executables": [executable_sha256(profile[k]) for k in ("node", "entry", "python")],
             "helper": self.helper.implementation_fingerprint(),
         })
         return profile, binding
