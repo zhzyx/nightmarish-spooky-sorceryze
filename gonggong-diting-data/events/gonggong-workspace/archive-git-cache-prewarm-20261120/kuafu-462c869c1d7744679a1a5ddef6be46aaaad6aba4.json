@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-462c869c1d7744679a1a5ddef6be46aaaad6aba4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "archive-git-cache-prewarm-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1640",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "028b2ab5621f0aa92d4665732018e3f0c2f1aa3f38e7bf44996101c85f754994",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1640",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1651",
+    "action": "validation",
+    "detection_head": "2466b3bcbb8f96b3f240329a7b07ea2f19863362",
+    "context_sha256": "62b885347e8f98ae18c2ed86bef557263fd5468302b71758f76740c17d0024f3",
+    "operator": "Sail-Li",
+    "worker": "codex-1640-release",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1640",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1649",
+    "diagnosis": "Windows receipt had CRLF working bytes; the staged UTF-8 LF Git blob differed. Confirmed full equality after EOL normalization and restored the authoritative index bytes on disk.",
+    "next_action": "Formal gate and committed check passed for the signed submission. Verify all remote checks and exact main blobs before closing this incident.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T16:52:47.664288+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T17:06:48.823191+00:00",
+  "sha256": "d165e10b25f981657cf57cf6be8df21fadad0907318f4f9419dd6e0450738538"
+}

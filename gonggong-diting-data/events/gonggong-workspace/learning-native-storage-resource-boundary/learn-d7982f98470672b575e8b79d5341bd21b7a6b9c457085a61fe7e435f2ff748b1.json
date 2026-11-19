@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-storage-resource-boundary",
+  "event_id": "learn-d7982f98470672b575e8b79d5341bd21b7a6b9c457085a61fe7e435f2ff748b1",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-workspace-host",
+    "origin": "AGENTS.md",
+    "version": "2466b3bc",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1640",
+  "occurred_at": "2026-11-19T17:08:11.145465+00:00",
+  "evidence_refs": [
+    "archive-prewarm-1640-request"
+  ],
+  "payload": {
+    "scope": "native-storage-resource-boundary",
+    "lesson": "measure-native-git-cache-adoption",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "For a staged database that already contains a complete Git bundle, measure the target database, pack, index, warmup kit and first record-index query together. Compare actual cold-start and adoption peak allocation at Git operation boundaries, and verify original refs, object IDs and file bytes after relocation.",
+      "when": "A published native catalog contains a complete supported Git bundle and deployment disk headroom is constrained during first access.",
+      "counterexample": "WAL-active targets cannot be identified by the database-file hash alone. Partial bundles, unapproved kit digests or different publication scopes must fail before promotion; an NTFS sample is not a Linux storage limit.",
+      "trial_plan": "On a second target filesystem, import the same approved published catalog, keep cold export disabled during first query, cross-check refs and file bytes against the independent mirror, measure allocation and verify wrong-kit rejection and ordinary cold fallback."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/tianxuan-archive-prewarm-1640.json",
+        "sha256": "4f9ae55fe8c99739c8d99e2a1463edc0c21383d77233cd49e815df0fd1abf72e"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/archive-git-cache-prewarm-20261120/archive-prewarm-1640-request.json",
+      "sha256": "1da2e5926e321d04590c7900dec5c398322c7b2e0140a3c0284c6469ff04d7ee"
+    }
+  },
+  "sha256": "287fa31c8dbc8bf25372b844ace2d5d938c9552c9ab6d7993e1a8f8735e60dde"
+}
