@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "docs-requirement-routing-20261119-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "docs-requirement-routing-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-19T13:45:21Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1597",
+  "agent": {
+    "id": "kimi-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "8557875119f3a68cf75706a8058fd5781547c21c1848558e512a540ab87e5307",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "scope": "补充需求类 Issue 提交推送后的需求与做法沉淀、Issue 分类依据、文档任务同步查重及原事项更新规则。",
+    "authorization_ref": "user-2026-11-19-docs-requirement-routing",
+    "issue_number": 1597,
+    "design": "design-docs/docs-requirement-routing-20261119.md",
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "c44f173d966691658875bf71ecd395e9dfc630902e5ecfb62ab6ceb495bb04a5"
+}
