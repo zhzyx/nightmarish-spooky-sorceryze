@@ -446,7 +446,9 @@ def signed_broker(tmp_path):
         template_path.write_text(runner.canonical(template), encoding="utf-8", newline="\n")
         key = tmp_path / "key"
         key.write_text("synthetic-test-only-signing-key-material-1526", encoding="utf-8", newline="\n")
-        node = str(Path(os.environ["NATIVE_TEST_NODE"]).resolve())
+        node = os.environ.get("NATIVE_TEST_NODE") or shutil.which("node")
+        assert node, "Node required"
+        node = str(Path(node).resolve())
         python = str(Path(sys.executable).resolve())
         config = dict(
             template=str(template_path),

@@ -1,0 +1,30 @@
+{
+  "request_id": "native-production-entry-20261118",
+  "issue_number": 1499,
+  "related_bug": 1445,
+  "source_sha256": {
+    "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": "a4054c273d74487b27390ea2e98979b7d4f14a9d1014fc27c996623c19f289af"
+  },
+  "prior_candidate": "197ddb2c4765e35443c329278eb036fd2831d1d5",
+  "failure": {
+    "pr": 1554,
+    "run": 44474915658,
+    "job": 135393007577,
+    "observed": "1237 passed, two signed fixture setup failures KeyError NATIVE_TEST_NODE, 233 subtests passed,9 skipped,2 pressure cases deselected. Docker normal112 and Windows/static/cache gates passed; no main acceptance.",
+    "raw_log_sha256": "fb2dd569bf720dd0e7f4ffbfb295cf4778cd5c70566928aa5c53244f082f613e"
+  },
+  "repair": "Signed fixture uses the existing ordinary test Node discovery policy: optional explicit NATIVE_TEST_NODE, otherwise Node on PATH; require available and resolve the real executable. Production code, safety checks, assertions and CI selection unchanged.",
+  "validation": {
+    "command": "pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_native_entry_resolver_normal.py -k \"ordinary_installed_conflict and signed\"",
+    "environment": "Windows, actual existing Node, deterministic signed loopback model fixture. Explicit environment and unset-variable/PATH discovery each run separately.",
+    "results": {
+      "discovery": "..                                                                       [100%]\n============================== warnings summary ===============================\n..\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n2 passed, 23 deselected, 1 warning in 17.75s\n",
+      "explicit": "..                                                                       [100%]\n============================== warnings summary ===============================\n..\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n2 passed, 23 deselected, 1 warning in 14.98s\n"
+    },
+    "exit_codes": [
+      0,
+      0
+    ]
+  },
+  "limits": "Fresh Linux module and normal package CI required for exact candidate. User-deferred pressure testing and unaccepted production/full-platform scope remain unchanged. No provider/deployment calls."
+}
