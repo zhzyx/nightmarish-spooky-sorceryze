@@ -109,10 +109,11 @@ def main():
                 saved = re.search(r'^dock_12="([^"\n]+)"', layout, re.M)
                 assert saved is not None, "Normal editor exit did not save the main-screen layout"
                 sample["saved_order"] = saved.group(1).split(",")
-                assert sample["saved_order"][:4] == [
+                assert sample["saved_order"][:5] == [
                     "AIChatMainScreen",
                     "AINativeMainScreen",
                     "DaqianMainScreen",
+                    "WebPlatformMainScreen",
                     "2D",
                 ], sample
                 if report["phases"]:

@@ -1,0 +1,204 @@
+{
+  "state": "passed",
+  "mode": "headless",
+  "binary_sha256": "d79677422cf8b360874d9aeb1bb402691625723de1e3bdeb6183f00ce812248a",
+  "phases": [
+    {
+      "current": 0,
+      "initial_selected_key": "AIChatMainScreen",
+      "labels": [
+        "AI Chat",
+        "马良",
+        "天枢",
+        "天璇",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "设置"
+      ],
+      "phase": "initial",
+      "slot": 11,
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    },
+    {
+      "current": 0,
+      "initial_selected_key": "2D",
+      "labels": [
+        "AI Chat",
+        "马良",
+        "天枢",
+        "天璇",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "设置"
+      ],
+      "phase": "legacy_maliang_last",
+      "slot": 11,
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    },
+    {
+      "current": 0,
+      "initial_selected_key": "AINativeMainScreen",
+      "labels": [
+        "AI Chat",
+        "马良",
+        "天枢",
+        "天璇",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "设置"
+      ],
+      "phase": "legacy_maliang_selected",
+      "slot": 11,
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    },
+    {
+      "current": 0,
+      "initial_selected_key": "2D",
+      "labels": [
+        "AI Chat",
+        "马良",
+        "天枢",
+        "天璇",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "设置"
+      ],
+      "phase": "pre_daqian_layout",
+      "slot": 11,
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    },
+    {
+      "current": 0,
+      "initial_selected_key": "2D",
+      "labels": [
+        "AI Chat",
+        "马良",
+        "天枢",
+        "天璇",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "设置"
+      ],
+      "phase": "pre_maliang_layout",
+      "slot": 11,
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    },
+    {
+      "current": 0,
+      "initial_selected_key": "AIChatMainScreen",
+      "labels": [
+        "AI Chat",
+        "马良",
+        "天枢",
+        "天璇",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "设置"
+      ],
+      "phase": "restart",
+      "slot": 11,
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    }
+  ],
+  "test_sha256": {
+    "run_ai_chat_tab_order.py": "a455dc2ecd007085c3aae7ef7020c18452f6c1b94a7e9ab5937e13eb2e28914f",
+    "ai_chat_tab_order.gd": "108448141e36731debe7f30cdbdef222333110651140225b5660591d2cee9e18"
+  },
+  "request_id": "kuafu-run-44534995639-attempt-1",
+  "issue_number": 1598,
+  "ci_failure_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44534995639/job/135597943965",
+  "ci_failure_report_artifact": 14536932761,
+  "validation_editor_artifact": 14516679716,
+  "review": {
+    "reviewer": "independent read-only Codex reviewer",
+    "source_sha256": {
+      "run_ai_chat_tab_order.py": "a455dc2ecd007085c3aae7ef7020c18452f6c1b94a7e9ab5937e13eb2e28914f",
+      "ai_chat_tab_order.gd": "108448141e36731debe7f30cdbdef222333110651140225b5660591d2cee9e18"
+    },
+    "result": "Passed checks for visible and saved tab order, retained migration coverage, and nonzero failure exit."
+  }
+}
