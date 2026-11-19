@@ -44,7 +44,7 @@ export default function HistoryBrowser({project, revision, actor, zh}: {project:
   const [term,setTerm]=useState(""), [query,setQuery]=useState(""), [offset,setOffset]=useState(0);
   const [id,setId]=useState(""), [related,setRelated]=useState(0);
   const [code,setCode]=useState(false), [path,setPath]=useState(""), [ref,setRef]=useState("");
-  const [git,setGit]=useState<Query>({}), [gitOffset,setGitOffset]=useState(0), [file,setFile]=useState<Query>();
+  const [git,setHistoryQuery]=useState<Query>({}), [gitOffset,setGitOffset]=useState(0), [file,setFile]=useState<Query>();
   const [downloadError,setDownloadError]=useState(false);
   const search=useRead<Page<Summary>>(code?"":endpoint("search",{query,offset:String(offset),limit:String(size)}),actor);
   const detail=useRead<Detail>(!code && id?endpoint("detail",{source_id:id,offset:String(related),limit:String(size)}):"",actor);
@@ -61,7 +61,7 @@ export default function HistoryBrowser({project, revision, actor, zh}: {project:
     const oid = commit[2];
     setRef(oid);
     setPath("");
-    setGit({commit: oid});
+    setHistoryQuery({commit: oid});
     setGitOffset(0);
     setFile(undefined);
     setCode(true);
@@ -99,7 +99,7 @@ export default function HistoryBrowser({project, revision, actor, zh}: {project:
         {navigation(related,related+size<Math.max(detail.data.comments.total,detail.data.reverse.total),setRelated)}
       </article>}
     </> : <>
-      <form onSubmit={e=>{e.preventDefault();const args:Query={};if(path.trim())args.path=path.trim();if(ref.trim())args.commit=ref.trim();setGit(args);setGitOffset(0);setFile(args.path && args.commit?args:undefined);}}>
+      <form onSubmit={e=>{e.preventDefault();const args:Query={};if(path.trim())args.path=path.trim();if(ref.trim())args.commit=ref.trim();setHistoryQuery(args);setGitOffset(0);setFile(args.path && args.commit?args:undefined);}}>
         <label>{t("仓库内文件路径","Repository file path")}<input value={path} onChange={e=>setPath(e.target.value)} /></label>
         <label>{t("原提交（可选）","Original commit (optional)")}<input value={ref} onChange={e=>setRef(e.target.value)} /></label>
         <button>{t("查看历史","View history")}</button></form>
