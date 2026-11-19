@@ -1,0 +1,80 @@
+{
+  "issue_number": 1551,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1551",
+  "request_id": "tianxuan-unified-experience-20261119",
+  "base": "f820c687083ff12db1a122bb27675d79bbdebc46",
+  "reviewed_product_tree": "8924864a7d7d37fa3921431657eb7eb6e3dbf5ae",
+  "verified_at": "2026-11-19T14:12:19.018186+00:00",
+  "checks": [
+    {
+      "check": "Next.js production build",
+      "version": "14.2.35",
+      "status": "passed",
+      "pages": 14,
+      "warning": "Existing migration page autoprefixer compatibility warning from the base."
+    },
+    {
+      "check": "FastAPI, gateway, native, work and migration regression",
+      "status": "passed",
+      "tests": 71,
+      "evidence": [
+        "Exact stage approvals, persisted source and replay",
+        "Cross-user and cross-tenant conversation privacy",
+        "Installed execution scopes/model validation, stable ledger ID and owner status read",
+        "Document edit plus restore, stale approval denied, exact reapproval and independent new entry",
+        "Live share withdrawal hides native catalog and integration details even with readable contribution"
+      ]
+    },
+    {
+      "check": "Chromium HTTPS isolated workspace",
+      "version": "157.0.8103.79",
+      "status": "passed",
+      "evidence": [
+        "Existing authenticated Next.js and FastAPI boot with an isolated SQLite domain and native store",
+        "IME, persisted multi-turn context, model-assisted editable draft, and direction/plan/design confirmations",
+        "Saved requirement read from the document API, first native entry read without manual refresh to fixture failure",
+        "Document PATCH and version restore, interactive confirmation of restored revision, new entry read to fixture acceptance, old ID retained",
+        "1280x800 composer and key todo both in viewport, only one design panel after repeated mutations",
+        "320x740 readable conversation selector with dark preference and no horizontal overflow, 550x860 native revision list"
+      ]
+    },
+    {
+      "check": "Independent read-only review",
+      "reviewer": "codex-native:/root/review1551",
+      "status": "passed",
+      "evidence": "Reviewed staged product tree and final CSS delta, verified exact base and tree, confirmed privacy, approval, reachability and ACL corrections."
+    },
+    {
+      "check": "Existing deployment boundary",
+      "status": "passed",
+      "evidence": "Existing Next.js and FastAPI package, original SQLite domain and native ledger. Source-level rollback uses the prior API/Web pair while preserving data."
+    }
+  ],
+  "screenshots": [
+    {
+      "path": "data-collection/tianxuan-continuation-1551/workspace-requirement.png",
+      "sha256": "9dd15305308ed4ceea882ba21eee55e1ce5b4185970977a2349b82b122ca1f67",
+      "scope": "1280x800 first viewport with chat composer, todo and active work orders"
+    },
+    {
+      "path": "data-collection/tianxuan-continuation-1551/workspace-reconfirmed.png",
+      "sha256": "b7953b0eaaf614c580ab3f699c5159c08d3675718670bee13b45b19b913e1f78",
+      "scope": "Workspace after reapproval and subsequent accepted task, with historical entry disclosed"
+    },
+    {
+      "path": "data-collection/tianxuan-continuation-1551/workspace-narrow.png",
+      "sha256": "b656688907d9a45237e2daf45130819da8a11968f065fd7117f7e43373458424",
+      "scope": "320x740 dark workspace with readable session selector and no horizontal overflow"
+    },
+    {
+      "path": "data-collection/tianxuan-continuation-1551/workspace-module-catalog.png",
+      "sha256": "84c175c9fe6d1d7402e36ad975121b2dcee80ee6a2bd745c00484ee52650e511",
+      "scope": "550x860 dark native repository catalogue and immutable revision contents"
+    }
+  ],
+  "remaining_integration": [
+    "Isolated Chromium used a controlled upstream chat transport and a test native task consumer. Browser launch used the automatic selection contract on this base.",
+    "The actual installed model selection, original raw execution authorization and production Windows/server node are coordinated with #1581. Its native status contract includes readable task labels from the bound work order.",
+    "Private deployment, installed Godot/WebView, and production model verification are tracked by #1577."
+  ]
+}

@@ -336,6 +336,11 @@ def create_app(
     migration_router, migration_tool = migration_routes(store, _require_actor, native_store)
     app.include_router(migration_router)
     configure_access(app, store)
+    from workspace_conversations import create_workspace_conversation_router
+    from workspace_inventory import create_workspace_inventory_router
+
+    app.include_router(create_workspace_conversation_router(store, gateway, native_entry))
+    app.include_router(create_workspace_inventory_router(native_entry, native_store))
     if native_entry is not None:
         from native_entry_api import create_entry_router
 
