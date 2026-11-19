@@ -48,7 +48,7 @@ export default async function ReposPage() {
         </div>
       </header>
 
-      {capabilities?.native_candidates && <NativeRepoBrowser />}
+      {capabilities?.native_candidates && <NativeRepoBrowser key={actor} />}
 
       {showGit && (
         <>
