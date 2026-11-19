@@ -69,6 +69,17 @@ export async function mergeDoc(
   return (await response.json()) as ApiMergeResult;
 }
 
+export async function saveDocTitle(id: string, actor: string, doc: ApiDocDetail, title: string): Promise<ApiDocDetail> {
+  const response = await fetch(`${apiBase()}/api/v1/docs/${encodeURIComponent(id)}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...authHeaders(actor) },
+    body: JSON.stringify({ title, body_md: doc.body_md, expected_version: doc.version }),
+  });
+  if (response.status === 409) throw new MergeConflict(["title"]);
+  if (!response.ok) throw new Error(`title save failed: ${response.status}`);
+  return response.json() as Promise<ApiDocDetail>;
+}
+
 export interface ApiRepo {
   name: string;
   full_name: string;

@@ -18,11 +18,10 @@ import os
 import threading
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 from urllib.parse import quote
 
 from access_control import configure_access
-from docx_export import render_docx
 from duobao_bridge import (
     GitService,
     GitServiceError,
@@ -39,7 +38,6 @@ from gateway import ModelGateway, create_model_router
 from gitea_bridge import GiteaClient, GiteaError
 from identity import allow_identity_attempt, get_identity_adapter
 from markdown_render import render_markdown
-from pdf_export import render_pdf
 from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
@@ -80,6 +78,7 @@ from schemas import (
     RequirementCreateRequest,
     RoleUpdateRequest,
     TicketsRequest,
+    ToolCallRequest,
 )
 from tianxuan_core import (
     NotFound,
@@ -94,7 +93,6 @@ from tianxuan_core import (
 from webhooks import summarize_gitea_event, verify_gitea_signature
 from wenqu_bridge import build_ai_index, export_markdown, merge_offline
 from wenqu_bridge import classify as classify_markdown
-from wenqu_bridge import search as search_documents
 
 
 def _actor_header_enabled() -> bool:
@@ -455,8 +453,21 @@ def create_app(
 
     # ---------- 身份 ----------
 
+    def check_account_attempt(request: Request) -> None:
+        if os.environ.get("TIANXUAN_AUTH_MODE") != "accounts":
+            return
+        from identity import allow_identity_attempt
+
+        expected = os.environ.get("TIANXUAN_PUBLIC_ORIGIN", "").rstrip("/")
+        origin = request.headers.get("origin")
+        if origin and origin != expected:
+            raise HTTPException(403, "same-origin request required")
+        if not allow_identity_attempt("account-login", request.client.host if request.client else "unknown"):
+            raise HTTPException(429, "too many authentication attempts")
+
     @app.post("/api/v1/auth/register")
-    def register(payload: RegisterRequest) -> dict[str, str]:
+    def register(payload: RegisterRequest, request: Request) -> dict[str, str]:
+        check_account_attempt(request)
         return store.register(payload.tenant_name, payload.email, payload.password, payload.name or "")  # type: ignore[no-any-return]
 
     @app.post("/api/v1/auth/login")
@@ -467,15 +478,39 @@ def create_app(
         return account  # type: ignore[no-any-return]
 
     @app.post("/api/v1/auth/session")
-    def create_session(payload: LoginRequest) -> dict[str, str]:
+    def create_session(payload: LoginRequest, request: Request):
+        check_account_attempt(request)
         account = store.authenticate(payload.email, payload.password)
         if account is None:
             raise HTTPException(status_code=401, detail="invalid email or password")
         token = store.issue_session(account["user_id"])
-        return {**account, "token": token}  # type: ignore[no-any-return]
+        if os.environ.get("TIANXUAN_AUTH_MODE") == "accounts":
+            from access_control import COOKIE, SESSION_COOKIE
+            from fastapi.responses import JSONResponse
+
+            result = account if request.headers.get("origin") else {**account, "token": token}
+            response = JSONResponse(result, headers={"Cache-Control": "no-store"})
+            response.delete_cookie(COOKIE, path="/", secure=True, httponly=True, samesite="strict")
+            response.set_cookie(
+                SESSION_COOKIE, token, max_age=86400, secure=True, httponly=True, samesite="strict", path="/"
+            )
+            return response
+        return {**account, "token": token}
 
     @app.post("/api/v1/auth/logout")
-    def logout(authorization: str | None = Header(default=None)) -> dict[str, bool]:
+    def logout(request: Request, authorization: str | None = Header(default=None)):
+        if os.environ.get("TIANXUAN_AUTH_MODE") == "accounts":
+            from access_control import SESSION_COOKIE
+            from fastapi.responses import JSONResponse
+
+            token = request.cookies.get(SESSION_COOKIE, "")
+            if authorization:
+                scheme, _, value = authorization.partition(" ")
+                if scheme.lower() == "bearer":
+                    token = value.strip()
+            response = JSONResponse({"revoked": store.revoke_session(token)})
+            response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="strict")
+            return response
         scheme, _, token = (authorization or "").partition(" ")
         if scheme.lower() != "bearer" or not token.strip():
             raise HTTPException(status_code=400, detail="Bearer token is required")
@@ -563,10 +598,14 @@ def create_app(
             media_type = "text/html; charset=utf-8"
             extension = "html"
         elif fmt == "docx":
+            from docx_export import render_docx
+
             content = render_docx(title, body_md)
             media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             extension = "docx"
         else:
+            from pdf_export import render_pdf
+
             content = render_pdf(title, body_md)
             media_type = "application/pdf"
             extension = "pdf"
@@ -757,13 +796,7 @@ def create_app(
         q: str = Query(min_length=1),
         limit: int = Query(default=20, ge=1, le=100),
     ) -> dict[str, list[dict[str, Any]]]:
-        documents = [store.get_doc(row["id"]) for row in store.list_docs(actor)]
-        by_id = {document["id"]: document for document in documents}
-        results = []
-        for item in search_documents(documents, q)[:limit]:
-            document = by_id.get(item["id"], {})
-            results.append({**item, "title": document.get("title", ""), "kind": document.get("kind", "doc")})
-        return {"results": results}
+        return cast(dict[str, list[dict[str, Any]]], store.search_docs(actor, q, limit))
 
     @app.get("/api/v1/docs/{doc_id}/export")
     def export_doc(doc_id: str, actor: ActorDep) -> dict[str, str]:
@@ -771,9 +804,25 @@ def create_app(
         return {"filename": f"{doc_id}.md", "markdown": export_markdown(document)}
 
     @app.get("/api/v1/docs/{doc_id}/ai-view")
-    def ai_view(doc_id: str, actor: ActorDep) -> dict[str, Any]:
+    def ai_view(
+        doc_id: str,
+        actor: ActorDep,
+        include_body: bool = True,
+        start_line: int = Query(default=1, ge=1),
+        max_lines: int | None = Query(default=None, ge=1),
+        max_chars: int | None = Query(default=None, ge=1),
+        expected_version: int | None = Query(default=None, ge=1),
+    ) -> dict[str, Any]:
         store.get_doc_shared(actor, doc_id)
-        return store.ai_view(doc_id)  # type: ignore[no-any-return]
+        result = store.ai_view(
+            doc_id,
+            include_body=include_body,
+            start_line=start_line,
+            max_lines=max_lines,
+            max_chars=max_chars,
+            expected_version=expected_version,
+        )
+        return cast(dict[str, Any], result)
 
     @app.post("/api/v1/docs/{doc_id}/classify")
     def classify_doc(doc_id: str, actor: ActorDep) -> dict[str, list[str]]:
@@ -885,22 +934,14 @@ def create_app(
 
     @app.post("/api/v1/docs/{doc_id}/patch")
     def patch_doc(doc_id: str, payload: DocPatchRequest, actor: ActorDep) -> dict[str, Any]:
-        document = store.get_doc_shared(actor, doc_id, write=True)
-        if document["version"] != payload.expected_version:
-            raise VersionConflict(
-                f"version mismatch: expected {payload.expected_version}, current {document['version']}"
-            )
-        body = document["body_md"]
-        for operation in payload.patches:
-            if not operation.find:
-                raise TianxuanError("patch find must not be empty")
-            occurrences = body.count(operation.find)
-            if occurrences == 0:
-                raise TianxuanError(f"patch target not found: {operation.find!r}")
-            if occurrences > 1:
-                raise TianxuanError(f"patch target is ambiguous ({occurrences} matches): {operation.find!r}")
-            body = body.replace(operation.find, operation.replace, 1)
-        return store.update_doc(actor, doc_id, body, payload.expected_version)  # type: ignore[no-any-return]
+        result = store.patch_doc(
+            actor,
+            doc_id,
+            payload.expected_version,
+            [operation.model_dump() for operation in payload.patches],
+            call_id=payload.call_id,
+        )
+        return cast(dict[str, Any], result)
 
     # ---------- 文曲：版本历史与差异 ----------
 
@@ -1764,6 +1805,30 @@ def create_app(
             and getattr(route, "path", "")
             not in {"/api/v1/requirements/{request_id}/commit", "/api/v1/requirements/{request_id}/git-file"}
         ]
+
+    @app.post("/api/v1/tools")
+    def call_tool(payload: ToolCallRequest, actor: ActorDep) -> dict[str, Any]:
+        document_tools = {"doc.read", "doc.list", "doc.search", "doc.create", "doc.update", "doc.patch"}
+        available_tools = document_tools | {
+            "requirement.create",
+            "requirement.plan",
+            "issue.create",
+            "issue.transition",
+            "issue.list",
+        }
+        if payload.name not in available_tools:
+            raise HTTPException(status_code=400, detail="unknown tool")
+        public_workspace = os.environ.get("TIANXUAN_AUTH_MODE") == "accounts" and store.actor_context(actor)[
+            "tenant"
+        ] != os.environ.get("TIANXUAN_TENANT_ID")
+        if public_workspace and payload.name not in document_tools:
+            raise HTTPException(status_code=403, detail="this workspace is limited to document tools")
+        try:
+            return cast(
+                dict[str, Any], store.dispatch_tool(actor, payload.name, payload.payload, call_id=payload.call_id)
+            )
+        except (TypeError, KeyError) as error:
+            raise HTTPException(status_code=422, detail="invalid tool arguments") from error
 
     @app.get("/api/v1/capabilities")
     def capabilities() -> dict[str, Any]:
