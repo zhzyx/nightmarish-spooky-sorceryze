@@ -6,6 +6,7 @@ import json
 import os
 import shutil
 import socket
+import subprocess
 import sys
 import threading
 import time
@@ -14,7 +15,6 @@ from pathlib import Path
 import httpx
 import pytest
 import uvicorn
-from native_node import NativeNode
 from native_store import NativeStore
 from native_worker import NativeWorker
 from test_native_entry_context import policy
@@ -106,12 +106,31 @@ def test_remote_ordinary_main(tmp_path, monkeypatch):
     server = uvicorn.Server(uvicorn.Config(main.app, log_level="error", timeout_graceful_shutdown=3))
     thread = threading.Thread(target=server.run, kwargs={"sockets": [sock]}, daemon=True)
     thread.start()
-    deadline = time.monotonic() + 20
-    while not server.started and time.monotonic() < deadline:
-        time.sleep(0.01)
-    assert server.started
-    worker = NativeNode(node_worker, url, "local-secret")
+    node_process = None
     try:
+        deadline = time.monotonic() + 20
+        while not server.started and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert server.started
+        token_file = root / "node-token"
+        token_file.write_text("local-secret")
+        config = root / "remote-node.json"
+        config.write_text(
+            json.dumps(
+                dict(
+                    database=str(root / "node.sqlite"),
+                    root=str(root / "node-work"),
+                    profiles=node_worker.profiles,
+                    server=url,
+                    token_file=str(token_file),
+                )
+            )
+        )
+        node_process = subprocess.Popen(
+            [sys.executable, native_node.__file__, "--config", str(config)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.PIPE,
+        )
         with httpx.Client(base_url=url, timeout=35) as client:
             login = client.post(
                 "/api/v1/auth/session", json=dict(email="remote@example.invalid", password="password123")
@@ -135,25 +154,46 @@ def test_remote_ordinary_main(tmp_path, monkeypatch):
             )
             assert response.status_code == 200, response.text
             key = response.json()["entry"]
-            worker.step()
-            worker.pool.shutdown(wait=True)
-            for future in worker.futures:
-                future.result()
             deadline = time.monotonic() + 30
             while time.monotonic() < deadline:
+                if node_process.poll() is not None:
+                    _, error = node_process.communicate()
+                    pytest.fail(f"Node exited before delivery: {error!r}")
                 status = client.get("/api/v1/native/entry/" + key, headers=headers).json()
                 if status["state"] == "delivered" or status["failures"]:
                     break
                 time.sleep(0.05)
-            assert status["state"] == "delivered", (status, getattr(main._NATIVE_ENTRY, "last_denied", None))
+            observed = dict(
+                entry=status["state"],
+                tasks=[task["state"] for task in status["tasks"]],
+                progress=status["progress"],
+                failures=status["failures"],
+                physical=len(list((root / "node-work").rglob("physical-producer-marker"))),
+                dispatches=len(main._NATIVE_ENTRY.transports.get(key, [])),
+            )
+            assert status["state"] == "delivered", observed
             assert status["progress"]["percent"] == 100
             assert list((root / "node-work").rglob("physical-producer-marker"))
             assert not list((root / "state/workers").rglob("physical-producer-marker"))
     finally:
-        worker.pool.shutdown(wait=True)
-        server.should_exit = True
-        thread.join(15)
-        sock.close()
-        main._STORE.db.close()
-        sys.modules.pop("main", None)
-        assert not thread.is_alive()
+        try:
+            if node_process is not None:
+                if node_process.poll() is None:
+                    node_process.terminate()
+                try:
+                    node_process.communicate(timeout=10)
+                except subprocess.TimeoutExpired:
+                    node_process.kill()
+                    node_process.communicate(timeout=10)
+        finally:
+            # The client has exited. Wake its outstanding event poll before closing
+            # the loopback coordinator and its database.
+            remote = main._NATIVE_ENTRY.workflow.worker
+            with remote.condition:
+                remote.condition.notify_all()
+            server.should_exit = True
+            thread.join(15)
+            sock.close()
+            main._STORE.db.close()
+            sys.modules.pop("main", None)
+            assert not thread.is_alive()

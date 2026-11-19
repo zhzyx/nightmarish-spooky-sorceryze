@@ -154,10 +154,10 @@ class EntryLedger:
                 "SELECT source,payload FROM native_entry_intents WHERE id=?", (key,)
             ).fetchone()
             document = self.domain.get_doc_shared(row["actor"], row["requirement"])
-            if workspace_approval(self.domain, row["actor"], document) != json.loads(intent["payload"]).get("approval"):
-                raise NativeStoreError("Workspace approval changed")
             if requirement_digest(document) != intent["source"]:
                 raise NativeStoreError("Entry source revision withdrawn")
+            if workspace_approval(self.domain, row["actor"], document) != json.loads(intent["payload"]).get("approval"):
+                raise NativeStoreError("Workspace approval changed")
             return True
 
     def pending(self, *, include_held=False):
