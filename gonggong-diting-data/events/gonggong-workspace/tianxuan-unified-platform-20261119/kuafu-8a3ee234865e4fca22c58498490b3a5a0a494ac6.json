@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8a3ee234865e4fca22c58498490b3a5a0a494ac6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-platform-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "33452abd2076806a6d4a40720f2f61fbba6ab6549675c9b2c6762a73d411e12d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1583",
+    "action": "validation",
+    "detection_head": "3e1bb937a8635b2f1acd0f2adfb49b7b1e370210",
+    "context_sha256": "5ead892457df8b7b8cfbd762c2c04162eaa52cb2edea7f0ec248cbd5935573c2",
+    "operator": "Sail-Li",
+    "worker": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9",
+    "authority_ref": "user-approved-1550-implementation",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44528380190",
+    "diagnosis": "Parent candidate includes genuine child dispatch events but omitted matching per-request collection indexes. This is evidence packaging, not product code failure. Root owns correction.",
+    "next_action": "Collect each affected request using work_items collect, stage indexes with original events, rerun original formal gate and deliver documentation slice while parent remains open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-19T12:55:13.242087+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-19T12:57:04.475816+00:00",
+  "sha256": "927426b7ecf686d9b3988128a6dd265bcebdafc87dfc7a0ee0a3d4b7a589beef"
+}
