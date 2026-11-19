@@ -324,6 +324,10 @@ def create_app(
     app = FastAPI(title="Tianxuan API", version="0.1.0", lifespan=lifespan)
     app.state.store = store
     app.state.native_only = native_only
+    from work_management_api import create_work_router
+
+    store.work_native_store = native_store
+    app.include_router(create_work_router(store, _require_actor))
     configure_access(app, store)
     if native_entry is not None:
         from native_entry_api import create_entry_router
