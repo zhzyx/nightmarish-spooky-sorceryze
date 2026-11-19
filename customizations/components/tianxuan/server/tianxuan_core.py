@@ -90,6 +90,11 @@ CREATE TABLE IF NOT EXISTS import_jobs (
   path TEXT, error TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_import_jobs_tenant ON import_jobs(tenant_id, created_at);
+CREATE TABLE IF NOT EXISTS issue_work_events (
+    issue_id TEXT NOT NULL REFERENCES issues(id), version INTEGER NOT NULL,
+    action TEXT NOT NULL, data TEXT NOT NULL, actor TEXT NOT NULL, created_at TEXT NOT NULL,
+    PRIMARY KEY(issue_id, version)
+);
 CREATE TABLE IF NOT EXISTS tool_receipts (
   tenant_id TEXT NOT NULL, actor_id TEXT NOT NULL, tool TEXT NOT NULL,
   key_kind TEXT NOT NULL, call_id TEXT NOT NULL, payload_json TEXT NOT NULL,
@@ -2100,6 +2105,11 @@ class Tianxuan:
 
     def _authorize_tool(self, actor: str, name: str, payload: dict[str, Any], result: Any = None) -> None:
         self._require_editor(actor)
+        if name.startswith("work."):
+            from work_management import authorize
+
+            authorize(self, actor, payload)
+            return
         if name == "doc.create" and payload["space_id"] is not None:
             self._require_tenant_object(actor, "spaces", payload["space_id"])
         if name == "doc.update":
@@ -2181,6 +2191,18 @@ class Tianxuan:
     def dispatch_tool(
         self, actor: str, name: str, payload: dict[str, Any], *, call_id: str | None = None
     ) -> dict[str, Any]:
+        if name == "work.roadmap":
+            from work_management import roadmap
+
+            if payload or call_id is not None:
+                raise TianxuanError("invalid roadmap arguments")
+            roadmap_result: dict[str, Any] = roadmap(self, actor)
+            return roadmap_result
+        if name in {"work.read", "work.plan", "work.log", "work.submit_asset"}:
+            from work_management import execute
+
+            work_result: dict[str, Any] = execute(self, actor, name, payload, call_id=call_id)
+            return work_result
         writes: dict[str, Callable[..., Any]] = {
             "doc.create": self.create_doc,
             "doc.update": self.update_doc,

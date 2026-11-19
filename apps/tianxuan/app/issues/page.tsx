@@ -156,6 +156,7 @@ export default async function IssuesPage() {
           <p className="page-lede">{t("issues.lede")}</p>
         </div>
         <div className="page-actions">
+          <Link className="btn btn-ghost" href="/issues/roadmap">{locale === "zh" ? "工单路线图" : "Roadmap"}</Link>
           <Link className="btn btn-ghost" href="/docs/sinan-events">
             <Icon name="branch" size={16} />
             {t("issues.rules")}
@@ -229,7 +230,7 @@ export default async function IssuesPage() {
                               {priorityLabel(issue.priority)}
                             </span>
                           </span>
-                          <span className="issue-card-title">{issue.title}</span>
+                          <Link className="issue-card-title" href={`/issues/${encodeURIComponent(issue.id)}`}>{issue.title}</Link>
                           <span className="issue-tags">
                             <span className="kind-tag">{typeLabel(issue.type)}</span>
                             {issue.status === "blocked" ? (

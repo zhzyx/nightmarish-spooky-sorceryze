@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "event_id": "request-work-management-1552",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-workflows-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-19T06:53:07.0000000Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1552",
+  "agent": {
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "87b82d26b741a04d787155b012076b32cdf14fcbec3ff51823fe83751ce89462"
+  },
+  "payload": {
+    "chat": "01a1f28e-4bc6-7d32-9471-fba869469a32",
+    "base": "ac8d1376d0a03678b625cbe4bd9b09ea18120475",
+    "operator": "Sail-Li",
+    "protocol": "customizations/components/codex-dispatch/HOST_PROTOCOL.md",
+    "issue_readback": {
+      "body": "<!-- gonggong-request:tianxuan-unified-workflows-20261119 -->\r\n\r\n父工单 #1550。设计 v1 已由用户定版并授权跨聊天并行，未结 Godot 工单仅记录。\r\n\r\n负责工单的迭代、里程碑、路线图、工时、自定义状态字段，以及概念图/模型版本绑定的人工确认。复用当前 Tianxuan 与 native 工作流，新增模块在既有存储上扩展，不重写调度。拥有独立 work_management.py/router 与工单页面，api.py 挂载只做小范围协同；避免文曲主体和 native_entry 文件。先回读实际缺口，明确接口后实现完整 HTTP+UI+AI工具正常入口，包含并发/重试/历史数据验证。\r\n\r\n设计位于 design-docs/tianxuan-unified-platform-20261119.md，当前确认副本 D:/GongGong-work/tianxuan-unified-20261119。按原验收持续推进，独立提交/审查/门禁/PR/main 后由整合主责接受，全平台部署由主责协调。每阶段留下实际候选、检查、剩余项和接口。\r\n\r\n<!-- gonggong-host-git:Sail-Li -->\r\n",
+      "number": 1552,
+      "state": "OPEN",
+      "title": "天璇整合：工单计划与美术人工确认",
+      "updatedAt": "2026-11-19T06:53:07Z",
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1552"
+    }
+  },
+  "evidence_refs": [],
+  "sha256": "9808d71e521435b93cfec197dd58a3a29fee1215c3d8b51de0f13d024726d61f"
+}
