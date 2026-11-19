@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>天璇 · 历史迁移核对</title>
+<style>
+:root{color-scheme:light dark;font:16px/1.6 system-ui}body{margin:4vw auto;padding:1rem;max-width:60rem}
+h1{font-size:2rem}label{display:block;margin:.8rem 0}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+table{border-collapse:collapse;margin:1rem 0;width:min(28rem,100%)}caption{text-align:start;font-weight:bold}td{padding:.3rem 0;border-bottom:1px solid #8885}td:last-child{text-align:end;font-variant-numeric:tabular-nums}summary{cursor:pointer;padding:.5rem 0}details{border-block-end:1px solid GrayText}
+</style>
+<main><h1>历史迁移核对</h1><label for="report">选择迁移报告（JSON）</label>
+<input type="file" id="report" accept=".json,application/json"><p role="status" id="status"></p><section id="fields"></section></main>
+<script>
+const picker = document.querySelector('#report')
+let selection = 0
+picker.onchange = async () => {
+  const current = ++selection
+  const file = picker.files[0]
+  const fields = document.querySelector('#fields')
+  const status = document.querySelector('#status')
+  fields.replaceChildren()
+  status.textContent = ''
+  if (!file) return
+  try {
+    const report = JSON.parse(await file.text())
+    if (current !== selection) return
+    if (!report || Array.isArray(report) || typeof report !== 'object') throw Error()
+        const counts = report.counts || report.inventory?.counts
+    if (counts && typeof counts === 'object') {
+      const names = {commit:'提交',requirement:'需求文件',issue:'工单',pull:'PR',issue_comment:'会话评论',
+        review:'审查',review_comment:'审查评论',commit_comment:'提交评论',attachment:'附件',pull_issue:'PR 工单信息'}
+      const table = document.createElement('table')
+      const caption = document.createElement('caption')
+      caption.textContent = '来源记录数量'
+      table.append(caption)
+      for (const [kind,count] of Object.entries(counts)) {
+        const row = table.insertRow()
+        row.insertCell().textContent = names[kind] || kind
+        row.insertCell().textContent = count
+      }
+      fields.append(table)
+    }
+    for (const [key,value] of Object.entries(report)) {
+      const details = document.createElement('details')
+      const summary = document.createElement('summary')
+      const body = document.createElement('pre')
+      summary.textContent = key
+      body.textContent = JSON.stringify(value,null,2)
+      details.append(summary,body)
+      fields.append(details)
+    }
+    status.textContent = file.name
+  } catch {
+    if (current === selection) status.textContent = '无法读取报告，请选择有效的 JSON 对象文件。'
+  }
+}
+</script></html>

@@ -1,0 +1,39 @@
+{
+  "attachment_scope": "GitHub-hosted upload URLs extracted from Markdown/HTML bodies",
+  "checked_sample": {
+    "blocked_by": [],
+    "issue": 1553,
+    "parent": "github:zhzyx/nightmarish-spooky-sorceryze/issue/1550"
+  },
+  "collected_through": "2026-11-19T07:11:11.934292+00:00",
+  "collection_started": "2026-11-19T07:09:01.123123+00:00",
+  "consistency": "Git revision immutable; GitHub paginated reads span a live collection window",
+  "counts": {
+    "commit": 1813,
+    "issue": 698,
+    "issue_comment": 4120,
+    "pull": 857,
+    "pull_issue_projection": 857,
+    "requirement": 399
+  },
+  "coverage": "pinned revision ancestry and design-docs tree; GitHub issues and PRs including issue projection; conversation, review and commit comments, review summaries, parent and blocker edges, PR commit membership, upload URLs from ticket, PR, review and comment bodies",
+  "document_upload_scan": "design-docs and README files in revision tree",
+  "document_upload_sources": {},
+  "empty_collections": [
+    "attachment",
+    "review",
+    "review_comment",
+    "commit_comment"
+  ],
+  "historical_policy": "record_only",
+  "newer_tickets_outside_initial_membership": [
+    1556,
+    1557
+  ],
+  "pull_commit_memberships": 2284,
+  "records_sha256": "8e0d6129a094ba229f9118e80cd675fc94d84259203858acaa55d9c62a2b5368",
+  "revision": "ac8d1376d0a03678b625cbe4bd9b09ea18120475",
+  "source": "zhzyx/nightmarish-spooky-sorceryze",
+  "structured_issue_edges": 171,
+  "verified_rows": 8744
+}
