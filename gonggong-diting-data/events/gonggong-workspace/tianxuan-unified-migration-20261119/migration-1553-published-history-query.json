@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "migration-1553-published-history-query",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-migration-20261119",
+  "kind": "step",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1553",
+  "occurred_at": "2026-11-19T14:41:34.412771+00:00",
+  "agent": {
+    "id": "codex-workspace-host",
+    "origin": "AGENTS.md",
+    "version": "ac8d1376",
+    "definition_sha256": "15dc82d98874b169be4c367f66db6f68dbe45096a7ff034f6289fb621f09018a"
+  },
+  "payload": {
+    "issue": 1553,
+    "request_id": "tianxuan-unified-migration-20261119",
+    "action": "verified authenticated, read-only HTTP and AI queries against retained published native archive",
+    "production_import": false,
+    "evidence": "data-collection/tianxuan-history-lookup-1553.json",
+    "evidence_sha256": "613a9606a8fc27986ef162bfbda7a2caaf6ca68ffcd6f92d867645b9c5aa7510"
+  },
+  "evidence_refs": [
+    "migration-1553-request"
+  ],
+  "sha256": "3e955181b1c7e7c5e44a4d00439b222275bab23256912878e28eeb92e5810a2f"
+}

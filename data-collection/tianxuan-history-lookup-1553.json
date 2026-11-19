@@ -1,0 +1,33 @@
+{
+  "issue": 1553,
+  "request_id": "tianxuan-unified-migration-20261119",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1553",
+  "verified_at": "2026-11-19T14:35:31.550225+00:00",
+  "scope": "Isolated HTTP/AI factory, read-only queries of retained published native catalog, viewer fixture in authenticated tenant; no reimport or production writes",
+  "project": "zhzyx/nightmarish-spooky-sorceryze",
+  "issue_source": "github:zhzyx/nightmarish-spooky-sorceryze/issue/1553",
+  "body_characters": 513,
+  "reverse_comments": [
+    "github:zhzyx/nightmarish-spooky-sorceryze/issue_comment/7001961154",
+    "github:zhzyx/nightmarish-spooky-sorceryze/issue_comment/7002095271",
+    "github:zhzyx/nightmarish-spooky-sorceryze/issue_comment/7002314651"
+  ],
+  "source_revision": "ac8d1376d0a03678b625cbe4bd9b09ea18120475",
+  "code_path": "customizations/components/tianxuan/duobao/native_store.py",
+  "code_blob": "6518739daaea3ecaf5b06bc3808e759aeceb2de0",
+  "code_size": 21730,
+  "history_pages": [
+    "0d41ceabc918950deceefe6d707bc3d4045fda35",
+    "0eba63a61ae9300b944fcd0b5cd6029d40368254"
+  ],
+  "requirement_path": "design-docs/active-work-order-provenance-20261107.md",
+  "requirement_sha256": "7623eff7c152cf9d610afc5f83afc6f999a6fde089b135bf6f4d2cd8bd9956a8",
+  "cross_tenant_status": 404,
+  "issues_before_after": [
+    0,
+    0
+  ],
+  "real_uploads": 0,
+  "sample_attachment": "HTTP and AI chunked response reconstruct identical sampled bytes in test_migration_history_api",
+  "production_acceptance": false
+}
