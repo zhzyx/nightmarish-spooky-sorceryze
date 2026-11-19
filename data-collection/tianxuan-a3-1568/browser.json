@@ -1,0 +1,15 @@
+{
+  "doc": "doc_83007b1a1532414fa7174620385ee8e5",
+  "checks": [
+    "both identities in room",
+    "disjoint simultaneous drafts converge",
+    "same-line conflict retains both and explicit resolution converges",
+    "compare revisions and reject stale restore, explicit retry appends history"
+  ],
+  "restore": {
+    "before": 7,
+    "concurrent": 8,
+    "restored": 9,
+    "body": "First\nMiddle\nLast\n"
+  }
+}

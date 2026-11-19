@@ -1,0 +1,27 @@
+{
+  "payload": {
+    "parent_issue": 1550,
+    "authorization_ref": "codex:01a1f26b-ddf0-7102-aefd-8324e79523f9:user-design-and-cross-chat-routing-20261119",
+    "design": "design-docs/tianxuan-collaboration-recovery-20261119.md",
+    "operator": "Sail-Li",
+    "source_body_sha256": "0dbd36773599e64cbe1c2a263f17e025a5a7532a2d5bd5a47713da1f029fc5a2",
+    "scope": "设计 v1 A3 双人实时协作、版本比较与恢复"
+  },
+  "event_id": "tianxuan-collaboration-1568-request",
+  "kind": "request",
+  "agent": {
+    "id": "codex-tianxuan-collaboration-1568",
+    "version": "not-reported-by-host",
+    "definition_sha256": "15dc82d98874b169be4c367f66db6f68dbe45096a7ff034f6289fb621f09018a",
+    "origin": "explicit-github-issue-event-intake"
+  },
+  "occurred_at": "2026-11-19T08:03:00Z",
+  "schema_version": 1,
+  "evidence_refs": [
+    "github-b8ff996f175adeb61c40e32f8c0e08476eb2bd9a689177e1806ddd812afd942f"
+  ],
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-collaboration-recovery-20261119",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1568",
+  "sha256": "1ca69a4fc8278ede28b8dfd6c01f330b44c3c4c28c7ee19c6d98393ed7905b8c"
+}

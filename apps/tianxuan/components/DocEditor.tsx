@@ -14,7 +14,8 @@ import {
   type ReactNode,
 } from "react";
 import { Icon, type IconName } from "@/components/Icon";
-import { MergeConflict, mergeDoc, saveDocTitle } from "@/lib/api";
+import { getToken } from "@/lib/auth";
+import { fetchDoc, MergeConflict, mergeDoc, saveDocTitle, type ApiDocDetail } from "@/lib/api";
 import type { DocRecord } from "@/lib/data";
 import { formatMessage } from "@/lib/i18n";
 import { useI18n } from "@/lib/i18n-client";
@@ -274,16 +275,27 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
   const [version, setVersion] = useState(initialVersion ?? doc.version ?? 1);
   const [syncNote, setSyncNote] = useState("");
   const baseRef = useRef({ body: initialContent, title: doc.title, version: initialVersion ?? doc.version ?? 1 });
+  const pendingRef = useRef(false);
+  const roomRef = useRef<WebSocket | null>(null);
+  const [actors, setActors] = useState<string[]>([]);
+  const [conflict, setConflict] = useState<ApiDocDetail | null>(null);
+  const loadedKey = useRef<string | null>(null);
   const savingRef = useRef(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    const key = JSON.stringify([doc.id, draftKey]);
+    if (loadedKey.current === key && (pendingRef.current || savingRef.current ||
+        (initialVersion ?? doc.version ?? 1) <= baseRef.current.version)) return;
+    loadedKey.current = key;
     baseRef.current = { body: initialContent, title: doc.title, version: initialVersion ?? doc.version ?? 1 };
     setTitle(doc.title);
     setMarkdown(initialContent);
     setVersion(initialVersion ?? doc.version ?? 1);
     setRestored(false);
     setLegacyDrafts([]);
+    setConflict(null);
+    pendingRef.current = false;
     recoveryBlocked.current = false;
     setSaveState(doc.id.startsWith("doc_") ? "synced" : "saved");
     setSyncNote("");
@@ -316,6 +328,8 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
         baseRef.current = { body: parsed.base.body, title: parsed.base.title, version: parsed.base.version };
         setTitle(parsed.title);
         setMarkdown(parsed.markdown);
+        pendingRef.current = true;
+        setVersion(parsed.base.version);
         setRestored(true);
         setSaveState("saved");
       }
@@ -329,9 +343,9 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
     if (saveState !== "dirty" || !draftKey) {
       return;
     }
-    const timeout = window.setTimeout(() => {
+    function keepDraft() {
       try {
-        if (recoveryBlocked.current) return;
+        if (!draftKey || !pendingRef.current || recoveryBlocked.current) return;
         window.localStorage.setItem(
           draftKey,
           JSON.stringify({ title, markdown, base: baseRef.current }),
@@ -340,9 +354,86 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
       } catch {
         // Keep the draft in memory when browser storage is unavailable.
       }
-    }, 900);
-    return () => window.clearTimeout(timeout);
+    }
+    const timeout = window.setTimeout(keepDraft, 900);
+    window.addEventListener("pagehide", keepDraft);
+    return () => {
+      window.clearTimeout(timeout);
+      window.removeEventListener("pagehide", keepDraft);
+    };
   }, [draftKey, markdown, saveState, title]);
+
+  useEffect(() => {
+    if (!isLive || !actor) return;
+    let active = true;
+    let retry = 0;
+    let reading = false;
+    function receive(remote: ApiDocDetail) {
+      if (!active || savingRef.current || pendingRef.current || remote.id !== doc.id ||
+          remote.version <= baseRef.current.version) return;
+      baseRef.current = { body: remote.body_md, title: remote.title, version: remote.version };
+      setMarkdown(remote.body_md);
+      setTitle(remote.title);
+      setVersion(remote.version);
+      setSaveState("synced");
+      setSyncNote("");
+    }
+    async function refresh() {
+      if (!actor || reading || document.hidden || !navigator.onLine) return;
+      reading = true;
+      try {
+        receive(await fetchDoc(doc.id, actor));
+      } catch {
+        // A disconnected editor retains its last confirmed base.
+      } finally {
+        reading = false;
+      }
+    }
+    function connect() {
+      if (!active || !actor || !navigator.onLine || roomRef.current) return;
+      const url = new URL("/api/v1/ws/docs/" + encodeURIComponent(doc.id), window.location.origin);
+      url.protocol = location.protocol === "https:" ? "wss:" : "ws:";
+      const token = getToken();
+      url.searchParams.set(token ? "token" : "actor", token || actor);
+      const room = new WebSocket(url);
+      roomRef.current = room;
+      room.onmessage = event => {
+        if (!active) return;
+        const message = JSON.parse(event.data);
+        if (message.type === "presence") setActors(message.actors);
+        if (message.type === "snapshot" || message.type === "updated") receive(message.doc);
+        if (message.type === "changed") void refresh();
+      };
+      room.onclose = () => {
+        if (!active) return;
+        roomRef.current = null;
+        setActors([]);
+        retry = window.setTimeout(connect, 3000);
+      };
+    }
+    function online() {
+      connect();
+      void refresh();
+    }
+    function localUpdate(event: Event) {
+      receive((event as CustomEvent<ApiDocDetail>).detail);
+    }
+    window.addEventListener("tianxuan:doc-updated", localUpdate);
+    connect();
+    const timer = window.setInterval(refresh, 5000);
+    window.addEventListener("online", online);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      active = false;
+      window.removeEventListener("tianxuan:doc-updated", localUpdate);
+      window.clearTimeout(retry);
+      window.clearInterval(timer);
+      window.removeEventListener("online", online);
+      document.removeEventListener("visibilitychange", refresh);
+      roomRef.current?.close();
+      roomRef.current = null;
+    };
+  }, [actor, doc.id, isLive]);
 
   const preview = useMemo(() => renderMarkdown(markdown), [markdown]);
   const characters = markdown.replace(/\s/g, "").length;
@@ -351,6 +442,7 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
 
   function updateMarkdown(value: string) {
     if (savingRef.current) return;
+    pendingRef.current = true;
     setMarkdown(value);
     setSyncNote("");
     setSaveState("dirty");
@@ -359,13 +451,14 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
 
   function updateTitle(value: string) {
     if (savingRef.current) return;
+    pendingRef.current = true;
     setTitle(value);
     setSyncNote("");
     setSaveState("dirty");
   }
 
   async function persistNow() {
-    if (savingRef.current) return;
+    if (savingRef.current || (isLive && (conflict || !pendingRef.current))) return;
     try {
       if (draftKey && !recoveryBlocked.current) window.localStorage.setItem(
         draftKey,
@@ -399,10 +492,12 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
       } catch {
         // A storage failure does not invalidate the server save.
       }
+      pendingRef.current = false;
       setSaveState("synced");
       setSyncNote(formatMessage(t("editor.syncedServer"), { version: result.doc.version }));
     } catch (error) {
       if (error instanceof MergeConflict) {
+        try { setConflict(await fetchDoc(doc.id, actor)); } catch { /* Retry after reconnection. */ }
         setSaveState("dirty");
         setSyncNote(formatMessage(t("editor.conflict"), { count: error.conflicts.length }));
       } else {
@@ -478,7 +573,7 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
           </Link>
           <button
             className={`btn btn-primary btn-sm${saveState === "saved" ? " is-saved" : ""}`}
-            disabled={saveState === "saving"}
+            disabled={saveState === "saving" || Boolean(conflict)}
             onClick={persistNow}
             type="button"
           >
@@ -505,9 +600,7 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
             {t("editor.aiReady")}
           </span>
           <div className="avatar-stack" aria-label={t("editor.collaboratorsAria")}>
-            <span className="avatar avatar-xs avatar-jade">文</span>
-            <span className="avatar avatar-xs avatar-gold">偃</span>
-            <span className="avatar avatar-xs avatar-mist">S</span>
+            {actors.map(id => <span className="avatar avatar-xs" key={id} title={id}>{id.slice(-2)}</span>)}
           </div>
         </div>
       </div>
@@ -520,6 +613,23 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
           </button>
         </div>
       ))}
+      {conflict && (
+        <section className="restore-banner" role="alert">
+          <div>
+            <strong>{locale === "zh" ? "远端已保存版本" : "Saved remote version"} v{conflict.version}</strong>
+            <p>{conflict.title}</p>
+            <pre>{conflict.body_md}</pre>
+            <p>{locale === "zh" ? "对照上方版本编辑下方草稿，确认合并内容后再保存。" : "Compare this version with your draft below, edit your resolution, then confirm and save."}</p>
+            <button type="button" onClick={() => {
+              if (title === baseRef.current.title) setTitle(conflict.title);
+              baseRef.current = { body: conflict.body_md, title: conflict.title, version: conflict.version };
+              setVersion(conflict.version);
+              setConflict(null);
+              setSaveState("dirty");
+            }}>{locale === "zh" ? "确认以此版本为合并基线" : "Confirm this version as merge base"}</button>
+          </div>
+        </section>
+      )}
       {restored ? (
         <div className="restore-banner" role="status">
           <Icon name="history" size={15} />

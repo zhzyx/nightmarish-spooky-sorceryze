@@ -1,0 +1,82 @@
+{
+  "calls": [
+    {
+      "entry": "HTTP",
+      "expected": 10,
+      "status": 409,
+      "persisted": 11
+    },
+    {
+      "entry": "HTTP",
+      "expected": 11,
+      "status": 200,
+      "persisted": 12
+    },
+    {
+      "entry": "AI",
+      "expected": 11,
+      "status": 409,
+      "persisted": 12
+    },
+    {
+      "entry": "AI",
+      "expected": 12,
+      "status": 200,
+      "persisted": 13
+    }
+  ],
+  "reopenedHistory": [
+    [
+      1,
+      "First\nMiddle\nLast\n"
+    ],
+    [
+      2,
+      "A online row\nFirst\nMiddle\nLast\n"
+    ],
+    [
+      3,
+      "A online row\nFirst\nMiddle\nLast\nB offline row\n"
+    ],
+    [
+      4,
+      "remote A\nA online row\nFirst\nMiddle\nLast\nB offline row\n"
+    ],
+    [
+      5,
+      "remote A\nA online row\nFirst\nMiddle\nLast\nB offline row\nremote B\n"
+    ],
+    [
+      6,
+      "A same line\n"
+    ],
+    [
+      7,
+      "A and B resolution\n"
+    ],
+    [
+      8,
+      "A saved during restore\n"
+    ],
+    [
+      9,
+      "First\nMiddle\nLast\n"
+    ],
+    [
+      10,
+      "A online row\nFirst\nMiddle\nLast\n"
+    ],
+    [
+      11,
+      "A online row\nFirst\nMiddle\nLast\nB offline row\n"
+    ],
+    [
+      12,
+      "First\nMiddle\nLast\n"
+    ],
+    [
+      13,
+      "First\nMiddle\nLast\n"
+    ]
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "doc": "doc_83007b1a1532414fa7174620385ee8e5",
+  "events": [
+    {
+      "type": "snapshot"
+    },
+    {
+      "type": "presence",
+      "actors": 2
+    },
+    {
+      "type": "changed"
+    }
+  ]
+}

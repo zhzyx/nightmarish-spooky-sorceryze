@@ -145,3 +145,37 @@ def test_public_http_tools_viewer_and_workspace_boundary(scenario, monkeypatch):
     assert (
         client.post("/api/v1/tools", headers=owner_headers, json={"name": "doc.read", "payload": {}}).status_code == 422
     )
+
+
+@pytest.mark.parametrize("entry", ["http", "ai"])
+def test_restore_appends_and_rejects_stale_version(scenario, entry):
+    store, actor, doc = scenario
+    client = TestClient(create_app(store))
+    headers = {"X-Actor": actor}
+    key = doc["id"]
+    store.update_doc(actor, key, "new text", 1)
+
+    def restore(expected, call_id):
+        if entry == "http":
+            return client.post(
+                f"/api/v1/docs/{key}/versions/1/restore",
+                headers=headers,
+                json={"expected_version": expected, "call_id": call_id},
+            )
+        return client.post(
+            "/api/v1/tools",
+            headers=headers,
+            json={
+                "name": "doc.restore",
+                "call_id": call_id,
+                "payload": {"doc_id": key, "version": 1, "expected_version": expected},
+            },
+        )
+
+    assert restore(1, "stale").status_code == 409
+    assert store.get_doc(key)["body_md"] == "new text"
+    response = restore(2, "accepted")
+    assert response.status_code == 200, response.text
+    assert restore(2, "accepted").json() == response.json()
+    assert store.get_doc(key)["version"] == 3
+    assert [store.version(key, i)["body_md"] for i in (1, 2, 3)] == [doc["body_md"], "new text", doc["body_md"]]
