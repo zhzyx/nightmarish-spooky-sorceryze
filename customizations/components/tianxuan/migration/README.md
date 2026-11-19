@@ -21,3 +21,9 @@
 从侧栏进入 `/migration`。管理员在此按项目或需求保存入口。编辑和管理员可提交新任务；天璇入口创建 backlog 工单，GitHub 项目保留原入口时返回预填的新建链接。新任务以 call_id 去重，原生目录中的历史记录仅供查阅。
 
 已认证客户端通过 GET `/api/v1/migration/status?project=OWNER/REPO` 查看已发布的来源、计数、导入及发布时间。GET/PUT `/api/v1/migration/entry` 接受 project 和可选 requirement 文档 ID，PUT 的 JSON 包含 entry。POST `/api/v1/migration/tasks` 接受 project、可选 requirement、title、call_id。AI 可通过现有 `/api/v1/tools` 调用 migration.status、migration.entry、migration.start。在线入口配置存于天璇领域库，离线管理使用 `python routing.py DOMAIN_DB PROJECT --tenant TENANT --set tianxuan`，HTTP 与 CLI 共用租户规则。旧式无租户规则只用于本地独立入口；如需启用，管理员从旧库读出指定项目和需求的有效值，再明确绑定至对应租户。
+
+## 查阅已发布的历史
+
+在项目的迁移页按原编号、标题或路径搜索，打开记录可查看正文、所属评论和来源关联。代码历史支持按原提交和仓库相对路径读取文本文件（最大 1 MiB）；单项附件下载上限为 8 MiB。
+
+已认证客户端可调用 `GET /api/v1/migration/history/{search,detail,body,commits,file,attachment}`，AI 对应工具为 `migration.history.<操作名>`。用 `project` 选项目，用可选的 `revision` 固定发布目录版本；读取 Git 提交时另传 `commit`。列表用 `offset` 与 `limit` 翻页，AI 附件按返回的 `next_offset` 传入下一次的 `byte_offset`。API 服务需要在原生数据库旁写入 `<数据库文件名>.history-index` 和 `.migration-history-cache`，以便复用检索索引和只读 Git 镜像。
