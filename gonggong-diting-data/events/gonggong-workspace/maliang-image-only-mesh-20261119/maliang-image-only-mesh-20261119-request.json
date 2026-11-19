@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-image-only-mesh-20261119-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-image-only-mesh-20261119",
+  "kind": "request",
+  "occurred_at": "2026-11-19T14:53:30Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1610",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261119",
+    "origin": "external-authorized-host",
+    "definition_sha256": "15dc82d98874b169be4c367f66db6f68dbe45096a7ff034f6289fb621f09018a"
+  },
+  "payload": {
+    "intent": "Remove the text prompt and redraw-model controls from image_to_mesh, clear legacy prompt and text fields before serialization or execution, and preserve pure image or image-set mesh generation without changing text_to_mesh or provider contracts.",
+    "authorization_ref": "kimi-work:user:20261119:image-only-mesh-submit-and-deliver",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "c87ad34057dab48c0bc72eb1c0c4f515920a6b892338b10bb5b58c390061f201"
+}

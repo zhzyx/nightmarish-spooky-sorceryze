@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-image-only-mesh-20261119",
+  "issue_number": 1610,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1610",
+  "candidate": "68c68888349bf4bc21819e43a28b73442f11e2f6",
+  "base_commit": "075e1cd02c6bb6980f882407d3c767bd6e404925",
+  "scope": "image_to_mesh UI and workflow request sanitization; no real Tripo inference",
+  "validation": [
+    {
+      "name": "parameter_form_acceptance.gd",
+      "state": "passed",
+      "evidence": "image-to-Mesh hides text and clears both legacy prompt fields"
+    },
+    {
+      "name": "multi_image_acceptance.gd",
+      "state": "passed",
+      "evidence": "ordered image inputs and workflow reopen remain intact"
+    },
+    {
+      "name": "context_menu_acceptance.gd",
+      "state": "passed",
+      "evidence": "visible parameter controls retain working focus actions"
+    },
+    {
+      "name": "run_ainative_builtin.py",
+      "state": "passed",
+      "candidate": "68c68888349bf4bc21819e43a28b73442f11e2f6",
+      "editor_sha256": "d38a6555126336597e07137b65ae50014d821cca57641f420c3ce71a1cc3b94e",
+      "evidence": "bundled image-to-Mesh is image-only and clears legacy text without a redraw model; source and installed bundle hashes match"
+    },
+    {
+      "name": "diting_files.py git-check --require-committed",
+      "state": "passed",
+      "evidence": "git_state=committed"
+    }
+  ],
+  "known_upstream_failures": [
+    {
+      "name": "test_generation_service_gui: late discovery for an edited endpoint cannot replace current readiness",
+      "state": "failed",
+      "relation": "upstream failure-dialog path; outside this request's diff"
+    },
+    {
+      "name": "No Godot source or link dependencies (macos-26, ubuntu-latest)",
+      "state": "failed",
+      "relation": "CI Python environment lacks NumPy for test_geometry_repair and its dependent test; outside this request's diff"
+    }
+  ],
+  "real_tripo_generation": false,
+  "main_merged": false
+}

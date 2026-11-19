@@ -24,11 +24,17 @@ func run():
 	for kind in ["generate_image", "image_to_mesh", "text_to_mesh"]:
 		panel.generator_choice.selected = kind_index
 		panel.add_generator()
-		var image_stage = true
-		check(form.prompt_edit.visible == image_stage and form.rows.width.visible == image_stage and form.rows.height.visible == image_stage, "type-specific prompt and image sizes: " + kind)
+		var prompt_stage = kind != "image_to_mesh"
+		check(form.prompt_edit.visible == prompt_stage and form.rows.width.visible and form.rows.height.visible, "type-specific prompt and image sizes: " + kind)
 		check(not form.advanced_box.visible and not panel.params_edit.is_visible_in_tree(), "advanced and developer fields start folded: " + kind)
 		form.advanced_toggle.button_pressed = true
 		check(form.rows.mesh_steps.visible == kind.ends_with("mesh") and form.rows.denoise.visible == (kind in ["generate_image", "image_to_mesh"]), "advanced fields follow node capabilities: " + kind)
+		if kind == "image_to_mesh":
+			panel.nodes[-1].parameters.prompt = "旧工作流提示词"
+			panel.nodes[-1].text = "旧版文字说明"
+			panel.select_node(panel.nodes[-1].id)
+			check(not form.prompt_edit.is_visible_in_tree() and panel.nodes[-1].parameters.prompt.is_empty() and panel.nodes[-1].text.is_empty(), "image-to-Mesh hides text and clears both legacy prompt fields")
+			check(panel.apply_fields() and panel.nodes[-1].parameters.prompt.is_empty(), "applying image-to-Mesh keeps its request image-only")
 		kind_index += 1
 	# Real widget signals, not editing the backing JSON.
 	panel.generator_choice.selected = 0

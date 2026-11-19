@@ -196,12 +196,13 @@ func configure(node_kind: String, parameters: Dictionary, node_version: String =
 	developer_toggle.set_pressed_no_signal(false)
 	raw_edit.hide()
 	var generator = kind != "copy"
-	# image_to_mesh can optionally redraw the source before generating the mesh.
-	# Keep its effective prompt and image parameters visible instead of hiding them.
+	# Image-to-Mesh is deliberately image-only. Do not expose a hidden text
+	# requirement which the direct 3D service cannot consume with an image.
 	var image_stage = generator
-	rows.prompt.text = "提示词（无图片时必填）" if kind == "generate_image" else "提示词（可选，填写后先重绘图像）" if kind == "image_to_mesh" else "提示词"
-	rows.prompt.visible = image_stage
-	prompt_edit.visible = image_stage
+	var prompt_stage = generator and kind != "image_to_mesh"
+	rows.prompt.text = "提示词（无图片时必填）" if kind == "generate_image" else "提示词"
+	rows.prompt.visible = prompt_stage
+	prompt_edit.visible = prompt_stage
 	rows.outputs.text = "图片数量、视角与局部细节由描述自动理解；多图从同一主图衍生" if _automatic_outputs else "输出数量，或每行一个视角／变体标签"
 	rows.outputs.visible = kind in ["generate_image", "text_to_image", "image_to_image"]
 	outputs_edit.visible = rows.outputs.visible and not _automatic_outputs
@@ -257,8 +258,9 @@ func _apply_cli_controls():
 			_raw_changed()
 	cli_hint.visible = (_cli_mode or instruction_mode) and generator
 	cli_hint.text = ('自选 API 返回严格规划，' + ('Blender' if _sculpt_mode else 'Godot') + ' 固定构造器生成网格；请预览检查形态与隐藏面。') if _api_mode else 'Kimi Work 独立图像服务根据提示词与可选参考图生成二维图片；下方宽高是实际请求尺寸，须为 16 的倍数。随机种子、采样步数和 denoise 不适用，不是 K3.1 Pro 直接输出图片。' if _kimi_image_mode() else 'Kimi Work 通过 Tripo API 根据描述、单图或 2–4 视图直接生成 GLB，无需 Blender 或 K3 原语规划；三视图整图按正面／右侧／背面裁切，额外图文混合约束会明确拒绝。' if _kimi_mode else 'CLI 图像按提示词及参考图生成；尺寸为目标要求，会采用支持的接近尺寸。图像不使用本机模型的随机种子、采样步数或重绘强度。'
-	if kind == 'model_adjust': cli_hint.text = '默认通过 Tripo API texture_3d_model 输出新 GLB；开发者 JSON 也可选择受限本地几何修复。原模型必须提供且不会被覆盖；四图引导需包含全部视角。'
-	rows.prompt.text = '微调要求（可选）' if kind == 'model_adjust' else ('建模要求（可选，结合源图推断结构）' if instruction_mode else '提示词（可选，填写后先重绘图像）') if kind == 'image_to_mesh' else ('生图要求（无图片时必填）' if kind == 'generate_image' else '图生图要求' if _kimi_image_mode() and kind == 'image_to_image' else '生图要求' if _kimi_image_mode() else '建模要求' if modeling_mesh else '提示词')
+	if kind == 'image_to_mesh': cli_hint.text = '图生网格只提交源图和参考视角，不接收额外文字要求；生成后请预览检查形态与隐藏面。'
+	elif kind == 'model_adjust': cli_hint.text = '默认通过 Tripo API texture_3d_model 输出新 GLB；开发者 JSON 也可选择受限本地几何修复。原模型必须提供且不会被覆盖；四图引导需包含全部视角。'
+	rows.prompt.text = '微调要求（可选）' if kind == 'model_adjust' else ('生图要求（无图片时必填）' if kind == 'generate_image' else '图生图要求' if _kimi_image_mode() and kind == 'image_to_image' else '生图要求' if _kimi_image_mode() else '建模要求' if modeling_mesh else '提示词')
 	for key in ['width', 'height']:
 		rows[key].visible = generator and not modeling_mesh
 	for key in ['mesh_steps', 'mesh_resolution', 'octree_resolution', 'mesh_threshold', 'mesh_algorithm']:
@@ -357,6 +359,7 @@ func parameters():
 		_set_error("参数格式无效，请修正开发者选项中的参数对象")
 		return null
 	if kind == "copy": return result
+	if kind == "image_to_mesh": result["prompt"] = ""
 	if not _automatic_outputs and kind in ["generate_image", "text_to_image", "image_to_image"]:
 		if _dirty_outputs or _output_specifications(result) == null:
 			_set_error("输出数量须为 1～8 的整数；每行一个非空、不重复且不超过 80 字的标签")
