@@ -598,7 +598,9 @@ func make_humanoid(path: String) -> bool:
 
 func verify_rigging():
 	var rig = panel.rigging_panel
+	check(not rig.advanced_panel.visible,'rigging defaults to the simple one-click interface')
 	rig.set_source(ProjectSettings.globalize_path('res://fixture.glb'))
+	check(not rig.bind_button.disabled and rig.check_button.disabled and rig.save_button.disabled,'one-click source selection enables only binding')
 	rig.confirm.button_pressed = true
 	rig.fit()
 	if is_instance_valid(rig.built):
@@ -612,13 +614,14 @@ func verify_rigging():
 	if not make_humanoid(source): return
 	var source_hash = FileAccess.get_sha256(source)
 	rig.set_source(source)
-	rig.confirm.button_pressed = true
-	rig.fit()
-	if not check(is_instance_valid(rig.built),'synthetic T-pose builds an actual bound character'):
+	rig.bind_one_click()
+	if not check(is_instance_valid(rig.built),'synthetic T-pose builds an actual bound character through one-click binding'):
 		details.rig_diagnostic = rig.message.text
 		print('RIG_DIAGNOSTIC ',rig.message.text)
 		return
-	check(rig.built.get_meta('rigging',{}).get('status')=='reviewed_template','suitable confirmed T-pose reaches the reviewed binding state')
+	check(rig.params.one_click and not rig.confirm.button_pressed,'one-click binding needs no manual confirmation or advanced parameters')
+	check(rig.built.get_meta('rigging',{}).get('status')=='reviewed_template','automatic anatomy checks allow a suitable T-pose to be saved')
+	check(not rig.check_button.disabled and not rig.save_button.disabled,'successful one-click binding exposes deformation checking and saving')
 	var skeleton = rig.built.get_node('Skeleton3D') as Skeleton3D
 	var body = rig.built.get_node('Body') as MeshInstance3D
 	check(skeleton.get_bone_count()==18 and body.skin.get_bind_count()==18,'binding creates 18 real bones and Skin bind poses')
@@ -658,7 +661,14 @@ func verify_rigging():
 		movement[motion] = maximum
 		check(animation.current_animation==motion and maximum>.01,'actual skinned ROM deformation: '+motion)
 	details.rom_maximum_displacement = movement
-	rig.rest()
+	rig.check_deformations()
+	check(animation.current_animation=='raise_arms' and rig.deformation_queue.size()==3,'deformation check starts the automatic motion sequence')
+	rig._process(2.1)
+	check(animation.current_animation=='squat','deformation check advances to squat')
+	rig._process(2.1)
+	check(animation.current_animation=='turn','deformation check advances to turn')
+	rig._process(2.1)
+	check(rig.deformation_queue.is_empty() and animation.current_animation.is_empty(),'deformation check restores the rest pose')
 	rig.target.text = panel.state_dir.path_join('rig-v1.tscn')
 	rig.save_version()
 	if not check(FileAccess.file_exists(rig.target.text),'reviewed rig publishes a new character version'): return

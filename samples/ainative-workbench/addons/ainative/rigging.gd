@@ -266,7 +266,9 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 	instance.skin = skin
 	instance.skeleton = NodePath('../Skeleton3D')
 	root.add_child(instance)
-	var accepted = p.confirmed_humanoid and (p.route=='standard' or p.joints.size()>=NAMES.size()-1)
+	# One-click mode replaces the separate confirmation checkbox with these
+	# automatic anatomy checks; saving still requires an explicit user action.
+	var accepted = (p.confirmed_humanoid or p.get('one_click',false)) and (p.route=='standard' or p.joints.size()>=NAMES.size()-1)
 	if bounds.size.x/bounds.size.y<.65 and p.reference_pose!='marked': accepted = false; report.warnings.append('T 形姿势需要双臂分开，宽高比不小于 0.65。')
 	if p.reference_pose=='marked' or p.route=='free':
 		for bone in NAMES:

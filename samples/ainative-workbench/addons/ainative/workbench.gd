@@ -685,7 +685,7 @@ func show_native_section(section: String):
 	for panel in native_other_panels: panel.visible = section=='other'
 	texture.visible = section=='mesh' and preview_resource!=null
 	mesh_container.visible = is_instance_valid(preview_scene)
-	native_sections.title.text = {'mesh':'网格生成 · 右键画布添加节点，右键节点编辑、预览和管理结果。','rig':'骨骼绑定 · 使用已预览的网格，或选择本地网格；检查姿势后拟合。','other':'独立模块工具 · 每个模块使用自己的角色。','settings':'本机设置 · 内置工具已随引擎提供；真实生成需要配置模型服务。'}.get(section,'')
+	native_sections.title.text = {'mesh':'网格生成 · 右键画布添加节点，右键节点编辑、预览和管理结果。','rig':'骨骼绑定 · 使用当前网格一键绑定；需要修正时展开高级选项。','other':'独立模块工具 · 每个模块使用自己的角色。','settings':'本机设置 · 内置工具已随引擎提供；真实生成需要配置模型服务。'}.get(section,'')
 	for key in native_buttons: native_buttons[key].button_pressed = key==section
 	native_scroll.scroll_vertical = 0
 
