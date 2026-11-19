@@ -1,0 +1,180 @@
+{
+  "issue_number": 1623,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1623",
+  "request_id": "tianxuan-web-standalone-package-20261119",
+  "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1657",
+  "signed_head": "bc6abaa73ab8d5e86260af3844c60fa890369597",
+  "signed_tree": "89595bdf6a364a90e2f9f3e7d47836a2ec572cde",
+  "independent_reviewer": "codex-native:/root/review1551",
+  "source_commit": "6fa84ecec9dc34634bb0ad3805b73d4378333622",
+  "source_tree": "701246da961112a5871df8b9d7c8ebf732387d95",
+  "main_delivery": {
+    "commit": "66bf4bbd891f8af02fbbc98f3d4c3135267e3ab0",
+    "tree": "013163aa510367e28a15487c15bf7ff19085edb3",
+    "artifact_built_tree": "701246da961112a5871df8b9d7c8ebf732387d95",
+    "linux_build_inputs_match": true,
+    "signed_head": "bc6abaa73ab8d5e86260af3844c60fa890369597",
+    "merged_by": "Sail-Li",
+    "merged_at": "11/19/2026 18:47:59",
+    "remote_ref_observed": "66bf4bbd891f8af02fbbc98f3d4c3135267e3ab0",
+    "intervening_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1639",
+    "intervening_windows_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44568827763/job/135718433080",
+    "combined_installer_archive_test_log_sha256": "dcc229be13dcaa82f3b966eefff6c8d7ca9ba21bc783d4615828cd1cae64ee8e",
+    "combined_installer_archive_tests": 13,
+    "combined_installer_archive_tests_skipped": 1
+  },
+  "ci": {
+    "docker": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44576239253/job/135744373975",
+    "windows_editor": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44576239011/job/135744640750",
+    "module_and_web": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44576239538/job/135744376435",
+    "static": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44576239011/job/135744373771",
+    "issue_association": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44576238778/job/135744371678",
+    "run_attempt": 1
+  },
+  "artifacts": {
+    "web": {
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44576239253/artifacts/14558275140",
+      "oci": "sha256:8c8a484ae0f8e3885a49ee020c74847b0467bb61aff3ef1f13d8ce3f54321e4d",
+      "config_oci": "sha256:3d916ce931f7a42ec110e64a0781eefdd13e3117d8a4e76e0b50b28a1b165115",
+      "archive_sha256": "4cab4d24997fcc17162c86555e6301740ce979d5f9bf2575cd915f2ad3eccf6f",
+      "archive_bytes": 66092338,
+      "runtime_user": "node",
+      "cmd": [
+        "node",
+        "server.js"
+      ],
+      "layers": [
+        {
+          "blob": "sha256:881fc932939efef04ca120ad44bbd2c0917851eb247aa4995428afb1e80ede17",
+          "diff_id": "sha256:75f1d9657d880da5f75298e8f40e9928bb6e260c50d26f97af196845307e3064",
+          "chain": "sha256:75f1d9657d880da5f75298e8f40e9928bb6e260c50d26f97af196845307e3064",
+          "compressed": 3853673
+        },
+        {
+          "blob": "sha256:87aaee1f6667374a3b8e33a252954e01b1fac9749bb0c570022533b9120d13a1",
+          "diff_id": "sha256:313a78c90b21a75531eacc3998f28ac7cf2f95060c1974a257ed80bd7a7a062c",
+          "chain": "sha256:8d89b5e0c6b9873e092e4e9a466fc4707ec2388b30cfdbbf77ba02e50df5f8cc",
+          "compressed": 56249638
+        },
+        {
+          "blob": "sha256:e868d1035e5072f0e369d44b840e8532b9500f7cc74aa8c908ccd2e1b9898eb3",
+          "diff_id": "sha256:acb510a1dd0f941dce95b097dde9780de168f02b6a85102c39d920d4eb0b9d26",
+          "chain": "sha256:e29f5eb347a83338206527fe00a0ec205c3b23d4eca300132cb6917af73439e0",
+          "compressed": 1262428
+        },
+        {
+          "blob": "sha256:177fffbd7f516ce769745a38154a76ab1cc31d9f87f1c4ea5e448f6548fea4c4",
+          "diff_id": "sha256:f06a70e4735f2521407da491d35f156f89ead52d32bba35a30186f9111b5052d",
+          "chain": "sha256:5fd54b56eb8ae1cde212e66b826a9ff92d094d4ab66c1b9c8bb90d9bac96bb07",
+          "compressed": 443
+        },
+        {
+          "blob": "sha256:5b2467edf757619357596e40eb40a0151371274b855ae04362e0100c81fa38f5",
+          "diff_id": "sha256:c1a03e268e1a2faf981d7cbff312d85771f4d64deda570b1c41b2ae81f37498b",
+          "chain": "sha256:dc51e58a4e0872b5b9d61f16285e47cb21cc42afb2554b47ac5727a09d9206bc",
+          "compressed": 93
+        },
+        {
+          "blob": "sha256:ff0ed594665d60dd74afd8e96a728a1f4b86080870b42a9b21bd420113b6a0cf",
+          "diff_id": "sha256:c1e4045541f980644b3ba0ee029727ca44e81d8a5cb1e4490fd365f19c7b0e90",
+          "chain": "sha256:2b392c00522da9a22b09f10fe0405da7f3aed879e36b61689c90a8c7e7601225",
+          "compressed": 5013851
+        }
+      ]
+    },
+    "api": {
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44576239253/artifacts/14556483828",
+      "oci": "sha256:5920daa2587cea3050ec3930ee0e773c9ece06822b9d1587158dac864a697237",
+      "config_oci": "sha256:d1c9b59db0c1543006d4c06a3b6dbdd8ae61cf92e94aeedb2455a50867c8a6ff",
+      "archive_sha256": "82628a3459cb361802d28f15c04fceab048c4390a4d8a7d2afb51caff651c0aa",
+      "archive_bytes": 151536311,
+      "runtime_user": "tianxuan",
+      "cmd": [
+        "uvicorn",
+        "main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "8000",
+        "--proxy-headers",
+        "--forwarded-allow-ips=*"
+      ]
+    }
+  },
+  "isolated_linux": {
+    "kernel": "6.6.152 x86_64",
+    "docker": "28.5.2",
+    "filesystem": "ext4 with containerd overlayfs",
+    "f820_control": {
+      "actor": "codex-native:/root/inventory1551",
+      "archive_sha256": "d1aac9815cc966b718b5575b62a9bd692127eb4d32d4976b7d0f1e965db0db31",
+      "proof_log_sha256": "46fb2d69fe0033de0b3562742ac7121b16ba7d45502c672596ae0acb578699d4",
+      "allocated_delta_bytes": {
+        "content_bytes": 139976704,
+        "snapshot_bytes": 502435840,
+        "all_containerd_bytes": 642523136
+      },
+      "load_seconds": 53.16,
+      "login_health_cold_seconds": 11.95,
+      "checks": [
+        "GG_HTTP old two_sample_keys=200 home=200 assets=js,css docs=200 same_origin_api=200 websocket_snapshot=1 websocket_update=2"
+      ]
+    },
+    "web_with_fixed_f820_api_proxy": {
+      "actor": "codex-native:/root/inventory1551",
+      "archive_sha256": "4cab4d24997fcc17162c86555e6301740ce979d5f9bf2575cd915f2ad3eccf6f",
+      "proof_log_sha256": "abbbab2eee3bd66c2c6b351a7196c24f0f5dcbe28d3905f80e4437272f2d9812",
+      "allocated_delta_bytes": {
+        "content_bytes": 62570496,
+        "snapshot_bytes": 196173824,
+        "all_containerd_bytes": 258826240
+      },
+      "load_seconds": 29.5,
+      "login_health_cold_seconds": 14.18,
+      "checks": [
+        "GG_HTTP candidate two_sample_keys=200 home=200 assets=js,css docs=200 same_origin_api=200 websocket_snapshot=1 websocket_update=2",
+        "GG_MIGRATION web=200 status_chunks=/_next/static/chunks/app/migration/page-ef5a8c53aa03295d.js",
+        "GG_MIGRATION history_chunks=/_next/static/chunks/app/migration/page-ef5a8c53aa03295d.js",
+        "GG_HTTP rollback two_sample_keys=200 home=200 assets=js,css docs=200 same_origin_api=200 websocket_snapshot=2 websocket_update=3",
+        "GG_ROLLBACK web_replaced=yes api_proxy_unchanged=yes candidate_doc_preserved=yes"
+      ]
+    },
+    "exact_api_web_pair": {
+      "actor": "codex-native:/root/inventory1551",
+      "archive_sha256": "4cab4d24997fcc17162c86555e6301740ce979d5f9bf2575cd915f2ad3eccf6f",
+      "proof_log_sha256": "c0ec48b5e7a4e6f79c07fb0354d6391acd5eb3bd0bf289551b5ef846a160e95d",
+      "allocated_delta_bytes": {
+        "content_bytes": 62570496,
+        "snapshot_bytes": 196182016,
+        "all_containerd_bytes": 258834432
+      },
+      "load_seconds": 27.11,
+      "login_health_cold_seconds": 12.03,
+      "checks": [
+        "GG_HTTP candidate two_sample_keys=200 home=200 assets=js,css docs=200 same_origin_api=200 websocket_snapshot=1 websocket_update=2",
+        "GG_MIGRATION web=200 status_chunks=/_next/static/chunks/app/migration/page-ef5a8c53aa03295d.js",
+        "GG_MIGRATION history_chunks=/_next/static/chunks/app/migration/page-ef5a8c53aa03295d.js",
+        "GG_MIGRATION status=200 publication=absent entry=200 history=expected_404",
+        "GG_ISSUES ssr=200 live_board=yes same_origin_list=200 count=0",
+        "GG_HTTP rollback two_sample_keys=200 home=200 assets=js,css docs=200 same_origin_api=200 websocket_snapshot=2 websocket_update=3",
+        "GG_ROLLBACK web_replaced=yes api_proxy_unchanged=yes candidate_doc_preserved=yes"
+      ]
+    },
+    "rollback_oci": "sha256:3b03a7598d2ba4d4fe7e3c79149404efc37cb750ad5f0191dc05d6c10b516060"
+  },
+  "capacity_reference": {
+    "production_observation_time": "2026-11-19T17:09:40.987391+00:00",
+    "production_observation_input_sha256": "4d6be31829f8aa4e761ab35f30d512bef43d4d0960d7d097e9e346eb2e601c5b",
+    "recorded_free_bytes": 944574464,
+    "reserve_bytes": 67108864,
+    "missing_image_content_and_estimated_snapshots_bytes": 463699968,
+    "normal_history_steady_margin_before_role_runner_bytes": 37682760,
+    "normal_history_cold_shortfall_before_role_runner_bytes": 110633912,
+    "prewarm_rehearsal_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1640",
+    "prewarm_peak_margin_before_role_runner_bytes": 45772800,
+    "prewarm_peak_shortfall_with_one_observed_cli_home_on_same_volume_bytes": 382386176,
+    "other_role_homes_and_workspaces_counted": false,
+    "production_admission": "Pending the deployment owner's current layout and fresh free-space check",
+    "deployment_owner_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1577"
+  }
+}
