@@ -1,0 +1,30 @@
+{
+  "request_id": "native-installed-resolution-20261118",
+  "issue_number": 1526,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1526",
+  "parent": 1499,
+  "sources_sha256": {
+    "customizations/components/tianxuan/server/native_entry_resolver.py": "49f06c5b64e7659b7bf76974592c2e28218d47fa37f1020957c2ff02141cd9c8",
+    "customizations/components/tianxuan/server/native_installation.py": "ec4c0326d613c3dcdb7320cb9adddb7246740914faad9a7cbfec6716238dc362",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "ab1e41ace8172aabc37c3d039d89bc90ca68e45b52ac2ee18a9535ec0f4822b3",
+    "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": "91f26f4e0132d74124de9ff431167fb330f1550f963a1588255946dcdb2cfa6e",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "48f1c718fedbe6bc04da549e8e2dcbafe778f7195dfd3b28446cbe187e1dd7f4",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d454c7a0c5b47552b16ba625b3ad97836b06625c7d6cf7ba74827ae4bea62ce9",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "d738528a30ddbfd36c744fadb47839af74fbb706e5c468f8e8a3c3f249864798"
+  },
+  "validation": "122 targeted tests pass, signed deterministic runtime and cold coordinator reconstruction included; host graph/cache tests pass. CI adds resolver normal/API suite to existing192MiB same-image smoke. Independent review and actual CI/server still required.",
+  "sdk_preparation": {
+    "initial": "SCons graph discovery failed before execution because isolated checkout lacked pinned WebView2 SDK; original private log retained.",
+    "repair": "Copied exactly six SDK files from previous verified own tree after byte-identical manifest and per-file hash verification; actual graph rerun and three cache suites pass.",
+    "incident": "012f812d4c56d07f737730c538cf189f501d0a991797848a351a74eb5dc13280"
+  },
+  "limits": [
+    "No real model/provider or production service calls; loopback fixture only.",
+    "No universal native CLI/Subscription role bridge; no multi-revision tool context or large-input capability.",
+    "Cold coordinator reconstructed over retained authoritative SQLite connections; separate OS process restart is not separately injected.",
+    "Resolver-specific CAS reuse is unit-tested alongside existing real continuous CAS tests; a combined ordinary signed resolver-plus-external-CAS race is not separately injected.",
+    "Installation/resolver-specific withdrawal and concurrent duplicate resolver events not separately injected; original mandate withdrawal, exact principal receipt deduplication, existing integration concurrency regressions exercised.",
+    "Production packaging/build inventory, independent source review, actual server/provider installation, CI/main delivery and whole parent acceptance remain with root."
+  ],
+  "scope": "Bounded generic-protocol installed resolver. No production switch, real provider, universal CLI, multi-revision tools, full250user workflow or AA game acceptance."
+}

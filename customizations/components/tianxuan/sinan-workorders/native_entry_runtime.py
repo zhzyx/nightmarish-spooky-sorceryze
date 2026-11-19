@@ -88,6 +88,7 @@ def execute(config, template, request, *, recover=False):
     )
     runner.require(
         (request["role"] == "yanshi" and template["task"]["agent_id"] == "yanshi")
+        or (request["role"] == "heqi" and template["task"]["agent_id"] == "heqi")
         or (
             request["role"] == "reviewer"
             and template["task"]["agent_id"] != "yanshi"
@@ -106,6 +107,11 @@ def execute(config, template, request, *, recover=False):
         and all(c in "0123456789abcdef" for c in request["entry"]),
         "Exact entry digest required",
     )
+    if request["role"] == "heqi":
+        runner.require(
+            all(p["protocol"] in {"chat-completions", "ollama-chat", "gonggong-json"} for p in template["profiles"]),
+            "Heqi requires evaluated generic JSON profiles; native-proposal CLI is incompatible",
+        )
     # Configuration owns all instructions, role, profiles, evaluation and budgets.
     plan = json.loads(runner.canonical(template))
     task = plan["task"]

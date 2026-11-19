@@ -1,0 +1,26 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-artifact-local-validation.json",
+    "sha256": "7b6dc272c8d484fe646bb51dada2cd98d1465f1cc132bc824780053b334ace60",
+    "path_base": "absolute private evidence archive"
+  },
+  "report": {
+    "issue": 1529,
+    "sources": {
+      ".github/workflows/tianxuan-deploy-build.yml": "92cf300b6f3f3c7f9ffcecb6a921bc06956c9fa76551d7b671511fd4f88698af",
+      "deploy/README.md": "c6cd4f4aca38fcf33806ce23d3ec91fb7a01d63f2bc20710045250e18d21383b"
+    },
+    "checks": {
+      "yaml_structure": true,
+      "portable_shell_syntax": true,
+      "python_compile": true,
+      "real_file_bytes_sha256": true,
+      "separate_actual_checkout_and_candidate": true,
+      "failed_inspect_no_new_manifest": true,
+      "success_only_after_checks": true
+    },
+    "limits": "Local synthetic manifest/structure validation only. No local Docker; actual save/upload/download/load and sandbox acceptance require exact CI and server.",
+    "setup_failure": "Initial assumed Program Files Git Bash path absent; discovered actual bundled Git sh.exe and validated syntax there. Initial export.sh retained.",
+    "retained_private": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-artifact-validation-v2"
+  }
+}

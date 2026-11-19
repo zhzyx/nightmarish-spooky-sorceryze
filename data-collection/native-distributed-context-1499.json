@@ -1,0 +1,92 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-summary-1499.json",
+    "sha256": "0c357e2d4a8b474f55d4d1e2bc7492214d50f52d6032dc0f13eab8fd8628a9f5",
+    "path_base": "absolute private evidence archive"
+  },
+  "export": "Lossless JSON value export; original retained.",
+  "report": {
+    "issue": 1499,
+    "parent": 1382,
+    "source": {
+      "server_script_sha256": "f9808de7ba974f27ca7f8235e5abdd22dfd567434fd263e5d5f9ff28e67f4014",
+      "overlay": {
+        "files": {
+          "customizations/components/tianxuan/server/test_native_entry_broker_context.py": {
+            "sha256": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\smoke-test_native_entry_broker_context.py",
+            "remote": "smoke-test_native_entry_broker_context.py"
+          },
+          "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": {
+            "sha256": "88f522a4fde1a2b2c3147f9d4ed5944e2acb95439eaf1625665b99af492ce8b9",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\smoke-test_native_entry_context_backpressure.py",
+            "remote": "smoke-test_native_entry_context_backpressure.py"
+          },
+          "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": {
+            "sha256": "060ac18a8735a91a583c3355e43c1d2b537b0e5c8ce974035bd50f85594c9168",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\smoke-native_entry_context_client.py",
+            "remote": "smoke-native_entry_context_client.py"
+          }
+        },
+        "image": "sha256:9e68494a546fed6479a8651ea7114c3f297fe06b3443665393c26d55fe8bfb9b",
+        "scope": "Exact three readonly file overlays on committed fd48cb4 runtime derivative; no production installation"
+      },
+      "source_commit": "5224b6ba8594aa52f85a5cc2f302d26202749843"
+    },
+    "scope": "Synthetic context RPC only:250 distinct reserved executions, one actor, no models, external Windows client and actual Linux coordinator",
+    "observed": {
+      "success": 250,
+      "seconds": 46.905999999988126,
+      "p50_seconds": 28.45299999997951,
+      "p95_seconds": 44.421999999991385,
+      "rpc": {
+        "attempts": 1428,
+        "known_not_started": 928,
+        "unknown": 0
+      },
+      "coordinator_memory_peak_bytes": 77709312,
+      "coordinator_memory_peak_MiB": 74.109375,
+      "cgroup_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "swap_peak": 0,
+      "durable_started": 250,
+      "durable_resolved": 250,
+      "exactly_once": true,
+      "remaining_threads": [
+        "MainThread"
+      ]
+    },
+    "failure_and_recovery": [
+      "Original setup used existing fixture capacity2; third reservation rejected as designed. V2 explicitly configures synthetic fixture capacity250 without changing production.",
+      "Windows SSH forwarding logged accept Too many open files, but250client operations ultimately succeeded with0unknown. Latency includes network and forwarding pressure; not isolated service throughput.",
+      "Server observed driver-done.json during non-atomic SCP write and original terminal receipt records JSON parse failure. Preserve that failure. After server physical exit, separate network-disabled read-only ledger process verified250started/250resolved and exact downloaded driver digest. No API or model operation replayed.",
+      "Earlier192MiB combined local driver/coordinator OOM remains separate evidence; moving driver off server changes measured resource boundary."
+    ],
+    "limitations": [
+      "Not50user authentication/onboarding or end-to-end250production tasks",
+      "Not provider concurrency, semantic quality, real token/time savings or full admission fairness",
+      "No production activation; derivative image plus exact source overlays only",
+      "Future driver must atomically publish completion and address SSH descriptor limits before isolated latency claims"
+    ],
+    "cleanup": {
+      "container_removed": true,
+      "production_after": "b9caa06f67a0 tianxuan-web:local tianxuan-web-1\n3703a4f68c7b nginx:alpine tianxuan-proxy-1\n73cc989a486b tianxuan-api:local tianxuan-api-1\n",
+      "production_unchanged": true
+    },
+    "artifacts": {
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-250-v2\\cleanup.json": "eae3c32ab507514137db88ae114f6b7b26ed533cd0d4a5291577823eb3def790",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-250-v2\\driver-result.json": "1d687cf9b5d5d26e4bd7178767da4300a0fc234e75940cd7ace478c4a037a74a",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-250-v2\\forward.log": "ebfb6c096bd4d8d5700acb7a5ed273e9b27178747350afbf1b331d5ce6c14f35",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-250-v2\\inputs.json": "8f32cfa8d502ef6de5941f9a0b89b44f2e5f7cca96299bb6f5b84584e1a8ee42",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-250-v2\\launch.json": "52cca63d048a1f12d0b5bcd56a5878abbea7562192fe56d0642a28b6d4fffe32",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-250-v2\\ledger-readback-transport.json": "ac7dac70573ef619e23b069fbc0b72d1a93a6c8b61bda6d2f0901b41a08dfa80",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-250-v2\\ledger-readback.json": "9c46712b77498b618e6c12c8b12700037c4ec5d9dde6fac5b00212c0e7992098",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-250-v2\\ready.json": "d914b7a27bb206cef9bb2a456223bde0767746f988b29d82c33f44f3208e5bca",
+      "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-250-v2\\server-result.json": "000c8aed0759565dbaca6f836ed95d8085068791d1dc20ac67170fb70e35412e"
+    },
+    "original_setup_failure": {
+      "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-250\\failure.log",
+      "sha256": "40d4fe83128eb8e8dacfb2d968fcd13359f93a4a64ddf111f26b07dbebcb07aa"
+    },
+    "whole_goal_complete": false
+  }
+}

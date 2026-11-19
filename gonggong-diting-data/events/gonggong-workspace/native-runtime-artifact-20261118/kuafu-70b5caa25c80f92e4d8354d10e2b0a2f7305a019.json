@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-70b5caa25c80f92e4d8354d10e2b0a2f7305a019",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-runtime-artifact-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1529",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d4ee5de651c424189f37123e641bb335910f74665c63d50234559b321216a940",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1529",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "delivery",
+    "detection_head": "f539bd711fc623937350a7ea8d689bd929170ab5",
+    "context_sha256": "cb7d857ba7804810e56577169dc5b4576e72907d6b23931bacaa310227cf83f7",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "data-collection/native-runtime-artifact-delivery-1529.json",
+    "diagnosis": "Formal delivery advanced past evidence binding and found no request-kind Diting event. Intake-only readback validates the Issue but does not record this request event; dispatch step receipts are not substitutes. No commit was produced. Root owns metadata correction.",
+    "next_action": "Record actual same-tenant Issue request through existing Diting adapter, collect its work-item association, stage source/event metadata and retry original formal writer; unchanged independent source review remains valid.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T11:01:27.227249+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T11:03:34.341005+00:00",
+  "sha256": "0cfad9625ac944e716dcf8f37e065bca2b2c2b180590eff9529a79ff92832f21"
+}

@@ -136,3 +136,28 @@ For small selected materializations, the broker retains the bounded full-context
 The resolver implements the existing NativeContext interface (including durable events and identity); it is a transport adapter, not an LLM client. Model-host closure is recorded separately from worker closure. Only the worker receipt reader, after checking the actual immutable process/output records, appends the final physical process closure. A closed worker rejects later context RPCs. Unknown read/model intents remain durable and cannot be replayed. Context reads remain `reads:null`, not merge read-sets.
 
 Validation uses deterministic admitted fixture programs, actual ASGI main, loopback HTTP, the existing Node runtime and separate node storage. Ordinary remote execution reaches delivered/100%; signed local and remote broker tests run actual multi-turn context tooling and retain final context receipts. This does not establish production activation, model quality, organization identity resolution or WAN deployment readiness. No model/provider request was made. The earlier small trial (tools 157s versus full 127s) remains a counterexample to universal context savings; threshold policy is boundedness/fit policy, not a performance claim. Root retains installation packaging closure, independent review, production admission and Git delivery responsibility.
+
+## 2026-11-18 合契、传输效率与正常运行包的联合候选
+
+沿用原用户授权、现有分工和父 #1382 完整验收，根责任者在可信 main f539bd711fc623937350a7ea8d689bd929170ab5 上整合本任务已交接的三部分，减少重复 CI 和包构建。主线其他责任者的引擎动画/渲染更新全部保留。此整合不改变原生内容存储的权威，也不把开发留底用的 Git 合入当成产品工作流的并发方案。
+
+- #1526：普通安装清单 v3 增加冻结的合契身份，通过已有签名运行时解决真实路径冲突；读取已完成结果后继续候选落库，未知执行保留暂停，保持原始验收、独立审查和发布职责。v1/v2 历史绑定保留。122 项实施测试与独立 19 项针对性测试通过；小输入通用 JSON 协议为当前边界，大型多版本工具上下文和通用 CLI 仍待后续接续。
+- #1501 / bug #1445：PR #1532 的普通包 77 项测试通过，但同进程 250 客户端突发的两个参数在 512 MiB / 1 CPU 下读取响应超时。保留此失败，核验并修复 HTTP 请求中重复初始化未使用 TLS 信任上下文的成本，以及代理处理对重试 Request 的路由变异。不得扩大超时、缩小并发负载、跳过测试或重放未知执行；安全语义和物理关闭必须独立复验。
+- #1529：只有相关镜像测试成功才导出实际受测的不可变 API 镜像、源码和归档摘要及精确 CI 身份。原失败候选没有发布包。正常镜像的下载、身份比对、服务器隔离运行及安装更新/回退仍是实际验收步骤，不能用既有 derivative 加源码覆盖试验替代。
+
+当前租户召回 editor-dependency-handoff 的消费者版本绑定、物理终态观察和工作者结果重建，分别用于各子项交接和最终组合核验。review-context-and-source-evidence 的适用条件是自动资产审查，本轮没有开展该模型审查，不把其历史结果冒充本次验证。
+
+整合后的精确源码、模块输入和证据再次绑定；独立审查、正式门禁、适用 CI、main 回读与服务器实际验收继续执行。各子单只有满足自身全部验收才关闭。生产身份启用、真实模型效果、组织注册准入、完整多用户 250 在途交付、文档/表格/工作台及 AA 游戏体验仍按原目标保留，不因局部测试成功关闭父项。
+
+
+## 2026-11-19 用户决定：高并发实测延期
+
+用户要求当前不继续高并发实际压测，先记录逻辑可行性、现状和恢复入口，后续再处理。此前立即排查突发压测的执行顺序由本决定覆盖；已失败的测试不改写为成功，完整目标及未验收工单保持未完成。本次只做本地进度留档，不触发 CI、部署或新的实现。
+
+Linux 是现有 API、存储与协调服务器，不是用户提交平台。以后压力验证按 Windows/外部执行节点与 Linux 协调器分离的实际拓扑开展；必要的服务器功能、一致性及安装恢复验证仍保留。原 CI 包含高并发步骤，恢复交付时须先明确分层门禁及延期范围，不能直接绕过失败候选发布。
+
+详细进度、证据、限制及恢复顺序：本机绝对路径 D:/GongGong/data-collection/receipts/duobao-1382/progress-pause-20261119.md。此记录明确区分架构逻辑可行、局部机制已测、完整性能未验收，并保留 AA 渲染与 3D 原验收目标。
+
+### 同日恢复：继续功能交付，高并发实测仍延期
+
+用户随后恢复目标执行。沿上述延期约束，继续已有合契、传输修复和正常运行包的联合交付及功能验证。两份常规测试工作流显式排除原 250 客户端突发用例，保留原测试代码，由 deploy-build 的手动布尔输入 run_context_burst 按需触发，默认关闭。普通入口、安全、撤权、有限重试和持久恢复测试继续作为门禁；归档清单增加实际 validation_scope，未执行的突发测试与生产多用户容量不能被标为通过。该调整记录用户决定，不回写 PR #1532 的历史失败。

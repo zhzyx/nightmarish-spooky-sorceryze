@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1529-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-runtime-artifact-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-18T11:03:17.741659+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1529",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1529,
+    "title": "原生运行包：复用已验证 CI 镜像与服务器隔离安装",
+    "body": "<!-- native-runtime-artifact-review:20261118 -->\n\nCandidate ready in isolated trustedmain84d62281 tree: existing API image captured by immutable ID for both container test stages; after Compose/WebSocket success save that exact image, archive/file SHA256 + actual checkout/tree + PRhead/run manifest, upload explicit artifact with14day retention. No app source or renderer changes. Local YAML/shell/Python and synthetic manifest/digest/failure-path checks pass; module gate reports no changed module. Exact CI upload/download and server install still required. Root retains delivery and server validation; independent source/evidence review now.\n\n---\n\n<!-- gonggong-request:native-runtime-artifact-20261118 -->\n\n# 原生运行包：复用已验证 CI 镜像并在服务器隔离安装\n\n需求 ID：native-runtime-artifact-20261118；父 #1499，上溯 #1382，排障 #1445。沿用用户完整链路效率优先、当前服务器协调及复用外部执行节点授权；路径以仓库根解析。\n\nPR #1525 已交付 main 84d62281f0c7179369aec4352047a9ba414582a7。其正常 API Docker 镜像 152566578 bytes，容器 77 smoke 和 2 burst 用例、Compose 及 Windows 检查通过。但镜像未作为可下载交付物归档，服务器此前只有精确源码覆盖的 derivative 沙盒证据；不能将其称为相同正常 CI 包已安装。当前服务器资源有限，应复用已构建、已测的不可变镜像，而不是再次在服务器构建。\n\n实施与验收：\n\n1. 在既有 Docker CI 全部相关功能验证成功后导出实际测试的 API 镜像及清单。清单记录真实 image ID、归档 SHA256/字节数、实际 checkout/source tree、PR head（如适用）、run ID 和必要构建输入来源。失败步骤不得产生“已验证”包；原镜像不掺入测试状态、凭据或部署 .env。\n2. 归档在现有 GitHub Actions artifact 中，以精确 run/commit 身份获取；下载者核对受审签发候选已进入 main、该 run 全部适用核查及归档摘要。原始失败、无法验证或已过期产物明确保留，不能从同名最新包猜测身份。\n3. 在当前服务器中按实际磁盘/内存余量下载或导入受核验 API 包，运行独立命名、资源有界、无生产挂载的沙盒容器；回读实际 image ID 与安装源码身份。不能改生产容器、现有认证、用户数据或有效入口。\n4. 同一正常包完成适用普通入口/context 及安装更新/回退验证；复用此前已通过且输入未变的独立证据，新增包边界才定向验证。生产切换、真实模型与完整 250 多用户交付仍由父目标接续。\n5. 记录实际下载/安装/检查/物理退出和清理。仅清理本任务归属明确、无在途占用且不再需要的临时归档和容器；保留有效安装、必要回退版本、原始证据及其他任务资源。禁止全局 prune。\n\n本项仅修改构建/归档接入和必要说明，不修改 #1526 正在实施的合契业务文件，不改变渲染能力或冻结定义。根责任者实施、独立审查、CI/main 回读与服务器隔离验收沿原授权连续推进，不请求重复确认。\n\n授权：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "updated_at": "2026-11-18T11:01:52Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "fd3cf0fbedb004850b4f6519a95438cd7cae019f2f7434af565b38bf0192265e"
+}

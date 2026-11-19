@@ -96,13 +96,18 @@ class OrdinaryEntry:
         spec = self.installation.spec
         self.consumer.recover_unknown = spec.get("mode") == "production"
         require(
-            spec["version"] == 2 and spec["mode"] in {"production", "deterministic-test"},
+            spec["version"] in {2, 3} and spec["mode"] in {"production", "deterministic-test"},
             "Explicit production or deterministic-test installation required",
         )
         if spec["mode"] == "production":
             self.validate_production(spec)
         self.principals = spec["principals"]
         self.principals = {**self.principals, "integrator": spec["principals"]["producer"] + "-integration"}
+        if spec["version"] == 3:
+            require(
+                self.principals["integrator"] not in {self.principals["resolver"], self.principals["reviewer"]},
+                "Independent integration author and reviewer identities required",
+            )
         for name in ("workers", "checks", "registry"):
             (self.root / name).mkdir(exist_ok=True)
         installation = self.installation
@@ -238,11 +243,17 @@ class OrdinaryEntry:
             next_issues=self.next_issues,
             installed_target=lambda a, t: dict(channel="stable", expected=None),
         )
+        from native_entry_resolver import InstalledResolver
+
+        resolver = InstalledResolver(self) if spec["version"] == 3 else None
         NativeIntegration(
             self.workflow,
             NativeCandidates(native, self.module_authority),
             lambda *_: None,
             installed_continuous=self.continuous_policies,
+            installed_resolver=resolver,
+            resolver_recovery=resolver.recover if resolver else None,
+            resolver_binding=resolver.binding if resolver else None,
             review_receipt=lambda actor, plan, result, reviewer: self.reconcile_review(
                 review, actor, plan, result, reviewer
             ),
@@ -280,7 +291,7 @@ class OrdinaryEntry:
             all(str(path) in spec["files"] for path in required),
             "Production installation must pin all native executable source inputs",
         )
-        for role in ("planner", "producer", "reviewer"):
+        for role in ("planner", "producer", "reviewer") + (("resolver",) if spec["version"] == 3 else ()):
             argv = spec["commands"][role]["argv"]
             script = str(sources / ("native_entry_producer.py" if role == "producer" else "native_entry_runtime.py"))
             require(script in argv, "Production must use admitted existing runtime broker")
@@ -292,6 +303,23 @@ class OrdinaryEntry:
                     "--registry" in argv and Path(argv[argv.index("--registry") + 1]) == self.root / "registry",
                     "Producer registry installation mismatch",
                 )
+        if "resolver" in templates:
+            config, template = templates["resolver"]
+            require(template["task"]["agent_id"] == "heqi", "Admitted Heqi required")
+            require(
+                all(
+                    p["protocol"] in {"chat-completions", "ollama-chat", "gonggong-json"} for p in template["profiles"]
+                ),
+                "Heqi native-proposal CLI is incompatible",
+            )
+            require(
+                templates["reviewer"][1]["task"]["agent_id"] != "heqi"
+                and all(
+                    Path(config["state"]).resolve() != Path(templates[r][0]["state"]).resolve()
+                    for r in ("planner", "producer", "reviewer")
+                ),
+                "Independent resolver reviewer role and state required",
+            )
         require(templates["planner"][1]["task"]["agent_id"] == "yanshi", "Admitted Yanshi required")
         require(
             templates["reviewer"][1]["task"].get("role") == "reviewer"
@@ -406,7 +434,7 @@ class OrdinaryEntry:
                 known = bool(integration and json.loads(integration[0])["product"] == self.product(row))
             if not known and not module.startswith("requirement-"):
                 continue
-            if actor in {self.principals["producer"], self.principals["integrator"]}:
+            if actor in {self.principals["producer"], self.principals["integrator"], self.principals.get("resolver")}:
                 if current is None:
                     continue
                 operation = next((e for e in self.entries() if e["id"] == current), None)
@@ -793,6 +821,25 @@ class OrdinaryEntry:
                 self.workflow.reconcile(row["actor"], key)
             except (NativeStoreError, PermissionDenied):
                 pass
+        # A cold coordinator may observe a held resolver batch that ordinary
+        # ready-event enumeration intentionally excludes. Reconcile that exact
+        # owned intent once; unknown broker work cannot start a replacement call.
+        if self.workflow.integration.resolver_recovery is not None:
+            with self.domain._connection_lock:
+                held_lanes = [
+                    r[0]
+                    for r in self.domain.db.execute(
+                        "SELECT l.id FROM native_continuous_lanes l "
+                        "JOIN native_continuous_batches b ON b.id=l.active "
+                        "JOIN native_integrations i ON i.id=b.plan "
+                        "WHERE b.state='held' AND json_extract(l.policy,'$.product')=? "
+                        "AND (json_extract(i.plan,'$.resolution') IS NOT NULL OR EXISTS "
+                        "(SELECT 1 FROM native_integration_intents n WHERE n.plan=b.plan AND n.stage='resolve'))",
+                        (self.product(row),),
+                    )
+                ]
+            for lane in held_lanes:
+                await asyncio.to_thread(self.workflow.integration.continue_lane, row["actor"], lane)
         command = self.installation.command("dispatcher")
         service = WorkflowService(
             self.workflow, row["actor"], lambda: self.entry_authority(row["id"]), receipt["mapping"]["tasks"].values()

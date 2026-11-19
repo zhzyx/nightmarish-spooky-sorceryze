@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "native-installed-resolution-20261118",
+  "collected_at": "2026-11-18T11:03:25.066233+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/codex-intake-1526-20261117.json",
+      "sha256": "b6f3b5180053bccb7e03c55b90b41c642e43c8adda05859f8507f100b46a10ed",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "codex-intake-1526-20261117",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/dispatch-9033fbf309084b4da08e4d1390d33f02.json",
+      "sha256": "f1beae11a3f185d6995fe1542e190c4f1e67ce6a8a2819c11d2cffbf69e68de3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-9033fbf309084b4da08e4d1390d33f02",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/dispatch-dc9bf03807c34111b9dbfaf1e023d571.json",
+      "sha256": "d72f15eb1b3b97bb7f0ee1c97045efe72cfb0473c1044717f4d7cc4f607fa201",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-dc9bf03807c34111b9dbfaf1e023d571",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/kuafu-cbf8a5e4faeef7737217da4a905cfa2bdf2e6683.json",
+      "sha256": "1b9685d42164d0aee4b941a999eb6fd42eeb48d68b1aca8b0f69950edb947fb5",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-cbf8a5e4faeef7737217da4a905cfa2bdf2e6683",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1526,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1526"
+}

@@ -209,12 +209,12 @@ class InstallationManifest:
             and set(spec)
             == (
                 {"version", "identity", "files", "commands", "principals", "scopes", "complexity", "catalog"}
-                | ({"mode"} if spec.get("version") == 2 else set())
+                | ({"mode"} if spec.get("version") in {2, 3} else set())
             ),
             "Closed installation manifest required",
         )
         require(
-            spec["version"] in {1, 2} and isinstance(spec["identity"], str) and spec["identity"],
+            spec["version"] in {1, 2, 3} and isinstance(spec["identity"], str) and spec["identity"],
             "Installation identity required",
         )
         require(isinstance(spec["files"], dict) and spec["files"], "Pinned installation sources required")
@@ -222,17 +222,24 @@ class InstallationManifest:
             _verified_source(path, digest, self._cache)
         principals = spec["principals"]
         require(
-            isinstance(principals, dict) and set(principals) == {"producer", "checker", "reviewer", "publisher"},
+            isinstance(principals, dict)
+            and set(principals)
+            == ({"producer", "checker", "reviewer", "publisher"} | ({"resolver"} if spec["version"] == 3 else set())),
             "Explicit independent principals required",
         )
         require(
-            all(isinstance(v, str) and v for v in principals.values()) and len(set(principals.values())) == 4,
+            all(isinstance(v, str) and v for v in principals.values())
+            and len(set(principals.values())) == len(principals),
             "Independent principal identities required",
         )
         commands = spec["commands"]
         require(
             isinstance(commands, dict)
-            and set(commands) == {"planner", "producer", "checker", "reviewer", "dispatcher"},
+            and set(commands)
+            == (
+                {"planner", "producer", "checker", "reviewer", "dispatcher"}
+                | ({"resolver"} if spec["version"] == 3 else set())
+            ),
             "Complete installed command set required",
         )
         for command in commands.values():
@@ -327,7 +334,15 @@ class InstalledPlannerRuntime:
         command = self.installation.command(self.role)
         argv = list(command["argv"])
         if recover:
-            require(self.installation.spec.get("mode") == "production", "Recovery requires admitted production broker")
+            require(
+                self.installation.spec.get("mode") == "production"
+                or (
+                    self.role == "resolver"
+                    and self.installation.spec["version"] == 3
+                    and self.installation.spec.get("mode") == "deterministic-test"
+                ),
+                "Recovery requires admitted broker",
+            )
             argv.append("--recover")
         # JSON output and stderr are separately bounded and fully drained by the
         # same process-tree helper already used by native worker/check execution.

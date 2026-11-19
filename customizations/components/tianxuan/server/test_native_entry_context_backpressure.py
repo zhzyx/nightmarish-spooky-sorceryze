@@ -298,3 +298,149 @@ def test_actual_http_unknown_no_retry(monkeypatch, mode):
         thread.join(3)
         server.server_close()
     assert not thread.is_alive() and len(attempts) == 1
+
+
+# Public test-only certificate/key; no production identity or credentials.
+# SAN localhost, valid 2020-2040; tests trust it only through their local factory.
+_TLS_CERT = "-----BEGIN CERTIFICATE-----\nMIIC1DCCAbygAwIBAgIJAMtmgolAKcshMA0GCSqGSIb3DQEBCwUAMBQxEjAQBgNV\nBAMTCWxvY2FsaG9zdDAeFw0xOTEyMzExNjAwMDBaFw0zOTEyMzExNjAwMDBaMBQx\nEjAQBgNVBAMTCWxvY2FsaG9zdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC\nggEBAMZ4yut91VJdXN3ZVPM5jnFEmpaA1Q1Dys6N+NWjS8TEsHv/TyKqnmYDkNch\noOmR2/fkAn5vt7xsSZ9ODYQy1mGUYu2cE03C2CRDZDUTo5UtmDfzhX2UhUOoQJuS\nwmEvwudwulUekJ3pAnP+9TNjZAboBdEU4quNU2X7plerDvWIHb8avS9GBsW2VoYa\nrFZ7Xh2SKRO9lsbPaiQEnp2dGUMuBxA3IrPVmcnb603vi/J3ID1B7nUFDdYs959D\nIxTk6Kv3OgxkldGkF54H0DczjBimLK4Fh0qApzSMTS/Fo/iwGJmhUqzcDJOWzWbm\n2mLDqSgELb1+MMENdQSmJpluLzECAwEAAaMpMCcwFAYDVR0RBA0wC4IJbG9jYWxo\nb3N0MA8GA1UdEwEB/wQFMAMBAf8wDQYJKoZIhvcNAQELBQADggEBAGX8eJoQoq7i\n4KRxw3x92wdPoQDoGipOzlxLs8WQfk4q4PvYDQ882PPfD5TgTwIn03iVPOTe+cZZ\nR2Zwk1848PiTrZOI+23/X3DPy3KLy0cb4DkCxs5pSAilpFUuQXFBEFGr2ayXX5Jc\nulMQDJ/6BVvb3+euRqFq+OLk34XWvkIcg+gMplhEC/yns/0zDQgxEyGfEHko50C1\nP/FxhuGVCGpIrqaxD9f80BEUjUH2+Ky7ChNlY8DGfN676aC81xyfR/QP6FRS/Vt3\nT3up2lhpdoJXzKOyOrM5RcuX7kJljVtXc05en+5+HrI7WAA5ka940i7TaizCNTs/\nH5mM+B2LPa8=\n-----END CERTIFICATE-----"  # codespell:ignore fo
+_TLS_KEY = "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDGeMrrfdVSXVzd\n2VTzOY5xRJqWgNUNQ8rOjfjVo0vExLB7/08iqp5mA5DXIaDpkdv35AJ+b7e8bEmf\nTg2EMtZhlGLtnBNNwtgkQ2Q1E6OVLZg384V9lIVDqECbksJhL8LncLpVHpCd6QJz\n/vUzY2QG6AXRFOKrjVNl+6ZXqw71iB2/Gr0vRgbFtlaGGqxWe14dkikTvZbGz2ok\nBJ6dnRlDLgcQNyKz1ZnJ2+tN74vydyA9Qe51BQ3WLPefQyMU5Oir9zoMZJXRpBee\nB9A3M4wYpiyuBYdKgKc0jE0vxaP4sBiZoVKs3AyTls1m5tpiw6koBC29fjDBDXUE\npiaZbi8xAgMBAAECggEAC8ALA3YnswCkBt5fESdPL5WIMXDfLDHfR+tP2BYa3kNm\nz3CGFt9TEWcUpCfxhuKDy2FMZH/ouNcQZMYSNslrt8s5MCgVXH00nrD+tcW74ZEZ\nefaI6K5qVV8YtB00NNzHBTy/S1rL5Q1uf7+QdMJloaMK9R3vbYiob1k+t+IAuLiD\nmRxXo3uZL14EEfSrnjn2UO7gSg1+dxiaG+yZgrYl/FFZEWoewrIHCX3F9JrsUTRr\nXGSatZ2kujCK8PmYY99ER2RCk2JxAXDAPh1BN7B5xBOZHWUkIyRUwvV/9Vb+p3CE\nkm/7OYu5NVvEyjFvOjFVbBTiK4dqQl3MikPtjxtLoQKBgQDemEQftxpELGMJVGp8\n/PL5Gfp2zL6gDCOcGJISgNQM37sF+RwexZgrC7O9me6MdrJzrMrlzuLKblBGxKE7\nylJMxQNhSljls1NDcbu1lEqf+FA6q3oSZ9R/TFymVqQN2rGJBF0Aj3wlvcpYAKsO\nhCKmBdotPlcRJb3PnirqyiEd3wKBgQDkQcMJKMg4HEf9fizqAyCjoqf6h4nADy+v\nIbOj6RR7mVUXE7po9QzB6Jgdtg6pLItd3QDbovGMQgm/AWSVpNrplRo/tZMNSgKZ\nIWC70+MFKXubYSRteiFXdX8pkFvpnlAcUe5wGb/JNHsHvn/LGjy/vbkpHN70vAh1\n5BNC/8407wKBgQC1H7M3F1fBJ1kCy3TG9VCED3Z1Wo62TopfRsL9WWSygQ5+gsA1\n7dSvGhuMaQfptd/pLi3/JwP1ciPSIceMjkm/fAQPE18YsX1MAOybiOncF0K5KrTu\n6xvG5YzyMMfXGh+h/THr9dUwJKnUR97ote43p8VrUTGpm0tC+FG1sPmXgwKBgBcu\nlqBXg/4u4SDdr7IUnzv/SRAos9TNtgoTYitDgNEMwZeWaVg/iwwmk0xxMQv9eioO\nSAgGhIG6M0My4QRRuen/Oqs9xbGT0q+6tBhfbK8Zh3RAaXK09K3tQPz3rF4NthUq\nPQ0lkFTe/5/JuTDneUQAAM4sIHi6oCFZCJvFXywBAoGAKnnU7T297NPziZD4QH2l\nku78+mq6D1Tf/bmShMKkyithPICtxdSqwMABqdniBdOPLyS1WiZkFSlQFEaI23d3\n4Z5HKOv/6YHm0/nL5b4D6hiqniEpIm409crNdSqsfhBp+AQTA6rulPz8CTTvy4qe\n709HID7DLefjYAKc3v187J0=\n-----END PRIVATE KEY-----"
+
+
+@pytest.mark.parametrize(
+    "scheme, proxy, outcome",
+    [
+        ("http", False, "ok"),
+        ("http", True, "ok"),
+        ("https", False, "ok"),
+        ("https", True, "ok"),
+        ("https", False, "untrusted"),
+        ("https", False, "hostname"),
+        ("https", True, "hostname"),
+        ("https", False, "redirect"),
+        ("https", False, "capacity"),
+        ("https", True, "capacity"),
+    ],
+)
+def test_lazy_tls_real_transport(tmp_path, monkeypatch, scheme, proxy, outcome):
+    import http.client
+    import ssl
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    cert, key = tmp_path / "cert.pem", tmp_path / "key.pem"
+    cert.write_text(_TLS_CERT)
+    key.write_text(_TLS_KEY)
+    server_context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    server_context.load_cert_chain(cert, key)
+    contexts, requests, tunnels, closed, bodies = [], [], [], [], []
+    original = ssl._create_default_https_context
+
+    def context(*args, **kwargs):
+        result = original(*args, **kwargs)
+        assert result.verify_mode == ssl.CERT_REQUIRED and result.check_hostname
+        if outcome != "untrusted":
+            result.load_verify_locations(cafile=cert)
+        contexts.append(result)
+        return result
+
+    monkeypatch.setattr(ssl, "_create_default_https_context", context)
+
+    class Handler(BaseHTTPRequestHandler):
+        protocol_version = "HTTP/1.1"
+
+        def log_message(self, *args):
+            pass
+
+        def do_CONNECT(self):
+            tunnels.append(self.path)
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.flush()
+            self.connection = server_context.wrap_socket(self.connection, server_side=True)
+            self.rfile = self.connection.makefile("rb", self.rbufsize)
+            self.wfile = self.connection.makefile("wb", 0)
+            self.handle_one_request()
+            self.close_connection = True
+
+        def do_POST(self):
+            assert isinstance(self.connection, ssl.SSLSocket) == (scheme == "https")
+            requests.append((self.path, self.headers["Authorization"], self.headers["Connection"]))
+            # Refuse before reading the delayed body, as the admission server does.
+            capacity = outcome == "capacity" and len(requests) <= 2
+            code = 503 if capacity else 302 if outcome == "redirect" else 200
+            body = b'{"detail":{"status":"not_started","reason":"context_capacity"}}' if capacity else b'{"ok":true}'
+            if not capacity:
+                bodies.append(self.rfile.read(int(self.headers["Content-Length"])))
+            self.send_response(code)
+            self.send_header("Content-Length", str(len(body)))
+            if code == 302:
+                self.send_header("Location", "https://localhost:1/forbidden")
+            self.end_headers()
+            self.wfile.write(body)
+            self.wfile.flush()
+            if capacity:
+                bodies.append(self.rfile.read(int(self.headers["Content-Length"])))
+            self.connection.settimeout(3)
+            try:
+                closed.append(self.rfile.read(1) == b"")
+            except (ConnectionResetError, BrokenPipeError):
+                # Rejecting a redirect closes the unread response immediately.
+                # TLS peers may observe a reset instead of an orderly EOF.
+                closed.append(True)
+            self.close_connection = True
+
+    server = HTTPServer(("127.0.0.1", 0), Handler)
+    server.timeout = 3
+    if scheme == "https" and not proxy:
+        server.socket = server_context.wrap_socket(server.socket, server_side=True)
+    port = server.server_port
+    monkeypatch.setattr(
+        transport.urllib.request, "getproxies", lambda: {scheme: f"http://127.0.0.1:{port}"} if proxy else {}
+    )
+    monkeypatch.setattr(transport.urllib.request, "proxy_bypass", lambda host: False)
+    c = EntryContextClient.__new__(EntryContextClient)
+    host = "127.0.0.1" if outcome == "hostname" or scheme == "http" else "localhost"
+    c.url, c.token, c.execution = f"{scheme}://{host}:{port}", "test", "execution"
+    if outcome == "capacity":
+        original_send = http.client.HTTPConnection.send
+
+        def send(self, data):
+            if isinstance(data, bytes) and data.startswith(b"{"):
+                time.sleep(0.05)
+            return original_send(self, data)
+
+        monkeypatch.setattr(http.client.HTTPConnection, "send", send)
+    count = 3 if outcome == "capacity" else 2 if outcome == "ok" else 1
+
+    def serve():
+        for _ in range(count):
+            server.handle_request()
+
+    thread = threading.Thread(target=serve)
+    thread.start()
+    try:
+        if outcome in {"untrusted", "hostname"}:
+            with pytest.raises(urllib.error.URLError) as error:
+                c.check()
+            assert isinstance(error.value.reason, ssl.SSLCertVerificationError)
+        elif outcome == "redirect":
+            with pytest.raises(urllib.error.HTTPError) as error:
+                c.check()
+            assert error.value.code == 302
+        else:
+            assert c.check() == {"ok": True}
+            if outcome == "ok":
+                assert c.check() == {"ok": True}
+    finally:
+        thread.join(10)
+        server.server_close()
+    assert not thread.is_alive()
+    assert len(contexts) == (count if scheme == "https" else 0)
+    assert len(tunnels) == (count if scheme == "https" and proxy else 0)
+    if outcome in {"untrusted", "hostname"}:
+        assert not requests
+    else:
+        assert len(requests) == count and closed == [True] * count
+        assert len(bodies) == count and len(set(bodies)) == 1
+        assert all(auth == "Bearer test" and connection == "keep-alive" for _, auth, connection in requests)
+        expected = c.url + "/native-context/execution" if proxy and scheme == "http" else "/native-context/execution"
+        assert all(path == expected for path, _, _ in requests)

@@ -1,0 +1,198 @@
+{
+  "module": "customizations/components/tianxuan/sinan-workorders",
+  "request_id": "native-production-entry-20261118",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1499",
+  "input_blobs": {
+    ".github/workflows/tianxuan-deploy-build.yml": "4ad73d8cffb88946d680c72e4303d7e0b72bc83a",
+    ".github/workflows/tianxuan-tests.yml": "a6070b6cf3a8fc57e949b42a3945a484f68ae112",
+    "customizations/components/tianxuan/server/api.py": "17de49d1b747a627fb056adfc2047b3125a337fe",
+    "customizations/components/tianxuan/server/main.py": "eb93609bcdc87ceaa834203503e9a9644a921354",
+    "customizations/components/tianxuan/server/native_entry_api.py": "e76d22706d402cd0e0ef122263c373d412940cba",
+    "customizations/components/tianxuan/server/native_entry_context.py": "3b013c1e0ef77b4c428d3287a4dc09939795ddbd",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "b7c83cc1885c2315280fb94bbb2d03fb17bc7f4a",
+    "customizations/components/tianxuan/server/native_entry_resolver.py": "169daa0876212e5185659ddb78c3ac0961c6fa32",
+    "customizations/components/tianxuan/server/native_installation.py": "5de7c66605094abc6e7414e653b3be7fbd8e1b6a",
+    "customizations/components/tianxuan/server/test_native_entry_broker_context.py": "628aa6a74932dc96e65507929f311b2b9149e283",
+    "customizations/components/tianxuan/server/test_native_entry_context.py": "cd340f78af182831d40ab0486c3f8443517f2845",
+    "customizations/components/tianxuan/server/test_native_entry_context_admission.py": "f80ccab33f57573d754439fb95743267205e88c2",
+    "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": "624d78d737f232c91187574e44ce9eaee37e2a1e",
+    "customizations/components/tianxuan/server/test_native_entry_context_resources.py": "5a1a9fd4a93fc4c538bd035e6bfe151f9ceb164d",
+    "customizations/components/tianxuan/server/test_native_entry_installation_lifecycle.py": "e0ae4b92744a8fc10e0d9d2927dd397764819a57",
+    "customizations/components/tianxuan/server/test_native_entry_remote_normal.py": "0e4840908443f5790ff8aeefadb96aa041b71288",
+    "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": "2e0a9bc72a3bf4275156a1943563a9ad7a24282d",
+    "customizations/components/tianxuan/sinan-workorders/README.md": "98a30bbad5aafe2e8aa1713f8d2202d04045d3d3",
+    "customizations/components/tianxuan/sinan-workorders/conftest.py": "9bbc6d468d36e1e0eae99d8a0baa1a95632572ab",
+    "customizations/components/tianxuan/sinan-workorders/native-model-producer.md": "2db7623802bb271184f502821197d5c973e0ed89",
+    "customizations/components/tianxuan/sinan-workorders/native-model-proposal.md": "24a1bd8b0d8f9bbf1c20439345230c171d5c4cd3",
+    "customizations/components/tianxuan/sinan-workorders/native_context.py": "770ef3e52e4e34b14c85651ef7b3b5b10c3ceb5d",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "8f28ce9f7569af444f4f8a1612b45b5f7d9c8fee",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous_acceptance.py": "4fd3fe19cd507b01424ff272cd3d28d02bcbd455",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "bf3f5a331116b17aadbdfd54e70535237fff380a",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "cddf436ae951b7b8bf824910a950ba0fb7abeab3",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": "11bf76a8eac333eda63cefd8c446213d87d527cb",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "f42a1053c174c35c29bee24424b8e9035ebd8afc",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "59729044134f02d0882acefa3e20aadbe88bb001",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.md": "90e30cbb0dc2b9a3a848693e413d0e3b51351882",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "ce4267fc5a5d4951de239bc26157e1d0304a9294",
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "c3cf568ef90d2e41925233da6f66c62695d09380",
+    "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "feb6d8f74745fd47627202b0e38c9f62029dab5e",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "46e30c77d38e4c4164c4a2c25cc828efe0e98bbf",
+    "customizations/components/tianxuan/sinan-workorders/native_node.py": "468166d69a12d9c2962c27a19b742433ca6e38d0",
+    "customizations/components/tianxuan/sinan-workorders/native_remote.md": "0b1dbc1519b474aec80be9bd9f9b0704c94146d0",
+    "customizations/components/tianxuan/sinan-workorders/native_remote_worker.py": "7369bf9d27d00dda1bbdbcf7bb1dca9d659e95aa",
+    "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "d574dfd7ce4c314b83e8c9d90fe128821e8dae1a",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "ad659c25154b62b472209cf28dc1b3212fc85675",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "97c2d4d42da7a8747f69145d0e52399fec5d1a60",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "135d686ba39874037ac7c15f942f4a5c2e7546ae",
+    "customizations/components/tianxuan/sinan-workorders/test_native_continuous.py": "df3fdcbf266645a21ce2d83e2913266d4f1579d6",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_parallel.py": "ea837a59c1565eba4eb7bee06457786fb72a1d52",
+    "customizations/components/tianxuan/sinan-workorders/test_native_entry_producer.py": "0595f273cab66c682b533cd39274a75c59552271",
+    "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": "0b7c208ad38f7fbaf1277f3b78c9ec9a71e952da",
+    "customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py": "7e6e2b92d62b5ae005bced258b558cbd9484142a",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_host.py": "99b892cfd2a36e7b20f4598650cbcbd25cd5ab2d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_producer.py": "13d54029b854e481b96fb0520d0401401cc7580c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_model_proposal.cjs": "9af4359e5af67fc16e0806733f61fc6510c94cf8",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote.py": "d8c9502d46c1ff6e77091b75e61341ec403b447e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py": "b30d844caa1ebfb9f1d3524cbc5a486438f32722",
+    "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": "8c532b093c0466a2b198d6f67b2f1a327b616de8",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py": "e0fd9d7711d590131b5e85952a981253b9d8447c",
+    "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py": "36bbc1c8be45f8521643b7edd7d266fb224a4e0e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "91819985bb3b9a839c409edb5aaadc96fd56b1cc",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py": "2dc8e1232cfeb563f61c3996fe0aa034963516c4",
+    "customizations/platforms/ai-access/host-http/runtime/README.md": "f85321fcbdd652d332e05a058334e99ecd3b4535",
+    "customizations/platforms/ai-access/host-http/runtime/adapters.py": "110141e355307ddc80a877d7c125bf0d99540d68",
+    "customizations/platforms/ai-access/host-http/runtime/diting.py": "f4fa9b1d1af3170632b0a95b3a00bb605c36eb84",
+    "customizations/platforms/ai-access/host-http/runtime/evaluate.py": "354e76e75e1125e27bf3062ac84de7a3a5c3fd35",
+    "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "85308fddec5012a343ea785233a3aeb6fa0bf6b0",
+    "customizations/platforms/ai-access/host-http/runtime/runner.py": "8d2f7ffd42b751c548d3d3d03452e9dea799692b",
+    "customizations/platforms/ai-access/host-http/runtime/task_budget.py": "0c6695fe8a9e6203c14d6cbfdd9f666e435e0b36",
+    "customizations/platforms/ai-access/host-http/runtime/test_adapters.py": "5cb0cc57fc69357dc8047eca480f4da1fbbd2112",
+    "customizations/platforms/ai-access/host-http/runtime/test_runtime.py": "374a01ea0609fe2a235b93aa4510e498e31c6829",
+    "customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs": "52465ea815f3cb0e6157f2f9c8d2aae421c9924a",
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": "c31da667a84b3dfe579bca4da0b7233b3f2d2495",
+    "customizations/platforms/process-management/yuanheng-local/sinan/module.json": "ceb9cc0604c9854c74107d2376bd61bf6baf06c1",
+    "customizations/platforms/process-management/yuanheng-local/sinan/parallel-dispatch.md": "be51dca791f09b7171722eda15dc104dfeb99f75",
+    "customizations/platforms/process-management/yuanheng-local/sinan/refresh.mjs": "44d9accf2f8d5b80e72a6b9464922f29ab83726f",
+    "customizations/platforms/process-management/yuanheng-local/sinan/runtime/registry.json": "46f47855d1ea7001645298b6f8a15fafd00b5693",
+    "customizations/platforms/process-management/yuanheng-local/sinan/sources.md": "5f9d6efd191f7d3d1e919429f3dd0bcd0e0682c4",
+    "customizations/platforms/process-management/yuanheng-local/sinan/test/dispatch.test.mjs": "7cff35c705f8fa37bdd494f4a671f3d3973588cc",
+    "customizations/platforms/process-management/yuanheng-local/sinan/test/generic-tracking.test.mjs": "b4b028afb7db2647568ef381c564f57276c0f792",
+    "customizations/platforms/process-management/yuanheng-local/sinan/test/refresh.test.mjs": "753e1da392836e028b0c93d5051b38bf99b0bb07",
+    "customizations/platforms/process-management/yuanheng-local/sinan/work-order-workflow.md": "94c5d4047d5ffece0c845224a64aebae20663dee",
+    "deploy/Dockerfile.api": "dbc8cfca44c8169c0ef05dd422ece91f10d07e77",
+    "deploy/Dockerfile.api.dockerignore": "0ccaf23bf1e4b731305aff9a4e577a07f8118402",
+    "deploy/README.md": "f618da00928b961fc12b8fd49e81afee8137d584",
+    "deploy/docker-compose.native.yml.example": "2280e8c4b89da1fe789fbe4fe49a8e72bb792250",
+    "deploy/nginx.conf": "4b63099c09d9b666e863e4477836228b11a09613",
+    "deploy/production/nginx.gate.conf.example": "5b0b7b87f63cdf00c75784c46fb31e5ec752f480",
+    "design-docs/native-production-entry-20261118.md": "6426f04ec2e92b535a1300465660b08a816ab6a1",
+    "framework/framework-manifest.json": "d91d6f1d82961531ef657350ce94297c652926e0",
+    "tools/ainative/owned_process.py": "299243639ded6ce63066006df1055ee18021ad68",
+    "tools/codex_cli/content_preview.js": "f182afcd95b9c5dbc755f3ad97f166c5aba46ed5",
+    "tools/codex_cli/subscription_profile.py": "f585f1ddd38343767ab0d6aee8c82986ea1a2f9c",
+    "tools/codex_cli/subscription_session.js": "a72b9db2166016e1b08fefa4b5518847483cacfe",
+    "tools/native_host_inputs.json": "804f3dee1fc7ef27bc367aa21bdaeddaaa2900dd"
+  },
+  "checks": {
+    "host_behavior": {
+      "passed": true,
+      "command": "28 combined ordinary resolver/broker/remote tests; independent33 transport tests+12 probes. Prior resolver122+independent19 and exact host graph evidence retained for unchanged sources; detailed commands in linked reports.",
+      "observed": "Combined ordinary installed resolver and signed broker/remote entry pass. Lazy TLS and finite known-not-started retries independently verified. Host inventory205 and native graph9392 boundary unchanged after resolver review; current transport bodies changed without new native consumers. High-concurrency explicitly deferred, no production package acceptance."
+    }
+  },
+  "evidence": [
+    {
+      "path": "data-collection/native-context-backpressure-1501.json",
+      "sha256": "7a9075498a2e28c9ee81a694fb50da23989d7460ae32fd4aba527940df2fd937"
+    },
+    {
+      "path": "data-collection/native-context-backpressure-review-1501.json",
+      "sha256": "951a6727eb4353ad87f8aa9158c9ae5c42d4b0ad6d6b30ff567007e852793fae"
+    },
+    {
+      "path": "data-collection/native-context-burst-repair-1501.json",
+      "sha256": "a76eef546f177c1d18e429c5e3a5072101e4a6083061beee9ec9fbed4b3df18c"
+    },
+    {
+      "path": "data-collection/native-context-transport-cost-repair-1445.json",
+      "sha256": "2de6551125a5717e1287bc1203215d73fba2fb1a47ed5bc638a6e276682a4c30"
+    },
+    {
+      "path": "data-collection/native-entry-assembled-delivery-1499.json",
+      "sha256": "30305560baa5b00ce680a85ed98c0131d85c13821180bb3bb13833fd32b5017a"
+    },
+    {
+      "path": "data-collection/native-entry-combined-repair-1499.json",
+      "sha256": "84abbf380a1bb0bb42097efcb6f34021349f9484ff74526bc2c347105bc63302"
+    },
+    {
+      "path": "data-collection/native-entry-context-resource-repair-1499.json",
+      "sha256": "1c9cf60b5a7bc5428bf58e8ea7acce07ebd4b7fa46201531c424d4d6a20768bd"
+    },
+    {
+      "path": "data-collection/native-entry-http-admission-repair-1499.json",
+      "sha256": "2af678a95e3088a3c3bec9e27b464b24976805e5abbcf8232276aa3c2d3361f2"
+    },
+    {
+      "path": "data-collection/native-entry-installation-lifecycle-repair-1499.json",
+      "sha256": "af04b6c79a0a6b537721f87b4ae8b22148f03ef684f112284cd8119198a9ca77"
+    },
+    {
+      "path": "data-collection/native-entry-package-review-1499.json",
+      "sha256": "63fd9ade76be388e90f11ac0e991a1ade3407b0c01bdab15dcdc820b83525f05"
+    },
+    {
+      "path": "data-collection/native-entry-runtime-combined-host-boundary-1499.json",
+      "sha256": "7d10458433a71cf6a2a26517f229cb37b04854b7ac7eb50f4932225547b79f03"
+    },
+    {
+      "path": "data-collection/native-entry-runtime-host-boundary-1499.json",
+      "sha256": "02faf55367e365f7927f96e3774b2e6b29d309f26ffec41312922ace5303426d"
+    },
+    {
+      "path": "data-collection/native-entry-runtime-integration-1499.json",
+      "sha256": "688c63940fc0604b86477ea6b423895fa8bf0fa90e606d1f2e73b33aaa692ae9"
+    },
+    {
+      "path": "data-collection/native-entry-runtime-repair-review-1499.json",
+      "sha256": "b6ede33c23708f1837db7a6b1191bec412c62c0c4646f11be016d40f855f5ffb"
+    },
+    {
+      "path": "data-collection/native-entry-runtime-review-1499.json",
+      "sha256": "635c1030547dacfdacab778489e75774b6d94bab26a98d588e0c5e54d5b54dd6"
+    },
+    {
+      "path": "data-collection/native-entry-server-package-1499.json",
+      "sha256": "a7192f95fa2dcadd2e82a2c5dfa42488d16525a8ac6758e87f4cb37b177f55a9"
+    },
+    {
+      "path": "data-collection/native-entry-server-package-ci-alignment-1499.json",
+      "sha256": "8a7723e3569d4af2dbfe9e8387e8807c02172dd7b5cf329b9149d579920ac170"
+    },
+    {
+      "path": "data-collection/native-entry-transport-review-1499.json",
+      "sha256": "f3d12c6dc4f8109a3dabdd1b2bb3378cf7fc5efe5655b70fa5a99b4fab9170cb"
+    },
+    {
+      "path": "data-collection/native-installed-resolution-delivery-1526.json",
+      "sha256": "e34e778024c350594fb0ea5da973d9aa40a3768374686558f88ef71f43d35e71"
+    },
+    {
+      "path": "data-collection/native-installed-resolution-host-boundary-1526.json",
+      "sha256": "0d3753731e43e4bb3cfe9238af65ca57e0f313d90359bc8b11b5a40f726b2325"
+    },
+    {
+      "path": "data-collection/native-installed-resolution-implementation-1526.json",
+      "sha256": "e235676cdc5d6b5dc8931d51feed4c82760df8c02b92541e3312eae4873b92d5"
+    },
+    {
+      "path": "data-collection/native-installed-resolution-review-1526.json",
+      "sha256": "b1712f64f74f0908a0fcf6068532e5d97a272787047cbd767433e359f65584d1"
+    },
+    {
+      "path": "data-collection/native-installed-resolver-audit-1526.json",
+      "sha256": "35fc99e4515e54eb7c2f8d1c728e1c20839986215e276d82b7bf81812e88b08e"
+    }
+  ],
+  "scope": "Complete current module inputs with scoped functional evidence; no inference of production/high-load/AA acceptance."
+}

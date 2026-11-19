@@ -1,0 +1,235 @@
+{
+  "schema": "native-installed-resolution-implementation/1",
+  "issue": 1526,
+  "source_main": "84d62281f0c7179369aec4352047a9ba414582a7",
+  "recorded_at": "2026-11-18T10:56:27.417712+00:00",
+  "path_base": "repository root unless absolute",
+  "sources_sha256": {
+    "customizations/components/tianxuan/server/native_entry_resolver.py": "49f06c5b64e7659b7bf76974592c2e28218d47fa37f1020957c2ff02141cd9c8",
+    "customizations/components/tianxuan/server/native_installation.py": "ec4c0326d613c3dcdb7320cb9adddb7246740914faad9a7cbfec6716238dc362",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "ab1e41ace8172aabc37c3d039d89bc90ca68e45b52ac2ee18a9535ec0f4822b3",
+    "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": "91f26f4e0132d74124de9ff431167fb330f1550f963a1588255946dcdb2cfa6e",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "48f1c718fedbe6bc04da549e8e2dcbafe778f7195dfd3b28446cbe187e1dd7f4",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d454c7a0c5b47552b16ba625b3ad97836b06625c7d6cf7ba74827ae4bea62ce9",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "d738528a30ddbfd36c744fadb47839af74fbb706e5c468f8e8a3c3f249864798"
+  },
+  "implementation": {
+    "manifest": 3,
+    "old_versions_preserved": [
+      1,
+      2
+    ],
+    "roles": "Existing Yanshi/producer/Heqi/checker/independent-reviewer/publisher/Sinan; no replacement client/scheduler/database",
+    "protocols": [
+      "chat-completions",
+      "ollama-chat",
+      "gonggong-json"
+    ],
+    "incompatible": "codex-native-proposal rejected before execution for Heqi",
+    "bounds": {
+      "files": 64,
+      "file_bytes": 32768,
+      "total_bytes": 65536,
+      "request_bytes": 100000
+    },
+    "recovery": "Persistent intent; original signed broker grant; read-only completed result; exact installed principal idempotent intake; effective successor persisted; held resolver batch cold-start reconciliation",
+    "cas": "Unchanged exact conflicts/dependencies rebase authenticated old resolution bytes; changed inputs require explicit authority"
+  },
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "lessons": [
+      "bind-consumer-release revision23",
+      "await-terminal-observers revision7",
+      "reconstruct-worker-outcomes revision3"
+    ],
+    "application": "Source-bound evidence; physical ownership closure; immutable recovery; fixture/provider transport alone never counts as production acceptance"
+  },
+  "tests": {
+    "final": "122 passed, 1 warning in 191.65s; exact final source hashes verified",
+    "earlier_integration_continuous": "78 passed in 128.98s",
+    "earlier_ordinary_combined": "44 passed in 67.09s before final history/cold-start strengthening",
+    "signed_cold_final": "2 passed in 15.88s; full coordinator stop/reconstruct/start, runtime.sqlite recovery with entry receipt removed, unchanged signed intent, one loopback provider call",
+    "withdrawal_unrelated": "2 passed in 11.60s",
+    "static": [
+      {
+        "command": [
+          "py",
+          "-X",
+          "utf8",
+          "-m",
+          "ruff",
+          "check",
+          "--no-fix",
+          "customizations/components/tianxuan/server/native_entry_resolver.py",
+          "customizations/components/tianxuan/server/native_installation.py",
+          "customizations/components/tianxuan/server/native_entry_factory.py",
+          "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py",
+          "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py",
+          "customizations/components/tianxuan/sinan-workorders/native_integration.py",
+          "customizations/components/tianxuan/sinan-workorders/native_continuous.py"
+        ],
+        "exit_code": 0,
+        "output": "All checks passed!\n"
+      },
+      {
+        "command": [
+          "py",
+          "-X",
+          "utf8",
+          "-m",
+          "ruff",
+          "format",
+          "--check",
+          "customizations/components/tianxuan/server/native_entry_resolver.py",
+          "customizations/components/tianxuan/server/native_installation.py",
+          "customizations/components/tianxuan/server/native_entry_factory.py",
+          "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py",
+          "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py",
+          "customizations/components/tianxuan/sinan-workorders/native_integration.py",
+          "customizations/components/tianxuan/sinan-workorders/native_continuous.py"
+        ],
+        "exit_code": 0,
+        "output": "7 files already formatted\n"
+      },
+      {
+        "command": [
+          "py",
+          "-X",
+          "utf8",
+          "-m",
+          "mypy",
+          "--follow-imports=silent",
+          "--ignore-missing-imports",
+          "customizations/components/tianxuan/server/native_entry_resolver.py",
+          "customizations/components/tianxuan/server/native_installation.py",
+          "customizations/components/tianxuan/server/native_entry_factory.py",
+          "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py",
+          "customizations/components/tianxuan/sinan-workorders/native_integration.py",
+          "customizations/components/tianxuan/sinan-workorders/native_continuous.py"
+        ],
+        "exit_code": 0,
+        "output": "Success: no issues found in 6 source files\n"
+      },
+      {
+        "command": [
+          "git",
+          "diff",
+          "--check"
+        ],
+        "exit_code": 0,
+        "output": ""
+      }
+    ],
+    "coverage": [
+      "ordinary requirement API and real installed physical producers/checker/reviewer/dispatcher",
+      "actual signed Heqi broker, isolated synthetic framework admission and evaluated deterministic loopback profile",
+      "two conflicting contributions to delivered with current plus frozen historical acceptance union",
+      "no-conflict zero resolver calls",
+      "intent-before-runtime, runtime-process exit7, completed-before-intake, intake-committed-lost-reply",
+      "cold coordinator ownership reconstruction; no broker/provider replay",
+      "relevant original acceptance withdrawal during physical resolver wait",
+      "unrelated timestamp updates retain same work",
+      "strict source/conflict digests, closed schema, exact path set, duplicate/missing/extra/traversal/dependency rejection, binary bound and valid deletion",
+      "exact input byte bound before runtime",
+      "existing real continuous CAS suite plus resolver-specific deterministic no-provider CAS reuse/rejection unit probes"
+    ]
+  },
+  "failures": [
+    {
+      "stage": "initial fixture",
+      "observed": "Invalid local task ID: uppercase A/B fixture ids",
+      "resolution": "Lowercase ids; retain uppercase title/content"
+    },
+    {
+      "stage": "unknown API assertions",
+      "observed": "API entry state remains planned with failures; continuous batch is held",
+      "resolution": "Assert authoritative batch state and undelivered entry, not invented API state"
+    },
+    {
+      "stage": "signed broker fixture",
+      "observed": "Host must provision GONGGONG_HOST_KEY (at least 32 characters) outside model context",
+      "resolution": "Isolated synthetic test key extended; no real credential used"
+    },
+    {
+      "stage": "signed broker fixture projection",
+      "observed": "Diting projection/delivery requires recovery: Diting delivery pending: Work link fields missing",
+      "resolution": "Structured synthetic work_items in fixture"
+    },
+    {
+      "stage": "signed schema fixture",
+      "observed": "Unexpected output fields; Schema type required",
+      "resolution": "Explicit typed schema for all resolver proposal properties"
+    },
+    {
+      "stage": "test source edit",
+      "observed": "SyntaxError closing brace mismatch",
+      "resolution": "Corrected fixture schema syntax"
+    },
+    {
+      "stage": "static import sort",
+      "observed": "ModuleNotFoundError: No module named evaluate",
+      "resolution": "Explicit runtime path before fixture imports"
+    },
+    {
+      "stage": "tooling",
+      "observed": "No module named ruff in tx-venv",
+      "resolution": "Existing system py ruff/mypy used; no installs"
+    }
+  ],
+  "limitations": [
+    "No real model/provider or production service calls; loopback fixture only.",
+    "No universal native CLI/Subscription role bridge; no multi-revision tool context or large-input capability.",
+    "Cold coordinator reconstructed over retained authoritative SQLite connections; separate OS process restart is not separately injected.",
+    "Resolver-specific CAS reuse is unit-tested alongside existing real continuous CAS tests; a combined ordinary signed resolver-plus-external-CAS race is not separately injected.",
+    "Installation/resolver-specific withdrawal and concurrent duplicate resolver events not separately injected; original mandate withdrawal, exact principal receipt deduplication, existing integration concurrency regressions exercised.",
+    "Production packaging/build inventory, independent source review, actual server/provider installation, CI/main delivery and whole parent acceptance remain with root."
+  ],
+  "terminal": {
+    "test_process": "all test sessions exited code 0; fixture HTTP threads joined; owned subprocesses closed by tested helpers/coordinator stop",
+    "live_provider_calls": 0,
+    "production_changes": false,
+    "commit_push_deploy": false
+  },
+  "cleanup": {
+    "removed": [],
+    "retained": [
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli0",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli1",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli10",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli2",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli3",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli4",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli5",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli6",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli7",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli8",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-323\\test_ordinary_installed_confli9",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-324\\test_ordinary_installed_confli0",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-324\\test_ordinary_installed_confli1",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli0",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli1",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli10",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli2",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli3",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli4",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli5",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli6",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli7",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli8",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\pytest-of-ROG\\pytest-325\\test_ordinary_installed_confli9"
+    ],
+    "reason": "Automatic approval review rejected recursive fixture cleanup: blocked by policy. No retry or bypass; archived fixture records first where possible.",
+    "source_worktree": "Retained uncommitted implementation for root independent review and delivery",
+    "other_task_resources": "untouched"
+  },
+  "wholegoal_complete": false,
+  "evidence": {
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installed-resolution-implementation-probes\\failures.json": "08a3d829c5246e8e02755dc46ecf08d2f1a1173efb88df654b6ff83466111569",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installed-resolution-implementation-probes\\final-test-command.json": "33c661b12fd80512b89c1317df99585ae56dffaa6615735a429397436c032044",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installed-resolution-implementation-probes\\final-tests.txt": "9dfe758f749a374980fc55afed37f76d47327e0a8006371d8426d8038bb39b8a",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installed-resolution-implementation-probes\\fixture-archive.json": "b0c73354240a04fcc86359bb7441a49cf4d42c23eb2a2e504fc88f4bc99aecdf",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installed-resolution-implementation-probes\\ordinary-final.txt": "bbf505ce36308e3d5f7427ac0a73c0b04a1f78687ad2e82adaf8c225735828c4",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installed-resolution-implementation-probes\\source-hashes.json": "ce8bf66fa76367309b6e8a774b0861f2c92450c5b86d2dd3419ac787dd72309e",
+    "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installed-resolution-implementation-probes\\static-final.json": "7c21b96a5597d22c7efbbd97d7c26ca7f05b79efffb9e86796a4f1ddc7dabe43"
+  }
+}

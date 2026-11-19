@@ -1,0 +1,232 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-installed-resolver-audit.json",
+    "sha256": "3137bcfea3bf7aebbcb0c634747db748bebc9611cfd96417e286929616131bbe",
+    "path_base": "absolute private audit archive"
+  },
+  "export": "Lossless JSON value export; original retained.",
+  "audit": {
+    "schema": "native-installed-resolver-audit/1",
+    "issue": 1445,
+    "entry_issue": 1499,
+    "parent_issue": 1382,
+    "recorded_at": "2026-11-18T10:10:02.758357+00:00",
+    "workspace": "D:\\GongGong-work\\native-entry-runtime-integration-20261118",
+    "source_head": "5224b6ba8594aa52f85a5cc2f302d26202749843",
+    "sources_sha256": {
+      "customizations/components/tianxuan/server/native_entry_factory.py": "ba3888de3587be7c90a18432847d0f34aece9012d96a8a3e8af16cda93a75c1d",
+      "customizations/components/tianxuan/server/native_installation.py": "1a7865cb4d13ce9127f1d276ec5bb9a1ec321faa83af5849c2d89095c260a416",
+      "customizations/components/tianxuan/server/native_entry_review.py": "498a387ce050c7733eb1602f4a207917232e4d3075fa6e345e6c0f05a3a2b9ce",
+      "customizations/components/tianxuan/server/native_entry_context.py": "af865c9c832ce4cb93794535b6f5d46d11e3afb03e10e6cafc8095d0cf42bfb8",
+      "customizations/components/tianxuan/server/native_execution_host.py": "5519f250e867e42af364537de822e4bc6bacd68e1f89e1c6b94fa7bdf74cd1fa",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "fe4f5f081f73e46fef83855acc1a148f6685007039a8ebe9cb9ec202eb31a427",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "0b44f7f7f385454729c5a6cd2cf38ef4113b4ee6526d6a0bbee6ee5ed68eb2b6",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_producer.py": "d07e0cd4dbf053a8179e3e7056165f6fc9c97628fcb7d75a28c162830749de19",
+      "customizations/components/tianxuan/sinan-workorders/native_model_producer.py": "42986e21bb5c528c4dfbc342ff597613aee861ff0468bbb2c2d12b89453b4803",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "26ad8ef3f1d07faeb04ee7fa89ac266346806dade17d77514bb4744680b402c9",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d35cfe7d9c5fc46da815cdf9d9405d615b8f51f247fcedb2b06e79731e0a14ea",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "0ceddb65d6c5f21ced74a858d89b13a810d161a8cc4a0dd5e68e711ca4df9efc",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "9f48bd4e5f774e3f84e9edc85d2b345fee562236ae1ccf3067e4e692196a06e9",
+      "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "97f149c125127bbbba3ce183fbaf6491a973ea47fa72f07b5bec41f9196933fb",
+      "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "a3a57f9e629ed16c3c358bbf4618a8495bed98d654b48237ca510524f70c9ca3",
+      "customizations/components/tianxuan/duobao/native_candidates.py": "5f485fb726ee6a5463ab7dfb1bd336d389499f0e35057b78aef2870014f977c4",
+      "customizations/components/tianxuan/sinan-workorders/test_native_integration.py": "224b4d3ac3fcadcac271d6b4707a5d4fd5ec4426b34d56d241a6f6674e6217b1",
+      "customizations/components/tianxuan/server/test_native_entry_normal.py": "a2681e05cb251b6c84b67076dcef0c7ddae9d53d935f045903509f7a36935342",
+      "customizations/components/tianxuan/server/test_native_entry_broker_context.py": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607",
+      "customizations/platforms/ai-access/host-http/runtime/runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
+      "customizations/platforms/ai-access/host-http/runtime/adapters.py": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08",
+      "customizations/platforms/ai-access/host-http/runtime/native_proposal_adapter.py": "d5844822a892454166a610049222d6d6dad03e195a659510dd564f89f9533663",
+      "framework/agents/heqi/AGENT.md": "0790ad82b2373c07ed9a8594e577f0d25c88bb0f9d7b6b45df91bf2165947063",
+      "design-docs/native-production-entry-20261118.md": "c73edb616cb79621076693d563d76fd8c3838d873df0dc723e592502e38c46a2"
+    },
+    "probe_kind": "AST and exact-source assertions; no behavioral tests or provider calls",
+    "probes": {
+      "factory_noop_resolver": true,
+      "ordinary_continuous_does_not_invoke_resolve": true,
+      "ordinary_continuous_does_invoke_reconcile": true,
+      "manifest_missing_resolver_role": true,
+      "broker_missing_heqi_role": true,
+      "resolve_intent_precedes_installed_call": true,
+      "reconcile_no_model_call": true,
+      "context_requires_native_task": true,
+      "native_proposal_requires_native_request": true
+    },
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "verified_lessons": [
+        "bind-consumer-release revision23",
+        "await-terminal-observers revision7",
+        "reconstruct-worker-outcomes revision3"
+      ],
+      "application": "Bind exact consumer sources, preserve unknown and physical closure; this read-only plan cannot release a dependency or establish business acceptance.",
+      "counterexample": "Prior synthetic callback tests or transport completion cannot establish an installed ordinary model resolver."
+    },
+    "prior_audits_reused": [
+      "data-collection/native-integration-final-review-1466.json",
+      "data-collection/native-entry-runtime-final-review-1499.json",
+      "data-collection/native-context-consumption-audit-1501.json"
+    ],
+    "findings": [
+      {
+        "priority": "P0",
+        "location": "server/native_entry_factory.py:248; server/native_installation.py:226",
+        "finding": "Factory supplies callable lambda returning None, lacks resolver principal, manifest rejects resolver command/principal. Calling resolve records an intent before principal lookup fails; replacing lambda alone cannot work."
+      },
+      {
+        "priority": "P0",
+        "location": "sinan-workorders/native_continuous.py:568",
+        "finding": "Ordinary continuous path calls reconcile -> finish -> execute, then blocks conflict members and clears lane. It never invokes resolve. Legacy native_dispatch.mjs integrate path calls resolve but does not cover this lane."
+      },
+      {
+        "priority": "P0",
+        "location": "sinan-workorders/native_integration.py:557-624",
+        "finding": "Existing resolution intent and exact NativeCandidates receipt recovery prevent replay, but crash after broker completion before candidate receive has no recovery hook. reconcile currently only reads candidate receipt; add read-only broker recovery then idempotent intake, never retry provider."
+      },
+      {
+        "priority": "P1",
+        "location": "sinan-workorders/native_continuous.py:568; native_integration.py:596",
+        "finding": "reconcile returns successor key string when a resolve intent exists, otherwise result dict. Continuous code unconditionally calls result.get. Persist/trace effective successor plan and re-run execute/finish on it; keep batch history and CAS successor references coherent."
+      },
+      {
+        "priority": "P1",
+        "location": "server/native_entry_context.py:142",
+        "finding": "Producer context binds existing native_tasks execution, producer, one selected revision per module and producer physical closure. A resolver needs product base AND multiple contribution revisions, integration authority and separate physical lifetime. Reusing producer execution/token would misbind authority/content."
+      },
+      {
+        "priority": "P1",
+        "location": "sinan-workorders/native_integration.py:307",
+        "finding": "Frozen integration principals exclude resolver. Add versioned resolver installation/principal binding for new resolvable plans, and validate on resolve/recovery; retain old historical plan readback."
+      }
+    ],
+    "existing_chain": [
+      "Sinan dispatch -> NativeWorker producer and exact candidate intake -> check_contribution -> continuous queue/freeze.",
+      "NativeIntegration.execute compares original receipt base/new objects with frozen product base and other contributions. Object conflicts carry module/path/base/product/contribution/task; dependency conflicts have no path.",
+      "resolve records durable null intent -> installed callback -> receipt_for exact installed principal and resolution-key -> successor plan. execute successor insists edits exactly equal conflict paths and dependencies/base unchanged.",
+      "NativeCandidates.receive atomically stores immutable blobs/revisions/receipt under tenant+actor+request_key; same key different input conflicts.",
+      "execute persists integration authors including resolver -> finish checks exact joint criteria -> IndependentReview -> NativeRelease approve/publish CAS -> complete verifies exact request/release, accepts original tasks and updates requirement progress/outbox."
+    ],
+    "runtime_reuse": {
+      "roles": "Admitted Heqi performs technical resolution. Existing Yanshi planner, producer, independent reviewer, checker/publisher and Sinan keep their roles. Heqi definition is sufficient as role source; operator template still needs actual admission and evaluated profile.",
+      "process": "Reuse InstalledPlannerRuntime.run_owned and native_entry_runtime.execute -> runner.context/validate_plan/run with pinned config/template/key and existing state/intent. No new client, orchestrator or database.",
+      "adapters": "Existing runner adapters support chat-completions, ollama-chat and gonggong-json generic JSON request. codex-native-proposal expects task.input.native_request and its typed native proposal; generic Heqi request is incompatible without an explicit bridge through existing producer/proposal contract. Select only an evaluated compatible installed profile; do not assume profile compatibility.",
+      "context": "Minimal first implementation sends bounded exact base and contribution bytes with digests plus full original acceptance union. Reject oversized input before model launch. Shared NativeContext internals could support later resolver scopes, but require integration-bound revision-set selectors and authority/lifetime/ledger support. Broker currently forces single mode; tool-enabled use requires admitted autonomous mode and passing an authenticated resolver into existing runner loop. Do not counterfeit native task rows or widen producer selection."
+    },
+    "proposed_closed_contract": {
+      "request": "Keep broker envelope role/entry/tenant/actor/source/document/scopes/complexity. role=heqi; source=integration plan digest; entry=SHA256(canonical resolution request identity). document={schema:1,plan,conflicts,conflicts_digest,originals:[task contract,terminal/intake identities,acceptance],request_key}; scopes={base:[module,revision,path,blob,base64-or-null],contributions:[task,module,base_revision,revision,path,blob,base64-or-null]}; complexity={installation,resolver}. Host owns all identities.",
+      "proposal": "Exact keys {schema,plan,conflicts_digest,edits,reason}; schema=1; edits list exact unique {module,path,content_base64} where null means delete. Strict decoded byte/file/total bounds, exact conflict slot set, valid portable paths, no extra module/file/dependency edits. No shell, arbitrary commands, user authority or model-supplied principal accepted.",
+      "receipt": "Host reconstructs changes with plan.base[module], reads=None and unchanged dependency mapping; NativeCandidates.receive(tenant, installed resolver, resolution-PLAN, changes, {source_ref:PLAN,worker_ref:heqi-resolution-PLAN,issue_url:plan.issue_url}). Only receipt_for verified result leaves adapter.",
+      "recovery": "Use existing resolve intent before external call. Broker immutable entry-intent/entry-receipt and runtime completed record are recovery sources. New installed reconciliation callback may read completed broker result, revalidate current all-original authority and input digest, then idempotently receive. Missing/unknown runtime state remains held; no replacement intent/key and no provider replay.",
+      "authority": "Validate installation, every original source/dependency/entry mandate and resolver module receive before launch, during owned process polling, before intake and after waiting. Preserve resolver author provenance and require independent reviewer distinct from all authors."
+    },
+    "minimal_file_isolated_plan": [
+      {
+        "files": [
+          "server/native_entry_resolver.py (new)"
+        ],
+        "change": "Small installed adapter only: exact request construction, bounded typed proposal validation, existing broker invocation/read-only recover, idempotent NativeCandidates intake. No database creation."
+      },
+      {
+        "files": [
+          "server/native_installation.py",
+          "server/native_entry_factory.py",
+          "sinan-workorders/native_entry_runtime.py"
+        ],
+        "change": "Version resolver-enabled manifest while retaining old install readback. Pin resolver command/config/template/state; require Heqi admitted template and reviewer separation. Wire adapter and resolver module authority. Extend existing broker closed role allowance, retain signed intent recovery."
+      },
+      {
+        "files": [
+          "sinan-workorders/native_integration.py",
+          "sinan-workorders/native_continuous.py"
+        ],
+        "change": "Bind resolver identity in new plans; add optional authenticated recovery hook. Resolve eligible path conflicts in existing lane, persist/trace successor and complete checks/review/release under successor. Keep unsupported dependency conflicts blocked; retain unknown lane ownership. No changes to Sinan scheduler architecture."
+      },
+      {
+        "files": [
+          "server/test_native_entry_resolver_normal.py (new)",
+          "sinan-workorders/test_native_integration.py",
+          "sinan-workorders/test_native_continuous.py"
+        ],
+        "change": "Focused deterministic ordinary API and crash-window tests; reuse existing broad worker/context/package evidence. Production manifest/package must include new source and undergo exact scoped independent review and delivery."
+      }
+    ],
+    "acceptance_matrix": [
+      [
+        "ordinary API conflicting contributions",
+        "Create two contributions to same path through normal entry and real dispatcher using deterministic installed broker. Exactly one resolver physical invocation, both original effect/criteria retained, one exact candidate/review/publication, both tasks and parent progress accurate. Do not inject resolver callback to claim this acceptance."
+      ],
+      [
+        "nonconflicting contributions",
+        "No resolver call; independent files preserved and existing lane releases."
+      ],
+      [
+        "unrelated mutable changes",
+        "While worker/resolver waits, mutate unrelated issue/doc/status/comment; unchanged relevant issue_snapshot/requirement_digest and pinned inputs continue, no new production or resolution call. Related acceptance/document change must invalidate. Avoid global event revision invalidation."
+      ],
+      [
+        "two restarts / duplicate dispatch",
+        "Concurrent same-plan resolve, cold restart and duplicate events produce one intent/call/receipt. Successor lookup cannot trigger string.get failure."
+      ],
+      [
+        "unknown before broker receipt",
+        "Crash after intent or during transport leaves null intent and occupied lane; restart never calls model. Report recovery needed."
+      ],
+      [
+        "completed broker / absent candidate receipt",
+        "Crash between broker completed result and NativeCandidates.receive recovers completed exact result read-only, receives once and proceeds without provider call."
+      ],
+      [
+        "candidate committed / lost reply",
+        "Recover exact principal receipt -> same successor -> checks/review/release."
+      ],
+      [
+        "authority withdrawal",
+        "Revoke one original entry, resolver module authority or installation while waiting; owned process stops, no intake/publication or false completion. Preserve unknown; independent unrelated lane can continue."
+      ],
+      [
+        "reviewer independence",
+        "Resolver chosen as reviewer or same admitted role/state fails before review/publish; genuine independent reviewer sees exact merged bytes plus union acceptance."
+      ],
+      [
+        "malformed typed output",
+        "Extra/missing/duplicate path, wrong plan/conflict digest, binary size overflow, path traversal, deletion and dependency repin cases: reject invalid outputs before intake; valid deletion is supported."
+      ],
+      [
+        "CAS and later unrelated contribution",
+        "New channel head gets authenticated known-CAS successor, retains original candidate provenance and acceptance; no blind provider replay under new key. If actual conflict inputs change, explicitly authorize new source-bound resolution."
+      ],
+      [
+        "large context",
+        "Small/full exact bytes accepted within bounds; oversized context fails before model with explicit limitation. Tool-context support separately requires multi-revision selector/ACL tests and cannot be claimed from producer context tests."
+      ]
+    ],
+    "not_completed": [
+      "Implementation",
+      "Independent review of implementation",
+      "Installed provider validation",
+      "CI/main delivery",
+      "Ordinary production acceptance",
+      "Whole 1499/1445/1382 acceptance"
+    ],
+    "terminal": {
+      "state": "audit_complete",
+      "process": "py -B audit.py",
+      "provider_calls": 0,
+      "production_changes": false,
+      "source_or_index_writes": false,
+      "test_processes_started": 0
+    },
+    "cleanup": {
+      "temporary_artifacts": [],
+      "retained": [
+        "audit.py and report are necessary source-bound evidence"
+      ],
+      "other_task_resources": "untouched"
+    },
+    "wholegoal_complete": false,
+    "prior_audit_hashes": {
+      "data-collection/native-integration-final-review-1466.json": "06b8fcc8cabe17dcb859c323a955233467ef77f6c107b6160fe6b608b37ea590",
+      "data-collection/native-entry-runtime-final-review-1499.json": "3e842aec4905a412b171abd40cd26ddc125cba9b1eacbc512697a7071dff0b5d",
+      "data-collection/native-context-consumption-audit-1501.json": "719d6c46737a8a5126939950177e11138d0a3b88c9e276a471b168aadf2df598"
+    }
+  }
+}

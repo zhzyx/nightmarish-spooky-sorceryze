@@ -28,11 +28,15 @@ class NativeIntegration:
         review_receipt=None,
         installed_groups=None,
         installed_continuous=None,
+        resolver_recovery=None,
+        resolver_binding=None,
     ):
         if not callable(installed_plan):
             raise NativeStoreError("Installed integration planner required")
         self.w, self.candidates, self.installed_plan = workflow, candidates, installed_plan
         self.installed_resolver = installed_resolver
+        self.resolver_recovery = resolver_recovery
+        self.resolver_binding = resolver_binding
         self.review_receipt = review_receipt
         self.installed_groups = installed_groups
         self.store, self.workspace = candidates.store, workflow.worker.workspace
@@ -309,6 +313,9 @@ class NativeIntegration:
                     for role in ("integrator", "checker", "reviewer", "publisher")
                 },
             )
+            if self.resolver_binding is not None:
+                plan["resolver_binding"] = self.resolver_binding()
+                plan["principals"]["resolver"] = self.w.principals(actor, originals[0]["contract"]["issue"], "resolver")
             plan["base"] = base
             key = digest(plan)
             db.execute("INSERT OR IGNORE INTO native_integrations(id,plan) VALUES (?,?)", (key, _json(plan)))
@@ -364,6 +371,9 @@ class NativeIntegration:
             for role in plan["principals"]
         }:
             raise NativeStoreError("Independent integration principal installation changed")
+        if "resolver_binding" in plan:
+            if self.resolver_binding is None or plan["resolver_binding"] != self.resolver_binding():
+                raise NativeStoreError("Resolver installation changed")
         self.w._inputs_allowed(actor, plan["base"])
         with self.store._connection() as native_db:
             for module in plan["base"]:
@@ -604,7 +614,15 @@ class NativeIntegration:
             if pending[0]:
                 return json.loads(pending[0])["plan"]
             principal = self.w.principals(actor, plan["originals"][0]["contract"]["issue"], "resolver")
-            receipt = self.candidates.receipt_for(plan["tenant"], actor, principal, "resolution-" + key)
+            try:
+                receipt = self.candidates.receipt_for(plan["tenant"], actor, principal, "resolution-" + key)
+            except NativeStoreError:
+                if self.resolver_recovery is None:
+                    raise
+                conflicts = self.execute(actor, key)
+                receipt = self.resolver_recovery(actor, plan, conflicts, "resolution-" + key)
+                if receipt != self.candidates.receipt_for(plan["tenant"], actor, principal, "resolution-" + key):
+                    raise NativeStoreError("Recovered resolver receipt mismatch")
             conflicts = self.execute(actor, key)
             if conflicts["state"] != "conflicts_pending" or receipt["origin"]["source_ref"] != key:
                 raise NativeStoreError("Exact unresolved source receipt required")

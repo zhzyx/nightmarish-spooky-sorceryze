@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "codex-intake-1526-20261117",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-installed-resolution-20261118",
+  "kind": "request",
+  "occurred_at": "2026-11-18T11:03:22.620944+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1526",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1526,
+    "title": "合契普通入口：已安装冲突消解与无重放接续",
+    "body": "<!-- native-installed-resolution-implementation:20261118 -->\n\nDependency accepted: PR1525 merged main84d62281f0c7179369aec4352047a9ba414582a7, all80delivered paths match signedhead and required CI succeeded. Isolated worktree created from that exact trustedmain; intake-only passed. Root accepts source-bound audit and existing-role adapter/continuous/recovery plan. One native implementation worker owns explicit server and workflow files; root retains independent review, build inventory/proofs, actual model/server acceptance and delivery. No live providers or production changes in implementation.\n\n---\n\n<!-- gonggong-request:native-installed-resolution-20261118 -->\n\n# 合契普通入口：已安装冲突消解与无重放接续\n\n需求 ID：native-installed-resolution-20261118；父 #1499，上溯 #1444 / #1382；排障 #1445。沿用用户“开始执行／继续”和完整 AI 链路优先授权。路径以本工单仓库根解析，现有角色分工保持。\n\n源码审计回执 native-installed-resolver-audit.json（SHA256 3137bcfea3bf7aebbcb0c634747db748bebc9611cfd96417e286929616131bbe）绑定 24 文件、9 条静态断言。普通 continuous 路径仅 reconcile 后将冲突标记阻塞；factory resolver 返回 None；安装清单与通用签名 broker 缺少合契角色。reconcile 可能返回后继 plan 字符串，现有 continuous 按字典处理；模型完成到候选落库间也缺只读恢复接线。源审计不算功能验证。\n\n实施前依赖：#1499 的受审运行时/上下文源码 PR #1525 已通过适用 CI 并合入可信 main。完成依赖验收后从 main 隔离实现；不抢占 #951 的共享模型会话源码或 #1343 渲染工作。\n\n实施范围：\n\n1. 复用现有 NativeIntegration、NativeContinuous、NativeCandidates、InstalledPlannerRuntime、签名 runner 与元衡准入。增加薄的已安装合契适配器；不新建模型客户端、调度器、工单数据库或以测试回调冒充普通产品入口。\n2. 安装清单当前已有版本 1/2；新版本明确 resolver 命令、身份、精确配置与角色来源，保留旧安装/历史 plan 回读。独立 reviewer 不能与 producer/resolver 共用身份或状态。仅选择实际评估兼容的模型协议；不得把通用 JSON 请求直接交给要求 native_request 的 CLI adapter 后声称多 CLI 已适配。\n3. 冻结消解输入包含所有原始诉求/验收、精确产品基线、冲突路径与各贡献原始字节/摘要。严格验证模型返回的 plan/conflict 摘要、唯一编辑集合、删除、路径、字节上限及依赖不变；宿主以已安装 principal 和稳定 resolution key 接收不可变候选。不得静默截断大输入。多修订工具上下文须另有精确授权契约，不能冒用 producer token 或伪造 native task。\n4. 普通 continuous lane 调用已安装 resolver，持久跟踪有效后继 plan，沿既有检查、独立审查、阎罗发布和进度闭环。锁不能覆盖模型/构建；无关模块或 main 变化不重跑生产者。真实依赖冲突不能静默自动合并。\n5. 外部调用前持久 intent；同 plan 至多一次实际调用。未知/失联保持 held 和占用，不重放。已完成 broker 回执可只读恢复并幂等接收候选；候选已落库而回包丢失时直接回读原 receipt。恢复仍验证精确原始输入和当前授权，不洗白旧在途凭证。\n\n验收矩阵：\n\n- 正常注册/需求 API 发起两项实际冲突贡献，经已安装确定性 broker 和真实派发完成一次合契调用、联合条件检查、独立审查及一次发布，双方贡献和父需求进度正确；不得手工注入 resolver 回调替代该验收。\n- 非冲突贡献不调用 resolver；无关需求/评论/状态/模块更新不触发重做或重复模型调用，相关验收变化正确拒绝旧候选。\n- 并发重复事件、冷重启、后继 plan 接续及已知 CAS 变更保留原贡献和幂等身份；无 string.get 错误。\n- 在 intent 后、模型调用中、已完成 broker 未 intake、已 intake 未回包等窗口注入中断；分别证明未知不重放、已知回执可恢复、物理资源真实关闭。\n- 撤销任一原任务授权/合契授权/安装时停止受影响操作，不发布、不假完成，不阻塞独立 lane。\n- 错误摘要、额外/缺失/重复路径、路径穿越、越界二进制和依赖偷换拒绝；有效删除可正确处理；独立审查覆盖全部原始验收。\n- 新模块实际输入、宿主接口、回退、精确候选独立审查与适用 CI/main 留底完整；不降低原生渲染能力。\n\n根责任者核对实际源码和接口后可在此范围内继续实施，无需再次询问用户。实现者不运行真实 provider、不切换生产、不修改共享冻结定义；真实安装/模型及父级 250 多用户完整验收由根责任者另行接续。小输入消解通过不能声称大上下文、多 CLI、整个 #1499 或父目标已完成。保留原始失败和未知。\n\n授权：codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117\n\n<!-- gonggong-host-git:Sail-Li -->\n",
+    "updated_at": "2026-11-18T11:03:13Z",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "operator": "Sail-Li",
+    "scope": "Actual issue readback and user authorization intake; not acceptance or delivery."
+  },
+  "evidence_refs": [],
+  "sha256": "5655e0508d345e7adbe99ddf1fb6ef990da3850d8de1f4c6b1111a45cff2c0c0"
+}

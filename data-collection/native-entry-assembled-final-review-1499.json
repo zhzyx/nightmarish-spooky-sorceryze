@@ -1,0 +1,892 @@
+{
+  "request_id": "native-production-entry-20261118",
+  "issue_number": 1499,
+  "original_sha256": "1932bd7c702a0ddaab9595e41617ab1cff811a14e4b9ce1e9b2aa689db3e7eeb",
+  "export": "Lossless JSON value export of actual independently reconciled review; original private bytes retained.",
+  "review": {
+    "index_tree": "8f4e26d74ad815a4452f806d0fd5c69d170eddfa",
+    "index_entries_sha256": "18b7211d812a5ba13c8938c0b9bff3a04f7cdad2bf497654f8dd3d3d7f4cde9a",
+    "head": "f539bd711fc623937350a7ea8d689bd929170ab5",
+    "source_hashes": {
+      ".github/workflows/tianxuan-deploy-build.yml": "aa8e766633c295d8d499c65db94a71abf59dc43d027458fdd1037ac79bbb93df",
+      ".github/workflows/tianxuan-tests.yml": "f27cae24db8881a344621786e9fd0e6bd874cebed0e27fbbcb7c86878f115537",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "ab1e41ace8172aabc37c3d039d89bc90ca68e45b52ac2ee18a9535ec0f4822b3",
+      "customizations/components/tianxuan/server/native_entry_resolver.py": "49f06c5b64e7659b7bf76974592c2e28218d47fa37f1020957c2ff02141cd9c8",
+      "customizations/components/tianxuan/server/native_installation.py": "ec4c0326d613c3dcdb7320cb9adddb7246740914faad9a7cbfec6716238dc362",
+      "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": "8e800d8cd1ef12007bd59a81cb7d490959f4d5135e133699bd8284a441ff8947",
+      "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": "91f26f4e0132d74124de9ff431167fb330f1550f963a1588255946dcdb2cfa6e",
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "d738528a30ddbfd36c744fadb47839af74fbb706e5c468f8e8a3c3f249864798",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "2b23d56d4860c5ff4309b52d43026e0348bec0c1041df649fe92bde27746c026",
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "48f1c718fedbe6bc04da549e8e2dcbafe778f7195dfd3b28446cbe187e1dd7f4",
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d454c7a0c5b47552b16ba625b3ad97836b06625c7d6cf7ba74827ae4bea62ce9",
+      "deploy/README.md": "0d0c610af5557ebc89d2e965e91b9ddf4f8dd80e1ffe2b9bba338ced7f3750e4",
+      "tools/native_host_inputs.json": "555da560bf77e777191b89b4b6154a601a6a2af27755bec122f0d32fb937e55f"
+    },
+    "staged": {
+      ".github/workflows/tianxuan-deploy-build.yml": {
+        "blob": "4ad73d8cffb88946d680c72e4303d7e0b72bc83a",
+        "sha256": "aa8e766633c295d8d499c65db94a71abf59dc43d027458fdd1037ac79bbb93df",
+        "worktree_sha256": "aa8e766633c295d8d499c65db94a71abf59dc43d027458fdd1037ac79bbb93df"
+      },
+      ".github/workflows/tianxuan-tests.yml": {
+        "blob": "a6070b6cf3a8fc57e949b42a3945a484f68ae112",
+        "sha256": "f27cae24db8881a344621786e9fd0e6bd874cebed0e27fbbcb7c86878f115537",
+        "worktree_sha256": "f27cae24db8881a344621786e9fd0e6bd874cebed0e27fbbcb7c86878f115537"
+      },
+      "customizations/components/tianxuan/build-impact.json": {
+        "blob": "72491d9f394b410794c346d87b5451be1f77a56c",
+        "sha256": "a2f983d9362c0a1a0cdf7cb7564335cda111395be0802ca17144fc4df821eb0e",
+        "worktree_sha256": "a2f983d9362c0a1a0cdf7cb7564335cda111395be0802ca17144fc4df821eb0e"
+      },
+      "customizations/components/tianxuan/server/native_entry_factory.py": {
+        "blob": "b7c83cc1885c2315280fb94bbb2d03fb17bc7f4a",
+        "sha256": "ab1e41ace8172aabc37c3d039d89bc90ca68e45b52ac2ee18a9535ec0f4822b3",
+        "worktree_sha256": "ab1e41ace8172aabc37c3d039d89bc90ca68e45b52ac2ee18a9535ec0f4822b3"
+      },
+      "customizations/components/tianxuan/server/native_entry_resolver.py": {
+        "blob": "169daa0876212e5185659ddb78c3ac0961c6fa32",
+        "sha256": "49f06c5b64e7659b7bf76974592c2e28218d47fa37f1020957c2ff02141cd9c8",
+        "worktree_sha256": "49f06c5b64e7659b7bf76974592c2e28218d47fa37f1020957c2ff02141cd9c8"
+      },
+      "customizations/components/tianxuan/server/native_installation.py": {
+        "blob": "5de7c66605094abc6e7414e653b3be7fbd8e1b6a",
+        "sha256": "ec4c0326d613c3dcdb7320cb9adddb7246740914faad9a7cbfec6716238dc362",
+        "worktree_sha256": "ec4c0326d613c3dcdb7320cb9adddb7246740914faad9a7cbfec6716238dc362"
+      },
+      "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": {
+        "blob": "624d78d737f232c91187574e44ce9eaee37e2a1e",
+        "sha256": "8e800d8cd1ef12007bd59a81cb7d490959f4d5135e133699bd8284a441ff8947",
+        "worktree_sha256": "8e800d8cd1ef12007bd59a81cb7d490959f4d5135e133699bd8284a441ff8947"
+      },
+      "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": {
+        "blob": "2e0a9bc72a3bf4275156a1943563a9ad7a24282d",
+        "sha256": "91f26f4e0132d74124de9ff431167fb330f1550f963a1588255946dcdb2cfa6e",
+        "worktree_sha256": "91f26f4e0132d74124de9ff431167fb330f1550f963a1588255946dcdb2cfa6e"
+      },
+      "customizations/components/tianxuan/sinan-workorders/build-impact.json": {
+        "blob": "e6fcb892b458eb5d3c247ad71d70dcee555b1fc2",
+        "sha256": "2b1f21aeef3ebcb9154ec6e3078d1f6dc7351a7d9ee1f70b9f371c955f06ac67",
+        "worktree_sha256": "2b1f21aeef3ebcb9154ec6e3078d1f6dc7351a7d9ee1f70b9f371c955f06ac67"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_continuous.py": {
+        "blob": "8f28ce9f7569af444f4f8a1612b45b5f7d9c8fee",
+        "sha256": "d738528a30ddbfd36c744fadb47839af74fbb706e5c468f8e8a3c3f249864798",
+        "worktree_sha256": "d738528a30ddbfd36c744fadb47839af74fbb706e5c468f8e8a3c3f249864798"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": {
+        "blob": "cddf436ae951b7b8bf824910a950ba0fb7abeab3",
+        "sha256": "2b23d56d4860c5ff4309b52d43026e0348bec0c1041df649fe92bde27746c026",
+        "worktree_sha256": "2b23d56d4860c5ff4309b52d43026e0348bec0c1041df649fe92bde27746c026"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": {
+        "blob": "59729044134f02d0882acefa3e20aadbe88bb001",
+        "sha256": "48f1c718fedbe6bc04da549e8e2dcbafe778f7195dfd3b28446cbe187e1dd7f4",
+        "worktree_sha256": "48f1c718fedbe6bc04da549e8e2dcbafe778f7195dfd3b28446cbe187e1dd7f4"
+      },
+      "customizations/components/tianxuan/sinan-workorders/native_integration.py": {
+        "blob": "ce4267fc5a5d4951de239bc26157e1d0304a9294",
+        "sha256": "d454c7a0c5b47552b16ba625b3ad97836b06625c7d6cf7ba74827ae4bea62ce9",
+        "worktree_sha256": "d454c7a0c5b47552b16ba625b3ad97836b06625c7d6cf7ba74827ae4bea62ce9"
+      },
+      "data-collection/native-context-transport-cost-repair-1445.json": {
+        "blob": "8b2ace19c87380cb285a3fc02733740c18ebb215",
+        "sha256": "2de6551125a5717e1287bc1203215d73fba2fb1a47ed5bc638a6e276682a4c30",
+        "worktree_sha256": "2de6551125a5717e1287bc1203215d73fba2fb1a47ed5bc638a6e276682a4c30"
+      },
+      "data-collection/native-distributed-context-1499.json": {
+        "blob": "6f2a5b0dc59d16ae15d140d3422ef8a15fb27f16",
+        "sha256": "8c6247f10ed194ce434da9b76fa9b698acaad33ab9e90bdad0583d1d8e1833c8",
+        "worktree_sha256": "8c6247f10ed194ce434da9b76fa9b698acaad33ab9e90bdad0583d1d8e1833c8"
+      },
+      "data-collection/native-distributed-context-review-1499.json": {
+        "blob": "9644d1168430832deae3ab3e1c3475caa16fe707",
+        "sha256": "621bccd63f929a7edaad9b5779e6f8bafb65356874b99a5dc57aaf42ad9cb118",
+        "worktree_sha256": "621bccd63f929a7edaad9b5779e6f8bafb65356874b99a5dc57aaf42ad9cb118"
+      },
+      "data-collection/native-entry-assembled-delivery-1499.json": {
+        "blob": "3f02745bdb7902ad851da06d447e57ac3f9ee207",
+        "sha256": "30305560baa5b00ce680a85ed98c0131d85c13821180bb3bb13833fd32b5017a",
+        "worktree_sha256": "30305560baa5b00ce680a85ed98c0131d85c13821180bb3bb13833fd32b5017a"
+      },
+      "data-collection/native-entry-assembled-module-build-impact-1499.json": {
+        "blob": "35bfd31a7f2c9e8cad1708f8ab94200646cfc489",
+        "sha256": "d77887695b4d403a2c64c4fa3fef148e1552061b13ddc9ed71e45f7df13cbb4f",
+        "worktree_sha256": "d77887695b4d403a2c64c4fa3fef148e1552061b13ddc9ed71e45f7df13cbb4f"
+      },
+      "data-collection/native-entry-assembled-workflow-build-impact-1499.json": {
+        "blob": "2dc7a1d0aba53de52ccc7be1cd7702173315be36",
+        "sha256": "db84f76d3229dba28973ccbb8cd291291f3fdab1f33d2e6248ceec1d21303d75",
+        "worktree_sha256": "db84f76d3229dba28973ccbb8cd291291f3fdab1f33d2e6248ceec1d21303d75"
+      },
+      "data-collection/native-entry-combined-main-1499.json": {
+        "blob": "d31061aeaf09ca7a0904973ccbd3752bed41fa82",
+        "sha256": "610dcbb40d6cfcf4e13d85389502a3920f937f2d1896c6fb0f38310f963680eb",
+        "worktree_sha256": "610dcbb40d6cfcf4e13d85389502a3920f937f2d1896c6fb0f38310f963680eb"
+      },
+      "data-collection/native-entry-transport-review-1499.json": {
+        "blob": "7c07a1a23774cebc5c2af252bd02d2c4a2041e16",
+        "sha256": "f3d12c6dc4f8109a3dabdd1b2bb3378cf7fc5efe5655b70fa5a99b4fab9170cb",
+        "worktree_sha256": "f3d12c6dc4f8109a3dabdd1b2bb3378cf7fc5efe5655b70fa5a99b4fab9170cb"
+      },
+      "data-collection/native-installed-resolution-delivery-1526.json": {
+        "blob": "8abe9e8e9c3e4dccb930d921dfadefbd739af56a",
+        "sha256": "e34e778024c350594fb0ea5da973d9aa40a3768374686558f88ef71f43d35e71",
+        "worktree_sha256": "e34e778024c350594fb0ea5da973d9aa40a3768374686558f88ef71f43d35e71"
+      },
+      "data-collection/native-installed-resolution-host-boundary-1526.json": {
+        "blob": "d3ae8e3cd869158cba78cd25a4ddc518e9332bde",
+        "sha256": "0d3753731e43e4bb3cfe9238af65ca57e0f313d90359bc8b11b5a40f726b2325",
+        "worktree_sha256": "0d3753731e43e4bb3cfe9238af65ca57e0f313d90359bc8b11b5a40f726b2325"
+      },
+      "data-collection/native-installed-resolution-implementation-1526.json": {
+        "blob": "4a6075c450b4eea0b05930634d31ac93a3baa32e",
+        "sha256": "e235676cdc5d6b5dc8931d51feed4c82760df8c02b92541e3312eae4873b92d5",
+        "worktree_sha256": "e235676cdc5d6b5dc8931d51feed4c82760df8c02b92541e3312eae4873b92d5"
+      },
+      "data-collection/native-installed-resolution-module-build-impact-1526.json": {
+        "blob": "1d148039ec1d2eb506d119119a1ca26bbf851d1d",
+        "sha256": "90440cad4f7dcfa136c32354a4e558da7befa1a25805baa51a5a0b3504715438",
+        "worktree_sha256": "90440cad4f7dcfa136c32354a4e558da7befa1a25805baa51a5a0b3504715438"
+      },
+      "data-collection/native-installed-resolution-review-1526.json": {
+        "blob": "3b0038802713eb295bf4aab853af9fac969998a5",
+        "sha256": "b1712f64f74f0908a0fcf6068532e5d97a272787047cbd767433e359f65584d1",
+        "worktree_sha256": "b1712f64f74f0908a0fcf6068532e5d97a272787047cbd767433e359f65584d1"
+      },
+      "data-collection/native-installed-resolution-workflow-build-impact-1526.json": {
+        "blob": "f1d258a833df9dbd61d431e1f9e727ab27971da7",
+        "sha256": "aac61c29ed9cf08c32bee7709d68ddc35978fac0868703d719008668ca16cc36",
+        "worktree_sha256": "aac61c29ed9cf08c32bee7709d68ddc35978fac0868703d719008668ca16cc36"
+      },
+      "data-collection/native-installed-resolver-audit-1526.json": {
+        "blob": "75e0a768d06088533b471f315f4f49c416c8366c",
+        "sha256": "35fc99e4515e54eb7c2f8d1c728e1c20839986215e276d82b7bf81812e88b08e",
+        "worktree_sha256": "35fc99e4515e54eb7c2f8d1c728e1c20839986215e276d82b7bf81812e88b08e"
+      },
+      "data-collection/native-runtime-artifact-cleanup-1529.json": {
+        "blob": "374c7763fc0e053a9532cc678d78f71185c2cc2c",
+        "sha256": "a223c5032e7403ce337f375d5b4a881d52a31b4910a2e88a9ff853fb3ae9938c",
+        "worktree_sha256": "a223c5032e7403ce337f375d5b4a881d52a31b4910a2e88a9ff853fb3ae9938c"
+      },
+      "data-collection/native-runtime-artifact-delivery-1529.json": {
+        "blob": "a0c4fbed90190607f65592a19e3fafac4e00e12c",
+        "sha256": "1851a18cb7f8a0bfe6f9207df714ace92c846feca82bdb0e8e6e8a5def7f5d65",
+        "worktree_sha256": "1851a18cb7f8a0bfe6f9207df714ace92c846feca82bdb0e8e6e8a5def7f5d65"
+      },
+      "data-collection/native-runtime-artifact-local-validation-1529.json": {
+        "blob": "bbb85fded0a2e0c0571d4dabdbd951ff95f972f4",
+        "sha256": "60093b51a894f9505c70527c14f99c582fde52ebe4781873390c07f9f96c3a42",
+        "worktree_sha256": "60093b51a894f9505c70527c14f99c582fde52ebe4781873390c07f9f96c3a42"
+      },
+      "data-collection/native-runtime-artifact-review-1529.json": {
+        "blob": "c2ddafa6e3dbbd3ef42493ffa83b99b93185bfac",
+        "sha256": "cd868bfd4853d490a685785a2cfa7482c36b563a87761fecf0cdd3bf69ce6ebd",
+        "worktree_sha256": "cd868bfd4853d490a685785a2cfa7482c36b563a87761fecf0cdd3bf69ce6ebd"
+      },
+      "data-collection/native-runtime-artifact-static-1529.json": {
+        "blob": "c941e8cccb3cf447e38ea7003b30ca16f47f8109",
+        "sha256": "2b12d6a2305c2e5886ebc667ff26d7f696fd8de937b9342d29f280478a11db45",
+        "worktree_sha256": "2b12d6a2305c2e5886ebc667ff26d7f696fd8de937b9342d29f280478a11db45"
+      },
+      "data-collection/requests/native-installed-resolution-20261118/2702be34-3fa2-442e-8e88-869d98a37736.json": {
+        "blob": "0ddf9df81992dadf32618d7a0344400f4f7a0b06",
+        "sha256": "b92041859f8a78e00cd262bbe53ae641fd3fc0ef7cfb3cf262cc8c22b77f3bfa",
+        "worktree_sha256": "b92041859f8a78e00cd262bbe53ae641fd3fc0ef7cfb3cf262cc8c22b77f3bfa"
+      },
+      "data-collection/requests/native-runtime-artifact-20261118/9d7bc9ab-8ee4-4ba3-822e-1a588ca34022.json": {
+        "blob": "86d8e5ab6ad10b1e5181fcfa361e0d53d74fde7a",
+        "sha256": "9c04c435eafd6d7586fde18ad364771d30a77be006fe2c5e5feebd2ec973a24d",
+        "worktree_sha256": "9c04c435eafd6d7586fde18ad364771d30a77be006fe2c5e5feebd2ec973a24d"
+      },
+      "deploy/README.md": {
+        "blob": "f618da00928b961fc12b8fd49e81afee8137d584",
+        "sha256": "0d0c610af5557ebc89d2e965e91b9ddf4f8dd80e1ffe2b9bba338ced7f3750e4",
+        "worktree_sha256": "0d0c610af5557ebc89d2e965e91b9ddf4f8dd80e1ffe2b9bba338ced7f3750e4"
+      },
+      "design-docs/native-installed-resolution-20261118.md": {
+        "blob": "6f0c2899a9416b11f8fcaeb32f46da6b99641990",
+        "sha256": "7d91500306f844b4028fe8573f93f5f26e9a567bc0433bef8c1fbd11071463bc",
+        "worktree_sha256": "7d91500306f844b4028fe8573f93f5f26e9a567bc0433bef8c1fbd11071463bc"
+      },
+      "design-docs/native-production-entry-20261118.md": {
+        "blob": "6426f04ec2e92b535a1300465660b08a816ab6a1",
+        "sha256": "7dbecbd081abfc3c1c88feb31ccf851497f0078619c240c03617a4929c88ebd0",
+        "worktree_sha256": "7dbecbd081abfc3c1c88feb31ccf851497f0078619c240c03617a4929c88ebd0"
+      },
+      "design-docs/native-runtime-artifact-20261118.md": {
+        "blob": "1947ac08f2ff92dc5e1d8247c1612bbac9947b2f",
+        "sha256": "f22e6a69514f73de1cf87ef1e613e5dd9e902fc4d149433a98a60997e25701f9",
+        "worktree_sha256": "f22e6a69514f73de1cf87ef1e613e5dd9e902fc4d149433a98a60997e25701f9"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/kuafu-local-1444-ffffe549d4ec4376898c6571b4be336ecf62913b530db55973e53f6202a96390/dispatch-37d44d29b9bb4eee8b7c27eff8dd7603.json": {
+        "blob": "034eac1245e19441ae0c5171edf23c6e447eea70",
+        "sha256": "d949c7ef9bf98560abb89a46081bfb0fac22de0bcb6a2c8b8faab869974db676",
+        "worktree_sha256": "d949c7ef9bf98560abb89a46081bfb0fac22de0bcb6a2c8b8faab869974db676"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/kuafu-local-1444-ffffe549d4ec4376898c6571b4be336ecf62913b530db55973e53f6202a96390/dispatch-61ed0f9464664378bbbf1aad6ad88d38.json": {
+        "blob": "2a65b6319e2575ca902d177b78faf1f6f739ee98",
+        "sha256": "4e7638afcaaf799f471f95badb9f53fccc189d44a4ad6f8d65e0526c01015287",
+        "worktree_sha256": "4e7638afcaaf799f471f95badb9f53fccc189d44a4ad6f8d65e0526c01015287"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/kuafu-local-1444-ffffe549d4ec4376898c6571b4be336ecf62913b530db55973e53f6202a96390/dispatch-cac7ec4d791340ab926746401e9e077d.json": {
+        "blob": "f3eb2e94ed3eae7edb558499fe6e461d1c6f3c0c",
+        "sha256": "db42ce10982ad6337c10b8ccc6fb61369b5c730e79f56c95231b462c04b448a1",
+        "worktree_sha256": "db42ce10982ad6337c10b8ccc6fb61369b5c730e79f56c95231b462c04b448a1"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/codex-intake-1526-20261117.json": {
+        "blob": "0c32195fc13436d728d27c81b7205c5ab321deb4",
+        "sha256": "b6f3b5180053bccb7e03c55b90b41c642e43c8adda05859f8507f100b46a10ed",
+        "worktree_sha256": "b6f3b5180053bccb7e03c55b90b41c642e43c8adda05859f8507f100b46a10ed"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/dispatch-9033fbf309084b4da08e4d1390d33f02.json": {
+        "blob": "0be45af699dbdab3b1d1c4ef455f257934c02bcc",
+        "sha256": "f1beae11a3f185d6995fe1542e190c4f1e67ce6a8a2819c11d2cffbf69e68de3",
+        "worktree_sha256": "f1beae11a3f185d6995fe1542e190c4f1e67ce6a8a2819c11d2cffbf69e68de3"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/dispatch-dc9bf03807c34111b9dbfaf1e023d571.json": {
+        "blob": "a9fffb5be34b08c67efd6c9e29b6bb31608be289",
+        "sha256": "d72f15eb1b3b97bb7f0ee1c97045efe72cfb0473c1044717f4d7cc4f607fa201",
+        "worktree_sha256": "d72f15eb1b3b97bb7f0ee1c97045efe72cfb0473c1044717f4d7cc4f607fa201"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/kuafu-cbf8a5e4faeef7737217da4a905cfa2bdf2e6683.json": {
+        "blob": "718a0c5a120d8d82ab5b12879e9dbbd3601a6767",
+        "sha256": "1b9685d42164d0aee4b941a999eb6fd42eeb48d68b1aca8b0f69950edb947fb5",
+        "worktree_sha256": "1b9685d42164d0aee4b941a999eb6fd42eeb48d68b1aca8b0f69950edb947fb5"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-1f72d81bb8c54bbc9f67c833f06d3410.json": {
+        "blob": "bf6367ea9e228dc293cf3628fe90295de727a76c",
+        "sha256": "3caf2d31d9108e3ed3e88c424a2899f3455b2109eff181f3b4357ff04f87ce58",
+        "worktree_sha256": "3caf2d31d9108e3ed3e88c424a2899f3455b2109eff181f3b4357ff04f87ce58"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-89d08f00292340f59b57ba3816731396.json": {
+        "blob": "3442b57f95b9e75ce4b2edb6b6ce114e69bae0fd",
+        "sha256": "2aac7d2d31845d1d93e6d3a3e5911045ba2dc18fb25a5ca863a84750f4134121",
+        "worktree_sha256": "2aac7d2d31845d1d93e6d3a3e5911045ba2dc18fb25a5ca863a84750f4134121"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-bf0929b0414149f1a15906fa131c0c19.json": {
+        "blob": "2fbe58139709c685a34f7dbeae906e00f4d996c5",
+        "sha256": "efde413c353c4a86a149696a346d9098289aa67ad89f8c58192e4bc1b15a28ba",
+        "worktree_sha256": "efde413c353c4a86a149696a346d9098289aa67ad89f8c58192e4bc1b15a28ba"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-1942148b071ccd093b6d518c4f0b2da4230302d6.json": {
+        "blob": "6f45446c67284f0c531f4cf19674eba20a1ff608",
+        "sha256": "b4fb19463923f20c6aa9eede606791f666d8ccdfa0e8f85645537aad44e0f9cd",
+        "worktree_sha256": "b4fb19463923f20c6aa9eede606791f666d8ccdfa0e8f85645537aad44e0f9cd"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-91ed9c39d24d8cd041ad8decdfc9fa06d4976ed9.json": {
+        "blob": "8a1b7f72c483f553b8eb2be2d537338d06ecf5be",
+        "sha256": "907e757c446bf5e8791660678cf43f4ca63e71fc5eeaf576153530b671d35872",
+        "worktree_sha256": "907e757c446bf5e8791660678cf43f4ca63e71fc5eeaf576153530b671d35872"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-de6e7b579a508f037722b39ce110d3634599c89d.json": {
+        "blob": "afb6f9762d6203f8323a4c3e9112c9514aaaf754",
+        "sha256": "f40d611715803ce389e6159d781cb527e43d45fbf96e3c05e786caaaa6bf5921",
+        "worktree_sha256": "f40d611715803ce389e6159d781cb527e43d45fbf96e3c05e786caaaa6bf5921"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/codex-intake-1529-20261117.json": {
+        "blob": "f7cc5b29f4133bb2fefb151d24070a365527c9de",
+        "sha256": "f1d67b9e7b66494c4d86b3a9e68daaf22340f5f315b8923dfcf4df80e3c0a424",
+        "worktree_sha256": "f1d67b9e7b66494c4d86b3a9e68daaf22340f5f315b8923dfcf4df80e3c0a424"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/dispatch-868a0f2174a6414ea9aee8e68b3d461e.json": {
+        "blob": "d83e422daf36c7c55a8049c1da5fda2fe8a3f53c",
+        "sha256": "196b8ba35d5a543808d52af080532583f24353b75e09d40fd055ffee58e6bf39",
+        "worktree_sha256": "196b8ba35d5a543808d52af080532583f24353b75e09d40fd055ffee58e6bf39"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/dispatch-bfe47f02546f484cb72be9adac9d4733.json": {
+        "blob": "80e69b7a5d0d39204c486feb430f987ed7815f7e",
+        "sha256": "a6973e2c6fa152a7c37c99d3412a235932e3e32a05ee8332aadb33e29536a733",
+        "worktree_sha256": "a6973e2c6fa152a7c37c99d3412a235932e3e32a05ee8332aadb33e29536a733"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/kuafu-70b5caa25c80f92e4d8354d10e2b0a2f7305a019.json": {
+        "blob": "ce0517919c9647d657149e8629db55c9fffee6ba",
+        "sha256": "c43a81dbc965886136410749021917e747e40873f0df6b8b3a434823b52cd3cb",
+        "worktree_sha256": "c43a81dbc965886136410749021917e747e40873f0df6b8b3a434823b52cd3cb"
+      },
+      "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/kuafu-8b22b769a9ccbd8e5782ba2324f85b2ce4b303df.json": {
+        "blob": "17d5be0a7730133c4d2074a5521cef54364acdee",
+        "sha256": "c83bb4bb16fe5899f28b70b148e53838bd8285bf9f64b1d9d1f147dd66fb41e4",
+        "worktree_sha256": "c83bb4bb16fe5899f28b70b148e53838bd8285bf9f64b1d9d1f147dd66fb41e4"
+      },
+      "tools/native_host_inputs.json": {
+        "blob": "804f3dee1fc7ef27bc367aa21bdaeddaaa2900dd",
+        "sha256": "555da560bf77e777191b89b4b6154a601a6a2af27755bec122f0d32fb937e55f",
+        "worktree_sha256": "555da560bf77e777191b89b4b6154a601a6a2af27755bec122f0d32fb937e55f"
+      }
+    },
+    "json_read_summary": {
+      "customizations/components/tianxuan/build-impact.json": [
+        "placement",
+        "reason",
+        "host_contract",
+        "rollback",
+        "evidence"
+      ],
+      "customizations/components/tianxuan/sinan-workorders/build-impact.json": [
+        "placement",
+        "reason",
+        "host_contract",
+        "rollback",
+        "evidence"
+      ],
+      "data-collection/native-context-transport-cost-repair-1445.json": [
+        "request_id",
+        "issue_number",
+        "original_sha256",
+        "export",
+        "report"
+      ],
+      "data-collection/native-distributed-context-1499.json": [
+        "original_report",
+        "export",
+        "report"
+      ],
+      "data-collection/native-distributed-context-review-1499.json": [
+        "original_report",
+        "export",
+        "report"
+      ],
+      "data-collection/native-entry-assembled-delivery-1499.json": [
+        "request_id",
+        "issue_number",
+        "related_issues",
+        "date",
+        "state",
+        "sources_sha256",
+        "authority",
+        "validation",
+        "reviews",
+        "deferred",
+        "remaining",
+        "cleanup",
+        "scope",
+        "static_correction"
+      ],
+      "data-collection/native-entry-assembled-module-build-impact-1499.json": [
+        "module",
+        "request_id",
+        "issue_url",
+        "input_blobs",
+        "checks",
+        "evidence",
+        "scope"
+      ],
+      "data-collection/native-entry-assembled-workflow-build-impact-1499.json": [
+        "module",
+        "request_id",
+        "issue_url",
+        "input_blobs",
+        "checks",
+        "evidence",
+        "scope"
+      ],
+      "data-collection/native-entry-combined-main-1499.json": [
+        "original_report",
+        "export",
+        "report"
+      ],
+      "data-collection/native-entry-transport-review-1499.json": [
+        "request_id",
+        "issue_number",
+        "original_sha256",
+        "export",
+        "review"
+      ],
+      "data-collection/native-installed-resolution-delivery-1526.json": [
+        "request_id",
+        "issue_number",
+        "issue_url",
+        "parent",
+        "sources_sha256",
+        "validation",
+        "sdk_preparation",
+        "limits",
+        "scope"
+      ],
+      "data-collection/native-installed-resolution-host-boundary-1526.json": [
+        "issue",
+        "passed",
+        "native_sources",
+        "native_sources_sha256",
+        "changed_host_inputs",
+        "source_sha256",
+        "overlap",
+        "inventory_before",
+        "inventory_after",
+        "added_inventory",
+        "policy_sha256",
+        "checks",
+        "actual_scons_command",
+        "seconds",
+        "compilation_performed",
+        "limits"
+      ],
+      "data-collection/native-installed-resolution-implementation-1526.json": [
+        "schema",
+        "issue",
+        "source_main",
+        "recorded_at",
+        "path_base",
+        "sources_sha256",
+        "implementation",
+        "method_recall",
+        "tests",
+        "failures",
+        "limitations",
+        "terminal",
+        "cleanup",
+        "wholegoal_complete",
+        "evidence"
+      ],
+      "data-collection/native-installed-resolution-module-build-impact-1526.json": [
+        "module",
+        "request_id",
+        "issue_url",
+        "input_blobs",
+        "checks",
+        "evidence",
+        "scope"
+      ],
+      "data-collection/native-installed-resolution-review-1526.json": [
+        "request_id",
+        "issue_number",
+        "original_report",
+        "export",
+        "review"
+      ],
+      "data-collection/native-installed-resolution-workflow-build-impact-1526.json": [
+        "module",
+        "request_id",
+        "issue_url",
+        "input_blobs",
+        "checks",
+        "evidence",
+        "scope"
+      ],
+      "data-collection/native-installed-resolver-audit-1526.json": [
+        "original_report",
+        "export",
+        "audit"
+      ],
+      "data-collection/native-runtime-artifact-cleanup-1529.json": [
+        "original_report",
+        "export",
+        "report"
+      ],
+      "data-collection/native-runtime-artifact-delivery-1529.json": [
+        "request_id",
+        "issue_number",
+        "issue_url",
+        "review",
+        "source_hashes",
+        "incident",
+        "repair",
+        "limits"
+      ],
+      "data-collection/native-runtime-artifact-local-validation-1529.json": [
+        "original_report",
+        "report"
+      ],
+      "data-collection/native-runtime-artifact-review-1529.json": [
+        "original_report",
+        "export",
+        "report"
+      ],
+      "data-collection/native-runtime-artifact-static-1529.json": [
+        "original_report",
+        "export",
+        "report"
+      ],
+      "data-collection/requests/native-installed-resolution-20261118/2702be34-3fa2-442e-8e88-869d98a37736.json": [
+        "schema_version",
+        "kind",
+        "request_id",
+        "collected_at",
+        "collector",
+        "intended_reader",
+        "diting_ingestion_confirmed",
+        "events",
+        "scope",
+        "issue_number",
+        "issue_url"
+      ],
+      "data-collection/requests/native-runtime-artifact-20261118/9d7bc9ab-8ee4-4ba3-822e-1a588ca34022.json": [
+        "schema_version",
+        "kind",
+        "request_id",
+        "collected_at",
+        "collector",
+        "intended_reader",
+        "diting_ingestion_confirmed",
+        "events",
+        "scope",
+        "issue_number",
+        "issue_url"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/kuafu-local-1444-ffffe549d4ec4376898c6571b4be336ecf62913b530db55973e53f6202a96390/dispatch-37d44d29b9bb4eee8b7c27eff8dd7603.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/kuafu-local-1444-ffffe549d4ec4376898c6571b4be336ecf62913b530db55973e53f6202a96390/dispatch-61ed0f9464664378bbbf1aad6ad88d38.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/kuafu-local-1444-ffffe549d4ec4376898c6571b4be336ecf62913b530db55973e53f6202a96390/dispatch-cac7ec4d791340ab926746401e9e077d.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/codex-intake-1526-20261117.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/dispatch-9033fbf309084b4da08e4d1390d33f02.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/dispatch-dc9bf03807c34111b9dbfaf1e023d571.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-installed-resolution-20261118/kuafu-cbf8a5e4faeef7737217da4a905cfa2bdf2e6683.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "source_ref",
+        "agent",
+        "evidence_refs",
+        "payload",
+        "occurred_at",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-1f72d81bb8c54bbc9f67c833f06d3410.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-89d08f00292340f59b57ba3816731396.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/dispatch-bf0929b0414149f1a15906fa131c0c19.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-1942148b071ccd093b6d518c4f0b2da4230302d6.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "source_ref",
+        "agent",
+        "evidence_refs",
+        "payload",
+        "occurred_at",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-91ed9c39d24d8cd041ad8decdfc9fa06d4976ed9.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "source_ref",
+        "agent",
+        "evidence_refs",
+        "payload",
+        "occurred_at",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-production-entry-20261118/kuafu-de6e7b579a508f037722b39ce110d3634599c89d.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "source_ref",
+        "agent",
+        "evidence_refs",
+        "payload",
+        "occurred_at",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/codex-intake-1529-20261117.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/dispatch-868a0f2174a6414ea9aee8e68b3d461e.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/dispatch-bfe47f02546f484cb72be9adac9d4733.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "occurred_at",
+        "source_ref",
+        "agent",
+        "payload",
+        "evidence_refs",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/kuafu-70b5caa25c80f92e4d8354d10e2b0a2f7305a019.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "source_ref",
+        "agent",
+        "evidence_refs",
+        "payload",
+        "occurred_at",
+        "sha256"
+      ],
+      "gonggong-diting-data/events/gonggong-workspace/native-runtime-artifact-20261118/kuafu-8b22b769a9ccbd8e5782ba2324f85b2ce4b303df.json": [
+        "schema_version",
+        "event_id",
+        "tenant_id",
+        "request_id",
+        "kind",
+        "source_ref",
+        "agent",
+        "evidence_refs",
+        "payload",
+        "occurred_at",
+        "sha256"
+      ],
+      "tools/native_host_inputs.json": [
+        "schema_version",
+        "inputs"
+      ]
+    },
+    "checks": {
+      "git_diff_cached_check": 0,
+      "resolver_exact_reviewed_source_hashes": true,
+      "certificate_comment_ast_equal_and_reconstructed_old_hash": "4e8d463648971873d3f39502543a83e3844f0eb4512aa7ee00313a0ee8df407a",
+      "data-collection/native-entry-assembled-module-build-impact-1499.json": {
+        "input_blobs": 255,
+        "evidence_hashes": 23
+      },
+      "data-collection/native-entry-assembled-workflow-build-impact-1499.json": {
+        "input_blobs": 89,
+        "evidence_hashes": 23
+      },
+      "workflow_yaml_and_scoped_selection_success_gates": true,
+      "complete_customizations/components/tianxuan": true,
+      "complete_customizations/components/tianxuan/sinan-workorders": true,
+      "host_inventory_205_exact_prior_policy_hash": true
+    },
+    "blockers": [],
+    "manifest_probes": {
+      "false": {
+        "ordinary_functional_checks": "passed",
+        "synthetic_250_client_burst": "not_run_user_deferred",
+        "production_multi_user_capacity": "not_accepted"
+      },
+      "true": {
+        "ordinary_functional_checks": "passed",
+        "synthetic_250_client_burst": "passed",
+        "production_multi_user_capacity": "not_accepted"
+      }
+    },
+    "shell_syntax": [
+      "Build API image",
+      "Native package execution and context",
+      "Native context burst with isolated test-driver budget",
+      "Build Web image",
+      "Report image sizes",
+      "Compose smoke",
+      "WebSocket proxy",
+      "Export tested API package",
+      "Compose logs",
+      "Compose down"
+    ],
+    "shell_export_probes": {
+      "success": {
+        "exit": 0,
+        "manifest_reached": true,
+        "stderr": ""
+      },
+      "inspect_fail": {
+        "exit": 1,
+        "manifest_reached": false,
+        "stderr": ""
+      },
+      "identity_changed": {
+        "exit": 1,
+        "manifest_reached": false,
+        "stderr": ""
+      },
+      "save_fail": {
+        "exit": 23,
+        "manifest_reached": false,
+        "stderr": ""
+      },
+      "files_fail": {
+        "exit": 24,
+        "manifest_reached": false,
+        "stderr": ""
+      }
+    },
+    "schema": "native-entry-final-independent-review/1",
+    "issue": 1499,
+    "reviewer": "independent Codex child /root/sinan_477594d6dab645a8",
+    "reviewed_at": "2026-11-19T06:23:34.534081+00:00",
+    "status": "passed_scoped_independent_integration_review",
+    "blocking_findings": [],
+    "method_recall": {
+      "scope": "editor-dependency-handoff",
+      "lesson": "bind-consumer-release revision23",
+      "application": "Exact producer/consumer bytes, changed test AST and source-vs-production acceptance separation. Other recalled process/automatic-review lessons do not substitute for candidate validation. No learning-event write authorization; parent may record application."
+    },
+    "review_conclusions": [
+      "Seven resolver implementation/test files exactly match independent resolver review; transport client exactly matches independent transport review. Current backpressure test differs only by certificate-line codespell comment: removing exact comment reconstructs reviewed SHA256 and AST equality passes.",
+      "Factory version3 resolver and recovery/binding callbacks compose with existing runtime HTTP client without new privileges, retry loops or trust changes. Existing v1/v2 semantics and unknown execution holds remain. Ordinary 28 combined tests are reused from current delivery report; 33 plus 12 independent transport results are reused under exact-source/AST checks, not represented as rerun.",
+      "Both routine PR suites exclude only the named synthetic250 burst. Optional workflow_dispatch boolean defaults false; current shell/Python probes confirm explicit not_run_user_deferred versus passed markers and permanent production capacity not_accepted. Functional suite and resolver tests remain enabled.",
+      "Exact built image ID feeds ordinary and optional tests, save and source-inventory export. Export and upload retain default success gating after functional checks; no continue-on-error. Injected inspect failure, identity mismatch, save failure and file-enumeration failure stop before manifest. Pipeline has pipefail.",
+      "Manifest binds actual checkout/tree separately from candidate head, archive/source inventory byte counts and hashes, image ID, run and attempt. Compose rebuild remains separate image: its smoke success is not proof it ran exported ID. Consumers must verify all applicable CI and main delivery.",
+      "Current module proof lists completely cover both module inventories and every referenced input blob/evidence SHA256 matches candidate. Host policy exact prior205-entry bytes verified; earlier9392-source SCons graph is bounded reuse for unchanged native consumers, not a new compile or package validation.",
+      "New Python sources and tests are included by existing server/sinan Docker COPY directories and inventory additions. No missing copy found. Public transport historical report wrapper explicitly preserves original hash; prior test hash is contextual only and new test hash is bound separately.",
+      "Historical PR1532 failed burst and unaccepted package/server outcomes remain explicit. Current report and docs retain unresolved production onboarding, CLI adapters, large-context conflict support and full goal acceptance."
+    ],
+    "validation_command": "py -B -X utf8 D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-entry-assembled-final-review-20261119-probes\\review_probe.py",
+    "limits": [
+      "No Docker/provider/server/network or high-concurrency operations; no rerun of passed28/33/12 suites.",
+      "Shell probes use docker/gzip/python functions; test pipefail/control flow, not compression or container correctness. Embedded manifest Python runs with synthetic files and mocked command outputs.",
+      "YAML parsing and sh -n done; no actionlint binary available. Actual ordinary functional CI, candidate gates, remote main readback and server acceptance remain root-owned.",
+      "Private source reports outside delegated readable paths were not reopened; exported wrapper original hashes are provenance claims corroborated by prior reconciled reviews, not independently rehashed originals here.",
+      "Parent may append/rebind dispatch/evidence metadata; any changed business source or CI logic needs renewed review. Index binding applies only to recorded exact tree."
+    ],
+    "cleanup": {
+      "created": "Only this report and allowed probes directory",
+      "retained": "Probe script, synthetic manifests/files and outputs retained as reproducible evidence; no cache, server, worker or package resources created. Existing policy-blocked fixtures untouched.",
+      "source_index_git_changes": false
+    },
+    "probe_files": {
+      "export-exact.sh": "673949e6a46e042e0e716a9829b917225d3bbad61f44451409312158cef6a631",
+      "results.json": "03d2d6a8b04ffd8b2afe8c2fcffe2349d2758212ae03c316674d2958a198c2bb",
+      "review_probe.py": "00bff4dbf3f890a414c3aa19f357f515457a7df2afb6b85a13edd62ce2cf4fda",
+      "shell-success\\manifest-reached": "52774637822c236d84ed1e221bb24d9c1840e08c9d3542efd26f16e27ac8c0a2",
+      "shell-success\\native-api-package\\api-image.tar.gz": "0eb3e36bfb24dcd9bb1d1bece1531216b59539a8fde17ee80224af0653c92aa3",
+      "shell-success\\native-api-package\\image-files.json": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "shell-save_fail\\native-api-package\\api-image.tar.gz": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "shell-files_fail\\native-api-package\\api-image.tar.gz": "0eb3e36bfb24dcd9bb1d1bece1531216b59539a8fde17ee80224af0653c92aa3",
+      "shell-files_fail\\native-api-package\\image-files.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "manifest-true\\deploy\\Dockerfile.api": "6ea2eaaffcb337ea8434dd20fb530e526d99cd2ddc31b35b9bd1d5e0293743da",
+      "manifest-true\\deploy\\Dockerfile.api.dockerignore": "320a2fcc12a3cd2bd7111ea36dc0fb50ab2ffd3f6c23ace2353515fa2b4605fc",
+      "manifest-true\\native-api-package\\api-image.tar.gz": "f197e4c6a8f50678756cbd027550c6216ea5244c47366eefd748f062afd1e7f1",
+      "manifest-true\\native-api-package\\image-files.json": "1bcdf8ec49ae35f0f8d77006e3ed0e8fabd9123b05f0be3aced4462a40ce56cb",
+      "manifest-true\\native-api-package\\manifest.json": "a0f8213b8f0dfcf5e267001b31483ce69270fd8dd12c3dcef8a887c84af3070a",
+      "manifest-true\\.github\\workflows\\tianxuan-deploy-build.yml": "aa8e766633c295d8d499c65db94a71abf59dc43d027458fdd1037ac79bbb93df",
+      "manifest-false\\deploy\\Dockerfile.api": "6ea2eaaffcb337ea8434dd20fb530e526d99cd2ddc31b35b9bd1d5e0293743da",
+      "manifest-false\\deploy\\Dockerfile.api.dockerignore": "320a2fcc12a3cd2bd7111ea36dc0fb50ab2ffd3f6c23ace2353515fa2b4605fc",
+      "manifest-false\\native-api-package\\api-image.tar.gz": "f197e4c6a8f50678756cbd027550c6216ea5244c47366eefd748f062afd1e7f1",
+      "manifest-false\\native-api-package\\image-files.json": "1bcdf8ec49ae35f0f8d77006e3ed0e8fabd9123b05f0be3aced4462a40ce56cb",
+      "manifest-false\\native-api-package\\manifest.json": "085f9f7e829047f95ce053203e10584bba8a688485bb5d65e710d0d70ac203e1",
+      "manifest-false\\.github\\workflows\\tianxuan-deploy-build.yml": "aa8e766633c295d8d499c65db94a71abf59dc43d027458fdd1037ac79bbb93df"
+    }
+  }
+}

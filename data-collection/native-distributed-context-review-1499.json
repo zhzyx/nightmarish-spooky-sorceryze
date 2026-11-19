@@ -1,0 +1,186 @@
+{
+  "original_report": {
+    "path": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-distributed-context-review.json",
+    "sha256": "2cc761e2a32fd8a2abc9ac19e6a4a647a9fbfa84d5d64a7ebd52439c8362a0fb",
+    "path_base": "absolute private evidence archive"
+  },
+  "export": "Lossless JSON value export; original retained.",
+  "report": {
+    "issue": 1445,
+    "related_issues": [
+      1499,
+      1382
+    ],
+    "reviewer": "independent native Codex subagent /root/sinan_8e55e8047b11d5b0",
+    "reviewed_at": "2026-11-18T10:27:34.447907+00:00",
+    "decision": "PASS_WITH_SCOPE_LIMITS",
+    "whole_goal_complete": false,
+    "conclusion": "Evidence supports 250 distinct reserved synthetic context executions under one actor, each externally bound and manifest-resolved using actual EntryContextClient and EntryContexts. It does not establish 250 model executions, user capacity, ordinary production installation, or end-to-end acceptance.",
+    "checks": {
+      "summary_artifact_hashes_match": true,
+      "distinct_ready_keys_250": true,
+      "driver_250_unique_successful_keys": true,
+      "ready_driver_ledger_key_sets_equal": true,
+      "exactly_one_started_resolved_per_key": true,
+      "transport_recovery_result_matches": true,
+      "uploaded_driver_bytes_match_local": true,
+      "original_false_receipt_preserved": true,
+      "500_successful_driver_rpc_attempts": true,
+      "runtime_archive_hash_matches": true,
+      "overlays_hash_match": true,
+      "original_and_v2_cleanup": true
+    },
+    "method_recall": {
+      "tenant": "gonggong-workspace",
+      "scope": "editor-native-acceptance",
+      "lesson": "assert-async-operation-started",
+      "revision": 2,
+      "application": "Check actual started/resolved ledger events and matching execution key sets, not absence of errors alone. Original admission-refusal negative case must instead show no driver launch. No learning-store writes within this narrow review scope."
+    },
+    "source": {
+      "server_script_sha256": "f9808de7ba974f27ca7f8235e5abdd22dfd567434fd263e5d5f9ff28e67f4014",
+      "overlay": {
+        "files": {
+          "customizations/components/tianxuan/server/test_native_entry_broker_context.py": {
+            "sha256": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\smoke-test_native_entry_broker_context.py",
+            "remote": "smoke-test_native_entry_broker_context.py"
+          },
+          "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": {
+            "sha256": "88f522a4fde1a2b2c3147f9d4ed5944e2acb95439eaf1625665b99af492ce8b9",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\smoke-test_native_entry_context_backpressure.py",
+            "remote": "smoke-test_native_entry_context_backpressure.py"
+          },
+          "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": {
+            "sha256": "060ac18a8735a91a583c3355e43c1d2b537b0e5c8ce974035bd50f85594c9168",
+            "local": "D:\\GongGong\\data-collection\\receipts\\duobao-1382\\native-runtime-server-sandbox\\smoke-native_entry_context_client.py",
+            "remote": "smoke-native_entry_context_client.py"
+          }
+        },
+        "image": "sha256:9e68494a546fed6479a8651ea7114c3f297fe06b3443665393c26d55fe8bfb9b",
+        "scope": "Exact three readonly file overlays on committed fd48cb4 runtime derivative; no production installation"
+      },
+      "source_commit": "5224b6ba8594aa52f85a5cc2f302d26202749843"
+    },
+    "source_boundary": {
+      "runtime_candidate": "fd48cb4a8a03e20292ef3c1c0def89d5aaf5b8b6",
+      "runtime_image": "sha256:9e68494a546fed6479a8651ea7114c3f297fe06b3443665393c26d55fe8bfb9b",
+      "current_source_head_readback": "5224b6ba8594aa52f85a5cc2f302d26202749843",
+      "normal_Dockerfile_build": false,
+      "overlays": "Exactly three files recorded in source.overlay, not a complete 5224b6b image. Archived server/native_entry_context.py and test_native_entry_context.py match current text after newline normalization; archive byte hashes remain authoritative. Two overlay test modules are present but are not executed by this probe. Client is imported from the verified local candidate and overlaid into the runtime; real server classes are wired by a synthetic fixture."
+    },
+    "dataset_and_policy": {
+      "actors": 1,
+      "distinct_reserved_executions": 250,
+      "module": "a",
+      "shared_fixture_data": "NativeStore initial namespace revisions for a/b/c, output bytes initial; all 250 tasks select initial a revision. Distinct execution IDs do not mean distinct user datasets.",
+      "source_binding": "task() creates individual domain Issues and authorizes/reserves each task with its source snapshot; ready, driver rows and ledger key sets are identical. Binding constructor RPC precedes each manifest resolve. One fixture binding occurs before measured driver and is outside its 1428 attempts.",
+      "limits": {
+        "full_bytes": 1024,
+        "response_bytes": 4096,
+        "chunk_bytes": 1024,
+        "total_bytes": 8192,
+        "max_reads": 20
+      },
+      "runtime_policy": "Synthetic RuntimeInstallation JSON hashed at construction; installation identity installed and trusted fixture authority callbacks. Not production credential/authentication/onboarding proof.",
+      "ledger_scope": "Exactly one started and one resolved event per execution for the tested manifest operation; not general exactly-once guarantees, nor worker/model/process lifecycle completion. Recovery retains event kinds, not independent payload-level manifests or a full SQLite archive locally."
+    },
+    "observed": {
+      "success": 250,
+      "seconds": 46.905999999988126,
+      "p50_seconds": 28.45299999997951,
+      "p95_seconds": 44.421999999991385,
+      "rpc": {
+        "attempts": 1428,
+        "known_not_started": 928,
+        "unknown": 0
+      },
+      "coordinator_memory_peak_bytes": 77709312,
+      "coordinator_memory_peak_MiB": 74.109375,
+      "cgroup_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n",
+      "swap_peak": 0,
+      "durable_started": 250,
+      "durable_resolved": 250,
+      "exactly_once": true,
+      "remaining_threads": [
+        "MainThread"
+      ]
+    },
+    "resources": {
+      "coordinator_limit_bytes": 201326592,
+      "coordinator_cpus": 1,
+      "host_MemTotal_raw": "469224 kB",
+      "host_MemTotal_MiB": 458.2265625,
+      "host_meminfo_source": "native-runtime-server-sandbox/backpressure-memory-readback.json (same host earlier readback)",
+      "peak_bytes": 77709312,
+      "peak_MiB": 74.109375,
+      "swap_peak_bytes": 0,
+      "boundary": "Peak belongs to coordinator cgroup only. External Windows driver, SSH transport, host daemons and their resources are outside this peak. The host has configured swap; zero cgroup swap does not mean swap-free host. Earlier combined driver/coordinator 192MiB OOM remains valid separate evidence."
+    },
+    "failures_and_recovery": [
+      "Original fixture default capacity=2 caused reservation rejection before ready; original failure and cleanup preserved. V2 only changes trusted synthetic fixture capacity to250.",
+      "Forward log has Too many open files. 46.906s/p50/p95 include client retry and forwarding pressure; no isolated service throughput or saturation-rate claim.",
+      "Server passed=false with JSONDecodeError at character0 reading driver-done during non-atomic SCP. Successful component recovery must never overwrite or relabel this original harness failure as a clean run.",
+      "Recovery waits for original container absence, uses docker --network none --read-only and readonly /evidence bind; sqlite connections mode=ro; source contains only reads/SELECT and stdout. No API, provider, task authorization or model replay. Synchronous recovery exit0 and --rm establish recovery completion; downloaded driver digest matches Windows file."
+    ],
+    "terminal_state": {
+      "original_and_v2_containers_removed": true,
+      "server_remaining_threads": [
+        "MainThread"
+      ],
+      "driver": "ThreadPoolExecutor exits after all rows; forwarding terminate+wait precedes recorded cleanup. No new driver or container started by this review.",
+      "recovery": "Synchronous docker --rm returned exit0.",
+      "readonly_remote_readback": {
+        "ssh_exit_code": 0,
+        "docker_inspect_return_codes": {
+          "gonggong-native-1499-distributed-context-20261118": 1,
+          "gonggong-native-1499-distributed-context-v2-20261118": 1,
+          "gonggong-native-1499-ledger-readback-20261118": 1
+        },
+        "stderr": ""
+      },
+      "production": "Recorded before/after container ID/image/name sets identical; this is process-list continuity, not comprehensive production health validation."
+    },
+    "overclaim_guardrails": [
+      "Say synthetic context RPC capacity evidence, not production execution capacity.",
+      "Do not call the original v2 server harness passed; recovered component checks passed after the harness failed.",
+      "250 threaded operations do not prove 250 simultaneously serviced requests: admission returns typed503 and retries.",
+      "No provider concurrency, 50-user testing, requirements-to-delivery acceptance, model quality, token savings or normal-image deployment proof.",
+      "Host memory is469224kB (458.2265625MiB), not469MiB."
+    ],
+    "remaining_authorized_work": "No remaining review action; delivery and broader acceptance remain parent responsibility. Atomic completion publication and forwarding descriptor correction are future harness work, not performed in this read-only review.",
+    "writes": [
+      "data-collection/receipts/duobao-1382/native-distributed-context-review.json"
+    ],
+    "cleanup": "No temporary files, containers, branches or worktrees created by reviewer; final review receipt retained.",
+    "artifacts": {
+      "native-distributed-context-summary-1499.json": "0c357e2d4a8b474f55d4d1e2bc7492214d50f52d6032dc0f13eab8fd8628a9f5",
+      "distributed-context-server.py": "2ba453a5c7d2085632abd095d3f8bce3d739211646360cfb75c38cdef5844459",
+      "distributed-context-server-v2.py": "f9808de7ba974f27ca7f8235e5abdd22dfd567434fd263e5d5f9ff28e67f4014",
+      "run-distributed-context.py": "e4ec62f9af2cd5858ba9e3f1fd43c8b1bf964f792f1cce69ec838ca80c1350e4",
+      "run-distributed-context-v2.py": "96c7d3b6b236b55c0544efce062d90f0d967b5494dfb897421e507befd874ca7",
+      "recover-distributed-context-ledgers.py": "48636127819deb8fbcf1730ac0e6c68ba9526d93d84d5f35ed10d55b6fb726b5",
+      "native-distributed-context-250/cleanup.json": "eae3c32ab507514137db88ae114f6b7b26ed533cd0d4a5291577823eb3def790",
+      "native-distributed-context-250/failure.log": "40d4fe83128eb8e8dacfb2d968fcd13359f93a4a64ddf111f26b07dbebcb07aa",
+      "native-distributed-context-250/inputs.json": "7417db39ea3103d5b6521c06417506581e9bbb37819080941a5481edbbc14bef",
+      "native-distributed-context-250/launch.json": "4761737d928da4a55c4505504392384edd02729c6656cb5bcd1de623ce85df4d",
+      "native-distributed-context-250-v2/cleanup.json": "eae3c32ab507514137db88ae114f6b7b26ed533cd0d4a5291577823eb3def790",
+      "native-distributed-context-250-v2/driver-result.json": "1d687cf9b5d5d26e4bd7178767da4300a0fc234e75940cd7ace478c4a037a74a",
+      "native-distributed-context-250-v2/forward.log": "ebfb6c096bd4d8d5700acb7a5ed273e9b27178747350afbf1b331d5ce6c14f35",
+      "native-distributed-context-250-v2/inputs.json": "8f32cfa8d502ef6de5941f9a0b89b44f2e5f7cca96299bb6f5b84584e1a8ee42",
+      "native-distributed-context-250-v2/launch.json": "52cca63d048a1f12d0b5bcd56a5878abbea7562192fe56d0642a28b6d4fffe32",
+      "native-distributed-context-250-v2/ledger-readback-transport.json": "ac7dac70573ef619e23b069fbc0b72d1a93a6c8b61bda6d2f0901b41a08dfa80",
+      "native-distributed-context-250-v2/ledger-readback.json": "9c46712b77498b618e6c12c8b12700037c4ec5d9dde6fac5b00212c0e7992098",
+      "native-distributed-context-250-v2/ready.json": "d914b7a27bb206cef9bb2a456223bde0767746f988b29d82c33f44f3208e5bca",
+      "native-distributed-context-250-v2/server-result.json": "000c8aed0759565dbaca6f836ed95d8085068791d1dc20ac67170fb70e35412e",
+      "native-runtime-server-sandbox/inputs.json": "d13eec520d5cf8b9c9a6b7a3c961eeb592ccd1ae413e7261697199b5ff00c694",
+      "native-runtime-server-sandbox/source.tar.gz": "394c9cfb7e5c704c4631ca4e7053b45af3d888ef2808468cac4acf9ba71cf287",
+      "native-runtime-server-sandbox/server-result.json": "cd88e2e284656a743530d24cfb13f24e343c76b817decbe20033a6d9895e717b",
+      "native-runtime-server-sandbox/backpressure-smoke-inputs.json": "feb5de381be708e2aaf42e3fc266f2f21a4df5293654f225f070baf165a39f35",
+      "native-runtime-server-sandbox/backpressure-memory-readback.json": "8db971b7f7c029b88b78257f0b1608196eb897541d1fed46223e5b90c9a52418",
+      "native-runtime-server-sandbox/smoke-test_native_entry_broker_context.py": "ece8fecf5b4727c75d2791f8cd376df2219afef0996eb1e4dbe843351668d607",
+      "native-runtime-server-sandbox/smoke-test_native_entry_context_backpressure.py": "88f522a4fde1a2b2c3147f9d4ed5944e2acb95439eaf1625665b99af492ce8b9",
+      "native-runtime-server-sandbox/smoke-native_entry_context_client.py": "060ac18a8735a91a583c3355e43c1d2b537b0e5c8ce974035bd50f85594c9168"
+    }
+  }
+}

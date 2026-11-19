@@ -1,0 +1,60 @@
+{
+  "request_id": "native-production-entry-20261118",
+  "issue_number": 1499,
+  "related_issues": [
+    1382,
+    1445,
+    1501,
+    1526,
+    1529
+  ],
+  "date": "2026-11-19",
+  "state": "source_slice_verified_pending_final_independent_review_and_delivery",
+  "sources_sha256": {
+    ".github/workflows/tianxuan-deploy-build.yml": "aa8e766633c295d8d499c65db94a71abf59dc43d027458fdd1037ac79bbb93df",
+    ".github/workflows/tianxuan-tests.yml": "f27cae24db8881a344621786e9fd0e6bd874cebed0e27fbbcb7c86878f115537",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "ab1e41ace8172aabc37c3d039d89bc90ca68e45b52ac2ee18a9535ec0f4822b3",
+    "customizations/components/tianxuan/server/native_entry_resolver.py": "49f06c5b64e7659b7bf76974592c2e28218d47fa37f1020957c2ff02141cd9c8",
+    "customizations/components/tianxuan/server/native_installation.py": "ec4c0326d613c3dcdb7320cb9adddb7246740914faad9a7cbfec6716238dc362",
+    "customizations/components/tianxuan/server/test_native_entry_context_backpressure.py": "8e800d8cd1ef12007bd59a81cb7d490959f4d5135e133699bd8284a441ff8947",
+    "customizations/components/tianxuan/server/test_native_entry_resolver_normal.py": "91f26f4e0132d74124de9ff431167fb330f1550f963a1588255946dcdb2cfa6e",
+    "customizations/components/tianxuan/sinan-workorders/native_continuous.py": "d738528a30ddbfd36c744fadb47839af74fbb706e5c468f8e8a3c3f249864798",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_context_client.py": "2b23d56d4860c5ff4309b52d43026e0348bec0c1041df649fe92bde27746c026",
+    "customizations/components/tianxuan/sinan-workorders/native_entry_runtime.py": "48f1c718fedbe6bc04da549e8e2dcbafe778f7195dfd3b28446cbe187e1dd7f4",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "d454c7a0c5b47552b16ba625b3ad97836b06625c7d6cf7ba74827ae4bea62ce9",
+    "deploy/README.md": "0d0c610af5557ebc89d2e965e91b9ddf4f8dd80e1ffe2b9bba338ced7f3750e4",
+    "tools/native_host_inputs.json": "555da560bf77e777191b89b4b6154a601a6a2af27755bec122f0d32fb937e55f"
+  },
+  "authority": "User requested submission of completed portions; high concurrency testing remains explicitly deferred.",
+  "validation": {
+    "command": "D:/GongGong-work/tx-venv/Scripts/python.exe -B -X utf8 -m pytest -q -p no:cacheprovider --basetemp <owned-absolute-private-temp> customizations/components/tianxuan/server/test_native_entry_resolver_normal.py customizations/components/tianxuan/server/test_native_entry_broker_context.py customizations/components/tianxuan/server/test_native_entry_remote_normal.py",
+    "environment": "Windows, Python3.12, existing actual Node runtime; deterministic installed role processes and loopback broker; no provider calls.",
+    "exit_code": 0,
+    "result": "............................                                             [100%]\n============================== warnings summary ===============================\n..\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1\n  D:\\GongGong-work\\tx-venv\\Lib\\site-packages\\fastapi\\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n28 passed, 1 warning in 72.49s (0:01:12)\n",
+    "log_sha256": "5b42f538daffbf0b8eb31e5e758a48a79644b5e6442e059fbca99ce73f519f58"
+  },
+  "reviews": {
+    "resolver": "data-collection/native-installed-resolution-review-1526.json",
+    "transport": "data-collection/native-entry-transport-review-1499.json",
+    "artifact": "data-collection/native-runtime-artifact-review-1529.json",
+    "limitation": "Earlier artifact review predates explicit deferred-burst CI selection and validation_scope fields; final integration review must inspect those changes."
+  },
+  "deferred": {
+    "high_concurrency": "User deferred actual pressure testing. Both PR test entries exclude only test_250_local_tool_burst. Original code remains opt-in with default false; no stress was run in this submission preparation.",
+    "old_failure": "PR1532 Docker run44291364937: normal77 passed, two512MiB same-process burst cases timed out; export skipped. Later192MiB no-swap colocated model fixture OOM and separate burst ContextNotStarted503 remain unresolved historical evidence.",
+    "scope": "Linux is the server/coordinator; actual client is Windows/Godot/browser and existing execution nodes. Future production capacity tests must match that topology. No 50-user/250-task acceptance."
+  },
+  "remaining": [
+    "Normal CI image download and identity verification, isolated server install/update/rollback",
+    "Production organization onboarding and all CLI role adapters",
+    "Large multi-revision conflict context and full real-model business acceptance",
+    "Deferred high-concurrency acceptance, original docs/workbench and AA rendering goals"
+  ],
+  "cleanup": "Existing uncommitted copies, evidence, fixtures and rollback packages retained for delivery/recovery. Prior automatic policy rejected fixture deletion; no retry or bypass.",
+  "scope": "Only implemented source slices are submitted; parent and incompletely accepted children stay open. No deployment or full-goal completion.",
+  "static_correction": {
+    "failure": "Spell checker interpreted a test-only certificate base64 fragment as a prose typo",
+    "repair": "A narrow inline spelling exclusion on the certificate literal; AST equality proves certificate/key values and all executable statements unchanged.",
+    "original_test_sha256": "4e8d463648971873d3f39502543a83e3844f0eb4512aa7ee00313a0ee8df407a"
+  }
+}

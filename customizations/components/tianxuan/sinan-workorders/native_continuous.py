@@ -566,6 +566,19 @@ class ContinuousIntegration:
             started = time.time()
             try:
                 result = self.i.reconcile(actor, plan)
+                if (
+                    isinstance(result, dict)
+                    and result.get("state") == "conflicts_pending"
+                    and callable(self.i.installed_resolver)
+                    and all("path" in c for c in result["conflicts"])
+                ):
+                    result = self.i.resolve(actor, plan)
+                if isinstance(result, str):
+                    plan = result
+                    with self.w._transaction() as db:
+                        db.execute("UPDATE native_continuous_batches SET plan=? WHERE id=?", (plan, active))
+                    batch["plan"] = plan
+                    result = self.i.finish(actor, plan)
                 if result.get("state") == "conflicts_pending":
                     bad = {c.get("task") for c in result["conflicts"]}
                     # Dependency conflicts lacking an exact member bind the batch.

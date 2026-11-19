@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cbf8a5e4faeef7737217da4a905cfa2bdf2e6683",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "native-installed-resolution-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1526",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "012f812d4c56d07f737730c538cf189f501d0a991797848a351a74eb5dc13280",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1526",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+    "action": "validation",
+    "detection_head": "84d62281f0c7179369aec4352047a9ba414582a7",
+    "context_sha256": "fadade94990a75458392e23ed26b28b8efed0c0f18540ef9771dd45677aa77bf",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a1e578-49b3-77f3-a3c4-6b284a5e688f:user-start-execution-20261117",
+    "evidence": "data-collection/native-installed-resolution-implementation-1526.json",
+    "diagnosis": "SCons dry run failed before graph discovery because this isolated checkout lacked the pinned WebView2 SDK. All six existing SDK files were reused from the previously verified own tree, checked against the byte-identical manifest and verified by the installed verifier. No native source changed.",
+    "next_action": "Preserve original failure log, rerun graph discovery with SDK present, then verify host inventory and cache boundary; independent source and delivery remain required.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-18T11:01:39.241299+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-18T11:03:06.576213+00:00",
+  "sha256": "45e943c6116baad8b67ed99825ca993c877aaeecb171a927d1a7209272c163ae"
+}
