@@ -22,6 +22,7 @@ from typing import Annotated, Any, cast
 from urllib.parse import quote
 
 from access_control import configure_access
+from anyio import from_thread
 from duobao_bridge import (
     GitService,
     GitServiceError,
@@ -46,6 +47,7 @@ from schemas import (
     DocIssueLinkRequest,
     DocMergeRequest,
     DocPatchRequest,
+    DocRestoreRequest,
     DocShareRequest,
     DocUpdateRequest,
     DocVisibilityRequest,
@@ -167,15 +169,18 @@ class DocRooms:
 
     async def broadcast(self, doc_id: str, payload: dict[str, Any]) -> None:
         for peer in list(self._peers.get(doc_id, ())):
+            actor = self._actors.get(peer)
+            if actor is None:
+                continue
             try:
                 try:
-                    self._store.get_doc_shared(self._actors[peer], doc_id)
+                    self._store.get_doc_shared(actor, doc_id)
                 except (NotFound, PermissionDenied):
                     await peer.close(code=4403)
                     self.leave(doc_id, peer)
                     continue
                 await peer.send_json(payload)
-            except (RuntimeError, WebSocketDisconnect):
+            except (OSError, RuntimeError, WebSocketDisconnect):
                 self.leave(doc_id, peer)
 
 
@@ -359,6 +364,11 @@ def create_app(
     app.state.required_approvals = required_approvals
     app.state.required_checks = tuple(required_checks)
     rooms = DocRooms(store)
+
+    def notify_document_change(document: dict[str, Any]) -> dict[str, Any]:
+        from_thread.run(rooms.broadcast, document["id"], {"type": "changed"})
+        return document
+
     if gateway is not None:
         app.include_router(create_model_router(gateway))
 
@@ -622,7 +632,7 @@ def create_app(
 
     @app.patch("/api/v1/docs/{doc_id}")
     def update_doc(doc_id: str, payload: DocUpdateRequest, actor: ActorDep) -> dict[str, Any]:
-        return store.update_doc(  # type: ignore[no-any-return]
+        updated = store.update_doc(
             actor,
             doc_id,
             payload.body_md,
@@ -632,7 +642,8 @@ def create_app(
             call_id=payload.call_id,
         )
 
-    # ---------- 偃师：需求与工单 ----------
+        # ---------- 偃师：需求与工单 ----------
+        return notify_document_change(updated)
 
     @app.post("/api/v1/requirements")
     def create_requirement(payload: RequirementCreateRequest, actor: ActorDep) -> dict[str, Any]:
@@ -838,10 +849,15 @@ def create_app(
     @app.post("/api/v1/docs/{doc_id}/merge")
     def merge_doc(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
         document = store.get_doc_shared(actor, doc_id, write=True)
+        if not 1 <= payload.expected_version <= document["version"]:
+            raise VersionConflict("draft base version is outside document history")
+        base = store.version(doc_id, payload.expected_version)["body_md"]
+        if payload.base_md != base:
+            raise VersionConflict("draft base content does not match its version")
         if document["version"] == payload.expected_version:
             updated = store.update_doc(actor, doc_id, payload.local_md, payload.expected_version)
-            return {"status": "applied", "doc": updated}
-        merged_md, conflicts = merge_offline(payload.base_md, payload.local_md, document["body_md"])
+            return {"status": "applied", "doc": notify_document_change(updated)}
+        merged_md, conflicts = merge_offline(base, payload.local_md, document["body_md"])
         if conflicts:
             return JSONResponse(
                 status_code=409,
@@ -852,7 +868,7 @@ def create_app(
                 },
             )
         updated = store.update_doc(actor, doc_id, merged_md, document["version"])
-        return {"status": "merged", "doc": updated, "remote_version": document["version"]}
+        return {"status": "merged", "doc": notify_document_change(updated), "remote_version": document["version"]}
 
     # ---------- 文曲：文档链接与反向链接 ----------
 
@@ -945,7 +961,7 @@ def create_app(
             [operation.model_dump() for operation in payload.patches],
             call_id=payload.call_id,
         )
-        return cast(dict[str, Any], result)
+        return notify_document_change(result)
 
     # ---------- 文曲：版本历史与差异 ----------
 
@@ -958,6 +974,11 @@ def create_app(
     def get_version(doc_id: str, version: int, actor: ActorDep) -> dict[str, Any]:
         store.get_doc_shared(actor, doc_id)
         return store.version(doc_id, version)  # type: ignore[no-any-return]
+
+    @app.post("/api/v1/docs/{doc_id}/versions/{version}/restore")
+    def restore_version(doc_id: str, version: int, payload: DocRestoreRequest, actor: ActorDep) -> dict[str, Any]:
+        updated = store.restore_doc(actor, doc_id, version, payload.expected_version, call_id=payload.call_id)
+        return notify_document_change(updated)
 
     @app.get("/api/v1/docs/{doc_id}/diff")
     def diff_versions(
@@ -1812,7 +1833,7 @@ def create_app(
 
     @app.post("/api/v1/tools")
     def call_tool(payload: ToolCallRequest, actor: ActorDep) -> dict[str, Any]:
-        document_tools = {"doc.read", "doc.list", "doc.search", "doc.create", "doc.update", "doc.patch"}
+        document_tools = {"doc.read", "doc.list", "doc.search", "doc.create", "doc.update", "doc.patch", "doc.restore"}
         available_tools = document_tools | {
             "requirement.create",
             "requirement.plan",
@@ -1828,9 +1849,12 @@ def create_app(
         if public_workspace and payload.name not in document_tools:
             raise HTTPException(status_code=403, detail="this workspace is limited to document tools")
         try:
-            return cast(
+            result = cast(
                 dict[str, Any], store.dispatch_tool(actor, payload.name, payload.payload, call_id=payload.call_id)
             )
+            if payload.name in {"doc.update", "doc.patch", "doc.restore"}:
+                return notify_document_change(result)
+            return result
         except (TypeError, KeyError) as error:
             raise HTTPException(status_code=422, detail="invalid tool arguments") from error
 

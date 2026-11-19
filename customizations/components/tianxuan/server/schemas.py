@@ -207,6 +207,11 @@ class ToolCallRequest(BaseModel):
     call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
+class DocRestoreRequest(BaseModel):
+    expected_version: int = Field(ge=1, strict=True)
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
+
+
 class DocPatchRequest(BaseModel):
     """按版本号对文档做结构化补丁，供 AI 以最小 token 编辑。"""
 
