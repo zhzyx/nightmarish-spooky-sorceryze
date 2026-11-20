@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-image-artifact-nodes-20261120",
+  "issue_number": 1679,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679",
+  "state": "passed",
+  "editor_sha256": "3f2ca9c3eab7cd478fd77c14401268963d7da9ff267c662a337dce904a368734",
+  "bundle_version": "ad20b915c5e2bbfda216f19a6f7303ef9794fe463b1ce125bf0e08799aa04646",
+  "workbench_sha256": "a8f6a55c2f0a2789e30e427eeebaf72d41a2480e833d37cb2f033347728f2371",
+  "validation": [
+    {
+      "name": "artifact_node_acceptance.gd",
+      "state": "passed",
+      "evidence": "Gallery, downloads, reference wiring, persistence and non-overlapping layout pass in real Godot controls."
+    },
+    {
+      "name": "prompt_refresh_acceptance.gd",
+      "state": "passed",
+      "evidence": "Full-workflow prompt changes produce different PNG bytes and refresh the gallery and preview; Delete preserves formal state, history and files."
+    },
+    {
+      "name": "multi_image_acceptance.gd and node_preview_acceptance.gd and port_type_acceptance.gd",
+      "state": "passed",
+      "evidence": "Existing ordered images, durable history, preview and typed-port regressions pass on the final candidate."
+    },
+    {
+      "name": "AINative Python unit tests",
+      "state": "passed",
+      "tests": 489,
+      "skipped": 62
+    },
+    {
+      "name": "macOS arm64 editor build and installed bundle verification",
+      "state": "passed",
+      "evidence": "Normalized source, installed workbench and manifest SHA256 match."
+    },
+    {
+      "name": "User workflow acceptance",
+      "state": "passed",
+      "evidence": "User confirmed acceptance and authorized main delivery on 2026-11-20."
+    }
+  ],
+  "known_local_failures": [
+    {
+      "name": "context_menu_acceptance.gd service eligibility assertions",
+      "state": "failed",
+      "relation": "Two service-configuration eligibility assertions are outside this request's diff; all artifact and prompt-refresh acceptance checks pass."
+    }
+  ],
+  "external_model_inference_in_tests": false,
+  "main_merged": false
+}
