@@ -14,7 +14,7 @@
 
 | 任务类型 | 模块入口 |
 | --- | --- |
-| 工单、验收、分支清理、规范维护、路由迭代与 Git 交付后的需求沉淀 | `Markdown/workflow/README.md` |
+| 工单、验收、分支清理、规范维护、路由迭代与 Git 提交时的需求沉淀 | `Markdown/workflow/README.md` |
 | 编译、安装、启动、构建边界与构建契约 | `Markdown/build/README.md` |
 | 测试选择、回归验证、验收证据与结果记录 | `Markdown/testing/README.md` |
 | C++ 命名、格式、API、内存、并发与代码评审 | `Markdown/code-style/README.md` |
