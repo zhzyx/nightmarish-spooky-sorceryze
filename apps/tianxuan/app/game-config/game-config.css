@@ -1,0 +1,51 @@
+.game-config-page { max-width: 1360px; margin-inline: auto; }
+.game-config-page .page-lede, .game-config-page .btn-ghost { color: var(--paper-72); }
+.game-config-page .btn-ghost { background: var(--glass-soft); }
+.game-config-page .btn-ghost:hover { color: var(--paper); background: var(--ink-4); }
+.game-config-page .btn-danger, .game-config-page .gc-error { color: var(--error-text); }
+.gc-card { padding: 24px; min-width: 0; }
+.gc-editor, .gc-features { display: grid; gap: 20px; }
+.gc-features, .gc-create fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+.gc-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.gc-toolbar h2, .gc-toolbar h3 { margin: 0; }
+.gc-toolbar small, .gc-status, .gc-project small { color: var(--paper-72); }
+.gc-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; margin-bottom: 14px; }
+.gc-field > span { font-size: 12px; color: var(--paper-72); }
+.gc-field input, .gc-field textarea, .gc-field select { width: 100%; min-width: 0; border: 1px solid var(--line-strong); border-radius: var(--radius-xs); padding: 10px 12px; background: var(--ink-2); color: var(--paper); font: inherit; }
+.gc-field textarea { resize: vertical; }
+.gc-field :is(input, textarea, select):focus-visible, .gc-project:focus-visible, .gc-create summary:focus-visible { outline: 2px solid var(--jade); outline-offset: 3px; }
+.gc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; align-items: flex-end; }
+.gc-values { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.gc-filter, .gc-create-project { display: flex; gap: 16px; align-items: flex-end; }
+.gc-filter .gc-field:first-child, .gc-create-project .gc-field { flex: 1; }
+.gc-create-project .btn { margin-bottom: 14px; }
+.gc-projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin: 8px 0 20px; }
+.gc-project { text-align: left; color: var(--paper); padding: 14px; border: 1px solid var(--line-strong); background: var(--glass-soft); border-radius: var(--radius-sm); cursor: pointer; display: flex; flex-direction: column; gap: 6px; overflow-wrap: anywhere; }
+.gc-project.is-selected { border-color: var(--jade); background: color-mix(in srgb, var(--jade) 12%, transparent); }
+.game-config-page code { font-size: 12px; font-family: var(--font-mono); overflow-wrap: anywhere; }
+.gc-status { display: flex; flex-wrap: wrap; gap: 10px 22px; padding-block: 4px 16px; }
+.gc-conflict { border: 1px solid var(--gold); background: color-mix(in srgb, var(--gold) 7%, transparent); padding: 18px; margin-block: 12px 18px; border-radius: var(--radius-sm); }
+.gc-conflict h3 { margin-top: 0; }
+.gc-conflict .gc-toolbar { margin-top: 16px; margin-bottom: 0; }
+.gc-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.gc-compare > div { min-width: 0; }
+.gc-compare pre { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 320px; overflow: auto; font-size: 12px; }
+.gc-error { color: var(--cinnabar); overflow-wrap: anywhere; }
+.gc-entries { display: grid; gap: 18px; margin-top: 20px; }
+.gc-entry { border: 1px solid var(--line-strong); border-radius: var(--radius-sm); padding: 18px; min-width: 0; }
+.gc-entry .gc-toolbar > span { color: var(--paper-72); font-size: 12px; }
+.gc-create { border-top: 1px solid var(--line-strong); padding-top: 16px; margin-top: 16px; }
+.gc-create summary { cursor: pointer; font-weight: 600; margin-bottom: 16px; }
+.gc-create .btn { width: fit-content; }
+.gc-clients, .gc-versions { list-style: none; margin: 0; padding: 0; }
+.gc-clients li, .gc-versions li { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 12px 0; border-top: 1px solid var(--line); }
+.gc-clients li > div { display: grid; gap: 3px; }
+.gc-clients li > p { flex-basis: 100%; margin: 0; }
+.gc-versions time { color: var(--paper-72); }
+@media (max-width: 700px) {
+  .gc-card { padding: 16px; }
+  .gc-values, .gc-compare { grid-template-columns: 1fr; gap: 0; }
+  .gc-filter, .gc-create-project { align-items: stretch; flex-direction: column; gap: 0; }
+  .gc-projects { grid-template-columns: 1fr; }
+  .gc-grid { grid-template-columns: 1fr; gap: 0; }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8ee74d298eb46bd423ba6decfb9a655205576865",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-config-workbench-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1672",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "94bcad86f3d0ee8724ab400bbcccc652f771b6e82cb0796544491443bf119638",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1672",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1675",
+    "action": "validation",
+    "detection_head": "f4e6f59706d3017fcaafe775908316f60a1c1b85",
+    "context_sha256": "6b4b3cac7828006fe54d4ab4379a53dbd385f807b99b13e79b4c48da2974ea2c",
+    "operator": "Sail-Li",
+    "worker": "codex-root-game-config-20261120",
+    "authority_ref": "codex:user-request-20261120-game-config-platform",
+    "evidence": "Formal gate operation_reverified 2026-11-20T08:20:51.556799+00:00; local_checks_passed on complete staged candidate",
+    "diagnosis": "Task-only Python virtualenv under ignored receipts contained executable symlinks, while collection validation rejects any symlink. Converted those four own executable links to regular copied binaries; interpreter and dependencies verified. No tracked code or other task resource changed.",
+    "next_action": "Original validation recovered; proceed signed submission.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T08:19:48.099963+00:00",
+    "attempted": "Formal issue gate passed",
+    "repair_owner": "Sail-Li/current Codex",
+    "continuable": "All delivery steps"
+  },
+  "occurred_at": "2026-11-20T08:22:04.031022+00:00",
+  "sha256": "7f8926b339d6469a4396087577b38861e1c1e3c5d7f13e0c6d55a8c4fa911e7a"
+}

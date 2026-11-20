@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "game-config-platform-20261120",
+  "collected_at": "2026-11-20T08:16:50.393991+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-config-platform-20261120/dispatch-89b3fdb29dea407e93306ff1ca7f001c.json",
+      "sha256": "1d47999007850d8ee495c755449b37969f67c6d3d3c88748e8d437fb3d1dc996",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-89b3fdb29dea407e93306ff1ca7f001c",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-config-platform-20261120/dispatch-d5377208454e461aa641ddd6c64fbf2f.json",
+      "sha256": "1cdff08f1876895688cf461a543c255f682a8e7c8e0f7eb216c9bd253a107be4",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-d5377208454e461aa641ddd6c64fbf2f",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-config-platform-20261120/dispatch-fe328aa8d4ab4b8bad9fcc341ff38d76.json",
+      "sha256": "7e50aeb1005f420a0932f9c60d557290e4f2628d2c0c37f043390b32249fc8b3",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-fe328aa8d4ab4b8bad9fcc341ff38d76",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-config-platform-20261120/game-config-1671-request.json",
+      "sha256": "891ec435b27e587e1e24a420b0b2a8b16511bc5228e6dd9f7713860124160f26",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "game-config-1671-request",
+      "origin": "explicit-user-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-config-platform-20261120/kuafu-78d3c45510b2f0bb2ae9cbf8ae4c628deca21476.json",
+      "sha256": "ac1af8332b8940bf29dddd0000fd38a4696376ca506e40277cedf7c392ba9b2b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-78d3c45510b2f0bb2ae9cbf8ae4c628deca21476",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-config-platform-20261120/kuafu-caec15fdda5fc10eb5281969a3406e8c88ffdbc5.json",
+      "sha256": "18ed9d1a47a373dfd4fa667923bf5f4edc6938a30a37cc4dad79d353b087355e",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-caec15fdda5fc10eb5281969a3406e8c88ffdbc5",
+      "origin": "authenticated_host_role"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/game-config-platform-20261120/kuafu-ea5b7a6d16d555cc88c913c500c366d897838673.json",
+      "sha256": "70c68e6834d1bd94acd9ee1c8a3a99f6534a0bbbb97e0da9e06e4f7ab5ca06b6",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "kuafu-ea5b7a6d16d555cc88c913c500c366d897838673",
+      "origin": "authenticated_host_role"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1671,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1671"
+}

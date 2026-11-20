@@ -1,0 +1,46 @@
+{
+  "request_id": "game-config-workbench-20261120",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1672",
+  "input_blobs": {
+    "apps/tianxuan/app/game-config/game-config.css": "889faf3dd3f557d461443a66618b2b438f57ad19",
+    "apps/tianxuan/app/game-config/page.tsx": "d7bc8dac81037afbb865d93ebecec9698a6c2f55",
+    "apps/tianxuan/components/AppShell.tsx": "6d6565cb930917f9424c056329d1af980b9639bb",
+    "apps/tianxuan/components/GameConfigPanel.tsx": "dbedbba7e6acb28d11029eb700673c50dfb7dc71",
+    "apps/tianxuan/lib/game-config-api.ts": "a07b29b932a661e1bab01b3efc0301b0070387a8",
+    "apps/tianxuan/lib/i18n.ts": "5b0c66ca4a6e6242f800d6eeb2d2aeda32dc24ac",
+    "customizations/components/tianxuan/server/access_control.py": "e8e50ebc8f72d5947be0b21e6909760d67f8ce47",
+    "customizations/components/tianxuan/server/api.py": "2f562adb59390b22214ad51ea89af07fc7bdba42",
+    "customizations/components/tianxuan/server/game_config.py": "a1784ace0e93fbfb714d1768a0b43e6996abdca4",
+    "customizations/components/tianxuan/server/game_config_api.py": "57ac48397ac6adcae509b645107357282e27d11e",
+    "customizations/components/tianxuan/server/game_config_schema.py": "70fea38b3ca15c3f7aa6ba000f39098ee5259a29",
+    "customizations/components/tianxuan/server/test_game_config.py": "3226cb8da1945e51adf564c9e2698293062d3315",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "9501b6eef0aaa054fa04b362226842c5fad2f390"
+  },
+  "checks": [
+    {
+      "command": "pytest test_game_config.py test_tool_receipts.py test_access_control.py test_account_registration.py test_api_versions.py test_api_merge.py test_api_session.py (Tianxuan server)",
+      "passed": true,
+      "observed": "130 passed; one existing FastAPI TestClient deprecation warning"
+    },
+    {
+      "command": "next build (apps/tianxuan)",
+      "passed": true,
+      "observed": "Compiled, typechecked and generated /game-config; existing migration CSS alignment warning only"
+    },
+    {
+      "command": "headless Chromium using installed Chrome; two isolated authenticated browser contexts against local Next and FastAPI",
+      "passed": true,
+      "observed": [
+        "UI project, feature and typed entry creation persisted",
+        "Two actual browser identities: overlapping edits preserve draft and explicit merge updates both",
+        "Independent edits retain both values using stable-ID three-way merge",
+        "Invalid numeric draft never changes the effective snapshot; repair saves",
+        "History restore creates a new effective revision; Wenqu link and stable-ID search work",
+        "Confirmed entry and feature deletion persists",
+        "Desktop/mobile render without page errors or horizontal overflow"
+      ]
+    }
+  ],
+  "independent_review": "data-collection/game-config-review-1671.json",
+  "scope": "Local support-platform acceptance, without production deployment or real game integration."
+}

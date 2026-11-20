@@ -45,3 +45,12 @@ python -m unittest discover -s customizations/components/tianxuan/server -p "tes
 工单页进入「工单流程」维护前置工单和阶段图。读取 `GET /api/v1/issues/{id}/work/flow` 可获取真实状态、进度、允许的边及依赖验收状态。向同一路径下的 `configure`、`dependencies`、`advance`、`judge` 提交变更，每次带当前 `expected_version` 和稳定 `call_id`。配置阶段使用 `{id, progress, human}`，流转边使用 `{from, to}`。阶段进度为 0–100，完成阶段 `done` 为 100。离开人工阶段须由用户明确选择目标并确认。
 
 AI 工具 `flow.read`、`flow.configure`、`flow.dependencies`、`flow.advance` 与页面读取同一工单记录。前置工单状态和当前访问权在流转时重新核对；原生托管前置还须有验收记录。旧工单沿用原始流程，新增依赖也约束既有 `issue.transition` 入口。可在隔离任务中先绑定未完成前置、验证推进被拒，再验收前置并确认推进，最后在人工阶段验证退回及完成操作。
+
+
+## Feature 游戏配置
+
+Web 入口为 `/game-config`。创建项目后，按 feature 维护参数、内容与稳定 ID；编辑完成自动保存，协作者收到新版本，同字段冲突保留草稿并要求明确合并。项目本身是 `kind=game_config` 的文曲文档，共享现有身份、租户、ACL 与版本历史。普通文曲编辑和历史恢复同样校验配置，非法快照不会发布。
+
+支持 number、integer、boolean、string、enum、json、reference，定义含当前值、默认值、说明和约束；feature 可关联文曲说明。运行实例通过认证 WebSocket 接收完整快照，游戏应用后显式确认，页面分别显示待应用、已应用与拒绝。离线连接不算应用成功。跨 API 进程的持久版本更新会在活动连接上同步。
+
+接口契约见仓库根 `design-docs/game-config-api-20261120.md`；可运行 Godot 4 接入及热更新验收见 `samples/game-config/README.md`。当前仅开发通用支持平台，没有实际生产游戏接入。服务测试入口为 `python -m pytest customizations/components/tianxuan/server/test_game_config.py`。

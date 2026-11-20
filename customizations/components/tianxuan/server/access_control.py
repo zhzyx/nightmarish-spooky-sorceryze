@@ -94,6 +94,8 @@ class ProductionAccess:
                 "/api/v1/invites",
                 "/api/v1/models",
                 "/api/v1/ws/docs",
+                "/api/v1/game-config",
+                "/api/v1/ws/game-config",
             )
             document_paths = {
                 "/api/v1/auth/me",

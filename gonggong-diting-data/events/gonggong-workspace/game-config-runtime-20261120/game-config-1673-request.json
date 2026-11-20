@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "game-config-1673-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-config-runtime-20261120",
+  "kind": "request",
+  "occurred_at": "2026-11-20T07:53:56.077984+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1673",
+  "agent": {
+    "id": "codex-current-operator",
+    "version": "not-reported-by-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636",
+    "origin": "explicit-user-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1673,
+    "operator": "Sail-Li",
+    "authorization_ref": "codex:user-request-20261120-game-config-platform",
+    "design": "design-docs/game-config-platform-20261120.md",
+    "api_contract": "design-docs/game-config-api-20261120.md",
+    "intake": "passed",
+    "scope": "Feature game configuration platform, versioned collaboration and live Godot application receipts"
+  },
+  "evidence_refs": [],
+  "sha256": "7bcafb984d9d0175c3e18f90bc602ff6352533607a29f373cbd3093e206dc11e"
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-05045a838636457a9de286e887e0389813174b40",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "game-config-platform-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1671",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4972545eb664fa33d2a14852ca980c158c2cedb72d6c249cd84e4566b8ae1c61",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1671",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1674",
+    "action": "dispatch",
+    "detection_head": "f4e6f59706d3017fcaafe775908316f60a1c1b85",
+    "context_sha256": "4cdcc9384aab71b7ca1060dfacff10d94dc3ddd47ef58a23c616e517a3ca2881",
+    "operator": "Sail-Li",
+    "worker": "codex-root-game-config-20261120",
+    "authority_ref": "codex:user-request-20261120-game-config-platform",
+    "evidence": "Independent reviewer /root/sinan_378b2d0288451da2 actually running and returning verified findings",
+    "diagnosis": "Authoritative Issue revision changed before source start while Kuafu notifications arrived. No worker was launched for old reservation. Verified never-launched release and fresh source read produced the actual reviewer.",
+    "next_action": "Review is proceeding; original dispatch recovered without reclaiming occupied workers.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T08:07:00.791592+00:00",
+    "attempted": "release-unstarted and source revalidation succeeded",
+    "repair_owner": "Sail-Li/current Codex",
+    "continuable": "All scope"
+  },
+  "occurred_at": "2026-11-20T08:16:58.116091+00:00",
+  "sha256": "2dfe1805a5ffcdeac256ff7b2ee1735fa65bde212d5d42bcc72f4e39c422d2dc"
+}

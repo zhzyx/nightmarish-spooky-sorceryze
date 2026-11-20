@@ -158,6 +158,13 @@ CREATE TABLE IF NOT EXISTS native_requirement_sources (
   tenant_id TEXT NOT NULL, module TEXT NOT NULL, doc_id TEXT NOT NULL,
   PRIMARY KEY (tenant_id, module), UNIQUE (tenant_id, doc_id)
 );
+CREATE TABLE IF NOT EXISTS game_config_clients (
+  id TEXT PRIMARY KEY, doc_id TEXT NOT NULL, actor TEXT NOT NULL,
+  name TEXT NOT NULL, version INTEGER NOT NULL DEFAULT 0,
+  reported_version INTEGER NOT NULL DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'pending', error TEXT NOT NULL DEFAULT '', last_seen REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS game_config_clients_doc ON game_config_clients(doc_id, last_seen);
 """
 
 _FIELD_FIELDS = {"title", "body_md", "status", "visibility"}
@@ -713,6 +720,19 @@ class Tianxuan:
         }
 
     # ---------- 文曲：文档 ----------
+    def _validate_game_config(self, actor: str, kind: str, body_md: str) -> None:
+        if kind != "game_config":
+            return
+        from game_config_schema import parse_config
+
+        try:
+            features = parse_config(body_md)
+        except ValueError as error:
+            raise TianxuanError(str(error)) from error
+        for feature in features:
+            if feature.get("document_id"):
+                self.get_doc_shared(actor, feature["document_id"])
+
     @_connection_call
     @_replayable("doc.create", legacy=False)
     def create_doc(
@@ -729,6 +749,7 @@ class Tianxuan:
     ) -> dict[str, Any]:
         self._require_editor(actor)
         tenant_id = self._tenant_of(actor)
+        self._validate_game_config(actor, kind, body_md)
         space_id = (
             space_id
             or self.db.execute(
@@ -786,6 +807,7 @@ class Tianxuan:
             raise PermissionDenied("no write access to document")
         if doc["version"] != expected_version:
             raise VersionConflict(f"expected version {expected_version}, found {doc['version']}")
+        self._validate_game_config(actor, doc["kind"], body_md)
         if body_md != doc["body_md"]:
             self._require_field_write(actor, doc, "body_md")
         if title is not None and title != doc["title"]:
