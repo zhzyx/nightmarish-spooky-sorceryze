@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0bf54c8b41f77e9b566132995c133548c3a1f5bb",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "kuafu-run-44108242937-attempt-1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1446",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a9e470c3bb31ea02f12d3fdd16b7df46419711bd3f3f6cf185f6c699c44d85e3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1446",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1446",
+    "action": "intake",
+    "detection_head": "6c83e0550db2324c35933d2e1fd93a75e060a836",
+    "context_sha256": "c245a9ac48cb67c44a03566409c071309a082be8eef2892734f2e09e216a3568",
+    "operator": "Sail-Li",
+    "worker": "/root/audit_tracking",
+    "authority_ref": "User authorized current Git Kuafu audit via issue 426 on 2026-11-21",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1446",
+    "diagnosis": "The initial read-only intake was rejected because status:planned is not active. The authorized audit changed only the issue status to in-progress; the same original intake passed and produced operation_reverified. Current-main Windows node --test tests/editor/test_codex_bridge.js passed all 21 tests, including private image cancellation cleanup, using local mock CLI processes only.",
+    "next_action": "Close the original cleanup incident with the existing main repair and this exact mock-test recovery; preserve the intake rejection and recovery evidence.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T21:46:46.083516+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T21:48:06.959112+00:00",
+  "sha256": "c377bf7ad94988844df5a7656dde7fa4edea56df04e8dd53de438e1da2d6fa1a"
+}

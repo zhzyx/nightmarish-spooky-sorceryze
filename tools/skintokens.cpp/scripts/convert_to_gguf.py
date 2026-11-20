@@ -16,8 +16,11 @@ import os
 import struct
 from dataclasses import dataclass
 from pathlib import Path
+from typing import TYPE_CHECKING, cast
 
-import numpy as np
+if TYPE_CHECKING:
+    import torch
+
 from safetensors import safe_open
 
 GGUF_MAGIC = b"GGUF"
@@ -72,9 +75,15 @@ def compact_name(name: str) -> str:
         ("cross_attn.", "xattn."),
         ("input_layernorm.", "an."),
         ("post_attention_layernorm.", "fn."),
-        ("q_proj.", "q."), ("k_proj.", "k."), ("v_proj.", "v."),
-        ("o_proj.", "o."), ("gate_proj.", "g."), ("up_proj.", "u."),
-        ("down_proj.", "d."), ("weight", "w"), ("bias", "b"),
+        ("q_proj.", "q."),
+        ("k_proj.", "k."),
+        ("v_proj.", "v."),
+        ("o_proj.", "o."),
+        ("gate_proj.", "g."),
+        ("up_proj.", "u."),
+        ("down_proj.", "d."),
+        ("weight", "w"),
+        ("bias", "b"),
     )
     output = name
     for old, new in replacements:
@@ -105,7 +114,7 @@ def choose_type(name: str, shape: tuple[int, ...], ftype: int) -> int:
 @dataclass
 class Tensor:
     name: str
-    value: object
+    value: torch.Tensor
     kind: int
     dimensions: tuple[int, ...]
     offset: int
@@ -113,12 +122,13 @@ class Tensor:
     @property
     def data(self) -> bytes:
         import torch
+
         dtype = torch.float32 if self.kind == F32 else torch.float16
-        return self.value.to(dtype=dtype).contiguous().numpy().tobytes(order="C")
+        return cast(bytes, self.value.to(dtype=dtype).contiguous().numpy().tobytes(order="C"))
 
 
-def load_tensors(path: Path) -> dict[str, object]:
-    result: dict[str, object] = {}
+def load_tensors(path: Path) -> dict[str, torch.Tensor]:
+    result: dict[str, torch.Tensor] = {}
     # PyTorch is used only as the safetensors numeric backend. Unlike a .ckpt
     # load this executes no file-controlled objects and handles BF16 exactly.
     with safe_open(path, framework="pt", device="cpu") as source:
@@ -132,8 +142,15 @@ def load_tensors(path: Path) -> dict[str, object]:
     return result
 
 
-def write_component(path: Path, component: str, values: list[tuple[str, object]],
-                    config_json: str, tokenrig_hash: str, vae_hash: str, ftype: int) -> None:
+def write_component(
+    path: Path,
+    component: str,
+    values: list[tuple[str, torch.Tensor]],
+    config_json: str,
+    tokenrig_hash: str,
+    vae_hash: str,
+    ftype: int,
+) -> None:
     tensors: list[Tensor] = []
     offset = 0
     names: set[str] = set()
@@ -191,12 +208,9 @@ def write_component(path: Path, component: str, values: list[tuple[str, object]]
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--tokenrig", type=Path, required=True,
-                        help="verified TokenRig safetensors intermediate")
-    parser.add_argument("--skin-vae", type=Path, required=True,
-                        help="verified SkinVAE safetensors intermediate")
-    parser.add_argument("--config", type=Path, required=True,
-                        help="JSON emitted by the trusted extractor")
+    parser.add_argument("--tokenrig", type=Path, required=True, help="verified TokenRig safetensors intermediate")
+    parser.add_argument("--skin-vae", type=Path, required=True, help="verified SkinVAE safetensors intermediate")
+    parser.add_argument("--config", type=Path, required=True, help="JSON emitted by the trusted extractor")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--ftype", type=int, choices=(0, 1), default=1)
     args = parser.parse_args()
@@ -211,9 +225,7 @@ def main() -> None:
     if not any(name.startswith("vae.") for name in combined):
         combined.update({"vae." + name: value for name, value in vae.items()})
 
-    grouped: dict[str, list[tuple[str, object]]] = {
-        "mesh-encoder": [], "tokenrig": [], "skin-vae": []
-    }
+    grouped: dict[str, list[tuple[str, torch.Tensor]]] = {"mesh-encoder": [], "tokenrig": [], "skin-vae": []}
     ignored: list[str] = []
     for name, value in combined.items():
         component = component_for(name)
@@ -230,8 +242,9 @@ def main() -> None:
     tokenrig_hash = sha256(args.tokenrig)
     vae_hash = sha256(args.skin_vae)
     for component, values in grouped.items():
-        write_component(args.output / f"{component}.gguf", component, values,
-                        config_json, tokenrig_hash, vae_hash, args.ftype)
+        write_component(
+            args.output / f"{component}.gguf", component, values, config_json, tokenrig_hash, vae_hash, args.ftype
+        )
 
 
 if __name__ == "__main__":

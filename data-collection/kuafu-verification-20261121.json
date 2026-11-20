@@ -1,0 +1,58 @@
+{
+  "issue_number": 426,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "baseline": "6c83e0550db2324c35933d2e1fd93a75e060a836",
+  "closed_incidents": 27,
+  "closures": "data-collection/kuafu-audit-closures-20261121.json",
+  "report": "data-collection/kuafu-audit-20261121.md",
+  "1588": {
+    "ruff_version": "0.17.1",
+    "format_check": "passed four original paths",
+    "lint_no_fix": "passed",
+    "executor_tests": 23,
+    "direct_provider_tests": 16,
+    "test_environment": "isolated Python3.14 with numpy2.5.5 and Pillow13",
+    "initial_missing_test_dependencies": "numpy/PIL, resolved only in disposable test environment"
+  },
+  "1446": {
+    "windows_mock_tests": 21,
+    "product_code_changed": false
+  },
+  "1545": {
+    "status": "passed",
+    "ruff": "0.17.1",
+    "mypy": "2.4.0",
+    "clang_format": "22.1.5",
+    "checks": [
+      "ruff check and format",
+      "mypy",
+      "clang-format dry-run",
+      "CODEOWNERS",
+      "codespell",
+      "file-format",
+      "header-guards",
+      "license/notice markers",
+      "patch SHA256 and git apply parsing",
+      "missing and extra patch rejection"
+    ],
+    "geometry_tests": 7,
+    "build": {
+      "platform": "Windows x64",
+      "compiler": "MSVC 19.51.36260",
+      "configuration": "Release CPU, Vulkan/all-variants/dynamic-backends off",
+      "ggml": "8c63e70982c95ceb862e3a1073a2c1beef75d60a",
+      "nlohmann_json": "9cca280a4d0ccf0c08f47a99aa71d1b0e52f8d03",
+      "result": "all targets built, exit 0",
+      "ctest": "4/4 passed (api, c-api, binding, tokenizer)",
+      "limitations": [
+        "Private test configuration preserves MSVC default flags plus _CRT_SECURE_NO_WARNINGS for standard getenv; not default MSVC portability acceptance.",
+        "First CTest lacked DLL search paths; same binaries passed after adding Release DLL directories to test subprocess PATH.",
+        "No GPU, model quality, numerical parity or production deployment acceptance claimed."
+      ]
+    },
+    "independent_review": "/root/audit_legacy: approved after patch set completeness fix; source remains separate from reviewer"
+  },
+  "delivery": "candidate_not_yet_published",
+  "business_acceptance": "remaining_in_original_issues"
+}

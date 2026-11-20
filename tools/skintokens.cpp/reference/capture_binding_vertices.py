@@ -24,20 +24,31 @@ from safetensors import safe_open
 
 def matrix(rotation: np.ndarray, translation: np.ndarray) -> np.ndarray:
     x, y, z, w = (float(value) for value in rotation)
-    length = x*x + y*y + z*z + w*w
+    length = x * x + y * y + z * z + w * w
     scale = 2.0 / length if length > 0 else 0.0
-    output = np.array([
-        [1-(y*y+z*z)*scale, (x*y-z*w)*scale, (x*z+y*w)*scale, translation[0]],
-        [(x*y+z*w)*scale, 1-(x*x+z*z)*scale, (y*z-x*w)*scale, translation[1]],
-        [(x*z-y*w)*scale, (y*z+x*w)*scale, 1-(x*x+y*y)*scale, translation[2]],
-        [0, 0, 0, 1]], dtype=np.float64)
+    output = np.array(
+        [
+            [1 - (y * y + z * z) * scale, (x * y - z * w) * scale, (x * z + y * w) * scale, translation[0]],
+            [(x * y + z * w) * scale, 1 - (x * x + z * z) * scale, (y * z - x * w) * scale, translation[1]],
+            [(x * z - y * w) * scale, (y * z + x * w) * scale, 1 - (x * x + y * y) * scale, translation[2]],
+            [0, 0, 0, 1],
+        ],
+        dtype=np.float64,
+    )
     return output
 
 
-def animated_vertices(positions: np.ndarray, joints: np.ndarray, weights: np.ndarray,
-                      parents: np.ndarray, rest: np.ndarray, roots: np.ndarray,
-                      rotations: np.ndarray, frames: list[int]) -> np.ndarray:
-    homogeneous = np.concatenate((positions.astype(np.float64), np.ones((len(positions), 1))), axis=1)
+def animated_vertices(
+    positions: np.ndarray,
+    joints: np.ndarray,
+    weights: np.ndarray,
+    parents: np.ndarray,
+    rest: np.ndarray,
+    roots: np.ndarray,
+    rotations: np.ndarray,
+    frames: list[int],
+) -> np.ndarray:
+    np.concatenate((positions.astype(np.float64), np.ones((len(positions), 1))), axis=1)
     output = np.zeros((len(frames), len(positions), 3), dtype="<f4")
     for selected, frame in enumerate(frames):
         globals_ = np.zeros((len(rest), 4, 4), dtype=np.float64)
@@ -58,21 +69,33 @@ def animated_vertices(positions: np.ndarray, joints: np.ndarray, weights: np.nda
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--weights", type=Path, required=True,
-                        help="verified TokenRig safetensors containing its frozen vae.model tensors")
-    parser.add_argument("--fixture", type=Path, required=True,
-                        help="fixture made by capture_animated_vertices.py")
+    parser.add_argument(
+        "--weights",
+        type=Path,
+        required=True,
+        help="verified TokenRig safetensors containing its frozen vae.model tensors",
+    )
+    parser.add_argument("--fixture", type=Path, required=True, help="fixture made by capture_animated_vertices.py")
     parser.add_argument("--vae-trace-prefix", type=Path, required=True)
     parser.add_argument("--token-trace-prefix", type=Path, required=True)
-    parser.add_argument("--cpp-binding-trace-prefix", type=Path,
-                        help="optional C++ dense/final binding trace for decoder-stage metrics")
+    parser.add_argument(
+        "--cpp-binding-trace-prefix", type=Path, help="optional C++ dense/final binding trace for decoder-stage metrics"
+    )
     parser.add_argument("--device", default="cuda")
-    parser.add_argument("--cpp-backend", choices=("cpu", "vulkan"), default="vulkan",
-                        help="backend that produced the C++ trace and animation GLB")
+    parser.add_argument(
+        "--cpp-backend",
+        choices=("cpu", "vulkan"),
+        default="vulkan",
+        help="backend that produced the C++ trace and animation GLB",
+    )
     parser.add_argument("--query-chunk", type=int, default=8192)
     parser.add_argument("--nearest-chunk", type=int, default=256)
-    parser.add_argument("--upstream-root", type=Path, default=Path("reference/upstream"),
-                        help="official SkinTokens checkout used for final voxel_skin")
+    parser.add_argument(
+        "--upstream-root",
+        type=Path,
+        default=Path("reference/upstream"),
+        help="official SkinTokens checkout used for final voxel_skin",
+    )
     args = parser.parse_args()
 
     manifest_path = args.fixture / "animation-vertices.json"
@@ -88,8 +111,7 @@ def main() -> None:
     parents = np.fromfile(args.fixture / "parents.i32", "<i4")
     rest = np.fromfile(args.fixture / "rest-positions.f32", "<f4").reshape(joints_count, 3)
     roots = np.fromfile(args.fixture / "root-translations.f32", "<f4").reshape(frames_count, 3)
-    rotations = np.fromfile(args.fixture / "local-rotations.f32", "<f4").reshape(
-        frames_count, joints_count, 4)
+    rotations = np.fromfile(args.fixture / "local-rotations.f32", "<f4").reshape(frames_count, joints_count, 4)
     if len(parents) != joints_count:
         raise ValueError("fixture skeleton is truncated")
 
@@ -106,8 +128,9 @@ def main() -> None:
 
     device = torch.device(args.device)
     with safe_open(args.weights, framework="pt", device="cpu") as source:
-        learned = {name: source.get_tensor(name).float().to(device)
-                   for name in source.keys() if name.startswith("vae.model.")}
+        learned = {
+            name: source.get_tensor(name).float().to(device) for name in source.keys() if name.startswith("vae.model.")
+        }
 
     def weight(name: str) -> torch.Tensor:
         return learned["vae.model." + name]
@@ -116,8 +139,7 @@ def main() -> None:
         return F.linear(value, weight(stem + ".weight"), learned.get("vae.model." + stem + ".bias"))
 
     def norm(value: torch.Tensor, stem: str) -> torch.Tensor:
-        return F.layer_norm(value, (value.shape[-1],), weight(stem + ".weight"),
-                            weight(stem + ".bias"), 1e-5)
+        return F.layer_norm(value, (value.shape[-1],), weight(stem + ".weight"), weight(stem + ".bias"), 1e-5)
 
     def embedding(points: torch.Tensor, normals: torch.Tensor) -> torch.Tensor:
         # Match FrequencyPositionalEmbedding.__init__ exactly. In particular,
@@ -131,23 +153,24 @@ def main() -> None:
         phase *= torch.pi * 2.0
         frequency, phase = frequency.to(device), phase.to(device)
         angle = (points[..., None] * frequency).reshape(points.shape[0], -1)
-        shifted = (points[..., None] * torch.pi * .5 + phase).reshape(points.shape[0], -1)
+        shifted = (points[..., None] * torch.pi * 0.5 + phase).reshape(points.shape[0], -1)
         return torch.cat((points, angle.sin() + shifted.sin(), angle.cos() + shifted.cos(), normals), -1)
 
-    def attention(query_input: torch.Tensor, data_input: torch.Tensor, stem: str,
-                  cross: bool) -> torch.Tensor:
+    def attention(query_input: torch.Tensor, data_input: torch.Tensor, stem: str, cross: bool) -> torch.Tensor:
         query = linear(query_input, stem + ".to_q")
         data = norm(data_input, stem + ".norm_cross") if cross else data_input
         key, value = linear(data, stem + ".to_k"), linear(data, stem + ".to_v")
         if cross:
-            key, value = torch.cat((key, value), dim=-1).reshape(
-                key.shape[0], 12, 128).split(64, dim=-1)
+            key, value = torch.cat((key, value), dim=-1).reshape(key.shape[0], 12, 128).split(64, dim=-1)
             query = query.reshape(query.shape[0], 12, 64)
         else:
-            query, key, value = torch.cat((query, key, value), dim=-1).reshape(
-                query.shape[0], 12, 192).split(64, dim=-1)
+            query, key, value = (
+                torch.cat((query, key, value), dim=-1).reshape(query.shape[0], 12, 192).split(64, dim=-1)
+            )
+
         def heads(item: torch.Tensor) -> torch.Tensor:
             return item.reshape(1, item.shape[0], 12, 64).transpose(1, 2)
+
         result = F.scaled_dot_product_attention(heads(query), heads(key), heads(value))
         return linear(result.transpose(1, 2).reshape(query.shape[0], 768), stem + ".to_out.0")
 
@@ -157,8 +180,7 @@ def main() -> None:
             state = state + attention(value, value, stem + ".attn1", False)
         else:
             state = state + attention(norm(state, stem + ".norm2"), data, stem + ".attn2", True)
-        return state + linear(F.gelu(linear(norm(state, stem + ".norm3"), stem + ".ff.net.0.proj")),
-                              stem + ".ff.net.2")
+        return state + linear(F.gelu(linear(norm(state, stem + ".norm3"), stem + ".ff.net.0.proj")), stem + ".ff.net.2")
 
     point_tensor = torch.from_numpy(sampled_points).to(device)
     normal_tensor = torch.from_numpy(sampled_normals).to(device)
@@ -184,10 +206,11 @@ def main() -> None:
         condition_difference = cpp_condition.astype(np.float64) - reference_condition.astype(np.float64)
         manifest["condition_max_abs"] = float(np.max(np.abs(condition_difference)))
         manifest["condition_relative_l2"] = float(
-            np.linalg.norm(condition_difference.ravel()) /
-            max(np.linalg.norm(reference_condition.astype(np.float64).ravel()), 1e-30))
+            np.linalg.norm(condition_difference.ravel())
+            / max(np.linalg.norm(reference_condition.astype(np.float64).ravel()), 1e-30)
+        )
         for joint in range(joints_count):
-            indices = torch.from_numpy(codes[joint*4:(joint+1)*4].astype(np.int64)).to(device)
+            indices = torch.from_numpy(codes[joint * 4 : (joint + 1) * 4].astype(np.int64)).to(device)
             fsq = (((indices[:, None] // basis) % 8).float() - 4.0) / 4.0
             decoded = linear(fsq, "FSQ.project_out")
             state = linear(torch.cat((decoded, condition_tensor), dim=0), "post_quant")
@@ -195,8 +218,7 @@ def main() -> None:
                 state = block(state, f"decoder.blocks.{layer}")
             for begin in range(0, len(sampled_points), args.query_chunk):
                 end = min(begin + args.query_chunk, len(sampled_points))
-                query = linear(embedding(point_tensor[begin:end], normal_tensor[begin:end]),
-                               "decoder.proj_query")
+                query = linear(embedding(point_tensor[begin:end], normal_tensor[begin:end]), "decoder.proj_query")
                 query = block(query, "decoder.blocks.10", state)
                 value = torch.sigmoid(linear(norm(query, "decoder.norm_out"), "decoder.proj_out"))
                 dense[begin:end, joint] = value[:, 0].float().cpu().numpy()
@@ -209,8 +231,8 @@ def main() -> None:
         model_joints[:, 1] *= -1
         low = np.minimum(model_vertices.min(axis=0), model_joints.min(axis=0))
         high = np.maximum(model_vertices.max(axis=0), model_joints.max(axis=0))
-        center = (low + high) * .5
-        scale = (high - low).max() * .5
+        center = (low + high) * 0.5
+        scale = (high - low).max() * 0.5
         normalized = (model_vertices - center) / scale
         normalized_joints = (model_joints - center) / scale
 
@@ -218,11 +240,13 @@ def main() -> None:
         # torch.cdist/topk is close numerically but is not the upstream
         # endpoint and can change the fourth selected bone on near ties.
         from scipy.spatial import cKDTree
+
         nearest_distances, nearest_indices = cKDTree(sampled_points).query(normalized, k=8)
         nearest_distances = nearest_distances.astype(np.float32)
 
     interpolation = 1.0 / (nearest_distances + 1e-8)
     interpolation /= interpolation.sum(axis=1, keepdims=True)
+
     def select_top_four(interpolated: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         top = np.argsort(-interpolated, axis=1, kind="stable")[:, :4]
         output_joints = top.astype("<u2")
@@ -235,8 +259,9 @@ def main() -> None:
         output_weights /= sums
         return output_joints, output_weights
 
-    def integrate(dense_values: np.ndarray, indices: np.ndarray,
-                  neighbor_weights: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    def integrate(
+        dense_values: np.ndarray, indices: np.ndarray, neighbor_weights: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         # Asset.from_data() interpolates every learned joint channel from the
         # sampled cloud. Keep this raw stage separately so it cannot be
         # mistaken for the demo's final postprocessed binding.
@@ -244,8 +269,7 @@ def main() -> None:
         output_joints, output_weights = select_top_four(interpolated)
         return interpolated.astype("<f4"), output_joints, output_weights
 
-    raw_dense, raw_joints, raw_weights = integrate(
-        dense, nearest_indices, interpolation)
+    raw_dense, raw_joints, raw_weights = integrate(dense, nearest_indices, interpolation)
 
     # This is the final upstream demo endpoint, not a local approximation:
     # call its own voxel_skin implementation, then perform the same normalize
@@ -253,6 +277,7 @@ def main() -> None:
     sys.path.insert(0, str(args.upstream_root.resolve()))
     import open3d as o3d
     from src.data.vertex_group import voxel_skin
+
     mesh_o3d = o3d.geometry.TriangleMesh()
     mesh_o3d.vertices = o3d.utility.Vector3dVector(normalized.astype(np.float64))
     mesh_o3d.triangles = o3d.utility.Vector3iVector(faces.astype(np.int32))
@@ -261,33 +286,43 @@ def main() -> None:
     voxel = o3d.geometry.VoxelGrid.create_from_triangle_mesh(mesh_o3d, voxel_size=voxel_size)
     grid_coords = np.asarray([value.grid_index for value in voxel.get_voxels()], dtype=np.float64)
     from scipy.spatial import cKDTree
-    _, surface_seeds = cKDTree(np.concatenate((normalized, grid_coords), axis=0)).query(
-        normalized_joints)
+
+    _, surface_seeds = cKDTree(np.concatenate((normalized, grid_coords), axis=0)).query(normalized_joints)
     locality = voxel_skin(
-        grid=0, grid_coords=grid_coords, joints=normalized_joints,
-        vertices=normalized, faces=faces.astype(np.int64), mode="square",
-        voxel_size=voxel_size)
+        grid=0,
+        grid_coords=grid_coords,
+        joints=normalized_joints,
+        vertices=normalized,
+        faces=faces.astype(np.int64),
+        mode="square",
+        voxel_size=voxel_size,
+    )
     postprocessed = raw_dense * locality
     postprocessed /= np.maximum(postprocessed.sum(axis=1, keepdims=True), 1e-30)
     reference_joints, reference_weights = select_top_four(postprocessed)
     reference_dense = postprocessed.astype("<f4")
 
     if args.cpp_binding_trace_prefix is not None:
-        cpp_dense = np.fromfile(str(args.cpp_binding_trace_prefix) + ".dense.f32", "<f4").reshape(
-            joints_count, len(sampled_points)).T
+        cpp_dense = (
+            np
+            .fromfile(str(args.cpp_binding_trace_prefix) + ".dense.f32", "<f4")
+            .reshape(joints_count, len(sampled_points))
+            .T
+        )
         difference = cpp_dense.astype(np.float64) - dense.astype(np.float64)
         manifest["decoder_dense_max_abs"] = float(np.max(np.abs(difference)))
         manifest["decoder_dense_relative_l2"] = float(
-            np.linalg.norm(difference.ravel()) / max(np.linalg.norm(dense.astype(np.float64).ravel()), 1e-30))
+            np.linalg.norm(difference.ravel()) / max(np.linalg.norm(dense.astype(np.float64).ravel()), 1e-30)
+        )
         cpp_normalized = np.fromfile(str(args.cpp_binding_trace_prefix) + ".normalized.f32", "<f4").reshape(vertices, 3)
         cpp_neighbors = np.fromfile(str(args.cpp_binding_trace_prefix) + ".neighbors.u32", "<u4").reshape(vertices, 8)
-        cpp_interpolation = np.fromfile(
-            str(args.cpp_binding_trace_prefix) + ".interpolation.f32", "<f4").reshape(vertices, 8)
+        cpp_interpolation = np.fromfile(str(args.cpp_binding_trace_prefix) + ".interpolation.f32", "<f4").reshape(
+            vertices, 8
+        )
         cpp_interpolation /= cpp_interpolation.sum(axis=1, keepdims=True)
         manifest["normalized_vertices_max_abs"] = float(np.max(np.abs(cpp_normalized - normalized)))
         manifest["nearest_neighbor_slot_agreement"] = float(np.mean(cpp_neighbors == nearest_indices))
-        cpp_raw_dense, _, _ = integrate(
-            cpp_dense, cpp_neighbors, cpp_interpolation)
+        cpp_raw_dense, _, _ = integrate(cpp_dense, cpp_neighbors, cpp_interpolation)
         cpp_expected_dense = cpp_raw_dense * locality
         cpp_expected_dense /= np.maximum(cpp_expected_dense.sum(axis=1, keepdims=True), 1e-30)
         cpp_py_joints, cpp_py_weights = select_top_four(cpp_expected_dense)
@@ -304,22 +339,24 @@ def main() -> None:
         post_difference = cpp_final_dense.astype(np.float64) - cpp_py_dense.astype(np.float64)
         manifest["cpp_postprocess_reproduction_max_abs"] = float(np.max(np.abs(post_difference)))
         manifest["cpp_postprocess_reproduction_relative_l2"] = float(
-            np.linalg.norm(post_difference.ravel()) /
-            max(np.linalg.norm(cpp_py_dense.astype(np.float64).ravel()), 1e-30))
+            np.linalg.norm(post_difference.ravel())
+            / max(np.linalg.norm(cpp_py_dense.astype(np.float64).ravel()), 1e-30)
+        )
         final_dense_path = Path(str(args.cpp_binding_trace_prefix) + ".final-dense.f32")
         if final_dense_path.exists():
             cpp_traced_dense = np.fromfile(final_dense_path, "<f4").reshape(vertices, joints_count)
             traced_difference = cpp_traced_dense.astype(np.float64) - cpp_expected_dense.astype(np.float64)
             manifest["cpp_final_dense_reproduction_max_abs"] = float(np.max(np.abs(traced_difference)))
             manifest["cpp_final_dense_reproduction_relative_l2"] = float(
-                np.linalg.norm(traced_difference.ravel()) /
-                max(np.linalg.norm(cpp_expected_dense.astype(np.float64).ravel()), 1e-30))
+                np.linalg.norm(traced_difference.ravel())
+                / max(np.linalg.norm(cpp_expected_dense.astype(np.float64).ravel()), 1e-30)
+            )
         cpp_support = cpp_final_dense > 0
         reference_support = reference_final_dense > 0
-        manifest["binding_top4_exact_vertex_fraction"] = float(np.mean(
-            np.all(cpp_support == reference_support, axis=1)))
-        manifest["binding_top4_slot_fraction"] = float(
-            np.sum(cpp_support & reference_support) / (vertices * 4))
+        manifest["binding_top4_exact_vertex_fraction"] = float(
+            np.mean(np.all(cpp_support == reference_support, axis=1))
+        )
+        manifest["binding_top4_slot_fraction"] = float(np.sum(cpp_support & reference_support) / (vertices * 4))
 
     reference_condition.tofile(args.fixture / "reference-condition-latents.f32")
     for name, values in condition_stages.items():
@@ -343,36 +380,38 @@ def main() -> None:
     surface_seeds.astype("<u4").tofile(args.fixture / "reference-surface-seeds.u32")
     reference_joints.tofile(args.fixture / "reference-joints.u16")
     reference_weights.tofile(args.fixture / "reference-weights.f32")
-    expected = animated_vertices(positions, reference_joints, reference_weights, parents, rest,
-                                 roots, rotations, manifest["selected_frames"])
+    expected = animated_vertices(
+        positions, reference_joints, reference_weights, parents, rest, roots, rotations, manifest["selected_frames"]
+    )
     expected.tofile(args.fixture / "expected-vertices.f32")
     manifest["reference"] = (
         "released SkinVAE safetensors in direct PyTorch F32 plus upstream "
-        "Asset.from_data interpolation, voxel_skin postprocess, and Blender top-four export")
+        "Asset.from_data interpolation, voxel_skin postprocess, and Blender top-four export"
+    )
     manifest["cpp_backend"] = args.cpp_backend
     manifest["binding_selection"] = "top four postprocessed learned weights"
     manifest["voxel_size"] = voxel_size
     manifest["voxel_count"] = len(grid_coords)
     if args.cpp_backend == "cpu":
-        manifest["binding_max_abs_tolerance"] = .01
-        manifest["binding_relative_l2_tolerance"] = .001
+        manifest["binding_max_abs_tolerance"] = 0.01
+        manifest["binding_relative_l2_tolerance"] = 0.001
         manifest["binding_exact_top4_tolerance"] = 1.0
         manifest["binding_shared_top4_tolerance"] = 1.0
-        manifest["max_abs_tolerance"] = .01
-        manifest["relative_l2_tolerance"] = .001
-        manifest["frame_relative_l2_tolerance"] = .01
+        manifest["max_abs_tolerance"] = 0.01
+        manifest["relative_l2_tolerance"] = 0.001
+        manifest["frame_relative_l2_tolerance"] = 0.01
     else:
         # GGML Vulkan F32 reductions differ slightly from PyTorch CUDA. The
         # dense-network bounds are asserted by full_binding_parity; here the
         # important discrete contract is that at least 99.5% of selected bone
         # slots agree before checking normalized weights and animated vertices.
-        manifest["binding_max_abs_tolerance"] = .26
-        manifest["binding_relative_l2_tolerance"] = .05
-        manifest["binding_exact_top4_tolerance"] = .99
-        manifest["binding_shared_top4_tolerance"] = .998
-        manifest["max_abs_tolerance"] = .16
-        manifest["relative_l2_tolerance"] = .002
-        manifest["frame_relative_l2_tolerance"] = .02
+        manifest["binding_max_abs_tolerance"] = 0.26
+        manifest["binding_relative_l2_tolerance"] = 0.05
+        manifest["binding_exact_top4_tolerance"] = 0.99
+        manifest["binding_shared_top4_tolerance"] = 0.998
+        manifest["max_abs_tolerance"] = 0.16
+        manifest["relative_l2_tolerance"] = 0.002
+        manifest["frame_relative_l2_tolerance"] = 0.02
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n")
     print(json.dumps(manifest, indent=2))
 

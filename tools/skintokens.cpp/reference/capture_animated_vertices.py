@@ -14,16 +14,15 @@ import hashlib
 import json
 import struct
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 
-
 COMPONENTS = {"SCALAR": 1, "VEC2": 2, "VEC3": 3, "VEC4": 4, "MAT4": 16}
-DTYPES = {5121: np.dtype("u1"), 5123: np.dtype("<u2"), 5125: np.dtype("<u4"),
-          5126: np.dtype("<f4")}
+DTYPES = {5121: np.dtype("u1"), 5123: np.dtype("<u2"), 5125: np.dtype("<u4"), 5126: np.dtype("<f4")}
 
 
-def read_glb(path: Path) -> tuple[dict, bytes]:
+def read_glb(path: Path) -> tuple[dict[str, Any], bytes]:
     data = path.read_bytes()
     if len(data) < 20 or struct.unpack_from("<II", data) != (0x46546C67, 2):
         raise ValueError("input is not a glTF 2 GLB")
@@ -36,7 +35,7 @@ def read_glb(path: Path) -> tuple[dict, bytes]:
     while offset < len(data):
         length, kind = struct.unpack_from("<II", data, offset)
         offset += 8
-        chunk = data[offset:offset + length]
+        chunk = data[offset : offset + length]
         if len(chunk) != length:
             raise ValueError("truncated GLB chunk")
         offset += length
@@ -49,7 +48,7 @@ def read_glb(path: Path) -> tuple[dict, bytes]:
     return root, binary
 
 
-def accessor(root: dict, binary: bytes, index: int) -> np.ndarray:
+def accessor(root: dict[str, Any], binary: bytes, index: int) -> np.ndarray:
     item = root["accessors"][index]
     if "sparse" in item:
         raise ValueError("sparse accessors are not supported by this parity capture")
@@ -65,22 +64,28 @@ def accessor(root: dict, binary: bytes, index: int) -> np.ndarray:
     required = offset + (count - 1) * stride + packed if count else offset
     if required > len(binary):
         raise ValueError("accessor exceeds the GLB binary chunk")
-    value = np.ndarray((count, components), dtype=dtype, buffer=binary, offset=offset,
-                       strides=(stride, dtype.itemsize)).copy()
+    value = np.ndarray(
+        (count, components), dtype=dtype, buffer=binary, offset=offset, strides=(stride, dtype.itemsize)
+    ).copy()
     return value[:, 0] if components == 1 else value
 
 
 def quaternion_matrix(value: np.ndarray) -> np.ndarray:
     x, y, z, w = (float(component) for component in value)
-    length = x*x + y*y + z*z + w*w
+    length = x * x + y * y + z * z + w * w
     scale = 2.0 / length if length > 0.0 else 0.0
-    xx, yy, zz = x*x*scale, y*y*scale, z*z*scale
-    xy, xz, yz = x*y*scale, x*z*scale, y*z*scale
-    wx, wy, wz = w*x*scale, w*y*scale, w*z*scale
-    return np.array([[1-yy-zz, xy-wz, xz+wy, 0],
-                     [xy+wz, 1-xx-zz, yz-wx, 0],
-                     [xz-wy, yz+wx, 1-xx-yy, 0],
-                     [0, 0, 0, 1]], dtype=np.float64)
+    xx, yy, zz = x * x * scale, y * y * scale, z * z * scale
+    xy, xz, yz = x * y * scale, x * z * scale, y * z * scale
+    wx, wy, wz = w * x * scale, w * y * scale, w * z * scale
+    return np.array(
+        [
+            [1 - yy - zz, xy - wz, xz + wy, 0],
+            [xy + wz, 1 - xx - zz, yz - wx, 0],
+            [xz - wy, yz + wx, 1 - xx - yy, 0],
+            [0, 0, 0, 1],
+        ],
+        dtype=np.float64,
+    )
 
 
 def local_matrix(translation: np.ndarray, rotation: np.ndarray) -> np.ndarray:
@@ -93,8 +98,7 @@ def selected_frames(text: str | None, count: int) -> list[int]:
     if text:
         values = [int(value.strip()) for value in text.split(",") if value.strip()]
     else:
-        values = [0, round((count - 1) * .25), round((count - 1) * .5),
-                  round((count - 1) * .75), count - 1]
+        values = [0, round((count - 1) * 0.25), round((count - 1) * 0.5), round((count - 1) * 0.75), count - 1]
     values = list(dict.fromkeys(values))
     if not values or min(values) < 0 or max(values) >= count:
         raise ValueError("selected frame is outside the animation")

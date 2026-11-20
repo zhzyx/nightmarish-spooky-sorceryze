@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-138bd5f7b06b034251572b581ebfe4b7d020f310",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c993f1388ad0d072c8e990ad0eee6d4d2274aff01e1d9091f190befbcf2ed4b9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+    "action": "intake",
+    "detection_head": "22ba06d9543c16ca5e91c0a5c8a4c8fc2545a4f4",
+    "context_sha256": "5efc836294f5eb50a26dba39eac3df018daafb8758856a3271fc358735335eb9",
+    "operator": "Sail-Li",
+    "worker": "codex-root-kuafu-20261121",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44821644768",
+    "diagnosis": "本次intake调用遗漏tenant；work-items.json明确tenant_id为gonggong-workspace。补充--tenant gonggong-workspace后原426及稳定需求ID的intake-only已成功回读。此为调用参数纠正，不是业务或代码缺陷。",
+    "next_action": "继续原426全量事故对账；本次参数错误已定向复验，不影响其他事故。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T21:35:11.261608+00:00",
+    "attempted": "原调用被Host tenant must match拒绝；带仓库tenant的同一入口成功。",
+    "repair_owner": "Sail-Li / codex-root-kuafu-20261121",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T21:36:09.420389+00:00",
+  "sha256": "5d515bdcb4437f0700a41c43063a01845139644417a31a8afd8c6c97a8b91912"
+}

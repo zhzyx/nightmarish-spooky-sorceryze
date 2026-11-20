@@ -223,7 +223,9 @@ class Executor:
                 not run["cancelled"] and node["state"] == "failed" and node["job"] and node["job"]["state"] == "failed",
                 "only confirmed provider failure can retry",
             )
-            node.update(state="pending", attempt=node["attempt"] + 1, job=None, error=None, result=None, public_error=None)
+            node.update(
+                state="pending", attempt=node["attempt"] + 1, job=None, error=None, result=None, public_error=None
+            )
             self._write(run)
 
     def export(self, run_id):

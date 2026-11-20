@@ -222,8 +222,8 @@ class ExecutorTests(unittest.TestCase):
     def test_public_failure_summary_is_whitelisted_and_cleared_on_retry(self):
         run = self.create()
         self.provider.fail = True
-        self.provider.public_failure_message = (
-            lambda snapshot: "安全的中文失败原因" if snapshot.get("error") == "secret-error" else None
+        self.provider.public_failure_message = lambda snapshot: (
+            "安全的中文失败原因" if snapshot.get("error") == "secret-error" else None
         )
         self.executor.step(run)
         status = self.executor.step(run)

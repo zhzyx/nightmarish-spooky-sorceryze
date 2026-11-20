@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Run an official SkinTokens example through the released inference path.
 
-This is intentionally an end-to-end behavioural fixture.  It loads the input
+This is intentionally an end-to-end behavioral fixture.  It loads the input
 with upstream's Blender parser, applies the checkpoint's predict transform,
 runs TokenRig, and exports both the raw default result and the optional
 ``voxel_skin`` postprocessed result.  The checked-in flash-attention shim only
@@ -18,6 +18,7 @@ import json
 import random
 import sys
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import torch
@@ -67,15 +68,16 @@ def main() -> None:
     # a matching optional flash-attn wheel is unavailable.
     original_from_config = AutoModelForCausalLM.from_config
     AutoModelForCausalLM.from_config = lambda config, **_kwargs: original_from_config(
-        config, attn_implementation="eager")
+        config, attn_implementation="eager"
+    )
 
+    import src.data.vertex_group as vertex_group_module
+    import src.model.tokenrig as tokenrig_module
     from src.data.dataset import RigDataset
     from src.data.transform import Transform
-    import src.data.vertex_group as vertex_group_module
     from src.data.vertex_group import voxel_skin
     from src.model.spec import ModelInput
     from src.model.tokenrig import TokenRig, decode
-    import src.model.tokenrig as tokenrig_module
     from src.rig_package.info.asset import Asset
     from src.rig_package.parser.bpy import BpyParser
     from src.tokenizer.parse import get_tokenizer
@@ -85,8 +87,7 @@ def main() -> None:
     # identifier embedded in the checkpoint. Upstream tests only Path.exists()
     # before passing it to Transformers, which makes an empty interrupted
     # download fail instead of falling back to the Hub configuration.
-    if (tokenrig_module.LLM_LOCAL_DIR.exists() and
-            not (tokenrig_module.LLM_LOCAL_DIR / "config.json").is_file()):
+    if tokenrig_module.LLM_LOCAL_DIR.exists() and not (tokenrig_module.LLM_LOCAL_DIR / "config.json").is_file():
         tokenrig_module.LLM_LOCAL_DIR = Path("/__missing_qwen_config__")
 
     random.seed(args.seed)
@@ -95,19 +96,23 @@ def main() -> None:
     # SkinFSQCVAEModel._sample_features asks for default_rng(None), bypassing
     # np.random.seed(). Pin only that otherwise-unseeded fixture lane so
     # repeated captures with --seed are byte-reproducible.
-    np.random.default_rng = lambda seed=None: original_default_rng(
-        args.seed if seed is None else seed)
+    np.random.default_rng = lambda seed=None: original_default_rng(args.seed if seed is None else seed)
     torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
 
     checkpoint = torch.load(args.checkpoint, map_location="cpu", weights_only=False)
     model_config = copy.deepcopy(checkpoint["hyper_parameters"]["model_config"])
     model_config["pretrained_vae"] = str(args.skin_checkpoint.resolve())
-    model = TokenRig.load_from_system_checkpoint(
-        checkpoint_path=str(args.checkpoint.resolve()), model_config=model_config).to(args.device).eval()
+    model = (
+        TokenRig
+        .load_from_system_checkpoint(checkpoint_path=str(args.checkpoint.resolve()), model_config=model_config)
+        .to(args.device)
+        .eval()
+    )
     mesh_conditions: list[torch.Tensor] = []
     hook = model.output_proj.register_forward_hook(
-        lambda _module, _inputs, value: mesh_conditions.append(value.detach().float().cpu()))
+        lambda _module, _inputs, value: mesh_conditions.append(value.detach().float().cpu())
+    )
     tokenizer = get_tokenizer(**model.tokenizer_config)
     transform = Transform.parse(**model.transform_config["predict_transform"])
 
@@ -119,15 +124,13 @@ def main() -> None:
     if args.use_skeleton:
         if asset.parents is None or asset.joint_names is None:
             raise ValueError("--use-skeleton input has no Blender-readable armature")
-        tokens = tokenizer.tokenize(TokenizeInput(
-            joints=asset.joints, parents=asset.parents, cls=asset.cls,
-            joint_names=asset.joint_names))
+        tokens = tokenizer.tokenize(
+            TokenizeInput(joints=asset.joints, parents=asset.parents, cls=asset.cls, joint_names=asset.joint_names)
+        )
 
-    dataset = RigDataset(data=[], transform=transform, process_fn=model._process_fn,
-                         tokenizer=tokenizer)
+    dataset = RigDataset(data=[], transform=transform, process_fn=model._process_fn, tokenizer=tokenizer)
     batch = dataset.collate_fn([ModelInput(asset=asset, tokens=tokens)])
-    batch = {key: value.to(args.device) if isinstance(value, torch.Tensor) else value
-             for key, value in batch.items()}
+    batch = {key: value.to(args.device) if isinstance(value, torch.Tensor) else value for key, value in batch.items()}
     batch["generate_kwargs"] = {
         "max_length": args.max_length,
         "top_k": args.top_k,
@@ -144,8 +147,7 @@ def main() -> None:
         skeleton_tokens = [batch["skeleton_tokens"][0][mask].cpu().numpy()]
 
     with torch.inference_mode():
-        result = model.predict_step(
-            batch, skeleton_tokens=skeleton_tokens, make_asset=True)["results"][0]
+        result = model.predict_step(batch, skeleton_tokens=skeleton_tokens, make_asset=True)["results"][0]
     hook.remove()
     if result.asset is None or result.output_ids is None or result.skin_pred is None:
         raise RuntimeError("upstream inference returned an incomplete result")
@@ -165,17 +167,15 @@ def main() -> None:
     switch = np.flatnonzero(output_ids == tokenizer.eos)
     if len(switch) != 1:
         raise RuntimeError(f"expected one skeleton/skin switch token, found {len(switch)}")
-    skeleton_tokens_out = output_ids[:switch[0] + 1]
-    skin_codes = output_ids[switch[0] + 1:] - tokenizer.vocab_size
+    skeleton_tokens_out = output_ids[: switch[0] + 1]
+    skin_codes = output_ids[switch[0] + 1 :] - tokenizer.vocab_size
     if len(skin_codes) != len(normalized.parents) * model.tokens_per_skin:
         raise RuntimeError("generated skin-code count does not match generated skeleton")
     skeleton_tokens_out.astype("<i4").tofile(output / "skeleton-tokens.i32")
     skin_codes.astype("<i4").tofile(output / "skin-codes.i32")
-    result.cond_latents.detach().float().cpu().numpy().astype("<f4").tofile(
-        output / "condition-latents.f32")
+    result.cond_latents.detach().float().cpu().numpy().astype("<f4").tofile(output / "condition-latents.f32")
     mesh_conditions[0].numpy().astype("<f4").tofile(output / "mesh-condition.f32")
-    result.skin_pred.detach().float().cpu().numpy().astype("<f4").tofile(
-        output / "sampled-skin.f32")
+    result.skin_pred.detach().float().cpu().numpy().astype("<f4").tofile(output / "sampled-skin.f32")
     np.asarray(normalized.parents, dtype="<i4").tofile(output / "parents.i32")
     normalized.joints.astype("<f4").tofile(output / "joints.f32")
     normalized.joints.astype("<f8").tofile(output / "joints.f64")
@@ -185,9 +185,14 @@ def main() -> None:
     postprocessed = normalized.copy()
     voxel = postprocessed.voxel(resolution=196)
     postprocessed.skin *= voxel_skin(
-        grid=0, grid_coords=voxel.coords, joints=postprocessed.joints,
-        vertices=postprocessed.vertices, faces=postprocessed.faces,
-        mode="square", voxel_size=voxel.voxel_size)
+        grid=0,
+        grid_coords=voxel.coords,
+        joints=postprocessed.joints,
+        vertices=postprocessed.vertices,
+        faces=postprocessed.faces,
+        mode="square",
+        voxel_size=voxel.voxel_size,
+    )
     postprocessed.normalize_skin()
     write_binding(output, "postprocessed", postprocessed.skin)
     BpyParser.export(postprocessed, str(output / "postprocessed.glb"), group_per_vertex=4)
@@ -208,36 +213,52 @@ def main() -> None:
     model.vae.model.embedder.phase = phase
     with torch.inference_mode():
         f32_result = decode(
-            cond=result.cond.float(), cond_latents=result.cond_latents.float(),
-            inputs_ids=result.output_ids, tokenizer=tokenizer,
-            tokens_per_skin=model.tokens_per_skin, vae=model.vae)
+            cond=result.cond.float(),
+            cond_latents=result.cond_latents.float(),
+            inputs_ids=result.output_ids,
+            tokenizer=tokenizer,
+            tokens_per_skin=model.tokens_per_skin,
+            vae=model.vae,
+        )
     if f32_result["skin_pred"] is None:
         raise RuntimeError("clean F32 decode returned no skin predictions")
     f32_sampled_skin = f32_result["skin_pred"].detach().float().cpu().numpy()
     f32_sampled_skin.astype("<f4").tofile(output / "f32-sampled-skin.f32")
     detokenized = f32_result["detokenize_output"]
     f32_asset = Asset.from_data(
-        vertices=asset.vertices, faces=asset.faces,
-        sampled_vertices=asset.sampled_vertices, sampled_skin=f32_sampled_skin,
-        joints=detokenized.joints, parents=np.asarray(detokenized.parents),
-        cls=asset.cls, path=asset.path)
+        vertices=asset.vertices,
+        faces=asset.faces,
+        sampled_vertices=asset.sampled_vertices,
+        sampled_skin=f32_sampled_skin,
+        joints=detokenized.joints,
+        parents=np.asarray(detokenized.parents),
+        cls=asset.cls,
+        path=asset.path,
+    )
     write_binding(output, "f32-raw", f32_asset.skin)
     f32_postprocessed = f32_asset.copy()
     f32_voxel = f32_postprocessed.voxel(resolution=196)
-    surface_trace: dict[str, object] = {}
+    surface_trace: dict[str, Any] = {}
     original_shortest_path = vertex_group_module.shortest_path
+
     def capture_shortest_path(graph, *shortest_args, **shortest_kwargs):
         graph = graph.tocsr()
         surface_trace["graph"] = graph.copy()
         value = original_shortest_path(graph, *shortest_args, **shortest_kwargs)
         surface_trace["raw_distances"] = value.copy()
         return value
+
     vertex_group_module.shortest_path = capture_shortest_path
     try:
         f32_surface = voxel_skin(
-            grid=0, grid_coords=f32_voxel.coords, joints=f32_postprocessed.joints,
-            vertices=f32_postprocessed.vertices, faces=f32_postprocessed.faces,
-            mode="square", voxel_size=f32_voxel.voxel_size)
+            grid=0,
+            grid_coords=f32_voxel.coords,
+            joints=f32_postprocessed.joints,
+            vertices=f32_postprocessed.vertices,
+            faces=f32_postprocessed.faces,
+            mode="square",
+            voxel_size=f32_voxel.voxel_size,
+        )
     finally:
         vertex_group_module.shortest_path = original_shortest_path
     f32_postprocessed.skin *= f32_surface
@@ -245,18 +266,19 @@ def main() -> None:
     write_binding(output, "f32-postprocessed", f32_postprocessed.skin)
     f32_surface.astype("<f4").tofile(output / "f32-surface-weights.f32")
     f32_voxel.coords.astype("<i4").tofile(output / "f32-voxel-coordinates.i32")
-    _, f32_seeds = cKDTree(np.concatenate(
-        (f32_postprocessed.vertices, f32_voxel.coords), axis=0)).query(
-            f32_postprocessed.joints)
+    _, f32_seeds = cKDTree(np.concatenate((f32_postprocessed.vertices, f32_voxel.coords), axis=0)).query(
+        f32_postprocessed.joints
+    )
     np.asarray(f32_seeds, dtype="<u4").tofile(output / "f32-surface-seeds.u32")
     graph = surface_trace["graph"]
     graph.indptr.astype("<i4").tofile(output / "f32-graph-indptr.i32")
     graph.indices.astype("<i4").tofile(output / "f32-graph-indices.i32")
     graph.data.astype("<f8").tofile(output / "f32-graph-weights.f64")
-    surface_distances = surface_trace["raw_distances"][:, :len(f32_postprocessed.vertices)]
+    surface_distances = surface_trace["raw_distances"][:, : len(f32_postprocessed.vertices)]
     unreachable = np.isinf(surface_distances).all(axis=0)
     fallback_distances, fallback_joints = cKDTree(f32_postprocessed.joints).query(
-        f32_postprocessed.vertices[unreachable], min(len(f32_postprocessed.joints), 3))
+        f32_postprocessed.vertices[unreachable], min(len(f32_postprocessed.joints), 3)
+    )
     unreachable_vertices = np.flatnonzero(unreachable)
     surface_distances[
         fallback_joints,
@@ -264,8 +286,11 @@ def main() -> None:
     ] = fallback_distances
     maximum_surface_distance = float(np.max(surface_distances[np.isfinite(surface_distances)]))
     surface_distances = np.nan_to_num(
-        surface_distances, nan=maximum_surface_distance,
-        posinf=maximum_surface_distance, neginf=maximum_surface_distance)
+        surface_distances,
+        nan=maximum_surface_distance,
+        posinf=maximum_surface_distance,
+        neginf=maximum_surface_distance,
+    )
     surface_distances = np.maximum(surface_distances, 1.0e-6)
     surface_distances.astype("<f8").tofile(output / "f32-surface-distances.f64")
 
@@ -290,8 +315,8 @@ def main() -> None:
         "mesh_condition_token_count": int(mesh_conditions[0].shape[-2]),
         "mesh_condition_width": int(mesh_conditions[0].shape[-1]),
         "f32_reference": (
-            "official decoder with checkpoint values promoted to F32 and "
-            "analytically reconstructed F32 PMPE buffers"),
+            "official decoder with checkpoint values promoted to F32 and analytically reconstructed F32 PMPE buffers"
+        ),
         "voxel_count": int(len(f32_voxel.coords)),
         "graph_node_count": int(graph.shape[0]),
         "graph_edge_count": int(graph.nnz),

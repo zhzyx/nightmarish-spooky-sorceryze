@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-34b16bb9e7154d49be621b0b9188c58a6bea8dd5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "182868c63d15ebbeb6bbe435d02a5c05b6c1527dd48da41702b31eb9b83336cf",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+    "action": "validation",
+    "detection_head": "6c83e0550db2324c35933d2e1fd93a75e060a836",
+    "context_sha256": "5efc836294f5eb50a26dba39eac3df018daafb8758856a3271fc358735335eb9",
+    "operator": "Sail-Li",
+    "worker": "codex-root-kuafu-20261121",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+    "diagnosis": "独立修复工作者尚在编辑补丁清单核验时执行预检，工作区与index不同。已等真实编辑完成回执再统一暂存，保持独立审查和正式门禁。",
+    "next_action": "按同一原门禁复验并保留实际回执；通过后继续正式签发和精确CI/main。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T21:55:56.267762+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T21:57:53.839981+00:00",
+  "sha256": "f896d3bb03617a632d5429015a5978d822464a4be982aa10104df971d0c656fa"
+}

@@ -23,9 +23,11 @@ def main() -> None:
 
     dtype = torch.float32 if args.dtype == "float32" else torch.bfloat16
     with safe_open(args.weights, framework="pt", device="cpu") as source:
-        weights = {name: source.get_tensor(name).to(args.device, dtype=dtype)
-                   for name in source.keys()
-                   if name.startswith(("mesh_encoder.", "output_proj."))}
+        weights = {
+            name: source.get_tensor(name).to(args.device, dtype=dtype)
+            for name in source.keys()
+            if name.startswith(("mesh_encoder.", "output_proj."))
+        }
 
     def w(name: str) -> torch.Tensor:
         return weights[name]
@@ -38,7 +40,9 @@ def main() -> None:
 
     def attention(q: torch.Tensor, k: torch.Tensor, v: torch.Tensor) -> torch.Tensor:
         batch, query, heads, dim = q.shape
-        q = q.transpose(1, 2); k = k.transpose(1, 2); v = v.transpose(1, 2)
+        q = q.transpose(1, 2)
+        k = k.transpose(1, 2)
+        v = v.transpose(1, 2)
         value = F.scaled_dot_product_attention(q, k, v)
         return value.transpose(1, 2).contiguous().view(batch, query, heads * dim)
 

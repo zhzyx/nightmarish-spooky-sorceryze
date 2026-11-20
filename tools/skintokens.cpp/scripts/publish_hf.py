@@ -14,6 +14,13 @@ import io
 import json
 import sys
 from pathlib import Path
+from typing import TypedDict
+
+
+class ManifestEntry(TypedDict):
+    path: str
+    bytes: int
+    sha256: str
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -55,10 +62,12 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--models", type=Path, default=ROOT / "models")
     parser.add_argument("--repo", default=REPOSITORY)
-    parser.add_argument("--upload", action="store_true",
-                        help="create/update the Hugging Face model repository")
-    parser.add_argument("--confirm-upstream-license", action="store_true",
-                        help="required with --upload; confirms authority to redistribute the MIT weights")
+    parser.add_argument("--upload", action="store_true", help="create/update the Hugging Face model repository")
+    parser.add_argument(
+        "--confirm-upstream-license",
+        action="store_true",
+        help="required with --upload; confirms authority to redistribute the MIT weights",
+    )
     args = parser.parse_args()
 
     card = ROOT / "scripts/hf/SkinTokens-GGUF/README.md"
@@ -71,9 +80,8 @@ def main() -> int:
         print(f"error: {error}", file=sys.stderr)
         return 1
 
-    entries = [
-        {"path": destination, "bytes": source.stat().st_size, "sha256": digest(source)}
-        for source, destination in files
+    entries: list[ManifestEntry] = [
+        {"path": destination, "bytes": source.stat().st_size, "sha256": digest(source)} for source, destination in files
     ]
     manifest = {
         "format": "skintokens-gguf-manifest-v1",
@@ -105,16 +113,24 @@ def main() -> int:
     uploads = [(card, "README.md"), (license_file, "LICENSE"), *files]
     for source, destination in uploads:
         print(f"uploading {destination} ...", flush=True)
-        api.upload_file(path_or_fileobj=str(source), path_in_repo=destination,
-                        repo_id=args.repo, repo_type="model",
-                        commit_message=f"Add {destination}")
+        api.upload_file(
+            path_or_fileobj=str(source),
+            path_in_repo=destination,
+            repo_id=args.repo,
+            repo_type="model",
+            commit_message=f"Add {destination}",
+        )
     for payload, destination in (
         (json.dumps(manifest, indent=2, sort_keys=True).encode() + b"\n", "MANIFEST.json"),
         (sums.encode(), "SHA256SUMS"),
     ):
-        api.upload_file(path_or_fileobj=io.BytesIO(payload), path_in_repo=destination,
-                        repo_id=args.repo, repo_type="model",
-                        commit_message=f"Add {destination}")
+        api.upload_file(
+            path_or_fileobj=io.BytesIO(payload),
+            path_in_repo=destination,
+            repo_id=args.repo,
+            repo_type="model",
+            commit_message=f"Add {destination}",
+        )
     print(f"done -> https://huggingface.co/{args.repo}")
     return 0
 

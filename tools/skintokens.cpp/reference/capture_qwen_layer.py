@@ -45,8 +45,11 @@ def main() -> None:
     reference_dtype = torch.float32 if args.dtype == "float32" else torch.bfloat16
     model = Qwen3ForCausalLM(config).to(dtype=reference_dtype)
     with safe_open(args.weights, framework="pt", device="cpu") as source:
-        state = {name.removeprefix("transformer."): source.get_tensor(name)
-                 for name in source.keys() if name.startswith("transformer.")}
+        state = {
+            name.removeprefix("transformer."): source.get_tensor(name)
+            for name in source.keys()
+            if name.startswith("transformer.")
+        }
     missing, unexpected = model.load_state_dict(state, strict=False)
     allowed_missing = {"model.rotary_emb.inv_freq"}
     if set(missing) - allowed_missing or unexpected:
@@ -55,8 +58,7 @@ def main() -> None:
 
     # Valid skeleton-prefix token IDs with enough length to exercise the causal
     # mask and non-zero RoPE positions.
-    ids = torch.tensor([[257, 263, 128, 128, 128, 128, 196, 128, 258]],
-                       dtype=torch.long, device=args.device)
+    ids = torch.tensor([[257, 263, 128, 128, 128, 128, 196, 128, 258]], dtype=torch.long, device=args.device)
     captured: dict[str, np.ndarray] = {"ids": ids.cpu().numpy()}
     hooks = []
     layer = model.model.layers[0]
@@ -82,14 +84,18 @@ def main() -> None:
         def hook(_module, _inputs, output):
             value = output[0] if isinstance(output, tuple) else output
             captured[name] = value.detach().float().cpu().numpy()
+
         return hook
 
     for name, module in modules.items():
         hooks.append(module.register_forward_hook(save(name)))
+
     def save_input(name: str):
         def hook(_module, inputs):
             captured[name] = inputs[0].detach().float().cpu().numpy()
+
         return hook
+
     hooks.append(layer.self_attn.o_proj.register_forward_pre_hook(save_input("attention")))
     with torch.inference_mode():
         captured["input"] = model.model.embed_tokens(ids).float().cpu().numpy()

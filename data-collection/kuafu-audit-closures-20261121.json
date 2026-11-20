@@ -1,0 +1,331 @@
+{
+  "issue": 426,
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "observed_date": "2026-11-21 Asia/Shanghai",
+  "closures": [
+    {
+      "number": 1684,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1684#issuecomment-7051244223",
+      "body": "2026-11-21 按总单 #426 的用户授权，独立只读核验后由当前责任链办理事故收尾。\n\n原失败：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44722042264/attempts/1，Package, relocate and generate with outbound access blocked（步骤7）；PR #1679 原责任链诊断为 fresh 启动使用已删除的 offline 模式，未建立本地连接会话。\n\n恢复证据：PR #1694 精确候选 3fe876bb610f15924b0617ae1a689a8d6edc3aae 的同一步骤已实际执行成功：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44737945650/job/136324464085；汇总要求 Require real success for every selected check 亦成功：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44737945650/job/136329523015。PR #1694 已合入 main，合并提交 0ddf3d62f8c9120aae93ac1d66dff7fea3cf5240。原 #1679 的责任者已记录8/8验收及交付：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679#issuecomment-7041986302。\n\n本单仅关闭对应离线打包运行事故，不将合成测试扩展为真实 Tripo 或模型质量验收。\r\n"
+    },
+    {
+      "number": 1692,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1692#issuecomment-7051242118",
+      "body": "2026-11-21 按总单 #426 的用户授权，独立只读核验后由当前责任链办理事故收尾。\n\n原失败：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44734393806/attempts/1，Package, relocate and generate with outbound access blocked（步骤7）；PR #1679 原责任链诊断为 fresh 启动使用已删除的 offline 模式，未建立本地连接会话。\n\n恢复证据：PR #1694 精确候选 3fe876bb610f15924b0617ae1a689a8d6edc3aae 的同一步骤已实际执行成功：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44737945650/job/136324464085；汇总要求 Require real success for every selected check 亦成功：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44737945650/job/136329523015。PR #1694 已合入 main，合并提交 0ddf3d62f8c9120aae93ac1d66dff7fea3cf5240。原 #1679 的责任者已记录8/8验收及交付：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679#issuecomment-7041986302。\n\n本单仅关闭对应离线打包运行事故，不将合成测试扩展为真实 Tripo 或模型质量验收。\r\n"
+    },
+    {
+      "number": 1693,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1693#issuecomment-7051239932",
+      "body": "2026-11-21 按总单 #426 的用户授权，独立只读核验后由当前责任链办理事故收尾。\n\n原失败：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44730509393/attempts/1，Package, relocate and generate with outbound access blocked（步骤7）；PR #1679 原责任链诊断为 fresh 启动使用已删除的 offline 模式，未建立本地连接会话。\n\n恢复证据：PR #1694 精确候选 3fe876bb610f15924b0617ae1a689a8d6edc3aae 的同一步骤已实际执行成功：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44737945650/job/136324464085；汇总要求 Require real success for every selected check 亦成功：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44737945650/job/136329523015。PR #1694 已合入 main，合并提交 0ddf3d62f8c9120aae93ac1d66dff7fea3cf5240。原 #1679 的责任者已记录8/8验收及交付：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679#issuecomment-7041986302。\n\n本单仅关闭对应离线打包运行事故，不将合成测试扩展为真实 Tripo 或模型质量验收。\r\n"
+    },
+    {
+      "number": 1695,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1695#issuecomment-7051248591",
+      "body": "2026-11-21 按总单 #426 的用户授权，独立只读核验后由当前责任链办理事故收尾。\n\n原失败：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44733899944/attempts/1，Package, relocate and generate with outbound access blocked（步骤7）；PR #1679 原责任链诊断为 fresh 启动使用已删除的 offline 模式，未建立本地连接会话。\n\n恢复证据：PR #1694 精确候选 3fe876bb610f15924b0617ae1a689a8d6edc3aae 的同一步骤已实际执行成功：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44737945650/job/136324464085；汇总要求 Require real success for every selected check 亦成功：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44737945650/job/136329523015。PR #1694 已合入 main，合并提交 0ddf3d62f8c9120aae93ac1d66dff7fea3cf5240。原 #1679 的责任者已记录8/8验收及交付：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679#issuecomment-7041986302。\n\n本单仅关闭对应离线打包运行事故，不将合成测试扩展为真实 Tripo 或模型质量验收。\r\n"
+    },
+    {
+      "number": 1696,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1696#issuecomment-7051246555",
+      "body": "2026-11-21 按总单 #426 的用户授权，独立只读核验后由当前责任链办理事故收尾。\n\n原失败：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44734979037/attempts/1，Package, relocate and generate with outbound access blocked（步骤7）；PR #1679 原责任链诊断为 fresh 启动使用已删除的 offline 模式，未建立本地连接会话。\n\n恢复证据：PR #1694 精确候选 3fe876bb610f15924b0617ae1a689a8d6edc3aae 的同一步骤已实际执行成功：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44737945650/job/136324464085；汇总要求 Require real success for every selected check 亦成功：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44737945650/job/136329523015。PR #1694 已合入 main，合并提交 0ddf3d62f8c9120aae93ac1d66dff7fea3cf5240。原 #1679 的责任者已记录8/8验收及交付：https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679#issuecomment-7041986302。\n\n本单仅关闭对应离线打包运行事故，不将合成测试扩展为真实 Tripo 或模型质量验收。\r\n"
+    },
+    {
+      "number": 1546,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1546#issuecomment-7051276358",
+      "body": "2026-11-21 总单 #426 夸父原步骤复核：原运行 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44359358963/attempts/1 的 macOS/Ubuntu Run complete AINative and package regressions 因 test_geometry_repair 和 test_local_geometry_uses_configured_runtime_not_host_python 导入 numpy 失败。\n\n恢复为已交付 main f4e6f59706d3017fcaafe775908316f60a1c1b85 的同一完整测试命令：python -m unittest discover -s tools/ainative -p test_*.py。日志明确先安装 pillow==12.1.1 numpy==2.4.4，再执行全套AINative和package回归；macOS日志489项、OK(skipped=62)。macOS原步骤成功 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796346，Ubuntu原步骤成功 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796047。\n\n只关闭此缺失测试依赖事故；不据此验收网络、GPU或完整业务。\r\n"
+    },
+    {
+      "number": 1593,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1593#issuecomment-7051278305",
+      "body": "2026-11-21 总单 #426 夸父原步骤复核：原运行 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44532326545/attempts/1 的 macOS/Ubuntu Run complete AINative and package regressions 因 test_geometry_repair 和 test_local_geometry_uses_configured_runtime_not_host_python 导入 numpy 失败。\n\n恢复为已交付 main f4e6f59706d3017fcaafe775908316f60a1c1b85 的同一完整测试命令：python -m unittest discover -s tools/ainative -p test_*.py。日志明确先安装 pillow==12.1.1 numpy==2.4.4，再执行全套AINative和package回归；macOS日志489项、OK(skipped=62)。macOS原步骤成功 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796346，Ubuntu原步骤成功 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796047。\n\n只关闭此缺失测试依赖事故；不据此验收网络、GPU或完整业务。\r\n"
+    },
+    {
+      "number": 1594,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1594#issuecomment-7051280478",
+      "body": "2026-11-21 总单 #426 夸父原步骤复核：原运行 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44532106685/attempts/1 的 macOS/Ubuntu Run complete AINative and package regressions 因 test_geometry_repair 和 test_local_geometry_uses_configured_runtime_not_host_python 导入 numpy 失败。\n\n恢复为已交付 main f4e6f59706d3017fcaafe775908316f60a1c1b85 的同一完整测试命令：python -m unittest discover -s tools/ainative -p test_*.py。日志明确先安装 pillow==12.1.1 numpy==2.4.4，再执行全套AINative和package回归；macOS日志489项、OK(skipped=62)。macOS原步骤成功 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796346，Ubuntu原步骤成功 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796047。\n\n只关闭此缺失测试依赖事故；不据此验收网络、GPU或完整业务。\r\n"
+    },
+    {
+      "number": 1599,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1599#issuecomment-7051282417",
+      "body": "2026-11-21 总单 #426 夸父原步骤复核：原运行 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44536307302/attempts/1 的 macOS/Ubuntu Run complete AINative and package regressions 因 test_geometry_repair 和 test_local_geometry_uses_configured_runtime_not_host_python 导入 numpy 失败。\n\n恢复为已交付 main f4e6f59706d3017fcaafe775908316f60a1c1b85 的同一完整测试命令：python -m unittest discover -s tools/ainative -p test_*.py。日志明确先安装 pillow==12.1.1 numpy==2.4.4，再执行全套AINative和package回归；macOS日志489项、OK(skipped=62)。macOS原步骤成功 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796346，Ubuntu原步骤成功 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796047。\n\n只关闭此缺失测试依赖事故；不据此验收网络、GPU或完整业务。\r\n"
+    },
+    {
+      "number": 1632,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1632#issuecomment-7051284542",
+      "body": "2026-11-21 总单 #426 原步骤复核：原 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44561862549/job/135693016733 的 test_native_entry_remote_normal.py::test_remote_ordinary_main 返回 planned 而非 delivered。\n\n后继PR #1678精确候选795426a326753d36bbbcd14b3ec3d2ce4bc16e9f的Run Tianxuan server and Duobao tests已通过：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44702911037/job/136175369523，命令pytest customizations/components/tianxuan -q -k 'not test_250_local_tool_burst'，1324 passed/9 skipped/2 deselected。原失败用例未被该排除规则排除；PR #1678已合入632dd860907d08c8e10d424de8995de87a167970。关闭该CI事故，不扩展为250上下文burst或原#1581整体验收。\r\n"
+    },
+    {
+      "number": 1569,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1569#issuecomment-7051286846",
+      "body": "2026-11-21 总单 #426 原场景复核：原 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44486124788/job/135429920075 的受限Docker进程OOMKilled=true/ExitCode137，在test_installation_update_and_rollback_preserve_accepted_tasks处退出。\n\n后继已交付main9871aacbd1ada4f5650f8b2898188c00d2780a0c的原生包测试 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44804007214/job/136523126284 日志明确上述安装更新/回退测试PASSED，并保留OOMKilled=false ExitCode=0。因此关闭本诊断事故。此回执不覆盖Native context burst with isolated test-driver budget（该步骤SKIPPED）；#1559继续保留，不声称250 burst恢复。\r\n"
+    },
+    {
+      "number": 1496,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1496#issuecomment-7051307533",
+      "body": "2026-11-21 总单 #426 原步骤复核：原 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44215391969/job/134503828505 缺少唯一GongGong-Issue及GongGong-Request行。PR #1494已补齐#1486/native-model-producer-20261118，完全相同SHA ecedfa7f3fd8ad7cdc3b86f1fd5409a6645d2079 的后继 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44215527206/job/134504280499 于01:24成功，早于PR在02:30合入；不是closed PR跳过。合并提交604fd44d64fc96cb2c110ecb26b3a36aacdff002。关闭此工单关联事故，不代替业务验收。\r\n"
+    },
+    {
+      "number": 1596,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1596#issuecomment-7051309701",
+      "body": "2026-11-21 总单 #426 原步骤复核：原 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44536307060/job/135602530220 缺少唯一GongGong-Issue及GongGong-Request行。原PR #1595已补齐#1610/maliang-image-only-mesh-20261119，后继签发候选094ace9b2aa45d03df275398979a68b1b8e76451 的 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44548971807/job/135647181301 于14:55成功，早于PR在15:00合入；不是closed PR跳过。合并提交398bdd9af8c2065b0420ed5d10b77f627da653bc。关闭此工单关联事故，不代替业务验收。\r\n"
+    },
+    {
+      "number": 1514,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1514#issuecomment-7051320157",
+      "body": "2026-11-21 总单 #426 定向复核：原 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44247158269/job/134608767291 在macOS Build and audit standalone tests (Clang)的reconnect/loss/interpolation/drain场景server/client status5退出。\n\n恢复为已交付main f4e6f59706d3017fcaafe775908316f60a1c1b85的同平台同一步骤 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796346，实际handshake、clean_handshake、package_handshake均记录clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok。逐文件API回读确认原候选9dc7832f与恢复版本的RunM2Handshake.py均blob cc92141b4c1721a75820c0bbe20ebcfef4934559，EnetTransport.cpp均f8b7742436a8f017ed63d3c98ac99a6062bd0c88；未以删减场景制造成功。\n\n本单按同一场景在后继已交付输入上的实际恢复关闭，原瞬态status5的根因仍未知，不宣称代码根治；不代替#1506 GPU/业务剩余验收。\r\n"
+    },
+    {
+      "number": 1346,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1346#issuecomment-7051326798",
+      "body": "2026-11-21 总单 #426 原网络场景定向回读：原运行 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43803106875 的macOS Build and audit standalone tests (Clang) reconnect/loss/interpolation/drain失败，后继已交付main f4e6f59706d3017fcaafe775908316f60a1c1b85的 https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796346 实际handshake、clean_handshake、package_handshake全部clients=2 resumes=1 stale_recoveries=1 graceful_acks=2 status=ok。\n\n原候选与恢复候选RunM2Handshake.py的blob均为cc92141b4c1721a75820c0bbe20ebcfef4934559，场景未删减；EnetTransport.cpp由e072bd715370e15ba3476476dc76a9493a8adcad更新为f8b7742436a8f017ed63d3c98ac99a6062bd0c88（新增socket诊断）。可确认原场景在后继主线恢复，瞬态status5根因仍未知，不声称源头根治或GPU业务验收。\r\n"
+    },
+    {
+      "number": 1489,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1489#issuecomment-7051250078",
+      "body": "2026-11-21 #426 本轮独立证据核对（Sail-Li 授权宿主）。\r\n\r\n两次交付门禁事故 82241856d017 / 71969ce73dfa：收集记录的 CRLF 原字节与旧索引 LF 字节不一致。原责任者在自己的候选中校正精确 -text 属性并重建索引；两个本地 delivery recheck 均指向源 adf95db8，最终候选49d6ce9及原操作复验已确认。\r\n\r\n原诊断与恢复回执：\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1481#issuecomment-6965052038\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1481#issuecomment-6965348009\r\n\r\n已从 GitHub API 回读 PR #1490 的精确签发头及 merged_at/merge_commit_sha，与上述原责任者交付回执一致：https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1490。\r\n\r\n本次关闭仅覆盖本跟踪单列出的事故恢复；引用原有独立验证结论，不代签父 #1444/#1382 的业务验收，不变更在途候选或生产安装。未进行新模型调用、构建或工作树写入。"
+    },
+    {
+      "number": 1478,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1478#issuecomment-7051252498",
+      "body": "2026-11-21 #426 本轮独立证据核对（Sail-Li 授权宿主）。\r\n\r\n交付事故 e24299a0a82f：缺少本租户、精确 Issue 来源的 kind=request 采集事件。按原入口补录真实来源后，原正式门禁和提交后核验成功；本地 delivery recheck 对应源833d7e56，最终签发eedddc24。\r\n\r\n原诊断与恢复回执：\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461#issuecomment-6961452882\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1461#issuecomment-6961767253\r\n\r\n已从 GitHub API 回读 PR #1479 的精确签发头及 merged_at/merge_commit_sha，与上述原责任者交付回执一致：https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1479。\r\n\r\n本次关闭仅覆盖本跟踪单列出的事故恢复；引用原有独立验证结论，不代签父 #1444/#1382 的业务验收，不变更在途候选或生产安装。未进行新模型调用、构建或工作树写入。"
+    },
+    {
+      "number": 1482,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1482#issuecomment-7051254892",
+      "body": "2026-11-21 #426 本轮独立证据核对（Sail-Li 授权宿主）。\r\n\r\n派发事故914093fffdf7：宿主误用 review.requested，失败发生在预留/启动前。更正为受支持 decision.recorded 后取得一次真实独立审查工作者回执；后续两轮协议审查、实测及最终候选5bcb9eee已交付。未重放模型调用。\r\n\r\n原诊断与恢复回执：\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480#issuecomment-6962178369\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1480#issuecomment-6963116966\r\n\r\n已从 GitHub API 回读 PR #1485 的精确签发头及 merged_at/merge_commit_sha，与上述原责任者交付回执一致：https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1485。\r\n\r\n本次关闭仅覆盖本跟踪单列出的事故恢复；引用原有独立验证结论，不代签父 #1444/#1382 的业务验收，不变更在途候选或生产安装。未进行新模型调用、构建或工作树写入。"
+    },
+    {
+      "number": 1498,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1498#issuecomment-7051257413",
+      "body": "2026-11-21 #426 本轮独立证据核对（Sail-Li 授权宿主）。\r\n\r\n派发事故0e2b9a7ebeeb：另一项已运行的 timing reconcile 正持有全局协调锁，发生EEXIST。原责任者等其真实完成并回读锁自然释放，再完成原continuous reconcile及工作者终态核验；没有删锁或重复派发。最终候选20fc2447完成独立核查及交付。\r\n\r\n原诊断与恢复回执：\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1488#issuecomment-6966723934\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1488#issuecomment-6967616074\r\n\r\n已从 GitHub API 回读 PR #1500 的精确签发头及 merged_at/merge_commit_sha，与上述原责任者交付回执一致：https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1500。\r\n\r\n本次关闭仅覆盖本跟踪单列出的事故恢复；引用原有独立验证结论，不代签父 #1444/#1382 的业务验收，不变更在途候选或生产安装。未进行新模型调用、构建或工作树写入。"
+    },
+    {
+      "number": 1507,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1507#issuecomment-7051259923",
+      "body": "2026-11-21 #426 本轮独立证据核对（Sail-Li 授权宿主）。\r\n\r\n验证事故6ad2e52e5bed：测量包装器将实际目录型Materials.enpak当普通文件哈希，GPU尚未启动。改为成员摘要及符号链接拒绝后，独立编号的后续实测完成8次GPU运行；独立复核423项摘要及原始帧通过，最终候选d36bc0aa交付。此次恢复仅证明包装器与指定测量流程，不外推渲染质量。\r\n\r\n原诊断与恢复回执：\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1504#issuecomment-6968039613\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1504#issuecomment-6969238177\r\n\r\n已从 GitHub API 回读 PR #1509 的精确签发头及 merged_at/merge_commit_sha，与上述原责任者交付回执一致：https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1509。\r\n\r\n本次关闭仅覆盖本跟踪单列出的事故恢复；引用原有独立验证结论，不代签父 #1444/#1382 的业务验收，不变更在途候选或生产安装。未进行新模型调用、构建或工作树写入。"
+    },
+    {
+      "number": 1497,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1497#issuecomment-7051262252",
+      "body": "2026-11-21 #426 本轮独立证据核对（Sail-Li 授权宿主）。\r\n\r\n三项事故逐一核对：12b50bd98fd5 是启动前不支持的 requirement.received，纠正为 request.created 后独立审查工作者启动与终态回执均存在；5a9d571482db 是完成通知重放/first_response晚于terminal的两项真实缺陷，修复后独立5JS与10Python边界探针通过；21fad764e289 是隔离树缺少固定WebView2 SDK，获取并核对六文件后原SCons图9392输入复验通过。最终103项证据及159项源码/索引核验通过，候选8b6b210b交付。保留原慢调用与未知原因，不宣称普遍性能收益。\r\n\r\n原诊断与恢复回执：\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495#issuecomment-6966198047\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495#issuecomment-6966731597\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495#issuecomment-6966996970\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1495#issuecomment-6967863355\r\n\r\n已从 GitHub API 回读 PR #1502 的精确签发头及 merged_at/merge_commit_sha，与上述原责任者交付回执一致：https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1502。\r\n\r\n本次关闭仅覆盖本跟踪单列出的事故恢复；引用原有独立验证结论，不代签父 #1444/#1382 的业务验收，不变更在途候选或生产安装。未进行新模型调用、构建或工作树写入。"
+    },
+    {
+      "number": 1493,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1493#issuecomment-7051361100",
+      "body": "2026-11-21 #426 独立对账。\r\n\r\n原run44211794824/job134491727107在Style checks的offline snapshot hook失败，具体为host-http/runtime清单摘要不符。后继PR1494同业务候选修正注册表；run44214680000/job134501424097日志明确该hook Passed，签发ecedfa7f已合入。\r\n\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44211794824/job/134491727107\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44214680000/job/134501424097\r\n\r\n只关闭本单对应操作阻塞，保留原失败和未知根因，不代验父业务。复用实际远端步骤和已交付证据，未新增运行/构建或操作其他工作树。"
+    },
+    {
+      "number": 1470,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1470#issuecomment-7051363862",
+      "body": "2026-11-21 #426 独立对账。\r\n\r\n原run44158439724/job134305381145的mypy报native_store.py:244缺base类型注解。后继PR1473精确签发7fe376b6已合入；run44162830402/job134320927514日志确认mypy实际检查4个源文件并Passed。\r\n\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44158439724/job/134305381145\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44162830402/job/134320927514\r\n\r\n只关闭本单对应操作阻塞，保留原失败和未知根因，不代验父业务。复用实际远端步骤和已交付证据，未新增运行/构建或操作其他工作树。"
+    },
+    {
+      "number": 1611,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1611#issuecomment-7051366637",
+      "body": "2026-11-21 #426 独立对账。\r\n\r\n本单三个运行分别核对：44548943740的checkout已由本单既有exact recovery 44548971807覆盖；44548943810及44549847280的macOS/Linux完整AINative步骤均因numpy缺失报两项ImportError。后继主线run44681517053的ubuntu job136105796047及macOS job136105796346，同名Run complete AINative and package regressions均success。这是修订环境后的同入口恢复，不宣称原SHA重跑或覆盖Windows以外所有环境。\r\n\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44548943810/job/135647081825\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44549847280/job/135650318032\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796047\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44681517053/job/136105796346\r\n\r\n只关闭本单对应操作阻塞，保留原失败和未知根因，不代验父业务。复用实际远端步骤和已交付证据，未新增运行/构建或操作其他工作树。"
+    },
+    {
+      "number": 1381,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1381#issuecomment-7051369477",
+      "body": "2026-11-21 #426 独立对账。\r\n\r\n两次macOS Clang运行均已核对。43924513546原失败来自CleanRun/RunM2DrainFaults，客户端和服务器status5；后继同业务PR1380的43926542575 attempt1失败、attempt2同候选106dfa0a job133517039209成功（本单已有exact recovery）。成功日志确认实际执行BuildRuntime --run-tests --soak且soak status=ok；已核对该精确提交BuildRuntime验收入口必须同步调用drain_faults与clean_drain_faults，失败会传播非零。此为原Clang/网络操作恢复证据；未单独留存成功DrainFaultsReport，网络偶发失败底层原因仍未知。原责任者1372评论6925633306确认最终网络重跑通过，PR1380已合入。\r\n\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43924513546/job/133500282324\r\n- https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/43926542575/job/133517039209\r\n\r\n只关闭本单对应操作阻塞，保留原失败和未知根因，不代验父业务。复用实际远端步骤和已交付证据，未新增运行/构建或操作其他工作树。"
+    },
+    {
+      "number": 1660,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1660#issuecomment-7051272419",
+      "body": "2026-11-21 #426 授权下的独立阻塞复核：本单登记的三类故障均已有对应恢复证据，关闭故障跟踪；#1642 真实消费者验收仍保留开放。\n\n1. 本地 delivery incident 9b4eba4fb2aeef317338625cd6639dfb355a20ddc2d071032dddb5ca45f727ca 原因为证据 CRLF 原始字节与暂存 LF 不同。已回读原诊断及原宿主 recheck-8003227e37cc307ee01492d265a65c8a818ef31e12332997653b5452541c92fd：规范化后在 2768dad9420be6c5f8dab17b7ee35883bbf8d80d 取得 delivery recovery_candidate，继而产生 PR1661。该记录只证明当时恢复候选，最终交付另按下面接替 PR 核实。\n2. 原 [44585769978/job135778152766](https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44585769978/job/135778152766) 的 Ruff format 与 mypy 失败，已由 [44773961196/job136418692697](https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44773961196/job/136418692697) 在接替签发 head 8dd542de40198065f6a8ad5b02dcdefdbcba5429 对同一七个 Python 文件执行 Ruff check/format 和 mypy，均 Passed。\n3. 原 [44585772828/job135778159414](https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44585772828/job/135778159414) 的 test_real_process_unknown_turn_closes_without_replay[flood] 未抛 ValueError，源头修复由 PR1698/main21654eb5 交付。该修复保留 flood、crash 与不可重放断言，并增加延迟 stdout/stderr、最终邮箱响应竞态验证。接替候选包含该修复；[44773961187/job136418838136](https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44773961187/job/136418838136) 在 Node v22.23.5 下执行 Tianxuan 完整测试（仅排除 test_250_local_tool_burst），1332 passed、10 skipped、2 deselected、249 subtests passed。已核对该精确 head 上原 flood 测试仍被参数化保留，节点可用且不属于排除项；六项局部真实子进程恢复证据另见 data-collection/tianxuan-output-drain-repair-1697.json。\n\nPR1699 明确接替 PR1661，签发 head 8dd542de40198065f6a8ad5b02dcdefdbcba5429，合入提交 09947028882f1865a3fa01b25c2d6c8ea69d0985；本次远端 compare 对 main 回读 behind_by=0，确认已被主线包含。原失败运行保留原样，不将其改称成功，也不重新发布旧候选。\n\n此关闭只覆盖本单登记的证据字节/签发、静态检查及 stdout flood 测试阻塞；不代表生产安装、#1642 原生内容回退实际消费者或 #1550 整体平台验收完成。#1642 保持 OPEN，生产接收仍沿 #1577 原责任链。旧 PR1661 的处置须由实际发布责任者核对，不在本次核查中擅自修改其候选。\r\n"
+    },
+    {
+      "number": 1446,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1446#issuecomment-7051433514",
+      "body": "2026-11-21 #426 当前 Windows 定向实测已通过。\r\n\r\n原 run44108242937/job134126770277 失败在 tests/editor/test_codex_bridge.js 的取消图片请求清理断言，原等待仅2秒。已交付主线修复7d5b83eee26c15c9bd30846632d8e5151bea9ae0将夹具期限改为60秒，覆盖独立清理监听器最多46.5秒的busy-file重试预算。\r\n\r\n本次在main 6c83e0550db2324c35933d2e1fd93a75e060a836隔离树执行原失败命令 node --test tests/editor/test_codex_bridge.js：21项全部通过、0跳过/取消、总11.196秒，取消附件清理用例781ms。所有CLI均为测试创建的mock.js，无实际模型调用或Godot GUI。测试文件SHA256 e3069e8fc36eeaffdb79a148b6e13b124f388da14b5d897731662043bf9857ab；bridge SHA256 3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab。测试终态后对应mock进程数量为0，未新增源码修改。\r\n\r\n本轮intake初次因planned状态拒绝；按已有授权转in-progress后同一入口通过，incident a9e470c3bb31的operation_reverified回执已留存，见上一判断评论。只关闭原清理操作阻塞，不把本次mock测试外推为完整编辑器业务验收。\r\n\r\n原失败：https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44108242937/job/134126770277\r\n已有修复：https://github.com/zhzyx/nightmarish-spooky-sorceryze/commit/7d5b83eee26c15c9bd30846632d8e5151bea9ae0"
+    }
+  ]
+}
