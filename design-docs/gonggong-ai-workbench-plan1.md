@@ -24,6 +24,8 @@
 
 ### B01
 
+[编辑器入口及复现路径](gonggong-ai-workbench-b01.md)
+
 **清点 Godot 原生入口** · [B01 #1873](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1873)
 
 列出现有 AI Chat、天枢、3D 面板、工具弹窗和其他可交互表面，标记现有挂载点。
