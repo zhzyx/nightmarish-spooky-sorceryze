@@ -1,0 +1,2721 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "observed_at": "2026-11-20T23:02:17.573661+00:00",
+  "source_workbook_sha256": "5bb842553cecbe61c300efcfb5639d93042241d02487d6502b2485f4f60dd8ec",
+  "design_path": "design-docs/gonggong-ai-workbench-plan1.md",
+  "source": "GitHub authenticated GraphQL issue/parent reads and REST sub_issues listings",
+  "task_count": 164,
+  "parent_issue_count_extra": 1,
+  "native_parent_edges": 164,
+  "direct_prerequisite_edges": 369,
+  "open_tasks_at_registration": 164,
+  "completed_tasks_at_registration": 0,
+  "registration_scope": "GitHub only",
+  "business_implementation_started_by_registration": false,
+  "tasks": [
+    {
+      "id": "B01",
+      "stage": "M0",
+      "dep": [],
+      "succ": [
+        "B05",
+        "B06",
+        "B07"
+      ],
+      "issue_number": 1873,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1873",
+      "native_parent": 1718,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#b01"
+    },
+    {
+      "id": "B02",
+      "stage": "M0",
+      "dep": [],
+      "succ": [
+        "B05",
+        "B07",
+        "C01",
+        "D14",
+        "I12"
+      ],
+      "issue_number": 1870,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1870",
+      "native_parent": 1718,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#b02"
+    },
+    {
+      "id": "B03",
+      "stage": "M0",
+      "dep": [],
+      "succ": [
+        "B06",
+        "B07",
+        "D01"
+      ],
+      "issue_number": 1874,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1874",
+      "native_parent": 1718,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#b03"
+    },
+    {
+      "id": "B04",
+      "stage": "M0",
+      "dep": [],
+      "succ": [
+        "B07",
+        "G01",
+        "G02"
+      ],
+      "issue_number": 1853,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1853",
+      "native_parent": 1718,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#b04"
+    },
+    {
+      "id": "B05",
+      "stage": "M0",
+      "dep": [
+        "B01",
+        "B02"
+      ],
+      "succ": [
+        "C03",
+        "K00"
+      ],
+      "issue_number": 1827,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1827",
+      "native_parent": 1718,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#b05"
+    },
+    {
+      "id": "B06",
+      "stage": "M0",
+      "dep": [
+        "B01",
+        "B03"
+      ],
+      "succ": [
+        "K00",
+        "U01"
+      ],
+      "issue_number": 1872,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1872",
+      "native_parent": 1718,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#b06"
+    },
+    {
+      "id": "B07",
+      "stage": "M0",
+      "dep": [
+        "B01",
+        "B02",
+        "B03",
+        "B04"
+      ],
+      "succ": [
+        "K00"
+      ],
+      "issue_number": 1719,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1719",
+      "native_parent": 1718,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#b07"
+    },
+    {
+      "id": "K00",
+      "stage": "M0",
+      "dep": [
+        "B05",
+        "B06",
+        "B07"
+      ],
+      "succ": [
+        "K01",
+        "K06"
+      ],
+      "issue_number": 1718,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1718",
+      "native_parent": 1709,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#k00"
+    },
+    {
+      "id": "C01",
+      "stage": "M1",
+      "dep": [
+        "B02"
+      ],
+      "succ": [
+        "C02",
+        "C03"
+      ],
+      "issue_number": 1868,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1868",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#c01"
+    },
+    {
+      "id": "C02",
+      "stage": "M1",
+      "dep": [
+        "C01"
+      ],
+      "succ": [
+        "C04",
+        "C05",
+        "I01"
+      ],
+      "issue_number": 1866,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1866",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#c02"
+    },
+    {
+      "id": "C03",
+      "stage": "M1",
+      "dep": [
+        "B05",
+        "C01"
+      ],
+      "succ": [
+        "C07",
+        "V07"
+      ],
+      "issue_number": 1806,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1806",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#c03"
+    },
+    {
+      "id": "C04",
+      "stage": "M1",
+      "dep": [
+        "C02"
+      ],
+      "succ": [
+        "C06",
+        "D12",
+        "I13"
+      ],
+      "issue_number": 1784,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1784",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#c04"
+    },
+    {
+      "id": "C05",
+      "stage": "M1",
+      "dep": [
+        "C02"
+      ],
+      "succ": [
+        "C08",
+        "D01",
+        "U08",
+        "U10",
+        "U11",
+        "U12",
+        "U15"
+      ],
+      "issue_number": 1864,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1864",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#c05"
+    },
+    {
+      "id": "C06",
+      "stage": "M1",
+      "dep": [
+        "C04",
+        "U02"
+      ],
+      "succ": [
+        "F01",
+        "K01",
+        "Q01"
+      ],
+      "issue_number": 1744,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1744",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#c06"
+    },
+    {
+      "id": "C07",
+      "stage": "M1",
+      "dep": [
+        "C03",
+        "U02"
+      ],
+      "succ": [
+        "K01",
+        "U14"
+      ],
+      "issue_number": 1785,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1785",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#c07"
+    },
+    {
+      "id": "C08",
+      "stage": "M1",
+      "dep": [
+        "C05"
+      ],
+      "succ": [
+        "U07",
+        "U09"
+      ],
+      "issue_number": 1839,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1839",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#c08"
+    },
+    {
+      "id": "U01",
+      "stage": "M1",
+      "dep": [
+        "B06"
+      ],
+      "succ": [
+        "U02"
+      ],
+      "issue_number": 1871,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1871",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u01"
+    },
+    {
+      "id": "U02",
+      "stage": "M1",
+      "dep": [
+        "U01"
+      ],
+      "succ": [
+        "C06",
+        "C07",
+        "D14",
+        "G09",
+        "G10",
+        "I12",
+        "U03",
+        "U04",
+        "U05",
+        "U06",
+        "U07",
+        "U08",
+        "U09",
+        "U12",
+        "U15"
+      ],
+      "issue_number": 1869,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1869",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u02"
+    },
+    {
+      "id": "U03",
+      "stage": "M1",
+      "dep": [
+        "U02"
+      ],
+      "succ": [
+        "K01",
+        "U13"
+      ],
+      "issue_number": 1807,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1807",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u03"
+    },
+    {
+      "id": "U04",
+      "stage": "M1",
+      "dep": [
+        "U02"
+      ],
+      "succ": [
+        "K01",
+        "U13"
+      ],
+      "issue_number": 1808,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1808",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u04"
+    },
+    {
+      "id": "U05",
+      "stage": "M1",
+      "dep": [
+        "U02"
+      ],
+      "succ": [
+        "H03",
+        "K01",
+        "S07",
+        "U13"
+      ],
+      "issue_number": 1840,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1840",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u05"
+    },
+    {
+      "id": "U06",
+      "stage": "M1",
+      "dep": [
+        "U02"
+      ],
+      "succ": [
+        "F01",
+        "K01",
+        "Q01"
+      ],
+      "issue_number": 1745,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1745",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u06"
+    },
+    {
+      "id": "U07",
+      "stage": "M1",
+      "dep": [
+        "C08",
+        "U02"
+      ],
+      "succ": [
+        "E04",
+        "K01",
+        "U14"
+      ],
+      "issue_number": 1828,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1828",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u07"
+    },
+    {
+      "id": "U08",
+      "stage": "M1",
+      "dep": [
+        "C05",
+        "U02"
+      ],
+      "succ": [
+        "E03",
+        "K01",
+        "Q01"
+      ],
+      "issue_number": 1829,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1829",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u08"
+    },
+    {
+      "id": "U09",
+      "stage": "M1",
+      "dep": [
+        "C08",
+        "U02"
+      ],
+      "succ": [
+        "E04",
+        "K01",
+        "Q01"
+      ],
+      "issue_number": 1830,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1830",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u09"
+    },
+    {
+      "id": "U12",
+      "stage": "M1",
+      "dep": [
+        "C05",
+        "U02"
+      ],
+      "succ": [
+        "K01",
+        "U16"
+      ],
+      "issue_number": 1809,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1809",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u12"
+    },
+    {
+      "id": "U15",
+      "stage": "M1",
+      "dep": [
+        "C05",
+        "U02"
+      ],
+      "succ": [
+        "D12",
+        "U16"
+      ],
+      "issue_number": 1810,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1810",
+      "native_parent": 1717,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u15"
+    },
+    {
+      "id": "K01",
+      "stage": "M1",
+      "dep": [
+        "C06",
+        "C07",
+        "D12",
+        "K00",
+        "U03",
+        "U04",
+        "U05",
+        "U06",
+        "U07",
+        "U08",
+        "U09",
+        "U12"
+      ],
+      "succ": [
+        "K02"
+      ],
+      "issue_number": 1717,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1717",
+      "native_parent": 1709,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#k01"
+    },
+    {
+      "id": "D01",
+      "stage": "M2",
+      "dep": [
+        "B03",
+        "C05"
+      ],
+      "succ": [
+        "D03",
+        "D12"
+      ],
+      "issue_number": 1862,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1862",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d01"
+    },
+    {
+      "id": "D02",
+      "stage": "M2",
+      "dep": [
+        "D14"
+      ],
+      "succ": [
+        "D03",
+        "D04",
+        "U10"
+      ],
+      "issue_number": 1865,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1865",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d02"
+    },
+    {
+      "id": "D03",
+      "stage": "M2",
+      "dep": [
+        "D01",
+        "D02"
+      ],
+      "succ": [
+        "D05",
+        "D09"
+      ],
+      "issue_number": 1860,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d03"
+    },
+    {
+      "id": "D04",
+      "stage": "M2",
+      "dep": [
+        "D02"
+      ],
+      "succ": [
+        "D05",
+        "D06",
+        "D07"
+      ],
+      "issue_number": 1863,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1863",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d04"
+    },
+    {
+      "id": "D05",
+      "stage": "M2",
+      "dep": [
+        "D03",
+        "D04"
+      ],
+      "succ": [
+        "D11",
+        "Q14"
+      ],
+      "issue_number": 1786,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1786",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d05"
+    },
+    {
+      "id": "D06",
+      "stage": "M2",
+      "dep": [
+        "D04"
+      ],
+      "succ": [
+        "D09"
+      ],
+      "issue_number": 1861,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1861",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d06"
+    },
+    {
+      "id": "D07",
+      "stage": "M2",
+      "dep": [
+        "D04"
+      ],
+      "succ": [
+        "D08"
+      ],
+      "issue_number": 1787,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1787",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d07"
+    },
+    {
+      "id": "D08",
+      "stage": "M2",
+      "dep": [
+        "D07"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1746,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1746",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d08"
+    },
+    {
+      "id": "D09",
+      "stage": "M2",
+      "dep": [
+        "D03",
+        "D06"
+      ],
+      "succ": [
+        "D10",
+        "D13"
+      ],
+      "issue_number": 1858,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1858",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d09"
+    },
+    {
+      "id": "D10",
+      "stage": "M2",
+      "dep": [
+        "D09",
+        "I01"
+      ],
+      "succ": [
+        "A01"
+      ],
+      "issue_number": 1857,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1857",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d10"
+    },
+    {
+      "id": "D11",
+      "stage": "M2",
+      "dep": [
+        "D05"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1747,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1747",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d11"
+    },
+    {
+      "id": "D12",
+      "stage": "M2",
+      "dep": [
+        "C04",
+        "D01",
+        "U15"
+      ],
+      "succ": [
+        "F01",
+        "K01",
+        "Q13"
+      ],
+      "issue_number": 1748,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1748",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d12"
+    },
+    {
+      "id": "D13",
+      "stage": "M2",
+      "dep": [
+        "D09"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1749,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1749",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d13"
+    },
+    {
+      "id": "D14",
+      "stage": "M2",
+      "dep": [
+        "B02",
+        "U02"
+      ],
+      "succ": [
+        "D02",
+        "I01"
+      ],
+      "issue_number": 1867,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#d14"
+    },
+    {
+      "id": "I01",
+      "stage": "M2",
+      "dep": [
+        "C02",
+        "D14"
+      ],
+      "succ": [
+        "D10",
+        "I02"
+      ],
+      "issue_number": 1859,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1859",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i01"
+    },
+    {
+      "id": "I02",
+      "stage": "M2",
+      "dep": [
+        "I01"
+      ],
+      "succ": [
+        "G12",
+        "H03",
+        "I03",
+        "I04",
+        "I05",
+        "I06",
+        "I07",
+        "I09",
+        "I10",
+        "I11",
+        "I14",
+        "I17",
+        "I19",
+        "U11"
+      ],
+      "issue_number": 1854,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i02"
+    },
+    {
+      "id": "I03",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1750,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1750",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i03"
+    },
+    {
+      "id": "I04",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "Q13",
+        "S05",
+        "S08"
+      ],
+      "issue_number": 1831,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1831",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i04"
+    },
+    {
+      "id": "I05",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "I16"
+      ],
+      "issue_number": 1788,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1788",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i05"
+    },
+    {
+      "id": "I06",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "A02",
+        "H02",
+        "I15"
+      ],
+      "issue_number": 1850,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i06"
+    },
+    {
+      "id": "I07",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "I08"
+      ],
+      "issue_number": 1789,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1789",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i07"
+    },
+    {
+      "id": "I08",
+      "stage": "M2",
+      "dep": [
+        "I07"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1751,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1751",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i08"
+    },
+    {
+      "id": "I09",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1752,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1752",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i09"
+    },
+    {
+      "id": "I10",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1753,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1753",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i10"
+    },
+    {
+      "id": "I11",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1754,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1754",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i11"
+    },
+    {
+      "id": "I12",
+      "stage": "M2",
+      "dep": [
+        "B02",
+        "U02"
+      ],
+      "succ": [
+        "G16",
+        "I13"
+      ],
+      "issue_number": 1790,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1790",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i12"
+    },
+    {
+      "id": "I13",
+      "stage": "M2",
+      "dep": [
+        "C04",
+        "I12"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1755,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i13"
+    },
+    {
+      "id": "I14",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "H04",
+        "I18"
+      ],
+      "issue_number": 1832,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1832",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i14"
+    },
+    {
+      "id": "I15",
+      "stage": "M2",
+      "dep": [
+        "I06"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1756,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i15"
+    },
+    {
+      "id": "I16",
+      "stage": "M2",
+      "dep": [
+        "A03",
+        "I05"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1757,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1757",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i16"
+    },
+    {
+      "id": "I17",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1758,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1758",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i17"
+    },
+    {
+      "id": "I18",
+      "stage": "M2",
+      "dep": [
+        "I14"
+      ],
+      "succ": [
+        "F01",
+        "Q13"
+      ],
+      "issue_number": 1759,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1759",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i18"
+    },
+    {
+      "id": "I19",
+      "stage": "M2",
+      "dep": [
+        "I02"
+      ],
+      "succ": [
+        "Q13"
+      ],
+      "issue_number": 1724,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1724",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#i19"
+    },
+    {
+      "id": "U10",
+      "stage": "M2",
+      "dep": [
+        "C05",
+        "D02"
+      ],
+      "succ": [
+        "F01",
+        "K02",
+        "Q01"
+      ],
+      "issue_number": 1760,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1760",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u10"
+    },
+    {
+      "id": "U11",
+      "stage": "M2",
+      "dep": [
+        "C05",
+        "I02"
+      ],
+      "succ": [
+        "U13"
+      ],
+      "issue_number": 1811,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1811",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u11"
+    },
+    {
+      "id": "U13",
+      "stage": "M2",
+      "dep": [
+        "U03",
+        "U04",
+        "U05",
+        "U11"
+      ],
+      "succ": [
+        "U14"
+      ],
+      "issue_number": 1791,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1791",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u13"
+    },
+    {
+      "id": "U14",
+      "stage": "M2",
+      "dep": [
+        "C07",
+        "U07",
+        "U13"
+      ],
+      "succ": [
+        "F01",
+        "K02",
+        "Q01"
+      ],
+      "issue_number": 1761,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1761",
+      "native_parent": 1716,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u14"
+    },
+    {
+      "id": "K02",
+      "stage": "M2",
+      "dep": [
+        "K01",
+        "Q13",
+        "U10",
+        "U14"
+      ],
+      "succ": [
+        "K03"
+      ],
+      "issue_number": 1716,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1716",
+      "native_parent": 1709,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#k02"
+    },
+    {
+      "id": "A01",
+      "stage": "M3",
+      "dep": [
+        "D10"
+      ],
+      "succ": [
+        "A02",
+        "A03",
+        "H01"
+      ],
+      "issue_number": 1856,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1856",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#a01"
+    },
+    {
+      "id": "A02",
+      "stage": "M3",
+      "dep": [
+        "A01",
+        "I06"
+      ],
+      "succ": [
+        "A05",
+        "S03"
+      ],
+      "issue_number": 1847,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1847",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#a02"
+    },
+    {
+      "id": "A03",
+      "stage": "M3",
+      "dep": [
+        "A01"
+      ],
+      "succ": [
+        "A04",
+        "E01",
+        "I16",
+        "S01",
+        "U16"
+      ],
+      "issue_number": 1855,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1855",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#a03"
+    },
+    {
+      "id": "A04",
+      "stage": "M3",
+      "dep": [
+        "A03"
+      ],
+      "succ": [
+        "A05",
+        "R01",
+        "S05",
+        "V08"
+      ],
+      "issue_number": 1841,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1841",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#a04"
+    },
+    {
+      "id": "A05",
+      "stage": "M3",
+      "dep": [
+        "A02",
+        "A04"
+      ],
+      "succ": [
+        "F01",
+        "K03"
+      ],
+      "issue_number": 1762,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1762",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#a05"
+    },
+    {
+      "id": "S01",
+      "stage": "M3",
+      "dep": [
+        "A03"
+      ],
+      "succ": [
+        "S02"
+      ],
+      "issue_number": 1851,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1851",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#s01"
+    },
+    {
+      "id": "S02",
+      "stage": "M3",
+      "dep": [
+        "S01"
+      ],
+      "succ": [
+        "S03"
+      ],
+      "issue_number": 1848,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1848",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#s02"
+    },
+    {
+      "id": "S03",
+      "stage": "M3",
+      "dep": [
+        "A02",
+        "S02"
+      ],
+      "succ": [
+        "R01",
+        "S04",
+        "S08"
+      ],
+      "issue_number": 1845,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1845",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#s03"
+    },
+    {
+      "id": "S04",
+      "stage": "M3",
+      "dep": [
+        "S03"
+      ],
+      "succ": [
+        "S05",
+        "S06",
+        "S07",
+        "S09",
+        "S10",
+        "V08"
+      ],
+      "issue_number": 1842,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1842",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#s04"
+    },
+    {
+      "id": "S05",
+      "stage": "M3",
+      "dep": [
+        "A04",
+        "I04",
+        "S04"
+      ],
+      "succ": [
+        "H06",
+        "K03",
+        "R07"
+      ],
+      "issue_number": 1812,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1812",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#s05"
+    },
+    {
+      "id": "S06",
+      "stage": "M3",
+      "dep": [
+        "S04"
+      ],
+      "succ": [
+        "K03",
+        "R06"
+      ],
+      "issue_number": 1833,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1833",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#s06"
+    },
+    {
+      "id": "S07",
+      "stage": "M3",
+      "dep": [
+        "S04",
+        "U05"
+      ],
+      "succ": [
+        "F01",
+        "K03"
+      ],
+      "issue_number": 1763,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1763",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#s07"
+    },
+    {
+      "id": "S08",
+      "stage": "M3",
+      "dep": [
+        "I04",
+        "S03"
+      ],
+      "succ": [
+        "H06",
+        "K03",
+        "R09"
+      ],
+      "issue_number": 1792,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1792",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#s08"
+    },
+    {
+      "id": "S09",
+      "stage": "M3",
+      "dep": [
+        "S04"
+      ],
+      "succ": [
+        "K03",
+        "Q03",
+        "R07"
+      ],
+      "issue_number": 1813,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1813",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#s09"
+    },
+    {
+      "id": "S10",
+      "stage": "M3",
+      "dep": [
+        "S04"
+      ],
+      "succ": [
+        "K03",
+        "R07"
+      ],
+      "issue_number": 1814,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1814",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#s10"
+    },
+    {
+      "id": "U16",
+      "stage": "M3",
+      "dep": [
+        "A03",
+        "U12",
+        "U15"
+      ],
+      "succ": [
+        "K03",
+        "Q01",
+        "V09"
+      ],
+      "issue_number": 1793,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1793",
+      "native_parent": 1715,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#u16"
+    },
+    {
+      "id": "K03",
+      "stage": "M3",
+      "dep": [
+        "A05",
+        "K02",
+        "S05",
+        "S06",
+        "S07",
+        "S08",
+        "S09",
+        "S10",
+        "U16"
+      ],
+      "succ": [
+        "K04",
+        "K05"
+      ],
+      "issue_number": 1715,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1715",
+      "native_parent": 1709,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#k03"
+    },
+    {
+      "id": "E01",
+      "stage": "M4",
+      "dep": [
+        "A03"
+      ],
+      "succ": [
+        "E02",
+        "E03",
+        "E04",
+        "V01"
+      ],
+      "issue_number": 1834,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1834",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e01"
+    },
+    {
+      "id": "E02",
+      "stage": "M4",
+      "dep": [
+        "E01"
+      ],
+      "succ": [
+        "E06",
+        "E07",
+        "E10"
+      ],
+      "issue_number": 1815,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1815",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e02"
+    },
+    {
+      "id": "E03",
+      "stage": "M4",
+      "dep": [
+        "E01",
+        "U08"
+      ],
+      "succ": [
+        "E06",
+        "E07",
+        "E10",
+        "V03"
+      ],
+      "issue_number": 1816,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1816",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e03"
+    },
+    {
+      "id": "E04",
+      "stage": "M4",
+      "dep": [
+        "E01",
+        "U07",
+        "U09"
+      ],
+      "succ": [
+        "E05",
+        "E06",
+        "E09",
+        "E10",
+        "V04"
+      ],
+      "issue_number": 1817,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1817",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e04"
+    },
+    {
+      "id": "E05",
+      "stage": "M4",
+      "dep": [
+        "E04"
+      ],
+      "succ": [
+        "E11",
+        "V06"
+      ],
+      "issue_number": 1794,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1794",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e05"
+    },
+    {
+      "id": "E06",
+      "stage": "M4",
+      "dep": [
+        "E02",
+        "E03",
+        "E04"
+      ],
+      "succ": [
+        "E11",
+        "E12",
+        "Q14"
+      ],
+      "issue_number": 1795,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1795",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e06"
+    },
+    {
+      "id": "E07",
+      "stage": "M4",
+      "dep": [
+        "E02",
+        "E03"
+      ],
+      "succ": [
+        "E08",
+        "E12"
+      ],
+      "issue_number": 1796,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1796",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e07"
+    },
+    {
+      "id": "E08",
+      "stage": "M4",
+      "dep": [
+        "E07",
+        "H03"
+      ],
+      "succ": [
+        "F01",
+        "Q03",
+        "Q15"
+      ],
+      "issue_number": 1764,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1764",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e08"
+    },
+    {
+      "id": "E09",
+      "stage": "M4",
+      "dep": [
+        "E04",
+        "H04"
+      ],
+      "succ": [
+        "V05"
+      ],
+      "issue_number": 1797,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1797",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e09"
+    },
+    {
+      "id": "E10",
+      "stage": "M4",
+      "dep": [
+        "E02",
+        "E03",
+        "E04",
+        "H04"
+      ],
+      "succ": [
+        "F01",
+        "Q03"
+      ],
+      "issue_number": 1765,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e10"
+    },
+    {
+      "id": "E11",
+      "stage": "M4",
+      "dep": [
+        "E05",
+        "E06"
+      ],
+      "succ": [
+        "F01",
+        "Q03"
+      ],
+      "issue_number": 1766,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1766",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e11"
+    },
+    {
+      "id": "E12",
+      "stage": "M4",
+      "dep": [
+        "E06",
+        "E07"
+      ],
+      "succ": [
+        "F01",
+        "Q15"
+      ],
+      "issue_number": 1767,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1767",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#e12"
+    },
+    {
+      "id": "H01",
+      "stage": "M4",
+      "dep": [
+        "A01"
+      ],
+      "succ": [
+        "H02",
+        "H03"
+      ],
+      "issue_number": 1843,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1843",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#h01"
+    },
+    {
+      "id": "H02",
+      "stage": "M4",
+      "dep": [
+        "H01",
+        "I06"
+      ],
+      "succ": [
+        "H05"
+      ],
+      "issue_number": 1818,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1818",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#h02"
+    },
+    {
+      "id": "H03",
+      "stage": "M4",
+      "dep": [
+        "H01",
+        "I02",
+        "U05"
+      ],
+      "succ": [
+        "E08",
+        "H04",
+        "R08"
+      ],
+      "issue_number": 1835,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1835",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#h03"
+    },
+    {
+      "id": "H04",
+      "stage": "M4",
+      "dep": [
+        "H03",
+        "I14"
+      ],
+      "succ": [
+        "E09",
+        "E10",
+        "H05"
+      ],
+      "issue_number": 1819,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1819",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#h04"
+    },
+    {
+      "id": "H05",
+      "stage": "M4",
+      "dep": [
+        "H02",
+        "H04"
+      ],
+      "succ": [
+        "H06",
+        "Q02"
+      ],
+      "issue_number": 1798,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1798",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#h05"
+    },
+    {
+      "id": "H06",
+      "stage": "M4",
+      "dep": [
+        "H05",
+        "S05",
+        "S08"
+      ],
+      "succ": [
+        "F01",
+        "Q03"
+      ],
+      "issue_number": 1768,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1768",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#h06"
+    },
+    {
+      "id": "V01",
+      "stage": "M4",
+      "dep": [
+        "E01"
+      ],
+      "succ": [
+        "V02",
+        "V03",
+        "V04",
+        "V05",
+        "V06",
+        "V07",
+        "V08",
+        "V09"
+      ],
+      "issue_number": 1820,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1820",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#v01"
+    },
+    {
+      "id": "V02",
+      "stage": "M4",
+      "dep": [
+        "V01"
+      ],
+      "succ": [
+        "F01",
+        "Q03",
+        "Q14"
+      ],
+      "issue_number": 1769,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1769",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#v02"
+    },
+    {
+      "id": "V03",
+      "stage": "M4",
+      "dep": [
+        "E03",
+        "V01"
+      ],
+      "succ": [
+        "Q15",
+        "V10"
+      ],
+      "issue_number": 1799,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1799",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#v03"
+    },
+    {
+      "id": "V04",
+      "stage": "M4",
+      "dep": [
+        "E04",
+        "V01"
+      ],
+      "succ": [
+        "V10"
+      ],
+      "issue_number": 1800,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1800",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#v04"
+    },
+    {
+      "id": "V05",
+      "stage": "M4",
+      "dep": [
+        "E09",
+        "V01"
+      ],
+      "succ": [
+        "F01",
+        "Q03"
+      ],
+      "issue_number": 1770,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1770",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#v05"
+    },
+    {
+      "id": "V06",
+      "stage": "M4",
+      "dep": [
+        "E05",
+        "V01"
+      ],
+      "succ": [
+        "F01",
+        "Q03"
+      ],
+      "issue_number": 1771,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1771",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#v06"
+    },
+    {
+      "id": "V07",
+      "stage": "M4",
+      "dep": [
+        "C03",
+        "V01"
+      ],
+      "succ": [
+        "V10"
+      ],
+      "issue_number": 1801,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1801",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#v07"
+    },
+    {
+      "id": "V08",
+      "stage": "M4",
+      "dep": [
+        "A04",
+        "S04",
+        "V01"
+      ],
+      "succ": [
+        "F01",
+        "Q03"
+      ],
+      "issue_number": 1772,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1772",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#v08"
+    },
+    {
+      "id": "V09",
+      "stage": "M4",
+      "dep": [
+        "U16",
+        "V01"
+      ],
+      "succ": [
+        "F01",
+        "K04"
+      ],
+      "issue_number": 1773,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1773",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#v09"
+    },
+    {
+      "id": "V10",
+      "stage": "M4",
+      "dep": [
+        "V03",
+        "V04",
+        "V07"
+      ],
+      "succ": [
+        "F01",
+        "Q03"
+      ],
+      "issue_number": 1774,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1774",
+      "native_parent": 1714,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#v10"
+    },
+    {
+      "id": "K04",
+      "stage": "M4",
+      "dep": [
+        "K03",
+        "Q09",
+        "V09"
+      ],
+      "succ": [
+        "K07"
+      ],
+      "issue_number": 1714,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1714",
+      "native_parent": 1709,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#k04"
+    },
+    {
+      "id": "R01",
+      "stage": "M5",
+      "dep": [
+        "A04",
+        "S03"
+      ],
+      "succ": [
+        "R02",
+        "R05",
+        "R06"
+      ],
+      "issue_number": 1836,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1836",
+      "native_parent": 1713,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#r01"
+    },
+    {
+      "id": "R02",
+      "stage": "M5",
+      "dep": [
+        "R01"
+      ],
+      "succ": [
+        "R03",
+        "R04"
+      ],
+      "issue_number": 1802,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1802",
+      "native_parent": 1713,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#r02"
+    },
+    {
+      "id": "R03",
+      "stage": "M5",
+      "dep": [
+        "R02"
+      ],
+      "succ": [
+        "F01"
+      ],
+      "issue_number": 1775,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1775",
+      "native_parent": 1713,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#r03"
+    },
+    {
+      "id": "R04",
+      "stage": "M5",
+      "dep": [
+        "R02"
+      ],
+      "succ": [
+        "F01"
+      ],
+      "issue_number": 1776,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1776",
+      "native_parent": 1713,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#r04"
+    },
+    {
+      "id": "R05",
+      "stage": "M5",
+      "dep": [
+        "R01"
+      ],
+      "succ": [
+        "R07",
+        "R09"
+      ],
+      "issue_number": 1821,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1821",
+      "native_parent": 1713,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#r05"
+    },
+    {
+      "id": "R06",
+      "stage": "M5",
+      "dep": [
+        "G11",
+        "R01",
+        "S06"
+      ],
+      "succ": [
+        "Q12",
+        "R07"
+      ],
+      "issue_number": 1822,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1822",
+      "native_parent": 1713,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#r06"
+    },
+    {
+      "id": "R07",
+      "stage": "M5",
+      "dep": [
+        "R05",
+        "R06",
+        "S05",
+        "S09",
+        "S10"
+      ],
+      "succ": [
+        "R08"
+      ],
+      "issue_number": 1803,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1803",
+      "native_parent": 1713,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#r07"
+    },
+    {
+      "id": "R08",
+      "stage": "M5",
+      "dep": [
+        "H03",
+        "R07"
+      ],
+      "succ": [
+        "F01"
+      ],
+      "issue_number": 1777,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1777",
+      "native_parent": 1713,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#r08"
+    },
+    {
+      "id": "R09",
+      "stage": "M5",
+      "dep": [
+        "R05",
+        "S08"
+      ],
+      "succ": [
+        "F01"
+      ],
+      "issue_number": 1778,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1778",
+      "native_parent": 1713,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#r09"
+    },
+    {
+      "id": "K05",
+      "stage": "M5",
+      "dep": [
+        "K03",
+        "Q04",
+        "Q05",
+        "Q12"
+      ],
+      "succ": [
+        "K07"
+      ],
+      "issue_number": 1713,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1713",
+      "native_parent": 1709,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#k05"
+    },
+    {
+      "id": "G01",
+      "stage": "M6",
+      "dep": [
+        "B04"
+      ],
+      "succ": [
+        "G06",
+        "G16"
+      ],
+      "issue_number": 1837,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1837",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g01"
+    },
+    {
+      "id": "G02",
+      "stage": "M6",
+      "dep": [
+        "B04"
+      ],
+      "succ": [
+        "G03"
+      ],
+      "issue_number": 1852,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1852",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g02"
+    },
+    {
+      "id": "G03",
+      "stage": "M6",
+      "dep": [
+        "G02"
+      ],
+      "succ": [
+        "G04",
+        "G05",
+        "G06",
+        "G08",
+        "G09"
+      ],
+      "issue_number": 1849,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1849",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g03"
+    },
+    {
+      "id": "G04",
+      "stage": "M6",
+      "dep": [
+        "G03"
+      ],
+      "succ": [
+        "G07",
+        "G10"
+      ],
+      "issue_number": 1846,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1846",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g04"
+    },
+    {
+      "id": "G05",
+      "stage": "M6",
+      "dep": [
+        "G03"
+      ],
+      "succ": [
+        "G07"
+      ],
+      "issue_number": 1823,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1823",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g05"
+    },
+    {
+      "id": "G06",
+      "stage": "M6",
+      "dep": [
+        "G01",
+        "G03"
+      ],
+      "succ": [
+        "G07"
+      ],
+      "issue_number": 1824,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1824",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g06"
+    },
+    {
+      "id": "G07",
+      "stage": "M6",
+      "dep": [
+        "G04",
+        "G05",
+        "G06"
+      ],
+      "succ": [
+        "G17",
+        "G18"
+      ],
+      "issue_number": 1804,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1804",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g07"
+    },
+    {
+      "id": "G08",
+      "stage": "M6",
+      "dep": [
+        "G03"
+      ],
+      "succ": [
+        "G19"
+      ],
+      "issue_number": 1779,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1779",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g08"
+    },
+    {
+      "id": "G09",
+      "stage": "M6",
+      "dep": [
+        "G03",
+        "U02"
+      ],
+      "succ": [
+        "F01"
+      ],
+      "issue_number": 1780,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1780",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g09"
+    },
+    {
+      "id": "G10",
+      "stage": "M6",
+      "dep": [
+        "G04",
+        "U02"
+      ],
+      "succ": [
+        "G11"
+      ],
+      "issue_number": 1844,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1844",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g10"
+    },
+    {
+      "id": "G11",
+      "stage": "M6",
+      "dep": [
+        "G10"
+      ],
+      "succ": [
+        "G12",
+        "G13",
+        "R06"
+      ],
+      "issue_number": 1838,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1838",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g11"
+    },
+    {
+      "id": "G12",
+      "stage": "M6",
+      "dep": [
+        "G11",
+        "I02"
+      ],
+      "succ": [
+        "G15"
+      ],
+      "issue_number": 1825,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1825",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g12"
+    },
+    {
+      "id": "G13",
+      "stage": "M6",
+      "dep": [
+        "G11"
+      ],
+      "succ": [
+        "G14",
+        "G15"
+      ],
+      "issue_number": 1826,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1826",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g13"
+    },
+    {
+      "id": "G14",
+      "stage": "M6",
+      "dep": [
+        "G13"
+      ],
+      "succ": [
+        "F01"
+      ],
+      "issue_number": 1781,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1781",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g14"
+    },
+    {
+      "id": "G15",
+      "stage": "M6",
+      "dep": [
+        "G12",
+        "G13"
+      ],
+      "succ": [
+        "F01",
+        "G18",
+        "Q12"
+      ],
+      "issue_number": 1805,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1805",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g15"
+    },
+    {
+      "id": "G16",
+      "stage": "M6",
+      "dep": [
+        "G01",
+        "I12"
+      ],
+      "succ": [
+        "G17"
+      ],
+      "issue_number": 1782,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1782",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g16"
+    },
+    {
+      "id": "G17",
+      "stage": "M6",
+      "dep": [
+        "G07",
+        "G16"
+      ],
+      "succ": [
+        "G20"
+      ],
+      "issue_number": 1741,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1741",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g17"
+    },
+    {
+      "id": "G18",
+      "stage": "M6",
+      "dep": [
+        "G07",
+        "G15"
+      ],
+      "succ": [
+        "G19"
+      ],
+      "issue_number": 1783,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1783",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g18"
+    },
+    {
+      "id": "G19",
+      "stage": "M6",
+      "dep": [
+        "G08",
+        "G18"
+      ],
+      "succ": [
+        "G20"
+      ],
+      "issue_number": 1742,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1742",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g19"
+    },
+    {
+      "id": "G20",
+      "stage": "M6",
+      "dep": [
+        "G17",
+        "G19"
+      ],
+      "succ": [
+        "G21"
+      ],
+      "issue_number": 1736,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1736",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g20"
+    },
+    {
+      "id": "G21",
+      "stage": "M6",
+      "dep": [
+        "G20"
+      ],
+      "succ": [
+        "G22"
+      ],
+      "issue_number": 1730,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1730",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g21"
+    },
+    {
+      "id": "G22",
+      "stage": "M6",
+      "dep": [
+        "G21",
+        "Q04",
+        "Q05",
+        "Q10",
+        "Q11",
+        "Q12"
+      ],
+      "succ": [
+        "G24",
+        "Q08"
+      ],
+      "issue_number": 1729,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1729",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g22"
+    },
+    {
+      "id": "G23",
+      "stage": "M6",
+      "dep": [
+        "G24"
+      ],
+      "succ": [
+        "K06"
+      ],
+      "issue_number": 1720,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1720",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g23"
+    },
+    {
+      "id": "G24",
+      "stage": "M6",
+      "dep": [
+        "G22"
+      ],
+      "succ": [
+        "G23"
+      ],
+      "issue_number": 1725,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1725",
+      "native_parent": 1712,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#g24"
+    },
+    {
+      "id": "K06",
+      "stage": "M6",
+      "dep": [
+        "G23",
+        "K00",
+        "Q08"
+      ],
+      "succ": [
+        "K07"
+      ],
+      "issue_number": 1712,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1712",
+      "native_parent": 1709,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#k06"
+    },
+    {
+      "id": "F01",
+      "stage": "M7",
+      "dep": [
+        "A05",
+        "C06",
+        "D08",
+        "D11",
+        "D12",
+        "D13",
+        "E08",
+        "E10",
+        "E11",
+        "E12",
+        "G09",
+        "G14",
+        "G15",
+        "H06",
+        "I03",
+        "I08",
+        "I09",
+        "I10",
+        "I11",
+        "I13",
+        "I15",
+        "I16",
+        "I17",
+        "I18",
+        "R03",
+        "R04",
+        "R08",
+        "R09",
+        "S07",
+        "U06",
+        "U10",
+        "U14",
+        "V02",
+        "V05",
+        "V06",
+        "V08",
+        "V09",
+        "V10"
+      ],
+      "succ": [
+        "Q06",
+        "Q07"
+      ],
+      "issue_number": 1743,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1743",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#f01"
+    },
+    {
+      "id": "Q01",
+      "stage": "M7",
+      "dep": [
+        "C06",
+        "U06",
+        "U08",
+        "U09",
+        "U10",
+        "U14",
+        "U16"
+      ],
+      "succ": [
+        "Q10",
+        "Q11"
+      ],
+      "issue_number": 1737,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1737",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q01"
+    },
+    {
+      "id": "Q02",
+      "stage": "M7",
+      "dep": [
+        "H05"
+      ],
+      "succ": [
+        "Q09",
+        "Q10",
+        "Q11"
+      ],
+      "issue_number": 1738,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1738",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q02"
+    },
+    {
+      "id": "Q03",
+      "stage": "M7",
+      "dep": [
+        "E08",
+        "E10",
+        "E11",
+        "H06",
+        "S09",
+        "V02",
+        "V05",
+        "V06",
+        "V08",
+        "V10"
+      ],
+      "succ": [
+        "Q09"
+      ],
+      "issue_number": 1726,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1726",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q03"
+    },
+    {
+      "id": "Q04",
+      "stage": "M7",
+      "dep": [
+        "Q06"
+      ],
+      "succ": [
+        "G22",
+        "K05"
+      ],
+      "issue_number": 1731,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q04"
+    },
+    {
+      "id": "Q05",
+      "stage": "M7",
+      "dep": [
+        "Q07"
+      ],
+      "succ": [
+        "G22",
+        "K05"
+      ],
+      "issue_number": 1732,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1732",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q05"
+    },
+    {
+      "id": "Q06",
+      "stage": "M7",
+      "dep": [
+        "F01"
+      ],
+      "succ": [
+        "Q04",
+        "Q10"
+      ],
+      "issue_number": 1739,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1739",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q06"
+    },
+    {
+      "id": "Q07",
+      "stage": "M7",
+      "dep": [
+        "F01"
+      ],
+      "succ": [
+        "Q05",
+        "Q11"
+      ],
+      "issue_number": 1740,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1740",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q07"
+    },
+    {
+      "id": "Q08",
+      "stage": "M7",
+      "dep": [
+        "G22"
+      ],
+      "succ": [
+        "K06"
+      ],
+      "issue_number": 1721,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1721",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q08"
+    },
+    {
+      "id": "Q09",
+      "stage": "M7",
+      "dep": [
+        "Q02",
+        "Q03",
+        "Q14",
+        "Q15"
+      ],
+      "succ": [
+        "K04"
+      ],
+      "issue_number": 1722,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1722",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q09"
+    },
+    {
+      "id": "Q10",
+      "stage": "M7",
+      "dep": [
+        "Q01",
+        "Q02",
+        "Q06"
+      ],
+      "succ": [
+        "G22"
+      ],
+      "issue_number": 1733,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1733",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q10"
+    },
+    {
+      "id": "Q11",
+      "stage": "M7",
+      "dep": [
+        "Q01",
+        "Q02",
+        "Q07"
+      ],
+      "succ": [
+        "G22"
+      ],
+      "issue_number": 1734,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1734",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q11"
+    },
+    {
+      "id": "Q12",
+      "stage": "M7",
+      "dep": [
+        "G15",
+        "R06"
+      ],
+      "succ": [
+        "G22",
+        "K05"
+      ],
+      "issue_number": 1735,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q12"
+    },
+    {
+      "id": "Q13",
+      "stage": "M7",
+      "dep": [
+        "D08",
+        "D11",
+        "D12",
+        "D13",
+        "I03",
+        "I04",
+        "I08",
+        "I09",
+        "I10",
+        "I11",
+        "I13",
+        "I15",
+        "I16",
+        "I17",
+        "I18",
+        "I19"
+      ],
+      "succ": [
+        "K02"
+      ],
+      "issue_number": 1723,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1723",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q13"
+    },
+    {
+      "id": "Q14",
+      "stage": "M7",
+      "dep": [
+        "D05",
+        "E06",
+        "V02"
+      ],
+      "succ": [
+        "Q09"
+      ],
+      "issue_number": 1727,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1727",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q14"
+    },
+    {
+      "id": "Q15",
+      "stage": "M7",
+      "dep": [
+        "E08",
+        "E12",
+        "V03"
+      ],
+      "succ": [
+        "Q09"
+      ],
+      "issue_number": 1728,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1728",
+      "native_parent": 1711,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#q15"
+    },
+    {
+      "id": "K07",
+      "stage": "M7",
+      "dep": [
+        "K04",
+        "K05",
+        "K06"
+      ],
+      "succ": [],
+      "issue_number": 1711,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1711",
+      "native_parent": 1709,
+      "design_anchor": "design-docs/gonggong-ai-workbench-plan1.md#k07"
+    }
+  ]
+}

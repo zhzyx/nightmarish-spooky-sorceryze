@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f04a41e6f608f791083abc42deadcf43b10b7ccf",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d6f135c30774928826062a35e0aa14493b09807821314ec2f20eeddc0432045c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1875",
+    "action": "delivery",
+    "detection_head": "a5137d854d687c4e9c8fa3d7148cb55198163818",
+    "context_sha256": "93611dc20acccfd2043544ce3a518f3f0a4ba78e2fb43846adfd14158bfb1187",
+    "operator": "Sail-Li",
+    "worker": "codex-current-issue-1709",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "evidence": "PR 1876 的静态检查差异；同一 Git 源的 fetch、原 main 和索引在本机成功回读。",
+    "diagnosis": "初始签发 Git 操作返回 128，原操作未创建新提交。现已回读同一真实 main；旧 PR 的数据回执末尾换行已由仓库格式工具修正并复检。",
+    "next_action": "使用本机现有联网配置重新核验当前候选、签发和 PR CI，再核对目标分支。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T23:08:49.353740+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T23:10:42.889533+00:00",
+  "sha256": "147cda2822a0378fef8fee86e794ead9136c75cc04cf29422bf9fd57f77d073c"
+}
