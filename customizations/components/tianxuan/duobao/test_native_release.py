@@ -112,6 +112,44 @@ class ReleaseTests(unittest.TestCase):
         self.assertEqual(len(restarted.events("org", "admin", "game")), 3)
         self.assertEqual(first["state"], "content_selected")
 
+    def test_exact_rollback_race_and_immutable_receipt_after_expiry(self):
+        a = self.publish()
+        candidate = self.candidate_for()
+        review = self.approve(candidate, self.record(candidate))
+        b = self.publish("second", review=review, expected=a["id"])
+        entry, source = "1" * 64, "2" * 64
+
+        def restore(call, expected, key=entry):
+            return self.release.publish(
+                "org", "admin", call, "game", "stable", None, expected,
+                restore_from=("admin", key, source, a["id"]),
+            )
+
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            competitors = {call: pool.submit(restore, call, b["id"]) for call in ("first", "second-call")}
+        winners = [call for call, future in competitors.items() if future.exception() is None]
+        self.assertEqual(len(winners), 1)
+        winner = winners[0]
+        loser = next(call for call in competitors if call != winner)
+        self.assertIsInstance(competitors[loser].exception(), Conflict)
+        restored = competitors[winner].result()
+        self.assertEqual(self.selected(), restored)
+        self.assertEqual(self.store.read("org", "core", restored["modules"]["core"], "code"),
+                         self.store.read("org", "core", a["modules"]["core"], "code"))
+        self.assertNotEqual(self.store.read("org", "core", restored["modules"]["core"], "code"),
+                            self.store.read("org", "core", b["modules"]["core"], "code"))
+        with self.assertRaises(Conflict):
+            restore(winner, b["id"], "3" * 64)
+        self.now += 31
+        with self.assertRaises(NativeStoreError):
+            restore("expired", restored["id"])
+        self.assertEqual(restore(winner, b["id"]), restored)
+        self.assertEqual(len(self.release.events("org", "admin", "game")), 3)
+        with self.store._connection(write=True) as db:
+            db.execute("DELETE FROM authority WHERE tenant='org' AND actor='admin'")
+        with self.assertRaises(NativeStoreError):
+            restore(winner, b["id"])
+
     def test_release_flow_without_network_process_or_git(self):
         with (
             patch("subprocess.Popen", side_effect=AssertionError("No external process")),

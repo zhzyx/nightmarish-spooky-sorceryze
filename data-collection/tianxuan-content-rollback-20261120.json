@@ -1,0 +1,51 @@
+{
+  "request_id": "tianxuan-content-rollback-20261120",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1642",
+  "parent_issue": 1550,
+  "runtime_issue": 1581,
+  "deployment_issue": 1577,
+  "operator": "Sail-Li",
+  "base": "dbe917571d393091e815f4c4a83d80f4b6de7dd0",
+  "handoff_sha256": "2d8dc93788109129a79a2f29512b1af2d4b97846f6b3d627bc0e170354196d00",
+  "intake": "status:in-progress",
+  "review_base": "226ec1dc0adb89d7a5e07b57644289dd3ead9da4",
+  "independent_review": {
+    "worker": "codex:/root/audit",
+    "reviewed_blobs": {
+      "WorkspaceExecution": "47b115a9",
+      "WorkspaceReleases": "2df1826a",
+      "native_release": "83601009",
+      "test_native_release": "8a329763",
+      "native_entry_api": "c1f86f33",
+      "native_entry_factory": "0dda5453",
+      "test_cli": "fdf6fc66",
+      "test_native_entry_normal": "4c5e9a39",
+      "tianxuan_cli": "d65b1485"
+    },
+    "correction": "Project the current publication and restored_from in ordinary progress. Verified the A, B and rollback selections in the revised HTTP test.",
+    "blocking_findings": []
+  },
+  "checks": {
+    "test_native_release": 21,
+    "test_native_entry": 19,
+    "test_native_entry_normal": 1,
+    "test_cli": 25,
+    "remote_normal_and_workspace_conversations": 4,
+    "web_typescript": "pass"
+  },
+  "production_consumer_issue": 1577,
+  "browser": {
+    "version": "157.0.8103.79",
+    "installation": "local HTTPS, deterministic installed roles, ordinary workspace approval and native store",
+    "A": "829caa72f4433a0e81153363755613b2d448933a7e6b030b7bb3514e0abc6969",
+    "B": "a31e479d570c41a07d2739fc5793fc246a7c13c80e4000cccf13c67dd8dd78f8",
+    "restored": "fee7440527fe71448631b830b41f13e8f25b97d1803410441134b684e1c7456f",
+    "A_and_restored_text_sha256": "9369b94fe0bb59dc9bba8982e9032543349a15d7604558f209a16a65e300f7eb",
+    "additional_art_scope_output_B_only_sha256": "30ae96f77231598ddcaadd63d0900e1885195ece6b142c318be899b334fba096",
+    "stale_second_browser_http": 409,
+    "cli_same_request_immutable_receipt": true,
+    "history_length_after_cli_replay": 3,
+    "progress_publication_equals_restored": true,
+    "earlier_fixture": "Pre-1647 workspace intent rejected with Workspace approval changed; fresh approved workspace and both published versions created using current main criteria."
+  }
+}

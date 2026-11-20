@@ -414,6 +414,29 @@ def build_parser() -> argparse.ArgumentParser:
     execute.add_argument("--model", help="Installed producer profile; omit for automatic selection")
     execute.add_argument("--dependency", action="append", help="Existing task in this requirement (repeatable)")
     execute.set_defaults(func=_cmd_runs_execute)
+    releases = actions.add_parser("releases", help="Read the product channel selection history")
+    releases.add_argument("entry")
+    releases.add_argument("--after", type=int, default=0)
+    releases.add_argument("--limit", type=int, default=100)
+    releases.set_defaults(
+        func=lambda client, args: _request(
+            client, "GET", f"/api/v1/native/entry/{_quote_id(args.entry)}/releases",
+            params={"after": str(args.after), "limit": str(args.limit)},
+        )
+    )
+    rollback = actions.add_parser("rollback", help="Restore an accepted stable-channel selection")
+    rollback.add_argument("entry")
+    rollback.add_argument("--selection", required=True)
+    rollback.add_argument("--expected", required=True, help="Exact current selection ID")
+    rollback.add_argument("--call-id", required=True)
+    rollback.set_defaults(
+        func=lambda client, args: _request(
+            client,
+            "POST",
+            f"/api/v1/native/entry/{_quote_id(args.entry)}/rollback",
+            json_body={"selection": args.selection, "expected": args.expected, "call_id": args.call_id},
+        )
+    )
     lookup = actions.add_parser("lookup", help="Recover status after an unknown execute response")
     lookup.add_argument("call_id")
     lookup.set_defaults(
