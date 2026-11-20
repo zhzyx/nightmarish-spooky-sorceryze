@@ -425,7 +425,7 @@ def dispatch(args, request):
                     entry = materialize(member, member_token)
                     provenance = iteration["payload"]["provenance"]
                     entry.update(
-                        label="第 %d 轮" % provenance["generation_iteration"],
+                        label=f"第 {provenance['generation_iteration']} 轮",
                         attempt=provenance["generation_iteration"],
                         review_passed=provenance.get("visual_review_passed"),
                         artifact=reference,

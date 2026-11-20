@@ -110,13 +110,13 @@ def iteration_mesh_factory():
             iterations = []
             for number, passed in ((1, False), (2, True)):
                 artifact = copy.deepcopy(source)
-                artifact["id"] = "mesh-round-%03d" % number
+                artifact["id"] = f"mesh-round-{number:03d}"
                 artifact["payload"]["provenance"] = {
                     "iteration_of": "mesh-final",
                     "generation_iteration": number,
                     "generation_iteration_count": 2,
                     "visual_review_passed": passed,
-                    "task_id": "synthetic-round-%d" % number,
+                    "task_id": f"synthetic-round-{number}",
                 }
                 iterations.append(artifact)
             final = copy.deepcopy(source)
@@ -420,7 +420,9 @@ class BridgeTests(unittest.TestCase):
             root = Path(tmp)
             fixtures(root)
             data = (root / "sample.glb").read_bytes()
-            args = argparse.Namespace(db=str(root / "db"), factory="test_editor_host:iteration_mesh_factory", command="create")
+            args = argparse.Namespace(
+                db=str(root / "db"), factory="test_editor_host:iteration_mesh_factory", command="create"
+            )
             run = dispatch(args, {"model": model(root / "sample.glb"), "target": "first"})["run_id"]
             args.command = "step"
             self.assertEqual(dispatch(args, {"run": run})["state"], "succeeded")
@@ -474,7 +476,9 @@ class BridgeTests(unittest.TestCase):
             state = dispatch(args, {"run": run})
             self.assertEqual(state["state"], "succeeded")
             self.assertEqual(state["nodes"]["consumer"]["job"]["outputs"]["result"], reference)
-            self.assertEqual(state["nodes"]["consumer"]["result"]["artifacts"][0]["payload"]["provenance"], snapshot["provenance"])
+            self.assertEqual(
+                state["nodes"]["consumer"]["result"]["artifacts"][0]["payload"]["provenance"], snapshot["provenance"]
+            )
             args.command = "preview"
             preview = dispatch(args, {"run": run, "node": "consumer"})
             self.assertEqual(Path(preview["path"]).read_bytes(), data)
