@@ -31,23 +31,23 @@ python -m unittest discover -s tools/ci -p "test_*.py" -v
 | --- | --- |
 | `CI / Select changed modules` | `Modular CI / select` |
 | `CI / Modular tests` | `Modular CI / summary` |
-| `📊 Static checks` | `GHA / static-checks` |
+| `📊 Static checks / Code style, file formatting, and docs` | `GHA / static-checks` |
 | `issue-association` | `GongGong Issue association` |
 
-下列模块检查在被选择时必须真实成功；未选择时允许不运行，不将 `skipped` 记为通过。公共汇总检查会拒绝所选任务的 `skipped`、`failure` 或 `cancelled`。
+下列模块检查在被选择时必须真实成功；未选择时允许不运行，不将 `skipped` 记为通过。公共汇总检查会拒绝所选任务的 `skipped`、`failure` 或 `cancelled`。可复用工作流保留 GitHub 实际显示的调用方前缀。
 
 | 模块 | 模块状态检查 |
 | --- | --- |
 | CI | `Module / ci` |
 | Engine Core | `Module / engine-core` |
-| 编辑器 | `Module / editor`；`Editor (target=editor)` |
-| 马良 | `Module / maliang`；`Original Windows CLI and real Blender geometry`；马良 Windows package/run |
-| Engine Next | 三平台 `No Godot source or link dependencies (...)`；三平台 `Visual runtime build and FrameGraph (...)` |
-| Gameplay | 三平台 `Gameplay standalone tests (...)` |
-| Web | 两种线程配置的 Web Template 构建与 JavaScript 语法检查 |
-| 天璇 | `Module and web tests`；`Docker images` |
-| 合契 | 两平台 `Integration planner (...)` |
-| 构建路由 | 两平台 `Build scope routing (...)`；两平台 `Native cache boundaries (...)` |
+| 编辑器 | `Module / editor`；`editor-native / Editor (target=editor)` |
+| 马良 | `Module / maliang`；`blender-geometry / Original Windows CLI and real Blender geometry`；`maliang-offline / package-and-run`；`maliang-offline / editor / Editor (target=editor)` |
+| Engine Next | `engine-next / No Godot source or link dependencies (...)`；`engine-next / Visual runtime build and FrameGraph (...)`，均为三平台 |
+| Gameplay | `gameplay / Gameplay standalone tests (...)`，三平台 |
+| Web | `web / Template w/ threads (target=template_release, threads=yes)`；`web / Template w/o threads (target=template_release, threads=no)` |
+| 天璇 | `tianxuan-tests / Module and web tests`；`tianxuan-deploy / Docker images` |
+| 合契 | `integration / Integration planner (...)`，两平台 |
+| 构建路由 | `build-scope / Build scope routing (...)`；`native-cache / Native cache boundaries (...)`，均为两平台 |
 | 共工接入 | `Module / gonggong` |
 | 文档、仓库元数据 | 无独立业务测试；公共静态检查必需 |
 

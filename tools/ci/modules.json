@@ -2,7 +2,7 @@
   "schema_version": 1,
   "common_checks": [
     {
-      "name": "📊 Static checks",
+      "name": "📊 Static checks / Code style, file formatting, and docs",
       "commands": [
         "bash ./misc/scripts/gitignore_check.sh",
         "prek run --from-ref <base>"
@@ -142,12 +142,22 @@
         "python -m compileall -q tools/editor_control_client.py tools/editor_native_app.py"
       ],
       "test_commands": [
-        "python -m unittest tools.test_build_gonggong_editor tools.test_installed_editor tools.test_editor_native_app tools.test_editor_provenance_guard tools.test_editor_source_manifest tools.test_editor_trusted_hosts -v",
-        "python -m unittest tests.editor.test_editor_self_build tests.editor.test_editor_test_isolation tests.editor.test_provenance_sandbox tests.editor.test_receipt_diagnostics tests.editor.test_session_credentials tests.editor.test_startup_git -v"
+        "python tools/test_build_gonggong_editor.py",
+        "python -m unittest discover -s tools -p test_installed_editor.py -k StageTests -v",
+        "python tools/test_editor_native_app.py",
+        "python tools/test_editor_provenance_guard.py",
+        "python tools/test_editor_source_manifest.py",
+        "python tools/test_editor_trusted_hosts.py",
+        "python tests/editor/test_editor_self_build.py",
+        "python tests/editor/test_editor_test_isolation.py",
+        "python tests/editor/test_provenance_sandbox.py",
+        "python tests/editor/test_receipt_diagnostics.py",
+        "python tests/editor/test_session_credentials.py",
+        "python tests/editor/test_startup_git.py"
       ],
       "status_checks": [
         "Module / editor",
-        "Editor (target=editor)"
+        "editor-native / Editor (target=editor)"
       ],
       "dependencies": []
     },
@@ -180,12 +190,15 @@
       ],
       "test_commands": [
         "python -m unittest discover -s tools/ainative -p 'test_*.py' -v",
-        "python -m unittest tests.editor.test_ainative_bundle tests.editor.test_maliang_package tests.editor.test_run_blender_geometry tools.test_editor_provenance_process -v"
+        "python -m unittest tests.editor.test_ainative_bundle tests.editor.test_maliang_package -v",
+        "python tests/editor/test_run_blender_geometry.py",
+        "python tools/test_editor_provenance_process.py"
       ],
       "status_checks": [
         "Module / maliang",
-        "Original Windows CLI and real Blender geometry",
-        "package-and-run"
+        "blender-geometry / Original Windows CLI and real Blender geometry",
+        "maliang-offline / package-and-run",
+        "maliang-offline / editor / Editor (target=editor)"
       ],
       "dependencies": []
     },
@@ -215,12 +228,12 @@
         "python -m unittest discover -s engine_next/Tools -p 'Test*.py' -v"
       ],
       "status_checks": [
-        "No Godot source or link dependencies (windows-latest)",
-        "No Godot source or link dependencies (macos-26)",
-        "No Godot source or link dependencies (ubuntu-latest)",
-        "Visual runtime build and FrameGraph (windows-latest)",
-        "Visual runtime build and FrameGraph (macos-26)",
-        "Visual runtime build and FrameGraph (ubuntu-latest)"
+        "engine-next / No Godot source or link dependencies (windows-latest)",
+        "engine-next / No Godot source or link dependencies (macos-26)",
+        "engine-next / No Godot source or link dependencies (ubuntu-latest)",
+        "engine-next / Visual runtime build and FrameGraph (windows-latest)",
+        "engine-next / Visual runtime build and FrameGraph (macos-26)",
+        "engine-next / Visual runtime build and FrameGraph (ubuntu-latest)"
       ],
       "dependencies": []
     },
@@ -242,9 +255,9 @@
         "python engine_next/Tools/BuildGameplay.py --repo . --build-dir build/engine_next/gameplay --run-tests"
       ],
       "status_checks": [
-        "Gameplay standalone tests (windows-latest)",
-        "Gameplay standalone tests (macos-26)",
-        "Gameplay standalone tests (ubuntu-latest)"
+        "gameplay / Gameplay standalone tests (windows-latest)",
+        "gameplay / Gameplay standalone tests (macos-26)",
+        "gameplay / Gameplay standalone tests (ubuntu-latest)"
       ],
       "dependencies": []
     },
@@ -264,8 +277,8 @@
         "node --check platform/web/js/engine/engine.js"
       ],
       "status_checks": [
-        "Template w/ threads (target=template_release, threads=yes)",
-        "Template w/o threads (target=template_release, threads=no)"
+        "web / Template w/ threads (target=template_release, threads=yes)",
+        "web / Template w/o threads (target=template_release, threads=no)"
       ],
       "dependencies": []
     },
@@ -294,8 +307,8 @@
         "npx tsc --noEmit --project apps/tianxuan/tsconfig.json"
       ],
       "status_checks": [
-        "Module and web tests",
-        "Docker images"
+        "tianxuan-tests / Module and web tests",
+        "tianxuan-deploy / Docker images"
       ],
       "dependencies": []
     },
@@ -313,8 +326,8 @@
         "python customizations/platforms/development/git/heqi/test_integration_plan.py"
       ],
       "status_checks": [
-        "Integration planner (ubuntu-latest)",
-        "Integration planner (windows-latest)"
+        "integration / Integration planner (ubuntu-latest)",
+        "integration / Integration planner (windows-latest)"
       ],
       "dependencies": []
     },
@@ -348,10 +361,10 @@
         "python tools/test_windows_editor_artifact.py"
       ],
       "status_checks": [
-        "Build scope routing (windows)",
-        "Build scope routing (metal)",
-        "Native cache boundaries (ubuntu-latest)",
-        "Native cache boundaries (windows-latest)"
+        "build-scope / Build scope routing (windows)",
+        "build-scope / Build scope routing (metal)",
+        "native-cache / Native cache boundaries (ubuntu-latest)",
+        "native-cache / Native cache boundaries (windows-latest)"
       ],
       "dependencies": []
     },
@@ -406,7 +419,10 @@
       ],
       "test_commands": [
         "python -m pytest customizations/components/issue-workorders customizations/components/godot-host customizations/components/yanluo customizations/components/repository-dispatch customizations/platforms/development/git/delivery customizations/platforms/ai-access/host-http/runtime -q",
-        "python -m unittest tools.test_gonggong_standalone tools.test_gonggong_runtime_config tools.test_verification_efficiency tools.test_framework_verification_efficiency -v"
+        "python tools/test_gonggong_standalone.py",
+        "python tools/test_gonggong_runtime_config.py",
+        "python tools/test_verification_efficiency.py",
+        "python tools/test_framework_verification_efficiency.py"
       ],
       "status_checks": [
         "Module / gonggong"
