@@ -165,7 +165,7 @@ def _write_outputs(path: Path, selection: dict[str, Any]) -> None:
 
     with path.open("a", encoding="utf-8") as stream:
         stream.write(f"modules={compact(selection['modules'])}\n")
-        stream.write(f"generic_matrix={compact(selection['generic_matrix'])}\n")
+        stream.write(f"generic_matrix={compact({'include': selection['generic_matrix']})}\n")
         stream.write(f"generic_count={len(selection['generic_matrix'])}\n")
         stream.write(f"selection={compact(selection)}\n")
 

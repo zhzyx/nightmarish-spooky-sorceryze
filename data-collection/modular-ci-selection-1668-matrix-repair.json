@@ -1,0 +1,21 @@
+{
+  "schema_version": 1,
+  "issue_number": 1668,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1668",
+  "request_id": "modular-ci-test-selection-20261120",
+  "supplements": "data-collection/modular-ci-selection-1668-repair.json",
+  "candidate": "275ed0d56427ad1a912ee979276a30fb862377b5",
+  "real_push_run": 44683548724,
+  "observed": {
+    "selection": "success",
+    "selected_modules": ["ci", "repository-metadata"],
+    "unselected_special_jobs": "skipped_as_expected",
+    "generic_matrix": "failed_before_creating_Module_ci",
+    "summary": "failed_closed"
+  },
+  "root_cause": "The GitHub output contained a bare list; strategy.matrix requires an object with an include list",
+  "repair": "Emit generic_matrix={include:[...]} while preserving the auditable artifact's list and generic_count",
+  "regression": "The CLI test now requires a non-empty Maliang generic matrix with the exact Actions include shape",
+  "local_recheck": "30 tests, Ruff 0.17.1 and Mypy 2.4.0 passed",
+  "real_ci": "pending_matrix_repair_candidate"
+}

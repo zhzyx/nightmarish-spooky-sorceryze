@@ -157,17 +157,18 @@ class SelectionTests(unittest.TestCase):
                 "--registry",
                 str(REGISTRY),
                 "--file",
-                "platform/web/js/engine/engine.js",
+                "tools/ainative/executor.py",
                 "--github-output",
                 str(output),
             ])
             self.assertEqual(result, 0)
             content = output.read_text(encoding="utf-8")
-            self.assertIn('modules=["web"]', content)
+            self.assertIn('modules=["maliang"]', content)
+            self.assertIn('generic_matrix={"include":[{"module":"maliang","runs_on":"ubuntu-latest"}]}', content)
             selection = json.loads(
                 next(line.split("=", 1)[1] for line in content.splitlines() if line.startswith("selection="))
             )
-            self.assertEqual(selection["path_ownership"], {"platform/web/js/engine/engine.js": "web"})
+            self.assertEqual(selection["path_ownership"], {"tools/ainative/executor.py": "maliang"})
 
 
 if __name__ == "__main__":
