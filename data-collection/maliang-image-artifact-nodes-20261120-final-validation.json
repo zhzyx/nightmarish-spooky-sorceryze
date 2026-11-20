@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-image-artifact-nodes-20261120",
+  "issue_number": 1679,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679",
+  "state": "passed",
+  "editor_sha256": "f40f56f5b8fcf3eb154f63b4419db0ba651a5fe5b2d2f57d4ba7932e3da5ed1d",
+  "bundle_version": "5d1db0b2393207c4fcfb147a25f2617fbe08f718f45e9b5b095e9493dfe6d873",
+  "workbench_sha256": "e5283e1f190ac03c64b8e70c282afc3d642cfc4c79f8af2b6f05b1a14d6859fb",
+  "validation": [
+    {
+      "name": "artifact_node_acceptance.gd",
+      "state": "passed",
+      "evidence": "Image gallery, exact-byte downloads, reference wiring, persistence, non-overlapping layout, double-click target and shared restore pass in real Godot controls."
+    },
+    {
+      "name": "mesh_artifact_node_acceptance.gd",
+      "state": "passed",
+      "evidence": "Every round renders its actual GLB, saves exact bytes, preserves fixed-iteration inputs and workflow history, and maximizes/restores the selected round on double-click."
+    },
+    {
+      "name": "prompt_refresh_acceptance.gd",
+      "state": "passed",
+      "evidence": "Full-workflow prompt changes produce different PNG bytes and refresh the gallery and preview; Delete preserves formal state, history and files."
+    },
+    {
+      "name": "multi_image_acceptance.gd and node_preview_acceptance.gd and port_type_acceptance.gd",
+      "state": "passed",
+      "evidence": "Existing ordered images, durable history, interactive preview and typed-port regressions pass on the final candidate."
+    },
+    {
+      "name": "AINative Python unit tests and Ruff",
+      "state": "passed",
+      "tests": 491,
+      "skipped": 62,
+      "evidence": "The full Python suite passes; 32 affected tests and Ruff check/format also pass after the final formatting correction."
+    },
+    {
+      "name": "macOS arm64 editor build and installed bundle verification",
+      "state": "passed",
+      "evidence": "Native entry, independent project, sample compatibility and relocated runtime pass; normalized source, installed workbench and manifest SHA256 match."
+    },
+    {
+      "name": "User workflow acceptance",
+      "state": "passed",
+      "evidence": "User confirmed acceptance and authorized main delivery on 2026-11-20."
+    }
+  ],
+  "known_remote_failures": [
+    {
+      "name": "PR #1682 maliang-offline / package-and-run",
+      "state": "failed",
+      "relation": "The previous signed candidate failed the Windows packaged runtime local-connection session ownership check. The replacement candidate must pass the same check; the old failure is not counted as passing evidence."
+    },
+    {
+      "name": "PR #1687 Ruff check and format",
+      "state": "failed",
+      "relation": "The first replacement candidate failed Python formatting checks. The final candidate corrects the three percent-format calls and applies Ruff formatting; local Ruff and affected tests pass."
+    }
+  ],
+  "external_model_inference_in_tests": false,
+  "main_merged": false,
+  "correction_policy": "Appended final-candidate evidence; prior collection sources and receipts are unchanged."
+}
