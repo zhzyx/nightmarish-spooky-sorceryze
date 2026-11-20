@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3465ab65beb23850a34211ab665a8c628f3b0d8a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-runtime-closure-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1581",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "967c508b4ac79e7dd253d83387b4e644a4bfe024dcc21e26637611c3ed20f0a9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1581",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1586",
+    "action": "validation",
+    "detection_head": "0eba243260b684a2400f30cebd5fb0ff318b58c2",
+    "context_sha256": "d0068a96e5ff3e39cc5e0a51dabb905abc6549e1b515b1672383ba28a652342a",
+    "operator": "Sail-Li",
+    "worker": "reviewer_definition_audit",
+    "authority_ref": "Issue 1581 append-only receipt correction",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44794312015",
+    "diagnosis": "The previous PR had already committed its public receipt. Repository receipt preservation rejects editing that historical path.",
+    "next_action": "Restore the exact published receipt bytes and append the replacement metadata in a separate issue-bound correction record, then verify.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T18:36:04.974338+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T18:38:18.120064+00:00",
+  "sha256": "639e5f0903ac9fc3ef506827bc89f9803a7c404a144e0cd034c04d7bcb5a0912"
+}

@@ -568,4 +568,6 @@
 /engine_next/**/*.py                            @kaiyunxue @godotengine/buildsystem
 /engine_next/Tests/                             @kaiyunxue @godotengine/tests
 /deploy/ @zhzyx
+/deploy/check-native-text.py @zhzyx @godotengine/buildsystem
+/deploy/prepare-native-role-installation.py @zhzyx @godotengine/buildsystem
 /deploy/production/ @zhzyx @godotengine/buildsystem

@@ -86,6 +86,7 @@ def test_conversation_and_confirmations_are_private_durable_and_idempotent(tmp_p
         stop=idle,
         entries=entries,
         task_references=lambda key, actor: [],
+        role_calls=lambda key: [],
         policy_reference=lambda *_: None,
         consumer=SimpleNamespace(notify=notify, failures=[]),
         installation=SimpleNamespace(
@@ -281,7 +282,8 @@ def test_conversation_and_confirmations_are_private_durable_and_idempotent(tmp_p
             "model": "available-model",
         }
         native_url = f"/api/v1/native/entry/{execution['entry']}"
-        assert get_state(client.get(native_url, headers=owner_headers))["state"] == "pending"
+        native_status = get_state(client.get(native_url, headers=owner_headers))
+        assert native_status["state"] == "pending" and native_status["role_calls"] == []
         assert client.get(native_url, headers=teammate_headers).status_code == 404
 
         with store._connection_lock:

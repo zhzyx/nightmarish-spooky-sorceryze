@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-61d936598a3e5003995fb63cb86c07ff7014e047",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-runtime-closure-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1581",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "24bbf53c97b190e890b145ffb3bc93627949bc625a3ec7d8f2ce0e273f2799d6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1581",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1586",
+    "action": "delivery",
+    "detection_head": "0eba243260b684a2400f30cebd5fb0ff318b58c2",
+    "context_sha256": "daabdd9ffc75993f55d48a8f49483d235b34f29f7fcd113d13be33125fface82",
+    "operator": "Sail-Li",
+    "worker": "reviewer_definition_audit",
+    "authority_ref": "Issue 1581 runtime publication and recorded gate rejection",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44793578406",
+    "diagnosis": "The public receipt used an integer issue field. Once the failure event was staged the gate required issue_number for the numeric form. The earlier local validation rejection has the same cause.",
+    "next_action": "Use the supported issue_number field, rerun candidate admission and sign the exact bytes.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T18:31:27.944246+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T18:34:00.465090+00:00",
+  "sha256": "687c720438011de4addc34ba9f0458ec684baea40f29024ef6a09d24c1033b2e"
+}

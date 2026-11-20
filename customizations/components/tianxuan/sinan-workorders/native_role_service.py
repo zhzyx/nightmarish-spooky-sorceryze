@@ -68,7 +68,8 @@ def identity():
         return "uid:" + str(os.geteuid())
     whoami = Path(os.environ["SystemRoot"]) / "System32/whoami.exe"
     value = subprocess.check_output(
-        [str(whoami), "/user", "/fo", "csv", "/nh"], creationflags=subprocess.CREATE_NO_WINDOW
+        [str(whoami), "/user", "/fo", "csv", "/nh"],  # codespell:ignore fo
+        creationflags=subprocess.CREATE_NO_WINDOW,
     )
     # The account name can be localized. Only the ASCII SID is used.
     row = next(csv.reader(io.StringIO(value.decode("mbcs"))))
