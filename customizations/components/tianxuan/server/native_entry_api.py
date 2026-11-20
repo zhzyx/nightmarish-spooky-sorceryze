@@ -1,8 +1,11 @@
 """Ordinary authenticated entry: only a requirement and installed scope choices."""
 
 import json
+import os
+import re
 
-from access_control import COOKIE
+from access_control import COOKIE, SESSION_COOKIE
+from api import _require_actor
 from fastapi import APIRouter, HTTPException, Request
 from native_api import _body, _fields, _identity
 from native_execution_host import entry_key
@@ -93,6 +96,43 @@ def create_entry_router(entry):
             raise HTTPException(422, str(error)) from None
         return await status(key, request)
 
+    @router.get("/{key}/releases")
+    async def releases(key: str, request: Request, after: int = 0, limit: int = 100):
+        if set(request.query_params) - {"after", "limit"}:
+            raise HTTPException(422, "Unsupported history query parameter")
+        actor = _require_actor(request, None, request.headers.get("authorization"))
+        tenant = entry.domain.actor_context(actor)["tenant"]
+        try:
+            return entry.release_history(tenant, actor, key, after, limit)
+        except NativeStoreError as error:
+            raise HTTPException(409, str(error)) from None
+
+    @router.post("/{key}/rollback")
+    async def rollback(key: str, request: Request):
+        tenant, actor = _identity(request)
+        payload = _fields(await _body(request), {"call_id", "selection", "expected"})
+        if not all(
+            isinstance(payload[f], str) and re.fullmatch(r"[0-9a-f]{64}", payload[f]) for f in ("selection", "expected")
+        ):
+            raise HTTPException(422, "Exact historical selection and current head required")
+        try:
+            scheme, _, token = request.headers.get("authorization", "").partition(" ")
+            if scheme.lower() != "bearer":
+                token = request.cookies.get(COOKIE, "")
+                if os.environ.get("TIANXUAN_AUTH_MODE") == "accounts":
+                    token = request.cookies.get(SESSION_COOKIE, "") or token
+            return entry.rollback(
+                tenant,
+                actor,
+                key,
+                payload["call_id"],
+                payload["selection"],
+                payload["expected"],
+                credential=token.strip(),
+            )
+        except NativeStoreError as error:
+            raise HTTPException(409, str(error)) from None
+
     @router.get("/{key}")
     async def status(key: str, request: Request):
         tenant, actor = _identity(request, read_only=True)
@@ -103,7 +143,7 @@ def create_entry_router(entry):
             if row is None:
                 raise HTTPException(404, "Entry unavailable")
             document = entry.domain.get_doc_shared(actor, row["requirement"])
-            return dict(
+            result = dict(
                 entry=key,
                 tasks=entry.task_references(key, actor),
                 policy=entry.policy_reference(actor, row["requirement"]),
@@ -113,5 +153,14 @@ def create_entry_router(entry):
                 progress=document["progress"],
                 failures=[r for r in entry.consumer.failures if r["id"] == key],
             )
+
+        if row["state"] == "delivered":
+            try:
+                result["progress"]["publication"] = entry.workflow.release.publication_progress(
+                    tenant, actor, entry.product(row), "stable"
+                )
+            except NativeStoreError as error:
+                raise HTTPException(409, str(error)) from None
+        return result
 
     return router

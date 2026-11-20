@@ -170,6 +170,8 @@ class NormalEntryTests(unittest.TestCase):
                             client.get("/api/v1/native/entry/" + entries[0][0], headers=entries[1][1]).status_code, 404
                         )
                         self.assertEqual(len(list((root / "state" / "workers").rglob("physical-producer-marker"))), 2)
+                        initial = client.get("/api/v1/native/entry/" + entries[0][0], headers=entries[0][1])
+                        initial_selection = initial.json()["progress"]["publication"]["selection"]
                         owner = entries[0][1]
                         response = client.post(
                             "/api/v1/users",
@@ -213,6 +215,69 @@ class NormalEntryTests(unittest.TestCase):
                             ),
                         )
                         self.assertEqual(len(list((root / "state" / "workers").rglob("physical-producer-marker"))), 3)
+                        route = "/api/v1/native/entry/" + key
+                        page = client.get(route + "/releases?after=0&limit=100", headers=headers)
+                        self.assertEqual(page.status_code, 200, page.text)
+                        first, second = page.json()["events"]
+                        self.assertEqual(initial_selection, first["selection"])
+                        self.assertEqual(status["progress"]["publication"]["selection"], second["selection"])
+                        self.assertTrue(first["accepted"] and second["accepted"])
+                        self.assertEqual(page.json()["head"], second["selection"])
+                        request = dict(call_id="restore", selection=first["selection"], expected=second["selection"])
+                        response = client.post(route + "/rollback", headers=headers, json=request)
+                        self.assertEqual(response.status_code, 200, response.text)
+                        rollback = response.json()
+                        self.assertNotIn(rollback["selection"], [first["selection"], second["selection"]])
+                        self.assertEqual(rollback["modules"], first["modules"])
+                        self.assertEqual(rollback["candidate"], first["candidate"])
+                        self.assertEqual(
+                            client.post(route + "/rollback", headers=headers, json=request).json(), rollback
+                        )
+                        self.assertEqual(
+                            client.post(
+                                route + "/rollback", headers=headers, json=dict(request, expected=rollback["selection"])
+                            ).status_code,
+                            409,
+                        )
+                        self.assertEqual(
+                            client.post(
+                                route + "/rollback", headers=headers, json=dict(request, call_id="stale")
+                            ).status_code,
+                            409,
+                        )
+                        self.assertEqual(
+                            client.post(route + "/rollback", headers=entries[1][1], json=request).status_code, 409
+                        )
+                        tail = client.get(route + "/releases?after=" + str(second["sequence"]), headers=headers).json()
+                        self.assertEqual([r["selection"] for r in tail["events"]], [rollback["selection"]])
+                        self.assertEqual(tail["head"], rollback["selection"])
+                        progress = client.get(route, headers=headers).json()["progress"]
+                        self.assertEqual(progress["percent"], 100)
+                        self.assertEqual(
+                            progress["publication"],
+                            dict(
+                                selection=rollback["selection"],
+                                candidate=first["candidate"],
+                                restored_from=first["selection"],
+                            ),
+                        )
+                        self.assertTrue(client.post("/api/v1/auth/logout", headers=headers).json()["revoked"])
+                        next_request = dict(
+                            call_id="after-withdrawal", selection=second["selection"], expected=rollback["selection"]
+                        )
+                        self.assertEqual(
+                            client.post(route + "/rollback", headers=headers, json=next_request).status_code, 401
+                        )
+                        new_login = client.post(
+                            "/api/v1/auth/session", json=dict(email="colleague@example.invalid", password="password123")
+                        ).json()
+                        renewed_editor = {"Authorization": "Bearer " + new_login["token"]}
+                        denied = client.post(route + "/rollback", headers=renewed_editor, json=next_request)
+                        self.assertEqual(denied.status_code, 409, denied.text)
+                        self.assertEqual(
+                            client.get(route + "/releases", headers=renewed_editor).json()["head"],
+                            rollback["selection"],
+                        )
                         headers = entries[1][1]
                         response = client.post(
                             "/api/v1/requirements",

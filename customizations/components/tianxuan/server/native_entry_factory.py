@@ -3,6 +3,7 @@
 import asyncio
 import json
 import os
+from contextlib import contextmanager
 from contextvars import ContextVar
 from functools import wraps
 from pathlib import Path
@@ -11,7 +12,7 @@ from native_candidates import NativeCandidates
 from native_check_runner import NativeCheckRunner
 from native_entry_review import IndependentReview
 from native_evidence import EvidenceCache
-from native_execution_host import EntryConsumer, EntryLedger, SharedSinanProcess, WorkflowService
+from native_execution_host import EntryConsumer, EntryLedger, SharedSinanProcess, WorkflowService, entry_key
 from native_installation import InstallationManifest, InstalledPlannerRuntime, require
 from native_integration import NativeIntegration
 from native_release import NativeRelease
@@ -576,6 +577,89 @@ class OrdinaryEntry:
                     )
                 )
             return result
+
+    def _release_entry(self, tenant, actor, key, *, write):
+        with self.domain._connection_lock:
+            row = self.domain.db.execute(
+                "SELECT * FROM native_entry_intents WHERE id=? AND tenant=? AND actor=?", (key, tenant, actor)
+            ).fetchone()
+            require(row is not None, "Entry unavailable")
+            self.domain._require_requirement(actor, row["requirement"], write=write)
+            if write:
+                self.entry_authority(key)
+            return dict(row)
+
+    def _accepted_selections(self, row):
+        return {
+            r[0]
+            for r in self.domain.db.execute(
+                "SELECT DISTINCT json_extract(t.acceptance,'$.id') FROM native_tasks t "
+                "JOIN native_entry_intents e ON e.id=json_extract(t.task,'$.mandate') AND e.tenant=t.tenant "
+                "WHERE t.tenant=? AND e.requirement=? AND e.source=? AND t.state='accepted' "
+                "AND json_extract(t.task,'$.product')=?",
+                (row["tenant"], row["requirement"], row["source"], self.product(row)),
+            )
+        }
+
+    def release_history(self, tenant, actor, key, after, limit):
+        row = self._release_entry(tenant, actor, key, write=False)
+        page = self.workflow.release.history(tenant, actor, self.product(row), after=after, limit=limit)
+        with self.domain._connection_lock:
+            accepted = self._accepted_selections(row)
+        events = []
+        for event in page["events"]:
+            record = event["record"]
+            request = record["request"]
+            events.append(
+                dict(
+                    sequence=event["sequence"],
+                    selection=record["id"],
+                    candidate=record["candidate"],
+                    modules=record["modules"],
+                    channel=request["channel"],
+                    previous=request["expected"],
+                    restored_from=request.get("restored_from"),
+                    accepted=record["id"] in accepted,
+                )
+            )
+        return dict(head=page["head"], events=events)
+
+    def rollback(self, tenant, actor, key, call_id, selected, expected, *, credential):
+        request_key = "rollback-" + entry_key(tenant, actor, call_id)
+        row = self._release_entry(tenant, actor, key, write=True)
+
+        @contextmanager
+        def guard(native_db):
+            with self.ledger.transaction():
+                self._release_entry(tenant, actor, key, write=True)
+                require(self.domain.user_for_token(credential) == actor, "Current credential withdrawn")
+                require(self.domain.role_of(actor) != "viewer", "Current publication permission withdrawn")
+                require(selected in self._accepted_selections(row), "Target lacks matching source acceptance")
+                yield
+
+        marker = self.current_entry.set(key)
+        try:
+            receipt = self.workflow.release.publish(
+                tenant,
+                self.principals["publisher"],
+                request_key,
+                self.product(row),
+                "stable",
+                None,
+                expected,
+                guard=guard,
+                restore_from=(actor, key, row["source"], selected),
+            )
+        finally:
+            self.current_entry.reset(marker)
+        return dict(
+            selection=receipt["id"],
+            candidate=receipt["candidate"],
+            modules=receipt["modules"],
+            previous=expected,
+            restored_from=selected,
+            channel="stable",
+        )
 
     def policy_reference(self, actor, requirement):
         tenant = self.domain.actor_context(actor)["tenant"]
