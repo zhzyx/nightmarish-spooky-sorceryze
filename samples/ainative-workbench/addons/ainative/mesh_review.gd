@@ -85,28 +85,59 @@ func run():
 	var center = bounds.get_center()
 	var radius = maxf(bounds.size.length() * 0.5, 0.001)
 	var distance = radius / sin(deg_to_rad(camera.fov * 0.5)) * 1.18
-	# Frame the complete head and neck, not merely the upper torso. Three
-	# independent directions make horizontal face cuts and neck gaps visible.
-	var head_center = Vector3(center.x, bounds.end.y - bounds.size.y * 0.12, center.z)
-	var head_scale = maxf(bounds.size.y * 0.38, 0.001) / distance
-	# Anatomical sides, not screen-left/screen-right: with a +Z-facing
-	# character, its right side is observed from -X.
-	var definitions = [
-		["front", Vector3(0, 0.05, 1), center, 1.0],
-		["right", Vector3(-1, 0.05, 0), center, 1.0],
-		["back", Vector3(0, 0.05, -1), center, 1.0],
-		["left", Vector3(1, 0.05, 0), center, 1.0],
-		["top", Vector3(0, 1, 0.001), center, 1.0],
-		["detail_upper_front", Vector3(0, 0.03, 1), center + Vector3(0, bounds.size.y * 0.25, 0), 0.55],
-		["detail_lower_front", Vector3(0, 0.03, 1), center - Vector3(0, bounds.size.y * 0.25, 0), 0.55],
-		["head_front", Vector3(0, 0.02, 1), head_center, head_scale],
-		["head_three_quarter", Vector3(-1, 0.02, 1), head_center, head_scale],
-		["head_side", Vector3(-1, 0.02, 0), head_center, head_scale]
-	]
+	# The Python review plan supplies only regions and directions implemented
+	# here. Legacy requests retain the original fixed ten-view evidence set.
+	var definitions = config.get("render_views", [])
+	if definitions.is_empty():
+		definitions = [
+			{"view": "front", "region": "full_subject", "direction": "front"},
+			{"view": "right", "region": "full_subject", "direction": "right"},
+			{"view": "back", "region": "full_subject", "direction": "back"},
+			{"view": "left", "region": "full_subject", "direction": "left"},
+			{"view": "top", "region": "full_subject", "direction": "top"},
+			{"view": "detail_upper_front", "region": "upper_body", "direction": "front"},
+			{"view": "detail_lower_front", "region": "lower_body", "direction": "front"},
+			{"view": "head_front", "region": "head", "direction": "front"},
+			{"view": "head_three_quarter", "region": "head", "direction": "three_quarter"},
+			{"view": "head_side", "region": "head", "direction": "side"}
+		]
 	var views = []
 	for definition in definitions:
-		var target = definition[2] as Vector3
-		camera.position = target + (definition[1] as Vector3).normalized() * distance * float(definition[3])
+		var target = center
+		var scale = 1.0
+		match str(definition.get("region", "full_subject")):
+			"upper_body":
+				target = center + Vector3(0, bounds.size.y * 0.25, 0)
+				scale = 0.55
+			"lower_body":
+				target = center - Vector3(0, bounds.size.y * 0.25, 0)
+				scale = 0.55
+			"head":
+				target = Vector3(center.x, bounds.end.y - bounds.size.y * 0.12, center.z)
+				scale = maxf(bounds.size.y * 0.38, 0.001) / distance
+			"hand_left":
+				target = Vector3(bounds.end.x - bounds.size.x * 0.04, center.y, center.z)
+				scale = maxf(bounds.size.y * 0.28, 0.001) / distance
+			"hand_right":
+				target = Vector3(bounds.position.x + bounds.size.x * 0.04, center.y, center.z)
+				scale = maxf(bounds.size.y * 0.28, 0.001) / distance
+			"object_detail":
+				scale = 0.65
+		var offset = Vector3(0, 0.03, 1)
+		match str(definition.get("direction", "front")):
+			"right":
+				offset = Vector3(-1, 0.05, 0)
+			"back":
+				offset = Vector3(0, 0.03, -1)
+			"left":
+				offset = Vector3(1, 0.05, 0)
+			"top":
+				offset = Vector3(0, 1, 0.001)
+			"three_quarter":
+				offset = Vector3(-1, 0.02, 1)
+			"side":
+				offset = Vector3(-1, 0.02, 0)
+		camera.position = target + offset.normalized() * distance * scale
 		var direction = (camera.position - target).normalized()
 		var up = Vector3.FORWARD if absf(direction.dot(Vector3.UP)) > 0.999 else Vector3.UP
 		camera.look_at(target, up)
@@ -115,15 +146,21 @@ func run():
 		await process_frame
 		await RenderingServer.frame_post_draw
 		var image = viewport.get_texture().get_image()
-		var path = output.path_join(str(definition[0]) + ".png")
+		var path = output.path_join(str(definition["view"]) + ".png")
 		if image.is_empty() or image.save_png(path) != OK:
 			printerr("Rendered view readback failed")
 			quit(1)
 			return
-		views.append({"view": definition[0], "path": path, "sha256": FileAccess.get_sha256(path)})
+		views.append({"view": definition["view"], "path": path, "sha256": FileAccess.get_sha256(path)})
+	var receipt_plan = config.get("review_plan")
+	if receipt_plan is Dictionary and receipt_plan.has("schema_version"):
+		receipt_plan = receipt_plan.duplicate(true)
+		receipt_plan["schema_version"] = int(receipt_plan["schema_version"])
 	var report = {
 		"model_sha256": FileAccess.get_sha256(config.model),
 		"yaw_degrees": float(yaw),
+		"review_plan": receipt_plan,
+		"review_plan_sha256": str(config.get("review_plan_sha256", "")),
 		"script_sha256": str(config.get("script_sha256", "")),
 		"camera_convention": "anatomical_front_plus_z_right_minus_x_y_up",
 		"views": views,

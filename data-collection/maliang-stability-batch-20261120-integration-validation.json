@@ -1,0 +1,58 @@
+{
+  "request_id": "maliang-stability-batch-20261120",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1625",
+  "state": "local_validation_passed",
+  "recorded_at": "2026-11-19T17:28:40Z",
+  "integration": {
+    "base_commit": "226ec1dc0adb89d7a5e07b57644289dd3ead9da4",
+    "previous_candidate": "18369ce9442aed4afcb94a601d294857858da182",
+    "previous_signed_head": "cf3dbe9dd182d5b81008e459cfc92b9de80b064c",
+    "pre_evidence_staged_tree": "eb6d238102fbf2f9b7e81b05180fd9ccb25c8594",
+    "reason": "Main merged the independent #1624 service-profile implementation and advanced with conflicting paths. The candidate was integrated in an isolated worktree; the existing main validation receipt was preserved and no historical evidence file was rewritten.",
+    "business_source_matches_previous_candidate": true,
+    "source_sha256": {
+      "samples/ainative-workbench/addons/ainative/workbench.gd": "0e047f83bc7fb0623eab44cc77b24af1d20b21eec205e297e28b84cdba16cfaf",
+      "tools/ainative/mesh_vision.py": "ba99263e04f9604b3ad717821cca91220b8d79053ca9e69367561afdaf824bfa",
+      "samples/ainative-workbench/addons/ainative/mesh_review.gd": "0ad977435774b5f926c79b28568df43675c17af55cc4f3ea1217d05653136e21"
+    }
+  },
+  "validation": {
+    "diff_check": {
+      "command": "git diff --cached --check",
+      "state": "passed"
+    },
+    "ainative_python": {
+      "command": "python3 -m unittest discover -s tools/ainative -p 'test_*.py'",
+      "state": "passed",
+      "tests": 489,
+      "skipped": 62,
+      "seconds": 186.917
+    },
+    "native_workbench": {
+      "command": "python3 tests/editor/run_ainative_builtin.py --godot <previous-candidate-editor> --report .kimi-input/integration-native-acceptance.json",
+      "state": "passed",
+      "editor_sha256": "f856b7bdba39f04a0ba989e788df359b8fcb47e06175a34363668f08b6cc15a7",
+      "runs": [
+        {"name": "mesh-and-rig", "checks": 164},
+        {"name": "independent-project", "checks": 108},
+        {"name": "sample-addon-compatibility", "checks": 22},
+        {"name": "relocated-runtime", "checks": 5}
+      ],
+      "source_binding": "The integrated samples, tests and AINative tools are byte-identical to the previous locally built candidate; the isolated runner loaded bundle e23e75f74c15b902db876006135ff73a60a4d1ea53c052fb65661e0325362258."
+    },
+    "service_gui": {
+      "command": "AINATIVE_GUI_TEST_GODOT=<previous-candidate-editor> PYTHONPATH=tools/ainative python3 -m unittest test_generation_service_gui",
+      "state": "passed",
+      "tests": 1,
+      "checks": 113,
+      "transport": "Synthetic settings and read-only HTTP fixtures; no model inference"
+    }
+  },
+  "previous_pr_ci": {
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1646",
+    "head": "cf3dbe9dd182d5b81008e459cfc92b9de80b064c",
+    "state": "passed_after_targeted_retry",
+    "note": "The macOS Engine Next network-drain acceptance passed on its targeted retry. Windows editor, static checks and all other required checks passed. This does not replace CI for the integrated candidate."
+  },
+  "evidence_boundary": "Synthetic fixtures and real Godot rendering were used; no real AI inference or new model generation was performed. Formal submission, independent review, exact-candidate CI and remote-main readback remain delivery steps."
+}

@@ -124,6 +124,28 @@ func run():
 	await wait_idle()
 	check(panel.current.get("state") == "cancelled" and panel.preview_history.get("upstream", []).size() == 1, "immediate cancellation leaves successful history intact")
 	check(FileAccess.get_sha256(image) == image_sha and FileAccess.get_sha256(mesh) == mesh_sha, "previews and reruns preserve original source bytes")
+	# Generated results are part of the portable workflow, not just this process.
+	for data in panel.nodes:
+		if data.id == "unrelated":
+			data.source = ""
+			data.source_paths = []
+	panel.path_edit.text = panel.state_dir.path_join("with-outputs.json")
+	panel.save_graph()
+	check(FileAccess.file_exists(panel.path_edit.text), "generated-output workflow saves successfully with no missing fixture inputs")
+	if not FileAccess.file_exists(panel.path_edit.text):
+		await finish()
+		return
+	var saved_outputs = JSON.parse_string(FileAccess.get_file_as_string(panel.path_edit.text)).get("output_history", {})
+	check(saved_outputs.get("target", []).size() == 3 and saved_outputs.get("upstream", []).size() == 1, "workflow save embeds every node's complete generated-result history")
+	check(saved_outputs.target[0].snapshot.content_sha256 == image_sha and saved_outputs.target[1].snapshot.content_sha256 == mesh_sha and not saved_outputs.target[0].has("path") and not saved_outputs.target[0].has("token"), "generated image and GLB bytes replace temporary preview paths and session tokens")
+	panel.open_graph()
+	check(panel.run_id.is_empty() and panel.current.is_empty() and panel.preview_history.get("target", []).size() == 3 and panel.preview_history.get("upstream", []).size() == 1, "reopen restores all output versions without restoring execution authority")
+	check(panel.preview_history.target[0].path.begins_with(panel.path_edit.text + ".assets/") and FileAccess.get_sha256(panel.preview_history.target[0].path) == image_sha and FileAccess.get_sha256(panel.preview_history.target[1].path) == mesh_sha, "restored outputs are durable content-addressed files independent of original previews")
+	panel.select_node("target")
+	panel.show_history(0)
+	check(panel.preview_resource is ImageTexture and panel.preview_source_path == panel.preview_history.target[0].path, "saved image result previews directly after reopen")
+	panel.show_history(1)
+	check(is_instance_valid(panel.preview_scene) and panel.preview_source_path == panel.preview_history.target[1].path, "saved GLB result previews directly after reopen")
 	# Reopening a different workflow with the same node ID must not alias old results.
 	panel.path_edit.text = panel.state_dir.path_join("replacement.json")
 	var replacement = FileAccess.open(panel.path_edit.text, FileAccess.WRITE)
