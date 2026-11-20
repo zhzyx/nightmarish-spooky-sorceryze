@@ -19,6 +19,7 @@ interface NavItem {
 const primaryNav: NavItem[] = [
   { href: "/", key: "nav.home", icon: "home" },
   { href: "/docs", key: "nav.docs", icon: "docs" },
+  { href: "/game-config", key: "nav.gameConfig", icon: "settings" },
   { href: "/issues", key: "nav.issues", icon: "issues" },
   { href: "/repos", key: "nav.repos", icon: "repos" },
   { href: "/requirements", key: "nav.requirements", icon: "requirements" },

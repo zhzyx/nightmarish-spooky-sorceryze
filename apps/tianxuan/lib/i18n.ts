@@ -7,6 +7,7 @@ export const LOCALE_COOKIE = "tianxuan_locale";
 const zh = {
   "nav.home": "工作台",
   "nav.docs": "文档",
+  "nav.gameConfig": "游戏配置",
   "nav.issues": "工单",
   "nav.repos": "代码仓库",
   "nav.migration": "历史迁移",
@@ -828,6 +829,7 @@ export type MessageKey = keyof typeof zh;
 const en: Record<MessageKey, string> = {
   "nav.home": "Workspace",
   "nav.docs": "Documents",
+  "nav.gameConfig": "Game configuration",
   "nav.issues": "Issues",
   "nav.repos": "Repositories",
   "nav.migration": "History migration",
@@ -1670,6 +1672,8 @@ export function routeTitleKey(pathname: string): MessageKey {
       return "nav.home";
     case "docs":
       return "nav.docs";
+    case "game-config":
+      return "nav.gameConfig";
     case "issues":
       return "nav.issues";
     case "migration":

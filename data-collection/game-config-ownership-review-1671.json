@@ -1,0 +1,17 @@
+{
+  "request_id": "game-config-platform-20261120",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1671",
+  "reviewer": "native-agent:/root/sinan_378b2d0288451da2",
+  "result": "passed",
+  "prior_business_review": "data-collection/game-config-review-r2-1671.json",
+  "input_blobs": {
+    ".github/CODEOWNERS": "6705c87faee1d3a8dca540e46efeaff12e9d52ed",
+    "samples/game-config/build-impact.json": "e5c55931219c4c47401f03224e13149225654699",
+    "misc/scripts/validate_codeowners.py": "ed7776b3edf58782325bd922f768c7affae8de28"
+  },
+  "checks": {
+    "command": "python misc/scripts/validate_codeowners.py samples/game-config/tests/run_headless.py samples/game-config/tests/live.gd samples/game-config/tests/unit.gd",
+    "passed": true,
+    "observed": "Independent read-only verification exit 0; exact sample tests ownership adds required tests/buildsystem teams while preserving @zhzyx. Business sample remains @zhzyx. No change to validator or protections. build-impact differs only in append-only evidence pointer."
+  }
+}

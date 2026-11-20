@@ -381,6 +381,10 @@ def create_app(
         from_thread.run(rooms.broadcast, document["id"], {"type": "changed"})
         return document
 
+    from game_config_api import create_game_config_router
+
+    app.include_router(create_game_config_router(store, _require_actor, notify_document_change))
+
     if gateway is not None:
         app.include_router(create_model_router(gateway))
 

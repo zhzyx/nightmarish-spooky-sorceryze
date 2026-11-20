@@ -1,0 +1,7 @@
+{
+  "placement": "host_tool",
+  "reason": "独立 Godot 示例与 headless 验收进程，由现有 Godot 二进制加载普通项目脚本；不参与引擎编译、生成、嵌入或已注册脚本包热替换。热更新对象是经业务校验的服务配置数据。",
+  "host_contract": "Godot 4 WebSocketPeer/SceneTree、天璇 game-config v1 HTTP/WebSocket 契约；凭据只经环境传入。正常入口 samples/game-config/project.godot；验收入口 samples/game-config/tests/run_headless.py，路径以仓库根解析。",
+  "rollback": "停止本示例进程并恢复此前客户端脚本/项目版本；不切换引擎、不改变用户游戏。业务配置可经既有文曲历史恢复生成新版本，由游戏重新验证和确认。",
+  "evidence": "data-collection/game-config-runtime-validation-r2-1673.json"
+}
