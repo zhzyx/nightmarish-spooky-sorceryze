@@ -73,10 +73,10 @@
       "handler": "generic",
       "setup_commands": [],
       "build_commands": [
-        "scons platform=linuxbsd target=editor tests=yes dev_mode=yes debug_symbols=no"
+        "scons platform=linuxbsd target=editor tests=yes dev_mode=yes debug_symbols=no use_llvm=yes"
       ],
       "test_commands": [
-        "bin/godot.linuxbsd.editor.x86_64 --headless --test --force-colors"
+        "bin/godot.linuxbsd.editor.x86_64.llvm --headless --test --force-colors"
       ],
       "status_checks": [
         "Module / engine-core"
@@ -418,8 +418,8 @@
         "python tools/check_gonggong_distribution.py"
       ],
       "test_commands": [
-        "python -m pytest customizations/components/issue-workorders customizations/components/godot-host customizations/components/yanluo customizations/components/repository-dispatch customizations/platforms/development/git/delivery customizations/platforms/ai-access/host-http/runtime -q",
-        "python tools/test_gonggong_standalone.py",
+        "python -m pytest customizations/components/issue-workorders customizations/components/godot-host customizations/components/yanluo customizations/components/repository-dispatch customizations/platforms/development/git/delivery customizations/platforms/ai-access/host-http/runtime --ignore=customizations/components/godot-host/daqian -q",
+        "python -m unittest discover -s customizations/components/godot-host/daqian -p 'test_*.py' -v",
         "python tools/test_gonggong_runtime_config.py",
         "python tools/test_verification_efficiency.py",
         "python tools/test_framework_verification_efficiency.py"

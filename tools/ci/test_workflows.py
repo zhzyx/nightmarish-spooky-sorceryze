@@ -31,6 +31,8 @@ class WorkflowContractTests(unittest.TestCase):
         text = (WORKFLOWS / "maliang_hunyuan_windows.yml").read_text(encoding="utf-8")
         self.assertIn("test_unified_settings.py", text)
         self.assertIn("run_bundled_hunyuan_windows.ps1", text)
+        self.assertIn("Maliang settings/report/unified-settings.json", text)
+        self.assertIn("Maliang settings/report/*", text)
 
     def test_windows_build_only_cannot_run_business_tests(self):
         text = (WORKFLOWS / "windows_builds.yml").read_text(encoding="utf-8")

@@ -38,7 +38,7 @@ jobs:
       - name: Run isolated Workbench settings acceptance on the selected editor
         shell: pwsh
         run: |
-          $report = "$env:RUNNER_TEMP/Maliang acceptance/report/unified-settings.json"
+          $report = "$env:RUNNER_TEMP/Maliang settings/report/unified-settings.json"
           python samples/ainative-workbench/test_unified_settings.py --godot "$env:RUNNER_TEMP/native-editor/godot.windows.editor.x86_64.exe" --report "$report"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify the recipient can open a private delivery with the included extractor
@@ -73,6 +73,7 @@ jobs:
           path: |
             ${{ runner.temp }}/Maliang acceptance/report/*.json
             ${{ runner.temp }}/Maliang acceptance/report/*.log
+            ${{ runner.temp }}/Maliang settings/report/*
           if-no-files-found: warn
       - name: Prepare the accepted Windows editor for the recipient
         if: success() && github.event_name == 'workflow_dispatch' && inputs.recipient_modulus != ''
