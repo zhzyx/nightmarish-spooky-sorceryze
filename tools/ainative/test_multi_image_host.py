@@ -106,7 +106,9 @@ class MultiImageHostTests(unittest.TestCase):
             self.assertEqual(graph[0]["request"]["inputs"]["source"]["id"], "gen-source-0")
             node.update(source_paths=["", ""], source_snapshots=snapshots)
             self.assertEqual(compile_graph({"nodes": [node], "edges": []})[1], manifest)
-            node.update(source_paths=[str(root / "missing-0.png"), str(root / "missing-1.png")], source_snapshots=snapshots)
+            node.update(
+                source_paths=[str(root / "missing-0.png"), str(root / "missing-1.png")], source_snapshots=snapshots
+            )
             with self.assertRaises(FileNotFoundError):
                 compile_graph({"nodes": [node], "edges": []})
             node.update(source=str(paths[0]), source_paths=[], source_snapshots=[])
