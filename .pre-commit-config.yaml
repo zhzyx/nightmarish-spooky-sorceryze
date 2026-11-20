@@ -303,6 +303,12 @@ repos:
         entry: python tools/check_gonggong_distribution.py
         pass_filenames: false
         always_run: true
+      - id: ci-module-selection
+        name: CI module ownership and selection contracts
+        language: python
+        entry: python -m unittest discover -s tools/ci -p test_*.py -v
+        pass_filenames: false
+        always_run: true
 #     - id: new-local-hook
 # To add external repo hooks, bring the indentation back to:
 # - repo: my-remote-hook

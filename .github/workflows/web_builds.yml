@@ -57,6 +57,9 @@ jobs:
       - name: Setup Python and SCons
         uses: ./.github/actions/godot-deps
 
+      - name: Check Web engine JavaScript syntax
+        run: node --check platform/web/js/engine/engine.js
+
       - name: Compilation
         uses: ./.github/actions/godot-build
         with:

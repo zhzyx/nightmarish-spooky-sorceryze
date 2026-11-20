@@ -1,19 +1,12 @@
 name: Maliang offline Windows editor
 on:
+  workflow_call:
   workflow_dispatch:
     inputs:
       recipient_modulus:
         description: Optional recipient RSA public modulus (base64, exponent 65537) for a private Windows installer
         type: string
         required: false
-  pull_request:
-    paths:
-      - ".github/workflows/maliang_hunyuan_windows.yml"
-      - "tools/package_maliang_editor.py"
-      - "tools/maliang_hunyuan/**"
-      - "tests/editor/run_bundled_hunyuan_windows.ps1"
-      - "tests/editor/test_maliang_package.py"
-      - "samples/ainative-workbench/bundled_hunyuan_acceptance.gd"
 
 permissions:
   contents: read
@@ -42,6 +35,12 @@ jobs:
         with:
           name: windows-editor
           path: ${{ runner.temp }}/native-editor
+      - name: Run isolated Workbench settings acceptance on the selected editor
+        shell: pwsh
+        run: |
+          $report = "$env:RUNNER_TEMP/Maliang settings/report/unified-settings.json"
+          python samples/ainative-workbench/test_unified_settings.py --godot "$env:RUNNER_TEMP/native-editor/godot.windows.editor.x86_64.exe" --report "$report"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify the recipient can open a private delivery with the included extractor
         shell: pwsh
         run: |
@@ -74,6 +73,7 @@ jobs:
           path: |
             ${{ runner.temp }}/Maliang acceptance/report/*.json
             ${{ runner.temp }}/Maliang acceptance/report/*.log
+            ${{ runner.temp }}/Maliang settings/report/*
           if-no-files-found: warn
       - name: Prepare the accepted Windows editor for the recipient
         if: success() && github.event_name == 'workflow_dispatch' && inputs.recipient_modulus != ''

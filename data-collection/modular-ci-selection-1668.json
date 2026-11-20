@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "issue_number": 1668,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1668",
+  "request_id": "modular-ci-test-selection-20261120",
+  "candidate": "working-tree-before-commit",
+  "local_validation": {
+    "selector_and_workflow_tests": {
+      "command": "python -m unittest discover -s tools/ci -p 'test_*.py' -v",
+      "result": "passed",
+      "tests": 30
+    },
+    "tracked_path_coverage": {
+      "command": "git ls-files + owning_module for every path",
+      "tracked_files": 30666,
+      "unregistered": 0,
+      "result": "passed"
+    },
+    "workflow_yaml_parse": {
+      "command": "yaml.safe_load for .github/workflows/*.yml",
+      "workflows": 22,
+      "result": "passed"
+    },
+    "web_syntax": {
+      "command": "node --check platform/web/js/engine/engine.js",
+      "result": "passed"
+    },
+    "diff_check": {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  },
+  "scenarios": {
+    "maliang_only": ["maliang"],
+    "engine_next_network_only": ["engine-next"],
+    "gameplay_nested_path": ["gameplay"],
+    "editor_only": ["editor"],
+    "web_only": ["web"],
+    "maliang_and_engine_next": ["maliang", "engine-next"],
+    "shared_sconstruct": ["engine-core"],
+    "docs_only": ["docs"],
+    "unregistered_path": "failed_closed",
+    "invalid_mapping": "failed_closed",
+    "explicit_full": "all_13_registered_modules"
+  },
+  "remote_branch_protection_observation": {
+    "repository": "zhzyx/nightmarish-spooky-sorceryze",
+    "branch": "main",
+    "protected": false,
+    "rulesets": [],
+    "viewer_permission": "WRITE",
+    "required_checks_configured": false,
+    "reason": "WRITE cannot administer branch protection; no success is claimed"
+  },
+  "real_ci": "not_run_before_candidate_push",
+  "manual_full_real_run": "not_run_before_candidate_push"
+}

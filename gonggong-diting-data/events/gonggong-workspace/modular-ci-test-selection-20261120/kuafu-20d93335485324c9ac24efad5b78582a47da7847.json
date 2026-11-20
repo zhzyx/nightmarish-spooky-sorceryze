@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-20d93335485324c9ac24efad5b78582a47da7847",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "modular-ci-test-selection-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1668",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "99647ba8d8a709879138487442774644fecdfa13f47fd31f3bbe14c4556741d4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1668",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1669",
+    "action": "validation",
+    "detection_head": "31bbf5f9a2d3b02a5fdcbede42b4e4f1a57850ba",
+    "context_sha256": "38e545db7b1acfc94d51343c095bce04c041693e54997488275c99aaf7088d8f",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-host",
+    "authority_ref": "用户附件中的全仓模块化 CI 实施要求",
+    "evidence": "data-collection/modular-ci-selection-1668-repair.json",
+    "diagnosis": "修复候选首次门禁误改已提交的采集原件；已恢复原文件并改为追加独立修复回执。",
+    "next_action": "追加证据后的正式门禁已通过；提交修复候选并复验真实 CI。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T05:47:04.825715+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T05:48:25.535850+00:00",
+  "sha256": "a3cf87febb0528f19b389b9128dc5d75b54e7626cfe07fc9eb2c68e384d1043f"
+}

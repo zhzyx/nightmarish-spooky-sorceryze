@@ -1,13 +1,8 @@
 name: Tianxuan tests
 
 on:
-  pull_request:
-    paths:
-      - "customizations/components/tianxuan/**"
-      - "apps/tianxuan/**"
-      - "deploy/**"
-      - ".github/workflows/tianxuan-tests.yml"
-  merge_group:
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "issue_number": 1668,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1668",
+  "request_id": "modular-ci-test-selection-20261120",
+  "supplements": "data-collection/modular-ci-selection-1668-full-repair.json",
+  "reason": "The owner correctly separated CI-rule verification from business-module acceptance",
+  "change": "All .github/workflows paths are owned by the ci module through the existing .github prefix; business sources and test contents retain their existing module ownership",
+  "regression_test": "Changes to Maliang, Engine Next, Web and Tianxuan workflow files each select only ci",
+  "local_validation": {
+    "tests": 31,
+    "result": "passed",
+    "whole_pr_selection": ["ci", "docs", "repository-metadata"],
+    "generic_matrix": ["ci"],
+    "diff_check": "passed"
+  },
+  "business_blocker": "The existing Maliang first-connection failure remains tracked separately in issue 1669 and is not used as evidence for or against CI selection correctness"
+}
