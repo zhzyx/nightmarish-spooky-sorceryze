@@ -59,13 +59,23 @@ class ExecutionTests(unittest.TestCase):
 class SummaryTests(unittest.TestCase):
     def test_unselected_special_jobs_may_be_skipped(self):
         selection = {"mode": "changed", "modules": ["docs"], "generic_matrix": []}
-        needs = {"select": {"result": "success"}, "module-tests": {"result": "skipped"}, "engine-next": {"result": "skipped"}}
+        needs = {
+            "select": {"result": "success"},
+            "module-tests": {"result": "skipped"},
+            "engine-next": {"result": "skipped"},
+        }
         self.assertEqual(validate_results(selection, needs), [])
 
     def test_selected_special_job_cannot_be_skipped(self):
         selection = {"mode": "changed", "modules": ["engine-next"], "generic_matrix": []}
-        needs = {"select": {"result": "success"}, "module-tests": {"result": "skipped"}, "engine-next": {"result": "skipped"}}
-        self.assertIn("selected module engine-next required successful job engine-next", validate_results(selection, needs))
+        needs = {
+            "select": {"result": "success"},
+            "module-tests": {"result": "skipped"},
+            "engine-next": {"result": "skipped"},
+        }
+        self.assertIn(
+            "selected module engine-next required successful job engine-next", validate_results(selection, needs)
+        )
 
     def test_generic_failure_is_not_success(self):
         selection = {"mode": "changed", "modules": ["ci"], "generic_matrix": [{"module": "ci"}]}

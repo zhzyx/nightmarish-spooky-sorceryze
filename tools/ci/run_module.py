@@ -20,9 +20,7 @@ def run_module(repo: Path, registry_path: Path, name: str) -> int:
     if module["handler"] != "generic":
         raise ValueError(f"Module {name!r} is handled by {module['handler']}, not the generic runner")
     commands = [
-        (stage, command)
-        for stage in ("setup_commands", "build_commands", "test_commands")
-        for command in module[stage]
+        (stage, command) for stage in ("setup_commands", "build_commands", "test_commands") for command in module[stage]
     ]
     if not any(stage == "test_commands" for stage, _ in commands):
         raise ValueError(f"Module {name!r} has no real test command")

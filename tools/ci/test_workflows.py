@@ -65,7 +65,9 @@ class WorkflowContractTests(unittest.TestCase):
             if handler in expected:
                 self.assertIn(f"uses: ./.github/workflows/{expected[handler]}", central)
                 self.assertIn(f"'{module['name']}'", central)
-        self.assertIn("validation_profile: ${{ github.event_name == 'workflow_dispatch' && 'full' || 'editor' }}", central)
+        self.assertIn(
+            "validation_profile: ${{ github.event_name == 'workflow_dispatch' && 'full' || 'editor' }}", central
+        )
         self.assertIn("full_regression=true", central)
 
     def test_no_module_workflow_uses_path_filters(self):

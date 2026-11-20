@@ -36,7 +36,9 @@ class SelectionTests(unittest.TestCase):
         self.assertSelection(["platform/web/js/engine/engine.js"], ["web"])
 
     def test_multiple_modules_do_not_become_full_regression(self):
-        self.assertSelection(["tools/ainative/executor.py", "engine_next/Runtime/Server.cpp"], ["maliang", "engine-next"])
+        self.assertSelection(
+            ["tools/ainative/executor.py", "engine_next/Runtime/Server.cpp"], ["maliang", "engine-next"]
+        )
 
     def test_shared_build_file_selects_only_build(self):
         self.assertSelection(["SConstruct"], ["engine-core"])
@@ -95,7 +97,9 @@ class SelectionTests(unittest.TestCase):
                 validate_registry(candidate)
 
     def test_all_current_tracked_paths_are_registered(self):
-        files = subprocess.check_output(["git", "-c", "core.quotePath=false", "ls-files"], cwd=ROOT, text=True).splitlines()
+        files = subprocess.check_output(
+            ["git", "-c", "core.quotePath=false", "ls-files"], cwd=ROOT, text=True
+        ).splitlines()
         unregistered = []
         for path in files:
             try:
@@ -110,27 +114,59 @@ class SelectionTests(unittest.TestCase):
             subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
             subprocess.run(["git", "config", "user.email", "ci@example.invalid"], cwd=repo, check=True)
             subprocess.run(["git", "config", "user.name", "CI Test"], cwd=repo, check=True)
-            (repo / "old.txt").write_text("before", encoding="utf-8")
-            subprocess.run(["git", "add", "old.txt"], cwd=repo, check=True)
+            (repo / "Markdown/testing").mkdir(parents=True)
+            (repo / "Markdown/testing/old.md").write_text("before", encoding="utf-8")
+            subprocess.run(["git", "add", "Markdown/testing/old.md"], cwd=repo, check=True)
             subprocess.run(["git", "commit", "-qm", "base"], cwd=repo, check=True)
             base = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip()
-            (repo / "old.txt").rename(repo / "new.txt")
+            (repo / "Markdown/testing/old.md").rename(repo / "Markdown/testing/new.md")
             subprocess.run(["git", "add", "-A"], cwd=repo, check=True)
             subprocess.run(["git", "commit", "-qm", "rename"], cwd=repo, check=True)
             head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=repo, text=True).strip()
             _, files = changed_files(repo, base, head)
-            self.assertEqual(files, ["new.txt", "old.txt"])
+            self.assertEqual(files, ["Markdown/testing/new.md", "Markdown/testing/old.md"])
+            from select_modules import main
+
+            output = repo / "selection.json"
+            self.assertEqual(
+                main([
+                    "--repo",
+                    str(repo),
+                    "--registry",
+                    str(REGISTRY),
+                    "--base",
+                    base,
+                    "--head",
+                    head,
+                    "--output",
+                    str(output),
+                ]),
+                0,
+            )
+            selection = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(selection["base"], base)
+            self.assertEqual(selection["head"], head)
+            self.assertEqual(selection["modules"], ["docs"])
 
     def test_cli_emits_machine_readable_outputs(self):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "github-output"
             from select_modules import main
 
-            result = main(["--registry", str(REGISTRY), "--file", "platform/web/js/engine/engine.js", "--github-output", str(output)])
+            result = main([
+                "--registry",
+                str(REGISTRY),
+                "--file",
+                "platform/web/js/engine/engine.js",
+                "--github-output",
+                str(output),
+            ])
             self.assertEqual(result, 0)
             content = output.read_text(encoding="utf-8")
             self.assertIn('modules=["web"]', content)
-            selection = json.loads(next(line.split("=", 1)[1] for line in content.splitlines() if line.startswith("selection=")))
+            selection = json.loads(
+                next(line.split("=", 1)[1] for line in content.splitlines() if line.startswith("selection="))
+            )
             self.assertEqual(selection["path_ownership"], {"platform/web/js/engine/engine.js": "web"})
 
 

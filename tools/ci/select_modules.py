@@ -132,9 +132,7 @@ def select_modules(document: dict[str, Any], files: list[str], full: bool = Fals
 def changed_files(repo: Path, base: str, head: str) -> tuple[str, list[str]]:
     resolved_base = base
     if not resolved_base or resolved_base == ZERO_SHA:
-        resolved_base = subprocess.check_output(
-            ["git", "merge-base", "origin/main", head], cwd=repo, text=True
-        ).strip()
+        resolved_base = subprocess.check_output(["git", "merge-base", "origin/main", head], cwd=repo, text=True).strip()
     command = ["git", "diff", "--no-renames", "--name-only", "-z", f"{resolved_base}...{head}"]
     result = subprocess.run(command, cwd=repo, check=True, capture_output=True)
     files = [item for item in result.stdout.decode("utf-8").split("\x00") if item]
@@ -146,9 +144,7 @@ def selection_document(
 ) -> dict[str, Any]:
     ownership = {path: owning_module(document, path)["name"] for path in files}
     generic = [
-        {"module": module["name"], "runs_on": module["runner"]}
-        for module in modules
-        if module["handler"] == "generic"
+        {"module": module["name"], "runs_on": module["runner"]} for module in modules if module["handler"] == "generic"
     ]
     return {
         "schema_version": 1,
@@ -164,7 +160,9 @@ def selection_document(
 
 
 def _write_outputs(path: Path, selection: dict[str, Any]) -> None:
-    compact = lambda value: json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+    def compact(value):
+        return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+
     with path.open("a", encoding="utf-8") as stream:
         stream.write(f"modules={compact(selection['modules'])}\n")
         stream.write(f"generic_matrix={compact(selection['generic_matrix'])}\n")
@@ -200,7 +198,8 @@ def main(argv: list[str] | None = None) -> int:
         else:
             if not args.head:
                 parser.error("--head is required unless --full or --file is used")
-            base, files = changed_files(args.repo, args.base, args.head)
+            head = args.head
+            base, files = changed_files(args.repo, args.base, head)
         modules = select_modules(registry, files, full=full)
         selection = selection_document(registry, modules, files, base, head, full)
         encoded = json.dumps(selection, ensure_ascii=False, indent=2) + "\n"

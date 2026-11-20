@@ -61,8 +61,8 @@ def main() -> int:
         print(f"Invalid CI summary inputs: {error}")
         return 2
     if errors:
-        for error in errors:
-            print(f"::error::{error}")
+        for failure in errors:
+            print(f"::error::{failure}")
         return 1
     print("All selected module checks succeeded; unselected jobs were not counted as test passes.")
     return 0
