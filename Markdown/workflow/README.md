@@ -4,8 +4,8 @@
 
 ## 工单与分支流程
 
-- 工单验收通过后，自动关闭该工单。
-- 如果曾为该工单拉出分支，则在关闭工单（合入 `main`）之后，删除对应的本地分支。
+- 验收、交付与关闭按[Issue 生命周期](../../customizations/components/issue-workorders/issue-lifecycle.md)核对；关闭工单与合入 `main` 是两个动作。
+- 本任务分支及 worktree 按[临时资源清理](../../customizations/platforms/process-management/repository/execution-policy.md#任务临时资源清理)在交付与工作者终态核实后处理，不删除他人资源。
 
 ## 子模块路由
 
