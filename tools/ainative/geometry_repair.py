@@ -5,6 +5,7 @@ neck-band center. reshape_crown deforms only a confirmed hairline-up region of
 an integrated mesh, preserving lower positions and topology. No remote generation,
 Blender, texture rewrite, source overwrite, or unsupported general-editing claim.
 """
+
 import copy
 import hashlib
 import json
@@ -77,8 +78,11 @@ def named_mesh(document, name):
     if len(nodes) != 1:
         raise ValueError("geometry_repair_transform_unsupported")
     node = nodes[0]
-    if "matrix" in node or "rotation" in node or "scale" in node or any(
-        abs(float(value)) > 1e-12 for value in node.get("translation", [0, 0, 0])
+    if (
+        "matrix" in node
+        or "rotation" in node
+        or "scale" in node
+        or any(abs(float(value)) > 1e-12 for value in node.get("translation", [0, 0, 0]))
     ):
         raise ValueError("geometry_repair_transform_unsupported")
     return mesh
@@ -228,8 +232,13 @@ def reshape_crown(document, binary, spec):
     binary = bytearray(binary)
     mesh = named_mesh(document, spec["mesh"])
     number_fields = (
-        "hairline_y", "blend_height", "crown_scale", "front_pivot_x", "front_scale",
-        "expected_head_top_y", "review_yaw_degrees",
+        "hairline_y",
+        "blend_height",
+        "crown_scale",
+        "front_pivot_x",
+        "front_scale",
+        "expected_head_top_y",
+        "review_yaw_degrees",
     )
     values = {key: float(spec[key]) for key in number_fields}
     if (
@@ -264,9 +273,9 @@ def reshape_crown(document, binary, spec):
         points[:, 1] = values["hairline_y"] + (y - values["hairline_y"]) * (
             1.0 + (values["crown_scale"] - 1.0) * weight
         )
-        points[:, 0] += (values["front_scale"] - 1.0) * np.maximum(
-            original[:, 0] - values["front_pivot_x"], 0.0
-        ) * weight
+        points[:, 0] += (
+            (values["front_scale"] - 1.0) * np.maximum(original[:, 0] - values["front_pivot_x"], 0.0) * weight
+        )
         protected = y <= values["hairline_y"]
         # Preserve the boundary bit-for-bit even when the JSON landmark cannot
         # be represented exactly as float32; do not relax this protection check.
@@ -321,8 +330,15 @@ def repair(spec):
     operation_fields = {
         "align_neck": {"head_mesh", "body_mesh", "neck_y", "band_height", "max_translation", "axes"},
         "reshape_crown": {
-            "mesh", "confirmed", "hairline_y", "blend_height", "crown_scale", "front_pivot_x",
-            "front_scale", "expected_head_top_y", "review_yaw_degrees",
+            "mesh",
+            "confirmed",
+            "hairline_y",
+            "blend_height",
+            "crown_scale",
+            "front_pivot_x",
+            "front_scale",
+            "expected_head_top_y",
+            "review_yaw_degrees",
         },
     }
     if not isinstance(spec, dict) or spec.get("schema_version") != 1:

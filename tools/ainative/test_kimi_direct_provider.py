@@ -403,8 +403,9 @@ class Direct3DTests(unittest.TestCase):
         self.assertFalse((self.root / "state" / KEY / "runtime" / "job" / "args.json").exists())
 
     def test_local_geometry_uses_configured_runtime_not_host_python(self):
-        from test_geometry_repair import fixture
         from unittest.mock import patch
+
+        from test_geometry_repair import fixture
 
         source_path = self.root / "integrated.glb"
         fixture(source_path, integrated=True, normals=True)
@@ -429,11 +430,11 @@ class Direct3DTests(unittest.TestCase):
             repair=dict(
                 mesh="IntegratedCharacter",
                 confirmed=True,
-                hairline_y=.9,
-                blend_height=.05,
-                crown_scale=.8,
+                hairline_y=0.9,
+                blend_height=0.05,
+                crown_scale=0.8,
                 front_pivot_x=0.0,
-                front_scale=.5,
+                front_scale=0.5,
                 expected_head_top_y=1.1,
                 review_yaw_degrees=-90.0,
             ),

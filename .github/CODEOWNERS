@@ -571,3 +571,5 @@
 /deploy/check-native-text.py @zhzyx @godotengine/buildsystem
 /deploy/prepare-native-role-installation.py @zhzyx @godotengine/buildsystem
 /deploy/production/ @zhzyx @godotengine/buildsystem
+
+/tools/skintokens.cpp/tests/ @zhzyx @godotengine/buildsystem @godotengine/tests

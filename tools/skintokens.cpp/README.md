@@ -11,7 +11,7 @@ automatic skeleton and skin-weight generation on CPU or Vulkan.
 Skin weights say how strongly every mesh vertex follows each bone. Without
 them, moving a skeleton does not deform the character surface correctly.
 SkinTokens takes a static mesh, predicts a suitable skeleton and its vertex
-weights, and writes a portable rigged GLB. 
+weights, and writes a portable rigged GLB.
 
 ## Build and install on Linux
 
@@ -107,7 +107,7 @@ both the geometry and static or animated skeleton; its old weights are ignored:
 ```
 
 Alternatively, pass separate mesh and skeleton GLBs. The default `--fit global`
-uses a single uniform scale and translation to match vertical extent and centre;
+uses a single uniform scale and translation to match vertical extent and center;
 it retains every relative joint position and bone-length ratio. Use `--fit none`
 when both files already share coordinates.
 
@@ -272,7 +272,7 @@ Skinning should use the manifold-wrapped, quad-remeshed Trellis export, not its 
 marching-cubes reconstruction: the latter is millions of triangles with
 generation topology that is unsuitable for animation. Direct quad remeshing is
 not sufficient for raw reconstruction topology; Alpha Wrap must clean it first.
-GLB scene-node transforms and vertex colours are preserved; atlas textures are
+GLB scene-node transforms and vertex colors are preserved; atlas textures are
 not yet round-tripped. The Kimodo rig is fitted to the mesh before
 conditioning, while its animation and hierarchy are retained in the output.
 SkinVAE predictions are decoded on the upstream 54K cloud and transferred to
@@ -280,7 +280,7 @@ source vertices with the same SciPy cKDTree inverse-distance 8-neighbour
 interpolation, then selects and renormalizes the greatest four influences for
 glTF. With `--postprocess`, the optional upstream heuristic first multiplies
 those channels by its `voxel_skin` surface-geodesic matrix. The C++ diagnostic
-retains Open3D voxel ordering and SciPy nearest-neighbour tie behaviour.
+retains Open3D voxel ordering and SciPy nearest-neighbour tie behavior.
 Generation currently recomputes the Qwen graph without a KV cache and may
 take several minutes.
 
@@ -424,7 +424,7 @@ GGML_VK_DISABLE_COOPMAT2=1 GGML_VK_DISABLE_GRAPH_OPTIMIZE=1 \
   models/skintokens-f32 fixtures/reference-f32 vulkan
 ```
 
-## Upstream scope and licence
+## Upstream scope and license
 
 SkinTokens is a learned skin-weight representation. TokenRig is the complete
 mesh-to-rig system: a Michelangelo point encoder, Qwen3-0.6B causal model, and
@@ -433,3 +433,27 @@ not an attempt to treat SkinTokens as a motion generator.
 
 The upstream repository and Hugging Face model card identify code and weights
 as MIT. This project is Apache-2.0 and keeps upstream attribution in `NOTICE`.
+
+## Repository quality boundary
+
+This directory is an independent CMake project with its own Apache-2.0
+`LICENSE` and upstream attribution in `NOTICE`. Its SkinTokens and TokenRig
+references retain their MIT attribution; the port is not attributed to the
+Godot authors. Run `python scripts/check_license.py` from this directory to
+verify these license and provenance markers.
+
+The containing repository applies its general formatting, Python type/lint,
+header-guard, ownership and text checks to this port. The Godot copyright
+insertion and repository-root include rewriting hooks do not apply: CMake
+resolves local headers relative to this project, including standalone source
+exports. Existing CMake targets and tests validate that include boundary.
+The license check replaces copyright insertion without excluding other checks.
+
+The repository CI incident #1545 exposed Python annotations/formatting and
+missing test ownership. Its repair preserves model operations, weights,
+LICENSE and NOTICE; formatting alone does not establish model parity.
+
+Bundled GGML patches retain their exact source bytes: context whitespace is
+patch syntax, not prose. The license check also verifies their pinned hashes
+and parses each with `git apply --numstat`; CMake checks actual applicability
+against its pinned GGML input before building.
