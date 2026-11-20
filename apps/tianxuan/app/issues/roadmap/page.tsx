@@ -40,7 +40,7 @@ export default function Roadmap() {
     milestones.set(milestone, tickets);
     groups.set(route, milestones);
   }
-  return <main className={styles.work}>
+  return <div className={`page-stack ${styles.work}`}>
     <Link href="/issues">返回工单看板</Link>
     <h1>工单路线图</h1>
     <button onClick={() => setRefresh(n => n + 1)}>刷新路线图</button>
@@ -55,5 +55,5 @@ export default function Roadmap() {
         </li>)}</ul>
       </article>)}
     </section>)}
-  </main>;
+  </div>;
 }

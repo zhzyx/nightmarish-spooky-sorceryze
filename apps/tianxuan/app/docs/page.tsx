@@ -40,7 +40,7 @@ export default async function DocsPage() {
         </Link>
       </header>
       {actor ? <CreateDoc /> : (
-        <section className="panel" style={{ padding: "26px" }}>
+        <section className="panel route-state">
           <p>{zh ? "登录后查看和创建文档。" : "Sign in to view and create documents."}</p>
           <Link className="btn btn-primary" href="/login">{zh ? "登录" : "Sign in"}</Link>
         </section>

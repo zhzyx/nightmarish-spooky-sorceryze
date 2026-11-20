@@ -65,9 +65,9 @@ const inputStyle = {
   padding: "0 10px",
   border: "1px solid var(--line)",
   borderRadius: "8px",
-  background: "rgba(245, 242, 234, 0.025)",
-  color: "rgba(245, 242, 234, 0.8)",
-  fontSize: "10px",
+  background: "var(--ink-3)",
+  color: "var(--paper-72)",
+  fontSize: ".875rem",
 } as const;
 
 const selectStyle = {
@@ -91,7 +91,7 @@ const createFormStyle = {
   padding: "14px",
   border: "1px solid var(--line)",
   borderRadius: "13px",
-  background: "rgba(245, 242, 234, 0.02)",
+  background: "var(--ink-3)",
 } as const;
 
 const formActionsStyle = {
@@ -109,9 +109,9 @@ const errorRowStyle = {
   flexWrap: "wrap",
 } as const;
 
-const errorTextStyle = { color: "#D48B80" } as const;
+const errorTextStyle = { color: "var(--error-text)" } as const;
 
-const noticeTextStyle = { color: "#9CCBBF" } as const;
+const noticeTextStyle = { color: "var(--jade)" } as const;
 
 const pagerStyle = {
   display: "flex",
@@ -139,7 +139,7 @@ const mergeSelectStyle = {
   ...selectStyle,
   width: "auto",
   height: "32px",
-  fontSize: "9px",
+  fontSize: ".8125rem",
 } as const;
 
 const loadButtonStyle = { flex: "0 0 auto", height: "32px" } as const;
@@ -462,7 +462,6 @@ export function RepoPulls() {
       <section aria-label={t("pulls.title")} className="panel">
         <div className="section-heading" style={headingStyle}>
           <div>
-            <p className="section-kicker">DUOBAO · GITEA PULLS</p>
             <h2>{t("pulls.title")}</h2>
           </div>
           <span className="mono-key">{t("pulls.disabled")}</span>
@@ -503,7 +502,6 @@ export function RepoPulls() {
     >
       <div className="section-heading" style={headingStyle}>
         <div>
-          <p className="section-kicker">DUOBAO · GITEA PULLS</p>
           <h2>{t("pulls.title")}</h2>
         </div>
         <span className="mono-key">{summary}</span>

@@ -79,7 +79,7 @@ export function WorkspaceReleases({ entry, editable, zh }: { entry: string; edit
   }
 
   const targets = history?.events.filter(event => event.accepted && event.selection !== history.head) ?? [];
-  return <section>
+  return <section className="workspace-releases">
     <h4>{zh ? "内容发布历史" : "Content release history"}</h4>
     <button type="button" className="workspace-refresh" disabled={busy}
       onClick={() => { setError(""); setRefresh(value => value + 1); }}>
@@ -90,7 +90,7 @@ export function WorkspaceReleases({ entry, editable, zh }: { entry: string; edit
     {history && <>
       <p>{zh ? "当前稳定版本 " : "Current stable release "}<code>{history.head ?? "—"}</code></p>
       {history.events.map(event => <details key={event.selection}>
-        <summary>#{event.sequence} · {event.selection}</summary>
+        <summary>#{event.sequence} · <code>{event.selection}</code></summary>
         <p>{zh ? "候选版本 " : "Candidate "}<code>{event.candidate}</code></p>
         {event.restored_from && <p>{zh ? "恢复来源 " : "Restored from "}<code>{event.restored_from}</code></p>}
         <pre>{JSON.stringify(event.modules, null, 2)}</pre>
@@ -100,10 +100,11 @@ export function WorkspaceReleases({ entry, editable, zh }: { entry: string; edit
           <select value={selected} onChange={e => setSelected(e.target.value)}>
             <option value="">{zh ? "选择已验收版本" : "Select an accepted release"}</option>
             {targets.map(event => <option value={event.selection} key={event.selection}>
-              #{event.sequence} · {event.selection}
+              #{event.sequence} · {event.selection.length > 24 ? event.selection.slice(0, 12) + "…" + event.selection.slice(-8) : event.selection}
             </option>)}
           </select>
         </label>
+        {selected && <p className="workspace-selected-release"><code>{selected}</code></p>}
         <button type="button" className="btn btn-ghost" disabled={!selected} onClick={() => void restore()}>
           {zh ? "回退到所选版本" : "Restore selected release"}
         </button>

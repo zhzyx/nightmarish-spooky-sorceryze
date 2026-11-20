@@ -20,8 +20,8 @@ import { useI18n } from "@/lib/i18n-client";
 const PROVIDERS = ["tianshu", "github", "oidc", "static"];
 
 const fieldStyle: CSSProperties = {
-  background: "rgba(245, 242, 234, 0.06)",
-  border: "1px solid rgba(245, 242, 234, 0.14)",
+  background: "var(--ink-3)",
+  border: "1px solid var(--line-strong)",
   borderRadius: 8,
   color: "inherit",
   font: "inherit",
@@ -146,7 +146,6 @@ export function IdentityBindings() {
     <section className="panel" aria-labelledby="identity-bindings-title">
       <div className="section-heading">
         <div>
-          <p className="section-kicker">IDENTITY · ADAPTERS</p>
           <h2 id="identity-bindings-title">{t("identity.title")}</h2>
         </div>
         <span className="section-note">{formatMessage(t("identity.note"), { count: links.length })}</span>

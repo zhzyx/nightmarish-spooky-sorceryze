@@ -9,6 +9,8 @@ import { LOCALE_COOKIE, normalizeLocale, translate } from "@/lib/i18n";
 import { I18nProvider } from "@/lib/i18n-client";
 import { normalizeTheme, THEME_COOKIE } from "@/lib/theme";
 import "./globals.css";
+import "./workspace-shell.css";
+import "./routes.css";
 
 export function generateMetadata(): Metadata {
   const locale = normalizeLocale(cookies().get(LOCALE_COOKIE)?.value);

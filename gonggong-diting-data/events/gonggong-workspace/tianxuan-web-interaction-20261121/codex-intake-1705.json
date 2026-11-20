@@ -1,0 +1,24 @@
+{
+  "tenant_id": "gonggong-workspace",
+  "schema_version": 1,
+  "evidence_refs": [],
+  "event_id": "codex-intake-1705",
+  "kind": "request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1705",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "updated_at": "2026-11-20T20:52:43Z",
+    "operator": "Sail-Li",
+    "authority_ref": "codex:01a1fab7-e513-7560-980b-214fa72426f7",
+    "issue_number": 1705,
+    "title": "天璇 Web：存储迁移后的全站 Apple 风格与交互重构"
+  },
+  "occurred_at": "2026-11-20T20:55:24.2387026+00:00",
+  "request_id": "tianxuan-web-interaction-20261121",
+  "sha256": "d56643383c6677fa34e4b42c673fb6e29e0f38c0804228781a1f1f0af536a5ab"
+}

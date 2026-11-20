@@ -10,14 +10,7 @@ export default function NotFound() {
     <div className="page-stack">
       <header className="page-header">
         <div className="page-title-group">
-          <p className="eyebrow">
-            <span className="eyebrow-rule" aria-hidden="true" />
-            TIANXUAN · NOT FOUND
-          </p>
-          <h1>
-            {t("nf.title")}
-            {locale === "zh" ? <span className="title-period">。</span> : null}
-          </h1>
+          <h1>{t("nf.title")}</h1>
           <p className="page-lede">{t("nf.lede")}</p>
         </div>
       </header>
@@ -25,7 +18,7 @@ export default function NotFound() {
         actionHref="/docs"
         actionLabel={t("nf.action")}
         description={t("nf.description")}
-        eyebrow="404 · PAGE ABSENT"
+        eyebrow="404"
         title={t("nf.emptyTitle")}
       />
     </div>

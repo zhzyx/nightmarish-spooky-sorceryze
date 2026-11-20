@@ -32,7 +32,6 @@ export default async function ReposPage() {
         <div className="page-title-group">
           <h1>
             {t("repos.title")}
-            {locale === "zh" ? <span className="title-period">。</span> : null}
           </h1>
         </div>
         <div className="page-actions">
@@ -63,7 +62,6 @@ export default async function ReposPage() {
         <section className="panel" aria-labelledby="live-repos-title">
           <div className="section-heading">
             <div>
-              <p className="section-kicker">GITEA · LIVE</p>
               <h2 id="live-repos-title">{t("repos.liveTitle")}</h2>
             </div>
             <span className="section-note">

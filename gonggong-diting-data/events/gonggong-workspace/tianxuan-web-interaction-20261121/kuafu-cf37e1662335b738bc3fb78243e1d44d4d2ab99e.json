@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cf37e1662335b738bc3fb78243e1d44d4d2ab99e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-web-interaction-20261121",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1705",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d4cef0d951946949ef11e9e3775416791131f094d16dc646426787b304a5b782",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1705",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1706",
+    "action": "delivery",
+    "detection_head": "8bb0386aac72c7a3210223ccb82e0ac06a3464dc",
+    "context_sha256": "2a7b8681a6712d9486f8fa16d113e670904d5716a9745ba1cbde13851d55a4b4",
+    "operator": "Sail-Li",
+    "worker": "codex:01a1fab7-e513-7560-980b-214fa72426f7",
+    "authority_ref": "issue:1705 user-authorized delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1706",
+    "diagnosis": "签发器 Git 子进程以 128 退出；相同身份和凭据助手独立回读 main 已成功。",
+    "next_action": "重新运行原签发门禁并核对远端候选和 CI",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T21:15:55.854877+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T21:18:32.264379+00:00",
+  "sha256": "507160bfcde5a30dfc14c61a816add58bd32399d60df4865a8ac4f8d64e7ee02"
+}

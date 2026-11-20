@@ -42,7 +42,6 @@ export function DocExternalSource({ docId }: { docId: string }) {
     <section className="panel" aria-labelledby="external-source-title">
       <div className="section-heading">
         <div>
-          <p className="section-kicker">TIANSHU · LINK</p>
           <h2 id="external-source-title">{t("external.title")}</h2>
         </div>
         <span className="section-note">{formatMessage(t("external.note"), { count: links.length })}</span>

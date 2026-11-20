@@ -14,7 +14,7 @@ export interface EmptyStateProps {
 export function EmptyState({
   title,
   description,
-  eyebrow = "此处留白",
+  eyebrow,
   actionLabel,
   actionHref,
   onAction,
@@ -22,19 +22,8 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className={`empty-state${compact ? " empty-state-compact" : ""}`}>
-      <div className="empty-visual" aria-hidden="true">
-        <span className="empty-orbit empty-orbit-one" />
-        <span className="empty-orbit empty-orbit-two" />
-        <span className="empty-sheet empty-sheet-back" />
-        <span className="empty-sheet empty-sheet-front">
-          <span className="empty-line empty-line-long" />
-          <span className="empty-line" />
-          <span className="empty-line empty-line-short" />
-        </span>
-        <span className="empty-seal">空</span>
-        <span className="empty-spark" />
-      </div>
-      <p className="empty-eyebrow">{eyebrow}</p>
+      <span className="empty-state-symbol" aria-hidden="true"><Icon name="search" size={23} /></span>
+      {eyebrow && <p className="empty-eyebrow">{eyebrow}</p>}
       <h3>{title}</h3>
       <p className="empty-description">{description}</p>
       {actionLabel && onAction ? (

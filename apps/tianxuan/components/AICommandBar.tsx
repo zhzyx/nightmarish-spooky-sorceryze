@@ -187,7 +187,7 @@ function ConversationPanel({ identity }: { identity: ReturnType<typeof useIdenti
   return (
     <section className="workspace-card workspace-chat" aria-labelledby="workspace-chat-title">
       <header className="workspace-chat-header">
-        <h2 id="workspace-chat-title"><Icon name="sparkles" size={18} />{zh ? "AI 对话" : "AI conversation"}</h2>
+        <h2 id="workspace-chat-title"><span className="workspace-ai-symbol"><Icon name="sparkles" size={23} /></span>{zh ? "AI 对话" : "AI conversation"}</h2>
         {editable && (conversation || summaries.length > 0) && <button className="workspace-refresh" type="button"
           disabled={busy || loading} onClick={() => void select("")}>{zh ? "新对话" : "New conversation"}</button>}
       </header>
@@ -244,7 +244,7 @@ function ConversationPanel({ identity }: { identity: ReturnType<typeof useIdenti
             <label htmlFor="workspace-chat-input" className="sr-only">{t("ai.inputLabel")}</label>
             <textarea id="workspace-chat-input" ref={input} rows={2} maxLength={8000}
               readOnly={busy || loading || loadFailed || Boolean(pending)} value={draft}
-              placeholder={zh ? "输入消息…" : "Type a message…"}
+              placeholder={zh ? "描述需求，或提出开发问题…" : "Describe a requirement or ask a development question…"}
               onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => {
                 if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.keyCode !== 229) {
                   event.preventDefault();
@@ -267,7 +267,11 @@ function ConversationPanel({ identity }: { identity: ReturnType<typeof useIdenti
           </div>}
         </>
       ) : identity ? <p>{zh ? "当前账号为只读。" : "Your account is read-only."}</p>
-        : <Link className="text-link" href="/login">{zh ? "登录后开始对话" : "Sign in to start a conversation"}</Link>}
+        : <div className="workspace-welcome">
+            <p>{zh ? "登录后可以继续已有对话、起草需求并查看执行进度。" :
+              "Sign in to resume a conversation, draft a requirement, and follow its execution."}</p>
+            <Link className="workspace-signin" href="/login">{zh ? "登录后开始对话" : "Sign in to start a conversation"}</Link>
+          </div>}
       {error && <p role="alert" className="workspace-error">{errorMessage}</p>}
       {conversation && conversation.turns.length > 0 && (
         <WorkspaceDesign key={`design-${conversation.id}`} conversation={conversation}

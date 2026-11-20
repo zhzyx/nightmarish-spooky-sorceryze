@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3a5a49af271e1d4dfef7abd2341ddeb43684299c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-web-interaction-20261121",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1705",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0047a49e7667b92194ef6006391a631aea1fdd39df6ce96cbf27e0278949b8a6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1705",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1706",
+    "action": "delivery",
+    "detection_head": "8bb0386aac72c7a3210223ccb82e0ac06a3464dc",
+    "context_sha256": "2a7b8681a6712d9486f8fa16d113e670904d5716a9745ba1cbde13851d55a4b4",
+    "operator": "Sail-Li",
+    "worker": "codex:01a1fab7-e513-7560-980b-214fa72426f7",
+    "authority_ref": "issue:1705 user-authorized delivery",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1706",
+    "diagnosis": "验收 JSON 缺少稳定需求标记；已补充 request_id 与 issue_url。",
+    "next_action": "重新运行原签发门禁并核对远端候选和 CI",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T21:11:52.201838+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T21:18:02.047898+00:00",
+  "sha256": "012d54123d4df1b1da6b176f02526134ce431ecd4a20769669cf206007bd0a45"
+}
