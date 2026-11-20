@@ -546,6 +546,9 @@ def test_real_worker_producer_context_pipeline(fixture, monkeypatch, tmp_path):
         encoding="utf8",
     )
     w.worker.profiles["local"]["argv"] = [sys.executable, "-B", "-X", "utf8", str(launch)]
+    from native_observations import OBSERVATION_PROTOCOL
+
+    w.worker.profiles["local"]["observation_protocol"] = OBSERVATION_PROTOCOL
     key, grant = admit(fixture, profile, root, old_registry, "a")
     contract = json.loads(w.status(actor, key)["task"])
     binding = dict(
@@ -584,6 +587,44 @@ def test_real_worker_producer_context_pipeline(fixture, monkeypatch, tmp_path):
     assert result["context_receipt"]["reads"] is None
     assert w.worker.store.read(tenant, "a", result["modules"]["a"], "output") == b"context-consumed"
     assert json.loads((tmp_path / "counts.json").read_text()) == {"threads": 1, "turns": 3}
+    calls = result["model_calls"]
+    assert [(c["call"], c["source"], c["usage"]["last"]["totalTokens"]) for c in calls] == [
+        (1, "codex-cli", 3),
+        (2, "codex-cli", 3),
+        (3, "codex-cli", 3),
+    ]
+    assert [c["usage"]["total"]["totalTokens"] for c in calls] == [3, 6, 9]
+    assert result["usage"] == calls[-1]["usage"]
+    assert w.worker.reconcile(contract, key)["model_calls"] == calls
+
+
+@pytest.mark.parametrize("received", [[2], [1, 3]])
+def test_worker_preserves_received_call_numbers_after_unknown(fixture, received):
+    from native_observations import OBSERVATION_PROTOCOL, valid_producer_calls
+    from test_native_workflow import reserve, task
+
+    workflow, actor, *_ = fixture
+    calls = [
+        dict(call=n, source="codex-cli", requested_model="selected", provider_model=None, usage=None) for n in received
+    ]
+    for invalid in ([0], [101], [1, 1], [3, 1], [True]):
+        assert not valid_producer_calls([{**calls[0], "call": n} for n in invalid])
+    profile = workflow.worker.profiles["local"]
+    profile["observation_protocol"] = OBSERVATION_PROTOCOL
+    profile["argv"] = [
+        sys.executable,
+        "-c",
+        "import json, os, pathlib, sys;"
+        "print(json.dumps(dict(execution=pathlib.Path(os.environ['NATIVE_WORKSPACE']).parent.name,"
+        "proposal_applied=True, provider_model=None, usage=None, model_calls=json.loads(sys.argv[1]))))",
+        json.dumps(calls),
+    ]
+    key, _ = task(fixture, "a")
+    contract = json.loads(workflow.status(actor, key)["task"])
+    reserve(fixture, key)
+    produced = workflow.execute(actor, key)
+    assert produced["model_calls"] == calls
+    assert workflow.worker.reconcile(contract, key)["model_calls"] == calls
 
 
 def test_effective_context_size_rejected_before_process(context, tmp_path, monkeypatch):

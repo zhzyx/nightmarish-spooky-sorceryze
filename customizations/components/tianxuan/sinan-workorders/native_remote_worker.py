@@ -16,7 +16,7 @@ from pathlib import Path
 
 from native_candidates import NativeCandidates
 from native_store import NativeStoreError, _digest, _json
-from native_worker import NativeWorker
+from native_worker import OBSERVATION_PROTOCOL, NativeWorker
 from native_workspace import Limits, NativeWorkspace, absolute
 from tianxuan_core import PermissionDenied
 
@@ -34,7 +34,11 @@ class RemoteNativeWorker(NativeWorker):
         self.condition = threading.Condition()
         self.workflow = None
         for profile in self.profiles.values():
-            if set(profile) != {"timeout", "installation"} or not 0 < profile["timeout"] <= 86400:
+            if (
+                set(profile) - {"observation_protocol"} != {"timeout", "installation"}
+                or ("observation_protocol" in profile and profile["observation_protocol"] != OBSERVATION_PROTOCOL)
+                or not 0 < profile["timeout"] <= 86400
+            ):
                 raise NativeStoreError("Public profile descriptor required")
         for node in self.nodes.values():
             if set(node) != {"tenant", "token_sha256", "profiles", "capacity", "enabled", "package"}:

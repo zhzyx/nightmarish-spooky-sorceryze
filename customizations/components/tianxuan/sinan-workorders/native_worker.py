@@ -8,6 +8,7 @@ from pathlib import Path
 
 from native_candidates import NativeCandidates
 from native_check_runner import _process_helper
+from native_observations import OBSERVATION_PROTOCOL, model_observation, valid_producer_calls
 from native_store import NativeStoreError, _digest, _json
 from native_workspace import Limits, NativeWorkspace, absolute
 
@@ -56,7 +57,9 @@ class NativeWorker:
                 "CREATE TABLE IF NOT EXISTS native_worker_process_closures (execution TEXT PRIMARY KEY, task TEXT NOT NULL, payload TEXT NOT NULL, digest TEXT NOT NULL)"
             )
         for spec in self.profiles.values():
-            if set(spec) != {"argv", "env", "timeout", "log_bytes"}:
+            if set(spec) - {"observation_protocol"} != {"argv", "env", "timeout", "log_bytes"} or (
+                "observation_protocol" in spec and spec["observation_protocol"] != OBSERVATION_PROTOCOL
+            ):
                 raise NativeStoreError("Invalid trusted producer profile")
             if (
                 not isinstance(spec["argv"], list)
@@ -145,8 +148,24 @@ class NativeWorker:
             )
             log.flush()
             log.seek(0)
-            digest = _digest(log.read())
-        physical = _json({"exit_code": code, "reasons": reasons, "transcript": digest})
+            transcript = log.read()
+            digest = _digest(transcript)
+        record = {"exit_code": code, "reasons": reasons, "transcript": digest}
+        if spec.get("observation_protocol") == OBSERVATION_PROTOCOL and code == 0 and not reasons:
+            # This channel belongs to the fixed installed broker, not candidate files.
+            try:
+                observed = json.loads(transcript)
+            except (UnicodeError, ValueError):
+                observed = None
+            if (
+                isinstance(observed, dict)
+                and observed.get("execution") == execution
+                and observed.get("proposal_applied") is True
+            ):
+                record["observation"] = model_observation(observed.get("provider_model"), observed.get("usage"))
+                if "model_calls" in observed and valid_producer_calls(observed["model_calls"]):
+                    record["observation"]["model_calls"] = observed["model_calls"]
+        physical = _json(record)
         with self.store._connection(write=True) as db:
             db.execute(
                 "INSERT INTO native_worker_process_closures VALUES (?,?,?,?)",
@@ -248,7 +267,7 @@ class NativeWorker:
         process, output = records
         if physical is not None and (
             not isinstance(process, dict)
-            or set(process) != {"exit_code", "reasons", "transcript"}
+            or set(process) - {"observation"} != {"exit_code", "reasons", "transcript"}
             or (process["exit_code"] is not None and type(process["exit_code"]) is not int)
             or not isinstance(process["reasons"], list)
             or not all(isinstance(reason, str) for reason in process["reasons"])
@@ -256,6 +275,21 @@ class NativeWorker:
             or len(process["transcript"]) != 64
         ):
             raise NativeStoreError("Worker physical closure integrity failure")
+        if process and "observation" in process:
+            obs = process["observation"]
+            if (
+                self.profiles.get(task["profile"], {}).get("observation_protocol") != OBSERVATION_PROTOCOL
+                or not isinstance(obs, dict)
+                or set(obs) - {"model_calls"} != {"provider_model", "usage"}
+                or {"provider_model": obs["provider_model"], "usage": obs["usage"]}
+                != model_observation(obs["provider_model"], obs["usage"])
+                or ("model_calls" in obs and not valid_producer_calls(obs["model_calls"]))
+                or (
+                    "model_calls" in obs
+                    and any(obs["model_calls"][-1][k] != obs[k] for k in ("provider_model", "usage"))
+                )
+            ):
+                raise NativeStoreError("Invalid producer observation")
         if closed is not None and (
             process is None
             or not isinstance(output, dict)
@@ -339,9 +373,11 @@ class NativeWorker:
             "intake": receipt,
             "origin": origin,
             "no_changes": not changes,
-            "usage": None,
-            "provider_model": None,
+            "usage": process.get("observation", {}).get("usage"),
+            "provider_model": process.get("observation", {}).get("provider_model"),
         }
+        if "model_calls" in process.get("observation", {}):
+            terminal["model_calls"] = process["observation"]["model_calls"]
         if context_receipt is not None:
             terminal["context_receipt"] = context_receipt
         return self._terminal(task, execution, terminal)

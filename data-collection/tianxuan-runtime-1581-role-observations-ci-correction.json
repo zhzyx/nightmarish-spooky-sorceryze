@@ -1,0 +1,31 @@
+{
+  "request_id": "tianxuan-runtime-closure-20261119",
+  "issue_number": 1581,
+  "corrects": "data-collection/tianxuan-runtime-1581-role-observations.json",
+  "previous_sha256": "7c01ead701c251acaf26acd702053e418fd70764f486d047e96737719894cd58",
+  "previous_pr": 1700,
+  "base": "9efed7c5a3429c1d95388a9d1f0279e70a8d4bda",
+  "service_tree": {
+    "index_files": 103,
+    "index_tree": "923118ddf548ee5e76c99bc32bee0b05ad39cf0a119e00841fc252a0aff0177b",
+    "working_tree": "923118ddf548ee5e76c99bc32bee0b05ad39cf0a119e00841fc252a0aff0177b",
+    "matches": true
+  },
+  "ci_correction": {
+    "previous_pr": 1700,
+    "failed_signed_head": "0ab1da75c0b45313b5b44db0c3ac101835544450",
+    "incident": "1b0bf0a9567e53bcc57260910dd078fe47afa566f2aaacf8bc4ad88ab1c048fa",
+    "failed_jobs": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44783910803/job/136453573019",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44783910653/job/136453718644",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44783910653/job/136453719197"
+    ],
+    "checks": [
+      "Both deployment scripts resolve to their declared owners and buildsystem in validate_codeowners --unowned.",
+      "Canonical Windows whoami argument preserved; Windows OS identity readback checked. codespell 2.4.2 passed.",
+      "Only the host_packages registration for the host-http runtime was refreshed. Offline snapshot integrity passed with 256 frozen files. All other registration fields matched their previous values.",
+      "The workspace conversation fixture now reports zero role calls on its pending entry. Its original authentication, privacy and idempotency regression passed."
+    ]
+  },
+  "status": "Original CLI evidence and source-stage receipt retained. Current package registration and CI fix require exact replacement PR checks."
+}

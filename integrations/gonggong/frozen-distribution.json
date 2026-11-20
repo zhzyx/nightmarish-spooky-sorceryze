@@ -297,14 +297,16 @@
       "yanshi.mjs": "acd3d84bc18b214943525fd9270962c6e72e9d45f7f453eb03ad80dd98cef300"
     },
     "customizations/platforms/ai-access/host-http/runtime": {
-      "adapters.py": "18561fc762bb74c1706b123203dc39c758bffcaed4b2272fb9b91f737ec66a08",
-      "diting.py": "ee5f9d885e553f787a596b85db386952d12ae3f54754d4c9b044f602600ec9f9",
-      "evaluate.py": "12651ab58fa46d20f99e115b9a83606f860d0c935eb8da49b4032a52548297fa",
-      "native_proposal_adapter.py": "d5844822a892454166a610049222d6d6dad03e195a659510dd564f89f9533663",
       "README.md": "5face9479b06526b12a74ac6b38c733eed54d3d28f802e445e3e9ad11a7cdcf8",
-      "runner.py": "bea30feb785e4e09bf46f2fa077c383120d31f4cd1bf7bb0eb98577df3becc15",
-      "task_budget.py": "20214feef0b1aaebfa2d40aa31584477a799f0b7ec079f9db29963fcccac3126",
+      "adapters.py": "91b867b791b9b87bc8d4c59b96fe6d7074247da05a9b0cd2b38ee79f2a2e3e4e",
+      "diting.py": "ee5f9d885e553f787a596b85db386952d12ae3f54754d4c9b044f602600ec9f9",
+      "evaluate.py": "96792ff7820ed727e0adbbd5e73189af41a51dc5dd369761c7cf2342b1dac5ec",
+      "local_agent_proposal.py": "3bc12d924e47a45ccc1427b21199dcc9c687958769bb1518b9b8faaa5875b10d",
+      "native_proposal_adapter.py": "cba37011f53dd134fff329ed5ed4deb94d431f06d2bc41186cfc0271a2c59db1",
+      "runner.py": "de1931203508d75e2b9e600e755138450018a6654334a7a65c9aad52c62f62a9",
+      "task_budget.py": "eb7eb1a45a4f63871d49c147b25444b08ec11c4c1b391e6ab8ae0535cfd1f58c",
       "test_adapters.py": "721ed5e808cbb4c97e3cad5ccb8502173d34abaedeeb54ed7164f8a403fb60eb",
+      "test_local_agent_proposal.py": "2d274f543cbeac7522ec07b5440b6e82ebe6eb52edd1d7650fc3895e7e43ec34",
       "test_runtime.py": "0fb66513ba9856bdaf5b0d097ede8d44243284a25fcd79e9bb7d9bc9028c6883"
     }
   },

@@ -146,6 +146,7 @@ def create_entry_router(entry):
             result = dict(
                 entry=key,
                 tasks=entry.task_references(key, actor),
+                role_calls=entry.role_calls(key),
                 policy=entry.policy_reference(actor, row["requirement"]),
                 state=row["state"],
                 source_digest=row["source"],

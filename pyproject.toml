@@ -60,8 +60,8 @@ write-changes = true
 check-hidden = true
 quiet-level = 3
 builtin = ["clear", "rare", "en-GB_to_en-US"]
-# Preserve the verbatim D3D12 validation diagnostic in immutable evidence.
-ignore-regex = "\\(labelled with 'Possibly imprecise'\\)" # codespell:ignore labelled
+# Preserve verbatim D3D12 and Windows CLI diagnostics in immutable evidence.
+ignore-regex = "\\(labelled with 'Possibly imprecise'\\)|Windows /fo spelling false positive" # codespell:ignore labelled,fo
 skip = [
 	# Preserve the exact #1434 process-test transcript and reviewed checksum.
 	"data-collection/native-host-inputs-cleanup-1434.json",

@@ -34,6 +34,7 @@ def runtime_digest():
             "evaluate.py",
             "native_proposal_adapter.py",
             "task_budget.py",
+            "local_agent_proposal.py",
         )
     })
     return digest(external)
@@ -129,10 +130,10 @@ def validate_plan(p):
     require(t["mode"] != "single" or len(t["steps"]) == 1, "Single mode requires one step")
     require(isinstance(t.get("work_items"), list) and t["work_items"], "Work linkage required")
     require(isinstance(t.get("resources", {}), dict), "Resources must be host-provided map")
-    cli = any(m["protocol"] == "codex-native-proposal" for m in profiles)
+    cli = any(m["protocol"] in {"codex-native-proposal", "codex-native-role", "local-agent-proposal"} for m in profiles)
     if cli:
         require(
-            all(m["protocol"] == "codex-native-proposal" for m in profiles),
+            all(m["protocol"] == profiles[0]["protocol"] for m in profiles),
             "Do not mix incompatible token budget protocols",
         )
         require(
@@ -146,14 +147,31 @@ def validate_plan(p):
                 not model.get("validation_probe") or t.get("validation_only") is True,
                 "Installed probes cannot authorize production",
             )
-            validate_profile(model)
+            if model["protocol"] == "local-agent-proposal":
+                from local_agent_proposal import validate
+
+                validate(model)
+                require(
+                    t["mode"] == "single" and not t.get("resources") and not t["steps"][0].get("tools"),
+                    "Local agents propose a single bounded result",
+                )
+            else:
+                validate_profile(model)
     for field, maximum in [("max_calls", 100)] if cli else [("max_calls", 100), ("max_output_tokens", 32000)]:
         require(type(limits.get(field)) is int and 1 <= limits[field] <= maximum, "Invalid " + field)
     require(profiles and len({x["id"] for x in profiles}) == len(profiles), "Unique model profiles required")
     for model in profiles:
         model_provenance(model)  # Validate the requested identity before any dispatch.
         require(
-            model["protocol"] in {"chat-completions", "ollama-chat", "gonggong-json", "codex-native-proposal"},
+            model["protocol"]
+            in {
+                "chat-completions",
+                "ollama-chat",
+                "gonggong-json",
+                "codex-native-proposal",
+                "codex-native-role",
+                "local-agent-proposal",
+            },
             "Unsupported model transport",
         )
         require(
@@ -358,7 +376,10 @@ def _run(grant, root, state, context_resolver=None, native_transport=None):
                     + ". Required value format: "
                     + canonical({"output": step["output"], "schema": step.get("schema")})
                 )
-                if p["profiles"][0]["protocol"] == "codex-native-proposal" and context_resolver is None:
+                if (
+                    p["profiles"][0]["protocol"] in {"codex-native-proposal", "local-agent-proposal"}
+                    and context_resolver is None
+                ):
                     instruction = (
                         "Return only JSON for the fixed native proposal schema, without an action/value wrapper. "
                         "The installed transport wraps the validated proposal for the runtime. "
@@ -373,7 +394,7 @@ def _run(grant, root, state, context_resolver=None, native_transport=None):
                             "instruction": step["instruction"],
                             "input": (
                                 {"native_request": t["input"]["native_request"]}
-                                if p["profiles"][0]["protocol"] == "codex-native-proposal"
+                                if p["profiles"][0]["protocol"] in {"codex-native-proposal", "local-agent-proposal"}
                                 else t.get("input")
                             ),
                             "previous_results": outputs,
@@ -408,7 +429,12 @@ def _run(grant, root, state, context_resolver=None, native_transport=None):
                                 native_transport.call
                                 if native_transport and model["protocol"] == "codex-native-proposal"
                                 else call
-                            )(model, messages, p["limits"]["max_output_tokens"])
+                            )(
+                                model,
+                                messages,
+                                p["limits"]["max_output_tokens"],
+                                **({"role_schema": step["schema"]} if model["protocol"] == "codex-native-role" else {}),
+                            )
                             if context_resolver:
                                 context_resolver.delivery(calls, messages, "transport_received")
                         except TransportUnknown as error:

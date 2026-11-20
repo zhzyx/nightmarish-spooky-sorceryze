@@ -3,6 +3,7 @@
 import hashlib
 import importlib.util
 import json
+import tempfile
 from pathlib import Path
 
 from adapters import TransportUnknown, canonical, model_provenance
@@ -189,4 +190,69 @@ def call_native(profile, messages, output_limit):
         "usage": {},  # No silent conversion of CLI last/total into HTTP counters.
         "provider_request_id": terminal["usage"].get("turn_id", "unavailable"),
         "protocol_evidence": terminal,
+    }
+
+
+def call_role(profile, messages, output_limit, role_schema):
+    """One tools-disabled structured planning or review turn in the installed subscription session."""
+    role = profile.get("entry_role")
+    if role not in {"yanshi", "reviewer"} or output_limit is not None:
+        raise ValueError("Installed CLI planning or review role required")
+    host = validate_profile(profile)
+    installed, binding = host.configuration()
+    serialized = canonical({"messages": messages, "decision_schema": role_schema})
+    if len(serialized.encode()) > min(100000, profile["max_context_bytes"]):
+        raise ValueError("Role input exceeds the installed transport limit")
+    checksum = hashlib.sha256(serialized.encode()).hexdigest()
+    packet = {
+        "schema": 3,
+        "role": role,
+        "messages": serialized,
+        "installed": {k: installed[k] for k in ("entry", "python", "model", "env", "reasoning_effort")},
+    }
+    reasons = []
+    evidence = {
+        "input_digest": checksum,
+        "config_digest": binding,
+        "requested_model": installed["model"],
+        "execution_authority": False,
+        "status": "unknown",
+        "usage": {"raw": None, "status": "unknown"},
+    }
+    with tempfile.TemporaryFile() as source, tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as err:
+        source.write(canonical(packet).encode())
+        source.seek(0)
+        code = host.helper.run_owned(
+            [installed["node"], str(host.wrapper)],
+            stdin=source,
+            stdout=out,
+            stderr=err,
+            env=installed["env"],
+            limit=524288,
+            timeout=installed["timeout"],
+            active=lambda: True,
+            fail=reasons.append,
+        )
+        out.seek(0)
+        if code != 0 or reasons or host.configuration()[1] != binding:
+            raise TransportUnknown("Role result unavailable; reconcile the original call", evidence)
+        try:
+            receipt = json.loads(out.read())
+            if (
+                receipt["input_digest"] != checksum
+                or receipt["role"] != role
+                or not isinstance(receipt["decision"], dict)
+                or not isinstance(receipt["usage"], dict)
+            ):
+                raise ValueError("Invalid role result")
+        except (ValueError, KeyError, TypeError) as error:
+            raise TransportUnknown("Unverified role response", evidence) from error
+    evidence.update(status="received", usage=receipt["usage"])
+    return {
+        **model_provenance(profile, receipt["usage"].get("observed_model")),
+        "text": canonical({"action": "final", "value": receipt["decision"]}),
+        "finish_reason": "stop",
+        "usage": {},
+        "provider_request_id": receipt["usage"].get("turn_id"),
+        "protocol_evidence": evidence,
     }
