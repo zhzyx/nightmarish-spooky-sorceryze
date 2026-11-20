@@ -2,6 +2,7 @@
 
 import argparse
 import base64
+import copy
 import hashlib
 import importlib
 import json
@@ -67,7 +68,9 @@ def target_graph(model, target):
     for edge in model["edges"]:
         if not isinstance(edge, dict) or not isinstance(edge.get("from"), str) or not isinstance(edge.get("to"), str):
             raise ValueError("invalid edge")
-        if edge["to"] in incoming:
+        # A selected generation iteration is an immutable file input, not a
+        # request to regenerate its original upstream node.
+        if edge["to"] in incoming and "artifact" not in edge:
             incoming[edge["to"]].append(edge["from"])
     required, pending = set(), [target]
     while pending:
@@ -175,13 +178,47 @@ def compile_graph(model):
         if n.get("text"):
             context.append(dict(text=n["text"], role="instruction", scope="node", strength="constraint"))
         links = {}
+        selected_ports = set()
         for edge in model["edges"]:
-            if edge["to"] == n["id"]:
-                port = edge.get("input", "source")
-                if port in links:
-                    raise ValueError("duplicate linked port")
+            if edge["to"] != n["id"]:
+                continue
+            port = edge.get("input", "source")
+            if port in links or port in selected_ports:
+                raise ValueError("duplicate linked port")
+            if "artifact" not in edge:
                 links[port] = {"node": edge["from"], "port": edge.get("output", "result")}
                 inputs.pop(port, None)
+                continue
+            reference = edge["artifact"]
+            snapshot = edge.get("artifact_snapshot")
+            if (
+                kind not in ("model_adjust", "copy")
+                or port != "source"
+                or edge.get("output", "result") != "result"
+                or not isinstance(reference, dict)
+                or set(reference) != {"id", "revision"}
+                or not isinstance(snapshot, dict)
+            ):
+                raise ValueError("invalid selected mesh iteration")
+            extension = snapshot.get("extension", "").lower()
+            if extension not in (".glb", ".gltf"):
+                raise ValueError("selected iteration must be a mesh")
+            data = base64.b64decode(snapshot.get("content_base64", ""), validate=True)
+            if not data or hashlib.sha256(data).hexdigest() != snapshot.get("content_sha256"):
+                raise ValueError("selected iteration digest mismatch")
+            if reference["revision"] != snapshot["content_sha256"] or not reference["id"]:
+                raise ValueError("selected iteration identity mismatch")
+            payload = dict(snapshot, extension=extension)
+            if not isinstance(payload.get("provenance", {}), dict):
+                raise ValueError("selected iteration provenance must be an object")
+            asset = dict(id=reference["id"], revision=reference["revision"], type="mesh", payload=payload)
+            existing = next((item for item in assets if item["id"] == asset["id"]), None)
+            if existing is not None and canonical(existing) != canonical(asset):
+                raise ValueError("conflicting selected iteration")
+            if existing is None:
+                assets.append(asset)
+            inputs[port] = dict(reference)
+            selected_ports.add(port)
         graph.append(
             dict(
                 id=n["id"],
@@ -227,6 +264,18 @@ def normalize_editor_integers(graph, registry):
         request["parameters"] = params
 
 
+def mesh_iterations(exported, result_reference):
+    """Return the immutable GLBs produced by each reviewed generation round."""
+    iterations = []
+    for artifact in exported["manifest"]["artifacts"]:
+        if artifact["type"] != "mesh":
+            continue
+        provenance = artifact["payload"].get("provenance", {})
+        if isinstance(provenance, dict) and provenance.get("iteration_of") == result_reference["id"]:
+            iterations.append(artifact)
+    return sorted(iterations, key=lambda artifact: artifact["payload"]["provenance"]["generation_iteration"])
+
+
 def selected(host, request, preview=False):
     exported = host.export_node(request["run"], request["node"]) if preview else host.export(request["run"])
     outputs = exported["outputs"][request["node"]]
@@ -251,9 +300,12 @@ def selected(host, request, preview=False):
         # explicit member selection, preview deterministically opens the first.
         ref = chosen or items[0]["artifact"]
     else:
-        if chosen is not None:
-            raise ValueError("selected artifact is not a set member")
         ref = outputs["result"]
+        if chosen is not None and chosen != ref:
+            iterations = mesh_iterations(exported, ref)
+            if not any({key: artifact[key] for key in ("id", "revision")} == chosen for artifact in iterations):
+                raise ValueError("selected artifact is not a generation iteration")
+            ref = chosen
     asset = next(
         a for a in exported["manifest"]["artifacts"] if a["id"] == ref["id"] and a["revision"] == ref["revision"]
     )
@@ -347,7 +399,12 @@ def dispatch(args, request):
                 except FileExistsError:
                     if path.read_bytes() != data:
                         raise ValueError("preview collision")
-                return dict(path=str(path), token=selected_token, type=selected_asset["type"])
+                return dict(
+                    path=str(path),
+                    token=selected_token,
+                    type=selected_asset["type"],
+                    provenance=copy.deepcopy(selected_asset["payload"].get("provenance", {})),
+                )
 
             result = materialize(asset, token)
             result["artifact"] = {"id": asset["id"], "revision": asset["revision"]}
@@ -360,6 +417,20 @@ def dispatch(args, request):
                     entry = materialize(member, member_token)
                     entry.update(label=item["label"], artifact=item["artifact"])
                     result["images"].append(entry)
+            elif asset["type"] == "mesh":
+                result["iterations"] = []
+                for iteration in mesh_iterations(exported, outputs["result"]):
+                    reference = {key: iteration[key] for key in ("id", "revision")}
+                    _, member, member_token = selected(host, dict(request, artifact=reference), preview=True)
+                    entry = materialize(member, member_token)
+                    provenance = iteration["payload"]["provenance"]
+                    entry.update(
+                        label=f"第 {provenance['generation_iteration']} 轮",
+                        attempt=provenance["generation_iteration"],
+                        review_passed=provenance.get("visual_review_passed"),
+                        artifact=reference,
+                    )
+                    result["iterations"].append(entry)
             return result
         if args.command == "publish":
             exported, asset, token = selected(host, request)

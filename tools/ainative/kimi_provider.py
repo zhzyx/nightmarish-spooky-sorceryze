@@ -1639,6 +1639,25 @@ class KimiNativeDirectProvider(ModelingProvider):
             code = str(error) if str(error) in self.MESSAGES else "worker_failed"
             return self.finish(key, "failed", code)
 
+    def _reviewed_result(self, model, attempt_models):
+        """Publish every reviewed GLB without changing the final result port."""
+        require(attempt_models, "model3d_result_unknown")
+        final_id = model["id"]
+        artifacts = []
+        count = len(attempt_models)
+        for number, generated in enumerate(attempt_models, 1):
+            iteration = copy.deepcopy(generated)
+            iteration["id"] = final_id + "-iteration-" + str(number).zfill(3)
+            provenance = iteration["payload"].setdefault("provenance", {})
+            provenance.update(
+                iteration_of=final_id,
+                generation_iteration=number,
+                generation_iteration_count=count,
+            )
+            artifacts.append(iteration)
+        artifacts.append(model)
+        return dict(schema_version=1, artifacts=artifacts)
+
     def _succeed_capability_limited(self, key, analysis, sources, attempts, previous_model):
         import mesh_vision
 
@@ -1648,6 +1667,8 @@ class KimiNativeDirectProvider(ModelingProvider):
             previous_model.get("revision") == latest.get("model_sha256") and review.get("passed") is False,
             "model3d_result_unknown",
         )
+        attempt_models = list(self.read(key).get("review_models", []))
+        require(len(attempt_models) == len(attempts), "model3d_result_unknown")
         model = mesh_vision.attach_capability_review(previous_model, review)
         provenance = model["payload"]["provenance"]
         provenance.update(
@@ -1670,7 +1691,7 @@ class KimiNativeDirectProvider(ModelingProvider):
             model3d_stage=model,
             stages=[dict(stage="capability_limited_review_delivery", artifact_sha256=model["revision"])],
         )
-        return self.finish(key, "succeeded", result=dict(schema_version=1, artifacts=[model]))
+        return self.finish(key, "succeeded", result=self._reviewed_result(model, attempt_models))
 
     def _review_with_orientation(
         self,
@@ -1751,6 +1772,8 @@ class KimiNativeDirectProvider(ModelingProvider):
         if not self._active(key, "reference_analyzed"):
             return
         attempts = list(record.get("review_attempts", []))
+        attempt_models = list(record.get("review_models", []))
+        require(len(attempt_models) == len(attempts), "model3d_result_unknown")
         while self._active(key, "review_attempt"):
             previous_issues = [issue for attempt in attempts for issue in attempt["review"]["issues"]][-12:]
             previous_model = None
@@ -1938,7 +1961,15 @@ class KimiNativeDirectProvider(ModelingProvider):
                     review=review,
                 )
             )
-            self.write(key, review_attempts=attempts, stage="reviewed_attempt_" + str(number))
+            iteration_model = copy.deepcopy(model)
+            iteration_model["payload"]["provenance"]["visual_review_passed"] = review["passed"]
+            attempt_models.append(iteration_model)
+            self.write(
+                key,
+                review_attempts=attempts,
+                review_models=attempt_models,
+                stage="reviewed_attempt_" + str(number),
+            )
             if not review["passed"]:
                 continue
             provenance.update(
@@ -1956,7 +1987,7 @@ class KimiNativeDirectProvider(ModelingProvider):
                 model3d_stage=model,
                 stages=[dict(stage="vision_guided_generate_and_review", artifact_sha256=model["revision"])],
             )
-            self.finish(key, "succeeded", result=dict(schema_version=1, artifacts=[model]))
+            self.finish(key, "succeeded", result=self._reviewed_result(model, attempt_models))
             return
 
     def work(self, key):
