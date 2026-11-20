@@ -78,6 +78,14 @@ var preview_target: String:
 	get: return controller.preview_target
 	set(value): controller.preview_target = value
 var preview_history: Dictionary = {}
+# Image artifacts are presentation-only graph nodes; they never enter the execution DAG.
+var artifact_nodes: Dictionary = {}
+var dismissed_artifacts: Dictionary = {}
+var artifact_preview_queue: Array = []
+var artifact_download_picker: FileDialog
+var artifact_download_source = ""
+var artifact_layout_pending = false
+var context_artifact_source = ""
 var history_choice: OptionButton
 var result_choice: OptionButton
 var current_images: Array = []
@@ -174,6 +182,8 @@ const CONTEXT_SAVE = 9
 const CONTEXT_OPEN = 10
 const CONTEXT_RUN_ALL = 11
 const CONTEXT_HISTORY = 12
+const CONTEXT_ARTIFACT_DOWNLOAD = 13
+const CONTEXT_ARTIFACT_DELETE = 14
 const RETIRED_GPT_MESH_PROVIDERS = ["codex-modeling", "codex-sculpt"]
 const RETIRED_GPT_MESH_MODES = ["codex_modeling", "codex_sculpt"]
 const RETIRED_GPT_MESH_NOTICE = "GPT CLI 单独网格生成已下线。请使用当前网格服务新建节点，再连接源文件与下游节点。"
@@ -448,6 +458,12 @@ func _ready():
 	graph = GraphEdit.new()
 	# Let users drag an ordered image list onto the combined image/list input.
 	graph.add_valid_connection_type(PORT_IMAGE_SET, PORT_IMAGE)
+	# Dynamic artifact ports are presentation adapters, not executable node types.
+	graph.add_valid_connection_type(PORT_IMAGE, PORT_DYNAMIC)
+	graph.add_valid_connection_type(PORT_IMAGE_SET, PORT_DYNAMIC)
+	graph.add_valid_connection_type(PORT_DYNAMIC, PORT_IMAGE)
+	graph.add_valid_connection_type(PORT_MESH, PORT_DYNAMIC)
+	graph.add_valid_connection_type(PORT_DYNAMIC, PORT_MESH)
 	graph.custom_minimum_size = Vector2(460, 320)
 	graph.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	split.add_child(graph)
@@ -634,6 +650,15 @@ func _ready():
 	save_picker.use_native_dialog = true
 	save_picker.file_selected.connect(save_preview_to)
 	add_child(save_picker)
+	artifact_download_picker = FileDialog.new()
+	artifact_download_picker.title = "下载全部图片到项目目录"
+	artifact_download_picker.ok_button_text = "下载到这里"
+	artifact_download_picker.cancel_button_text = "取消"
+	artifact_download_picker.access = FileDialog.ACCESS_FILESYSTEM
+	artifact_download_picker.file_mode = FileDialog.FILE_MODE_OPEN_DIR
+	artifact_download_picker.use_native_dialog = true
+	artifact_download_picker.dir_selected.connect(_download_artifact_images)
+	add_child(artifact_download_picker)
 	dialog = ConfirmationDialog.new()
 	dialog.title = "确认发布"
 	dialog.ok_button_text = "发布新文件"
@@ -857,8 +882,328 @@ func input_type_name(data: Dictionary) -> String:
 	if kind == GENERATE_IMAGE: return "图片 / 图片列表（可选）＋文本（参数）"
 	return "图片 / 图片列表" if _accepts_image_set(data) and kind in ["image_to_image", "image_to_mesh"] else port_type_name(input_kind(data))
 
+func _latest_image_entry(node_id: String) -> Dictionary:
+	var history: Array = preview_history.get(node_id, [])
+	if history.is_empty(): return {}
+	var entry = history.back()
+	if not entry is Dictionary or entry.get("type", "") != "image": return {}
+	return entry
+
+func _latest_mesh_entry(node_id: String) -> Dictionary:
+	var history: Array = preview_history.get(node_id, [])
+	if history.is_empty(): return {}
+	var entry = history.back()
+	if not entry is Dictionary or entry.get("type", "") != "mesh": return {}
+	return entry
+
+func _artifact_images(entry: Dictionary) -> Array:
+	var images = entry.get("images", [])
+	if images is Array and not images.is_empty(): return images
+	return [entry]
+
+func _mesh_iterations(entry: Dictionary) -> Array:
+	var iterations = entry.get("iterations", [])
+	if iterations is Array and not iterations.is_empty(): return iterations
+	return [entry] if entry.get("type", "") == "mesh" else []
+
+func _mesh_artifact_key(source_id: String, entry: Dictionary) -> String:
+	return source_id + "::" + str(entry.get("artifact", {}).get("revision", entry.get("token", "")))
+
+func _style_artifact_node(node: GraphNode):
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.055, 0.14, 0.16, 0.98)
+	style.border_color = Color(0.24, 0.82, 0.72)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(18)
+	style.content_margin_left = 14
+	style.content_margin_right = 14
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+	node.add_theme_stylebox_override("panel", style)
+	var selected_style = style.duplicate() as StyleBoxFlat
+	selected_style.border_color = Color(0.95, 0.82, 0.38)
+	node.add_theme_stylebox_override("panel_selected", selected_style)
+
+func _artifact_preview_input(event: InputEvent, key: String, index: int, control: Control):
+	if not event is InputEventMouseButton or not event.pressed or event.button_index != MOUSE_BUTTON_LEFT or not event.double_click: return
+	_show_artifact_result(key, index)
+	if _displayed_preview() != null: toggle_preview_maximized()
+	control.accept_event()
+
+func _create_artifact_node(data: Dictionary, entry: Dictionary):
+	var source_id = str(data.id)
+	var artifact_id = "artifact_" + source_id
+	while nodes.any(func(item): return item.id == artifact_id): artifact_id += "_dynamic"
+	var images = _artifact_images(entry)
+	var node = GraphNode.new()
+	node.name = artifact_id
+	node.title = "◇ 图片生成物"
+	node.position_offset = Vector2(data.x + 340, data.y)
+	node.tooltip_text = "动态生成物节点：双击放大对应图片；不参与工作流执行"
+	node.set_meta("maliang_artifact", true)
+	node.set_meta("artifact_source", source_id)
+	node.set_meta("artifact_key", source_id)
+	_style_artifact_node(node)
+	var summary = Label.new()
+	summary.name = "ArtifactSummary"
+	summary.text = "动态节点 · 来自 %s · %d 张图片" % [source_id, images.size()]
+	summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	node.add_child(summary)
+	node.set_slot(0, true, PORT_DYNAMIC, PORT_COLORS[PORT_IMAGE_SET], true, PORT_DYNAMIC, PORT_COLORS[PORT_IMAGE_SET])
+	var gallery = GridContainer.new()
+	gallery.name = "ArtifactGallery"
+	gallery.columns = 2 if images.size() > 1 else 1
+	gallery.add_theme_constant_override("h_separation", 10)
+	gallery.add_theme_constant_override("v_separation", 10)
+	node.add_child(gallery)
+	for index in images.size():
+		var item = images[index]
+		if not item is Dictionary: continue
+		var item_box = VBoxContainer.new()
+		item_box.custom_minimum_size.x = 132
+		gallery.add_child(item_box)
+		var thumbnail = TextureRect.new()
+		thumbnail.name = "ArtifactThumbnail%d" % index
+		thumbnail.custom_minimum_size = Vector2(124, 78)
+		thumbnail.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		thumbnail.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		thumbnail.mouse_filter = Control.MOUSE_FILTER_STOP
+		thumbnail.tooltip_text = "双击放大这张图片"
+		var image = Image.load_from_file(str(item.get("path", "")))
+		if image != null: thumbnail.texture = ImageTexture.create_from_image(image)
+		item_box.add_child(thumbnail)
+		thumbnail.gui_input.connect(_artifact_preview_input.bind(source_id, index, thumbnail))
+		var preview_button = button(item_box, "%d. %s" % [index + 1, str(item.get("label", "独立图片"))], _show_artifact_result.bind(source_id, index))
+		preview_button.name = "ArtifactImage%d" % index
+		preview_button.tooltip_text = "在右侧预览这张图片；双击放大"
+		preview_button.clip_text = true
+		preview_button.gui_input.connect(_artifact_preview_input.bind(source_id, index, preview_button))
+	var download_button = button(node, "下载全部到项目…", _open_artifact_download.bind(source_id))
+	download_button.name = "DownloadArtifacts"
+	download_button.tooltip_text = "选择项目目录，保留每张图片的原始字节"
+	graph.add_child(node)
+	node.gui_input.connect(_artifact_preview_input.bind(source_id, 0, node))
+	node.node_selected.connect(_show_artifact_result.bind(source_id, 0))
+	artifact_nodes[source_id] = {"id": artifact_id, "entry": entry, "source": source_id, "kind": "image"}
+
+func _create_mesh_artifact_node(data: Dictionary, entry: Dictionary, attempt: int):
+	var source_id = str(data.id)
+	var key = _mesh_artifact_key(source_id, entry)
+	var artifact_id = "artifact_%s_round_%03d" % [source_id, attempt]
+	while nodes.any(func(item): return item.id == artifact_id): artifact_id += "_dynamic"
+	var node = GraphNode.new()
+	node.name = artifact_id
+	node.title = "◇ Mesh 生成物 · 第 %d 轮" % attempt
+	node.position_offset = Vector2(data.x + 340, data.y + (attempt - 1) * 180)
+	node.tooltip_text = "双击放大本轮 Mesh；可独立保存并作为固定轮次输入连接到下游节点"
+	node.set_meta("maliang_artifact", true)
+	node.set_meta("artifact_source", source_id)
+	node.set_meta("artifact_key", key)
+	node.set_meta("iteration", attempt)
+	_style_artifact_node(node)
+	var summary = Label.new()
+	summary.name = "ArtifactSummary"
+	var review_text = "已生成 GLB"
+	if entry.get("review_passed", null) == true: review_text = "视觉审核通过"
+	elif entry.get("review_passed", null) == false: review_text = "视觉审核未通过"
+	summary.text = "动态节点 · 来自 %s · %s" % [source_id, review_text]
+	summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	node.add_child(summary)
+	node.set_slot(0, true, PORT_DYNAMIC, PORT_COLORS[PORT_MESH], true, PORT_DYNAMIC, PORT_COLORS[PORT_MESH])
+	var thumbnail = preload("res://addons/ainative/mesh_artifact_preview.gd").new()
+	thumbnail.name = "ArtifactMeshPreview"
+	thumbnail.mouse_filter = Control.MOUSE_FILTER_STOP
+	thumbnail.tooltip_text = "双击放大本轮 Mesh"
+	node.add_child(thumbnail)
+	thumbnail.gui_input.connect(_artifact_preview_input.bind(key, 0, thumbnail))
+	var preview_button = button(node, "旋转 / 缩放第 %d 轮 Mesh" % attempt, _show_artifact_result.bind(key))
+	preview_button.name = "PreviewMeshArtifact"
+	preview_button.tooltip_text = "在右侧旋转和缩放；双击直接放大"
+	preview_button.gui_input.connect(_artifact_preview_input.bind(key, 0, preview_button))
+	var save_button = button(node, "保存本轮 GLB…", _save_mesh_artifact.bind(key))
+	save_button.name = "SaveMeshArtifact"
+	save_button.tooltip_text = "另存本轮原始 GLB，不覆盖其他轮次"
+	graph.add_child(node)
+	thumbnail.show_mesh(str(entry.get("path", "")))
+	node.gui_input.connect(_artifact_preview_input.bind(key, 0, node))
+	node.node_selected.connect(_show_artifact_result.bind(key))
+	artifact_nodes[key] = {"id": artifact_id, "entry": entry, "source": source_id, "kind": "mesh", "attempt": attempt}
+
+func _mark_artifact_deleted(key: String):
+	if artifact_nodes.has(key):
+		dismissed_artifacts[key] = str(artifact_nodes[key].entry.get("token", ""))
+		return
+	var entry = _latest_image_entry(key)
+	if not entry.is_empty(): dismissed_artifacts[key] = str(entry.get("token", ""))
+
+func _delete_artifact_node(key: String):
+	if is_graph_busy():
+		status.text = "请等待当前运行结束或先取消，再删除生成物节点"
+		return
+	_mark_artifact_deleted(key)
+	rebuild()
+	status.text = "已删除动态生成物节点；正式节点、生成历史和生成物文件均保留"
+
+func _reveal_mesh_preview():
+	if is_instance_valid(native_scroll) and native_scroll.is_ancestor_of(mesh_container) and mesh_container.is_visible_in_tree():
+		native_scroll.ensure_control_visible(mesh_container)
+
+func _show_artifact_result(key: String, index: int = 0):
+	if artifact_nodes.has(key) and artifact_nodes[key].get("kind", "image") == "mesh":
+		var record: Dictionary = artifact_nodes[key]
+		var entry: Dictionary = record.entry
+		select_node(record.source)
+		load_preview(entry, record.source, str(entry.get("run", "")))
+		if is_instance_valid(preview_scene): call_deferred("_reveal_mesh_preview")
+		status.text += " · 第 %d 轮" % int(record.get("attempt", 1))
+		return
+	var entry = _latest_image_entry(key)
+	if entry.is_empty(): return
+	select_node(key)
+	load_preview(entry, key, str(entry.get("run", "")))
+	if index > 0: show_result(index)
+
+func _save_mesh_artifact(key: String):
+	if not artifact_nodes.has(key) or artifact_nodes[key].get("kind", "") != "mesh": return
+	_show_artifact_result(key)
+	if preview_source_path.is_empty(): return
+	var attempt = int(artifact_nodes[key].get("attempt", 1))
+	open_save_dialog()
+	save_picker.current_file = ("mesh-round-%03d-%s.glb" % [attempt, str(artifact_nodes[key].entry.get("artifact", {}).get("revision", "")).left(12)]).validate_filename()
+
+func _open_artifact_download(key: String):
+	if artifact_nodes.has(key) and artifact_nodes[key].get("kind", "image") == "mesh":
+		_save_mesh_artifact(key)
+		return
+	if _latest_image_entry(key).is_empty():
+		status.text = "该节点暂无可下载的图片"
+		return
+	artifact_download_source = key
+	var project_output = ProjectSettings.globalize_path("res://generated").path_join(key)
+	if DirAccess.make_dir_recursive_absolute(project_output) != OK:
+		status.text = "无法创建项目生成物目录：" + project_output
+		return
+	artifact_download_picker.current_dir = project_output
+	artifact_download_picker.popup_centered_ratio(0.7)
+
+func _download_artifact_images(directory: String, source_id: String = ""):
+	var source = artifact_download_source if source_id.is_empty() else source_id
+	var entry = _latest_image_entry(source)
+	if entry.is_empty() or directory.is_empty():
+		status.text = "请选择有效的生成物和目标目录"
+		return
+	if DirAccess.make_dir_recursive_absolute(directory) != OK:
+		status.text = "无法创建下载目录：" + directory
+		return
+	var images = _artifact_images(entry)
+	for index in images.size():
+		var item = images[index]
+		if not item is Dictionary: return
+		var source_path = str(item.get("path", ""))
+		if not FileAccess.file_exists(source_path):
+			status.text = "生成物源文件已不可用：" + source_path
+			return
+		var extension = "." + source_path.get_extension().to_lower()
+		if extension not in [".png", ".jpg", ".jpeg"]: extension = ".png"
+		var artifact = item.get("artifact", {})
+		var identity = str(artifact.get("id", source)) if artifact is Dictionary else source
+		if identity.is_empty(): identity = source
+		var filename = ("%02d-%s" % [index + 1, identity]).validate_filename() + extension
+		var target = directory.path_join(filename)
+		var err = DirAccess.copy_absolute(source_path, target)
+		if err != OK or FileAccess.get_sha256(target) != FileAccess.get_sha256(source_path):
+			status.text = "下载生成物失败：" + (error_string(err) if err != OK else target)
+			return
+	status.text = "已下载 %d 张图片：%s" % [images.size(), directory]
+	if Engine.is_editor_hint(): EditorInterface.get_resource_filesystem().scan()
+
+func _schedule_artifact_layout():
+	if artifact_nodes.is_empty() or artifact_layout_pending: return
+	artifact_layout_pending = true
+	call_deferred("_layout_graph_with_artifacts")
+
+func _layout_graph_with_artifacts():
+	artifact_layout_pending = false
+	if not is_instance_valid(graph) or artifact_nodes.is_empty(): return
+	var graph_nodes: Array = []
+	for child in graph.get_children():
+		if child is GraphNode:
+			child.reset_size()
+			graph_nodes.append(child)
+	var layers: Dictionary = {}
+	var indegree: Dictionary = {}
+	var outgoing: Dictionary = {}
+	var ids: Array = []
+	for node in graph_nodes:
+		var id = str(node.name)
+		ids.append(id)
+		layers[id] = 0
+		indegree[id] = 0
+		outgoing[id] = []
+	for connection in graph.get_connection_list():
+		var from_id = str(connection.from_node)
+		var to_id = str(connection.to_node)
+		if not indegree.has(from_id) or not indegree.has(to_id): continue
+		indegree[to_id] += 1
+		outgoing[from_id].append(to_id)
+	var ready: Array = []
+	for id in ids:
+		if indegree[id] == 0: ready.append(id)
+	ready.sort()
+	while not ready.is_empty():
+		var id = ready.pop_front()
+		for next_id in outgoing[id]:
+			layers[next_id] = maxi(layers[next_id], layers[id] + 1)
+			indegree[next_id] -= 1
+			if indegree[next_id] == 0:
+				ready.append(next_id)
+				ready.sort()
+	var columns: Dictionary = {}
+	for id in ids:
+		var layer = layers[id]
+		if not columns.has(layer): columns[layer] = []
+		columns[layer].append(id)
+	var column_keys = columns.keys()
+	column_keys.sort()
+	var x_positions: Dictionary = {}
+	var column_heights: Dictionary = {}
+	var x = 60.0
+	var tallest = 0.0
+	for layer in column_keys:
+		var width = 0.0
+		var height = 48.0 * maxi(columns[layer].size() - 1, 0)
+		for id in columns[layer]:
+			var node = graph.get_node(NodePath(id)) as GraphNode
+			var minimum = node.get_combined_minimum_size()
+			var measured = Vector2(maxf(node.size.x, minimum.x), maxf(node.size.y, minimum.y))
+			node.set_meta("artifact_layout_size", measured)
+			width = maxf(width, measured.x)
+			height += measured.y
+		x_positions[layer] = x
+		column_heights[layer] = height
+		tallest = maxf(tallest, height)
+		x += width + 120.0
+	for layer in column_keys:
+		var y = 60.0 + (tallest - column_heights[layer]) * 0.5
+		for id in columns[layer]:
+			var node = graph.get_node(NodePath(id)) as GraphNode
+			node.position_offset = Vector2(x_positions[layer], y)
+			y += node.get_meta("artifact_layout_size").y + 48.0
+			if node.get_meta("maliang_artifact", false): continue
+			for data in nodes:
+				if data.id == id:
+					data.x = node.position_offset.x
+					data.y = node.position_offset.y
+					break
+	# Keep the complete generated chain visible when the inspector narrows the canvas.
+	var content_width = maxf(x - 60.0, 1.0)
+	var fit_zoom = clampf((graph.size.x - 24.0) / content_width, 0.55, 1.0)
+	if graph.zoom > fit_zoom: graph.zoom = fit_zoom
+	graph.scroll_offset = Vector2.ZERO
+
 func rebuild():
 	graph.clear_connections()
+	artifact_nodes.clear()
 	for child in graph.get_children():
 		if child is GraphNode:
 			graph.remove_child(child)
@@ -901,10 +1246,54 @@ func rebuild():
 			node.set_slot(3, false, 0, PORT_COLORS[PORT_IMAGE], true, PORT_IMAGE_SET, PORT_COLORS[PORT_IMAGE_SET])
 		node.node_selected.connect(select_node.bind(data.id))
 		node.position_offset_changed.connect(func(): data.x = node.position_offset.x; data.y = node.position_offset.y)
+	var mesh_chains: Dictionary = {}
+	for data in nodes:
+		var source_id = str(data.id)
+		var entry = _latest_image_entry(source_id)
+		if not entry.is_empty() and dismissed_artifacts.get(source_id, "") != str(entry.get("token", "")):
+			_create_artifact_node(data, entry)
+		if not _is_mesh_kind(str(data.get("type", ""))): continue
+		var mesh_entry = _latest_mesh_entry(source_id)
+		if mesh_entry.is_empty(): continue
+		mesh_chains[source_id] = []
+		var iterations = _mesh_iterations(mesh_entry)
+		for index in iterations.size():
+			var iteration: Dictionary = iterations[index]
+			var key = _mesh_artifact_key(source_id, iteration)
+			if dismissed_artifacts.get(key, "") == str(iteration.get("token", "")): continue
+			_create_mesh_artifact_node(data, iteration, int(iteration.get("attempt", index + 1)))
+			mesh_chains[source_id].append(key)
+	for key in artifact_nodes:
+		var record: Dictionary = artifact_nodes[key]
+		var source_id = str(record.source)
+		var source = nodes.filter(func(n): return n.id == source_id)[0]
+		if record.get("kind", "image") == "image":
+			var entry: Dictionary = record.entry
+			var from_port = 1 if not _queue_only_node(source) and entry.has("images") else 0
+			graph.connect_node(source_id, from_port, str(record.id), 0)
+			continue
+		var chain: Array = mesh_chains.get(source_id, [])
+		var chain_index = chain.find(key)
+		if chain_index > 0:
+			graph.connect_node(str(artifact_nodes[chain[chain_index - 1]].id), 0, str(record.id), 0)
+		else:
+			graph.connect_node(source_id, 0, str(record.id), 0)
 	for edge in edges:
 		var source = nodes.filter(func(n): return n.id == edge.from)[0]
 		var from_port = 1 if edge.get("output", "result") == "image_set" and not _queue_only_node(source) else 0
-		graph.connect_node(edge.from, from_port, edge.to, 0)
+		if edge.has("artifact"):
+			var selected_key = _mesh_artifact_key(str(edge.from), {"artifact": edge.artifact})
+			if artifact_nodes.has(selected_key):
+				graph.connect_node(str(artifact_nodes[selected_key].id), 0, edge.to, 0)
+				continue
+		if artifact_nodes.has(edge.from):
+			graph.connect_node(str(artifact_nodes[edge.from].id), 0, edge.to, 0)
+		elif not mesh_chains.get(edge.from, []).is_empty():
+			var chain: Array = mesh_chains[edge.from]
+			graph.connect_node(str(artifact_nodes[chain.back()].id), 0, edge.to, 0)
+		else:
+			graph.connect_node(edge.from, from_port, edge.to, 0)
+	_schedule_artifact_layout()
 
 func _merged_requirements(primary: String, supplementary: String) -> String:
 	var main = primary.strip_edges()
@@ -992,9 +1381,32 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	if from == to: return
 	var source_node = nodes.filter(func(n): return n.id == from)
 	var target_node = nodes.filter(func(n): return n.id == to)
-	if source_node.is_empty() or target_node.is_empty(): return
+	if target_node.is_empty(): return
 	var target_kind = target_node[0].get("type", "copy")
 	if target_kind.begins_with("text_"): return
+	for key in artifact_nodes:
+		var record: Dictionary = artifact_nodes[key]
+		if record.id != str(from): continue
+		if record.get("kind", "image") != "mesh":
+			status.text = "图片生成物请从正式图片节点连接下游"
+			return
+		if target_kind not in ["copy", "model_adjust"]:
+			status.text = "Mesh 轮次生成物只能连接到 Mesh 输入"
+			return
+		for edge in edges:
+			if edge.to == to: return
+		edges.append({
+			"from": str(record.source),
+			"to": str(to),
+			"input": "source",
+			"output": "result",
+			"artifact": record.entry.get("artifact", {}).duplicate(true),
+			"iteration": int(record.get("attempt", 1))
+		})
+		rebuild()
+		status.text = "已连接第 %d 轮 Mesh；下游将使用这一轮的固定 GLB 快照" % int(record.get("attempt", 1))
+		return
+	if source_node.is_empty(): return
 	var output = "image_set" if _queue_only_node(source_node[0]) or (_image_queue_node(source_node[0]) and from_port == 1) else "result"
 	if output == "image_set":
 		if not _accepts_image_set(target_node[0]):
@@ -1009,7 +1421,14 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	rebuild()
 
 func disconnect_nodes(from: StringName, _fp: int, to: StringName, _tp: int):
-	edges = edges.filter(func(e): return not (e.from == from and e.to == to))
+	var source_id = str(from)
+	var target_id = str(to)
+	# Removing an artifact-to-consumer wire removes the underlying formal edge.
+	for key in artifact_nodes:
+		if artifact_nodes[key].id == source_id:
+			source_id = str(artifact_nodes[key].source)
+			break
+	edges = edges.filter(func(e): return not (e.from == source_id and e.to == target_id))
 	rebuild()
 
 func delete_node():
@@ -1031,6 +1450,39 @@ func model() -> Dictionary:
 		_sync_node_files(data)
 		if data.get("type", "copy") in ["text_to_image", "image_to_image"] and not data.has("version"): data.version = "4"
 	return {"format": 1, "nodes": nodes, "edges": edges}
+
+func _matching_output_entry(entry: Dictionary, reference: Dictionary) -> Dictionary:
+	if entry.get("artifact", {}) == reference: return entry
+	for collection in ["images", "iterations"]:
+		for item in entry.get(collection, []):
+			if item is Dictionary:
+				var found = _matching_output_entry(item, reference)
+				if not found.is_empty(): return found
+	return {}
+
+func _find_output_entry(source_id: String, reference: Dictionary) -> Dictionary:
+	for entry in preview_history.get(source_id, []):
+		if not entry is Dictionary: continue
+		var found = _matching_output_entry(entry, reference)
+		if not found.is_empty(): return found
+	return {}
+
+func execution_model() -> Dictionary:
+	var executable = model().duplicate(true)
+	for edge in executable.edges:
+		if not edge.has("artifact"): continue
+		var entry = _find_output_entry(str(edge.from), edge.artifact)
+		if entry.is_empty():
+			status.text = "所选 Mesh 轮次已不可用，请重新连接生成物"
+			return {}
+		var snapshot: Dictionary = entry.get("snapshot", {}).duplicate(true)
+		if snapshot.is_empty(): snapshot = _snapshot_file(str(entry.get("path", "")))
+		if snapshot.is_empty():
+			status.text = "无法读取所选 Mesh 轮次，请重新预览后再运行"
+			return {}
+		snapshot["provenance"] = entry.get("provenance", {}).duplicate(true)
+		edge["artifact_snapshot"] = snapshot
+	return executable
 
 func _snapshot_file(path: String) -> Dictionary:
 	var input = FileAccess.open(path, FileAccess.READ)
@@ -1071,6 +1523,7 @@ func _snapshot_output_entry(entry: Dictionary, node_id: String) -> Dictionary:
 		"node": node_id,
 		"description": str(entry.get("description", "")),
 		"artifact": {"id": str(entry.get("artifact", {}).get("id", "")), "revision": str(entry.get("artifact", {}).get("revision", ""))},
+		"provenance": entry.get("provenance", {}).duplicate(true),
 		"snapshot": snapshot
 	}
 	if entry.has("images"):
@@ -1083,6 +1536,18 @@ func _snapshot_output_entry(entry: Dictionary, node_id: String) -> Dictionary:
 			saved_item["label"] = str(item.get("label", "独立图片"))
 			images.append(saved_item)
 		saved["images"] = images
+	if entry.has("iterations") and not entry.iterations.is_empty():
+		if not entry.iterations is Array: return {}
+		var iterations: Array = []
+		for item in entry.iterations:
+			if not item is Dictionary or item.has("iterations") or item.has("images"): return {}
+			var saved_item = _snapshot_output_entry(item, node_id)
+			if saved_item.is_empty(): return {}
+			saved_item["label"] = str(item.get("label", "Mesh 轮次"))
+			saved_item["attempt"] = int(item.get("attempt", iterations.size() + 1))
+			saved_item["review_passed"] = item.get("review_passed", null)
+			iterations.append(saved_item)
+		saved["iterations"] = iterations
 	return saved
 
 func _result_artifact(manifest: Dictionary, reference: Dictionary) -> Dictionary:
@@ -1090,6 +1555,15 @@ func _result_artifact(manifest: Dictionary, reference: Dictionary) -> Dictionary
 		if artifact is Dictionary and artifact.get("id") == reference.get("id") and artifact.get("revision") == reference.get("revision"):
 			return artifact
 	return {}
+
+func _result_mesh_iterations(manifest: Dictionary, reference: Dictionary) -> Array:
+	var iterations: Array = []
+	for artifact in manifest.get("artifacts", []):
+		if not artifact is Dictionary or artifact.get("type", "") != "mesh": continue
+		var provenance: Dictionary = artifact.get("payload", {}).get("provenance", {})
+		if provenance.get("iteration_of", "") == reference.get("id", ""): iterations.append(artifact)
+	iterations.sort_custom(func(left, right): return int(left.payload.provenance.get("generation_iteration", 0)) < int(right.payload.provenance.get("generation_iteration", 0)))
+	return iterations
 
 func _snapshot_result_artifact(result_run: String, node_id: String, reference: Dictionary, artifact: Dictionary) -> Dictionary:
 	var payload = artifact.get("payload", {})
@@ -1110,6 +1584,7 @@ func _snapshot_result_artifact(result_run: String, node_id: String, reference: D
 		"node": node_id,
 		"description": "",
 		"artifact": {"id": str(reference.get("id", "")), "revision": str(reference.get("revision", ""))},
+		"provenance": payload.get("provenance", {}).duplicate(true),
 		"snapshot": snapshot
 	}
 
@@ -1148,6 +1623,18 @@ func _snapshot_current_result(node_id: String, state: Dictionary) -> Dictionary:
 	primary.erase("label")
 	primary["description"] = JSON.stringify(state.get("request", {}), "  ", true, true)
 	if references.size() > 1 or not image_set.is_empty(): primary["images"] = images
+	if primary.get("type", "") == "mesh":
+		var iterations: Array = []
+		for artifact in _result_mesh_iterations(manifest, outputs.result):
+			var reference = {"id": str(artifact.id), "revision": str(artifact.revision)}
+			var saved = _snapshot_result_artifact(run_id, node_id, reference, artifact)
+			if saved.is_empty(): return {}
+			var provenance: Dictionary = artifact.payload.provenance
+			saved["label"] = "第 %d 轮" % int(provenance.get("generation_iteration", iterations.size() + 1))
+			saved["attempt"] = int(provenance.get("generation_iteration", iterations.size() + 1))
+			saved["review_passed"] = provenance.get("visual_review_passed", null)
+			iterations.append(saved)
+		if not iterations.is_empty(): primary["iterations"] = iterations
 	return primary
 
 func _snapshot_outputs():
@@ -1260,6 +1747,7 @@ func _valid_output_entry(entry, node_id: String) -> bool:
 	for key in ["type", "preview_token", "run", "node"]:
 		if not entry.get(key) is String: return false
 	if entry.has("description") and not entry.description is String: return false
+	if entry.has("provenance") and not entry.provenance is Dictionary: return false
 	if entry.node != node_id or entry.preview_token.is_empty() or not _valid_artifact_reference(entry.artifact): return false
 	if not _valid_input_snapshots([entry.snapshot]): return false
 	var image = entry.type == "image" and entry.snapshot.extension.to_lower() in [".png", ".jpg", ".jpeg"]
@@ -1269,6 +1757,13 @@ func _valid_output_entry(entry, node_id: String) -> bool:
 		if not entry.images is Array or entry.images.is_empty(): return false
 		for item in entry.images:
 			if not item is Dictionary or item.has("images") or not item.get("label") is String or not _valid_output_entry(item, node_id): return false
+	if entry.has("iterations"):
+		if not mesh or not entry.iterations is Array or entry.iterations.is_empty(): return false
+		for item in entry.iterations:
+			if not item is Dictionary or item.has("images") or item.has("iterations") or not item.get("label") is String: return false
+			if not (item.get("attempt", 0) is int or item.get("attempt", 0) is float) or int(item.attempt) < 1: return false
+			if item.get("review_passed", null) != null and not item.review_passed is bool: return false
+			if not _valid_output_entry(item, node_id): return false
 	return true
 
 func _valid_output_history(value, by_id: Dictionary) -> bool:
@@ -1278,6 +1773,11 @@ func _valid_output_history(value, by_id: Dictionary) -> bool:
 		for entry in value[node_id]:
 			if not _valid_output_entry(entry, node_id): return false
 	return true
+
+func _output_history_has_artifact(history: Dictionary, source_id: String, reference: Dictionary) -> bool:
+	for entry in history.get(source_id, []):
+		if entry is Dictionary and not _matching_output_entry(entry, reference).is_empty(): return true
+	return false
 
 func _materialize_output_snapshot(snapshot: Dictionary, directory: String) -> String:
 	var bytes = Marshalls.base64_to_raw(snapshot.content_base64)
@@ -1322,6 +1822,7 @@ func _restore_output_entry(saved: Dictionary, directory: String):
 		"node": saved.node,
 		"description": saved.get("description", ""),
 		"artifact": saved.artifact.duplicate(true),
+		"provenance": saved.get("provenance", {}).duplicate(true),
 		"path": path
 	}
 	if saved.has("images"):
@@ -1332,6 +1833,16 @@ func _restore_output_entry(saved: Dictionary, directory: String):
 			restored["label"] = item.label
 			images.append(restored)
 		entry["images"] = images
+	if saved.has("iterations"):
+		var iterations: Array = []
+		for item in saved.iterations:
+			var restored = _restore_output_entry(item, directory)
+			if restored == null: return null
+			restored["label"] = item.label
+			restored["attempt"] = int(item.attempt)
+			restored["review_passed"] = item.get("review_passed", null)
+			iterations.append(restored)
+		entry["iterations"] = iterations
 	return entry
 
 func _restore_output_history(saved: Dictionary, workflow_path: String):
@@ -1356,6 +1867,17 @@ func _valid_workflow_edge(edge: Dictionary, by_id: Dictionary) -> bool:
 	var target_kind = by_id[edge.to].get("type", "copy")
 	if target_kind.begins_with("text_"): return false
 	var output = edge.get("output", "result")
+	if edge.has("artifact"):
+		return (
+			output == "result"
+			and target_kind in ["copy", "model_adjust"]
+			and output_kind(by_id[edge.from]) == PORT_MESH
+			and _valid_artifact_reference(edge.artifact)
+			and edge.artifact.size() == 2
+			and (edge.get("iteration", 0) is int or edge.get("iteration", 0) is float)
+			and int(edge.get("iteration", 0)) > 0
+			and not edge.has("artifact_snapshot")
+		)
 	if output == "image_set":
 		return _image_queue_node(by_id[edge.from]) and _accepts_image_set(by_id[edge.to])
 	if _queue_only_node(by_id[edge.from]): return false
@@ -1418,6 +1940,10 @@ func open_graph():
 	if not _valid_output_history(saved_outputs, by_id):
 		status.text = "生成物快照无效"
 		return
+	for edge in value.edges:
+		if edge.has("artifact") and not _output_history_has_artifact(saved_outputs, str(edge.from), edge.artifact):
+			status.text = "生成物连线引用的轮次不存在"
+			return
 	var recovered_inputs = _restore_missing_input_paths(value.nodes, path_edit.text)
 	if recovered_inputs < 0:
 		status.text = "无法从快照恢复输入文件，已保留当前工作流"
@@ -1427,6 +1953,8 @@ func open_graph():
 		status.text = "无法恢复生成物，已保留当前工作流"
 		return
 	preview_history = restored_history
+	artifact_preview_queue.clear()
+	dismissed_artifacts.clear()
 	controller.reset()
 	clear_preview()
 	nodes = value.nodes
@@ -1455,7 +1983,7 @@ func _reject_missing_run_resources(target: String = "") -> bool:
 		if node_id in visited: continue
 		visited.append(node_id)
 		for edge in edges:
-			if edge.to == node_id: pending.append(str(edge.from))
+			if edge.to == node_id and not edge.has("artifact"): pending.append(str(edge.from))
 		for data in nodes:
 			if data.id != node_id: continue
 			var changed = false
@@ -1495,9 +2023,12 @@ func run_node_preview(id: String):
 	if selected_id != id: select_node(id)
 	if service_config_link != null: service_config_link.hide()
 	preview_token = ""
+	artifact_preview_queue.clear()
 	status.text = "正在运行选中节点及必要的上游节点…"
+	var executable = execution_model()
+	if executable.is_empty(): return
 	_configure_controller()
-	controller.start(model(), id)
+	controller.start(executable, id)
 
 func start_run():
 	if is_graph_busy() or not apply_fields(): return
@@ -1509,8 +2040,11 @@ func start_run():
 			return
 	if service_config_link != null: service_config_link.hide()
 	preview_token = ""
+	artifact_preview_queue.clear()
+	var executable = execution_model()
+	if executable.is_empty(): return
 	_configure_controller()
-	controller.start(model())
+	controller.start(executable)
 
 func resume_run():
 	_configure_controller()
@@ -1518,6 +2052,7 @@ func resume_run():
 
 func cancel_run():
 	preview_token = ""
+	artifact_preview_queue.clear()
 	_configure_controller()
 	controller.cancel()
 
@@ -1528,6 +2063,7 @@ func retry_node():
 		status.text = RETIRED_GPT_MESH_NOTICE
 		return
 	preview_token = ""
+	artifact_preview_queue.clear()
 	_configure_controller()
 	controller.retry(selected_id)
 
@@ -1543,8 +2079,25 @@ func launch(command: String, spec: Dictionary):
 	_configure_controller()
 	controller.submit(command, spec)
 
+func _queue_completed_image_previews(data: Dictionary):
+	if data.get("state", "") != "succeeded": return
+	for data_node in nodes:
+		var kind = str(data_node.get("type", ""))
+		if not _is_image_kind(kind) and not _is_mesh_kind(kind): continue
+		var node_id = str(data_node.id)
+		var state = data.get("nodes", {}).get(node_id, {})
+		if state.get("state", "") != "succeeded" or artifact_preview_queue.has(node_id): continue
+		var outputs = state.get("job", {}).get("outputs", {})
+		if not outputs is Dictionary or (not outputs.has("image_set") and not outputs.has("result")): continue
+		var already_loading = jobs.values().any(func(job): return job.command == "preview" and job.spec.get("node", "") == node_id)
+		if not already_loading: artifact_preview_queue.append(node_id)
+
 func _process(_delta):
 	controller.tick()
+	# Full-workflow runs also refresh every image artifact, not only a preview target.
+	if not artifact_preview_queue.is_empty() and jobs.is_empty() and not creating and not auto_step and not run_id.is_empty():
+		var node_id = str(artifact_preview_queue.pop_front())
+		launch("preview", {"run": run_id, "node": node_id})
 
 func _controller_failed(command: String, failure: Dictionary):
 	var message = str(failure.message)
@@ -1676,6 +2229,7 @@ func _controller_completed(command: String, data: Dictionary, request: Dictionar
 		if data.state == "reconcile": status.text += " | 提交结果未知，已暂停。点击“继续运行”查询一次结果，避免重复提交。"
 		if not failure_messages.is_empty():
 			_show_run_problem("生成任务失败，可复制以下报错：\n\n" + "\n\n".join(failure_messages))
+		if command in ["step", "status"]: _queue_completed_image_previews(data)
 
 func request_preview():
 	if creating:
@@ -1711,6 +2265,10 @@ func remember_preview(data: Dictionary, node_id: String, result_run: String):
 		history.append(entry)
 		preview_history[node_id] = history
 	if node_id == selected_id: refresh_history()
+	# An explicit new run restores previously dismissed result nodes.
+	for key in dismissed_artifacts.keys():
+		if key == node_id or str(key).begins_with(node_id + "::"): dismissed_artifacts.erase(key)
+	if data.get("type", "") in ["image", "mesh"] or artifact_nodes.has(node_id): rebuild()
 
 func show_history(index: int):
 	var history: Array = preview_history.get(selected_id, [])
@@ -1829,9 +2387,8 @@ func load_preview(data: Dictionary, node_id: String, result_run: String = "", pr
 		frame_mesh()
 	preview_token = data.token
 	preview_source_path = str(data.path)
-	# The primary result of an ordinary single-image node is not an explicit
-	# image_set selection. Only member entries carry an artifact override.
-	preview_artifact = data.get("artifact", {}).duplicate(true) if not current_images.is_empty() else {}
+	# Keep the exact result or iteration identity for save confirmation and publishing.
+	preview_artifact = data.get("artifact", {}).duplicate(true)
 	preview_run = run_id if result_run.is_empty() else result_run
 	preview_node = node_id
 	status.text = "已加载" + {"image":"图像", "mesh":"网格"}.get(data.type,data.type) + "预览，请检查后再发布"
@@ -1981,7 +2538,7 @@ func _setup_context_controls():
 func _graph_selected_ids() -> Array:
 	var ids: Array = []
 	for child in graph.get_children():
-		if child is GraphNode and child.selected: ids.append(str(child.name))
+		if child is GraphNode and child.selected and not child.get_meta("maliang_artifact", false): ids.append(str(child.name))
 	return ids
 
 func _node_at_context(point: Vector2) -> String:
@@ -2038,7 +2595,8 @@ func node_run_blocker(id: String) -> String:
 		var kind: String = data.get("type", "copy")
 		if _retired_mesh_node(data): return RETIRED_GPT_MESH_NOTICE
 		var incoming = edges.filter(func(edge): return edge.to == next_id)
-		for edge in incoming: pending.append(edge.from)
+		for edge in incoming:
+			if not edge.has("artifact"): pending.append(edge.from)
 		var has_images = not incoming.is_empty() or not _node_paths(data, "source").is_empty() or not _node_paths(data, "image_context").is_empty()
 		if kind != GENERATE_IMAGE and not kind.begins_with("text_") and incoming.is_empty() and _node_paths(data, "source").is_empty():
 			return "请先设置源文件或连接上游节点（" + str(next_id) + "）"
@@ -2074,8 +2632,22 @@ func show_context_menu(local_position: Vector2):
 	context_position = local_position
 	context_node_ids = []
 	context_connection = {}
+	context_artifact_source = ""
 	var hit = _node_at_context(local_position)
 	if not hit.is_empty():
+		var hit_node = graph.get_node(NodePath(hit)) as GraphNode
+		if hit_node.get_meta("maliang_artifact", false):
+			context_artifact_source = str(hit_node.get_meta("artifact_key", hit_node.get_meta("artifact_source", "")))
+			_show_artifact_result(context_artifact_source)
+			_remember_context()
+			context_menu.clear()
+			context_history_menu.clear()
+			var mesh_artifact = artifact_nodes.has(context_artifact_source) and artifact_nodes[context_artifact_source].get("kind", "image") == "mesh"
+			_context_item("保存本轮 GLB…" if mesh_artifact else "下载全部到项目…", CONTEXT_ARTIFACT_DOWNLOAD)
+			_context_item("删除生成物节点", CONTEXT_ARTIFACT_DELETE, "请等待当前运行结束或先取消" if is_graph_busy() else "")
+			context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_DELETE)
+			context_menu.popup(Rect2i(Vector2i(graph.get_screen_transform() * local_position), Vector2i.ZERO))
+			return
 		var selected = _graph_selected_ids()
 		if not hit in selected:
 			for child in graph.get_children():
@@ -2163,6 +2735,10 @@ func _context_action(action: int):
 				retry_node()
 		CONTEXT_DUPLICATE: duplicate_context_nodes()
 		CONTEXT_DELETE: delete_context_nodes()
+		CONTEXT_ARTIFACT_DOWNLOAD:
+			if not context_artifact_source.is_empty(): _open_artifact_download(context_artifact_source)
+		CONTEXT_ARTIFACT_DELETE:
+			if not context_artifact_source.is_empty(): _delete_artifact_node(context_artifact_source)
 		CONTEXT_DISCONNECT:
 			if is_graph_busy() or context_connection.is_empty(): return
 			disconnect_nodes(context_connection.from_node, context_connection.from_port, context_connection.to_node, context_connection.to_port)
@@ -2272,8 +2848,24 @@ func _keyboard_duplicate():
 	duplicate_context_nodes()
 
 func _keyboard_delete(ids: Array):
+	if is_graph_busy():
+		status.text = "请等待当前运行结束或先取消，再删除节点"
+		return
 	context_node_ids = []
-	for id in ids: context_node_ids.append(str(id))
+	var artifact_sources: Array = []
+	for id in ids:
+		var node = graph.get_node_or_null(NodePath(str(id)))
+		if node != null and node.get_meta("maliang_artifact", false):
+			var key = str(node.get_meta("artifact_key", node.get_meta("artifact_source", "")))
+			artifact_sources.append(key)
+			_mark_artifact_deleted(key)
+			continue
+		context_node_ids.append(str(id))
+	if context_node_ids.is_empty():
+		if not artifact_sources.is_empty():
+			rebuild()
+			status.text = "已删除动态生成物节点；正式节点、生成历史和生成物文件均保留"
+		return
 	context_connection = {}
 	_remember_context()
 	delete_context_nodes()
