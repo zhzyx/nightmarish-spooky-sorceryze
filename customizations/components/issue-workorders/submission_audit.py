@@ -7,11 +7,13 @@ to avoid uniform full-repo bottlenecks while preserving exact candidate and gove
 from __future__ import annotations
 
 import hashlib
+import json
 import re
+import runpy
 from bisect import bisect_left
 from collections import Counter
 from collections.abc import Collection, Iterable, Mapping, Sequence
-from pathlib import PurePosixPath
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 _ENGINE_IMPL_ROOTS = frozenset({"core", "drivers", "editor", "modules", "scene", "servers"})
@@ -153,6 +155,8 @@ def _is_scoped_engine_impl(path: str, modified_regular: bool) -> bool:
 def classify_submission_diff(
     entries: Sequence[tuple[str, bool]] | Sequence[str],
     reviewed_host_inputs: Collection[str] = (),
+    *,
+    module_registry: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Compute a deterministic 5-tier review & Yanluo audit profile from changed paths.
 
@@ -254,7 +258,7 @@ def classify_submission_diff(
     if max_level >= 3:
         mandatory_ci.add("🏁 Windows / Editor (target=editor)")
 
-    return {
+    profile: dict[str, Any] = {
         "schema_version": 1,
         "tier": tier,
         "tier_level": max_level,
@@ -279,6 +283,34 @@ def classify_submission_diff(
             "mandatory_ci_checks": sorted(mandatory_ci),
         },
     }
+    if module_registry is not None:
+        # Load the installed selector, not executable code from the candidate.
+        # The caller supplies the comparison base's registry, so a candidate
+        # cannot remove its own checks by editing its copy of modules.json.
+        selector = runpy.run_path(str(Path(__file__).resolve().parents[3] / "tools/ci/select_modules.py"))
+        registry = dict(module_registry)
+        selector["validate_registry"](registry)
+        files = sorted(path for path, _ in normalized)
+        modules = selector["select_modules"](registry, files)
+        selection = selector["selection_document"](registry, modules, files, "", "", False)
+        checks = {"issue-association", *(item["name"] for item in registry["common_checks"])}
+        checks.update(check for module in modules for check in module["status_checks"])
+        profile["ci_policy"] = "module-registry"
+        profile["tier_role"] = "legacy_review_hint"
+        profile["module_selection"] = selection
+        profile["registry_sha256"] = hashlib.sha256(
+            json.dumps(registry, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+        ).hexdigest()
+        profile["yanluo_requirements"].update({
+            # Tier remains a review/governance hint; it must not create a
+            # second CI matrix alongside the authoritative module selection.
+            "mandatory_ci_checks": sorted(checks),
+            "scoped_engine_ci_required": False,
+            "full_windows_editor_ci_required": "🏁 Windows / Editor (target=editor)" in checks,
+            "review_evidence_policy": "reuse_bound_evidence_recheck_affected_changes",
+            "github_approval_policy": "actual_branch_rules_only",
+        })
+    return profile
 
 
 def _check_sort_key(entry: Mapping[str, Any], index: int) -> tuple[int, str, int]:
@@ -341,7 +373,9 @@ def verify_ci_rollup(
         mandatory = audit_profile.get("yanluo_requirements", {}).get("mandatory_ci_checks", ())
         for required_name in mandatory:
             observed = by_name.get(required_name, [])
-            if observed and not any(entry["state"] == "SUCCESS" for entry in observed):
+            if not observed:
+                raise ValueError(f"Mandatory CI check is missing: {required_name}")
+            if not any(entry["state"] == "SUCCESS" for entry in observed):
                 raise ValueError(f"Mandatory tier CI check was skipped instead of executed: {required_name}")
     return summary
 

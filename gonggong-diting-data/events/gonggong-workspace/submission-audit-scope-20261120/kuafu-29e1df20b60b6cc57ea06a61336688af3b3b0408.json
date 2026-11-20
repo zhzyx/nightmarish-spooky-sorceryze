@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-29e1df20b60b6cc57ea06a61336688af3b3b0408",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "submission-audit-scope-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1683",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a1372344349872dee29b35ac275a00947d1ac93f35b55b8f51d291980defdfdf",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1683",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1683",
+    "action": "validation",
+    "detection_head": "632dd860907d08c8e10d424de8995de87a167970",
+    "context_sha256": "f7bd1656b54f169b67fbda6dc5b5ac50ce707721b67537f85b504af3dbd8bee6",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request:submission-audit-scope-20261120",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1683",
+    "diagnosis": "任务临时Python环境位于采集私有目录但包含符号链接，触发现有采集路径门禁；已移至Git私有资源目录，不改变门禁。",
+    "next_action": "等待独立审查终态落库后重新暂存并执行同一正式门禁。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T11:35:51.984550+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T11:36:52.157874+00:00",
+  "sha256": "6d9efe32116b3a2a885444cd23b4fe621038b0653a16d1768790b1edb6a37439"
+}
