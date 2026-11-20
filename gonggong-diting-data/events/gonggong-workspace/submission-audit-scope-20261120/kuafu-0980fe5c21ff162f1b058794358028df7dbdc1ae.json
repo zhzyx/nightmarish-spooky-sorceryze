@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0980fe5c21ff162f1b058794358028df7dbdc1ae",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "submission-audit-scope-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1683",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f8642e099e1bac073eefada27d466f26e55c4b9999a36a72b560dacaa9883960",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1683",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1683",
+    "action": "user-report",
+    "detection_head": "632dd860907d08c8e10d424de8995de87a167970",
+    "context_sha256": "f7bd1656b54f169b67fbda6dc5b5ac50ce707721b67537f85b504af3dbd8bee6",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-request:submission-audit-scope-20261120",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1682",
+    "diagnosis": "旧五级提交检查与已上线模块CI重复；main protected=false且无ruleset，人工Approve无服务器依据；工作台主脚本仍为真实原生嵌入输入，不可整体豁免构建。",
+    "next_action": "在独立工单1683修复交付入口以签发基线模块注册表选择适用检查，保留独立审查并复用候选证据，原1682发布者保持不变。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T11:28:52.112827+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T11:32:57.389466+00:00",
+  "sha256": "a9fea2ae582e094373809ad60daede69a9c85a3439dc805144dea5067b031cfe"
+}

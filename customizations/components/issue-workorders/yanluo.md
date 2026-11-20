@@ -20,17 +20,17 @@ python customizations/components/issue-workorders/writer_submit.py --issue <编�
 
 连接中断后在同一工作树以同一账号重跑。入口按候选提交定位分支并核对已有签名及 PR。签发前若主线仅发生无路径/读取交叉的前进，可显式加 `--auto-integrate`（可选配合 `--reads-file` 声明读取依赖路径）在门禁前完成树级无冲突对齐；附加 `--supersede-prior` 可在新签发 PR 就绪后自动收口本人同工单被替代的旧开放 PR（或单独运行 `--prune-superseded`）。多人并行提交期间，可运行 `writer_submit.py --queue` 在单次 GraphQL 快照中聚合所有账号的在途 PR、审计分层、CI 状态与无冲突合入波次（`merge_waves`）。CI 等待期间若主线前进且 `overlapping_write_paths` 为空，原签发者可在独立临时工作树运行 `python customizations/components/issue-workorders/writer_submit.py --rebind-pr <PR编号> --close-superseded` 重新执行正式门禁、谛听校验与服务端签发并收口被替代旧单，出现写/读重叠时仍拒绝自动重绑并转合契整合。取得 PR 后沿下述交付路径核验精确 SHA、审查和 CI，并用本人账号合入及回读。生产工具、模型预算及宿主服务凭据仍由其各自宿主授权。
 
-## 五级差异化提交审查与阎罗审核契约
+## 同一候选的交付核验与模块 CI
 
-`submission_audit.py` 按候选相对基线的真实路径差异自动计算 `audit_profile`，消除“一刀切全仓审查与全量重编”造成的排队，同时严格保留冻结治理与原生构建边界：
+阎罗接收合契交出的完整候选和已有审查、测试、准入证据，只核验这些证据的责任、范围、输入摘要和结果是否仍适用。不按文件、提交账号或交付阶段另起一轮业务审查；同一候选只组织一轮必要独立审查，缺失证据由原责任链补齐，新增差异、基线变化或明确风险只复核受影响部分。用户验收不能代替必要独立审查，独立 Agent 的真实审查也不自动等于 GitHub approval。
 
-| 审核等级 | 命中范围 | 审查链路要求 | 阎罗合入与收尾审核要求 |
-| --- | --- | --- | --- |
-| `tier0_docs_telemetry` | `design-docs/*.md`、`Markdown/**/*.md`、`data-collection` / `gonggong-diting-data` 数据 | 正式门禁 + 静态与谛听校验，免全仓代码独立审查 | `issue-association` + `Static checks` 通过；零重叠主线前进可直接合入 |
-| `tier1_isolated_host` | 已经 SCons 零交集核验的宿主工具与 Web（`tools/native_host_inputs.json`）修改 | 仅审查变更路径与关联条款；跳过 15 分钟引擎重编 | 对应模块测试（如 `Module and web tests` / `planner-tests`）必须真实 `SUCCESS`（禁止被 `SKIPPED` 冒充） |
-| `tier2_scoped_engine_impl` | 常规引擎 `.cpp/.c/.mm` 实现文件修改（不含头文件/注册表/新增文件） | 变更实现与模块回归审查 | 定向模块编译 `Compile affected Windows/Metal targets` 通过即可，免全量编辑器链接 |
-| `tier3_shared_engine_or_ci` | 共享头文件、编辑器核心 C++、未登记宿主新文件、CI 工作流 | 完整独立审查 + 证据哈希绑定 | 必须包含 `Windows / Editor (target=editor)` 全量编译与原生会话回归 `SUCCESS` |
-| `tier4_governance_or_admission` | `framework/`、准入通行证、`AGENT.md`/`SKILL.md`、`build-impact.json` | 元衡/`gonggong-check` 独立审查 + 精确候选通行证 | 额外强制模块构建边界核验与精确候选准入，禁止降级豁免 |
+当前 CI 以 [模块化 CI](../../../Markdown/testing/ci-modules.md) 和 `tools/ci/modules.json` 为唯一模块选择来源。`writer_submit.py` 从签发基线读取该注册表，由已安装的 `select_modules.py` 对真实差异（含新增、删除）计算模块归属；`audit_profile.module_selection` 绑定基线、候选树、逐路径归属及所选模块，另保存注册表摘要。候选自身修改注册表不能删除基线要求；未知路径或损坏注册表拒绝交付，先完成归属修复及独立核查。
+
+阎罗核对 `issue-association`、注册表公共检查和所选模块检查的真实成功结果。任何适用必需检查缺失、跳过、失败或尚未完成均不算通过。原五级标签仅保留为审查范围与治理提示，不再叠加另一套 CI 矩阵或全仓审查；只有尚未采用模块注册表的历史基线沿用旧分级检查。`framework/`、Agent/Skill 定义与准入变更继续遵循精确候选治理，不由模块测试替代。
+
+例如，马良工作台的 `addons/ainative/*.gd` 和非测试 `tools/ainative/*.py` 会被 `editor/SCsub` 嵌入原生资源，不能按脚本后缀豁免构建。其提交消费马良模块已声明的测试、编辑器构建和会话验证；新增独立测试或测试 Provider 不因“未登记宿主文件”另加全量 Windows 检查。多模块提交核对所选模块的并集，不扩展到未变更模块。
+
+GitHub approval 仅以实际分支保护及规则集为依据，不能从 tier 标签、CODEOWNERS 邀请或普通 review request 推导出人工审批要求。没有实际人工门禁时，已获授权的独立 Agent 可提供审查证据，协作者用本人身份连续交付，不要求固定账号或所有者再次签发。保护规则确实要求审批时，保留该要求，不用管理员权限绕过。
 
 此外，引擎内 `complete_delivery` 与 `editor_delivery_finalize.py` 支持 `delivery_mode="slice"`（分片交付模式）：多人并发协作同一父工单时，分片 PR 合入并回读后记录阶段验收声明、保持 Issue 开放及原 `status:in-progress` 标签，避免提前关单阻塞其他账号在途工作；`yanluo_host.py` 另支持 `mode="pull_request_merge"`（零路径重叠主线前进时无需重签即可原子合入）及规范化 `scope_digest`（容忍工单顶部临时协调头更新，仍拒绝需求正文篡改）。
 

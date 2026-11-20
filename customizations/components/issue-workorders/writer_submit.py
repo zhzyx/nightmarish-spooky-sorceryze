@@ -254,10 +254,27 @@ def _base_reviewed_host_inputs(repo: Path, base: str) -> frozenset[str]:
     return frozenset()
 
 
+def _base_module_registry(repo: Path, base: str) -> dict[str, Any] | None:
+    entry = issue_gate.git(repo, "ls-tree", "-z", base, "--", "tools/ci/modules.json")
+    if not entry:
+        # Historical pre-modular baselines retain their original audit contract.
+        return None
+    mode, kind, oid = entry.split(b"\t", 1)[0].split()
+    require(mode == b"100644" and kind == b"blob", "Base module registry must be a regular file")
+    registry = json.loads(issue_gate.git(repo, "cat-file", "blob", oid.decode("ascii")))
+    if not isinstance(registry, dict):
+        raise ValueError("Base module registry must be an object")
+    return registry
+
+
 def handoff(repo: Path, base: str, tree: str, main: str) -> dict[str, Any]:
     diff_items = _diff_entries(repo, base, tree)
     writes = sorted(path for path, _ in diff_items)
-    audit_profile = submission_audit.classify_submission_diff(diff_items, _base_reviewed_host_inputs(repo, base))
+    audit_profile = submission_audit.classify_submission_diff(
+        diff_items, _base_reviewed_host_inputs(repo, base), module_registry=_base_module_registry(repo, base)
+    )
+    if "module_selection" in audit_profile:
+        audit_profile["module_selection"].update({"base": base, "head": tree})
     upstream = changed_paths(repo, base, main) if main != base else []
     overlap = path_overlap(writes, upstream)
     advanced = main != base and git(repo, "merge-base", base, main) == base
@@ -848,6 +865,10 @@ def queue_snapshot(repo: Path) -> dict[str, Any]:
             "write_paths": report["write_paths"],
             "overlapping_write_paths": report["overlapping_write_paths"],
             "audit_tier": report["audit_profile"]["tier"],
+            "audit_policy": report["audit_profile"].get("ci_policy", "legacy-tier"),
+            "audit_tier_role": report["audit_profile"].get("tier_role", "legacy_ci_and_review"),
+            "audit_modules": report["audit_profile"].get("module_selection", {}).get("modules", []),
+            "mandatory_ci_checks": report["audit_profile"]["yanluo_requirements"]["mandatory_ci_checks"],
             "ci_state": submission_audit.summarize_ci_state(checks),
             "mergeable": node.get("mergeable") or "UNKNOWN",
             "updated_at": node.get("updatedAt") or "",
