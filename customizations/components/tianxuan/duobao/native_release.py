@@ -11,7 +11,7 @@ import json
 import sqlite3
 from collections.abc import Callable, Generator
 from contextlib import contextmanager, nullcontext
-from typing import Any
+from typing import Any, TypedDict
 
 from native_evidence import EvidenceCache
 from native_store import Conflict, NativeStore, NativeStoreError, _digest, _identifier, _json, _revision_id
@@ -40,6 +40,11 @@ CREATE INDEX IF NOT EXISTS native_release_event_cursor ON native_release_events(
 
 Authority = Callable[[sqlite3.Connection, str, str, str, str], bool]
 Contributors = Callable[[sqlite3.Connection, str, str], set[str] | None]
+
+
+class _ReleaseHistory(TypedDict):
+    events: list[dict[str, Any]]
+    head: str | None
 
 
 class _TransactionStore(NativeStore):
@@ -278,10 +283,11 @@ class NativeRelease:
         request_key: str,
         product: str,
         channel: str,
-        review: str,
+        review: str | None,
         expected: str | None,
         *,
         guard=None,
+        restore_from: tuple[str, str, str, str] | None = None,
     ) -> dict[str, Any]:
         """Rollback uses this same operation with a valid review of old content."""
         _identifier(channel)
@@ -297,11 +303,28 @@ class NativeRelease:
             expected=expected,
             action="publish",
         )
+        if restore_from is not None:
+            requester, entry, source, selection = restore_from
+            _revision_id(selection)
+            if not expected or expected == selection:
+                raise Conflict("Rollback requires a different current selection")
+            request.update(requested_by=requester, entry=entry, source=source, restored_from=selection)
         with self.store._connection(write=True) as db, guard(db) if guard is not None else nullcontext():
             self._allow(db, tenant, actor, product, "publish")
+            if restore_from is not None:
+                self._allow(db, tenant, requester, product, "read")
+                target = self._record(db, tenant, selection)
+                if target["state"] != "content_selected":
+                    raise NativeStoreError("Historical selection required")
+                request["review"] = review = target["request"]["review"]
             old = self._existing(db, request)
             if old is not None:
                 return old  # Historical receipt only; does not reselect or revalidate it.
+            if restore_from is not None:
+                self._validated_selection(db, tenant, requester, product, channel, selection)
+            if review is None:
+                raise NativeStoreError("Invalid revision")
+            _revision_id(review)
             approval = self._valid_review(db, tenant, review)
             if approval["request"]["product"] != product:
                 raise NativeStoreError("Review product mismatch")
@@ -350,6 +373,23 @@ class NativeRelease:
                 return None
             return self._validated_selection(db, tenant, actor, product, channel, row[0])
 
+    def publication_progress(self, tenant, actor, product, channel):
+        """Report the committed publication independently of later review validity."""
+        with self._snapshot() as db:
+            self._allow(db, tenant, actor, product, "read")
+            row = db.execute(
+                "SELECT record FROM native_release_heads WHERE tenant=? AND product=? AND channel=?",
+                (tenant, product, channel),
+            ).fetchone()
+            if row is None:
+                return None
+            receipt = self._record(db, tenant, row[0])
+            return dict(
+                selection=receipt["id"],
+                candidate=receipt["candidate"],
+                restored_from=receipt["request"].get("restored_from"),
+            )
+
     def historical(self, tenant, actor, product, channel, record_id):
         """Validate an original atomic selection, independent of the current channel."""
         with self._snapshot() as db:
@@ -387,11 +427,16 @@ class NativeRelease:
     def events(
         self, tenant: str, actor: str, product: str, *, after: int = 0, limit: int = 100
     ) -> list[dict[str, Any]]:
+        return self.history(tenant, actor, product, after=after, limit=limit)["events"]
+
+    def history(
+        self, tenant: str, actor: str, product: str, *, after: int = 0, limit: int = 100, channel: str = "stable"
+    ) -> _ReleaseHistory:
         if type(after) is not int or after < 0 or type(limit) is not int or not 1 <= limit <= 1000:
             raise NativeStoreError("Expected nonnegative cursor and 1..1000 event limit")
         with self._snapshot() as db:
             self._allow(db, tenant, actor, product, "read")
-            result = []
+            result: list[dict[str, Any]] = []
             for row in db.execute(
                 "SELECT record,sequence FROM native_release_events WHERE tenant=? AND product=? "
                 "AND sequence>? ORDER BY sequence LIMIT ?",
@@ -401,4 +446,8 @@ class NativeRelease:
                 if record["state"] != "content_selected" or record["request"].get("product") != product:
                     raise NativeStoreError("Event product integrity failure")
                 result.append({"sequence": row[1], "record": record})
-            return result
+            head = db.execute(
+                "SELECT record FROM native_release_heads WHERE tenant=? AND product=? AND channel=?",
+                (tenant, product, channel),
+            ).fetchone()
+            return {"events": result, "head": head[0] if head else None}
