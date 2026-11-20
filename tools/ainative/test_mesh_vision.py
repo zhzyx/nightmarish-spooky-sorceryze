@@ -739,10 +739,19 @@ class ReviewLoopTests(unittest.TestCase):
             self.assertEqual(len(manifest["artifacts"]), 3)
             iterations = manifest["artifacts"][:-1]
             self.assertEqual([item["payload"]["provenance"]["generation_iteration"] for item in iterations], [1, 2])
-            self.assertEqual([item["payload"]["provenance"]["visual_review_passed"] for item in iterations], [False, True])
+            self.assertEqual(
+                [item["payload"]["provenance"]["visual_review_passed"] for item in iterations], [False, True]
+            )
             self.assertEqual(len({item["id"] for item in iterations}), 2)
-            self.assertTrue(all(item["payload"]["provenance"]["iteration_of"] == manifest["artifacts"][-1]["id"] for item in iterations))
-            self.assertEqual(terminal["outputs"]["result"], {key: manifest["artifacts"][-1][key] for key in ("id", "revision")})
+            self.assertTrue(
+                all(
+                    item["payload"]["provenance"]["iteration_of"] == manifest["artifacts"][-1]["id"]
+                    for item in iterations
+                )
+            )
+            self.assertEqual(
+                terminal["outputs"]["result"], {key: manifest["artifacts"][-1][key] for key in ("id", "revision")}
+            )
             provenance = manifest["artifacts"][-1]["payload"]["provenance"]
             self.assertEqual(provenance["review_policy"], "reference_driven_dynamic_review_plan_v1")
             self.assertEqual(provenance["visual_review_plan"], get_review_plan(document))
