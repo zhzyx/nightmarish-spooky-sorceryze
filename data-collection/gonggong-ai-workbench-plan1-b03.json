@@ -1,0 +1,35 @@
+{
+  "issue_number": 1874,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1874",
+  "request_id": "gonggong-ai-workbench-plan1-b03",
+  "observed_at": "2026-11-20T23:33:25.871515+00:00",
+  "source_baseline": "b60ae96914cd25b0856f4be09b6b0b6a710cc717",
+  "document": "design-docs/gonggong-ai-workbench-b03.md",
+  "document_git_blob": "b3101c353b421873d89929e6b09f3dbee32e23fb",
+  "relative_destinations_checked": 45,
+  "verification": "Execution path and local lifecycle contracts",
+  "checks": [
+    {
+      "suite": "test_direct_issue.py",
+      "passed": 3
+    },
+    {
+      "suite": "test_parent_completion.py",
+      "passed": 3
+    },
+    {
+      "suite": "test_parallel_work_orders.mjs (selected)",
+      "passed": 3
+    },
+    {
+      "suite": "sinan/test/dispatch.test.mjs",
+      "passed": 16
+    }
+  ],
+  "failure_readback": {
+    "exit_code": 7,
+    "state": "reconcile_required",
+    "transport_completed": false
+  },
+  "limits": "Windows test host, real child/fixture CLI; historic editor receipts are identified separately. Same-candidate macOS/Windows reopen acceptance belongs to Q04/Q05."
+}

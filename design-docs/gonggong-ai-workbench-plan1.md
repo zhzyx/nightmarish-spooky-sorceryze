@@ -48,6 +48,8 @@
 
 ### B03
 
+[天枢与司南执行路径](gonggong-ai-workbench-b03.md)
+
 **核对天枢与司南执行路径** · [B03 #1874](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1874)
 
 追踪当前一单从聊天到本机、阶段回执和退出的调用路径。
