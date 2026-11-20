@@ -62,6 +62,15 @@ def produce(config, template, registry):
         inputs = prepare_inputs(contract, execution, work, small_files, outputs, acceptance)
     plan = runner.read(config["template"])
     runner.require(plan == template, "Installed template changed")
+    bindings = config.get("catalog_bindings")
+    if bindings is not None:
+        profile_id = bindings.get(contract["profile"])
+        selected = [profile for profile in plan["profiles"] if profile["id"] == profile_id]
+        runner.require(len(selected) == 1, "Selected catalog model has no admitted producer profile")
+        # A signed grant runs only the selected profile, including on a provider failure.
+        plan["profiles"] = selected
+    else:
+        runner.require(len(plan["profiles"]) == 1, "Multiple producer profiles require explicit catalog bindings")
     task = plan["task"]
     task.update(
         id=execution,

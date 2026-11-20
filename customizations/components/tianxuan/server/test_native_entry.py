@@ -495,7 +495,10 @@ class RecoveryBoundaryTests(unittest.TestCase):
                 key_file=str(root / "key"),
                 authority_ref="test-authority",
             )
-            template = {"task": {"agent_id": "yanshi", "mode": "single", "steps": [{}]}}
+            template = {
+                "task": {"agent_id": "yanshi", "mode": "single", "steps": [{}]},
+                "profiles": [{"protocol": "chat-completions"}],
+            }
             request = dict(
                 role="yanshi",
                 entry="a" * 64,

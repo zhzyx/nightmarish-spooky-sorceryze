@@ -15,7 +15,13 @@ def evaluate(profile, cases, scope):
             response = call(
                 profile,
                 case["messages"],
-                case.get("max_output_tokens", None if profile["protocol"] == "codex-native-proposal" else 512),
+                case.get(
+                    "max_output_tokens",
+                    None
+                    if profile["protocol"] in {"codex-native-proposal", "codex-native-role", "local-agent-proposal"}
+                    else 512,
+                ),
+                **({"role_schema": case["schema"]} if profile["protocol"] == "codex-native-role" else {}),
             )
             result["response"] = response
             if response["finish_reason"] != "stop":
