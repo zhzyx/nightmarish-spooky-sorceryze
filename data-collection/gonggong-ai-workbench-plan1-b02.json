@@ -1,0 +1,26 @@
+{
+  "issue_number": 1870,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1870",
+  "request_id": "gonggong-ai-workbench-plan1-b02",
+  "observed_at": "2026-11-20T23:36:01.614810+00:00",
+  "source_baseline": "b60ae96914cd25b0856f4be09b6b0b6a710cc717",
+  "document": "design-docs/gonggong-ai-workbench-b02.md",
+  "document_git_blob": "ae53e27c8bd6e64b21e557097f0b5a7ded702cb6",
+  "relative_destinations_checked": 57,
+  "verification": "All 39 I/D/H cards compared with the workbench design, service API, callers and tests",
+  "coverage": {
+    "issues": 19,
+    "design_and_sessions": 14,
+    "human_judgment": 6
+  },
+  "service_test_groups": [
+    {
+      "passed": 84
+    },
+    {
+      "passed": 71,
+      "deselected": 15
+    }
+  ],
+  "limits": "Isolated service cases, one TestClient deprecation warning per run. Godot native and production deployments retain their separate acceptance."
+}
