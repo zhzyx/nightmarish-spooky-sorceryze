@@ -1,0 +1,311 @@
+{
+  "issue_number": 1550,
+  "request_id": "tianxuan-unified-platform-20261119",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+  "recorded_at": "2026-11-20T20:04:58.2237043Z",
+  "kind": "roadmap_m0_verified_baseline",
+  "source_main": "9871aacbd1ada4f5650f8b2898188c00d2780a0c",
+  "delivery_mode": "phased_roadmap",
+  "platform_complete": false,
+  "runtime": {
+    "checks": [
+      {
+        "name": "issue-association",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795974107/job/136495477349"
+      },
+      {
+        "name": "CI / Select changed modules",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795974147/job/136495478416"
+      },
+      {
+        "name": "CI / Select changed modules",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795957047/job/136498235533"
+      },
+      {
+        "name": "📊 Static checks / Code style, file formatting, and docs",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795974118/job/136495481572"
+      },
+      {
+        "name": "Module / ci",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795974147/job/136495608922"
+      },
+      {
+        "name": "Module / gonggong",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795974147/job/136495609086"
+      },
+      {
+        "name": "🏁 Windows / Editor (target=editor)",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795974118/job/136495793895"
+      },
+      {
+        "name": "tianxuan-tests / Module and web tests",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795974147/job/136495609200"
+      },
+      {
+        "name": "tianxuan-deploy / Docker images",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795974147/job/136495609152"
+      },
+      {
+        "name": "CI / Modular tests",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795974147/job/136501827094"
+      },
+      {
+        "name": "CI / Modular tests",
+        "result": "SUCCESS",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44795957047/job/136498352784"
+      }
+    ],
+    "pr": 1702,
+    "tree": "35abecb3aafa9d606148398654fe7d28bd706635",
+    "linux_tests": {
+      "passed": 1345,
+      "subtests_passed": 249,
+      "skipped": 10,
+      "deselected": 2,
+      "pytest_selector": "not test_250_local_tool_burst",
+      "seconds": 653.43,
+      "web_typecheck_and_build": "passed"
+    },
+    "merge": "9871aacbd1ada4f5650f8b2898188c00d2780a0c",
+    "deployed": false
+  },
+  "browser": {
+    "source_files": [
+      {
+        "path": "apps/tianxuan/components/WorkspaceExecution.tsx",
+        "worktree_sha256": "28e3991da55594b549efc97f6d9d688e54a1b5059a29812ca2b8c380766e124c",
+        "git_blob": "e1829eb7dbe834a74df26af8f0dab6875b63ca0c"
+      },
+      {
+        "path": "apps/tianxuan/components/WorkspaceReleases.tsx",
+        "worktree_sha256": "9314b540237c3ccab480d22feef7ec30dd41d12b95f8997012444a723e3a990c",
+        "git_blob": "2df1826a339813d01907036517ce427c4444a53a"
+      },
+      {
+        "path": "customizations/components/tianxuan/server/native_entry_factory.py",
+        "worktree_sha256": "e12129b07041ef7467c927c005f2f536e84cd959d5921c6811315ed7b014b8f2",
+        "git_blob": "b7aedbfc9b35c3716cff22e185704467a87931b5"
+      },
+      {
+        "path": "customizations/components/tianxuan/duobao/native_release.py",
+        "worktree_sha256": "e30ed5be92f9dad8e32d505ca1a1c417d71949ab1a9b94c308d22fbef995ba3c",
+        "git_blob": "10a99e6bdcf2a312a757e68a98d890514d452f4e"
+      },
+      {
+        "path": "customizations/components/tianxuan/server/test_native_entry_normal.py",
+        "worktree_sha256": "a26216a314b5b45dbe94facd450bc3c098f6733876d7c5696996e17b9a0e06c2",
+        "git_blob": "26317edfa7a501ad0c0aa5dd37006bd2500923c8"
+      }
+    ],
+    "selections": {
+      "first": "1cf22bd5dcf497d2a508d606c5b0c2395bb212a6cd810bbb0b717a903acee883",
+      "second": "3bf80f8b9e8f53f852d36e732555da36b9100edbf93b0334a2eac2e72c18b474",
+      "rollback": "bdff69fbae47710de9105ed4010d114609b8af2671164dbbc25cc554638b0d0a",
+      "initial_and_restored_candidate": "d91c3732c0d2b417805a982657d6f71cc9dcaef14284dd8bc3e1e0f85d01aaa0",
+      "history_count": 3,
+      "browser_post_status": 200
+    },
+    "timestamp": "2026-11-21T03:35:30.9543391+08:00",
+    "browser": "Chrome 157.0.8103.79",
+    "pr": 1699,
+    "production": false,
+    "pending_visual_changes": [
+      "Compact release IDs",
+      "Use existing styled release controls"
+    ],
+    "scope": "普通中文工作区的A5和A7组合，以及真实API中的新回退回执",
+    "unscrolled_header_visibility": "verified visible; earlier full-page screenshot was not a confirmed layout defect",
+    "no_external_model_usage_in_fixture": true,
+    "exit": 0,
+    "tree": "16c3ea92886dc07451df7fed50822e3e2d27cca1"
+  },
+  "windows": {
+    "exit_code": 0,
+    "dock_ok": true,
+    "archive_sha256": "a39d91c076bedca7b97ed28df011c53ff4256bdc528db19d3cb542f3d6b621b7",
+    "scope": "Independent installation and headless native dock only; user primary workspace unchanged",
+    "source": "9871aacbd1ada4f5650f8b2898188c00d2780a0c",
+    "files": [
+      {
+        "matches": true,
+        "path": "bin/D3D12Core.dll"
+      },
+      {
+        "matches": true,
+        "path": "bin/d3d12SDKLayers.dll"
+      },
+      {
+        "matches": true,
+        "path": "bin/godot.windows.editor.x86_64.exe"
+      },
+      {
+        "matches": true,
+        "path": "bin/tianshu-board.json"
+      },
+      {
+        "matches": true,
+        "path": "bin/tianshu-ui.json"
+      },
+      {
+        "matches": true,
+        "path": "bin/WebView2-LICENSE.txt"
+      },
+      {
+        "matches": true,
+        "path": "bin/WebView2-NOTICE.txt"
+      },
+      {
+        "matches": true,
+        "path": "bin/WebView2Loader.dll"
+      }
+    ],
+    "artifact": 14660946092,
+    "run": 44798052534
+  },
+  "storage": {
+    "ingress": {
+      "/api/v1/health": "200",
+      "/": "302"
+    },
+    "roots": {
+      "/mnt/data": "/dev/sda /mnt/data ext4   rw,relatime",
+      "/var/lib/containerd": "/dev/sda[/gonggong-tianxuan-1577/engine-storage-v3/containerd] /var/lib/containerd ext4   rw,relatime",
+      "/var/lib/docker": "/dev/sda[/gonggong-tianxuan-1577/engine-storage-v3/docker] /var/lib/docker ext4   rw,relatime"
+    },
+    "reboot_tested": false,
+    "data_available": 96024694784,
+    "checks": [
+      "Frozen copy checksums",
+      "Two SQLite quick_check results",
+      "Same three container identities/images/mounts and named volume",
+      "Persistent systemd mount dependencies"
+    ],
+    "time": "2026-11-21T03:33:06.797157+08:00",
+    "application_version_changed": false,
+    "events": [
+      {
+        "time": "2026-11-21T03:27:21.921015+08:00",
+        "event": "prepared",
+        "uuid": "f6ed7d9c-5c7d-480c-8e8f-df1883f30fd2",
+        "root_free": 488919040,
+        "images": [
+          "28e3bfd0fd2d598997fb4044acc3d61481b8cbefb3dfbba7536701ad9fa8e82b",
+          "d25c1a15fcc74e3d718a485f9591287ad158f4cbb7c405855adebf8f9506ecee",
+          "fed7e14be83cbd2661a75cdc5b872d936cf155d46c327084d30b8df19ae88d72"
+        ],
+        "containers": [
+          "5b89a99514c065d16551f6742b859d23e216562402093dbf5cb6d67fb170ae5d",
+          "b9caa06f67a0916c51d2ead18784d076f956433aa1b98f6154cf044ed572ad51",
+          "3703a4f68c7b22a137748f8feb608f13146f12af3dfa67d5d1efe88ca5e0fb89"
+        ]
+      },
+      {
+        "time": "2026-11-21T03:27:57.753692+08:00",
+        "event": "warm_synchronized"
+      },
+      {
+        "time": "2026-11-21T03:27:59.191463+08:00",
+        "event": "ingress_frozen"
+      },
+      {
+        "time": "2026-11-21T03:28:00.615602+08:00",
+        "event": "engines_stopped"
+      },
+      {
+        "time": "2026-11-21T03:30:28.30303+08:00",
+        "event": "cold_copies_verified",
+        "database_hashes": {
+          "tianxuan.db": "137a9a77034ecc061dcf912e7abaa9f0741be1c744cfa4ecde542982f711817e",
+          "tianxuan_gateway.db": "7c9c85dd08ec4e5188f666c3d576c155fab69edbd6f0c33173619c6266388f17"
+        },
+        "schema_objects": {
+          "tianxuan.db": 66,
+          "tianxuan_gateway.db": 5
+        }
+      },
+      {
+        "time": "2026-11-21T03:31:00.816472+08:00",
+        "event": "internal_health_verified"
+      },
+      {
+        "time": "2026-11-21T03:31:04.20919+08:00",
+        "event": "ingress_restored",
+        "elapsed_seconds": 186.277,
+        "root_free": 488853504,
+        "expanded_free": 96024694784,
+        "identity_matches": true
+      }
+    ]
+  },
+  "public_entry": {
+    "checked_at": "2026-11-20T19:44:27.614Z",
+    "document_status": 200,
+    "browser": "157.0.8103.79",
+    "health_status": 200,
+    "transport": "Existing operator system proxy",
+    "password_entry_visible": true,
+    "tls_errors_ignored": false,
+    "business_writes": false
+  },
+  "remaining": {
+    "M1": "Final UI, API/Web deployment and real server role chain",
+    "M5": "Full original A1-A10 review",
+    "M3": "Production migration",
+    "M4": "Windows background roles, all available CLI/external agents and actual art approvals",
+    "M2": "Collaboration/workflows/resolver/content rollback combination"
+  },
+  "resource_state": {
+    "old_production_data_and_images": "Retained as rollback",
+    "unverified_resolver_draft": "Retained outside this candidate; seven staged and two unstaged files",
+    "effective_windows_install_and_previous_version": "Retained",
+    "workers": "All stage handoffs returned; no active deployment operation or resolver test VM",
+    "prior_rejected_cleanup": "Retained; no bypass attempted"
+  },
+  "original_receipts": [
+    {
+      "path": "runtime-resume-1581-delivery.json",
+      "sha256": "aa25d7ce05c908192963705a48b1185895149e589933ea59a38bb5af3815e6e2",
+      "storage": "Original private coordinator receipt root, retained locally"
+    },
+    {
+      "path": "rollback-resume-1642/browser-combined/verification.json",
+      "sha256": "9ee90d3b12a205cb1ca3bc6c41ed6649771cc9904086eb1406226adbe7ee0838",
+      "storage": "Original private coordinator receipt root, retained locally"
+    },
+    {
+      "path": "windows-main-9871/acceptance.json",
+      "sha256": "7fbcb3aab7676ae007a11530e2b088783fc62a0f2d63dfac4b5c9423a35de5ca",
+      "storage": "Original private coordinator receipt root, retained locally"
+    },
+    {
+      "path": "capacity-1577-expanded-storage-acceptance.json",
+      "sha256": "22320fa8ec5f9fd75bc61a3135ac9cadae6d544b3bc7446fa80f8dd7cd6130d4",
+      "storage": "Original private coordinator receipt root, retained locally"
+    },
+    {
+      "path": "production-public-browser-20261121.json",
+      "sha256": "9c07439c90f3422022518f6f4226e9e94c5cda725eb4a61bb4bf0e453bf628c9",
+      "storage": "Original private coordinator receipt root, retained locally"
+    },
+    {
+      "path": "deployment-1577-stage-handoff.json",
+      "sha256": "f873a60dd888fb3d2971880bbdd142e6d169e8aa8e45286ab7a6914b5e7c42bf",
+      "storage": "Original private coordinator receipt root, retained locally"
+    },
+    {
+      "path": "execution-efficiency-audit-20261121.json",
+      "sha256": "224cd73daeca280b9b134d3024088a84194f12f11812cc597ed1e7c68c1397d7",
+      "storage": "Original private coordinator receipt root, retained locally"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6f0b7ed14390650ae18303f7532001c313a44605",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-unified-platform-20261119",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "665e5cc11e57753d5998d1d67492ad522f1fb871bb11e685f206846e423d67a6",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1697",
+    "action": "user-report",
+    "detection_head": "2adbc62349e66d85734bd0dc62fb164a9e67cbd1",
+    "context_sha256": "e8bdab192284f5657fdd3d2493f8c4f277cb2679f486bc2e8d81ab76a59a127a",
+    "operator": "Sail-Li",
+    "worker": "codex-root-tianxuan-unified",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+    "evidence": "D:/GongGong-work/tianxuan-unified-20261119/data-collection/receipts/tianxuan-unified/execution-efficiency-audit-20261121.json",
+    "diagnosis": "Confirmed coordinator resume omission: all three workers interrupted while ordinary send_message does not start a turn. Also confirmed late cheap-check failures, reconstruction of disposable browser fixture, unnecessary metadata review and serial assignment; elapsed intervals include pause and are not pure idle time.",
+    "next_action": "Resume interrupted workers through followup_task after external-operation readback; keep separate resolver, UI and deployment owners; reuse unchanged evidence and batch cheap preflight before signing. Await actual timeline results; do not claim measured speedup yet.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T19:49:53.581560+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T19:54:07.539930+00:00",
+  "sha256": "86f84c56c5d9c3dd93a4baf07c6ec5c0351a846b1079e62c6bcd5b9062ed8659"
+}
