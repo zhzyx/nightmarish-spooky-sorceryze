@@ -322,6 +322,9 @@ async function contextSession(packet, start = transport.start) {
             await check();
             const tmp = path.join(root, `${count + 1}.output.tmp`);
             await fs.writeFile(tmp, output, {flag: 'wx'});
+            // Order the mailbox publication after writes already queued on both pipes.
+            await Promise.all([process.stdout, process.stderr].map(stream =>
+                new Promise((resolve, reject) => stream.write('', error => error ? reject(error) : resolve()))));
             await fs.rename(tmp, path.join(root, `${count + 1}.output.json`));
             count++;
             if (receipt.status !== 'tool_requested') return;

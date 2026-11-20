@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "issue": 1550,
+  "bug": 1697,
+  "base": "e9cac10ff0ac29fb04840760ced06a7e1eb729f8",
+  "source_failure": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44585772828/job/135778159414",
+  "files_sha256": {
+    "customizations/components/tianxuan/sinan-workorders/native_model_host.py": "5864b6a2c5fc18c0c9c38e8a2d06e1cd0249afec571e96bc56bf02160f953552",
+    "customizations/components/tianxuan/sinan-workorders/native_model_proposal.cjs": "87fc9904ad89e2feacfbd5177e3af341c605c0f0cac2e6b7649346e5acb1b9f6",
+    "customizations/components/tianxuan/sinan-workorders/test_native_context.py": "07bdb9db7a6e6af0983f5b846862fece8a9ee9df56d247dd4350bb01ad7528f5",
+    "gonggong-diting-data/events/gonggong-workspace/tianxuan-unified-platform-20261119/kuafu-861bb2bad6c4756f9cfcf72ba32ba589fa4b79c9.json": "3cdc06f60b6c79047f027cd07594dffe4242e5a1e530d8517d148fcc32ccc0ae"
+  },
+  "problem": "Intermediate model receipt could be accepted before queued stdout/stderr overflow was observed. A separate last-publication/exit window could incorrectly discard a valid final response.",
+  "change": "Flush both Node output queues before atomic mailbox publication; synchronously account available pipe output and revalidate before durable model_receipt; reobserve the same mailbox on confirmed child exit. Keep cumulative deadlines and no-replay behavior.",
+  "author_validation": [
+    "Original 600000-byte flood and crash tests, and deterministic stdout/stderr delayed observer tests kept same failure/no-replay requirements plus durable model_receipt sequence [1].",
+    "Both deterministic new cases fail DID NOT RAISE when original main Python turn method is loaded in memory; candidate passes both.",
+    "Writer-specific independent scheduling probe in real Node: two controlled Writable streams hold second-turn callbacks until an immediate scheduled after 2.output.tmp completion. Instrumented rename records pending count. Original main CJS publishes with two writes pending and the existing success test fails. Exact repaired wrapper passes the success test with zero premature publications. Temporary work removed.",
+    "Windows full context and model-host files: 43 tests plus 15 subtests passed. No production or model calls.",
+    "Ruff 0.17.1 check and format --check, mypy 2.4.0 on both modified Python files: passed. Node --check and git diff --check: passed."
+  ],
+  "followup_validation": {
+    "regression": "Test defers the final input rename just until first negative output.exists observation. Before returning that captured False, lets the real Node process publish its bound final receipt and cleanly exit. Original code raised Session exited without response. Corrected code checks the actual final packet and returns closed with exit code 0.",
+    "tests": "6 passed: normal closure, deterministic exit-between-checks final delivery, crash without output, flood, late stdout, late stderr. 21 unrelated cases deselected.",
+    "static": "Ruff check, Ruff format --check, mypy and git diff --check passed."
+  },
+  "independent_review": {
+    "worker": "/root/reviewer_definition_audit",
+    "report_sha256": "d5a39d7184a0d3ee6713373c4cd7a0f0f2b96fa7faa50be3f82cd81f5f7e982c",
+    "status": "PASS for #1697 source repair and adjacent clean-final mailbox race, limited to the listed candidate bytes and local targeted tests. No independent authorization of publication, PR integration, production operation or other repair ownership.",
+    "previous_candidate_checks": "8 selected tests passed (11 unrelated helper tests deselected). Real Node fixture with synthetic local RPC: crash, 600000B flood, late stdout/stderr, clean final with physical close, revocation before next turn, retained-child observer with slow reader, Windows nonblocking availability/EOF. Ran with disabled pytest plugins/cache and Python bytecode; bounded scratch under ignored parent receipts automatically removed.",
+    "final_candidate_checks": "Two targeted Windows cases on final exact bytes passed in 1.25 seconds: exit-between-checks (five turns, valid final, physical closure and one thread) and crash (missing response, durable receipts [1], incomplete, restart refused). Exact four candidate SHA256 matched before and after this run. Other evidence in stage_one relates to the previous candidate and transfers only to unaffected code."
+  },
+  "delivery_scope": "Source repair only. PR1661 integration, remote CI and production acceptance are separate; parent1550 and shared bug1697 remain open.",
+  "cleanup": "Isolated candidate retained for delivery. Some task-owned pytest and bytecode scratch was retained after automatic cleanup rejection; no original publisher resources were removed.",
+  "request_id": "tianxuan-unified-platform-20261119",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550"
+}
