@@ -54,6 +54,8 @@
 
 ### B04
 
+[Git 与多宝历史标识对照](gonggong-ai-workbench-b04.md)
+
 **核对多宝历史承载能力** · [B04 #1853](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1853)
 
 比对原仓库历史、分支、标签语义与多宝现有导入、合入接口。

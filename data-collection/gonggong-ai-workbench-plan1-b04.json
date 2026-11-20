@@ -1,0 +1,42 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-b04",
+  "issue_number": 1853,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1853",
+  "observed_at": "2026-11-20T23:30:47.296164+00:00",
+  "source_baseline": "b60ae96914cd25b0856f4be09b6b0b6a710cc717",
+  "scope": "Read-only GitHub and #1553 isolated rehearsal, with local disposable compatibility tests.",
+  "readback": {
+    "tag": "gonggong-windows-x64-20261104-r2",
+    "source": {
+      "sha": "21780aea530778c2a2a636fbad5a1c3198c29601",
+      "type": "commit",
+      "url": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/git/commits/21780aea530778c2a2a636fbad5a1c3198c29601"
+    },
+    "mirror": "GongGong.git",
+    "commit": "21780aea530778c2a2a636fbad5a1c3198c29601",
+    "tree": "3a317a7ffb809b733f47223e5105df8dcec47b05",
+    "parents": [
+      "e6b9f5c8dad827af52a346f4b0342f30d2e2312f"
+    ],
+    "tag_api": {
+      "name": "gonggong-windows-x64-20261104-r2",
+      "sha": "21780aea530778c2a2a636fbad5a1c3198c29601"
+    },
+    "source_id": "github:zhzyx/nightmarish-spooky-sorceryze/commit/21780aea530778c2a2a636fbad5a1c3198c29601",
+    "module": "migration-889f65f7000e7e49471aa499be49dac84eb78ddf75c18ad7dcfccaa0056b4593",
+    "revision": "fb4f0172d86579b7f4c01f114bbe4fbf692b62a19b59f9e01133cbd529525e2e",
+    "record_module": "migration-5c14d015a2dbb408817d5ebf9ca3876b870bf21f66ce9a26e7359ec43d408ec3",
+    "record_revision": "6026296d407c26acaf0baa5b20d83b282ca9d9a1e583e611e3758270e5680878",
+    "record_key": "5cc1d0e32f4dfe168b2cb6d7668a4f82ddc1cba5f76733f5a72712cda679afc3",
+    "bundle_sha256": "5cf19a300d89eb2adf2c0d33eeae2153dfee1ee5816c9bcd42fa1e29d2788b44",
+    "mirror_main_at_readback": "5f704a260f10edda3f31fdd9a040cbbbcb57abe5",
+    "archive_source_revision": "a5137d854d687c4e9c8fa3d7148cb55198163818"
+  },
+  "tests": [
+    "GitServiceTests.test_import_mirror_preserves_branches_tags_and_head",
+    "GitServiceTests.test_fast_forward_merge",
+    "GitServiceTests.test_conflicting_merge_raises_and_leaves_clean_state",
+    "GitServiceTests.test_create_and_delete_tag"
+  ],
+  "passed": 4
+}

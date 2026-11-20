@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-b04",
+  "event_id": "plan1-intake-1853",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1853",
+  "occurred_at": "2026-11-20T23:30:46.125382+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "issue_number": 1853,
+    "title": "[方案一 B04] 核对多宝历史承载能力",
+    "operator": "Sail-Li",
+    "updated_at": "2026-11-20T23:24:39Z",
+    "action": "Proceed with this explicitly requested baseline work order and verify its own acceptance criteria."
+  },
+  "sha256": "9a689b1b818cc267bc87f2d32d3f870548f33bde260ef69acc950a584c15a9f9"
+}
