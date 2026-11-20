@@ -1,0 +1,18 @@
+{
+  "issue_number": 1873,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1873",
+  "request_id": "gonggong-ai-workbench-plan1-b01",
+  "observed_at": "2026-11-20T23:33:25.778515+00:00",
+  "source_baseline": "b60ae96914cd25b0856f4be09b6b0b6a710cc717",
+  "document": "design-docs/gonggong-ai-workbench-b01.md",
+  "document_git_blob": "a3265af2edb2e971f4a963b097857494e6b2a3e4",
+  "relative_destinations_checked": 44,
+  "verification": "Source registration and existing version-bound receipts",
+  "checks": [
+    "Ten main screen tabs and six saved-layout phases in #1598",
+    "Three native dock constructors and two plugin registrations",
+    "Two spatial containers, detach and chat mount in spatial_workbench.gd",
+    "History #819 independently records native/restart/chat mount; no external model request"
+  ],
+  "limits": "Native window interactions on a new binary belong to Q01/Q10/Q11."
+}
