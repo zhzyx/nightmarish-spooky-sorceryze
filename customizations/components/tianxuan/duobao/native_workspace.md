@@ -48,3 +48,13 @@ python -X utf8 -m unittest discover -s customizations/components/tianxuan/duobao
 真实临时文件系统、空 PATH 子进程 CLI、普通 Python 修改、重启幂等回读、跨模块原子接收/拒绝、来源篡改、路径/资源拒绝、写失败清理与增量二进制分页测试见该文件。大文本场景保留 100,000 字节未变对象，比较实际增量 JSON 传输字节；不估算 token。Windows junction 与 Linux symlink/FIFO 按平台真实能力留证，不能将跳过解释成通过。记录在仓库相对 `data-collection/duobao-native-workspace-1414.json`，独立审查与 Linux 由父工单收尾。
 
 宿主契约为 NativeStore 的 revision/read/submit 与同库只读长度预检；无需重新编译引擎。回退停止调用这两个新入口，保留权威数据库、有效工作副本和必要来源证据。测试临时数据库与快照由 TemporaryDirectory 清理；没有生产安装、配置或服务改动。
+
+## 工单批准资产的 Godot 导入
+
+使用 `native_workspace_cli.py godot-import` 可从当前工单的批准输入生成可打开的独立 Godot 项目。可信本机宿主设置 `TIANXUAN_PUBLIC_ORIGIN` 指向部署的 HTTPS 服务、`TIANXUAN_TOKEN` 为当前用户身份、`TIANXUAN_GODOT_EXECUTABLE` 指向已安装的编辑器。标准输入仅含工单 ID 和新的绝对目标目录，例如：
+
+```json
+{"issue_id":"issue-example","destination":"D:/A8Checks/review-01"}
+```
+
+命令从认证服务读取该工单已提交的全部概念图/模型，服务逐一检查当前批准绑定。命令在临时目录以 headless 编辑器导入并检查导入产物，发布新目录前再次读取当前批准集合。待审、退回、撤权、摘要变化、导入失败或目标已存在时拒绝发布。成功的项目是该次消费时的快照；后续受保护的消费要重新执行命令。原有 materialize/collect 等普通快照操作继续沿用各自契约。生产切换由部署责任者安排。
