@@ -112,7 +112,8 @@ var node_picker: ConfirmationDialog
 var node_picker_search: LineEdit
 var node_picker_list: ItemList
 var workflow_menu: MenuButton
-var workflow_dialog: ConfirmationDialog
+var workflow_dialog: FileDialog
+var workflow_path_display: LineEdit
 var workflow_mode = ""
 var inspector_fields: VBoxContainer
 var node_model_label: Label
@@ -409,16 +410,29 @@ func _ready():
 	context_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	context_hint.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bar.add_child(context_hint)
-	workflow_dialog = ConfirmationDialog.new()
+	workflow_dialog = FileDialog.new()
 	workflow_dialog.title = "工作流文件"
-	workflow_dialog.ok_button_text = "确定"
 	workflow_dialog.cancel_button_text = "取消"
-	var workflow_fields = VBoxContainer.new()
-	workflow_dialog.add_child(workflow_fields)
-	path_edit = line(workflow_fields, "工作流 JSON 绝对路径", ProjectSettings.globalize_path("user://workflow.json"))
-	path_edit.custom_minimum_size.x = 420
-	workflow_dialog.confirmed.connect(_workflow_confirmed)
+	workflow_dialog.access = FileDialog.ACCESS_FILESYSTEM
+	workflow_dialog.use_native_dialog = true
+	workflow_dialog.filters = PackedStringArray(["*.json ; 马良工作流"])
+	workflow_dialog.file_selected.connect(_workflow_confirmed)
 	add_child(workflow_dialog)
+	# Keep the scripted path API, while the visible UI uses a real file picker.
+	path_edit = LineEdit.new()
+	path_edit.name = "WorkflowPathState"
+	path_edit.text = str(settings.get_value("workflow", "last_path", ProjectSettings.globalize_path("user://workflow.json")))
+	path_edit.hide()
+	add_child(path_edit)
+	workflow_path_display = LineEdit.new()
+	workflow_path_display.name = "CurrentWorkflowPath"
+	workflow_path_display.placeholder_text = "当前工作流路径；粘贴后按回车打开"
+	workflow_path_display.custom_minimum_size.x = 320
+	workflow_path_display.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	workflow_path_display.text_submitted.connect(_open_workflow_path)
+	bar.add_child(workflow_path_display)
+	bar.move_child(workflow_path_display, 1)
+	_update_workflow_path_display()
 	# Retained for saved automation and callers; node creation is now in the canvas menu.
 	generator_choice = OptionButton.new()
 	for kind in CREATION_NODE_KINDS:
@@ -666,10 +680,13 @@ func _ready():
 		status.reparent(self)
 		status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		show_native_section('mesh')
-	if FileAccess.file_exists(state_dir.path_join("last_run.txt")):
+	var reopen_previous = settings.has_section_key("workflow", "last_path") and FileAccess.file_exists(path_edit.text)
+	if reopen_previous:
+		open_graph()
+	elif FileAccess.file_exists(state_dir.path_join("last_run.txt")):
 		_configure_controller()
 		controller.restore_run(FileAccess.get_file_as_string(state_dir.path_join("last_run.txt")))
-	add_node()
+	if nodes.is_empty(): add_node()
 
 func show_native_section(section: String):
 	if native_sections.is_empty(): return
@@ -1032,18 +1049,15 @@ func _snapshot_inputs(data: Dictionary, field: String) -> bool:
 	var snapshots: Array = []
 	for index in range(paths.size()):
 		var path: String = paths[index]
-		if path.is_empty():
-			var snapshot = previous[index] if index < previous.size() else data.get(field + "_snapshot", {}) if index == 0 else {}
-			if not snapshot is Dictionary or snapshot.is_empty(): return false
-			snapshots.append(snapshot)
-			continue
-		var snapshot = _snapshot_file(path)
-		if snapshot.is_empty(): return false
+		var snapshot = previous[index] if index < previous.size() else data.get(field + "_snapshot", {}) if index == 0 else {}
+		if not path.is_empty():
+			var disk_snapshot = _snapshot_file(path)
+			if not disk_snapshot.is_empty(): snapshot = disk_snapshot
+		if not snapshot is Dictionary or snapshot.is_empty(): return false
 		snapshots.append(snapshot)
-		paths[index] = ""
 	data[field + "_paths"] = paths
 	data[field + "_snapshots"] = snapshots
-	data[field] = ""
+	data[field] = str(paths[0]) if not paths.is_empty() else ""
 	data.erase(field + "_snapshot")
 	return true
 
@@ -1094,6 +1108,7 @@ func _snapshot_result_artifact(result_run: String, node_id: String, reference: D
 		"preview_token": hash_context.finish().hex_encode(),
 		"run": result_run,
 		"node": node_id,
+		"description": "",
 		"artifact": {"id": str(reference.get("id", "")), "revision": str(reference.get("revision", ""))},
 		"snapshot": snapshot
 	}
@@ -1161,6 +1176,19 @@ func _output_version_count(history: Dictionary) -> int:
 	for versions in history.values(): count += versions.size()
 	return count
 
+func _update_workflow_path_display():
+	if workflow_path_display == null or path_edit == null: return
+	workflow_path_display.text = path_edit.text
+	workflow_path_display.tooltip_text = "当前工作流：" + path_edit.text
+	workflow_path_display.caret_column = path_edit.text.length()
+
+func _remember_workflow_path() -> bool:
+	_update_workflow_path_display()
+	var local = ConfigFile.new()
+	local.load(state_dir.path_join("local.cfg"))
+	local.set_value("workflow", "last_path", path_edit.text)
+	return local.save(state_dir.path_join("local.cfg")) == OK
+
 func save_graph():
 	if not apply_fields(): return
 	if path_edit.text.get_extension().to_lower() != "json":
@@ -1196,8 +1224,11 @@ func save_graph():
 		DirAccess.remove_absolute(temporary)
 		status.text = "无法替换工作流，已保留原工作流"
 		return
+	var remembered = _remember_workflow_path()
 	status.text = "已保存工作流及全部有序输入快照"
 	if not output_history.is_empty(): status.text += "，已内嵌 " + str(_output_version_count(output_history)) + " 个生成结果版本"
+	status.text += "；文件：" + path_edit.text
+	if not remembered: status.text += "（未能记录最近路径）"
 
 func clear_embedded():
 	for data in nodes:
@@ -1225,9 +1256,10 @@ func _valid_artifact_reference(value) -> bool:
 	return value is Dictionary and value.get("id") is String and value.get("revision") is String and not value.id.is_empty() and not value.revision.is_empty()
 
 func _valid_output_entry(entry, node_id: String) -> bool:
-	if not entry is Dictionary or not entry.has_all(["type", "preview_token", "run", "node", "description", "artifact", "snapshot"]): return false
-	for key in ["type", "preview_token", "run", "node", "description"]:
+	if not entry is Dictionary or not entry.has_all(["type", "preview_token", "run", "node", "artifact", "snapshot"]): return false
+	for key in ["type", "preview_token", "run", "node"]:
 		if not entry.get(key) is String: return false
+	if entry.has("description") and not entry.description is String: return false
 	if entry.node != node_id or entry.preview_token.is_empty() or not _valid_artifact_reference(entry.artifact): return false
 	if not _valid_input_snapshots([entry.snapshot]): return false
 	var image = entry.type == "image" and entry.snapshot.extension.to_lower() in [".png", ".jpg", ".jpeg"]
@@ -1262,6 +1294,24 @@ func _materialize_output_snapshot(snapshot: Dictionary, directory: String) -> St
 	DirAccess.remove_absolute(temporary)
 	return path if FileAccess.file_exists(path) and FileAccess.get_sha256(path) == snapshot.content_sha256 else ""
 
+func _restore_missing_input_paths(node_list: Array, workflow_path: String) -> int:
+	var restored = 0
+	var directory = workflow_path + ".assets/inputs"
+	for data in node_list:
+		for field in ["source", "image_context"]:
+			var paths = _node_paths(data, field)
+			var snapshots: Array = data.get(field + "_snapshots", [])
+			for index in range(mini(paths.size(), snapshots.size())):
+				if not str(paths[index]).is_empty(): continue
+				if DirAccess.make_dir_recursive_absolute(directory) != OK: return -1
+				var path = _materialize_output_snapshot(snapshots[index], directory)
+				if path.is_empty(): return -1
+				paths[index] = path
+				restored += 1
+			data[field + "_paths"] = paths
+			data[field] = str(paths[0]) if not paths.is_empty() else ""
+	return restored
+
 func _restore_output_entry(saved: Dictionary, directory: String):
 	var path = _materialize_output_snapshot(saved.snapshot, directory)
 	if path.is_empty(): return null
@@ -1270,7 +1320,7 @@ func _restore_output_entry(saved: Dictionary, directory: String):
 		"token": saved.preview_token,
 		"run": saved.run,
 		"node": saved.node,
-		"description": saved.description,
+		"description": saved.get("description", ""),
 		"artifact": saved.artifact.duplicate(true),
 		"path": path
 	}
@@ -1368,6 +1418,10 @@ func open_graph():
 	if not _valid_output_history(saved_outputs, by_id):
 		status.text = "生成物快照无效"
 		return
+	var recovered_inputs = _restore_missing_input_paths(value.nodes, path_edit.text)
+	if recovered_inputs < 0:
+		status.text = "无法从快照恢复输入文件，已保留当前工作流"
+		return
 	var restored_history = _restore_output_history(saved_outputs, path_edit.text)
 	if restored_history == null:
 		status.text = "无法恢复生成物，已保留当前工作流"
@@ -1382,9 +1436,50 @@ func open_graph():
 	selected_id = ""
 	rebuild()
 	if not nodes.is_empty(): select_node(nodes[0].id)
+	var remembered = _remember_workflow_path()
 	status.text = RETIRED_GPT_MESH_NOTICE if nodes.any(_retired_mesh_node) else "已重新打开工作流"
 	if not saved_outputs.is_empty() and not nodes.any(_retired_mesh_node):
 		status.text += "，已恢复 " + str(_output_version_count(saved_outputs)) + " 个生成结果版本，无需重新运行"
+	elif not nodes.any(_retired_mesh_node):
+		status.text += "；此文件没有内嵌生成结果，仅恢复节点和输入快照"
+	if recovered_inputs > 0: status.text += "；已从快照恢复 " + str(recovered_inputs) + " 个输入文件路径"
+	status.text += "；文件：" + path_edit.text
+	if not remembered: status.text += "（未能记录最近路径）"
+
+func _reject_missing_run_resources(target: String = "") -> bool:
+	var pending: Array = nodes.map(func(node): return str(node.id)) if target.is_empty() else [target]
+	var visited: Array = []
+	var missing: Array = []
+	while not pending.is_empty():
+		var node_id = str(pending.pop_back())
+		if node_id in visited: continue
+		visited.append(node_id)
+		for edge in edges:
+			if edge.to == node_id: pending.append(str(edge.from))
+		for data in nodes:
+			if data.id != node_id: continue
+			var changed = false
+			for field in ["source", "image_context"]:
+				var paths = _node_paths(data, field)
+				for index in paths.size():
+					var path = str(paths[index])
+					if path.is_empty() or FileAccess.file_exists(path): continue
+					missing.append("节点 " + node_id + " · " + ("源文件" if field == "source" else "参考图像") + "：\n" + path)
+					paths[index] = ""
+					changed = true
+				data[field + "_paths"] = paths
+				data[field] = str(paths[0]) if not paths.is_empty() else ""
+				if selected_id == node_id:
+					var edit = source_edit if field == "source" else context_edit
+					edit.text = " ; ".join(paths)
+					edit.tooltip_text = edit.text
+			if changed and selected_id == node_id: _sync_node_files(data)
+	if missing.is_empty(): return false
+	var message = "无法运行：以下输入路径的资源已不存在，对应路径已清空。请重新选择文件后再运行。\n\n" + "\n\n".join(missing)
+	status.text = message
+	if service_config_link != null: service_config_link.hide()
+	_show_failure_dialog(message)
+	return true
 
 func run_node_preview(id: String):
 	if is_graph_busy():
@@ -1392,6 +1487,7 @@ func run_node_preview(id: String):
 		return
 	if id.is_empty() or nodes.filter(func(n): return n.id == id).is_empty(): return
 	if not apply_fields(): return
+	if _reject_missing_run_resources(id): return
 	var blocker = node_run_blocker(id)
 	if not blocker.is_empty():
 		_show_run_problem(blocker)
@@ -1405,6 +1501,7 @@ func run_node_preview(id: String):
 
 func start_run():
 	if is_graph_busy() or not apply_fields(): return
+	if _reject_missing_run_resources(): return
 	for data in nodes:
 		var blocker = node_run_blocker(data.id)
 		if not blocker.is_empty():
@@ -1426,6 +1523,7 @@ func cancel_run():
 
 func retry_node():
 	if is_graph_busy(): return
+	if not selected_id.is_empty() and _reject_missing_run_resources(selected_id): return
 	if nodes.any(func(node): return node.id == selected_id and _retired_mesh_node(node)):
 		status.text = RETIRED_GPT_MESH_NOTICE
 		return
@@ -2194,6 +2292,15 @@ func _graph_context_input(event: InputEvent):
 		show_context_menu(position)
 		graph.accept_event()
 
+func _open_workflow_path(selected_path: String):
+	if is_graph_busy():
+		status.text = "请等待当前运行结束或先取消，再打开工作流"
+		_update_workflow_path_display()
+		return
+	path_edit.text = selected_path.strip_edges()
+	_update_workflow_path_display()
+	open_graph()
+
 func _workflow_action(action: int):
 	if action == CONTEXT_OPEN and is_graph_busy():
 		status.text = "请等待运行结束或先取消，再打开工作流"
@@ -2201,10 +2308,15 @@ func _workflow_action(action: int):
 	workflow_mode = "save" if action == CONTEXT_SAVE else "open"
 	workflow_dialog.title = "保存工作流" if workflow_mode == "save" else "打开工作流"
 	workflow_dialog.ok_button_text = "保存" if workflow_mode == "save" else "打开"
-	workflow_dialog.popup_centered()
-	path_edit.grab_focus()
+	workflow_dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE if workflow_mode == "save" else FileDialog.FILE_MODE_OPEN_FILE
+	workflow_dialog.current_path = path_edit.text
+	workflow_dialog.popup_centered_ratio(0.75)
 
-func _workflow_confirmed():
+func _workflow_confirmed(selected_path: String = ""):
+	if not selected_path.is_empty():
+		if workflow_mode == "save" and selected_path.get_extension().is_empty(): selected_path += ".json"
+		path_edit.text = selected_path
+		_update_workflow_path_display()
 	if workflow_mode == "save": save_graph()
 	elif workflow_mode == "open": open_graph()
 

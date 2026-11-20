@@ -64,8 +64,12 @@ The CLI prints the durable run ID before polling; use `--run ID` with the same
 services. Editor local settings use this Python interpreter and factory
 `comfy_provider:factory`; start Godot from an environment with
 `AINATIVE_COMFY_CONFIG` set. Preview decodes PNG/GLB and existing review/publish
-creates new `.tres` / `.tscn` files. Graph saves embed input snapshots and omit
-endpoint, storage, factory, credentials and input filesystem paths.
+creates new `.tres` / `.tscn` files. Graph saves preserve ordered input paths and
+embed matching snapshots, so reopening displays the original paths. Legacy blank
+paths are materialized under the workflow's `assets/inputs` directory. At run time,
+a nonempty path whose resource is missing is cleared and reported in a native error
+dialog; execution never silently substitutes a snapshot for that missing path.
+Endpoint, storage, factory and credentials remain excluded.
 
 The image path uses SD-Turbo's checkpoint, text conditioning, Euler sampling at
 CFG 1, then VAE decode. A single image context becomes the img2img initial latent.

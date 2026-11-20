@@ -146,6 +146,18 @@ func run():
 	check(panel.preview_resource is ImageTexture and panel.preview_source_path == panel.preview_history.target[0].path, "saved image result previews directly after reopen")
 	panel.show_history(1)
 	check(is_instance_valid(panel.preview_scene) and panel.preview_source_path == panel.preview_history.target[1].path, "saved GLB result previews directly after reopen")
+	var automatic = load("res://addons/ainative/workbench.gd").new()
+	automatic.state_dir = panel.state_dir
+	root.add_child(automatic)
+	await process_frame
+	check(automatic.nodes.size() == panel.nodes.size() and automatic.preview_history.get("target", []).size() == 3 and automatic.run_id.is_empty(), "a new workbench instance automatically reopens the last saved workflow instead of creating an empty graph")
+	check(automatic.workflow_path_display.text == panel.path_edit.text and is_instance_valid(automatic.preview_scene), "automatic reopen shows the persisted path and restores the first node's saved preview")
+	automatic.queue_free()
+	await process_frame
+	panel.workflow_path_display.text = panel.path_edit.text
+	panel.workflow_path_display.text_submitted.emit(panel.workflow_path_display.text)
+	check(panel.nodes.size() == 4 and panel.preview_history.get("target", []).size() == 3 and panel.run_id.is_empty(), "submitting a path in the visible toolbar really replaces the current graph with the saved workflow")
+	check(is_instance_valid(panel.preview_scene) and panel.workflow_path_display.text == panel.path_edit.text, "visible-path opening restores the saved preview and keeps the displayed path synchronized")
 	# Reopening a different workflow with the same node ID must not alias old results.
 	panel.path_edit.text = panel.state_dir.path_join("replacement.json")
 	var replacement = FileAccess.open(panel.path_edit.text, FileAccess.WRITE)
@@ -175,6 +187,18 @@ func run():
 	panel.run_node_preview("upstream")
 	await wait_idle()
 	check(panel.current.get("state") == "succeeded" and panel.preview_history.get("upstream", []).size() == 1 and panel.preview_resource is ImageTexture, "correcting the Python setting allows a fresh run without stale history")
+	var missing = panel.state_dir.path_join("deleted-input.png")
+	var data = panel.nodes.filter(func(node): return node.id == "upstream")[0]
+	data.source = missing
+	data.source_paths = [missing]
+	data.source_snapshots = [panel._snapshot_file(image)]
+	panel.select_node("upstream")
+	var serial_before_missing = panel.serial
+	panel.run_node_preview("upstream")
+	check(panel.failure_dialog.visible and panel.jobs.is_empty() and panel.serial == serial_before_missing, "a missing runtime resource blocks execution and opens a native error dialog without launching a process")
+	check(data.source.is_empty() and data.source_paths == [""] and data.source_snapshots.size() == 1 and panel.source_edit.text.is_empty(), "missing runtime paths are cleared while their saved snapshots remain intact")
+	check(panel.failure_text.text.contains(missing) and panel.failure_text.text.contains("路径已清空"), "the error dialog identifies the missing resource and explains that its path was cleared")
+	panel.failure_dialog.hide()
 	await finish()
 
 func finish():

@@ -1,0 +1,48 @@
+{
+  "request_id": "maliang-stability-batch-20261120",
+  "issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1625",
+  "state": "passed",
+  "editor_sha256": "7dc3d48dd099ae7f7c34a7c16045c6cfa60ae96b99b2283b8979c1b78401fb68",
+  "bundle_version": "4212b03bcf614af24a1877940771cce789680d6d7c27245ca4481ce400e61911",
+  "checks": {
+    "editor_build": {
+      "command": "$HOME/.local/venvs/godot-build/bin/python -m SCons platform=macos target=editor arch=arm64 use_volk=yes accesskit=no -j8",
+      "state": "passed"
+    },
+    "acceptance": {
+      "command": "bin/godot.macos.editor.arm64 --headless --path samples/ainative-workbench --script res://acceptance.gd",
+      "state": "passed"
+    },
+    "multi_image": {
+      "command": "bin/godot.macos.editor.arm64 --headless --path samples/ainative-workbench --script res://multi_image_acceptance.gd",
+      "state": "passed",
+      "coverage": "original path preservation, missing-path save snapshots, legacy input materialization, optional member descriptions"
+    },
+    "node_preview": {
+      "command": "bin/godot.macos.editor.arm64 --headless --path samples/ainative-workbench --script res://node_preview_acceptance.gd",
+      "state": "passed",
+      "coverage": "recent workflow reopen, visible-path open, missing resource dialog, path clearing, snapshot preservation and unrelated branch isolation"
+    },
+    "python_multi_image_host": {
+      "command": "python3 -m unittest discover -s tools/ainative -p test_multi_image_host.py",
+      "state": "passed",
+      "tests": 2
+    },
+    "native_workbench": {
+      "command": "python3 tests/editor/run_ainative_builtin.py --godot bin/godot.macos.editor.arm64 --report runtime/validation/workflow-missing-resource-final-20261120.json",
+      "state": "passed",
+      "installed_bundle_matches_source": true
+    },
+    "real_testsave_ui": {
+      "state": "passed",
+      "workflow_sha256_before_and_after": "b87f8b038f11604b778d5e68d3a341c3c39e9cc7bc21bd4380ec8103292bf3d8",
+      "nodes": ["n99484139", "n214534199"],
+      "edges": [{"from": "n99484139", "to": "n214534199", "output": "image_set"}],
+      "output_versions": 3,
+      "legacy_input_sha256": "d0e669bb3799e4d8e854ff64a1bd73775e9406373abff111098880e160e7c365",
+      "missing_resource_native_dialog_observed": true,
+      "workflow_json_modified": false
+    }
+  },
+  "evidence_boundary": "Real editor UI operations, offline Executor fixtures and isolated native Godot acceptance were used. No remote model generation was performed during the follow-up validation."
+}
