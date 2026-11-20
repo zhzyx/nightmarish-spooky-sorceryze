@@ -22,3 +22,11 @@
 - 当前编辑器构建及隔离原生验收通过，正式门禁、精确候选 CI 和远端 main 回读完成。
 
 验证结果写入 `data-collection/maliang-stability-batch-20261120-validation.json` 与 `data-collection/generation-service-profile-persistence-20261120-validation.json`。合成夹具不构成真实模型推理证据。
+
+## 工作流持久化验收返修（2026-11-20）
+
+4. 输入路径与对应快照同时保存；旧工作流的空路径从快照恢复到 `assets/inputs/`，图像集成员缺少 `description` 的历史文件保持可读。
+5. 使用系统文件选择器和可见路径入口打开工作流，成功保存／打开后记住最近文件，重启优先恢复该文件而不是创建空图。
+6. 本次执行节点的非空输入路径资源不存在时，阻止执行、清空路径并弹窗；不相关分支不受影响，不以快照静默替代缺失路径。
+
+返修验证写入 `data-collection/maliang-stability-batch-20261120-workflow-followup-validation.json`。真实界面使用用户保存的 `TESTSAVE.json` 只读验证，文件 SHA-256 保持不变。

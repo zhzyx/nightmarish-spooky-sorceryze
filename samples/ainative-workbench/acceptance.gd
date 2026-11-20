@@ -43,7 +43,7 @@ func run():
 	panel.path_edit.text = panel.state_dir.path_join("graph.json")
 	panel.save_graph()
 	var original = FileAccess.get_file_as_string(panel.path_edit.text)
-	check(not original.contains(source) and original.contains("source_snapshot"), "portable graph embeds content without source paths")
+	check(original.contains(source) and original.contains("source_snapshot"), "portable graph preserves the source path and embeds its content snapshot")
 	panel.nodes = []; panel.edges = []
 	panel.open_graph()
 	check(JSON.parse_string(JSON.stringify(panel.model())) == JSON.parse_string(original), "save/reopen preserves nodes edges positions parameters text image context")

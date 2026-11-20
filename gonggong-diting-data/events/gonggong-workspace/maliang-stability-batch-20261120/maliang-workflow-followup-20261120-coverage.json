@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-workflow-followup-20261120-coverage",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-stability-batch-20261120",
+  "kind": "coverage",
+  "occurred_at": "2026-11-20T04:24:19Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1625",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261120",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "payload": {
+    "state": "passed",
+    "authorization_ref": "kimi-work:user:20261120:workflow-followup-submit-main",
+    "validation": "data-collection/maliang-stability-batch-20261120-workflow-followup-validation.json",
+    "editor_sha256": "7dc3d48dd099ae7f7c34a7c16045c6cfa60ae96b99b2283b8979c1b78401fb68",
+    "bundle_version": "4212b03bcf614af24a1877940771cce789680d6d7c27245ca4481ce400e61911",
+    "coverage": "Workflow input/output persistence, legacy TESTSAVE compatibility, visible path reopen, recent workflow restore and native missing-resource error dialog."
+  },
+  "evidence_refs": [],
+  "sha256": "a7e04d2115638f53224b0f1344e105a293f1403f9a1c731c3d599b966978a548"
+}
