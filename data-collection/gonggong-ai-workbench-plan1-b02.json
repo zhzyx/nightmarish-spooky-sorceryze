@@ -1,0 +1,38 @@
+{
+  "issue_number": 1870,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1870",
+  "request_id": "gonggong-ai-workbench-plan1-b02",
+  "observed_at": "2026-11-20T23:41:43.649445+00:00",
+  "source_baseline": "b60ae96914cd25b0856f4be09b6b0b6a710cc717",
+  "document": "design-docs/gonggong-ai-workbench-b02.md",
+  "document_git_blob": "3310256ce307256355fe9b1ebb599663fb7545a6",
+  "relative_destinations_checked": 57,
+  "verification": "All 39 I/D/H cards compared with the workbench design, service API, callers and tests",
+  "coverage": {
+    "issues": 19,
+    "design_and_sessions": 14,
+    "human_judgment": 6
+  },
+  "service_test_groups": [
+    {
+      "passed": 84
+    },
+    {
+      "passed": 71,
+      "deselected": 15
+    }
+  ],
+  "limits": "Isolated service cases, one TestClient deprecation warning per run. Godot native and production deployments retain their separate acceptance.",
+  "ci_repair": {
+    "issue": 1881,
+    "run": 44838389702,
+    "attempt": 1,
+    "job": 136640410278,
+    "step": 7,
+    "head": "22a6888c5dd6d13d774c6e46318dc1ab6ab2578a",
+    "diagnosis": "codespell flagged two occurrences of the Markdown link label on lines 22 and 100.",
+    "scope": "Renamed reference and its definition; all 57 relative destinations verified.",
+    "local_retest": "codespell 2.4.2 on the corrected document and evidence, exit 0.",
+    "ci_retest": "Tracked in #1881 against the replacement signed candidate."
+  }
+}

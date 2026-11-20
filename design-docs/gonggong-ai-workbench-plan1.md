@@ -36,6 +36,8 @@
 
 ### B02
 
+[天璇与偃师接口矩阵](gonggong-ai-workbench-b02.md)
+
 **核对天璇与偃师已有接口** · [B02 #1870](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1870)
 
 从服务与已有用例编制工单、文档、会话、判断能力矩阵。
