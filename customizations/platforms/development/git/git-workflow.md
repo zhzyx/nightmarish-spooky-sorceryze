@@ -1,6 +1,6 @@
 # Git 工作流接入子模块
 
-工单：[Issue #9](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9)。本模块属于 GongGong 宿主 `issue-workorders`，为后续共工/司南 GitHub 来源适配提供可核对的输入契约；它不注册 Sinan 来源，也不向共工宿主部署。
+来源：[Issue #9](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/9)。本页定义身份与并发记录契约；实际来源绑定和派发见[当前宿主入口](../../../components/issue-workorders/README.md#当前来源与执行接入9-最终对账)，不重复部署。
 
 ## 身份与并发记录
 
@@ -10,4 +10,4 @@
 
 ## 共工后续补充
 
-共工侧需在有效上游中实现 GitHub Issue 来源适配：绑定真实事件来源和认证账号，按同一稳定键去重，保存更新前后修订证据、执行账号、冲突与认定回执；将 followUps 与真实 Issue 查重关联，区分 proposed 和实际 start/ack。司南只消费其真实注册来源，元衡原账本和谛听采集协议保持各自权威。完成后按 GongGong 全量同步与精确准入流程更新 Sinan；本子模块的本地测试不能替代该步骤。
+本标题保留历史锚点。#9 时提出的接入需求已由当前宿主的 GitHub 来源与操作者入口承接；本段不是普通任务需另行升级或全量同步框架的前置条件。来源绑定、去重、修订回读、start/ack 与真实终态以本次宿主运行证据为准。未来若修改共享框架定义，另按对应精确候选治理；本地测试不替代准入或业务验收。

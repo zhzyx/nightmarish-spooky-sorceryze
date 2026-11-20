@@ -2,13 +2,15 @@
 
 从可信的 main 检出运行。Git、Node.js（22+）、Python 3.11+ 和已用本人账号登录的 GitHub CLI 需要在 PATH 中。可用 GONGGONG_GH 和 GONGGONG_PYTHON 指向已有工具。以下命令从仓库根运行，均由一次真实业务事件触发。无需打开 Codex 或 Godot、导入个人提示词或安装插件。
 
+以下核验与模型生产是按宿主选择的入口；已有 Codex 原生执行能力时沿其协议，不额外要求仓库模型 grant、API Key 或专用测试工单。
+
 ## 验证独立检出
 
-先确认其他安装的实际工作者已经终止或交接。选择已授权、进行中的专用 type:test 工单，使用真实编号和稳定需求 ID。例如在 #160 的验收期运行：
+先确认其他安装的实际工作者已经终止或交接。选择已授权、进行中的专用 type:test 工单，使用真实编号和稳定需求 ID。以下为命令形状，替换本次真实工单；#160 仅是历史验收来源：
 
 ```sh
-node customizations/components/repository-dispatch/session.mjs inspect 160 collaborator-runtime-second-host
-node customizations/components/repository-dispatch/session.mjs verify 160 collaborator-runtime-second-host
+node customizations/components/repository-dispatch/session.mjs inspect ISSUE REQUEST_ID
+node customizations/components/repository-dispatch/session.mjs verify ISSUE REQUEST_ID
 ```
 
 inspect 返回 GitHub 来源修订和依赖。verify 核实本人写权限、origin、租户、工单及框架准入，再通过司南实际启动仓库自带的 Python 核验进程。框架校验成功退出、启动回执和终态绑定一致后才释放该预留。验证不使用模型。每个来源修订最多认领一次，保留失败或未知回执，禁止通过修改标签制造重试。查看返回的 results 和 deferred；完整录入与来源回执按既有谛听门禁提交。其他协作者可以在自己的独立检出运行，记录本人、来源修订、实际终态与 PR 回读。不要复制个人配置、旧认领或登录资料。
