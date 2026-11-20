@@ -18,7 +18,7 @@ from native_integration import NativeIntegration
 from native_release import NativeRelease
 from native_requirement_plan import RequirementPlanner
 from native_store import NativeStoreError, _digest, _json
-from native_worker import NativeWorker
+from native_worker import OBSERVATION_PROTOCOL, NativeWorker
 from native_workflow import NativeWorkflow
 from tianxuan_core import NotFound, PermissionDenied
 
@@ -78,6 +78,7 @@ class OrdinaryEntry:
         require(self.root.is_absolute(), "Absolute installation state root required")
         self.root.mkdir(parents=True, exist_ok=True)
         self.ledger = EntryLedger(domain)
+        self.install_role_observations()
         with self.ledger.transaction() as db:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS native_entry_catalogs (product TEXT PRIMARY KEY, origin TEXT NOT NULL)"
@@ -95,12 +96,14 @@ class OrdinaryEntry:
         self.active_drivers = set()
         self.driver_closures = {}
         spec = self.installation.spec
-        self.consumer.recover_unknown = spec.get("mode") == "production"
+        if spec.get("mode") == "deterministic-test":
+            require(os.environ.get("TIANXUAN_REQUIRE_KEYS") != "1", "Test programs cannot serve key-mode production")
+        self.consumer.recover_unknown = spec.get("mode") in {"production", "local-signed-validation"}
         require(
-            spec["version"] == 2 and spec["mode"] in {"production", "deterministic-test"},
+            spec["version"] == 2 and spec["mode"] in {"production", "deterministic-test", "local-signed-validation"},
             "Explicit production or deterministic-test installation required",
         )
-        if spec["mode"] == "production":
+        if spec["mode"] in {"production", "local-signed-validation"}:
             self.validate_production(spec)
         self.principals = spec["principals"]
         self.principals = {**self.principals, "integrator": spec["principals"]["producer"] + "-integration"}
@@ -134,6 +137,8 @@ class OrdinaryEntry:
                 return super().run(task, execution, Cancel())
 
         producer = {**spec["commands"]["producer"], "timeout": 600, "log_bytes": 900000}
+        if spec["mode"] in {"production", "local-signed-validation"}:
+            producer["observation_protocol"] = OBSERVATION_PROTOCOL
         worker = Worker(
             native,
             self.root / "workers",
@@ -225,7 +230,7 @@ class OrdinaryEntry:
             lambda *_: bool(installation.verify()),
         )
         release = NativeRelease(cache, self.release_authority, lambda db, t, c: {self.principals["producer"]})
-        review = IndependentReview(domain, native, installation, self.authorize)
+        review = IndependentReview(domain, native, installation, self.authorize, self.observe_role_calls)
         self.workflow = NativeWorkflow(
             domain,
             worker,
@@ -251,7 +256,9 @@ class OrdinaryEntry:
         self.planner = RequirementPlanner(
             domain,
             self.ledger,
-            InstalledPlannerRuntime(installation, lambda request: self.entry_authority(request["entry"])),
+            InstalledPlannerRuntime(
+                installation, lambda request: self.entry_authority(request["entry"]), observe=self.observe_role_calls
+            ),
             spec["scopes"],
             spec["complexity"],
             self.requirement_authority,
@@ -267,6 +274,13 @@ class OrdinaryEntry:
             "Production execution requires strict administrator key and tenant admission",
         )
 
+        local_validation = spec.get("mode") == "local-signed-validation"
+        if local_validation:
+            require(
+                os.environ.get("TIANXUAN_LOCAL_VALIDATION_ROOT") == str(self.root)
+                and os.environ.get("TIANXUAN_PUBLIC_ORIGIN") in {"https://localhost", "https://testserver"},
+                "Local signed validation requires an explicitly bound isolated root and loopback origin",
+            )
         templates = {}
         sources = Path(__file__).resolve().parent.parent / "sinan-workorders"
         component = sources.parent
@@ -281,18 +295,78 @@ class OrdinaryEntry:
             all(str(path) in spec["files"] for path in required),
             "Production installation must pin all native executable source inputs",
         )
+        endpoints = {}
         for role in ("planner", "producer", "reviewer"):
             argv = spec["commands"][role]["argv"]
             script = str(sources / ("native_entry_producer.py" if role == "producer" else "native_entry_runtime.py"))
-            require(script in argv, "Production must use admitted existing runtime broker")
+            service = str(sources / "native_role_service.py")
             require("--config" in argv and "--sha256" in argv, "Pinned broker configuration required")
-            config, template = load_config(argv[argv.index("--config") + 1], argv[argv.index("--sha256") + 1])
+            path, checksum = argv[argv.index("--config") + 1], argv[argv.index("--sha256") + 1]
+            if service in argv:
+                from native_role_service import HEX
+                from native_role_service import config as service_config
+
+                client = service_config(path, checksum)
+                require(
+                    argv[1:] == ["-B", "-X", "utf8", service, "call", "--config", path, "--sha256", checksum]
+                    and client["role"] == role,
+                    "Exact installed role service client required",
+                )
+                path, checksum = client["broker_file"], client["broker_sha256"]
+                require(spec["files"].get(path) == checksum, "Service broker must be pinned in the installation")
+                require(
+                    all(
+                        isinstance(client.get(k), str) and HEX.fullmatch(client[k])
+                        for k in ("service_sha256", "peer_sha256", "tree_sha256")
+                    )
+                    and (role != "producer" or Path(client["worker_root"]).is_absolute()),
+                    "Exact role service installation required",
+                )
+                endpoints[role] = client
+            else:
+                require(local_validation, "Production requires authenticated operating-system role services")
+                exact = [argv[0], "-B", "-X", "utf8", script, "--config", path, "--sha256", checksum]
+                if role == "producer":
+                    exact.extend(["--registry", str(self.root / "registry")])
+                require(argv == exact, "Exact installed local validation broker required")
+            config, template = load_config(path, checksum)
+            if role in endpoints:
+                require(
+                    argv[0] == config["python"] and spec["files"].get(config["python"]) == config["python_sha256"],
+                    "Role service client must use the verified broker Python",
+                )
             templates[role] = (config, template)
             if role == "producer":
-                require(
-                    "--registry" in argv and Path(argv[argv.index("--registry") + 1]) == self.root / "registry",
-                    "Producer registry installation mismatch",
+                registry = (
+                    client["registry"]
+                    if role in endpoints
+                    else argv[argv.index("--registry") + 1]
+                    if "--registry" in argv
+                    else ""
                 )
+                require(Path(registry) == self.root / "registry", "Producer registry installation mismatch")
+        producer_config, producer_template = templates["producer"]
+        model_ids = [m["id"] for m in spec["catalog"] if m.get("available") and "agent" in m.get("targets", [])]
+        evaluated = {profile["id"] for profile in producer_template["profiles"]}
+        bindings = producer_config.get("catalog_bindings")
+        if bindings is None:
+            require(len(model_ids) == len(evaluated) == 1, "Explicit bindings required for multiple producer profiles")
+        else:
+            require(
+                isinstance(bindings, dict)
+                and set(bindings) == set(model_ids)
+                and len(model_ids) == len(set(model_ids))
+                and len(set(bindings.values())) == len(model_ids)
+                and set(bindings.values()) == evaluated,
+                "Catalog must bind each model to a distinct evaluated profile",
+            )
+        if endpoints:
+            require(
+                len(endpoints) == 3
+                and len({e["service_identity"] for e in endpoints.values()}) == 3
+                and len({e["peer_sha256"] for e in endpoints.values()}) == 3,
+                "Three distinct authenticated operating-system role endpoints required",
+            )
         require(templates["planner"][1]["task"]["agent_id"] == "yanshi", "Admitted Yanshi required")
         require(
             templates["reviewer"][1]["task"].get("role") == "reviewer"
@@ -318,7 +392,7 @@ class OrdinaryEntry:
             return [dict(r) for r in self.domain.db.execute("SELECT * FROM native_entry_intents")]
 
     def entry_authority(self, key):
-        if self.installation.spec["mode"] == "production":
+        if self.installation.spec["mode"] in {"production", "local-signed-validation"}:
             with self.domain._connection_lock:
                 row = self.domain.db.execute(
                     "SELECT e.tenant,c.access_key FROM native_entry_intents e JOIN native_entry_credentials c ON c.entry=e.id WHERE e.id=?",
@@ -553,6 +627,91 @@ class OrdinaryEntry:
                 policies[product] = json.loads(existing[0])
         return list(policies.values())
 
+    def install_role_observations(self):
+        with self.ledger.transaction() as db:
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS native_role_calls (entry TEXT NOT NULL, role TEXT NOT NULL, "
+                "input_digest TEXT NOT NULL, calls TEXT NOT NULL, PRIMARY KEY(entry,role,input_digest))"
+            )
+            if db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='native_review_observation_refs'"
+            ).fetchone():
+                return
+            db.execute(
+                "CREATE TABLE native_review_observation_refs (entry TEXT NOT NULL, "
+                "origin TEXT NOT NULL, input_digest TEXT NOT NULL, PRIMARY KEY(entry,origin,input_digest))"
+            )
+            if db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='native_entry_reviews'").fetchone():
+                # Older installations attributed joint calls only to the first entry. Reuse
+                # the original review request and its tenant-bound contracts once on upgrade.
+                db.execute(
+                    "INSERT OR IGNORE INTO native_review_observation_refs "
+                    "SELECT e.id,c.entry,c.input_digest FROM native_role_calls c "
+                    "JOIN native_entry_reviews r ON r.id=c.input_digest "
+                    "JOIN native_entry_intents origin ON origin.id=c.entry "
+                    "JOIN json_each(r.request,'$.document.integration_plan.originals') o "
+                    "JOIN native_entry_intents e ON e.id=json_extract(o.value,'$.contract.mandate') "
+                    "WHERE c.role='reviewer' AND c.entry=json_extract(r.request,'$.document.mandate') "
+                    "AND origin.tenant=json_extract(r.request,'$.tenant') "
+                    "AND e.tenant=origin.tenant AND e.tenant=json_extract(o.value,'$.contract.tenant') "
+                    "AND e.actor=json_extract(o.value,'$.contract.actor') AND e.id!=c.entry"
+                )
+
+    def observe_role_calls(self, request, input_digest, calls):
+        role = request["role"]
+        key = request["entry"] if role == "yanshi" else request["document"]["mandate"]
+        originals = request["document"].get("integration_plan", {}).get("originals", []) if role == "reviewer" else []
+        with self.ledger.transaction() as db:
+            bound = db.execute("SELECT tenant,actor FROM native_entry_intents WHERE id=?", (key,)).fetchone()
+            require(bound is not None and bound["tenant"] == request["tenant"], "Unknown role observation entry")
+            if role == "yanshi":
+                require(bound["actor"] == request["actor"], "Unknown planner observation owner")
+            args = (key, role, input_digest)
+            db.execute("INSERT OR IGNORE INTO native_role_calls VALUES (?,?,?,?)", (*args, _json(calls)))
+            old = db.execute(
+                "SELECT calls FROM native_role_calls WHERE entry=? AND role=? AND input_digest=?", args
+            ).fetchone()
+            require(old["calls"] == _json(calls), "Role observation changed")
+            for original in originals:
+                contract = original["contract"]
+                target = contract["mandate"]
+                owner = db.execute("SELECT tenant,actor FROM native_entry_intents WHERE id=?", (target,)).fetchone()
+                require(
+                    owner is not None
+                    and owner["tenant"] == contract["tenant"] == request["tenant"]
+                    and owner["actor"] == contract["actor"],
+                    "Joint review observation has no matching original entry",
+                )
+                if target != key:
+                    db.execute(
+                        "INSERT OR IGNORE INTO native_review_observation_refs VALUES (?,?,?)",
+                        (target, key, input_digest),
+                    )
+
+    def role_calls(self, key):
+        rows = self.domain.db.execute(
+            "SELECT c.rowid AS seq,c.* FROM native_role_calls c WHERE entry=? "
+            "UNION ALL SELECT c.rowid AS seq,c.* FROM native_review_observation_refs r "
+            "JOIN native_role_calls c ON c.entry=r.origin AND c.role='reviewer' AND c.input_digest=r.input_digest "
+            "WHERE r.entry=? ORDER BY seq",
+            (key, key),
+        )
+        return [
+            dict(
+                role=row["role"],
+                input_digest=row["input_digest"],
+                call_id=_digest(_json([row["role"], row["input_digest"], number]).encode()),
+                usage_attribution="original" if row["entry"] == key else "reference",
+                requested_model=call["requested_model"],
+                observed_model=call["provider_model"],
+                reported_usage=call["usage"],
+                source="codex-cli",
+                normalized_usage=None,
+            )
+            for row in rows
+            for number, call in enumerate(json.loads(row["calls"]), 1)
+        ]
+
     def task_references(self, key, actor):
         with self.domain._connection_lock:
             result = []
@@ -568,7 +727,16 @@ class OrdinaryEntry:
                 result.append(
                     dict(
                         observed_model=terminal.get("provider_model"),
+                        normalized_usage=None,
                         usage=terminal.get("usage"),
+                        model_calls=terminal.get("model_calls"),
+                        observation_source=(
+                            terminal["model_calls"][-1]["source"]
+                            if terminal.get("model_calls")
+                            else "codex-cli"
+                            if terminal.get("usage") or terminal.get("provider_model")
+                            else None
+                        ),
                         task=row["id"],
                         state=row["state"],
                         issue_id=row["issue"],

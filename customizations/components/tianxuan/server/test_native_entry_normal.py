@@ -341,6 +341,10 @@ class NormalEntryTests(unittest.TestCase):
                     tenant = main._STORE.actor_context(owner["user_id"])["tenant"]
                 finally:
                     main._STORE.db.close()
+                # Restart the isolated deterministic installation. Exercise strict HTTP
+                # authentication against this live fixture without presenting its test
+                # programs as a production installation during startup.
+                main = importlib.reload(main)
                 with patch.dict(
                     os.environ,
                     dict(
@@ -349,9 +353,25 @@ class NormalEntryTests(unittest.TestCase):
                         TIANXUAN_PUBLIC_ORIGIN="https://testserver",
                     ),
                 ):
-                    main = importlib.reload(main)
                     try:
-                        with TestClient(main.app, base_url="https://testserver") as client:
+                        from native_store import NativeStoreError
+
+                        with self.assertRaisesRegex(NativeStoreError, "cannot serve key-mode production"):
+                            main.OrdinaryEntry(
+                                main._STORE,
+                                main._NATIVE_STORE,
+                                str(manifest),
+                                env["TIANXUAN_NATIVE_INSTALLATION_SHA256"],
+                                str(root / "state"),
+                            )
+                        strict_app = main.create_app(
+                            main._STORE,
+                            native_store=main._NATIVE_STORE,
+                            native_only=True,
+                            native_workflow=main._NATIVE_ENTRY.workflow,
+                            native_entry=main._NATIVE_ENTRY,
+                        )
+                        with TestClient(strict_app, base_url="https://testserver") as client:
                             headers = {"Authorization": "Bearer " + access["key"]}
                             self.assertEqual(
                                 client.post("/api/v1/auth/register", headers=headers, json={}).status_code, 403

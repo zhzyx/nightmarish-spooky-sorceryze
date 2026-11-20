@@ -62,7 +62,15 @@ def canonical(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
-def call(profile, messages, output_limit):
+def call(profile, messages, output_limit, *, role_schema=None):
+    if profile["protocol"] == "local-agent-proposal":
+        from local_agent_proposal import call_agent
+
+        return call_agent(profile, messages, output_limit)
+    if profile["protocol"] == "codex-native-role":
+        from native_proposal_adapter import call_role
+
+        return call_role(profile, messages, output_limit, role_schema)
     if profile["protocol"] == "codex-native-proposal":
         from native_proposal_adapter import call_native
 
