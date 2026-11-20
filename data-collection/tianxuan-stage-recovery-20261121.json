@@ -1,0 +1,80 @@
+{
+  "request_id": "tianxuan-unified-platform-20261119",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1550",
+  "recorded_at": "2026-11-20T17:16:13.543352+00:00",
+  "kind": "stage_delivery_and_verified_worker_recovery",
+  "main": "09947028882f1865a3fa01b25c2d6c8ea69d0985",
+  "deliveries": [
+    {
+      "pr": 1659,
+      "merge": "1bc7a105e5548137404cc7ff0838012cd0692602",
+      "scope": "Godot consumes approved fixed asset revisions",
+      "acceptance_limit": "Does not replace user concept/model approval or final deployed workflow"
+    },
+    {
+      "pr": 1698,
+      "merge": "21654eb5eeca45c6952a6457768d7fe15e2683d9",
+      "scope": "Ordered output drain and validated terminal model receipts",
+      "acceptance_limit": "Source fix and exact module CI; production unchanged"
+    },
+    {
+      "pr": 1699,
+      "merge": "09947028882f1865a3fa01b25c2d6c8ea69d0985",
+      "scope": "Content rollback source and static fixes integrated with model usage UI",
+      "acceptance_limit": "Final combined browser and production consumption tracked by1642/1577"
+    }
+  ],
+  "worker_recovery": {
+    "user_confirmed_stop": true,
+    "four_original_chats_host_state": "interrupted",
+    "runtime_and_deployment_reservations": "released after host terminal verification",
+    "unknown_model_usage": null,
+    "delivery_is_not_inferred_from_worker_terminal": true
+  },
+  "current_owners": {
+    "runtime_1581": "independent resumed candidate; existing reviewed source and scoped repairs",
+    "content_1642": "resumed publication and browser acceptance",
+    "deployment_1577": "single storage migration and production operator"
+  },
+  "remaining_acceptance": [
+    "A1 final installed Godot normal entry and identity",
+    "A2 approved requirement execution on actual installation",
+    "A3 final Web two-user editing/conflict/recovery",
+    "A4 final deployed workflow progress",
+    "A5 resolver integration and final content rollback consumption",
+    "A6 Windows/server installed execution and interruption recovery",
+    "A7 all available CLI/selection/results/usage; CodeBuddy authentication unavailable",
+    "A8 actual user concept/model decisions and deployed Godot flow",
+    "A9 production import/history/relations with record-only historical workorders",
+    "A10 final combined deployment/pages/persistence/backup recovery"
+  ],
+  "expanded_storage": {
+    "path": "/mnt/data",
+    "operator_observed_available_bytes": 100945264640,
+    "status": "Storage migration not yet accepted; first attempt rolled back after mount-order comparison false positive; actual original services restored"
+  },
+  "preservation": {
+    "historical_godot_issues": "record_only",
+    "original_candidates": "retained pending downstream acceptance",
+    "known_auto_review_rejected_test_cleanup": "retained; no bypass",
+    "parent_1550": "open"
+  },
+  "event_files": [
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-runtime-closure-20261119/dispatch-4461ba0a47c84a3383137a5304ab2c67.json",
+      "sha256": "d7fb159d5c6f4c7e08363cad42a3fef9ded9bf3680bae93f9df2770a071938fd"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-unified-deployment-20261119/dispatch-204e07cd80b4489bb4281a81e108e451.json",
+      "sha256": "1a8ab2b4e55970398ee726a3f2417b4951813886ca28c3a8f1793f153c4b50ab"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/tianxuan-unified-platform-20261119/kuafu-bba890c7763f54ee0f4e40717101f3942316b6e8.json",
+      "sha256": "661b116b35323c235f766e5a99877123223a266cbb8398f062cb07e1db7f3280"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-9acba4d5b3238df69088668ffe9cf037a7a20fd6e44619d00f47c6d75905b7b4.json",
+      "sha256": "07ec2b2dea2b5144e67e02f928f7a5369750754345648e35eea71ddbc901a333"
+    }
+  ]
+}
