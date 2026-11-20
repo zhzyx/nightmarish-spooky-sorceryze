@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-github-issue-delivery",
+  "event_id": "learn-d47e5325fc494ee946202d046224752ba905d510eb5859e1ef641e8bfccb3b01",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1870",
+  "occurred_at": "2026-11-20T23:42:57.5305647Z",
+  "evidence_refs": [
+    "plan1-intake-1870",
+    "learn-ce7ef103446a3891492a7b0db02f60b54185d0508b1fb3242913fc6554cb9276"
+  ],
+  "payload": {
+    "scope": "github-issue-delivery",
+    "lesson": "reconcile-workflow-incidents",
+    "revision": 4,
+    "previous": "aa7d66d8e81add281eb8b41e4c0027fcf124e610b134ed7daf5d43924f7477df",
+    "action": "applied",
+    "details": {
+      "observed": "从运行 44838389702 第一次尝试、作业 136640410278 第 7 步定位唯一跟踪单 #1881；同一原件两处引用名触发 codespell，目标和用例不变，修订后本机同版本检查通过。线上复验继续绑定替代候选和原失败步骤。",
+      "task": "核对 B02 原工单 #1870 的静态检查阻塞"
+    },
+    "evidence": [
+      {
+        "sha256": "7f10bad5a5ddb1f988a8c3cd95e18c7efbf67c31e22ffc2b96f1e370aca97ac9",
+        "path": "data-collection/gonggong-ai-workbench-plan1-b02.json"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-b02/plan1-intake-1870.json",
+      "sha256": "5dc3b8d7f7fe14ca5d457af7d4d6a56e7a6bb34ade498cdf5fa192703fbabd7a"
+    }
+  },
+  "sha256": "bbbc81c5fdf7cec646f948ffda27573cfa0692dd2d6d09c5cbc332adcb9cfdff"
+}
