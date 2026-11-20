@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f6d2b3f3a5c8e9050ac428e7e2f9c3e7d130480f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "modular-ci-test-selection-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1668",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c2ea4dcc28bbaadf84107b6a68918fd88ad77037168fb25cfc117a8ffbd3dad8",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1668",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1669",
+    "action": "validation",
+    "detection_head": "f4e6f59706d3017fcaafe775908316f60a1c1b85",
+    "context_sha256": "38e545db7b1acfc94d51343c095bce04c041693e54997488275c99aaf7088d8f",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work-host",
+    "authority_ref": "用户附件中的全仓模块化 CI 实施要求",
+    "evidence": "data-collection/modular-ci-selection-1668.json",
+    "diagnosis": "首次门禁仅有 kind=step 的工单标签事件，缺少精确指向 Issue 的 kind=request 来源；已通过可信谛听入口补记真实用户附件需求并采集。",
+    "next_action": "同一候选正式门禁已恢复通过；继续提交、推送并以真实 PR CI 复验。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T05:39:18.852608+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T05:42:25.404123+00:00",
+  "sha256": "6582fc2eb6c13908454cfc5e4b4d9a0aef490d0bfc0d29e69a3abccedcdf87b2"
+}

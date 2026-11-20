@@ -130,6 +130,7 @@ jobs:
     uses: ./.github/workflows/windows_builds.yml
     with:
       editor_only: ${{ github.event_name != 'workflow_dispatch' && !startsWith(github.ref, 'refs/tags/') }}
+      validation_profile: ${{ (github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')) && 'full' || 'build-only' }}
 
   web-build:
     name: 🌐 Web

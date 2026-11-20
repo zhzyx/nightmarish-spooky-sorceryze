@@ -1,22 +1,7 @@
 name: Blender geometry on Windows
 on:
+  workflow_call:
   workflow_dispatch:
-  pull_request:
-    paths:
-      - ".github/workflows/blender_geometry_windows.yml"
-      - "tests/editor/run_blender_geometry.py"
-      - "tests/editor/test_run_blender_geometry.py"
-      - "tools/ainative/**"
-      - "tools/editor_provenance_process.py"
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/blender_geometry_windows.yml"
-      - "tests/editor/run_blender_geometry.py"
-      - "tests/editor/test_run_blender_geometry.py"
-      - "tools/ainative/**"
-      - "tools/editor_provenance_process.py"
-  merge_group:
 
 permissions:
   contents: read

@@ -1,16 +1,11 @@
 name: Engine build routing
 on:
-  pull_request:
-    paths:
-      - .github/workflows/engine_build_scope.yml
-      - .github/workflows/runner.yml
-      - .github/workflows/static_checks.yml
-      - modules/SCsub
-      - tools/build_engine_modules.py
-      - tests/python_build/check_engine_build_scope.py
+  workflow_call:
+  workflow_dispatch:
 
 jobs:
   verify-routing:
+    name: Build scope routing (${{ matrix.worker }})
     if: ${{ !vars.DISABLE_GODOT_CI || github.run_attempt > 1 }}
     strategy:
       fail-fast: false

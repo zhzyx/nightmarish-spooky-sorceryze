@@ -1,19 +1,14 @@
 name: Tianxuan deploy build
 
 on:
-  pull_request:
-    paths:
-      - "deploy/**"
-      - "apps/tianxuan/**"
-      - "customizations/components/tianxuan/**"
-      - "framework/**"
-      - "customizations/platforms/ai-access/host-http/runtime/**"
-      - "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs"
-      - "tools/ainative/owned_process.py"
-      - "tools/codex_cli/subscription_session.js"
-      - "tools/codex_cli/content_preview.js"
-      - "tools/codex_cli/subscription_profile.py"
-      - ".github/workflows/tianxuan-deploy-build.yml"
+  workflow_call:
+    inputs:
+      release_revision:
+        type: string
+        required: false
+      run_context_burst:
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       release_revision:

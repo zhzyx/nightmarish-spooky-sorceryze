@@ -1,0 +1,176 @@
+name: Modular CI
+
+on:
+  pull_request:
+  push:
+  merge_group:
+  workflow_dispatch:
+    inputs:
+      full_regression:
+        description: Explicitly run the complete module regression matrix
+        type: boolean
+        required: true
+        default: false
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ${{ github.workflow }}|${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  select:
+    name: CI / Select changed modules
+    runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.select.outputs.modules }}
+      generic_matrix: ${{ steps.select.outputs.generic_matrix }}
+      generic_count: ${{ steps.select.outputs.generic_count }}
+      selection: ${{ steps.select.outputs.selection }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Resolve and validate the exact change scope
+        id: select
+        env:
+          BASE: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.event.after || github.sha }}
+          FULL: ${{ github.event_name == 'workflow_dispatch' && inputs.full_regression || false }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == workflow_dispatch && "$FULL" != true ]]; then
+            echo 'Manual Modular CI requires explicit full_regression=true.' >&2
+            exit 2
+          fi
+          args=(--repo . --head "$HEAD" --output "$RUNNER_TEMP/module-selection.json" --github-output "$GITHUB_OUTPUT")
+          if [[ "$FULL" == true ]]; then
+            args+=(--full)
+          else
+            args+=(--base "$BASE")
+          fi
+          python tools/ci/select_modules.py "${args[@]}"
+      - name: Publish the auditable selection
+        uses: actions/upload-artifact@v7
+        with:
+          name: module-selection-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/module-selection.json
+          if-no-files-found: error
+
+  static-checks:
+    name: 📊 Static checks
+    if: github.event_name == 'workflow_dispatch'
+    uses: ./.github/workflows/static_checks.yml
+
+  module-tests:
+    name: Module / ${{ matrix.module }}
+    needs: select
+    if: needs.select.outputs.generic_count != '0'
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.select.outputs.generic_matrix) }}
+    runs-on: ${{ matrix.runs_on }}
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/godot-deps
+        with:
+          python-version: "3.12"
+      - name: Run registered setup, build and tests
+        run: python tools/ci/run_module.py --repo . --module "${{ matrix.module }}"
+
+  engine-next:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'engine-next')
+    uses: ./.github/workflows/engine_next_contract.yml
+
+  gameplay:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'gameplay')
+    uses: ./.github/workflows/gameplay_tests.yml
+
+  editor-native:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'editor')
+    uses: ./.github/workflows/windows_builds.yml
+    with:
+      editor_only: true
+      validation_profile: ${{ github.event_name == 'workflow_dispatch' && 'full' || 'editor' }}
+
+  maliang-offline:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'maliang')
+    uses: ./.github/workflows/maliang_hunyuan_windows.yml
+
+  blender-geometry:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'maliang')
+    uses: ./.github/workflows/blender_geometry_windows.yml
+
+  web:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'web')
+    uses: ./.github/workflows/web_builds.yml
+
+  tianxuan-tests:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'tianxuan')
+    uses: ./.github/workflows/tianxuan-tests.yml
+
+  tianxuan-deploy:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'tianxuan')
+    uses: ./.github/workflows/tianxuan-deploy-build.yml
+
+  integration:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'integration')
+    uses: ./.github/workflows/integration-plan.yml
+
+  build-scope:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'build')
+    uses: ./.github/workflows/engine_build_scope.yml
+
+  native-cache:
+    needs: select
+    if: contains(fromJSON(needs.select.outputs.modules), 'build')
+    uses: ./.github/workflows/native-cache.yml
+
+  summary:
+    name: CI / Modular tests
+    if: always()
+    needs:
+      - select
+      - static-checks
+      - module-tests
+      - engine-next
+      - gameplay
+      - editor-native
+      - maliang-offline
+      - blender-geometry
+      - web
+      - tianxuan-tests
+      - tianxuan-deploy
+      - integration
+      - build-scope
+      - native-cache
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Require real success for every selected check
+        env:
+          SELECTION: ${{ needs.select.outputs.selection }}
+          NEEDS: ${{ toJSON(needs) }}
+        run: python tools/ci/summarize.py --selection-json "$SELECTION" --needs-json "$NEEDS"

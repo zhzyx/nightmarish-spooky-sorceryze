@@ -1,0 +1,37 @@
+name: Gameplay standalone tests
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gameplay:
+    name: Gameplay standalone tests (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-26, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Build and test Gameplay (MSVC)
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: |
+          set "VSWHERE=%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe"
+          for /f "usebackq delims=" %%i in (`"%VSWHERE%" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSROOT=%%i"
+          call "%VSROOT%\VC\Auxiliary\Build\vcvars64.bat"
+          python engine_next/Tools/BuildGameplay.py --repo . --compiler msvc --build-dir build/engine_next/msvc-gameplay --run-tests
+          python tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/msvc-gameplay/LinkManifest.json
+      - name: Build and test Gameplay (Clang)
+        if: runner.os != 'Windows'
+        run: |
+          python3 engine_next/Tools/BuildGameplay.py --repo . --compiler clang --build-dir build/engine_next/clang-gameplay --run-tests
+          python3 tools/check_engine_next_contract.py --repo . --require-sources --require-link-manifest --link-manifest build/engine_next/clang-gameplay/LinkManifest.json
