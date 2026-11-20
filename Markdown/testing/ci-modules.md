@@ -5,6 +5,7 @@
 `tools/ci/modules.json` 是唯一模块注册表，登记模块名称、路径、运行器、构建／测试命令、公共检查和状态检查。`tools/ci/select_modules.py` 对 PR 的 base/head、普通 push 的 before/after 执行真实 Git diff，并按**最长路径前缀**确定唯一归属；因此 `modules/gameplay/` 属于 Gameplay，而 `modules/` 的其他内容属于 Engine Core。
 
 - 单模块变更只选择该模块；多模块变更分别选择各模块，不升级为全量。
+- `.github/workflows/` 和 `tools/ci/` 统一属于 CI 模块；仅修改编排规则时不把对应业务模块的完整验收当作规则正确性的前置条件。业务源码和测试内容仍归属各自模块。
 - 新路径没有归属、同一前缀重复登记、未知依赖、通用模块没有真实测试命令时，选择器失败关闭。
 - 文档和仓库元数据只运行公共静态检查；不以未登记或共享文件为理由启动全仓测试。
 - 选择结果和逐路径归属作为 `module-selection-<run>-<attempt>` artifact 保存，汇总检查只接受所选任务的真实 `success`。

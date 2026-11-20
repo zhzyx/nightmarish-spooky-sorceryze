@@ -88,7 +88,6 @@
       "paths": [
         "editor/",
         "tests/editor/",
-        ".github/workflows/windows_builds.yml",
         "launch_dotnet_editor.cmd",
         "open_engine.command",
         "update_build_engine.command",
@@ -176,9 +175,7 @@
         "tests/editor/test_maliang_package.py",
         "tests/editor/test_run_blender_geometry.py",
         "tests/editor/run_blender_geometry.py",
-        "tests/editor/run_bundled_hunyuan_windows.ps1",
-        ".github/workflows/maliang_hunyuan_windows.yml",
-        ".github/workflows/blender_geometry_windows.yml"
+        "tests/editor/run_bundled_hunyuan_windows.ps1"
       ],
       "runner": "ubuntu-latest",
       "handler": "generic",
@@ -211,8 +208,7 @@
         "tools/check_engine_next_contract.py",
         "tools/engine_next_contract.json",
         "tools/test_check_engine_next_contract.py",
-        "tools/engine_next_legacy/",
-        ".github/workflows/engine_next_contract.yml"
+        "tools/engine_next_legacy/"
       ],
       "runner": "ubuntu-latest",
       "handler": "engine-next",
@@ -242,8 +238,7 @@
       "paths": [
         "modules/gameplay/",
         "engine_next/Gameplay/",
-        "engine_next/Tools/BuildGameplay.py",
-        ".github/workflows/gameplay_tests.yml"
+        "engine_next/Tools/BuildGameplay.py"
       ],
       "runner": "ubuntu-latest",
       "handler": "gameplay",
@@ -264,8 +259,7 @@
     {
       "name": "web",
       "paths": [
-        "platform/web/",
-        ".github/workflows/web_builds.yml"
+        "platform/web/"
       ],
       "runner": "ubuntu-latest",
       "handler": "web",
@@ -287,10 +281,7 @@
       "paths": [
         "apps/tianxuan/",
         "customizations/components/tianxuan/",
-        "deploy/",
-        ".github/workflows/tianxuan-tests.yml",
-        ".github/workflows/tianxuan-deploy-build.yml",
-        ".github/workflows/duobao-acceptance.yml"
+        "deploy/"
       ],
       "runner": "ubuntu-latest",
       "handler": "tianxuan",
@@ -315,8 +306,7 @@
     {
       "name": "integration",
       "paths": [
-        "customizations/platforms/development/git/heqi/",
-        ".github/workflows/integration-plan.yml"
+        "customizations/platforms/development/git/heqi/"
       ],
       "runner": "ubuntu-latest",
       "handler": "integration",
@@ -342,11 +332,7 @@
         "tools/test_windows_editor_artifact.py",
         "tests/editor/test_editor_native_cache.py",
         "tests/editor/test_native_host_inputs.py",
-        ".github/scripts/windows_editor_artifact.py",
-        ".github/workflows/native-cache.yml",
-        ".github/workflows/engine_build_scope.yml",
-        ".github/workflows/runner.yml",
-        ".github/workflows/static_checks.yml"
+        ".github/scripts/windows_editor_artifact.py"
       ],
       "runner": "ubuntu-latest",
       "handler": "build",

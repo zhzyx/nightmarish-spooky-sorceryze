@@ -44,6 +44,16 @@ class SelectionTests(unittest.TestCase):
         self.assertSelection(["SConstruct"], ["engine-core"])
         self.assertSelection(["tools/build_engine_modules.py"], ["build"])
 
+    def test_workflow_changes_select_ci_not_business_modules(self):
+        for path in (
+            ".github/workflows/maliang_hunyuan_windows.yml",
+            ".github/workflows/engine_next_contract.yml",
+            ".github/workflows/web_builds.yml",
+            ".github/workflows/tianxuan-tests.yml",
+        ):
+            with self.subTest(path=path):
+                self.assertSelection([path], ["ci"])
+
     def test_docs_only_select_common_checks(self):
         modules = select_modules(self.registry, ["Markdown/testing/README.md"])
         self.assertEqual([module["name"] for module in modules], ["docs"])
