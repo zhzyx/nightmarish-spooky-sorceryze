@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import math
 import re
-from typing import Any
+from typing import Any, cast
 
 ID = re.compile(r"[A-Za-z][A-Za-z0-9_-]{0,63}\Z")
 BLOCK = re.compile(r"^```game-config\s*\n(.*?)^```[ \t]*$", re.MULTILINE | re.DOTALL)
@@ -140,7 +140,7 @@ def validate_features(features: Any) -> list[dict[str, Any]]:
             if not valid:
                 raise ValueError(f"{feature_id}/{entry_id}.{field}: invalid {kind} or constraint/reference violation")
     # Detach nested caller-owned values; one validated snapshot is the authority.
-    return json.loads(encoded)
+    return cast("list[dict[str, Any]]", json.loads(encoded))
 
 
 def parse_config(body: str) -> list[dict[str, Any]]:
@@ -181,5 +181,7 @@ def config_markdown(features: Any) -> str:
 def replace_config(body: str, features: Any) -> str:
     """Replace only the authoritative block, preserving collaborative prose byte-for-byte."""
     parse_config(body)
-    replacement = BLOCK.search(config_markdown(features)).group(0)
+    block = BLOCK.search(config_markdown(features))
+    assert block is not None  # config_markdown always emits exactly one block.
+    replacement = block.group(0)
     return BLOCK.sub(lambda _: replacement, body, count=1)

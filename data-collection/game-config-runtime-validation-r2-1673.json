@@ -1,0 +1,33 @@
+{
+  "request_id": "game-config-runtime-20261120",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1673",
+  "module": "samples/game-config",
+  "platform": "macOS arm64; repository Godot 4.8.beta; Python 3.14",
+  "input_blobs": {
+    "customizations/components/tianxuan/server/access_control.py": "e8e50ebc8f72d5947be0b21e6909760d67f8ce47",
+    "customizations/components/tianxuan/server/api.py": "2f562adb59390b22214ad51ea89af07fc7bdba42",
+    "customizations/components/tianxuan/server/game_config.py": "a1784ace0e93fbfb714d1768a0b43e6996abdca4",
+    "customizations/components/tianxuan/server/game_config_api.py": "57ac48397ac6adcae509b645107357282e27d11e",
+    "customizations/components/tianxuan/server/game_config_schema.py": "56595b195dddd6857f727903391786dd3053f7c6",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "9501b6eef0aaa054fa04b362226842c5fad2f390",
+    "design-docs/game-config-api-20261120.md": "8702face00ec069859abe87d04019264aa23e171",
+    "samples/game-config/.gitignore": "94592b1f63bc4beed6f37b33d9fe402366acae69",
+    "samples/game-config/README.md": "80bf0bb519b6b7675d93233d12abfbb36a3f90db",
+    "samples/game-config/example.gd": "5b1bbc9cbf2e4fdb450f1047e57367981813c8c8",
+    "samples/game-config/game_config_client.gd": "9c943df351dd42c0f40421f7bdbc59852fade6c9",
+    "samples/game-config/main.tscn": "d6c19853deb4e0c700b7447c3cd16fb4c300c2e5",
+    "samples/game-config/project.godot": "b792b04ed1ac1dc8abdf4f69559f0cdfc9c013df",
+    "samples/game-config/tests/live.gd": "b4353b0a168f59a39b9688c16d6ce0afb16743ea",
+    "samples/game-config/tests/run_headless.py": "dbaa78c9bdbb99efd73d1b202fcee1ba2c0598b7",
+    "samples/game-config/tests/unit.gd": "8974f4b13d2e72b8e37b061659c8baccc3eca383"
+  },
+  "checks": {
+    "host_behavior": {
+      "command": "python samples/game-config/tests/run_headless.py --godot <verified existing repository Godot executable>",
+      "passed": true,
+      "observed": "Independent reviewer reran actual authenticated Godot harness on final type-only delta: all checks passed, including exact 900000-byte Chinese content, hot update, reconnect, business rejection retaining previous state, restore, tenant isolation and offline removal."
+    }
+  },
+  "scope": "Independent sample normal entry plus actual authenticated HTTP/WebSocket/Godot integration. No real production game or deployment required or claimed.",
+  "supersedes": "data-collection/game-config-runtime-validation-1673.json"
+}

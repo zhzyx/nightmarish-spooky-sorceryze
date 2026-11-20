@@ -22,6 +22,7 @@ import time
 import urllib.error
 import urllib.request
 from pathlib import Path
+from typing import Any
 
 SAMPLE = Path(__file__).resolve().parents[1]
 ROOT = SAMPLE.parents[1]
@@ -104,7 +105,7 @@ def main() -> None:
             )
             return json.loads(raw)
 
-        events = []
+        events: list[dict[str, Any]] = []
         event_lock = threading.Lock()
 
         def wait_for(predicate, description, timeout=12):
@@ -138,7 +139,7 @@ def main() -> None:
             token = request("POST", "/api/v1/auth/session", {"email": "godot@example.test", "password": password})[
                 "token"
             ]
-            features = [
+            features: list[dict[str, Any]] = [
                 {
                     "id": "combat",
                     "name": "Combat",
