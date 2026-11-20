@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "maliang-image-artifact-nodes-20261120-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-image-artifact-nodes-20261120",
+  "kind": "request",
+  "occurred_at": "2026-11-20T10:41:43Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261120",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "payload": {
+    "intent": "Deliver MaLiang dynamic image artifact nodes with complete galleries, project downloads, downstream reference wiring, distinct shapes, non-overlapping layout, presentation-only deletion, and prompt-change refresh for both targeted and full-workflow runs.",
+    "authorization_ref": "kimi-work:user:20261120:maliang-image-artifact-nodes-accepted-submit-main",
+    "state": "in_progress",
+    "usage": null,
+    "definition": "AGENTS.md"
+  },
+  "evidence_refs": [],
+  "sha256": "0484bb9c8128385590153a49f5750c1a6117f3d7e05be5c1570fbc136ed5860d"
+}

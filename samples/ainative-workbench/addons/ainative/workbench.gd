@@ -78,6 +78,14 @@ var preview_target: String:
 	get: return controller.preview_target
 	set(value): controller.preview_target = value
 var preview_history: Dictionary = {}
+# Image artifacts are presentation-only graph nodes; they never enter the execution DAG.
+var artifact_nodes: Dictionary = {}
+var dismissed_artifacts: Dictionary = {}
+var artifact_preview_queue: Array = []
+var artifact_download_picker: FileDialog
+var artifact_download_source = ""
+var artifact_layout_pending = false
+var context_artifact_source = ""
 var history_choice: OptionButton
 var result_choice: OptionButton
 var current_images: Array = []
@@ -174,6 +182,8 @@ const CONTEXT_SAVE = 9
 const CONTEXT_OPEN = 10
 const CONTEXT_RUN_ALL = 11
 const CONTEXT_HISTORY = 12
+const CONTEXT_ARTIFACT_DOWNLOAD = 13
+const CONTEXT_ARTIFACT_DELETE = 14
 const RETIRED_GPT_MESH_PROVIDERS = ["codex-modeling", "codex-sculpt"]
 const RETIRED_GPT_MESH_MODES = ["codex_modeling", "codex_sculpt"]
 const RETIRED_GPT_MESH_NOTICE = "GPT CLI 单独网格生成已下线。请使用当前网格服务新建节点，再连接源文件与下游节点。"
@@ -448,6 +458,10 @@ func _ready():
 	graph = GraphEdit.new()
 	# Let users drag an ordered image list onto the combined image/list input.
 	graph.add_valid_connection_type(PORT_IMAGE_SET, PORT_IMAGE)
+	# Dynamic artifact ports are presentation adapters, not executable node types.
+	graph.add_valid_connection_type(PORT_IMAGE, PORT_DYNAMIC)
+	graph.add_valid_connection_type(PORT_IMAGE_SET, PORT_DYNAMIC)
+	graph.add_valid_connection_type(PORT_DYNAMIC, PORT_IMAGE)
 	graph.custom_minimum_size = Vector2(460, 320)
 	graph.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	split.add_child(graph)
@@ -634,6 +648,15 @@ func _ready():
 	save_picker.use_native_dialog = true
 	save_picker.file_selected.connect(save_preview_to)
 	add_child(save_picker)
+	artifact_download_picker = FileDialog.new()
+	artifact_download_picker.title = "下载全部图片到项目目录"
+	artifact_download_picker.ok_button_text = "下载到这里"
+	artifact_download_picker.cancel_button_text = "取消"
+	artifact_download_picker.access = FileDialog.ACCESS_FILESYSTEM
+	artifact_download_picker.file_mode = FileDialog.FILE_MODE_OPEN_DIR
+	artifact_download_picker.use_native_dialog = true
+	artifact_download_picker.dir_selected.connect(_download_artifact_images)
+	add_child(artifact_download_picker)
 	dialog = ConfirmationDialog.new()
 	dialog.title = "确认发布"
 	dialog.ok_button_text = "发布新文件"
@@ -857,8 +880,230 @@ func input_type_name(data: Dictionary) -> String:
 	if kind == GENERATE_IMAGE: return "图片 / 图片列表（可选）＋文本（参数）"
 	return "图片 / 图片列表" if _accepts_image_set(data) and kind in ["image_to_image", "image_to_mesh"] else port_type_name(input_kind(data))
 
+func _latest_image_entry(node_id: String) -> Dictionary:
+	var history: Array = preview_history.get(node_id, [])
+	if history.is_empty(): return {}
+	var entry = history.back()
+	if not entry is Dictionary or entry.get("type", "") != "image": return {}
+	return entry
+
+func _artifact_images(entry: Dictionary) -> Array:
+	var images = entry.get("images", [])
+	if images is Array and not images.is_empty(): return images
+	return [entry]
+
+func _create_artifact_node(data: Dictionary, entry: Dictionary):
+	var source_id = str(data.id)
+	var artifact_id = "artifact_" + source_id
+	while nodes.any(func(item): return item.id == artifact_id): artifact_id += "_dynamic"
+	var images = _artifact_images(entry)
+	var node = GraphNode.new()
+	node.name = artifact_id
+	node.title = "◇ 图片生成物"
+	node.position_offset = Vector2(data.x + 340, data.y)
+	node.tooltip_text = "动态生成物节点：展示本次生成的全部图片，不参与工作流执行"
+	node.set_meta("maliang_artifact", true)
+	node.set_meta("artifact_source", source_id)
+	var style = StyleBoxFlat.new()
+	style.bg_color = Color(0.055, 0.14, 0.16, 0.98)
+	style.border_color = Color(0.24, 0.82, 0.72)
+	style.set_border_width_all(2)
+	style.set_corner_radius_all(18)
+	style.content_margin_left = 14
+	style.content_margin_right = 14
+	style.content_margin_top = 10
+	style.content_margin_bottom = 10
+	node.add_theme_stylebox_override("panel", style)
+	var selected_style = style.duplicate() as StyleBoxFlat
+	selected_style.border_color = Color(0.95, 0.82, 0.38)
+	node.add_theme_stylebox_override("panel_selected", selected_style)
+	var summary = Label.new()
+	summary.name = "ArtifactSummary"
+	summary.text = "动态节点 · 来自 %s · %d 张图片" % [source_id, images.size()]
+	summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	node.add_child(summary)
+	node.set_slot(0, true, PORT_DYNAMIC, PORT_COLORS[PORT_IMAGE_SET], true, PORT_DYNAMIC, PORT_COLORS[PORT_IMAGE_SET])
+	var gallery = GridContainer.new()
+	gallery.name = "ArtifactGallery"
+	gallery.columns = 2 if images.size() > 1 else 1
+	gallery.add_theme_constant_override("h_separation", 10)
+	gallery.add_theme_constant_override("v_separation", 10)
+	node.add_child(gallery)
+	for index in images.size():
+		var item = images[index]
+		if not item is Dictionary: continue
+		var item_box = VBoxContainer.new()
+		item_box.custom_minimum_size.x = 132
+		gallery.add_child(item_box)
+		var thumbnail = TextureRect.new()
+		thumbnail.name = "ArtifactThumbnail%d" % index
+		thumbnail.custom_minimum_size = Vector2(124, 78)
+		thumbnail.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		thumbnail.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		thumbnail.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		var image = Image.load_from_file(str(item.get("path", "")))
+		if image != null: thumbnail.texture = ImageTexture.create_from_image(image)
+		item_box.add_child(thumbnail)
+		var preview_button = button(item_box, "%d. %s" % [index + 1, str(item.get("label", "独立图片"))], _show_artifact_result.bind(source_id, index))
+		preview_button.name = "ArtifactImage%d" % index
+		preview_button.tooltip_text = "在右侧预览这张图片"
+		preview_button.clip_text = true
+	var download_button = button(node, "下载全部到项目…", _open_artifact_download.bind(source_id))
+	download_button.name = "DownloadArtifacts"
+	download_button.tooltip_text = "选择项目目录，保留每张图片的原始字节"
+	graph.add_child(node)
+	node.node_selected.connect(_show_artifact_result.bind(source_id, 0))
+	artifact_nodes[source_id] = {"id": artifact_id, "entry": entry}
+
+func _mark_artifact_deleted(source_id: String):
+	var entry = _latest_image_entry(source_id)
+	if not entry.is_empty(): dismissed_artifacts[source_id] = str(entry.get("token", ""))
+
+func _delete_artifact_node(source_id: String):
+	if is_graph_busy():
+		status.text = "请等待当前运行结束或先取消，再删除生成物节点"
+		return
+	_mark_artifact_deleted(source_id)
+	rebuild()
+	status.text = "已删除动态生成物节点；正式节点、生成历史和图片文件均保留"
+
+func _show_artifact_result(source_id: String, index: int = 0):
+	var entry = _latest_image_entry(source_id)
+	if entry.is_empty(): return
+	select_node(source_id)
+	load_preview(entry, source_id, str(entry.get("run", "")))
+	if index > 0: show_result(index)
+
+func _open_artifact_download(source_id: String):
+	if _latest_image_entry(source_id).is_empty():
+		status.text = "该节点暂无可下载的图片"
+		return
+	artifact_download_source = source_id
+	var project_output = ProjectSettings.globalize_path("res://generated").path_join(source_id)
+	if DirAccess.make_dir_recursive_absolute(project_output) != OK:
+		status.text = "无法创建项目生成物目录：" + project_output
+		return
+	artifact_download_picker.current_dir = project_output
+	artifact_download_picker.popup_centered_ratio(0.7)
+
+func _download_artifact_images(directory: String, source_id: String = ""):
+	var source = artifact_download_source if source_id.is_empty() else source_id
+	var entry = _latest_image_entry(source)
+	if entry.is_empty() or directory.is_empty():
+		status.text = "请选择有效的生成物和目标目录"
+		return
+	if DirAccess.make_dir_recursive_absolute(directory) != OK:
+		status.text = "无法创建下载目录：" + directory
+		return
+	var images = _artifact_images(entry)
+	for index in images.size():
+		var item = images[index]
+		if not item is Dictionary: return
+		var source_path = str(item.get("path", ""))
+		if not FileAccess.file_exists(source_path):
+			status.text = "生成物源文件已不可用：" + source_path
+			return
+		var extension = "." + source_path.get_extension().to_lower()
+		if extension not in [".png", ".jpg", ".jpeg"]: extension = ".png"
+		var artifact = item.get("artifact", {})
+		var identity = str(artifact.get("id", source)) if artifact is Dictionary else source
+		if identity.is_empty(): identity = source
+		var filename = ("%02d-%s" % [index + 1, identity]).validate_filename() + extension
+		var target = directory.path_join(filename)
+		var err = DirAccess.copy_absolute(source_path, target)
+		if err != OK or FileAccess.get_sha256(target) != FileAccess.get_sha256(source_path):
+			status.text = "下载生成物失败：" + (error_string(err) if err != OK else target)
+			return
+	status.text = "已下载 %d 张图片：%s" % [images.size(), directory]
+	if Engine.is_editor_hint(): EditorInterface.get_resource_filesystem().scan()
+
+func _schedule_artifact_layout():
+	if artifact_nodes.is_empty() or artifact_layout_pending: return
+	artifact_layout_pending = true
+	call_deferred("_layout_graph_with_artifacts")
+
+func _layout_graph_with_artifacts():
+	artifact_layout_pending = false
+	if not is_instance_valid(graph) or artifact_nodes.is_empty(): return
+	var graph_nodes: Array = []
+	for child in graph.get_children():
+		if child is GraphNode:
+			child.reset_size()
+			graph_nodes.append(child)
+	var layers: Dictionary = {}
+	var indegree: Dictionary = {}
+	var outgoing: Dictionary = {}
+	var ids: Array = []
+	for node in graph_nodes:
+		var id = str(node.name)
+		ids.append(id)
+		layers[id] = 0
+		indegree[id] = 0
+		outgoing[id] = []
+	for connection in graph.get_connection_list():
+		var from_id = str(connection.from_node)
+		var to_id = str(connection.to_node)
+		if not indegree.has(from_id) or not indegree.has(to_id): continue
+		indegree[to_id] += 1
+		outgoing[from_id].append(to_id)
+	var ready: Array = []
+	for id in ids:
+		if indegree[id] == 0: ready.append(id)
+	ready.sort()
+	while not ready.is_empty():
+		var id = ready.pop_front()
+		for next_id in outgoing[id]:
+			layers[next_id] = maxi(layers[next_id], layers[id] + 1)
+			indegree[next_id] -= 1
+			if indegree[next_id] == 0:
+				ready.append(next_id)
+				ready.sort()
+	var columns: Dictionary = {}
+	for id in ids:
+		var layer = layers[id]
+		if not columns.has(layer): columns[layer] = []
+		columns[layer].append(id)
+	var column_keys = columns.keys()
+	column_keys.sort()
+	var x_positions: Dictionary = {}
+	var column_heights: Dictionary = {}
+	var x = 60.0
+	var tallest = 0.0
+	for layer in column_keys:
+		var width = 0.0
+		var height = 48.0 * maxi(columns[layer].size() - 1, 0)
+		for id in columns[layer]:
+			var node = graph.get_node(NodePath(id)) as GraphNode
+			var minimum = node.get_combined_minimum_size()
+			var measured = Vector2(maxf(node.size.x, minimum.x), maxf(node.size.y, minimum.y))
+			node.set_meta("artifact_layout_size", measured)
+			width = maxf(width, measured.x)
+			height += measured.y
+		x_positions[layer] = x
+		column_heights[layer] = height
+		tallest = maxf(tallest, height)
+		x += width + 120.0
+	for layer in column_keys:
+		var y = 60.0 + (tallest - column_heights[layer]) * 0.5
+		for id in columns[layer]:
+			var node = graph.get_node(NodePath(id)) as GraphNode
+			node.position_offset = Vector2(x_positions[layer], y)
+			y += node.get_meta("artifact_layout_size").y + 48.0
+			if node.get_meta("maliang_artifact", false): continue
+			for data in nodes:
+				if data.id == id:
+					data.x = node.position_offset.x
+					data.y = node.position_offset.y
+					break
+	# Keep the complete generated chain visible when the inspector narrows the canvas.
+	var content_width = maxf(x - 60.0, 1.0)
+	var fit_zoom = clampf((graph.size.x - 24.0) / content_width, 0.55, 1.0)
+	if graph.zoom > fit_zoom: graph.zoom = fit_zoom
+	graph.scroll_offset = Vector2.ZERO
+
 func rebuild():
 	graph.clear_connections()
+	artifact_nodes.clear()
 	for child in graph.get_children():
 		if child is GraphNode:
 			graph.remove_child(child)
@@ -901,10 +1146,23 @@ func rebuild():
 			node.set_slot(3, false, 0, PORT_COLORS[PORT_IMAGE], true, PORT_IMAGE_SET, PORT_COLORS[PORT_IMAGE_SET])
 		node.node_selected.connect(select_node.bind(data.id))
 		node.position_offset_changed.connect(func(): data.x = node.position_offset.x; data.y = node.position_offset.y)
+	for data in nodes:
+		var entry = _latest_image_entry(str(data.id))
+		if not entry.is_empty() and dismissed_artifacts.get(str(data.id), "") != str(entry.get("token", "")):
+			_create_artifact_node(data, entry)
+	for source_id in artifact_nodes:
+		var source = nodes.filter(func(n): return n.id == source_id)[0]
+		var entry: Dictionary = artifact_nodes[source_id].entry
+		var from_port = 1 if not _queue_only_node(source) and entry.has("images") else 0
+		graph.connect_node(source_id, from_port, str(artifact_nodes[source_id].id), 0)
 	for edge in edges:
 		var source = nodes.filter(func(n): return n.id == edge.from)[0]
 		var from_port = 1 if edge.get("output", "result") == "image_set" and not _queue_only_node(source) else 0
-		graph.connect_node(edge.from, from_port, edge.to, 0)
+		if artifact_nodes.has(edge.from):
+			graph.connect_node(str(artifact_nodes[edge.from].id), 0, edge.to, 0)
+		else:
+			graph.connect_node(edge.from, from_port, edge.to, 0)
+	_schedule_artifact_layout()
 
 func _merged_requirements(primary: String, supplementary: String) -> String:
 	var main = primary.strip_edges()
@@ -1009,7 +1267,14 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	rebuild()
 
 func disconnect_nodes(from: StringName, _fp: int, to: StringName, _tp: int):
-	edges = edges.filter(func(e): return not (e.from == from and e.to == to))
+	var source_id = str(from)
+	var target_id = str(to)
+	# Removing an artifact-to-consumer wire removes the underlying formal edge.
+	for source in artifact_nodes:
+		if artifact_nodes[source].id == source_id:
+			source_id = str(source)
+			break
+	edges = edges.filter(func(e): return not (e.from == source_id and e.to == target_id))
 	rebuild()
 
 func delete_node():
@@ -1427,6 +1692,8 @@ func open_graph():
 		status.text = "无法恢复生成物，已保留当前工作流"
 		return
 	preview_history = restored_history
+	artifact_preview_queue.clear()
+	dismissed_artifacts.clear()
 	controller.reset()
 	clear_preview()
 	nodes = value.nodes
@@ -1495,6 +1762,7 @@ func run_node_preview(id: String):
 	if selected_id != id: select_node(id)
 	if service_config_link != null: service_config_link.hide()
 	preview_token = ""
+	artifact_preview_queue.clear()
 	status.text = "正在运行选中节点及必要的上游节点…"
 	_configure_controller()
 	controller.start(model(), id)
@@ -1509,6 +1777,7 @@ func start_run():
 			return
 	if service_config_link != null: service_config_link.hide()
 	preview_token = ""
+	artifact_preview_queue.clear()
 	_configure_controller()
 	controller.start(model())
 
@@ -1518,6 +1787,7 @@ func resume_run():
 
 func cancel_run():
 	preview_token = ""
+	artifact_preview_queue.clear()
 	_configure_controller()
 	controller.cancel()
 
@@ -1528,6 +1798,7 @@ func retry_node():
 		status.text = RETIRED_GPT_MESH_NOTICE
 		return
 	preview_token = ""
+	artifact_preview_queue.clear()
 	_configure_controller()
 	controller.retry(selected_id)
 
@@ -1543,8 +1814,24 @@ func launch(command: String, spec: Dictionary):
 	_configure_controller()
 	controller.submit(command, spec)
 
+func _queue_completed_image_previews(data: Dictionary):
+	if data.get("state", "") != "succeeded": return
+	for data_node in nodes:
+		if not _is_image_kind(str(data_node.get("type", ""))): continue
+		var node_id = str(data_node.id)
+		var state = data.get("nodes", {}).get(node_id, {})
+		if state.get("state", "") != "succeeded" or artifact_preview_queue.has(node_id): continue
+		var outputs = state.get("job", {}).get("outputs", {})
+		if not outputs is Dictionary or (not outputs.has("image_set") and not outputs.has("result")): continue
+		var already_loading = jobs.values().any(func(job): return job.command == "preview" and job.spec.get("node", "") == node_id)
+		if not already_loading: artifact_preview_queue.append(node_id)
+
 func _process(_delta):
 	controller.tick()
+	# Full-workflow runs also refresh every image artifact, not only a preview target.
+	if not artifact_preview_queue.is_empty() and jobs.is_empty() and not creating and not auto_step and not run_id.is_empty():
+		var node_id = str(artifact_preview_queue.pop_front())
+		launch("preview", {"run": run_id, "node": node_id})
 
 func _controller_failed(command: String, failure: Dictionary):
 	var message = str(failure.message)
@@ -1676,6 +1963,7 @@ func _controller_completed(command: String, data: Dictionary, request: Dictionar
 		if data.state == "reconcile": status.text += " | 提交结果未知，已暂停。点击“继续运行”查询一次结果，避免重复提交。"
 		if not failure_messages.is_empty():
 			_show_run_problem("生成任务失败，可复制以下报错：\n\n" + "\n\n".join(failure_messages))
+		if command in ["step", "status"]: _queue_completed_image_previews(data)
 
 func request_preview():
 	if creating:
@@ -1711,6 +1999,10 @@ func remember_preview(data: Dictionary, node_id: String, result_run: String):
 		history.append(entry)
 		preview_history[node_id] = history
 	if node_id == selected_id: refresh_history()
+	# An explicit new run restores a previously dismissed result node.
+	dismissed_artifacts.erase(node_id)
+	# A newly generated image immediately receives its presentation-only node.
+	if data.get("type", "") == "image" or artifact_nodes.has(node_id): rebuild()
 
 func show_history(index: int):
 	var history: Array = preview_history.get(selected_id, [])
@@ -1981,7 +2273,7 @@ func _setup_context_controls():
 func _graph_selected_ids() -> Array:
 	var ids: Array = []
 	for child in graph.get_children():
-		if child is GraphNode and child.selected: ids.append(str(child.name))
+		if child is GraphNode and child.selected and not child.get_meta("maliang_artifact", false): ids.append(str(child.name))
 	return ids
 
 func _node_at_context(point: Vector2) -> String:
@@ -2074,8 +2366,21 @@ func show_context_menu(local_position: Vector2):
 	context_position = local_position
 	context_node_ids = []
 	context_connection = {}
+	context_artifact_source = ""
 	var hit = _node_at_context(local_position)
 	if not hit.is_empty():
+		var hit_node = graph.get_node(NodePath(hit)) as GraphNode
+		if hit_node.get_meta("maliang_artifact", false):
+			context_artifact_source = str(hit_node.get_meta("artifact_source", ""))
+			_show_artifact_result(context_artifact_source)
+			_remember_context()
+			context_menu.clear()
+			context_history_menu.clear()
+			_context_item("下载全部到项目…", CONTEXT_ARTIFACT_DOWNLOAD)
+			_context_item("删除生成物节点", CONTEXT_ARTIFACT_DELETE, "请等待当前运行结束或先取消" if is_graph_busy() else "")
+			context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_DELETE)
+			context_menu.popup(Rect2i(Vector2i(graph.get_screen_transform() * local_position), Vector2i.ZERO))
+			return
 		var selected = _graph_selected_ids()
 		if not hit in selected:
 			for child in graph.get_children():
@@ -2163,6 +2468,10 @@ func _context_action(action: int):
 				retry_node()
 		CONTEXT_DUPLICATE: duplicate_context_nodes()
 		CONTEXT_DELETE: delete_context_nodes()
+		CONTEXT_ARTIFACT_DOWNLOAD:
+			if not context_artifact_source.is_empty(): _open_artifact_download(context_artifact_source)
+		CONTEXT_ARTIFACT_DELETE:
+			if not context_artifact_source.is_empty(): _delete_artifact_node(context_artifact_source)
 		CONTEXT_DISCONNECT:
 			if is_graph_busy() or context_connection.is_empty(): return
 			disconnect_nodes(context_connection.from_node, context_connection.from_port, context_connection.to_node, context_connection.to_port)
@@ -2272,8 +2581,24 @@ func _keyboard_duplicate():
 	duplicate_context_nodes()
 
 func _keyboard_delete(ids: Array):
+	if is_graph_busy():
+		status.text = "请等待当前运行结束或先取消，再删除节点"
+		return
 	context_node_ids = []
-	for id in ids: context_node_ids.append(str(id))
+	var artifact_sources: Array = []
+	for id in ids:
+		var node = graph.get_node_or_null(NodePath(str(id)))
+		if node != null and node.get_meta("maliang_artifact", false):
+			var source_id = str(node.get_meta("artifact_source", ""))
+			artifact_sources.append(source_id)
+			_mark_artifact_deleted(source_id)
+			continue
+		context_node_ids.append(str(id))
+	if context_node_ids.is_empty():
+		if not artifact_sources.is_empty():
+			rebuild()
+			status.text = "已删除动态生成物节点；正式节点、生成历史和图片文件均保留"
+		return
 	context_connection = {}
 	_remember_context()
 	delete_context_nodes()
