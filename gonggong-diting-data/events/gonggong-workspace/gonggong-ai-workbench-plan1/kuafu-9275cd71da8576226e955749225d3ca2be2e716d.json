@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9275cd71da8576226e955749225d3ca2be2e716d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "db63fee05705601d458c177d26c876fba348ee8089f111385ad414e3afb9204b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1875",
+    "action": "delivery",
+    "detection_head": "a5137d854d687c4e9c8fa3d7148cb55198163818",
+    "context_sha256": "93611dc20acccfd2043544ce3a518f3f0a4ba78e2fb43846adfd14158bfb1187",
+    "operator": "Sail-Li",
+    "worker": "codex-current-issue-1709",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "evidence": "git ls-files --eol：两份候选均为 i/lf w/lf",
+    "diagnosis": "登记回执在工作树为 CRLF 而索引为 LF，导致精确字节核验失败；仅本人候选的文档与回执已规范为 LF。",
+    "next_action": "同候选重新运行签发并回读 main、CI 与登记回执；保持产品工单开放。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T23:02:57.120514+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T23:05:04.952308+00:00",
+  "sha256": "74e38ab78abd459b21e88395de31dd4308c683b45065c5cde0e1ecdf54019f01"
+}
