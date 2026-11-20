@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Icon, type IconName } from "@/components/Icon";
 import { useIdentity } from "@/components/IdentityProvider";
 import { ApiStatus } from "@/components/ApiStatus";
@@ -16,19 +16,18 @@ interface NavItem {
   icon: IconName;
 }
 
-const primaryNav: NavItem[] = [
+const projectNav: NavItem[] = [
   { href: "/", key: "nav.home", icon: "home" },
-  { href: "/docs", key: "nav.docs", icon: "docs" },
-  { href: "/game-config", key: "nav.gameConfig", icon: "settings" },
-  { href: "/issues", key: "nav.issues", icon: "issues" },
-  { href: "/repos", key: "nav.repos", icon: "repos" },
   { href: "/requirements", key: "nav.requirements", icon: "requirements" },
+  { href: "/issues", key: "nav.issues", icon: "issues" },
+  { href: "/docs", key: "nav.docs", icon: "docs" },
 ];
 
-const utilityNav: NavItem[] = [
+const libraryNav: NavItem[] = [
+  { href: "/repos", key: "nav.repos", icon: "repos" },
+  { href: "/game-config", key: "nav.gameConfig", icon: "layers" },
   { href: "/migration", key: "nav.migration", icon: "history" },
   { href: "/search", key: "nav.search", icon: "search" },
-  { href: "/settings", key: "nav.settings", icon: "settings" },
 ];
 
 function isActive(pathname: string, href: string): boolean {
@@ -53,6 +52,65 @@ export function AppShell({ children }: { children: ReactNode }) {
     setMobileNavOpen(false);
   }, [pathname]);
 
+  const sidebar = useRef<HTMLElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+  const menu = useRef<HTMLButtonElement>(null);
+  const search = useRef<HTMLInputElement>(null);
+  const mobileSearch = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    function shortcut(event: KeyboardEvent) {
+      if (event.defaultPrevented || event.isComposing || event.repeat) return;
+      if (!(event.metaKey || event.ctrlKey) || event.altKey || event.shiftKey || event.key.toLowerCase() !== "k" || mobileNavOpen) return;
+      event.preventDefault();
+      if (search.current?.getClientRects().length) {
+        search.current.focus();
+        search.current.select();
+      } else {
+        mobileSearch.current?.click();
+      }
+    }
+    window.addEventListener("keydown", shortcut);
+    return () => window.removeEventListener("keydown", shortcut);
+  }, [mobileNavOpen]);
+
+  useEffect(() => {
+    if (!mobileNavOpen || !sidebar.current || !content.current) return;
+    const panel = sidebar.current;
+    const background = content.current;
+    const desktop = matchMedia("(min-width: 1021px)");
+    const previousOverflow = document.body.style.overflow;
+    function closeOnResize() {
+      if (desktop.matches) setMobileNavOpen(false);
+    }
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") setMobileNavOpen(false);
+      if (event.key !== "Tab") return;
+      const controls = Array.from(panel.querySelectorAll<HTMLElement>("a[href], button:enabled"));
+      const first = controls[0];
+      const last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last?.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first?.focus();
+      }
+    }
+    background.inert = true;
+    document.body.style.overflow = "hidden";
+    panel.querySelector<HTMLElement>('[aria-current="page"], .sidebar-close')?.focus();
+    desktop.addEventListener("change", closeOnResize);
+    panel.addEventListener("keydown", onKey);
+    return () => {
+      background.inert = false;
+      document.body.style.overflow = previousOverflow;
+      desktop.removeEventListener("change", closeOnResize);
+      panel.removeEventListener("keydown", onKey);
+      if (!desktop.matches) menu.current?.focus();
+    };
+  }, [mobileNavOpen]);
+
   return (
     <>
       <a className="skip-link" href="#main-content">
@@ -60,6 +118,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       </a>
       <div className="app-frame">
         <aside
+          ref={sidebar}
+          role={mobileNavOpen ? "dialog" : undefined}
+          aria-modal={mobileNavOpen || undefined}
+          onClick={event => { if ((event.target as Element).closest("a[href]")) setMobileNavOpen(false); }}
           aria-label={t("shell.navAria")}
           className={`sidebar${mobileNavOpen ? " is-open" : ""}`}
           id="app-sidebar"
@@ -67,7 +129,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="sidebar-brand">
             <Link className="brand" href="/" aria-label={t("shell.brandAria")}>
               <span className="brand-mark" aria-hidden="true">
-                <span>璇</span>
+                <Icon name="layers" size={23} />
               </span>
               <span className="brand-wordmark">
                 <strong>天璇</strong>
@@ -84,46 +146,31 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
 
           <nav aria-label={t("shell.navAria")} className="sidebar-nav">
-            <p className="sidebar-label">{t("shell.workspace")}</p>
-            {primaryNav.map((item) => {
-              const active = isActive(pathname, item.href);
-              return (
-                <Link
-                  aria-current={active ? "page" : undefined}
-                  className={`nav-item${active ? " is-active" : ""}`}
-                  href={item.href}
-                  key={item.href}
-                >
-                  <span className="nav-icon">
-                    <Icon name={item.icon} size={18} />
-                  </span>
-                  <span>{t(item.key)}</span>
-                </Link>
-              );
-            })}
-
-            <p className="sidebar-label sidebar-label-spaced">{t("shell.explore")}</p>
-            {utilityNav.map((item) => {
-              const active = isActive(pathname, item.href);
-              return (
-                <Link
-                  aria-current={active ? "page" : undefined}
-                  className={`nav-item${active ? " is-active" : ""}`}
-                  href={item.href}
-                  key={item.href}
-                >
-                  <span className="nav-icon">
-                    <Icon name={item.icon} size={18} />
-                  </span>
-                  <span>{t(item.key)}</span>
-                </Link>
-              );
-            })}
+            {[
+              { label: t("shell.workspace"), items: projectNav },
+              { label: locale === "zh" ? "资源" : "Resources", items: libraryNav },
+            ].map(group => (
+              <div className="nav-group" key={group.items[0].href}>
+                <p className="sidebar-label">{group.label}</p>
+                {group.items.map(item => {
+                  const active = isActive(pathname, item.href);
+                  return <Link aria-current={active ? "page" : undefined}
+                    className={`nav-item${active ? " is-active" : ""}`} href={item.href} key={item.href}>
+                    <span className="nav-icon"><Icon name={item.icon} size={19} /></span>
+                    <span>{t(item.key)}</span>
+                  </Link>;
+                })}
+              </div>
+            ))}
           </nav>
 
           <div className="sidebar-footer">
+            <Link className={`nav-item${pathname === "/settings" ? " is-active" : ""}`} href="/settings"
+              aria-current={pathname === "/settings" ? "page" : undefined}>
+              <span className="nav-icon"><Icon name="settings" size={19} /></span>{t("nav.settings")}
+            </Link>
             <ApiStatus />
-            <Link className="profile-card" href="/accounts">
+            <Link className="profile-card" href={identity ? "/accounts" : "/login"}>
               <span className="avatar avatar-jade">{profileInitial}</span>
               <span className="profile-copy">
                 <strong>{profileName}</strong>
@@ -139,14 +186,16 @@ export function AppShell({ children }: { children: ReactNode }) {
             aria-label={t("shell.closeScrim")}
             className="sidebar-scrim"
             onClick={() => setMobileNavOpen(false)}
+            tabIndex={-1}
             type="button"
           />
         ) : null}
 
-        <div className="app-main">
+        <div className="app-main" ref={content}>
           <header className="topbar">
             <div className="topbar-left">
               <button
+                ref={menu}
                 aria-controls="app-sidebar"
                 aria-expanded={mobileNavOpen}
                 aria-label={t("shell.openNav")}
@@ -168,13 +217,14 @@ export function AppShell({ children }: { children: ReactNode }) {
                 <Icon name="search" size={16} />
                 <input
                   aria-label={t("shell.searchAria")}
+                  ref={search}
                   name="q"
                   placeholder={t("shell.searchPlaceholder")}
                   type="search"
                 />
-                <span className="search-scope">{t("shell.searchScope")}</span>
+                <kbd className="search-scope" aria-hidden="true">Ctrl / ⌘ K</kbd>
               </form>
-              <Link aria-label={t("shell.searchAria")} className="icon-button mobile-search-link" href="/search">
+              <Link ref={mobileSearch} aria-label={t("shell.searchAria")} className="icon-button mobile-search-link" href="/search">
                 <Icon name="search" size={19} />
               </Link>
               <button
@@ -186,9 +236,6 @@ export function AppShell({ children }: { children: ReactNode }) {
                 {locale === "zh" ? "EN" : "中"}
               </button>
               <ThemeSelect />
-              <Link className="topbar-avatar" href="/settings" aria-label={t("shell.settingsAria")}>
-                <span className="avatar avatar-jade">{profileInitial}</span>
-              </Link>
             </div>
           </header>
 

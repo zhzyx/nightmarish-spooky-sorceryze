@@ -1,16 +1,16 @@
-.panel { padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--line-strong); border-radius: 16px; }
+.panel { padding: clamp(1rem, 3vw, 2rem); background: var(--ink-2); border: 1px solid var(--line); border-radius: var(--radius-lg); }
 .panel h2 { margin-top: 0; }
 .panel dl > div { display: flex; gap: 1rem; margin: .45rem 0; }
 .panel dt { min-width: 6rem; }
 .panel dd { margin: 0; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
-.panel .counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: .25rem 1.5rem; }
+.panel .counts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr)); gap: .25rem 1.5rem; }
 .counts div { justify-content: space-between; border-bottom: 1px solid var(--line-strong); }
-.panel form, .choice { display: flex; flex-wrap: wrap; align-items: end; gap: 1rem; margin-top: 1rem; }
-.panel label { display: grid; gap: .35rem; }
-.panel input, .panel select, .panel button { padding: .45rem .7rem; color: inherit; background: var(--glass); border: 1px solid var(--line-strong); border-radius: 6px; font: inherit; }
+.panel form, .choice { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem; margin-top: 1rem; }
+.panel label { display: grid; min-width: 0; max-width: 100%; gap: .35rem; }
+.panel input, .panel select, .panel button { min-height: 2.75rem; max-width: 100%; padding: .5rem .8rem; color: inherit; background: var(--glass); border: 1px solid var(--line-strong); border-radius: 6px; font: inherit; }
 .panel button:disabled { opacity: .55; }
 .panel button:enabled { cursor: pointer; }
 .body { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 32rem; overflow: auto; }
-.paging { display: flex; gap: .6rem; align-items: center; margin-block: .75rem; }
+.paging { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin-block: .75rem; }
 .panel li, .panel small { overflow-wrap: anywhere; }
 .paging button[aria-pressed="true"] { font-weight: 700; border-color: currentColor; }

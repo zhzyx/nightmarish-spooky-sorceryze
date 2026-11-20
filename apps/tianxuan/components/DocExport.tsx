@@ -42,7 +42,6 @@ export function DocExport({ docId, title }: { docId: string; title: string }) {
     <section className="panel" aria-labelledby="doc-export-title">
       <div className="section-heading">
         <div>
-          <p className="section-kicker">DOCUMENT · EXPORT</p>
           <h2 id="doc-export-title">{t("export.title")}</h2>
         </div>
         <span className="section-note">Markdown / HTML / Word / PDF</span>

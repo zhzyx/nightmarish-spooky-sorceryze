@@ -20,8 +20,8 @@
 .gc-filter .gc-field:first-child, .gc-create-project .gc-field { flex: 1; }
 .gc-create-project .btn { margin-bottom: 14px; }
 .gc-projects { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; margin: 8px 0 20px; }
-.gc-project { text-align: left; color: var(--paper); padding: 14px; border: 1px solid var(--line-strong); background: var(--glass-soft); border-radius: var(--radius-sm); cursor: pointer; display: flex; flex-direction: column; gap: 6px; overflow-wrap: anywhere; }
-.gc-project.is-selected { border-color: var(--jade); background: color-mix(in srgb, var(--jade) 12%, transparent); }
+.gc-project { text-align: left; color: var(--paper); padding: 16px; border: 1px solid var(--line-strong); background: var(--glass-soft); border-radius: var(--radius-sm); cursor: pointer; display: flex; flex-direction: column; gap: 6px; overflow-wrap: anywhere; }
+.gc-project.is-selected { border-color: var(--accent); background: var(--accent-soft); }
 .game-config-page code { font-size: 12px; font-family: var(--font-mono); overflow-wrap: anywhere; }
 .gc-status { display: flex; flex-wrap: wrap; gap: 10px 22px; padding-block: 4px 16px; }
 .gc-conflict { border: 1px solid var(--gold); background: color-mix(in srgb, var(--gold) 7%, transparent); padding: 18px; margin-block: 12px 18px; border-radius: var(--radius-sm); }

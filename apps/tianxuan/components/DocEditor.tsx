@@ -595,10 +595,6 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
           <span>{formatMessage(t("editor.lastEdited"), { time: doc.updated })}</span>
         </div>
         <div className="doc-meta-right">
-          <span className="ai-ready">
-            <Icon name="sparkles" size={14} />
-            {t("editor.aiReady")}
-          </span>
           <div className="avatar-stack" aria-label={t("editor.collaboratorsAria")}>
             {actors.map(id => <span className="avatar avatar-xs" key={id} title={id}>{id.slice(-2)}</span>)}
           </div>
@@ -659,10 +655,6 @@ export function DocEditor({ doc, initialContent, version: initialVersion }: DocE
             ))}
             <span className="doc-tag-meta">{doc.readTime}</span>
           </div>
-        </div>
-        <div className="doc-seal" aria-hidden="true">
-          <span>文曲</span>
-          <small>MARKDOWN</small>
         </div>
       </div>
 

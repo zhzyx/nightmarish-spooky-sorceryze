@@ -48,17 +48,17 @@ const commentMetaStyle = {
 } as const;
 
 const commentAuthorStyle = {
-  color: "rgba(245, 242, 234, 0.78)",
-  fontSize: "10.5px",
+  color: "var(--paper-72)",
+  fontSize: ".875rem",
   fontWeight: 500,
 } as const;
 
-const commentTimeStyle = { fontSize: "8px" } as const;
+const commentTimeStyle = { fontSize: ".8125rem" } as const;
 
 const commentBodyStyle = {
   margin: 0,
-  color: "rgba(245, 242, 234, 0.66)",
-  fontSize: "11px",
+  color: "var(--paper-72)",
+  fontSize: "1rem",
   lineHeight: 1.75,
   overflowWrap: "anywhere",
   whiteSpace: "pre-wrap",
@@ -71,7 +71,7 @@ const commentFormStyle = {
   padding: "13px 14px",
   border: "1px solid var(--line)",
   borderRadius: "13px",
-  background: "rgba(245, 242, 234, 0.025)",
+  background: "var(--ink-3)",
 } as const;
 
 const commentInputStyle = {
@@ -79,11 +79,11 @@ const commentInputStyle = {
   minHeight: "76px",
   padding: "9px 11px",
   resize: "vertical",
-  border: "1px solid rgba(245, 242, 234, 0.075)",
+  border: "1px solid var(--line-strong)",
   borderRadius: "9px",
-  background: "rgba(8, 11, 14, 0.45)",
-  color: "rgba(245, 242, 234, 0.8)",
-  fontSize: "11px",
+  background: "var(--ink-3)",
+  color: "var(--paper-72)",
+  fontSize: "1rem",
   lineHeight: 1.7,
 } as const;
 
@@ -184,13 +184,12 @@ export function DocComments({ docId }: DocCommentsProps) {
       <section aria-label={t("comments.title")} className="panel">
         <header className="panel-head">
           <div>
-            <p className="section-kicker">WENQU · COMMENTS</p>
-            <h2>{t("comments.title")}</h2>
+            <h2 id="doc-comments">{t("comments.title")}</h2>
           </div>
           <span className="mono-key">{t("comments.disabled")}</span>
         </header>
         <div style={panelBodyStyle}>
-          <p className="section-note" style={{ fontSize: "10.5px", lineHeight: 1.6 }}>
+          <p className="section-note" style={{ fontSize: ".875rem", lineHeight: 1.6 }}>
             <Icon name="lock" size={14} />
             {t("comments.disabledNote")}
           </p>
@@ -203,8 +202,7 @@ export function DocComments({ docId }: DocCommentsProps) {
     <section aria-busy={loadState === "loading"} aria-label={t("comments.title")} className="panel">
       <header className="panel-head">
         <div>
-          <p className="section-kicker">WENQU · COMMENTS</p>
-          <h2>{t("comments.title")}</h2>
+          <h2 id="doc-comments">{t("comments.title")}</h2>
         </div>
         <span className="mono-key">
           {loadState === "loading"
@@ -222,7 +220,7 @@ export function DocComments({ docId }: DocCommentsProps) {
           <div
             style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}
           >
-            <p className="section-note" role="alert" style={{ color: "#D48B80" }}>
+            <p className="section-note" role="alert" style={{ color: "var(--error-text)" }}>
               <Icon name="alert" size={13} /> {loadError}
             </p>
             <button className="text-link" onClick={() => void loadComments()} type="button">
@@ -284,7 +282,7 @@ export function DocComments({ docId }: DocCommentsProps) {
         ) : null}
 
         {actionError ? (
-          <p className="section-note" role="alert" style={{ color: "#D48B80" }}>
+          <p className="section-note" role="alert" style={{ color: "var(--error-text)" }}>
             <Icon name="alert" size={13} /> {actionError}
           </p>
         ) : null}

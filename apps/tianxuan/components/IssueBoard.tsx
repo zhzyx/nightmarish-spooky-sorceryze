@@ -178,7 +178,6 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
           actionLabel={t("board.clear")}
           compact
           description={t("board.emptyDesc")}
-          eyebrow="SINAN · NO MATCH"
           onAction={() => {
             setQuery("");
             setProject(ALL_PROJECTS);
@@ -402,13 +401,11 @@ export function IssueBoard({ initialIssues }: IssueBoardProps) {
               </div>
 
               <section className="drawer-section">
-                <p className="section-kicker">CONTEXT</p>
                 <h3>{t("board.description")}</h3>
                 <p>{selected.detail}</p>
               </section>
 
               <section className="drawer-section">
-                <p className="section-kicker">ACCEPTANCE</p>
                 <h3>{t("board.acceptance")}</h3>
                 <ul className="criteria-list">
                   {selected.criteria.map((criterion) => (

@@ -3,10 +3,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n-client";
 import { clearSession } from "@/lib/auth";
-const inputStyle = {
-    display: "block", width: "100%", padding: "10px 12px", borderRadius: "6px",
-    background: "transparent", color: "inherit", border: "1px solid rgba(245, 242, 234, 0.18)",
-} as const;
+
 
 export default function LoginPage() {
     const router = useRouter();
@@ -61,23 +58,23 @@ export default function LoginPage() {
         }
     }
     return (
-        <div className="page-stack">
+        <div className="page-stack sign-in-page">
             <header className="page-header">
                 <h1>{register ? label("创建文曲工作空间", "Create a Wenqu workspace") : label("登录天璇", "Sign in to Tianxuan")}</h1>
             </header>
             <section className="panel">
-                <form onSubmit={submit} style={{ display: "grid", gap: "16px", padding: "24px", maxWidth: "480px" }}>
+                <form onSubmit={submit} className="sign-in-form">
                     {mode === "accounts" && !useKey ? (
                         <>
                             <label>
                                 {label("邮箱", "Email")}
-                                <input type="email" autoComplete="username" required style={inputStyle}
+                                <input type="email" autoComplete="username" required
                                     value={email} onChange={event => setEmail(event.target.value)} />
                             </label>
                             {register ? (
                                 <label>
                                     {label("工作空间名称", "Workspace name")}
-                                    <input required style={inputStyle} value={workspace}
+                                    <input required value={workspace}
                                         onChange={event => setWorkspace(event.target.value)} />
                                 </label>
                             ) : null}
@@ -85,7 +82,7 @@ export default function LoginPage() {
                     ) : null}
                     <label>
                         {mode === "accounts" && !useKey ? label("密码", "Password") : label("个人访问密钥", "Personal access key")}
-                        <input type="password" required style={inputStyle}
+                        <input type="password" required
                             autoComplete={register ? "new-password" : "current-password"}
                             value={password} onChange={event => setPassword(event.target.value)} />
                     </label>

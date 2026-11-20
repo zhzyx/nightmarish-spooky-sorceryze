@@ -40,7 +40,7 @@ const controlsStyle = {
   flexWrap: "wrap",
 } as const;
 
-const arrowStyle = { fontSize: "10px" } as const;
+const arrowStyle = { fontSize: ".875rem" } as const;
 
 const errorRowStyle = {
   display: "flex",
@@ -49,7 +49,7 @@ const errorRowStyle = {
   flexWrap: "wrap",
 } as const;
 
-const errorTextStyle = { color: "#D48B80" } as const;
+const errorTextStyle = { color: "var(--error-text)" } as const;
 
 const diffStyle = {
   maxHeight: "360px",
@@ -58,11 +58,11 @@ const diffStyle = {
   overflow: "auto",
   border: "1px solid var(--line)",
   borderRadius: "11px",
-  background: "rgba(8, 11, 14, 0.45)",
-  color: "rgba(245, 242, 234, 0.74)",
+  background: "var(--ink-3)",
+  color: "var(--paper-72)",
   fontFamily:
     "var(--font-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-  fontSize: "10px",
+  fontSize: ".875rem",
   lineHeight: 1.65,
   whiteSpace: "pre-wrap",
   overflowWrap: "anywhere",
@@ -180,13 +180,12 @@ export function DocVersions({ docId }: DocVersionsProps) {
       <section aria-label={t("versions.title")} className="panel">
         <div className="section-heading" style={headingStyle}>
           <div>
-            <p className="section-kicker">WENQU · VERSIONS</p>
-            <h2>{t("versions.title")}</h2>
+            <h2 id="doc-versions">{t("versions.title")}</h2>
           </div>
           <span className="mono-key">{t("versions.disabled")}</span>
         </div>
         <div style={panelBodyStyle}>
-          <p className="section-note" style={{ fontSize: "10.5px", lineHeight: 1.6 }}>
+          <p className="section-note" style={{ fontSize: ".875rem", lineHeight: 1.6 }}>
             <Icon name="lock" size={14} />
             {t("versions.disabledNote")}
           </p>
@@ -205,8 +204,7 @@ export function DocVersions({ docId }: DocVersionsProps) {
     >
       <div className="section-heading" style={headingStyle}>
         <div>
-          <p className="section-kicker">WENQU · VERSIONS</p>
-          <h2>{t("versions.title")}</h2>
+          <h2 id="doc-versions">{t("versions.title")}</h2>
         </div>
         <span className="mono-key">
           {loadState === "loading"
