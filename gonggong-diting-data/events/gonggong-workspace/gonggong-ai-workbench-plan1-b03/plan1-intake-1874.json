@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-b03",
+  "event_id": "plan1-intake-1874",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1874",
+  "occurred_at": "2026-11-20T23:30:45.444359+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "issue_number": 1874,
+    "title": "[方案一 B03] 核对天枢与司南执行路径",
+    "operator": "Sail-Li",
+    "updated_at": "2026-11-20T23:24:35Z",
+    "action": "Proceed with this explicitly requested baseline work order and verify its own acceptance criteria."
+  },
+  "sha256": "6b94b87c70f18dc6b24d22c7cefd495f4bc0e1ec6cfe19c1ec80f9997f4e5a64"
+}
