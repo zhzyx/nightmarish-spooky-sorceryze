@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-image-artifact-nodes-20261120",
+  "issue_number": 1679,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679",
+  "state": "passed",
+  "editor_sha256": "4d303a00c997060d6b0ec88f5f794e0ae59182e8ff408465c3bd87ba9bac9897",
+  "bundle_version": "325ba9a39afca904aca7da2239294a5b22dacae58a7a8ca346e77f2529050bc9",
+  "validation": [
+    {
+      "name": "managed_comfy_fresh_acceptance.gd",
+      "state": "passed",
+      "evidence": "Fresh installation enables recovery, selects local_mesh, and requests the exact bundled interpreter and native host; fake executable only, no model inference."
+    },
+    {
+      "name": "artifact_node_acceptance.gd and mesh_artifact_node_acceptance.gd",
+      "state": "passed",
+      "evidence": "Image and per-round actual GLB rendering, exact-byte saves, fixed-iteration inputs, persistence, double-click target and shared restore pass."
+    },
+    {
+      "name": "multi_image_acceptance.gd and node_preview_acceptance.gd and port_type_acceptance.gd and unified_settings_acceptance.gd",
+      "state": "passed",
+      "evidence": "Existing ordered images, durable history, interactive preview, typed ports and central settings/lease behavior pass."
+    },
+    {
+      "name": "AINative Python unit tests and Ruff",
+      "state": "passed",
+      "tests": 491,
+      "skipped": 62,
+      "evidence": "The full Python suite and Ruff check/format pass for all five changed Python files."
+    },
+    {
+      "name": "macOS arm64 editor build and installed bundle verification",
+      "state": "passed",
+      "evidence": "Native entry, independent project, sample compatibility and relocated runtime pass; normalized source, installed workbench and manifest SHA256 match."
+    },
+    {
+      "name": "User workflow acceptance",
+      "state": "passed",
+      "evidence": "User confirmed acceptance and authorized main delivery on 2026-11-20."
+    }
+  ],
+  "known_remote_failures": [
+    {
+      "name": "PR #1682 and #1691 maliang-offline / package-and-run",
+      "state": "failed",
+      "relation": "Both candidates failed fresh local-connection ownership because the fresh predicate referenced the removed offline mode. The startup fix is included in this candidate, but the same Windows check must still pass before merge."
+    }
+  ],
+  "external_model_inference_in_tests": false,
+  "main_merged": false,
+  "correction_policy": "Appended fresh-startup fix evidence; prior collection sources and receipts are unchanged."
+}

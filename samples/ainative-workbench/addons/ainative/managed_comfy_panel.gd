@@ -73,8 +73,7 @@ func initialize(workbench, settings: ConfigFile):
 	chooser.title = '选择已有 ComfyUI 本机运行库'
 	chooser.dir_selected.connect(func(path): runtime_path.text = path)
 	add_child(chooser)
-	var fresh = (host._service_mode() == 'offline'
-			and not settings.has_section_key('service', 'mode')
+	var fresh = (not settings.has_section_key('service', 'mode')
 			and not FileAccess.file_exists(host.service_config_path)
 			and host.factory_edit.text == 'editor_demo:factory')
 	var default_bundle = fresh and using_bundle() and _uses_native_host()

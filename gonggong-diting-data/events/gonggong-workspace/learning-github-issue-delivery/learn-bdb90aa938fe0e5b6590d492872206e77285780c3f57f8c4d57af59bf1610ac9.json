@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-github-issue-delivery",
+  "event_id": "learn-bdb90aa938fe0e5b6590d492872206e77285780c3f57f8c4d57af59bf1610ac9",
+  "kind": "analysis",
+  "agent": {
+    "id": "kimi-work-host",
+    "version": "20261120",
+    "origin": "external-authorized-host",
+    "definition_sha256": "00e4161c08059956fc5a0c291fc7d9f90eb17093e77fb55626b9cf602aced636"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679",
+  "occurred_at": "2026-11-20T10:47:37Z",
+  "evidence_refs": [
+    "maliang-image-artifact-nodes-20261120-request"
+  ],
+  "payload": {
+    "scope": "github-issue-delivery",
+    "lesson": "check-merge-tree-capability",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "使用 writer_submit --auto-integrate 前先运行 git merge-tree -h 核对 --merge-base 支持；旧 Git 在隔离副本对齐目标 main 后按原路径重跑门禁，不把参数错误当成内容冲突。",
+      "when": "协作者使用本机 Apple Git 或旧版 Git 交付，自动树整合在读取冲突详情前就返回笼统失败。",
+      "counterexample": "merge-tree 返回真实冲突并列出冲突路径时不能按兼容性处理；不得用硬重置覆盖未保存的他人改动。",
+      "trial_plan": "在 Apple Git 2.39.5 复现 --merge-base 参数拒绝，对无路径重叠候选先安全保存暂存树、对齐 main、恢复并复核暂存字节，再执行不带 auto-integrate 的正式门禁；预期同一候选能够签发 PR。"
+    },
+    "evidence": [
+      {
+        "path": "gonggong-diting-data/events/gonggong-workspace/maliang-image-artifact-nodes-20261120/kuafu-ab0d2e112767c16072f4bb293414613eb0eb0afe.json",
+        "sha256": "14ecda8c47fcfa099468ae7e3a12c11efee6c60adaf80f38252f38c8200c5999"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/maliang-image-artifact-nodes-20261120/maliang-image-artifact-nodes-20261120-request.json",
+      "sha256": "0484bb9c8128385590153a49f5750c1a6117f3d7e05be5c1570fbc136ed5860d"
+    }
+  },
+  "sha256": "4a6c22f01e011cb298c6982455b07724b1b6d47719aa0b2b9b0151b65ff39694"
+}

@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "request_id": "maliang-image-artifact-nodes-20261120",
+  "issue_number": 1679,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679",
+  "state": "passed",
+  "editor_sha256": "3da7b006d38783aee9c4d37532668ad7c22a60cc89f3ba7ff8746bea86c6b352",
+  "bundle_version": "f1a4270cc2ced2e1dcf8d86f4dba8fd64b6f2c64f29ab88f25e66efb4e519442",
+  "workbench_sha256": "e5283e1f190ac03c64b8e70c282afc3d642cfc4c79f8af2b6f05b1a14d6859fb",
+  "validation": [
+    {
+      "name": "artifact_node_acceptance.gd",
+      "state": "passed",
+      "evidence": "Image gallery, exact-byte downloads, reference wiring, persistence, non-overlapping layout, double-click target and shared restore pass in real Godot controls."
+    },
+    {
+      "name": "mesh_artifact_node_acceptance.gd",
+      "state": "passed",
+      "evidence": "Every round renders its actual GLB, saves exact bytes, preserves fixed-iteration inputs and workflow history, and maximizes/restores the selected round on double-click."
+    },
+    {
+      "name": "prompt_refresh_acceptance.gd",
+      "state": "passed",
+      "evidence": "Full-workflow prompt changes produce different PNG bytes and refresh the gallery and preview; Delete preserves formal state, history and files."
+    },
+    {
+      "name": "multi_image_acceptance.gd and node_preview_acceptance.gd and port_type_acceptance.gd",
+      "state": "passed",
+      "evidence": "Existing ordered images, durable history, interactive preview and typed-port regressions pass on the final candidate."
+    },
+    {
+      "name": "AINative Python unit tests",
+      "state": "passed",
+      "tests": 491,
+      "skipped": 62
+    },
+    {
+      "name": "macOS arm64 editor build and installed bundle verification",
+      "state": "passed",
+      "evidence": "Native entry, independent project, sample compatibility and relocated runtime pass; normalized source, installed workbench and manifest SHA256 match."
+    },
+    {
+      "name": "User workflow acceptance",
+      "state": "passed",
+      "evidence": "User confirmed acceptance and authorized main delivery on 2026-11-20."
+    }
+  ],
+  "known_remote_failures": [
+    {
+      "name": "PR #1682 maliang-offline / package-and-run",
+      "state": "failed",
+      "relation": "The previous signed candidate failed the Windows packaged runtime local-connection session ownership check. The replacement candidate must pass the same check; the old failure is not counted as passing evidence."
+    }
+  ],
+  "external_model_inference_in_tests": false,
+  "main_merged": false
+}

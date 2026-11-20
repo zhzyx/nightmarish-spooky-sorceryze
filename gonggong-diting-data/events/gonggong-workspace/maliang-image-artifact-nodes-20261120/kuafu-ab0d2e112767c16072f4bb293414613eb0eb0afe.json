@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ab0d2e112767c16072f4bb293414613eb0eb0afe",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-image-artifact-nodes-20261120",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a8b0c3aae3ac527a2f7427f9a03471b7c70f3f114fce82c1b645b243e21d60cb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1679",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1680",
+    "action": "delivery",
+    "detection_head": "b9493fda273168eb46f22283cb400ed9957f4bcb",
+    "context_sha256": "22985f2a8f79f232f39ba3eade7c175fd6546da64c03f2d71f28f5c5f03ebf23",
+    "operator": "kaiyunxue",
+    "worker": "kimi-work:kaiyunxue",
+    "authority_ref": "2026-11-20 用户验收完成并授权提交到 main",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1680",
+    "diagnosis": "Apple Git 2.39.5 does not support merge-tree --merge-base used by auto-integration; no candidate path overlaps origin/main and no content conflict was found.",
+    "next_action": "Candidate branch is aligned to origin/main with the same staged paths; rerun the formal writer gate without auto-integrate and verify the resulting PR.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-20T10:43:15.361740+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-20T10:45:29.911188+00:00",
+  "sha256": "2c5fb8b9c9a65a5485ea6bad87ca197a3455d73d01f567f70f59a85caa2ea4e0"
+}

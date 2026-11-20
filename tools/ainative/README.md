@@ -233,6 +233,14 @@ whether publishing, incremental adjustment, or a structural stop is appropriate.
 legacy reviews lacking the front-view decision are requested again on their original GLB
 and renders before recovery; no angle is inferred from their free-form prose.
 
+Every reviewed generation/adjustment round is also published as an immutable Mesh artifact,
+ordered by `generation_iteration`; the ordinary `result` port still references only the final
+delivery. The Workbench turns these artifacts into per-round dynamic nodes with actual GLB
+thumbnails, independent interactive previews and GLB save actions. Connecting a particular round to a Mesh consumer freezes that
+artifact's bytes and provenance as the downstream input, including after workflow save/reopen;
+it does not silently substitute the final round or require regenerating the original upstream
+node for a target-only run.
+
 The direct service does not accept additional text constraints together with image or
 multiview input. Such requests fail explicitly instead of silently dropping the text.
 A three-view marker is used only to select sheet splitting. Generation model `v3.1` is
