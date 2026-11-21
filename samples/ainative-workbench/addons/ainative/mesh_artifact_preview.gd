@@ -42,13 +42,26 @@ func _ready():
 	scene_root.add_child(world)
 
 func show_mesh(path: String) -> bool:
-	mesh_count = 0
 	if rendering == null or path.is_empty() or not FileAccess.file_exists(path): return false
 	var document = GLTFDocument.new()
 	var state = GLTFState.new()
 	if document.append_from_file(path, state) != OK: return false
 	var generated = preload("res://addons/ainative/runtime_mesh.gd").generate(document, state)
 	if generated == null: return false
+	tooltip_text = "本轮 Mesh 的实际 GLB 渲染；双击放大，点击下方按钮可旋转和缩放"
+	return _show_generated(generated,false)
+
+func show_character(path: String) -> bool:
+	if rendering == null or path.is_empty() or not FileAccess.file_exists(path): return false
+	var packed = ResourceLoader.load(path,"PackedScene",ResourceLoader.CACHE_MODE_IGNORE)
+	if not packed is PackedScene: return false
+	var generated = packed.instantiate() as Node3D
+	if generated == null: return false
+	tooltip_text = "实际角色与骨骼预览；双击进入骨骼绑定页签"
+	return _show_generated(generated,true)
+
+func _show_generated(generated: Node3D, include_skeleton: bool) -> bool:
+	mesh_count = 0
 	scene_root.add_child(generated)
 	var bounds = AABB()
 	var found = false
@@ -60,6 +73,25 @@ func show_mesh(path: String) -> bool:
 		found = true
 	mesh_count = meshes.size()
 	if not found: return false
+	if include_skeleton:
+		var skeleton = generated.get_node_or_null("Skeleton3D") as Skeleton3D
+		if skeleton != null:
+			var overlay = MeshInstance3D.new()
+			var lines = ImmediateMesh.new()
+			lines.surface_begin(Mesh.PRIMITIVE_LINES)
+			for index in skeleton.get_bone_count():
+				var parent = skeleton.get_bone_parent(index)
+				if parent<0: continue
+				lines.surface_add_vertex(skeleton.get_bone_global_rest(index).origin)
+				lines.surface_add_vertex(skeleton.get_bone_global_rest(parent).origin)
+			lines.surface_end()
+			overlay.mesh = lines
+			var material = StandardMaterial3D.new()
+			material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			material.no_depth_test = true
+			material.albedo_color = Color(1.0,0.65,0.1)
+			overlay.material_override = material
+			generated.add_child(overlay)
 	var center = bounds.get_center()
 	var radius = maxf(bounds.size.length() * 0.5, 0.05)
 	var distance = radius / sin(deg_to_rad(camera.fov * 0.5)) * 1.18

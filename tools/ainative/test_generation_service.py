@@ -278,6 +278,9 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(report["code"], "service_unreachable")
         error = failure(ValueError("secret-token-and-private-path"))
         self.assertNotIn("secret-token", json.dumps(error))
+        invalid_parameters = failure(ValueError("unknown parameter"))
+        self.assertEqual(invalid_parameters["error"], "node_parameters_invalid")
+        self.assertIn("不支持的参数", invalid_parameters["message"])
         self.assertTrue(all(not state["ready"] for state in report["capabilities"].values()))
         self.assertEqual(set(report["capabilities"]), set(KINDS))
         with self.assertRaises(ServiceError):

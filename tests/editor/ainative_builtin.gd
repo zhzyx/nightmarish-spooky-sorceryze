@@ -83,11 +83,14 @@ func run():
 	check(panel.native_buttons.mesh.button_pressed and panel.graph.is_visible_in_tree(),'Mesh generation is the default native page')
 	var kinds = []
 	for i in panel.generator_choice.item_count: kinds.append(panel.generator_choice.get_item_metadata(i))
-	check(kinds==['generate_image','image_to_mesh','text_to_mesh','model_adjust'],'unified image generation and all three Mesh node kinds are available')
+	check(kinds==['generate_image','image_to_mesh','text_to_mesh','model_adjust','human_shape_adjust','humanoid_rig'],'unified image generation, Mesh processing, pre-rig human shape adjustment and the local humanoid rig node are available')
 	for i in panel.generator_choice.item_count:
 		panel.generator_choice.select(i)
 		panel.add_generator()
 		check(panel.nodes.back().type==kinds[i],'Chinese generator option preserves protocol: '+kinds[i])
+		if kinds[i]=='human_shape_adjust':
+			check(panel.parameter_form.rows.head_ratio.visible and not panel.parameter_form.landmarks_edit.visible and not panel.parameter_form.pose_row.visible and not panel.parameter_form.prompt_edit.visible,'bundled human shape node exposes five controls with automatic AINative pose and landmark fitting')
+			check(panel.apply_fields() and not panel.nodes.back().parameters.has('prompt') and not panel.nodes.back().parameters.has('landmarks') and not panel.nodes.back().parameters.has('confirmed'),'bundled human shape apply adds neither prompt, manual landmarks nor human confirmation')
 		panel.delete_node()
 	panel.generator_choice.select(2)
 	panel.select_node(panel.nodes[0].id)
@@ -167,7 +170,7 @@ func verify_generation_service_controls():
 	check(draft.get('mode') == 'kimi_native' and draft.get('model3d_model') == 'v3.1', 'Kimi Native uses direct Tripo API generation')
 	check(not draft.has('cli_path') and not draft.has('blender_path') and draft.image_model.is_empty() and draft.mesh_model.is_empty(), 'Kimi Native does not require Codex, Blender or ComfyUI model settings')
 	check(panel.kimi_model3d_fields.visible and not panel.kimi_model_edit.visible and not panel.endpoint_edit.visible and not panel.endpoint_edit.editable and draft.endpoint.is_empty() and not draft.has('kimi_model'), 'Kimi Native exposes direct 3D settings and discards obsolete language model routing')
-	check(panel._generator_provider('text_to_mesh') == 'kimi_native' and panel._generator_provider('image_to_mesh') == 'kimi_native' and panel._generator_provider('model_adjust') == 'kimi_native', 'both Mesh generation kinds and model adjustment route to Kimi Native')
+	check(panel._generator_provider('text_to_mesh') == 'kimi_native' and panel._generator_provider('image_to_mesh') == 'kimi_native' and panel._generator_provider('model_adjust') == 'kimi_native' and panel._generator_provider('human_shape_adjust') == 'kimi_native', 'Mesh generation, model adjustment and local human shape adjustment route to Kimi Native')
 	check(panel._generator_provider('generate_image') == 'kimi_work_image' and panel._generator_provider('text_to_image') == 'kimi_work_image' and panel._generator_provider('image_to_image') == 'kimi_work_image', 'unified and legacy 2D kinds route to the independent Kimi Work image service')
 	check(panel.get('model3d_tool_edit') is LineEdit and panel.get('model3d_pythonw_edit') is LineEdit and panel.get('kimi_image_tool_edit') is LineEdit and panel.get('kimi_image_pythonw_edit') is LineEdit, 'native settings expose independent 3D and 2D tools')
 	panel.save_service_settings()
@@ -543,7 +546,7 @@ func verify_mesh():
 	await process_frame
 	check(not panel.graph.visible and panel.rigging_panel.is_visible_in_tree(),'rigging navigation opens its controls directly')
 
-func make_humanoid(path: String) -> bool:
+func make_humanoid(path: String, include_review: bool = true) -> bool:
 	var scene = Node3D.new()
 	scene.name = 'SyntheticTPoseFixtureNotAI'
 	for box in [
@@ -575,6 +578,7 @@ func make_humanoid(path: String) -> bool:
 	if error==OK: error = document.write_to_filesystem(state,path)
 	scene.free()
 	if error != OK: return check(false,'synthetic T-pose GLB fixture is encoded without AI inference')
+	if not include_review: return true
 	# This fixture has explicit eyes, nose, mouth, chin and an overlapping neck.
 	# Record only that synthetic geometry review, not a human identity verdict.
 	var file = FileAccess.open(path,FileAccess.READ)
@@ -592,7 +596,8 @@ func make_humanoid(path: String) -> bool:
 	json_document.asset['extras'] = json_document.asset.get('extras',{})
 	json_document.asset.extras['maliang_head_review'] = {
 		'schema_version':1,
-		'mode':'manual',
+		'mode':'automatic',
+		'ai_reviewed':true,
 		'geometry_sha256':geometry_sha,
 		'head_geometry_mode':'integrated',
 		'passed':true,
@@ -707,6 +712,56 @@ func verify_rigging():
 	rig.reopen()
 	check(is_instance_valid(rig.built) and rig.source==source and rig.source_field.text==source,'reopening a bound version restores both source model state and visible source input')
 	check(FileAccess.get_sha256(source)==source_hash,'binding, animation and publication preserve source GLB bytes')
+	verify_humanoid_node(source)
+	rig.target.text = panel.state_dir.path_join('rig-v1.tscn')
+	rig.reopen()
+
+func synthetic_ai_receipt(source_sha: String) -> Dictionary:
+	return {'passed':true,'source_sha256':source_sha,'head_review':{
+		'schema_version':2,'mode':'automatic','ai_reviewed':true,'passed':true,
+		'geometry_sha256':source_sha,'source_sha256':source_sha,'head_geometry_mode':'integrated',
+		'head_gate':{'applicable':true,'complete_face':true,'neck_join_pass':true,'identity_pass':true,'face_proportions_pass':true,'animation_geometry_pass':true,'observation':'synthetic AI adapter receipt'},
+		'head_views':{'head_front':true,'head_three_quarter':true,'head_side':true},
+		'acceptance':{'top_view':'approximate_allowed','face':'recognizable_identity_normal_proportions','animation':'geometry_readiness_only_rig_unverified'},
+		'animation_geometry_ready':true,'rigging_verified':false,'animation_verified':false}}
+
+func verify_humanoid_node(source: String):
+	panel.humanoid_text_review_fixture = {
+		'schema_version':1,'text_only':true,'synthetic':true,'passed':true,'local_passed':true,
+		'summary':'合成文本回执：本地实测证据完整。','issues':[],'feedback':[],
+		'repair':{'command':'none','parameters':{}},'retry_count':1,'max_retries':3,
+		'review_document':{'schema_version':1,'passed':true},'api_receipt':{'provider':'synthetic_fixture'}
+	}
+	var id = 'humanoid_node'
+	panel.nodes.append({'id':id,'type':'humanoid_rig','version':'1','provider':'local-humanoid-rig','source':source,'image_context':'','text':'','parameters':{'height_m':1.8},'x':40.0,'y':60.0})
+	panel.rebuild()
+	panel.select_node(id)
+	check(panel.node_run_blocker(id).is_empty(),'bundled humanoid node runs without a generation service')
+	panel.run_node_preview(id)
+	var entry = panel._latest_character_entry(id)
+	check(not entry.is_empty() and not entry.get('provenance',{}).get('capability_limited',true),'bundled humanoid node produces a fully ROM-validated character')
+	if entry.is_empty():
+		details.humanoid_node_diagnostic = panel.status.text
+		return
+	check(entry.provenance.get('anatomical_bone_count',0)==17 and entry.provenance.get('validation',{}).get('bone_count',0)==18,'bundled node output has seventeen anatomical bones plus independent root')
+	check(FileAccess.file_exists(entry.path) and FileAccess.get_sha256(entry.path)==entry.artifact.revision,'bundled character artifact is durable and digest-bound')
+	panel._open_preview_rigging()
+	check(panel.rigging_panel.visible and is_instance_valid(panel.rigging_panel.built) and panel.rigging_panel.source==source,'double-click action enters bundled rigging with the matching source')
+	var unreviewed = panel.state_dir.path_join('synthetic-unreviewed.glb')
+	if not make_humanoid(unreviewed,false): return
+	panel.show_native_section('mesh')
+	panel.select_node(id)
+	panel._set_node_file('source',unreviewed)
+	var before = panel.preview_history.get(id,[]).size()
+	check(panel.has_method('_start_humanoid_ai_review') and not panel.has_method('_confirm_head_review'),'bundled node exposes AI review and no manual confirmation callback')
+	var input_entry = panel._direct_humanoid_input(id)
+	panel.humanoid_review_node = id
+	panel.humanoid_review_source = unreviewed
+	panel.humanoid_review_directory = 'synthetic-native-ai-review'
+	panel.humanoid_review_input = input_entry.duplicate(true)
+	panel._complete_humanoid_ai_review(synthetic_ai_receipt(FileAccess.get_sha256(unreviewed)),{'directory':'synthetic-native-ai-review'})
+	var reviewed = panel._latest_character_entry(id)
+	check(not reviewed.is_empty() and panel.preview_history.get(id,[]).size()>before and reviewed.get('provenance',{}).get('source_sha256','')==FileAccess.get_sha256(unreviewed),'accepted synthetic AI receipt resumes the bundled rig and binds the new source')
 
 func prepare_portable_runtime():
 	var rig = panel.rigging_panel

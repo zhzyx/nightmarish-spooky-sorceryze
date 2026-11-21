@@ -124,6 +124,26 @@ func run():
 	config.load(panel.state_dir.path_join("local.cfg"))
 	check(config.get_value("interface", "developer_mode", true) == false, "developer visibility is a machine setting")
 	check(not panel.model().has("developer_mode"), "developer visibility is excluded from portable workflows")
+	# The body-shape node exposes only five controls and AINative fits landmarks.
+	panel.generator_choice.selected = 4
+	panel.add_generator()
+	var shape = panel.nodes[-1]
+	check(shape.type == "human_shape_adjust" and not form.prompt_edit.visible and not form.landmarks_edit.visible and not form.pose_row.visible, "human shape node uses its automatic five-control pre-rig form")
+	check(form.rows.height_m.visible and form.rows.head_ratio.visible and form.rows.arm_length_scale.visible and form.rows.leg_length_scale.visible and form.rows.build.visible, "all five human shape controls are visible")
+	check(panel.apply_fields() and not shape.parameters.has("prompt") and not shape.parameters.has("landmarks") and not shape.parameters.has("reference_pose"), "default node delegates pose and landmark fitting without manufacturing an empty prompt")
+	shape.parameters.confirmed = false
+	shape.parameters.prompt = ""
+	shape.parameters.reference_pose = "T"
+	shape.parameters.landmarks = {"source_sha256":""}
+	panel.select_node(shape.id)
+	check(not shape.parameters.has("confirmed") and not shape.parameters.has("prompt") and not shape.parameters.has("landmarks") and not shape.parameters.has("reference_pose"), "legacy prompt, confirmation and empty landmarks migrate to automatic AINative fitting")
+	form.controls.height_m.value = 1.9
+	form.controls.head_ratio.value = 9.0
+	form.controls.arm_length_scale.value = 1.2
+	form.controls.leg_length_scale.value = 1.1
+	form.controls.build.value = 0.4
+	check(panel.apply_fields() and shape.parameters.height_m == 1.9 and shape.parameters.head_ratio == 9.0 and shape.parameters.arm_length_scale == 1.2 and shape.parameters.leg_length_scale == 1.1 and shape.parameters.build == 0.4, "human shape widgets update all five contract values without manual landmarks")
+	check(not shape.parameters.has("confirmed") and not shape.parameters.has("landmarks"), "automatic mode preserves neither manufactured confirmation nor manual landmarks")
 	# Switching nodes must not leak another type's values or reopen advanced UI.
 	panel.select_node(panel.nodes[0].id)
 	check(form.copy_hint.visible and not form.advanced_box.visible and JSON.parse_string(JSON.stringify(panel.nodes[0].parameters)) == JSON.parse_string(JSON.stringify(original)), "node switching restores independent parameters and collapsed UI")

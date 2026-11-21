@@ -488,7 +488,7 @@ MODEL3D_GATEWAY_VERSION = "v1"
 MODEL3D_GENERATE_MODELS = frozenset(("v3.1", "v3.0", "v2.5", "p1", "p2"))
 MODEL3D_TEXTURE_MODELS = frozenset(("v3.5", "v3.0", "v2.5"))
 MODEL3D_TEXTURE_QUALITIES = frozenset(("fast", "standard", "detailed", "extreme"))
-LOCAL_GEOMETRY_OPERATIONS = frozenset(("align_neck", "reshape_crown"))
+LOCAL_GEOMETRY_OPERATIONS = frozenset(("align_neck", "reshape_crown", "reshape_humanoid"))
 MODEL3D_TIMEOUT = 1500
 MAX_MODEL3D_BYTES = 64 * 1024 * 1024
 MAX_MODEL3D_SOURCE_BYTES = 32 * 1024 * 1024
@@ -507,6 +507,22 @@ MODEL3D_MESSAGES = dict(
     model3d_sheet_unsupported="三视图裁切需要 Pillow 支持的 PNG/JPEG 图片，且宽高必须足够。",
     unsupported_image_text_constraints="Tripo API 的直接图片／多视图生成不接受额外文字约束；请只保留三视图标记或留空。",
     model_adjust_source_missing="模型调整节点必须提供一个已生成的 GLB 或内嵌 glTF 模型。",
+    human_shape_source_invalid="人形体态调整需要一份静态、未绑骨的 GLB；默认由 AINative 自动拟合源绑定的人体关键点。",
+    human_shape_auto_fit_output_invalid="AINative 自动拟合返回的人体姿态或关键点不完整，未执行体态调整。",
+    human_shape_auto_fit_front_required="AINative 无法确认源模型的解剖正面；请先规范模型朝向，未猜测关键点。",
+    human_shape_auto_fit_low_confidence="AINative 对姿态或关键点拟合置信度不足，已停止且未修改源模型。",
+    human_shape_auto_fit_geometry_mismatch="AINative 拟合的关键点偏离源网格过多，已停止且未执行体态调整。",
+    human_shape_auto_fit_geometry_invalid="源 GLB 缺少可用于自动拟合的有效静态网格。",
+    human_shape_auto_fit_output_exists="自动拟合回执目录已存在，未覆盖旧证据。",
+    geometry_repair_confirmation_required="请先预览并确认局部几何修复参数。",
+    geometry_repair_reference_pose_invalid="AINative 无法确认参考姿态；请将 reference_pose 设为 T 或 A。",
+    geometry_repair_landmarks_invalid="人体关键点不完整或格式无效；请提供头顶、下巴、颈根及双侧肩肘腕、髋膝踝坐标。",
+    geometry_repair_landmark_source_mismatch="人体关键点属于另一份源模型；几何变化后必须重新确认标记。",
+    geometry_repair_landmark_mismatch="人体关键点的左右侧、上下顺序或头顶高度不一致，请修正后再调整。",
+    geometry_repair_parameters_invalid="体态参数超出支持范围；身高、头身比、臂长、腿长和胖瘦必须使用有限数值。",
+    geometry_repair_proportion_limit_exceeded="目标头身比需要超出安全范围的头部缩放，已停止且未覆盖源模型。",
+    geometry_repair_rigged_source_unsupported="人形体态调整只接受最终绑骨前的静态 Mesh；已绑骨模型请重新从静态源派生。",
+    geometry_repair_transform_unsupported="当前 V1 只支持无节点变换且 POSITION accessor 不共享的静态 GLB，请先规范化源模型。",
     model3d_geometry_edit_unsupported="当前缺陷缺少已确认的局部几何修复参数，且不能只靠材质调整解决；已停止，未偷偷改为全量重生成。",
     model_adjust_guidance_invalid="模型调整引导方式无效：文字+风格图必须有文字；四图引导必须包含 front/left/back/right 全部视角。",
     prompt_required="请填写文字建模描述，或提供参考图。",
@@ -645,6 +661,9 @@ class KimiNativeDirectProvider(ModelingProvider):
         self.fingerprint = digest([
             self.config,
             hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name("geometry_repair.py").read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name("human_shape_landmarks.py").read_bytes()).hexdigest(),
+            hashlib.sha256(Path(__file__).with_name("rigging_review.py").read_bytes()).hexdigest(),
             implementation_fingerprint(),
             hashlib.sha256(Path(__file__).with_name("mesh_vision.py").read_bytes()).hexdigest()
             if review_keys
@@ -660,7 +679,7 @@ class KimiNativeDirectProvider(ModelingProvider):
             version=VERSION,
             model="Tripo API generate_3d_model " + MODEL3D_GATEWAY_VERSION + " (" + self.config["model"] + ")",
             model_version=self.fingerprint,
-            capabilities=["text_to_mesh", "image_to_mesh", "model_adjust"],
+            capabilities=["text_to_mesh", "image_to_mesh", "model_adjust", "human_shape_adjust"],
             context_types=["text", "image"],
             available=True,
         )
@@ -679,7 +698,7 @@ class KimiNativeDirectProvider(ModelingProvider):
         return self.write(key, **values)["terminal"]
 
     def plan(self, request, manifest):
-        if request["node"] == "model_adjust":
+        if request["node"] in ("model_adjust", "human_shape_adjust"):
             return self._adjust_plan(request, manifest)
         kind = request["node"]
         require(kind in ("text_to_mesh", "image_to_mesh"), "invalid_input")
@@ -767,11 +786,13 @@ class KimiNativeDirectProvider(ModelingProvider):
         )
 
     def _adjust_plan(self, request, manifest):
-        require(request["node"] == "model_adjust", "invalid_input")
+        require(request["node"] in ("model_adjust", "human_shape_adjust"), "invalid_input")
+        human_shape = request["node"] == "human_shape_adjust"
+        source_error = "human_shape_source_invalid" if human_shape else "model_adjust_source_missing"
         reference = request["inputs"].get("source")
         require(
             isinstance(reference, dict) and reference.get("id") and reference.get("revision"),
-            "model_adjust_source_missing",
+            source_error,
         )
         source_model = next(
             (
@@ -781,14 +802,16 @@ class KimiNativeDirectProvider(ModelingProvider):
             ),
             None,
         )
-        require(source_model is not None and source_model["type"] == "mesh", "model_adjust_source_missing")
+        require(source_model is not None and source_model["type"] == "mesh", source_error)
         payload = source_model["payload"]
         extension = payload["extension"].lower()
-        require(extension in (".glb", ".gltf"), "model_adjust_source_missing")
+        require(extension in (".glb", ".gltf"), source_error)
+        if human_shape:
+            require(extension == ".glb", "human_shape_source_invalid")
         data = base64.b64decode(payload["content_base64"], validate=True)
         require(
             0 < len(data) <= MAX_MODEL3D_BYTES and hashlib.sha256(data).hexdigest() == payload["content_sha256"],
-            "model_adjust_source_missing",
+            source_error,
         )
         source_geometry = validate_mesh(data) if extension == ".glb" else None
         if extension == ".gltf":
@@ -815,11 +838,34 @@ class KimiNativeDirectProvider(ModelingProvider):
                 "model_adjust_source_missing",
             )
             embedded(document)
-        operation = request["parameters"].get("operation")
+        operation = "reshape_humanoid" if human_shape else request["parameters"].get("operation")
         if operation in LOCAL_GEOMETRY_OPERATIONS:
             require(not request["context"] and not request["parameters"].get("prompt"), "invalid_input")
-            repair = request["parameters"].get("repair")
-            require(isinstance(repair, dict), "invalid_input")
+            if human_shape:
+                names = ("height_m", "head_ratio", "arm_length_scale", "leg_length_scale", "build")
+                require(all(name in request["parameters"] for name in names), "invalid_input")
+                values = {name: copy.deepcopy(request["parameters"][name]) for name in names}
+                repair = dict(
+                    reference_pose=None,
+                    landmarks=None,
+                    target_height_m=values["height_m"],
+                    target_head_ratio=values["head_ratio"], arm_length_scale=values["arm_length_scale"],
+                    leg_length_scale=values["leg_length_scale"], build=values["build"],
+                )
+                # Default is AINative fitting. Explicit developer JSON remains a
+                # bounded override and follows the same source/anatomy checks.
+                override = request["parameters"].get("landmarks")
+                empty_legacy_placeholder = override is None or (
+                    isinstance(override, dict)
+                    and (not override or set(override) == {"source_sha256"} and not override["source_sha256"])
+                )
+                if not empty_legacy_placeholder:
+                    require(request["parameters"].get("reference_pose") in ("T", "A"), "invalid_input")
+                    repair["landmarks"] = copy.deepcopy(override)
+                    repair["reference_pose"] = request["parameters"]["reference_pose"]
+            else:
+                repair = request["parameters"].get("repair")
+                require(isinstance(repair, dict), "invalid_input")
             return dict(
                 operation=operation,
                 source_model=source_model,
@@ -1243,6 +1289,20 @@ class KimiNativeDirectProvider(ModelingProvider):
         with source.open("xb") as stream:
             stream.write(base64.b64decode(source_payload["content_base64"], validate=True))
         output = directory / "generated.glb"
+        repair = copy.deepcopy(plan["repair"])
+        automatic = None
+        if operation == "reshape_humanoid" and repair.get("landmarks") is None:
+            import human_shape_landmarks
+
+            automatic = human_shape_landmarks.fit_landmarks(
+                source,
+                directory / "automatic-landmarks",
+                self.config.get("review_godot_path", ""),
+                self.config.get("review_script_path", ""),
+                self.config["planner"],
+            )
+            repair["landmarks"] = automatic["landmarks"]
+            repair["reference_pose"] = automatic["reference_pose"]
         request = dict(
             schema_version=1,
             source=str(source),
@@ -1250,12 +1310,17 @@ class KimiNativeDirectProvider(ModelingProvider):
             output=str(output),
             operation=operation,
         )
-        request.update(plan["repair"])
+        request.update(repair)
         result = geometry_repair.repair(request)
+        if automatic is not None:
+            result["automatic_landmarks"] = automatic
         data = output.read_bytes()
         sha = hashlib.sha256(data).hexdigest()
         require(sha == result["output_sha256"], "model3d_output_invalid")
-        fingerprint = hashlib.sha256(Path(geometry_repair.__file__).read_bytes()).hexdigest()
+        implementation_paths = [Path(geometry_repair.__file__)]
+        if automatic is not None:
+            implementation_paths.append(Path(human_shape_landmarks.__file__))
+        fingerprint = digest([hashlib.sha256(path.read_bytes()).hexdigest() for path in implementation_paths])
         receipt = dict(
             operation=operation,
             output_path=str(output),
@@ -1278,7 +1343,7 @@ class KimiNativeDirectProvider(ModelingProvider):
             operation=operation,
             generation_version="1",
             generation_model=operation,
-            auth_mode="local",
+            auth_mode="kimi_work_sdk_credentials" if automatic is not None else "local",
             origin="new_glb_from_previous_model_geometry_repair",
             task_id=None,
             source_model_sha256=source_payload["content_sha256"],
@@ -1287,7 +1352,13 @@ class KimiNativeDirectProvider(ModelingProvider):
             source_geometry=plan["source_geometry"],
             geometry=receipt["geometry"],
             geometry_repair=result,
-            input_mode="previous_model_" + operation,
+            automatic_landmarks=automatic,
+            landmark_estimation=(
+                "ainative_ai_geometry_checked" if automatic is not None
+                else "explicit_source_bound_override" if operation == "reshape_humanoid"
+                else "not_applicable"
+            ),
+            input_mode="previous_model_human_shape_ainative_auto" if automatic is not None else "previous_model_" + operation,
             view_sources=[],
             original_model_not_overwritten=True,
             tool_fingerprint=fingerprint,

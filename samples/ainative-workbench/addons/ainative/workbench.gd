@@ -40,6 +40,14 @@ var mesh_focus := Vector3.ZERO
 var mesh_frame_distance := 1.0
 var preview_root: Node3D
 var dialog: ConfirmationDialog
+var humanoid_review_node = ""
+var humanoid_review_source = ""
+var humanoid_review_directory = ""
+var humanoid_review_input: Dictionary = {}
+# Post-rigging assessment keeps the reloaded candidate alive while text-only AI runs.
+var humanoid_text_review: Dictionary = {}
+# Test-only synthetic receipt; production runs always use rigging-text-review.
+var humanoid_text_review_fixture: Dictionary = {}
 var run_all_dialog: ConfirmationDialog
 var run_all_button: Button
 var capability_notice_dialog: AcceptDialog
@@ -53,7 +61,11 @@ var nodes: Array = []
 var edges: Array = []
 var selected_id = ""
 const WorkbenchController = preload("res://addons/ainative/workbench_controller.gd")
+const HumanoidRigNode = preload("res://addons/ainative/humanoid_rig_node.gd")
+const Rig = preload("res://addons/ainative/rigging.gd")
 var controller = WorkbenchController.new()
+# Maps an upstream preview node to local humanoid targets waiting for its GLB.
+var humanoid_waiting: Dictionary = {}
 # Preserve the workbench's existing scripting API while the controller owns state.
 var run_id: String:
 	get: return controller.run_id
@@ -191,27 +203,31 @@ const RETIRED_GPT_MESH_PROVIDERS = ["codex-modeling", "codex-sculpt"]
 const RETIRED_GPT_MESH_MODES = ["codex_modeling", "codex_sculpt"]
 const RETIRED_GPT_MESH_NOTICE = "GPT CLI 单独网格生成已下线。请使用当前网格服务新建节点，再连接源文件与下游节点。"
 const GENERATE_IMAGE = "generate_image"
+const HUMANOID_RIG = "humanoid_rig"
+const HUMAN_SHAPE = "human_shape_adjust"
 const IMAGE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image"]
-const NODE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", "copy"]
-const CREATION_NODE_KINDS = [GENERATE_IMAGE, "image_to_mesh", "text_to_mesh", "model_adjust", "copy"]
+const NODE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", HUMAN_SHAPE, HUMANOID_RIG, "copy"]
+const CREATION_NODE_KINDS = [GENERATE_IMAGE, "image_to_mesh", "text_to_mesh", "model_adjust", HUMAN_SHAPE, HUMANOID_RIG, "copy"]
 const PORT_DYNAMIC = 0
 const PORT_IMAGE = 1
 const PORT_MESH = 2
 const PORT_TEXT = 3
 const PORT_IMAGE_SET = 4
+const PORT_CHARACTER = 5
 const PORT_COLORS = {
 	PORT_DYNAMIC: Color(0.65, 0.68, 0.75),
 	PORT_IMAGE: Color.SKY_BLUE,
 	PORT_MESH: Color.PALE_GREEN,
 	PORT_TEXT: Color(0.85, 0.65, 1.0),
 	PORT_IMAGE_SET: Color(0.4, 0.85, 0.85),
+	PORT_CHARACTER: Color(1.0, 0.65, 0.25),
 }
 
 func node_label(kind: String) -> String:
-	return {"copy":"离线复制", GENERATE_IMAGE:"生成图片", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格", "model_adjust":"模型调整"}.get(kind,kind)
+	return {"copy":"离线复制", GENERATE_IMAGE:"生成图片", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格", "model_adjust":"模型调整", HUMAN_SHAPE:"人形体态调整", HUMANOID_RIG:"创建人形17根骨骼"}.get(kind,kind)
 
 func _is_mesh_kind(kind: String) -> bool:
-	return kind in ["text_to_mesh", "image_to_mesh", "model_adjust"]
+	return kind in ["text_to_mesh", "image_to_mesh", "model_adjust", HUMAN_SHAPE]
 
 func _is_image_kind(kind: String) -> bool:
 	return kind in IMAGE_KINDS
@@ -221,6 +237,12 @@ func _new_node_version(kind: String) -> String:
 	if kind == "image_to_mesh": return "2"
 	if kind == "model_adjust": return "2"
 	return "4" if kind in ["text_to_image", "image_to_image"] else "1"
+
+func human_shape_default_parameters() -> Dictionary:
+	return {
+		"height_m":1.8, "head_ratio":7.5, "arm_length_scale":1.0,
+		"leg_length_scale":1.0, "build":0.0
+	}
 
 func state_label(value: String) -> String:
 	return {"pending":"等待中", "queued":"排队中", "ready":"就绪", "running":"运行中", "succeeded":"已成功", "failed":"已失败", "cancelled":"已取消", "blocked":"受阻", "reconcile":"待查询提交结果", "skipped":"已跳过"}.get(value,value)
@@ -260,13 +282,15 @@ func _show_file_picker(picker: FileDialog, selected_path: String):
 func _configure_source_picker(kind: String, data: Dictionary = {}):
 	var copy = kind == "copy"
 	var adjust = kind == "model_adjust"
+	var shape = kind == HUMAN_SHAPE
+	var mesh_input = kind in ["model_adjust",HUMAN_SHAPE,HUMANOID_RIG]
 	var multiple = _is_image_kind(kind) or _accepts_image_set(data)
-	source_picker.title = "选择已生成模型（GLB / 内嵌 glTF）" if adjust else "选择源图像或模型" if copy else "选择源图像（可多选）"
-	source_picker.filters = PackedStringArray(["*.glb,*.gltf ; GLB / 内嵌 glTF 模型" if adjust else "*.png,*.jpg,*.jpeg,*.glb,*.gltf ; 图像 / 网格" if copy else "*.png,*.jpg,*.jpeg ; PNG / JPEG 图像"])
+	source_picker.title = "选择项目中的 GLB 人形模型" if kind == HUMANOID_RIG else "选择绑骨前的静态 GLB 人形模型" if shape else "选择已生成模型（GLB / 内嵌 glTF）" if adjust else "选择源图像或模型" if copy else "选择源图像（可多选）"
+	source_picker.filters = PackedStringArray(["*.glb,*.gltf ; GLB / 内嵌 glTF 模型" if mesh_input else "*.png,*.jpg,*.jpeg,*.glb,*.gltf ; 图像 / 网格" if copy else "*.png,*.jpg,*.jpeg ; PNG / JPEG 图像"])
 	source_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple else FileDialog.FILE_MODE_OPEN_FILE
 	context_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple or adjust else FileDialog.FILE_MODE_OPEN_FILE
-	source_browse.text = "选择模型…" if adjust else "选择文件…" if copy else "选择图片…"
-	source_edit.placeholder_text = "必须选择已生成模型" if adjust else "未选择源图像或模型" if copy else "未选择源图像，可多选；也可仅填写文本" if kind == GENERATE_IMAGE else "未选择源图像，可多选"
+	source_browse.text = "选择模型…" if mesh_input else "选择文件…" if copy else "选择图片…"
+	source_edit.placeholder_text = "选择项目路径下的 GLB，或连接上游 Mesh" if kind == HUMANOID_RIG else "选择绑骨前 GLB；关键点须绑定此文件 SHA" if shape else "必须选择已生成模型" if adjust else "未选择源图像或模型" if copy else "未选择源图像，可多选；也可仅填写文本" if kind == GENERATE_IMAGE else "未选择源图像，可多选"
 	context_edit.placeholder_text = "微调参考图（可选，单图或四视角）" if adjust else "未选择参考图像（可选）"
 
 func _node_paths(data: Dictionary, field: String) -> Array:
@@ -480,6 +504,7 @@ func _ready():
 	graph.add_valid_connection_type(PORT_DYNAMIC, PORT_IMAGE)
 	graph.add_valid_connection_type(PORT_MESH, PORT_DYNAMIC)
 	graph.add_valid_connection_type(PORT_DYNAMIC, PORT_MESH)
+	graph.add_valid_connection_type(PORT_CHARACTER, PORT_DYNAMIC)
 	graph.custom_minimum_size = Vector2(460, 320)
 	graph.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	split.add_child(graph)
@@ -808,8 +833,8 @@ func add_node():
 func add_generator():
 	var kind = generator_choice.get_item_metadata(generator_choice.selected)
 	var id = "n" + str(Time.get_ticks_usec())
-	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
-	if kind != 'copy' and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
+	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": human_shape_default_parameters() if kind == HUMAN_SHAPE else HumanoidRigNode.default_parameters() if kind == HUMANOID_RIG else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
+	if kind not in ['copy',HUMANOID_RIG] and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	_migrate_node_models(data, service_draft())
 	nodes.append(data)
 	rebuild()
@@ -819,7 +844,7 @@ func _migrate_node_models(data: Dictionary, legacy: Dictionary):
 	var kind = str(data.get('type', 'copy'))
 	var mode = _service_mode()
 	# Nodes created before the first saved service inherit once on that first save.
-	if kind == 'copy' or _retired_mesh_node(data) or _using_legacy_service() or (service_saved.is_empty() and not data.has('model')): return
+	if kind in ['copy',HUMANOID_RIG] or _retired_mesh_node(data) or _using_legacy_service() or (service_saved.is_empty() and not data.has('model')): return
 	var cli_mode = mode == 'codex'
 	var mesh_kind = _is_mesh_kind(kind)
 	var legacy_image = str(legacy.get('image_model', ''))
@@ -836,7 +861,7 @@ func _migrate_node_models(data: Dictionary, legacy: Dictionary):
 
 func _sync_node_model_controls(data: Dictionary):
 	var kind = str(data.get('type', 'copy'))
-	var generating = kind != 'copy' and not _retired_mesh_node(data) and not _using_legacy_service()
+	var generating = kind not in ['copy',HUMANOID_RIG] and not _retired_mesh_node(data) and not _using_legacy_service()
 	node_model_label.visible = generating
 	node_model_choice.visible = generating and _service_mode() not in ['api_modeling', 'api_sculpt']
 	node_model_edit.visible = generating
@@ -882,16 +907,17 @@ func input_kind(data: Dictionary) -> int:
 	# The GraphEdit compatibility rule registered in _ready also permits image_set here.
 	if _accepts_image_set(data): return PORT_IMAGE
 	if kind in ["image_to_image", "image_to_mesh"]: return PORT_IMAGE
-	if kind == "model_adjust": return PORT_MESH
+	if kind in ["model_adjust",HUMAN_SHAPE,HUMANOID_RIG]: return PORT_MESH
 	return PORT_DYNAMIC
 
 func output_kind(data: Dictionary) -> int:
 	var kind = str(data.get("type", "copy"))
+	if kind == HUMANOID_RIG: return PORT_CHARACTER
 	if _queue_only_node(data): return PORT_IMAGE_SET
 	return PORT_MESH if _is_mesh_kind(kind) else PORT_DYNAMIC if kind == "copy" else PORT_IMAGE
 
 func port_type_name(kind: int) -> String:
-	return {PORT_DYNAMIC:"图片 / Mesh", PORT_IMAGE:"图片", PORT_MESH:"Mesh", PORT_TEXT:"文本", PORT_IMAGE_SET:"图片队列"}.get(kind, "未知")
+	return {PORT_DYNAMIC:"图片 / Mesh", PORT_IMAGE:"图片", PORT_MESH:"Mesh", PORT_TEXT:"文本", PORT_IMAGE_SET:"图片队列", PORT_CHARACTER:"人形角色（17骨＋root）"}.get(kind, "未知")
 
 func input_type_name(data: Dictionary) -> String:
 	var kind = str(data.get("type", "copy"))
@@ -911,6 +937,25 @@ func _latest_mesh_entry(node_id: String) -> Dictionary:
 	var entry = history.back()
 	if not entry is Dictionary or entry.get("type", "") != "mesh": return {}
 	return entry
+
+func _latest_character_entry(node_id: String) -> Dictionary:
+	var history: Array = preview_history.get(node_id, [])
+	if history.is_empty(): return {}
+	var entry = history.back()
+	if not entry is Dictionary or entry.get("type", "") != "character": return {}
+	return entry
+
+func _reusable_character_entry(node_id: String) -> Dictionary:
+	var entry = _latest_character_entry(node_id)
+	if entry.is_empty() or not FileAccess.file_exists(str(entry.get("path", ""))): return {}
+	var fingerprint = str(entry.get("cache_fingerprint", ""))
+	if not fingerprint.is_empty() and fingerprint != _cache_fingerprint(node_id): return {}
+	return entry
+
+func _character_entry(node_id: String, token: String) -> Dictionary:
+	for entry in preview_history.get(node_id,[]):
+		if entry is Dictionary and entry.get("type","")=="character" and str(entry.get("token",""))==token: return entry
+	return {}
 
 func _artifact_images(entry: Dictionary) -> Array:
 	var images = entry.get("images", [])
@@ -943,7 +988,8 @@ func _style_artifact_node(node: GraphNode):
 func _artifact_preview_input(event: InputEvent, key: String, index: int, control: Control):
 	if not event is InputEventMouseButton or not event.pressed or event.button_index != MOUSE_BUTTON_LEFT or not event.double_click: return
 	_show_artifact_result(key, index)
-	if _displayed_preview() != null: toggle_preview_maximized()
+	if artifact_nodes.has(key) and artifact_nodes[key].get("kind","")=="character": _open_preview_rigging()
+	elif _displayed_preview() != null: toggle_preview_maximized()
 	control.accept_event()
 
 func _create_artifact_node(data: Dictionary, entry: Dictionary):
@@ -1045,6 +1091,51 @@ func _create_mesh_artifact_node(data: Dictionary, entry: Dictionary, attempt: in
 	node.node_selected.connect(_show_artifact_result.bind(key))
 	artifact_nodes[key] = {"id": artifact_id, "entry": entry, "source": source_id, "kind": "mesh", "attempt": attempt}
 
+func _create_character_artifact_node(data: Dictionary, entry: Dictionary):
+	var source_id = str(data.id)
+	var key = _mesh_artifact_key(source_id,entry)
+	var artifact_id = "artifact_%s_character" % source_id
+	while nodes.any(func(item): return item.id == artifact_id): artifact_id += "_dynamic"
+	var node = GraphNode.new()
+	node.name = artifact_id
+	node.title = "◇ 人形17骨骼生成物"
+	node.position_offset = Vector2(data.x + 340,data.y)
+	node.tooltip_text = "17 根解剖骨＋独立 root；双击进入骨骼绑定页签"
+	node.set_meta("maliang_artifact",true)
+	node.set_meta("artifact_source",source_id)
+	node.set_meta("artifact_key",key)
+	_style_artifact_node(node)
+	var summary = Label.new()
+	summary.name = "ArtifactSummary"
+	var limited = entry.get("provenance",{}).get("capability_limited",false)
+	summary.text = "能力受限 · 可编辑但 ROM 未全通过" if limited else "ROM 已验证 · 可继续绑定调整"
+	summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	node.add_child(summary)
+	node.set_slot(0,true,PORT_DYNAMIC,PORT_COLORS[PORT_CHARACTER],false,0,PORT_COLORS[PORT_CHARACTER])
+	var thumbnail = preload("res://addons/ainative/mesh_artifact_preview.gd").new()
+	thumbnail.name = "ArtifactCharacterPreview"
+	node.add_child(thumbnail)
+	thumbnail.gui_input.connect(_artifact_preview_input.bind(key,0,thumbnail))
+	var edit_button = button(node,"双击进入骨骼绑定",_open_character_artifact.bind(key))
+	edit_button.name = "EditCharacterRig"
+	edit_button.gui_input.connect(_artifact_preview_input.bind(key,0,edit_button))
+	var save_button = button(node,"下载角色 .tscn…",_save_character_artifact.bind(key))
+	save_button.name = "SaveCharacterArtifact"
+	graph.add_child(node)
+	thumbnail.show_character(str(entry.get("path","")))
+	node.gui_input.connect(_artifact_preview_input.bind(key,0,node))
+	node.node_selected.connect(_show_artifact_result.bind(key))
+	artifact_nodes[key] = {"id":artifact_id,"entry":entry,"source":source_id,"kind":"character"}
+
+func _open_character_artifact(key: String):
+	_show_artifact_result(key)
+	_open_preview_rigging()
+
+func _save_character_artifact(key: String):
+	if not artifact_nodes.has(key) or artifact_nodes[key].get("kind","")!="character": return
+	_show_artifact_result(key)
+	open_save_dialog()
+
 func _mark_artifact_deleted(key: String):
 	if artifact_nodes.has(key):
 		dismissed_artifacts[key] = str(artifact_nodes[key].entry.get("token", ""))
@@ -1065,13 +1156,13 @@ func _reveal_mesh_preview():
 		native_scroll.ensure_control_visible(mesh_container)
 
 func _show_artifact_result(key: String, index: int = 0):
-	if artifact_nodes.has(key) and artifact_nodes[key].get("kind", "image") == "mesh":
+	if artifact_nodes.has(key) and artifact_nodes[key].get("kind", "image") in ["mesh","character"]:
 		var record: Dictionary = artifact_nodes[key]
 		var entry: Dictionary = record.entry
 		select_node(record.source)
 		load_preview(entry, record.source, str(entry.get("run", "")))
 		if is_instance_valid(preview_scene): call_deferred("_reveal_mesh_preview")
-		status.text += " · 第 %d 轮" % int(record.get("attempt", 1))
+		if record.get("kind","")=="mesh": status.text += " · 第 %d 轮" % int(record.get("attempt", 1))
 		return
 	var entry = _latest_image_entry(key)
 	if entry.is_empty(): return
@@ -1088,6 +1179,9 @@ func _save_mesh_artifact(key: String):
 	save_picker.current_file = ("mesh-round-%03d-%s.glb" % [attempt, str(artifact_nodes[key].entry.get("artifact", {}).get("revision", "")).left(12)]).validate_filename()
 
 func _open_artifact_download(key: String):
+	if artifact_nodes.has(key) and artifact_nodes[key].get("kind", "image") == "character":
+		_save_character_artifact(key)
+		return
 	if artifact_nodes.has(key) and artifact_nodes[key].get("kind", "image") == "mesh":
 		_save_mesh_artifact(key)
 		return
@@ -1217,7 +1311,7 @@ func _layout_graph_with_artifacts():
 	if graph.zoom > fit_zoom: graph.zoom = fit_zoom
 	graph.scroll_offset = Vector2.ZERO
 
-func rebuild():
+func rebuild(layout_artifacts: bool = true):
 	graph.clear_connections()
 	artifact_nodes.clear()
 	for child in graph.get_children():
@@ -1268,6 +1362,11 @@ func rebuild():
 		var entry = _latest_image_entry(source_id)
 		if not entry.is_empty() and dismissed_artifacts.get(source_id, "") != str(entry.get("token", "")):
 			_create_artifact_node(data, entry)
+		if str(data.get("type",""))==HUMANOID_RIG:
+			var character_entry = _latest_character_entry(source_id)
+			var character_key = _mesh_artifact_key(source_id,character_entry) if not character_entry.is_empty() else ""
+			if not character_entry.is_empty() and dismissed_artifacts.get(character_key,"")!=str(character_entry.get("token","")):
+				_create_character_artifact_node(data,character_entry)
 		if not _is_mesh_kind(str(data.get("type", ""))): continue
 		var mesh_entry = _latest_mesh_entry(source_id)
 		if mesh_entry.is_empty(): continue
@@ -1309,7 +1408,7 @@ func rebuild():
 			graph.connect_node(str(artifact_nodes[chain.back()].id), 0, edge.to, 0)
 		else:
 			graph.connect_node(edge.from, from_port, edge.to, 0)
-	_schedule_artifact_layout()
+	if layout_artifacts: _schedule_artifact_layout()
 
 func _merged_requirements(primary: String, supplementary: String) -> String:
 	var main = primary.strip_edges()
@@ -1333,6 +1432,14 @@ func select_node(id: String):
 		if data.id == id:
 			_clear_image_mesh_text(data)
 			selected_kind = data.get("type", "copy")
+			if selected_kind == HUMAN_SHAPE:
+				data.parameters.erase("confirmed")
+				data.parameters.erase("prompt")
+				data.text = ""
+				var old_landmarks = data.parameters.get("landmarks", {})
+				if old_landmarks is Dictionary and (old_landmarks.is_empty() or (old_landmarks.size() == 1 and str(old_landmarks.get("source_sha256", "")).is_empty())):
+					data.parameters.erase("landmarks")
+					data.parameters.erase("reference_pose")
 			_sync_node_model_controls(data)
 			_sync_node_files(data)
 			source_edit.text = " ; ".join(_node_paths(data, "source"))
@@ -1341,6 +1448,10 @@ func select_node(id: String):
 			if selected_kind == "copy":
 				text_edit.text = str(data.get("text", ""))
 				parameter_form.configure(selected_kind, data.parameters)
+			elif selected_kind in [HUMAN_SHAPE, HUMANOID_RIG]:
+				# These structured nodes have no prompt/text parameter. Do not
+				# manufacture an empty prompt which their invocation schema rejects.
+				parameter_form.configure(selected_kind, data.parameters, str(data.get("version", "1")))
 			else:
 				# Legacy text and prompt become one editable requirement. The old
 				# field is cleared only when the user applies or runs the node.
@@ -1364,7 +1475,7 @@ func apply_fields() -> bool:
 		return false
 	for data in nodes:
 		if data.id == selected_id:
-			if data.get('type', 'copy') != 'copy' and not _retired_mesh_node(data) and not _using_legacy_service():
+			if data.get('type', 'copy') not in ['copy',HUMANOID_RIG] and not _retired_mesh_node(data) and not _using_legacy_service():
 				var primary_name = node_model_edit.text.strip_edges()
 				if _service_mode() in ['api_modeling', 'api_sculpt']: primary_name = node_model_edit.text
 				if data.has('model') or not primary_name.is_empty(): data.model = primary_name
@@ -1374,10 +1485,14 @@ func apply_fields() -> bool:
 			_sync_node_files(data)
 			if data.get("type", "copy") == "copy":
 				data.text = text_edit.text
-			else:
+			elif data.get("type","") not in [HUMANOID_RIG,HUMAN_SHAPE]:
 				# Keep the hidden control compatible with existing automation while
-				# storing all non-copy requirements in the canonical prompt field.
+				# storing prompt-based requirements in the canonical prompt field.
 				params["prompt"] = _merged_requirements(str(params.get("prompt", "")), text_edit.text)
+				data.text = ""
+			else:
+				# Structured rig/shape nodes do not declare prompt or text inputs.
+				params.erase("prompt")
 				data.text = ""
 			data.parameters = params
 			_clear_image_mesh_text(data)
@@ -1403,10 +1518,13 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 	for key in artifact_nodes:
 		var record: Dictionary = artifact_nodes[key]
 		if record.id != str(from): continue
+		if record.get("kind", "image") == "character":
+			status.text = "人形角色是终端预览产物，请双击进入骨骼绑定或使用下载按钮"
+			return
 		if record.get("kind", "image") != "mesh":
 			status.text = "图片生成物请从正式图片节点连接下游"
 			return
-		if target_kind not in ["copy", "model_adjust"]:
+		if target_kind not in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG]:
 			status.text = "Mesh 轮次生成物只能连接到 Mesh 输入"
 			return
 		for edge in edges:
@@ -1423,6 +1541,9 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 		status.text = "已连接第 %d 轮 Mesh；下游将使用这一轮的固定 GLB 快照" % int(record.get("attempt", 1))
 		return
 	if source_node.is_empty(): return
+	if output_kind(source_node[0])==PORT_CHARACTER:
+		status.text = "人形角色是终端预览产物，不能继续连接到执行节点"
+		return
 	var output = "image_set" if _queue_only_node(source_node[0]) or (_image_queue_node(source_node[0]) and from_port == 1) else "result"
 	if output == "image_set":
 		if not _accepts_image_set(target_node[0]):
@@ -1589,7 +1710,7 @@ func execution_model(reuse_cache: bool = true, rerun_node: String = "") -> Dicti
 	var cached: Dictionary = {}
 	for data in executable.nodes:
 		var node_id = str(data.id)
-		if node_id != rerun_node and _has_reusable_cache(data): cached[node_id] = true
+		if node_id != rerun_node and data.get("type", "") != HUMANOID_RIG and _has_reusable_cache(data): cached[node_id] = true
 	# A cached node is reusable only when its whole dependency chain is also reusable.
 	# Otherwise an invalidated upstream would disappear while its stale downstream remained.
 	var changed = true
@@ -1665,6 +1786,10 @@ func _snapshot_output_entry(entry: Dictionary, node_id: String) -> Dictionary:
 		"snapshot": snapshot
 	}
 	if entry.has("cache_fingerprint"): saved["cache_fingerprint"] = str(entry.cache_fingerprint)
+	if saved.type=="character":
+		var source_snapshot = entry.get("source_snapshot",{}).duplicate(true)
+		if source_snapshot.is_empty(): return {}
+		saved["source_snapshot"] = source_snapshot
 	if entry.has("images"):
 		if not entry.images is Array or entry.images.is_empty(): return {}
 		var images: Array = []
@@ -1865,13 +1990,15 @@ func clear_embedded():
 				data.erase(field + "_snapshots")
 	status.text = "已清除内嵌源文件和参考图像，路径字段仍然有效"
 
-func _valid_input_snapshots(value, uncapped: bool = false) -> bool:
+func _valid_input_snapshots(value, uncapped: bool = false, extra_extensions: Array = []) -> bool:
 	if not value is Array or (not uncapped and value.size() > 8): return false
+	var allowed_extensions = [".png", ".jpg", ".jpeg", ".glb", ".gltf"]
+	allowed_extensions.append_array(extra_extensions)
 	for snapshot in value:
 		if not snapshot is Dictionary: return false
 		for key in ["content_base64", "content_sha256", "extension"]:
 			if not snapshot.get(key) is String: return false
-		if snapshot.extension.to_lower() not in [".png", ".jpg", ".jpeg", ".glb", ".gltf"]: return false
+		if snapshot.extension.to_lower() not in allowed_extensions: return false
 		var bytes = Marshalls.base64_to_raw(snapshot.content_base64)
 		if bytes.is_empty(): return false
 		var hash_context = HashingContext.new()
@@ -1890,10 +2017,14 @@ func _valid_output_entry(entry, node_id: String) -> bool:
 	if entry.has("cache_fingerprint") and not entry.cache_fingerprint is String: return false
 	if entry.has("provenance") and not entry.provenance is Dictionary: return false
 	if entry.node != node_id or entry.preview_token.is_empty() or not _valid_artifact_reference(entry.artifact): return false
-	if not _valid_input_snapshots([entry.snapshot]): return false
+	if not _valid_input_snapshots([entry.snapshot],false,[".tscn"]): return false
 	var image = entry.type == "image" and entry.snapshot.extension.to_lower() in [".png", ".jpg", ".jpeg"]
 	var mesh = entry.type == "mesh" and entry.snapshot.extension.to_lower() in [".glb", ".gltf"]
-	if not image and not mesh: return false
+	var character = entry.type == "character" and entry.snapshot.extension.to_lower()==".tscn"
+	if character:
+		if not entry.get("source_snapshot") is Dictionary or not _valid_input_snapshots([entry.source_snapshot]): return false
+		if entry.source_snapshot.extension.to_lower() not in [".glb",".gltf"] or entry.has("images") or entry.has("iterations"): return false
+	if not image and not mesh and not character: return false
 	if entry.has("images"):
 		if not entry.images is Array or entry.images.is_empty(): return false
 		for item in entry.images:
@@ -1967,6 +2098,13 @@ func _restore_output_entry(saved: Dictionary, directory: String):
 		"path": path
 	}
 	if saved.has("cache_fingerprint"): entry["cache_fingerprint"] = saved.cache_fingerprint
+	if saved.type=="character":
+		var source_directory = directory.path_join("inputs")
+		if DirAccess.make_dir_recursive_absolute(source_directory)!=OK: return null
+		var source_path = _materialize_output_snapshot(saved.source_snapshot,source_directory)
+		if source_path.is_empty(): return null
+		entry["source_path"] = source_path
+		entry["source_snapshot"] = saved.source_snapshot.duplicate(true)
 	if saved.has("images"):
 		var images: Array = []
 		for item in saved.images:
@@ -2009,10 +2147,11 @@ func _valid_workflow_edge(edge: Dictionary, by_id: Dictionary) -> bool:
 	var target_kind = by_id[edge.to].get("type", "copy")
 	if target_kind.begins_with("text_"): return false
 	var output = edge.get("output", "result")
+	if output_kind(by_id[edge.from])==PORT_CHARACTER: return false
 	if edge.has("artifact"):
 		return (
 			output == "result"
-			and target_kind in ["copy", "model_adjust"]
+			and target_kind in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG]
 			and output_kind(by_id[edge.from]) == PORT_MESH
 			and _valid_artifact_reference(edge.artifact)
 			and edge.artifact.size() == 2
@@ -2096,6 +2235,7 @@ func open_graph():
 		return
 	preview_history = restored_history
 	artifact_preview_queue.clear()
+	humanoid_waiting.clear()
 	dismissed_artifacts.clear()
 	controller.reset()
 	clear_preview()
@@ -2132,7 +2272,8 @@ func _reject_missing_run_resources(target: String = "", reuse_cache: bool = true
 		var matching = nodes.filter(func(node): return node.id == node_id)
 		if matching.is_empty(): continue
 		var data: Dictionary = matching[0]
-		if reuse_cache and node_id != target and _has_reusable_cache(data): continue
+		var local_cache = _reusable_character_entry(node_id) if data.get("type", "") == HUMANOID_RIG else {}
+		if reuse_cache and node_id != target and (_has_reusable_cache(data) or (not local_cache.is_empty() and FileAccess.file_exists(str(local_cache.get("path", ""))))): continue
 		for edge in edges:
 			if edge.to == node_id and not edge.has("artifact"): pending.append(str(edge.from))
 		var changed = false
@@ -2158,6 +2299,283 @@ func _reject_missing_run_resources(target: String = "", reuse_cache: bool = true
 	_show_failure_dialog(message)
 	return true
 
+func _queue_humanoid_target(id: String, upstream: String):
+	var waiting: Array = humanoid_waiting.get(upstream,[])
+	if not waiting.has(id): waiting.append(id)
+	humanoid_waiting[upstream] = waiting
+
+func _direct_humanoid_input(id: String) -> Dictionary:
+	var matching = nodes.filter(func(node): return node.id==id)
+	if matching.is_empty(): return {}
+	var incoming = edges.filter(func(edge): return edge.to==id)
+	if incoming.is_empty():
+		var paths = _node_paths(matching[0],"source")
+		if paths.is_empty(): return {}
+		var path = str(paths[0])
+		return {"type":"mesh","path":path,"artifact":{"id":id+"-source","revision":FileAccess.get_sha256(path)},"provenance":{}}
+	var edge: Dictionary = incoming[0]
+	if not edge.has("artifact"): return {}
+	return _find_output_entry(str(edge.from),edge.artifact)
+
+func _run_humanoid_target(id: String):
+	var incoming = edges.filter(func(edge): return edge.to==id and not edge.has("artifact"))
+	if not incoming.is_empty():
+		var upstream = str(incoming[0].from)
+		var executable = execution_model(true, upstream)
+		if executable.is_empty(): return
+		var history: Array = preview_history.get(upstream, [])
+		var cached: Dictionary = history.back() if not history.is_empty() else {}
+		if upstream in executable.get("reused_nodes", []) and cached.get("type", "") == "mesh":
+			controller.reset()
+			status.text = "已复用上游 Mesh 缓存，仅重新创建当前节点的 17 根骨骼…"
+			_execute_humanoid(id, cached)
+			return
+		_queue_humanoid_target(id,upstream)
+		status.text = "正在运行上游 Mesh，完成后将在本机创建 17 根骨骼并检查变形…"
+		_configure_controller()
+		controller.start(executable,upstream)
+		return
+	var input_entry = _direct_humanoid_input(id)
+	if input_entry.is_empty():
+		_show_failure_dialog("请选择 GLB 或连接一个已生成的 Mesh。")
+		return
+	controller.reset()
+	_execute_humanoid(id,input_entry)
+
+func _humanoid_capability_notice(id: String, entry: Dictionary):
+	var provenance: Dictionary = entry.get("provenance",{})
+	var validation: Dictionary = provenance.get("validation",{})
+	var text_review: Dictionary = provenance.get("text_review",{})
+	var lines := PackedStringArray()
+	lines.append("角色文件已保留并可继续编辑，但未通过完整的本地实测与文本审核。")
+	lines.append("已完成最多三轮拟合与修复；这不是验收通过标记。请双击生成物进入骨骼绑定页签调整细节。")
+	if not str(text_review.get("summary","")).is_empty(): lines.append("文本审核："+str(text_review.summary))
+	var problems: Array = validation.get("issues",[])+validation.get("unsupported",[])
+	for problem in problems: lines.append("• "+str(problem))
+	for issue in text_review.get("issues",[]):
+		if issue is Dictionary and not problems.has(issue.get("message","")): lines.append("• "+str(issue.get("message","")))
+	var key = str(entry.get("run",""))+"/"+id+"/"+str(entry.get("token",""))
+	if capability_notices.has(key): return
+	capability_notices[key] = true
+	capability_notice_dialog.dialog_text = "\n".join(lines)
+	capability_notice_dialog.popup_centered(Vector2i(760,480))
+
+func _clear_humanoid_review():
+	humanoid_review_node = ""
+	humanoid_review_source = ""
+	humanoid_review_directory = ""
+	humanoid_review_input = {}
+
+func _start_humanoid_ai_review(id: String, input_entry: Dictionary, source_path: String):
+	humanoid_review_node = id
+	humanoid_review_source = source_path
+	humanoid_review_input = input_entry.duplicate(true)
+	humanoid_review_directory = state_dir.path_join("rigging-review").path_join((id+"-"+str(Time.get_ticks_usec())).validate_filename())
+	status.text = "正在渲染全身和头部多视角，并调用 AI 检查是否适合标准人形绑骨…"
+	failure_dialog.hide()
+	launch("rigging-review",{
+		"source":source_path,
+		"directory":humanoid_review_directory,
+		"godot_path":OS.get_executable_path(),
+		"render_script":ProjectSettings.globalize_path(get_script().resource_path.get_base_dir().path_join("mesh_review.gd"))
+	})
+
+func _complete_humanoid_ai_review(data: Dictionary, request: Dictionary):
+	if humanoid_review_node.is_empty() or request.get("directory","")!=humanoid_review_directory: return
+	var id = humanoid_review_node
+	var source_path = humanoid_review_source
+	var input_entry = humanoid_review_input.duplicate(true)
+	_clear_humanoid_review()
+	var expected_sha = str(input_entry.get("artifact",{}).get("revision",""))
+	if not FileAccess.file_exists(source_path) or FileAccess.get_sha256(source_path)!=expected_sha or data.get("source_sha256","")!=expected_sha:
+		_show_failure_dialog("源模型在 AI 审核过程中发生变化，请重新运行。")
+		return
+	var matching = nodes.filter(func(node): return node.id==id and node.get("type","")==HUMANOID_RIG)
+	if matching.is_empty():
+		_show_failure_dialog("等待 AI 审核的骨骼节点已不存在，请重新运行。")
+		return
+	if data.get("passed",false)!=true:
+		var issues = data.get("issues",[])
+		var summaries = _capability_issue_summaries(issues if issues is Array else [])
+		var message = "AI 视觉审核未通过，已停止绑骨。请使用完整、正面朝向、双臂展开且四肢分离的标准人形模型。\n\n"+"\n".join(summaries)
+		status.text = message
+		_show_run_problem(message)
+		return
+	var review = data.get("head_review",{})
+	if not review is Dictionary or review.get("mode","")!="automatic" or review.get("ai_reviewed",false)!=true or review.get("source_sha256","")!=expected_sha:
+		_show_failure_dialog("AI 审核返回的来源绑定无效，已停止绑骨。")
+		return
+	var parameters: Dictionary = matching[0].get("parameters",{}).duplicate(true)
+	parameters.head_review = review.duplicate(true)
+	matching[0].parameters = parameters
+	if selected_id==id: parameter_form.configure(HUMANOID_RIG,parameters,"1")
+	status.text = "AI 多视角审核通过，继续检查骨骼和实际变形。"
+	_execute_humanoid(id,input_entry)
+
+func _discard_humanoid_text_review():
+	if not humanoid_text_review.is_empty():
+		var scene = humanoid_text_review.get("result",{}).get("scene")
+		if is_instance_valid(scene) and scene != preview_scene: scene.free()
+	humanoid_text_review = {}
+
+func _fail_humanoid_text_result(result: Dictionary, message: String):
+	var scene = result.get("scene")
+	if is_instance_valid(scene) and scene != preview_scene: scene.free()
+	status.text = message
+	_show_failure_dialog(message)
+
+func _start_humanoid_text_review(id: String, input_entry: Dictionary, result: Dictionary):
+	var directory = state_dir.path_join("rigging-text-review").path_join((id+"-"+str(Time.get_ticks_usec())).validate_filename())
+	humanoid_text_review = {"node":id,"input":input_entry.duplicate(true),"result":result,"directory":directory}
+	result.scene.hide()
+	var attempts: Array = []
+	for attempt in result.get("attempts",[]):
+		attempts.append({"attempt":attempt.get("attempt",0),"repair":attempt.get("repair",""),"validation":attempt.get("validation",{}).duplicate(true),"error":attempt.get("error","")})
+	status.text = "骨骼候选已保存并重载；正在将实测 JSON 送入纯文本审核，不发送截图…"
+	failure_dialog.hide()
+	if not humanoid_text_review_fixture.is_empty():
+		var synthetic = humanoid_text_review_fixture.duplicate(true)
+		synthetic.source_sha256 = str(result.source_sha256)
+		synthetic.candidate_sha256 = str(result.sha256)
+		_complete_humanoid_text_review(synthetic,{"directory":directory})
+		return
+	launch("rigging-text-review",{
+		"source":str(input_entry.get("path","")),
+		"candidate":str(result.path),
+		"directory":directory,
+		"validation":result.validation.duplicate(true),
+		"attempts":attempts,
+		"retry_count":attempts.size(),
+		"max_retries":HumanoidRigNode.MAX_ATTEMPTS
+	})
+
+func _complete_humanoid_text_review(data: Dictionary, request: Dictionary):
+	if humanoid_text_review.is_empty() or request.get("directory","")!=humanoid_text_review.get("directory",""): return
+	var pending = humanoid_text_review
+	humanoid_text_review = {}
+	var id = str(pending.node)
+	var input_entry: Dictionary = pending.input
+	var result: Dictionary = pending.result
+	var source_path = str(input_entry.get("path",""))
+	var candidate_path = str(result.get("path",""))
+	var matching = nodes.filter(func(node): return node.id==id and node.get("type","")==HUMANOID_RIG)
+	if matching.is_empty():
+		_fail_humanoid_text_result(result,"等待文本审核的骨骼节点已不存在，请重新运行。")
+		return
+	var shape_valid = data.get("text_only",false)==true and data.get("passed") is bool and data.get("summary","") is String and data.get("issues",[]) is Array and data.get("feedback",[]) is Array
+	var hashes_valid = FileAccess.file_exists(source_path) and FileAccess.file_exists(candidate_path) and FileAccess.get_sha256(source_path)==str(result.source_sha256) and FileAccess.get_sha256(candidate_path)==str(result.sha256)
+	if not shape_valid or not hashes_valid or data.get("source_sha256","")!=str(result.source_sha256) or data.get("candidate_sha256","")!=str(result.sha256):
+		_fail_humanoid_text_result(result,"文本审核回执无效，或候选在审核期间发生变化；本次结果未加入工作流。")
+		return
+	result.capability_limited = result.get("capability_limited",false) or not data.passed
+	result.passed = result.get("validation",{}).get("passed",false) and data.passed and not result.capability_limited
+	result.text_review = data.duplicate(true)
+	_finish_humanoid(id,input_entry,result)
+
+func _execute_humanoid(id: String, input_entry: Dictionary):
+	var matching = nodes.filter(func(node): return node.id==id)
+	if matching.is_empty(): return
+	var source_path = str(input_entry.get("path",""))
+	if input_entry.get("type","")!="mesh" or source_path.get_extension().to_lower() not in ["glb","gltf"] or not FileAccess.file_exists(source_path):
+		var problem = "人形骨骼节点的输入必须是仍存在的 GLB／内嵌 glTF Mesh；请重新选择资源或运行上游 Mesh。"
+		status.text = problem
+		_show_failure_dialog(problem)
+		return
+	var parameters: Dictionary = matching[0].get("parameters",{}).duplicate(true)
+	if parameters.has("head_review") and not parameters.head_review is Dictionary:
+		_show_failure_dialog("AI 头脸验收记录格式无效，请清除后重新审核。")
+		return
+	var source_sha = FileAccess.get_sha256(source_path)
+	var supplied_review = parameters.get("head_review",{})
+	var invalidate_supplied = supplied_review is Dictionary and (supplied_review.get("mode","")=="manual" or supplied_review.get("manual_confirmation",false) or (supplied_review.get("ai_reviewed",false) and supplied_review.get("source_sha256","")!=source_sha))
+	if invalidate_supplied:
+		parameters.erase("head_review")
+		matching[0].parameters = parameters
+		if selected_id==id: parameter_form.configure(HUMANOID_RIG,parameters,"1")
+		supplied_review = {}
+	var contract = Rig.defaults(source_path)
+	if supplied_review is Dictionary and not supplied_review.is_empty(): contract.head_review = supplied_review.duplicate(true)
+	var existing_review = contract.get("head_review",{})
+	if existing_review is Dictionary and existing_review.get("mode","")=="manual": existing_review = {}
+	if not existing_review is Dictionary or existing_review.is_empty():
+		_start_humanoid_ai_review(id,input_entry,source_path)
+		return
+	var head_problem = Rig.head_contract_error(contract)
+	if not head_problem.is_empty():
+		status.text = head_problem
+		_show_failure_dialog(head_problem)
+		return
+	var directory = state_dir.path_join("humanoid-rig")
+	if DirAccess.make_dir_recursive_absolute(directory)!=OK:
+		_show_failure_dialog("无法创建本机角色输出目录："+directory)
+		return
+	var output_path = directory.path_join((id+"-"+str(Time.get_ticks_usec())+".tscn").validate_filename())
+	status.text = "正在检查正视角人形、拟合 17 根解剖骨并执行抬臂／下蹲／转身验收…"
+	var result = HumanoidRigNode.run(source_path,matching[0].get("parameters",{}),preview_root,output_path)
+	if result.has("error"):
+		status.text = str(result.error)
+		_show_failure_dialog(status.text)
+		return
+	_start_humanoid_text_review(id,input_entry,result)
+
+func _finish_humanoid(id: String, input_entry: Dictionary, result: Dictionary):
+	var matching = nodes.filter(func(node): return node.id==id)
+	if matching.is_empty():
+		_fail_humanoid_text_result(result,"骨骼节点已不存在，无法发布文本审核候选。")
+		return
+	var source_path = str(input_entry.get("path",""))
+	var source_snapshot = _snapshot_file(source_path)
+	if source_snapshot.is_empty():
+		_fail_humanoid_text_result(result,"无法保存源 GLB 快照，角色结果未加入工作流。")
+		return
+	var attempt_summaries: Array = []
+	for attempt in result.get("attempts",[]):
+		attempt_summaries.append({"attempt":attempt.get("attempt",0),"repair":attempt.get("repair",""),"validation":attempt.get("validation",{}).duplicate(true)})
+	var result_run = run_id if not run_id.is_empty() else "local-"+str(result.sha256).left(12)
+	var artifact = {"id":id+"-character","revision":str(result.sha256)}
+	var entry = {
+		"type":"character",
+		"token":str(result.sha256),
+		"path":str(result.path),
+		"source_path":source_path,
+		"source_snapshot":source_snapshot,
+		"run":result_run,
+		"node":id,
+		"description":JSON.stringify(matching[0].get("parameters",{}),"  ",true,true),
+		"artifact":artifact,
+		"provenance":{
+			"algorithm":"anatomical-segments-v1",
+			"anatomical_bone_count":17,
+			"independent_root":true,
+			"source_sha256":str(result.source_sha256),
+			"capability_limited":result.capability_limited,
+			"passed":result.get("passed",false),
+			"review_mode":"text_only",
+			"validation":result.validation.duplicate(true),
+			"text_review":result.get("text_review",{}).duplicate(true),
+			"attempts":attempt_summaries,
+			"original_model_not_overwritten":true
+		}
+	}
+	remember_preview(entry,id,result_run)
+	if selected_id==id:
+		clear_preview()
+		result.scene.show()
+		preview_scene = result.scene
+		preview_token = entry.token
+		preview_run = result_run
+		preview_node = id
+		preview_source_path = entry.path
+		preview_artifact = artifact.duplicate(true)
+		rigging_panel.set_source(source_path)
+		mesh_container.show()
+		frame_mesh()
+		_update_preview_maximize_controls()
+	else:
+		result.scene.free()
+	status.text = "已生成 17 根解剖骨＋独立 root，并通过本地实测、保存重载与纯文本审核；双击角色进入绑定调整。" if not result.capability_limited else "已保留能力受限角色；本地实测或文本审核未通过，请查看告警并进入绑定页签修正。"
+	if result.capability_limited: _humanoid_capability_notice(id,entry)
+
 func run_node_preview(id: String):
 	cache_full_run = false
 	if is_graph_busy():
@@ -2174,6 +2592,11 @@ func run_node_preview(id: String):
 	if service_config_link != null: service_config_link.hide()
 	preview_token = ""
 	artifact_preview_queue.clear()
+	humanoid_waiting.clear()
+	var selected = nodes.filter(func(node): return node.id==id)[0]
+	if selected.get("type","")==HUMANOID_RIG:
+		_run_humanoid_target(id)
+		return
 	var executable = execution_model(true, id)
 	if executable.is_empty(): return
 	var reused = executable.get("reused_nodes", []).size()
@@ -2199,6 +2622,7 @@ func confirm_run_all():
 	preview_history.clear()
 	dismissed_artifacts.clear()
 	artifact_preview_queue.clear()
+	humanoid_waiting.clear()
 	clear_preview()
 	rebuild()
 	start_run(true)
@@ -2211,7 +2635,8 @@ func start_run(force_rerun: bool = false):
 		return
 	if _reject_missing_run_resources("", not force_rerun): return
 	for data in nodes:
-		if not force_rerun and _has_reusable_cache(data): continue
+		var local_cache = _reusable_character_entry(str(data.id)) if data.get("type", "") == HUMANOID_RIG else {}
+		if not force_rerun and (_has_reusable_cache(data) or (not local_cache.is_empty() and FileAccess.file_exists(str(local_cache.get("path", ""))))): continue
 		var blocker = node_run_blocker(data.id)
 		if not blocker.is_empty():
 			_show_run_problem(blocker)
@@ -2219,9 +2644,29 @@ func start_run(force_rerun: bool = false):
 	if service_config_link != null: service_config_link.hide()
 	preview_token = ""
 	artifact_preview_queue.clear()
+	humanoid_waiting.clear()
 	var executable = execution_model(not force_rerun)
 	if executable.is_empty(): return
-	var reused = executable.get("reused_nodes", []).size()
+	var reused_nodes: Array = executable.get("reused_nodes", [])
+	var local_inputs: Array = []
+	for data in nodes:
+		if data.get("type","")!=HUMANOID_RIG: continue
+		var local_cache = _reusable_character_entry(str(data.id))
+		if not force_rerun and not local_cache.is_empty(): continue
+		var incoming = edges.filter(func(edge): return edge.to==data.id and not edge.has("artifact"))
+		if not incoming.is_empty():
+			var upstream = str(incoming[0].from)
+			var upstream_entry: Dictionary = preview_history.get(upstream, []).back() if not preview_history.get(upstream, []).is_empty() else {}
+			if not force_rerun and upstream in reused_nodes and upstream_entry.get("type", "") == "mesh":
+				local_inputs.append([str(data.id), upstream_entry])
+			else:
+				_queue_humanoid_target(str(data.id),upstream)
+		else:
+			var input_entry = _direct_humanoid_input(str(data.id))
+			if not input_entry.is_empty(): local_inputs.append([str(data.id),input_entry])
+	var reused = reused_nodes.size()
+	executable.nodes = executable.nodes.filter(func(node): return node.get("type","")!=HUMANOID_RIG)
+	executable.edges = executable.edges.filter(func(edge): return not nodes.any(func(node): return node.get("type","")==HUMANOID_RIG and (node.id==edge.from or node.id==edge.to)))
 	if force_rerun:
 		for data in executable.nodes: data["ignore_cache"] = true
 	_configure_controller()
@@ -2230,7 +2675,8 @@ func start_run(force_rerun: bool = false):
 		controller.start(executable)
 	else:
 		controller.reset()
-		status.text = "所有节点均已有结果缓存，本次运行直接完成，未重新生成。"
+		if local_inputs.is_empty() and humanoid_waiting.is_empty(): status.text = "所有节点均已有结果缓存，本次运行直接完成，未重新生成。"
+	for item in local_inputs: _execute_humanoid(item[0],item[1])
 
 func resume_run():
 	_configure_controller()
@@ -2239,6 +2685,7 @@ func resume_run():
 func cancel_run():
 	preview_token = ""
 	artifact_preview_queue.clear()
+	humanoid_waiting.clear()
 	_configure_controller()
 	controller.cancel()
 
@@ -2267,6 +2714,10 @@ func launch(command: String, spec: Dictionary):
 
 func _queue_completed_image_previews(data: Dictionary):
 	if data.get("state", "") not in ["succeeded", "failed"]: return
+	for upstream in humanoid_waiting:
+		var upstream_state = data.get("nodes",{}).get(upstream,{})
+		var already_loading = jobs.values().any(func(job): return job.command=="preview" and job.spec.get("node","")==upstream)
+		if upstream_state.get("state","")=="succeeded" and not artifact_preview_queue.has(upstream) and not already_loading: artifact_preview_queue.append(upstream)
 	for data_node in nodes:
 		var kind = str(data_node.get("type", ""))
 		if (kind != "copy" or not cache_full_run) and not _is_image_kind(kind) and not _is_mesh_kind(kind): continue
@@ -2286,6 +2737,18 @@ func _process(_delta):
 		launch("preview", {"run": run_id, "node": node_id})
 
 func _controller_failed(command: String, failure: Dictionary):
+	if command in ["create","step","preview","retry"]: humanoid_waiting.clear()
+	if command=="rigging-review":
+		_clear_humanoid_review()
+		if failure.code in ["api_key_missing","kimi_key_missing"]: failure.message = "AI 视觉审核需要可用的 KIMI_API_KEY。请在本机配置后重启马良；不会回退到人工确认。"
+		elif failure.code=="review_render_failed": failure.message = "无法生成 AI 审核所需的多视角图像，请检查模型和当前引擎渲染环境。"
+		elif failure.code in ["vision_output_invalid","api_output_invalid"]: failure.message = "AI 视觉审核返回的内容不完整或无效，请显式重试。"
+	elif command=="rigging-text-review":
+		_discard_humanoid_text_review()
+		if failure.code in ["api_key_missing","kimi_key_missing"]: failure.message = "绑骨后的文本审核需要可用的 KIMI_API_KEY。请配置后显式重试；不会回退到简单检测判定。"
+		elif failure.code in ["text_review_output_invalid","api_output_invalid"]: failure.message = "绑骨后的文本审核返回内容不完整或无效，候选未加入工作流。"
+		elif failure.code in ["source_missing","candidate_missing","source_changed"]: failure.message = "文本审核所需的源模型或角色候选已不存在，请重新运行。"
+		else: failure.message = "绑骨后的文本审核未完成，候选未加入工作流；请检查服务后显式重试。"
 	var message = str(failure.message)
 	var section = "ai"
 	match failure.code:
@@ -2383,14 +2846,22 @@ func _controller_completed(command: String, data: Dictionary, request: Dictionar
 		managed_comfy_panel.completed(data, request)
 	elif command == "service-check":
 		_apply_service_check(data, request.service)
+	elif command == "rigging-review":
+		_complete_humanoid_ai_review(data,request)
+	elif command == "rigging-text-review":
+		_complete_humanoid_text_review(data,request)
 	elif command == "preview":
 		if request.run == run_id:
 			remember_preview(data, request.node, request.run)
 			if request.node == selected_id: load_preview(data, request.node, request.run)
+			var targets: Array = humanoid_waiting.get(str(request.node),[]).duplicate()
+			humanoid_waiting.erase(str(request.node))
+			for target in targets: _execute_humanoid(str(target),data)
 	elif command == "publish":
 		status.text = "已发布新文件：" + data.path
 		if Engine.is_editor_hint(): EditorInterface.get_resource_filesystem().scan()
 	elif command != "create":
+		if data.get("state","") in ["failed","cancelled"]: humanoid_waiting.clear()
 		status.text = "运行状态：" + state_label(data.state) + " | 响应计数 " + str(heartbeat)
 		var failure_messages := PackedStringArray()
 		for id in data.nodes:
@@ -2421,6 +2892,9 @@ func request_preview():
 	if creating:
 		status.text = "正在创建运行，请稍候"
 		return
+	if not _latest_character_entry(selected_id).is_empty():
+		show_history(preview_history[selected_id].size()-1)
+		return
 	if run_id.is_empty() or selected_id.is_empty():
 		status.text = "请先点击节点的“运行并预览”"
 		return
@@ -2448,14 +2922,14 @@ func remember_preview(data: Dictionary, node_id: String, result_run: String):
 		entry["run"] = result_run
 		entry["node"] = node_id
 		entry["cache_fingerprint"] = _cache_fingerprint(node_id)
-		entry["description"] = JSON.stringify(current.get("nodes", {}).get(node_id, {}).get("request", {}), "  ", true, true)
+		if str(entry.get("description","")).is_empty(): entry["description"] = JSON.stringify(current.get("nodes", {}).get(node_id, {}).get("request", {}), "  ", true, true)
 		history.append(entry)
 		preview_history[node_id] = history
 	if node_id == selected_id: refresh_history()
 	# An explicit new run restores previously dismissed result nodes.
 	for key in dismissed_artifacts.keys():
 		if key == node_id or str(key).begins_with(node_id + "::"): dismissed_artifacts.erase(key)
-	if data.get("type", "") in ["image", "mesh"] or artifact_nodes.has(node_id): rebuild()
+	if data.get("type", "") in ["image", "mesh","character"] or artifact_nodes.has(node_id): rebuild()
 
 func show_history(index: int):
 	var history: Array = preview_history.get(selected_id, [])
@@ -2562,6 +3036,16 @@ func load_preview(data: Dictionary, node_id: String, result_run: String = "", pr
 		preview_resource = ImageTexture.create_from_image(image)
 		texture.texture = preview_resource
 		texture.show()
+	elif data.type=="character":
+		var packed = ResourceLoader.load(str(data.path),"PackedScene",ResourceLoader.CACHE_MODE_IGNORE)
+		if not packed is PackedScene: status.text = "角色预览失败"; return
+		preview_scene = packed.instantiate() as Node3D
+		if preview_scene == null: return
+		preview_root.add_child(preview_scene)
+		rigging_panel.set_source(str(data.get("source_path","")))
+		mesh_container.tooltip_text = "左键拖动旋转 · 中键拖动平移 · 滚轮缩放 · 双击进入骨骼绑定页签"
+		mesh_container.show()
+		frame_mesh()
 	else:
 		var document = GLTFDocument.new()
 		var state = GLTFState.new()
@@ -2570,6 +3054,7 @@ func load_preview(data: Dictionary, node_id: String, result_run: String = "", pr
 		if preview_scene == null: return
 		preview_root.add_child(preview_scene)
 		rigging_panel.set_source(data.path)
+		mesh_container.tooltip_text = "左键拖动旋转 · 中键拖动平移 · 滚轮缩放 · 双击最大化 / 还原预览"
 		mesh_container.show()
 		frame_mesh()
 	preview_token = data.token
@@ -2578,9 +3063,22 @@ func load_preview(data: Dictionary, node_id: String, result_run: String = "", pr
 	preview_artifact = data.get("artifact", {}).duplicate(true)
 	preview_run = run_id if result_run.is_empty() else result_run
 	preview_node = node_id
-	status.text = "已加载" + {"image":"图像", "mesh":"网格"}.get(data.type,data.type) + "预览，请检查后再发布"
+	status.text = "已加载" + {"image":"图像", "mesh":"网格", "character":"人形角色（双击进入骨骼绑定）"}.get(data.type,data.type) + "预览，请检查后再发布"
 	if not current_images.is_empty(): status.text += "；当前为“" + str(data.get("label", "独立图片")) + "”，共 " + str(current_images.size()) + " 张"
 	_update_preview_maximize_controls()
+
+func _open_preview_rigging():
+	var character = _character_entry(preview_node,preview_token)
+	if character.is_empty() or str(character.get("token",""))!=preview_token:
+		status.text = "当前预览不是可编辑的人形角色"
+		return
+	var source_path = str(character.get("source_path",""))
+	if source_path.is_empty():
+		status.text = "角色缺少源 GLB，请重新打开工作流快照"
+		return
+	var character_path = preview_source_path
+	show_native_section("rig")
+	rigging_panel.open_character(character_path,source_path)
 
 func frame_mesh():
 	var bounds = AABB()
@@ -2618,8 +3116,11 @@ func _mesh_preview_input(event: InputEvent):
 		mesh_focus += (camera.basis.y * event.relative.y - camera.basis.x * event.relative.x) * pixel_scale
 	elif event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.double_click:
-			frame_mesh()
-			toggle_preview_maximized()
+			var character = _character_entry(preview_node,preview_token)
+			if not character.is_empty() and str(character.get("token",""))==preview_token: _open_preview_rigging()
+			else:
+				frame_mesh()
+				toggle_preview_maximized()
 			mesh_container.accept_event()
 			return
 		if event.button_index not in [MOUSE_BUTTON_WHEEL_UP, MOUSE_BUTTON_WHEEL_DOWN]: return
@@ -2643,7 +3144,7 @@ func open_save_dialog():
 		return
 	var extension = preview_source_path.get_extension().to_lower()
 	if extension.is_empty(): extension = "png" if preview_resource != null else "glb"
-	save_picker.filters = ["*." + extension + " ; " + ("图像" if preview_resource != null else "网格") + "生成物"]
+	save_picker.filters = ["*." + extension + " ; " + ("图像" if preview_resource != null else "人形角色" if extension=="tscn" and not _latest_character_entry(preview_node).is_empty() else "网格") + "生成物"]
 	save_picker.current_dir = preview_source_path.get_base_dir()
 	save_picker.current_file = preview_source_path.get_file()
 	save_picker.popup_centered_ratio(0.7)
@@ -2661,6 +3162,9 @@ func save_preview_to(path: String):
 	status.text = "已保存生成物：" + target
 
 func review_publish():
+	if not _latest_character_entry(preview_node).is_empty():
+		status.text = "人形角色已保存为 .tscn；请使用“保存生成物…”下载，或双击进入骨骼绑定后另存新版本"
+		return
 	if preview_token == "" or preview_run != run_id:
 		status.text = "请先预览本次运行成功的结果"
 		return
@@ -2778,7 +3282,8 @@ func node_run_blocker(id: String) -> String:
 		var matching = nodes.filter(func(n): return n.id == next_id)
 		if matching.is_empty(): return "缺少必要的上游节点"
 		var data: Dictionary = matching[0]
-		if next_id != id and _has_reusable_cache(data): continue
+		var local_cache = _reusable_character_entry(next_id) if data.get("type", "") == HUMANOID_RIG else {}
+		if next_id != id and (_has_reusable_cache(data) or (not local_cache.is_empty() and FileAccess.file_exists(str(local_cache.get("path", ""))))): continue
 		_clear_image_mesh_text(data)
 		var kind: String = data.get("type", "copy")
 		if _retired_mesh_node(data): return RETIRED_GPT_MESH_NOTICE
@@ -2792,13 +3297,19 @@ func node_run_blocker(id: String) -> String:
 			for path in _node_paths(data, field):
 				if not path.is_empty() and not FileAccess.file_exists(path):
 					return ("源文件" if field == "source" else "参考图像") + "不存在（" + str(next_id) + "）"
+		if kind==HUMANOID_RIG:
+			for path in _node_paths(data,"source"):
+				if not path.is_empty() and path.get_extension().to_lower() not in ["glb","gltf"]: return "创建人形17根骨骼需要 GLB／内嵌 glTF 模型（"+str(next_id)+"）"
+		if kind==HUMAN_SHAPE:
+			for path in _node_paths(data,"source"):
+				if not path.is_empty() and path.get_extension().to_lower()!="glb": return "人形体态调整 V1 只接受绑骨前的静态 GLB（"+str(next_id)+"）"
 		var reviewed_mesh = kind == "image_to_mesh" and data.get("version", "1") == "2"
 		if not reviewed_mesh and (_is_image_kind(kind) or _accepts_image_set(data)) and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
 			return "源图与参考图合计每次最多 8 张（" + str(next_id) + "）"
 		var prompt = str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))
 		if kind == GENERATE_IMAGE and not has_images and prompt.strip_edges().is_empty():
 			return "请至少选择图片或填写生成提示词（" + str(next_id) + "）"
-		if kind != GENERATE_IMAGE and not kind in ["copy", "image_to_mesh", "model_adjust"] and prompt.strip_edges().is_empty():
+		if kind != GENERATE_IMAGE and not kind in ["copy", "image_to_mesh", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG] and prompt.strip_edges().is_empty():
 			return "请先填写生成提示词（" + str(next_id) + "）"
 		var service_reason = _service_blocker(kind, data)
 		if not service_reason.is_empty(): return service_reason
@@ -2831,7 +3342,8 @@ func show_context_menu(local_position: Vector2):
 			context_menu.clear()
 			context_history_menu.clear()
 			var mesh_artifact = artifact_nodes.has(context_artifact_source) and artifact_nodes[context_artifact_source].get("kind", "image") == "mesh"
-			_context_item("保存本轮 GLB…" if mesh_artifact else "下载全部到项目…", CONTEXT_ARTIFACT_DOWNLOAD)
+			var character_artifact = artifact_nodes.has(context_artifact_source) and artifact_nodes[context_artifact_source].get("kind", "image") == "character"
+			_context_item("下载角色 .tscn…" if character_artifact else "保存本轮 GLB…" if mesh_artifact else "下载全部到项目…", CONTEXT_ARTIFACT_DOWNLOAD)
 			_context_item("删除生成物节点", CONTEXT_ARTIFACT_DELETE, "请等待当前运行结束或先取消" if is_graph_busy() else "")
 			context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_DELETE)
 			context_menu.popup(Rect2i(Vector2i(graph.get_screen_transform() * local_position), Vector2i.ZERO))
@@ -2941,7 +3453,7 @@ func _history_context_action(index: int):
 func filter_node_picker(text: String):
 	node_picker_list.clear()
 	var search = text.strip_edges().to_lower()
-	for group in [["图像生成", [GENERATE_IMAGE]], ["网格生成", ["image_to_mesh", "text_to_mesh"]], ["模型处理", ["model_adjust"]], ["离线工具", ["copy"]]]:
+	for group in [["图像生成", [GENERATE_IMAGE]], ["网格生成", ["image_to_mesh", "text_to_mesh"]], ["模型处理", ["model_adjust", HUMAN_SHAPE]], ["骨骼工具", [HUMANOID_RIG]], ["离线工具", ["copy"]]]:
 		var matches: Array = []
 		for kind in group[1]:
 			if search.is_empty() or search in (node_label(kind) + " " + kind + " " + group[0]).to_lower(): matches.append(kind)
@@ -2968,13 +3480,14 @@ func create_context_node(kind: String):
 	var position = (context_position + graph.scroll_offset) / graph.zoom
 	var id = "n" + str(Time.get_ticks_usec())
 	while not nodes.filter(func(n): return n.id == id).is_empty(): id += "x"
-	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": "local-copy" if kind == "copy" else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
-	if kind != 'copy' and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
+	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": human_shape_default_parameters() if kind==HUMAN_SHAPE else HumanoidRigNode.default_parameters() if kind==HUMANOID_RIG else {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
+	if kind not in ['copy',HUMANOID_RIG] and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	_migrate_node_models(data, service_draft())
 	nodes.append(data)
 	node_picker.hide()
 	context_menu.hide()
-	rebuild()
+	# Adding a formal node must not re-layout existing artifacts and move it away from the pointer.
+	rebuild(false)
 	for child in graph.get_children():
 		if child is GraphNode: child.selected = str(child.name) == id
 	select_node(id)
@@ -3254,9 +3767,10 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	button(actions, "保存生成服务设置", save_service_settings)
 	service_status = Label.new()
 	service_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	service_status.text = "请选择生成服务；本机复制节点始终可用，配置草稿会自动保存。"
+	service_status.text = "请选择生成服务；本机复制和人形骨骼节点始终可用，配置草稿会自动保存。"
 	service_fields.add_child(service_status)
 	for kind in NODE_KINDS:
+		if kind==HUMANOID_RIG: continue
 		var label = Label.new()
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		service_capability_labels[kind] = label
@@ -3405,15 +3919,18 @@ func _retired_mesh_node(data: Dictionary) -> bool:
 func _generator_description(data: Dictionary) -> String:
 	var kind = str(data.get('type', 'copy'))
 	if _retired_mesh_node(data): return node_label(kind) + ' · GPT CLI 网格已下线'
+	if kind == HUMANOID_RIG: return '本机解剖模板 · 17 根解剖骨＋root · 实际 ROM 检查'
 	if kind == 'copy': return '本机离线复制'
 	var selected_model = str(data.get('model', '')) if not _using_legacy_service() else '高级自定义服务'
 	var description = node_label(kind) + ' · ' + (selected_model if not selected_model.is_empty() else 'CLI 默认／待选择模型')
 	if _service_mode() in ['api_modeling', 'api_sculpt']: description += ' · 自选 API 语义规划'
 	elif _service_mode() == 'local_mesh': description += ' · 本机网格'
-	elif _service_mode() == 'kimi_native': description += ' · Tripo API 直接 3D' if _is_mesh_kind(kind) else ' · Kimi Work 图像服务'
+	elif _service_mode() == 'kimi_native': description += ' · 本地绑骨前几何形变' if kind == HUMAN_SHAPE else ' · Tripo API 直接 3D' if _is_mesh_kind(kind) else ' · Kimi Work 图像服务'
 	return description
 
 func _generator_provider(kind: String) -> String:
+	if kind == 'copy': return 'local-copy'
+	if kind == HUMANOID_RIG: return 'local-humanoid-rig'
 	if _service_mode() == 'api_modeling': return 'api-modeling'
 	if _service_mode() == 'api_sculpt': return 'api-sculpt'
 	if _service_mode() == 'local_mesh': return 'comfy'
@@ -3703,7 +4220,7 @@ func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
 		_show_run_problem(service_status.text)
 
 func _service_blocker(kind: String, data: Dictionary = {}) -> String:
-	if kind == "copy" or _using_legacy_service(): return ""
+	if kind in ["copy",HUMANOID_RIG] or _using_legacy_service(): return ""
 	if _is_mesh_kind(kind) and managed_comfy_panel != null and _service_mode() in ['codex', 'local_mesh']:
 		var bundle_problem: String = managed_comfy_panel.bundled_mesh_blocker()
 		if not bundle_problem.is_empty(): return bundle_problem
@@ -3711,6 +4228,8 @@ func _service_blocker(kind: String, data: Dictionary = {}) -> String:
 		return "请选择一种生成服务，再保存配置。"
 	if kind == 'model_adjust' and _service_mode() != 'kimi_native':
 		return '模型调整目前使用 Kimi Native / Tripo API，请先在 AI 设置中选择 Kimi Native。'
+	if kind == HUMAN_SHAPE and _service_mode() != 'kimi_native':
+		return '人形体态调整复用 Kimi Native 的本地几何运行时，不调用 Tripo API；请先选择并配置 Kimi Native。'
 	if service_saved.is_empty() or service_draft() != service_saved:
 		return "生成服务设置尚未保存。请在 AI 设置中检测连接并保存。"
 	if _service_mode() in ['api_modeling', 'api_sculpt'] and not _is_mesh_kind(kind):

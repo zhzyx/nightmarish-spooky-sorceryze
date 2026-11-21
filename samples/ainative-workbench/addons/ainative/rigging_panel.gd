@@ -299,6 +299,39 @@ func reopen():
 	show_scene(scene)
 	message.text = '已按保存记录重新打开源模型及修正参数。修改后请使用新的版本文件名保存。'
 
+func open_character(path: String, source_path: String):
+	if not FileAccess.file_exists(path) or not FileAccess.file_exists(source_path):
+		var problem = '角色文件或源 GLB 已不存在，请从工作流快照恢复后再打开。'
+		message.text = problem
+		host._show_failure_dialog(problem)
+		return
+	var packed = ResourceLoader.load(path,'PackedScene',ResourceLoader.CACHE_MODE_IGNORE)
+	if not packed is PackedScene:
+		host._show_failure_dialog('无法打开人形角色文件：'+path)
+		return
+	var scene = packed.instantiate() as Node3D
+	var metadata: Dictionary = scene.get_meta('rigging',{}) if scene != null else {}
+	if scene == null or metadata.get('algorithm','')!='anatomical-segments-v1' or FileAccess.get_sha256(source_path)!=metadata.get('source_sha256',''):
+		if scene != null: scene.free()
+		host._show_failure_dialog('角色来源校验失败，无法进入骨骼绑定。')
+		return
+	set_source(source_path)
+	params = metadata.get('parameters',{}).duplicate(true)
+	route.select(0 if params.get('route','standard')=='standard' else 1)
+	height.value = params.get('height_m',1.8)
+	crop.value = params.get('crop_below_y',-10000.0)
+	clean.button_pressed = params.get('clean_faces',false)
+	auto_orient.button_pressed = params.get('auto_orient',false)
+	confirm.button_pressed = params.get('confirmed_humanoid',false)
+	corrections.text = JSON.stringify({'joints':params.get('joints',{}),'weights':params.get('weights',{}),'yaw_degrees':params.get('yaw_degrees',0.0),'reference_pose':params.get('reference_pose','T'),'weights_geometry':params.get('weights_geometry','')},'  ')
+	target.text = path.get_basename()+'-edited.tscn'
+	advanced_toggle.set_pressed_no_signal(true)
+	advanced_panel.show()
+	show_scene(scene)
+	var validation: Dictionary = metadata.get('validation',{})
+	message.text = '已打开 17 根解剖骨＋独立 root；可调整关节、权重并重新检查变形。'
+	if metadata.get('status','')=='capability_limited' or not validation.get('passed',false): message.text += ' 当前产物为能力受限版本，尚未通过完整 ROM 验收。'
+
 func load_markers():
 	if not is_instance_valid(built): return
 	if built.get_meta('rigging',{}).get('algorithm','') == 'skintokens-local':

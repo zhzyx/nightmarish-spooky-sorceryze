@@ -52,6 +52,20 @@ After previewing a generated Mesh, the Character panel offers anatomical templat
 
 `rigging_acceptance.gd -- source.glb new-character.tscn params.json` checks actual Skin/rest, weights, three animated deformations and sampled squat foot contact. `rigging_live_ui.gd -- live-runs.json params.json new-preview.png new-receipt.json` uses the same deployment environment as `live_acceptance.gd` to replay a real `image_to_mesh` output through fitting, publication, no-overwrite and reopen operations. The latter invokes actual panel methods and requires new screenshot/receipt paths; its confirmation is test-only. Neither script invokes an AI model.
 
+## 创建人形17根骨骼节点
+
+在画布右键选择 **骨骼工具 → 创建人形17根骨骼**。节点接受上游 Mesh，也可通过系统文件资源器选择项目中的 `.glb`／内嵌资源 `.gltf`；非空路径在运行时已丢失时会弹窗报错，不会静默改用持久化快照。运行在本机完成，不调用图像或网格生成服务。
+
+节点沿用标准人物门禁与解剖模板，输出 **17 根解剖骨＋独立 root** 的新 `.tscn`，不会覆盖源 GLB。正视角人形检查失败时停止；骨点或实际蒙皮 ROM 未通过时，最多进行矢状面校正和清理后重拟合。仍无法完整通过时保留可编辑产物并弹出能力受限告警，不将其标记为验收通过。
+
+节点只使用自动 AI 头脸与标准人形审核，不提供人工确认入口。模型没有随附验收记录时，会在本机渲染全身正面／侧面／背面／俯视和头部正脸／斜侧面／侧面，再调用 Kimi 视觉模型审核；此步骤需要可用的 `KIMI_API_KEY`。通过后记录绑定当前源文件 SHA-256 并随工作流保存，不修改原 GLB。AI 判定不通过、渲染失败或返回缺项都会停止，不静默回退到人工审核；更换模型后需要重新审核。
+
+绑骨后的最终检测使用**纯文本审核流程**：本地 Godot 先完成骨骼、Skin、Rest、权重和实际 ROM 数值检测，候选保存并重载后，只把 JSON 实测证据发送给 Kimi 文本模型，不发送截图或图片 Base64。文本回执包含结构化问题、节点／控件路由及白名单修复建议。最终通过必须同时满足本地硬门禁与文本审核通过；文本模型无权把结构无效、Rest／权重异常或超阈值候选改判为通过。该步骤同样需要 `KIMI_API_KEY`，服务或回执无效时停止，不静默退回简单检测结论。
+
+角色生成物显示实际网格和骨架。**双击生成物或右侧角色预览**进入“骨骼绑定”页签调整关节、权重和变形；“下载角色 .tscn”可另存产物。工作流会内嵌角色和对应源 GLB 快照，重开后仍可预览和进入绑定调整。
+
+后台回归：设置 `AINATIVE_PYTHON` 后运行 `--headless --path samples/ainative-workbench --script humanoid_rig_node_acceptance.gd`。默认使用明确标注的合成 T 形夹具和 `synthetic=true` 的文本回执，不调用真实 AI，只证明节点适配器、持久化、文本流程和实际 ROM 行为；真实人物与真实文本审核仍需分别留存业务证据。
+
 ## 逐节点运行与预览
 
 节点上的“运行并预览”只执行该节点及其必要上游，成功后自动展示图片或网格。不运行后续节点或无关分支；相同输入沿用执行器缓存。修改提示词、参数或参考图后再次点击才会生成，运行中重复点击不会重复提交。
@@ -79,6 +93,14 @@ After previewing a generated Mesh, the Character panel offers anatomical templat
 本地 ComfyUI 不要求购买云端额度，但仍需要实际运行的服务和模型。图生三维在本机执行，不计作 ChatGPT/Codex 额度；界面配置通过不代表真实生成已验收。没有服务时，可继续离线复制和预览。
 
 后台回归还包括 `parameter_form_acceptance.gd` 及 `generation_service_acceptance.gd`。后者由 `tools/ainative/test_generation_service_gui.py` 启动只读 HTTP 测试服务；结果只证明配置、错误处理及离线流程，不代表真实模型推理。
+
+### 绑骨前人形体态调整
+
+在 Kimi Native 模式的“模型处理”中添加“人形体态调整”节点，连接静态人形 GLB。常规界面只提供目标身高、目标头身比、臂长倍率、腿长倍率和胖瘦五项控制，不调用 Tripo API 或重新生成模型。默认由 AINative 渲染源模型，通过一次 Kimi 视觉请求估计 T／A 姿态、解剖正面和 15 个人体关键点，再自动写入源 SHA-256、转换到源坐标并检查关键点与源网格的距离；此阶段需要可用的 `KIMI_API_KEY` 和既有审核渲染配置。
+
+自动拟合回执明确记录 AI 置信度和几何误差，不宣称动捕级精确度或人工确认。低置信度、正面不明、缺关键点或偏离网格会在变形前停止。开发者 JSON 仍可显式提供源绑定的 landmarks 覆盖，但不再要求额外人工勾选。
+
+该节点必须放在最终骨骼绑定之前。输出是新的 GLB 和实测比例回执，原模型不覆盖；旧头脸审核、头部 landmarks 和绑定结果失效，派生关键点标记为自动派生、需要重新审核。重新完成全身／头颈审核后，再将输出连接“创建人形17根骨骼”。V1 拒绝已有 Skin、网格节点变换和共享 POSITION accessor 的输入，具体参数范围与回执以 `tools/ainative/README.md` 为准。
 
 ## 使用已有 Codex CLI 登录生成图片
 

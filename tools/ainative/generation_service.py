@@ -20,7 +20,7 @@ from multi_image_provider import MESSAGES as MULTI_IMAGE_MESSAGES
 
 RETIRED_MODELING_MODES = frozenset(("codex_modeling", "codex_sculpt"))
 RETIRED_MODELING_PROVIDERS = frozenset(("codex-modeling", "codex-sculpt"))
-KINDS = ("generate_image", "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust")
+KINDS = ("generate_image", "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", "human_shape_adjust")
 IMAGE_NODES = {"CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"}
 MESH_NODES = {
     "LoadImage",
@@ -52,6 +52,7 @@ MESSAGES = {
     "source_invalid": "源文件格式无效或不受此节点支持。图像输入请选择 PNG/JPEG；网格复制请选择 GLB 或内嵌 glTF。",
     "prompt_missing": "缺少生成提示词。请在节点的提示词参数或文字说明中填写内容后重试。",
     "node_unsupported": "当前生成服务不支持该节点类型。请检查节点类型及“本机设置”的服务模式。",
+    "node_parameters_invalid": "节点包含当前类型不支持的参数。请重新选择该节点并应用表单；旧工作流的空提示词和空关键点占位会自动迁移。",
     "api_key_missing": "未检测到 API 凭据环境变量；请核对本机连接设置并在配置环境变量后重启马良。",
     "node_api_model_invalid": "该节点的 API 模型为空、无效或已下线。请在节点检查器中填写有效的本节点模型 ID。",
     "run_service_missing": "本次运行的生成服务快照缺失，不能安全恢复。请保留当前记录并重新创建运行。",
@@ -454,6 +455,7 @@ def _probe_kimi(config):
             text_to_mesh=mesh,
             image_to_mesh=dict(mesh),
             model_adjust=dict(mesh),
+            human_shape_adjust=dict(mesh),
         ),
         backend_revision="kimi-native-3d-v1|"
         + config["model3d_model"]
@@ -565,7 +567,7 @@ def check_inputs(model):
         if not isinstance(source_paths, list) or not isinstance(context_paths, list):
             raise ServiceError("source_invalid")
         if (
-            (kind.startswith("image_") or kind == "model_adjust")
+            (kind.startswith("image_") or kind in ("model_adjust", "human_shape_adjust"))
             and not incoming
             and not source
             and not any(source_paths)
@@ -575,17 +577,17 @@ def check_inputs(model):
             raise ServiceError("source_missing")
         if kind == "copy" and len(source_paths) + len(context_paths) > 1:
             raise ServiceError("source_invalid")
-        if kind == "model_adjust" and len([path for path in source_paths if path]) > 1:
+        if kind in ("model_adjust", "human_shape_adjust") and len([path for path in source_paths if path]) > 1:
             raise ServiceError("source_invalid")
         for field, paths in (("source", source_paths), ("image_context", context_paths)):
             for path in paths:
                 if not isinstance(path, str) or path and not Path(path).is_file():
                     raise ServiceError("source_missing")
-                model_source = kind == "model_adjust" and field == "source"
+                model_source = kind in ("model_adjust", "human_shape_adjust") and field == "source"
                 allowed = (".glb", ".gltf") if model_source else (".png", ".jpg", ".jpeg")
                 if kind != "copy" and path and Path(path).suffix.lower() not in allowed:
                     raise ServiceError("source_invalid")
-        if kind in KINDS and kind not in ("image_to_mesh", "model_adjust"):
+        if kind in KINDS and kind not in ("image_to_mesh", "model_adjust", "human_shape_adjust"):
             prompt = str(node.get("parameters", {}).get("prompt", "")) + str(node.get("text", ""))
             has_image_input = bool(
                 incoming
@@ -619,7 +621,7 @@ def _migrate_node_models(node, config):
     """Accept legacy graphs once; new empty node choices never consult other nodes."""
     kind = node["type"]
     mode = config["mode"]
-    mesh_kind = kind.endswith("mesh") or kind == "model_adjust"
+    mesh_kind = kind.endswith("mesh") or kind in ("model_adjust", "human_shape_adjust")
     if "model" not in node:
         if mode in ("api_modeling", "api_sculpt"):
             node["model"] = config.get("api_model", "")
@@ -672,7 +674,7 @@ def prepare_provider(config, model, database, run_id):
         config = settings(config)
         if any(node["type"].endswith("mesh") for node in generated):
             raise ServiceError("gpt_modeling_retired")
-    if any(node["type"] == "model_adjust" and config["mode"] != "kimi_native" for node in generated):
+    if any(node["type"] in ("model_adjust", "human_shape_adjust") and config["mode"] != "kimi_native" for node in generated):
         raise ServiceError("node_unsupported")
     if not generated:
         return registry, providers, {"mode": "local_copy"}
@@ -727,7 +729,7 @@ def prepare_provider(config, model, database, run_id):
                 raise ServiceError(capability_report.get("code") or "service_not_configured")
         register_workflow(registry)
         for node in generated:
-            mesh_node = node["type"].endswith("mesh") or node["type"] == "model_adjust"
+            mesh_node = node["type"].endswith("mesh") or node["type"] in ("model_adjust", "human_shape_adjust")
             selected = node["model"].strip()
             if mesh_node:
                 if selected not in report["models"]["mesh"]:
@@ -1006,6 +1008,8 @@ def failure(error):
             "glTF must embed dependencies": "source_invalid",
             "invalid GLB": "source_invalid",
             "unregistered node version": "node_unsupported",
+            "unknown parameter": "node_parameters_invalid",
+            "parameter enum mismatch": "node_parameters_invalid",
         }
         code = known.get(str(error), str(error) if str(error) in MULTI_IMAGE_MESSAGES else code)
     return dict(

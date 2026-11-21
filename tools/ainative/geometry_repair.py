@@ -325,6 +325,325 @@ def reshape_crown(document, binary, spec):
     return document, binary, record
 
 
+HUMAN_LANDMARK_NAMES = (
+    "head_top", "chin", "neck",
+    "shoulder_l", "elbow_l", "wrist_l",
+    "shoulder_r", "elbow_r", "wrist_r",
+    "hip_l", "knee_l", "ankle_l",
+    "hip_r", "knee_r", "ankle_r",
+)
+
+
+def _smoothstep_array(low, high, value):
+    t = np.clip((value - low) / max(high - low, 1e-12), 0.0, 1.0)
+    return t * t * (3.0 - 2.0 * t)
+
+
+def _chain_projection(points, chain):
+    """Return nearest original/deformed chain points for an Nx3 array."""
+    best_distance = np.full(len(points), np.inf)
+    best_closest = np.zeros_like(points)
+    best_deformed = np.zeros_like(points)
+    best_segment = np.zeros(len(points), dtype=np.int64)
+    best_t = np.zeros(len(points), dtype=np.float64)
+    for index in range(len(chain) - 1):
+        start, end = chain[index], chain[index + 1]
+        direction = end - start
+        length_squared = float(np.dot(direction, direction))
+        if length_squared <= 1e-12:
+            raise ValueError("geometry_repair_landmark_mismatch")
+        t = np.clip(np.sum((points - start) * direction, axis=1) / length_squared, 0.0, 1.0)
+        closest = start + t[:, None] * direction
+        distance = np.linalg.norm(points - closest, axis=1)
+        selected = distance < best_distance
+        best_distance[selected] = distance[selected]
+        best_closest[selected] = closest[selected]
+        best_segment[selected] = index
+        best_t[selected] = t[selected]
+    return best_distance, best_closest, best_segment, best_t
+
+
+def _scaled_chain_displacement(points, chain, scale):
+    scaled = chain[0] + (chain - chain[0]) * scale
+    best_distance = np.full(len(points), np.inf)
+    best_delta = np.zeros_like(points)
+    best_closest = np.zeros_like(points)
+    for index in range(len(chain) - 1):
+        start, end = chain[index], chain[index + 1]
+        direction = end - start
+        length_squared = float(np.dot(direction, direction))
+        if length_squared <= 1e-12:
+            raise ValueError("geometry_repair_landmark_mismatch")
+        t = np.clip(np.sum((points - start) * direction, axis=1) / length_squared, 0.0, 1.0)
+        closest = start + t[:, None] * direction
+        distance = np.linalg.norm(points - closest, axis=1)
+        deformed = scaled[index] + t[:, None] * (scaled[index + 1] - scaled[index])
+        selected = distance < best_distance
+        best_distance[selected] = distance[selected]
+        best_delta[selected] = (deformed - closest)[selected]
+        best_closest[selected] = closest[selected]
+    return best_distance, best_closest, best_delta
+
+
+def _human_landmarks(spec, source_sha256):
+    value = spec["landmarks"]
+    if not isinstance(value, dict) or set(value) != {"source_sha256", *HUMAN_LANDMARK_NAMES}:
+        raise ValueError("geometry_repair_landmarks_invalid")
+    if value["source_sha256"] != source_sha256:
+        raise ValueError("geometry_repair_landmark_source_mismatch")
+    result = {}
+    for name in HUMAN_LANDMARK_NAMES:
+        point = value[name]
+        if (
+            not isinstance(point, list) or len(point) != 3
+            or any(type(component) not in (int, float) or not math.isfinite(component) for component in point)
+        ):
+            raise ValueError("geometry_repair_landmarks_invalid")
+        result[name] = np.asarray(point, dtype=np.float64)
+    if result["shoulder_l"][0] <= result["shoulder_r"][0] or result["hip_l"][0] <= result["hip_r"][0]:
+        raise ValueError("geometry_repair_landmark_mismatch")
+    if not result["head_top"][1] > result["chin"][1] > result["neck"][1]:
+        raise ValueError("geometry_repair_landmark_mismatch")
+    for side in ("l", "r"):
+        if not result["hip_" + side][1] > result["knee_" + side][1] > result["ankle_" + side][1]:
+            raise ValueError("geometry_repair_landmark_mismatch")
+    return result
+
+
+def _human_parameters(spec, source_sha256):
+    if spec.get("reference_pose") not in ("T", "A"):
+        raise ValueError("geometry_repair_reference_pose_invalid")
+    bounds = dict(
+        target_height_m=(0.2, 4.0), target_head_ratio=(3.0, 12.0),
+        arm_length_scale=(0.75, 1.35), leg_length_scale=(0.75, 1.35), build=(-1.0, 1.0),
+    )
+    values = {}
+    for name, limit in bounds.items():
+        raw = spec[name]
+        if type(raw) not in (int, float) or not math.isfinite(raw) or not limit[0] <= raw <= limit[1]:
+            raise ValueError("geometry_repair_parameters_invalid")
+        values[name] = float(raw)
+    values["landmarks"] = _human_landmarks(spec, source_sha256)
+    values["reference_pose"] = spec["reference_pose"]
+    return values
+
+
+def reshape_humanoid(document, binary, spec):
+    """Deform a source-validated static humanoid before skeleton/skin generation.
+
+    Coordinates are Y-up world/local coordinates with anatomical left at +X.
+    Node transforms and existing skins are deliberately outside this V1 contract.
+    """
+    source_sha256 = hashlib.sha256(Path(spec["source"]).read_bytes()).hexdigest()
+    source_geometry_sha256 = hashlib.sha256(bytes(binary)).hexdigest()
+    parameters = _human_parameters(spec, source_sha256)
+    landmarks = parameters["landmarks"]
+    if document.get("skins"):
+        raise ValueError("geometry_repair_rigged_source_unsupported")
+    for node in document.get("nodes", []):
+        if "mesh" not in node:
+            continue
+        if "matrix" in node or "rotation" in node or "scale" in node or any(
+            abs(float(value)) > 1e-12 for value in node.get("translation", [0, 0, 0])
+        ):
+            raise ValueError("geometry_repair_transform_unsupported")
+    document = copy.deepcopy(document)
+    binary = bytearray(binary)
+    primitives = []
+    originals = []
+    accessors = set()
+    for mesh in document.get("meshes", []):
+        for primitive in mesh.get("primitives", []):
+            if primitive.get("mode", 4) != 4:
+                raise ValueError("geometry_repair_source_invalid")
+            index = primitive["attributes"]["POSITION"]
+            if index in accessors:
+                raise ValueError("geometry_repair_transform_unsupported")
+            accessors.add(index)
+            points = accessor_values(document, binary, index, "VEC3")
+            if points.dtype != np.dtype("<f4") or not np.isfinite(points).all():
+                raise ValueError("geometry_repair_source_invalid")
+            primitives.append(primitive)
+            originals.append(np.asarray(points, dtype=np.float64).copy())
+    if not originals:
+        raise ValueError("geometry_repair_mesh_missing")
+    joined = np.concatenate(originals)
+    source_height = float(joined[:, 1].max() - joined[:, 1].min())
+    if source_height <= 1e-6 or abs(float(joined[:, 1].max()) - landmarks["head_top"][1]) > source_height * 0.002:
+        raise ValueError("geometry_repair_landmark_mismatch")
+    hips = (landmarks["hip_l"] + landmarks["hip_r"]) / 2.0
+    chains = [np.asarray([hips, landmarks["neck"]])]
+    for side in ("l", "r"):
+        chains.append(np.asarray([landmarks[name + "_" + side] for name in ("shoulder", "elbow", "wrist")]))
+    for side in ("l", "r"):
+        chains.append(np.asarray([landmarks[name + "_" + side] for name in ("hip", "knee", "ankle")]))
+
+    def pre_head(points):
+        result = np.asarray(points, dtype=np.float64).copy()
+        if parameters["build"]:
+            head_weight = _smoothstep_array(landmarks["neck"][1], landmarks["chin"][1], result[:, 1])
+            foot_level = min(landmarks["ankle_l"][1], landmarks["ankle_r"][1])
+            foot_weight = 1.0 - _smoothstep_array(foot_level, foot_level + source_height * 0.08, result[:, 1])
+            nearest_distance = np.full(len(result), np.inf)
+            nearest = np.zeros_like(result)
+            nearest_chain = np.zeros(len(result), dtype=np.int64)
+            for chain_index, chain in enumerate(chains):
+                distance, closest, _segment, _t = _chain_projection(result, chain)
+                selected = distance < nearest_distance
+                nearest_distance[selected] = distance[selected]
+                nearest[selected] = closest[selected]
+                nearest_chain[selected] = chain_index
+            radius = source_height * 0.16
+            region = 1.0 - _smoothstep_array(radius * 0.45, radius, nearest_distance)
+            protect = np.maximum(head_weight, foot_weight)
+            # Hands keep their size; only the arm up to the wrist follows build.
+            for side_index, side in enumerate(("l", "r"), 1):
+                wrist = landmarks["wrist_" + side]
+                elbow = landmarks["elbow_" + side]
+                direction = wrist - elbow
+                direction /= np.linalg.norm(direction)
+                beyond = np.sum((result - wrist) * direction, axis=1)
+                hand = _smoothstep_array(-source_height * 0.015, source_height * 0.035, beyond)
+                same_chain = nearest_chain == side_index
+                protect[same_chain] = np.maximum(protect[same_chain], hand[same_chain])
+            weight = region * (1.0 - protect)
+            factor = 1.0 + parameters["build"] * 0.25
+            result = nearest + (result - nearest) * (1.0 + (factor - 1.0) * weight[:, None])
+        for side in ("l", "r"):
+            chain = np.asarray([landmarks[name + "_" + side] for name in ("shoulder", "elbow", "wrist")])
+            distance, closest, delta = _scaled_chain_displacement(result, chain, parameters["arm_length_scale"])
+            side_sign = 1.0 if side == "l" else -1.0
+            lateral = (result[:, 0] - hips[0]) * side_sign
+            side_weight = _smoothstep_array(0.0, source_height * 0.04, lateral)
+            region = 1.0 - _smoothstep_array(source_height * 0.06, source_height * 0.16, distance)
+            root_blend = _smoothstep_array(0.0, np.linalg.norm(chain[1] - chain[0]) * 0.2,
+                                           np.linalg.norm(closest - chain[0], axis=1))
+            result += delta * (side_weight * region * root_blend)[:, None]
+        for side in ("l", "r"):
+            chain = np.asarray([landmarks[name + "_" + side] for name in ("hip", "knee", "ankle")])
+            distance, closest, delta = _scaled_chain_displacement(result, chain, parameters["leg_length_scale"])
+            side_sign = 1.0 if side == "l" else -1.0
+            lateral = (result[:, 0] - hips[0]) * side_sign
+            side_weight = _smoothstep_array(0.0, source_height * 0.04, lateral)
+            region = 1.0 - _smoothstep_array(source_height * 0.07, source_height * 0.18, distance)
+            root_blend = _smoothstep_array(0.0, np.linalg.norm(chain[1] - chain[0]) * 0.15,
+                                           np.linalg.norm(closest - chain[0], axis=1))
+            result += delta * (side_weight * region * root_blend)[:, None]
+        return result
+
+    landmark_array = np.asarray([landmarks[name] for name in HUMAN_LANDMARK_NAMES])
+    pre_landmark_array = pre_head(landmark_array)
+    pre_landmarks = dict(zip(HUMAN_LANDMARK_NAMES, pre_landmark_array))
+    pre_points = [pre_head(points) for points in originals]
+    bottom = min(float(points[:, 1].min()) for points in pre_points)
+    top = float(pre_landmarks["head_top"][1])
+    chin = float(pre_landmarks["chin"][1])
+    neck = float(pre_landmarks["neck"][1])
+    denominator = parameters["target_head_ratio"] * (top - chin) - (top - neck)
+    if denominator <= 1e-9:
+        raise ValueError("geometry_repair_parameters_invalid")
+    head_scale = (neck - bottom) / denominator
+    if not 0.25 <= head_scale <= 2.0:
+        raise ValueError("geometry_repair_proportion_limit_exceeded")
+
+    def apply_head(points):
+        weight = _smoothstep_array(neck, chin, points[:, 1])
+        pivot = pre_landmarks["neck"]
+        return points + (points - pivot) * ((head_scale - 1.0) * weight[:, None])
+
+    headed = [apply_head(points) for points in pre_points]
+    headed_landmarks = dict(zip(HUMAN_LANDMARK_NAMES, apply_head(pre_landmark_array)))
+    all_headed = np.concatenate(headed)
+    lower = all_headed.min(axis=0)
+    upper = all_headed.max(axis=0)
+    height = float(upper[1] - lower[1])
+    if height <= 1e-9:
+        raise ValueError("geometry_repair_output_invalid")
+    normalize = parameters["target_height_m"] / height
+    origin = np.asarray([(lower[0] + upper[0]) / 2.0, lower[1], (lower[2] + upper[2]) / 2.0])
+
+    def final_points(points):
+        return (points - origin) * normalize
+
+    changed_count = 0
+    tangents_removed = 0
+    for primitive, original, transformed in zip(primitives, originals, headed):
+        final = final_points(transformed).astype("<f4")
+        if not np.isfinite(final).all():
+            raise ValueError("geometry_repair_output_invalid")
+        points = accessor_values(document, binary, primitive["attributes"]["POSITION"], "VEC3")
+        changed = np.any(final != original.astype("<f4"), axis=1)
+        points[:] = final
+        changed_count += int(changed.sum())
+        if "TANGENT" in primitive["attributes"]:
+            del primitive["attributes"]["TANGENT"]
+            tangents_removed += 1
+        _refresh_crown_normals(document, binary, primitive, changed)
+        index = primitive["attributes"]["POSITION"]
+        document["accessors"][index]["min"] = points.min(axis=0).tolist()
+        document["accessors"][index]["max"] = points.max(axis=0).tolist()
+    final_landmark_array = final_points(np.asarray([headed_landmarks[name] for name in HUMAN_LANDMARK_NAMES]))
+    final_landmarks = dict(zip(HUMAN_LANDMARK_NAMES, final_landmark_array))
+    final_head_height = float(final_landmarks["head_top"][1] - final_landmarks["chin"][1])
+    measured_height = parameters["target_height_m"]
+    measured_ratio = measured_height / final_head_height
+    if not math.isclose(measured_ratio, parameters["target_head_ratio"], rel_tol=2e-5, abs_tol=2e-5):
+        raise ValueError("geometry_repair_output_invalid")
+    record = dict(
+        schema_version=1,
+        operation="reshape_humanoid",
+        source_sha256=source_sha256,
+        source_geometry_sha256=source_geometry_sha256,
+        reference_pose=parameters["reference_pose"],
+        target_height_m=parameters["target_height_m"],
+        target_head_ratio=parameters["target_head_ratio"],
+        arm_length_scale=parameters["arm_length_scale"],
+        leg_length_scale=parameters["leg_length_scale"],
+        build=parameters["build"],
+        head_scale=head_scale,
+        uniform_height_scale=normalize,
+        measured=dict(
+            height_m=measured_height,
+            head_ratio=measured_ratio,
+            arm_lengths_m={
+                side: float(np.linalg.norm(final_landmarks["elbow_" + side] - final_landmarks["shoulder_" + side])
+                            + np.linalg.norm(final_landmarks["wrist_" + side] - final_landmarks["elbow_" + side]))
+                for side in ("l", "r")
+            },
+            leg_lengths_m={
+                side: float(np.linalg.norm(final_landmarks["knee_" + side] - final_landmarks["hip_" + side])
+                            + np.linalg.norm(final_landmarks["ankle_" + side] - final_landmarks["knee_" + side]))
+                for side in ("l", "r")
+            },
+        ),
+        landmarks={name: final_landmarks[name].tolist() for name in HUMAN_LANDMARK_NAMES},
+        changed_vertices=changed_count,
+        tangents_removed=tangents_removed,
+        topology_changed=False,
+        decimated=False,
+        requires_new_head_review=True,
+        requires_new_rigging=True,
+        binding_stage="pre_rig_geometry_only",
+        validation_mode="ainative_source_bound_landmarks_automatic",
+        capability_scope="source_bound_static_T_or_A_pose_landmarked_humanoid_v1",
+    )
+    _record_repair(document, record)
+    extras = document["asset"]["extras"]
+    extras.pop("maliang_head_landmarks", None)
+    extras.pop("maliang_review_frame", None)
+    extras.pop("maliang_geometry_recipe", None)
+    extras["maliang_humanoid_landmarks"] = dict(
+        schema_version=1,
+        validation_state="automatically_derived_review_required",
+        derived_from_source_sha256=source_sha256,
+        reference_pose=parameters["reference_pose"],
+        coordinate_space="Y_up_meters_left_positive_X",
+        landmarks=record["landmarks"],
+        review_required=True,
+    )
+    return document, binary, record
+
+
 def repair(spec):
     common = {"schema_version", "source", "source_sha256", "output", "operation"}
     operation_fields = {
@@ -339,6 +658,10 @@ def repair(spec):
             "front_scale",
             "expected_head_top_y",
             "review_yaw_degrees",
+        },
+        "reshape_humanoid": {
+            "reference_pose", "landmarks", "target_height_m", "target_head_ratio",
+            "arm_length_scale", "leg_length_scale", "build",
         },
     }
     if not isinstance(spec, dict) or spec.get("schema_version") != 1:
@@ -357,8 +680,8 @@ def repair(spec):
     if source_sha != spec["source_sha256"]:
         raise ValueError("geometry_repair_source_changed")
     document, binary = load_glb(source)
-    operator = align_neck if operation == "align_neck" else reshape_crown
-    document, binary, record = operator(document, binary, spec)
+    operators = dict(align_neck=align_neck, reshape_crown=reshape_crown, reshape_humanoid=reshape_humanoid)
+    document, binary, record = operators[operation](document, binary, spec)
     result = write_glb(document, binary, output)
     loaded, output_binary = load_glb(output)
     vertices = triangles = 0

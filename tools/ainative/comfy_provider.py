@@ -21,7 +21,7 @@ from pathlib import Path
 
 from extensions import canonical, require, validate_invocation
 
-KINDS = ("text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust")
+KINDS = ("text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", "human_shape_adjust")
 VERSION = "1"
 DEFAULTS = dict(
     prompt="",
@@ -43,11 +43,27 @@ def register(registry):
         k: {"type": "string" if isinstance(v, str) else "integer" if type(v) is int else "number"}
         for k, v in DEFAULTS.items()
     }
+    shape_props = dict(
+        height_m={"type": "number"},
+        head_ratio={"type": "number"},
+        arm_length_scale={"type": "number"},
+        leg_length_scale={"type": "number"},
+        build={"type": "number"},
+        # Ignored legacy field from the short-lived manual-confirmation V1.
+        # The provider never turns it into evidence or a human-approval claim.
+        confirmed={"type": "boolean"},
+        # Empty prompt was accidentally injected by the structured-node form.
+        # Accept it only for migration; non-empty text remains unsupported.
+        prompt={"type": "string", "enum": [""]},
+        reference_pose={"type": "string", "enum": ["T", "A"]},
+        landmarks={"type": "object"},
+    )
     for kind in KINDS:
-        output_type = "mesh" if kind.endswith("mesh") or kind == "model_adjust" else "image"
+        mesh_node = kind.endswith("mesh") or kind in ("model_adjust", "human_shape_adjust")
+        output_type = "mesh" if mesh_node else "image"
         inputs = (
             {"source": {"types": ["mesh"], "required": True}}
-            if kind == "model_adjust"
+            if kind in ("model_adjust", "human_shape_adjust")
             else {"source": {"types": ["image"], "required": True}}
             if kind.startswith("image_")
             else {}
@@ -58,8 +74,8 @@ def register(registry):
                 version=VERSION,
                 inputs=inputs,
                 outputs={"result": {"types": [output_type], "required": True}},
-                context_types=["text", "image"],
-                parameters={"properties": props},
+                context_types=[] if kind == "human_shape_adjust" else ["text", "image"],
+                parameters={"properties": shape_props if kind == "human_shape_adjust" else props},
                 capabilities=[kind],
             )
         )

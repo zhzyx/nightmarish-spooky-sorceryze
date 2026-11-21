@@ -292,6 +292,47 @@ character's right view is taken from -X, not from screen-right. A confirmed revi
 yaw rotates only the render stage, never the source geometry. These branches submit no
 Tripo API generation, texture, segmentation or completion operation.
 
+### Pre-rig human body shape adjustment V1
+
+The separate `human_shape_adjust` node adjusts a static humanoid GLB before final
+skeleton and skin generation. Its ordinary form exposes only `height_m`,
+`head_ratio`, `arm_length_scale`, `leg_length_scale` and `build`; the operation
+recorded in the artifact is `reshape_humanoid`. The deformation is deterministic
+and local, with no Tripo API generation, Blender, image generation or texture
+adjustment.
+
+By default `human_shape_landmarks.py` renders the immutable source and makes one
+Kimi vision request through the configured planner. This automatic landmark stage
+requires the same API/review configuration as humanoid review; it is not a remote
+mesh generation. The AI returns T/A pose, anatomical front, confidence and 15
+landmarks normalized by full model height. AINative writes the source SHA-256,
+converts estimates to source coordinates and checks anatomy plus nearest-source
+vertex distances. Low confidence, wrong front, missing coordinates or excessive
+geometry mismatch stops before deformation. The receipt states
+`quality=ai_estimated_geometry_checked`, confidence and per-landmark distances;
+it never claims motion-capture accuracy or human confirmation.
+
+Developer JSON may explicitly supply `reference_pose` and a source-bound
+`landmarks` override with `head_top`, `chin`, `neck`, both
+`shoulder/elbow/wrist` chains and both `hip/knee/ankle` chains. Coordinates are
+Y-up with anatomical left at +X. Both automatic and overridden paths enforce the
+same source/anatomy contract. There is no extra confirmation checkbox. The source
+must have no Skin, no mesh-node transform and no shared POSITION accessors;
+existing rigged assets are rejected instead of invalidating inverse binds.
+
+Build and limb-chain deformation run first, head scale is solved for the requested
+final ratio, and uniform target-height normalization runs last with feet at Y=0.
+Height is 0.2–4 m, head ratio 3–12, arm/leg scales 0.75–1.35, and build -1–1.
+The output records measured height, head ratio and bilateral limb lengths,
+`landmark_estimation=ainative_ai_geometry_checked` for the default path, updated
+landmarks, source/output hashes and
+`requires_new_head_review=requires_new_rigging=true`. Existing head review and
+merged-head landmarks are invalidated. Stale tangents are removed and affected
+normals refreshed; material references, indices and source bytes are preserved.
+Derived landmarks use `validation_state=automatically_derived_review_required`;
+no manufactured human-confirmation flag is emitted. All required views must be
+reviewed again before fitting the final skeleton and skin.
+
 ### Local configuration and credentials
 
 Copy `kimi-config.example.json` outside the repository and set absolute paths for

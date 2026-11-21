@@ -22,9 +22,11 @@
 
 标准路线限定：Y-up、+Z 朝前、近似直立对称、双臂展开的 T 参考姿态、双腿分离、头和四肢有独立可见区域。程序检查宽高比、头/左右臂/左右腿区域占据数、左右臂占据大致对称、腿关键点高低顺序及 X 对齐；这些必要条件不是人体语义分类器，使用者仍须检查预览并确认。初始 18 骨为 17 个解剖骨加独立 root；深度通过对应几何截面中位数拟合，身高归一为米，底部归零、X/Z 居中。标准 T 姿在 `auto_orient=true` 且 `yaw_degrees=0` 时，根据未偏航的源网格世界包围盒识别明显的 Z 向臂展并应用 −90°，避免把双臂沿 Z 轴的人物直接套进 X 向骨架；非零手动 yaw 优先，关闭开关以及自由/标记路线均不自动旋转。实际 yaw 写入诊断和保存参数，权重按最终派生几何校验。该启发式只校正水平臂展轴，不推断人体前后，也不替代姿势与关节检查。非标准人体、未知物体不能因能加载 Mesh 就被当作绑骨成功。
 
-自由路线需要全部 17 个解剖关键点，root 可选覆盖。先 Fit 得到待标记预览，再点 Load fitted joint markers 将实际拟合点载入修正区；坐标使用归一化后的米制坐标。修正 JSON 的 `reference_pose: "marked"` 表示人工标注源真实姿态，可用于略下垂手臂的 A 姿角色；不假称原模型已变成 T 姿。未完整标记或未检查确认时，允许诊断与预览，拒绝角色发布。黄色线段显示当前骨架，可播放 raise_arms、squat、turn 或恢复 Rest。
+自由路线需要全部 17 个解剖关键点，root 可选覆盖。先 Fit 得到待标记预览，再点 Load fitted joint markers 将实际拟合点载入修正区；坐标使用归一化后的米制坐标。修正 JSON 的 `reference_pose: "marked"` 表示人工标注源真实姿态，可用于略下垂手臂的 A 姿角色；不假称原模型已变成 T 姿。未完整标记或未检查确认时，允许诊断与预览，拒绝角色发布。黄色线段显示当前骨架，可播放 raise_arms、squat、turn 或恢复 Rest。抬臂检查包含上臂、前臂与手腕协同旋转，并验证肩／肘／腕高度关系及肘部折返，不以“动画存在或顶点位移”代替姿态合理性检查。
 
-所有人物路线在进入拟合前还必须通过头脸门禁：源 GLB 的 `asset.extras.maliang_head_review` 记录完整嘴／下巴、头颈衔接和 `head_front`、`head_three_quarter`、`head_side` 三个近景结论。审查生成的人物在通过后自动嵌入该记录；本地人工验收必须显式提供同等字段并绑定源文件。换头衍生模型另需 `maliang_head_landmarks`，其中下巴和颈根绑定头／身源 SHA-256，且颈根必须低于下巴；禁止用固定归一化 Y 值无标记切头。缺少记录、来源变化、任一视图失败或头颈接缝不通过时，标准、自由和 SkinTokens 路线均拒绝进入绑骨。普通非人物 Mesh 生成不使用该人物契约。
+所有人物路线在进入拟合前还必须通过头脸门禁：源 GLB 的 `asset.extras.maliang_head_review` 记录完整嘴／下巴、头颈衔接和 `head_front`、`head_three_quarter`、`head_side` 三个近景结论。审查生成的人物在通过后自动嵌入该记录；本地人工验收必须显式提供同等字段并绑定源文件。换头衍生模型另需 `maliang_head_landmarks`，其中下巴和颈根绑定头／身源 SHA-256，且颈根必须低于下巴；禁止用固定归一化 Y 值无标记切头。缺少记录、来源变化、任一视图失败或头颈接缝不通过时，标准、自由和 SkinTokens 路线均拒绝直接进入绑骨。“创建人形17根骨骼”节点只接受自动 AI 审核；完全没有随附记录时，自动渲染全身与头部多视角并调用 Kimi 视觉模型，生成绑定当前源文件 SHA-256 的 automatic 记录并随工作流保存，不修改原 GLB。该步骤需要可用的 `KIMI_API_KEY`；审核失败、渲染失败或证据缺项均停止，不回退人工确认。来源变化后旧记录失效并须重新验收。普通非人物 Mesh 生成不使用该人物契约。
+
+“创建人形17根骨骼”节点的绑骨后检测采用纯文本审核。`Rig.validate_scene` 仍负责采集真实 Skeleton3D、Skin、Rest、逐顶点权重和 ROM 数值，这些本地硬门禁不是可被语言模型覆盖的建议。候选保存重载后，`rigging-text-review` 只将源／候选 SHA-256、实测报告和修复轮次组成的 JSON 文本发送给 Kimi；请求不含图片或图片 Base64。严格文本回执给出结构化问题、实际值／阈值、目标节点／控件和白名单修复建议。只有本地门禁与文本审核都通过才记为完整通过；结构无效必须失败，其他未解决项只能保留为能力受限候选。AI 服务、凭据或回执异常时停止，不回退为原来的简单检测通过结论。离线回归使用明确标注 `synthetic=true` 的回执，不作为真实 AI 验收证据。
 
 ## 修正、版本与发布
 
@@ -32,7 +34,7 @@
 
 面板 Save new character version 先编码到私有 staging，再经既有 `publish_new` 的同目录临时文件及原子独占 hard-link 发布，拒绝覆盖任何已有目标。发布副本重置为参考姿态，保留三段真实 AnimationPlayer 动画；当前预览不受影响。Reopen version + corrections 重载 `.tscn` 中的 Skeleton3D、Skin、动画及修正参数，核对本机已知源 SHA256 后继续修改；修改需另存新文件名。本机源路径仅保存在 user 数据目录的配置中，不进入便携角色元数据。派生预览会清除生成器原预览令牌，不能绕过角色审查走普通生成物发布按钮。
 
-角色携带 v1 `ainative_manifest`：source mesh、skeleton_profile、avatar_profile、character 均有版本引用，来源绑定原文件 SHA256，character 仅声明 semantic_mapped。骨骼局部 rest 轴为 identity，Y-up/+Z 朝前；尚非 SkeletonProfileHumanoid，也不宣称已兼容 UE/Mixamo，留待 #147 转换。Skin 使用真实逆 global rest，4 权重归一；足底使用 foot 刚性权重并向小腿平滑过渡，人工权重覆盖优先。深蹲使用双腿平面两段 IK、hips 下移和足踝角度补偿，当前约束要求髋膝踝近似处于各自 sagittal 平面，不支持任意怪物、额外肢体、手指或脸部骨。
+角色携带 v1 `ainative_manifest`：source mesh、skeleton_profile、avatar_profile、character 均有版本引用，来源绑定原文件 SHA256，character 仅声明 semantic_mapped。骨骼局部 rest 轴为 identity，Y-up/+Z 朝前；尚非 SkeletonProfileHumanoid，也不宣称已兼容 UE/Mixamo，留待 #147 转换。Skin 使用真实逆 global rest，4 权重归一；肩带内侧至上臂采用 `segment-distance-shoulder-gate-v2` 平滑衰减，避免抬臂牵拉胸口，并记录肩带内侧最大外扩，超过身高 2.5% 时验收失败。足底使用 foot 刚性权重并向小腿平滑过渡，人工权重覆盖优先。深蹲使用双腿平面两段 IK、hips 下移和足踝角度补偿，当前约束要求髋膝踝近似处于各自 sagittal 平面，不支持任意怪物、额外肢体、手指或脸部骨。
 
 ## 开发验证记录
 

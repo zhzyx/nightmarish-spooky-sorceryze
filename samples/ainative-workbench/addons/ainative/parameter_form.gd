@@ -1,9 +1,14 @@
 @tool
 extends VBoxContainer
 # The existing JSON contract stays authoritative; widgets update individual keys.
-const DEFAULTS = {"prompt":"", "seed":0, "width":512, "height":512, "steps":1, "denoise":0.65, "mesh_steps":20, "mesh_resolution":512, "octree_resolution":128, "mesh_algorithm":"surface net", "mesh_threshold":0.6}
+const HUMANOID_RIG = "humanoid_rig"
+const HUMAN_SHAPE = "human_shape_adjust"
+const DECIMALS = ["denoise", "mesh_threshold", "height_m", "head_ratio", "arm_length_scale", "leg_length_scale", "build"]
+const DEFAULTS = {"prompt":"", "seed":0, "width":512, "height":512, "height_m":1.8, "head_ratio":7.5, "arm_length_scale":1.0, "leg_length_scale":1.0, "build":0.0, "steps":1, "denoise":0.65, "mesh_steps":20, "mesh_resolution":512, "octree_resolution":128, "mesh_algorithm":"surface net", "mesh_threshold":0.6}
 const NUMBERS = {
-	"width":["图像宽度",64,1024,8], "height":["图像高度",64,1024,8],
+	"width":["图像宽度",64,1024,8], "height":["图像高度",64,1024,8], "height_m":["目标身高（米）",0.2,4.0,0.01],
+	"head_ratio":["目标头身比",3.0,12.0,0.1], "arm_length_scale":["臂长倍率",0.75,1.35,0.01],
+	"leg_length_scale":["腿长倍率",0.75,1.35,0.01], "build":["胖瘦（-1 至 1）",-1.0,1.0,0.05],
 	"seed":["随机种子",0,9007199254740991,1], "steps":["图像采样步数",1,8,1],
 	"denoise":["重绘强度",0.01,0.99,0.01], "mesh_steps":["网格采样步数",1,50,1],
 	"mesh_resolution":["网格分辨率",1,4096,1], "octree_resolution":["几何细节分辨率",16,256,1],
@@ -12,6 +17,10 @@ const NUMBERS = {
 var raw_edit: TextEdit
 var prompt_edit: TextEdit
 var outputs_edit: TextEdit
+var landmarks_edit: TextEdit
+var landmarks_label: Label
+var pose_row: HBoxContainer
+var pose_edit: OptionButton
 var advanced_toggle: Button
 var advanced_box: VBoxContainer
 var developer_box: VBoxContainer
@@ -66,7 +75,31 @@ func _init():
 	cli_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	cli_hint.hide()
 	add_child(cli_hint)
-	for key in ["width", "height"]: _number_field(self, key)
+	for key in ["width", "height", "height_m", "head_ratio", "arm_length_scale", "leg_length_scale", "build"]: _number_field(self, key)
+	pose_row = HBoxContainer.new()
+	var pose_label = Label.new()
+	pose_label.text = "参考姿态（AINative 自动校验）"
+	pose_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	pose_row.add_child(pose_label)
+	pose_edit = OptionButton.new()
+	pose_edit.add_item("T 姿")
+	pose_edit.set_item_metadata(0, "T")
+	pose_edit.add_item("A 姿")
+	pose_edit.set_item_metadata(1, "A")
+	pose_row.add_child(pose_edit)
+	add_child(pose_row)
+	pose_edit.item_selected.connect(func(index): _set_parameter("reference_pose", pose_edit.get_item_metadata(index)))
+	landmarks_label = Label.new()
+	landmarks_label.text = "人体关键点 JSON（AINative 自动校验源哈希、左右侧与解剖顺序）"
+	landmarks_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	add_child(landmarks_label)
+	landmarks_edit = TextEdit.new()
+	landmarks_edit.name = "HumanShapeLandmarks"
+	landmarks_edit.custom_minimum_size.y = 180
+	landmarks_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	landmarks_edit.placeholder_text = '{"source_sha256":"源 GLB 的 SHA-256","head_top":[x,y,z],"chin":[x,y,z],"neck":[x,y,z],"shoulder_l":[x,y,z],"elbow_l":[x,y,z],"wrist_l":[x,y,z],"shoulder_r":[x,y,z],"elbow_r":[x,y,z],"wrist_r":[x,y,z],"hip_l":[x,y,z],"knee_l":[x,y,z],"ankle_l":[x,y,z],"hip_r":[x,y,z],"knee_r":[x,y,z],"ankle_r":[x,y,z]}'
+	add_child(landmarks_edit)
+	landmarks_edit.text_changed.connect(_landmarks_changed)
 	advanced_toggle = Button.new()
 	advanced_toggle.text = "高级生成选项"
 	advanced_toggle.toggle_mode = true
@@ -138,7 +171,7 @@ func _number_field(parent: Node, key: String):
 	if input.has_method("set_custom_arrow_round"):
 		input.set_custom_arrow_round(false)
 	if input.has_method("set_format"):
-		input.set_format("%s" if key in ["denoise", "mesh_threshold"] else "%.0f")
+		input.set_format("%s" if key in DECIMALS else "%.0f")
 	# Imported values must not be silently clamped or rounded before validation.
 	input.allow_greater = true
 	input.allow_lesser = true
@@ -185,8 +218,18 @@ func _update_output_specs():
 	_set_parameter("output_count", count)
 	_set_parameter("output_labels", labels)
 
+func _landmarks_changed():
+	if _loading or kind != HUMAN_SHAPE: return
+	var json = JSON.new()
+	if json.parse(landmarks_edit.text) != OK or not json.data is Dictionary:
+		_set_error("人体关键点必须是有效 JSON 对象")
+		return
+	_set_parameter("landmarks", json.data)
+
 func configure(node_kind: String, parameters: Dictionary, node_version: String = ""):
 	kind = node_kind
+	# Migrate the short-lived manual checkbox without asking users to edit JSON.
+	if kind == HUMAN_SHAPE and parameters.has("confirmed"): parameters.erase("confirmed")
 	_automatic_outputs = node_version == "4" or (kind == "generate_image" and node_version == "2")
 	_loading = true
 	raw_edit.text = JSON.stringify(parameters, "", true, true)
@@ -195,11 +238,12 @@ func configure(node_kind: String, parameters: Dictionary, node_version: String =
 	advanced_box.hide()
 	developer_toggle.set_pressed_no_signal(false)
 	raw_edit.hide()
-	var generator = kind != "copy"
+	var generator = kind != "copy" and kind != HUMANOID_RIG
+	var shape = kind == HUMAN_SHAPE
 	# Image-to-Mesh is deliberately image-only. Do not expose a hidden text
 	# requirement which the direct 3D service cannot consume with an image.
-	var image_stage = generator
-	var prompt_stage = generator and kind != "image_to_mesh"
+	var image_stage = generator and not shape
+	var prompt_stage = generator and kind != "image_to_mesh" and not shape
 	rows.prompt.text = "提示词（无图片时必填）" if kind == "generate_image" else "提示词"
 	rows.prompt.visible = prompt_stage
 	prompt_edit.visible = prompt_stage
@@ -207,10 +251,17 @@ func configure(node_kind: String, parameters: Dictionary, node_version: String =
 	rows.outputs.visible = kind in ["generate_image", "text_to_image", "image_to_image"]
 	outputs_edit.visible = rows.outputs.visible and not _automatic_outputs
 	copy_hint.visible = not generator
-	advanced_toggle.visible = generator
+	copy_hint.text = "使用现有解剖模板生成 17 根骨骼＋独立 root，自动检查蒙皮和抬臂／下蹲／转身；双击角色生成物可继续调整。" if kind == HUMANOID_RIG else "直接预览输入图像或模型，无需生成参数。"
+	advanced_toggle.visible = generator and not shape
 	rows.width.visible = image_stage
 	rows.height.visible = image_stage
-	rows.seed.visible = generator
+	rows.height_m.visible = kind == HUMANOID_RIG or shape
+	for key in ["head_ratio", "arm_length_scale", "leg_length_scale", "build"]:
+		rows[key].visible = shape
+	pose_row.visible = false
+	landmarks_label.visible = false
+	landmarks_edit.visible = false
+	rows.seed.visible = generator and not shape
 	rows.steps.visible = image_stage
 	rows.denoise.visible = kind in ["generate_image", "image_to_image", "image_to_mesh"]
 	for key in ["mesh_steps", "mesh_resolution", "octree_resolution", "mesh_threshold", "mesh_algorithm"]:
@@ -238,9 +289,29 @@ func _kimi_image_mode() -> bool:
 	return _kimi_mode and kind in ['generate_image', 'text_to_image', 'image_to_image']
 
 func _is_mesh_kind(value: String) -> bool:
-	return value in ['text_to_mesh', 'image_to_mesh', 'model_adjust']
+	return value in ['text_to_mesh', 'image_to_mesh', 'model_adjust', HUMAN_SHAPE]
 
 func _apply_cli_controls():
+	if kind == HUMANOID_RIG:
+		cli_hint.hide()
+		advanced_toggle.hide()
+		advanced_box.hide()
+		rows.height_m.show()
+		return
+	if kind == HUMAN_SHAPE:
+		cli_hint.text = '常规流程只需五项体态参数。AINative 默认渲染源 GLB，使用 Kimi 视觉估计 T／A 姿态和 15 个人体关键点，自动写入源 SHA-256 并做网格几何校验；不调用 Tripo 生成。此步骤需要可用的 KIMI_API_KEY，输出后仍需重新审核和绑骨。开发者 JSON 可显式覆盖 landmarks。'
+		cli_hint.show()
+		advanced_toggle.hide()
+		advanced_box.hide()
+		for key in ['width', 'height', 'seed', 'steps', 'denoise', 'mesh_steps', 'mesh_resolution', 'octree_resolution', 'mesh_threshold', 'mesh_algorithm']:
+			rows[key].hide()
+		rows.height_m.show()
+		for key in ['head_ratio', 'arm_length_scale', 'leg_length_scale', 'build']:
+			rows[key].show()
+		pose_row.hide()
+		landmarks_label.hide()
+		landmarks_edit.hide()
+		return
 	var generator = kind != 'copy'
 	var instruction_mode = _api_mode or _kimi_mode
 	var modeling_mesh = instruction_mode and _is_mesh_kind(kind)
@@ -324,12 +395,16 @@ func _raw_changed():
 		else:
 			if value is float or value is int:
 				controls[key].value = value
-				controls[key].get_line_edit().text = JSON.stringify(value, "", true, true) if key in ["denoise", "mesh_threshold"] else str(int(value))
+				controls[key].get_line_edit().text = JSON.stringify(value, "", true, true) if key in DECIMALS else str(int(value))
 			else:
 				controls[key].get_line_edit().text = str(value)
 			_display_text[key] = controls[key].get_line_edit().text
 	var algorithm = str(parameters.get("mesh_algorithm", DEFAULTS.mesh_algorithm))
 	controls.mesh_algorithm.select(0 if algorithm == "surface net" else 1 if algorithm == "basic" else -1)
+	if kind == HUMAN_SHAPE:
+		var landmark_text = JSON.stringify(parameters.get("landmarks", {}), "  ", true, true)
+		if landmarks_edit.text != landmark_text: landmarks_edit.text = landmark_text
+		pose_edit.select(1 if parameters.get("reference_pose", "T") == "A" else 0)
 	var specifications = _output_specifications(parameters)
 	if not _automatic_outputs and specifications != null and kind in ["generate_image", "text_to_image", "image_to_image"]:
 		outputs_edit.text = "\n".join(specifications.labels) if not specifications.labels.is_empty() else str(specifications.count)
@@ -377,11 +452,29 @@ func parameters():
 			if key == "denoise": valid = valid and value > 0 and value < 1
 			elif _kimi_image_mode() and key in ['width', 'height']: valid = valid and value >= 64 and value <= 3840
 			else: valid = valid and value >= spec[1] and value <= spec[2]
-		if valid and key not in ["denoise", "mesh_threshold"]: valid = value == floor(value)
+		if valid and key not in DECIMALS: valid = value == floor(value)
 		if valid and key in ["width", "height"]: valid = int(value) % (16 if _kimi_image_mode() else 8) == 0
 		if not valid:
 			_set_error(str(spec[0]) + "超出允许范围，或数值格式无效")
 			return null
+	if kind == HUMAN_SHAPE and result.has("landmarks"):
+		if result.get("reference_pose", "") not in ["T", "A"]:
+			_set_error("手动关键点覆盖需要明确的 T 或 A 参考姿态")
+			return null
+		var landmarks = result.get("landmarks", {})
+		var source_sha = str(landmarks.get("source_sha256", "")) if landmarks is Dictionary else ""
+		if not landmarks is Dictionary or landmarks.size() != 16 or source_sha.length() != 64 or not source_sha.is_valid_hex_number(false):
+			_set_error("关键点须包含源 GLB 的 64 位 SHA-256 和 15 个人体坐标")
+			return null
+		for name in ["head_top", "chin", "neck", "shoulder_l", "elbow_l", "wrist_l", "shoulder_r", "elbow_r", "wrist_r", "hip_l", "knee_l", "ankle_l", "hip_r", "knee_r", "ankle_r"]:
+			var point = landmarks.get(name, [])
+			if not point is Array or point.size() != 3:
+				_set_error("缺少有效人体关键点：" + name)
+				return null
+			for component in point:
+				if not (component is float or component is int) or component is bool or not is_finite(component):
+					_set_error("人体关键点必须是有限数值：" + name)
+					return null
 	if _kimi_image_mode():
 		var pixels = int(result.get('width', 1024)) * int(result.get('height', 1024))
 		var shortest = mini(int(result.get('width', 1024)), int(result.get('height', 1024)))

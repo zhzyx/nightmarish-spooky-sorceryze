@@ -114,7 +114,7 @@ def compile_graph(model):
                 raise ValueError("input paths/snapshots length mismatch")
             if require_count > 8:
                 raise ValueError("too many input images")
-            if kind == "model_adjust" and field == "source" and len(paths) > 1:
+            if kind in ("model_adjust", "human_shape_adjust") and field == "source" and len(paths) > 1:
                 raise ValueError("one source model required")
             for index in range(require_count):
                 selected_path = paths[index] if index < len(paths) else ""
@@ -137,10 +137,10 @@ def compile_graph(model):
                     elif signature.startswith(b"\xff\xd8\xff") and ext == ".png":
                         ext = ".jpg"
                 payload["extension"] = ext
-                image_field = kind != "model_adjust" or field != "source"
+                image_field = kind not in ("model_adjust", "human_shape_adjust") or field != "source"
                 if kind != "copy" and image_field and ext not in (".png", ".jpg", ".jpeg"):
                     raise ValueError("image context required")
-                if kind == "model_adjust" and field == "source" and ext not in (".glb", ".gltf"):
+                if kind in ("model_adjust", "human_shape_adjust") and field == "source" and ext not in (".glb", ".gltf"):
                     raise ValueError("source model required")
                 if ext in (".gltf", ".glb"):
 
@@ -216,7 +216,7 @@ def compile_graph(model):
             reference = edge["artifact"]
             snapshot = edge.get("artifact_snapshot")
             if (
-                kind not in ("model_adjust", "copy")
+                kind not in ("model_adjust", "human_shape_adjust", "copy")
                 or port != "source"
                 or edge.get("output", "result") != "result"
                 or not isinstance(reference, dict)
@@ -350,6 +350,14 @@ def dispatch(args, request):
         return manage(request)
     if args.command == "service-check":
         return check_service(request.get("service", {}))
+    if args.command == "rigging-review":
+        from rigging_review import review_local_model
+
+        return review_local_model(request)
+    if args.command == "rigging-text-review":
+        from rigging_text_review import review_candidate
+
+        return review_candidate(request)
     registry, providers = NodeRegistry(), {}
     model = None
     runtime_service = None
@@ -496,7 +504,7 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument(
         "command",
-        choices=["create", "step", "status", "cancel", "retry", "preview", "publish", "service-check", "managed-comfy"],
+        choices=["create", "step", "status", "cancel", "retry", "preview", "publish", "service-check", "managed-comfy", "rigging-review", "rigging-text-review"],
     )
     p.add_argument("--db", required=True)
     p.add_argument("--factory", default="editor_demo:factory")
