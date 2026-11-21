@@ -24,7 +24,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 TIMEOUT = 20
 urlopen = urllib.request.urlopen
@@ -88,6 +88,24 @@ def _endpoint(api: str, path: str, params: dict[str, str] | None = None) -> str:
     return f"{base}{path}"
 
 
+def _response_bytes(request, limit=None) -> bytes:
+    try:
+        with urlopen(request, timeout=TIMEOUT) as response:
+            raw = response.read() if limit is None else response.read(limit + 1)
+            if limit is not None and len(raw) > limit:
+                raise BridgeError("对象超出差异预览上限")
+            return bytes(raw)
+    except urllib.error.HTTPError as error:
+        detail = error.read().decode("utf-8", errors="replace")
+        try:
+            parsed = json.loads(detail)
+        except ValueError:
+            parsed = detail
+        raise BridgeHTTPError(error.code, parsed) from error
+    except urllib.error.URLError as error:
+        raise BridgeError(f"API unreachable: {error.reason}") from error
+
+
 def _request(
     api: str,
     method: str,
@@ -108,18 +126,7 @@ def _request(
         data = json.dumps(body, ensure_ascii=False).encode("utf-8")
         headers["Content-Type"] = "application/json"
     request = urllib.request.Request(_endpoint(api, path, params), data=data, method=method, headers=headers)
-    try:
-        with urlopen(request, timeout=TIMEOUT) as response:
-            raw = response.read().decode("utf-8")
-    except urllib.error.HTTPError as error:
-        detail = error.read().decode("utf-8", errors="replace")
-        try:
-            parsed = json.loads(detail)
-        except ValueError:
-            parsed = detail
-        raise BridgeHTTPError(error.code, parsed) from error
-    except urllib.error.URLError as error:
-        raise BridgeError(f"API unreachable: {error.reason}") from error
+    raw = _response_bytes(request).decode("utf-8")
     if not raw.strip():
         return {}
     try:
@@ -129,6 +136,66 @@ def _request(
     if not isinstance(parsed, dict):
         raise BridgeError("API response must be a JSON object")
     return parsed
+
+
+def workcopy_operation(args: argparse.Namespace) -> dict[str, Any]:
+    import selected_commit
+
+    body = json.loads(args.request.read_text(encoding="utf-8")) if getattr(args, "request", None) else {}
+    marker = None
+    for directory in (args.project, *args.project.parents):
+        if (directory / ".git").exists():
+            break
+        if (directory / ".duobao-source.json").exists():
+            marker = directory / ".duobao-source.json"
+            break
+    if marker:
+        from native_workcopy_commit import NativeProject
+
+        def request(method, path, data=None):
+            return _request(args.api, method, "/api/v1/native/" + path, actor=args.actor, token=args.token, body=data)
+
+        def read(path, limit):
+            req = urllib.request.Request(
+                _endpoint(args.api, "/api/v1/native/" + path), headers={"Authorization": "Bearer " + args.token}
+            )
+            return _response_bytes(req, limit)
+
+        project = NativeProject(args.project, marker, args.api, request, read)
+        if args.command == "workcopy-diff":
+            return cast(dict[str, Any], project.diff())
+        if body.get("mode") != "native":
+            raise BridgeError("项目来源已变化，请刷新")
+        if args.command == "workcopy-preview":
+            return cast(dict[str, Any], project.preview(body))
+        return cast(dict[str, Any], project.submit(body))
+    if body.get("mode") == "native":
+        raise BridgeError("未找到物化来源，请重新打开工程")
+    if args.command == "workcopy-diff":
+        return cast(dict[str, Any], selected_commit.diff(args.project))
+    if args.command == "workcopy-preview":
+        return cast(dict[str, Any], selected_commit.preview(args.project, body["base"], body["tree"], body["path"]))
+    name = body["repo"]
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", name) or name in (".", ".."):
+        raise BridgeError("多宝仓库名称无效")
+    path = "/api/v1/git/repos/" + urllib.parse.quote(name, safe="") + "/selected-commits"
+
+    def publish(payload):
+        return _request(args.api, "POST", path, actor=args.actor, token=args.token, body=payload)
+
+    def lookup(branch, base, sha):
+        return _request(
+            args.api,
+            "GET",
+            path + "/" + sha,
+            actor=args.actor,
+            token=args.token,
+            params={"branch": branch, "base": base},
+        )
+
+    return cast(
+        dict[str, Any], selected_commit.submit(args.project, [args.api, name, args.actor], body, publish, lookup)
+    )
 
 
 def branch_operation(args: argparse.Namespace) -> dict[str, Any]:
@@ -447,6 +514,13 @@ def main(argv: list[str] | None = None) -> int:
 
     sub.add_parser("status", help="天璇健康与 Gitea 状态").set_defaults(func=status)
 
+    for command in ("workcopy-diff", "workcopy-preview", "workcopy-submit"):
+        workcopy = sub.add_parser(command)
+        workcopy.add_argument("--project", required=True, type=Path)
+        if command != "workcopy-diff":
+            workcopy.add_argument("--request", required=True, type=Path)
+        workcopy.set_defaults(func=workcopy_operation)
+
     for command in ("branch-create", "branch-tip"):
         branch = sub.add_parser(command)
         branch.add_argument("--repo-name", required=True)
@@ -541,7 +615,7 @@ def main(argv: list[str] | None = None) -> int:
         data = args.func(args)
         envelope = {"ok": True, "data": data}
         code = 0
-    except (BridgeError, ValueError) as error:
+    except (BridgeError, ValueError, OSError, TimeoutError) as error:
         envelope = {"ok": False, "error": str(error)}
         code = 1
     _write(args, envelope)

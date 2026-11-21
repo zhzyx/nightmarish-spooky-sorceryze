@@ -1,0 +1,99 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g11",
+  "issue_number": 1838,
+  "baseline": "46c88f41e73d86a3804a3426b5ae7b4b2d9d5946",
+  "native": {
+    "editor_sha256": "ab710c13f129ab39fbea3838c2396d144518bdf8ed261da81a03db8e60a3b7e3",
+    "source_revision": "aabb4eeeeea10cbba51f477a0fd68218e045d7bd8677a474a7cd3574728734e0",
+    "received_revision": "d57c18823f0a4245009a2869df11c795a71dc362fe6795852039307ebb0c2cd9",
+    "request_key": "g11-310a3af6621aeb3a23923e6b7e60926d1d82c16419309a375e5fce961c25bb1d",
+    "posted_edits": [
+      "A.txt"
+    ],
+    "receipt_lookups": [
+      false,
+      true
+    ],
+    "post_count": 1,
+    "total_revisions_including_seed": 2,
+    "matching_receipts": 1,
+    "native_only": true,
+    "git_checkout": false,
+    "service_and_editor_restarted": true,
+    "service_pids": [
+      126476,
+      121676
+    ],
+    "checks": {
+      "first": {
+        "entry": true,
+        "initial_diff": true,
+        "native_module": true,
+        "preview": true,
+        "unknown_response": true
+      },
+      "restart": {
+        "entry": true,
+        "initial_diff": true,
+        "native_module": true,
+        "preview": true,
+        "received": true,
+        "remaining": true
+      }
+    },
+    "B": {
+      "exact_remote_revision": "original B",
+      "materialized_file": "working B"
+    }
+  },
+  "compatible": {
+    "editor_sha256": "ab710c13f129ab39fbea3838c2396d144518bdf8ed261da81a03db8e60a3b7e3",
+    "baseline": "6ce64eaab51643898ee3f23026a1c9436c5b89f8",
+    "branch": "work/g11",
+    "authoritative_receipts": [
+      "bb369c0c48c41bb8d6008aff95ded7b9b43d0f89"
+    ],
+    "lookup_branch_tips": [
+      "6ce64eaab51643898ee3f23026a1c9436c5b89f8",
+      "bb369c0c48c41bb8d6008aff95ded7b9b43d0f89"
+    ],
+    "additional_commits": 1,
+    "changed_paths": [
+      "A.txt"
+    ],
+    "B": {
+      "remote": "original",
+      "index": "staged B",
+      "working_tree": "working B"
+    },
+    "checks": {
+      "entry": true,
+      "initial_diff": true,
+      "preview": true,
+      "received": true,
+      "remaining": true,
+      "unknown_response": true
+    }
+  },
+  "source_blobs": {
+    "customizations/components/tianxuan/duobao/native_store.py": "775dea06ad53ebc69c26fc2d5896c7252ded35ac",
+    "customizations/components/tianxuan/server/api.py": "38a72796faddbd357f5aa15ad76a3d38bc8bbc1a",
+    "customizations/components/tianxuan/server/native_api.py": "6de37e39a68ba5e11c5981d4eb830fd6facad97e",
+    "customizations/components/tianxuan/server/native_workcopy_commit.py": "506ef93af63fbeb8781c837ef3549f63c6c85214",
+    "customizations/components/tianxuan/server/schemas.py": "cf075c6fa1d7d909ad135c657e6b93442a9b14b5",
+    "customizations/components/tianxuan/server/selected_commit.py": "41a0e24d51b52e5de391524f64701a259e0ba653",
+    "customizations/components/tianxuan/server/test_native_workcopy_commit.py": "b4603d7a15069022c8425ccf05c2e79af3f858d4",
+    "customizations/components/tianxuan/server/test_selected_commit.py": "65d409b0cae39e3d45bdee5635b246d5ac5e9351",
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "1d85991c4870691872849f15021bc2054f4f3c3f",
+    "data-collection/gonggong-ai-workbench-plan1-g11.json": "8ea83fcfd20e0f5e8172335471946eddd3bb4e59",
+    "design-docs/gonggong-ai-workbench-g11.md": "1ffb889e5288b9122dcee922dd53c4213221e328",
+    "editor/SCsub": "29674110ef8f4ab94577b8bce15776047c463716",
+    "editor/docks/daqian/duobao_commit.gd": "800353132eb60cef9536022a141541207a6cf37c",
+    "editor/docks/daqian/workspace.gd": "e1a90cd740b9a92b5facadd872eb9955cb6d164a",
+    "editor/docks/daqian_dock.cpp": "f8a6197708be5c099cd9f38f8d0ceb9a7d8166b8",
+    "tests/editor/run_workbench_duobao_commit.py": "5869c99306af5fe4c9b35877ba9ae466b64fefc0",
+    "tests/editor/run_workbench_duobao_native_commit.py": "8e1c80858d4f8cd1d3dfd9f84ed893ad8eac5ef8",
+    "tests/editor/workbench_duobao_commit.gd": "bf67652ade6832173b35a343ee50264f89ddae35"
+  },
+  "observed_at": "2026-11-21T19:18:20.059941+00:00"
+}

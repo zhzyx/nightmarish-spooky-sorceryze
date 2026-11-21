@@ -9,6 +9,9 @@ var environment_ready := false
 var environment_cleanup_active := false
 var observed_runtime: Dictionary = {}
 
+var duobao_commit_script: Script
+var duobao_commit_button: Button
+var duobao_commit_dialog: AcceptDialog
 var duobao_branches_script: Script
 var duobao_dialog: AcceptDialog
 var canvas_script: Script
@@ -332,6 +335,8 @@ func _ready() -> void:
 	connection_button.tooltip_text = "工作区连接"
 	connection_button.accessibility_name = "工作区连接"
 	refresh_button = _button(row, "刷新", _manual_refresh)
+	if duobao_commit_script:
+		duobao_commit_button = _button(row, "多宝提交", _open_duobao_commit)
 	if duobao_branches_script:
 		duobao_branches_button = _button(row, "多宝分支", _open_duobao_branches)
 	historical_issue_button = _button(row, "历史工单", _open_historical_issue)
@@ -1444,6 +1449,19 @@ func _opened() -> void:
 			auto_refresh_pending = true
 
 
+func _open_duobao_commit() -> void:
+	if not is_instance_valid(duobao_commit_dialog):
+		duobao_commit_dialog = duobao_commit_script.new()
+		duobao_commit_dialog.set("execute", _workcopy_commit_command)
+		add_child(duobao_commit_dialog)
+	duobao_commit_dialog.popup_centered()
+	duobao_commit_dialog.call("refresh")
+
+
+func _workcopy_commit_command(arguments: Array, request: Dictionary) -> Dictionary:
+	return await _tianxuan_command(arguments + ["--project", ProjectSettings.globalize_path("res://")], request)
+
+
 func _open_duobao_branches() -> void:
 	if not is_instance_valid(duobao_dialog):
 		duobao_dialog = duobao_branches_script.new()
@@ -1465,7 +1483,7 @@ func _duobao_workcopy_command(arguments: Array) -> Dictionary:
 	return await _host_command(args, "--result", {})
 
 
-func _tianxuan_command(arguments: Array) -> Dictionary:
+func _tianxuan_command(arguments: Array, request: Dictionary = {}) -> Dictionary:
 	var root := _host_root()
 	var bridge := root.path_join("customizations/components/tianxuan/server/tianshu_bridge.py")
 	if root.is_empty() or not FileAccess.file_exists(bridge):
@@ -1485,7 +1503,7 @@ func _tianxuan_command(arguments: Array) -> Dictionary:
 		])
 	for part in arguments:
 		args.append(str(part))
-	return await _host_command(args, "--result", {})
+	return await _host_command(args, "--result", request)
 
 
 func _tianxuan_item() -> Dictionary:
@@ -2973,7 +2991,7 @@ func _gate_visibility(opened: bool) -> void:
 	result_count.visible = current.is_empty()
 	connection_button.text = "" if opened else "工作区连接"
 	for child in toolbar.get_children():
-		child.visible = opened or child in [refresh_button, connection_button, historical_issue_button, archive_history_button, duobao_branches_button]
+		child.visible = opened or child in [refresh_button, connection_button, historical_issue_button, archive_history_button, duobao_branches_button, duobao_commit_button]
 	return_button.visible = opened and not current.is_empty()
 	search.visible = opened and current.is_empty()
 	pending_menu.visible = opened and current.is_empty()

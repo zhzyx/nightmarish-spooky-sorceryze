@@ -338,6 +338,7 @@ EditorDock *create_daqian_dock() {
 	content->set_name("DaqianWorkspace");
 	content->set_script(workspace);
 	content->set("controller_script", refWorkflowController);
+	content->set("duobao_commit_script", load_editor_script(daqian_duobao_commit));
 	content->set("duobao_branches_script", load_editor_script(daqian_duobao_branches));
 	content->set("process_stopper", callable_mp_static(&stop_gonggong_process));
 #if defined(WINDOWS_ENABLED) || defined(MACOS_ENABLED) || defined(LINUXBSD_ENABLED)

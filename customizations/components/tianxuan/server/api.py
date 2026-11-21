@@ -30,6 +30,7 @@ from duobao_bridge import (
     approved_reviewers,
     ensure_branch_mutation_allowed,
     ensure_checks_passed,
+    ensure_merge_allowed,
     ensure_pr_merge_allowed,
     parse_protected_branches,
 )
@@ -84,6 +85,7 @@ from schemas import (
     RequirementCommitRequest,
     RequirementCreateRequest,
     RoleUpdateRequest,
+    SelectedGitCommitRequest,
     TicketsRequest,
     ToolCallRequest,
 )
@@ -158,6 +160,17 @@ def _private_actor(request: Request) -> str:
 
 
 PrivateActorDep = Annotated[str, Depends(_private_actor)]
+
+
+async def _selected_commit_body(request: Request) -> SelectedGitCommitRequest:
+    from native_api import _body
+    from pydantic import ValidationError
+
+    data = await _body(request, max_bytes=28 * 1024 * 1024)
+    try:
+        return SelectedGitCommitRequest.model_validate(data)
+    except ValidationError:
+        raise HTTPException(422, "invalid selected commit request") from None
 
 
 class DocRooms:
@@ -1473,6 +1486,34 @@ def create_app(
             return {"branches": GitService().list_branches(repo)}
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/git/repos/{name}/selected-commits/{sha}")
+    def selected_commit_receipt(name: str, sha: str, branch: str, base: str, actor: PrivateActorDep) -> dict[str, str]:
+        from selected_commit import receipt
+
+        repo = _repo_under_root(name)
+        try:
+            GitService().branch_tip(repo, branch)
+            return cast(dict[str, str], receipt(repo, branch, base, sha))
+        except (GitServiceError, ValueError, OSError) as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
+
+    @app.post("/api/v1/git/repos/{name}/selected-commits")
+    def receive_selected_commit(
+        name: str, actor: PrivateActorDep, payload: Annotated[SelectedGitCommitRequest, Depends(_selected_commit_body)]
+    ) -> dict[str, str]:
+        from selected_commit import receive
+
+        repo = _repo_under_root(name)
+        try:
+            ensure_merge_allowed(payload.branch, _policy_patterns(app), actor_role=store.role_of(actor), path="direct")
+            # Resolve a real repository root and the exact branch, as for the G10 toolbar.
+            GitService().branch_tip(repo, payload.branch)
+            return cast(dict[str, str], receive(repo, **payload.model_dump()))
+        except PolicyError as error:
+            raise HTTPException(status_code=403, detail=str(error)) from error
+        except (GitServiceError, ValueError, OSError) as error:
+            raise HTTPException(status_code=409, detail=str(error)) from error
 
     @app.get("/api/v1/git/repos/{name}/branch-tip")
     def git_branch_tip(name: str, actor: ActorDep, branch: str = Query(min_length=1)) -> dict[str, str]:
