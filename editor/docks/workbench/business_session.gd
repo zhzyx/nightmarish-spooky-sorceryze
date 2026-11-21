@@ -73,6 +73,10 @@ func _ready() -> void:
 		_authenticate("", supplied, _project.text)
 
 
+func redact_credentials(text: String) -> String:
+	return text if _token.is_empty() else text.replace(_token, "[REDACTED]")
+
+
 func get_identity() -> Dictionary:
 	return _identity.duplicate()
 

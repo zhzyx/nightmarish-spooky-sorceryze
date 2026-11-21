@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-70c7bf6bee51faa50f7c0b36425325433b051103b2ca35e3bfc0612c1236be1d",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1810",
+  "occurred_at": "2026-11-21T14:15:52.167064+00:00",
+  "evidence_refs": [
+    "dispatch-eb61016961a0405eb7ce7bb8a49d4b29",
+    "learn-9ab78b162c13544f0abd4033d5e6f31733a75e1acfddba08f52f0d3e18aa1b1f"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 24,
+    "previous": "ab42a88db3abe3bc689394fe7bcd4ba50def3ad0ac4670af903bad8eb491045f",
+    "action": "applied",
+    "details": {
+      "task": "#1810 native reference integration.",
+      "observed": "Verified four handed-off patch hashes and reran scene, script, resource, generic page, selective removal and C08 on one Windows binary. Rotated placeholder credentials and re-opened a paused queue, then matched the loopback receiver and retained draft."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-u15.json",
+        "sha256": "bc5425a12d4e401e63fcf33c16898a328a47df4005272cf49b5ca468b2160733"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u15/dispatch-eb61016961a0405eb7ce7bb8a49d4b29.json",
+      "sha256": "0f50e7eb6a849eb275276dc69fd29ed7efbf2456c9123320b6109073de190ab1"
+    }
+  },
+  "sha256": "0cf9047f44d560aea7f4640f55e2e1c955857cc85ddce4a8670a1841afecc5a5"
+}

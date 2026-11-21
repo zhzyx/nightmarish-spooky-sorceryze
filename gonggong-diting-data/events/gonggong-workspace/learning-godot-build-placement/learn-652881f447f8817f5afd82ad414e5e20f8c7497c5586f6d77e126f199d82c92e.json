@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-652881f447f8817f5afd82ad414e5e20f8c7497c5586f6d77e126f199d82c92e",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1809",
+  "occurred_at": "2026-11-21T15:45:33.184117+00:00",
+  "evidence_refs": [
+    "ind1709-windows-references-1809",
+    "learn-b86e953d5cc3a0807e2f4d802a4b6ae39abb375de641233e5309b590a05a2c1e"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 23,
+    "previous": "520c55e7272c6ef2573d953915d4bb35f47140b1b8367bb166c6da9e2bf53b31",
+    "action": "applied",
+    "details": {
+      "task": "U12 #1809",
+      "observed": "Used a separate worktree and read-only SCons cache. The embedded Maliang script invalidated the generated native bundle and linked editor. The installed fixture bundle matched current source. No cross-platform inference."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-u12.json",
+        "sha256": "96151da1bd272944dfeef3037f4d59839fcfb1b9563bd3121a2c74b8cab73592"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u12/ind1709-windows-references-1809.json",
+      "sha256": "ea72601cec73b16d30f9d4cea25bf7749529b17b896b0aab9a601dcb0b8870ca"
+    }
+  },
+  "sha256": "370d507b5bb721c6e83666882eb90e9964629099b10f81de23255d4ceded2724"
+}

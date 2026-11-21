@@ -1,0 +1,120 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-u09",
+  "issue_number": 1830,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1830",
+  "observed_at": "2026-11-21T21:27:25+08:00",
+  "platform": "Windows x86_64, isolated headless Godot editor",
+  "baseline": "e415518a44a2dde7fdbdc5014bb0e7d0527f32ef",
+  "source_sha256": {
+    "editor/docks/AIChatController.h": "394cb867d75b8cbb9e9a37a166956b004a6452a207a879d9592f446697aef6ad",
+    "editor/docks/ai_chat_dock.h": "e6cb494994e6f1b076bb8aa417e3f2c18812f0625627810dcbf0edd64e852ffa",
+    "editor/docks/ai_chat_dock.cpp": "a1a003d3aad259ca2fc7fd962327ece432f5899c37129d475967bb854edd17ef",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "30331fea230efddbb24f994ed9a7a3cd14f59799dd4224af57d070649ad16af5",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "6378823200b57c04719d2aade4625c568e2d2baa995909988b4ca5a43b93f18e",
+    "tests/editor/run_workbench_resource_selection.py": "f50c544ad233e29f1fcd2f317d979191407a8360d8e90455dc106d1e8c44cd9c",
+    "tests/editor/workbench_resource_selection.gd": "29c3af37cb602631a49857a9748e627198f67b68048ee3cbd77a757758ad50b5"
+  },
+  "previous_macos_observations": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1830#issuecomment-7060958741",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1830#issuecomment-7062657045"
+  ],
+  "build": {
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=D:/GongGong/data-collection/receipts/duobao-1382/scons-cache cache_limit=0 --cache-readonly -j6",
+    "sdk_verified_by": "python tools/install_webview2.py --arch x64 --output-dir bin",
+    "fresh_build_exit": 0,
+    "final_build_exit": 0,
+    "final_native_input": "editor/docks/workbench/AIWorkbenchReference.cpp",
+    "final_engine_sha256": "6de3146b47750619d07de4f7882cd4848ec07b42955a7552254304c5aca7b389",
+    "build_log_sha256": "cbe240b404ae6bc2d47699f7f088352fe31f05d99b3a1d5901a88a101da9b530"
+  },
+  "test_command": "python -X utf8 tests/editor/run_workbench_resource_selection.py --godot bin/godot.windows.editor.x86_64.exe --report <private-result.json>",
+  "resource_selection": {
+    "passed": true,
+    "engine_sha256": "6de3146b47750619d07de4f7882cd4848ec07b42955a7552254304c5aca7b389",
+    "exit": 0,
+    "model_requests": 1,
+    "received_references": [
+      {
+        "kind": "editor",
+        "object_id": "res://north/SameGradient.tres",
+        "revision": "da10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+      },
+      {
+        "kind": "editor",
+        "object_id": "res://south/SameGradient.tres",
+        "revision": "1bfd728e964cda28c57718bd5ea3ce8c3a3f2e80bee318fd7a263dc9cf556eee"
+      },
+      {
+        "kind": "editor",
+        "object_id": "temporary://6b019b9f-1c374-45555b-5e41bcd0/Gradient/-9223370476556835966",
+        "revision": "7858b9fa6c2d6969ad437684c9aa3de32d3ec6aae6d50566d8ae9cb6fd57e61a"
+      }
+    ],
+    "controls_and_history": {
+      "distinct_unsaved": "-9223370475751529600",
+      "draft_after_removal": "stale draft stays",
+      "draft_label": "编辑器引用 · res://north/SameGradient.tres, res://south/SameGradient.tres, 临时资源 · temporary://6b019b9f-1c374-45555b-5e41bcd0/Gradient/-9223370476556835966",
+      "history": [
+        {
+          "kind": "editor",
+          "object_id": "res://north/SameGradient.tres",
+          "revision": "da10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+        },
+        {
+          "kind": "editor",
+          "object_id": "res://south/SameGradient.tres",
+          "revision": "1bfd728e964cda28c57718bd5ea3ce8c3a3f2e80bee318fd7a263dc9cf556eee"
+        },
+        {
+          "kind": "editor",
+          "object_id": "temporary://6b019b9f-1c374-45555b-5e41bcd0/Gradient/-9223370476556835966",
+          "revision": "7858b9fa6c2d6969ad437684c9aa3de32d3ec6aae6d50566d8ae9cb6fd57e61a"
+        }
+      ],
+      "saved_label": "编辑器引用 · res://north/SameGradient.tres, res://south/SameGradient.tres",
+      "saved_temporary_blocked": true,
+      "stale_send_blocked": true
+    },
+    "stderr": "WARNING: 6 RIDs of type \"Canvas\" were leaked.\n   at: RendererCanvasCull::_free_rids (servers\\rendering\\renderer_canvas_cull.cpp:2735)\nWARNING: 144 RIDs of type \"CanvasItem\" were leaked.\n   at: RendererCanvasCull::_free_rids (servers\\rendering\\renderer_canvas_cull.cpp:2735)\nWARNING: 673 ObjectDB instances were leaked at exit (run with `--verbose` for details).\n   at: ObjectDB::cleanup (core\\object\\object.cpp:2609)\n"
+  },
+  "regression": {
+    "spatial": {
+      "command": "python -X utf8 tests/editor/run_tianshu_spatial.py --godot bin/godot.windows.editor.x86_64.exe --references --report <private-result.json>",
+      "passed": true,
+      "exit": 0,
+      "binary_sha256": "6de3146b47750619d07de4f7882cd4848ec07b42955a7552254304c5aca7b389",
+      "model_requests": 1,
+      "restarts": [
+        {
+          "phase": "stale",
+          "exit_code": 0
+        },
+        {
+          "phase": "legacy",
+          "exit_code": 0
+        }
+      ]
+    },
+    "sidebar": {
+      "command": "python -X utf8 tests/editor/run_ai_chat_tab_order.py --godot bin/godot.windows.editor.x86_64.exe --workbench-command --report <private-result.json>",
+      "state": "passed",
+      "binary_sha256": "6de3146b47750619d07de4f7882cd4848ec07b42955a7552254304c5aca7b389",
+      "layout_phases": [
+        "initial",
+        "legacy_maliang_last",
+        "legacy_maliang_selected",
+        "pre_daqian_layout",
+        "pre_maliang_layout",
+        "restart"
+      ]
+    }
+  },
+  "method_learning": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "verified_revision": 20,
+    "observed": "The selected native Godot inputs were compiled in this worktree using a read-only shared SCons cache. The final modified AIWorkbenchReference.cpp produced a new object and the editor was relinked. The isolated copied executable had the same SHA-256 in all three probes. Opening an ordinary sidebar and sending via loopback exercised that executable.",
+    "fixture_correction": "On an inherited GONGGONG_WORKSPACE the isolation helper refused the initial copy. The resource runner clears this variable in its own process before copying the editor. Existing regression runners were launched with the variable removed from their own environment."
+  },
+  "scope": "The direct receipt is the Windows loopback model request and its matching persisted transcript. The two macOS links record the failure on earlier binaries. Remote delivery and GitHub close receipts belong to the parent delivery."
+}
