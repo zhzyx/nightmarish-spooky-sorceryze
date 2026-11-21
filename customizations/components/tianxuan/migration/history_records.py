@@ -187,7 +187,10 @@ def _bounded_record(raw, budget):
         return row
     content = row["content"]
     # Expose a bounded preview, retaining the digest of the full archived content.
-    preview = {k: content[k] for k in ("number", "state") if k in content}
+    preview = {k: content[k] for k in ("number", "state", "migration_synced_merge") if k in content}
+    for key in ("html_url", "url"):
+        if isinstance(content.get(key), str):
+            preview[key] = content[key][:2048]
     for k in ("title", "path", "body"):
         if isinstance(content.get(k), str):
             preview[k] = content[k].encode()[: budget // 4].decode("utf8", errors="ignore")
