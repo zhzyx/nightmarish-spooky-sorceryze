@@ -12,6 +12,28 @@ board = importlib.import_module("board")
 
 
 class BoardProjection(unittest.TestCase):
+    def test_original_issue_only_reads_the_exact_bound_source(self):
+        url = "https://github.com/fixture/board/issues/83"
+        row = {
+            "html_url": url,
+            "number": 83,
+            "title": "Prior item",
+            "state": "closed",
+            "labels": [{"name": "status:done"}],
+            "body": "Original body.\n<!-- gonggong-request:old-request -->",
+        }
+        actor = {"repo": "fixture/board"}
+        request = {"action": "original", "request": "old-request", "number": 83}
+        with patch.object(board.work_items, "gh", return_value=json.dumps(row)) as github:
+            result = board.issue_request(None, actor, request)["original"]
+            self.assertEqual(result, dict(url=url, title=row["title"], state="closed", status="done", body=row["body"]))
+            github.assert_called_once_with("api", "repos/fixture/board/issues/83")
+        for changed in (dict(html_url=url + "0"), dict(number=82), dict(body="rebound"), dict(pull_request={})):
+            with patch.object(board.work_items, "gh", return_value=json.dumps(dict(row, **changed))) as github:
+                with self.assertRaisesRegex(ValueError, "绑定已更改"):
+                    board.issue_request(None, actor, request)
+                github.assert_called_once_with("api", "repos/fixture/board/issues/83")
+
     def test_bound_design_document_and_published_fallback(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -4681,7 +4681,23 @@ void AIChatDock::_agent_right_clicked(int p_index) {
 	agent_context_menu->popup();
 }
 
+void AIChatDock::_open_conversation_original(int p_agent) {
+	String conversation;
+	if (p_agent == -1 || p_agent == active_agent) {
+		conversation = GetAiSession().strConversation;
+	} else if (const AgentSession *session = agent_sessions.getptr(p_agent)) {
+		conversation = session->stData.strConversation;
+	}
+	if (!conversation.is_empty()) {
+		(settings_owner ? settings_owner : this)->emit_signal(SNAME("daqian_original_requested"), conversation);
+	}
+}
+
 void AIChatDock::_agent_menu_selected(int p_id) {
+	if (p_id == 1 && pending_rename_agent >= 0) {
+		_open_conversation_original(pending_rename_agent);
+		return;
+	}
 	if (p_id != 0) {
 		return;
 	}
@@ -4923,6 +4939,7 @@ void AIChatDock::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("daqian_preview_received", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "text")));
 	ADD_SIGNAL(MethodInfo("daqian_preview_failed", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::STRING, "reason")));
 	ADD_SIGNAL(MethodInfo("daqian_execution_finished", PropertyInfo(Variant::DICTIONARY, "receipt"), PropertyInfo(Variant::STRING, "error"), PropertyInfo(Variant::BOOL, "past_preflight")));
+	ADD_SIGNAL(MethodInfo("daqian_original_requested", PropertyInfo(Variant::STRING, "conversation")));
 	ADD_SIGNAL(MethodInfo("daqian_work_event", PropertyInfo(Variant::STRING, "workspace"), PropertyInfo(Variant::DICTIONARY, "binding"), PropertyInfo(Variant::STRING, "worker"), PropertyInfo(Variant::STRING, "kind"), PropertyInfo(Variant::STRING, "phase"), PropertyInfo(Variant::STRING, "status")));
 	ADD_SIGNAL(MethodInfo("daqian_issue_bound", PropertyInfo(Variant::STRING, "source"), PropertyInfo(Variant::INT, "issue"), PropertyInfo(Variant::STRING, "request")));
 }
@@ -8495,6 +8512,7 @@ void fragment() {
 	agent_context_menu = memnew(PopupMenu);
 	agent_context_menu->set_name("AgentContextMenu");
 	agent_context_menu->add_item(U"重命名…", 0);
+	agent_context_menu->add_item(U"查看关联工单", 1);
 	agent_context_menu->connect("id_pressed", callable_mp(this, &AIChatDock::_agent_menu_selected));
 	add_child(agent_context_menu);
 	agent_rename_dialog = memnew(ConfirmationDialog);
@@ -8912,6 +8930,13 @@ void fragment() {
 	pConversationView->set_v_size_flags(SIZE_EXPAND_FILL);
 	pConversationView->add_theme_constant_override("separation", 6 * EDSCALE);
 	layout->add_child(pConversationView);
+	Button *original_issue = memnew(Button);
+	original_issue->set_name("ConversationOriginalIssue");
+	original_issue->set_text(U"查看关联工单");
+	original_issue->set_flat(true);
+	original_issue->set_h_size_flags(SIZE_SHRINK_BEGIN);
+	original_issue->connect(SceneStringName(pressed), callable_mp(this, &AIChatDock::_open_conversation_original).bind(-1));
+	pConversationView->add_child(original_issue);
 	chat_scroll = memnew(ScrollContainer);
 	chat_scroll->set_name("ChatScroll");
 	chat_scroll->set_v_size_flags(SIZE_EXPAND_FILL);

@@ -198,6 +198,7 @@ var checking := false
 var offline := false
 var toolbar: HFlowContainer
 var advanced_bar: HFlowContainer
+var inflight_dialog: AcceptDialog
 var historical_issue_button: Button
 var historical_issue_dialog: AcceptDialog
 var archive_history_button: Button
@@ -339,6 +340,7 @@ func _ready() -> void:
 	draft_menu.about_to_popup.connect(_list_drafts)
 	draft_menu.get_popup().id_pressed.connect(_restore_personal)
 	advanced_bar.add_child(draft_menu)
+	_button(advanced_bar, "在途工单", _open_inflight_records)
 	status = OptionButton.new()
 	status.tooltip_text = "按工单状态筛选"
 	status.item_selected.connect(func(_index): _filter_board())
@@ -1602,6 +1604,147 @@ func _open_archive_history() -> void:
 	dialog.popup_centered_clamped(Vector2i(680, 500))
 
 
+func _inflight_records(bindings: Dictionary) -> Array[Dictionary]:
+	var records: Array[Dictionary] = []
+	var links: Dictionary = saved.get("linked", {})
+	for row in board.get("issues", []):
+		if not row.get("closed", false) and row.get("status", "") in ["planned", "in-progress", "in-review", "needs-decision", "blocked"]:
+			_add_inflight_record(records, "工单看板", row)
+	for source in links:
+		if links[source] is not Dictionary:
+			continue
+		var link: Dictionary = links[source]
+		if str(source).begins_with("https://") and str(source) != "https://github.com/%s/issues/%d" % [actor.repo, int(link.get("number", 0))]:
+			continue
+		_add_inflight_record(records, "原记录 " + str(source), link)
+	for url in saved.get("direct_started", {}):
+		var request = saved.direct_started[url]
+		# Early worker receipts held only a boolean. Their private link above
+		# carries the request. Never infer an old request from a current board row.
+		if request is String:
+			_add_inflight_record(records, "开工记录", {"url":url, "number":str(url).get_file().to_int(), "request":request})
+	var scope := (_repo() + "|" + str(actor.repo_id) + "|" + str(actor.user_id)).sha256_text()
+	for conversation in bindings:
+		if bindings[conversation] is not Dictionary:
+			continue
+		var entry: Dictionary = bindings[conversation]
+		var raw_number := str(entry.get("issue_number", ""))
+		var number := raw_number.to_int()
+		var request := str(entry.get("request_id", ""))
+		var source := str(entry.get("source", ""))
+		var url := "https://github.com/%s/issues/%d" % [actor.repo, number]
+		if str(number) != raw_number or number <= 0 or request.is_empty() or str(entry.get("issue_url", url)) != url:
+			continue
+		if source != url and not source.begins_with("draft_") and not source.begins_with("spatial_"):
+			continue
+		var link: Dictionary = {}
+		# Early releases sometimes stored the URL in the chat and keyed the
+		# private work receipt by draft ID. Compare both original identities.
+		for key in links:
+			var candidate = links[key]
+			if candidate is not Dictionary or (key != source and (source != url or candidate.get("url") != url)):
+				continue
+			if int(candidate.get("number", 0)) == number and candidate.get("request") == request and candidate.get("url", url) == url:
+				link = candidate
+				break
+		if entry.get("scope", "") != scope:
+			var scoped_start: bool = source == url and saved.get("direct_started", {}).get(url) == request
+			if not str(entry.get("scope", "")).is_empty() or (link.is_empty() and not scoped_start):
+				continue
+		_add_inflight_record(records, "原会话 " + str(conversation), {"url":url, "number":number, "request":request, "status":link.get("status", "")})
+	return records
+
+
+func _add_inflight_record(records: Array[Dictionary], origin: String, binding: Dictionary) -> void:
+	var number := int(binding.get("number", 0))
+	var request := str(binding.get("request", ""))
+	var url := "https://github.com/%s/issues/%d" % [actor.repo, number]
+	if number <= 0 or request.is_empty() or binding.get("url", url) != url:
+		return
+	records.append({"origin":origin, "url":url, "number":number, "request":request, "status":str(binding.get("status", ""))})
+
+
+func _open_inflight_records(conversation_id := "") -> void:
+	if not conversation_id.is_empty() and (actor.is_empty() or picker_scope != _repo()):
+		await refresh()
+	var verified := await _fresh_access()
+	if not verified and conversation_id.is_empty():
+		return
+	if is_instance_valid(inflight_dialog):
+		inflight_dialog.queue_free()
+	var dialog := AcceptDialog.new()
+	inflight_dialog = dialog
+	dialog.title = "天枢 · 在途工单"
+	dialog.ok_button_text = "关闭"
+	var box := VBoxContainer.new()
+	dialog.add_child(box)
+	var choices := OptionButton.new()
+	choices.accessibility_name = "原会话或在途记录"
+	box.add_child(choices)
+	var bindings: Dictionary = EditorInterface.get_editor_settings().get_project_metadata("daqian", "bindings", {})
+	var records: Array[Dictionary] = []
+	if verified:
+		records = _inflight_records(bindings)
+		if not conversation_id.is_empty():
+			records.assign(records.filter(func(record): return record.origin == "原会话 " + conversation_id))
+	for record in records:
+		choices.add_item("#%d · %s" % [record.number, record.origin])
+	var open := Button.new()
+	open.text = "读取原单详情"
+	open.disabled = records.is_empty()
+	box.add_child(open)
+	var details := TextEdit.new()
+	details.editable = false
+	details.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	details.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	box.add_child(details)
+	var show_reference := func(index: int):
+		var record := records[index]
+		details.text = "%s\n%s\n需求标识：%s" % [record.origin, record.url, record.request]
+		if not record.status.is_empty():
+			details.text += "\n记录状态：" + record.status
+	choices.item_selected.connect(show_reference)
+	if records.is_empty():
+		details.text = "当前账号在此工作区没有已绑定原单的记录。" if conversation_id.is_empty() else "此会话没有可核实的原单，请核对工作区、账号与来源。"
+		if not verified:
+			details.text = "请先在天枢连接工作区并核实当前账号。"
+	else:
+		show_reference.call(0)
+	var principal := actor.duplicate()
+	var root := _repo()
+	open.pressed.connect(func():
+		var record := records[choices.selected]
+		open.disabled = true
+		choices.disabled = true
+		show_reference.call(choices.selected)
+		var args := _board_entry_args(_host_root().path_join("customizations/components/godot-host/daqian/board.py"))
+		args.append_array(["--repo", root, "--editor-session", editor_session, "--expected-user", str(principal.user_id)])
+		var reply := await _host_command(args, "--result", {"action":"original", "number":record.number, "request":record.request})
+		if not is_instance_valid(dialog) or dialog.is_queued_for_deletion():
+			return
+		if root != _repo() or principal != actor or reply.get("session_changed", false):
+			dialog.queue_free()
+			return
+		open.disabled = false
+		choices.disabled = false
+		var issue: Dictionary = reply.get("original", {})
+		if issue.get("url", "") != record.url:
+			details.text += "\n无法读取已绑定的原单，请核对访问权限和原记录。"
+			return
+		details.text += "\n%s\n原单状态：%s · %s\n\n%s" % [issue.title, issue.state, issue.status, issue.body])
+	if conversation_id.is_empty():
+		add_child(dialog)
+	else:
+		chat.add_child(dialog)
+		choices.hide()
+	dialog.confirmed.connect(dialog.queue_free)
+	dialog.close_requested.connect(dialog.queue_free)
+	dialog.visibility_changed.connect(_sync_modal_input, CONNECT_DEFERRED)
+	dialog.popup_centered_clamped(Vector2i(640,460))
+	if not conversation_id.is_empty() and not records.is_empty():
+		open.pressed.emit()
+
+
 func _open_historical_issue(original_id := "", parent_dialog: AcceptDialog = null) -> void:
 	if is_instance_valid(historical_issue_dialog):
 		historical_issue_dialog.queue_free()
@@ -2846,6 +2989,8 @@ func _access_denied(root: String, user_id: String, reason: String) -> void:
 func _forget(reason: String) -> void:
 	if is_instance_valid(archive_history_dialog):
 		archive_history_dialog.queue_free()
+	if is_instance_valid(inflight_dialog):
+		inflight_dialog.queue_free()
 	if is_instance_valid(historical_issue_dialog):
 		historical_issue_dialog.queue_free()
 	_leave_issue_inspector()
@@ -3096,6 +3241,8 @@ func cancel_startup_model_refresh() -> void:
 
 func _use_personal_board(auth: Dictionary) -> void:
 	if actor != auth or picker_scope != _repo():
+		if is_instance_valid(inflight_dialog):
+			inflight_dialog.queue_free()
 		_leave_issue_inspector()
 		inspector_sessions.clear()
 		canvas_panel.clear_session()
@@ -4775,6 +4922,7 @@ func _attach_chat() -> void:
 	if chat and chat.has_signal("daqian_issue_bound"):
 		chat.connect("daqian_chat_unmounted", _conversation_unmounted)
 		chat.connect("daqian_issue_bound",_issue_bound)
+		chat.connect("daqian_original_requested", _open_inflight_records)
 		chat.connect("daqian_requirement_phase",_requirement_phase)
 		if chat.has_signal("daqian_execution_finished"):
 			chat.connect("daqian_execution_finished", _execution_finished)
