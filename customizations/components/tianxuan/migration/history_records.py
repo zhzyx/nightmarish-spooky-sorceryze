@@ -181,9 +181,51 @@ def search_records(database, tenant, project, revision, query="", kind=None, off
         return dict(items=[dict(r) for r in rows], total=total, offset=offset, limit=limit, revision=revision)
 
 
+def _original_url(row):
+    """Resolve a provider permalink using the record identity and its structural parent."""
+    identity = re.fullmatch(r"github:([a-zA-Z0-9-]+/[a-zA-Z0-9_.-]+)/([a-z_]+)/(\S+)", row["source_id"])
+    if not identity:
+        return None
+    source, kind, identifier = identity.groups()
+    if kind != row["kind"]:
+        return None
+    content = row["content"]
+    original = content.get("html_url") or content.get("url")
+    if not isinstance(original, str):
+        return None
+    provider = re.match(r"https://github\.com/([a-zA-Z0-9-]+/[a-zA-Z0-9_.-]+)/", original)
+    if not provider or provider[1].lower() != source.lower():
+        return None
+    if not re.fullmatch(r"[1-9][0-9]*", identifier):
+        # Older GraphQL reviews used the opaque node id when databaseId was unavailable.
+        if kind != "review" or content.get("databaseId") or content.get("id") != identifier:
+            return None
+        anchor = re.search(r"#pullrequestreview-([1-9][0-9]*)$", original)
+        if not anchor or content.get("url") != original:
+            return None
+        identifier = anchor[1]
+    root = f"https://github.com/{provider[1]}"
+    tickets = {"issue": "issues", "pull": "pull", "pull_issue_projection": "pull"}
+    if kind in tickets:
+        return original if original == f"{root}/{tickets[kind]}/{identifier}" else None
+
+    anchors = {"issue_comment": "issuecomment-", "review": "pullrequestreview-", "review_comment": "discussion_r"}
+    if kind in anchors:
+        owners = _comment_owners(kind, content, source)
+        for owner in owners.intersection(row["relations"]):
+            _, role, number = owner.rsplit("/", 2)
+            if role in ("issue", "pull") and original == f"{root}/{tickets[role]}/{number}#{anchors[kind]}{identifier}":
+                return original
+    return None
+
+
 def _bounded_record(raw, budget):
     row = json.loads(raw)
+    row.pop("original_url", None)
+    original = _original_url(row)
     if len(raw) <= budget:
+        if original:
+            row["original_url"] = original
         return row
     content = row["content"]
     # Expose a bounded preview, retaining the digest of the full archived content.
@@ -199,6 +241,7 @@ def _bounded_record(raw, budget):
         content=preview,
         relations=row["relations"][:32],
         truncated=True,
+        **({"original_url": original} if original else {}),
     )
 
 

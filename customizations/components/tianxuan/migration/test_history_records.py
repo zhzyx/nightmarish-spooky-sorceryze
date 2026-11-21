@@ -19,16 +19,25 @@ class HistoryTests(unittest.TestCase):
             binary = root / "binary"
             binary.write_bytes(data)
             long_body = "逐字🍀还原\n" * 10000
+            original = "https://github.com/A/B/issues/14#issuecomment-22"
             records = [
                 ("issue/14", {"number": 14, "title": "History search", "body": "archived"}, []),
                 (
                     "issue_comment/22",
-                    {"issue_url": "https://api.github.com/repos/a/b/issues/14", "body": long_body},
+                    {
+                        "issue_url": "https://api.github.com/repos/a/b/issues/14",
+                        "html_url": original,
+                        "body": long_body,
+                    },
                     [issue],
                 ),
                 (
                     "issue_comment/23",
-                    {"issue_url": "https://api.github.com/repos/a/b/issues/15", "body": "See #14"},
+                    {
+                        "issue_url": "https://api.github.com/repos/a/b/issues/15",
+                        "html_url": "https://github.com/a/b/issues/14#issuecomment-23",
+                        "body": "See #14",
+                    },
                     [prefix + "pull/15", issue],
                 ),
                 ("pull/15", {"number": 15, "title": "Neighbor"}, []),
@@ -79,6 +88,9 @@ class HistoryTests(unittest.TestCase):
             self.assertEqual(detail["comments"]["total"], 1)
             neighbor = record_detail(*args, prefix + "pull/15")
             self.assertEqual(neighbor["comments"]["items"][0]["source_id"], prefix + "issue_comment/23")
+            self.assertNotIn("original_url", neighbor["comments"]["items"][0])
+            self.assertEqual(detail["comments"]["items"][0]["original_url"], original)
+            self.assertEqual(record_detail(*args, prefix + "issue_comment/22")["record"]["original_url"], original)
             self.assertEqual(len(detail["reverse"]["items"]), 1)
             self.assertTrue(detail["comments"]["items"][0]["truncated"])
             self.assertEqual(detail["record"]["content"]["body"], "archived")

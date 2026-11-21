@@ -1,0 +1,90 @@
+{
+  "issue_number": 1741,
+  "request_id": "gonggong-ai-workbench-plan1-g17",
+  "provider": {
+    "pr": 1403,
+    "merge": "d41fd1329ae296201b080c5df32b0be9e88ceea6",
+    "parents": [
+      "a409f21b95c1a878c8022d7603b64251bfc2faf6",
+      "d37e311b5c6628a45c8c7971df9fb0c0355d7382"
+    ],
+    "original_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1403#issuecomment-6941738379",
+    "body_sha256": "f82effa3e6fb3b3493bcdad50ddf9a313080b5a7878ffee8a64a068171c723db",
+    "base_revision": "9b6d0500825183fcb7d699a0652c189c8ed7f34ef4bf6478672851692b1085b8",
+    "new_revision": "7312d33dfc12ae0d6fe727c5f227b5ced523d428dedc02e7f4d3c547d9bc35c7",
+    "before": {
+      "native_revisions": 4,
+      "native_blobs": 8,
+      "native_receipts": 4,
+      "migration_publications": 2
+    },
+    "after": {
+      "native_revisions": 4,
+      "native_blobs": 8,
+      "native_receipts": 4,
+      "migration_publications": 2
+    },
+    "records": 6,
+    "comment_id": "github:zhzyx/nightmarish-spooky-sorceryze/issue_comment/6941738379",
+    "source_scope": "two bounded inventory captures from GitHub REST + actual local Git objects, isolated Duobao; no full-repo synchronizer"
+  },
+  "mac_chrome": {
+    "before": {
+      "pr": 1403,
+      "body_sha256": "f82effa3e6fb3b3493bcdad50ddf9a313080b5a7878ffee8a64a068171c723db",
+      "exact_original_permalink_visible": false,
+      "requests": [
+        [
+          "/api/v1/migration/status",
+          200
+        ],
+        [
+          "/api/v1/migration/history/search",
+          200
+        ],
+        [
+          "/api/v1/migration/history/search",
+          200
+        ],
+        [
+          "/api/v1/migration/history/detail",
+          200
+        ],
+        [
+          "/api/v1/migration/history/detail",
+          200
+        ]
+      ]
+    },
+    "after": {
+      "pr": 1403,
+      "body_sha256": "f82effa3e6fb3b3493bcdad50ddf9a313080b5a7878ffee8a64a068171c723db",
+      "exact_original_permalink_visible": true,
+      "requests": [
+        [
+          "/api/v1/migration/status",
+          200
+        ],
+        [
+          "/api/v1/migration/history/search",
+          200
+        ],
+        [
+          "/api/v1/migration/history/search",
+          200
+        ],
+        [
+          "/api/v1/migration/history/detail",
+          200
+        ],
+        [
+          "/api/v1/migration/history/detail",
+          200
+        ]
+      ]
+    }
+  },
+  "migration_tests": "26 passed, 16 subtests",
+  "independent_review": "24 archived-record assertions covering issue, PR, REST, GraphQL and legacy opaque IDs; 9 actual archived issue URLs matched",
+  "scope": "Two consecutive bounded inventories for an actual historical merged PR in an isolated project. The reviewer text was a PR conversation comment. Full repository incremental capture was not exercised."
+}

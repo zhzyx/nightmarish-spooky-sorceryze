@@ -5,7 +5,7 @@ import { authHeaders } from "@/lib/auth";
 import styles from "./page.module.css";
 
 type Summary = { source_id: string; kind: string; title?: string; path?: string };
-type Row = Summary & { content: Record<string, unknown>; relations: string[]; truncated?: boolean };
+type Row = Summary & { content: Record<string, unknown>; relations: string[]; truncated?: boolean; original_url?: string };
 type Page<T> = { items: T[]; total: number };
 type Detail = { record: Row; comments: Page<Row>; reverse: Page<Summary>; document?: { text?: string } };
 type Commit = { oid: string; subject: string; author: string };
@@ -89,7 +89,9 @@ export default function HistoryBrowser({project, revision, actor, zh}: {project:
       {search?.data && <><ul>{search.data.items.map(r=><li key={r.source_id}>{button(r)} <small>{r.kind}</small></li>)}</ul>
       <p>{search.data.total} {t("条记录","records")}</p>{navigation(offset,offset+size<search.data.total,setOffset)}</>}
       {record && detail?.data && <article><h3>{String(record.content.title || record.content.path || record.source_id)}</h3>
-        <small>{record.source_id}</small><pre className={styles.body}>{detail.data.document?.text ?? String(record.content.body ?? JSON.stringify(record.content,null,2))}</pre>
+        <small>{record.source_id}</small>
+        {record.original_url && <p><a href={record.original_url}>{t("在 GitHub 查看原文","View original on GitHub")}</a></p>}
+        <pre className={styles.body}>{detail.data.document?.text ?? String(record.content.body ?? JSON.stringify(record.content,null,2))}</pre>
         {record.truncated && <FullBody key={record.source_id} base={endpoint("body",{source_id:record.source_id})} actor={actor} zh={zh} />}
         {record.kind==="attachment" && <button onClick={download}>{t("下载归档附件","Download archived attachment")}</button>}
         {record.relations.length>0 && <><h4>{t("关联来源","Related sources")}</h4><ul>{record.relations.map(r=><li key={r}><button type="button" onClick={()=>openRelation(r)}>{r}</button></li>)}</ul></>}
