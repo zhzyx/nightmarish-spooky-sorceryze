@@ -1,0 +1,247 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d01",
+  "issue_number": 1862,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1862",
+  "observed_at": "2026-11-21T10:08:41.221241+00:00",
+  "source_base": "1cca7579fd007e8625ce8d275abd874fe4be0d33",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "b1f0c20611b9bb5a7cf0660d0891878de392e7d120a7d8f70788b85b0f31e113",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "0da261071339da64cdbc6d094e5425b6acb3144ee89e7ec626bf72f69dba9177",
+    "tests/editor/ai_chat_tab_order.gd": "2da2103c62fdf856ac561b50be02421309908ad7d5dacb17d9832ed16e28f72e",
+    "tests/editor/consultation_only.gd": "1e9797959eed6c68c7a709857753ef2b9086d1db7388452a6f66b0f964ed0b53"
+  },
+  "evidence_scope": "macOS arm64, headless native editor, signed app and an isolated loopback model. The transport and UI are real; generated replies are fixtures.",
+  "baseline_mode": false,
+  "native_conversation": {
+    "binary_sha256": "b68ed1d1c8dc2c901904e69215b125cca7e62065397541c3de3519e545495d50",
+    "ui": {
+      "composer_id": "617821015239",
+      "default_consultation": true,
+      "visible_replies": [
+        "建议先核对返回值，再决定如何修改。",
+        "可以继续检查同一个函数的返回行。"
+      ]
+    },
+    "histories": [
+      [
+        [
+          "user",
+          "请改代码"
+        ]
+      ],
+      [
+        [
+          "user",
+          "请改代码"
+        ],
+        [
+          "assistant",
+          "建议先核对返回值，再决定如何修改。"
+        ],
+        [
+          "user",
+          "这会影响哪一行？"
+        ]
+      ]
+    ],
+    "advertised_tools": [
+      [
+        "get_editor_state",
+        "list_directory",
+        "list_scripts",
+        "read_file",
+        "read_logs",
+        "read_script"
+      ],
+      [
+        "get_editor_state",
+        "list_directory",
+        "list_scripts",
+        "read_file",
+        "read_logs",
+        "read_script"
+      ]
+    ],
+    "sentinel_before": "20a627023fcfe652f7c1ac46042950026f535ad9fb77693d88c4a5fe1620e433",
+    "sentinel_after": "20a627023fcfe652f7c1ac46042950026f535ad9fb77693d88c4a5fe1620e433",
+    "execution_resume_journals": 0
+  },
+  "independent_boundary_checks": [
+    {
+      "scenario": "open from editing surface",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "unbound defaults to consultation",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "send consultation to initialize scoped conversation",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "initialized conversation replied",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "unbound grant denied",
+      "consultation": false,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "same-session expand",
+      "consultation": false,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "same-session return",
+      "consultation": false,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "same-session deliberate development preserved",
+      "consultation": false,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "close unbound sidebar",
+      "consultation": false,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "reopen from independent editing surface",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "fresh unbound entry re-enables consultation",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "issue-bound explicit grant accepted",
+      "consultation": false,
+      "native_grant": true,
+      "passed": true
+    },
+    {
+      "scenario": "close bound sidebar",
+      "consultation": false,
+      "native_grant": true,
+      "passed": true
+    },
+    {
+      "scenario": "reopen bound sidebar",
+      "consultation": false,
+      "native_grant": true,
+      "passed": true
+    },
+    {
+      "scenario": "valid scoped grant preserved on fresh entry",
+      "consultation": false,
+      "native_grant": true,
+      "passed": true
+    },
+    {
+      "scenario": "close before binding change",
+      "consultation": false,
+      "native_grant": true,
+      "passed": true
+    },
+    {
+      "scenario": "open after request change",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "request change restores consultation",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "explicit grant accepted for replacement request",
+      "consultation": false,
+      "native_grant": true,
+      "passed": true
+    },
+    {
+      "scenario": "expand before new conversation",
+      "consultation": false,
+      "native_grant": true,
+      "passed": true
+    },
+    {
+      "scenario": "create conversation in full workbench",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "new conversation selected and previous grant revoked",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "return to sidebar after changing conversation",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    },
+    {
+      "scenario": "ungranted new conversation returns in consultation",
+      "consultation": true,
+      "native_grant": false,
+      "passed": true
+    }
+  ],
+  "layout_processes": 6,
+  "bare_editor_sha256": "b7abea6ca604aaf1d38ed931b48cad8a754f600aa67bcad772901c64c963447a",
+  "per_message_authority": {
+    "requests": [
+      {
+        "prompt": "CONSULTATION_ATTACK",
+        "tool_results": 0
+      },
+      {
+        "prompt": "CONSULTATION_ATTACK",
+        "tool_results": 8
+      },
+      {
+        "prompt": "CONSULTATION_ATTACK",
+        "tool_results": 9
+      },
+      {
+        "prompt": "CLI_MUST_NOT_START",
+        "tool_results": 0
+      }
+    ],
+    "denied_tools": 8,
+    "read_result": "verified"
+  },
+  "test_artifact_sha256": {
+    "after.json": "ce0fb59a0e120a67c0ba596ba4ba42f3d9b5719658d00db76647d27ecd074ef9",
+    "legacy-final.json": "dbfbcba9fd29600a50b4a23198b59e4fd0640edbf899b051d4462b9af9cbaec4",
+    "review/boundary-final.json": "0f755a4a4aea09582d7d045ec54199e95e24c6d2177e6199a5d9d06cbce214d4",
+    "review/tab-final.json": "cd0214daf4a7cc6b7d3ebb03aba2672df601af080df2803b3f1aae3a329ce2e4",
+    "consult.py": "a2ff2d25e6009f69a1f8387ef2564df157410c0ce9c7cab02c5243192511f509",
+    "consult.gd": "4d55f005799289d33b744b92a55b344646332e0e12e3a2d4fe8e3ebb722228ad"
+  }
+}

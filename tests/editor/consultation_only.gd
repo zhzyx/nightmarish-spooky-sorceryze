@@ -73,10 +73,14 @@ func _run():
 		return
 	await create_timer(0.2).timeout
 	check.button_pressed = true
+	# No CLI installation is configured for this isolated editor.
+	dock.set_runtime_field("node", OS.get_environment("GONGGONG_TEST_WORKSPACE").path_join("missing-node"))
 	backend.select(1)
 	backend.item_selected.emit(1)
 	_send(dock, "CLI_MUST_NOT_START")
-	if not await _wait(dock, "原生 CLI 不执行此请求"):
+	await process_frame
+	if not dock.get_meta("queue_paused") or dock.get_meta("queued_message_count") != 1:
+		push_error("Unavailable CLI must keep the consultation queued for an explicit retry")
 		quit(1)
 		return
 	# Return to API and explicitly resume the rejected queued consultation.

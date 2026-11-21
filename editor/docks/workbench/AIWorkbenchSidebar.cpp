@@ -37,6 +37,7 @@
 #include "editor/settings/editor_command_palette.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
+#include "scene/gui/check_box.h"
 #include "scene/gui/text_edit.h"
 #include "scene/main/viewport.h"
 
@@ -101,6 +102,12 @@ void AIChatDock::OpenWorkbenchSidebar()
 		{
 			EditorDockManager::get_singleton()->force_focus_dock(pScreen);
 		}
+	}
+	else if (nConversationIndex < 0 && !task_native_grant.matches(_native_task_scope()))
+	{
+		// Entering from an editing surface starts in consultation. Returning from
+		// the expanded view retains the mode selected for this conversation.
+		consultation_only->set_pressed(true);
 	}
 	if (nConversationIndex < 0)
 	{
