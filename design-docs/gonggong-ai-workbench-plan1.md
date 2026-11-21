@@ -1296,6 +1296,8 @@
 
 ### G03
 
+[交付清单与验证](gonggong-ai-workbench-g03.md)
+
 **在隔离仓导入提交历史** · [G03 #1849](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1849)
 
 用含合并的最小仓验证现有导入器，补齐单一入口。

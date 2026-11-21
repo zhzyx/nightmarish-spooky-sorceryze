@@ -20,6 +20,18 @@ def canonical(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
 
 
+def record_line(source_id, kind, content, relations):
+    row = dict(
+        source_id=source_id,
+        kind=kind,
+        content=content,
+        relations=sorted(set(relations)),
+        mode="record_only",
+        sha256=hashlib.sha256(canonical(content)).hexdigest(),
+    )
+    return canonical(row) + b"\n"
+
+
 def command(*args):
     if args[0] != "gh":
         return subprocess.check_output(args)
@@ -69,15 +81,7 @@ def collect(repo, source, revision, output):
             if source_id in seen:
                 raise ValueError("Duplicate source in paginated inventory: " + source_id)
             seen.add(source_id)
-            row = dict(
-                source_id=source_id,
-                kind=kind,
-                content=content,
-                relations=sorted(set(relations)),
-                mode="record_only",
-                sha256=hashlib.sha256(canonical(content)).hexdigest(),
-            )
-            line = canonical(row) + b"\n"
+            line = record_line(source_id, kind, content, relations)
             stream.write(line)
             stream_hash.update(line)
             counts[kind] += 1
