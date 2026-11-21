@@ -1,0 +1,23 @@
+{
+  "issue_number": 1553,
+  "request_id": "tianxuan-unified-migration-20261119",
+  "source_revision": "07fe7a37aeb78000674b61cc0d3e068cd73aeb25",
+  "scope": "Portable Git historical ref updates in an isolated migration rehearsal",
+  "original_command_exit": 128,
+  "macos_migration_tests": {
+    "passed": 23,
+    "subtests_passed": 16
+  },
+  "independent_review": {
+    "object_formats": [
+      "sha1",
+      "sha256"
+    ],
+    "unique_commits": 3,
+    "pinned_on_first_pass": 2,
+    "pinned_on_replay": 0,
+    "target_ids_matched": true
+  },
+  "windows_input": "CRLF text stream simulated on macOS; native Windows execution pending",
+  "production_import": false
+}
