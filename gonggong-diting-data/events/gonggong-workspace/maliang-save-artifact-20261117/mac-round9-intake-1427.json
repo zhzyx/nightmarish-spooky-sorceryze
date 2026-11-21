@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "maliang-save-artifact-20261117",
+  "event_id": "mac-round9-intake-1427",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1427",
+  "occurred_at": "2026-11-21T20:34:17.689867+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1427,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T20:24:38Z",
+    "scope": "自动验证 macOS 系统面板实际选择 PNG、GLB 的路径、写入字节和取消结果，检查默认选址与另存为失败原因。"
+  },
+  "evidence_refs": [],
+  "sha256": "81f37c6cad3901dfc63b0b6461275a98bce86d36c986a52d48e45e1be3546d9c"
+}
