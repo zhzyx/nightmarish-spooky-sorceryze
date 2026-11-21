@@ -955,6 +955,15 @@ class Tianxuan:
         return doc
 
     @_connection_call
+    def editable_doc_body(self, actor: str, doc_id: str, expected_version: int) -> str:
+        self._require_editor(actor)
+        document = self.get_doc_shared(actor, doc_id, write=True)
+        self._require_field_write(actor, document, "body_md")
+        if document["version"] != expected_version:
+            raise VersionConflict("document revision has changed")
+        return str(document["body_md"])
+
+    @_connection_call
     def set_visibility(self, actor: str, doc_id: str, visibility: str) -> dict[str, Any]:
         if visibility not in {"tenant", "private"}:
             raise TianxuanError("visibility must be tenant or private")
