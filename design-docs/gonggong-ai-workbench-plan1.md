@@ -1336,6 +1336,8 @@
 
 ### G06
 
+[交付清单与验证](gonggong-ai-workbench-g06.md)
+
 **核对大文件及子模块引用** · [G06 #1824](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1824)
 
 依据真实清单核查 LFS 对象与子模块版本；无实例则记录扫描范围。
