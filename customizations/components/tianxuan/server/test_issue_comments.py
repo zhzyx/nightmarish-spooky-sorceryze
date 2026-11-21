@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from api import create_app
@@ -121,3 +122,54 @@ def test_second_tenant_cannot_read_or_comment() -> None:
         client.post(f"/api/v1/issues/{issue['id']}/comments", headers=other, json={"body": "越权"}).status_code == 404
     )
     assert client.get(f"/api/v1/issues/{issue['id']}/comments", headers=headers).json() == {"comments": []}
+
+
+def test_reply_requires_a_parent_in_the_same_issue() -> None:
+    store = Tianxuan(":memory:")
+    client = TestClient(create_app(store))
+    owner = _register(client, "Thread scope", "thread-scope@example.invalid")
+    headers = {"X-Actor": owner}
+    first = store.create_issue(owner, "first")
+    second = store.create_issue(owner, "second")
+    parent = store.add_issue_comment(owner, first["id"], "original")
+    route = f"/api/v1/issues/{second['id']}/comments"
+    for parent_id in [parent["id"], "icmt_absent"]:
+        response = client.post(route, headers=headers, json={"body": "reply", "parent_id": parent_id})
+        assert response.status_code == 404, response.text
+    assert client.get(route, headers=headers).json()["comments"] == []
+    assert store.list_issue_comments(owner, first["id"]) == [parent]
+
+
+def test_existing_issue_comments_survive_store_upgrade(tmp_path: Path) -> None:
+    database = str(tmp_path / "upgrade.db")
+    old = Tianxuan(database)
+    account = old.register("Previous schema", "upgrade@example.invalid", "test-password", name="原作者")
+    actor = account["user_id"]
+    issue = old.create_issue(actor, "Old thread")
+    comment = old.add_issue_comment(actor, issue["id"], "保留原始内容")
+    with old.db:
+        old.db.execute("DROP TABLE issue_comment_replies")
+    old.db.close()
+
+    upgraded = Tianxuan(database)
+    try:
+        assert upgraded.list_issue_comments(actor, issue["id"]) == [comment]
+        reply = upgraded.add_issue_comment(actor, issue["id"], "回复历史评论", comment["id"])
+        assert reply["parent_id"] == comment["id"]
+        assert upgraded.list_issue_comments(actor, issue["id"]) == [comment, reply]
+    finally:
+        upgraded.db.close()
+
+
+def test_reply_retry_returns_one_persisted_comment() -> None:
+    client, headers, issue = _setup()
+    route = f"/api/v1/issues/{issue['id']}/comments"
+    parent = client.post(route, headers=headers, json={"body": "original"}).json()
+    payload = {"body": "reply", "parent_id": parent["id"], "call_id": "one-draft"}
+    reply = client.post(route, headers=headers, json=payload)
+    replay = client.post(route, headers=headers, json=payload)
+    assert reply.status_code == replay.status_code == 200
+    assert reply.json() == replay.json()
+    conflict = client.post(route, headers=headers, json=payload | {"body": "different"})
+    assert conflict.status_code == 409
+    assert client.get(route, headers=headers).json()["comments"] == [parent, reply.json()]

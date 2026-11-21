@@ -1,0 +1,267 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i05",
+  "issue_number": 1788,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1788",
+  "source_base": "c8d07b74fc4d5b615aca671e57e5e60b8271ca08",
+  "intake": {
+    "exit": 0,
+    "issue_comments_at_read": 0,
+    "upstream": {
+      "issue_number": 1854,
+      "state": "CLOSED/COMPLETED",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854#issuecomment-7066884069"
+    },
+    "prior_service_observation": {
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709#issuecomment-7066453423",
+      "baseline": "3034a7ef9ee4b4b550b714905321d0998c14bd24",
+      "consumer": "天璇服务",
+      "result": "两位作者依次留言，重启后评论 ID、顺序和作者均相同"
+    }
+  },
+  "build_boundary": {
+    "platform": "windows.x86_64",
+    "source": "editor/docks/workbench/issue_actions/issue_comments.gd",
+    "generated_header": "editor/docks/workbench/IssueActions.gen.h",
+    "native_consumer": "editor/docks/workbench/AIWorkbenchSidebar.cpp",
+    "host_integration_owner": "I03",
+    "before_bounded_body_gd_sha256": "8964343f15f7b4773d7709f5d44b624c03d11235c64e596dceb0151f8a3dd96d",
+    "before_bounded_body_header_sha256": "b08855cc80731c13c681e0c2eeb2b404e46a3fcc72b7c351e4a003495ef70041",
+    "lesson_recalled": "godot-build-placement/trace-native-consumer@24",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j8",
+    "toolchain": "Visual Studio 14.5, Windows SDK 10.0.26100.0",
+    "initial_full_build": {
+      "exit": 0,
+      "elapsed": "00:28:52.42",
+      "engine_sha256": "289259cf1c4d42d3181a83c629c8b86645bdfb90861a36f169fa5d5b111e8ae0",
+      "log_sha256": "2f6c3bcb6d8826dd9f74d187c2bf68c8964f92af653470583308b503b81c4f16"
+    },
+    "incremental_build": {
+      "change": "replace unbounded selected Label with scrollable RichTextLabel",
+      "observed_targets": [
+        "Generating editor/docks/workbench/IssueActions.gen.h",
+        "Compiling editor/docks/workbench/AIWorkbenchSidebar.cpp",
+        "Linking editor.windows.editor.x86_64.lib",
+        "Linking godot.windows.editor.x86_64.exe"
+      ],
+      "exit": 0,
+      "elapsed": "00:00:56.10",
+      "engine_sha256": "376e232798e52194f19d9d84d66d3a6de047ef979252e6bfc930a446fbc7f318",
+      "header_sha256": "248ff804659a1dad01c8b5111facbd0ad2ceb4515e1bb7c19b59012a42cd3e63",
+      "log_sha256": "c1bd3866552d21edb8f0f6f4d1abfc21d1b522b3878e3428e4038157502c84a8"
+    }
+  },
+  "service_tests": {
+    "command": "python -B -X utf8 -m pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_issue_comments.py customizations/components/tianxuan/server/test_issue_ancestor_acl.py customizations/components/tianxuan/server/test_tianxuan_boundary.py",
+    "exit": 0,
+    "passed": 31,
+    "subtests_passed": 44,
+    "checks": [
+      "old issue comment reopened and replied after schema upgrade",
+      "reject parent from another issue and unknown parent with 404 and empty thread",
+      "retry with same call ID returns one row, changed payload returns 409",
+      "author, viewer, tenant, ancestor access restrictions and transaction rollback"
+    ]
+  },
+  "ruff": "check passed for service and regression runner",
+  "target": "I02 原生工单详情；后继 I16 #1757",
+  "delivery": "working candidate; parent session owns exact Git delivery and closure",
+  "native_acceptance": {
+    "command": "python -B -X utf8 tests/editor/run_workbench_issue_comments.py --godot bin/godot.windows.editor.x86_64.exe --report <result.json>",
+    "target": "real native WorkbenchIssueDetail/issue_comments, authenticated accounts, loopback FastAPI and SQLite; no desktop focus",
+    "initial_attempt": "Failed waiting for identity before comment assertions. Added phase, request/status and UI status diagnostics to the fixture. Same service and binary passed in two independent fresh directories. Initial timeout cause unconfirmed.",
+    "observations": [
+      "four separate editor launches per run; account B begins with no selection from A",
+      "first POST executed but HTTP response deliberately lost (503); same logical draft posted again; four POSTs persisted three comments",
+      "all three visible rows and their authors compared with a reopened database; reply parent IDs form the expected chain",
+      "phase 2 locates the multiline parent and checks that all text is present and scrollable",
+      "phase 3 restores the middle comment then goes to the original; closing details clears and hides the control"
+    ],
+    "first_completed_run": {
+      "engine_sha256": "376e232798e52194f19d9d84d66d3a6de047ef979252e6bfc930a446fbc7f318",
+      "comment_post_status": [
+        503,
+        200,
+        200,
+        200
+      ],
+      "verified_thread": [
+        {
+          "id": "icmt_be731b7eded94603a084282013f104a1",
+          "tenant_id": "ten_40fad17e3e39460b9add6b85ba566372",
+          "issue_id": "iss_31c6572e37be4137b3b83db19a7b783c",
+          "author": "usr_15c2f123e0804c8eb603c3bdafe9d1b9",
+          "body": "入口截图已更新",
+          "created_at": "2026-11-21T19:04:07.419678+00:00",
+          "author_name": "林川",
+          "parent_id": null
+        },
+        {
+          "id": "icmt_691d2fd5e2674dcbb38a4c6f210be5ac",
+          "tenant_id": "ten_40fad17e3e39460b9add6b85ba566372",
+          "issue_id": "iss_31c6572e37be4137b3b83db19a7b783c",
+          "author": "usr_3a65eeb6e8c84fff82d2c554eef239c3",
+          "body": "请补上验收步骤\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径",
+          "created_at": "2026-11-21T19:04:13.819114+00:00",
+          "author_name": "唐敏",
+          "parent_id": "icmt_be731b7eded94603a084282013f104a1"
+        },
+        {
+          "id": "icmt_cc9ad14361644be6aef5e8f7b34ab393",
+          "tenant_id": "ten_40fad17e3e39460b9add6b85ba566372",
+          "issue_id": "iss_31c6572e37be4137b3b83db19a7b783c",
+          "author": "usr_15c2f123e0804c8eb603c3bdafe9d1b9",
+          "body": "已补充第二步",
+          "created_at": "2026-11-21T19:04:19.724111+00:00",
+          "author_name": "林川",
+          "parent_id": "icmt_691d2fd5e2674dcbb38a4c6f210be5ac"
+        }
+      ],
+      "editor_launches": [
+        {
+          "phase": 0,
+          "restored": -1,
+          "selected": 0
+        },
+        {
+          "phase": 1,
+          "restored": -1,
+          "selected": 1
+        },
+        {
+          "phase": 2,
+          "restored": 0,
+          "selected": 1
+        },
+        {
+          "phase": 3,
+          "restored": 1,
+          "selected": 0
+        }
+      ],
+      "pass": true
+    },
+    "independent_repeat": {
+      "engine_sha256": "376e232798e52194f19d9d84d66d3a6de047ef979252e6bfc930a446fbc7f318",
+      "comment_post_status": [
+        503,
+        200,
+        200,
+        200
+      ],
+      "verified_thread": [
+        {
+          "id": "icmt_e1e73b20f34c4de49d4f005b1f11a12f",
+          "tenant_id": "ten_bb05c3c773c341baa71a6294cee075f4",
+          "issue_id": "iss_af6cc4a9a4f84ff0b94fd859cac47d74",
+          "author": "usr_d36bc267f7254cf9bb0458065cdbde80",
+          "body": "入口截图已更新",
+          "created_at": "2026-11-21T19:06:45.680290+00:00",
+          "author_name": "林川",
+          "parent_id": null
+        },
+        {
+          "id": "icmt_179cc42e7f6f45549dea26c2ebbd3ad8",
+          "tenant_id": "ten_bb05c3c773c341baa71a6294cee075f4",
+          "issue_id": "iss_af6cc4a9a4f84ff0b94fd859cac47d74",
+          "author": "usr_7ad5f7e323fb4bd891ddf24c59a3e3a7",
+          "body": "请补上验收步骤\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径",
+          "created_at": "2026-11-21T19:06:50.368411+00:00",
+          "author_name": "唐敏",
+          "parent_id": "icmt_e1e73b20f34c4de49d4f005b1f11a12f"
+        },
+        {
+          "id": "icmt_c51cd7c28d71402ba2cac1e9cfda35df",
+          "tenant_id": "ten_bb05c3c773c341baa71a6294cee075f4",
+          "issue_id": "iss_af6cc4a9a4f84ff0b94fd859cac47d74",
+          "author": "usr_d36bc267f7254cf9bb0458065cdbde80",
+          "body": "已补充第二步",
+          "created_at": "2026-11-21T19:06:54.635180+00:00",
+          "author_name": "林川",
+          "parent_id": "icmt_179cc42e7f6f45549dea26c2ebbd3ad8"
+        }
+      ],
+      "editor_launches": [
+        {
+          "phase": 0,
+          "restored": -1,
+          "selected": 0
+        },
+        {
+          "phase": 1,
+          "restored": -1,
+          "selected": 1
+        },
+        {
+          "phase": 2,
+          "restored": 0,
+          "selected": 1
+        },
+        {
+          "phase": 3,
+          "restored": 1,
+          "selected": 0
+        }
+      ],
+      "pass": true
+    }
+  },
+  "i02_native_regression": {
+    "engine_sha256": "376e232798e52194f19d9d84d66d3a6de047ef979252e6bfc930a446fbc7f318",
+    "observed_fields": [
+      "标题　核对场景入口\n负责人　唐敏\n状态　planned\n内容版本　2995b4e8adb1d5f834a333c93e41a00313105bb76fe2ebfd6a9105e0d6855899",
+      "标题　检查地图\n负责人　未分配\n状态　backlog\n内容版本　25acd07919fde8df972c74b21a899bf7a6918546ce2ed4aea62eddc88d611cc8"
+    ],
+    "http_readback": [
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/2/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/3/detail",
+        "studio/game",
+        403
+      ],
+      [
+        "/api/v1/issues/by-number/99999/detail",
+        "studio/game",
+        404
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ]
+    ],
+    "error_feedback": [
+      "没有权限查看此工单",
+      "当前项目中不存在此编号的工单"
+    ],
+    "checks": [
+      "command palette opened sidebar",
+      "assigned and unassigned compared to reopened database",
+      "private and absent results cleared prior detail",
+      "successful refresh after 404, logout cleared the visible record"
+    ]
+  },
+  "candidate_files": {
+    "editor/docks/workbench/issue_actions/issue_comments.gd": "f8f14814a3bec95be5645c3915f149d06c5567da8c011994796a0a74a3039a42",
+    "customizations/components/tianxuan/server/api.py": "571a61c2090e834341f712f697156535e0aee350becfbac0d258df8cc3a3a6dc",
+    "customizations/components/tianxuan/server/schemas.py": "6108b6e93693cc89ec6cbb77e29d57d1466492fedfeeca9b3cf5ccd3b736584c",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "a0618424553b58662518a2b68c3b2c430f7affe296b734608c3d18b6892b9558",
+    "customizations/components/tianxuan/server/test_issue_comments.py": "83dd5f6b9a33e90d97c5b25842b85becde10eeee2578b67f5e755be208b4a49f",
+    "tests/editor/workbench_issue_comments.gd": "cc73adaf48666a158868070776bfc0f6a53122e17e81ccd33dbc45b844f0abdb",
+    "tests/editor/run_workbench_issue_comments.py": "683236c06361394a37551365c2a9dcbe37316016e8436e0c54b6274f00c7899e",
+    "design-docs/gonggong-ai-workbench-i05.md": "fdbe93842db09ea0005148756a7ad37ed0934f0ecd7272a5b083d4f157fd10af"
+  },
+  "cleanup": {
+    "removed": "temporary test homes, projects, fixture databases, copied editors, Ruff cache; native reports consolidated here",
+    "retained": "isolated candidate source, generated native outputs and shared host patch for parent acceptance/candidate audit"
+  }
+}
