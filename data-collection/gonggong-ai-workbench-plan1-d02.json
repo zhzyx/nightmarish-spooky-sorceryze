@@ -1,0 +1,175 @@
+{
+  "issue_number": 1865,
+  "request_id": "gonggong-ai-workbench-plan1-d02",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1865",
+  "observed_at": "2026-11-21T15:21:45.670901+00:00",
+  "baseline": "8b48bd11844073a0d73499899991f7ee6f3b712f",
+  "dispatch_event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d02/dispatch-5c49f0d960534162b60be17639052f43.json",
+  "intake": {
+    "result": "in-progress",
+    "upstream_issue": 1867,
+    "upstream_state": "closed/completed",
+    "upstream_main": "75419237e87776e6de3b5a20a921f2d7381d3977",
+    "issue_comment_count_at_intake": 0,
+    "upstream_macos_evidence": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7060361368",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7062658872"
+    ]
+  },
+  "source_sha256": {
+    "editor/SCsub": "ed043f75dd0973426bdd355d2575aa79e52b8f48da9e525dbfe41913ce9de210",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "2acf6f56a557b7816a85345be8fe5c45dae855d04e1ee403590cf330950166be",
+    "editor/docks/workbench/business_session.gd": "83fa2d9616fe5283d6faa4572613e150a2fab457ba9a3df397dbf0b3a0c5b27e",
+    "tests/editor/workbench_documents.gd": "4288842114d5d15d85b3d6d058c6d8df897716b9ec11900843c9261e24cc26c0",
+    "tests/editor/run_workbench_documents.py": "7e6bfe82e86df49f080463fc0d33f48126257614acaa7d56909ce89bf25b5528",
+    "design-docs/gonggong-ai-workbench-d02.md": "89995c5fd300072b09708bd7a9f6e6f113d03321eeb2311ef554fb9dca1fcdd6"
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "baseline_includes": "C06 module selector and D14 business session",
+    "toolchain": "VS 14.5, Windows SDK 10.0.26100.0, SCons 4.11.1",
+    "scons_options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j14",
+    "consumer": "business_session.gd -> BusinessSession.gen.h -> AIWorkbenchSidebar.cpp -> editor",
+    "generated_header_sha256": "3633cba543e801c1bed4611b1e1f9e30dd4477197a128d5a558a36d9a924ce2d",
+    "integrated_build_exit_code": 0,
+    "editor_sha256": "25a5fb5d03593dc257830ddc6d93fafa6322572d99c9d3ae8f4d12b997537ea3"
+  },
+  "native_test": {
+    "command": "python tests/editor/run_workbench_documents.py --godot <candidate> --report <local-report>",
+    "exit_code": 0,
+    "fixture": "isolated compiled sidebar with loopback Tianxuan accounts service, disposable tenant and two documents both titled 同名设计",
+    "editor_sha256": "25a5fb5d03593dc257830ddc6d93fafa6322572d99c9d3ae8f4d12b997537ea3",
+    "state": "passed",
+    "native_selections": [
+      {
+        "document_id": "doc_6e0bf976a1274cf4a6229b85940bfb76",
+        "paragraph": 2,
+        "selected_text": "第一个目标\n延续一行",
+        "version": 1
+      },
+      {
+        "document_id": "doc_6ec6bc6b49754dbea64d6821554bb9bd",
+        "paragraph": 2,
+        "selected_text": "第二个目标",
+        "version": 2
+      },
+      {
+        "document_id": "doc_6ec6bc6b49754dbea64d6821554bb9bd",
+        "paragraph": 2,
+        "selected_text": "原始段落",
+        "version": 1
+      }
+    ],
+    "service_reads": [
+      [
+        "/api/v1/auth/me",
+        200
+      ],
+      [
+        "/api/v1/docs",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_6e0bf976a1274cf4a6229b85940bfb76/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_6ec6bc6b49754dbea64d6821554bb9bd/versions/2",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_6ec6bc6b49754dbea64d6821554bb9bd/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_6ec6bc6b49754dbea64d6821554bb9bd/versions/99",
+        404
+      ],
+      [
+        "/api/v1/docs/doc_6e0bf976a1274cf4a6229b85940bfb76/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_6e0bf976a1274cf4a6229b85940bfb76/versions/1",
+        200
+      ]
+    ],
+    "same_title": true,
+    "readonly_body": true,
+    "invalid_targets_cleared": true,
+    "signout_cleared": true
+  },
+  "regressions": {
+    "business_session": {
+      "command": "python tests/editor/run_workbench_business_session.py --godot <candidate> --report <local-report>",
+      "exit_code": 0,
+      "checks": [
+        "native sidebar",
+        "open workbench command",
+        "business session mounted",
+        "account password verified and field cleared",
+        "verified admin and project",
+        "first account private position",
+        "previous identity cleared synchronously",
+        "personal key verified for second account",
+        "old account response discarded",
+        "second account private position with project query",
+        "viewer write denied by server, session retained",
+        "revocation prompts native reauthentication",
+        "write rejected while signed out",
+        "reauthenticated",
+        "different project isolated",
+        "returned to first project",
+        "original location restored",
+        "explicit logout clears identity"
+      ],
+      "files_scanned": 18,
+      "exit_diagnostics": [
+        "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+        "ERROR: 31 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+        "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+        "ERROR: 222 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+        "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+        "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+        "ERROR: 1 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+        "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+        "WARNING: 113 RIDs of type \"CanvasItem\" were leaked.",
+        "WARNING: 580 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+      ]
+    },
+    "business_modules": {
+      "command": "clear inherited GONGGONG_WORKSPACE for this subprocess, then python tests/editor/run_workbench_business_modules.py --godot <candidate> --report <local-report>",
+      "exit_code": 0,
+      "state": "passed",
+      "native_step_count": 4,
+      "real_account_switch": true,
+      "explicit_send_snapshot": {
+        "project": "c06/studio",
+        "module_id": "default",
+        "issue_id": null,
+        "references": []
+      }
+    }
+  },
+  "acceptance": [
+    {
+      "criterion": "从两份同名文档跳转至目标段，修订号一致",
+      "result": "passed",
+      "observations": [
+        "native_test.native_selections",
+        "native_test.service_reads"
+      ]
+    },
+    {
+      "criterion": "原生视图接收指定修订和段落",
+      "consumer": "Windows Godot AIWorkbenchSidebar / WorkbenchBusinessSession / WorkbenchDocuments",
+      "result": "received",
+      "observations": [
+        "native_test.native_selections",
+        "native_test.readonly_body",
+        "native_test.invalid_targets_cleared",
+        "native_test.signout_cleared"
+      ]
+    }
+  ]
+}

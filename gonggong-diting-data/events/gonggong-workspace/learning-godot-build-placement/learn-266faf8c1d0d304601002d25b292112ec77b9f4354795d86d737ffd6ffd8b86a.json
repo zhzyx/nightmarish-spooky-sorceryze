@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-266faf8c1d0d304601002d25b292112ec77b9f4354795d86d737ffd6ffd8b86a",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1865",
+  "occurred_at": "2026-11-21T15:21:45.670901+00:00",
+  "evidence_refs": [
+    "dispatch-5c49f0d960534162b60be17639052f43",
+    "learn-6116496f0c5207f05de1c69ad3e5bd514ca0e0506168f7b08aa85b8d686cbdc1"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 21,
+    "previous": "3af14bb9fc2eb748937c9402f6a3f6abe542db3b1e253cf85033cf46054d81fc",
+    "action": "applied",
+    "details": {
+      "task": "D02 integrated the Windows native document reader after the C06 selector landed on main.",
+      "observed": "Regenerated the integrated sidebar consumer and linked the editor against the shared read-only cache. On that binary the D02 real native sidebar selected the two duplicate titles and a pinned historical revision; D14 passed 18 checks and C06 business-module tests passed."
+    },
+    "evidence": [
+      {
+        "path": "design-docs/gonggong-ai-workbench-d02.md",
+        "sha256": "89995c5fd300072b09708bd7a9f6e6f113d03321eeb2311ef554fb9dca1fcdd6"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d02/dispatch-5c49f0d960534162b60be17639052f43.json",
+      "sha256": "be55cada5c9d9b4216ca9c2ffb01969d9ed6813010df0bb7e81967d18e72dd91"
+    }
+  },
+  "sha256": "cb274a52e6992813272ef487abf919f3cff4a22048cd1599e1b077b09df0364f"
+}
