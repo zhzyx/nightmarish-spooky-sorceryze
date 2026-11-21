@@ -3216,6 +3216,7 @@ func _setup_context_controls():
 	context_history_menu = PopupMenu.new()
 	context_history_menu.name = "ContextHistory"
 	context_history_menu.id_pressed.connect(_history_context_action)
+	context_history_menu.visibility_changed.connect(_fit_history_menu)
 	context_menu.add_child(context_history_menu)
 	node_picker = ConfirmationDialog.new()
 	node_picker.title = "添加节点"
@@ -3333,6 +3334,35 @@ func _retry_blocker(id: String) -> String:
 		return "仅可重试原运行中已确认失败的节点"
 	return ""
 
+func _graph_menu_bounds() -> Rect2i:
+	if get_viewport().gui_embed_subwindows:
+		return Rect2i(get_viewport_rect())
+	var host := get_window()
+	return Rect2i(host.position, host.size)
+
+func _fit_history_menu():
+	if not context_history_menu.visible:
+		return
+	var bounds := _graph_menu_bounds()
+	var pos := context_history_menu.position
+	var left := context_menu.position.x - context_history_menu.size.x
+	var right := context_menu.position.x + context_menu.size.x
+	if pos.x + context_history_menu.size.x > bounds.end.x and left >= bounds.position.x:
+		pos.x = left
+	elif pos.x < bounds.position.x and right + context_history_menu.size.x <= bounds.end.x:
+		pos.x = right
+	context_history_menu.position = pos.clamp(bounds.position, bounds.end - context_history_menu.size)
+
+func _popup_graph_menu(local_position: Vector2):
+	var bounds := _graph_menu_bounds()
+	context_menu.max_size = bounds.size
+	context_history_menu.max_size = bounds.size
+	context_menu.popup(Rect2i(Vector2i(graph.get_screen_transform() * local_position), Vector2i.ZERO))
+	# PopupMenu applies its content scale and shadow during popup().
+	var fitted := context_menu.position.clamp(bounds.position, bounds.end - context_menu.size)
+	if fitted != context_menu.position:
+		context_menu.position = fitted
+
 func show_context_menu(local_position: Vector2):
 	if not graph.is_visible_in_tree(): return
 	# Persist the previous inspector before selecting a different context target.
@@ -3355,7 +3385,7 @@ func show_context_menu(local_position: Vector2):
 			_context_item("下载角色 .tscn…" if character_artifact else "保存本轮 GLB…" if mesh_artifact else "下载全部到项目…", CONTEXT_ARTIFACT_DOWNLOAD)
 			_context_item("删除生成物节点", CONTEXT_ARTIFACT_DELETE, "请等待当前运行结束或先取消" if is_graph_busy() else "")
 			context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_DELETE)
-			context_menu.popup(Rect2i(Vector2i(graph.get_screen_transform() * local_position), Vector2i.ZERO))
+			_popup_graph_menu(local_position)
 			return
 		var selected = _graph_selected_ids()
 		if not hit in selected:
@@ -3404,7 +3434,7 @@ func show_context_menu(local_position: Vector2):
 		_context_item("保存工作流…", CONTEXT_SAVE)
 		_context_item("打开工作流…", CONTEXT_OPEN, busy_reason)
 		_context_item("运行整个工作流", CONTEXT_RUN_ALL, busy_reason if not busy_reason.is_empty() else ("请先添加节点" if nodes.is_empty() else ""))
-	context_menu.popup(Rect2i(Vector2i(graph.get_screen_transform() * local_position), Vector2i.ZERO))
+	_popup_graph_menu(local_position)
 
 func _context_action(action: int):
 	if not _context_is_current(): return

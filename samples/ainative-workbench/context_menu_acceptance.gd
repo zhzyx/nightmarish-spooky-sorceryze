@@ -316,6 +316,21 @@ func run():
 		check(preview_index >= 0 and not panel.context_menu.is_item_disabled(preview_index) and menu_has("预览历史"), "successful node enables existing-result and history actions")
 		var history_index = menu_index("预览历史")
 		if history_index >= 0 and not panel.context_menu.is_item_disabled(history_index):
+			if DisplayServer.get_name() != "headless":
+				var host_bounds := Rect2i(root.get_visible_rect()) if panel.context_menu.is_embedded() else Rect2i(root.position, root.size)
+				panel.context_menu.position.x = host_bounds.end.x - panel.context_menu.size.x
+				panel.context_menu.set_focused_item(history_index)
+				var right := InputEventKey.new()
+				right.window_id = root.get_window_id() if panel.context_menu.is_embedded() else panel.context_menu.get_window_id()
+				right.keycode = KEY_RIGHT
+				for pressed in [true, false]:
+					right.pressed = pressed
+					Input.parse_input_event(right.duplicate())
+					Input.flush_buffered_events()
+					await process_frame
+				await settle()
+				var submenu: PopupMenu = panel.context_history_menu
+				check(submenu.visible and host_bounds.encloses(Rect2i(submenu.position, submenu.size)), "history submenu opens within the host at its right edge")
 			panel.context_history_menu.id_pressed.emit(0)
 			panel.context_menu.hide()
 			await settle()
@@ -368,14 +383,22 @@ func run():
 	var keyboard_clone = panel.nodes.back().id
 	panel.graph.delete_nodes_request.emit([StringName(keyboard_clone)])
 	check(panel.nodes.size() == keyboard_copy_count, "GraphEdit delete shortcut removes the requested node using contextual safeguards")
-	# Position clamping is measured against the actual usable popup parent rectangle.
+	if panel.failure_dialog.visible:
+		panel.failure_dialog.get_ok_button().pressed.emit()
+	# Dispatch at the visible canvas edge, even when the parent scrolls the graph.
 	for window_size in [Vector2i(1100, 800), Vector2i(1440, 1000)]:
 		root.size = window_size
 		await settle()
-		popup_at(panel.graph.size - Vector2(2, 2))
+		panel.native_scroll.ensure_control_visible(panel.graph)
 		await settle()
+		var visible_canvas: Rect2 = panel.graph.get_global_rect().intersection(panel.native_scroll.get_global_rect()).intersection(root.get_visible_rect())
+		var target := visible_canvas.end - Vector2(40, 40)
+		var click: Vector2 = panel.graph.get_global_transform_with_canvas().affine_inverse() * target
+		await viewport_click(target, MOUSE_BUTTON_RIGHT)
+		await settle()
+		check(panel.context_menu.visible and panel.context_position.distance_to(click) < 1.0, "visible edge right-click preserves the original graph position at size " + str(window_size))
 		var menu_rect = Rect2i(panel.context_menu.position, panel.context_menu.size)
-		var window_rect = Rect2i(root.position, root.size)
+		var window_rect = Rect2i(root.get_visible_rect()) if panel.context_menu.is_embedded() else Rect2i(root.position, root.size)
 		check(window_rect.encloses(menu_rect), "context menu remains inside the window at size " + str(window_size))
 		panel.context_menu.hide()
 		check(panel.graph.size.y > 300 and panel.native_sections.advanced.size_flags_vertical & Control.SIZE_EXPAND_FILL, "context menus preserve the canvas vertical expansion at size " + str(window_size))
