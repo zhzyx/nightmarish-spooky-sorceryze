@@ -36,6 +36,7 @@
 #include "editor/docks/editor_dock_manager.h"
 #include "editor/docks/workbench/AIWorkbenchWindow.h"
 #include "editor/docks/workbench/BusinessSession.gen.h"
+#include "editor/docks/workbench/IssueCreation.gen.h"
 #include "editor/docks/workbench/module_selector.gen.h"
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
@@ -48,6 +49,24 @@
 #include "scene/main/viewport.h"
 
 static constexpr char WORKBENCH_SHORTCUT[] = "editor/open_ai_workbench";
+
+static VBoxContainer *MountWorkbenchControl(Node *pParent, const char *pName, const char *const *pChunks)
+{
+	Ref<Script> refScript = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
+	ERR_FAIL_COND_V(refScript.is_null(), nullptr);
+	String strSource;
+	for (int nChunk = 0; pChunks[nChunk]; nChunk++)
+	{
+		strSource += String::utf8(pChunks[nChunk]);
+	}
+	refScript->set_source_code(strSource);
+	ERR_FAIL_COND_V(refScript->reload() != OK, nullptr);
+	VBoxContainer *pControl = memnew(VBoxContainer);
+	pControl->set_name(pName);
+	pControl->set_script(refScript);
+	pParent->add_child(pControl);
+	return pControl;
+}
 
 void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button *pTitleButton)
 {
@@ -74,22 +93,10 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	pExpand->connect(SNAME("pressed"), callable_mp(this, &AIChatDock::ExpandWorkbenchSidebar));
 	pSidebarLayout->add_child(pExpand);
 	// The editor owns this session for the lifetime of the sidebar.
-	Ref<Script> refSessionScript = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
-	if (refSessionScript.is_valid())
+	VBoxContainer *pSession = MountWorkbenchControl(pSidebarLayout, "WorkbenchBusinessSession", daqian_business_session);
+	if (pSession)
 	{
-		String strSessionSource;
-		for (int nChunk = 0; daqian_business_session[nChunk]; nChunk++)
-		{
-			strSessionSource += String::utf8(daqian_business_session[nChunk]);
-		}
-		refSessionScript->set_source_code(strSessionSource);
-		if (refSessionScript->reload() == OK)
-		{
-			VBoxContainer *pSession = memnew(VBoxContainer);
-			pSession->set_name("WorkbenchBusinessSession");
-			pSession->set_script(refSessionScript);
-			pSidebarLayout->add_child(pSession);
-		}
+		MountWorkbenchControl(pSession, "WorkbenchIssueCreation", daqian_issue_creation);
 	}
 	Button *pClose = memnew(Button);
 	pClose->set_text(TTR("Close AI Workbench"));
