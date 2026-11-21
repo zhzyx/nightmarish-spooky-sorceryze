@@ -1,0 +1,51 @@
+{
+  "base": "fc43b92cdc29f91825a5fd10fd708ec8e118d0fd",
+  "hashes": {
+    "bin/godot.macos.editor.arm64": "ed81087d188d04d0f3ba3378f2388d5a59f7de0423abe98848e05074c58fdeb2",
+    "bin/tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "bin/tianshu-board.json": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914",
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "a44a66014aa83619a401bccf7f5b08503f5f4c6e2a3432a6ea2a6166963861c6",
+    "editor/docks/daqian/workspace.gd": "34e3c0ba0bd57cc835d1fe38e4778d12a191fe8a6c14005d74ec489c3403d742",
+    "tests/editor/daqian_historical_issue.gd": "ee1aadf1e062554a3b1ba2220652cd987f7dd346a65d711a878a4a114bfd244a"
+  },
+  "display": "headless",
+  "os": "26.6.2",
+  "arch": "arm64",
+  "python": "3.14.3",
+  "entry": "天枢 › 历史工单 › 读取历史工单 (native controls)",
+  "original_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1642",
+  "source_id": "github:zhzyx/nightmarish-spooky-sorceryze/issue/1642",
+  "displayed_title": "天璇：原生内容发布与回退闭环（#1550 A5）",
+  "shown_state": "open",
+  "original_record_sha256_before_after": [
+    "8e375d5620dfe40a712e91035279ff904ffa887b06f639283433bf94781eb215",
+    "8e375d5620dfe40a712e91035279ff904ffa887b06f639283433bf94781eb215"
+  ],
+  "github_updated_before_after": [
+    "2026-11-19T18:27:03Z",
+    "2026-11-19T18:27:03Z"
+  ],
+  "body_sha256": "e48cd4b55c7112d6477d6a354ae6ee22a02aba368291f650c9bb220cb7484925",
+  "exact_display_match": true,
+  "catalog_revision": "08ffbaa5f71b13e0f011bcf7bbdec7ba0bf87c946ae64787cc916cb561c9856f",
+  "full_archive_detail_sha256_before_after": [
+    "957ba0a6662cb4705825ee022ed89004e791da5e9dc2cb3cc7c11963b7e94ffe",
+    "957ba0a6662cb4705825ee022ed89004e791da5e9dc2cb3cc7c11963b7e94ffe"
+  ],
+  "active_issues_sha256_before_after": [
+    "e3c93592e27fc67c4d0cd94f360ec5876116eedaed608ddee051ba4b13ae85d1",
+    "e3c93592e27fc67c4d0cd94f360ec5876116eedaed608ddee051ba4b13ae85d1"
+  ],
+  "active_issue_count": 1,
+  "other_tenant_status": 403,
+  "error_text": "无法读取历史工单，请检查归档项目、原始标识与访问权限。\n归档项目：issue-archive\n原始标识：github:zhzyx/nightmarish-spooky-sorceryze/issue/1643",
+  "editor_http": [
+    "\"GET /api/v1/migration/history/detail?project=issue-archive&source_id=github%3Azhzyx%2Fnightmarish-spooky-sorceryze%2Fissue%2F1642&limit=1 HTTP/1.1\" 200 OK",
+    "\"GET /api/v1/migration/history/detail?project=issue-archive&source_id=github%3Azhzyx%2Fnightmarish-spooky-sorceryze%2Fissue%2F1643&limit=1 HTTP/1.1\" 404 Not Found"
+  ],
+  "schema_version": 1,
+  "issue_number": 1790,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1790",
+  "request_id": "gonggong-ai-workbench-plan1-i12",
+  "tests": "11 bridge and archive tests passed. Independent headless native editor rerun against loopback Tianxuan checked the original and missing identifier."
+}
