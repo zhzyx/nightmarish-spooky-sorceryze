@@ -186,6 +186,9 @@ class DropTargetWindows;
 class NativeMenuWindows;
 class TTS_Windows;
 class WinRTWindowData;
+namespace WindowsIme {
+struct Composition;
+}
 
 #ifndef WDA_EXCLUDEFROMCAPTURE
 #define WDA_EXCLUDEFROMCAPTURE 0x00000011
@@ -298,7 +301,7 @@ class DisplayServerWindows : public DisplayServer {
 	void _winrt_adv_color_info_cb(DisplayServerEnums::WindowID p_id);
 
 	struct WindowData {
-		HWND hWnd;
+		HWND hWnd = nullptr;
 		DisplayServerEnums::WindowID id;
 		WinRTWindowData *wrt_wd = nullptr;
 
@@ -373,7 +376,7 @@ class DisplayServerWindows : public DisplayServer {
 		HICON icon_small = nullptr;
 
 		// IME
-		HIMC im_himc;
+		HIMC im_himc = nullptr;
 		Vector2i im_position;
 		Rect2i im_rect;
 		bool ime_active = false;
@@ -525,6 +528,7 @@ class DisplayServerWindows : public DisplayServer {
 
 	void _set_mouse_mode_impl(DisplayServerEnums::MouseMode p_mode);
 	DisplayServerEnums::WindowID _get_focused_window_or_popup() const;
+	WindowsIme::Composition ReadImeComposition(bool bReadCursor) const;
 	void _register_raw_input_devices(DisplayServerEnums::WindowID p_target_window);
 	bool _has_moving_window() const;
 

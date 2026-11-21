@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "windows-ime-read-boundaries",
+  "event_id": "mac-round9-intake-514",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/514",
+  "occurred_at": "2026-11-21T20:39:07.334703+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 514,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T20:29:04Z",
+    "scope": "核对 Windows 平台已交付的 IMM 长度检查、有效 UTF-16 及光标回归证据，检查主线是否包含修复和对应的 Windows 测试。"
+  },
+  "evidence_refs": [],
+  "sha256": "0a0d69a385838e542173999c05617bbdaaa1d143fef03aac70197c0d42094437"
+}
