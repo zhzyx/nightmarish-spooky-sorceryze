@@ -114,6 +114,52 @@ class Executor:
     def _write(self, run):
         self.db.execute("UPDATE runs SET body=? WHERE id=?", (canonical(run), run["id"]))
 
+    def _restore_cached_manifest(self, manifest):
+        """Hydrate abbreviated cached snapshots from their immutable stored records."""
+        manifest = copy.deepcopy(manifest)
+        check_content(manifest)
+        require(not validate(manifest), "invalid manifest")
+        restored = []
+        index = {}
+        pending = [(asset, False) for asset in manifest["artifacts"]]
+        while pending:
+            candidate, hydrate = pending.pop(0)
+            key = (candidate.get("id"), candidate.get("revision"))
+            row = self.db.execute("SELECT body FROM assets WHERE id=? AND revision=?", key).fetchone()
+            asset = candidate
+            if row is not None:
+                stored = json.loads(row[0])
+                if canonical(stored) != canonical(candidate):
+                    candidate_sha = candidate.get("payload", {}).get("content_sha256")
+                    stored_sha = stored.get("payload", {}).get("content_sha256")
+                    require(
+                        candidate.get("type") == stored.get("type")
+                        and isinstance(candidate_sha, str)
+                        and candidate_sha
+                        and candidate_sha == stored_sha,
+                        "immutable artifact revision changed",
+                    )
+                    hydrate = True
+                asset = stored
+            asset_id = asset["id"]
+            if asset_id in index:
+                require(canonical(index[asset_id]) == canonical(asset), "conflicting cached artifact")
+                continue
+            index[asset_id] = asset
+            restored.append(asset)
+            if hydrate:
+                references = list(asset.get("dependencies", []))
+                references += [entry["artifact"] for entry in asset.get("context", []) if "artifact" in entry]
+                for reference in references:
+                    dependency = self.db.execute(
+                        "SELECT body FROM assets WHERE id=? AND revision=?",
+                        (reference.get("id"), reference.get("revision")),
+                    ).fetchone()
+                    require(dependency is not None, "cached artifact dependency missing")
+                    pending.append((json.loads(dependency[0]), True))
+        manifest["artifacts"] = restored
+        return manifest
+
     def _assets(self, manifest):
         require(not validate(manifest), "invalid manifest")
         check_content(manifest)
@@ -172,6 +218,7 @@ class Executor:
             require(bool(ready), "DAG cycle")
             pending -= ready
             visited |= ready
+        manifest = self._restore_cached_manifest(manifest)
         run = {
             "id": run_id or uuid.uuid4().hex,
             "cancelled": False,

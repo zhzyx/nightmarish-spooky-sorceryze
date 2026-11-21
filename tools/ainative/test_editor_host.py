@@ -519,6 +519,61 @@ class BridgeTests(unittest.TestCase):
             preview = dispatch(args, {"run": run, "node": "consumer"})
             self.assertEqual(Path(preview["path"]).read_bytes(), data)
 
+    def test_cached_mesh_snapshot_hydrates_original_immutable_record(self):
+        import base64
+        import sqlite3
+        from extensions import canonical
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixtures(root)
+            data = (root / "sample.glb").read_bytes()
+            revision = hashlib.sha256(data).hexdigest()
+            snapshot = {
+                "content_base64": base64.b64encode(data).decode(),
+                "content_sha256": revision,
+                "extension": ".glb",
+                "provenance": {"task_id": "round-one-task"},
+            }
+            reference = {"id": "generated-round-001", "revision": revision}
+            source_reference = {"id": "generator-source", "revision": revision}
+            original_source = dict(source_reference, type="mesh", payload=copy.deepcopy(snapshot))
+            original = dict(
+                reference,
+                type="mesh",
+                payload=dict(snapshot, provenance={"task_id": "round-one-task", "visual_review_passed": False}),
+                dependencies=[source_reference],
+            )
+            database = root / "db"
+            with sqlite3.connect(database) as db:
+                db.execute("CREATE TABLE assets(id TEXT, revision TEXT, body TEXT NOT NULL, PRIMARY KEY(id,revision))")
+                for asset in (original_source, original):
+                    db.execute("INSERT INTO assets VALUES(?,?,?)", (asset["id"], asset["revision"], canonical(asset)))
+            workflow = {
+                "format": 1,
+                "nodes": [
+                    dict(id="generator", type="text_to_mesh", provider="unused", parameters={"prompt": "regenerate"}),
+                    dict(id="consumer", type="copy", provider="local-copy", source="", parameters={"delay": 0}),
+                ],
+                "edges": [{
+                    "from": "generator",
+                    "to": "consumer",
+                    "input": "source",
+                    "output": "result",
+                    "artifact": reference,
+                    "artifact_snapshot": snapshot,
+                }],
+            }
+            args = argparse.Namespace(db=str(database), factory="editor_demo:factory", command="create")
+            run = dispatch(args, {"model": workflow, "target": "consumer"})["run_id"]
+            args.command = "step"
+            state = dispatch(args, {"run": run})
+            self.assertEqual(state["state"], "succeeded")
+            artifacts = {asset["id"]: asset for asset in state["manifest"]["artifacts"]}
+            self.assertEqual(set(artifacts), {reference["id"], source_reference["id"]})
+            self.assertEqual(artifacts[reference["id"]], original)
+            self.assertEqual(state["nodes"]["consumer"]["job"]["outputs"]["result"], reference)
+
     def test_config_and_external_gltf_rejected(self):
         with self.assertRaises(ValueError):
             compile_graph({"factory": "evil", "nodes": [], "edges": []})
