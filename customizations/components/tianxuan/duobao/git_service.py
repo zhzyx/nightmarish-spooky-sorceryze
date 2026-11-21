@@ -627,13 +627,26 @@ class GitService:
         target = self._rev_parse(repo_path, start)
         if target is None:
             raise GitServiceError(f"unknown start revision: {start!r}")
-        existing = self._rev_parse(repo_path, f"refs/heads/{name}")
+        existing = self._branch_oid(repo_path, name)
         if existing is not None:
             if existing == target:
                 return target
             raise GitServiceError(f"branch already exists with a different commit: {name!r}")
         self._run(["-C", str(repo_path), "branch", name, target])
         return target
+
+    def _branch_oid(self, repo: Path, name: str) -> str | None:
+        result = self._run(["-C", str(repo), "show-ref", "--verify", "--hash", "refs/heads/" + name], check=False)
+        return result.stdout.strip() if result.returncode == 0 else None
+
+    def branch_tip(self, repo: str | os.PathLike[str], name: str) -> str:
+        """Resolve a branch without falling back to a same-named tag."""
+        path, _ = self._repo_path(repo)
+        name = _validate_branch_name(name)
+        oid = self._branch_oid(path, name)
+        if oid is None:
+            raise GitServiceError(f"unknown branch: {name!r}")
+        return oid
 
     def list_branches(self, repo: str | os.PathLike[str]) -> list[str]:
         """返回仓库内的本地分支名。"""
