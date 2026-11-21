@@ -1,0 +1,24 @@
+name: SavePanel
+options:
+  deploymentTarget:
+    macOS: "14.0"
+targets:
+  SavePanelTests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - SavePanelTests.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.godotengine.tests.maliang-save-panel
+        GENERATE_INFOPLIST_FILE: YES
+        CODE_SIGN_IDENTITY: "-"
+        SWIFT_VERSION: "5.0"
+schemes:
+  SavePanel:
+    build:
+      targets:
+        SavePanelTests: [test]
+    test:
+      targets:
+        - SavePanelTests

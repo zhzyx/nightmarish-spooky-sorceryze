@@ -7,6 +7,10 @@ on:
         description: Run the Tianshu arm64 editor acceptance suite
         type: boolean
         default: false
+      maliang_save_ui:
+        description: Run only the Maliang native Save panel acceptance on the arm64 editor
+        type: boolean
+        default: false
 
 # Global Settings
 env:
@@ -23,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target: ${{ fromJSON(inputs.tianshu_only && '["editor"]' || '["editor", "template_release"]') }}
+        target: ${{ fromJSON((inputs.tianshu_only || inputs.maliang_save_ui) && '["editor"]' || '["editor", "template_release"]') }}
     env:
       CACHE_NAME: ${{ matrix.target == 'editor' && 'macos-editor' || 'macos-template' }}
       EXTRA_FLAGS: ${{ matrix.target == 'template_release' && 'debug_symbols=no' || '' }}
@@ -45,7 +49,7 @@ jobs:
         uses: ./.github/actions/godot-deps
 
       - name: Preflight real signed external host and launchd
-        if: matrix.target == 'editor'
+        if: matrix.target == 'editor' && !inputs.maliang_save_ui
         run: |
           python3 -m unittest discover -s tools -p test_editor_trusted_hosts.py -v
           python3 -m unittest discover -s tools -p test_macos_external_host_acceptance.py -v
@@ -85,7 +89,7 @@ jobs:
         continue-on-error: true
 
       - name: Compilation (x86_64)
-        if: ${{ !inputs.tianshu_only }}
+        if: ${{ !inputs.tianshu_only && !inputs.maliang_save_ui }}
         uses: ./.github/actions/godot-build
         with:
           # Silence warning about Metal not being supported in x86_64 builds using `metal=no`.
@@ -100,17 +104,30 @@ jobs:
           platform: macos
           target: ${{ matrix.target }}
 
+      - name: Verify Maliang saves through the macOS system panel
+        if: inputs.maliang_save_ui
+        run: |
+          command -v xcodegen || brew install xcodegen
+          python3 tests/editor/macos_save_panel/run.py --godot ./bin/godot.macos.editor.arm64 --output "$RUNNER_TEMP/maliang-save-ui"
+
+      - name: Upload Maliang native Save panel evidence
+        if: always() && inputs.maliang_save_ui
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: maliang-save-ui
+          path: ${{ runner.temp }}/maliang-save-ui
+
       - name: Verify Tianshu package switching on arm64
-        if: matrix.target == 'editor'
+        if: matrix.target == 'editor' && !inputs.maliang_save_ui
         run: python3 tests/editor/run_tianshu_ui_package.py --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-package.json"
 
       - name: Verify external host trust on macOS
-        if: matrix.target == 'editor'
+        if: matrix.target == 'editor' && !inputs.maliang_save_ui
         run: |
           ./bin/godot.macos.editor.arm64 --headless --test --test-case='[Editor][AIChat][ExternalPeer]*'
 
       - name: Verify real signed external hosts without GUI or model calls
-        if: matrix.target == 'editor'
+        if: matrix.target == 'editor' && !inputs.maliang_save_ui
         run: >-
           python3 tools/run_macos_external_host_acceptance.py
           --godot ./bin/godot.macos.editor.arm64
@@ -118,7 +135,7 @@ jobs:
           --download-fixtures --download-codex
 
       - name: Upload real signed host acceptance evidence
-        if: always() && matrix.target == 'editor'
+        if: always() && matrix.target == 'editor' && !inputs.maliang_save_ui
         uses: ./.github/actions/upload-artifact
         with:
           name: macos-signed-host-acceptance
@@ -129,33 +146,33 @@ jobs:
             ${{ runner.temp }}/external-host-acceptance-logs/*
 
       - name: Verify Tianshu creator navigation on arm64
-        if: matrix.target == 'editor'
+        if: matrix.target == 'editor' && !inputs.maliang_save_ui
         run: |
           for attempt in 1 2 3; do
             python3 tests/editor/run_daqian_graph.py --scenario graph --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-graph-$attempt.json"
           done
 
       - name: Verify Tianshu work-order interactions on arm64
-        if: inputs.tianshu_only
+        if: inputs.tianshu_only && !inputs.maliang_save_ui
         run: |
           for scenario in direct publish parallel entry; do
             python3 tests/editor/run_daqian_graph.py --scenario "$scenario" --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-$scenario.json"
           done
 
       - name: Verify automatic model discovery and cancellation
-        if: inputs.tianshu_only
+        if: inputs.tianshu_only && !inputs.maliang_save_ui
         run: |
           python3 tests/editor/run_model_autofetch.py --godot ./bin/godot.macos.editor.arm64 --source . --node "$(command -v node)" --out "$RUNNER_TEMP/model-autofetch.json"
 
       - name: Save Godot build cache
-        if: ${{ !inputs.tianshu_only }}
+        if: ${{ !inputs.tianshu_only && !inputs.maliang_save_ui }}
         uses: ./.github/actions/godot-cache-save
         with:
           cache-name: ${{ env.CACHE_NAME }}
         continue-on-error: true
 
       - name: Prepare artifact
-        if: ${{ !inputs.tianshu_only }}
+        if: ${{ !inputs.tianshu_only && !inputs.maliang_save_ui }}
         run: |
           lipo -create ./bin/godot.macos.${{ matrix.target }}.x86_64 ./bin/godot.macos.${{ matrix.target }}.arm64 -output ./bin/godot.macos.${{ matrix.target }}.universal
           rm ./bin/godot.macos.${{ matrix.target }}.x86_64 ./bin/godot.macos.${{ matrix.target }}.arm64
@@ -164,13 +181,13 @@ jobs:
           chmod +x bin/godot.*
 
       - name: Upload artifact
-        if: ${{ !inputs.tianshu_only }}
+        if: ${{ !inputs.tianshu_only && !inputs.maliang_save_ui }}
         uses: ./.github/actions/upload-artifact
         with:
           name: ${{ env.CACHE_NAME }}
 
       - name: Unit tests
-        if: ${{ !inputs.tianshu_only }}
+        if: ${{ !inputs.tianshu_only && !inputs.maliang_save_ui }}
         run: |
           ${{ env.UNIVERSAL_BIN }} --version
           ${{ env.UNIVERSAL_BIN }} --help
