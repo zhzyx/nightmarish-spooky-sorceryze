@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g02",
+  "event_id": "wave20-intake-1852",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1852",
+  "occurred_at": "2026-11-21T04:37:14.354697+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1852,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T04:37:11Z",
+    "accepted_dependencies": {
+      "1853": "f90a589d1be50326e58c097ab528bcae13e5fac7"
+    },
+    "title": "[方案一 G02] 定义 Git 到多宝的历史映射"
+  },
+  "evidence_refs": [],
+  "sha256": "0371532451d539c75b537a75da132bca73f42cc835f59cb6585d7d2eec15c6fb"
+}

@@ -126,6 +126,45 @@ def _check_commit(repo, commit):
         raise ValueError("Commit is outside archived history")
 
 
+def commit_mapping(database, tenant, project, revision, commit, *, cache_dir=None):
+    """Resolve one exact Git commit inside the project's published native catalog."""
+    _check_oid(commit)
+    repo = _mirror(database, tenant, project, revision, cache_dir)
+    _check_commit(repo, commit)
+    # No path filtering, traversal, mailmap substitution or display truncation.
+    fields = (
+        _git(
+            repo,
+            "show",
+            "-s",
+            "--no-notes",
+            "--no-show-signature",
+            "--encoding=UTF-8",
+            "--format=format:%H%x00%T%x00%P%x00%an%x00%ae%x00%aI%x00%cn%x00%ce%x00%cI",
+            commit,
+            "--",
+        )
+        .decode("utf-8")
+        .split("\0")
+    )
+    oid, tree, parents, author, author_email, authored_at, committer, committer_email, committed_at = fields
+    if oid != commit:
+        raise ValueError("Expected the complete archive object ID")
+    status = _publication(database, tenant, project, revision)
+    return {
+        "source_id": f"github:{status['source']}/commit/{oid}",
+        "tenant": tenant,
+        "project": project,
+        "module": status["module"],
+        "revision": revision,
+        "oid": oid,
+        "tree": tree,
+        "parents": parents.split(),
+        "author": {"name": author, "email": author_email, "time": authored_at},
+        "committer": {"name": committer, "email": committer_email, "time": committed_at},
+    }
+
+
 def list_commits(database, tenant, project, revision, *, commit=None, path=None, offset=0, limit=50, cache_dir=None):
     if type(offset) is not int or offset < 0 or offset > 2**31 - 1 or type(limit) is not int or not 1 <= limit <= 100:
         raise ValueError("Invalid history page")

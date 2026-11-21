@@ -6,7 +6,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-OPERATIONS = ("search", "detail", "body", "commits", "file", "attachment")
+OPERATIONS = ("search", "detail", "body", "commits", "commit", "file", "attachment")
 HISTORY_TOOLS = frozenset("migration.history." + name for name in OPERATIONS)
 
 
@@ -35,6 +35,10 @@ class Commits(Page):
     path: str | None = Field(default=None, max_length=1024)
 
 
+class Commit(Scope):
+    commit: str = Field(pattern="^[0-9a-f]{40}([0-9a-f]{24})?$")
+
+
 class File(Scope):
     commit: str | None = Field(default=None, pattern="^[0-9a-f]{40}([0-9a-f]{24})?$")
     path: str = Field(min_length=1, max_length=1024)
@@ -51,7 +55,7 @@ class Attachment(Scope):
 
 
 def history_routes(store, actor_dependency, native_store):
-    from history_git import list_commits, read_file
+    from history_git import commit_mapping, list_commits, read_file
     from history_records import read_attachment, record_detail, search_records
     from migration_status import read_import_status
 
@@ -63,6 +67,7 @@ def history_routes(store, actor_dependency, native_store):
             "detail": Detail,
             "body": Body,
             "commits": Commits,
+            "commit": Commit,
             "file": File,
             "attachment": Attachment,
         }[operation]
@@ -93,6 +98,8 @@ def history_routes(store, actor_dependency, native_store):
                 return read_body(*scope, **args)
             if operation == "commits":
                 return list_commits(*scope, **args)
+            if operation == "commit":
+                return commit_mapping(*scope, **args)
             if operation == "file":
                 args["commit"] = args["commit"] or publication["source_revision"]
                 return read_file(*scope, **args)
@@ -104,7 +111,7 @@ def history_routes(store, actor_dependency, native_store):
 
     @router.get("/{operation}")
     def read(
-        operation: Literal["search", "detail", "body", "commits", "file", "attachment"],
+        operation: Literal["search", "detail", "body", "commits", "commit", "file", "attachment"],
         request: Request,
         actor: str = Depends(actor_dependency),
     ):

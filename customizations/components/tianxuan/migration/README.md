@@ -26,7 +26,9 @@
 
 在项目的迁移页按原编号、标题或路径搜索，打开记录可查看正文、所属评论和来源关联。代码历史支持按原提交和仓库相对路径读取文本文件（最大 1 MiB）；单项附件下载上限为 8 MiB。
 
-已认证客户端可调用 `GET /api/v1/migration/history/{search,detail,body,commits,file,attachment}`，AI 对应工具为 `migration.history.<操作名>`。用 `project` 选项目，用可选的 `revision` 固定发布目录版本；读取 Git 提交时另传 `commit`。列表用 `offset` 与 `limit` 翻页，AI 附件按返回的 `next_offset` 传入下一次的 `byte_offset`。API 服务需要在原生数据库旁写入 `<数据库文件名>.history-index` 和 `.migration-history-cache`，以便复用检索索引和只读 Git 镜像。
+已认证客户端可调用 `GET /api/v1/migration/history/{search,detail,body,commits,commit,file,attachment}`，AI 对应工具为 `migration.history.<操作名>`。用 `project` 选项目，用可选的 `revision` 固定发布目录版本。单项 `commit` 查询接收完整 Git 提交 ID，返回来源键、原生目录定位、树、有序父链、作者与提交者的身份和时间。链接父提交时沿用原项目和目录修订。[Git 提交映射契约](../../../../design-docs/gonggong-ai-workbench-g02.md)
+
+列表用 `offset` 与 `limit` 翻页，AI 附件按返回的 `next_offset` 传入下一次的 `byte_offset`。API 服务需要在原生数据库旁写入 `<数据库文件名>.history-index` 和 `.migration-history-cache`，以便复用检索索引和只读 Git 镜像。
 
 ## 在小磁盘目标启用 Git 历史
 

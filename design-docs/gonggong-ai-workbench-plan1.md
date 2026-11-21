@@ -1276,6 +1276,8 @@
 
 ### G02
 
+[交付清单与验证](gonggong-ai-workbench-g02.md)
+
 **定义 Git 到多宝的历史映射** · [G02 #1852](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1852)
 
 为提交、父链与多宝标识定义可回查映射，处理合并提交。
