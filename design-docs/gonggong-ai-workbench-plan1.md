@@ -222,6 +222,8 @@
 
 ### U02
 
+[侧栏、焦点回退与 macOS 验收](gonggong-ai-workbench-u02.md)
+
 **挂载可停靠原生侧栏** · [U02 #1869](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1869)
 
 为该命令挂载原生侧栏并在关闭时还原焦点。

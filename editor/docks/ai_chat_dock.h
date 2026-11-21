@@ -39,6 +39,7 @@
 #include "editor/docks/editor_dock.h"
 
 class AIChatEditorControl;
+class EditorCommandPalette;
 class AIChatEditorBridge;
 class Button;
 class CheckBox;
@@ -292,6 +293,16 @@ class AIChatDock : public EditorDock {
 	bool _native_task_allows(const String &p_tool, const Dictionary &p_arguments);
 	CheckBox *auto_apply_file_changes = nullptr;
 	CheckBox *auto_execute_commands = nullptr;
+	VBoxContainer *pConversationView = nullptr;
+	EditorDock *pWorkbenchSidebar = nullptr;
+	VBoxContainer *pSidebarLayout = nullptr;
+	ObjectID idSidebarSource;
+	int nConversationIndex = -1;
+	void CaptureWorkbenchSource();
+	void OpenWorkbenchSidebar();
+	void CloseWorkbenchSidebar();
+	void DismissWorkbenchSidebar();
+	void RestoreWorkbenchFocus(ObjectID idSource);
 	ScrollContainer *chat_scroll = nullptr;
 	bool chat_follow_latest = true;
 	bool chat_scroll_update_pending = false;
@@ -865,6 +876,7 @@ protected:
 	void _notification(int p_what);
 
 public:
+	void RegisterWorkbenchSidebar(EditorCommandPalette *pPalette);
 	// Main-thread APIs. Snapshots are detached, contain no credentials, and never select a model.
 	Dictionary GetModelCatalogSnapshot() const;
 	Dictionary GetAiWorkflowSnapshot() const;

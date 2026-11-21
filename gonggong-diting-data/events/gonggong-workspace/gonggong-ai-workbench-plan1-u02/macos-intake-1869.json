@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-u02",
+  "event_id": "macos-intake-1869",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1869",
+  "occurred_at": "2026-11-21T07:56:12.491123+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1869,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T07:53:21Z",
+    "accepted_dependencies": {
+      "1871": "146134e03e783e77b4deb0322ca9fe6c7099e19e"
+    },
+    "title": "[方案一 U02] 挂载可停靠原生侧栏"
+  },
+  "evidence_refs": [],
+  "sha256": "88cf99b6bb03f778f3e0619a99db3fc81826fdd503aad015cb4e4f4e8be4f12c"
+}

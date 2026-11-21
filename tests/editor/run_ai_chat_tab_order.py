@@ -55,6 +55,13 @@ def main():
                 encoding="utf-8",
             )
             shutil.copyfile(Path(__file__).with_name("ai_chat_tab_order.gd"), project / "order.gd")
+            if args.workbench_command:
+                (project / "sidebar_fixture.gd").write_text("extends Node2D\n# Editable draft", encoding="utf-8")
+                (project / "sidebar_fixture.tscn").write_text(
+                    '[gd_scene format=3]\n[node name="CanvasRoot" type="Node2D"]\n'
+                    '[node name="Selection" type="Node2D" parent="."]\nposition = Vector2(12, 24)\n',
+                    encoding="utf-8",
+                )
             env = os.environ.copy()
             for key in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"]:
                 env[key] = str(project / key.lower())
