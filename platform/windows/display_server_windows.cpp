@@ -31,6 +31,7 @@
 #include "display_server_windows.h"
 
 #include "drop_target_windows.h"
+#include "ime/ImeComposition.h"
 #include "key_mapping_windows.h"
 #include "native_menu_windows.h"
 #include "os_windows.h"
@@ -3268,56 +3269,25 @@ int DisplayServerWindows::accessibility_screen_reader_active() const {
 	return false;
 }
 
+WindowsIme::Composition DisplayServerWindows::ReadImeComposition(bool bReadCursor) const {
+	const RBMap<DisplayServerEnums::WindowID, WindowData>::Element *pWindow = windows.find(_get_focused_window_or_popup());
+	if (!pWindow || !pWindow->get().ime_active || !pWindow->get().hWnd) {
+		return {};
+	}
+
+	return WindowsIme::ReadNativeComposition(pWindow->get().im_himc, bReadCursor);
+}
+
 Vector2i DisplayServerWindows::ime_get_selection() const {
 	_THREAD_SAFE_METHOD_
 
-	DisplayServerEnums::WindowID window_id = _get_focused_window_or_popup();
-	const WindowData &wd = windows[window_id];
-	if (!wd.ime_active) {
-		return Vector2i();
-	}
-
-	int cursor = ImmGetCompositionStringW(wd.im_himc, GCS_CURSORPOS, nullptr, 0);
-
-	int32_t length = ImmGetCompositionStringW(wd.im_himc, GCS_COMPSTR, nullptr, 0);
-	wchar_t *string = reinterpret_cast<wchar_t *>(memalloc(length));
-	ImmGetCompositionStringW(wd.im_himc, GCS_COMPSTR, string, length);
-
-	int32_t utf32_cursor = 0;
-	for (int32_t i = 0; i < length / int32_t(sizeof(wchar_t)); i++) {
-		if ((string[i] & 0xfffffc00) == 0xd800) {
-			i++;
-		}
-		if (i < cursor) {
-			utf32_cursor++;
-		} else {
-			break;
-		}
-	}
-
-	memdelete(string);
-
-	return Vector2i(utf32_cursor, 0);
+	return Vector2i(ReadImeComposition(true).nCursor, 0);
 }
 
 String DisplayServerWindows::ime_get_text() const {
 	_THREAD_SAFE_METHOD_
 
-	DisplayServerEnums::WindowID window_id = _get_focused_window_or_popup();
-	const WindowData &wd = windows[window_id];
-	if (!wd.ime_active) {
-		return String();
-	}
-
-	String ret;
-	int32_t length = ImmGetCompositionStringW(wd.im_himc, GCS_COMPSTR, nullptr, 0);
-	wchar_t *string = reinterpret_cast<wchar_t *>(memalloc(length));
-	ImmGetCompositionStringW(wd.im_himc, GCS_COMPSTR, string, length);
-	ret.append_utf16((char16_t *)string, length / sizeof(wchar_t));
-
-	memdelete(string);
-
-	return ret;
+	return ReadImeComposition(false).strText;
 }
 
 void DisplayServerWindows::window_set_ime_active(const bool p_active, DisplayServerEnums::WindowID p_window) {

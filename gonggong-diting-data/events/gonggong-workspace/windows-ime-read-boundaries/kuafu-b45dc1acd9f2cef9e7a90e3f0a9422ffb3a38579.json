@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b45dc1acd9f2cef9e7a90e3f0a9422ffb3a38579",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "windows-ime-read-boundaries",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/514",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "dec4733c86ac3e6743dfbc8d72728d34ec6cbd0b669c5051aac95f16c40e7fd4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/514",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/514",
+    "action": "delivery",
+    "detection_head": "174e9ee8262a47bfc8577a80d9eed80ca010d985",
+    "context_sha256": "7ef24f734753f05cddc3ae3f749609d2e452ec4f67845db2e23a319d65979887",
+    "operator": "Sail-Li",
+    "worker": "mac-round9-operator",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/514",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1987",
+    "diagnosis": "签发前新增了终态记录。将同一工单的调度终态一同提交后签发成功，Windows 原生 MSVC 单测通过。",
+    "next_action": "修复 Linux Engine Core 编译告警，再在当前主线上签发和复验。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T20:39:23.298080+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T21:12:34.994821+00:00",
+  "sha256": "776ac7ada413692e993d949211435ea8b593a143e957bc9128b5bf03b1979142"
+}

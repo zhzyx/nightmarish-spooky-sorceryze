@@ -1,0 +1,31 @@
+{
+  "request_id": "windows-ime-read-boundaries",
+  "issue_number": 514,
+  "source_hashes": {
+    "platform/windows/display_server_windows.cpp": "3e527f9d01dec5f697a3fa2c9af31470117688ec88fe1319908a1bf905f68317",
+    "platform/windows/display_server_windows.h": "11a5e03fe981016e4914d251e470f0485b3a37084cbc639df18c3978cd0edc9d",
+    "platform/windows/ime/.clang-format": "89e531db7c700706b8311d12de15f2e6ad64dd1faba9150fb55209e0ce8135f0",
+    "platform/windows/ime/ImeComposition.h": "962867c5da9379c973cd353a930c601ab5016061ac2d4c5d457e2547dd3d6c68",
+    "tests/platform/windows/.clang-format": "89e531db7c700706b8311d12de15f2e6ad64dd1faba9150fb55209e0ce8135f0",
+    "tests/platform/windows/TestImeComposition.cpp": "9c5a7265619b9c29380cc51f3e7d254668f9a377709796873229e67828246828"
+  },
+  "verification": {
+    "macOS": "3 doctest cases / 37 assertions under ASan and UBSan",
+    "windows_cross_compile": "MinGW x86_64 COFF for production display server and test translation units, warnings treated as errors",
+    "format": "clang-format 22.1.5",
+    "win32_runtime": "Requires Windows CI for the signed revision"
+  },
+  "windows_msvc": {
+    "job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44947608343/job/136978267927",
+    "head": "64877d8f89bfbc981dcca63a5822835585b3174f",
+    "passed_tests": 1602,
+    "passed_assertions": 475036,
+    "skipped_tests": 3
+  },
+  "engine_core_followup": {
+    "initial_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44947564709/job/136978216458",
+    "diagnosis": "Clang rejects a range-loop const Dictionary reference bound to a temporary converted from a Variant. The integrated change names the Variant and materializes the Dictionary in the body.",
+    "local_object": "macOS clang, werror=yes, AIWorkbenchReference.macos.editor.arm64.o",
+    "ime_sanitizer_assertions": 37
+  }
+}
