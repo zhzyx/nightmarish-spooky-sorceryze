@@ -1,0 +1,813 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-u02",
+  "issue_number": 1869,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1869",
+  "observed_at": "2026-11-21T08:09:01.045018+00:00",
+  "host": {
+    "macOS": "26.6.2",
+    "architecture": "arm64",
+    "display": "headless"
+  },
+  "source_baseline": "82adeffcaf7ebcf9a82c742176cbd9e4a2ad6a22",
+  "source_sha256": {
+    "editor/docks/SCsub": "e3713cefc4408c2e4f68c4182b851a0c917facf08108b041f628a81a809fbe2b",
+    "editor/docks/ai_chat_dock.h": "a7294e124b5cf422d29c0aeeb60d244f3a2cb4e1b0b037fd8a145345f6bd35d9",
+    "editor/docks/ai_chat_dock.cpp": "aa889c48ddeb3280626b2b41fb3010919b7f0c393f636522d04250ead1e90ade",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "582de4264a324b0b56abd9e04e8dd1207c129bc0ef5cfc70ae5e611d1067442f",
+    "editor/docks/workbench/.clang-format": "80e3f12172224b4df9038dab0d861bb75d087f30578e5f4b095157943a91a8e3",
+    "editor/editor_node.cpp": "f40ca06ed8db1ec13892b3a6b8c9a94d9d6975a91a30f942add7b773fd20df2d"
+  },
+  "build_command": "python -m SCons platform=macos target=editor arch=arm64 vulkan=no metal=no accesskit=no -j8",
+  "executable_sha256": "ef3a6f501384a15867674e7ed9089adc66b1e008a6437117e2407e33c640d600",
+  "runner": "tests/editor/run_ai_chat_tab_order.py --workbench-command",
+  "test_sha256": {
+    "run_ai_chat_tab_order.py": "711d94f9a9da67c74228c3fd4e8a9be038c8e4d6a7924b63603d7d06fe3e3628",
+    "ai_chat_tab_order.gd": "2d0fa3ff35cb5989c8fc76e5c2ab16ae2e797c881f1fc1a85c176b5493bba6ec"
+  },
+  "layout_phases": [
+    {
+      "initial_selected_key": "AIChatMainScreen",
+      "phase": "initial",
+      "workbench": {
+        "invocations": [
+          {
+            "composer": 617670020295,
+            "dock_ids": [
+              596547504179
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 622770294244,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (614.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (602.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (602.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 193.0), S: (399.0, 657.0)]",
+                  "visible": "[P: (196.0, 193.0), S: (399.0, 657.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1094.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1082.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (1082.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 157.0), S: (879.0, 693.0)]",
+                  "visible": "[P: (196.0, 157.0), S: (879.0, 693.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617670020295,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              596547504179
+            ],
+            "draft_length": 1,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 628172558100,
+            "sidebar": 622770294244,
+            "tab_count": 10
+          },
+          {
+            "composer": 617670020295,
+            "dock_ids": [
+              596547504179
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 622770294244,
+            "tab_count": 10
+          },
+          {
+            "composer": 617670020295,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              596547504179
+            ],
+            "draft_length": 2,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1766489934014,
+            "sidebar": 622770294244,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617670020295,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488082796310
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 596547504179
+      },
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    },
+    {
+      "initial_selected_key": "2D",
+      "phase": "legacy_maliang_last",
+      "workbench": {
+        "invocations": [
+          {
+            "composer": 617653243079,
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (614.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (602.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (602.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 193.0), S: (399.0, 657.0)]",
+                  "visible": "[P: (196.0, 193.0), S: (399.0, 657.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1094.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1082.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (1082.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 157.0), S: (879.0, 693.0)]",
+                  "visible": "[P: (196.0, 157.0), S: (879.0, 693.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617653243079,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              596530726963
+            ],
+            "draft_length": 3,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 628155780884,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "composer": 617653243079,
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "composer": 617653243079,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              596530726963
+            ],
+            "draft_length": 4,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1500839486247,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617653243079,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488066019094
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 596530726963
+      },
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    },
+    {
+      "initial_selected_key": "AINativeMainScreen",
+      "phase": "legacy_maliang_selected",
+      "workbench": {
+        "invocations": [
+          {
+            "composer": 617653243079,
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (614.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (602.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (602.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 193.0), S: (399.0, 657.0)]",
+                  "visible": "[P: (196.0, 193.0), S: (399.0, 657.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1094.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1082.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (1082.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 157.0), S: (879.0, 693.0)]",
+                  "visible": "[P: (196.0, 157.0), S: (879.0, 693.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617653243079,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              596530726963
+            ],
+            "draft_length": 5,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 628155780884,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "composer": 617653243079,
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "composer": 617653243079,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              596530726963
+            ],
+            "draft_length": 6,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1662420861964,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617653243079,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488066019094
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 596530726963
+      },
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    },
+    {
+      "initial_selected_key": "2D",
+      "phase": "pre_daqian_layout",
+      "workbench": {
+        "invocations": [
+          {
+            "composer": 617653243079,
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (614.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (602.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (602.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 193.0), S: (399.0, 657.0)]",
+                  "visible": "[P: (196.0, 193.0), S: (399.0, 657.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1094.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1082.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (1082.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 157.0), S: (879.0, 693.0)]",
+                  "visible": "[P: (196.0, 157.0), S: (879.0, 693.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617653243079,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              596530726963
+            ],
+            "draft_length": 7,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 628155780884,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "composer": 617653243079,
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "composer": 617653243079,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              596530726963
+            ],
+            "draft_length": 8,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1500839486247,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617653243079,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488066019094
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 596530726963
+      },
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    },
+    {
+      "initial_selected_key": "2D",
+      "phase": "pre_maliang_layout",
+      "workbench": {
+        "invocations": [
+          {
+            "composer": 617653243079,
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (614.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (602.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (602.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 193.0), S: (399.0, 657.0)]",
+                  "visible": "[P: (196.0, 193.0), S: (399.0, 657.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1094.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1082.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (1082.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 157.0), S: (879.0, 693.0)]",
+                  "visible": "[P: (196.0, 157.0), S: (879.0, 693.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617653243079,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              596530726963
+            ],
+            "draft_length": 9,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 628155780884,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "composer": 617653243079,
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "composer": 617653243079,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              596530726963
+            ],
+            "draft_length": 10,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1500839486247,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617653243079,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488066019094
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 596530726963
+      },
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    },
+    {
+      "initial_selected_key": "2D",
+      "phase": "restart",
+      "workbench": {
+        "invocations": [
+          {
+            "composer": 617653243079,
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (614.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (602.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (602.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 193.0), S: (399.0, 657.0)]",
+                  "visible": "[P: (196.0, 193.0), S: (399.0, 657.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1094.0, 750.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1082.0, 122.0), S: (350.0, 770.0)]",
+                  "visible": "[P: (1082.0, 122.0), S: (350.0, 770.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 157.0), S: (879.0, 693.0)]",
+                  "visible": "[P: (196.0, 157.0), S: (879.0, 693.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617653243079,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              596530726963
+            ],
+            "draft_length": 11,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 628155780884,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "composer": 617653243079,
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "composer": 617653243079,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              596530726963
+            ],
+            "draft_length": 12,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1500839486247,
+            "sidebar": 622753517028,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617653243079,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488066019094
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 596530726963
+      },
+      "saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ]
+    }
+  ],
+  "previous_full_view_regression": [
+    {
+      "scale": 1.0,
+      "width": 960,
+      "exit_code": 0,
+      "test_source_sha256": "173749256a61c9e1cc91a96c3d72c09db7c010745c2bcf38a50dbebb20760b0b",
+      "report_present": true
+    },
+    {
+      "scale": 1.0,
+      "width": 1440,
+      "exit_code": 0,
+      "test_source_sha256": "173749256a61c9e1cc91a96c3d72c09db7c010745c2bcf38a50dbebb20760b0b",
+      "report_present": true
+    }
+  ],
+  "verification_scope": "Mac arm64 headless native editor. RID and ObjectDB diagnostics also occurred on the unchanged baseline. Physical display and OS key delivery were outside this probe.",
+  "independent_quit_and_cold_start": [
+    {
+      "composer_in_main": true,
+      "initial_sidebar_visible": false,
+      "phase": "warm",
+      "same_composer_in_sidebar": true
+    },
+    {
+      "composer_in_main": true,
+      "draft_restored": true,
+      "initial_sidebar_visible": false,
+      "phase": "cold",
+      "same_composer_in_sidebar": true
+    }
+  ],
+  "local_mac_app": {
+    "installed_executable_sha256": "ca0944a9c1bf840cca1753dab355a0845f9223e207daf5f6850c452ec6199174",
+    "installed_board_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914",
+    "installed_ui_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "codesign_verified": true,
+    "archive_sha256": "c9da5b5fbfbd54f0d54d2168177c42ed8d930ff7b55fdf08a181984d5e00f3cd"
+  }
+}
