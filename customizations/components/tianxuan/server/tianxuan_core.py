@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS issues (
   requirement_id TEXT, created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
   project TEXT NOT NULL DEFAULT 'workspace', module_id TEXT NOT NULL DEFAULT 'default'
 );
+CREATE INDEX IF NOT EXISTS idx_issues_tenant_number ON issues(tenant_id, number);
 CREATE TABLE IF NOT EXISTS business_modules (
   tenant_id TEXT NOT NULL, project TEXT NOT NULL, id TEXT NOT NULL, name TEXT NOT NULL,
   PRIMARY KEY (tenant_id, project, id)
@@ -1508,6 +1509,21 @@ class Tianxuan:
         if not self.db.in_transaction:
             self.db.execute("BEGIN")
         return self._require_tenant_issue(actor, issue_id)
+
+    @_connection_call
+    def read_issue_number(self, actor: str, project: str, number: int) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        self._validate_project(project)
+        if number < 1 or number > 2**63 - 1:
+            raise NotFound("issue number not found in project")
+        row = self.db.execute(
+            "SELECT id FROM issues WHERE tenant_id=? AND number=? AND project=?",
+            (self._tenant_of(actor), number, project),
+        ).fetchone()
+        if row is None:
+            raise NotFound("issue number not found in project")
+        return self._require_tenant_issue(actor, row["id"])
 
     @_connection_call
     def set_issue_module(self, actor: str, issue_id: str, project: str, module_id: str) -> dict[str, Any]:

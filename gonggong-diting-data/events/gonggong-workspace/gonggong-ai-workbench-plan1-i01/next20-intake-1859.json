@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-i01",
+  "event_id": "next20-intake-1859",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1859",
+  "occurred_at": "2026-11-21T14:21:42.605508+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1859,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T14:21:36Z",
+    "accepted_dependencies": {
+      "1866": "62b3f5ec7e10b65409466615a4f46b9f41ba7389",
+      "1867": "75419237e87776e6de3b5a20a921f2d7381d3977"
+    },
+    "title": "[方案一 I01] 通过天璇创建工单"
+  },
+  "evidence_refs": [],
+  "sha256": "f83faf01879c0c326ffa7dee3686dd1013d49d4fb590c0485e1b8e0e9c0fb8bb"
+}

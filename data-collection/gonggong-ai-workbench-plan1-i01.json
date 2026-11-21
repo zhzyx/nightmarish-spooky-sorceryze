@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i01",
+  "issue_number": 1859,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1859",
+  "observed_at": "2026-11-21T23:09:13.3529931+08:00",
+  "baseline": "75419237e87776e6de3b5a20a921f2d7381d3977",
+  "source_sha256": {
+    "editor/SCsub": "c02f59eb7d732d9ef96b9e55b7af5c7e4aa691423a1b00fdd1d6b99349cc2537",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "d080b3f8c8bfcba87bd23a3cfd99fb7ffa51a61e2d85cafc7bb3feeecc74a47c",
+    "editor/docks/workbench/issue_creation.gd": "9e524c661da0ee342321e01c710b0a1c35dcb0bf17de2574e9bf86eb550905f5",
+    "customizations/components/tianxuan/server/api.py": "0984253d468e5612753d7703798eaa81f8b9d7b0d9e197cf8b9fc62c72d89bac",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "941d2454ec4599cf429b471416a0f9dd9e8d0eab1a270e6f2d443df66bca62e4",
+    "customizations/components/tianxuan/server/test_issue_number.py": "087db90dcb63c893a5e06655115641cd1458ef2776191213d5a645aa83297b6c",
+    "tests/editor/run_workbench_issue_creation.py": "fc046e2d582aee0d91f417d198cffe76febf4102ef7517873efd189836df3660",
+    "tests/editor/workbench_issue_creation.gd": "66b3294a159f508d045dd3b5861613f6681f751e23e87ca80c357e226d0e4257",
+    "design-docs/gonggong-ai-workbench-i01.md": "113c89fdc4a165f4d7ece864d99c7deece2aab8c757cb412b25a73fbdef381e3"
+  },
+  "prerequisites": {
+    "C02_1866": "CLOSED/COMPLETED",
+    "D14_1867": "CLOSED/COMPLETED",
+    "intake_only_exit": 0,
+    "issue_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1859#issuecomment-7064264232",
+    "upstream_macos_scope": "D14 account/session isolation, key revocation and service checks",
+    "upstream_macos_links": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7060361368",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7062658872"
+    ]
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5, Windows SDK 10.0.26100.0, SCons 4.11.1",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j10",
+    "sdk_manifest": "thirdparty/webview2/manifest.json (all 6 file hashes verified)",
+    "full_build_log_sha256": "015249a2e42445a6e8bcfdc1c9040f8345b6389f4e51d8509666b8b839b66799",
+    "final_incremental_log_sha256": "e01cafee64c748c1dde4104554498a1800600a48f5feedb1a3ca2dd2c975d8b2",
+    "product_sha256": "523db0181c5c7a5ee49b47d8ed1c8383130d5ef3bf8ecd4d3d9dbac7b6a935b6",
+    "generated_header_sha256": "b3578ef8f644a639dbc6100b3036e9e3dcd76b0672420aa0c8e7a0351ec8586c",
+    "invalidation": "Changing issue_creation.gd regenerated IssueCreation.gen.h, recompiled AIWorkbenchSidebar.cpp and relinked the editor",
+    "exit_code": 0
+  },
+  "acceptance": {
+    "entry": "Compiled editor command palette > Open AI Workbench > 新建天璇工单",
+    "command": "python tests/editor/run_workbench_issue_creation.py --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+    "fixture": "Isolated editor copy and native-only loopback Tianxuan service with SQLite, password-generated fixture admin and temporary Bearer session",
+    "observation": "First committed 200 was replaced by HTTP 503. The user-facing retry preserved the original request. Two successful issue.create transactions yielded one stored issue and one replay receipt. The control displayed the server number and module after numbered GET. A second numbered GET and a new SQLite connection resolved the same ID. Logout cleared the form.",
+    "native": {
+      "authority": {
+        "id": "iss_98951c781c7741a88416604998633f35",
+        "module_id": "mod_fc47b5db54184740b5fbc670e5e94da7",
+        "number": 1,
+        "project": "studio/game"
+      },
+      "first_response": "创建结果待确认，请重试同一请求",
+      "visible_receipt": "#1 · 场景（mod_fc47b5db54184740b5fbc670e5e94da7） · 检查建单回执",
+      "call_id": "6d4a804116b3af1d57805dd9a629b21a",
+      "committed_create_statuses": [
+        200,
+        200
+      ],
+      "reopened_module_records": 1,
+      "create_receipts": 1
+    },
+    "exit_code": 0,
+    "initial_failure_and_retest": "Native script load initially rejected two inferred types in the readback check. Explicit bool annotations were added, the embedding target regenerated and linked, and the final executable passed."
+  },
+  "regressions": {
+    "server_command": "python -m pytest -q customizations/components/tianxuan/server/test_issue_number.py customizations/components/tianxuan/server/test_module_issues.py customizations/components/tianxuan/server/test_business_modules.py customizations/components/tianxuan/server/test_tool_receipts.py customizations/components/tianxuan/server/test_scope_idempotency.py",
+    "pytest_passed": 69,
+    "pytest_exit_code": 0,
+    "pytest_warnings": [
+      "Starlette TestClient httpx deprecation"
+    ],
+    "d14_command": "python tests/editor/run_workbench_business_session.py --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+    "d14": {
+      "target": "compiled editor sidebar",
+      "project_files_created_by_editor": [
+        ".godot",
+        "test.gd.uid"
+      ],
+      "exit_diagnostics": [
+        "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+        "ERROR: 31 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+        "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+        "ERROR: 222 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+        "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+        "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+        "ERROR: 1 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+        "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+        "WARNING: 113 RIDs of type \"CanvasItem\" were leaked.",
+        "WARNING: 580 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+      ],
+      "engine_sha256": "523db0181c5c7a5ee49b47d8ed1c8383130d5ef3bf8ecd4d3d9dbac7b6a935b6",
+      "script_sha256": "614e4048446e80fc1093909afbcf28d1fdcaab8b890a2094002b244e8a694975",
+      "checks": [
+        "native sidebar",
+        "open workbench command",
+        "business session mounted",
+        "account password verified and field cleared",
+        "verified admin and project",
+        "first account private position",
+        "previous identity cleared synchronously",
+        "personal key verified for second account",
+        "old account response discarded",
+        "second account private position with project query",
+        "viewer write denied by server, session retained",
+        "revocation prompts native reauthentication",
+        "write rejected while signed out",
+        "reauthenticated",
+        "different project isolated",
+        "returned to first project",
+        "original location restored",
+        "explicit logout clears identity"
+      ],
+      "credentials_checked": 5,
+      "files_scanned": 18,
+      "project_source_sha256_unchanged": {
+        "project.godot": "3483029a70f7a6de28391860b7ad570678ee359dc167a2b2bc105493be9b4498",
+        "test.gd": "2503636460ca10dc8f188731c19c2e2d23e5cbfbabe22a20ffb20a497fb6fad9"
+      },
+      "fixture": "loopback FastAPI accounts service, disposable tenant, admin and viewer, isolated editor copy"
+    },
+    "d14_exit_code": 0,
+    "static": "Ruff lint and format (5 files); mypy --no-incremental --follow-imports=silent on api.py and tianxuan_core.py passed"
+  },
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 23,
+    "application": "Bound HEAD, tested source bytes and executable to native consumer observations. Integration into a changed main needs the receiving worktree to verify its candidate."
+  }
+}

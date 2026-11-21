@@ -1,0 +1,560 @@
+{
+  "issue_number": 1859,
+  "request_id": "gonggong-ai-workbench-plan1-i01",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1859",
+  "c06_integration": {
+    "baseline": "8b48bd11844073a0d73499899991f7ee6f3b712f",
+    "stash": "695f1053fab73d9f8b31e6379798e639b5a9bcbb",
+    "resolved_paths": [
+      "editor/SCsub",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp"
+    ],
+    "build_log_sha256": "4f101efc74fdb268efe233100077211cc9a2de8da81b9c0bb4f1ab34c123ff7b",
+    "editor_sha256": "9904bc9f347a79ba0f8706d4be7a83cfcefa9134fce55775ae1c8c390d56f1ab",
+    "i01": {
+      "authority": {
+        "id": "iss_5e65b21440bc44639acac1c1bd731d08",
+        "module_id": "mod_83fe958bdc1d4a6780e1c98f9d0ec936",
+        "number": 1,
+        "project": "studio/game"
+      },
+      "first_response": "创建结果待确认，请重试同一请求",
+      "visible_receipt": "#1 · 场景（mod_83fe958bdc1d4a6780e1c98f9d0ec936） · 检查建单回执",
+      "call_id": "350a149bebe0f7978fb3a2a60154f407",
+      "committed_create_statuses": [
+        200,
+        200
+      ],
+      "reopened_module_records": 1,
+      "create_receipts": 1
+    },
+    "c06": {
+      "status": "passed",
+      "saved_steps": 4,
+      "real_account_switch": true
+    },
+    "d14": {
+      "checks": 18,
+      "exit_code": 0
+    }
+  },
+  "schema_version": 1,
+  "observed_at": "2026-11-21T15:47:22.474708+00:00",
+  "baseline": "17938f86828ba4b3e1e7b27400c5b0b4f0e474e0",
+  "remote_main_at_verification": "17938f86828ba4b3e1e7b27400c5b0b4f0e474e0",
+  "merged_dependencies": {
+    "C06": {
+      "pr": 1936,
+      "commit": "8b48bd11844073a0d73499899991f7ee6f3b712f"
+    },
+    "D02": {
+      "pr": 1946,
+      "commit": "25d67bedb29eb7c0947e767be8ad435054853ab4"
+    },
+    "G10": {
+      "pr": 1947,
+      "commit": "c855f7699df2ef22bc6c3544b0dc7f96dca180fb"
+    },
+    "U06": {
+      "pr": 1945,
+      "commit": "17938f86828ba4b3e1e7b27400c5b0b4f0e474e0"
+    }
+  },
+  "second_stash": "00eb8e6e718a1da8b1f3fe64e806890254f1fccc",
+  "integration": "Fast-forwarded the I01 worktree after confirmed G10 and U06 merges. The selector and issue panel remain mounted; the sidebar retains U06 window routing. Preserved the G10 build inputs and API. The account session contains D02.",
+  "candidate_sha256": {
+    "editor/SCsub": "b550d0d7e8de95c02e260b166dc894e09436903793de26c50581fe8d3d1ff4d0",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "97563cb017dab4a535c41f9fb7cad77885bd511d3cd84325f6ae2d94a7177da6",
+    "editor/docks/workbench/issue_creation.gd": "9e524c661da0ee342321e01c710b0a1c35dcb0bf17de2574e9bf86eb550905f5",
+    "customizations/components/tianxuan/server/api.py": "51c6cd1728861fb9c42780d65794670c0418b3eb599babc083e506844ee4ccbe",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "941d2454ec4599cf429b471416a0f9dd9e8d0eab1a270e6f2d443df66bca62e4",
+    "customizations/components/tianxuan/server/test_issue_number.py": "087db90dcb63c893a5e06655115641cd1458ef2776191213d5a645aa83297b6c",
+    "tests/editor/run_workbench_issue_creation.py": "fc046e2d582aee0d91f417d198cffe76febf4102ef7517873efd189836df3660",
+    "tests/editor/workbench_issue_creation.gd": "66b3294a159f508d045dd3b5861613f6681f751e23e87ca80c357e226d0e4257",
+    "design-docs/gonggong-ai-workbench-i01.md": "2f0ee324cfb35fcb060ce0054ab18b96a918e32c6565ba1a7b8af303073abd7f",
+    "data-collection/gonggong-ai-workbench-plan1-i01.json": "3e79c787de0094585147f649931fbe5f8992285153a9a6df4b02ae36f77c7791",
+    "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-i01/dispatch-06806d6a996b4ece9d6abce92c916cef.json": "8284d51b7d27a5c62f3f6dad367271baf636e9a4af45855881626b78b36b543f",
+    "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-i01/dispatch-13278491a9244f1faf4139dbe24f2544.json": "6ee13499e97a5bbda665819acfadb0a08c4095c9f5023de4f45586dd1a3d54a4",
+    "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-i01/dispatch-7cf88c474e0740d59e629e49a234fbd3.json": "4a84d2075af2e95efea0ab08517517c6f26b4d6a54cea42ab196ef5e6beca734"
+  },
+  "candidate_git_blobs": {
+    "editor/SCsub": "09da0f3b79a4f6546d634e91c77467cab89993ec",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "21113fdc2d9b411fa6fc075071d3448a31dc1cea",
+    "editor/docks/workbench/issue_creation.gd": "1289e36b804c625f8321d438a74bb26c32d8f66f",
+    "customizations/components/tianxuan/server/api.py": "67bfbdf22b384e7fec781a1113d64ad5ddbfd426",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "caeb74e05bc0e56bb4ccb01809d5ad5a5a62e8e5",
+    "customizations/components/tianxuan/server/test_issue_number.py": "cea125c9038599867c0fe54cce5cc9e56722106c",
+    "tests/editor/run_workbench_issue_creation.py": "d51dade41e943b8c0e48899f410f823854704a59",
+    "tests/editor/workbench_issue_creation.gd": "2051333b5e05952d802a3b04c1acb7757e07dcbd",
+    "design-docs/gonggong-ai-workbench-i01.md": "175b101ae80baa187e63e58c02b962fd99fad12e",
+    "data-collection/gonggong-ai-workbench-plan1-i01.json": "25d8cb0ae693ec84361d7d57625f3b9f3f68abea",
+    "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-i01/dispatch-06806d6a996b4ece9d6abce92c916cef.json": "ae42faea241600ded397e0d2101d2179ce98f950",
+    "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-i01/dispatch-13278491a9244f1faf4139dbe24f2544.json": "f3f0630913bfe072367caf0285055ea41a595790",
+    "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-i01/dispatch-7cf88c474e0740d59e629e49a234fbd3.json": "68ebcd31f4f807122e8fcbe4d3ddc2ce60003090"
+  },
+  "build": {
+    "command": "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 cache_path=<read-only shared cache> --cache-readonly -j10",
+    "exit_code": 0,
+    "editor_sha256": "4b8fdccd555daf0cc6f4344a312b9a75b43f8199c2a64587591b49305d1539e6",
+    "build_log_sha256": "01485fd2ae958d9ebf07f6085e795ed347473906f9564d032b21734768237b9c",
+    "platform": "Visual Studio 14.5, Windows SDK 10.0.26100.0, x86_64",
+    "headers_sha256": {
+      "BusinessSession.gen.h": "3633cba543e801c1bed4611b1e1f9e30dd4477197a128d5a558a36d9a924ce2d",
+      "IssueCreation.gen.h": "b3578ef8f644a639dbc6100b3036e9e3dcd76b0672420aa0c8e7a0351ec8586c",
+      "module_selector.gen.h": "e3c6475cdde1b4427d57fd5f07750a29905aecf217fbe8be1c75936e6c47982c"
+    }
+  },
+  "native": {
+    "i01": {
+      "command": "python -B -X utf8 tests/editor/run_workbench_issue_creation.py --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+      "exit_code": 0,
+      "report": {
+        "authority": {
+          "id": "iss_e22ff470e51041da9626b427b1c8196a",
+          "module_id": "mod_f27405b54a584a9a8604c3b3d43ccb1a",
+          "number": 1,
+          "project": "studio/game"
+        },
+        "first_response": "创建结果待确认，请重试同一请求",
+        "visible_receipt": "#1 · 场景（mod_f27405b54a584a9a8604c3b3d43ccb1a） · 检查建单回执",
+        "call_id": "42d4a184a096e8f3f564dde6fcb700e0",
+        "committed_create_statuses": [
+          200,
+          200
+        ],
+        "reopened_module_records": 1,
+        "create_receipts": 1
+      }
+    },
+    "c06": {
+      "command": "python -B -X utf8 tests/editor/run_workbench_business_modules.py --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+      "exit_code": 0,
+      "report": {
+        "state": "passed",
+        "native_steps": [
+          {
+            "conversation_id": "66f4cc4c-3148-4b26-ae83-1de491441671",
+            "draft": "",
+            "history": "A issue body\n\nA comment\n\nA prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · A saved design",
+            "issue_id": "iss_2b1c186627d448ef90496a752b7f6495",
+            "module_id": "mod_2a63e03ea0474d83b8f20813f6f9e538",
+            "position": "issue/comments#A"
+          },
+          {
+            "conversation_id": "8a5e37c2-96d8-48c3-8dad-e679d24c9522",
+            "draft": "",
+            "history": "B issue body\n\nB comment\n\nB prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · B saved design",
+            "issue_id": "iss_1dbba47f2d124b1ea455b1306edcde2e",
+            "module_id": "mod_0f421110cfaa41d1ae475fafd54cff3d",
+            "position": "issue/comments#B"
+          },
+          {
+            "conversation_id": "66f4cc4c-3148-4b26-ae83-1de491441671",
+            "draft": "A pending",
+            "history": "A issue body\n\nA comment\n\nA prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · A saved design",
+            "issue_id": "iss_2b1c186627d448ef90496a752b7f6495",
+            "module_id": "mod_2a63e03ea0474d83b8f20813f6f9e538",
+            "position": "issue/comments#A"
+          },
+          {
+            "conversation_id": "8a5e37c2-96d8-48c3-8dad-e679d24c9522",
+            "draft": "B pending",
+            "history": "B issue body\n\nB comment\n\nB prior turn\n\n消息已保存，模型尚未回复。\n\n设计草稿 · B saved design",
+            "issue_id": "iss_1dbba47f2d124b1ea455b1306edcde2e",
+            "module_id": "mod_0f421110cfaa41d1ae475fafd54cff3d",
+            "position": "issue/comments#B"
+          }
+        ],
+        "native_http": [
+          [
+            "GET",
+            "/api/v1/auth/me",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_2a63e03ea0474d83b8f20813f6f9e538/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_2b1c186627d448ef90496a752b7f6495/comments",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/workspace/conversations/66f4cc4c-3148-4b26-ae83-1de491441671",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_0f421110cfaa41d1ae475fafd54cff3d/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_1dbba47f2d124b1ea455b1306edcde2e/comments",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/workspace/conversations/8a5e37c2-96d8-48c3-8dad-e679d24c9522",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_2a63e03ea0474d83b8f20813f6f9e538/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_2b1c186627d448ef90496a752b7f6495/comments",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/workspace/conversations/66f4cc4c-3148-4b26-ae83-1de491441671",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_0f421110cfaa41d1ae475fafd54cff3d/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/iss_1dbba47f2d124b1ea455b1306edcde2e/comments",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/workspace/conversations/8a5e37c2-96d8-48c3-8dad-e679d24c9522",
+            200
+          ],
+          [
+            "PUT",
+            "/api/v1/business-modules/mod_0f421110cfaa41d1ae475fafd54cff3d/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/default/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations",
+            201
+          ],
+          [
+            "PUT",
+            "/api/v1/business-modules/default/location",
+            200
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations/70db3109-1cdc-4820-b57d-db447833afe0/turns",
+            200
+          ],
+          [
+            "POST",
+            "/api/v1/auth/session",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/auth/me",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/default/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ]
+        ],
+        "real_account_switch": true,
+        "isolated_identity_race": false,
+        "last_position_saved": {
+          "issue_id": null,
+          "conversation_id": "8a5e37c2-96d8-48c3-8dad-e679d24c9522",
+          "position": "module/overview"
+        },
+        "explicit_send_snapshot": {
+          "project": "c06/studio",
+          "module_id": "default",
+          "issue_id": null,
+          "references": []
+        },
+        "editor_sha256": "4b8fdccd555daf0cc6f4344a312b9a75b43f8199c2a64587591b49305d1539e6"
+      }
+    },
+    "d14": {
+      "command": "python -B -X utf8 tests/editor/run_workbench_business_session.py --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+      "exit_code": 0,
+      "report": {
+        "target": "compiled editor sidebar",
+        "project_files_created_by_editor": [
+          ".godot",
+          "test.gd.uid"
+        ],
+        "exit_diagnostics": [
+          "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+          "ERROR: 222 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 113 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 580 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ],
+        "engine_sha256": "4b8fdccd555daf0cc6f4344a312b9a75b43f8199c2a64587591b49305d1539e6",
+        "script_sha256": "83fa2d9616fe5283d6faa4572613e150a2fab457ba9a3df397dbf0b3a0c5b27e",
+        "checks": [
+          "native sidebar",
+          "open workbench command",
+          "business session mounted",
+          "account password verified and field cleared",
+          "verified admin and project",
+          "first account private position",
+          "previous identity cleared synchronously",
+          "personal key verified for second account",
+          "old account response discarded",
+          "second account private position with project query",
+          "viewer write denied by server, session retained",
+          "revocation prompts native reauthentication",
+          "write rejected while signed out",
+          "reauthenticated",
+          "different project isolated",
+          "returned to first project",
+          "original location restored",
+          "explicit logout clears identity"
+        ],
+        "credentials_checked": 5,
+        "files_scanned": 18,
+        "project_source_sha256_unchanged": {
+          "project.godot": "3483029a70f7a6de28391860b7ad570678ee359dc167a2b2bc105493be9b4498",
+          "test.gd": "2503636460ca10dc8f188731c19c2e2d23e5cbfbabe22a20ffb20a497fb6fad9"
+        },
+        "fixture": "loopback FastAPI accounts service, disposable tenant, admin and viewer, isolated editor copy"
+      }
+    },
+    "g10": {
+      "command": "python -B -X utf8 tests/editor/run_workbench_duobao_branches.py --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+      "exit_code": 0,
+      "report": {
+        "windows_or_host_editor": "4b8fdccd555daf0cc6f4344a312b9a75b43f8199c2a64587591b49305d1539e6",
+        "explicit_base": "8344ce6a26e8e52b0d356367a27323b849283353",
+        "original_head": "2bc719fca91afc0849c36cadb5615d544e47a36f",
+        "checks": {
+          "first": {
+            "created": true,
+            "denied": true,
+            "dirty_buffer": true,
+            "entry": true,
+            "start": true,
+            "start_tip": true,
+            "switched": true
+          },
+          "restart": {
+            "entry": true,
+            "recoverable": true,
+            "restored": true,
+            "returned": true,
+            "start": true,
+            "start_tip": true
+          }
+        },
+        "independent_git_and_file_readback": true
+      }
+    },
+    "u06": {
+      "command": "python -B -X utf8 tests/editor/run_workbench_window.py --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+      "exit_code": 0,
+      "report": {
+        "passed": true,
+        "native_exit": 0,
+        "engine_sha256": "4b8fdccd555daf0cc6f4344a312b9a75b43f8199c2a64587591b49305d1539e6",
+        "controls": {
+          "auxiliary_text_preserved": true,
+          "composer_id": 618274000114,
+          "continued_typing": true,
+          "destroyed_source_detached": true,
+          "line_edits": [
+            {
+              "caret": 9,
+              "loopback_reply": true,
+              "quoted": "saved-s",
+              "returned_focus_id": 603057064300,
+              "source": "重命名会话",
+              "source_id": 603057064300,
+              "source_text": "unsaved-session-name"
+            },
+            {
+              "caret": 9,
+              "loopback_reply": false,
+              "quoted": "und4-ed",
+              "returned_focus_id": 96066344332,
+              "source": "Editor Settings",
+              "source_id": 96066344332,
+              "source_text": "round4-editor-filter"
+            }
+          ],
+          "messages_id": 610472594214,
+          "secret_excluded": true,
+          "whole_field_quoted": true
+        },
+        "loopback": [
+          {
+            "last_user": "Explain the selection.\nWindow reference (重命名会话):\nsaved-s",
+            "consultation": true,
+            "writes": false,
+            "execution": false
+          }
+        ],
+        "diagnostics": [
+          "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+          "ERROR: 35 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+          "ERROR: 290 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+          "ERROR: 18 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 144 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 687 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ]
+      }
+    },
+    "d02": {
+      "command": "python -B -X utf8 tests/editor/run_workbench_documents.py --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+      "exit_code": 0,
+      "report": {
+        "editor_sha256": "4b8fdccd555daf0cc6f4344a312b9a75b43f8199c2a64587591b49305d1539e6",
+        "state": "passed",
+        "native_selections": [
+          {
+            "document_id": "doc_3d43896782224d35837ba47d43b66494",
+            "paragraph": 2,
+            "selected_text": "第一个目标\n延续一行",
+            "version": 1
+          },
+          {
+            "document_id": "doc_b23c4c1f45ce4d3d813440bd54172ab6",
+            "paragraph": 2,
+            "selected_text": "第二个目标",
+            "version": 2
+          },
+          {
+            "document_id": "doc_b23c4c1f45ce4d3d813440bd54172ab6",
+            "paragraph": 2,
+            "selected_text": "原始段落",
+            "version": 1
+          }
+        ],
+        "service_reads": [
+          [
+            "/api/v1/auth/me",
+            200
+          ],
+          [
+            "/api/v1/docs",
+            200
+          ],
+          [
+            "/api/v1/docs/doc_3d43896782224d35837ba47d43b66494/versions/1",
+            200
+          ],
+          [
+            "/api/v1/docs/doc_b23c4c1f45ce4d3d813440bd54172ab6/versions/2",
+            200
+          ],
+          [
+            "/api/v1/docs/doc_b23c4c1f45ce4d3d813440bd54172ab6/versions/1",
+            200
+          ],
+          [
+            "/api/v1/docs/doc_b23c4c1f45ce4d3d813440bd54172ab6/versions/99",
+            404
+          ],
+          [
+            "/api/v1/docs/doc_3d43896782224d35837ba47d43b66494/versions/1",
+            200
+          ],
+          [
+            "/api/v1/docs/doc_3d43896782224d35837ba47d43b66494/versions/1",
+            200
+          ]
+        ],
+        "same_title": true,
+        "readonly_body": true,
+        "invalid_targets_cleared": true,
+        "signout_cleared": true
+      }
+    }
+  },
+  "checks": {
+    "server": {
+      "command": "python -B -X utf8 -m pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_issue_number.py customizations/components/tianxuan/server/test_module_issues.py customizations/components/tianxuan/server/test_business_modules.py customizations/components/tianxuan/server/test_tool_receipts.py customizations/components/tianxuan/server/test_scope_idempotency.py",
+      "passed": 69,
+      "exit_code": 0,
+      "warnings": [
+        "Starlette TestClient HTTPX deprecation"
+      ]
+    },
+    "clauses": [
+      "I01 actual compiled control retried the committed issue after a missing success receipt. The same module has one stored issue and one replay receipt after reopening its database.",
+      "The displayed number resolves the same ID, title, project and business module in Tianxuan.",
+      "The integrated C06 fixture used its real-account branch. D14 checked stale requests after a switch and cleared the revoked credential."
+    ],
+    "static": [
+      "clang-format 22.1.5 --dry-run --Werror for AIWorkbenchSidebar.cpp",
+      "python misc/scripts/validate_includes.py editor/docks/workbench/AIWorkbenchSidebar.cpp",
+      "mypy 2.4.0 for all four changed Python files",
+      "Ruff 0.17.1 check and format --check for five changed Python/SCons files",
+      "git diff --check"
+    ],
+    "scope": "Results cover the local integration candidate used by all six native probes. Delivery and completed issue closure belong to the publisher."
+  }
+}
