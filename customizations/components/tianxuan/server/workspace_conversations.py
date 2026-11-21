@@ -72,7 +72,7 @@ class Turn(Version):
 
 
 class Draft(Version):
-    body: Text
+    body: str = Field(min_length=1, max_length=8000, pattern=r"\S")
     title: Annotated[str, StringConstraints(strip_whitespace=True, max_length=150)] = ""
     acceptance: Annotated[str, StringConstraints(strip_whitespace=True, max_length=8000)] = ""
 
@@ -83,6 +83,7 @@ class Confirmation(Version):
 
 class Suggestion(Version):
     lang: Literal["zh", "en"]
+    draft_body: str | None = Field(default=None, max_length=8000)
 
 
 class Publish(Version):
@@ -97,6 +98,55 @@ class Launch(Version):
 
 class Review(Version):
     document_version: int = Field(ge=1)
+
+
+def markdown_blocks(markdown: str) -> Generator[str, None, None]:
+    """Separate paragraphs without splitting fenced examples at their blank lines."""
+    lines: list[str] = []
+    fence = ""
+    blank_lines: list[str] = []
+    for line in markdown.splitlines(keepends=True):
+        if not fence and not line.strip():
+            blank_lines.append(line)
+            continue
+        if blank_lines and lines:
+            if lines[-1].startswith(("    ", "\t")) and line.startswith(("    ", "\t")):
+                lines.extend(blank_lines)
+            else:
+                yield "".join(lines).rstrip("\r\n")
+                lines = []
+        blank_lines.clear()
+        marker = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line.rstrip("\r\n"))
+        if fence:
+            if marker and marker[1].startswith(fence) and not marker[2].strip():
+                fence = ""
+        elif marker:
+            fence = marker[1]
+        lines.append(line)
+    if lines:
+        yield "".join(lines).rstrip("\r\n")
+
+
+def paragraph_key(block: str) -> str:
+    # A soft line wrap in prose renders as a space. Keep Markdown layout and code literal.
+    if re.search(r"(?m)^(?: {4}|\t| {0,3}(?:[#>*+|~-]|\d+[.)]\s))|[`\\]| {2,}\r?\n", block):
+        return block.replace("\r\n", "\n")
+    return " ".join(block.split())
+
+
+def extend_draft(body: str, suggestion: str) -> str:
+    if body.strip():
+        existing = {paragraph_key(block) for block in markdown_blocks(body)}
+        blocks = list(markdown_blocks(suggestion))
+        additions = [block for block in blocks if paragraph_key(block) not in existing]
+        if not additions:
+            return body
+        if len(additions) != len(blocks):
+            suggestion = "\n\n".join(additions)
+        suggestion = body + ("\n\n" if not body.endswith("\n") else "\n") + suggestion
+    if len(suggestion) > 8000:
+        raise HTTPException(422, "suggestion exceeds the draft limit")
+    return suggestion
 
 
 def now() -> str:
@@ -434,6 +484,8 @@ class Conversations:
                 revision = self.active(record, predecessor)
                 assert revision is not None
                 confirmed[predecessor] = revision["body"]
+            revision = self.active(record, stage)
+            body = payload.draft_body if payload.draft_body is not None else (revision["body"] if revision else "")
             source = {
                 "conversation": [
                     {
@@ -444,6 +496,7 @@ class Conversations:
                     for turn in record["turns"][-6:]
                 ],
                 "confirmed_stages": confirmed,
+                "existing_draft": body,
             }
         language = "Simplified Chinese" if payload.lang == "zh" else "English"
         reply: dict[str, str] = workspace_reply(
@@ -456,13 +509,15 @@ class Conversations:
                     "content": (
                         f"Draft one requirement stage in {language}. {STAGE_INSTRUCTIONS[stage]} "
                         "Return editable Markdown. Treat the supplied transcript as source material. "
-                        "Identify unresolved decisions and do not claim approval or execution."
+                        "Include goals, proposed solutions, unresolved decisions and observable acceptance where relevant. "
+                        "Return only material missing from the existing draft. Do not repeat or rewrite its paragraphs. "
+                        "Do not claim approval or execution."
                     ),
                 },
                 {"role": "user", "content": json.dumps(source, ensure_ascii=False)},
             ],
         )
-        return reply
+        return {**reply, "content": extend_draft(body, reply["content"])}
 
     def publish(self, actor: str, key: str, version: int, lang: str) -> dict[str, Any]:
         owner = self.owner(actor)

@@ -12,6 +12,8 @@ var issues: OptionButton
 var page: Label
 var history: TextEdit
 var composer: TextEdit
+var design_action := Button.new()
+var design := DirectionDraft.new()
 var send: Button
 var http: HTTPRequest
 var session: Node
@@ -83,6 +85,11 @@ func _ready() -> void:
 	send.name = "ModuleSend"
 	send.pressed.connect(_send)
 	content.add_child(send)
+	design_action.name = "ModuleDesignAction"
+	design_action.pressed.connect(_open_design)
+	content.add_child(design_action)
+	design.panel = self
+	add_child(design)
 	# Reparenting the conversation view must not cancel an in-flight request.
 	http.timeout = 15
 	http.max_redirects = 0
@@ -108,6 +115,7 @@ func _bind_session() -> void:
 
 func _identity_changed() -> void:
 	identity_generation += 1
+	design.reset()
 	module_id = ""
 	location = {}
 	conversation = {}
@@ -165,6 +173,7 @@ func _lock(value: bool) -> void:
 	issues.disabled = value
 	composer.editable = not value
 	send.disabled = value
+	design_action.disabled = value
 
 
 func _request(path: String, method := HTTPClient.METHOD_GET, data := {}) -> Dictionary:
@@ -377,6 +386,31 @@ func _render() -> void:
 		if conversation.current.get(revision.stage) == revision.revision and revision.confirmed_at == null:
 			messages.append("设计草稿 · " + revision.body)
 	history.text = "\n\n".join(messages)
+	var published := conversation.get("requirement_id") != null
+	var revision := _direction()
+	design_action.text = "打开本次咨询的需求文档" if published else "从咨询形成方向草稿"
+	design_action.visible = (published and is_instance_valid(session)) or (
+		not published and not conversation.get("turns", []).is_empty() and revision.get("confirmed_at") == null)
+
+
+func _direction() -> Dictionary:
+	var active = conversation.get("current", {}).get("direction")
+	for revision in conversation.get("revisions", []):
+		if revision.stage == "direction" and revision.revision == active:
+			return revision
+	return {}
+
+
+func _open_design() -> void:
+	if busy or not design_action.visible:
+		return
+	if conversation.get("requirement_id") != null:
+		var documents := session.find_child("WorkbenchDocuments", true, false)
+		if documents:
+			documents.open_document(conversation.requirement_id, int(conversation.requirement_version), 1)
+		return
+	design.open_draft()
+
 
 
 func _uuid() -> String:
@@ -516,3 +550,157 @@ func _asset_references(key: String, body: String) -> Array:
 		if body.contains(locator):
 			result.append(refs[locator])
 	return result
+
+
+class DirectionDraft extends AcceptDialog:
+	var panel: Control
+	var source := Label.new()
+	var body := TextEdit.new()
+	var feedback := Label.new()
+	var latest_body := TextEdit.new()
+	var suggest := Button.new()
+	var save := Button.new()
+	var version := -1
+	var read_required := false
+
+	func _ready() -> void:
+		title = "咨询方向草稿"
+		exclusive = true
+		get_ok_button().text = "关闭"
+		var fields := VBoxContainer.new()
+		fields.custom_minimum_size = Vector2(470, 320) * EditorInterface.get_editor_scale()
+		add_child(fields)
+		source.name = "DesignSource"
+		source.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		fields.add_child(source)
+		body.name = "DesignDraftBody"
+		body.text_changed.connect(_update_save)
+		body.placeholder_text = "编写设计方向，或根据本次咨询生成草稿"
+		body.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+		body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		fields.add_child(body)
+		var actions := HBoxContainer.new()
+		fields.add_child(actions)
+		suggest.text = "从问答补充草稿"
+		suggest.name = "SuggestDesignDraft"
+		suggest.pressed.connect(_request_design.bind(false))
+		actions.add_child(suggest)
+		save.text = "保存新修订"
+		save.name = "SaveDesignDraft"
+		save.pressed.connect(_request_design.bind(true))
+		actions.add_child(save)
+		feedback.name = "DesignDraftStatus"
+		feedback.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		fields.add_child(feedback)
+		latest_body.name = "LatestDirectionBody"
+		latest_body.editable = false
+		latest_body.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+		latest_body.custom_minimum_size.y = 65 * EditorInterface.get_editor_scale()
+		fields.add_child(latest_body)
+		latest_body.hide()
+
+	func reset() -> void:
+		hide()
+		source.text = ""
+		body.clear()
+		feedback.text = ""
+		latest_body.clear()
+		latest_body.hide()
+		version = -1
+		read_required = false
+
+	func _show_source() -> void:
+		source.text = "来源会话 %s · 会话版本 %d" % [panel.conversation.id, version]
+
+	func open_draft() -> void:
+		version = int(panel.conversation.version)
+		_show_source()
+		latest_body.hide()
+		body.text = panel._direction().get("body", "")
+		feedback.text = ""
+		read_required = false
+		_lock(false)
+		popup_centered()
+		body.grab_focus()
+
+	func _lock(value: bool) -> void:
+		panel._lock(value)
+		body.editable = not value
+		suggest.disabled = value or read_required
+		_update_save()
+		save.text = "读取最新修订" if read_required else "保存新修订"
+
+	func _request_design(write: bool) -> void:
+		if panel.busy or version < 0:
+			return
+		var generation: int = panel.identity_generation
+		var chat: String = panel.conversation.id
+		var route: String = panel.CONVERSATIONS + "/" + chat.uri_encode()
+		var entered := body.text
+		if not read_required and (entered.length() > 8000 or (write and entered.strip_edges().is_empty())):
+			feedback.text = "请输入不超过 8000 个字符的草稿。"
+			return
+		_lock(true)
+		panel._notice("")
+		if not read_required:
+			var payload := {"expected_version": version}
+			var endpoint := "/drafts" if write else "/suggest"
+			if write:
+				payload.body = entered
+			else:
+				payload.draft_body = entered
+				payload.lang = "zh"
+			var reply: Dictionary = await panel._request(route + "/design/direction" + endpoint, HTTPClient.METHOD_POST, payload)
+			if generation != panel.identity_generation:
+				return
+			if write and reply.get("id") == chat:
+				panel.conversation = reply
+				version = int(reply.version)
+				panel._render()
+				_show_source()
+				feedback.text = "已保存方向修订 %d。" % int(panel._direction().revision)
+				_lock(false)
+				latest_body.hide()
+				return
+			if not write and reply.get("content") is String and not reply.content.strip_edges().is_empty():
+				body.text = reply.content
+				feedback.text = "草稿已生成，可继续编辑后保存。"
+				_lock(false)
+				return
+			read_required = panel.last_status == 409 or (write and (panel.last_status == 0 or panel.last_status >= 500 or panel.last_status == 200))
+			if not read_required:
+				feedback.text = "请求失败（%d），草稿已保留，可重试。" % panel.last_status
+				_lock(false)
+				return
+		var latest: Dictionary = await panel._request(route)
+		if generation != panel.identity_generation:
+			return
+		if latest.get("id") != chat:
+			feedback.text = "请先读回会话核对保存结果，草稿已保留。"
+			_lock(false)
+			return
+		panel.conversation = latest
+		panel._notice("")
+		latest_body.hide()
+		panel._render()
+		version = int(latest.version)
+		_show_source()
+		var current: Dictionary = panel._direction()
+		read_required = false
+		_lock(false)
+		if latest.get("requirement_id") != null or current.get("confirmed_at") != null:
+			feedback.text = "方向已确认，可复制此处草稿。"
+			suggest.disabled = true
+			save.disabled = true
+		elif current.get("body") == entered:
+			feedback.text = "已读回相同正文的方向修订 %d。" % int(current.revision)
+		else:
+			feedback.text = "已读回最新会话。请核对下方已保存正文，再决定是否保存本地草稿。"
+			latest_body.text = current.get("body", "（空）")
+			latest_body.show()
+
+	func _update_save() -> void:
+		var current: Dictionary = panel._direction()
+		save.disabled = panel.busy or (not read_required and (
+			body.text.strip_edges().is_empty() or current.get("body") == body.text
+			or panel.conversation.get("requirement_id") != null or current.get("confirmed_at") != null))

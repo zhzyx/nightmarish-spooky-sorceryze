@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e20b22838e18185614ce195b36653920a0e32d6a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-d03",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6911533d97c625674b0eff316e819b27429288236c46271174a5de77723281dc",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1959",
+    "action": "intake",
+    "detection_head": "0576491bc51fad512e819cab7aa1f78fdd75c6ed",
+    "context_sha256": "1b3e44b5669e1687dbd27becce8a321020f82509259b2089513fac44a2d01c54",
+    "operator": "Sail-Li",
+    "worker": "mac-delivery-1860-intake",
+    "authority_ref": "codex:mac-delivery-20261122-010923",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1959",
+    "diagnosis": "本次 Mac 接单命令遗漏 work-items.json 声明的租户参数。",
+    "next_action": "使用已复验的租户继续 D03 实现与交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T17:12:16.300064+00:00",
+    "attempted": "按实际租户 gonggong-workspace 重跑 intake-only，已回读 #1860 的需求标识、状态与权威来源。",
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T17:18:30.083866+00:00",
+  "sha256": "4055b5a4e4db7273c5868d6449f6c000abc01a1398d32b72c887cfc56596101a"
+}
