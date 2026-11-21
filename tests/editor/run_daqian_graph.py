@@ -27,11 +27,12 @@ parser.add_argument("--godot", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
 parser.add_argument(
     "--scenario",
-    choices=["graph", "parallel", "entry", "inputs", "multi_issue", "publish", "direct", "details"],
+    choices=["graph", "parallel", "entry", "inputs", "multi_issue", "publish", "direct", "details", "inflight"],
     default="graph",
 )
 args = parser.parse_args()
 scenarios = {
+    "inflight": ("daqian_inflight_issue.gd", "DAQIAN_INFLIGHT_OK"),
     "details": ("daqian_issue_details.gd", "DAQIAN_DETAILS_OK"),
     "direct": ("daqian_direct.gd", "DAQIAN_DIRECT_OK"),
     "graph": ("daqian_graph.gd", "DAQIAN_GRAPH_TEST passed"),
@@ -44,7 +45,7 @@ scenarios = {
 script, marker = scenarios[args.scenario]
 os.environ.pop("GONGGONG_WORKSPACE", None)
 env = {key: value for key, value in os.environ.items() if not key.startswith("GONGGONG_")}
-if args.scenario in {"parallel", "inputs", "multi_issue"}:
+if args.scenario in {"parallel", "inputs", "multi_issue", "inflight"}:
     node = env.get("DAQIAN_TEST_NODE") or shutil.which("node")
     if not node:
         raise SystemExit("Node required for Tianshu native parallel acceptance")
@@ -101,7 +102,7 @@ with tempfile.TemporaryDirectory(prefix="daqian-editor-", ignore_cleanup_errors=
     )
     env["GONGGONG_RUNTIME_CONFIG"] = str(configuration)
     env["XDG_CACHE_HOME"] = str(project / "cache")
-    if args.scenario in {"graph", "parallel", "inputs", "multi_issue"}:
+    if args.scenario in {"graph", "parallel", "inputs", "multi_issue", "inflight"}:
         # The repository gate is exercised using the ordinary gh transport; no product bypass.
         fixture = project / "fixture_gh.py"
         fixture.write_text(
@@ -112,6 +113,14 @@ mode=mode_path.read_text() if mode_path.is_file() else "member"
 uid=84 if mode=="switch" else 42
 login="next" if mode=="switch" else "fixture"
 a=sys.argv[1:]
+if os.environ.get("DAQIAN_TEST_SCENARIO") == "inflight":
+    if a[:2] == ["api", "graphql"]:
+        allowed = not any(arg.startswith("query=") and "mutation" in arg for arg in a)
+    else:
+        allowed = a[:2] == ["config", "get"] or a[:1] == ["api"] and not set(a) & {"--method", "-X", "-F", "-f", "--input"}
+    if not allowed:
+        with (mode_path.parent/"inflight-mutations").open("a") as log: print(json.dumps(a),file=log)
+        sys.exit(1)
 if mode=="overlap" and a[0]=="api" and "/issues?" in a[1]:
     import time
     scope="project" if "?state=open" in a[1] else "personal"
@@ -128,6 +137,11 @@ if a[:2]==["api","graphql"]:
     print(json.dumps({"data":{"viewer":{"login":login,"databaseId":uid,"repositories":{"nodes":nodes,"pageInfo":{"hasNextPage":False}}}}}))
 elif a[:2]==["api","user"]: print(str(uid) if "--jq" in a else json.dumps({"id":uid,"login":login}))
 elif a[0]=="api" and a[1].startswith("user/repos?"): print("" if mode=="denied" else "123")
+elif a == ["api","repos/zhzyx/nightmarish-spooky-sorceryze/issues/1755"]:
+    with (mode_path.parent/"inflight-reads").open("a") as log: print(json.dumps(a),file=log)
+    print(json.dumps(dict(number=1755,html_url="https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755",
+                          title="Original item",state="open",labels=[dict(name="status:in-review")],
+                          body="Original body.\\n<!-- gonggong-request:original-i13 -->")))
 elif a[0]=="api" and "/issues?state=open" in a[1]:
     repo="zhzyx/nightmarish-spooky-sorceryze"
     row=dict(number=901, html_url=f"https://github.com/{repo}/issues/901", title="Project issue", body="", updated_at="fixture", state="open", user=dict(login="writer"), assignees=[], labels=[], issue_dependencies_summary={"total_blocked_by":0})
@@ -169,11 +183,12 @@ else: sys.exit(1)
             wrapper.chmod(0o755)
         env.update(
             DAQIAN_TEST_ACCESS_FILE=str(project / "membership-fixture"),
+            DAQIAN_TEST_SCENARIO=args.scenario,
             GONGGONG_GH=str(wrapper),
             DAQIAN_TEST_REPO=str(Path(__file__).resolve().parents[2]),
             DAQIAN_TEST_PYTHON=sys.executable,
         )
-        if args.scenario == "graph":
+        if args.scenario in {"graph", "inflight"}:
             # Configure the fixture workspace before startup checks can open the runtime setup window.
             env["GONGGONG_WORKSPACE"] = env["DAQIAN_TEST_REPO"]
     if args.scenario in {"publish", "direct", "details"}:
@@ -263,6 +278,8 @@ Path(sys.argv[sys.argv.index('--out') + 1]).write_text(json.dumps(reply))
     )
     shutil.copyfile(Path(__file__).with_name(script), project / "test.gd")
     phases = ["DAQIAN_DIRECT_RESTART_READY", marker] if args.scenario == "direct" else [marker]
+    if args.scenario == "inflight":
+        phases = ["DAQIAN_INFLIGHT_SAVED", marker]
     passed = True
     log = ""
     for phase, expected_marker in enumerate(phases):
@@ -295,8 +312,16 @@ Path(sys.argv[sys.argv.index('--out') + 1]).write_text(json.dumps(reply))
         if args.scenario == "direct"
         else "native issue inspector, workflow selection, linked issue, draft isolation, revert and save/reopen"
         if args.scenario == "details"
+        else "reopen persisted account-scoped conversations and worker records in a second editor, read original twice and reject a stale binding"
+        if args.scenario == "inflight"
         else "native editor; fixture graph source, execution state, model catalog and 55-issue board",
     }
+    if args.scenario == "inflight" and passed:
+        report["reads"] = [json.loads(line) for line in (project / "inflight-reads").read_text().splitlines()]
+        mutation_log = project / "inflight-mutations"
+        report["mutation_attempts"] = mutation_log.read_text().splitlines() if mutation_log.exists() else []
+        passed = len(report["reads"]) == 6 and not report["mutation_attempts"]
+        report["state"] = "passed" if passed else "failed"
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n")
     if not passed:

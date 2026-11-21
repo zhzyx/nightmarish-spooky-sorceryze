@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i13",
+  "issue_number": 1755,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755",
+  "verified_at": "2026-11-21T20:58:54.920689+08:00",
+  "base": "217cd6c7641af1b6bddeed284599992d9f800a91",
+  "predecessors": [
+    {
+      "issue_number": 1784,
+      "merge": "4ed6bfa2aefdebfe10cf3aa9eb96fbea56e58cd6"
+    },
+    {
+      "issue_number": 1790,
+      "merge": "1cca7579fd007e8625ce8d275abd874fe4be0d33"
+    }
+  ],
+  "candidate_source_git_blobs": {
+    "editor/docks/ai_chat_dock.cpp": "4cbbbf9e593913c19123f2a67d7b80b63cf9ff8e",
+    "editor/docks/ai_chat_dock.h": "5cdc0e6d08f786e9a0d0e651ceb1f1c3e91b7e48",
+    "editor/docks/daqian/workspace.gd": "c7b70b14c72377465ae9e4b3bf60c741d41b3fde",
+    "customizations/components/godot-host/daqian/board.py": "674a00f29108066f288236f356a615bb16bd6c59",
+    "tests/editor/run_daqian_graph.py": "135d9447a45cbf0f52c00f1a03a4158eefddb392",
+    "tests/editor/test_daqian_board.py": "c8c97cb03ec1936730c0cd1acee631ae540e1aa7",
+    "tests/editor/daqian_inflight_issue.gd": "2d1951f5b5c680396b8a50fb583f716d1c086b57",
+    "design-docs/gonggong-ai-workbench-i13.md": "afdcc2519be8a25c01e1f359064a764f78b3b15a"
+  },
+  "build": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python": "3.14.3",
+    "toolchain": "Visual Studio 14.5; SDK 10.0.26100.0; SCons 4.11.1",
+    "scons_options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no --cache-readonly -j6",
+    "initial_exit": 0,
+    "final_incremental_exit": 0,
+    "sha256": {
+      "bin/godot.windows.editor.x86_64.exe": "2f881fcda528dc5c85c0b97bccc40b0d348f89e49333cb65e91d14e68fa0d310",
+      "bin/tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "bin/tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b"
+    }
+  },
+  "tests": {
+    "native_controls": {
+      "command": "python tests/editor/run_daqian_graph.py --scenario inflight --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+      "fixture": "Two consecutive self-contained editor processes using the same disposable project and private account cache. Production editor and board helper use an isolated GitHub transport.",
+      "result": {
+        "state": "passed",
+        "editor_sha256": "2f881fcda528dc5c85c0b97bccc40b0d348f89e49333cb65e91d14e68fa0d310",
+        "scenario": "inflight",
+        "scope": "reopen persisted account-scoped conversations and worker records in a second editor, read original twice and reject a stale binding",
+        "reads": [
+          [
+            "api",
+            "repos/zhzyx/nightmarish-spooky-sorceryze/issues/1755"
+          ],
+          [
+            "api",
+            "repos/zhzyx/nightmarish-spooky-sorceryze/issues/1755"
+          ],
+          [
+            "api",
+            "repos/zhzyx/nightmarish-spooky-sorceryze/issues/1755"
+          ],
+          [
+            "api",
+            "repos/zhzyx/nightmarish-spooky-sorceryze/issues/1755"
+          ],
+          [
+            "api",
+            "repos/zhzyx/nightmarish-spooky-sorceryze/issues/1755"
+          ],
+          [
+            "api",
+            "repos/zhzyx/nightmarish-spooky-sorceryze/issues/1755"
+          ]
+        ],
+        "mutation_attempts": []
+      },
+      "checked": [
+        "Durably stored old unscoped conversation corroborated by the current account, scoped conversation, private draft link and start receipt.",
+        "Skipped foreign scope and a legacy conversation lacking corroboration.",
+        "Record retains recorded in-progress. Original GET returns open/in-review and original body; changed request fails without rebinding.",
+        "Opened from workbench sidebar, same expanded original conversation, and context menu for an inactive tab without switching the active tab.",
+        "Verified original private draft, persisted bindings and starts, tab count, empty execution turns; fixture counted six original GET calls and zero GitHub mutation attempts."
+      ]
+    },
+    "old_editor_negative": {
+      "binary_sha256": "5f5c09fbbdc6e471a35a6b8cef44419ea743a7493676ac68661d99e90ae94453",
+      "expected": "Missing inflight entry",
+      "observed": "Missing inflight entry",
+      "phase_one": "DAQIAN_INFLIGHT_SAVED"
+    },
+    "existing_issue_inspector": {
+      "state": "passed",
+      "editor_sha256": "2f881fcda528dc5c85c0b97bccc40b0d348f89e49333cb65e91d14e68fa0d310",
+      "scenario": "details",
+      "scope": "native issue inspector, workflow selection, linked issue, draft isolation, revert and save/reopen"
+    },
+    "unit_and_lint": [
+      {
+        "command": "python -m unittest discover -s tests/editor -p test_daqian_board.py",
+        "passed": 6
+      },
+      {
+        "command": "python -m unittest discover -s tests/editor -p test_tianshu_board_package.py",
+        "passed": 8
+      },
+      {
+        "command": "python -m ruff check customizations/components/godot-host/daqian/board.py tests/editor/test_daqian_board.py tests/editor/run_daqian_graph.py",
+        "exit": 0
+      }
+    ],
+    "authenticated_github_original": {
+      "observed_at": "2026-11-21T20:47:41.472752+08:00",
+      "board_sha256": "cf1d55606f113f8d4452074df41f150ca7d9c84c30a840b5261cba36c67ee075",
+      "before": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755",
+        "state": "open",
+        "status": [
+          "status:in-progress"
+        ],
+        "updated": "2026-11-21T12:28:48Z",
+        "comments": 1,
+        "title": "[方案一 I13] 接回天枢在途工单入口",
+        "body_sha256": "d4ba41145d2d3d63c63c35decf8e1221d1eae1fcbc40a14f45981e64f4ceec11"
+      },
+      "reads": [
+        {
+          "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755",
+          "title": "[方案一 I13] 接回天枢在途工单入口",
+          "state": "open",
+          "status": "in-progress",
+          "body_sha256": "d4ba41145d2d3d63c63c35decf8e1221d1eae1fcbc40a14f45981e64f4ceec11"
+        },
+        {
+          "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755",
+          "title": "[方案一 I13] 接回天枢在途工单入口",
+          "state": "open",
+          "status": "in-progress",
+          "body_sha256": "d4ba41145d2d3d63c63c35decf8e1221d1eae1fcbc40a14f45981e64f4ceec11"
+        },
+        {
+          "rejected": "工单绑定已更改，请刷新"
+        }
+      ],
+      "after": {
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755",
+        "state": "open",
+        "status": [
+          "status:in-progress"
+        ],
+        "updated": "2026-11-21T12:28:48Z",
+        "comments": 1,
+        "title": "[方案一 I13] 接回天枢在途工单入口",
+        "body_sha256": "d4ba41145d2d3d63c63c35decf8e1221d1eae1fcbc40a14f45981e64f4ceec11"
+      }
+    }
+  },
+  "macos_observation": {
+    "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755#issuecomment-7062595326",
+    "tested_revision": "217cd6c7641af1b6bddeed284599992d9f800a91",
+    "old_list_and_details_passed": 6,
+    "old_worker_found": 4,
+    "missing_worker_reported": 2,
+    "original_entry_available": {
+      "sidebar": "0/2",
+      "expanded": "0/4"
+    },
+    "scope": "Mac observation on the preceding revision; the changed candidate was executed on Windows."
+  },
+  "receiving_target": "Read-only native dialog, using original-source readback from the installed board helper. Source revision/candidate supplied to parent for independent integration, signing, main readback and Issue closure.",
+  "combined_main": {
+    "result": "passed",
+    "mutation_count": 0,
+    "base": "07fe7a37aeb78000674b61cc0d3e068cd73aeb25",
+    "editor_sha256": "0fce8c9b3acded437eb552d6c926022db1517834ae1a65277dd5944735f47e2a",
+    "reads": 6
+  }
+}

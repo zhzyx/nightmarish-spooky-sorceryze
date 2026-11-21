@@ -277,11 +277,26 @@ def document_bytes(original, markdown):
     return b"".join(line + separator for line, separator in zip(edited, separators)) + edited[-1]
 
 
+def issue_status(labels, state):
+    statuses = [label.removeprefix("status:") for label in labels if label.startswith("status:")]
+    return statuses[0] if len(statuses) == 1 else state
+
+
 def issue_request(root, actor, request):
     action = request["action"]
-    if action not in {"details", "save_document"}:
+    if action not in {"original", "details", "save_document"}:
         raise ValueError("未知工单操作")
     issue = bound_issue(actor["repo"], request)
+    if action == "original":
+        return {
+            "original": {
+                "url": issue["html_url"],
+                "title": issue["title"],
+                "body": issue.get("body") or "",
+                "state": issue["state"],
+                "status": issue_status((label["name"] for label in issue["labels"]), issue["state"]),
+            }
+        }
     document = design_document(root, issue.get("body"))
     if action == "details":
         if document:
@@ -338,13 +353,11 @@ def project_row(root, receipts, actor, row):
     number = row["number"]
     repo = actor["repo"]
     labels = [label["name"] for label in row["labels"]]
-    statuses = [v.removeprefix("status:") for v in labels if v.startswith("status:")]
-    status = statuses[0] if len(statuses) == 1 else row["state"]
     markers = sorted(work_items.request_ids(row.get("body")))
     item = {
         "number": number,
         "title": row["title"],
-        "status": status,
+        "status": issue_status(labels, row["state"]),
         "url": row["html_url"],
         "updated": row["updated_at"],
         "creator": (row.get("user") or {}).get("login") or "",
@@ -517,9 +530,13 @@ def main():
             raise AccessDenied("当前登录账号已切换")
         if args.request:
             try:
-                result = issue_request(args.repo, actor, json.loads(args.request.read_text(encoding="utf-8")))
+                request = json.loads(args.request.read_text(encoding="utf-8"))
+                result = issue_request(args.repo, actor, request)
             except (ValueError, KeyError, OSError, TypeError) as error:
                 result = {"error": str(error)}
+            else:
+                if request.get("action") == "original" and session_actor(args.repo, args.editor_session) != actor:
+                    raise SessionChanged("读取原工单期间账号已切换")
         elif args.access_only:
             result = {"access": actor}
         elif args.delta:
