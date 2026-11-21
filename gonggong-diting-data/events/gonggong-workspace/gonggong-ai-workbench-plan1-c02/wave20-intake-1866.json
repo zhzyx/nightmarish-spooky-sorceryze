@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-c02",
+  "event_id": "wave20-intake-1866",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1866",
+  "occurred_at": "2026-11-21T05:28:23.867507+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1866,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T05:28:22Z",
+    "accepted_dependencies": {
+      "1868": "f36cc2bf1b14028a0d7abadd04772536a65dc465"
+    },
+    "title": "[方案一 C02] 建立模块和工单关系"
+  },
+  "evidence_refs": [],
+  "sha256": "377f09105e2cc89d18256b3a18f2d939c3359d334b52dcf527951cfcbda60668"
+}

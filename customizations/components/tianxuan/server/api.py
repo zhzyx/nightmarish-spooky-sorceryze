@@ -65,6 +65,7 @@ from schemas import (
     InviteAcceptRequest,
     InviteCreateRequest,
     IssueCommentCreateRequest,
+    IssueModuleRequest,
     IssueTransitionRequest,
     LoginRequest,
     MemberCreateRequest,
@@ -703,11 +704,23 @@ def create_app(
         actor: ActorDep,
         status: str | None = Query(default=None),
         requirement_id: str | None = Query(default=None),
+        project: str | None = Query(default=None),
+        module_id: str | None = Query(default=None),
     ) -> dict[str, list[dict[str, Any]]]:
-        issues = store.list_issues(actor, requirement_id)
+        issues = store.list_issues(actor, requirement_id, project=project, module_id=module_id)
         if status is not None:
             issues = [issue for issue in issues if issue["status"] == status]
         return {"issues": issues}
+
+    @app.get("/api/v1/issues/{issue_id}")
+    def read_issue(issue_id: str, actor: ActorDep) -> dict[str, Any]:
+        return cast(dict[str, Any], store.read_issue(actor, issue_id))
+
+    @app.put("/api/v1/issues/{issue_id}/module")
+    def set_issue_module(
+        issue_id: str, payload: IssueModuleRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(dict[str, Any], store.set_issue_module(actor, issue_id, project, payload.module_id))
 
     @app.patch("/api/v1/issues/{issue_id}")
     def transition_issue(issue_id: str, payload: IssueTransitionRequest, actor: ActorDep) -> dict[str, Any]:
