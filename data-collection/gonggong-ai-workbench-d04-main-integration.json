@@ -1,0 +1,60 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d04",
+  "issue_number": 1863,
+  "integration_base": "0576491bc51fad512e819cab7aa1f78fdd75c6ed",
+  "manual_design": {
+    "document_id": "doc_8bcb14a9f62a467fad6ab075fe9f24fd",
+    "reopened": [
+      {
+        "author": "usr_1cdc7b163b0b43e590c23fa16e4bbcca",
+        "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+        "paragraph": 2,
+        "selected": "第二段 · 手写",
+        "version": 1
+      },
+      {
+        "author": "usr_1cdc7b163b0b43e590c23fa16e4bbcca",
+        "body": "设定与目标\n保留换行\n\n第二段 · 手写\n\n第三段 · 复审",
+        "paragraph": 3,
+        "selected": "第三段 · 复审",
+        "version": 2
+      }
+    ],
+    "stale_draft_retained": true,
+    "write_receipts": [
+      {
+        "method": "POST",
+        "path": "/api/v1/docs",
+        "service_status": 200,
+        "client_status": 200
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/docs/doc_8bcb14a9f62a467fad6ab075fe9f24fd",
+        "service_status": 200,
+        "client_status": 503
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/docs/doc_8bcb14a9f62a467fad6ab075fe9f24fd",
+        "service_status": 200,
+        "client_status": 200
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/docs/doc_8bcb14a9f62a467fad6ab075fe9f24fd",
+        "service_status": 409,
+        "client_status": 409
+      }
+    ],
+    "retry_after_lost_success": "one committed revision"
+  },
+  "editor_sha256": "6dbd472cb49bfd3d5593fb2f231f235260f6c261f3a8cfe96db7b86cc13e7b95",
+  "existing_document_reads": [
+    true,
+    true,
+    true,
+    true
+  ],
+  "observed_at": "2026-11-21T16:57:17.325956+00:00"
+}

@@ -18,6 +18,7 @@ from unittest.mock import patch
 import uvicorn
 from editor_test_isolation import copy_editor
 from run_unified_settings_native import sanitized_environment
+from starlette.responses import Response
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "customizations/components/tianxuan/server"))
@@ -27,13 +28,15 @@ from api import create_app  # noqa: E402
 from tianxuan_core import Tianxuan  # noqa: E402
 
 
-def exercise(root, binary):
+def exercise(root, binary, manual=False):
     with patch.dict(os.environ, {"GONGGONG_WORKSPACE": ""}):
         editor = copy_editor(binary, root / "engine")
     project = root / "project"
     project.mkdir()
     (project / "project.godot").write_text('config_version=5\n[application]\nconfig/name="D02"\n')
     shutil.copyfile(Path(__file__).with_name("workbench_documents.gd"), project / "probe.gd")
+    if manual:
+        shutil.copyfile(Path(__file__).with_name("workbench_document_edits.gd"), project / "edits.gd")
     store = Tianxuan(str(root / "business.sqlite"))
     user = store.register("studio", "reader@example.invalid", secrets.token_urlsafe(24))
     actor = user["user_id"]
@@ -51,6 +54,7 @@ def exercise(root, binary):
         "TIANXUAN_TENANT_ID": user["tenant_id"],
     }
     reads = []
+    writes = []
     with patch.dict(os.environ, modes), socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
         api = create_app(store)
@@ -58,7 +62,13 @@ def exercise(root, binary):
         @api.middleware("http")
         async def observe(request, call_next):
             response = await call_next(request)
-            reads.append((request.url.path, response.status_code))
+            if manual and request.method in {"POST", "PATCH"}:
+                server_status = response.status_code
+                if len(writes) == 1 and request.method == "PATCH" and server_status == 200:
+                    response = Response(status_code=503)  # Committed write with a lost success response.
+                writes.append((request.method, request.url.path, server_status, response.status_code))
+            if request.method == "GET":
+                reads.append((request.url.path, response.status_code))
             return response
 
         service = uvicorn.Server(uvicorn.Config(api, log_level="error", access_log=False))
@@ -77,6 +87,9 @@ def exercise(root, binary):
                 TIANXUAN_PROJECT="studio/game",
                 D02_EXPECT=json.dumps(fixtures),
             )
+            env.pop("D04_AUTHOR", None)
+            if manual:
+                env["D04_AUTHOR"] = actor
             result = subprocess.run(
                 [str(editor), "--headless", "--editor", "--path", str(project), "--script", "res://probe.gd"],
                 env=env,
@@ -105,6 +118,30 @@ def exercise(root, binary):
                 (second["id"], 99, 404),
             ):
                 assert (f"/api/v1/docs/{id_}/versions/{version}", code) in reads
+            if manual:
+                observations = [
+                    line.removeprefix("D04_CHECKS=") for line in output.splitlines() if line.startswith("D04_CHECKS=")
+                ]
+                assert len(observations) == 1
+                edits = json.loads(observations[0])
+                created = store.get_doc(edits["document_id"])
+                assert created["created_by"] == actor and created["version"] == 2 and created["title"] == "手工设计"
+                assert len(store.list_docs(actor)) == 3
+                for observed in edits["reopened"]:
+                    revision = store.version(created["id"], observed["version"])
+                    assert revision["body_md"] == observed["body"] and revision["author"] == observed["author"] == actor
+                path = "/api/v1/docs/" + created["id"]
+                assert writes == [
+                    ("POST", "/api/v1/docs", 200, 200),
+                    ("PATCH", path, 200, 503),
+                    ("PATCH", path, 200, 200),
+                    ("PATCH", path, 409, 409),
+                ]
+                edits["write_receipts"] = [
+                    {"method": method, "path": route, "service_status": server, "client_status": client}
+                    for method, route, server, client in writes
+                ]
+                edits["retry_after_lost_success"] = "one committed revision"
         finally:
             service.should_exit = True
             thread.join(timeout=10)
@@ -112,6 +149,7 @@ def exercise(root, binary):
     return {
         "editor_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
         "state": "passed",
+        **({"manual_design": edits} if manual else {}),
         "native_selections": trace,
         "service_reads": reads,
         "same_title": True,
@@ -125,8 +163,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--manual", action="store_true", help="Also exercise manual creation, save, retry and reopen")
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="workbench-documents-") as directory:
-        result = exercise(Path(directory), args.godot.resolve())
+        result = exercise(Path(directory), args.godot.resolve(), manual=args.manual)
     args.report.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("Passed native document and paragraph readback")

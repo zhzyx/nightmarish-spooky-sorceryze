@@ -1,0 +1,181 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d04",
+  "issue_number": 1863,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1863",
+  "observed_at": "2026-11-21T16:14:23.067697+00:00",
+  "baseline": "25d67bedb29eb7c0947e767be8ad435054853ab4",
+  "dispatch_event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d04/dispatch-4cf7cc26fff64679b9b5007ececd3dd1.json",
+  "intake": {
+    "status": "in-progress",
+    "upstream_accepted": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1865#issuecomment-7065042042",
+    "d04_comment_count_at_intake": 0,
+    "upstream_account_macos": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7060361368",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7062658872"
+    ],
+    "macos_d04_run": null
+  },
+  "source_sha256": {
+    "editor/docks/workbench/business_session.gd": "0200ac800c9e04da2e84763ffd0af0e6ecd8abd813c70808394a93081aadc312",
+    "tests/editor/workbench_documents.gd": "d0b510fc72ff8925fc10733dde3806944b0445565a6e9461fc3fe6c201af8716",
+    "tests/editor/workbench_document_edits.gd": "5826f3732229d49a1a9c7bf428063a50fb6780d1ff7a6970c0f3d1a276f73979",
+    "tests/editor/run_workbench_documents.py": "5e57a20ef1e0735e57e2896a607e55357191c2629b45a8564fca5a85c9fedd1c",
+    "design-docs/gonggong-ai-workbench-d04.md": "69865734f6204ad8bb329ae5b1e968b550aa3baa542e23eeb59dcff25bdaa0d8"
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "consumer": "editor/docks/workbench/business_session.gd -> BusinessSession.gen.h -> AIWorkbenchSidebar.cpp -> native editor",
+    "generated_header_sha256": "e76d269785c2098a2cf53706e8a8ee4a8aeec5bf28a391c78815716a4ef04469",
+    "editor_sha256": "4f075602ffb9c551105953c0c2bd3aba84f6ec5fb5e0ec5d2037fcd821cb9937",
+    "toolchain": "VS 14.5 / Windows SDK 10.0.26100.0",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no --cache-readonly -j8",
+    "exit_code": 0
+  },
+  "native_test": {
+    "command": "python tests/editor/run_workbench_documents.py --manual --godot <candidate-editor> --report <report-path>",
+    "fixture": "Isolated headless native sidebar and loopback Tianxuan accounts service with a temporary database. No model credentials or chat actions.",
+    "exit_code": 0,
+    "report_sha256": "754bef27703d43321be55505467df5235adb5a46490bf31e9c3ebc6c549fda7b",
+    "editor_sha256": "4f075602ffb9c551105953c0c2bd3aba84f6ec5fb5e0ec5d2037fcd821cb9937",
+    "state": "passed",
+    "manual_design": {
+      "document_id": "doc_5c66b0215d9242889e01bc38b68bdd78",
+      "reopened": [
+        {
+          "author": "usr_909441ee38a84f3fa3303a695095d049",
+          "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+          "paragraph": 2,
+          "selected": "第二段 · 手写",
+          "version": 1
+        },
+        {
+          "author": "usr_909441ee38a84f3fa3303a695095d049",
+          "body": "设定与目标\n保留换行\n\n第二段 · 手写\n\n第三段 · 复审",
+          "paragraph": 3,
+          "selected": "第三段 · 复审",
+          "version": 2
+        }
+      ],
+      "stale_draft_retained": true,
+      "write_receipts": [
+        {
+          "method": "POST",
+          "path": "/api/v1/docs",
+          "service_status": 200,
+          "client_status": 200
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/docs/doc_5c66b0215d9242889e01bc38b68bdd78",
+          "service_status": 200,
+          "client_status": 503
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/docs/doc_5c66b0215d9242889e01bc38b68bdd78",
+          "service_status": 200,
+          "client_status": 200
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/docs/doc_5c66b0215d9242889e01bc38b68bdd78",
+          "service_status": 409,
+          "client_status": 409
+        }
+      ],
+      "retry_after_lost_success": "one committed revision"
+    },
+    "native_selections": [
+      {
+        "document_id": "doc_7fc4324f858041e0a07f99d17ceb9dd9",
+        "paragraph": 2,
+        "selected_text": "第一个目标\n延续一行",
+        "version": 1
+      },
+      {
+        "document_id": "doc_0cb9ab59336b4c549ebaf7a06b12ad5a",
+        "paragraph": 2,
+        "selected_text": "第二个目标",
+        "version": 2
+      },
+      {
+        "document_id": "doc_0cb9ab59336b4c549ebaf7a06b12ad5a",
+        "paragraph": 2,
+        "selected_text": "原始段落",
+        "version": 1
+      }
+    ],
+    "service_reads": [
+      [
+        "/api/v1/auth/me",
+        200
+      ],
+      [
+        "/api/v1/docs",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_7fc4324f858041e0a07f99d17ceb9dd9/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_0cb9ab59336b4c549ebaf7a06b12ad5a/versions/2",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_0cb9ab59336b4c549ebaf7a06b12ad5a/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_0cb9ab59336b4c549ebaf7a06b12ad5a/versions/99",
+        404
+      ],
+      [
+        "/api/v1/docs/doc_7fc4324f858041e0a07f99d17ceb9dd9/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_5c66b0215d9242889e01bc38b68bdd78/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_5c66b0215d9242889e01bc38b68bdd78/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_5c66b0215d9242889e01bc38b68bdd78/versions/2",
+        200
+      ],
+      [
+        "/api/v1/docs",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_5c66b0215d9242889e01bc38b68bdd78/versions/2",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_5c66b0215d9242889e01bc38b68bdd78/versions/1",
+        200
+      ],
+      [
+        "/api/v1/docs/doc_7fc4324f858041e0a07f99d17ceb9dd9/versions/1",
+        200
+      ]
+    ],
+    "same_title": true,
+    "readonly_body": true,
+    "invalid_targets_cleared": true,
+    "signout_cleared": true
+  },
+  "handoff": {
+    "producer": "d04",
+    "receiver": "parent Codex session for independent candidate verification and main delivery",
+    "method": "editor-dependency-handoff/bind-consumer-release",
+    "verified_scope": "Windows x86_64 compiled editor candidate and temporary Tianxuan service"
+  }
+}
