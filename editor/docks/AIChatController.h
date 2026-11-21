@@ -54,6 +54,10 @@ struct AIChatSessionData
 	Vector<String> arrToolDetails;
 	String strDraft;
 	Array arrDraftImages;
+	Array arrDraftEditorReferences;
+	// Live node identities are deliberately never restored from disk.
+	ObjectID idDraftScene;
+	ObjectID idDraftNode;
 	Array arrQueuedMessages;
 	bool bQueuePaused = false;
 	String strModel;

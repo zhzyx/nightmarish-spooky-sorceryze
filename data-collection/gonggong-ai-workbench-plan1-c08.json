@@ -1,0 +1,105 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-c08",
+  "issue_number": 1839,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1839",
+  "observed_at": "2026-11-21T10:16:22.603628+00:00",
+  "platform": "macOS arm64, native headless editor and loopback model",
+  "reviewed_base": "b32cc374f2ccd76f01334141365b65d5ae2cd378",
+  "source_sha256": {
+    "editor/docks/AIChatController.h": "0c9177eea69f4e325b7fde76a58b292ea4ef120af3281f9c379265db1c9bc445",
+    "editor/docks/ai_chat_dock.cpp": "dab9ed6852cc5f8e99807a86db507de65d5274af665b36d367fbb107607851cc",
+    "editor/docks/ai_chat_dock.h": "f0b9897e302037c7180e2f782c1f9a1942b36ca719cdd4c4456ef7ca80141e0f",
+    "editor/docks/ai_chat_external_chat.cpp": "98234ac303df0df355ab557b041ce36df144eabd6920ee9552f0a5b04c8349e4",
+    "editor/docks/ai_chat_host_commands.cpp": "c5e2885b3a3cea62e921ea6fc8059d093fbcb37befb77c2b27b5f30d86cf6d55",
+    "editor/docks/daqian/spatial_workbench.gd": "6e2fc36e8be71c4e63ae014c406b60f410e376afd59a947d55ad30bc2adb4271",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "dd4939323eafe4de6219ab5465c6dfcd629194ce94c3ccb436c6d8c273118de2",
+    "tests/editor/run_tianshu_spatial.py": "b81b1edddfd37b60d6de2b78bb55c511056a834cf5b84bb86c07070bcce65f24",
+    "tests/editor/tianshu_spatial.gd": "5d0733bfbf5b0dcbfe5b1f8c5bdbf9468ea6b6b626d38071b43175d27e917211"
+  },
+  "source_of_selection": "Selected a real MeshInstance3D in a saved scene and used the Tianshu spatial panel to open the bound issue in its original composer. Issue fixture and identity are isolated.",
+  "independent_regression": {
+    "executable_sha256": "7d718c837dd774bb16b0c8dd88b0da0a83bae313257cd2bc38b38c10f5aef9ec",
+    "sent_model_requests": 1,
+    "source_issue_in_request": true,
+    "frozen_message_references": [
+      {
+        "kind": "editor",
+        "object_id": "res://reference-a.tscn#Hero",
+        "revision": "ea33a9a19127a7ee07bd67ea9320c851193afee226fd4f2017a82725c0cd5758"
+      },
+      {
+        "kind": "editor",
+        "object_id": "res://hero-mesh.tres",
+        "revision": "495a5662ca84bcde04022009797fb83556e9a2620acb6b5a582e807d35f4fd1e"
+      }
+    ],
+    "refused": [
+      {
+        "after": "引用已失效 · res://reference-a.tscn#Branch/Leaf",
+        "before": "编辑器引用 · res://reference-a.tscn#Branch/Leaf",
+        "draft": "must stay in draft: pending removal of ancestor",
+        "reason": "pending removal of ancestor",
+        "visible": true
+      },
+      {
+        "after": "引用已失效 · res://reference-a.tscn#Hero",
+        "before": "编辑器引用 · res://reference-a.tscn#Hero",
+        "draft": "must stay in draft: same name and path with a new instance",
+        "reason": "same name and path with a new instance",
+        "visible": true
+      },
+      {
+        "after": "引用已失效 · res://reference-a.tscn#Hero",
+        "before": "引用已失效 · res://reference-a.tscn#Hero",
+        "draft": "must stay in draft: stale node path",
+        "reason": "stale node path",
+        "visible": true
+      },
+      {
+        "after": "引用已失效 · res://reference-a.tscn#Renamed",
+        "before": "编辑器引用 · res://reference-a.tscn#Renamed",
+        "draft": "must stay in draft: same file path with different bytes",
+        "reason": "same file path with different bytes",
+        "visible": true
+      },
+      {
+        "after": "引用已失效 · res://reference-a.tscn#Renamed",
+        "before": "引用已失效 · res://reference-a.tscn#Renamed",
+        "draft": "must stay in draft: deleted external resource",
+        "reason": "deleted external resource",
+        "visible": true
+      },
+      {
+        "after": "引用已失效 · res://reference-a.tscn#Hero",
+        "before": "引用已失效 · res://reference-a.tscn#Hero",
+        "draft": "must stay in draft: same-named node in newly opened scene",
+        "reason": "same-named node in newly opened scene",
+        "visible": true
+      }
+    ],
+    "history_unchanged": true,
+    "reopened_drafts": [
+      "stale instance binding",
+      "legacy editable preamble"
+    ],
+    "original_spatial_checks": true,
+    "spatial_restart_exit": 0
+  },
+  "isolated_candidate_signed_app_sha256": "7146b6f1375dc232bfb7a89343b6904b70e2dd5b3f71a64657049f2dd5f7e789",
+  "integrated_consultation": {
+    "two_turns_preserved": true,
+    "default_consultation": true,
+    "six_layout_processes": 6,
+    "signed_app_sha256": "c66743651274ed64166a635239184cc0c23531475d93d428b97fdf64aa560bbc"
+  },
+  "evidence_sha256": {
+    "integrated/premerge/reference.json": "c94c43c0e83e3fcfd908cf399eb4bd6302b4f0f7082a7103fa98e1797470fe8a",
+    "integrated/premerge/spatial.json": "e736dbe997ecad22e779d39514b920f5668aa9303a9957152067d1836af048c7",
+    "integrated/premerge/layout.json": "48ade3073a063d27cc08dee0f8a755e2cab3d2fc0da280795ebb853398cad614",
+    "integrated/premerge/consultation.json": "839d84b9b7d422fcb4652040e8c579475bc2f1119e947b8c9c5be46a20523301",
+    "c08/signed-references.json": "1ac4254506fe539ba35968c81c6789eddb61fe6b6b87a5828160dfd0dd4ad108",
+    "c08-review/original-scope.json": "aa66feaba69b43532552d6d5f94f79df031c94a95b2da2deeacab0f2ce5d0d55",
+    "c08-review/run.py": "b800b25d5cdda621e6c388066379f7efdc77195ee58a6ea51fbee03091e4ad65"
+  },
+  "scope": "The tracked card covers validity of already attached references. General 2D/3D draft selection and FileSystem/Inspector adapters remain on U07/U09."
+}

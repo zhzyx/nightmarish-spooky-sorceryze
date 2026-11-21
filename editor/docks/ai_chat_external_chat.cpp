@@ -169,6 +169,9 @@ String AIChatDock::_chat_instruction_blocked_reason(bool p_force_consultation) c
 	if (!input->get_text().is_empty() || input->has_ime_text()) {
 		return "draft_not_empty";
 	}
+	if (!GetAiSession().arrDraftEditorReferences.is_empty()) {
+		return "draft_editor_reference_present";
+	}
 	if (!GetAiSession().arrDraftImages.is_empty()) {
 		return "draft_images_present";
 	}
