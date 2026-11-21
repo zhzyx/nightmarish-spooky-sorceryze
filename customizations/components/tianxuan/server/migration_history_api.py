@@ -6,7 +6,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-OPERATIONS = ("branches", "search", "detail", "body", "commits", "commit", "file", "attachment")
+OPERATIONS = ("branches", "search", "detail", "body", "commits", "commit", "tags", "tag_object", "file", "attachment")
 HISTORY_TOOLS = frozenset("migration.history." + name for name in OPERATIONS)
 
 
@@ -39,6 +39,11 @@ class Commit(Scope):
     commit: str = Field(pattern="^[0-9a-f]{40}([0-9a-f]{24})?$")
 
 
+class TagObject(Scope):
+    oid: str = Field(pattern="^[0-9a-f]{40}([0-9a-f]{24})?$")
+    byte_offset: int = Field(default=0, ge=0)
+
+
 class File(Scope):
     commit: str | None = Field(default=None, pattern="^[0-9a-f]{40}([0-9a-f]{24})?$")
     path: str = Field(min_length=1, max_length=1024)
@@ -55,7 +60,7 @@ class Attachment(Scope):
 
 
 def history_routes(store, actor_dependency, native_store):
-    from history_git import commit_mapping, list_branches, list_commits, read_file
+    from history_git import commit_mapping, list_branches, list_commits, list_tags, read_file, read_tag_object
     from history_records import read_attachment, record_detail, search_records
     from migration_status import read_import_status
 
@@ -69,6 +74,8 @@ def history_routes(store, actor_dependency, native_store):
             "body": Body,
             "commits": Commits,
             "commit": Commit,
+            "tags": Page,
+            "tag_object": TagObject,
             "file": File,
             "attachment": Attachment,
         }[operation]
@@ -103,6 +110,10 @@ def history_routes(store, actor_dependency, native_store):
                 return list_commits(*scope, **args)
             if operation == "commit":
                 return commit_mapping(*scope, **args)
+            if operation == "tags":
+                return list_tags(*scope, **args)
+            if operation == "tag_object":
+                return read_tag_object(*scope, **args)
             if operation == "file":
                 args["commit"] = args["commit"] or publication["source_revision"]
                 return read_file(*scope, **args)
@@ -114,7 +125,9 @@ def history_routes(store, actor_dependency, native_store):
 
     @router.get("/{operation}")
     def read(
-        operation: Literal["branches", "search", "detail", "body", "commits", "commit", "file", "attachment"],
+        operation: Literal[
+            "branches", "search", "detail", "body", "commits", "commit", "tags", "tag_object", "file", "attachment"
+        ],
         request: Request,
         actor: str = Depends(actor_dependency),
     ):
