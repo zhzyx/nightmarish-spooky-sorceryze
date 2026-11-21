@@ -84,6 +84,8 @@
 
 ### B06
 
+[交付清单与验证](gonggong-ai-workbench-b06.md)
+
 **核定原生构建与回退边界** · [B06 #1872](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1872)
 
 给外壳、资源包与宿主桥各登记实际构建输入及上一可用版本。

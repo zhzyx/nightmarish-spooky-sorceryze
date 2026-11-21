@@ -1,0 +1,65 @@
+{
+  "issue_number": 1872,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1872",
+  "request_id": "gonggong-ai-workbench-plan1-b06",
+  "source_baseline": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+  "artifacts": {
+    "design-docs/gonggong-ai-workbench-b06.md": "fdd30b74ff2ff005b4f03424569325a2680361c0"
+  },
+  "review": "独立复核安装根选择、原生编译输入及实际回退步骤，当前 Windows 安装件同一二进制实测 UI 48→96→48 和七种拒绝，宿主桥三次状态回读成功。",
+  "verification": {
+    "checked": {
+      "installed_revision": "22ba06d9543c16ca5e91c0a5c8a4c8fc2545a4f4",
+      "host_reselection": [
+        {
+          "revision": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+          "status": {
+            "ok": true,
+            "framework_version": "0.10.0",
+            "action": "status"
+          },
+          "bridge_blob": "1b7556815ac5c518ff9b798cefb17d2caa497b39"
+        },
+        {
+          "revision": "22ba06d9543c16ca5e91c0a5c8a4c8fc2545a4f4",
+          "status": {
+            "ok": true,
+            "framework_version": "0.10.0",
+            "action": "status"
+          },
+          "bridge_blob": "1b7556815ac5c518ff9b798cefb17d2caa497b39"
+        },
+        {
+          "revision": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+          "status": {
+            "ok": true,
+            "framework_version": "0.10.0",
+            "action": "status"
+          },
+          "bridge_blob": "1b7556815ac5c518ff9b798cefb17d2caa497b39"
+        }
+      ],
+      "ui_package": {
+        "editor_sha256": "fcb08b5401d18c129368bc3ee431b24cfe64aa788cde509a49871495017190e9",
+        "installed_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "candidate_sha256": "3dc6d3571390c8990781f25b1b562ed6f75774f8e34c80c0920daa821c50be01",
+        "cases": {
+          "installed": "48 应用更改",
+          "selected": "96 应用候选",
+          "rollback": "48 应用更改",
+          "independent_self_update_slot": "96 应用候选",
+          "wrong_pin": "blocked",
+          "missing_pin": "blocked",
+          "project_path": "blocked",
+          "missing_selected": "blocked",
+          "damaged_payload": "blocked",
+          "incompatible": "blocked",
+          "missing_default": "blocked"
+        }
+      },
+      "prior_native_build_receipt": "data-collection/tianshu-board-runtime-package-1404.json"
+    },
+    "source_links_verified": 13
+  },
+  "observed_at": "2026-11-21T05:35:06.699902+00:00"
+}
