@@ -200,6 +200,8 @@ var toolbar: HFlowContainer
 var advanced_bar: HFlowContainer
 var historical_issue_button: Button
 var historical_issue_dialog: AcceptDialog
+var archive_history_button: Button
+var archive_history_dialog: AcceptDialog
 var advanced_button: Button
 var refresh_button: Button
 var empty_state: CenterContainer
@@ -327,6 +329,7 @@ func _ready() -> void:
 	connection_button.accessibility_name = "工作区连接"
 	refresh_button = _button(row, "刷新", _manual_refresh)
 	historical_issue_button = _button(row, "历史工单", _open_historical_issue)
+	archive_history_button = _button(row, "多宝历史", _open_archive_history)
 	advanced_button = _button(row, "筛选与跟进 ▾", _toggle_advanced)
 	advanced_bar = HFlowContainer.new()
 	advanced_bar.hide()
@@ -1477,6 +1480,126 @@ func _open_tianxuan() -> void:
 		issue_inspector.feedback.text = "天璇不可达：" + str(result.get("error", "未知错误"))
 		return
 	_show_tianxuan_dialog(url, result.get("data", {}), item)
+
+
+class ArchiveHistory extends AcceptDialog:
+	var project := LineEdit.new()
+	var file_path := LineEdit.new()
+	var search := Button.new()
+	var more := Button.new()
+	var commits := ItemList.new()
+	var details := TextEdit.new()
+	var source := Button.new()
+	var query := PackedStringArray()
+	var next_offset := -1
+	var mapping := {}
+	var generation := 0
+	var selection_serial := 0
+	var execute: Callable
+
+	func _ready() -> void:
+		title = "多宝历史"
+		ok_button_text = "关闭"
+		var box := VBoxContainer.new()
+		add_child(box)
+		var inputs := HBoxContainer.new()
+		box.add_child(inputs)
+		project.text = "workspace"
+		project.accessibility_name = "归档项目"
+		project.placeholder_text = "归档项目"
+		inputs.add_child(project)
+		file_path.placeholder_text = "仓库内文件路径（可选）"
+		file_path.accessibility_name = "仓库内文件路径"
+		file_path.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		inputs.add_child(file_path)
+		search.text = "查询提交"
+		search.pressed.connect(_search)
+		inputs.add_child(search)
+		commits.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		box.add_child(commits)
+		commits.item_selected.connect(_select_commit)
+		more.text = "更多提交"
+		more.pressed.connect(_load_page)
+		box.add_child(more)
+		more.hide()
+		details.editable = false
+		details.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		box.add_child(details)
+		source.text = "查看原始提交"
+		source.pressed.connect(_show_source)
+		box.add_child(source)
+		source.hide()
+		confirmed.connect(queue_free)
+		close_requested.connect(queue_free)
+
+	func _search() -> void:
+		generation += 1
+		query = PackedStringArray(["archive-history", "--project=" + project.text.strip_edges()])
+		if not file_path.text.is_empty():
+			query.append("--path=" + file_path.text)
+		next_offset = 0
+		commits.clear()
+		details.text = ""
+		source.hide()
+		_load_page()
+
+	func _load_page() -> void:
+		var version := generation
+		var offset := next_offset
+		more.hide()
+		var result: Dictionary = await execute.call(Array(query) + ["--offset=" + str(offset)])
+		if version != generation or is_queued_for_deletion():
+			return
+		if not result.get("ok", false):
+			details.text = "无法读取提交：" + str(result.get("error", "未知错误"))
+			return
+		if offset == 0:
+			query.append("--revision=" + str(result.data.revision))
+		for item in result.data.items:
+			var row := commits.add_item("%s  %s" % [str(item.oid).left(12), item.subject])
+			commits.set_item_metadata(row, item.oid)
+		next_offset = -1 if result.data.next_offset == null else int(result.data.next_offset)
+		more.visible = next_offset >= 0
+		if commits.item_count == 0:
+			details.text = "没有匹配的提交"
+
+	func _select_commit(row: int) -> void:
+		selection_serial += 1
+		var current_selection := selection_serial
+		var oid: String = commits.get_item_metadata(row)
+		var version := generation
+		source.hide()
+		details.text = "正在读取 " + oid
+		var result: Dictionary = await execute.call(Array(query) + ["--commit=" + oid])
+		if version != generation or current_selection != selection_serial or is_queued_for_deletion() or not commits.is_selected(row):
+			return
+		if not result.get("ok", false):
+			details.text = "无法读取修订：" + str(result.get("error", "未知错误"))
+			return
+		mapping = result.data.source
+		source.show()
+		if not result.data.file_error.is_empty():
+			details.text = result.data.file_error
+		elif result.data.file == null:
+			_show_source()
+		else:
+			var file: Dictionary = result.data.file
+			details.text = "%s @ %s\n\n%s" % [file.path, oid, file.text]
+
+	func _show_source() -> void:
+		details.text = "原始提交：%s\n提交者：%s\n提交树：%s\n归档版本：%s" % [
+			mapping.source_id, mapping.committer.name, mapping.tree, mapping.revision]
+
+
+func _open_archive_history() -> void:
+	if is_instance_valid(archive_history_dialog):
+		archive_history_dialog.queue_free()
+	var dialog := ArchiveHistory.new()
+	archive_history_dialog = dialog
+	dialog.execute = _tianxuan_command
+	add_child(dialog)
+	dialog.visibility_changed.connect(_sync_modal_input, CONNECT_DEFERRED)
+	dialog.popup_centered_clamped(Vector2i(680, 500))
 
 
 func _open_historical_issue(original_id := "", parent_dialog: AcceptDialog = null) -> void:
@@ -2681,7 +2804,7 @@ func _gate_visibility(opened: bool) -> void:
 	result_count.visible = current.is_empty()
 	connection_button.text = "" if opened else "工作区连接"
 	for child in toolbar.get_children():
-		child.visible = opened or child in [refresh_button, connection_button, historical_issue_button]
+		child.visible = opened or child in [refresh_button, connection_button, historical_issue_button, archive_history_button]
 	return_button.visible = opened and not current.is_empty()
 	search.visible = opened and current.is_empty()
 	pending_menu.visible = opened and current.is_empty()
@@ -2721,6 +2844,8 @@ func _access_denied(root: String, user_id: String, reason: String) -> void:
 
 
 func _forget(reason: String) -> void:
+	if is_instance_valid(archive_history_dialog):
+		archive_history_dialog.queue_free()
 	if is_instance_valid(historical_issue_dialog):
 		historical_issue_dialog.queue_free()
 	_leave_issue_inspector()

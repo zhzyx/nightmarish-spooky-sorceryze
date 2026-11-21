@@ -34,6 +34,13 @@ class BridgeError(Exception):
     """API 调用或参数错误。"""
 
 
+class BridgeHTTPError(BridgeError):
+    def __init__(self, status: int, response: Any):
+        super().__init__(f"HTTP {status}: {response}")
+        self.status = status
+        self.detail = response.get("detail") if isinstance(response, dict) else None
+
+
 def _cache_file(api: str, provider: str, subject: str) -> Path | None:
     setting = os.environ.get("TIANXUAN_TOKEN_CACHE", "")
     if setting.strip().lower() in {"off", "none", "0"}:
@@ -110,7 +117,7 @@ def _request(
             parsed = json.loads(detail)
         except ValueError:
             parsed = detail
-        raise BridgeError(f"HTTP {error.code}: {parsed}") from error
+        raise BridgeHTTPError(error.code, parsed) from error
     except urllib.error.URLError as error:
         raise BridgeError(f"API unreachable: {error.reason}") from error
     if not raw.strip():
@@ -142,6 +149,46 @@ def context(args: argparse.Namespace) -> dict[str, Any]:
         token=args.token,
         params={"system": args.system, "external_id": args.external_id},
     )
+
+
+def archive_history(args: argparse.Namespace) -> dict[str, Any]:
+    """Pin the publication for every page, file and source shown in one search."""
+
+    def read(endpoint: str, **params: str) -> dict[str, Any]:
+        return _request(
+            args.api,
+            "GET",
+            "/api/v1/migration/" + endpoint,
+            actor=args.actor,
+            token=args.token,
+            params={"project": args.project, **params},
+        )
+
+    revision = args.revision
+    if not revision:
+        status = read("status")
+        if not status.get("available") or not status.get("catalog_revision"):
+            raise BridgeError("该项目没有可访问的多宝归档")
+        revision = status["catalog_revision"]
+    query = {"revision": revision}
+    if args.path:
+        query["path"] = args.path
+    if not args.commit:
+        return {**read("history/commits", **query, offset=str(args.offset)), "revision": revision}
+    file = None
+    file_error = ""
+    if args.path:
+        try:
+            file = read("history/file", **query, commit=args.commit)
+        except BridgeHTTPError as error:
+            if (error.status, error.detail) not in (
+                (404, "Archive item unavailable"),
+                (422, "Invalid or unsupported archive content or query"),
+            ):
+                raise
+            file_error = "该修订没有可预览的文本文件：" + args.path
+    mapping = read("history/commit", revision=revision, commit=args.commit)
+    return {"source": mapping, "file": file, "file_error": file_error}
 
 
 def historical_issue(args: argparse.Namespace) -> dict[str, Any]:
@@ -347,6 +394,14 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--system", default="tianshu")
     p.add_argument("--external-id", required=True)
     p.set_defaults(func=context)
+
+    p = sub.add_parser("archive-history", help="读取多宝归档提交、文件及原始映射")
+    p.add_argument("--project", required=True)
+    p.add_argument("--revision")
+    p.add_argument("--path", default="")
+    p.add_argument("--commit")
+    p.add_argument("--offset", default=0, type=int)
+    p.set_defaults(func=archive_history)
 
     p = sub.add_parser("historical-issue", help="只读打开已归档的历史工单")
     p.add_argument("--project", required=True)

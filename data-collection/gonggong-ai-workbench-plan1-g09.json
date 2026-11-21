@@ -1,0 +1,31 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g09",
+  "issue_number": 1780,
+  "base": "217cd6c7641af1b6bddeed284599992d9f800a91",
+  "platform": "Windows x86_64, headless native editor",
+  "entry": "天枢 > 多宝历史 > 查询提交 > 选择修订 > 查看原始提交",
+  "editor_sha256": "5933459b9f31d32121fc2141c7238866665265185430f3484bbca42c8b8766c3",
+  "catalog_revision": "84a811b20dc3d75d6dc45ade480f5658bb701123c093e226cd2836a8eacc1b46",
+  "reads": [
+    {
+      "file": "该修订没有可预览的文本文件：art/同名.txt",
+      "oid": "2b5ba5bc86c09a12ee153fbe6402c3c262fbc965",
+      "source": "原始提交：github:sample/g09/commit/2b5ba5bc86c09a12ee153fbe6402c3c262fbc965\n提交者：G09\n提交树：4b825dc642cb6eb9a060e54bf8d69288fbee4904\n归档版本：84a811b20dc3d75d6dc45ade480f5658bb701123c093e226cd2836a8eacc1b46"
+    },
+    {
+      "file": "art/同名.txt @ 7a6908091f47fe12aa5ade2aeda03f2cd2872031\n\n版本 B\n",
+      "oid": "7a6908091f47fe12aa5ade2aeda03f2cd2872031",
+      "source": "原始提交：github:sample/g09/commit/7a6908091f47fe12aa5ade2aeda03f2cd2872031\n提交者：G09\n提交树：c1a914a76a58ea93dd9443361d13a8e3a3e4c3b3\n归档版本：84a811b20dc3d75d6dc45ade480f5658bb701123c093e226cd2836a8eacc1b46"
+    },
+    {
+      "file": "art/同名.txt @ 91525be43e0b517149b08b649ac1fe3639779e90\n\n版本 A\n",
+      "oid": "91525be43e0b517149b08b649ac1fe3639779e90",
+      "source": "原始提交：github:sample/g09/commit/91525be43e0b517149b08b649ac1fe3639779e90\n提交者：G09\n提交树：f00551148599a566f64d2dad3e8aa6169f5bfb60\n归档版本：84a811b20dc3d75d6dc45ade480f5658bb701123c093e226cd2836a8eacc1b46"
+    }
+  ],
+  "archive": "Isolated Git repository with two contents and a deletion imported via G03 into local Tianxuan; temporary test actor.",
+  "negative_checks": [
+    "stale publication rejected",
+    "deleted path has no text preview; original commit remains accessible"
+  ]
+}
