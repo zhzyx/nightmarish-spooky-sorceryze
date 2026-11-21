@@ -69,6 +69,9 @@ func _ready() -> void:
 	history.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	history.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(history)
+	var reference_host := VBoxContainer.new()
+	reference_host.name = "ModuleReferenceHost"
+	content.add_child(reference_host)
 	composer.name = "ModuleChatInput"
 	composer.custom_minimum_size.y = 70 * EditorInterface.get_editor_scale()
 	composer.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
@@ -105,6 +108,7 @@ func _identity_changed() -> void:
 	comments.clear()
 	drafts.clear()
 	pending_turn.clear()
+	_reset_reference_scope()
 	location_dirty = false
 	composer.clear()
 	history.clear()
@@ -301,10 +305,11 @@ func _switch_to(target: String) -> void:
 	issues.set_item_metadata(0, null)
 	for issue in next_issues:
 		issue_details[issue.id] = issue
-		issues.add_item("#%s  %s" % [issue.number, issue.title])
+		issues.add_item("#%d  %s" % [int(issue.number), issue.title])
 		issues.set_item_metadata(issues.item_count - 1, issue.id)
 		if issue.id == location.get("issue_id"):
 			issues.select(issues.item_count - 1)
+	_reset_reference_scope()
 	_render()
 	composer.text = drafts.get(_draft_key(), "")
 	if content.visible:
@@ -312,15 +317,29 @@ func _switch_to(target: String) -> void:
 
 
 func _choose_issue(index: int) -> void:
-	if busy:
+	if busy or location.get("issue_id") == issues.get_item_metadata(index):
 		return
 	drafts[_draft_key()] = composer.text
 	comments.clear()
 	location.issue_id = issues.get_item_metadata(index)
 	location.position = "module/overview" if location.issue_id == null else "issue/details"
 	location_dirty = true
+	_reset_reference_scope()
 	composer.text = drafts.get(_draft_key(), "")
 	_render()
+
+
+func _reset_reference_scope() -> void:
+	var module_label := "" if module_id.is_empty() else picker.get_item_text(picker.selected)
+	var issue_label := "无关联工单" if location.get("issue_id") == null else issues.get_item_text(issues.selected)
+	get_meta("change_reference_scope").call(module_label, issue_label)
+
+
+func redact_reference(text: String) -> String:
+	if managed_identity and is_instance_valid(session) and session.has_method("redact_credentials"):
+		return session.redact_credentials(text)
+	var token := OS.get_environment("TIANXUAN_TOKEN")
+	return text if token.is_empty() else text.replace(token, "[REDACTED]")
 
 
 func _render() -> void:
@@ -355,6 +374,15 @@ func _uuid() -> String:
 func _send() -> void:
 	if busy or module_id.is_empty() or composer.text.strip_edges().is_empty():
 		return
+	var frozen: Dictionary = get_meta("freeze_references").call(composer.text.strip_edges())
+	if frozen.is_empty():
+		_notice("引用已失效，请移除或重新选择后发送。")
+		return
+	var body: String = frozen.content
+	if body.length() > 8000:
+		_notice("正文与引用合计超过 8000 字符，请缩短后发送。")
+		return
+	var snapshot := {"project": project, "module_id": module_id, "issue_id": location.issue_id, "references": frozen.references}
 	var generation := identity_generation
 	_lock(true)
 	_notice("")
@@ -377,11 +405,10 @@ func _send() -> void:
 		location_dirty = true
 	if await _save_location():
 		var key := _draft_key()
-		var body := composer.text.strip_edges()
 		var turn: Dictionary = pending_turn.get(key, {})
-		if turn.get("content") != body:
+		if turn.get("content") != body or turn.get("context_snapshot") != snapshot:
 			turn = {"id": _uuid(), "content": body, "expected_version": conversation.version,
-				"context_snapshot": {"project": project, "module_id": module_id, "issue_id": location.issue_id, "references": []}}
+				"context_snapshot": snapshot}
 		pending_turn[key] = turn
 		var result := await _request(CONVERSATIONS + "/" + str(location.conversation_id).uri_encode() + "/turns", HTTPClient.METHOD_POST, turn)
 		if generation != identity_generation:
@@ -389,6 +416,7 @@ func _send() -> void:
 		if result.get("id") == location.conversation_id:
 			conversation = result
 			composer.clear()
+			_reset_reference_scope()
 			drafts.erase(key)
 			pending_turn.erase(key)
 			_render()

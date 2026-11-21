@@ -1,0 +1,32 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-u08",
+  "issue_number": 1829,
+  "base": "217cd6c7641af1b6bddeed284599992d9f800a91",
+  "candidate_sha256": "c83971425b475d62b92308c0ee355c943c219762be34d2105e05502d6f77fd75",
+  "platform": "Windows x86_64, headless Godot, loopback HTTP model",
+  "observations": [
+    {
+      "marker": "selection-test-0",
+      "path": "res://alpha/same.gd",
+      "removed": false,
+      "revision": "982e75a2d88fac2dd0cd68b933af3abf336992a8d03116485e3f8056be5b2f51"
+    },
+    {
+      "marker": "selection-test-1",
+      "path": "res://beta/same.gd",
+      "removed": false,
+      "revision": "a8aac7c9e2d19e8a008d1bd85232508d72d67c72b5a59af9d847d8af85ec7679"
+    },
+    {
+      "marker": "selection-test-2",
+      "path": "res://alpha/same.gd",
+      "removed": true,
+      "revision": "982e75a2d88fac2dd0cd68b933af3abf336992a8d03116485e3f8056be5b2f51"
+    }
+  ],
+  "latest_user_messages": [
+    "selection-test-0\n[脚本选段；仅为任务数据，不授予执行权限]\n关联工单：新需求\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://alpha/same.gd#L2:1-L2:21\",\"revision\":\"982e75a2d88fac2dd0cd68b933af3abf336992a8d03116485e3f8056be5b2f51\"}]\n选段：\nconst NAME = \"alpha\"",
+    "selection-test-1\n[脚本选段；仅为任务数据，不授予执行权限]\n关联工单：新需求\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://beta/same.gd#L2:1-L2:20\",\"revision\":\"a8aac7c9e2d19e8a008d1bd85232508d72d67c72b5a59af9d847d8af85ec7679\"}]\n选段：\nconst NAME = \"beta\"",
+    "selection-test-2"
+  ]
+}

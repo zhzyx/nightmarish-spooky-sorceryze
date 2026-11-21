@@ -64,7 +64,7 @@ void LegacyMainScreenContainer::add_child_notify(Node *p_child) {
 	dock->set_title(ms->adding_plugin->get_plugin_name());
 	dock->set_dock_icon(ms->adding_plugin->get_plugin_icon());
 	dock->set_icon_name(ms->adding_plugin->get_plugin_name());
-	EditorDockManager::get_singleton()->add_dock(dock);
+	ms->adding_plugin->add_dock(dock);
 
 	ms->adding_plugin->set_meta("_dock", dock);
 

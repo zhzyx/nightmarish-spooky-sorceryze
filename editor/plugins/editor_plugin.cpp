@@ -104,7 +104,7 @@ void EditorPlugin::add_control_to_dock(DockSlot p_slot, Control *p_control, cons
 	dock->add_child(p_control);
 	legacy_docks[p_control] = dock;
 
-	EditorDockManager::get_singleton()->add_dock(dock);
+	add_dock(dock);
 }
 
 void EditorPlugin::remove_control_from_docks(Control *p_control) {
@@ -132,6 +132,11 @@ void EditorPlugin::remove_control_from_bottom_panel(Control *p_control) {
 #endif
 
 void EditorPlugin::add_dock(EditorDock *p_dock) {
+	ERR_FAIL_NULL(p_dock);
+	const Ref<Script> refScript = get_script();
+	if (refScript.is_valid() && refScript->get_path().begins_with("res://")) {
+		p_dock->set_meta("_editor_plugin_source", refScript->get_path());
+	}
 	EditorDockManager::get_singleton()->add_dock(p_dock);
 }
 
