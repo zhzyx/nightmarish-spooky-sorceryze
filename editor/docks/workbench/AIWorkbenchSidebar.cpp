@@ -28,6 +28,8 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
+#include "AIWorkbenchWindow.h"
+
 #include "core/object/callable_mp.h"
 #include "core/object/class_db.h"
 #include "core/object/script_language.h"
@@ -50,6 +52,7 @@ static constexpr char WORKBENCH_SHORTCUT[] = "editor/open_ai_workbench";
 
 void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button *pTitleButton)
 {
+	add_child(CreateWorkbenchWindowRouter(pConversationView, input, agent_name, pPalette, callable_mp(this, &AIChatDock::PrepareWorkbenchConsultation)));
 	// The view controls and command palette take focus before moving the composer.
 	input->set_deselect_on_focus_loss_enabled(false);
 	pWorkbenchSidebar = memnew(EditorDock);
@@ -154,6 +157,14 @@ void AIChatDock::CaptureWorkbenchSource()
 	}
 }
 
+void AIChatDock::PrepareWorkbenchConsultation()
+{
+	if (!task_native_grant.matches(_native_task_scope()))
+	{
+		consultation_only->set_pressed(true);
+	}
+}
+
 void AIChatDock::OpenWorkbenchSidebar()
 {
 	if (idWorkbenchReturnScreen.is_valid())
@@ -166,11 +177,11 @@ void AIChatDock::OpenWorkbenchSidebar()
 			EditorDockManager::get_singleton()->force_focus_dock(pScreen);
 		}
 	}
-	else if (nConversationIndex < 0 && !task_native_grant.matches(_native_task_scope()))
+	else if (nConversationIndex < 0)
 	{
 		// Entering from an editing surface starts in consultation. Returning from
 		// the expanded view retains the mode selected for this conversation.
-		consultation_only->set_pressed(true);
+		PrepareWorkbenchConsultation();
 	}
 	if (nConversationIndex < 0)
 	{

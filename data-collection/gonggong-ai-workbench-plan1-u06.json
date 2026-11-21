@@ -1,0 +1,203 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-u06",
+  "issue_number": 1745,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1745",
+  "source_sha": "27410222cdf359ce2fb71049fc7b5831564091f0",
+  "observed_at": "2026-11-21T13:36:56.834223+00:00",
+  "prerequisite": {
+    "issue_number": 1869,
+    "state": "CLOSED",
+    "reason": "COMPLETED"
+  },
+  "intake": {
+    "issue_number": 1745,
+    "type": "type:development",
+    "status": "status:in-progress"
+  },
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.h": "0feae63a9f786763ae2a423614ffa43f9225422f9f78fdc72cdd82c8a8c5d498",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "20db95fbddeb7a4313abac9ad2823c168511382b1c6ceb8b472b5786cfb681e7",
+    "editor/docks/workbench/AIWorkbenchWindow.h": "c592203e0d664d067e4c61830131aaea04452e30ff8e5473253cf3645bdcbb15",
+    "editor/docks/workbench/AIWorkbenchWindow.cpp": "8136899543a605b7b735e327518e0fcb6ae727248d4219cb3099ef50a4300f84",
+    "tests/editor/run_workbench_window.py": "82d121644058d46e891fa37b7c99f6f210563718fe76e4485cf66d7b4650fbab",
+    "tests/editor/workbench_window.gd": "88b1cda94581e10b3e1320dc68112f4b7d264d677b91ab638106f122239c3520",
+    "design-docs/gonggong-ai-workbench-u06.md": "d1b905b03ead4ad15748e92ba8a8f20a3a623744b93d2b8e375be24fd2e450dc"
+  },
+  "host": "Windows x86_64, Visual Studio 14.5, Windows SDK 10.0.26100.0, SCons 4.11.1",
+  "build": {
+    "exit_code": 0,
+    "command": "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<read-only shared object cache> cache_limit=0 --cache-readonly -j12",
+    "sdk": "Verified each copied SDK file against thirdparty/webview2/manifest.json before building the candidate.",
+    "compiled": [
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp",
+      "editor/docks/workbench/AIWorkbenchWindow.cpp"
+    ],
+    "linked": "bin/godot.windows.editor.x86_64.exe",
+    "sha256": "3d0a93ebb36a46c17ca84e875acd9ded0bc6435c2c5ed32f34713446d93c0298",
+    "build_log_sha256": "6079cb9bc5cfb10b8f1db2eab702ff1fe567ca3cee3138ee1d16aad1fc0ef7f3"
+  },
+  "targeted_verification": {
+    "command": "py tests/editor/run_workbench_window.py --godot bin/godot.windows.editor.x86_64.exe --report bin/u06-probe.json",
+    "mode": "--headless --editor, private binary, disposable project and model server bound to 127.0.0.1",
+    "report": {
+      "passed": true,
+      "native_exit": 0,
+      "engine_sha256": "3d0a93ebb36a46c17ca84e875acd9ded0bc6435c2c5ed32f34713446d93c0298",
+      "controls": {
+        "auxiliary_text_preserved": true,
+        "composer_id": 618139782378,
+        "continued_typing": true,
+        "destroyed_source_detached": true,
+        "line_edits": [
+          {
+            "caret": 9,
+            "loopback_reply": true,
+            "quoted": "saved-s",
+            "returned_focus_id": 602973178215,
+            "source": "重命名会话",
+            "source_id": 602973178215,
+            "source_text": "unsaved-session-name"
+          },
+          {
+            "caret": 9,
+            "loopback_reply": false,
+            "quoted": "und4-ed",
+            "returned_focus_id": 96066344332,
+            "source": "Editor Settings",
+            "source_id": 96066344332,
+            "source_text": "round4-editor-filter"
+          }
+        ],
+        "messages_id": 610338376478,
+        "secret_excluded": true,
+        "whole_field_quoted": true
+      },
+      "loopback": [
+        {
+          "last_user": "Explain the selection.\nWindow reference (重命名会话):\nsaved-s",
+          "consultation": true,
+          "writes": false,
+          "execution": false
+        }
+      ],
+      "diagnostics": [
+        "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+        "ERROR: 34 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+        "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+        "ERROR: 290 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+        "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+        "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+        "ERROR: 18 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+        "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+        "WARNING: 144 RIDs of type \"CanvasItem\" were leaked.",
+        "WARNING: 684 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+      ]
+    }
+  },
+  "sidebar_regression": {
+    "command": "py tests/editor/run_ai_chat_tab_order.py --godot bin/godot.windows.editor.x86_64.exe --report bin/u06-sidebar-regression.json --workbench-command",
+    "state": "passed",
+    "candidate_sha256": "3d0a93ebb36a46c17ca84e875acd9ded0bc6435c2c5ed32f34713446d93c0298",
+    "phases": [
+      "initial",
+      "legacy_maliang_last",
+      "legacy_maliang_selected",
+      "pre_daqian_layout",
+      "pre_maliang_layout",
+      "restart"
+    ],
+    "report_sha256": "2f850b3d10715410a90e25e8642d29014b0a89cb4dba3a96fe2cc647d55c9255"
+  },
+  "diagnostic_control": {
+    "fixture": "Same candidate in a private empty project, no workbench action; waited one second and requested normal editor shutdown.",
+    "observed": {
+      "exit": 0,
+      "diagnostics": [
+        "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+        "ERROR: 31 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+        "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+        "ERROR: 222 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+        "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+        "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+        "ERROR: 1 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+        "WARNING: Detected another project.godot at res://private-home/tmp/godot-silent-202611212133485225646. The folder will be ignored.",
+        "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+        "WARNING: 113 RIDs of type \"CanvasItem\" were leaked.",
+        "WARNING: 580 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+      ]
+    },
+    "scope": "Headless editor shutdown reports leaked engine resources in both runs. Counts vary with UI activity. The targeted fixture checks disposal of the child workbench and auxiliary source and survival of the original composer."
+  },
+  "macos_prior_observations": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1745#issuecomment-7059220987",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1745#issuecomment-7062652835"
+  ],
+  "validation_limits": "The candidate was exercised with Godot viewport input on Windows headless. Prior macOS comments describe the pre-fix behavior. No candidate macOS desktop run is claimed.",
+  "delivery": "Handed to the publishing parent as an uncommitted candidate. Target acceptance, main receipt and issue closure are tracked by the publishing parent.",
+  "main_integration": {
+    "base": "8b48bd11844073a0d73499899991f7ee6f3b712f",
+    "editor_receipt": {
+      "passed": true,
+      "native_exit": 0,
+      "engine_sha256": "01d873ef91ee0b4486db2ccdec9bd88f9da8433cf7218d15378836eed05626e8",
+      "controls": {
+        "auxiliary_text_preserved": true,
+        "composer_id": 618274000114,
+        "continued_typing": true,
+        "destroyed_source_detached": true,
+        "line_edits": [
+          {
+            "caret": 9,
+            "loopback_reply": true,
+            "quoted": "saved-s",
+            "returned_focus_id": 603057064300,
+            "source": "重命名会话",
+            "source_id": 603057064300,
+            "source_text": "unsaved-session-name"
+          },
+          {
+            "caret": 9,
+            "loopback_reply": false,
+            "quoted": "und4-ed",
+            "returned_focus_id": 96066344332,
+            "source": "Editor Settings",
+            "source_id": 96066344332,
+            "source_text": "round4-editor-filter"
+          }
+        ],
+        "messages_id": 610472594214,
+        "secret_excluded": true,
+        "whole_field_quoted": true
+      },
+      "loopback": [
+        {
+          "last_user": "Explain the selection.\nWindow reference (重命名会话):\nsaved-s",
+          "consultation": true,
+          "writes": false,
+          "execution": false
+        }
+      ],
+      "diagnostics": [
+        "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+        "ERROR: 35 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+        "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+        "ERROR: 290 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+        "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+        "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+        "ERROR: 18 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+        "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+        "WARNING: 144 RIDs of type \"CanvasItem\" were leaked.",
+        "WARNING: 687 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+      ]
+    },
+    "files": {
+      "design-docs/gonggong-ai-workbench-u06.md": "9e5d3c555b813f72908c2971cbc049c703913d36",
+      "editor/docks/ai_chat_dock.h": "e568f3d1566d8db9c9683f370800d64f4de47c6a",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp": "18956963bbf111ecf73271591aa8d11de1910b45",
+      "editor/docks/workbench/AIWorkbenchWindow.cpp": "2db7745b264cbf00d8bd1f69a3b1cc5e644043b8",
+      "editor/docks/workbench/AIWorkbenchWindow.h": "54877446242dc14054924214934af664c7696e48",
+      "tests/editor/run_workbench_window.py": "53b93b09e1d59298d2fe6af91cfb33b7f7573868",
+      "tests/editor/workbench_window.gd": "23904d2ec6de8cb03183b4278e0bd1b77a906c5b"
+    }
+  }
+}
