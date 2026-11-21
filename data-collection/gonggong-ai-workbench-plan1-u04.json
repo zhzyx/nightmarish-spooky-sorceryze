@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-u04",
+  "issue_number": 1808,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1808",
+  "observed_at": "2026-11-21T20:45:51.828742+08:00",
+  "source_baseline": "217cd6c7641af1b6bddeed284599992d9f800a91",
+  "candidate_git_blobs": {
+    "editor/docks/ai_chat_dock.h": "57bb6ce6b6aa0979e3310fb840f2f786019aa2a4",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "d06f3b0807167fb26ea09ea0da3ed98d784ccda6",
+    "tests/editor/ai_chat_tab_order.gd": "e12ca9d530879e389df5557b35735701f1b833c5",
+    "design-docs/gonggong-ai-workbench-u04.md": "982ce488f652e691d9ca81d46b293b0f4a0948cf"
+  },
+  "dependency": {
+    "issue_number": 1869,
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "closed_at": "2026-11-21T08:45:02Z"
+  },
+  "previous_mac_observation": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1808#issuecomment-7059219206",
+    "scope": "Only the command palette shortcut was bound at baseline. Cmd+A selected the chat draft. That binary did not exercise this dedicated action."
+  },
+  "native_build": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "display": "headless",
+    "toolchain": "MSVC 14.5, Windows SDK 10.0.26100.0, SCons 4.11.1",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no --cache-readonly -j8",
+    "editor_sha256": "d004744d9727a1f6d550dad623c862c611a623ff9a83eba0a6615e5017536194",
+    "initial_log_sha256": "3be450e13d73fdbc6d8802c9e43faa77a179a13ec03a1361829e61dfe61fd386",
+    "final_rebuild_log_sha256": "1a5476ffdb2730e85f7bb77ab1f1f46ce08d248d8aa4eae2eed12147d482ad88",
+    "rebuild": "The incrementally rebuilt workbench source and relinked editor passed SCons and all six runtime phases.",
+    "tianshu_ui_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu_board_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914",
+    "exit_code": 0
+  },
+  "targeted_verification": {
+    "command": "py tests/editor/run_ai_chat_tab_order.py --godot bin/godot.windows.editor.x86_64.exe --report bin/u04-layout.json --workbench-command",
+    "runner_git_blob": "b1a55a203655d82892fd9ee997f09e56b48f321a",
+    "test_sha256": {
+      "run_ai_chat_tab_order.py": "711d94f9a9da67c74228c3fd4e8a9be038c8e4d6a7924b63603d7d06fe3e3628",
+      "ai_chat_tab_order.gd": "1ec397a9e01995583ad03f170a6efa42c1d628339d09f377122a5cf88efeb285"
+    },
+    "binary_sha256": "d004744d9727a1f6d550dad623c862c611a623ff9a83eba0a6615e5017536194",
+    "exit_code": 0,
+    "method": "A private executable and disposable editor settings receive pressed and released InputEventKey objects through the root viewport. The test checks the same dock and ChatInput, focus return, the retired default and select-all in both focused text controls even with a conflicting workbench rebind.",
+    "layout_runs": [
+      {
+        "phase": "initial",
+        "chat_select_all": "workbench selection",
+        "composer": 618173336810,
+        "default": "Ctrl+Shift+M",
+        "old_binding_inactive": true,
+        "rebound": "Alt+Shift+P",
+        "sidebar": 623290387974,
+        "source_select_all": "source draft"
+      },
+      {
+        "phase": "legacy_maliang_last",
+        "chat_select_all": "workbench selection",
+        "composer": 618106227946,
+        "default": "Ctrl+Shift+M",
+        "old_binding_inactive": true,
+        "rebound": "Alt+Shift+P",
+        "sidebar": 623223279110,
+        "source_select_all": "source draft"
+      },
+      {
+        "phase": "legacy_maliang_selected",
+        "chat_select_all": "workbench selection",
+        "composer": 618106227946,
+        "default": "Ctrl+Shift+M",
+        "old_binding_inactive": true,
+        "rebound": "Alt+Shift+P",
+        "sidebar": 623223279110,
+        "source_select_all": "source draft"
+      },
+      {
+        "phase": "pre_daqian_layout",
+        "chat_select_all": "workbench selection",
+        "composer": 618106227946,
+        "default": "Ctrl+Shift+M",
+        "old_binding_inactive": true,
+        "rebound": "Alt+Shift+P",
+        "sidebar": 623223279110,
+        "source_select_all": "source draft"
+      },
+      {
+        "phase": "pre_maliang_layout",
+        "chat_select_all": "workbench selection",
+        "composer": 618106227946,
+        "default": "Ctrl+Shift+M",
+        "old_binding_inactive": true,
+        "rebound": "Alt+Shift+P",
+        "sidebar": 623223279110,
+        "source_select_all": "source draft"
+      },
+      {
+        "phase": "restart",
+        "chat_select_all": "workbench selection",
+        "composer": 618106227946,
+        "default": "Ctrl+Shift+M",
+        "old_binding_inactive": true,
+        "rebound": "Alt+Shift+P",
+        "sidebar": 623223279110,
+        "source_select_all": "source draft"
+      }
+    ],
+    "full_report_sha256": "86773f5f9aba3bef1729b009f3617b64a9d3704b3b8de225bb5f4dd711d1c038",
+    "workbench_command_regression": "All six phases passed the command palette, sidebar and expanded-view round trips."
+  },
+  "integrated_with_u03": {
+    "base": "1a991819eb349b157e933c4c4a32ee0769b75db3",
+    "editor_sha256": "a06c8768b02e22a2a0a5c39372098829d29566f6b4b98284bc875591f75ea384",
+    "phases": 6,
+    "result": "Passed combined title button and rebindable shortcut checks on Windows headless",
+    "report_sha256": "c7b16b2fc8e308772fdcd9249373d7c3d64d5eef6e737380c652eebff7ef8518"
+  }
+}

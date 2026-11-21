@@ -886,6 +886,7 @@ class AIChatDock : public EditorDock {
 protected:
 	static void _bind_methods();
 	void _notification(int p_what);
+	void shortcut_input(const Ref<InputEvent> &p_event) override;
 
 public:
 	void RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button *pTitleButton);
