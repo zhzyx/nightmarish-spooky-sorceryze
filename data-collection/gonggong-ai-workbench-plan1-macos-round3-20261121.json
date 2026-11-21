@@ -1,0 +1,660 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "observed_at": "2026-11-21T09:59:30.247014+00:00",
+  "macos": "26.6.2",
+  "arch": "arm64",
+  "base": "1cca7579fd007e8625ce8d275abd874fe4be0d33",
+  "package_sha256": "4aa160b38e28c9a0949a869fccb592cf20dab9c1093b70fcaa8aa8ade66d7b53",
+  "editor_sha256": "2b17d664f93b9a63725ee0c6e2dd8ad8a70d0af60657d28e69199dfd373ad40f",
+  "execution": "Signed arm64 diagnostic editor, headless. Native selection and captured loopback HTTP model calls were measured separately from explicit service snapshots (FastAPI, SQLite, fixture gateway). Animation and resource observations are engine fixtures. Cocoa visual acceptance is pending.",
+  "selection": {
+    "selected": {
+      "C08": 1839,
+      "U07": 1828,
+      "U09": 1830,
+      "D01": 1862,
+      "E03": 1816,
+      "E04": 1817,
+      "E05": 1794,
+      "V03": 1799,
+      "V04": 1800,
+      "V06": 1771
+    },
+    "prior": [
+      [
+        1871,
+        1869,
+        1807,
+        1808,
+        1745,
+        1776,
+        1743,
+        1740,
+        1732,
+        1734
+      ],
+      [
+        1840,
+        1790,
+        1829,
+        1809,
+        1810,
+        1744,
+        1785,
+        1867,
+        1780,
+        1844
+      ]
+    ]
+  },
+  "cards": {
+    "C08": {
+      "issue_number": 1839,
+      "acceptance": "删除或换场景后显示失效，发送时不能误用同名替代节点。",
+      "product_work": "Independent product implementation and acceptance tracked on #1839."
+    },
+    "U07": {
+      "issue_number": 1828,
+      "acceptance": "分别选 2D、3D 节点后对应草稿引用准确，多选可辨识。",
+      "native": [
+        {
+          "ui": {
+            "case": "flat",
+            "revision": "ee786b2a64cb34d70d0555483455af42267cf71997b49dfaba1f7f54345ae04e",
+            "scene": "res://FlatStage.tscn",
+            "selected": [
+              {
+                "class": "Node2D",
+                "name": "BlueLantern",
+                "path": "BlueLantern"
+              }
+            ],
+            "tokens": [
+              "res://FlatStage.tscn",
+              "BlueLantern",
+              "ee786b2a64cb34d70d0555483455af42267cf71997b49dfaba1f7f54345ae04e"
+            ]
+          },
+          "wire_matches": {
+            "res://FlatStage.tscn": false,
+            "BlueLantern": false,
+            "ee786b2a64cb34d70d0555483455af42267cf71997b49dfaba1f7f54345ae04e": false
+          },
+          "visible_matches": {
+            "res://FlatStage.tscn": false,
+            "BlueLantern": false,
+            "ee786b2a64cb34d70d0555483455af42267cf71997b49dfaba1f7f54345ae04e": false
+          }
+        },
+        {
+          "ui": {
+            "case": "space",
+            "revision": "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96",
+            "scene": "res://SpaceStage.tscn",
+            "selected": [
+              {
+                "class": "Node3D",
+                "name": "BlueLantern",
+                "path": "BlueLantern"
+              }
+            ],
+            "tokens": [
+              "res://SpaceStage.tscn",
+              "BlueLantern",
+              "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96"
+            ]
+          },
+          "wire_matches": {
+            "res://SpaceStage.tscn": false,
+            "BlueLantern": false,
+            "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96": false
+          },
+          "visible_matches": {
+            "res://SpaceStage.tscn": false,
+            "BlueLantern": false,
+            "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96": false
+          }
+        },
+        {
+          "ui": {
+            "case": "multiple",
+            "revision": "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96",
+            "scene": "res://SpaceStage.tscn",
+            "selected": [
+              {
+                "class": "Node3D",
+                "name": "BlueLantern",
+                "path": "BlueLantern"
+              },
+              {
+                "class": "Node3D",
+                "name": "AmberStand",
+                "path": "AmberStand"
+              }
+            ],
+            "tokens": [
+              "res://SpaceStage.tscn",
+              "BlueLantern",
+              "AmberStand",
+              "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96"
+            ]
+          },
+          "wire_matches": {
+            "res://SpaceStage.tscn": false,
+            "BlueLantern": false,
+            "AmberStand": false,
+            "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96": false
+          },
+          "visible_matches": {
+            "res://SpaceStage.tscn": false,
+            "BlueLantern": false,
+            "AmberStand": false,
+            "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96": false
+          }
+        }
+      ],
+      "explicit_service_references": [
+        [
+          {
+            "kind": "editor",
+            "object_id": "res://FlatStage.tscn#BlueLantern",
+            "revision": "ee786b2a64cb34d70d0555483455af42267cf71997b49dfaba1f7f54345ae04e"
+          }
+        ],
+        [
+          {
+            "kind": "editor",
+            "object_id": "res://SpaceStage.tscn#BlueLantern",
+            "revision": "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96"
+          }
+        ],
+        [
+          {
+            "kind": "editor",
+            "object_id": "res://SpaceStage.tscn#BlueLantern",
+            "revision": "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://SpaceStage.tscn#AmberStand",
+            "revision": "0ec2af21d4f6409d44497972df6ff55a1500cc1cbaf9aae1c3b32062a0eb5a96"
+          }
+        ]
+      ],
+      "service_reopened": true,
+      "finding": "在编辑器依次打开 2D 场景、3D 场景并选中同名节点，再选两个 3D 节点。原生选区能读出场景路径、节点类型和两个有序节点；三次打开统一侧栏后，草稿可见文字和实际发送请求都没有这些节点标识及场景修订。把同样的选区显式提交给 C05，三条消息重开数据库后仍逐条对应。待接入选区到草稿及发送的原生适配。"
+    },
+    "U09": {
+      "issue_number": 1830,
+      "acceptance": "同名资源分目录可区分，未保存资源显示临时身份。",
+      "native": [
+        {
+          "ui": {
+            "case": "north",
+            "file_selection": [
+              "res://north/SameGradient.tres"
+            ],
+            "inspector_class": "Gradient",
+            "inspector_path": "res://north/SameGradient.tres",
+            "object_id": "-9223370483351608583",
+            "resource_name": "Palettenorth",
+            "tokens": [
+              "res://north/SameGradient.tres",
+              "74d37ab8a925f4bfd2ca81bbe0f44657a41bd5abe0eadaf1637ad95b7e0ebcb3"
+            ]
+          },
+          "wire_matches": {
+            "res://north/SameGradient.tres": false,
+            "74d37ab8a925f4bfd2ca81bbe0f44657a41bd5abe0eadaf1637ad95b7e0ebcb3": false
+          },
+          "visible_matches": {
+            "res://north/SameGradient.tres": false,
+            "74d37ab8a925f4bfd2ca81bbe0f44657a41bd5abe0eadaf1637ad95b7e0ebcb3": false
+          }
+        },
+        {
+          "ui": {
+            "case": "south",
+            "file_selection": [
+              "res://south/SameGradient.tres"
+            ],
+            "inspector_class": "Gradient",
+            "inspector_path": "res://south/SameGradient.tres",
+            "object_id": "-9223370483351608583",
+            "resource_name": "Palettesouth",
+            "tokens": [
+              "res://south/SameGradient.tres",
+              "df71e19f4ad43fdf304b835d47181fc8c15a21460b664deddd6f7d5d88aa2ea3"
+            ]
+          },
+          "wire_matches": {
+            "res://south/SameGradient.tres": false,
+            "df71e19f4ad43fdf304b835d47181fc8c15a21460b664deddd6f7d5d88aa2ea3": false
+          },
+          "visible_matches": {
+            "res://south/SameGradient.tres": false,
+            "df71e19f4ad43fdf304b835d47181fc8c15a21460b664deddd6f7d5d88aa2ea3": false
+          }
+        },
+        {
+          "ui": {
+            "case": "temporary",
+            "inspector_class": "Gradient",
+            "inspector_path": "",
+            "object_id": "-9223370484039474387",
+            "resource_name": "UnsavedGradientQuartz",
+            "tokens": [
+              "UnsavedGradientQuartz"
+            ]
+          },
+          "wire_matches": {
+            "UnsavedGradientQuartz": false
+          },
+          "visible_matches": {
+            "UnsavedGradientQuartz": false
+          }
+        }
+      ],
+      "explicit_service_references": [
+        [
+          {
+            "kind": "editor",
+            "object_id": "res://north/SameGradient.tres",
+            "revision": "74d37ab8a925f4bfd2ca81bbe0f44657a41bd5abe0eadaf1637ad95b7e0ebcb3"
+          }
+        ],
+        [
+          {
+            "kind": "editor",
+            "object_id": "res://south/SameGradient.tres",
+            "revision": "df71e19f4ad43fdf304b835d47181fc8c15a21460b664deddd6f7d5d88aa2ea3"
+          }
+        ]
+      ],
+      "service_reopened": true,
+      "finding": "在文件系统与检查器中依次选中 north、south 目录中的 SameGradient.tres，再检查一个无磁盘路径的临时 Gradient。两个磁盘对象的完整路径和摘要各异；临时对象有独立实例 ID。原生侧栏与三次发送均没有对应名称或来源引用。两份已保存资源显式交给 C05 后均能重开回读。待补同名对象的草稿显示与未保存对象的临时身份。"
+    },
+    "D01": {
+      "issue_number": 1862,
+      "acceptance": "“请改代码”在未授权会话仅输出建议；可在同一会话继续追问。",
+      "default_mode_before_fix": false
+    },
+    "E03": {
+      "issue_number": 1816,
+      "acceptance": "手改一行后下一轮读到新内容；光标移动不触发新修订。",
+      "native_write": {
+        "after": "02aa38427ae1944b6ec301732e5374ad808e5152a546dc2f887a0a31aba02349",
+        "caret_zero_based": [
+          3,
+          3
+        ],
+        "sha_caret": "f3dd678ed05b1105895b8945f19e4ac8e777b96881e1947e11bc879a45a0aae6",
+        "sha_initial": "f3dd678ed05b1105895b8945f19e4ac8e777b96881e1947e11bc879a45a0aae6",
+        "ver_after": 4,
+        "ver_caret": 2,
+        "ver_initial": 2
+      },
+      "native_reopen": {
+        "line_4": "\treturn 29",
+        "score": 29,
+        "sha256": "02aa38427ae1944b6ec301732e5374ad808e5152a546dc2f887a0a31aba02349"
+      },
+      "finding": "用 Godot CodeEdit 移动光标，编辑版本保持 2、磁盘摘要相同。第 4 行返回值从 11 改到 29，编辑版本变为 4，写回后新进程执行读到 29。待把编辑器保存和外部改动关联到工作台的修订记录，并验证下一轮会话读取。"
+    },
+    "E04": {
+      "issue_number": 1817,
+      "acceptance": "保存材质或节点属性后重开有新修订，未修改依赖仍指原版。",
+      "native_write": {
+        "after": "84e61cc2fb177608856208cc0550d5579029005c06a14811c71492e49179fe82",
+        "before": "6b2c7ca4d44a43f8869fbf8b088591660ede838868a474a26c74036903166670",
+        "dep_before": "b86db53fb136e44947c69b1ba8fc3671835f243868d085071b440f7be43b315a",
+        "deps_before": [
+          "res://material.tres"
+        ],
+        "errors": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      "native_reopen": {
+        "asset": "84e61cc2fb177608856208cc0550d5579029005c06a14811c71492e49179fe82",
+        "dependency": "b86db53fb136e44947c69b1ba8fc3671835f243868d085071b440f7be43b315a",
+        "deps": [
+          "res://material.tres"
+        ],
+        "material": "res://material.tres",
+        "x": 17.5
+      },
+      "finding": "用 ResourceSaver 保存节点位置 x=17.5，新 Godot 进程重开同一场景读到 17.5。场景摘要改变，外部 material.tres 的依赖路径与 SHA-256 均保持一致。待从原生编辑器的人工保存事件记录操作者及资源修订。"
+    },
+    "E05": {
+      "issue_number": 1794,
+      "acceptance": "手调一个关键帧后可定位该轨道，其他轨道摘要保持一致。",
+      "native_write": {
+        "after_sha256": "c144dacf9d13d4b7b895eff09476bd58ec69e32395baf547deea1554620698f3",
+        "before": [
+          {
+            "keys": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                0.5,
+                12.0
+              ],
+              [
+                1.0,
+                20.0
+              ]
+            ],
+            "keys_sha256": "bea639d66279e922504457ef7d873de54a98068f98abb8706f856b1d2417871d",
+            "path": ".:position:x"
+          },
+          {
+            "keys": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                0.5,
+                3.0
+              ],
+              [
+                1.0,
+                7.0
+              ]
+            ],
+            "keys_sha256": "6ccb9aa7aa7dd80561766571b6b2feafb6b962d5732125ee099352a8ac8a83c0",
+            "path": ".:position:y"
+          }
+        ],
+        "before_sha256": "d1aa197dcdda51ac4331d91f319fd11b594d06d2af7102cf745c7be6d28f7edc",
+        "errors": [
+          0,
+          0
+        ]
+      },
+      "native_reopen": {
+        "rows": [
+          {
+            "keys": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                0.5,
+                18.0
+              ],
+              [
+                1.0,
+                20.0
+              ]
+            ],
+            "keys_sha256": "e4d17690b6097b748417baa392cfedf1de91ee3aa5627af0e15ce62498406d59",
+            "path": ".:position:x"
+          },
+          {
+            "keys": [
+              [
+                0.0,
+                0.0
+              ],
+              [
+                0.5,
+                3.0
+              ],
+              [
+                1.0,
+                7.0
+              ]
+            ],
+            "keys_sha256": "6ccb9aa7aa7dd80561766571b6b2feafb6b962d5732125ee099352a8ac8a83c0",
+            "path": ".:position:y"
+          }
+        ],
+        "sha256": "c144dacf9d13d4b7b895eff09476bd58ec69e32395baf547deea1554620698f3"
+      },
+      "finding": "把 x 轨第 0.5 秒关键帧从 12 调成 18 并保存。新进程重开后读到 18；y 轨所有键值与摘要一致。待在工作台记录由人工时间线编辑产生的轨道和时间片。"
+    },
+    "V03": {
+      "issue_number": 1799,
+      "acceptance": "正确及故意错误样例各一次，结果属于所验修订并可跳到行。",
+      "observed": {
+        "good_sha256": "02aa38427ae1944b6ec301732e5374ad808e5152a546dc2f887a0a31aba02349",
+        "bad_sha256": "1dc1fa06aa817fefd8999a9a8fbad8d155ac19a7e34e0628768ad88c293e7593",
+        "good_exit": 0,
+        "bad_exit": 0,
+        "expected_file_line": "res://subject.gd:4",
+        "diagnostic_at_4": true,
+        "editor_open": {
+          "ok": true,
+          "action": "open_script",
+          "target": "res://subject.gd",
+          "request_id": "probe-open_script",
+          "routing_status": "completed"
+        },
+        "editor_state_after_open": {
+          "ok": true,
+          "scene": "res://part.tscn",
+          "main_screen": "AI Chat",
+          "selected_nodes": [],
+          "unsaved_scenes": [],
+          "running": false,
+          "script": "res://subject.gd",
+          "script_unsaved": false
+        },
+        "cursor_cache_zero_based": {
+          "line": 3,
+          "column": 0
+        }
+      },
+      "finding": "同一路径的正确脚本与故意错误脚本分别运行 --check-only。两次退出码都是 0，错误版本明确报告第 4 行。编辑器打开该位置后，正常退出写出的光标缓存为 row=3、column=0。待从脚本窗口发起检查，绑定受检修订并从诊断点击跳转；单看退出码会漏报。"
+    },
+    "V04": {
+      "issue_number": 1800,
+      "acceptance": "不切换项目即可验证本场景；退出预览回到原编辑状态。",
+      "editor": {
+        "discovery": true,
+        "before": {
+          "ok": true,
+          "scene": "res://part.tscn",
+          "main_screen": "AI Chat",
+          "selected_nodes": [],
+          "unsaved_scenes": [],
+          "running": false,
+          "script": null,
+          "script_unsaved": null
+        },
+        "run_route": {
+          "ok": false,
+          "routing_status": "awaiting_confirmation",
+          "request_id": "probe-run_scene",
+          "confirmation_required": true,
+          "manual_confirmation_required": true
+        },
+        "cancel": {
+          "http": 400,
+          "routing_status": "cancelled"
+        },
+        "after": {
+          "ok": true,
+          "scene": "res://part.tscn",
+          "main_screen": "AI Chat",
+          "selected_nodes": [],
+          "unsaved_scenes": [],
+          "running": false,
+          "script": null,
+          "script_unsaved": null
+        },
+        "alive_after_preview": true
+      },
+      "preview": {
+        "main_scene": "res://main.tscn",
+        "root": "LocalPreview",
+        "scene": "res://part.tscn"
+      },
+      "finding": "将 main.tscn 设为项目主场景，单独在同项目运行 part.tscn，实际启动 LocalPreview 并正常退出。原编辑器进程前后场景、主屏与选区相同。工作台的 run_scene 请求抵达人工确认，测试随后取消。内嵌预览、退出后的画面与焦点仍待窗口验收。"
+    },
+    "V06": {
+      "issue_number": 1771,
+      "acceptance": "回放样例能观察前段节奏变化，落地关键帧与原件一致。",
+      "observed": {
+        "edited": {
+          "keys": [
+            {
+              "keys": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.25,
+                  12.0
+                ],
+                [
+                  1.0,
+                  20.0
+                ]
+              ],
+              "keys_sha256": "ac35b0b6c616c34d4e489e0cdfcc4213d34a7b26c00c6265cd867a244fc8a9a5",
+              "path": ".:position:x"
+            },
+            {
+              "keys": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.25,
+                  3.0
+                ],
+                [
+                  1.0,
+                  7.0
+                ]
+              ],
+              "keys_sha256": "a507b99eef86763b5b60528b2f42f61078ae7d24bbc618cc98093f61caee954f",
+              "path": ".:position:y"
+            }
+          ],
+          "landing": [
+            20.0,
+            7.0
+          ],
+          "samples": [
+            {
+              "t": 0.0,
+              "x": 0.0,
+              "y": 0.0
+            },
+            {
+              "t": 0.25,
+              "x": 12.0,
+              "y": 3.0
+            },
+            {
+              "t": 0.5,
+              "x": 14.6666669845581,
+              "y": 4.33333349227905
+            },
+            {
+              "t": 0.75,
+              "x": 17.3333339691162,
+              "y": 5.66666698455811
+            }
+          ],
+          "section_end": 0.75,
+          "stopped_at_section_end": true
+        },
+        "original": {
+          "keys": [
+            {
+              "keys": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.5,
+                  12.0
+                ],
+                [
+                  1.0,
+                  20.0
+                ]
+              ],
+              "keys_sha256": "bea639d66279e922504457ef7d873de54a98068f98abb8706f856b1d2417871d",
+              "path": ".:position:x"
+            },
+            {
+              "keys": [
+                [
+                  0.0,
+                  0.0
+                ],
+                [
+                  0.5,
+                  3.0
+                ],
+                [
+                  1.0,
+                  7.0
+                ]
+              ],
+              "keys_sha256": "6ccb9aa7aa7dd80561766571b6b2feafb6b962d5732125ee099352a8ac8a83c0",
+              "path": ".:position:y"
+            }
+          ],
+          "landing": [
+            20.0,
+            7.0
+          ],
+          "samples": [
+            {
+              "t": 0.0,
+              "x": 0.0,
+              "y": 0.0
+            },
+            {
+              "t": 0.25,
+              "x": 6.0,
+              "y": 1.5
+            },
+            {
+              "t": 0.5,
+              "x": 12.0,
+              "y": 3.0
+            },
+            {
+              "t": 0.75,
+              "x": 16.0,
+              "y": 5.0
+            }
+          ],
+          "section_end": 0.75,
+          "stopped_at_section_end": true
+        }
+      },
+      "finding": "通过原生 AnimationPlayer 对两版动画分别回放 0 至 0.75 秒，均在区间边界停止。0.25 秒处 x 从 6 变为 12；另外跳到 1 秒，两版落地姿势均为 (20,7)。待从原生时间线发起前后对照并显示各自修订。"
+    }
+  },
+  "raw_evidence_sha256": {
+    "batch/final-run/results.json": "939e6439f9083cf334cd59fb2f207e8604d1658656250dffb764b008fe56d070",
+    "batch/rerun.py": "663bd669f4ba6b044444a679c071b7b014d662bf9a3c78d1dcbdcc72018f21e9",
+    "refs/results.json": "214d863f98b30b5bb06081b11b7e322c6ad74c381a2f24c55def2ab30c010aba",
+    "refs/run.py": "68f3798b58bf1b8e532f457ec69fc368cc3decbd8b731e6879cfed2c433c0c93",
+    "refs/probe.gd": "ee0225e124c1e3cdc5b3205bc78caa66aa212dc9d6a5c51bfb6fe81fd1d8bc70",
+    "refs/service.json": "f2e979eb40eb54353570d938798a3d64a0789624b582c1edef86a2a0f4b5e758",
+    "d01/before.json": "fa8916cfe0dc8001f43bd7289817fcf025a556c57831d846d470e145a8f517c5"
+  }
+}
