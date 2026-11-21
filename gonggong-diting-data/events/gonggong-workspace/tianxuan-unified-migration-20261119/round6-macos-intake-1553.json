@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "tianxuan-unified-migration-20261119",
+  "event_id": "round6-macos-intake-1553",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1553",
+  "occurred_at": "2026-11-21T14:15:44.410456+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1553,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T12:45:34Z",
+    "scope": "Preserve historical pull-request references using binary Git update transactions on macOS and Windows"
+  },
+  "evidence_refs": [],
+  "sha256": "18f66ef31de96456d23c686b6108229b3e316d1ecf32868d9a1cfd6c88de4450"
+}

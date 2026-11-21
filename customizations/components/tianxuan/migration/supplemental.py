@@ -7,8 +7,8 @@ import subprocess
 from pathlib import Path
 
 
-def git(repo, *args, **kwargs):
-    return subprocess.run(["git", "-C", str(repo), *args], text=True, capture_output=True, **kwargs)
+def git(repo, *args, text=True, **kwargs):
+    return subprocess.run(["git", "-C", str(repo), *args], text=text, capture_output=True, **kwargs)
 
 
 def supplement(records, repo, origin):
@@ -65,8 +65,8 @@ def supplement(records, repo, origin):
     reachable = set(git(repo, "rev-list", "--all", check=True).stdout.splitlines())
     unpinned = sorted(ids - absent - reachable)
     if unpinned:
-        updates = "".join(f"create refs/migration/historical/{oid} {oid}\n" for oid in unpinned)
-        git(repo, "update-ref", "--stdin", input=updates, check=True)
+        updates = "".join(f"create refs/migration/historical/{oid}\0{oid}\0" for oid in unpinned).encode("ascii")
+        git(repo, "update-ref", "--stdin", "-z", input=updates, text=False, check=True)
     return {
         "checked": len(ids),
         "pinned_existing": len(unpinned),
