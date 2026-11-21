@@ -5,7 +5,9 @@ from __future__ import annotations
 import contextlib
 import io
 import json
+import os
 import sqlite3
+import subprocess
 import tempfile
 import unittest
 import zipfile
@@ -75,6 +77,63 @@ class BackupRoundTripTests(BackupTestCase):
             self.assertEqual(connection.execute("SELECT body FROM docs").fetchone()[0], "# one")
         finally:
             connection.close()
+
+    def test_bare_repository_with_packed_refs_is_readable_after_restore(self) -> None:
+        source = self.base / "work"
+        subprocess.run(["git", "init", "--quiet", str(source)], check=True)
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(source),
+                "-c",
+                "user.name=Test",
+                "-c",
+                "user.email=test@example.invalid",
+                "-c",
+                "commit.gpgsign=false",
+                "commit",
+                "--quiet",
+                "--allow-empty",
+                "-m",
+                "one",
+            ],
+            check=True,
+        )
+        bare = self.root / "packed.git"
+        subprocess.run(["git", "clone", "--quiet", "--bare", str(source), str(bare)], check=True)
+        subprocess.run(["git", "-C", str(bare), "pack-refs", "--all", "--prune"], check=True)
+        (self.root / "empty" / "nested").mkdir(parents=True)
+        receipt = self._backup()
+        restored = self.base / "restored"
+        restore_backup(receipt["archive"], restored)
+        self.assertTrue((restored / "repos" / "empty" / "nested").is_dir())
+        rev = ["git", "rev-parse", "HEAD"]
+        self.assertEqual(
+            subprocess.check_output(rev, cwd=bare), subprocess.check_output(rev, cwd=restored / "repos" / "packed.git")
+        )
+
+    def test_legacy_file_only_snapshot_still_restores(self) -> None:
+        if os.name != "nt":
+            _write(self.root / "x:notes", b"posix")
+        archive = Path(self._backup()["archive"])
+        legacy = self.base / "legacy.zip"
+
+        def legacy_manifest(name: str, data: bytes) -> bytes:
+            if name != "manifest.json":
+                return data
+            manifest = json.loads(data)
+            manifest.pop("directories")
+            manifest["format"] = 1
+            return json.dumps(manifest).encode()
+
+        _rewrite_archive(archive, legacy, legacy_manifest)
+        expected_count = 3 if os.name == "nt" else 4
+        self.assertEqual(verify_backup(archive)["files"], expected_count)
+        self.assertEqual(verify_backup(legacy)["files"], expected_count)
+        self.assertEqual(restore_backup(legacy, self.base / "legacy")["restored"], expected_count)
+        if os.name != "nt":
+            self.assertEqual((self.base / "legacy" / "repos" / "x:notes").read_bytes(), b"posix")
 
     def test_receipt_exposes_digest_and_size(self) -> None:
         receipt = self._backup()

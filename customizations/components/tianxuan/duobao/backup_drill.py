@@ -93,6 +93,14 @@ def run_drill(
                 f"restored repository differs: missing={missing[:3]} extra={extra[:3]} changed={changed[:3]}"
             )
 
+        def directories(directory: Path) -> set[Path]:
+            return {
+                path.relative_to(directory) for path in directory.rglob("*") if not path.is_symlink() and path.is_dir()
+            }
+
+        if not restored_root.is_dir() or directories(root) != directories(restored_root):
+            raise DrillError("restored repository directory structure differs")
+
         database_check: dict[str, Any] | None = None
         if database_path is not None:
             restored_db = restore_dir / "state" / database_path.name

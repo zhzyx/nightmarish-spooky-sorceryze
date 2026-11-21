@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "tianxuan-platform-20261114",
+  "event_id": "round5-macos-intake-1188",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1188",
+  "occurred_at": "2026-11-21T13:25:03.002893+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1188,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T13:21:28Z",
+    "scope": "Restore repository directory structure and validate the isolated data backup drill on macOS"
+  },
+  "evidence_refs": [],
+  "sha256": "926857e7ecead609b80df067a01520d9180bf89dbc3af567ea4b55629d3d8cbe"
+}

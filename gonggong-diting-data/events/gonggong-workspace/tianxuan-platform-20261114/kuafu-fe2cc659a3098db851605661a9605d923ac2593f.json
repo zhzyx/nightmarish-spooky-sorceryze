@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fe2cc659a3098db851605661a9605d923ac2593f",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-platform-20261114",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1188",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "61e32be945d9cba18df8e58858aa7b4a92d6a0542b0a0ff3aa2af6258567453e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1188",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1926",
+    "action": "intake",
+    "detection_head": "4b58273aef19d55f04c821b07c4f5af679992a41",
+    "context_sha256": "218cca2fa189a65edcc327cba8464ac0e03712a95faf9aed4aedafa46f530aa7",
+    "operator": "Sail-Li",
+    "worker": "mac-round5-root",
+    "authority_ref": "codex:user-mac-independent-round5",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1188",
+    "diagnosis": "首次调用遗漏 work-items.json 绑定的 tenant，已用实际租户 gonggong-workspace 通过同一 intake-only。",
+    "next_action": "继续 #1188 恢复后的裸仓验收及签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T13:20:53.836978+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T13:25:34.089156+00:00",
+  "sha256": "7854501eb7aa2354bf9ee17fc1e9e0aaa9ab735e74bcdc33b7f26c8d54ea6f0a"
+}

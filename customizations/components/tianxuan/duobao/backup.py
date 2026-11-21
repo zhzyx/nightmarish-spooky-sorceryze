@@ -22,12 +22,12 @@ import sqlite3
 import sys
 import tempfile
 import zipfile
-from collections.abc import Iterable, Sequence
+from collections.abc import Sequence
 from datetime import datetime, timezone
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 
-FORMAT_VERSION = 1
+FORMAT_VERSION = 2
 MANIFEST_NAME = "manifest.json"
 REPOS_PREFIX = "repos/"
 STATE_PREFIX = "state/"
@@ -48,18 +48,6 @@ def _sha256_file(path: Path) -> str:
         for chunk in iter(lambda: handle.read(CHUNK_SIZE), b""):
             digest.update(chunk)
     return digest.hexdigest()
-
-
-def _iter_repo_files(root: Path) -> Iterable[Path]:
-    """按稳定顺序遍历仓库根文件；跳过符号链接（由调用方计数）。"""
-    for path in sorted(root.rglob("*")):
-        if path.is_symlink() or not path.is_file():
-            continue
-        yield path
-
-
-def _count_symlinks(root: Path) -> int:
-    return sum(1 for path in root.rglob("*") if path.is_symlink())
 
 
 def _sqlite_snapshot(database: Path) -> bytes:
@@ -124,9 +112,19 @@ def create_backup(
         raise BackupError(f"backup already exists: {archive_path}")
 
     entries: list[dict[str, Any]] = []
+    directories = [REPOS_PREFIX.rstrip("/")]
+    skipped_symlinks = 0
     with zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED) as archive:
-        for file_path in _iter_repo_files(root_path):
+        for file_path in sorted(root_path.rglob("*")):
             relative = file_path.relative_to(root_path).as_posix()
+            if file_path.is_symlink():
+                skipped_symlinks += 1
+                continue
+            if file_path.is_dir():
+                directories.append(REPOS_PREFIX + relative)
+                continue
+            if not file_path.is_file():
+                continue
             data = file_path.read_bytes()
             archive.writestr(REPOS_PREFIX + relative, data)
             entries.append(_entry(REPOS_PREFIX, relative, data))
@@ -141,7 +139,8 @@ def create_backup(
             "created_at": created_at.isoformat(),
             "label": label,
             "root_name": root_path.resolve().name,
-            "skipped_symlinks": _count_symlinks(root_path),
+            "skipped_symlinks": skipped_symlinks,
+            "directories": directories,
             "databases": sorted(database.name for database in database_paths),
             "entries": entries,
         }
@@ -167,7 +166,7 @@ def _read_manifest(archive: zipfile.ZipFile) -> dict[str, Any]:
         raise BackupError(f"cannot read backup manifest: {error}") from error
     if not isinstance(manifest, dict):
         raise BackupError("backup manifest must be a JSON object")
-    if manifest.get("format") != FORMAT_VERSION:
+    if manifest.get("format") not in (1, FORMAT_VERSION):
         raise BackupError(f"unsupported backup format: {manifest.get('format')!r}")
     entries = manifest.get("entries")
     if not isinstance(entries, list):
@@ -182,11 +181,30 @@ def _safe_member(name: str) -> PurePosixPath:
     if "\\" in name or "\x00" in name:
         raise BackupError(f"unsafe backup member: {name!r}")
     path = PurePosixPath(name)
-    if path.is_absolute() or any(part in {"..", ""} for part in path.parts):
+    if (
+        not path.parts
+        or path.is_absolute()
+        or any(part in {"..", ""} or (os.name == "nt" and PureWindowsPath(part).drive) for part in path.parts)
+    ):
         raise BackupError(f"unsafe backup member: {name!r}")
     if path.parts[0] not in {REPOS_PREFIX.rstrip("/"), STATE_PREFIX.rstrip("/")}:
         raise BackupError(f"unexpected backup member: {name!r}")
     return path
+
+
+def _repo_directories(manifest: dict[str, Any]) -> list[str]:
+    if manifest["format"] == 1:
+        return []
+    directories = manifest.get("directories")
+    if not isinstance(directories, list) or not directories:
+        raise BackupError("backup manifest requires repository directories")
+    for name in directories:
+        member = _safe_member(name)
+        if member.parts[0] != "repos" or member.as_posix() != name:
+            raise BackupError("invalid backup directory")
+    if "repos" not in directories or len(set(directories)) != len(directories):
+        raise BackupError("invalid backup directory tree")
+    return directories
 
 
 def _validate_archive(archive: zipfile.ZipFile, manifest: dict[str, Any]) -> list[dict[str, Any]]:
@@ -226,6 +244,14 @@ def _validate_archive(archive: zipfile.ZipFile, manifest: dict[str, Any]) -> lis
         if digest_check.hexdigest() != digest:
             raise BackupError(f"backup entry digest mismatch: {key}")
         validated.append({"path": key, "size": size, "sha256": digest})
+    directories = _repo_directories(manifest)
+    directory_set = set(directories)
+    if seen & directory_set:
+        raise BackupError("backup directory conflicts with a file")
+    if manifest["format"] == FORMAT_VERSION:
+        for name in directory_set | {name for name in seen if name.startswith(REPOS_PREFIX)}:
+            if name != "repos" and PurePosixPath(name).parent.as_posix() not in directory_set:
+                raise BackupError("backup directory tree is incomplete")
     unexpected = members - seen - {MANIFEST_NAME}
     if unexpected:
         raise BackupError(f"backup contains unlisted members: {sorted(unexpected)[:3]}")
@@ -283,6 +309,15 @@ def restore_backup(
         with zipfile.ZipFile(path) as archive:
             manifest = _read_manifest(archive)
             entries = _validate_archive(archive, manifest)
+            directories = _repo_directories(manifest)
+            for name in directories + [entry["path"] for entry in entries]:
+                target = destination_path
+                for part in PurePosixPath(name).parts:
+                    target = target / part
+                    if target.is_symlink():
+                        raise BackupError("restore destination contains a symbolic link")
+            for name in directories:
+                destination_path.joinpath(*PurePosixPath(name).parts).mkdir(parents=True, exist_ok=True)
             restored = 0
             for entry in entries:
                 target = destination_path.joinpath(*PurePosixPath(entry["path"]).parts)
