@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "observed_at": "2026-11-21T09:05:13.541583+00:00",
+  "selection": "Ten open children with completed direct prerequisites, excluding the prior Mac batch.",
+  "candidate": {
+    "service_source": "fc43b92cdc29f91825a5fd10fd708ec8e118d0fd",
+    "system": "26.6.2",
+    "machine": "arm64",
+    "zip_sha256": "c9da5b5fbfbd54f0d54d2168177c42ed8d930ff7b55fdf08a181984d5e00f3cd",
+    "python": "3.14.3",
+    "dependencies": {
+      "fastapi": "0.165.0",
+      "httpx": "0.28.1",
+      "uvicorn": "0.54.0"
+    },
+    "godot_version": "4.8.beta.custom_build",
+    "godot_binary_sha256": "ca0944a9c1bf840cca1753dab355a0845f9223e207daf5f6850c452ec6199174"
+  },
+  "editor_transport": "macOS arm64 headless editor and loopback fixture model. Business-service scenarios use isolated fixture records, real Git, and one read-only GitHub source issue.",
+  "checksums": {
+    "services/diagnose.py": "0e52c09103be36a4f222b7273ba1e8462d07ea74a6162ed1ffd448b068601202",
+    "services/native_probe.gd": "d4ea8844640e179046eb99a9de866ee1a9f85ed2ca4e18b64cb43428c2b18d51",
+    "services/result.json": "f97d5aa8675c98d50505ee7665a83331e38f280d2af02f27749b1553407f3bd7",
+    "editor/context-probe.gd": "94cfc6c9520f85a4625561beb2d80c977d6d0ced7d85854d2cd1c4c60ec94def",
+    "editor/run_context.py": "331d9aedb4dc568f6a6d8ceb8186f61c73889a5b1e90e766301d44b36c76aee2",
+    "editor/out-final/result.json": "f36985da7b1e2efe920d83a2bf9ceaaa50d19053072e254744ae2d095449fb91",
+    "editor/ref-turns.py": "0861d41296dd354f9466e75f1201929faa48a65b62a30ebb522accb06d0e8d5e",
+    "editor/ref-turns.json": "6768cb1911fb113d4d00fce712d3f60edfca301ccc9b9ee992a8eac3ef3854e7"
+  },
+  "cards": {
+    "U05": {
+      "issue_number": 1840,
+      "acceptance": "往返后草稿、滚动位置、选区与光标可恢复。",
+      "observed": {
+        "baseline_sidebar_actions": [
+          "Close AI Workbench",
+          "编辑器",
+          "编辑器",
+          "添加图片",
+          "粘贴截图",
+          "仅咨询",
+          "发送",
+          "停止"
+        ],
+        "existing_editor_command": "editor/open_ai_workbench"
+      },
+      "scope": "U02 baseline. Sidebar has a close action. Full-view expansion and return tracked independently on U05."
+    },
+    "U08": {
+      "issue_number": 1829,
+      "acceptance": "两个同名脚本路径可区分，切换前后的发送内容正确。",
+      "observed": [
+        {
+          "case": "alpha",
+          "turn": 1,
+          "same_input": true,
+          "page": "Script",
+          "selected": {
+            "source_path": "res://alpha/control.gd",
+            "selected_text": "ROUND2_ALPHA_SELECTION",
+            "line_begin": 2,
+            "line_end": 2,
+            "revision": "26132c16e8059d7dcb316c263355cd067649265368eac2b582f10c1eade90f93"
+          },
+          "last_user_content": "Inspect current context alpha",
+          "wire_contains": {
+            "res://alpha/control.gd": false,
+            "res://beta/control.gd": false,
+            "ROUND2_ALPHA_SELECTION": false,
+            "ROUND2_BETA_SELECTION": false,
+            "马良": false,
+            "context_snapshot": false,
+            "AIWorkbenchSidebar": false,
+            "exact_script_revision": false
+          }
+        },
+        {
+          "case": "beta",
+          "turn": 1,
+          "same_input": true,
+          "page": "Script",
+          "selected": {
+            "source_path": "res://beta/control.gd",
+            "selected_text": "ROUND2_BETA_SELECTION",
+            "line_begin": 2,
+            "line_end": 2,
+            "revision": "580b24a6ef064512d0b7e6316a7bb6953efbcad533534e460a40ec85492018f3"
+          },
+          "last_user_content": "Inspect current context beta",
+          "wire_contains": {
+            "res://alpha/control.gd": false,
+            "res://beta/control.gd": false,
+            "ROUND2_ALPHA_SELECTION": false,
+            "ROUND2_BETA_SELECTION": false,
+            "马良": false,
+            "context_snapshot": false,
+            "AIWorkbenchSidebar": false,
+            "exact_script_revision": false
+          }
+        },
+        {
+          "case": "switch",
+          "turn": 1,
+          "same_input": true,
+          "page": "Script",
+          "selected": {
+            "source_path": "res://alpha/control.gd",
+            "selected_text": "ROUND2_ALPHA_SELECTION",
+            "line_begin": 2,
+            "line_end": 2,
+            "revision": "26132c16e8059d7dcb316c263355cd067649265368eac2b582f10c1eade90f93"
+          },
+          "last_user_content": "Inspect current context alpha",
+          "wire_contains": {
+            "res://alpha/control.gd": false,
+            "res://beta/control.gd": false,
+            "ROUND2_ALPHA_SELECTION": false,
+            "ROUND2_BETA_SELECTION": false,
+            "马良": false,
+            "context_snapshot": false,
+            "AIWorkbenchSidebar": false,
+            "exact_script_revision": false
+          }
+        },
+        {
+          "case": "switch",
+          "turn": 2,
+          "same_input": true,
+          "page": "Script",
+          "selected": {
+            "source_path": "res://beta/control.gd",
+            "selected_text": "ROUND2_BETA_SELECTION",
+            "line_begin": 2,
+            "line_end": 2,
+            "revision": "580b24a6ef064512d0b7e6316a7bb6953efbcad533534e460a40ec85492018f3"
+          },
+          "last_user_content": "Inspect current context beta",
+          "wire_contains": {
+            "res://alpha/control.gd": false,
+            "res://beta/control.gd": false,
+            "ROUND2_ALPHA_SELECTION": false,
+            "ROUND2_BETA_SELECTION": false,
+            "马良": false,
+            "context_snapshot": false,
+            "AIWorkbenchSidebar": false,
+            "exact_script_revision": false
+          }
+        }
+      ],
+      "scope": "Native Script CodeEdit, two res:// paths with the same basename, line selection and buffer revision. Standalone A/B captures and two successive turns in one process and conversation with a loopback model; the script selection was absent from the serialized request."
+    },
+    "U12": {
+      "issue_number": 1809,
+      "acceptance": "在清单中挑一个扩展页，发送前可见页面名、模块和实际可读范围。",
+      "observed": {
+        "case": "plugin",
+        "turn": 1,
+        "same_input": true,
+        "page": "马良",
+        "selected": {
+          "source_page_visible": true
+        },
+        "last_user_content": "Inspect current context plugin",
+        "wire_contains": {
+          "res://alpha/control.gd": false,
+          "res://beta/control.gd": false,
+          "ROUND2_ALPHA_SELECTION": false,
+          "ROUND2_BETA_SELECTION": false,
+          "马良": false,
+          "context_snapshot": false,
+          "AIWorkbenchSidebar": false
+        }
+      },
+      "scope": "Bundled Maliang extension selected and visible. Native sidebar and its visible labels examined before Send. No page-specific context found on this route."
+    },
+    "U15": {
+      "issue_number": 1810,
+      "acceptance": "移除脚本引用后发送，载荷和可见内容一致，工单不变。",
+      "observed": {
+        "visible_sidebar_actions": [
+          "Close AI Workbench",
+          "编辑器",
+          "编辑器",
+          "添加图片",
+          "粘贴截图",
+          "仅咨询",
+          "发送",
+          "停止"
+        ],
+        "message_contract": {
+          "source": "explicit HTTP references built from observed native selection data",
+          "model": "httpx.MockTransport",
+          "issue_unchanged": true,
+          "received_references": [
+            [
+              {
+                "kind": "editor",
+                "object_id": "res://alpha/control.gd#L2-L2",
+                "revision": "26132c16e8059d7dcb316c263355cd067649265368eac2b582f10c1eade90f93"
+              }
+            ],
+            [
+              {
+                "kind": "editor",
+                "object_id": "res://beta/control.gd#L2-L2",
+                "revision": "580b24a6ef064512d0b7e6316a7bb6953efbcad533534e460a40ec85492018f3"
+              }
+            ],
+            []
+          ],
+          "turn_count": 3,
+          "reopened_database_verified": true
+        }
+      },
+      "scope": "Matched native panel and captured payload separately against three explicit service snapshots, including removal and DB reopen. An end-user native removal action remains unverified."
+    },
+    "C06": {
+      "issue_number": 1744,
+      "acceptance": "切换两次能回到原工单、会话及草稿。",
+      "observed": {
+        "transport": "macOS TCP HTTP, native storage, fixture business accounts",
+        "module_sequence": [
+          {
+            "issue_id": "iss_5e6b87d49b644775ac11e49fba4a100a",
+            "conversation_id": "3c9d2756-5f1e-4b20-9c48-c6a33df3eb60",
+            "position": "issue/comments#default",
+            "module": "default",
+            "draft": "Unconfirmed draft for default"
+          },
+          {
+            "issue_id": "iss_bd8f249ea25e4e868d26318dac121f89",
+            "conversation_id": "b3261e04-be65-4f5a-8947-29bd3e4e2981",
+            "position": "issue/comments#mod_3f400e49c4ed45478ddb01e73249606d",
+            "module": "mod_3f400e49c4ed45478ddb01e73249606d",
+            "draft": "Unconfirmed draft for mod_3f400e49c4ed45478ddb01e73249606d"
+          },
+          {
+            "issue_id": "iss_5e6b87d49b644775ac11e49fba4a100a",
+            "conversation_id": "3c9d2756-5f1e-4b20-9c48-c6a33df3eb60",
+            "position": "issue/comments#default",
+            "module": "default",
+            "draft": "Unconfirmed draft for default"
+          }
+        ],
+        "gap": "Native module selector and unsent composer draft; tested unconfirmed saved design draft."
+      },
+      "scope": "Two authenticated location GET transitions. The design draft is persisted but unconfirmed."
+    },
+    "C07": {
+      "issue_number": 1785,
+      "acceptance": "无关系不擅自建单，多关系需选择，从工单打开沿用原归属。",
+      "observed": {
+        "no_links": [],
+        "two_links": [
+          "default",
+          "mod_3f400e49c4ed45478ddb01e73249606d"
+        ],
+        "issue_ids_before": [
+          "iss_5e6b87d49b644775ac11e49fba4a100a",
+          "iss_bd8f249ea25e4e868d26318dac121f89"
+        ],
+        "issue_ids_after": [
+          "iss_5e6b87d49b644775ac11e49fba4a100a",
+          "iss_bd8f249ea25e4e868d26318dac121f89"
+        ],
+        "opened_from_issue": "iss_bd8f249ea25e4e868d26318dac121f89",
+        "issue_module": "mod_3f400e49c4ed45478ddb01e73249606d",
+        "content_sha256": "cabb6ab13d7462385d601eaca5bec72c8f337ede0f560b25c633c1b57342cd39",
+        "gap": "Client chose explicit issue.module_id; native multi-choice prompt, cancellation and issue-origin auto-selection unverified."
+      },
+      "scope": "The two existing module relations remain intact after reading. The test harness provided the module from the source issue."
+    },
+    "D14": {
+      "issue_number": 1867,
+      "acceptance": "切换账号后读取各自内容，失效凭据提示重新认证且不写入项目。",
+      "observed": {
+        "alice_visible": [
+          "b3261e04-be65-4f5a-8947-29bd3e4e2981",
+          "3c9d2756-5f1e-4b20-9c48-c6a33df3eb60"
+        ],
+        "bob_visible": [
+          "04f59459-8bb0-4b23-8703-2208044923d2"
+        ],
+        "cross_account_details": [
+          404,
+          404
+        ],
+        "revoked_read": [
+          401,
+          {
+            "detail": "a valid personal access key is required"
+          }
+        ],
+        "revoked_write": [
+          401,
+          {
+            "detail": "a valid personal access key is required"
+          }
+        ],
+        "relogin_location_equal": true,
+        "git_tracked_fixture_content_unchanged": true,
+        "gap": "Native account UI, reauthentication prompt, credential-storage/write paths in editor unverified."
+      },
+      "scope": "The fixture project directory has no production credentials. Only the tracked fixture content digest was compared."
+    },
+    "I12": {
+      "issue_number": 1790,
+      "acceptance": "能打开一条真实旧单；链接失效给出来源和标识，操作不改变旧单状态。",
+      "observed": {
+        "source_id": "github:zhzyx/nightmarish-spooky-sorceryze/issue/1642",
+        "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1642",
+        "title": "天璇：原生内容发布与回退闭环（#1550 A5）",
+        "state_before_after": [
+          "open",
+          "open"
+        ],
+        "updated_at_before_after": [
+          "2026-11-19T18:27:03Z",
+          "2026-11-19T18:27:03Z"
+        ],
+        "body_sha256": "e48cd4b55c7112d6477d6a354ae6ee22a02aba368291f650c9bb220cb7484925",
+        "missing_requested": "github:zhzyx/nightmarish-spooky-sorceryze/issue/1642-missing",
+        "missing_status": 404,
+        "missing_response": {
+          "detail": "Archive item unavailable"
+        },
+        "id_in_error": false,
+        "gap": "Real GitHub GET before/after and isolated Tianxuan import/read; native open and failure display unverified. API error does not echo source ID."
+      },
+      "scope": "A single source issue imported through the production migration code in the isolated DB."
+    },
+    "G09": {
+      "issue_number": 1780,
+      "acceptance": "选中两次修订能区分文件内容并返回关联来源。",
+      "observed": {
+        "transport": "Mac native-storage service + imported isolated Git bundle",
+        "files": [
+          {
+            "commit": "14131f03991fbb28fff118217d7cb36a1f6f6e10",
+            "path": "asset.txt",
+            "blob": "806b517e0403758c65c1b4f8a2ab162b64d421a5",
+            "size": 15,
+            "text": "first revision\n",
+            "source_id": "github:fixture/local-history/commit/14131f03991fbb28fff118217d7cb36a1f6f6e10"
+          },
+          {
+            "commit": "a45d3c6e5f56d175a18f9d0af915700c136e19b5",
+            "path": "asset.txt",
+            "blob": "3ec573a3a0cc2ea27359ea0d13a847f009bf495c",
+            "size": 16,
+            "text": "second revision\n",
+            "source_id": "github:fixture/local-history/commit/a45d3c6e5f56d175a18f9d0af915700c136e19b5"
+          }
+        ],
+        "gap": "Godot history selector and clickable source navigation unverified."
+      },
+      "scope": "Synthetic Git commits in a test archive. No real remote GitHub commit is implied."
+    },
+    "G10": {
+      "issue_number": 1844,
+      "acceptance": "从明确基线建分支可回读 tip；未保存编辑在切换前可保全。",
+      "observed": {
+        "baseline": "14131f03991fbb28fff118217d7cb36a1f6f6e10",
+        "main_tip": "a45d3c6e5f56d175a18f9d0af915700c136e19b5",
+        "branch_create": {
+          "branch": "from-first",
+          "sha": "14131f03991fbb28fff118217d7cb36a1f6f6e10"
+        },
+        "api_readback": "14131f03991fbb28fff118217d7cb36a1f6f6e10",
+        "independent_git_readback": "14131f03991fbb28fff118217d7cb36a1f6f6e10",
+        "on_disk_conflict_refused_exit": 1,
+        "on_disk_work_preserved_stash": "d22fb411a572c2951378e7932c1eb6167553c39d",
+        "scope": "Real Godot CodeEdit in headless editor on Mac while host Git switched fixture branch; Godot branch-control action, native prompt and on-screen interaction unverified.",
+        "godot_unsaved_after_switch": {
+          "buffer_equal": true,
+          "disk_after": "extends Node\n# unsaved fixture\n",
+          "disk_equal": true,
+          "edited_text": "extends Node\n# unsaved fixturex\n",
+          "saved_equals_unsaved": false,
+          "switch_marker": true,
+          "visible_dialogs": []
+        },
+        "switched_to": "from-first",
+        "on_disk_changes_restored_on_main": true,
+        "same_open_script_changed_on_target": {
+          "from_disk": "extends Node\n# unsaved fixture\n",
+          "from_unsaved": "extends Node\n# unsaved fixturex\n",
+          "target_commit": "34f9666dc84397162dce25d8775956a24a84b043",
+          "after": {
+            "buffer_equal": true,
+            "disk_after": "extends Node\n# target branch revision\n",
+            "disk_equal": false,
+            "edited_text": "extends Node\n# unsaved fixturex\n",
+            "saved_equals_unsaved": false,
+            "switch_marker": true,
+            "visible_dialogs": []
+          },
+          "measurement": "one second after external Git checkout while editor remains running. No branch-control UX invoked."
+        }
+      },
+      "scope": "First branch scenario leaves open script unchanged on disk. Separate second scenario switches to a branch whose committed open script differs; actual buffer and disk independently recorded after one second. Native branch controls, focus reload, reopening after exit and user recovery remain unverified."
+    }
+  }
+}
