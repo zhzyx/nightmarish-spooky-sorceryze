@@ -1,0 +1,94 @@
+{
+  "request_id": "maliang-save-artifact-20261117",
+  "issue_number": 1427,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1427",
+  "checks": {
+    "issue": 1427,
+    "owner": "mac-round9-saveui",
+    "head": "54684debf89eccdd48e754fb620a64420aad1206",
+    "checks": {
+      "import_and_gdscript_parse": {
+        "command": [
+          "python3",
+          "/private/tmp/r9-results-saveui/check.py"
+        ],
+        "returncode": 0
+      },
+      "swift_parse": {
+        "command": [
+          "xcrun",
+          "swiftc",
+          "-frontend",
+          "-parse",
+          "tests/editor/macos_save_panel/SavePanelTests.swift"
+        ],
+        "returncode": 0
+      },
+      "result_verifier_negative_cases": {
+        "command": [
+          "python3",
+          "/private/tmp/r9-results-saveui/verifier.py"
+        ],
+        "returncode": 0
+      },
+      "workflow_syntax": {
+        "command": [
+          "ruby",
+          "-ryaml",
+          "-e",
+          "YAML.load_file(ARGV.fetch(0))",
+          ".github/workflows/macos_builds.yml"
+        ],
+        "returncode": 0
+      },
+      "xcodegen_project": {
+        "command": [
+          "/private/tmp/r9-build-saveui/xcodegen/xcodegen/bin/xcodegen",
+          "generate",
+          "--spec",
+          "/private/tmp/r9-build-saveui/project-check/project.yml"
+        ],
+        "returncode": 0
+      },
+      "project_lint": {
+        "command": [
+          "plutil",
+          "-lint",
+          "/private/tmp/r9-build-saveui/project-check/SavePanel.xcodeproj/project.pbxproj"
+        ],
+        "returncode": 0
+      },
+      "full_xcode": {
+        "command": [
+          "xcodebuild",
+          "-version"
+        ],
+        "returncode": 1
+      }
+    },
+    "files": {
+      ".github/workflows/macos_builds.yml": "f4eae6de4184596d0fff4ce311a40e119721e81bd86205b7ef62102dd647940b",
+      "tests/editor/macos_save_panel/probe.gd": "07908105762da32703cf60a16c250c1dd9d683b09c2a2e3e1fe8f6bf6d095032",
+      "tests/editor/macos_save_panel/run.py": "22e9cc1809d70cff42897129a90f02e77a14022ba623adaef8770b5b92ac41f5",
+      "tests/editor/macos_save_panel/project.yml": "f7d7b22d95d28a6d2d21fe91815123e9b5e9567d5d43c88a630eb1ed85f61464",
+      "tests/editor/macos_save_panel/SavePanelTests.swift": "aa47a8fdda6711d63ba174a2a54a1d026f43524471cbb2a5762782e79318e6d2"
+    },
+    "native_clicks": "pending dedicated GUI runner"
+  },
+  "hosted_ui_result": "Pending dedicated macOS test run",
+  "followup": {
+    "runner_failure": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44949386563",
+    "compile_error": "AIWorkbenchReference.cpp:608 Clang -Wrange-loop-construct",
+    "compile_repair_pr": 1993,
+    "format_check": "ruff format and check passed",
+    "codeowners_check": "editor Python script has editor, tests and buildsystem owners",
+    "clean_packaging": "Both resource packages generated from source by the official tools; signed app imported the isolated project and fixtures.",
+    "files_sha256": {
+      ".github/workflows/macos_builds.yml": "d9a73033e927bccfdc27613834e417d3e2a5f969d9844a11ea5705de2bb2e0bc",
+      "tests/editor/run_macos_save_panel.py": "807f9f61aa3fa7f92d5cc070443ab0b891d09e5416720517a74ee729f3ba2b5f",
+      "tests/editor/macos_save_panel/SavePanelTests.swift": "aa47a8fdda6711d63ba174a2a54a1d026f43524471cbb2a5762782e79318e6d2",
+      "tests/editor/macos_save_panel/project.yml": "f7d7b22d95d28a6d2d21fe91815123e9b5e9567d5d43c88a630eb1ed85f61464",
+      "tests/editor/macos_save_panel/probe.gd": "07908105762da32703cf60a16c250c1dd9d683b09c2a2e3e1fe8f6bf6d095032"
+    }
+  }
+}
