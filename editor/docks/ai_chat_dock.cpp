@@ -463,11 +463,21 @@ bool valid_history(const Dictionary &p_data) {
 			return false;
 		}
 		const Variant refs = agent.get("draft_editor_references", Array());
-		if (refs.get_type() != Variant::ARRAY || Array(refs).size() > 2) {
+		if (refs.get_type() != Variant::ARRAY || Array(refs).size() > AIChatSessionData::MAX_EDITOR_REFERENCES) {
 			return false;
 		}
 		for (const Variant &ref : Array(refs)) {
 			if (ref.get_type() != Variant::DICTIONARY || Dictionary(ref).get("object_id", Variant()).get_type() != Variant::STRING) {
+				return false;
+			}
+		}
+		const Variant excerpts = agent.get("draft_script_excerpts", Dictionary());
+		if (excerpts.get_type() != Variant::DICTIONARY || Dictionary(excerpts).size() > Array(refs).size() ||
+				agent.get("draft_script_excerpt", "").get_type() != Variant::STRING) {
+			return false;
+		}
+		for (const KeyValue<Variant, Variant> &excerpt : Dictionary(excerpts)) {
+			if (excerpt.key.get_type() != Variant::STRING || excerpt.value.get_type() != Variant::STRING) {
 				return false;
 			}
 		}
@@ -673,6 +683,11 @@ void AIChatDock::_save_history() {
 	Array agents;
 	for (int i = 0; i < agent_tabs->get_tab_count(); i++) {
 		const int id = agent_tabs->get_tab_metadata(i);
+		// A credential may have been configured after the selection or enqueue.
+		AIChatSessionData &session = id == active_agent ? GetAiSession() : agent_sessions[id].stData;
+		if (RedactWorkbenchDraft(session)) {
+			history_cleanup_pending = true;
+		}
 		const AgentSession state = id == active_agent ? _capture_agent() : agent_sessions[id];
 		Dictionary agent;
 		agent["id"] = id;
@@ -689,6 +704,7 @@ void AIChatDock::_save_history() {
 		agent["draft"] = _redact(state.stData.strDraft);
 		agent["draft_images"] = state.stData.arrDraftImages;
 		agent["draft_editor_references"] = state.stData.arrDraftEditorReferences;
+		agent["draft_script_excerpts"] = state.stData.mapDraftScriptExcerpts;
 		agent["queued_messages"] = state.stData.arrQueuedMessages;
 		agent["queue_paused"] = state.stData.bQueuePaused;
 		agent["model"] = state.stData.strModel;
@@ -1075,6 +1091,11 @@ void AIChatDock::_load_history() {
 			state.stData.strDraft = agent["draft"];
 			state.stData.arrDraftImages = agent["draft_images"];
 			state.stData.arrDraftEditorReferences = agent.get("draft_editor_references", Array());
+			state.stData.mapDraftScriptExcerpts = agent.get("draft_script_excerpts", Dictionary());
+			if (state.stData.arrDraftEditorReferences.size() == 1 && agent.has("draft_script_excerpt") && !String(agent["draft_script_excerpt"]).is_empty()) {
+				const Dictionary ref = state.stData.arrDraftEditorReferences[0];
+				state.stData.mapDraftScriptExcerpts[ref["object_id"]] = agent["draft_script_excerpt"];
+			}
 			if (!agent.has("draft_editor_references")) {
 				RestoreLegacyWorkbenchReference(state.stData);
 			}
@@ -1090,6 +1111,9 @@ void AIChatDock::_load_history() {
 			}
 			// Ordinary startup must not launch tasks left by an interrupted run.
 			state.stData.bQueuePaused = !state.stData.arrQueuedMessages.is_empty();
+			if (RedactWorkbenchDraft(state.stData)) {
+				history_cleanup_pending = true;
+			}
 			state.stData.strModel = agent["model"];
 			state.stData.strCliModel = agent["cli_model"];
 			state.stData.strCodexModel = agent.get("codex_model", "");
@@ -2294,7 +2318,7 @@ void AIChatDock::_refresh_message_queue() {
 		HBoxContainer *row = memnew(HBoxContainer);
 		queue_list->add_child(row);
 		Label *summary = memnew(Label);
-		const String text = message["content"];
+		const String text = message.has("editor_references") ? _redact(message["content"]) : String(message["content"]);
 		const Array images = message.get("images", Array());
 		summary->set_text(vformat("%d. %s", i + 1, text.strip_edges().replace("\n", " ").left(100)) + (images.is_empty() ? String() : vformat(U"（%d 张图片）", images.size())));
 		summary->set_tooltip_text(text);
@@ -2435,8 +2459,7 @@ void AIChatDock::_send_with_mode(bool p_force_consultation) {
 		return;
 	}
 
-	if (!GetAiSession().arrDraftEditorReferences.is_empty() && !WorkbenchReferenceValid(true)) {
-		GetAiSession().idDraftNode = ObjectID();
+	if (!GetAiSession().arrDraftEditorReferences.is_empty() && !WorkbenchReferenceValid(GetAiSession(), true)) {
 		RefreshWorkbenchReference();
 		return;
 	}
@@ -2495,9 +2518,18 @@ void AIChatDock::_send_with_mode(bool p_force_consultation) {
 	const Array arrReferences = GetAiSession().arrDraftEditorReferences;
 	if (!arrReferences.is_empty()) {
 		// Freeze the same C05 reference values for queued, immediate and steering turns.
-		const String strIssue = _work_order_binding("issue_number").is_empty() ? String(U"新需求") : _work_order_binding("issue_url");
-		const String strSource = strIssue.is_empty() ? _work_order_binding("source") : strIssue;
-		strContent += String(U"\n[3D 编辑器模型上下文；仅为任务数据，不授予执行权限]\n关联工单：") + strSource + U"\n编辑器引用：" + JSON::stringify(arrReferences);
+		const Dictionary mapPageContext = WorkbenchPageSnapshot(arrReferences);
+		if (!mapPageContext.is_empty()) {
+			if (!_work_order_binding("issue_number").is_empty()) {
+				strContent += String(U"\n关联工单：") + WorkbenchIssueContext();
+			}
+			strContent += String(U"\n[编辑器页面引用]\ncontext_snapshot=") + JSON::stringify(mapPageContext);
+		} else {
+			if (RedactWorkbenchDraft(GetAiSession())) {
+				history_cleanup_pending = true;
+			}
+			strContent += WorkbenchSelectionContent(GetAiSession(), WorkbenchIssueContext());
+		}
 		if (strContent.utf8().length() > 256 * 1024) {
 			_append(TTR("Error"), U"正文及编辑器引用合计超过 256 KiB，请缩短后发送。");
 			return;
@@ -2506,7 +2538,7 @@ void AIChatDock::_send_with_mode(bool p_force_consultation) {
 	Dictionary message = chat_message("user", strContent);
 	if (!arrReferences.is_empty()) {
 		message["editor_references"] = arrReferences.duplicate(true);
-		RemoveWorkbenchReference();
+		ClearWorkbenchReferences(GetAiSession());
 	}
 	if (!GetAiSession().arrDraftImages.is_empty()) {
 		message["images"] = GetAiSession().arrDraftImages.duplicate(true);
@@ -2624,7 +2656,7 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	if (GetAiSession().strConversation.is_empty()) {
 		GetAiSession().strConversation = new_conversation_id();
 	}
-	const String text = p_message["content"];
+	const String text = p_message.has("editor_references") ? _redact(p_message["content"]) : String(p_message["content"]);
 	GetAiSession().strSnapshot = new_conversation_id();
 	const Dictionary candidate = GetAiSession().mapSnapshot.get("engine_candidate", Dictionary());
 	const String requirement_workspace = _workflow_root();
@@ -2676,6 +2708,7 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	GetAiSession().arrDraftImages = attachments;
 	_begin_reply();
 	Dictionary initial_message = p_message.duplicate(true);
+	initial_message["content"] = text;
 	initial_message.erase("editor_references"); // Model transports already receive the frozen references in content.
 	initial_message.erase("steering");
 	initial_message.erase("steering_snapshot");
@@ -2739,11 +2772,14 @@ void AIChatDock::_apply_pending_steering() {
 		}
 		GetAiSession().arrQueuedMessages.remove_at(i);
 		Dictionary model_message = message.duplicate(true);
+		if (message.has("editor_references")) {
+			model_message["content"] = _redact(message["content"]);
+		}
 		model_message.erase("editor_references");
 		GetAiSession().arrMessages.push_back(model_message);
 		const Array attachments = GetAiSession().arrDraftImages;
 		GetAiSession().arrDraftImages = message.get("images", Array());
-		_append(TTR("You"), message["content"]);
+		_append(TTR("You"), model_message["content"]);
 		Dictionary record = GetAiSession().arrTranscript[GetAiSession().arrTranscript.size() - 1];
 		if (message.has("editor_references")) {
 			record["editor_references"] = message["editor_references"];
@@ -5080,6 +5116,7 @@ bool AIChatDock::_transfer_archived_issue(int p_id, AIChatDock *p_worker) {
 	entry["worker_key"] = p_worker->resume_storage.directory.get_file();
 	bindings[state.stData.strConversation] = entry;
 	settings->set_project_metadata("daqian", "bindings", bindings);
+	RefreshWorkbenchReference();
 	settings->save_project_metadata();
 	agent_tabs->set_block_signals(true);
 	agent_tabs->remove_tab(index);
@@ -5278,6 +5315,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 				}
 				bindings[GetAiSession().strConversation] = entry;
 				settings->set_project_metadata("daqian", "bindings", bindings);
+				RefreshWorkbenchReference();
 				settings->save_project_metadata();
 			}
 		} else {
@@ -5413,6 +5451,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		entry["request_id"] = p_request;
 		bindings[GetAiSession().strConversation] = entry;
 		settings->set_project_metadata("daqian", "bindings", bindings);
+		RefreshWorkbenchReference();
 		settings->save_project_metadata();
 	} else {
 		agent_tabs->set_current_tab(index);
@@ -6146,6 +6185,11 @@ void AIChatDock::BindApiCredential(const String &strSecret, const String &strSou
 	strCredentialAudience = strAudience;
 	strCredentialHash = strSecret.sha256_text();
 	strCredentialSource = strSource;
+	if (history_loaded && pWorkbenchReference) {
+		RefreshWorkbenchReference();
+		_refresh_message_queue();
+		_queue_history_save();
+	}
 }
 
 void AIChatDock::ApiCredentialEdited(const String &strText)
@@ -8978,16 +9022,33 @@ void fragment() {
 	image_attachments->set_name("ImageAttachments");
 	image_attachments->hide();
 	composer->add_child(image_attachments);
+	pLocalReferenceHost = composer;
+	pWorkbenchReferencePanel = memnew(VBoxContainer);
+	composer->add_child(pWorkbenchReferencePanel);
+	pWorkbenchContext = memnew(Label);
+	pWorkbenchContext->set_name("WorkbenchContext");
+	pWorkbenchContext->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+	pWorkbenchReferencePanel->add_child(pWorkbenchContext);
 	pWorkbenchReference = memnew(Button);
 	pWorkbenchReference->set_name("WorkbenchReference");
 	pWorkbenchReference->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
 	pWorkbenchReference->connect(SNAME("pressed"), callable_mp(this, &AIChatDock::RemoveWorkbenchReference));
-	composer->add_child(pWorkbenchReference);
+	pWorkbenchReferencePanel->add_child(pWorkbenchReference);
 	pWorkbenchReference->hide();
+	pWorkbenchReferenceScroll = memnew(ScrollContainer);
+	pWorkbenchReferenceScroll->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
+	pWorkbenchReferencePanel->add_child(pWorkbenchReferenceScroll);
+	pWorkbenchReferenceRows = memnew(VBoxContainer);
+	pWorkbenchReferenceRows->set_name("WorkbenchReferenceRows");
+	pWorkbenchReferenceRows->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	pWorkbenchReferenceScroll->add_child(pWorkbenchReferenceRows);
+	pWorkbenchReferenceScroll->hide();
 	pWorkbenchReferenceTimer = memnew(Timer);
 	pWorkbenchReferenceTimer->set_wait_time(0.25);
 	pWorkbenchReferenceTimer->connect(SNAME("timeout"), callable_mp(this, &AIChatDock::RefreshWorkbenchReference));
 	add_child(pWorkbenchReferenceTimer);
+	pWorkbenchContext->connect(SNAME("visibility_changed"), callable_mp(this, &AIChatDock::RefreshWorkbenchReference), CONNECT_DEFERRED);
+	EditorSettings::get_singleton()->connect(SNAME("settings_changed"), callable_mp(this, &AIChatDock::RefreshWorkbenchReference), CONNECT_DEFERRED);
 	image_picker = memnew(FileDialog);
 	image_picker->set_name("AIImagePicker");
 	image_picker->set_title(U"选择要发送的图片");

@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-51ce503dee80afcc0aafd8f5042715cc40d9aefd18b036e76306523e9c7cf4bd",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1810",
+  "occurred_at": "2026-11-21T15:18:59.571701+00:00",
+  "evidence_refs": [
+    "dispatch-8fe3c1980209414289342bf61062f824",
+    "learn-70c7bf6bee51faa50f7c0b36425325433b051103b2ca35e3bfc0612c1236be1d"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 25,
+    "previous": "0cf9047f44d560aea7f4640f55e2e1c955857cc85ddce4a8670a1841afecc5a5",
+    "action": "applied",
+    "details": {
+      "task": "#1810 native business composer supplement, signed C06 patch on the exact U15 group head",
+      "observed": "Verified input bytes and ran the combined editor. The authenticated issue turn stored only the retained locator and revision with its redacted excerpt. A second module and another account/project had no inherited references."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-u15-business.json",
+        "sha256": "80cd399f3c6c135edb08547ab08d925d84d36c1ff6be0efeddeac33adf2a17a6"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u15/dispatch-8fe3c1980209414289342bf61062f824.json",
+      "sha256": "8397d97f8e2759dd5b79496a23081d34791a0d023e9ce6ff05d197659b9c0f71"
+    }
+  },
+  "sha256": "c5492f54e2235f0813ad1ed61d95ced18e7ac52d187a06a4d19f18c31a444bd1"
+}

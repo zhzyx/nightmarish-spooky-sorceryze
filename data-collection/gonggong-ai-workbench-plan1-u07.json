@@ -1,0 +1,184 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-u07",
+  "issue_number": 1828,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1828",
+  "observed_at": "2026-11-21T13:23:46.589778+00:00",
+  "reviewed_base": "e415518a44a2dde7fdbdc5014bb0e7d0527f32ef",
+  "source_sha256": {
+    "editor/docks/AIChatController.h": "1049eb875b7559a013340ab9f92b32dee9f33f4f2fac2bafa5258129ab0d3d1a",
+    "editor/docks/ai_chat_dock.cpp": "28a0deb887e3dff6d06ea91b6a323684c0d5c6f13983ca7601fdb755cdcb1c82",
+    "editor/docks/ai_chat_dock.h": "d8645e007f42a7fe85a162499aa9d87adfedb6e36b2d79b715c595a0e60fb832",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "577d56b665e51532113b333ec4ca2bc18eb5144fe212257decab130c850fda61",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "f97574252f4fc1563b05925505f0cde99a781dbc0ca7e4e086485bcc5a9466aa",
+    "tests/editor/run_tianshu_spatial.py": "7dfe4c794cbb86b2ef1a8c9e39ae7c33041a8374202197d986fe42311f93b544",
+    "tests/editor/workbench_scene_selection.gd": "95fdf4deb0a0f7ae45b77d0f4d319573d795739043901fba91701ffd3e8edddb",
+    "design-docs/gonggong-ai-workbench-u07.md": "971fe180fc1f8ab37c19730898aa7d3135a7c54a83bdcbb461914ba13f834988"
+  },
+  "previous_mac_observations": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1828#issuecomment-7060959286",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1828#issuecomment-7062653896"
+  ],
+  "build": {
+    "platform": "Windows x86_64, Visual Studio 14.5 / SDK 10.0.26100.0",
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-read-only-cache> cache_limit=0 --cache-readonly -j6",
+    "source_settled_incremental_exit": 0,
+    "engine_sha256": "064406e6671338f62b5c3617ee6fabfcef701d2e1ba4e68446e312588ba19b13",
+    "console_wrapper_sha256": "e2a060ee77235970071af674e9c062c5d90c2d21fb284b90b3ba4a8e2da4012e",
+    "accepted_build_log_sha256": "0bd76113750e6acf5b698f37359cbbe88197711815537287108ac1a8110f65ac"
+  },
+  "fixture": "Private self-contained editor and disposable project, headless real Godot controls, consultation via loopback HTTP model. Source files generated separately for 2D and 3D. Each request checked independently against local file SHA-256. Native editor history checked after each send.",
+  "commands": [
+    "python -X utf8 tests/editor/run_tianshu_spatial.py --godot <console> --scene-selection --report <scene.json>",
+    "python -X utf8 tests/editor/run_tianshu_spatial.py --godot <console> --references --report <spatial.json>"
+  ],
+  "scene_selection": {
+    "passed": true,
+    "editor_exit": 0,
+    "model_requests": 4,
+    "drafts": [
+      {
+        "draft": "2D selection 1",
+        "label": "编辑器引用 · res://selection-2D.tscn#Right/SharedLeaf",
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "res://selection-2D.tscn#Right/SharedLeaf",
+            "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+          }
+        ],
+        "history_equals_draft": true,
+        "model_received": [
+          {
+            "kind": "editor",
+            "object_id": "res://selection-2D.tscn#Right/SharedLeaf",
+            "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+          }
+        ]
+      },
+      {
+        "draft": "2D selection 3",
+        "label": "编辑器引用 · 3 项 · res://selection-2D.tscn#Right/SharedLeaf、res://selection-2D.tscn#Left/SharedLeaf、res://selection-2D.tscn#Other/SharedLeaf",
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "res://selection-2D.tscn#Right/SharedLeaf",
+            "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://selection-2D.tscn#Left/SharedLeaf",
+            "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://selection-2D.tscn#Other/SharedLeaf",
+            "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+          }
+        ],
+        "history_equals_draft": true,
+        "model_received": [
+          {
+            "kind": "editor",
+            "object_id": "res://selection-2D.tscn#Right/SharedLeaf",
+            "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://selection-2D.tscn#Left/SharedLeaf",
+            "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://selection-2D.tscn#Other/SharedLeaf",
+            "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+          }
+        ]
+      },
+      {
+        "draft": "3D selection 1",
+        "label": "编辑器引用 · res://selection-3D.tscn#Right/SharedLeaf",
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "res://selection-3D.tscn#Right/SharedLeaf",
+            "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+          }
+        ],
+        "history_equals_draft": true,
+        "model_received": [
+          {
+            "kind": "editor",
+            "object_id": "res://selection-3D.tscn#Right/SharedLeaf",
+            "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+          }
+        ]
+      },
+      {
+        "draft": "3D selection 3",
+        "label": "编辑器引用 · 3 项 · res://selection-3D.tscn#Right/SharedLeaf、res://selection-3D.tscn#Left/SharedLeaf、res://selection-3D.tscn#Other/SharedLeaf",
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "res://selection-3D.tscn#Right/SharedLeaf",
+            "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://selection-3D.tscn#Left/SharedLeaf",
+            "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://selection-3D.tscn#Other/SharedLeaf",
+            "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+          }
+        ],
+        "history_equals_draft": true,
+        "model_received": [
+          {
+            "kind": "editor",
+            "object_id": "res://selection-3D.tscn#Right/SharedLeaf",
+            "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://selection-3D.tscn#Left/SharedLeaf",
+            "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://selection-3D.tscn#Other/SharedLeaf",
+            "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+          }
+        ]
+      }
+    ],
+    "renamed_third_member_rejected_with_draft_preserved": true,
+    "remove_kept_text": true,
+    "restored_three_member_draft_invalid": true
+  },
+  "spatial_regression": {
+    "passed": true,
+    "editor_exit": 0,
+    "model_requests": 1,
+    "blocked_reasons": [
+      "same name and path with a new instance",
+      "stale node path",
+      "same file path with different bytes",
+      "deleted external resource",
+      "same-named node in newly opened scene"
+    ],
+    "reopened": [
+      {
+        "phase": "stale",
+        "exit_code": 0
+      },
+      {
+        "phase": "legacy",
+        "exit_code": 0
+      }
+    ]
+  },
+  "triage": "Initial build was started before all native header changes settled. Discarded that binary and rebuilt against the settled tree. Ordinary palette navigation uses the registered menu action in the headless fixture. A concurrent C08 re-open run observed the invalid reference before the active tab became visible. Standalone C08 diagnostic and unmodified C08 fixture then passed on the accepted binary. Windows headless editor teardown emitted RID/ObjectDB warnings; tests checked script assertions, HTTP requests and process exits.",
+  "receipt_scope": "Feature consumer is the native composer, saved transcript and HTTP model fixture on the recorded Windows candidate. Parent integration tracks published main and issue completion."
+}
