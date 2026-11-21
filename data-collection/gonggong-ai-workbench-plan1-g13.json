@@ -1,0 +1,118 @@
+{
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1826",
+  "request_id": "gonggong-ai-workbench-plan1-g13",
+  "issue_number": 1826,
+  "observed_at": "2026-11-21T20:29:27.992318+00:00",
+  "baseline": "ab75b08a9fe400968f47f7084ec27dba1d26ebd9",
+  "platform": "macOS 26.6.2 arm64",
+  "editor_sha256": "df58e59d41138b28dcdb6fedff1642864c20c6fd89a195787295fb15abf206ea",
+  "candidate_file_sha256": {
+    "customizations/components/tianxuan/duobao/README.md": "92092d884f7fdd8252e90470f34965b89342bd7e6e5951159d87b7349a3b0d1e",
+    "customizations/components/tianxuan/duobao/merge_queue.py": "17172af64830c3e0c51168036f090a1804f70c3bac7a57628735bc12c9c5db8d",
+    "customizations/components/tianxuan/duobao/test_merge_queue.py": "7185da2a780e17f008424529184b4c196ad29915308a441fc605c46638db0927",
+    "customizations/components/tianxuan/server/api.py": "c1b6df273b38a1a40a9b70a78df0428d7089f9400613334214a9b1a05aa057e5",
+    "customizations/components/tianxuan/server/schemas.py": "fb10dd027cdaba1441215a48aaa6622c04a4c85683a534dac0bc0d95470bdb52",
+    "customizations/components/tianxuan/server/test_merge_queue_api.py": "283e3d1f6b105be372f3be3f7f43f7dae1ae203bbbfaa694c536c668d84b57de",
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "7b36643efdc452aeb7440f050c3c153f7e46f4382510915c392174e5b6e84cf5",
+    "editor/SCsub": "3fbfb027b990bb51f09921a15db6ce2fb7f6002a11233ed62d1f249fa5ab8328",
+    "editor/docks/daqian/duobao_merge.gd": "4967ea80e27032403bf274293277387595fc914ab844b1add56e0032fb063f31",
+    "editor/docks/daqian/workspace.gd": "ef5b0e69768dd18f3ba91ba8611924fc4b5ecff5160f268d377a647685c0dd97",
+    "editor/docks/daqian_dock.cpp": "e609a80de84e268e204b2ac972455c0e17655df9cc1d830f9b07785d7af48a6b",
+    "tests/editor/run_workbench_duobao_merge.py": "6b04c51b85b8850a93554a30bdc88b4dd07ed7a37835d57fb150332811752945",
+    "tests/editor/workbench_duobao_merge.gd": "de9c352b5691df40a2643c4a05197ba1e7f8ccf89f52ded211b037932d7ed75c"
+  },
+  "commands": [
+    "python -m SCons platform=macos arch=arm64 target=editor vulkan=no accesskit=no -j8",
+    "python -m pytest -q customizations/components/tianxuan/duobao/test_merge_queue.py customizations/components/tianxuan/server/test_merge_queue_api.py customizations/components/tianxuan/server/test_tianshu_bridge.py",
+    "python tests/editor/run_workbench_duobao_merge.py --godot <candidate-editor> --report <local-report.json>"
+  ],
+  "backend": "uvicorn main:app, accounts, Duobao Git backend",
+  "native_editor_headless": true,
+  "service_and_editor_restarted": true,
+  "worker": "deployment-configured command reads candidate.txt in the exact merged preflight tree",
+  "independent_target_readback": {
+    "branch": "main",
+    "tip": "d73ffe0cffd6771da057dbb1270b30c6c7339ead",
+    "verified_after_each_request": true
+  },
+  "requests": [
+    {
+      "request_id": "mr_e4f1c659dc1683a782061610cf5111eb38ccb540825985c9b618d9321a1eb955",
+      "source_branch": "feature/g13",
+      "source": "a4a2f7386da92240a3055a6a45d0ea7e9c3aa492",
+      "target_base": "d73ffe0cffd6771da057dbb1270b30c6c7339ead",
+      "checks_exit_code": 0,
+      "control_assertions": {
+        "accepted": true,
+        "checks_from_service": true,
+        "entry": true,
+        "replayed": true,
+        "source": true,
+        "target": true
+      },
+      "status_text": "检查通过，等待合入",
+      "target_readback": "当前目标 main @ d73ffe0cffd6771da057dbb1270b30c6c7339ead"
+    },
+    {
+      "request_id": "mr_3a1fcdc539f1cebbd742804ceda5d31a1ef55998766ff91b67bd02402e14c798",
+      "source_branch": "feature/g13",
+      "source": "020c704fe5b3446a67f2877b7c3f1f6d7a8654e6",
+      "target_base": "d73ffe0cffd6771da057dbb1270b30c6c7339ead",
+      "checks_exit_code": 1,
+      "control_assertions": {
+        "accepted": true,
+        "checks_from_service": true,
+        "entry": true,
+        "old_rejected": true,
+        "replayed": true,
+        "source": true,
+        "stale": true,
+        "target": true
+      },
+      "status_text": "检查未通过",
+      "target_readback": "当前目标 main @ d73ffe0cffd6771da057dbb1270b30c6c7339ead"
+    }
+  ],
+  "regression": "38 passed, 1 warning in 21.12s",
+  "additional_regressions": [
+    "source or target advances during a passing check",
+    "full OID and authenticated session enforcement",
+    "same-tenant reviewer readback and different-tenant refusal",
+    "existing automatic merge queue workflows"
+  ],
+  "limits": [
+    "Programmatic native control signals on an isolated headless Mac editor, without visible window interaction.",
+    "This feature uses the same Git-backed Duobao branches as G10. G14 conflict resolution and G15 delivery are separate."
+  ],
+  "warnings": [
+    "SCons ranlib reported existing empty platform-specific object files.",
+    "Starlette test client reported a dependency deprecation."
+  ],
+  "integration_verification": {
+    "base": "174e9ee8262a47bfc8577a80d9eed80ca010d985",
+    "candidate_file_sha256": {
+      "customizations/components/tianxuan/duobao/README.md": "92092d884f7fdd8252e90470f34965b89342bd7e6e5951159d87b7349a3b0d1e",
+      "customizations/components/tianxuan/duobao/merge_queue.py": "17172af64830c3e0c51168036f090a1804f70c3bac7a57628735bc12c9c5db8d",
+      "customizations/components/tianxuan/duobao/test_merge_queue.py": "7185da2a780e17f008424529184b4c196ad29915308a441fc605c46638db0927",
+      "customizations/components/tianxuan/server/api.py": "0821508b75b14bbcda6ed1e859ca27435e0d5c3de64454985197062b0a8f16c9",
+      "customizations/components/tianxuan/server/schemas.py": "cb9976db7e57e9fe9182104f1c1fa77f92cff607b4d3e008e209de2fc715e46d",
+      "customizations/components/tianxuan/server/test_merge_queue_api.py": "283e3d1f6b105be372f3be3f7f43f7dae1ae203bbbfaa694c536c668d84b57de",
+      "customizations/components/tianxuan/server/tianshu_bridge.py": "7b36643efdc452aeb7440f050c3c153f7e46f4382510915c392174e5b6e84cf5",
+      "editor/SCsub": "3fbfb027b990bb51f09921a15db6ce2fb7f6002a11233ed62d1f249fa5ab8328",
+      "editor/docks/daqian/duobao_merge.gd": "4967ea80e27032403bf274293277387595fc914ab844b1add56e0032fb063f31",
+      "editor/docks/daqian/workspace.gd": "ef5b0e69768dd18f3ba91ba8611924fc4b5ecff5160f268d377a647685c0dd97",
+      "editor/docks/daqian_dock.cpp": "e609a80de84e268e204b2ac972455c0e17655df9cc1d830f9b07785d7af48a6b",
+      "tests/editor/run_workbench_duobao_merge.py": "6b04c51b85b8850a93554a30bdc88b4dd07ed7a37835d57fb150332811752945",
+      "tests/editor/workbench_duobao_merge.gd": "de9c352b5691df40a2643c4a05197ba1e7f8ccf89f52ded211b037932d7ed75c"
+    },
+    "service_tests": "38 passed",
+    "editor_sha256": "c437717f34c7f2b15c65702d418302831fc9f176d4f75ce2f067f76fbb800a77",
+    "editor_arguments": [
+      "--rendering-method",
+      "gl_compatibility",
+      "--editor"
+    ],
+    "independent_bare_target_readback": true,
+    "service_restarted": true
+  }
+}

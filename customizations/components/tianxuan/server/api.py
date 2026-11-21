@@ -55,6 +55,7 @@ from schemas import (
     DocShareRequest,
     DocUpdateRequest,
     DocVisibilityRequest,
+    ExactMergeRequest,
     ExternalLinkRequest,
     ExternalRequirementRequest,
     FieldPermissionRequest,
@@ -1782,6 +1783,50 @@ def create_app(
     # ---------- 多宝：合入队列 ----------
 
     if merge_queue is not None:
+
+        def exact_request_view(item: dict[str, Any]) -> dict[str, Any]:
+            evidence = item["evidence"]
+            return {
+                "id": item["id"],
+                "source": item["source"],
+                "target": item["target"],
+                **evidence["exact_request"],
+                "check_state": item["check_state"],
+                "checks": [
+                    {"command": check["command"], "exit_code": check["exit_code"]}
+                    for check in evidence.get("checks", [])
+                ],
+            }
+
+        @app.post("/api/v1/git/repos/{name}/merge-requests")
+        def create_exact_request(name: str, payload: ExactMergeRequest, actor: PrivateActorDep) -> dict[str, Any]:
+            if store.role_of(actor) == "viewer":
+                raise PermissionDenied("viewer cannot enqueue merge candidates")
+            repo = _repo_under_root(name)
+            try:
+                item = merge_queue.enqueue(
+                    actor, str(repo), payload.source, payload.target, candidate=payload.candidate
+                )
+            except PolicyError as error:
+                raise HTTPException(status_code=403, detail=str(error)) from error
+            except (GitServiceError, ValueError, OSError) as error:
+                raise HTTPException(status_code=409, detail=str(error)) from error
+            return exact_request_view(item)
+
+        @app.get("/api/v1/git/repos/{name}/merge-requests/{item_id}")
+        def read_exact_request(name: str, item_id: str, actor: PrivateActorDep) -> dict[str, Any]:
+            repo = _repo_under_root(name)
+            try:
+                item = merge_queue.get(item_id)
+            except KeyError as error:
+                raise HTTPException(status_code=404, detail="merge request not found") from error
+            if (
+                item["repo"] != str(repo)
+                or "exact_request" not in item["evidence"]
+                or store.actor_context(item["created_by"])["tenant"] != store.actor_context(actor)["tenant"]
+            ):
+                raise HTTPException(status_code=404, detail="merge request not found")
+            return exact_request_view(item)
 
         @app.post("/api/v1/merge-queue")
         def enqueue_merge(payload: MergeQueueCreateRequest, actor: ActorDep) -> dict[str, Any]:

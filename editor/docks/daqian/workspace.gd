@@ -12,6 +12,9 @@ var observed_runtime: Dictionary = {}
 var duobao_commit_script: Script
 var duobao_commit_button: Button
 var duobao_commit_dialog: AcceptDialog
+var duobao_merge_script: Script
+var duobao_merge_button: Button
+var duobao_merge_dialog: AcceptDialog
 var duobao_branches_script: Script
 var duobao_dialog: AcceptDialog
 var canvas_script: Script
@@ -339,6 +342,8 @@ func _ready() -> void:
 		duobao_commit_button = _button(row, "多宝提交", _open_duobao_commit)
 	if duobao_branches_script:
 		duobao_branches_button = _button(row, "多宝分支", _open_duobao_branches)
+	if duobao_merge_script:
+		duobao_merge_button = _button(row, "多宝合入", _open_duobao_merge)
 	historical_issue_button = _button(row, "历史工单", _open_historical_issue)
 	archive_history_button = _button(row, "多宝历史", _open_archive_history)
 	advanced_button = _button(row, "筛选与跟进 ▾", _toggle_advanced)
@@ -1460,6 +1465,14 @@ func _open_duobao_commit() -> void:
 
 func _workcopy_commit_command(arguments: Array, request: Dictionary) -> Dictionary:
 	return await _tianxuan_command(arguments + ["--project", ProjectSettings.globalize_path("res://")], request)
+
+
+func _open_duobao_merge() -> void:
+	if not is_instance_valid(duobao_merge_dialog):
+		duobao_merge_dialog = duobao_merge_script.new()
+		duobao_merge_dialog.set("execute", _tianxuan_command)
+		add_child(duobao_merge_dialog)
+	duobao_merge_dialog.popup_centered()
 
 
 func _open_duobao_branches() -> void:
@@ -2991,7 +3004,7 @@ func _gate_visibility(opened: bool) -> void:
 	result_count.visible = current.is_empty()
 	connection_button.text = "" if opened else "工作区连接"
 	for child in toolbar.get_children():
-		child.visible = opened or child in [refresh_button, connection_button, historical_issue_button, archive_history_button, duobao_branches_button, duobao_commit_button]
+		child.visible = opened or child in [refresh_button, connection_button, historical_issue_button, archive_history_button, duobao_branches_button, duobao_commit_button, duobao_merge_button]
 	return_button.visible = opened and not current.is_empty()
 	search.visible = opened and current.is_empty()
 	pending_menu.visible = opened and current.is_empty()
