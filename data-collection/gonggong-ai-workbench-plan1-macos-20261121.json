@@ -1,0 +1,602 @@
+{
+  "schema_version": 1,
+  "issue_number": 1709,
+  "request_id": "gonggong-ai-workbench-plan1",
+  "observed_at": "2026-11-21T07:20:02.910432+00:00",
+  "platform": {
+    "system": "26.6.2",
+    "architecture": "arm64",
+    "display": "headless",
+    "scons": "4.11.1",
+    "python": "3.14.3"
+  },
+  "build": {
+    "pr": 1900,
+    "source": "4a618d90cbbbf1925077819fc8c5361aea3b5f19",
+    "tree": "af632660ba815284d6cd53116156a1d3f144453f",
+    "command": "python -m SCons -Q platform=macos target=editor arch=arm64 vulkan=no metal=no accesskit=no generate_bundle=yes -j8",
+    "elapsed": "00:05:15.51",
+    "executable_sha256": "e3a5bd2c045952269db02f207bbf2af0f621eba7d24501fbfa7c1b3c68edc8a1",
+    "official_f01_candidate": false
+  },
+  "app": {
+    "installed_executable_sha256": "21fd81391a7a36a4dfc57065b319f7584775479c3a1c939571d406a8d4f0a67e",
+    "installed_board_sha256": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914",
+    "installed_ui_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "codesign_verified": true,
+    "packager_blob": "1f8d05b7d8544f72aba580b39703927e90529cfa",
+    "archive_sha256": "950e5a1d9d147a6f8ca932b1e7675116ee154900e13f6ffc1f34ae1e801af01a",
+    "archive_scope": "local ad-hoc signed diagnostic bundle; unpacked, codesign --verify --strict and executable byte comparison passed"
+  },
+  "issues": [
+    {
+      "issue": 1871,
+      "id": "U01",
+      "evidence": "u01_command",
+      "result": "候选的 6 轮布局测试合计执行 24 次工作台命令；每个进程始终复用同一实例，页签数保持 10。"
+    },
+    {
+      "issue": 1869,
+      "id": "U02",
+      "evidence": "candidate_ui",
+      "result": "候选工作台仍是 AIChatMainScreen，布局掩码 8、默认槽 11。从 2D 用命令打开能选中原实例。",
+      "remaining": "侧栏停靠、关闭时恢复编辑焦点。"
+    },
+    {
+      "issue": 1807,
+      "id": "U03",
+      "evidence": "candidate_ui",
+      "result": "从 2D、3D、Script 切换旧工作台页签均复用原实例，三次输入框均未获焦；2D 通过新命令打开也未获焦。",
+      "remaining": "固定按钮及其输入焦点验收。"
+    },
+    {
+      "issue": 1808,
+      "id": "U04",
+      "evidence": "candidate_ui",
+      "result": "编辑器内注入 Cmd+Shift+P 打开命令面板，临时修改面板绑定后旧键匹配为假、新键匹配为真，Cmd+A 仍选择草稿。",
+      "remaining": "工作台专属快捷键及重绑定后的直接打开。"
+    },
+    {
+      "issue": 1745,
+      "id": "U06",
+      "evidence": "candidate_ui",
+      "result": "会话重命名弹窗内输入未保存文本，向模态窗口派发 Cmd+Shift+P 后命令面板未出现；取消后原聊天草稿及焦点保留。",
+      "remaining": "从模态窗口发起 AI 请求并携带所选内容。"
+    },
+    {
+      "issue": 1776,
+      "id": "R04",
+      "evidence": "runner_cancel",
+      "result": "工作者终态为 reconcile_required；已收到 cancel_requested=true、transport_completed=false 后，孙进程仍能响应新标记并写文件。",
+      "remaining": "把退出路径接到任务进程组并核实全组终态。"
+    },
+    {
+      "issue": 1743,
+      "id": "F01",
+      "evidence": "build, app",
+      "result": "固定 Mac 诊断构建的源码、树、裸二进制、签名后可执行件、UI 包、看板包和归档摘要。",
+      "remaining": "等待方案一组合前置并核对两个平台的冻结记录。"
+    },
+    {
+      "issue": 1740,
+      "id": "Q07",
+      "evidence": "app, bundle_slots, layout_roundtrip",
+      "result": "修正默认及 A/B 自更新槽缺看板包；真实签名 .app 内两个包摘要匹配。回退再切回候选均能打开原 3D 布局。",
+      "remaining": "在已冻结 F01 双平台组合上重复构建安装。"
+    },
+    {
+      "issue": 1732,
+      "id": "Q05",
+      "evidence": "cold_restart",
+      "result": "真实 Mac 编辑器被终止并冷启动一次，原工单绑定、输入及父单历史均恢复，普通需求调用合计一次；业务传输为隔离夹具。",
+      "remaining": "正常退出运行中任务、进程组终态及原授权阶段边界。"
+    },
+    {
+      "issue": 1734,
+      "id": "Q11",
+      "evidence": "candidate_ui",
+      "result": "回读 Cmd 键路由、模态焦点、当前停靠槽及 Game 面板。headless 驱动报告不支持窗口嵌入。",
+      "remaining": "冻结候选上的 Cocoa 窗口焦点、真实停靠与内嵌游戏预览。"
+    }
+  ],
+  "u01_command": {
+    "runner": "tests/editor/run_ai_chat_tab_order.py --workbench-command",
+    "test_sha256": {
+      "run_ai_chat_tab_order.py": "0789524129ac29421bbb016f15f40d6588c7ea25083d2660ce45802ac2819a0b",
+      "ai_chat_tab_order.gd": "3a4cd064f424bca3ba22df178f1ac7a3ed26010bcac5a41d78a8034be18c0f79"
+    },
+    "phases": [
+      {
+        "phase": "initial",
+        "invocations": [
+          {
+            "dock_ids": [
+              596547504179
+            ],
+            "from": "2D",
+            "instance_id": 596547504179,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596547504179
+            ],
+            "from": "AI Chat",
+            "instance_id": 596547504179,
+            "repeat": true,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596547504179
+            ],
+            "from": "Script",
+            "instance_id": 596547504179,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596547504179
+            ],
+            "from": "AI Chat",
+            "instance_id": 596547504179,
+            "repeat": true,
+            "tab_count": 10
+          }
+        ]
+      },
+      {
+        "phase": "legacy_maliang_last",
+        "invocations": [
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "2D",
+            "instance_id": 596530726963,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "AI Chat",
+            "instance_id": 596530726963,
+            "repeat": true,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "Script",
+            "instance_id": 596530726963,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "AI Chat",
+            "instance_id": 596530726963,
+            "repeat": true,
+            "tab_count": 10
+          }
+        ]
+      },
+      {
+        "phase": "legacy_maliang_selected",
+        "invocations": [
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "2D",
+            "instance_id": 596530726963,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "AI Chat",
+            "instance_id": 596530726963,
+            "repeat": true,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "Script",
+            "instance_id": 596530726963,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "AI Chat",
+            "instance_id": 596530726963,
+            "repeat": true,
+            "tab_count": 10
+          }
+        ]
+      },
+      {
+        "phase": "pre_daqian_layout",
+        "invocations": [
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "2D",
+            "instance_id": 596530726963,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "AI Chat",
+            "instance_id": 596530726963,
+            "repeat": true,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "Script",
+            "instance_id": 596530726963,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "AI Chat",
+            "instance_id": 596530726963,
+            "repeat": true,
+            "tab_count": 10
+          }
+        ]
+      },
+      {
+        "phase": "pre_maliang_layout",
+        "invocations": [
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "2D",
+            "instance_id": 596530726963,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "AI Chat",
+            "instance_id": 596530726963,
+            "repeat": true,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "Script",
+            "instance_id": 596530726963,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "AI Chat",
+            "instance_id": 596530726963,
+            "repeat": true,
+            "tab_count": 10
+          }
+        ]
+      },
+      {
+        "phase": "restart",
+        "invocations": [
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "2D",
+            "instance_id": 596530726963,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "AI Chat",
+            "instance_id": 596530726963,
+            "repeat": true,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "Script",
+            "instance_id": 596530726963,
+            "repeat": false,
+            "tab_count": 10
+          },
+          {
+            "dock_ids": [
+              596530726963
+            ],
+            "from": "AI Chat",
+            "instance_id": 596530726963,
+            "repeat": true,
+            "tab_count": 10
+          }
+        ]
+      }
+    ]
+  },
+  "candidate_ui": {
+    "chat_default_slot": 11,
+    "chat_focus_after_cancel": true,
+    "chat_layout_key": "AIChatMainScreen",
+    "chat_layout_mask": 8,
+    "cmd_a_selected_draft": true,
+    "cmd_shift_p_opened_palette": true,
+    "command_focused_chat_input": false,
+    "command_palette_shortcut": "Shift+Command+P",
+    "command_selected_original_chat": true,
+    "display": "headless",
+    "draft_preserved": true,
+    "engine": {
+      "build": "custom_build",
+      "hash": "4a618d90cbbbf1925077819fc8c5361aea3b5f19",
+      "hex": 264192,
+      "major": 4,
+      "minor": 8,
+      "patch": 0,
+      "status": "beta",
+      "string": "4.8-beta (custom_build)",
+      "timestamp": 1795244917
+    },
+    "game_dock_present": true,
+    "initial_tab": "3D",
+    "layout_existed_at_probe": true,
+    "main_screen_tab": {
+      "2D": {
+        "active_before": "2D",
+        "chat_hidden_before": true,
+        "input_focused": false,
+        "same_chat_visible": true
+      },
+      "3D": {
+        "active_before": "3D",
+        "chat_hidden_before": true,
+        "input_focused": false,
+        "same_chat_visible": true
+      },
+      "Script": {
+        "active_before": "Script",
+        "chat_hidden_before": true,
+        "input_focused": false,
+        "same_chat_visible": true
+      }
+    },
+    "matching_shortcut_ids": [],
+    "modal_draft_preserved": true,
+    "palette_matches_cmd_shift_p": true,
+    "palette_opened_from_rename": false,
+    "rebound_palette_matches_alt": true,
+    "rebound_palette_matches_old_cmd": false,
+    "rename_dismissed": true,
+    "rename_input_focused": true,
+    "rename_modal_visible": true,
+    "self_contained": true,
+    "window_embedding_supported": false,
+    "workbench_command_found": true
+  },
+  "runner_cancel": {
+    "source": "d316510f4e4bd469e8ef16eb0607755f3812cbc9",
+    "runner": "tools/godot_parallel/runner.mjs",
+    "fixture": "tests/editor/test_parallel_work_orders.mjs",
+    "sequence": [
+      "Start one registered substitute CLI via runHost; spawn a grandchild with its own closed stdio and a five-second deadline.",
+      "Wait for the grandchild readiness file, write <receipt>.1.cancel, then await the immutable terminal receipt.",
+      "Only after reading the receipt, create a release marker. The grandchild observes it and writes the late marker."
+    ],
+    "observed": {
+      "state": "reconcile_required",
+      "cancel_requested": true,
+      "transport_completed": false,
+      "grandchild_ready": true,
+      "grandchild_wrote_after_terminal": true
+    },
+    "owned_command_control": "ParentCompletionTests.test_owned_process_cancellation_prevents_late_descendant_write passed on the separate OwnedCommand path."
+  },
+  "bundle_slots": {
+    "default": {
+      "board_validation_before": "candidate_tianshu_board_changed",
+      "board_before": null,
+      "ui_input": "39c727c35365a7b9ef0eb39e9d78678b74d5fc0b7fd24db431417263a395874c",
+      "ui_installed": "39c727c35365a7b9ef0eb39e9d78678b74d5fc0b7fd24db431417263a395874c",
+      "board_input": "c6dc9068420213dfd0dfd8c50aebb069a8ef8225f2f869e96b2ddc17af39b7a3",
+      "board_installed": "c6dc9068420213dfd0dfd8c50aebb069a8ef8225f2f869e96b2ddc17af39b7a3",
+      "codesign_exit": 0,
+      "board_validation": "passed"
+    },
+    "self_update_a": {
+      "board_validation_before": "candidate_tianshu_board_changed",
+      "board_before": null,
+      "ui_input": "5112864ed400115f0c1ae3237ced5db75baca39cfecfc1e8160538d05a912841",
+      "ui_installed": "5112864ed400115f0c1ae3237ced5db75baca39cfecfc1e8160538d05a912841",
+      "board_input": "36750f41c8c7634b708376216e9bd1c775819e10a3bce3a3260c475ae8637c75",
+      "board_installed": "36750f41c8c7634b708376216e9bd1c775819e10a3bce3a3260c475ae8637c75",
+      "codesign_exit": 0,
+      "board_validation": "passed"
+    },
+    "self_update_b": {
+      "board_validation_before": "candidate_tianshu_board_changed",
+      "board_before": null,
+      "ui_input": "5b637289a9befb33fc274e68a595094b69d65eab73e0d0c6465d9091e3ceb85c",
+      "ui_installed": "5b637289a9befb33fc274e68a595094b69d65eab73e0d0c6465d9091e3ceb85c",
+      "board_input": "3f451e7ea86f158631ffdb212e610f14111577477618e5ee07644f94055380b7",
+      "board_installed": "3f451e7ea86f158631ffdb212e610f14111577477618e5ee07644f94055380b7",
+      "codesign_exit": 0,
+      "board_validation": "passed"
+    }
+  },
+  "layout_roundtrip": [
+    {
+      "application": "repackaged U01",
+      "build_commit": "4a618d90cbbbf1925077819fc8c5361aea3b5f19",
+      "executable_sha256": "21fd81391a7a36a4dfc57065b319f7584775479c3a1c939571d406a8d4f0a67e",
+      "selected_before_start": "3D",
+      "selected_at_start": "3D"
+    },
+    {
+      "application": "previous installation",
+      "build_commit": "a2a119d51af1259555fd8ce3f9cc42c2bdb96404",
+      "executable_sha256": "823dbe058971d48f35a348f3e4ca7cf3c4f5d95e96d3d4dc3218e7fb4d06bd2d",
+      "selected_before_start": "3D",
+      "selected_at_start": "3D"
+    },
+    {
+      "application": "repackaged U01",
+      "build_commit": "4a618d90cbbbf1925077819fc8c5361aea3b5f19",
+      "executable_sha256": "21fd81391a7a36a4dfc57065b319f7584775479c3a1c939571d406a8d4f0a67e",
+      "selected_before_start": "3D",
+      "selected_at_start": "3D"
+    }
+  ],
+  "cold_restart": {
+    "ok": true,
+    "editor_sha256": "e3a5bd2c045952269db02f207bbf2af0f621eba7d24501fbfa7c1b3c68edc8a1",
+    "public_parent_requirement": true,
+    "model_and_github": "isolated loopback/CLI fixtures only",
+    "ordinary_requirements_calls": 1,
+    "checkpoint_failure_tested": false,
+    "warm": {
+      "binding": {
+        "issue_number": "8001",
+        "request_id": "requirement-921cc9006c06545b11df2d403d87ec52"
+      },
+      "checkpoint_failure_verified": false,
+      "conversation": "63be12aa7b6b56fd53591691490c7714",
+      "durable_before_crash": true
+    },
+    "cold": {
+      "binding": {
+        "issue_number": "8001",
+        "request_id": "requirement-921cc9006c06545b11df2d403d87ec52"
+      },
+      "ok": true,
+      "original_input_restored": true,
+      "parent_history_restored": true
+    },
+    "cold_exit_code": 0,
+    "termination": "kill real editor before graceful shutdown; cold reopen same isolated project"
+  },
+  "board_loader": {
+    "editor_sha256": "e3a5bd2c045952269db02f207bbf2af0f621eba7d24501fbfa7c1b3c68edc8a1",
+    "package_a": "5e2fc0797e98114396f67809a14db6b39e88f306322f92584e145f3143d40b71",
+    "package_b": "577d3253859c9c475e9cee3c33ccb0a776f943c80ead2e0f8f3ac48791b086ac",
+    "cases": {
+      "installed_A_session_fixed_while_B_written": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT ae061fab868585fe0f8be05938f4755aa3dc31fbbdee84d2dab6ced9c38191f8|ae061fab868585fe0f8be05938f4755aa3dc31fbbdee84d2dab6ced9c38191f8"
+      },
+      "next_session_B": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT 06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0|06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0"
+      },
+      "rollback_A": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT ae061fab868585fe0f8be05938f4755aa3dc31fbbdee84d2dab6ced9c38191f8|ae061fab868585fe0f8be05938f4755aa3dc31fbbdee84d2dab6ced9c38191f8"
+      },
+      "explicit_B": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT 06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0|06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0"
+      },
+      "self_update_slot_B": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT 06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0|06cfa9779f5dec1e3956ce6e60a477d593a85a0748f2df67249feef013560be0"
+      },
+      "legacy_modern_unknown_helpers": {
+        "returncode": 0,
+        "observed": "DAQIAN_BOARD_HELPERS_OK"
+      },
+      "wrong_pin": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "missing_pin": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "relative_path": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "missing_package": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "unknown_abi": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "entry_digest": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "zip_digest": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "wrong_type": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "bad_base64": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "bad_payload": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "oversize": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      },
+      "corrupt_zip": {
+        "returncode": 0,
+        "observed": "BOARD_PACKAGE_RESULT |"
+      }
+    },
+    "evidence_level": "native editor injection; Python execution semantics tested separately"
+  },
+  "limitations": [
+    "The build uses headless UI probes and disables Metal and Vulkan. Physical key events, Cocoa focus and embedded game preview remain unverified.",
+    "The SceneTree probe logged RID/ObjectDB leaks on shutdown; no OS worker liveness conclusion is based on those logs.",
+    "Issue acceptance and statuses are tracked separately in GitHub."
+  ]
+}
