@@ -265,3 +265,61 @@ def test_identity_token_is_cached(monkeypatch, tmp_path, capsys) -> None:
     assert tianshu_bridge.main(args) == 0
     assert resolve_calls == 1
     capsys.readouterr()
+
+
+def test_historical_issue_reads_exact_source_and_pins_body_pages(monkeypatch, capsys):
+    from urllib.parse import parse_qs, urlsplit
+
+    requests = []
+    revision = "e" * 64
+    sid = "github:team/repo/issue/89"
+
+    def fake(request: Request, timeout: int) -> _Response:
+        address = urlsplit(request.full_url)
+        query = parse_qs(address.query, strict_parsing=True)
+        assert query["source_id"] == [sid] and query["project"] == ["example"]
+        assert request.get_method() == "GET" and request.headers["Authorization"] == "Bearer bearer"
+        requests.append(address.path)
+        if address.path.endswith("/detail"):
+            return _Response({
+                "revision": revision,
+                "record": {
+                    "source_id": sid,
+                    "kind": "issue",
+                    "truncated": True,
+                    "content": {"state": "closed", "title": "Old"},
+                },
+            })
+        assert query["revision"] == [revision]
+        offset = int(query["offset"][0])
+        return _Response({"text": "完整" if offset == 0 else "正文", "next_offset": 2 if offset == 0 else None})
+
+    monkeypatch.setattr(tianshu_bridge, "urlopen", fake)
+    assert (
+        tianshu_bridge.main([
+            "--token",
+            "bearer",
+            "historical-issue",
+            "--project",
+            "example",
+            "--source-id",
+            "https://github.com/team/repo/issues/89",
+        ])
+        == 0
+    )
+    data = json.loads(capsys.readouterr().out)["data"]
+    assert data == {"source_id": sid, "title": "Old", "state": "closed", "body": "完整正文", "revision": revision}
+    assert requests == ["/api/v1/migration/history/" + name for name in ("detail", "body", "body")]
+
+
+def test_historical_issue_rejects_non_issue(monkeypatch, capsys):
+    sid = "github:team/repo/comment/89"
+    monkeypatch.setattr(
+        tianshu_bridge,
+        "urlopen",
+        lambda request, timeout: _Response({
+            "record": {"source_id": sid, "kind": "comment", "content": {"body": "comment"}},
+        }),
+    )
+    assert tianshu_bridge.main(["historical-issue", "--project", "example", "--source-id", sid]) == 1
+    assert "未指向历史工单" in json.loads(capsys.readouterr().out)["error"]

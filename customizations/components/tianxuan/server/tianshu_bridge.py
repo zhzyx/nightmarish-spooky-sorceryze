@@ -16,6 +16,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 import tempfile
 import time
@@ -141,6 +142,50 @@ def context(args: argparse.Namespace) -> dict[str, Any]:
         token=args.token,
         params={"system": args.system, "external_id": args.external_id},
     )
+
+
+def historical_issue(args: argparse.Namespace) -> dict[str, Any]:
+    source_id = args.source_id
+    link = re.fullmatch(r"https://github\.com/([\w.-]+/[\w.-]+)/issues/([1-9]\d*)/?", source_id)
+    if link:
+        source_id = f"github:{link[1]}/issue/{link[2]}"
+    params = {"project": args.project, "source_id": source_id}
+
+    def read(action: str, **query: str) -> dict[str, Any]:
+        return _request(
+            args.api,
+            "GET",
+            "/api/v1/migration/history/" + action,
+            actor=args.actor,
+            token=args.token,
+            params={**params, **query},
+        )
+
+    detail = read("detail", limit="1")
+    row = detail["record"]
+    if row["kind"] != "issue" or row["source_id"] != source_id:
+        raise BridgeError("该标识未指向历史工单")
+    content = row["content"]
+    body = content.get("body") or ""
+    if row.get("truncated"):
+        chunks = []
+        offset = 0
+        while True:
+            page = read("body", revision=detail["revision"], offset=str(offset))
+            chunks.append(page["text"])
+            if page["next_offset"] is None:
+                break
+            if page["next_offset"] <= offset:
+                raise BridgeError("历史工单正文分页无效")
+            offset = page["next_offset"]
+        body = "".join(chunks)
+    return {
+        "source_id": source_id,
+        "title": content.get("title", ""),
+        "state": content.get("state", ""),
+        "body": body,
+        "revision": detail["revision"],
+    }
 
 
 def publish(args: argparse.Namespace) -> dict[str, Any]:
@@ -302,6 +347,11 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--system", default="tianshu")
     p.add_argument("--external-id", required=True)
     p.set_defaults(func=context)
+
+    p = sub.add_parser("historical-issue", help="只读打开已归档的历史工单")
+    p.add_argument("--project", required=True)
+    p.add_argument("--source-id", required=True)
+    p.set_defaults(func=historical_issue)
 
     p = sub.add_parser("publish", help="从天枢工单创建天璇需求与工单树")
     p.add_argument("--system", default="tianshu")

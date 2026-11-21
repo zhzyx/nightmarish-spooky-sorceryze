@@ -198,6 +198,8 @@ var checking := false
 var offline := false
 var toolbar: HFlowContainer
 var advanced_bar: HFlowContainer
+var historical_issue_button: Button
+var historical_issue_dialog: AcceptDialog
 var advanced_button: Button
 var refresh_button: Button
 var empty_state: CenterContainer
@@ -324,6 +326,7 @@ func _ready() -> void:
 	connection_button.tooltip_text = "工作区连接"
 	connection_button.accessibility_name = "工作区连接"
 	refresh_button = _button(row, "刷新", _manual_refresh)
+	historical_issue_button = _button(row, "历史工单", _open_historical_issue)
 	advanced_button = _button(row, "筛选与跟进 ▾", _toggle_advanced)
 	advanced_bar = HFlowContainer.new()
 	advanced_bar.hide()
@@ -1476,6 +1479,75 @@ func _open_tianxuan() -> void:
 	_show_tianxuan_dialog(url, result.get("data", {}), item)
 
 
+func _open_historical_issue(original_id := "", parent_dialog: AcceptDialog = null) -> void:
+	if is_instance_valid(historical_issue_dialog):
+		historical_issue_dialog.queue_free()
+	var dialog := AcceptDialog.new()
+	historical_issue_dialog = dialog
+	dialog.title = "天璇 · 历史工单"
+	dialog.ok_button_text = "关闭"
+	var box := VBoxContainer.new()
+	dialog.add_child(box)
+	var project := LineEdit.new()
+	var project_label := Label.new()
+	project_label.text = "归档项目"
+	box.add_child(project_label)
+	project.text = "workspace"
+	project.accessibility_name = project_label.text
+	box.add_child(project)
+	var source := LineEdit.new()
+	var source_label := Label.new()
+	source_label.text = "原始标识或 GitHub 工单链接"
+	box.add_child(source_label)
+	source.accessibility_name = source_label.text
+	source.placeholder_text = "github:owner/repo/issue/123"
+	source.text = original_id
+	box.add_child(source)
+	var details := TextEdit.new()
+	details.editable = false
+	details.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	details.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	var open := Button.new()
+	open.text = "读取历史工单"
+	box.add_child(open)
+	box.add_child(details)
+	open.pressed.connect(func():
+		var archive := project.text.strip_edges()
+		var identifier := source.text.strip_edges()
+		if archive.is_empty() or identifier.is_empty():
+			details.text = "请输入归档项目和原始标识。"
+			return
+		var reference := "归档项目：%s\n原始标识：%s" % [archive, identifier]
+		details.text = "正在读取…\n" + reference
+		open.disabled = true
+		project.editable = false
+		source.editable = false
+		var principal := actor.duplicate()
+		var root := _repo()
+		var result := await _tianxuan_command(["historical-issue", "--project=" + archive, "--source-id=" + identifier])
+		if not is_instance_valid(dialog) or dialog.is_queued_for_deletion():
+			return
+		open.disabled = false
+		project.editable = true
+		source.editable = true
+		if principal != actor or root != _repo():
+			dialog.queue_free()
+			return
+		if not result.get("ok", false):
+			details.text = "无法读取历史工单，请检查归档项目、原始标识与访问权限。\n" + reference
+			return
+		var issue: Dictionary = result.data
+		details.text = "%s\n%s\n归档状态：%s\n\n%s" % [issue.title, reference, issue.state, issue.body])
+	if parent_dialog:
+		parent_dialog.add_child(dialog)
+	else:
+		add_child(dialog)
+	dialog.confirmed.connect(dialog.queue_free)
+	dialog.close_requested.connect(dialog.queue_free)
+	dialog.visibility_changed.connect(_sync_modal_input, CONNECT_DEFERRED)
+	dialog.popup_centered_clamped(Vector2i(640, 460))
+
+
 func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> void:
 	var dialog := AcceptDialog.new()
 	dialog.title = "天璇 · Issue #" + str(item.get("number", ""))
@@ -1484,6 +1556,7 @@ func _show_tianxuan_dialog(url: String, data: Dictionary, item: Dictionary) -> v
 	var box := VBoxContainer.new()
 	box.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	dialog.add_child(box)
+	_button(box, "历史工单", _open_historical_issue.bind(url, dialog))
 	var checks: Array = []
 	var requirements: Array = []
 	for doc in data.get("documents", []):
@@ -2608,7 +2681,7 @@ func _gate_visibility(opened: bool) -> void:
 	result_count.visible = current.is_empty()
 	connection_button.text = "" if opened else "工作区连接"
 	for child in toolbar.get_children():
-		child.visible = opened or child == refresh_button or child == connection_button
+		child.visible = opened or child in [refresh_button, connection_button, historical_issue_button]
 	return_button.visible = opened and not current.is_empty()
 	search.visible = opened and current.is_empty()
 	pending_menu.visible = opened and current.is_empty()
@@ -2648,6 +2721,8 @@ func _access_denied(root: String, user_id: String, reason: String) -> void:
 
 
 func _forget(reason: String) -> void:
+	if is_instance_valid(historical_issue_dialog):
+		historical_issue_dialog.queue_free()
 	_leave_issue_inspector()
 	inspector_sessions.clear()
 	canvas_panel.clear_session()
