@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-u10",
+  "event_id": "next20-intake-1760",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1760",
+  "occurred_at": "2026-11-21T15:40:12.962347+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1760,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T15:40:09Z",
+    "accepted_dependencies": {
+      "1864": "c82b8bc3a22112af8e2b3f78e6a1f224b3161ea5",
+      "1865": "25d67bedb29eb7c0947e767be8ad435054853ab4"
+    },
+    "title": "[方案一 U10] 把文档段落作为引用"
+  },
+  "evidence_refs": [],
+  "sha256": "44fa159fbfa1e3e5bae9079601e3f507a76d4c626eed46e1b762e99aeb32b9ca"
+}
