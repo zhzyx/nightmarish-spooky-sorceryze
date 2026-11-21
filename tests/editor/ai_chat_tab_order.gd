@@ -229,6 +229,161 @@ func _check_workbench_command(tabs: TabContainer, dock: Node, samples: Array) ->
 	samples.append({"from": "temporary LineEdit", "released_source": true, "preserved_draft": composer.text == draft})
 	return true
 
+func _settle_layout():
+	for frame in 4:
+		await process_frame
+
+func _press_workbench_button(button: Button):
+	button.grab_focus()
+	_key(KEY_SPACE, 32)
+
+func _wheel_down(control: Control):
+	var wheel := InputEventMouseButton.new()
+	wheel.position = _visible_rect(control).get_center()
+	wheel.global_position = wheel.position
+	wheel.button_index = MOUSE_BUTTON_WHEEL_DOWN
+	wheel.pressed = true
+	root.push_input(wheel, true)
+	wheel.pressed = false
+	root.push_input(wheel, true)
+
+func _selection_state(code: TextEdit) -> Dictionary:
+	return {
+		"text": code.get_selected_text(),
+		"origin": [code.get_selection_origin_line(), code.get_selection_origin_column()],
+		"caret": [code.get_caret_line(), code.get_caret_column()],
+	}
+
+func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: Array) -> bool:
+	EditorInterface.set_main_screen_editor("Script")
+	EditorInterface.edit_script(load("res://sidebar_fixture.gd"))
+	await _settle_layout()
+	var code := EditorInterface.get_script_editor().get_current_editor().get_base_editor() as CodeEdit
+	var source_screen := tabs.get_current_tab_control()
+	code.grab_focus()
+	code.select(1, 10, 1, 2)
+	var selection := _selection_state(code)
+	if not _check(selection.text == "Editable" and selection.caret == [1, 2], "Missing reverse script selection: " + str(selection)):
+		return false
+	if not await _invoke_workbench():
+		return false
+	var sidebar := root.find_child("AIWorkbenchSidebar", true, false) as EditorDock
+	var composer := sidebar.find_child("ChatInput", true, false) as TextEdit
+	var messages := sidebar.find_child("Messages", true, false) as VBoxContainer
+	var scroll := sidebar.find_child("ChatScroll", true, false) as ScrollContainer
+	var expand := sidebar.find_child("ExpandWorkbench", true, false) as Button
+	var restore := dock.find_child("RestoreWorkbenchSidebar", true, false) as Button
+	if not _check(expand != null and restore != null and expand.is_visible_in_tree(), "Missing workbench view controls"):
+		return false
+	# Deterministic transcript rows give both native layouts a nontrivial scroll range.
+	var rows: Array[Label] = []
+	for index in 48:
+		var row := Label.new()
+		row.text = "Round trip fixture %02d" % index
+		messages.add_child(row)
+		rows.append(row)
+	var draft := "草稿 · round trip\nsecond line"
+	composer.text = draft
+	await _settle_layout()
+	for attempt in 2:
+		var offset := 193 + 127 * attempt
+		scroll.scroll_vertical = offset
+		if not _check(scroll.scroll_vertical == offset, "Sidebar fixture could not scroll to " + str(offset)):
+			return false
+		composer.select(1, 6 + attempt, 0, 2 + attempt)
+		var sidebar_selection := _selection_state(composer)
+		if not _check(not sidebar_selection.text.is_empty() and sidebar_selection.caret == [0, 2 + attempt], "Missing reverse multiline draft selection"):
+			return false
+		_press_workbench_button(expand)
+		await _settle_layout()
+		var expanded_selection := _selection_state(composer)
+		if not _check(expanded_selection == sidebar_selection, "Expand changed the draft selection: " + str(expanded_selection)):
+			return false
+		if not _check(tabs.get_current_tab_control() == dock and not sidebar.is_visible_in_tree() and restore.is_visible_in_tree(), "Expand did not select the full native AI workspace"):
+			return false
+		if not _check(dock.is_ancestor_of(composer) and composer.is_visible_in_tree() and composer.has_focus() and composer.text == draft and dock.is_ancestor_of(messages) and scroll.scroll_vertical == offset, "Full view changed conversation state: " + str(scroll.scroll_vertical)):
+			return false
+		composer.deselect()
+		composer.set_caret_line(1)
+		composer.set_caret_column(composer.get_line(1).length())
+		_key(KEY_Z, 122)
+		draft += "z"
+		composer.select(1, 5 + attempt, 0, 1 + attempt)
+		var full_selection := _selection_state(composer)
+		_wheel_down(scroll)
+		await _settle_layout()
+		var full_offset := scroll.scroll_vertical
+		if not _check(full_offset > offset, "Full conversation did not receive wheel input: " + str(full_offset)):
+			return false
+		if attempt == 0:
+			_press_workbench_button(restore)
+		elif not await _invoke_workbench():
+			return false
+		await _settle_layout()
+		if not _check(tabs.get_current_tab_control() == source_screen and sidebar.is_visible_in_tree() and sidebar.is_ancestor_of(composer) and composer.has_focus(), "Return did not restore Script and its native sidebar"):
+			return false
+		if not _check(composer.text == draft and _selection_state(composer) == full_selection and sidebar.is_ancestor_of(messages) and scroll.scroll_vertical == full_offset and _selection_state(code) == selection, "Returned conversation or script state changed: " + str([_selection_state(composer), scroll.scroll_vertical, _selection_state(code)])):
+			return false
+		samples.append({
+			"cycle": attempt + 1,
+			"entry": "expand button",
+			"return": "button" if attempt == 0 else WORKBENCH_COMMAND,
+			"source": source_screen.name,
+			"composer_id": composer.get_instance_id(),
+			"draft": composer.text,
+			"expanded_scroll": offset,
+			"full_view_user_scroll": full_offset,
+			"returned_scroll": scroll.scroll_vertical,
+			"sidebar_draft_selection": sidebar_selection,
+			"expanded_draft_selection": expanded_selection,
+			"full_view_user_selection": full_selection,
+			"returned_draft_selection": _selection_state(composer),
+			"script_selection": _selection_state(code),
+		})
+	sidebar.close()
+	await _settle_layout()
+	if not _check(code.has_focus() and _selection_state(code) == selection, "Closing the restored sidebar lost the script editor focus or selection"):
+		return false
+	var old_text := code.text
+	_key(KEY_X, 120)
+	if not _check(code.get_line(1) == "# x draft", "Continued editing did not replace the restored selection"):
+		return false
+	code.undo()
+	if not _check(code.text == old_text, "Could not undo fixture edit"):
+		return false
+	for row in rows:
+		row.free()
+	var plugin := EditorPlugin.new()
+	var temporary_screen := EditorDock.new()
+	temporary_screen.title = "Temporary Workbench Source"
+	temporary_screen.default_slot = EditorDock.DOCK_SLOT_MAIN_SCREEN
+	temporary_screen.available_layouts = EditorDock.DOCK_LAYOUT_MAIN_SCREEN
+	var temporary_input := LineEdit.new()
+	temporary_screen.add_child(temporary_input)
+	plugin.add_dock(temporary_screen)
+	tabs.current_tab = tabs.get_tab_idx_from_control(temporary_screen)
+	await _settle_layout()
+	temporary_input.grab_focus()
+	if not _check(tabs.get_current_tab_control() == temporary_screen and temporary_input.has_focus(), "Temporary screen could not take focus"):
+		return false
+	if not await _invoke_workbench():
+		return false
+	_press_workbench_button(expand)
+	await _settle_layout()
+	plugin.remove_dock(temporary_screen)
+	temporary_screen.free()
+	plugin.free()
+	_press_workbench_button(restore)
+	await _settle_layout()
+	if not _check(tabs.get_current_tab_control() == dock and sidebar.is_visible_in_tree() and composer.has_focus(), "Released source screen prevented return to the sidebar"):
+		return false
+	sidebar.close()
+	await _settle_layout()
+	if not _check(not sidebar.is_visible_in_tree() and dock.is_ancestor_of(composer) and composer.text == draft, "Released source control prevented close"):
+		return false
+	samples.append({"released_source_screen_while_expanded": true, "script_edit_after_close": "# x draft"})
+	return true
+
 func _run():
 	# A headless display can start at 64 px; test the order of visible, unscrolled tabs.
 	root.size = Vector2i(1600, 900)
@@ -273,6 +428,10 @@ func _run():
 		var invocations := []
 		if not await _check_workbench_command(tabs, dock, invocations):
 			return
+		var cycles := []
+		if not await _check_workbench_round_trip(tabs, dock, cycles):
+			return
+		sample["round_trips"] = cycles
 		sample["workbench"] = {"key": WORKBENCH_COMMAND, "original_instance_id": dock.get_instance_id(), "invocations": invocations}
 	print("AI_CHAT_TAB_ORDER_RESULT=" + JSON.stringify(sample))
 	# Use the editor's normal close path so editor_layout.cfg is actually saved.

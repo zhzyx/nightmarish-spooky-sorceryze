@@ -1,0 +1,872 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-u05",
+  "issue_number": 1840,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1840",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "source_baseline": "fc43b92cdc29f91825a5fd10fd708ec8e118d0fd",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.cpp": "be05b52790661c04d79e1efe5a5474295e46e3adcbf1d3e3f9dfd88e3272a5aa",
+    "editor/docks/ai_chat_dock.h": "64387680ffbd2c76b6d177bde7ffa8c8656a7139cc24a69c6511cf83efe72620",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "ed418f0a5dff54c028b68f03887b1bf6399bd5512c7c764d660e32b0d7185235",
+    "tests/editor/ai_chat_tab_order.gd": "ed542d23bc62fcf2aab32431688980717bb43f309c57108542dc8a58a6560f0f"
+  },
+  "build_command": "python -m SCons platform=macos target=editor arch=arm64 vulkan=no metal=no accesskit=no -j8",
+  "binary_sha256": "35349cba9dd2556f4124b01328ed5c10fa2e6fffddf2ff4d119814ab9413d863",
+  "test_command": "python3 tests/editor/run_ai_chat_tab_order.py --godot <bare-mac-editor> --workbench-command --report <output.json>",
+  "evidence": "Independent six-process rerun after fixing loss of the composer selection when an action button takes focus. Headless editor; existing renderer/ObjectDB shutdown warnings.",
+  "phases": [
+    {
+      "layout": "initial",
+      "round_trips": [
+        {
+          "composer_id": 617670020295,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 219,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 219,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617670020295,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 346,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 346,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ],
+      "u02_command_checks": 9
+    },
+    {
+      "layout": "legacy_maliang_last",
+      "round_trips": [
+        {
+          "composer_id": 617653243079,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 219,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 219,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617653243079,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 346,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 346,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ],
+      "u02_command_checks": 9
+    },
+    {
+      "layout": "legacy_maliang_selected",
+      "round_trips": [
+        {
+          "composer_id": 617653243079,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 219,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 219,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617653243079,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 346,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 346,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ],
+      "u02_command_checks": 9
+    },
+    {
+      "layout": "pre_daqian_layout",
+      "round_trips": [
+        {
+          "composer_id": 617653243079,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 219,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 219,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617653243079,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 346,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 346,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ],
+      "u02_command_checks": 9
+    },
+    {
+      "layout": "pre_maliang_layout",
+      "round_trips": [
+        {
+          "composer_id": 617653243079,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 219,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 219,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617653243079,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 346,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 346,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ],
+      "u02_command_checks": 9
+    },
+    {
+      "layout": "restart",
+      "round_trips": [
+        {
+          "composer_id": 617653243079,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 219,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 219,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617653243079,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 346,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 346,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ],
+      "u02_command_checks": 9
+    }
+  ]
+}
