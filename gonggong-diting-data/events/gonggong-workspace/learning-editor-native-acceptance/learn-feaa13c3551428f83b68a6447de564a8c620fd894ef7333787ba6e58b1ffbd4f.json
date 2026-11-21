@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-feaa13c3551428f83b68a6447de564a8c620fd894ef7333787ba6e58b1ffbd4f",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1785",
+  "occurred_at": "2026-11-21T14:56:29.371187+00:00",
+  "evidence_refs": [
+    "dispatch-012d14561c05431dba97a5bf79711c13",
+    "learn-7f3f8fd2fe794af52413ae8d25e41dd15d7bb729eebb6698b926db39bc5349b0"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 4,
+    "previous": "1895dcbe80345a24453ba60252a1daa9506e834acef9275faa66b22076ba5e00",
+    "action": "applied",
+    "details": {
+      "task": "C07 #1785, canceling an in-flight native asset ownership lookup.",
+      "observed": "The real authenticated loopback server marked the pending response, the probe canceled in the actual picker then released the server, and the completed HTTP request left the draft and selected asset unchanged."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-c07.json",
+        "sha256": "666a5c6c85990f0f60a12ecb28abbcc3dca2ba4ac57cea5d0ca208b88a857076"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-c07/dispatch-012d14561c05431dba97a5bf79711c13.json",
+      "sha256": "f748e77a9d6e1f042cf732fd90dc5ae12ec9d1e213f16f658b96d408deed13a1"
+    }
+  },
+  "sha256": "85f81eebae91da1280a0c503510a5c3a63d3f8df1b5115332717a12bdbe9d292"
+}

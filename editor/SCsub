@@ -32,7 +32,7 @@ if env.editor_build:
 
     env.CommandNoCache(
         "docks/workbench/module_selector.gen.h",
-        ["docks/workbench/module_selector.gd"],
+        ["docks/workbench/module_selector.gd", "docks/workbench/asset_picker.gd"],
         env.Run(editor_builders.daqian_scripts_builder),
     )
 

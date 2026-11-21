@@ -26,6 +26,8 @@ var issue_details := {}
 var comments: Array = []
 var drafts := {}
 var pending_turn := {}
+var asset_picker
+var staged_assets := {}
 var busy := false
 var location_dirty := false
 var last_status := 0
@@ -86,6 +88,11 @@ func _ready() -> void:
 	http.max_redirects = 0
 	http.body_size_limit = 8 * 1024 * 1024
 	EditorInterface.get_base_control().add_child.call_deferred(http)
+	if has_meta("asset_picker_script"):
+		asset_picker = get_meta("asset_picker_script").new()
+		asset_picker.name = "WorkbenchAssetPicker"
+		add_child(asset_picker)
+		move_child(asset_picker, 1)
 	_bind_session.call_deferred()
 
 
@@ -109,6 +116,9 @@ func _identity_changed() -> void:
 	drafts.clear()
 	pending_turn.clear()
 	_reset_reference_scope()
+	staged_assets.clear()
+	if asset_picker:
+		asset_picker.reset()
 	location_dirty = false
 	composer.clear()
 	history.clear()
@@ -319,6 +329,10 @@ func _switch_to(target: String) -> void:
 func _choose_issue(index: int) -> void:
 	if busy or location.get("issue_id") == issues.get_item_metadata(index):
 		return
+	_set_issue(index)
+
+
+func _set_issue(index: int) -> void:
 	drafts[_draft_key()] = composer.text
 	comments.clear()
 	location.issue_id = issues.get_item_metadata(index)
@@ -343,6 +357,8 @@ func redact_reference(text: String) -> String:
 
 
 func _render() -> void:
+	if asset_picker:
+		asset_picker.update_issue_button()
 	page.text = location.get("position", "")
 	page.tooltip_text = page.text
 	var messages := PackedStringArray()
@@ -382,7 +398,14 @@ func _send() -> void:
 	if body.length() > 8000:
 		_notice("正文与引用合计超过 8000 字符，请缩短后发送。")
 		return
-	var snapshot := {"project": project, "module_id": module_id, "issue_id": location.issue_id, "references": frozen.references}
+	var references: Array = frozen.references.duplicate()
+	for asset in _asset_references(_draft_key(), body):
+		if not references.has(asset):
+			references.append(asset)
+	if references.size() > 16:
+		_notice("每条消息最多可引用 16 个对象。")
+		return
+	var snapshot := {"project": project, "module_id": module_id, "issue_id": location.issue_id, "references": references}
 	var generation := identity_generation
 	_lock(true)
 	_notice("")
@@ -400,7 +423,11 @@ func _send() -> void:
 			return
 		pending_turn.erase(draft_key)
 		drafts.erase(draft_key)
+		var asset_refs: Dictionary = staged_assets.get(draft_key, {})
+		staged_assets.erase(draft_key)
 		location.conversation_id = created.id
+		if not asset_refs.is_empty():
+			staged_assets[_draft_key()] = asset_refs
 		conversation = created
 		location_dirty = true
 	if await _save_location():
@@ -418,6 +445,7 @@ func _send() -> void:
 			composer.clear()
 			_reset_reference_scope()
 			drafts.erase(key)
+			staged_assets.erase(key)
 			pending_turn.erase(key)
 			_render()
 		elif last_status == 409:
@@ -431,3 +459,60 @@ func _send() -> void:
 				_notice("会话已更新，请查看后重新发送草稿。")
 	if generation == identity_generation:
 		_lock(false)
+
+
+# Asset-origin navigation chooses a module; only an explicit issue-origin action inherits an issue.
+func select_asset_module(target: String, owners: Array) -> void:
+	if module_id != target:
+		await _switch_to(target)
+	if module_id != target:
+		return
+	var listed := false
+	for index in picker.item_count:
+		if picker.get_item_metadata(index) == target:
+			listed = true
+			break
+	if not listed:
+		for owner in owners:
+			if owner.id == target:
+				picker.add_item("%s · %s" % [owner.name, target])
+				picker.set_item_metadata(picker.item_count - 1, target)
+				break
+	_select_current()
+	if location.get("issue_id") != null:
+		issues.select(0)
+		_set_issue(0)
+
+
+func stage_asset_reference(asset: Dictionary) -> void:
+	var input: TextEdit = composer if not module_id.is_empty() else get_parent().find_child("ChatInput", true, false)
+	if not is_instance_valid(input):
+		return
+	var locator := "<duobao://%s/%s/%s>" % [asset.source_module, asset.revision, str(asset.path).uri_encode()]
+	if not module_id.is_empty():
+		var key := _draft_key()
+		var refs: Dictionary = staged_assets.get(key, {})
+		# Preserve the service's per-message reference limit. Editing a citation out releases its slot.
+		for existing in refs.keys():
+			if not input.text.contains(existing):
+				refs.erase(existing)
+		if refs.size() >= 16 and not refs.has(locator):
+			_notice("每条消息最多可引用 16 个对象。")
+			return
+		refs[locator] = {"kind": "editor", "object_id": "duobao:" + str(asset.asset_id), "revision": asset.revision}
+		staged_assets[key] = refs
+	if not input.text.contains(locator):
+		input.set_caret_line(input.get_line_count() - 1)
+		input.set_caret_column(input.get_line(input.get_caret_line()).length())
+		input.deselect()
+		input.insert_text_at_caret(("" if input.text.is_empty() else "\n") + locator)
+	input.grab_focus()
+
+
+func _asset_references(key: String, body: String) -> Array:
+	var result := []
+	var refs: Dictionary = staged_assets.get(key, {})
+	for locator in refs:
+		if body.contains(locator):
+			result.append(refs[locator])
+	return result

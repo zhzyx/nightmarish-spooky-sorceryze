@@ -52,17 +52,24 @@
 
 static constexpr char WORKBENCH_SHORTCUT[] = "editor/open_ai_workbench";
 
-static VBoxContainer *MountWorkbenchControl(Node *pParent, const char *pName, const char *const *pChunks)
+static Ref<Script> LoadWorkbenchControlScript(const char *const *pChunks)
 {
 	Ref<Script> refScript = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
-	ERR_FAIL_COND_V(refScript.is_null(), nullptr);
+	ERR_FAIL_COND_V(refScript.is_null(), Ref<Script>());
 	String strSource;
 	for (int nChunk = 0; pChunks[nChunk]; nChunk++)
 	{
 		strSource += String::utf8(pChunks[nChunk]);
 	}
 	refScript->set_source_code(strSource);
-	ERR_FAIL_COND_V(refScript->reload() != OK, nullptr);
+	ERR_FAIL_COND_V(refScript->reload() != OK, Ref<Script>());
+	return refScript;
+}
+
+static VBoxContainer *MountWorkbenchControl(Node *pParent, const char *pName, const char *const *pChunks)
+{
+	Ref<Script> refScript = LoadWorkbenchControlScript(pChunks);
+	ERR_FAIL_COND_V(refScript.is_null(), nullptr);
 	VBoxContainer *pControl = memnew(VBoxContainer);
 	pControl->set_name(pName);
 	pControl->set_script(refScript);
@@ -129,30 +136,23 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	set_process_shortcut_input(true);
 
 	// The selector travels with the same view when it is docked or expanded.
-	Ref<Script> selector_script = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
+	Ref<Script> selector_script = LoadWorkbenchControlScript(daqian_module_selector);
 	if (selector_script.is_valid())
 	{
-		String source;
-		for (const char *chunk : daqian_module_selector)
+		VBoxContainer *selector = memnew(VBoxContainer);
+		selector->set_name("WorkbenchBusinessModules");
+		pBusinessModules = selector;
+		selector->set_script(selector_script);
+		selector->set_meta("change_reference_scope", callable_mp(this, &AIChatDock::ChangeWorkbenchReferenceScope));
+		selector->set_meta("freeze_references", callable_mp(this, &AIChatDock::FreezeBusinessReferences));
+		selector->set_meta("workbench_sidebar", pWorkbenchSidebar);
+		Ref<Script> asset_script = LoadWorkbenchControlScript(daqian_asset_picker);
+		if (asset_script.is_valid())
 		{
-			if (chunk)
-			{
-				source += String::utf8(chunk);
-			}
+			selector->set_meta("asset_picker_script", asset_script);
 		}
-		selector_script->set_source_code(source);
-		if (selector_script->reload() == OK)
-		{
-			VBoxContainer *selector = memnew(VBoxContainer);
-			selector->set_name("WorkbenchBusinessModules");
-			pBusinessModules = selector;
-			selector->set_script(selector_script);
-			selector->set_meta("change_reference_scope", callable_mp(this, &AIChatDock::ChangeWorkbenchReferenceScope));
-			selector->set_meta("freeze_references", callable_mp(this, &AIChatDock::FreezeBusinessReferences));
-			selector->set_meta("workbench_sidebar", pWorkbenchSidebar);
-			pConversationView->add_child(selector);
-			pConversationView->move_child(selector, 0);
-		}
+		pConversationView->add_child(selector);
+		pConversationView->move_child(selector, 0);
 	}
 }
 
