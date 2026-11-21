@@ -28,11 +28,22 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
+#include "core/config/project_settings.h"
 #include "core/io/file_access.h"
+#include "core/object/callable_mp.h"
 #include "editor/docks/ai_chat_dock.h"
+#include "editor/editor_interface.h"
+#include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
+#include "editor/inspector/editor_inspector.h"
+#include "editor/script/script_editor_plugin.h"
+#include "editor/settings/editor_settings.h"
+#include "editor/themes/editor_scale.h"
 #include "scene/3d/mesh_instance_3d.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
+#include "scene/gui/label.h"
+#include "scene/gui/scroll_container.h"
 #include "scene/gui/text_edit.h"
 #include "scene/main/timer.h"
 
@@ -66,7 +77,101 @@ Dictionary EditorReference(const String &strObject, const String &strSource)
 	mapReference["revision"] = FileAccess::exists(strSource) ? FileAccess::get_sha256(strSource) : String();
 	return mapReference;
 }
+// Temporary references describe an instance and its inspector edit generation in this editor run.
+Dictionary TemporaryResourceReference(Resource *pResource)
+{
+	static const String strProcess = AIChatResume::make_token();
+	const String strTarget = "temporary://" + strProcess + "/" + pResource->get_class() + "/" + itos(int64_t(pResource->get_instance_id()));
+	Dictionary mapReference;
+	mapReference["kind"] = "editor";
+	mapReference["object_id"] = strTarget;
+	mapReference["revision"] = (strTarget + ":" + uitos(pResource->get_edited_version())).sha256_text();
+	return mapReference;
+}
+
+bool ResourceReferenceValid(const Dictionary &mapReference, bool bCheckBytes)
+{
+	const String strTarget = mapReference.get("object_id", "");
+	if (strTarget.begins_with("temporary://"))
+	{
+		Resource *pResource = ObjectDB::get_instance<Resource>(ObjectID(uint64_t(strTarget.get_file().to_int())));
+		return pResource && (pResource->get_path().is_empty() || pResource->get_path().begins_with("local://")) &&
+				TemporaryResourceReference(pResource) == mapReference;
+	}
+	const String strSource = strTarget.get_slice("::", 0);
+	return strSource.begins_with("res://") && FileAccess::exists(strSource) && (!bCheckBytes || FileAccess::get_sha256(strSource) == String(mapReference.get("revision", "")));
+}
+
+Dictionary PageReference(EditorDock *pPage)
+{
+	const String strName = pPage->get_display_title();
+	const String strModule = pPage->get_meta("_editor_plugin_source", pPage->get_effective_layout_key());
+	Dictionary mapReference;
+	mapReference["kind"] = "editor";
+	const String strId = "editor-page://" + strModule.uri_encode() + "#" + strName.uri_encode();
+	mapReference["object_id"] = strId;
+	mapReference["revision"] = strId.sha256_text();
+	return mapReference;
+}
+
 } // namespace
+
+Dictionary AIChatDock::WorkbenchPageSnapshot(const Array &arrReferences)
+{
+	Dictionary mapContext;
+	if (arrReferences.size() != 1)
+	{
+		return mapContext;
+	}
+	const String strId = Dictionary(arrReferences[0]).get("object_id", "");
+	if (!strId.begins_with("editor-page://"))
+	{
+		return mapContext;
+	}
+	const String strLocator = strId.trim_prefix("editor-page://");
+	mapContext["page_name"] = strLocator.get_slice("#", 1).uri_decode();
+	mapContext["module_id"] = strLocator.get_slice("#", 0).uri_decode();
+	mapContext["readable_scope"] = Array({ "page_name", "module_id" });
+	mapContext["references"] = arrReferences;
+	return mapContext;
+}
+
+void AIChatDock::StageWorkbenchPageReference()
+{
+	EditorDock *pPage = nullptr;
+	Control *pSource = ObjectDB::get_instance<Control>(idSidebarSource);
+	if (pSource && pSource->is_visible_in_tree())
+	{
+		for (Node *pFocus = pSource; pFocus && !pPage; pFocus = pFocus->get_parent())
+		{
+			pPage = Object::cast_to<EditorDock>(pFocus);
+		}
+	}
+	if (!pPage)
+	{
+		pPage = Object::cast_to<EditorDock>(EditorNode::get_editor_main_screen()->get_current_tab_control());
+	}
+	if (!pPage || pPage == this || pPage == pWorkbenchSidebar || !pPage->is_visible_in_tree())
+	{
+		return;
+	}
+	// These native surfaces have dedicated selection providers. Match their
+	// classes so an unrelated plugin can use the same display title.
+	if (pPage->is_class("CanvasItemEditor") || pPage->is_class("Node3DEditor") || pPage->is_class("ScriptEditor") ||
+		pPage->is_class("SceneTreeDock") || pPage->is_class("InspectorDock") || pPage->is_class("FileSystemDock"))
+	{
+		return;
+	}
+	AIChatSessionData &stSession = GetAiSession();
+	if (!stSession.arrDraftEditorReferences.is_empty())
+	{
+		return;
+	}
+	stSession.arrDraftEditorReferences = Array({ PageReference(pPage) });
+	stSession.idDraftNode = pPage->get_instance_id();
+	RefreshWorkbenchReference();
+	_queue_history_save();
+}
 
 void AIChatDock::RestoreLegacyWorkbenchReference(AIChatSessionData &stSession)
 {
@@ -114,6 +219,49 @@ String AIChatDock::GetWorkbenchModelAsset(Node *pNode, Node *pRoot) const
 	return String();
 }
 
+void AIChatDock::StageWorkbenchSelection()
+{
+	AIChatSessionData &stSession = GetAiSession();
+	if (!stSession.arrDraftEditorReferences.is_empty())
+	{
+		return;
+	}
+	EditorNode *pEditor = EditorNode::get_singleton();
+	Node *pRoot = pEditor->get_edited_scene();
+	const List<Node *> lstNodes = pEditor->get_editor_selection()->get_full_selected_node_list();
+	if (!pRoot || lstNodes.is_empty())
+	{
+		return;
+	}
+	if (lstNodes.size() > AIChatSessionData::MAX_EDITOR_REFERENCES)
+	{
+		_append(TTR("Editor"), vformat(U"当前选区包含 %d 个节点，每条消息最多引用 %d 项。请缩小选区，再打开工作台。", lstNodes.size(), AIChatSessionData::MAX_EDITOR_REFERENCES));
+		return;
+	}
+	const String strScene = pRoot->get_scene_file_path();
+	const String strRevision = FileAccess::exists(strScene) ? FileAccess::get_sha256(strScene) : String();
+	Array arrReferences;
+	Vector<ObjectID> arrNodes;
+	for (Node *pNode : lstNodes)
+	{
+		if (!IsLiveSceneNode(pNode, pRoot))
+		{
+			return;
+		}
+		Dictionary mapReference;
+		mapReference["kind"] = "editor";
+		mapReference["object_id"] = strScene + "#" + String(pRoot->get_path_to(pNode));
+		mapReference["revision"] = strRevision;
+		arrReferences.push_back(mapReference);
+		arrNodes.push_back(pNode->get_instance_id());
+	}
+	stSession.arrDraftEditorReferences = arrReferences;
+	stSession.idDraftScene = pRoot->get_instance_id();
+	stSession.arrDraftSelection = arrNodes;
+	RefreshWorkbenchReference();
+	_queue_history_save();
+}
+
 String AIChatDock::StageWorkbenchReference(Control *pHost, Node *pNode)
 {
 	AIChatDock *pWorker = selected_worker ? selected_worker : this;
@@ -147,34 +295,205 @@ String AIChatDock::StageWorkbenchReference(Control *pHost, Node *pNode)
 	return String();
 }
 
-bool AIChatDock::WorkbenchReferenceValid(bool bCheckBytes)
+void AIChatDock::CaptureWorkbenchScriptSelection()
+{
+	ScriptEditor *pScriptEditor = ScriptEditor::get_singleton();
+	AIChatSessionData &stSession = GetAiSession();
+	if (!pScriptEditor || EditorNode::get_editor_main_screen()->get_current_tab_control() != pScriptEditor || (!stSession.arrDraftEditorReferences.is_empty() && stSession.mapDraftScriptExcerpts.is_empty()))
+	{
+		return;
+	}
+	ScriptEditorBase *pTab = pScriptEditor->get_current_editor();
+	TextEdit *pText = pTab ? Object::cast_to<TextEdit>(pTab->get_base_editor()) : nullptr;
+	if (!pText || !pText->has_selection(0))
+	{
+		return;
+	}
+	const Ref<Script> refScript = pTab->get_edited_resource();
+	if (refScript.is_null() || !refScript->get_path().begins_with("res://"))
+	{
+		return;
+	}
+	const String strExcerpt = _redact(pText->get_selected_text(0));
+	const String strLocator = vformat("%s#L%d:%d-L%d:%d", refScript->get_path(), pText->get_selection_from_line() + 1, pText->get_selection_from_column() + 1, pText->get_selection_to_line() + 1, pText->get_selection_to_column() + 1);
+	Dictionary mapReference;
+	mapReference["kind"] = "editor";
+	mapReference["object_id"] = strLocator;
+	mapReference["revision"] = pText->get_text().sha256_text();
+	if (strExcerpt.is_empty() || strLocator.length() > 1024 || strExcerpt.utf8().length() > 256 * 1024)
+	{
+		return;
+	}
+	for (int i = 0; i < stSession.arrDraftEditorReferences.size(); i++)
+	{
+		if (Dictionary(stSession.arrDraftEditorReferences[i]).get("object_id", "") == strLocator)
+		{
+			stSession.arrDraftEditorReferences[i] = mapReference;
+			stSession.mapDraftScriptExcerpts[strLocator] = strExcerpt;
+			stSession.arrInvalidReferences.erase(i);
+			RefreshWorkbenchReference();
+			_queue_history_save();
+			return;
+		}
+	}
+	if (stSession.arrDraftEditorReferences.size() >= AIChatSessionData::MAX_EDITOR_REFERENCES)
+	{
+		_append(TTR("Editor"), U"每条消息最多引用 16 项。");
+		return;
+	}
+	stSession.arrDraftEditorReferences.push_back(mapReference);
+	stSession.mapDraftScriptExcerpts[strLocator] = strExcerpt;
+	RefreshWorkbenchReference();
+	_queue_history_save();
+}
+
+void AIChatDock::AddWorkbenchResourceSelection(int nSource)
 {
 	AIChatSessionData &stSession = GetAiSession();
-	const Array &arrReferences = stSession.arrDraftEditorReferences;
+	if (send_button->is_disabled())
+	{
+		return;
+	}
+	if (!stSession.arrDraftEditorReferences.is_empty() && (!stSession.bLiveResourceDraft || !WorkbenchReferenceValid(true)))
+	{
+		_append(TTR("Editor"), U"请先移除当前引用，再添加所选资源。");
+		return;
+	}
+	EditorInterface *pEditor = EditorInterface::get_singleton();
+	Vector<String> arrPaths;
+	Array arrAdded;
+	if (nSource == 0)
+	{
+		Resource *pResource = Object::cast_to<Resource>(pEditor->get_inspector()->get_edited_object());
+		if (pResource)
+		{
+			const String strPath = pResource->get_path();
+			if (strPath.is_empty() || strPath.begins_with("local://"))
+			{
+				arrAdded.push_back(TemporaryResourceReference(pResource));
+			}
+			else
+			{
+				arrPaths.push_back(strPath);
+			}
+		}
+	}
+	else if (nSource == 1)
+	{
+		arrPaths = pEditor->get_selected_paths();
+	}
+	for (const String &strPath : arrPaths)
+	{
+		const String strSource = strPath.get_slice("::", 0);
+		if (strPath.begins_with("res://") && FileAccess::exists(strSource))
+		{
+			if (strPath.length() > 1024)
+			{
+				_append(TTR("Editor"), U"所选资源路径超过单条引用的 1024 字符限制。");
+				return;
+			}
+			const Dictionary mapReference = EditorReference(strPath, strSource);
+			if (String(mapReference["revision"]).length() == 64)
+			{
+				arrAdded.push_back(mapReference);
+				if (arrAdded.size() > AIChatSessionData::MAX_EDITOR_REFERENCES)
+				{
+					break;
+				}
+			}
+		}
+	}
+	if (arrAdded.is_empty())
+	{
+		_append(TTR("Editor"), U"请在检查器打开资源，或在文件系统选中文件。");
+		return;
+	}
+	Array arrDraft = stSession.arrDraftEditorReferences.duplicate();
+	for (const Dictionary mapReference : arrAdded)
+	{
+		if (!arrDraft.has(mapReference))
+		{
+			arrDraft.push_back(mapReference);
+		}
+	}
+	if (arrDraft.size() > AIChatSessionData::MAX_EDITOR_REFERENCES)
+	{
+		_append(TTR("Editor"), U"每条消息最多引用 16 个对象，请缩小选区。");
+		return;
+	}
+	stSession.arrDraftEditorReferences = arrDraft;
+	stSession.bLiveResourceDraft = true;
+	RefreshWorkbenchReference();
+	_queue_history_save();
+}
+
+bool AIChatDock::WorkbenchReferenceAtValid(int pIndex, bool bCheckBytes)
+{
+	const AIChatSessionData &stSession = GetAiSession();
+	const Dictionary mapReference = stSession.arrDraftEditorReferences[pIndex];
+	const String strTarget = mapReference.get("object_id", "");
+	const String strRevision = mapReference.get("revision", "");
+	if (mapReference.get("kind", "") != "editor" || strRevision.length() != 64 || !strRevision.is_valid_hex_number(false))
+	{
+		return false;
+	}
+	if (strTarget.begins_with("editor-page://"))
+	{
+		EditorDock *pPage = ObjectDB::get_instance<EditorDock>(stSession.idDraftNode);
+		return pPage && !pPage->is_queued_for_deletion() && pPage->is_dock_open() && pPage->is_inside_tree() && PageReference(pPage) == mapReference;
+	}
+	if (!stSession.mapDraftScriptExcerpts.is_empty())
+	{
+		return strTarget.begins_with("res://") && strTarget.contains("#L") &&
+				stSession.mapDraftScriptExcerpts.get(strTarget, Variant()).get_type() == Variant::STRING &&
+				!String(stSession.mapDraftScriptExcerpts[strTarget]).is_empty();
+	}
+	if (stSession.bLiveResourceDraft)
+	{
+		return ResourceReferenceValid(mapReference, bCheckBytes);
+	}
 	Node *pRoot = EditorNode::get_singleton()->get_edited_scene();
-	Node *pNode = ObjectDB::get_instance<Node>(stSession.idDraftNode);
-	if (!IsLiveSceneNode(pNode, pRoot) || pRoot->get_instance_id() != stSession.idDraftScene)
+	if (!pRoot || pRoot->get_instance_id() != stSession.idDraftScene)
 	{
 		return false;
 	}
-	const String strScene = pRoot->get_scene_file_path();
-	const String strAsset = GetWorkbenchModelAsset(pNode, pRoot);
-	if (arrReferences.size() != ((!strAsset.is_empty() && strAsset != strScene) ? 2 : 1))
+	const bool bSceneSelection = !stSession.arrDraftSelection.is_empty();
+	if (bSceneSelection && pIndex >= stSession.arrDraftSelection.size())
 	{
 		return false;
 	}
-	for (int32_t nIndex = 0; nIndex < arrReferences.size(); ++nIndex)
+	Node *pNode = ObjectDB::get_instance<Node>(bSceneSelection ? stSession.arrDraftSelection[pIndex] : stSession.idDraftNode);
+	if (!IsLiveSceneNode(pNode, pRoot))
 	{
-		const String strSource = nIndex == 0 ? strScene : strAsset;
-		const String strTarget = nIndex == 0 ? strScene + "#" + String(pRoot->get_path_to(pNode)) : strAsset;
-		const Dictionary mapReference = arrReferences[nIndex];
-		const String strRevision = mapReference.get("revision", "");
-		if (mapReference.get("object_id", "") != strTarget || strRevision.length() != 64 || !FileAccess::exists(strSource) || (bCheckBytes && FileAccess::get_sha256(strSource) != strRevision))
+		return false;
+	}
+	String strSource = pRoot->get_scene_file_path();
+	if (strTarget != strSource + "#" + String(pRoot->get_path_to(pNode)))
+	{
+		if (bSceneSelection)
+		{
+			return false;
+		}
+		strSource = GetWorkbenchModelAsset(pNode, pRoot);
+		if (strSource.is_empty() || strTarget != strSource)
 		{
 			return false;
 		}
 	}
-	return true;
+	return FileAccess::exists(strSource) && (!bCheckBytes || FileAccess::get_sha256(strSource) == strRevision);
+}
+
+bool AIChatDock::WorkbenchReferenceValid(bool bCheckBytes)
+{
+	AIChatSessionData &stSession = GetAiSession();
+	for (int i = 0; i < stSession.arrDraftEditorReferences.size(); i++)
+	{
+		if (!stSession.arrInvalidReferences.has(i) && !WorkbenchReferenceAtValid(i, bCheckBytes))
+		{
+			stSession.arrInvalidReferences.push_back(i);
+		}
+	}
+	return stSession.arrInvalidReferences.is_empty();
 }
 
 void AIChatDock::WorkbenchSceneChanged()
@@ -185,48 +504,189 @@ void AIChatDock::WorkbenchSceneChanged()
 	{
 		if (entry.value.stData.idDraftScene != idCurrentRoot)
 		{
-			entry.value.stData.idDraftNode = ObjectID();
+			entry.value.stData.idDraftScene = ObjectID();
 		}
 	}
 	RefreshWorkbenchReference();
 }
 
+String AIChatDock::WorkbenchIssueContext() const
+{
+	const String strNumber = _work_order_binding("issue_number");
+	if (strNumber.is_empty())
+	{
+		return U"新需求";
+	}
+	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
+	const Dictionary entry = bindings.get(GetAiSession().strConversation, Dictionary());
+	const String strUrl = entry.get("issue_url", "");
+	const String strSource = entry.get("source", "");
+	const String strRequest = _work_order_binding("request_id");
+	String strIssue = "#" + strNumber;
+	if (String(entry.get("issue_number", "")) == strNumber && String(entry.get("request_id", "")) == strRequest)
+	{
+		if (!strUrl.is_empty())
+		{
+			strIssue = strUrl;
+		}
+		else if (strSource.ends_with("/issues/" + strNumber))
+		{
+			strIssue = strSource;
+		}
+	}
+	return strIssue + (strRequest.is_empty() ? String() : String(U" · ") + strRequest);
+}
+
+bool AIChatDock::RedactWorkbenchDraft(AIChatSessionData &pSession) const
+{
+	bool changed = false;
+	for (const Variant &locator : pSession.mapDraftScriptExcerpts.get_key_list())
+	{
+		const String excerpt = pSession.mapDraftScriptExcerpts[locator];
+		const String safe = _redact(excerpt);
+		if (safe != excerpt)
+		{
+			pSession.mapDraftScriptExcerpts[locator] = safe;
+			changed = true;
+		}
+	}
+	for (Dictionary message : pSession.arrQueuedMessages)
+	{
+		if (message.has("editor_references"))
+		{
+			const String content = message["content"];
+			const String safe = _redact(content);
+			if (safe != content)
+			{
+				message["content"] = safe;
+				changed = true;
+			}
+		}
+	}
+	return changed;
+}
+
 void AIChatDock::RefreshWorkbenchReference()
 {
-	const Array &arrReferences = GetAiSession().arrDraftEditorReferences;
+	AIChatSessionData &stSession = GetAiSession();
+	const Array &arrReferences = stSession.arrDraftEditorReferences;
+	const Dictionary bindings = EditorSettings::get_singleton()->get_project_metadata("daqian", "bindings", Dictionary());
+	const Dictionary entry = bindings.get(stSession.strConversation, Dictionary());
+	const Dictionary mapPage = WorkbenchPageSnapshot(arrReferences);
+	const String module = mapPage.get("module_id", entry.get("module_id", ""));
+	const String project = ProjectSettings::get_singleton()->get_setting("application/config/name");
+	pWorkbenchContext->set_text((module.is_empty() ? String(U"项目 · ") + (project.is_empty() ? String(U"未命名项目") : project) : String(U"模块 · ") + module) + U"\n工单 · " + WorkbenchIssueContext());
 	pWorkbenchReference->set_visible(!arrReferences.is_empty());
+	pWorkbenchReferenceScroll->set_visible(!arrReferences.is_empty());
+	while (pWorkbenchReferenceRows->get_child_count() > arrReferences.size())
+	{
+		Node *row = pWorkbenchReferenceRows->get_child(pWorkbenchReferenceRows->get_child_count() - 1);
+		pWorkbenchReferenceRows->remove_child(row);
+		row->queue_free();
+	}
 	if (arrReferences.is_empty())
 	{
 		pWorkbenchReferenceTimer->stop();
 		return;
 	}
 	const bool bValid = WorkbenchReferenceValid(false);
-	if (!bValid)
+	if (stSession.mapDraftScriptExcerpts.is_empty() && stSession.arrInvalidReferences.size() < arrReferences.size())
 	{
-		// An observed mismatch stays invalid until the user explicitly selects again.
-		GetAiSession().idDraftNode = ObjectID();
+		if (pWorkbenchReferenceTimer->is_stopped() && is_inside_tree())
+		{
+			pWorkbenchReferenceTimer->start();
+		}
+	}
+	else
+	{
 		pWorkbenchReferenceTimer->stop();
 	}
-	else if (pWorkbenchReferenceTimer->is_stopped() && is_inside_tree())
+	PackedStringArray arrTargets;
+	PackedStringArray arrDetails;
+	for (int i = 0; i < arrReferences.size(); i++)
 	{
-		pWorkbenchReferenceTimer->start();
+		const Dictionary ref = arrReferences[i];
+		const String strTarget = ref.get("object_id", "");
+		const String strRevision = ref.get("revision", "");
+		String strDetail = strTarget + "\n" + (strRevision.is_empty() ? String(U"修订未知") : strRevision);
+		if (stSession.mapDraftScriptExcerpts.has(strTarget))
+		{
+			strDetail += "\n" + _redact(stSession.mapDraftScriptExcerpts[strTarget]);
+		}
+		const String strStatus = stSession.arrInvalidReferences.has(i) ? String(U"已失效 · ") : String();
+		arrTargets.push_back(strTarget.begins_with("temporary://") ? String(U"临时资源 · ") + strTarget : strTarget);
+		arrDetails.push_back(strStatus + strDetail);
+		Button *pRow = nullptr;
+		if (i == pWorkbenchReferenceRows->get_child_count())
+		{
+			pRow = memnew(Button);
+			pRow->set_autowrap_mode(TextServer::AUTOWRAP_WORD_SMART);
+			pRow->set_text_alignment(HORIZONTAL_ALIGNMENT_LEFT);
+			pRow->connect(SNAME("pressed"), callable_mp(this, &AIChatDock::RemoveWorkbenchReferenceAt).bind(i));
+			pWorkbenchReferenceRows->add_child(pRow);
+		}
+		else
+		{
+			pRow = Object::cast_to<Button>(pWorkbenchReferenceRows->get_child(i));
+		}
+		pRow->set_text(String(U"移除 · ") + strStatus + strDetail);
 	}
-	const String strTarget = Dictionary(arrReferences[0]).get("object_id", "");
-	const String strLabel = (bValid ? String(U"编辑器引用 · ") : String(U"引用已失效 · ")) + strTarget;
-	pWorkbenchReference->set_text(strLabel);
-	String strDetails = strLabel;
-	if (arrReferences.size() == 2)
+	const String strLabel = bValid ? String(U"清空引用 · ") : String(U"引用已失效 · 清空引用 · ");
+	pWorkbenchReference->set_autowrap_mode(mapPage.is_empty() ? TextServer::AUTOWRAP_OFF : TextServer::AUTOWRAP_WORD_SMART);
+	if (mapPage.is_empty())
 	{
-		strDetails += "\n" + String(Dictionary(arrReferences[1]).get("object_id", ""));
+		pWorkbenchReference->set_text(strLabel + String(U"、").join(arrTargets));
 	}
-	pWorkbenchReference->set_tooltip_text(strDetails + U"\n点击移除此引用");
+	else
+	{
+		const String details = (bValid ? String(U"页面：") : String(U"引用已失效 · 页面：")) + String(mapPage["page_name"]) +
+				U"\n模块：" + String(mapPage["module_id"]) + U"\n可读范围：页面名、模块标识";
+		pWorkbenchReference->set_text(details);
+	}
+	pWorkbenchReference->set_tooltip_text(String("\n").join(arrDetails));
+	pWorkbenchReferenceScroll->set_custom_minimum_size(Size2(0, MIN(arrReferences.size(), 2) * 72 * EDSCALE));
+}
+
+void AIChatDock::RemoveWorkbenchReferenceAt(int pIndex)
+{
+	AIChatSessionData &stSession = GetAiSession();
+	ERR_FAIL_INDEX(pIndex, stSession.arrDraftEditorReferences.size());
+	if (stSession.arrDraftEditorReferences.size() == 1)
+	{
+		RemoveWorkbenchReference();
+		return;
+	}
+	stSession.mapDraftScriptExcerpts.erase(Dictionary(stSession.arrDraftEditorReferences[pIndex])["object_id"]);
+	stSession.arrDraftEditorReferences.remove_at(pIndex);
+	if (!stSession.arrDraftSelection.is_empty())
+	{
+		stSession.arrDraftSelection.remove_at(pIndex);
+	}
+	for (int i = stSession.arrInvalidReferences.size() - 1; i >= 0; i--)
+	{
+		if (stSession.arrInvalidReferences[i] == pIndex)
+		{
+			stSession.arrInvalidReferences.remove_at(i);
+		}
+		else if (stSession.arrInvalidReferences[i] > pIndex)
+		{
+			stSession.arrInvalidReferences.write[i]--;
+		}
+	}
+	RefreshWorkbenchReference();
+	_queue_history_save();
 }
 
 void AIChatDock::RemoveWorkbenchReference()
 {
-	GetAiSession().arrDraftEditorReferences = Array();
-	GetAiSession().idDraftScene = ObjectID();
-	GetAiSession().idDraftNode = ObjectID();
+	AIChatSessionData &stSession = GetAiSession();
+	stSession.arrDraftEditorReferences = Array();
+	stSession.mapDraftScriptExcerpts = Dictionary();
+	stSession.bLiveResourceDraft = false;
+	stSession.idDraftScene = ObjectID();
+	stSession.idDraftNode = ObjectID();
+	stSession.arrDraftSelection.clear();
+	stSession.arrInvalidReferences.clear();
 	RefreshWorkbenchReference();
 	_queue_history_save();
 }

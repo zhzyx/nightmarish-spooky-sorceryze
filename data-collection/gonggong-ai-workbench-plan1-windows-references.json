@@ -1,0 +1,199 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64; isolated headless editor, loopback transports",
+  "source_base": "75419237e87776e6de3b5a20a921f2d7381d3977",
+  "candidate_editor_sha256": "8b26e6a8461b2dd3c9957d258f023072bcc40d2d3e20b054ce260baae4309d2d",
+  "verified_at": "2026-11-21T14:33:44.426677+00:00",
+  "cards": {
+    "u07": {
+      "issue_number": 1828,
+      "passed": true,
+      "summary": "2D 和 3D 单选、多选、失效及冷启动草稿均经原生侧栏与模型接收回读。",
+      "source_evidence": "data-collection/gonggong-ai-workbench-plan1-u07.json"
+    },
+    "u08": {
+      "issue_number": 1829,
+      "passed": true,
+      "summary": "两个同名脚本的完整路径、选区和缓冲区摘要与发送内容一致。更新测试凭据后预览、队列、历史和回环接收均完成脱敏。",
+      "source_evidence": "data-collection/gonggong-ai-workbench-plan1-u08.json"
+    },
+    "u09": {
+      "issue_number": 1830,
+      "passed": true,
+      "summary": "文件系统和检查器选出的同名资源以完整项目路径区分，未保存资源有临时身份，三条引用与接收端及会话历史一致。",
+      "source_evidence": "data-collection/gonggong-ai-workbench-plan1-u09.json"
+    },
+    "u12": {
+      "issue_number": 1809,
+      "passed": true,
+      "summary": "马良与 R4 Notes 在 960、1200、1440 像素三档窗口均显示页面名、模块和实际可读范围。发送只包含预览的范围，原页草稿保留。",
+      "source_evidence": "data-collection/gonggong-ai-workbench-plan1-u12.json"
+    },
+    "u15": {
+      "issue_number": 1810,
+      "passed": true,
+      "summary": "在已绑定工单的草稿中移除一份同名脚本，模型实收、历史和界面剩余引用一致，原工单绑定保留。轮换占位凭据及恢复队列后也已复验。",
+      "source_evidence": "data-collection/gonggong-ai-workbench-plan1-u15.json"
+    }
+  },
+  "tests": {
+    "u07": {
+      "report_sha256": "2050dd6da1495e6cc613762be2d12279c7451188c98819cc50ea2fe73ae0ad06"
+    },
+    "u09": {
+      "report_sha256": "3522eb4933dd880fff939f248b4b7f7d3e3529f3c7e9c44dacc793771dd9384a"
+    },
+    "u12": {
+      "report_sha256": "2b948eeb1021450c86c8701fe152e985ce63b8ec9973253720783eb8d91e3616"
+    },
+    "u15": {
+      "report_sha256": "bca0cf8b9affd4563f4d99fdd9a88e0dda1389e38d1b6984ef7d85a9afbc9415"
+    },
+    "i13": {
+      "report_sha256": "e90ece897732cfc56a2ac0a7089ec02d308ab2b236514c8b7247a6f0f9fd283b"
+    },
+    "layout": {
+      "report_sha256": "0c8701d1fcb284a23004fd5d71f9a811b9d2a4727d2c9cc18745af61306064a2"
+    },
+    "c08": {
+      "report_sha256": "c3687b13e3fc75aec77656d0c8b2884474e915f9bf0fd9b8172b0a8594c97bdd"
+    },
+    "u08": {
+      "report_sha256": "e0676cc308d2f0848352c6d6b4d47e256c704d0fddd2eef3f1b11c9cb8bda8a5"
+    }
+  },
+  "observations": {
+    "scene_model_calls": 4,
+    "script_messages": 3,
+    "resource_references": [
+      {
+        "kind": "editor",
+        "object_id": "res://north/SameGradient.tres",
+        "revision": "da10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+      },
+      {
+        "kind": "editor",
+        "object_id": "res://south/SameGradient.tres",
+        "revision": "1bfd728e964cda28c57718bd5ea3ce8c3a3f2e80bee318fd7a263dc9cf556eee"
+      },
+      {
+        "kind": "editor",
+        "object_id": "temporary://6b01aba1-1d8b8-2dad99-d60c90ad/Gradient/-9223370475298544698",
+        "revision": "e7fe11900bbaa6e63b00e77f034daec5553cfbbff8ccb1a9250dddefe2d2fe77"
+      }
+    ],
+    "page_snapshots": [
+      {
+        "module_id": "AINativeMainScreen",
+        "page_name": "马良",
+        "readable_scope": [
+          "page_name",
+          "module_id"
+        ],
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "editor-page://AINativeMainScreen#%E9%A9%AC%E8%89%AF",
+            "revision": "d843e95bef14d21538bdf8fa341a26428c48fd0ccef6c5e8d234b3c9ea0bd843"
+          }
+        ]
+      },
+      {
+        "module_id": "res://addons/notes/plugin.gd",
+        "page_name": "R4 Notes",
+        "readable_scope": [
+          "page_name",
+          "module_id"
+        ],
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "editor-page://res%3A%2F%2Faddons%2Fnotes%2Fplugin.gd#R4%20Notes",
+            "revision": "0a664c611ed1e2ca15837dbc5a133920f63172df423e536fffc23463a8d56b6d"
+          }
+        ]
+      }
+    ],
+    "page_geometry": [
+      {
+        "bounds": [
+          {
+            "composer": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (614.0, 597.0), S: (326.0, 69.0)]",
+            "window_width": 960
+          },
+          {
+            "composer": "[P: (854.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (854.0, 597.0), S: (326.0, 69.0)]",
+            "window_width": 1200
+          },
+          {
+            "composer": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (1094.0, 597.0), S: (326.0, 69.0)]",
+            "window_width": 1440
+          }
+        ],
+        "composer": 618743762179,
+        "module": "AINativeMainScreen",
+        "name": "马良",
+        "preview": "页面：马良\n模块：AINativeMainScreen\n可读范围：页面名、模块标识"
+      },
+      {
+        "bounds": [
+          {
+            "composer": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (614.0, 597.0), S: (326.0, 69.0)]",
+            "window_width": 960
+          },
+          {
+            "composer": "[P: (854.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (854.0, 597.0), S: (326.0, 69.0)]",
+            "window_width": 1200
+          },
+          {
+            "composer": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (1094.0, 597.0), S: (326.0, 69.0)]",
+            "window_width": 1440
+          }
+        ],
+        "composer": 618743762179,
+        "module": "res://addons/notes/plugin.gd",
+        "name": "R4 Notes",
+        "preview": "页面：R4 Notes\n模块：res://addons/notes/plugin.gd\n可读范围：页面名、模块标识"
+      }
+    ],
+    "page_draft_preserved": true,
+    "remove_and_send": {
+      "after": "移除 · res://beta/same.gd#L2:1-L2:59\nf9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+      "before": [
+        "移除 · res://alpha/same.gd#L2:1-L2:60\n209f4c87fadf95447ec04a2b1ccdf90d6586a238f87cf2d53adfa6216b1ae5d8\nconst MARKER = \"alpha [REDACTED] [REDACTED]\"",
+        "移除 · res://beta/same.gd#L2:1-L2:59\nf9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\nconst MARKER = \"beta [REDACTED] [REDACTED]\""
+      ],
+      "history": [
+        {
+          "kind": "editor",
+          "object_id": "res://beta/same.gd#L2:1-L2:59",
+          "revision": "f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a"
+        }
+      ],
+      "issue_after": "项目 · U15 project\n工单 · #1810 · gonggong-ai-workbench-plan1-u15",
+      "issue_before": "项目 · U15 project\n工单 · #1810 · gonggong-ai-workbench-plan1-u15",
+      "selected": [
+        {
+          "kind": "editor",
+          "object_id": "res://alpha/same.gd#L2:1-L2:60",
+          "revision": "209f4c87fadf95447ec04a2b1ccdf90d6586a238f87cf2d53adfa6216b1ae5d8"
+        },
+        {
+          "kind": "editor",
+          "object_id": "res://beta/same.gd#L2:1-L2:59",
+          "revision": "f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a"
+        }
+      ]
+    },
+    "restored_queue_exit": 0,
+    "persisted_scrubbed": true,
+    "inflight_read_count": 6
+  }
+}

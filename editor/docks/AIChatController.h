@@ -54,10 +54,15 @@ struct AIChatSessionData
 	Vector<String> arrToolDetails;
 	String strDraft;
 	Array arrDraftImages;
+	static constexpr int MAX_EDITOR_REFERENCES = 16; // C05 MessageContext.references.
 	Array arrDraftEditorReferences;
+	Dictionary mapDraftScriptExcerpts; // Immutable script selections keyed by their full locator.
+	bool bLiveResourceDraft = false;
+	Vector<int> arrInvalidReferences; // Observed live-identity or revision mismatches.
 	// Live node identities are deliberately never restored from disk.
 	ObjectID idDraftScene;
 	ObjectID idDraftNode;
+	Vector<ObjectID> arrDraftSelection;
 	Array arrQueuedMessages;
 	bool bQueuePaused = false;
 	String strModel;

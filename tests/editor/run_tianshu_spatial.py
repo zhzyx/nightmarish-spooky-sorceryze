@@ -11,6 +11,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from editor_test_isolation import copy_editor
+from run_unified_settings_native import sanitized_environment
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--godot", type=Path, required=True)
@@ -20,14 +21,19 @@ mode.add_argument("--source-only", action="store_true")
 mode.add_argument(
     "--references", action="store_true", help="Exercise native reference invalidation and the send boundary"
 )
+mode.add_argument("--scene-selection", action="store_true", help="Exercise ordinary 2D/3D sidebar selection and sends")
 args = parser.parse_args()
-source = Path(__file__).with_name("tianshu_spatial.gd")
+source = Path(__file__).with_name("workbench_scene_selection.gd" if args.scene_selection else "tianshu_spatial.gd")
 with tempfile.TemporaryDirectory(prefix="tianshu-spatial-") as directory:
     root = Path(directory)
     editor = copy_editor(args.godot.resolve(), root / "editor")
     (root / "project.godot").write_text('[application]\nconfig/name="Tianshu 3D acceptance"\n')
     (root / "test.gd").write_bytes(source.read_bytes())
-    env = {k: v for k, v in os.environ.items() if not k.startswith("GONGGONG_")}
+    env = (
+        sanitized_environment(root)
+        if args.scene_selection
+        else {k: v for k, v in os.environ.items() if not k.startswith("GONGGONG_")}
+    )
     env["XDG_CACHE_HOME"] = str(root / "cache")
     env["TIANSHU_SOURCE_ONLY"] = "1" if args.source_only else ""
     env["TIANSHU_SPATIAL_SOURCE"] = str(source.parents[2] / "editor/docks/daqian/spatial_workbench.gd")
@@ -35,7 +41,16 @@ with tempfile.TemporaryDirectory(prefix="tianshu-spatial-") as directory:
     env.pop("TIANSHU_REFERENCE_RESTORE", None)
     requests: list[list[str]] = []
     server = None
-    if args.references:
+    if args.scene_selection:
+        for screen in ("2D", "3D"):
+            nodes = [f'[node name="Root" type="Node{screen}"]']
+            for branch in ("Left", "Right", "Other"):
+                nodes.extend([
+                    f'[node name="{branch}" type="Node{screen}" parent="."]',
+                    f'[node name="SharedLeaf" type="Node{screen}" parent="{branch}"]',
+                ])
+            (root / f"selection-{screen}.tscn").write_text("[gd_scene format=3]\n" + "\n".join(nodes) + "\n")
+    if args.references or args.scene_selection:
 
         class Model(BaseHTTPRequestHandler):
             def log_message(self, *_):
@@ -68,11 +83,27 @@ with tempfile.TemporaryDirectory(prefix="tianshu-spatial-") as directory:
         [str(editor), "--headless", "--editor", "--path", str(root), "--script", str(root / "test.gd")],
         env=env,
         text=True,
+        encoding="utf-8",
+        errors="replace",
         capture_output=True,
         timeout=120,
     )
     passed = result.returncode == 0 and "TIANSHU_SPATIAL_OK" in result.stdout and "SCRIPT ERROR:" not in result.stderr
-    if server:
+    selections = []
+    if args.scene_selection:
+        selections = [
+            json.loads(line.removeprefix("SELECTION_DRAFT "))
+            for line in result.stdout.splitlines()
+            if line.startswith("SELECTION_DRAFT ")
+        ]
+        passed = (
+            result.returncode == 0 and "SCENE_SELECTION_OK" in result.stdout and "SCRIPT ERROR:" not in result.stderr
+        )
+        passed = passed and len(selections) == len(requests) == 4
+        for sample, messages in zip(selections, requests):
+            prefix, _, references = messages[-1].partition("编辑器引用：")
+            passed = passed and prefix.startswith(sample["draft"]) and json.loads(references) == sample["references"]
+    if args.references:
         references = [
             line.removeprefix("FROZEN_EDITOR_REFERENCES ")
             for line in result.stdout.splitlines()
@@ -122,12 +153,33 @@ with tempfile.TemporaryDirectory(prefix="tianshu-spatial-") as directory:
             )
             if not passed:
                 break
+    if passed and args.scene_selection:
+        reopened = subprocess.run(
+            [str(editor), "--headless", "--editor", "--path", str(root), "--script", str(root / "test.gd")],
+            env={**env, "SCENE_SELECTION_RESTORE": "1"},
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+            capture_output=True,
+            timeout=120,
+        )
+        reference_reopens.append({
+            "phase": "selection",
+            "exit_code": reopened.returncode,
+            "stdout": reopened.stdout,
+            "stderr": reopened.stderr,
+        })
+        passed = (
+            reopened.returncode == 0
+            and "SCENE_SELECTION_RESTORED" in reopened.stdout
+            and "SCRIPT ERROR:" not in reopened.stderr
+        )
     if server:
         server.shutdown()
         server.server_close()
-        passed = passed and len(requests) == 1
+        passed = passed and len(requests) == (4 if args.scene_selection else 1)
     restart = None
-    if passed and not args.source_only and not args.references:
+    if passed and not args.source_only and not args.references and not args.scene_selection:
         restart = subprocess.run(
             [str(editor), "--headless", "--editor", "--path", str(root), "--script", str(root / "test.gd")],
             env={**env, "TIANSHU_RESTART": "1"},
@@ -144,6 +196,7 @@ with tempfile.TemporaryDirectory(prefix="tianshu-spatial-") as directory:
         "passed": passed,
         "source_only": args.source_only,
         "reference_model_requests": requests,
+        "selection_drafts": selections,
         "reference_reopens": reference_reopens,
         "binary_sha256": hashlib.sha256(args.godot.read_bytes()).hexdigest(),
         "test_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
@@ -155,6 +208,6 @@ with tempfile.TemporaryDirectory(prefix="tianshu-spatial-") as directory:
         else {"exit_code": restart.returncode, "stdout": restart.stdout, "stderr": restart.stderr},
     }
     args.report.parent.mkdir(parents=True, exist_ok=True)
-    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2))
+    args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False))
     raise SystemExit(0 if passed else 1)
