@@ -35,6 +35,7 @@
 #include "editor/docks/dock_tab_container.h"
 #include "editor/docks/editor_dock_manager.h"
 #include "editor/docks/workbench/BusinessSession.gen.h"
+#include "editor/docks/workbench/module_selector.gen.h"
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
 #include "editor/settings/editor_command_palette.h"
@@ -108,6 +109,30 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	const Ref<Shortcut> workbench_shortcut = ED_SHORTCUT(WORKBENCH_SHORTCUT, TTRC("Open AI Workbench"), KeyModifierMask::CMD_OR_CTRL | KeyModifierMask::SHIFT | Key::M);
 	pPalette->add_command(TTR("Open AI Workbench"), WORKBENCH_SHORTCUT, callable_mp(this, &AIChatDock::OpenWorkbenchSidebar), workbench_shortcut);
 	set_process_shortcut_input(true);
+
+	// The selector travels with the same view when it is docked or expanded.
+	Ref<Script> selector_script = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
+	if (selector_script.is_valid())
+	{
+		String source;
+		for (const char *chunk : daqian_module_selector)
+		{
+			if (chunk)
+			{
+				source += String::utf8(chunk);
+			}
+		}
+		selector_script->set_source_code(source);
+		if (selector_script->reload() == OK)
+		{
+			VBoxContainer *selector = memnew(VBoxContainer);
+			selector->set_name("WorkbenchBusinessModules");
+			selector->set_script(selector_script);
+			selector->set_meta("workbench_sidebar", pWorkbenchSidebar);
+			pConversationView->add_child(selector);
+			pConversationView->move_child(selector, 0);
+		}
+	}
 }
 
 void AIChatDock::shortcut_input(const Ref<InputEvent> &p_event)
@@ -158,7 +183,14 @@ void AIChatDock::OpenWorkbenchSidebar()
 	{
 		pSlot->show();
 	}
-	input->grab_focus();
+	if (input->is_visible_in_tree())
+	{
+		input->grab_focus();
+	}
+	else if (Control *composer = Object::cast_to<Control>(pConversationView->find_child("ModuleChatInput", true, false)))
+	{
+		composer->grab_focus();
+	}
 }
 
 void AIChatDock::ExpandWorkbenchSidebar()
@@ -177,7 +209,14 @@ void AIChatDock::ExpandWorkbenchSidebar()
 	EditorDockManager::get_singleton()->force_focus_dock(this);
 	workspace_pages->set_current_tab(chat_layout->get_parent() == timer_chat_host ? 1 : 0);
 	pRestoreSidebar->show();
-	input->grab_focus();
+	if (input->is_visible_in_tree())
+	{
+		input->grab_focus();
+	}
+	else if (Control *composer = Object::cast_to<Control>(pConversationView->find_child("ModuleChatInput", true, false)))
+	{
+		composer->grab_focus();
+	}
 }
 
 void AIChatDock::CloseWorkbenchSidebar()
