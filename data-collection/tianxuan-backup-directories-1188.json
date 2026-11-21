@@ -1,0 +1,53 @@
+{
+  "request_id": "tianxuan-platform-20261114",
+  "issue_number": 1188,
+  "base": "4b58273aef19d55f04c821b07c4f5af679992a41",
+  "platform": "macOS 26.6.2 arm64",
+  "business_case": "Back up and restore a two-commit bare repository with packed references alongside the application database",
+  "before": {
+    "verified_files": 23,
+    "restored_files": 23,
+    "git_exit": 128,
+    "sqlite_integrity": "ok"
+  },
+  "after": {
+    "verified": 23,
+    "restored": 23,
+    "original_restore_git_exit": 0,
+    "missing_directories": [],
+    "diagnostic_directory_added": null,
+    "sqlite_integrity": "ok",
+    "post_restore_authenticated_read": true
+  },
+  "candidate_files": {
+    "backup.py": "7f02a9bb31613f1744eeb0de08998e976422dcdb3c05fe7b0350b120943de5a3",
+    "backup_drill.py": "b256618979772ae9bf9109da0ae3c3dbf61ba88949d0ad90f8b41e2c77b80d4d",
+    "test_backup.py": "b1528343f7eee20e31a6a137ffa057952de8589c2e5beb76f0251d7d20596574"
+  },
+  "legacy_file_backup": {
+    "backup_writer": "exact main v1",
+    "verified": 23,
+    "restored": 23,
+    "git_exit_through_v1_reader": 128,
+    "git_exit_through_v2_reader": 128,
+    "restored_db_login_read": true
+  },
+  "posix_filename": {
+    "v1": {
+      "format": 1,
+      "created": true,
+      "original_reader": "verified",
+      "candidate_reader": "verified",
+      "restored_exact_text": true
+    },
+    "v2": {
+      "format": 2,
+      "created": true,
+      "original_reader": "not_applicable",
+      "candidate_reader": "verified",
+      "restored_exact_text": true
+    }
+  },
+  "independent_review": "The first candidate rejected a previously valid POSIX filename. After correction, both version 1 and version 2 archives verified and restored the original bytes.",
+  "regression_tests_passed": 17
+}
