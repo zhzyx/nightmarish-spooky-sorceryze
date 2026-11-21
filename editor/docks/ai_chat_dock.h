@@ -795,6 +795,7 @@ class AIChatDock : public EditorDock {
 	void _agent_close_requested(int p_index);
 	void _agent_right_clicked(int p_index);
 	void _agent_menu_selected(int p_id);
+	void _open_conversation_original(int p_agent);
 	void _validate_agent_name();
 	void _rename_agent();
 	void _cancel_agent_rename();
