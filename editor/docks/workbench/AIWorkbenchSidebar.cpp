@@ -35,11 +35,14 @@
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
 #include "editor/settings/editor_command_palette.h"
+#include "editor/settings/editor_settings.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/text_edit.h"
 #include "scene/main/viewport.h"
+
+static constexpr char WORKBENCH_SHORTCUT[] = "editor/open_ai_workbench";
 
 void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette)
 {
@@ -79,7 +82,19 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette)
 	pWorkbenchSidebar->close();
 	pWorkbenchSidebar->connect(SNAME("closed"), callable_mp(this, &AIChatDock::CloseWorkbenchSidebar));
 	pPalette->connect(SNAME("about_to_popup"), callable_mp(this, &AIChatDock::CaptureWorkbenchSource));
-	pPalette->add_command(TTR("Open AI Workbench"), "editor/open_ai_workbench", callable_mp(this, &AIChatDock::OpenWorkbenchSidebar));
+	const Ref<Shortcut> workbench_shortcut = ED_SHORTCUT(WORKBENCH_SHORTCUT, TTRC("Open AI Workbench"), KeyModifierMask::CMD_OR_CTRL | KeyModifierMask::SHIFT | Key::M);
+	pPalette->add_command(TTR("Open AI Workbench"), WORKBENCH_SHORTCUT, callable_mp(this, &AIChatDock::OpenWorkbenchSidebar), workbench_shortcut);
+	set_process_shortcut_input(true);
+}
+
+void AIChatDock::shortcut_input(const Ref<InputEvent> &p_event)
+{
+	if (p_event->is_pressed() && !p_event->is_echo() && ED_IS_SHORTCUT(WORKBENCH_SHORTCUT, p_event))
+	{
+		CaptureWorkbenchSource();
+		OpenWorkbenchSidebar();
+		get_viewport()->set_input_as_handled();
+	}
 }
 
 void AIChatDock::CaptureWorkbenchSource()
