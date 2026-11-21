@@ -111,7 +111,7 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 										  .sha256_text();
 		entry["conversation_id"] = session.stData.strConversation;
 		entry["content_hash"] = JSON::stringify(session.stData.arrMessages).sha256_text() + JSON::stringify(session.stData.arrTranscript).sha256_text();
-		entry["draft_hash"] = session.stData.strDraft.sha256_text() + JSON::stringify(session.stData.arrDraftImages).sha256_text();
+		entry["draft_hash"] = session.stData.strDraft.sha256_text() + JSON::stringify(session.stData.arrDraftImages).sha256_text() + JSON::stringify(session.stData.arrDraftEditorReferences).sha256_text();
 		session_state.push_back(entry);
 	}
 	for (int i = 0; i < GetAiSession().arrDraftImages.size(); i++) {
@@ -386,7 +386,7 @@ Dictionary AIChatDock::_chat_extended_host_action(const Dictionary &p_args, bool
 		}
 		index = p_args["index"];
 	} else if (action == "chat_send_message" || action == "chat_host_send_message") {
-		if (value.get_type() != Variant::STRING || String(value).strip_edges().is_empty() || String(value).utf8().length() > 8192 || !input->get_text().is_empty() || send_button->is_disabled() || GetAiSession().arrQueuedMessages.size() >= 32 || !issue_guide_state.is_empty() || !igniter_state.is_empty()) {
+		if (value.get_type() != Variant::STRING || String(value).strip_edges().is_empty() || String(value).utf8().length() > 8192 || !input->get_text().is_empty() || !GetAiSession().arrDraftEditorReferences.is_empty() || send_button->is_disabled() || GetAiSession().arrQueuedMessages.size() >= 32 || !issue_guide_state.is_empty() || !igniter_state.is_empty()) {
 			result["error"] = "invalid_message_or_existing_draft";
 			return result;
 		}

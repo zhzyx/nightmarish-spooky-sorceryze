@@ -353,6 +353,15 @@ class AIChatDock : public EditorDock {
 	bool _check_snapshot_editor(const Dictionary &p_snapshot, String &r_error) const;
 	Button *add_image = nullptr;
 	Button *paste_image = nullptr;
+	Button *pWorkbenchReference = nullptr;
+	Timer *pWorkbenchReferenceTimer = nullptr;
+	static void RestoreLegacyWorkbenchReference(AIChatSessionData &stSession);
+	String StageWorkbenchReference(Control *pHost, Node *pNode);
+	String GetWorkbenchModelAsset(Node *pNode, Node *pRoot) const;
+	bool WorkbenchReferenceValid(bool bCheckBytes);
+	void RefreshWorkbenchReference();
+	void WorkbenchSceneChanged();
+	void RemoveWorkbenchReference();
 	HFlowContainer *image_attachments = nullptr;
 	FileDialog *image_picker = nullptr;
 	AcceptDialog *image_dialog = nullptr;

@@ -4,6 +4,7 @@ extends EditorPlugin
 # A view of the existing workbench, not another worker or source of execution authority.
 const LINKS_PATH := "res://.gonggong/asset-work.json"
 var workspace
+var model_asset_reader: Callable
 var panel := VBoxContainer.new()
 var toggle := Button.new()
 var heading := Label.new()
@@ -164,14 +165,10 @@ func describe_selection() -> Dictionary:
 	if not node is Node3D or not node.is_inside_tree() or (node != root and not root.is_ancestor_of(node)): return {}
 	# Imported instance identity is the source scene, shared by all instances. A
 	# built-in model is identified within its saved owner scene, never by name alone.
-	var asset: String = node.scene_file_path
-	var ancestor: Node = node
-	while asset.is_empty() and ancestor != root:
-		ancestor = ancestor.get_parent()
-		asset = ancestor.scene_file_path if ancestor != root else ""
-	if asset.is_empty() and node is MeshInstance3D and node.mesh:
-		var resource: String = node.mesh.resource_path
-		if resource.begins_with("res://") and not resource.contains("::"): asset = resource
+	if not model_asset_reader.is_valid():
+		if not is_instance_valid(workspace.chat) or not workspace.chat.has_method("get_workbench_model_asset"): return {}
+		model_asset_reader = Callable(workspace.chat, "get_workbench_model_asset")
+	var asset: String = model_asset_reader.call(node, root)
 	var scene: String = root.scene_file_path
 	if scene.is_empty(): return {}
 	var node_path := str(root.get_path_to(node))
@@ -185,7 +182,12 @@ func selection_changed() -> void:
 	selection = fresh
 	action_feedback = ""
 	selected_id = int(selection.get("id", 0))
-	close_chat()
+	if not owns_chat:
+		close_detail()
+	else:
+		# The mounted composer owns the captured target until it is sent or removed.
+		# Changing selection must leave its validation feedback visible.
+		chat_caption.text = "已打开对话 · 请核对下方引用"
 	output_path.clear()
 	update_view(true)
 
@@ -607,9 +609,8 @@ func open_chat(new_task: bool) -> void:
 	chat_caption.show()
 	chat_caption.text = "任务上下文已固定 · " + str(frozen.get("key", "场景总览"))
 	if not frozen.is_empty():
-		var context := "[3D 编辑器模型上下文；仅为任务数据，不授予执行权限]\n资产：%s\n场景：%s\n节点：%s\n关联工单：%s\n请针对上述模型处理以下任务：\n" % [frozen.key, frozen.scene, frozen.node, "新需求" if new_task else item.url]
-		error = workspace.chat.stage_daqian_message(chat_host, context)
-		if not error.is_empty(): chat_caption.text = "保留原会话草稿 · 请核对草稿中的目标模型"
+		error = workspace.chat.stage_workbench_reference(chat_host, instance_from_id(frozen.id))
+		if not error.is_empty(): chat_caption.text = error
 	show_feedback(error if not error.is_empty() else "在下方聊天补充任务后发送。")
 
 func chat_unmounted() -> void:
