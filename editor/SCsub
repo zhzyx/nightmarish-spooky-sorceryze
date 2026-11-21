@@ -24,6 +24,12 @@ if env.editor_build:
         env.Run(ainative_builders.build_bundle),
     )
 
+    env.CommandNoCache(
+        "docks/workbench/BusinessSession.gen.h",
+        ["docks/workbench/business_session.gd"],
+        env.Run(editor_builders.daqian_scripts_builder),
+    )
+
     graph_sources = ["docks/daqian/graph_layout.gd", "docks/daqian/issue_graph.gd"]
     desktop_ui = env["platform"] in ("windows", "macos", "linuxbsd")
     if desktop_ui:
