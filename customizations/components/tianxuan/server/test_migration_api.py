@@ -33,7 +33,10 @@ def test_authenticated_http_and_ai_select_new_task():
     assert created.status_code == 200, created.text
     result = client.post("/api/v1/tools", headers=admin, json={"name": "migration.start", "payload": task})
     assert result.json() == created.json()
-    assert len(store.list_issues(admin["X-Actor"])) == 1
+    issues = store.list_issues(admin["X-Actor"])
+    assert [(row["id"], row["project"], row["module_id"]) for row in issues] == [
+        (result.json()["issue_id"], "org/repo", "default")
+    ]
     assert (
         client.post(base + "/tasks", json={**task, "source_id": "github:org/repo/issue/9"}, headers=admin).status_code
         == 422

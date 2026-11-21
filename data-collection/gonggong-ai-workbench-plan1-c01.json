@@ -1,0 +1,112 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-c01",
+  "issue_number": 1868,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1868",
+  "source_baseline": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+  "observed_at": "2026-11-21T04:54:32.048679+00:00",
+  "candidate_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "653a8beae5597fba56e3b15799e17351097b2403",
+    "customizations/components/tianxuan/server/migration_api.py": "87edaaf412b9c6de1b303a9605c2222b607832a1",
+    "customizations/components/tianxuan/server/schemas.py": "9cb661ad33fe5c7458928f6ee12d2d28a5c654d1",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "dfa66b698d5a01e329b0c1aa035c0bedffbbd913",
+    "customizations/components/tianxuan/server/test_business_modules.py": "085cd92e89fe4a52f84cb916a833691ab823ca44",
+    "customizations/components/tianxuan/server/test_migration_api.py": "3e89f31220fe1ea0855496933ed5f2f085fc9efe",
+    "design-docs/gonggong-ai-workbench-c01.md": "99c8548d5c2651049f7d1df73099c91709e4a54c"
+  },
+  "runtime": {
+    "python": "3.14.3",
+    "pytest": "9.2.0",
+    "fastapi": "0.165.0",
+    "starlette": "1.10.0",
+    "httpx": "0.28.1"
+  },
+  "verification": {
+    "cwd": "customizations/components/tianxuan/server",
+    "suites": [
+      "test_business_modules.py",
+      "test_tool_receipts.py",
+      "test_migration_api.py",
+      "test_issue_ancestor_acl.py",
+      "test_api_session.py",
+      "test_scope_idempotency.py",
+      "test_work_management.py",
+      "test_api_auth_mode.py"
+    ],
+    "exit_code": 0,
+    "pytest_summary": "98 passed, 1 warning in 23.05s",
+    "warning": "Starlette TestClient httpx deprecation",
+    "ruff_check": "passed",
+    "ruff_format_check": "6 files already formatted",
+    "mypy": "Success: no issues found in 6 source files"
+  },
+  "native_api_reopened_sqlite_readback": {
+    "modules_created": [
+      {
+        "id": "mod_0f4316ec4b6840548044e0c73babd95b",
+        "project": "studio/game",
+        "name": "场景"
+      },
+      {
+        "id": "mod_4e6b2d45b8f64d8e833b9f83ba31a967",
+        "project": "studio/game",
+        "name": "场景"
+      }
+    ],
+    "stored_modules_after_rename": [
+      {
+        "project": "studio/game",
+        "id": "mod_4e6b2d45b8f64d8e833b9f83ba31a967",
+        "name": "场景"
+      },
+      {
+        "project": "studio/game",
+        "id": "mod_0f4316ec4b6840548044e0c73babd95b",
+        "name": "城镇"
+      }
+    ],
+    "issues_after_restart": [
+      {
+        "id": "iss_2a306f90bc194d528bdf5c0be6cca4e5",
+        "number": 1,
+        "project": "studio/game",
+        "module_id": "mod_0f4316ec4b6840548044e0c73babd95b"
+      }
+    ]
+  },
+  "legacy_upgraded_sqlite_readback": {
+    "modules_created": [],
+    "stored_modules_after_rename": [
+      {
+        "project": "team/other",
+        "id": "default",
+        "name": "迁入"
+      }
+    ],
+    "issues_after_restart": [
+      {
+        "id": "iss_ab951b8c832242babf7cf42118f1d8d6",
+        "number": 1,
+        "project": "workspace",
+        "module_id": "default"
+      },
+      {
+        "id": "iss_18ec375667824a5ab82fb21696a162bd",
+        "number": 2,
+        "project": "team/other",
+        "module_id": "default"
+      },
+      {
+        "id": "iss_89b8e8f04b2e408383455c97098c9a17",
+        "number": 3,
+        "project": "team/other",
+        "module_id": "default"
+      }
+    ]
+  },
+  "upstream": {
+    "issue": 1870,
+    "state": "CLOSED",
+    "stateReason": "COMPLETED",
+    "closedAt": "2026-11-20T23:45:30Z"
+  }
+}

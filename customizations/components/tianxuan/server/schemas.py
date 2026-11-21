@@ -348,6 +348,16 @@ class IdentityRebindRequest(BaseModel):
     user_id: str
 
 
+class BusinessModuleName(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    name: str = Field(min_length=1, max_length=200)
+
+
+class BusinessModuleCreate(BusinessModuleName):
+    call_id: str = Field(min_length=1, max_length=256)
+
+
 class IssueTransitionRequest(BaseModel):
     """司南工单状态迁移。"""
 
