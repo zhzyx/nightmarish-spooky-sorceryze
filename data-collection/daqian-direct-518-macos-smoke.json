@@ -1,0 +1,63 @@
+{
+  "request_id": "daqian-direct-d327a478b46b58b48121",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/518",
+  "issue_number": 518,
+  "observed_at": "2026-11-21T20:43:22.537836+00:00",
+  "outcome": "已恢复并回读大千草稿绑定的原始需求。实际领取此单的 Codex 工作者完成了工作区交付。",
+  "intake": {
+    "entry": "Godot 大千 → issue-direct",
+    "draft_id": "draft_d327a478b46b58b48121",
+    "created_at": "2026-11-07T19:33:21Z",
+    "issue_author": "Sail-Li",
+    "github_user_id": 350401007,
+    "repository_id": 1441270901,
+    "matching_issue_numbers": [
+      518
+    ],
+    "historical_editor_creation_confirmation": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/511#issuecomment-6712178757",
+    "yanshi_ready_confirmation": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/525#issuecomment-6712922731",
+    "verification": "大千 direct_issue.readback 与 GitHub 实际返回的完整正文、作者、当前账号、标签及工单地址匹配。"
+  },
+  "execution": {
+    "authorization": "mac-round9-smoke",
+    "host": "Codex",
+    "worker_id": "/root/sinan_2029928846f58b92",
+    "source_snapshot_sha256": "8c9b8670f2999479674b33d3436c7e52a35b8e75d2d9e0523faf5d016752e532",
+    "intake_gate": {
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/518",
+      "number": 518,
+      "type": "type:development",
+      "status": "status:in-progress",
+      "updated_at": "2026-11-21T20:31:33Z"
+    },
+    "handoff_event": "gonggong-diting-data/events/gonggong-workspace/daqian-direct-d327a478b46b58b48121/dispatch-56979f5d6d664e7998bb7ab6f860d2bc.json",
+    "received_request_event": "gonggong-diting-data/events/gonggong-workspace/daqian-direct-d327a478b46b58b48121/mac-round9-518-smoke-intake.json"
+  },
+  "document": {
+    "path": "design-docs/daqian-direct-d327a478b46b58b48121.md",
+    "bytes": 321,
+    "sha256": "50e0dad35e46ab8e4807521385872d74124098d780b63899c88ae4f93ad92f00",
+    "original_text": "创建测试需求用来看看AI跑通了没",
+    "verification": "发布正文内嵌的 Markdown 包括末行换行，与当前 direct_issue.requirement_bytes 的历史「大千」格式逐字节相同。"
+  },
+  "mac_readback": {
+    "system": "26.6.2",
+    "architecture": "arm64",
+    "editor_version": "4.8-beta (custom_build)",
+    "editor_sha256": "9cdfa4fdb04cc5cff362692571307a2ea6e8603e72b3153579383b68f4d854ec",
+    "board_package_sha256": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "ui_package_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "host_source_commit": "ab75b08a9fe400968f47f7084ec27dba1d26ebd9",
+    "mode": "隔离工程、自包含 headless 编辑器、线上 GitHub 只读传输",
+    "document_source": "工作区",
+    "inspector_text_sha256": "50e0dad35e46ab8e4807521385872d74124098d780b63899c88ae4f93ad92f00",
+    "unexpected_request_error": "工单绑定已更改，请刷新",
+    "marker": "SMOKE_518_MAC_READBACK_OK",
+    "exit_code": 0,
+    "shutdown_diagnostics": "读取断言通过，编辑器退出时报告 Canvas、ObjectDB 和 RID 等资源仍分配。",
+    "recheck": "在配置同一 GitHub 写协作者的编辑器上绑定包含本文件的此仓库，打开个人列表中的 #518，核对详情链接、原文及工作区文件 SHA-256。",
+    "inspector_issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/518",
+    "selection": "真实协作者个人工单列表中唯一匹配行，打开详情后核对链接与文本。"
+  },
+  "scope": "本轮发布器核对和 Mac 编辑器回读复用了真实 #518。用户草稿创建与偃师就绪由历史工单回执证实，业务领取与文件交付由本轮 Codex 工作者执行。Mac 读回期间未启动第二个生产模型回合。"
+}
