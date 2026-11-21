@@ -1,0 +1,28 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-i13",
+  "issue_number": 1755,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755",
+  "progress": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755#issuecomment-7062595326",
+  "editor_sha256": "d153735dadc2d3458c587610f601d1e4bbc9b9a79d1b6d972228e635f8ad6b11",
+  "platform_run": "macOS window and independent headless project, cold restarts",
+  "issue_details": [
+    6,
+    6
+  ],
+  "restored_sessions": [
+    4,
+    4
+  ],
+  "missing_worker_explicit": [
+    2,
+    2
+  ],
+  "http_writes": 0,
+  "new_issues": 0,
+  "old_conversation_can_open_original": [
+    0,
+    4
+  ],
+  "scope": "isolated issue host and archive fixture",
+  "source": "217cd6c7641af1b6bddeed284599992d9f800a91"
+}

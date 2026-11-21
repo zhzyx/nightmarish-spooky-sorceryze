@@ -1,0 +1,110 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "platform": "Apple Silicon, macOS 26.6.2",
+  "source": "217cd6c7641af1b6bddeed284599992d9f800a91",
+  "observed_at": "2026-11-21T12:43:08.949174+00:00",
+  "items": [
+    {
+      "request_id": "gonggong-ai-workbench-plan1-g08",
+      "issue_number": 1779,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1779",
+      "progress": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1779#issuecomment-7062595383",
+      "migration": "SIGKILL after 512 durable records and before first publication; restarted same CLI. Independent clean DB used as control.",
+      "checks": {
+        "all_checkpoint_rowids_and_revisions_retained": true,
+        "same_all_refs_and_reachable_objects": true,
+        "same_module_and_revision": true,
+        "same_publication_except_wallclock": true,
+        "same_restored_artifacts_and_mappings": true,
+        "same_sql_counts": true,
+        "unique_complete_mappings": true
+      },
+      "records": 1026,
+      "published": 1,
+      "duplicate_source_ids": 0,
+      "content_addressed_resume": true,
+      "scope": "process termination and native transaction reuse, not a power loss or full production migration"
+    },
+    {
+      "request_id": "gonggong-ai-workbench-plan1-g16",
+      "issue_number": 1782,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1782",
+      "progress": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1782#issuecomment-7062547006",
+      "pulls": [
+        {
+          "number": 1661,
+          "candidate": "86fe0140398fa4a51fb37ae13432054979750889",
+          "owner": "Sail-Li",
+          "mergeable": "CONFLICTING"
+        },
+        {
+          "number": 1245,
+          "candidate": "30ae3066535e5b0edbdcb3d8ded87591b6526317",
+          "owner": "Sail-Li",
+          "mergeable": "CONFLICTING"
+        },
+        {
+          "number": 1234,
+          "candidate": "40bfbdc81916125a293cfb2e2ec01dc998fdb7d6",
+          "owner": "Sail-Li",
+          "mergeable": "CONFLICTING"
+        },
+        {
+          "number": 1216,
+          "candidate": "148c99da417903b7b9d9599057cc3818c1adfb26",
+          "owner": "Sail-Li",
+          "mergeable": "CONFLICTING"
+        },
+        {
+          "number": 645,
+          "candidate": "0b20b7e1b27dd8555448308c17d9e5a77b8db3cf",
+          "owner": "kaiyunxue",
+          "mergeable": "CONFLICTING"
+        }
+      ],
+      "overlapping_files_1234_1245": 43,
+      "decisions": "Scope includes the five still-open PRs from G01. Original owners keep review responsibility; #645 needs cross-author confirmation and #1234/#1245 require a disposition before archiving. No PR was changed."
+    },
+    {
+      "request_id": "gonggong-ai-workbench-plan1-g07",
+      "issue_number": 1804,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1804",
+      "progress": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1804#issuecomment-7062595414",
+      "baseline": "Missing tag and one-byte change both refused without changing the prior publication. Both baseline diagnostics were generic.",
+      "correct_copy": {
+        "refs": 4,
+        "reachable_objects": 1031
+      }
+    },
+    {
+      "request_id": "gonggong-ai-workbench-plan1-i13",
+      "issue_number": 1755,
+      "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755",
+      "progress": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755#issuecomment-7062595326",
+      "editor_sha256": "d153735dadc2d3458c587610f601d1e4bbc9b9a79d1b6d972228e635f8ad6b11",
+      "platform_run": "macOS window and independent headless project, cold restarts",
+      "issue_details": [
+        6,
+        6
+      ],
+      "restored_sessions": [
+        4,
+        4
+      ],
+      "missing_worker_explicit": [
+        2,
+        2
+      ],
+      "http_writes": 0,
+      "new_issues": 0,
+      "old_conversation_can_open_original": [
+        0,
+        4
+      ],
+      "scope": "isolated issue host and archive fixture"
+    }
+  ],
+  "baseline_probe_sha256": "c62ac94e6a5e4413e947ad9211c8e2affaff982200f87c45807d20a509faa6bf"
+}
