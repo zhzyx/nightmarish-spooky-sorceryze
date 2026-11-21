@@ -45,8 +45,12 @@ class ArchiveCheck(unittest.TestCase):
             inventory.write_text(json.dumps({"source": "example/history", "revision": data["head"]}))
             data["refs"] = {}
             report.write_text(json.dumps(data))
-            with self.assertRaisesRegex(ValueError, "differ"):
+            with self.assertRaisesRegex(ValueError, "differ") as caught:
                 archive(inventory, root, root, root / "native.db", "test", "test")
+            differences = json.loads(str(caught.exception).split("differ: ", 1)[1])
+            branch = subprocess.check_output(["git", "-C", str(work), "symbolic-ref", "HEAD"], text=True).strip()
+            self.assertEqual(differences, {branch: {"report": None, "mirror": data["head"], "bundle": data["head"]}})
+            self.assertFalse((root / "native.db").exists())
 
     def test_new_tasks_and_archived_items(self):
         with tempfile.TemporaryDirectory() as tmp:
