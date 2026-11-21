@@ -158,6 +158,8 @@
 
 ### C04
 
+[交付清单与验证](gonggong-ai-workbench-c04.md)
+
 **恢复模块的最近工作位置** · [C04 #1784](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1784)
 
 按用户、项目和模块保存活动工单、对话与位置。

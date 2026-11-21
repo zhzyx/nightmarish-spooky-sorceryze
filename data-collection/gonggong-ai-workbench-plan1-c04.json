@@ -1,0 +1,535 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-c04",
+  "issue_number": 1784,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1784",
+  "source_baseline": "62b3f5ec7e10b65409466615a4f46b9f41ba7389",
+  "upstream": {
+    "number": 1866,
+    "state": "CLOSED",
+    "stateReason": "COMPLETED",
+    "closedAt": "2026-11-21T06:14:56Z"
+  },
+  "observed_at": "2026-11-21T06:29:19.327092+00:00",
+  "runtime": {
+    "pytest": "9.2.0",
+    "fastapi": "0.165.0",
+    "starlette": "1.10.0",
+    "httpx": "0.28.1",
+    "python": "3.12.14"
+  },
+  "candidate_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "16e6d2850a6b7df1e8a99f91eb27c0cb3538f9d0",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "5018cafaa3ecb1fbc31428e43527a6b530ea06fe",
+    "customizations/components/tianxuan/server/schemas.py": "af3db9f607d38f14dffd967af495127a548e332c",
+    "customizations/components/tianxuan/server/test_module_locations.py": "9887e188a69789925c96a4f6e020b7ab69d0dea7",
+    "design-docs/gonggong-ai-workbench-c04.md": "a4444beaf475e1f71a615802b840118c1edda5ca"
+  },
+  "http_readback": [
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "no bearer",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location",
+      "status": 401,
+      "detail": "a valid personal access key is required"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "no bearer",
+      "method": "POST",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "signed_in": "alice"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "no bearer",
+      "method": "POST",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "signed_in": "bob"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "POST",
+      "path": "/api/v1/business-modules?project=studio%2Fgame",
+      "status": 200
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "POST",
+      "path": "/api/v1/workspace/conversations",
+      "status": 201
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": null,
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_dd1a3eb6bd854d73afdb732690887f77",
+        "conversation_id": "705f50ea-5a0e-4d84-bef3-ba1dacf97310",
+        "position": "issue/comments#7"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "GET",
+      "path": "/api/v1/business-modules/mod_43e920eb90db4676a5d8a74846b10018/location?project=studio%2Fgame",
+      "status": 200,
+      "location": null,
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/mod_43e920eb90db4676a5d8a74846b10018/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_7c2b5a2a66fc4fff8aab12ebb735a7e1",
+        "conversation_id": null,
+        "position": "issue/details"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_dd1a3eb6bd854d73afdb732690887f77",
+        "conversation_id": "705f50ea-5a0e-4d84-bef3-ba1dacf97310",
+        "position": "issue/comments#7"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fother",
+      "status": 200,
+      "location": null,
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "GET",
+      "path": "/api/v1/business-modules/mod_43e920eb90db4676a5d8a74846b10018/location?project=studio%2Fother",
+      "status": 404,
+      "detail": "business module not found"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/mod_43e920eb90db4676a5d8a74846b10018/location?project=studio%2Fgame",
+      "status": 404,
+      "detail": "issue not found in module"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "GET",
+      "path": "/api/v1/business-modules/mod_43e920eb90db4676a5d8a74846b10018/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_7c2b5a2a66fc4fff8aab12ebb735a7e1",
+        "conversation_id": null,
+        "position": "issue/details"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "bob",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": null,
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "bob",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 404,
+      "detail": "conversation unavailable"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "bob",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 422
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "bob",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_dd1a3eb6bd854d73afdb732690887f77",
+        "conversation_id": null,
+        "position": "issue/history"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_dd1a3eb6bd854d73afdb732690887f77",
+        "conversation_id": "705f50ea-5a0e-4d84-bef3-ba1dacf97310",
+        "position": "issue/comments#7"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "POST",
+      "path": "/api/v1/auth/logout",
+      "status": 200
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 401,
+      "detail": "a valid personal access key is required"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "no bearer",
+      "method": "POST",
+      "path": "/api/v1/auth/session",
+      "status": 200,
+      "signed_in": "alice"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_dd1a3eb6bd854d73afdb732690887f77",
+        "conversation_id": "705f50ea-5a0e-4d84-bef3-ba1dacf97310",
+        "position": "issue/comments#7"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "GET",
+      "path": "/api/v1/business-modules/mod_43e920eb90db4676a5d8a74846b10018/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_7c2b5a2a66fc4fff8aab12ebb735a7e1",
+        "conversation_id": null,
+        "position": "issue/details"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "bob",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_dd1a3eb6bd854d73afdb732690887f77",
+        "conversation_id": null,
+        "position": "issue/history"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "bob",
+      "method": "GET",
+      "path": "/api/v1/business-modules/mod_43e920eb90db4676a5d8a74846b10018/location?project=studio%2Fgame",
+      "status": 200,
+      "location": null,
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_dd1a3eb6bd854d73afdb732690887f77",
+        "conversation_id": "705f50ea-5a0e-4d84-bef3-ba1dacf97310",
+        "position": "issue/comments#12"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "alice",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_dd1a3eb6bd854d73afdb732690887f77",
+        "conversation_id": "705f50ea-5a0e-4d84-bef3-ba1dacf97310",
+        "position": "issue/comments#12"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_switch_module_reopen_and_switch_accounts",
+      "actor": "bob",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_dd1a3eb6bd854d73afdb732690887f77",
+        "conversation_id": null,
+        "position": "issue/history"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_location_rechecks_issue_ancestors_and_module",
+      "actor": "session-4",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_526da68354bb40b0813f881d6080141d",
+        "conversation_id": null,
+        "position": "issue/design#private-anchor"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_location_rechecks_issue_ancestors_and_module",
+      "actor": "session-4",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": null,
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_location_rechecks_issue_ancestors_and_module",
+      "actor": "session-4",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 403,
+      "detail": "no access to document: doc_abe6fa8dd36149c9a911385abb495685"
+    },
+    {
+      "test": "test_location_rechecks_issue_ancestors_and_module",
+      "actor": "session-4",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_526da68354bb40b0813f881d6080141d",
+        "conversation_id": null,
+        "position": "issue/design#private-anchor"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_location_rechecks_issue_ancestors_and_module",
+      "actor": "session-4",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": null,
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_location_rechecks_issue_ancestors_and_module",
+      "actor": "session-4",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 404,
+      "detail": "issue not found in module"
+    },
+    {
+      "test": "test_location_rechecks_issue_ancestors_and_module",
+      "actor": "session-4",
+      "method": "GET",
+      "path": "/api/v1/business-modules/mod_3068e30dfffa405b91833fbabd395eec/location?project=studio%2Fgame",
+      "status": 200,
+      "location": null,
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_default_module_isolation_and_legacy_actor_header",
+      "actor": "session-5",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_b4ac4262863046958bb77599def529c9",
+        "conversation_id": null,
+        "position": "issue/body"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_default_module_isolation_and_legacy_actor_header",
+      "actor": "no bearer",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 401,
+      "detail": "authenticated account required"
+    },
+    {
+      "test": "test_default_module_isolation_and_legacy_actor_header",
+      "actor": "session-6",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": null,
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_default_module_isolation_and_legacy_actor_header",
+      "actor": "session-6",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 404,
+      "detail": "issues object not found: iss_b4ac4262863046958bb77599def529c9"
+    },
+    {
+      "test": "test_default_module_isolation_and_legacy_actor_header",
+      "actor": "session-7",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 403,
+      "detail": "viewer cannot modify content"
+    },
+    {
+      "test": "test_default_module_isolation_and_legacy_actor_header",
+      "actor": "session-5",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 404,
+      "detail": "conversation unavailable"
+    },
+    {
+      "test": "test_default_module_isolation_and_legacy_actor_header",
+      "actor": "session-5",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_b4ac4262863046958bb77599def529c9",
+        "conversation_id": null,
+        "position": "issue/body"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_default_module_isolation_and_legacy_actor_header",
+      "actor": "session-6",
+      "method": "PUT",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": null,
+        "conversation_id": null,
+        "position": "module/overview"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_default_module_isolation_and_legacy_actor_header",
+      "actor": "session-6",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": null,
+        "conversation_id": null,
+        "position": "module/overview"
+      },
+      "cache_control": "private, no-store"
+    },
+    {
+      "test": "test_default_module_isolation_and_legacy_actor_header",
+      "actor": "session-5",
+      "method": "GET",
+      "path": "/api/v1/business-modules/default/location?project=studio%2Fgame",
+      "status": 200,
+      "location": {
+        "issue_id": "iss_b4ac4262863046958bb77599def529c9",
+        "conversation_id": null,
+        "position": "issue/body"
+      },
+      "cache_control": "private, no-store"
+    }
+  ],
+  "verification": {
+    "cwd": "customizations/components/tianxuan/server",
+    "command": "python -B -X utf8 -m pytest -p no:cacheprovider --basetemp=.c04-candidate -q test_module_locations.py test_module_issues.py test_business_modules.py test_tool_receipts.py test_migration_api.py test_issue_ancestor_acl.py test_api_session.py test_scope_idempotency.py test_work_management.py test_api_auth_mode.py test_workspace_conversations.py",
+    "pytest_summary": "106 passed, 1 warning in 30.12s",
+    "warning": "Starlette TestClient httpx deprecation",
+    "exit_code": 0,
+    "ruff_check": "All checks passed!",
+    "ruff_format": "4 files already formatted",
+    "mypy": "Success: no issues found in 4 source files"
+  },
+  "main_integration": {
+    "main": "82adeffcaf7ebcf9a82c742176cbd9e4a2ad6a22",
+    "worker_base": "62b3f5ec7e10b65409466615a4f46b9f41ba7389",
+    "worker_receipt_blob": "c7be8499edef4120aa57ca4b73c4be982ffa2433",
+    "original_and_integrated_blobs": {
+      "customizations/components/tianxuan/server/api.py": {
+        "base": "e43c56805325ac31a9e1114e3040442966cf8a3a",
+        "main": "9e9001526b0324221a63ec979728970b3f7047e1",
+        "worker": "16e6d2850a6b7df1e8a99f91eb27c0cb3538f9d0",
+        "integrated": "554f63edaf6e18197304f7420e701aba17d58039"
+      },
+      "customizations/components/tianxuan/server/tianxuan_core.py": {
+        "base": "8fc2dd1d8713742c71b66f27a287bfd2d59710f2",
+        "main": "295c9bd992ed04a4f0fcb548d960d44f05fd0704",
+        "worker": "5018cafaa3ecb1fbc31428e43527a6b530ea06fe",
+        "integrated": "28a86683cea7084bce2cb51fe0be680f9e833435"
+      }
+    },
+    "final_artifacts": {
+      "customizations/components/tianxuan/server/api.py": "554f63edaf6e18197304f7420e701aba17d58039",
+      "customizations/components/tianxuan/server/schemas.py": "af3db9f607d38f14dffd967af495127a548e332c",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "28a86683cea7084bce2cb51fe0be680f9e833435",
+      "customizations/components/tianxuan/server/test_module_locations.py": "9887e188a69789925c96a4f6e020b7ab69d0dea7",
+      "design-docs/gonggong-ai-workbench-c04.md": "a4444beaf475e1f71a615802b840118c1edda5ca"
+    },
+    "verification": "已和已验收的 C03 合并，核对资产与位置两张表以及两组路由。Python 3.12.14 上模块位置、共享资产、工单、模块与原生接口 27 项通过，Ruff 与 git diff --check 通过。",
+    "observed_at": "2026-11-21T07:46:00.432352+00:00"
+  }
+}
