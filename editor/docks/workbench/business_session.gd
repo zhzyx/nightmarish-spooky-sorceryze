@@ -215,6 +215,14 @@ class DocumentView extends AcceptDialog:
 	var reference := {}
 	var ranges: Array[Vector2i] = []
 	var generation := 0
+	var create := Button.new()
+	var edit := Button.new()
+	var composer := ConfirmationDialog.new()
+	var draft_title := LineEdit.new()
+	var draft_body := TextEdit.new()
+	var draft_status := Label.new()
+	var editing := {}
+	var call_id := ""
 
 	func _ready() -> void:
 		title = "设计文档"
@@ -225,6 +233,16 @@ class DocumentView extends AcceptDialog:
 		documents.custom_minimum_size.y = 95 * EditorInterface.get_editor_scale()
 		documents.item_selected.connect(_select_document)
 		box.add_child(documents)
+		var actions := HBoxContainer.new()
+		box.add_child(actions)
+		create.text = "新建设计"
+		create.pressed.connect(_compose.bind(false))
+		actions.add_child(create)
+		edit.text = "编辑正文"
+		edit.disabled = true
+		edit.pressed.connect(_compose.bind(true))
+		actions.add_child(edit)
+		_setup_composer()
 		status.name = "DocumentStatus"
 		box.add_child(status)
 		paragraphs.name = "DocumentParagraph"
@@ -239,7 +257,111 @@ class DocumentView extends AcceptDialog:
 		get_ok_button().text = "关闭"
 		session.identity_changed.connect(reset_view)
 
+	func _setup_composer() -> void:
+		composer.dialog_hide_on_ok = false
+		composer.get_ok_button().text = "保存"
+		composer.get_cancel_button().text = "取消"
+		composer.confirmed.connect(_save_draft)
+		composer.canceled.connect(_clear_draft)
+		add_child(composer)
+		var fields := VBoxContainer.new()
+		fields.custom_minimum_size = Vector2(480, 310) * EditorInterface.get_editor_scale()
+		composer.add_child(fields)
+		draft_title.placeholder_text = "文档标题"
+		fields.add_child(draft_title)
+		draft_body.placeholder_text = "编写设计正文，使用空行分段"
+		draft_body.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+		draft_body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		fields.add_child(draft_body)
+		draft_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		fields.add_child(draft_status)
+
+	func _clear_draft() -> void:
+		composer.hide()
+		draft_title.clear()
+		draft_body.clear()
+		draft_status.text = ""
+		editing.clear()
+		call_id = ""
+
+	func _compose(existing: bool) -> void:
+		if session.get_identity().is_empty() or (existing and reference.is_empty()):
+			return
+		_clear_draft()
+		editing = reference.duplicate() if existing else {}
+		call_id = Crypto.new().generate_random_bytes(16).hex_encode()
+		composer.title = "编辑正文 · v%d" % editing.version if existing else "新建设计"
+		composer.get_ok_button().disabled = false
+		draft_title.visible = not existing
+		draft_title.editable = true
+		draft_body.editable = true
+		draft_body.text = body.text if existing else ""
+		composer.popup_centered()
+		if existing:
+			draft_body.grab_focus()
+		else:
+			draft_title.grab_focus()
+
+	func _save_draft() -> void:
+		if call_id.is_empty() or composer.get_ok_button().disabled:
+			return
+		if editing.is_empty() and draft_title.text.strip_edges().is_empty():
+			draft_status.text = "请填写文档标题。"
+			return
+		var attempt := call_id
+		var payload := {"body_md": draft_body.text, "call_id": call_id}
+		var method := HTTPClient.METHOD_POST
+		var route := "/api/v1/docs"
+		if editing.is_empty():
+			payload.title = draft_title.text.strip_edges()
+		else:
+			method = HTTPClient.METHOD_PATCH
+			route += "/" + str(editing.document_id).uri_encode()
+			payload.expected_version = editing.version
+		composer.get_ok_button().disabled = true
+		draft_title.editable = false
+		draft_body.editable = false
+		draft_status.text = "正在保存…"
+		var reply: Dictionary = await session.api_request(method, route, payload)
+		if attempt != call_id:
+			return
+		composer.get_ok_button().disabled = false
+		if reply.status == 0 or reply.status >= 500:
+			draft_status.text = "尚未收到保存回执。再次点击保存可核对此次提交。"
+			return
+		if reply.status != 200:
+			draft_title.editable = true
+			draft_body.editable = true
+			call_id = Crypto.new().generate_random_bytes(16).hex_encode()
+			draft_status.text = "保存失败，请检查文档权限。" if reply.status == 403 else "保存失败（%d）。草稿已保留。" % reply.status
+			if reply.status == 409:
+				draft_status.text = "文档修订发生冲突。请复制草稿，重开最新修订再编辑。"
+			return
+		var saved: Dictionary = reply.data
+		if str(saved.get("id", "")).is_empty() or int(saved.get("version", 0)) < 1:
+			draft_status.text = "保存回执不完整。再次点击保存可核对此次提交。"
+			return
+		_clear_draft()
+		var row := -1
+		for index in documents.item_count:
+			if documents.get_item_metadata(index).id == saved.id:
+				row = index
+				break
+		row = _document_row(saved, row)
+		documents.select(row)
+		await open_document(saved.id, int(saved.version), 1)
+
+	func _document_row(item: Dictionary, index: int = -1) -> int:
+		var label := "%s · v%d · %s" % [item.title, item.version, item.id]
+		if index == -1:
+			index = documents.add_item(label)
+		else:
+			documents.set_item_text(index, label)
+		documents.set_item_metadata(index, {"id": str(item.id), "version": int(item.version)})
+		return index
+
 	func _clear_body() -> void:
+		edit.disabled = true
 		reference.clear()
 		body.clear()
 		ranges.clear()
@@ -248,6 +370,8 @@ class DocumentView extends AcceptDialog:
 
 	func reset_view() -> void:
 		generation += 1
+		_clear_draft()
+		create.disabled = session.get_identity().is_empty()
 		documents.clear()
 		_clear_body()
 		status.text = ""
@@ -268,8 +392,7 @@ class DocumentView extends AcceptDialog:
 			status.text = "无法读取此账号的文档。"
 			return
 		for item in result.data.docs:
-			var row := documents.add_item("%s · v%d · %s" % [item.title, item.version, item.id])
-			documents.set_item_metadata(row, {"id": str(item.id), "version": int(item.version)})
+			_document_row(item)
 		status.text = "请选择文档。" if documents.item_count else "此账号没有可读取的文档。"
 
 	func _select_document(index: int) -> void:
@@ -309,7 +432,8 @@ class DocumentView extends AcceptDialog:
 			status.text = "此修订没有指定段落。"
 			return
 		reference = {"document_id": id, "version": version, "paragraph": 0}
-		status.text = "%s · v%d" % [id,version]
+		edit.disabled = false
+		status.text = "%s · v%d · 作者 %s" % [id, version, reply.data.get("author", "未知")]
 		paragraphs.disabled = ranges.is_empty()
 		if not ranges.is_empty():
 			paragraphs.select(paragraph - 1)
