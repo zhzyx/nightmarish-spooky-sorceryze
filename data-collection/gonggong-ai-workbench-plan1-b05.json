@@ -1,0 +1,101 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-b05",
+  "issue_number": 1827,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1827",
+  "source_baseline": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+  "observed_at": "2026-11-21T04:44:31.9496894+00:00",
+  "product_files_sha256": {
+    "samples/gonggong-workbench/fixtures/b05/sample.json": "8f9da1789c13229403edac11fe1e2539cd133c5a26b707a251c9bcdf262c43b3",
+    "samples/gonggong-workbench/fixtures/b05/sample.py": "a4547f047a1bfdb2f1a613a698b42df5fefa4eefeaac4a5acc3e7b85a8e08190"
+  },
+  "command": "py -B -X utf8 samples/gonggong-workbench/fixtures/b05/sample.py",
+  "runtime": "Python 3.14.3",
+  "exit_code": 0,
+  "resets": 2,
+  "runs": [
+    {
+      "tenant": "ten_ed5bf73434ef47c899abd66e0486bf93",
+      "users": {
+        "movement": "usr_d9c1fbed3fb3482c88f1268a0fb74cf0",
+        "animation": "usr_c6731d2099424607bbf10c27accd18e5"
+      },
+      "modules": {
+        "character-movement": {
+          "actor": "usr_d9c1fbed3fb3482c88f1268a0fb74cf0",
+          "requirement": "doc_d11223e83e99465197bd8f01dd9c1be6",
+          "issue": "iss_37ef45d040db4e53a7823e50833b97ab",
+          "number": 1,
+          "revision": "00fa0632be8dd12c834a919562233fb8ed4a737dc43dcdfa69999d978811c6b6"
+        },
+        "character-animation": {
+          "actor": "usr_c6731d2099424607bbf10c27accd18e5",
+          "requirement": "doc_ea2383ef6ee7471f9696255e92490593",
+          "issue": "iss_5e44550efbec4dee95f5d99c6af30dd9",
+          "number": 2,
+          "revision": "a427a4baa9e36b973a35b8bf3572f7a08612a8e9780486c3a995495a6a971620"
+        }
+      },
+      "asset_revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89",
+      "shared_model_reads": {
+        "character-movement": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+        "character-animation": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+      }
+    },
+    {
+      "tenant": "ten_978b39b4ba33431d800ecf1895cd3d36",
+      "users": {
+        "movement": "usr_7dea371f872d42cfaf53bd7fb14e2f67",
+        "animation": "usr_17cddebf567d4a38b2937aac43911891"
+      },
+      "modules": {
+        "character-movement": {
+          "actor": "usr_7dea371f872d42cfaf53bd7fb14e2f67",
+          "requirement": "doc_e5cf08f8c0154da1bdc1eb3918577f4a",
+          "issue": "iss_b301dae550b742b18f2146fc44fc0969",
+          "number": 1,
+          "revision": "00fa0632be8dd12c834a919562233fb8ed4a737dc43dcdfa69999d978811c6b6"
+        },
+        "character-animation": {
+          "actor": "usr_17cddebf567d4a38b2937aac43911891",
+          "requirement": "doc_82a188c68f7642359bc2758eb3b39502",
+          "issue": "iss_c5a0289430df43e3aff213d671f21571",
+          "number": 2,
+          "revision": "a427a4baa9e36b973a35b8bf3572f7a08612a8e9780486c3a995495a6a971620"
+        }
+      },
+      "asset_revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89",
+      "shared_model_reads": {
+        "character-movement": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+        "character-animation": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+      }
+    },
+    {
+      "tenant": "ten_eeda00edf4d94a5c92a4da205bbe0e8c",
+      "users": {
+        "movement": "usr_b190cc2a00fe416590e75d54cec57bc2",
+        "animation": "usr_5ce0584882d44342900ca523e25f2dc5"
+      },
+      "modules": {
+        "character-movement": {
+          "actor": "usr_b190cc2a00fe416590e75d54cec57bc2",
+          "requirement": "doc_f991e517f7cf44c98d341065b2aead3b",
+          "issue": "iss_50855b268ed1491b883bf2ae4f714b27",
+          "number": 1,
+          "revision": "00fa0632be8dd12c834a919562233fb8ed4a737dc43dcdfa69999d978811c6b6"
+        },
+        "character-animation": {
+          "actor": "usr_5ce0584882d44342900ca523e25f2dc5",
+          "requirement": "doc_12172f32b7da4e48952ea6645564a876",
+          "issue": "iss_a729a26bd0464676ad2ba1112e01e2b3",
+          "number": 2,
+          "revision": "a427a4baa9e36b973a35b8bf3572f7a08612a8e9780486c3a995495a6a971620"
+        }
+      },
+      "asset_revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89",
+      "shared_model_reads": {
+        "character-movement": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+        "character-animation": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+      }
+    }
+  ]
+}
