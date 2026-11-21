@@ -29,9 +29,12 @@
 /**************************************************************************/
 
 #include "core/object/callable_mp.h"
+#include "core/object/class_db.h"
+#include "core/object/script_language.h"
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/dock_tab_container.h"
 #include "editor/docks/editor_dock_manager.h"
+#include "editor/docks/workbench/BusinessSession.gen.h"
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
 #include "editor/settings/editor_command_palette.h"
@@ -67,6 +70,24 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	pExpand->set_text(TTR("Expand AI Workbench"));
 	pExpand->connect(SNAME("pressed"), callable_mp(this, &AIChatDock::ExpandWorkbenchSidebar));
 	pSidebarLayout->add_child(pExpand);
+	// The editor owns this session for the lifetime of the sidebar.
+	Ref<Script> refSessionScript = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
+	if (refSessionScript.is_valid())
+	{
+		String strSessionSource;
+		for (int nChunk = 0; daqian_business_session[nChunk]; nChunk++)
+		{
+			strSessionSource += String::utf8(daqian_business_session[nChunk]);
+		}
+		refSessionScript->set_source_code(strSessionSource);
+		if (refSessionScript->reload() == OK)
+		{
+			VBoxContainer *pSession = memnew(VBoxContainer);
+			pSession->set_name("WorkbenchBusinessSession");
+			pSession->set_script(refSessionScript);
+			pSidebarLayout->add_child(pSession);
+		}
+	}
 	Button *pClose = memnew(Button);
 	pClose->set_text(TTR("Close AI Workbench"));
 	pClose->set_name("CloseWorkbench");
