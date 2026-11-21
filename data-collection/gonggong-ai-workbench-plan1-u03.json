@@ -1,0 +1,611 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-u03",
+  "issue_number": 1807,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1807",
+  "observed_at": "2026-11-21T12:30:31.032036+00:00",
+  "source_baseline": "217cd6c7641af1b6bddeed284599992d9f800a91",
+  "source_sha256": {
+    "editor/editor_node.cpp": "de0e8cb0304add649ff6f235ba10750be872c0c1038f0e900dda57d9cd13f673",
+    "editor/docks/ai_chat_dock.h": "860a85430fc1208bad99c4f68882bf71ce81ea65f4026bef14ee12ed7c07ce59",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "e728711ca98fa3fe5fc8a867902a171d1383276e145fb2acc71f319798cd725c",
+    "tests/editor/ai_chat_tab_order.gd": "acd7c54c614620b40ddc1f003cb6f175f4b4c585a7ea67ab6ec1927a536de797",
+    "tests/editor/run_ai_chat_tab_order.py": "c5c2ba7f3598b67b40f59712a9a3645a3d6367532d836b1d8cf245d850c0b1d7",
+    "design-docs/gonggong-ai-workbench-u03.md": "46006fe6194eb5127b076270114759f7928d58feabcf679b0a282560d63d7466"
+  },
+  "dependency": {
+    "issue_number": 1869,
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1869"
+  },
+  "before": {
+    "host": "macOS, PR #1900",
+    "entry": "AI Chat main-screen tab",
+    "screens": [
+      "2D",
+      "3D",
+      "Script"
+    ],
+    "same_instance": true,
+    "chat_input_focus_count": 0,
+    "readback": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1807#issuecomment-7059217521"
+  },
+  "candidate": {
+    "platform": "Windows x86_64",
+    "compiler": "Visual Studio 14.5, Windows SDK 10.0.26100.0",
+    "scons": "4.11.1",
+    "python": "3.14.3",
+    "build_command": "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<read-only shared SCons cache> cache_limit=0 --cache-readonly -j14",
+    "sdk_verification": "All six WebView2 files verified against thirdparty/webview2/manifest.json before use. The x64 loader and both Tianshu packages were placed alongside the editor.",
+    "method": "Reused verified native-input tracing in godot-build-placement / trace-native-consumer revision 20. The private worktree used the shared cache in read-only mode. Its final build compiled editor/editor_node.cpp and relinked the executable.",
+    "initial_build_exit": 0,
+    "final_build_exit": 0,
+    "sha256": {
+      "godot.windows.editor.x86_64.exe": "0ddf046988be405094677fca900edfad093915346e59e744beaea75d3eac6199",
+      "godot.windows.editor.x86_64.console.exe": "d268524e26846e206cb5d585fd81c23e79f420480573ae9e02da13120c966441",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914",
+      "u03-build.log": "8abf71388110528cca020f111cfaa6f9a8e40308ed4cd82eba6a68ffc1c12c52",
+      "u03-final-build.log": "a50992bd8a159049556375e70be48654901156fb76eb660fa312ec85d8438f78"
+    }
+  },
+  "targeted_verification": {
+    "command": "py -X utf8 tests/editor/run_ai_chat_tab_order.py --godot bin/godot.windows.editor.x86_64.exe --report bin/u03-button.json --workbench-button",
+    "environment": "Paths resolved in checkout, working directory switched to system TEMP and inherited GONGGONG_WORKSPACE cleared. Private editor and project per test run, six separate headless editing processes.",
+    "assertions": "Exactly one title-bar workbench button and sidebar. Dispatch motion and left-click through the viewport to the button at its visible position. Keep original main screen selected and reuse sidebar and composer. Move focus away before repeat; check original composer.has_focus() after every click.",
+    "exit_code": 0,
+    "click_count": 36,
+    "focused_count": 36,
+    "raw_report_sha256": "ae3d4b459ad116b7b69ab2bfa1b2450fb6d7eef4015c9542c9735fc2142d9529",
+    "report": {
+      "state": "passed",
+      "mode": "headless",
+      "binary_sha256": "0ddf046988be405094677fca900edfad093915346e59e744beaea75d3eac6199",
+      "phases": [
+        {
+          "current": 0,
+          "initial_selected_key": "AIChatMainScreen",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "initial",
+          "slot": 11,
+          "title_button": [
+            {
+              "button": 386429638544,
+              "composer": 618223668461,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623340719625
+            },
+            {
+              "button": 386429638544,
+              "composer": 618223668461,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623340719625
+            },
+            {
+              "button": 386429638544,
+              "composer": 618223668461,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623340719625
+            },
+            {
+              "button": 386429638544,
+              "composer": 618223668461,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623340719625
+            },
+            {
+              "button": 386429638544,
+              "composer": 618223668461,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623340719625
+            },
+            {
+              "button": 386429638544,
+              "composer": 618223668461,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623340719625
+            }
+          ],
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        },
+        {
+          "current": 0,
+          "initial_selected_key": "2D",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "legacy_maliang_last",
+          "slot": 11,
+          "title_button": [
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            }
+          ],
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        },
+        {
+          "current": 0,
+          "initial_selected_key": "AINativeMainScreen",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "legacy_maliang_selected",
+          "slot": 11,
+          "title_button": [
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            }
+          ],
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        },
+        {
+          "current": 0,
+          "initial_selected_key": "2D",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "pre_daqian_layout",
+          "slot": 11,
+          "title_button": [
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            }
+          ],
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        },
+        {
+          "current": 0,
+          "initial_selected_key": "2D",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "pre_maliang_layout",
+          "slot": 11,
+          "title_button": [
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            }
+          ],
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        },
+        {
+          "current": 0,
+          "initial_selected_key": "Script",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "restart",
+          "slot": 11,
+          "title_button": [
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "2D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "3D",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": false,
+              "sidebar": 623273610761
+            },
+            {
+              "button": 386362529680,
+              "composer": 618156559597,
+              "from": "Script",
+              "has_focus": true,
+              "repeat": true,
+              "sidebar": 623273610761
+            }
+          ],
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        }
+      ],
+      "test_sha256": {
+        "run_ai_chat_tab_order.py": "c5c2ba7f3598b67b40f59712a9a3645a3d6367532d836b1d8cf245d850c0b1d7",
+        "ai_chat_tab_order.gd": "acd7c54c614620b40ddc1f003cb6f175f4b4c585a7ea67ab6ec1927a536de797"
+      }
+    }
+  },
+  "regression": {
+    "workbench_command": {
+      "runner_option": "--workbench-command",
+      "exit_code": 0,
+      "state": "passed",
+      "raw_report_sha256": "f75430724ac66aa230ac8f5a2192548d3ccabe1421b7e8764e6747fe65b262a9",
+      "phases": [
+        {
+          "phase": "initial",
+          "invocations": 9,
+          "round_trip_rows": 3
+        },
+        {
+          "phase": "legacy_maliang_last",
+          "invocations": 9,
+          "round_trip_rows": 3
+        },
+        {
+          "phase": "legacy_maliang_selected",
+          "invocations": 9,
+          "round_trip_rows": 3
+        },
+        {
+          "phase": "pre_daqian_layout",
+          "invocations": 9,
+          "round_trip_rows": 3
+        },
+        {
+          "phase": "pre_maliang_layout",
+          "invocations": 9,
+          "round_trip_rows": 3
+        },
+        {
+          "phase": "restart",
+          "invocations": 9,
+          "round_trip_rows": 3
+        }
+      ]
+    },
+    "native": {
+      "command": "godot.windows.editor.x86_64.console.exe --headless --test --test-case=*[AIChat]*",
+      "environment": "Private engine copy and sanitized_environment from tests/editor, source checkout as cwd for the native fixtures.",
+      "exit_code": 0,
+      "doctest": [
+        "[doctest] test cases:  115 |  115 passed | 0 failed | 1486 skipped",
+        "[doctest] assertions: 1909 | 1909 passed | 0 failed |",
+        "[doctest] Status: SUCCESS!"
+      ],
+      "diagnostics": [
+        "ERROR: Object '<Object#51287949831>' was freed or unreferenced while a signal is being emitted from it. Try connecting to the signal using 'CONNECT_DEFERRED' flag, or use queue_free() to free the object (if this object is a Node) to avoid this error and potential crashes.",
+        "ERROR: Object '<Object#58166608352>' was freed or unreferenced while a signal is being emitted from it. Try connecting to the signal using 'CONNECT_DEFERRED' flag, or use queue_free() to free the object (if this object is a Node) to avoid this error and potential crashes.",
+        "ERROR: EditorSettings not instantiated yet when getting setting \"interface/theme/base_spacing\"."
+      ],
+      "log_sha256": "529daeb2d775dc6816111151938d5f5344c9f49ac9659c13ea4c70df21580729"
+    }
+  },
+  "verification_scope": "Exact Windows editor and headless viewport input. macOS record describes the earlier baseline. PR, main and GitHub Issue state belong to the integration owner."
+}

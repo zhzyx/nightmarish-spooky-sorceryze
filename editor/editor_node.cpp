@@ -162,6 +162,7 @@
 #include "scene/2d/node_2d.h"
 #include "scene/3d/bone_attachment_3d.h"
 #include "scene/animation/animation_tree.h"
+#include "scene/gui/button.h"
 #include "scene/gui/color_picker.h"
 #include "scene/gui/control.h"
 #include "scene/gui/dialogs.h"
@@ -9365,6 +9366,13 @@ EditorNode::EditorNode() {
 	right_menu_hb->set_mouse_filter(Control::MOUSE_FILTER_STOP);
 	title_bar->add_child(right_menu_hb);
 
+	Button *pWorkbenchButton = memnew(Button(TTRC("AI Workbench")));
+	pWorkbenchButton->set_name("OpenAIWorkbench");
+	pWorkbenchButton->set_flat(true);
+	pWorkbenchButton->set_tooltip_text(TTRC("Open AI Workbench"));
+	pWorkbenchButton->set_focus_mode(Control::FOCUS_ACCESSIBILITY);
+	right_menu_hb->add_child(pWorkbenchButton);
+
 	renderer = memnew(OptionButton);
 	renderer->set_flat(true);
 	renderer->set_theme_type_variation("TopBarOptionButton");
@@ -9623,7 +9631,7 @@ EditorNode::EditorNode() {
 	// AI Chat is registered first so it is the opening main-screen tab.
 	AIChatDock *pWorkbenchDock = memnew(AIChatDock);
 	editor_dock_manager->add_dock(pWorkbenchDock);
-	pWorkbenchDock->RegisterWorkbenchSidebar(command_palette);
+	pWorkbenchDock->RegisterWorkbenchSidebar(command_palette, pWorkbenchButton);
 	editor_dock_manager->add_dock(create_daqian_dock());
 	editor_dock_manager->add_dock(CreateWebPlatformDock());
 #ifdef MACOS_ENABLED
