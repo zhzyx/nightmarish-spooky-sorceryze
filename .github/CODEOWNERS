@@ -549,6 +549,7 @@
 /releases/                                    @zhzyx
 /samples/                                     @zhzyx
 /samples/ainative-workbench/test_unified_settings.py @zhzyx @godotengine/buildsystem
+/samples/gonggong-workbench/fixtures/b05/sample.py @zhzyx @godotengine/buildsystem
 /samples/game-config/tests/                    @zhzyx @godotengine/tests
 /samples/game-config/tests/*.py                @zhzyx @godotengine/tests @godotengine/buildsystem
 /tools/                                       @zhzyx @godotengine/buildsystem
