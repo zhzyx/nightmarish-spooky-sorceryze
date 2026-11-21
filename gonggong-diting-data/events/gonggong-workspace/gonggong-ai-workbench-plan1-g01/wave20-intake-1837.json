@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g01",
+  "event_id": "wave20-intake-1837",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1837",
+  "occurred_at": "2026-11-21T04:37:14.850771+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1837,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T04:37:12Z",
+    "accepted_dependencies": {
+      "1853": "f90a589d1be50326e58c097ab528bcae13e5fac7"
+    },
+    "title": "[方案一 G01] 盘点迁移源和开放 PR"
+  },
+  "evidence_refs": [],
+  "sha256": "4b5102ef0a722738ac6bb2a6f1c4281d7142e48563dbda0a9b12cfb3d2f346f7"
+}

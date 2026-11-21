@@ -1272,6 +1272,8 @@
 
 ### G01
 
+[交付清单与验证](gonggong-ai-workbench-g01.md)
+
 **盘点迁移源和开放 PR** · [G01 #1837](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1837)
 
 在只读快照上列出对象规模、引用、开放 PR、LFS 及子模块使用情况。

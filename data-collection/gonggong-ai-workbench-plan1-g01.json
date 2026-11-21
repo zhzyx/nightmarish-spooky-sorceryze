@@ -1,0 +1,74 @@
+{
+  "issue_number": 1837,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1837",
+  "request_id": "gonggong-ai-workbench-plan1-g01",
+  "source_baseline": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+  "artifacts": {
+    "design-docs/gonggong-ai-workbench-g01.md": "af40184ba64626ecd7bde3afdd6cbca141b47a0c",
+    "data-collection/gonggong-ai-workbench-g01-inventory.json": "e9960f64d62e8900408f949852c7c168725b664f"
+  },
+  "review": "独立逐项核对只读镜像 1,640 个引用、54,473 个可达对象、15,423 棵树、4,824 个小 blob 和五个开放 PR 的候选、作者及去向。",
+  "verification": {
+    "checked": {
+      "observed_at": "2026-11-21T04:43:01.384169+00:00",
+      "main": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+      "ref_count": 1640,
+      "object_counts": {
+        "commit": 2656,
+        "tree": 15423,
+        "blob": 36394
+      },
+      "unpacked_bytes": {
+        "commit": 2260742,
+        "tree": 88567823,
+        "blob": 761676861
+      },
+      "open_pulls": [
+        {
+          "number": 1661,
+          "candidate": "86fe0140398fa4a51fb37ae13432054979750889",
+          "author": "Sail-Li",
+          "base": "main",
+          "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1661",
+          "disposition": "Retain original GitHub review and author. On merge archive the merge commit and synchronize it once; on close archive the original terminal decision."
+        },
+        {
+          "number": 1245,
+          "candidate": "30ae3066535e5b0edbdcb3d8ded87591b6526317",
+          "author": "Sail-Li",
+          "base": "main",
+          "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1245",
+          "disposition": "Retain original GitHub review and author. On merge archive the merge commit and synchronize it once; on close archive the original terminal decision."
+        },
+        {
+          "number": 1234,
+          "candidate": "40bfbdc81916125a293cfb2e2ec01dc998fdb7d6",
+          "author": "Sail-Li",
+          "base": "main",
+          "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1234",
+          "disposition": "Retain original GitHub review and author. On merge archive the merge commit and synchronize it once; on close archive the original terminal decision."
+        },
+        {
+          "number": 1216,
+          "candidate": "148c99da417903b7b9d9599057cc3818c1adfb26",
+          "author": "Sail-Li",
+          "base": "main",
+          "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1216",
+          "disposition": "Retain original GitHub review and author. On merge archive the merge commit and synchronize it once; on close archive the original terminal decision."
+        },
+        {
+          "number": 645,
+          "candidate": "0b20b7e1b27dd8555448308c17d9e5a77b8db3cf",
+          "author": "kaiyunxue",
+          "base": "main",
+          "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/645",
+          "disposition": "Retain original GitHub review and author. On merge archive the merge commit and synchronize it once; on close archive the original terminal decision."
+        }
+      ],
+      "gitlinks": [],
+      "lfs_v1_pointer_blobs": []
+    },
+    "source_links_verified": 3
+  },
+  "observed_at": "2026-11-21T05:37:03.691808+00:00"
+}
