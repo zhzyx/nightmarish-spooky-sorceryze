@@ -9,6 +9,28 @@ from git_archive import git, verify_bundle_relations
 from importer import import_inventory
 
 
+def verify_captured_refs(mirror, bundle, history):
+    refs = dict(
+        line.split(" ", 1) for line in git(mirror, "for-each-ref", "--format=%(refname) %(objectname)").splitlines()
+    )
+    archived_refs = dict(
+        line.split(" ", 1)[::-1] for line in git(mirror, "bundle", "list-heads", str(bundle)).splitlines()
+    )
+    archived_head = archived_refs.pop("HEAD", None)
+    mirror_head = git(mirror, "rev-parse", "--revs-only", "HEAD") or None
+    if refs != archived_refs or refs != history["refs"] or not (archived_head == mirror_head == history["head"]):
+        expected = history["refs"]
+        names = sorted(set(refs) | set(archived_refs) | set(expected))
+        differences = {
+            name: {"report": expected.get(name), "mirror": refs.get(name), "bundle": archived_refs.get(name)}
+            for name in names
+            if not (refs.get(name) == archived_refs.get(name) == expected.get(name))
+        }
+        if not (archived_head == mirror_head == history["head"]):
+            differences["HEAD"] = {"report": history["head"], "mirror": mirror_head, "bundle": archived_head}
+        raise ValueError("Git mirror, report and bundle differ: " + json.dumps(differences, sort_keys=True))
+
+
 def archive(inventory, git_dir, attachment_dir, database, tenant, actor):
     manifest = json.loads(inventory.read_bytes())
     mirror = git_dir / "archive.git"
@@ -21,15 +43,7 @@ def archive(inventory, git_dir, attachment_dir, database, tenant, actor):
         raise ValueError("Inventory and Git mirror have different sources")
     bundle = (git_dir / "history.bundle").resolve()
     git(mirror, "bundle", "verify", str(bundle))
-    refs = dict(
-        line.split(" ", 1) for line in git(mirror, "for-each-ref", "--format=%(refname) %(objectname)").splitlines()
-    )
-    archived_refs = dict(
-        line.split(" ", 1)[::-1] for line in git(mirror, "bundle", "list-heads", str(bundle)).splitlines()
-    )
-    archived_head = archived_refs.pop("HEAD", None)
-    if refs != archived_refs or refs != history["refs"] or archived_head != history["head"]:
-        raise ValueError("Git mirror, report and bundle differ")
+    verify_captured_refs(mirror, bundle, history)
     revision = manifest["revision"]
     if git(mirror, "rev-parse", "--verify", revision + "^{commit}") != revision:
         raise ValueError("Inventory revision missing from mirror")

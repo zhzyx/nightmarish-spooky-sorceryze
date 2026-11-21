@@ -9,7 +9,7 @@ from pathlib import Path
 
 from git_archive import git
 from inventory import canonical, record_line
-from migration_archive import archive
+from migration_archive import archive, verify_captured_refs
 from migration_status import publish_import, read_import_status
 
 
@@ -25,10 +25,12 @@ def import_git_history(git_dir, database, tenant, actor, project):
     source = match[1]
     if git(mirror, "rev-parse", "--is-shallow-repository") != "false":
         raise ValueError("Full history requires a non-shallow mirror")
-    if git(mirror, "rev-parse", "HEAD") != history["head"]:
+    if git(mirror, "rev-parse", "--revs-only", "HEAD") != history["head"]:
+        verify_captured_refs(mirror, git_dir / "history.bundle", history)
         raise ValueError("Captured HEAD differs from mirror")
     graph = git(mirror, "--no-replace-objects", "rev-list", "--parents", "--all").splitlines()
     if not graph or len(graph) != history["commit_count"]:
+        verify_captured_refs(mirror, git_dir / "history.bundle", history)
         raise ValueError("Reachable commit count differs from capture")
     prefix = f"github:{source}/commit/"
     with tempfile.TemporaryDirectory() as tmp:

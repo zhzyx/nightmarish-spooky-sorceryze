@@ -1,0 +1,26 @@
+{
+  "issue_number": 1804,
+  "scope": "Per-ref mirror / capture report / bundle differences; object-level reporting remains open.",
+  "platform": "macOS arm64",
+  "reviewed_sources": {
+    "customizations/components/tianxuan/migration/migration_archive.py": "15d7c4cc086c86906a4270b144dd4a2d6e10ea1ce53bcd52014d86fd14fec17e",
+    "customizations/components/tianxuan/migration/import_git_history.py": "65ede72340662c0b8face80ea19132a798b403ffa36ab076e98cc55b1efa3292",
+    "customizations/components/tianxuan/migration/test_archive.py": "68a4eb3aafd547659c98f536851bb928f3f5c13d146973b9018c6aa51be5aa21"
+  },
+  "positive": {
+    "refs": 4,
+    "reachable_objects": 1031
+  },
+  "negative_cases": [
+    "missing lightweight tag",
+    "one-byte change on topic",
+    "missing branch with a unique commit",
+    "different HEAD",
+    "deleted current branch"
+  ],
+  "negative_runs": 10,
+  "side_effects": "No destination file created in empty target; prior publication unchanged in populated target.",
+  "review_sha256": "d8c821e5ac6815528fbc95efe13f7859782bfaf853bb06a2f871ce72050d4d58",
+  "request_id": "gonggong-ai-workbench-plan1-g07",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1804"
+}
