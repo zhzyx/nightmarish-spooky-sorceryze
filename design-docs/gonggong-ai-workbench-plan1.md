@@ -92,6 +92,8 @@
 
 ### B07
 
+[交付清单与验证](gonggong-ai-workbench-b07.md)
+
 **建立需求到任务的基线表** · [B07 #1719](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1719)
 
 映射本次决定、旧设计、本次任务和已有候选归属。
