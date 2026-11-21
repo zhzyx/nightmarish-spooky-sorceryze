@@ -1,0 +1,575 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g07",
+  "issue_number": 1804,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1804",
+  "recorded_at": "2026-11-21T15:14:29.921206+00:00",
+  "source_baseline": "217cd6c7641af1b6bddeed284599992d9f800a91",
+  "source_inventory": "data-collection/gonggong-ai-workbench-g01-inventory.json",
+  "candidate_sha256": {
+    "customizations/components/tianxuan/migration/audit_git_history.py": "26633a768291dd2786abf0d02f189ba694c68723e8f29f3800e7cd9cb4367594",
+    "customizations/components/tianxuan/migration/test_audit_git_history.py": "c9d2a1e61dfaca6b3e41cbefaf3b11a4303b81dc162601cc527dbdb7936f5c88",
+    "design-docs/gonggong-ai-workbench-g07.md": "c2c2c49b1f69dbe65b4f90d8fce0e83ba002cf89375ee59c79505422a304b560"
+  },
+  "python": "3.12.14",
+  "git": "git version 2.53.0.windows.3",
+  "frozen_snapshot": {
+    "publication": {
+      "source": "zhzyx/nightmarish-spooky-sorceryze",
+      "source_revision": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+      "records_sha256": "01de10a9fe215b973ad80a3d441f30d235da0f701a2f540af40d633e115e565d",
+      "counts": {
+        "commit": 2656
+      },
+      "binary_count": 2,
+      "catalog_sha256": "e41acb5c48c0770af5b27cdcee2131ff160f0eeb024e7cb9c9a3b72ff9855b23",
+      "module": "migration-902129b46022059293ae8f939f42a5cad98aa6718c9eb5615140e5645e05e38b",
+      "revision": "b83cec0a4dba4b646ca2ef867c783236ef45224436e62f089661c90c1cdee614",
+      "historical_policy": "record_only",
+      "tenant": "migration-validation",
+      "project": "g07-source-snapshot",
+      "published_by": "operator",
+      "published_at": "2026-11-21T12:33:40.893406+00:00",
+      "imported_at": "2026-11-21T12:33:40.879408+00:00"
+    },
+    "inventory_sha256": "b46b2a6a81802722c4769ac61923cd6d2e9f9c80d77ba4ffcb35388ef60735a1",
+    "exported": {
+      "sha256": "dfed406642c27830d71bf19fc91cba4d316d0f161b10bfe63617c5ce17613fac",
+      "size": 150851882
+    },
+    "complete": true,
+    "ref_status_counts": {
+      "matched": 1641
+    },
+    "object_status_counts": {
+      "matched": 54473
+    },
+    "object_types": {
+      "tree": 15423,
+      "blob": 36394,
+      "commit": 2656
+    },
+    "ref_namespaces": {
+      "HEAD": 1,
+      "heads": 683,
+      "pull": 954,
+      "tags": 3
+    },
+    "full_report": "data-collection/gonggong-ai-workbench-g07-integrity.json.gz",
+    "json_sha256": "7ccc99d33852f0f56fe4b62cb6c5e1a5b58e8a968727ceda22947e636210ac7f",
+    "gzip_sha256": "3dc3ce2ea131b1074a83b605c48de2272949f282a43067eb176d734442138cd8",
+    "gzip_bytes": 5242571
+  },
+  "isolated_project_reports": {
+    "copy": {
+      "publication": {
+        "source": "sample/repo",
+        "source_revision": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+        "records_sha256": "21e25d840fd727392191fa5346f0fccd5cb28c6a4499040d226625f56f38bef6",
+        "counts": {
+          "commit": 2
+        },
+        "binary_count": 2,
+        "catalog_sha256": "1c2face07e6dd12435ae47f01e19696bb0f7baa5df497c6cdc0f3bda48906918",
+        "module": "migration-459b15120141c9c2b472d72d8f720c5a65494d6d0c3f60e99c028d883677fe16",
+        "revision": "746ef44ccf3ad99e53c51279e4732dc60b6b2fa03b1db782a03a7495f4253b76",
+        "historical_policy": "record_only",
+        "tenant": "owners",
+        "project": "copy",
+        "published_by": "operator",
+        "published_at": "2026-11-21T12:37:19.451204+00:00",
+        "imported_at": "2026-11-21T12:37:19.438204+00:00"
+      },
+      "inventory_sha256": "18b5e89fc03ebea1e99359be009ba20d77db744b4f1d8f781900dee818c26379",
+      "exported": {
+        "sha256": "5d1135a7985618912fb361e7ea7a7274e4c533a981a29e06795b8b2242ac4ebf",
+        "size": 792
+      },
+      "complete": true,
+      "ref_status_counts": {
+        "matched": 5
+      },
+      "object_status_counts": {
+        "matched": 6
+      },
+      "refs": [
+        {
+          "ref": "HEAD",
+          "source": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "target": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "status": "matched"
+        },
+        {
+          "ref": "refs/heads/main",
+          "source": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "target": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "status": "matched"
+        },
+        {
+          "ref": "refs/heads/topic",
+          "source": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "target": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "status": "matched"
+        },
+        {
+          "ref": "refs/tags/light",
+          "source": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "target": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "status": "matched"
+        },
+        {
+          "ref": "refs/tags/release",
+          "source": "783ddd8a15e635db671e6eafbf1276602e9eba50",
+          "target": "783ddd8a15e635db671e6eafbf1276602e9eba50",
+          "status": "matched"
+        }
+      ],
+      "objects": [
+        {
+          "oid": "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+          "source": {
+            "type": "tree",
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "target": {
+            "type": "tree",
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "70de02c57f50d71fa803db7fe12e1d28fcbfdaa8",
+          "source": {
+            "type": "blob",
+            "size": 9,
+            "sha256": "fe032ba4bd9c85d1c47658590e9daa692aa21b05ef60296db5867c923c1d1f75",
+            "example_name": "data.bin"
+          },
+          "target": {
+            "type": "blob",
+            "size": 9,
+            "sha256": "fe032ba4bd9c85d1c47658590e9daa692aa21b05ef60296db5867c923c1d1f75",
+            "example_name": "data.bin"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "783ddd8a15e635db671e6eafbf1276602e9eba50",
+          "source": {
+            "type": "tag",
+            "size": 137,
+            "sha256": "dc116e4aceb62c64d2ceb6d5ecb55dad76b66fefabbec3d1be7335e66c2b91cf",
+            "example_name": "release"
+          },
+          "target": {
+            "type": "tag",
+            "size": 137,
+            "sha256": "dc116e4aceb62c64d2ceb6d5ecb55dad76b66fefabbec3d1be7335e66c2b91cf",
+            "example_name": "release"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "9c9dc470c61718c10e45342a28289fd8c335334b",
+          "source": {
+            "type": "tree",
+            "size": 36,
+            "sha256": "9a3a7c9cca851c675f602b23564e0fa0eafcf9d07058d462d9a02305818310ff"
+          },
+          "target": {
+            "type": "tree",
+            "size": 36,
+            "sha256": "9a3a7c9cca851c675f602b23564e0fa0eafcf9d07058d462d9a02305818310ff"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "source": {
+            "type": "commit",
+            "size": 167,
+            "sha256": "7f80a756258ad88cc05384399a58079a2ac7865ecf14fc952c083d38ec2ea1bb"
+          },
+          "target": {
+            "type": "commit",
+            "size": 167,
+            "sha256": "7f80a756258ad88cc05384399a58079a2ac7865ecf14fc952c083d38ec2ea1bb"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "source": {
+            "type": "commit",
+            "size": 217,
+            "sha256": "742f3a7b036be1250fda6b707675368b9a3bee6921504a7d9c6feb4807f7a97a"
+          },
+          "target": {
+            "type": "commit",
+            "size": 217,
+            "sha256": "742f3a7b036be1250fda6b707675368b9a3bee6921504a7d9c6feb4807f7a97a"
+          },
+          "status": "matched"
+        }
+      ]
+    },
+    "deleted": {
+      "publication": {
+        "source": "sample/repo",
+        "source_revision": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+        "records_sha256": "21e25d840fd727392191fa5346f0fccd5cb28c6a4499040d226625f56f38bef6",
+        "counts": {
+          "commit": 2
+        },
+        "binary_count": 2,
+        "catalog_sha256": "fc0cd840294c7770308e5a4f8118a8fcfb262642495b538b722a6e93c94fb766",
+        "module": "migration-982c629402de4f90d57c7cd365cbb2392d94113d69cb7f31fac5c1031df71ecf",
+        "revision": "cb25081b6113f617f155c9bf120b0dc103ad068975ac75ae587121d567aabe04",
+        "historical_policy": "record_only",
+        "tenant": "owners",
+        "project": "deleted",
+        "published_by": "operator",
+        "published_at": "2026-11-21T12:37:31.687524+00:00",
+        "imported_at": "2026-11-21T12:37:31.679524+00:00"
+      },
+      "inventory_sha256": "18b5e89fc03ebea1e99359be009ba20d77db744b4f1d8f781900dee818c26379",
+      "exported": {
+        "sha256": "0ca6331638e012a96f5c024186330afb7b3ca7ad59376ad690ab22c1f630737f",
+        "size": 734
+      },
+      "complete": false,
+      "ref_status_counts": {
+        "matched": 4,
+        "missing": 1
+      },
+      "object_status_counts": {
+        "matched": 6
+      },
+      "refs": [
+        {
+          "ref": "HEAD",
+          "source": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "target": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "status": "matched"
+        },
+        {
+          "ref": "refs/heads/main",
+          "source": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "target": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "status": "matched"
+        },
+        {
+          "ref": "refs/heads/topic",
+          "source": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "target": null,
+          "status": "missing"
+        },
+        {
+          "ref": "refs/tags/light",
+          "source": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "target": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "status": "matched"
+        },
+        {
+          "ref": "refs/tags/release",
+          "source": "783ddd8a15e635db671e6eafbf1276602e9eba50",
+          "target": "783ddd8a15e635db671e6eafbf1276602e9eba50",
+          "status": "matched"
+        }
+      ],
+      "objects": [
+        {
+          "oid": "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+          "source": {
+            "type": "tree",
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "target": {
+            "type": "tree",
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "70de02c57f50d71fa803db7fe12e1d28fcbfdaa8",
+          "source": {
+            "type": "blob",
+            "size": 9,
+            "sha256": "fe032ba4bd9c85d1c47658590e9daa692aa21b05ef60296db5867c923c1d1f75",
+            "example_name": "data.bin"
+          },
+          "target": {
+            "type": "blob",
+            "size": 9,
+            "sha256": "fe032ba4bd9c85d1c47658590e9daa692aa21b05ef60296db5867c923c1d1f75",
+            "example_name": "data.bin"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "783ddd8a15e635db671e6eafbf1276602e9eba50",
+          "source": {
+            "type": "tag",
+            "size": 137,
+            "sha256": "dc116e4aceb62c64d2ceb6d5ecb55dad76b66fefabbec3d1be7335e66c2b91cf",
+            "example_name": "release"
+          },
+          "target": {
+            "type": "tag",
+            "size": 137,
+            "sha256": "dc116e4aceb62c64d2ceb6d5ecb55dad76b66fefabbec3d1be7335e66c2b91cf",
+            "example_name": "release"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "9c9dc470c61718c10e45342a28289fd8c335334b",
+          "source": {
+            "type": "tree",
+            "size": 36,
+            "sha256": "9a3a7c9cca851c675f602b23564e0fa0eafcf9d07058d462d9a02305818310ff"
+          },
+          "target": {
+            "type": "tree",
+            "size": 36,
+            "sha256": "9a3a7c9cca851c675f602b23564e0fa0eafcf9d07058d462d9a02305818310ff"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "source": {
+            "type": "commit",
+            "size": 167,
+            "sha256": "7f80a756258ad88cc05384399a58079a2ac7865ecf14fc952c083d38ec2ea1bb"
+          },
+          "target": {
+            "type": "commit",
+            "size": 167,
+            "sha256": "7f80a756258ad88cc05384399a58079a2ac7865ecf14fc952c083d38ec2ea1bb"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "source": {
+            "type": "commit",
+            "size": 217,
+            "sha256": "742f3a7b036be1250fda6b707675368b9a3bee6921504a7d9c6feb4807f7a97a"
+          },
+          "target": {
+            "type": "commit",
+            "size": 217,
+            "sha256": "742f3a7b036be1250fda6b707675368b9a3bee6921504a7d9c6feb4807f7a97a"
+          },
+          "status": "matched"
+        }
+      ]
+    },
+    "edited": {
+      "publication": {
+        "source": "sample/repo",
+        "source_revision": "9b696dfb1a40e6282177ed64284e75bb0bed77fb",
+        "records_sha256": "ee1bcb342f12b57214224fbbcb138e2e7be1a1d0bda4a2982521615b6e0a9c45",
+        "counts": {
+          "commit": 2
+        },
+        "binary_count": 2,
+        "catalog_sha256": "35ee12b050b1fcc2ca1651ac4e8d0699774b59a9080760b01ddd1bbc69d8258b",
+        "module": "migration-f9e546fd3d215c79d1b328668be892ca10a56d043f89bde043036b845cb531b5",
+        "revision": "2a4c586a852edfc8eb7a7c2971ac29698fc176ef67c61b5b6a49dc4daaaf7bcb",
+        "historical_policy": "record_only",
+        "tenant": "owners",
+        "project": "edited",
+        "published_by": "operator",
+        "published_at": "2026-11-21T12:37:44.473060+00:00",
+        "imported_at": "2026-11-21T12:37:44.465058+00:00"
+      },
+      "inventory_sha256": "18b5e89fc03ebea1e99359be009ba20d77db744b4f1d8f781900dee818c26379",
+      "exported": {
+        "sha256": "50c787ad6329be50ee0d62adbce570cf9387c610b3d725eb34dd0a233d6298d7",
+        "size": 792
+      },
+      "complete": false,
+      "ref_status_counts": {
+        "changed": 2,
+        "matched": 3
+      },
+      "object_status_counts": {
+        "unexpected": 3,
+        "matched": 3,
+        "missing": 3
+      },
+      "refs": [
+        {
+          "ref": "HEAD",
+          "source": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "target": "9b696dfb1a40e6282177ed64284e75bb0bed77fb",
+          "status": "changed"
+        },
+        {
+          "ref": "refs/heads/main",
+          "source": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "target": "9b696dfb1a40e6282177ed64284e75bb0bed77fb",
+          "status": "changed"
+        },
+        {
+          "ref": "refs/heads/topic",
+          "source": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "target": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "status": "matched"
+        },
+        {
+          "ref": "refs/tags/light",
+          "source": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "target": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "status": "matched"
+        },
+        {
+          "ref": "refs/tags/release",
+          "source": "783ddd8a15e635db671e6eafbf1276602e9eba50",
+          "target": "783ddd8a15e635db671e6eafbf1276602e9eba50",
+          "status": "matched"
+        }
+      ],
+      "objects": [
+        {
+          "oid": "4b35e8b19145e5ef12d6b18f3c8811e38d190b9e",
+          "source": null,
+          "target": {
+            "type": "tree",
+            "size": 36,
+            "sha256": "cb464ede58988a84b2c2993fc5582ede64cfda2b50e8e4db809c00cde7e7487f"
+          },
+          "status": "unexpected"
+        },
+        {
+          "oid": "4b825dc642cb6eb9a060e54bf8d69288fbee4904",
+          "source": {
+            "type": "tree",
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "target": {
+            "type": "tree",
+            "size": 0,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "70de02c57f50d71fa803db7fe12e1d28fcbfdaa8",
+          "source": {
+            "type": "blob",
+            "size": 9,
+            "sha256": "fe032ba4bd9c85d1c47658590e9daa692aa21b05ef60296db5867c923c1d1f75",
+            "example_name": "data.bin"
+          },
+          "target": null,
+          "status": "missing"
+        },
+        {
+          "oid": "783ddd8a15e635db671e6eafbf1276602e9eba50",
+          "source": {
+            "type": "tag",
+            "size": 137,
+            "sha256": "dc116e4aceb62c64d2ceb6d5ecb55dad76b66fefabbec3d1be7335e66c2b91cf",
+            "example_name": "release"
+          },
+          "target": {
+            "type": "tag",
+            "size": 137,
+            "sha256": "dc116e4aceb62c64d2ceb6d5ecb55dad76b66fefabbec3d1be7335e66c2b91cf",
+            "example_name": "release"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "9b696dfb1a40e6282177ed64284e75bb0bed77fb",
+          "source": null,
+          "target": {
+            "type": "commit",
+            "size": 217,
+            "sha256": "9ab1c9c40feb474310a50865d75d16a56017f9805edc59c27a9c78c7030cd8cd"
+          },
+          "status": "unexpected"
+        },
+        {
+          "oid": "9c9dc470c61718c10e45342a28289fd8c335334b",
+          "source": {
+            "type": "tree",
+            "size": 36,
+            "sha256": "9a3a7c9cca851c675f602b23564e0fa0eafcf9d07058d462d9a02305818310ff"
+          },
+          "target": null,
+          "status": "missing"
+        },
+        {
+          "oid": "a42b5c664c5d3943ea1015e4839c776ce8bd08f5",
+          "source": {
+            "type": "commit",
+            "size": 167,
+            "sha256": "7f80a756258ad88cc05384399a58079a2ac7865ecf14fc952c083d38ec2ea1bb"
+          },
+          "target": {
+            "type": "commit",
+            "size": 167,
+            "sha256": "7f80a756258ad88cc05384399a58079a2ac7865ecf14fc952c083d38ec2ea1bb"
+          },
+          "status": "matched"
+        },
+        {
+          "oid": "e2c9d19bbc81ebc9e56b7f100ff2139ef48a85d3",
+          "source": {
+            "type": "commit",
+            "size": 217,
+            "sha256": "742f3a7b036be1250fda6b707675368b9a3bee6921504a7d9c6feb4807f7a97a"
+          },
+          "target": null,
+          "status": "missing"
+        },
+        {
+          "oid": "e393a89f897991d8883c04e1bd433f161e1ddc82",
+          "source": null,
+          "target": {
+            "type": "blob",
+            "size": 9,
+            "sha256": "447134370f97f6c556b2876fee91dff509d0744bb04ed3d63284941e57063535",
+            "example_name": "data.bin"
+          },
+          "status": "unexpected"
+        }
+      ]
+    }
+  },
+  "verification": [
+    {
+      "command": "python -X utf8 -m unittest discover -v -s customizations/components/tianxuan/migration -p test_audit_git_history.py",
+      "returncode": 0,
+      "result": "Ran 1 test in 62.017s; OK",
+      "coverage": [
+        "matching, removed branch and edited binary from three published catalogs",
+        "other tenant and drifted source rejected"
+      ]
+    },
+    {
+      "command": "ruff check --no-fix customizations/components/tianxuan/migration/audit_git_history.py customizations/components/tianxuan/migration/test_audit_git_history.py",
+      "returncode": 0,
+      "result": "All checks passed!"
+    },
+    {
+      "command": "ruff format --check customizations/components/tianxuan/migration/audit_git_history.py customizations/components/tianxuan/migration/test_audit_git_history.py",
+      "returncode": 0,
+      "result": "2 files already formatted"
+    }
+  ],
+  "report_readback": {
+    "ref_rows": 1641,
+    "object_rows": 54473,
+    "gzip_verified": true,
+    "uncompressed_digest_verified": true
+  }
+}
