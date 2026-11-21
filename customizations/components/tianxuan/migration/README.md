@@ -12,6 +12,8 @@
 
 ## 发布原生目录回执
 
+仅导入 Git 提交历史时，可直接使用第 2 步已完成的快照目录。从本目录运行 `python import_git_history.py GIT_DIR DATABASE --tenant TENANT --actor ACTOR --project PROJECT`。命令为所有可达提交生成记录并发布到指定项目，标准输出返回原生目录修订及项目接收回执。使用相同的快照重跑可复用原记录。逐个提交的回查方式见 [G03 隔离导入](../../../../design-docs/gonggong-ai-workbench-g03.md)。
+
 在归档命令中指定 `--publish-project OWNER/REPO`，经办人将该目录的摘要、计数及来源修订发布给所选租户下的项目。省略参数时，归档继续作为私有目录保存。HTTP 宿主从认证会话取得租户，通过 `migration_status.read_import_status(database, tenant, project)` 读取项目最新发布的回执。每次读取重新核验原生修订及目录字节摘要。
 
 历史 v1 目录可由经授权的管理入口调用 `migration_status.publish_import(database, tenant, project, actor, module, revision)` 单独登记。回执的 `published_at` 记录首次向该项目发布的时间，`imported_at` 记录已取得证据的导入完成时间。旧目录缺少导入时间时此字段为 null。重新发布同一目录保留原有时点。

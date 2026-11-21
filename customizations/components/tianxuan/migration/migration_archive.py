@@ -37,7 +37,11 @@ def archive(inventory, git_dir, attachment_dir, database, tenant, actor):
     if not git(mirror, "for-each-ref", "--count=1", "--contains", revision):
         raise ValueError("Inventory revision is unreachable from archive refs")
     verify_bundle_relations(bundle, inventory.with_name("records.jsonl"))
-    attachments = json.loads((attachment_dir / "attachments.json").read_bytes())
+    attachments = (
+        json.loads((attachment_dir / "attachments.json").read_bytes())
+        if attachment_dir is not None
+        else {"records": {}, "failures": []}
+    )
     with inventory.with_name("records.jsonl").open("rb") as rows:
         ids = {row["source_id"] for raw in rows if (row := json.loads(raw))["kind"] == "attachment"}
     if attachments["failures"] or set(attachments["records"]) != ids:
