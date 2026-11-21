@@ -32,6 +32,8 @@
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/dock_tab_container.h"
 #include "editor/docks/editor_dock_manager.h"
+#include "editor/editor_main_screen.h"
+#include "editor/editor_node.h"
 #include "editor/settings/editor_command_palette.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
@@ -40,6 +42,8 @@
 
 void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette)
 {
+	// The view controls and command palette take focus before moving the composer.
+	input->set_deselect_on_focus_loss_enabled(false);
 	pWorkbenchSidebar = memnew(EditorDock);
 	pWorkbenchSidebar->set_name("AIWorkbenchSidebar");
 	pWorkbenchSidebar->set_title(TTR("AI Workbench"));
@@ -54,11 +58,22 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette)
 	pWorkbenchSidebar->set_closable(true);
 	pSidebarLayout = memnew(VBoxContainer);
 	pWorkbenchSidebar->add_child(pSidebarLayout);
+	Button *pExpand = memnew(Button);
+	pExpand->set_name("ExpandWorkbench");
+	pExpand->set_text(TTR("Expand AI Workbench"));
+	pExpand->connect(SNAME("pressed"), callable_mp(this, &AIChatDock::ExpandWorkbenchSidebar));
+	pSidebarLayout->add_child(pExpand);
 	Button *pClose = memnew(Button);
 	pClose->set_text(TTR("Close AI Workbench"));
 	pClose->set_name("CloseWorkbench");
 	pClose->connect(SNAME("pressed"), callable_mp(pWorkbenchSidebar, &EditorDock::close));
 	pSidebarLayout->add_child(pClose);
+	pRestoreSidebar = memnew(Button);
+	pRestoreSidebar->set_name("RestoreWorkbenchSidebar");
+	pRestoreSidebar->set_text(TTR("Return to Sidebar"));
+	pRestoreSidebar->connect(SNAME("pressed"), callable_mp(this, &AIChatDock::OpenWorkbenchSidebar));
+	workspace_pages->get_internal_container()->add_child(pRestoreSidebar);
+	pRestoreSidebar->hide();
 	EditorDockManager::get_singleton()->add_dock(pWorkbenchSidebar);
 	pWorkbenchSidebar->close();
 	pWorkbenchSidebar->connect(SNAME("closed"), callable_mp(this, &AIChatDock::CloseWorkbenchSidebar));
@@ -68,7 +83,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette)
 
 void AIChatDock::CaptureWorkbenchSource()
 {
-	if (nConversationIndex < 0)
+	if (nConversationIndex < 0 && idWorkbenchReturnScreen.is_null())
 	{
 		Control *pFocus = get_viewport()->gui_get_focus_owner();
 		idSidebarSource = pFocus ? pFocus->get_instance_id() : ObjectID();
@@ -77,6 +92,16 @@ void AIChatDock::CaptureWorkbenchSource()
 
 void AIChatDock::OpenWorkbenchSidebar()
 {
+	if (idWorkbenchReturnScreen.is_valid())
+	{
+		EditorDock *pScreen = ObjectDB::get_instance<EditorDock>(idWorkbenchReturnScreen);
+		idWorkbenchReturnScreen = ObjectID();
+		pRestoreSidebar->hide();
+		if (pScreen && !pScreen->is_queued_for_deletion() && pScreen->get_parent_container() == EditorNode::get_editor_main_screen() && pScreen->is_dock_open())
+		{
+			EditorDockManager::get_singleton()->force_focus_dock(pScreen);
+		}
+	}
 	if (nConversationIndex < 0)
 	{
 		nConversationIndex = pConversationView->get_index();
@@ -91,6 +116,25 @@ void AIChatDock::OpenWorkbenchSidebar()
 	input->grab_focus();
 }
 
+void AIChatDock::ExpandWorkbenchSidebar()
+{
+	if (nConversationIndex < 0)
+	{
+		return;
+	}
+	Control *pScreen = EditorNode::get_editor_main_screen()->get_current_tab_control();
+	ERR_FAIL_NULL(pScreen);
+	idWorkbenchReturnScreen = pScreen->get_instance_id();
+	// Store the displayed offset before reflow. The conversation's scroll handler
+	// retains it through layout clamps and tracks subsequent scrolling in the full view.
+	_chat_scrolled();
+	pWorkbenchSidebar->close();
+	EditorDockManager::get_singleton()->force_focus_dock(this);
+	workspace_pages->set_current_tab(chat_layout->get_parent() == timer_chat_host ? 1 : 0);
+	pRestoreSidebar->show();
+	input->grab_focus();
+}
+
 void AIChatDock::CloseWorkbenchSidebar()
 {
 	if (nConversationIndex < 0)
@@ -100,6 +144,10 @@ void AIChatDock::CloseWorkbenchSidebar()
 	pConversationView->reparent(chat_layout, false);
 	chat_layout->move_child(pConversationView, nConversationIndex);
 	nConversationIndex = -1;
+	if (idWorkbenchReturnScreen.is_valid())
+	{
+		return;
+	}
 	// Closing a dock restores its previous tab after emitting the closed signal.
 	callable_mp(this, &AIChatDock::RestoreWorkbenchFocus).call_deferred(idSidebarSource);
 	idSidebarSource = ObjectID();

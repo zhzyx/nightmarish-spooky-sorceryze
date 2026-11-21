@@ -296,10 +296,13 @@ class AIChatDock : public EditorDock {
 	VBoxContainer *pConversationView = nullptr;
 	EditorDock *pWorkbenchSidebar = nullptr;
 	VBoxContainer *pSidebarLayout = nullptr;
+	Button *pRestoreSidebar = nullptr;
 	ObjectID idSidebarSource;
+	ObjectID idWorkbenchReturnScreen;
 	int nConversationIndex = -1;
 	void CaptureWorkbenchSource();
 	void OpenWorkbenchSidebar();
+	void ExpandWorkbenchSidebar();
 	void CloseWorkbenchSidebar();
 	void DismissWorkbenchSidebar();
 	void RestoreWorkbenchFocus(ObjectID idSource);
