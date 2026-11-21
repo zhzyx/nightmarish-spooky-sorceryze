@@ -43,6 +43,18 @@ func _choose(index: int) -> bool:
 	return true
 
 
+func _choose_work_order(control: OptionButton, index: int) -> bool:
+	control.select(index)
+	control.item_selected.emit(index)
+	var deadline := Time.get_ticks_msec() + 20000
+	while picker.disabled and Time.get_ticks_msec() < deadline:
+		await process_frame
+	if picker.disabled or control.selected != index:
+		_fail("Work order change failed: " + str(panel.feedback.text))
+		return false
+	return true
+
+
 func _index(id: String) -> int:
 	for i in picker.item_count:
 		if picker.get_item_metadata(i) == id:
@@ -118,8 +130,8 @@ func _run() -> void:
 	if not await _choose(bi) or not _observe(fixture[1], "B pending"):
 		return
 	var issue := panel.find_child("ModuleIssue", true, false) as OptionButton
-	issue.select(0)
-	issue.item_selected.emit(0)
+	if not await _choose_work_order(issue, 0):
+		return
 	if not await _choose(0) or not local.is_visible_in_tree() or local.text != "local pending":
 		_fail("Returning to local chat lost the original draft")
 		return

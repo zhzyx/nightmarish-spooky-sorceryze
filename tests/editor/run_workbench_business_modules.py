@@ -247,7 +247,7 @@ def exercise(editor, root, references=False):
                 )["location"]
                 assert final_position == {
                     "issue_id": None,
-                    "conversation_id": b["conversation_id"],
+                    "conversation_id": None,
                     "position": "module/overview",
                 }
                 return {

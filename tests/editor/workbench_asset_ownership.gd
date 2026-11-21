@@ -150,6 +150,7 @@ func _run() -> void:
 	if not await _send():
 		return
 	trace.selected_module = panel.module_id
+	trace.module_conversation = panel.location.conversation_id
 
 	var issues := panel.issues as OptionButton
 	var idx := -1
@@ -160,6 +161,8 @@ func _run() -> void:
 		return
 	issues.select(idx)
 	issues.item_selected.emit(idx)
+	if not await _wait(func(): return not panel.busy and panel.location.get("issue_id") == fixture.issue, "Issue selection"):
+		return
 	if not _check(assets.issue_button.is_visible_in_tree(), "No issue entry"):
 		return
 	assets.issue_button.pressed.emit()

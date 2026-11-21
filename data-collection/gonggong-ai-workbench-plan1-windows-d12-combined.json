@@ -1,0 +1,382 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "ab75b08a9fe400968f47f7084ec27dba1d26ebd9",
+  "editor_sha256": "06eb1c6ce480982809d33ec135f1ccdbd1ea9485f2fb933db8842fb45c9c7e82",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "8dfdf294acc3d7cce8f34ddb55a3d8786b912e2f",
+    "customizations/components/tianxuan/server/wenqu_bridge.py": "c9d7c8c0b85bdfcfe6921baccb08457798b3878e",
+    "customizations/components/tianxuan/wenqu/test_wenqu.py": "e70150557543207ae4f7afc4a1bedc1514f57e46",
+    "customizations/components/tianxuan/wenqu/wenqu.py": "4649f9f5f3a59a50f808e310cec68878e8c8f1aa",
+    "editor/SCsub": "723b1d33b289a0dfc972c694c73a0f9d0adec22f",
+    "editor/docks/ai_chat_dock.h": "994bab9bea02fd785b5ee5489882784336414903",
+    "editor/docks/workbench/AIWorkbenchDraft.cpp": "f0927e06c19681d7f8fc128f5db562618f77ec21",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "3e3ed8d937296986176a59f77729f39bc0933356",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "e6a4d5f7065afa982f55a74994b436413b1e410c",
+    "editor/docks/workbench/asset_picker.gd": "33a51772f3085e343847a475e3aa911394f8f324",
+    "editor/docks/workbench/business_session.gd": "332bca2b3b2091fdb7594c8b921ab35161b76170",
+    "editor/docks/workbench/document_collaboration.gd": "cc58f63fc788b81d2d48005eaba11a1b637de202",
+    "editor/docks/workbench/document_history.gd": "e15371f5273e5ad6ad6616b1954e30d61bd9454d",
+    "editor/docks/workbench/module_selector.gd": "41d3218b4ae35ffebe6146c756eeffc67818268a",
+    "tests/editor/run_workbench_asset_ownership.py": "cff726074a2c45404b96e42d77c957da5250515f",
+    "tests/editor/run_workbench_business_modules.py": "610c39be317a11557ffea4486c9d1375f84ad9ee",
+    "tests/editor/run_workbench_document_collaboration.py": "9c9c4ae6e8b0f0d96a5fcc9c69f92e93deec83d2",
+    "tests/editor/run_workbench_document_reference.py": "a475545e68a43de5b660952ebc4a294b7c31c7e9",
+    "tests/editor/run_workbench_documents.py": "6ea1ff878b8d25a3e924be5ddb883696a981709b",
+    "tests/editor/run_workbench_module_drafts.py": "e1e5b2eaee804d997bd3d7fe03b631f944529249",
+    "tests/editor/workbench_asset_ownership.gd": "9a3c2fb42a4c0b553cf018789092541255fd886f",
+    "tests/editor/workbench_business_modules.gd": "58e4c00500c5f9e229bbe9d81fdb3567f1956b15",
+    "tests/editor/workbench_business_references.gd": "54e1a5f3ea823264b9b611e40b4eb526e1b7fd80",
+    "tests/editor/workbench_document_collaboration.gd": "e5dd7699d0faff73ce5665f11464a30f42823777",
+    "tests/editor/workbench_document_history.gd": "c86f0bf79f79892c219bf9058de262f2c03c25d8",
+    "tests/editor/workbench_documents.gd": "1523635db78f88c80beccd8ad96bae8c28306ccd",
+    "tests/editor/workbench_module_drafts.gd": "d877f6788eb8bdacd204e8a847c88f926eac1ef8"
+  },
+  "checks": {
+    "d12": "f67d1ab24ecd62844159d6b3413e87cc5b75ecea9b40362bb44ba2360dd56c15",
+    "d04": "2456bd013854cdf0f5bde751bead2851d6aff163814e9b32e090320477999f2d",
+    "c07": "790e842cede58f28ca9b889b9b172ef6515ed5cc0f7bc44ce4a47c2c50e73e09",
+    "c06": "a2c531febd9181a566c0bf9765f361be01ae10f4f79da79f381b5a86cc0ac225",
+    "u15": "b812c11d4ef2987f0cc31678c0f2111091072a00705b6df25ba2409b6c5524ff",
+    "d14": "906663129c8c54f02c67cedd902cbb3628adec02226a685e50c2675e5a30c538",
+    "i01": "4e62f76ad19361c764225172b9fd1a9e84048d5ee61c34f3b05cc5e18e0d26ef",
+    "i02": "9c31a9a0abd226379184e5b6e4e5f3ffeda0b6e61e009e5a4a36582d5e3eb672",
+    "u10": "618bd45f0f7d4779d3bd481fb1c620bedcdab3dd7ac823652750a5d7362851f6",
+    "d03": "f7149728e81489669b520a2335afc448834da67508fb13557cd3e4c3b36ca1ff",
+    "g11": "5cbfed1380572bbc23c7caaf5c4e615fe72ffc7caec21be72ecae41893189a34",
+    "d05": "2cbcd7a717629446814d3af56efe42335f342eb33fbd63ab3f970a48bb867150",
+    "i03": "2ec760d0cc31533412b88b5c54bda3e10725a4d1b4adcad7d68d26212c8a626b",
+    "d06": "a9d96c727ba602c944b7d275e114b1ba16c3872c1f4172e9869e6c5a231c95a2",
+    "d07": "034ecbf13ea0b19fded347167b4214240ee3b7e6743212159434fc7f5d777614"
+  },
+  "issues": {
+    "d12": 1748,
+    "d06": 1861,
+    "d07": 1787
+  },
+  "observed": "2026-11-21T20:10:08.580641+00:00",
+  "results": {
+    "d12": {
+      "controls": [
+        {
+          "controls": [
+            {
+              "conversation": null,
+              "draft": "",
+              "issue": "iss_76474df0d25f49dbaf2b8c262b43ecbd",
+              "module": "mod_410ec65588404c109aede76faed36bff",
+              "references": [],
+              "reply_visible": false,
+              "turns": 0
+            },
+            {
+              "conversation": "37c1646f-3dfc-4ba1-9a0e-817c8ab6c81e",
+              "draft": "",
+              "issue": "iss_76474df0d25f49dbaf2b8c262b43ecbd",
+              "module": "mod_410ec65588404c109aede76faed36bff",
+              "references": [],
+              "reply_visible": true,
+              "turns": 1
+            },
+            {
+              "conversation": "37c1646f-3dfc-4ba1-9a0e-817c8ab6c81e",
+              "draft": "draft A [REDACTED]",
+              "issue": "iss_76474df0d25f49dbaf2b8c262b43ecbd",
+              "module": "mod_410ec65588404c109aede76faed36bff",
+              "references": [
+                "移除 · res://module0.tres\nda10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+              ],
+              "reply_visible": true,
+              "turns": 1
+            },
+            {
+              "conversation": null,
+              "draft": "draft B\n<duobao://draft-assets/5a5b391efe489c5df21fa593a0632a139080cd8d58c3b38a467af5df187b6a19/B-model.glb>",
+              "issue": "iss_802c5dbe262646cda352c05cb3a383b8",
+              "module": "mod_b75b434af4944891a57ed7ce2ade0cca",
+              "references": [
+                "移除 · res://module1.tres\n1bfd728e964cda28c57718bd5ea3ce8c3a3f2e80bee318fd7a263dc9cf556eee"
+              ],
+              "reply_visible": false,
+              "turns": 0
+            }
+          ],
+          "phase": "write",
+          "pid": 69988
+        },
+        {
+          "controls": [
+            {
+              "conversation": "37c1646f-3dfc-4ba1-9a0e-817c8ab6c81e",
+              "draft": "draft A [REDACTED]",
+              "issue": "iss_76474df0d25f49dbaf2b8c262b43ecbd",
+              "module": "mod_410ec65588404c109aede76faed36bff",
+              "references": [
+                "移除 · res://module0.tres\nda10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+              ],
+              "reply_visible": true,
+              "turns": 1
+            },
+            {
+              "conversation": null,
+              "draft": "draft B\n<duobao://draft-assets/5a5b391efe489c5df21fa593a0632a139080cd8d58c3b38a467af5df187b6a19/B-model.glb>",
+              "issue": "iss_802c5dbe262646cda352c05cb3a383b8",
+              "module": "mod_b75b434af4944891a57ed7ce2ade0cca",
+              "references": [
+                "移除 · res://module1.tres\n1bfd728e964cda28c57718bd5ea3ce8c3a3f2e80bee318fd7a263dc9cf556eee"
+              ],
+              "reply_visible": false,
+              "turns": 0
+            },
+            {
+              "conversation": null,
+              "draft": "",
+              "issue": "iss_802c5dbe262646cda352c05cb3a383b8",
+              "module": "mod_b75b434af4944891a57ed7ce2ade0cca",
+              "references": [],
+              "reply_visible": false,
+              "turns": 0
+            }
+          ],
+          "phase": "reopen",
+          "pid": 103796
+        },
+        {
+          "controls": [
+            {
+              "conversation": "37c1646f-3dfc-4ba1-9a0e-817c8ab6c81e",
+              "draft": "draft A [REDACTED]",
+              "issue": "iss_76474df0d25f49dbaf2b8c262b43ecbd",
+              "module": "mod_410ec65588404c109aede76faed36bff",
+              "references": [
+                "移除 · res://module0.tres\nda10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+              ],
+              "reply_visible": true,
+              "turns": 1
+            },
+            {
+              "conversation": null,
+              "draft": "",
+              "issue": "iss_802c5dbe262646cda352c05cb3a383b8",
+              "module": "mod_b75b434af4944891a57ed7ce2ade0cca",
+              "references": [],
+              "reply_visible": false,
+              "turns": 0
+            }
+          ],
+          "phase": "cleared",
+          "pid": 127976
+        },
+        {
+          "controls": [
+            {
+              "conversation": null,
+              "draft": "",
+              "issue": "iss_76474df0d25f49dbaf2b8c262b43ecbd",
+              "module": "mod_410ec65588404c109aede76faed36bff",
+              "references": [],
+              "reply_visible": false,
+              "turns": 0
+            }
+          ],
+          "phase": "other-account",
+          "pid": 107280
+        },
+        {
+          "empty_default": true,
+          "phase": "other-project",
+          "pid": 127384
+        }
+      ],
+      "stored_turn": {
+        "id": "2f859c7e-9ad8-4e8a-8728-ef5742c703fb",
+        "content": "D12 consult once\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：#1  Same issue title\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://module0.tres\",\"revision\":\"da10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83\"}]",
+        "state": "answered",
+        "answer": "D12 fixture answer",
+        "model": "fixture",
+        "error": null,
+        "context_snapshot": {
+          "project": "d12/studio",
+          "module_id": "mod_410ec65588404c109aede76faed36bff",
+          "issue_id": "iss_76474df0d25f49dbaf2b8c262b43ecbd",
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "res://module0.tres",
+              "revision": "da10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+            }
+          ]
+        }
+      },
+      "model_fixture_calls": 1,
+      "editor_sha256": "06eb1c6ce480982809d33ec135f1ccdbd1ea9485f2fb933db8842fb45c9c7e82",
+      "state": "passed"
+    },
+    "d06": {
+      "editor_sha256": "06eb1c6ce480982809d33ec135f1ccdbd1ea9485f2fb933db8842fb45c9c7e82",
+      "state": "passed",
+      "manual_design": {
+        "document_id": "doc_05eb7d302f2442b1bfed5cff20d50268",
+        "reopened": [
+          {
+            "author": "usr_2ef460d3ee914b7bbf95501dae372301",
+            "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+            "paragraph": 2,
+            "selected": "第二段 · 手写",
+            "version": 1
+          },
+          {
+            "author": "usr_2ef460d3ee914b7bbf95501dae372301",
+            "body": "设定与目标\n保留换行\n\n第二段 · 手写\n\n第三段 · 复审",
+            "paragraph": 3,
+            "selected": "第三段 · 复审",
+            "version": 2
+          }
+        ],
+        "stale_draft_retained": true,
+        "write_receipts": [
+          {
+            "method": "POST",
+            "path": "/api/v1/docs",
+            "service_status": 200,
+            "client_status": 200
+          },
+          {
+            "method": "PATCH",
+            "path": "/api/v1/docs/doc_05eb7d302f2442b1bfed5cff20d50268",
+            "service_status": 200,
+            "client_status": 503
+          },
+          {
+            "method": "PATCH",
+            "path": "/api/v1/docs/doc_05eb7d302f2442b1bfed5cff20d50268",
+            "service_status": 200,
+            "client_status": 200
+          },
+          {
+            "method": "PATCH",
+            "path": "/api/v1/docs/doc_05eb7d302f2442b1bfed5cff20d50268",
+            "service_status": 409,
+            "client_status": 409
+          }
+        ],
+        "retry_after_lost_success": "one committed revision"
+      },
+      "history": {
+        "diff": "--- v1\n+++ v2\n@@ -2,3 +2,5 @@\n 保留换行\n \n 第二段 · 手写\n+\n+第三段 · 复审",
+        "document_id": "doc_05eb7d302f2442b1bfed5cff20d50268",
+        "revisions": [
+          {
+            "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+            "version": 1
+          },
+          {
+            "body": "设定与目标\n保留换行\n\n第二段 · 手写\n\n第三段 · 复审",
+            "version": 2
+          },
+          {
+            "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+            "version": 3
+          }
+        ],
+        "project": "studio/game",
+        "restores": [
+          [
+            "/api/v1/docs/doc_05eb7d302f2442b1bfed5cff20d50268/versions/1/restore",
+            {
+              "call_id": "da7578415b79510c00db9dba838a9708",
+              "expected_version": 2
+            },
+            200,
+            503
+          ],
+          [
+            "/api/v1/docs/doc_05eb7d302f2442b1bfed5cff20d50268/versions/1/restore",
+            {
+              "call_id": "da7578415b79510c00db9dba838a9708",
+              "expected_version": 2
+            },
+            200,
+            200
+          ],
+          [
+            "/api/v1/docs/doc_e7d1fba17532447faf70ace1faa92852/versions/1/restore",
+            {
+              "call_id": "3f6f29cd726723b326fbd9084363c049",
+              "expected_version": 2
+            },
+            409,
+            409
+          ]
+        ],
+        "concurrent_head_preserved": true
+      }
+    },
+    "d07": {
+      "state": "passed",
+      "editor_sha256": "06eb1c6ce480982809d33ec135f1ccdbd1ea9485f2fb933db8842fb45c9c7e82",
+      "windows": {
+        "A": {
+          "account": "usr_c942a62f018e40659dcdfedf68a56a1a",
+          "different_paragraphs": {
+            "body_md": "设计目标 A\n约束条件\n\n交付清单 B",
+            "version": 3
+          },
+          "resolved": {
+            "body_md": "设计目标 A2\n约束条件 B2\n\n交付清单 B",
+            "version": 5
+          }
+        },
+        "B": {
+          "account": "usr_af83ad6d0c9b4c35bad877851da91871",
+          "conflict": {
+            "local": "设计目标 A\n约束条件 B2\n\n交付清单 B",
+            "remote": "设计目标 A2\n约束条件\n\n交付清单 B",
+            "unchanged_server_version": 4.0
+          },
+          "different_paragraphs": {
+            "body_md": "设计目标 A\n约束条件\n\n交付清单 B",
+            "version": 3
+          },
+          "resolved": {
+            "body_md": "设计目标 A2\n约束条件 B2\n\n交付清单 B",
+            "version": 5
+          }
+        }
+      },
+      "history": [
+        {
+          "version": 1,
+          "body_md": "设计目标\n约束条件\n\n交付清单",
+          "author": "usr_c942a62f018e40659dcdfedf68a56a1a",
+          "created_at": "2026-11-21T20:10:02.860260+00:00"
+        },
+        {
+          "version": 2,
+          "body_md": "设计目标 A\n约束条件\n\n交付清单",
+          "author": "usr_c942a62f018e40659dcdfedf68a56a1a",
+          "created_at": "2026-11-21T20:10:06.885892+00:00"
+        },
+        {
+          "version": 3,
+          "body_md": "设计目标 A\n约束条件\n\n交付清单 B",
+          "author": "usr_af83ad6d0c9b4c35bad877851da91871",
+          "created_at": "2026-11-21T20:10:07.055818+00:00"
+        },
+        {
+          "version": 4,
+          "body_md": "设计目标 A2\n约束条件\n\n交付清单 B",
+          "author": "usr_c942a62f018e40659dcdfedf68a56a1a",
+          "created_at": "2026-11-21T20:10:07.168819+00:00"
+        },
+        {
+          "version": 5,
+          "body_md": "设计目标 A2\n约束条件 B2\n\n交付清单 B",
+          "author": "usr_af83ad6d0c9b4c35bad877851da91871",
+          "created_at": "2026-11-21T20:10:07.373825+00:00"
+        }
+      ]
+    }
+  }
+}

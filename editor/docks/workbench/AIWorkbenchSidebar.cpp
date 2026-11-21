@@ -120,6 +120,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 		{
 			pSession->call("install_paragraph_suggestion", refParagraphSuggestion);
 		}
+		MountWorkbenchControl(pSession, "DocumentCollaboration", daqian_document_collaboration);
 		MountWorkbenchControl(pSession, "WorkbenchIssueCreation", daqian_issue_creation);
 		VBoxContainer *pDetail = MountWorkbenchControl(pSession, "WorkbenchIssueDetail", daqian_issue_detail);
 		if (pDetail)
@@ -132,6 +133,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 				}
 			}
 		}
+		MountWorkbenchControl(pSession, "WorkbenchDocumentHistory", daqian_document_history);
 	}
 	MenuButton *pResourceMenu = memnew(MenuButton);
 	pResourceMenu->set_name("WorkbenchResourceSelection");
@@ -170,6 +172,9 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 		pBusinessModules = selector;
 		selector->set_script(selector_script);
 		selector->set_meta("change_reference_scope", callable_mp(this, &AIChatDock::ChangeWorkbenchReferenceScope));
+		selector->set_meta("read_draft", callable_mp(this, &AIChatDock::ReadBusinessDraft));
+		selector->set_meta("write_draft", callable_mp(this, &AIChatDock::WriteBusinessDraft));
+		selector->set_meta("restore_references", callable_mp(this, &AIChatDock::RestoreBusinessReferences));
 		selector->set_meta("freeze_references", callable_mp(this, &AIChatDock::FreezeBusinessReferences));
 		selector->set_meta("workbench_sidebar", pWorkbenchSidebar);
 		Ref<Script> asset_script = LoadWorkbenchControlScript(daqian_asset_picker);

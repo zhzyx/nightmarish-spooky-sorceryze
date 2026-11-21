@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0dd6589450dbbe9fbafb98dbe196eddcd72064b0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-d12",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1748",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5aeb2c4e0600aee81af9015e5f3f7973d8e902239cc9d886ab062e3cbee6b7a9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1748",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1976",
+    "action": "validation",
+    "detection_head": "ab75b08a9fe400968f47f7084ec27dba1d26ebd9",
+    "context_sha256": "48b8a9ee48a9c94ec55bcb9bb7584fbc8faa4e85b8728db73e1e3891d577c168",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-operator",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1748",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1748#issuecomment-7067766284",
+    "diagnosis": "D12 工单在本次精确门禁核对期间新增 Mac 冷启动验证的工作记录，原单状态回读发生变化。整合树中无未暂存改动，另两张子卡同一内容均通过。",
+    "next_action": "保留双方验收。回读 D12 当前评论并使用同一工作树重跑正式门禁，签发后在原单回填新 PR 的入口。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T20:10:39.560338+00:00",
+    "attempted": "回读原工单时间线，核对候选和同批另外两次门禁。",
+    "repair_owner": "Sail-Li",
+    "continuable": "其他已分配工作者继续各自独立的原生验收。"
+  },
+  "occurred_at": "2026-11-21T20:12:48.211255+00:00",
+  "sha256": "48b7a009b6347b726f757aa4f285a923ca91af209570a28e5eb9773f143e0ea0"
+}

@@ -1,6 +1,7 @@
 @tool
 extends VBoxContainer
 
+signal identity_resetting
 signal identity_changed
 
 var _origin: String
@@ -109,6 +110,8 @@ func _sign_out_pressed() -> void:
 
 
 func _reset(message: String) -> void:
+	if not _identity.is_empty():
+		identity_resetting.emit()
 	_generation += 1
 	var old_token := _token
 	var revoke := _owned_session
@@ -189,6 +192,17 @@ func api_request(method: int, route: String, payload: Dictionary = {}, timeout_s
 	return reply
 
 
+func join_document_room(id: String) -> WebSocketPeer:
+	if _identity.is_empty() or id.is_empty():
+		return null
+	var peer := WebSocketPeer.new()
+	peer.inbound_buffer_size = 8 * 1024 * 1024
+	peer.handshake_headers = PackedStringArray(["Authorization: Bearer " + _token])
+	var url := "ws" + _origin.trim_prefix("http") + "/api/v1/ws/docs/" + id.uri_encode()
+	url += "?project=" + str(_identity.project).uri_encode()
+	return peer if peer.connect_to_url(url) == OK else null
+
+
 func _exchange(method: int, route: String, credential: String, payload: Dictionary, timeout_seconds: float = 12.0) -> Dictionary:
 	var http := HTTPRequest.new()
 	http.max_redirects = 0
@@ -218,6 +232,7 @@ func _exchange(method: int, route: String, credential: String, payload: Dictiona
 
 class DocumentView extends AcceptDialog:
 	signal target_changed
+	signal revision_cleared
 
 	var session: Node
 	var actions := HBoxContainer.new()
@@ -233,10 +248,13 @@ class DocumentView extends AcceptDialog:
 	var generation := 0
 	var create := Button.new()
 	var edit := Button.new()
+	var history := Button.new()
 	var composer := ConfirmationDialog.new()
 	var draft_title := LineEdit.new()
 	var draft_body := TextEdit.new()
 	var draft_status := Label.new()
+	var collaboration: Node
+	var live_document := false
 	var editing := {}
 	var call_id := ""
 
@@ -257,6 +275,10 @@ class DocumentView extends AcceptDialog:
 		edit.disabled = true
 		edit.pressed.connect(_compose.bind(true))
 		actions.add_child(edit)
+		history.text = "版本历史"
+		history.name = "OpenDocumentHistory"
+		history.disabled = true
+		actions.add_child(history)
 		_setup_composer()
 		status.name = "DocumentStatus"
 		box.add_child(status)
@@ -332,6 +354,8 @@ class DocumentView extends AcceptDialog:
 			return
 		_clear_draft()
 		editing = reference.duplicate() if existing else {}
+		if existing and live_document:
+			editing.base_md = collaboration.base_md
 		call_id = Crypto.new().generate_random_bytes(16).hex_encode()
 		composer.title = "编辑正文 · v%d" % editing.version if existing else "新建设计"
 		composer.get_ok_button().disabled = false
@@ -365,7 +389,11 @@ class DocumentView extends AcceptDialog:
 		draft_title.editable = false
 		draft_body.editable = false
 		draft_status.text = "正在保存…"
-		var reply: Dictionary = await session.api_request(method, route, payload)
+		var reply: Dictionary
+		if editing.has("base_md"):
+			reply = await collaboration.save(route, payload, editing, attempt)
+		else:
+			reply = await session.api_request(method, route, payload)
 		if attempt != call_id:
 			return
 		composer.get_ok_button().disabled = false
@@ -377,7 +405,9 @@ class DocumentView extends AcceptDialog:
 			draft_body.editable = true
 			call_id = Crypto.new().generate_random_bytes(16).hex_encode()
 			draft_status.text = "保存失败，请检查文档权限。" if reply.status == 403 else "保存失败（%d）。草稿已保留。" % reply.status
-			if reply.status == 409:
+			if reply.status == 409 and reply.data.get("status") == "conflict":
+				collaboration.show_conflict(reply.data)
+			elif reply.status == 409:
 				draft_status.text = "文档修订发生冲突。请复制草稿，重开最新修订再编辑。"
 			return
 		var saved: Dictionary = reply.data
@@ -387,15 +417,17 @@ class DocumentView extends AcceptDialog:
 		_clear_draft()
 		await open_saved(saved, 1)
 
-	func open_saved(saved: Dictionary, paragraph: int) -> void:
+	func open_saved(saved: Dictionary, paragraph: int = 1) -> void:
 		var row := -1
 		for index in documents.item_count:
 			if documents.get_item_metadata(index).id == saved.id:
 				row = index
 				break
+		if collaboration and collaboration.document_id == saved.id:
+			saved.version = maxi(int(saved.version), collaboration.notified_version)
 		row = _document_row(saved, row)
 		documents.select(row)
-		await open_document(saved.id, int(saved.version), paragraph)
+		await open_document(saved.id, int(saved.version), paragraph, true)
 
 	func _document_row(item: Dictionary, index: int = -1) -> int:
 		var label := "%s · v%d · %s" % [item.title, item.version, item.id]
@@ -407,6 +439,8 @@ class DocumentView extends AcceptDialog:
 		return index
 
 	func _clear_body() -> void:
+		revision_cleared.emit()
+		history.disabled = true
 		edit.disabled = true
 		cite.disabled = true
 		reference.clear()
@@ -419,6 +453,8 @@ class DocumentView extends AcceptDialog:
 		paragraphs.disabled = true
 
 	func reset_view() -> void:
+		if collaboration:
+			collaboration.leave()
 		generation += 1
 		_clear_draft()
 		create.disabled = session.get_identity().is_empty()
@@ -447,10 +483,13 @@ class DocumentView extends AcceptDialog:
 
 	func _select_document(index: int) -> void:
 		var selected: Dictionary = documents.get_item_metadata(index)
-		open_document(selected.id, selected.version, 1)
+		open_document(selected.id, selected.version, 1, true)
 
 	# Paragraph numbers refer to non-blank blocks in this exact Markdown revision.
-	func open_document(id: String, version: int, paragraph: int) -> void:
+	func open_document(id: String, version: int, paragraph: int, follow: bool = false) -> void:
+		live_document = false
+		if collaboration and (not follow or id != collaboration.document_id):
+			collaboration.leave()
 		generation += 1
 		var request := generation
 		_clear_body()
@@ -467,6 +506,9 @@ class DocumentView extends AcceptDialog:
 		if reply.status != 200 or int(reply.data.get("version",0)) != version or not reply.data.get("body_md") is String:
 			status.text = "无法读取指定文档修订。"
 			return
+		if follow and collaboration:
+			live_document = true
+			collaboration.watch(id, version, reply.data.body_md)
 		raw_body = reply.data.body_md
 		var lines := raw_body.split("\n")
 		var offset := 0
@@ -493,6 +535,7 @@ class DocumentView extends AcceptDialog:
 			return
 		reference = {"document_id": id, "version": version, "paragraph": 0}
 		edit.disabled = false
+		history.disabled = false
 		status.text = "%s · v%d · 作者 %s" % [id, version, reply.data.get("author", "未知")]
 		paragraphs.disabled = ranges.is_empty()
 		if not ranges.is_empty():

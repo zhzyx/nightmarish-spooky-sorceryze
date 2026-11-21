@@ -1,0 +1,266 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d07",
+  "issue_number": 1787,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1787",
+  "verified_at": "2026-11-21T17:52:21.847462+00:00",
+  "baseline": "bb053f34dd3f5ee4b23cee7fe3bd85e1efb4ce2c",
+  "producer": "wave22_d07",
+  "dispatch_event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d07/dispatch-22dbcc8542df4baa8c23b031aeb9e4ab.json",
+  "intake": {
+    "state": "open",
+    "label": "status:in-progress",
+    "issue_comments": 0,
+    "upstream_d04_windows_acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1863#issuecomment-7066298223",
+    "upstream_d04_macos_observation": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1863#issuecomment-7065749950",
+    "prior_windows_service_observation": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709#issuecomment-7066453423",
+    "macos_d07_candidate_run": null
+  },
+  "source_sha256": {
+    "customizations/components/tianxuan/server/api.py": "160d0564706537fe39f10fa0600584629680735c211d1424515c1241e672a5b9",
+    "customizations/components/tianxuan/server/wenqu_bridge.py": "0963acf487bd46bd851a18a6fafefc3d1c352b089875a018f6501861784c8c3f",
+    "customizations/components/tianxuan/wenqu/wenqu.py": "9f2b33709436ebc074d2fde3815a0757f0faec4dae2726b10b36f4e40cff7a47",
+    "customizations/components/tianxuan/wenqu/test_wenqu.py": "3f7653e0ad51902793e6305cf23dd64c35aca867ddd6cbf439c121f5da117abb",
+    "editor/SCsub": "efb77fa10e4442da0f8ab0aee94037ae8a064e359ba9ecc03c235760aa2819d6",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "34e0d9d9134c4a16529d65a4d8428c06405d860d13dccd403c4b532dae89da8a",
+    "editor/docks/workbench/business_session.gd": "363bda148d77f5253d5ee67318773151f2a79d27aac26ada175a75240e5bbd23",
+    "editor/docks/workbench/document_collaboration.gd": "204a3de60782a30dcb94670d0469834f2b728efe41cd11c3122c78223b436a41",
+    "tests/editor/run_workbench_document_collaboration.py": "556fa7d7def915d4148b51f34df4ffe396b18bbe893cc63cfa2047b0d7824222",
+    "tests/editor/workbench_document_collaboration.gd": "c14bcb43fe2b86e960188ce0f0f98c8b1972070acde8b704cfcbb2017bf14f29",
+    "design-docs/gonggong-ai-workbench-d07.md": "44fc0841f2bb97873bc6b008b3bf7e28d2b0eac2a24aac14654d35fea94445cf"
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5, SDK 10.0.26100.0",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<read-only SCons cache> cache_limit=0 --cache-readonly -j6",
+    "exit_code": 0,
+    "generated_header_sha256": "51a9672648907be6c1818550db2a1cd72ee63542f43bdf4480a0fc1b3ca2a62b",
+    "editor_sha256": "c63de28a21190914590c141f890ab262f128d3eca07c265f1fb08eedff1fbe03",
+    "observed_invalidation": [
+      "Generating editor/docks/workbench/BusinessSession.gen.h",
+      "Compiling editor/docks/workbench/AIWorkbenchSidebar.cpp",
+      "Linking editor static library",
+      "Linking Godot Windows editor"
+    ],
+    "binary_before_final_source_normalization": "3f3cd1dddaa46a35c0b25a578b4e4be830757b09d0c3049f50020de0f792fdf4"
+  },
+  "native_test": {
+    "command": "python tests/editor/run_workbench_document_collaboration.py --godot <candidate-editor> --report <report>",
+    "exit_code": 0,
+    "fixture": "Two private headless editor installations, distinct projects, personal sessions in accounts mode, two authenticated Godot WebSocket clients and one temporary loopback Tianxuan SQLite database.",
+    "report_sha256": "d3754ca65d41168138e96891d61b3a2a6bc964c0b20c01802e83fc1287b36677",
+    "state": "passed",
+    "editor_sha256": "c63de28a21190914590c141f890ab262f128d3eca07c265f1fb08eedff1fbe03",
+    "windows": {
+      "A": {
+        "account": "usr_492a07c343c443ac812ce839bd369494",
+        "different_paragraphs": {
+          "body_md": "设计目标 A\n约束条件\n\n交付清单 B",
+          "version": 3
+        },
+        "resolved": {
+          "body_md": "设计目标 A2\n约束条件 B2\n\n交付清单 B",
+          "version": 5
+        }
+      },
+      "B": {
+        "account": "usr_94681b8418524ab3b9c6490b30097e86",
+        "conflict": {
+          "local": "设计目标 A\n约束条件 B2\n\n交付清单 B",
+          "remote": "设计目标 A2\n约束条件\n\n交付清单 B",
+          "unchanged_server_version": 4.0
+        },
+        "different_paragraphs": {
+          "body_md": "设计目标 A\n约束条件\n\n交付清单 B",
+          "version": 3
+        },
+        "resolved": {
+          "body_md": "设计目标 A2\n约束条件 B2\n\n交付清单 B",
+          "version": 5
+        }
+      }
+    },
+    "history": [
+      {
+        "version": 1,
+        "body_md": "设计目标\n约束条件\n\n交付清单",
+        "author": "usr_492a07c343c443ac812ce839bd369494",
+        "created_at": "2026-11-21T17:51:35.392825+00:00"
+      },
+      {
+        "version": 2,
+        "body_md": "设计目标 A\n约束条件\n\n交付清单",
+        "author": "usr_492a07c343c443ac812ce839bd369494",
+        "created_at": "2026-11-21T17:51:39.979878+00:00"
+      },
+      {
+        "version": 3,
+        "body_md": "设计目标 A\n约束条件\n\n交付清单 B",
+        "author": "usr_94681b8418524ab3b9c6490b30097e86",
+        "created_at": "2026-11-21T17:51:40.156915+00:00"
+      },
+      {
+        "version": 4,
+        "body_md": "设计目标 A2\n约束条件\n\n交付清单 B",
+        "author": "usr_492a07c343c443ac812ce839bd369494",
+        "created_at": "2026-11-21T17:51:40.274852+00:00"
+      },
+      {
+        "version": 5,
+        "body_md": "设计目标 A2\n约束条件 B2\n\n交付清单 B",
+        "author": "usr_94681b8418524ab3b9c6490b30097e86",
+        "created_at": "2026-11-21T17:51:40.480534+00:00"
+      }
+    ],
+    "requests": [
+      {
+        "method": "PATCH",
+        "path": "/api/v1/docs/doc_ebfb59ea70ef4512b45ce1116890d855",
+        "status": 200,
+        "client_status": 200,
+        "current_version": 2
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/docs/doc_ebfb59ea70ef4512b45ce1116890d855",
+        "status": 409,
+        "client_status": 409,
+        "current_version": 2
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/docs/doc_ebfb59ea70ef4512b45ce1116890d855/merge/preview",
+        "status": 200,
+        "client_status": 200,
+        "current_version": 2
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/docs/doc_ebfb59ea70ef4512b45ce1116890d855",
+        "status": 200,
+        "client_status": 503,
+        "current_version": 3
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/docs/doc_ebfb59ea70ef4512b45ce1116890d855",
+        "status": 200,
+        "client_status": 200,
+        "current_version": 3
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/docs/doc_ebfb59ea70ef4512b45ce1116890d855",
+        "status": 200,
+        "client_status": 200,
+        "current_version": 4
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/docs/doc_ebfb59ea70ef4512b45ce1116890d855",
+        "status": 409,
+        "client_status": 409,
+        "current_version": 4
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/docs/doc_ebfb59ea70ef4512b45ce1116890d855/merge/preview",
+        "status": 409,
+        "client_status": 409,
+        "current_version": 4
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/v1/docs/doc_ebfb59ea70ef4512b45ce1116890d855",
+        "status": 200,
+        "client_status": 200,
+        "current_version": 5
+      }
+    ]
+  },
+  "regression": {
+    "command": "python tests/editor/run_workbench_documents.py --manual --godot <candidate-editor> --report <report>",
+    "exit_code": 0,
+    "report_sha256": "62093ec1faefb2adfe2a71301ca22fb719685e8a4580c4de34c7c163e41665ab",
+    "state": "passed",
+    "editor_sha256": "c63de28a21190914590c141f890ab262f128d3eca07c265f1fb08eedff1fbe03",
+    "pinned_revisions": [
+      {
+        "document_id": "doc_37362d9f8773434886277c7b53b14e91",
+        "paragraph": 2,
+        "selected_text": "第一个目标\n延续一行",
+        "version": 1
+      },
+      {
+        "document_id": "doc_2d28f26a49764b5ea0e85e551816567a",
+        "paragraph": 2,
+        "selected_text": "第二个目标",
+        "version": 2
+      },
+      {
+        "document_id": "doc_2d28f26a49764b5ea0e85e551816567a",
+        "paragraph": 2,
+        "selected_text": "原始段落",
+        "version": 1
+      }
+    ],
+    "manual_design": {
+      "document_id": "doc_62aa4ca657874ec789305d2faa2e8674",
+      "reopened": [
+        {
+          "author": "usr_1340b73384be4fa791e16bf822238ab2",
+          "body": "设定与目标\n保留换行\n\n第二段 · 手写",
+          "paragraph": 2,
+          "selected": "第二段 · 手写",
+          "version": 1
+        },
+        {
+          "author": "usr_1340b73384be4fa791e16bf822238ab2",
+          "body": "设定与目标\n保留换行\n\n第二段 · 手写\n\n第三段 · 复审",
+          "paragraph": 3,
+          "selected": "第三段 · 复审",
+          "version": 2
+        }
+      ],
+      "stale_draft_retained": true,
+      "write_receipts": [
+        {
+          "method": "POST",
+          "path": "/api/v1/docs",
+          "service_status": 200,
+          "client_status": 200
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/docs/doc_62aa4ca657874ec789305d2faa2e8674",
+          "service_status": 200,
+          "client_status": 503
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/docs/doc_62aa4ca657874ec789305d2faa2e8674",
+          "service_status": 200,
+          "client_status": 200
+        },
+        {
+          "method": "PATCH",
+          "path": "/api/v1/docs/doc_62aa4ca657874ec789305d2faa2e8674",
+          "service_status": 409,
+          "client_status": 409
+        }
+      ],
+      "retry_after_lost_success": "one committed revision"
+    },
+    "signout_cleared": true
+  },
+  "server_tests": {
+    "command": "python -m pytest -p no:cacheprovider -q customizations/components/tianxuan/wenqu/test_wenqu.py customizations/components/tianxuan/server/test_ws.py customizations/components/tianxuan/server/test_acl_matrix.py customizations/components/tianxuan/server/test_access_control.py",
+    "exit_code": 0,
+    "observed": "44 passed, 1 warning in 10.05s",
+    "warning": "Starlette TestClient deprecation warning from the fixture environment"
+  },
+  "handoff": {
+    "method": "editor-dependency-handoff/bind-consumer-release",
+    "receiver": "Parent Codex session for independent candidate verification, main delivery and Issue readback",
+    "candidate_state": "verified Windows candidate in isolated worktree; parent acceptance pending"
+  }
+}
