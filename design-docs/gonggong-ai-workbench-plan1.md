@@ -168,6 +168,8 @@
 
 ### C05
 
+[消息快照字段、发送与回读](gonggong-ai-workbench-c05.md)
+
 **形成单次消息的上下文快照** · [C05 #1864](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1864)
 
 在发送时固定项目、模块、工单、对象和所用修订。

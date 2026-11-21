@@ -25,6 +25,134 @@ def get_state(response, status=200):
     return response.json()
 
 
+def test_context_snapshot_survives_selection_revision_and_module_changes(tmp_path, monkeypatch):
+    database = str(tmp_path / "messages.sqlite")
+    store = Tianxuan(database)
+    actor = store.register("Studio", "maker@example.invalid", "password123")["user_id"]
+    auth = headers(store, actor, actor)
+    project = "studio/game"
+    selections = []
+    for key in ("first", "second"):
+        module = store.create_business_module(actor, project, "Lighting", call_id=key)
+        issue = store.create_issue(actor, "Review", project=project, module_id=module["id"])
+        document = store.create_doc(actor, "Lighting", f"{key} original")
+        selections.append({
+            "project": project,
+            "module_id": module["id"],
+            "issue_id": issue["id"],
+            "references": [{"kind": "document", "object_id": document["id"], "revision": document["version"]}],
+        })
+    monkeypatch.setenv("TIANXUAN_CHAT_MODEL", "test-model")
+    monkeypatch.setenv("TIANXUAN_CHAT_BASE_URL", "https://configured.example/v1")
+    monkeypatch.setenv("TIANXUAN_CHAT_MODEL_KEY", "workspace-fixture")
+    model_requests = []
+
+    def reply(request):
+        model_requests.append(json.loads(request.content)["messages"])
+        return httpx.Response(
+            200,
+            json={
+                "choices": [{"message": {"content": "received"}}],
+                "usage": {"prompt_tokens": 4, "completion_tokens": 1},
+                "model": "test-model",
+            },
+        )
+
+    gateway = ModelGateway(":memory:", transport=httpx.MockTransport(reply))
+    conversation_id = str(uuid4())
+    url = f"{ROOT}/{conversation_id}"
+    with TestClient(create_app(store, gateway=gateway), headers=auth) as client:
+        get_state(client.post(ROOT, json={"id": conversation_id}), 201)
+        selection = selections[0]
+        first = {"id": str(uuid4()), "expected_version": 0, "content": "Review this", "context_snapshot": selection}
+        response = get_state(client.post(url + "/turns", json=first))
+        assert response["turns"][0]["state"] == "answered"
+        selection = selections[1]
+        original = response["turns"][0]["context_snapshot"]["references"][0]
+        store.update_doc(actor, original["object_id"], "first revised", expected_version=1)
+        store.set_issue_module(actor, selections[0]["issue_id"], project, selection["module_id"])
+        # A transport retry addresses the committed turn, even after the original issue moved.
+        assert get_state(client.post(url + "/turns", json=first)) == response
+        assert client.post(url + "/turns", json={**first, "context_snapshot": selection}).status_code == 409
+        assert (
+            client.post(
+                url + "/turns",
+                json={
+                    **first,
+                    "id": str(uuid4()),
+                    "expected_version": response["version"],
+                },
+            ).status_code
+            == 409
+        )
+        second = {**first, "id": str(uuid4()), "expected_version": response["version"], "context_snapshot": selection}
+        result = get_state(client.post(url + "/turns", json=second))
+        assert result["turns"][1]["state"] == "answered"
+    assert len(model_requests) == 2
+    model_snapshots = [
+        json.loads(message["content"])["context_snapshot"] for message in model_requests[1] if message["role"] == "user"
+    ]
+    assert model_snapshots == selections
+    assert json.loads(model_requests[0][0]["content"])["context_snapshot"] == selections[0]
+    gateway.close()
+    store.db.close()
+
+    reopened = Tianxuan(database)
+    with TestClient(create_app(reopened), headers=auth) as client:
+        turns = get_state(client.get(url))["turns"]
+        assert [turn["context_snapshot"] for turn in turns] == selections
+        bodies = []
+        for turn in turns:
+            reference = turn["context_snapshot"]["references"][0]
+            path = f"/api/v1/docs/{reference['object_id']}/versions/{reference['revision']}"
+            bodies.append(get_state(client.get(path))["body_md"])
+        assert bodies == ["first original", "second original"]
+        current = get_state(client.get(f"/api/v1/docs/{original['object_id']}"))
+        assert (current["version"], current["body_md"]) == (2, "first revised")
+    reopened.db.close()
+
+
+def test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn():
+    store = Tianxuan()
+    owner = store.register("Team", "owner@example.invalid", "password123")["user_id"]
+    actor = store.add_member(owner, "editor@example.invalid", "password123")["user_id"]
+    outsider = store.register("Outside", "outside@example.invalid", "password123")["user_id"]
+    requirement = store.create_requirement(owner, "private", "Private", "goal", "scope", "done")
+    store.set_visibility(owner, requirement["id"], "private")
+    issue = store.create_issue(owner, "Public")
+    private = store.create_issue(owner, "Private", requirement_id=requirement["id"])
+    foreign = store.create_issue(outsider, "Public")
+    ref = {"kind": "document", "object_id": requirement["id"], "revision": 1}
+    snapshot = {"project": issue["project"], "module_id": issue["module_id"], "issue_id": issue["id"], "references": []}
+    key = str(uuid4())
+    url = f"{ROOT}/{key}"
+    with TestClient(create_app(store), headers=headers(store, owner, actor)) as client:
+        empty = get_state(client.post(ROOT, json={"id": key}), 201)
+        turn = {"id": str(uuid4()), "expected_version": 0, "content": "Discuss"}
+        for changes, expected in (
+            ({"issue_id": private["id"]}, 403),
+            ({"issue_id": foreign["id"]}, 404),
+            ({"project": "elsewhere"}, 409),
+            ({"module_id": "another"}, 409),
+            ({"references": [ref]}, 403),
+            ({"references": [{**ref, "revision": 0}]}, 422),
+            ({"references": [{"kind": "editor", "object_id": "res://a.gd", "revision": "HEAD"}]}, 422),
+            ({"issue_id": None, "module_id": "missing"}, 404),
+        ):
+            response = client.post(url + "/turns", json={**turn, "context_snapshot": {**snapshot, **changes}})
+            assert response.status_code == expected, response.text
+        store.share_doc(owner, requirement["id"], actor, "read")
+        missing = {**snapshot, "references": [{**ref, "revision": 2}]}
+        assert client.post(url + "/turns", json={**turn, "context_snapshot": missing}).status_code == 404
+        assert get_state(client.get(url)) == empty
+        local = {"kind": "editor", "object_id": "res://scenes/Hero.tscn#Arm", "revision": "e" * 64}
+        selection = {**snapshot, "issue_id": None, "references": [local]}
+        result = get_state(client.post(url + "/turns", json={**turn, "context_snapshot": selection}))
+        assert result["turns"][0]["context_snapshot"] == selection
+        assert result["turns"][0]["state"] == "unanswered"
+    store.db.close()
+
+
 def test_conversation_and_confirmations_are_private_durable_and_idempotent(tmp_path, monkeypatch):
     for name in ("duobao", "sinan-workorders"):
         monkeypatch.syspath_prepend(str(Path(__file__).resolve().parents[1] / name))

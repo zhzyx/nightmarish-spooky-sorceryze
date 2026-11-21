@@ -19,7 +19,7 @@ from gateway import ModelGateway, workspace_actor, workspace_reply
 from native_store import NativeStoreError
 from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 from starlette.concurrency import run_in_threadpool
-from tianxuan_core import Tianxuan, _storage_error
+from tianxuan_core import PROJECT_PATTERN, Tianxuan, _storage_error
 
 Stage = Literal["direction", "plan", "design"]
 STAGES = ("direction", "plan", "design")
@@ -43,9 +43,32 @@ class Version(Payload):
     expected_version: int = Field(ge=0)
 
 
+ObjectId = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1024)]
+
+
+class DocumentReference(Payload):
+    kind: Literal["document"]
+    object_id: ObjectId
+    revision: int = Field(strict=True, ge=1, le=2**63 - 1)
+
+
+class EditorReference(Payload):
+    kind: Literal["editor"]
+    object_id: ObjectId
+    revision: str = Field(pattern=r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+
+
+class MessageContext(Payload):
+    project: str = Field(pattern=PROJECT_PATTERN)
+    module_id: ObjectId
+    issue_id: ObjectId | None = None
+    references: list[DocumentReference | EditorReference] = Field(max_length=16)
+
+
 class Turn(Version):
     id: UUID
     content: Text
+    context_snapshot: MessageContext | None = None
 
 
 class Draft(Version):
@@ -267,40 +290,66 @@ class Conversations:
                 raise conflict("confirm the preceding stage first")
 
     @staticmethod
-    def context(record: dict[str, Any]) -> list[dict[str, Any]]:
+    def user_content(turn: dict[str, Any]) -> str:
+        if turn.get("context_snapshot") is None:
+            return str(turn["content"])
+        return json.dumps(
+            {"content": turn["content"], "context_snapshot": turn["context_snapshot"]}, ensure_ascii=False
+        )
+
+    @classmethod
+    def context(cls, record: dict[str, Any]) -> list[dict[str, Any]]:
         context: list[dict[str, Any]] = []
         for turn in record["turns"][-12:]:
             if turn["state"] == "answered":
                 context.extend((
-                    {"role": "user", "content": turn["content"]},
+                    {"role": "user", "content": cls.user_content(turn)},
                     {"role": "assistant", "content": turn["answer"]},
                 ))
         return context
 
+    def check_selection(self, actor: str, tenant: str, snapshot: MessageContext) -> None:
+        if snapshot.issue_id is None:
+            self.domain._business_module(tenant, snapshot.project, snapshot.module_id)
+        else:
+            issue = self.domain.read_issue(actor, snapshot.issue_id)
+            if (issue["project"], issue["module_id"]) != (snapshot.project, snapshot.module_id):
+                raise conflict("selected issue no longer belongs to this project and module")
+        for reference in snapshot.references:
+            if isinstance(reference, DocumentReference):
+                self.domain.get_doc_shared(actor, reference.object_id)
+                self.domain.version(reference.object_id, reference.revision)
+
     def turn(self, actor: str, key: str, payload: Turn, gateway: ModelGateway | None) -> dict[str, Any]:
         owner = self.owner(actor)
         turn_id = str(payload.id)
+        snapshot = payload.context_snapshot.model_dump() if payload.context_snapshot is not None else None
         with self.transaction() as db:
             record = self.get(db, owner, key)
             for turn in record["turns"]:
                 if turn["id"] == turn_id:
-                    if turn["content"] != payload.content:
-                        raise conflict("turn ID has different content")
+                    if turn["content"] != payload.content or turn.get("context_snapshot") != snapshot:
+                        raise conflict("turn ID has different content or context")
                     return record
             self.check(record, payload.expected_version)
             if len(record["turns"]) >= 100:
                 raise conflict("conversation turn limit reached")
             if any(turn["state"] == "pending" for turn in record["turns"]):
                 raise conflict("resolve the pending turn first")
+            if payload.context_snapshot is not None:
+                self.check_selection(actor, owner[0], payload.context_snapshot)
             context = self.context(record)
-            record["turns"].append({
+            message: dict[str, Any] = {
                 "id": turn_id,
                 "content": payload.content,
                 "state": "pending",
                 "answer": None,
                 "model": None,
                 "error": None,
-            })
+            }
+            if snapshot is not None:
+                message["context_snapshot"] = snapshot
+            record["turns"].append(message)
             if not record["title"]:
                 record["title"] = payload.content.splitlines()[0][:90]
             self.save(db, owner, record)
@@ -308,7 +357,8 @@ class Conversations:
         error: int | None = None
         result: dict[str, str] | None = None
         try:
-            result = workspace_reply(gateway, owner[0], actor, [*context, {"role": "user", "content": payload.content}])
+            context.append({"role": "user", "content": self.user_content(message)})
+            result = workspace_reply(gateway, owner[0], actor, context)
         except HTTPException as exc:
             error = exc.status_code
 
@@ -386,7 +436,11 @@ class Conversations:
                 confirmed[predecessor] = revision["body"]
             source = {
                 "conversation": [
-                    {"user": turn["content"][-4000:], "reply": (turn["answer"] or "")[-5000:]}
+                    {
+                        "user": turn["content"][-4000:],
+                        "reply": (turn["answer"] or "")[-5000:],
+                        **({"context_snapshot": turn["context_snapshot"]} if turn.get("context_snapshot") else {}),
+                    }
                     for turn in record["turns"][-6:]
                 ],
                 "confirmed_stages": confirmed,

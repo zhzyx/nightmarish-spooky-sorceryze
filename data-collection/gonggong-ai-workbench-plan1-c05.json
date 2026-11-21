@@ -1,0 +1,705 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-c05",
+  "issue_number": 1864,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1864",
+  "upstream": {
+    "closedAt": "2026-11-21T06:14:56Z",
+    "number": 1866,
+    "state": "CLOSED",
+    "stateReason": "COMPLETED"
+  },
+  "source_baseline": "62b3f5ec7e10b65409466615a4f46b9f41ba7389",
+  "observed_at": "2026-11-21T06:30:28.884282+00:00",
+  "candidate_sha256": {
+    "apps/tianxuan/lib/workspace-conversations.ts": "b93a992fc68d93e9731a37ac43bb62cf7c5274209779cf6833d4893af8daced9",
+    "customizations/components/tianxuan/server/workspace_conversations.py": "83d46ad7b1690aed9baf50fb4e317b9dfb970395d5c0290b17ab40628956ffc1",
+    "customizations/components/tianxuan/server/test_workspace_conversations.py": "11a6a9eaade458110ddff1b2074c74f634568a61fef1affc5ce729eb1c516378",
+    "design-docs/gonggong-ai-workbench-c05.md": "3684d277860ddfea00f83a49d0296d83b90bb52d5e4cf55db500a6fbb64ccda7"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "pytest": "9.2.0",
+    "fastapi": "0.165.0",
+    "starlette": "1.10.0",
+    "httpx": "0.28.1"
+  },
+  "validation": {
+    "test_command_from_repo_root": "python -B -X utf8 -m pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_workspace_conversations.py customizations/components/tianxuan/server/test_module_issues.py",
+    "exit_code": 0,
+    "tests": [
+      {
+        "case": "customizations/components/tianxuan/server/test_workspace_conversations.py::test_context_snapshot_survives_selection_revision_and_module_changes",
+        "result": "passed"
+      },
+      {
+        "case": "customizations/components/tianxuan/server/test_workspace_conversations.py::test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "result": "passed"
+      },
+      {
+        "case": "customizations/components/tianxuan/server/test_workspace_conversations.py::test_conversation_and_confirmations_are_private_durable_and_idempotent",
+        "result": "passed"
+      },
+      {
+        "case": "customizations/components/tianxuan/server/test_workspace_conversations.py::test_unconfigured_model_preserves_text_and_manual_design",
+        "result": "passed"
+      },
+      {
+        "case": "customizations/components/tianxuan/server/test_workspace_conversations.py::test_pending_turn_replay_and_stop_waiting_do_not_repeat_or_accept_late_reply",
+        "result": "passed"
+      },
+      {
+        "case": "customizations/components/tianxuan/server/test_module_issues.py::test_same_title_module_index_and_restart",
+        "result": "passed"
+      },
+      {
+        "case": "customizations/components/tianxuan/server/test_module_issues.py::test_scoped_issues_and_acl",
+        "result": "passed"
+      }
+    ],
+    "http_scope": "Authenticated FastAPI TestClient, disposable SQLite databases; model HTTP transport substituted",
+    "model_http_requests": [
+      {
+        "url": "https://configured.example/v1/chat/completions",
+        "messages": [
+          {
+            "role": "user",
+            "content": "{\"content\": \"Review this\", \"context_snapshot\": {\"project\": \"studio/game\", \"module_id\": \"mod_77b21c61228a43b5b031ebd89054a1b0\", \"issue_id\": \"iss_5b40181f0df54464b511137bf41c4f50\", \"references\": [{\"kind\": \"document\", \"object_id\": \"doc_7ad6de6185814d8a945c26c4e622c511\", \"revision\": 1}]}}"
+          }
+        ],
+        "status": 200
+      },
+      {
+        "url": "https://configured.example/v1/chat/completions",
+        "messages": [
+          {
+            "role": "user",
+            "content": "{\"content\": \"Review this\", \"context_snapshot\": {\"project\": \"studio/game\", \"module_id\": \"mod_77b21c61228a43b5b031ebd89054a1b0\", \"issue_id\": \"iss_5b40181f0df54464b511137bf41c4f50\", \"references\": [{\"kind\": \"document\", \"object_id\": \"doc_7ad6de6185814d8a945c26c4e622c511\", \"revision\": 1}]}}"
+          },
+          {
+            "role": "assistant",
+            "content": "received"
+          },
+          {
+            "role": "user",
+            "content": "{\"content\": \"Review this\", \"context_snapshot\": {\"project\": \"studio/game\", \"module_id\": \"mod_047686c6020145738c77c9f33eaba8a7\", \"issue_id\": \"iss_8296bb30ca0c4a27a124aca174143ec2\", \"references\": [{\"kind\": \"document\", \"object_id\": \"doc_537ea134f06b47da8cae9a3d9eade94a\", \"revision\": 1}]}}"
+          }
+        ],
+        "status": 200
+      }
+    ],
+    "http_readback": [
+      {
+        "test": "test_context_snapshot_survives_selection_revision_and_module_changes",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations",
+        "status": 201,
+        "conversation_version": 0,
+        "turns": []
+      },
+      {
+        "test": "test_context_snapshot_survives_selection_revision_and_module_changes",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/f420ddc0-08c3-45d7-a311-23d5e9a5607c/turns",
+        "status": 200,
+        "conversation_version": 2,
+        "turns": [
+          {
+            "id": "e2fccef6-a117-49ae-8cf6-13b6b3baff0e",
+            "state": "answered",
+            "context_snapshot": {
+              "project": "studio/game",
+              "module_id": "mod_77b21c61228a43b5b031ebd89054a1b0",
+              "issue_id": "iss_5b40181f0df54464b511137bf41c4f50",
+              "references": [
+                {
+                  "kind": "document",
+                  "object_id": "doc_7ad6de6185814d8a945c26c4e622c511",
+                  "revision": 1
+                }
+              ]
+            }
+          }
+        ],
+        "sent": {
+          "id": "e2fccef6-a117-49ae-8cf6-13b6b3baff0e",
+          "expected_version": 0,
+          "content": "Review this",
+          "context_snapshot": {
+            "project": "studio/game",
+            "module_id": "mod_77b21c61228a43b5b031ebd89054a1b0",
+            "issue_id": "iss_5b40181f0df54464b511137bf41c4f50",
+            "references": [
+              {
+                "kind": "document",
+                "object_id": "doc_7ad6de6185814d8a945c26c4e622c511",
+                "revision": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "test": "test_context_snapshot_survives_selection_revision_and_module_changes",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/f420ddc0-08c3-45d7-a311-23d5e9a5607c/turns",
+        "status": 200,
+        "conversation_version": 2,
+        "turns": [
+          {
+            "id": "e2fccef6-a117-49ae-8cf6-13b6b3baff0e",
+            "state": "answered",
+            "context_snapshot": {
+              "project": "studio/game",
+              "module_id": "mod_77b21c61228a43b5b031ebd89054a1b0",
+              "issue_id": "iss_5b40181f0df54464b511137bf41c4f50",
+              "references": [
+                {
+                  "kind": "document",
+                  "object_id": "doc_7ad6de6185814d8a945c26c4e622c511",
+                  "revision": 1
+                }
+              ]
+            }
+          }
+        ],
+        "sent": {
+          "id": "e2fccef6-a117-49ae-8cf6-13b6b3baff0e",
+          "expected_version": 0,
+          "content": "Review this",
+          "context_snapshot": {
+            "project": "studio/game",
+            "module_id": "mod_77b21c61228a43b5b031ebd89054a1b0",
+            "issue_id": "iss_5b40181f0df54464b511137bf41c4f50",
+            "references": [
+              {
+                "kind": "document",
+                "object_id": "doc_7ad6de6185814d8a945c26c4e622c511",
+                "revision": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "test": "test_context_snapshot_survives_selection_revision_and_module_changes",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/f420ddc0-08c3-45d7-a311-23d5e9a5607c/turns",
+        "status": 409,
+        "detail": "turn ID has different content or context",
+        "sent": {
+          "id": "e2fccef6-a117-49ae-8cf6-13b6b3baff0e",
+          "expected_version": 0,
+          "content": "Review this",
+          "context_snapshot": {
+            "project": "studio/game",
+            "module_id": "mod_047686c6020145738c77c9f33eaba8a7",
+            "issue_id": "iss_8296bb30ca0c4a27a124aca174143ec2",
+            "references": [
+              {
+                "kind": "document",
+                "object_id": "doc_537ea134f06b47da8cae9a3d9eade94a",
+                "revision": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "test": "test_context_snapshot_survives_selection_revision_and_module_changes",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/f420ddc0-08c3-45d7-a311-23d5e9a5607c/turns",
+        "status": 409,
+        "detail": "selected issue no longer belongs to this project and module",
+        "sent": {
+          "id": "f56434f4-7074-4ea2-b9cc-34e010b57af3",
+          "expected_version": 2,
+          "content": "Review this",
+          "context_snapshot": {
+            "project": "studio/game",
+            "module_id": "mod_77b21c61228a43b5b031ebd89054a1b0",
+            "issue_id": "iss_5b40181f0df54464b511137bf41c4f50",
+            "references": [
+              {
+                "kind": "document",
+                "object_id": "doc_7ad6de6185814d8a945c26c4e622c511",
+                "revision": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "test": "test_context_snapshot_survives_selection_revision_and_module_changes",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/f420ddc0-08c3-45d7-a311-23d5e9a5607c/turns",
+        "status": 200,
+        "conversation_version": 4,
+        "turns": [
+          {
+            "id": "e2fccef6-a117-49ae-8cf6-13b6b3baff0e",
+            "state": "answered",
+            "context_snapshot": {
+              "project": "studio/game",
+              "module_id": "mod_77b21c61228a43b5b031ebd89054a1b0",
+              "issue_id": "iss_5b40181f0df54464b511137bf41c4f50",
+              "references": [
+                {
+                  "kind": "document",
+                  "object_id": "doc_7ad6de6185814d8a945c26c4e622c511",
+                  "revision": 1
+                }
+              ]
+            }
+          },
+          {
+            "id": "b9019c0b-6e92-4eb6-b735-8e1e50af87be",
+            "state": "answered",
+            "context_snapshot": {
+              "project": "studio/game",
+              "module_id": "mod_047686c6020145738c77c9f33eaba8a7",
+              "issue_id": "iss_8296bb30ca0c4a27a124aca174143ec2",
+              "references": [
+                {
+                  "kind": "document",
+                  "object_id": "doc_537ea134f06b47da8cae9a3d9eade94a",
+                  "revision": 1
+                }
+              ]
+            }
+          }
+        ],
+        "sent": {
+          "id": "b9019c0b-6e92-4eb6-b735-8e1e50af87be",
+          "expected_version": 2,
+          "content": "Review this",
+          "context_snapshot": {
+            "project": "studio/game",
+            "module_id": "mod_047686c6020145738c77c9f33eaba8a7",
+            "issue_id": "iss_8296bb30ca0c4a27a124aca174143ec2",
+            "references": [
+              {
+                "kind": "document",
+                "object_id": "doc_537ea134f06b47da8cae9a3d9eade94a",
+                "revision": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "test": "test_context_snapshot_survives_selection_revision_and_module_changes",
+        "method": "GET",
+        "url": "/api/v1/workspace/conversations/f420ddc0-08c3-45d7-a311-23d5e9a5607c",
+        "status": 200,
+        "conversation_version": 4,
+        "turns": [
+          {
+            "id": "e2fccef6-a117-49ae-8cf6-13b6b3baff0e",
+            "state": "answered",
+            "context_snapshot": {
+              "project": "studio/game",
+              "module_id": "mod_77b21c61228a43b5b031ebd89054a1b0",
+              "issue_id": "iss_5b40181f0df54464b511137bf41c4f50",
+              "references": [
+                {
+                  "kind": "document",
+                  "object_id": "doc_7ad6de6185814d8a945c26c4e622c511",
+                  "revision": 1
+                }
+              ]
+            }
+          },
+          {
+            "id": "b9019c0b-6e92-4eb6-b735-8e1e50af87be",
+            "state": "answered",
+            "context_snapshot": {
+              "project": "studio/game",
+              "module_id": "mod_047686c6020145738c77c9f33eaba8a7",
+              "issue_id": "iss_8296bb30ca0c4a27a124aca174143ec2",
+              "references": [
+                {
+                  "kind": "document",
+                  "object_id": "doc_537ea134f06b47da8cae9a3d9eade94a",
+                  "revision": 1
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "test": "test_context_snapshot_survives_selection_revision_and_module_changes",
+        "method": "GET",
+        "url": "/api/v1/docs/doc_7ad6de6185814d8a945c26c4e622c511/versions/1",
+        "status": 200,
+        "document": {
+          "version": 1,
+          "body_md": "first original"
+        }
+      },
+      {
+        "test": "test_context_snapshot_survives_selection_revision_and_module_changes",
+        "method": "GET",
+        "url": "/api/v1/docs/doc_537ea134f06b47da8cae9a3d9eade94a/versions/1",
+        "status": 200,
+        "document": {
+          "version": 1,
+          "body_md": "second original"
+        }
+      },
+      {
+        "test": "test_context_snapshot_survives_selection_revision_and_module_changes",
+        "method": "GET",
+        "url": "/api/v1/docs/doc_7ad6de6185814d8a945c26c4e622c511",
+        "status": 200,
+        "document": {
+          "version": 2,
+          "body_md": "first revised"
+        }
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations",
+        "status": 201,
+        "conversation_version": 0,
+        "turns": []
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46/turns",
+        "status": 403,
+        "detail": "no access to document: doc_71b8b96f4c5f413aae49399224db2e7e",
+        "sent": {
+          "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+          "expected_version": 0,
+          "content": "Discuss",
+          "context_snapshot": {
+            "project": "workspace",
+            "module_id": "default",
+            "issue_id": "iss_96da67556b14480f86929064d21cd7dd",
+            "references": []
+          }
+        }
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46/turns",
+        "status": 404,
+        "detail": "issues object not found: iss_4e9f718694fa4db3a74a99e33c381f76",
+        "sent": {
+          "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+          "expected_version": 0,
+          "content": "Discuss",
+          "context_snapshot": {
+            "project": "workspace",
+            "module_id": "default",
+            "issue_id": "iss_4e9f718694fa4db3a74a99e33c381f76",
+            "references": []
+          }
+        }
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46/turns",
+        "status": 409,
+        "detail": "selected issue no longer belongs to this project and module",
+        "sent": {
+          "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+          "expected_version": 0,
+          "content": "Discuss",
+          "context_snapshot": {
+            "project": "elsewhere",
+            "module_id": "default",
+            "issue_id": "iss_5e22d7d5173b4a858a2c2e2bc55c498f",
+            "references": []
+          }
+        }
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46/turns",
+        "status": 409,
+        "detail": "selected issue no longer belongs to this project and module",
+        "sent": {
+          "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+          "expected_version": 0,
+          "content": "Discuss",
+          "context_snapshot": {
+            "project": "workspace",
+            "module_id": "another",
+            "issue_id": "iss_5e22d7d5173b4a858a2c2e2bc55c498f",
+            "references": []
+          }
+        }
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46/turns",
+        "status": 403,
+        "detail": "no access to document: doc_71b8b96f4c5f413aae49399224db2e7e",
+        "sent": {
+          "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+          "expected_version": 0,
+          "content": "Discuss",
+          "context_snapshot": {
+            "project": "workspace",
+            "module_id": "default",
+            "issue_id": "iss_5e22d7d5173b4a858a2c2e2bc55c498f",
+            "references": [
+              {
+                "kind": "document",
+                "object_id": "doc_71b8b96f4c5f413aae49399224db2e7e",
+                "revision": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46/turns",
+        "status": 422,
+        "detail": [
+          {
+            "type": "greater_than_equal",
+            "loc": [
+              "body",
+              "context_snapshot",
+              "references",
+              0,
+              "DocumentReference",
+              "revision"
+            ],
+            "msg": "Input should be greater than or equal to 1",
+            "input": 0,
+            "ctx": {
+              "ge": 1
+            }
+          },
+          {
+            "type": "literal_error",
+            "loc": [
+              "body",
+              "context_snapshot",
+              "references",
+              0,
+              "EditorReference",
+              "kind"
+            ],
+            "msg": "Input should be 'editor'",
+            "input": "document",
+            "ctx": {
+              "expected": "'editor'"
+            }
+          },
+          {
+            "type": "string_type",
+            "loc": [
+              "body",
+              "context_snapshot",
+              "references",
+              0,
+              "EditorReference",
+              "revision"
+            ],
+            "msg": "Input should be a valid string",
+            "input": 0
+          }
+        ],
+        "sent": {
+          "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+          "expected_version": 0,
+          "content": "Discuss",
+          "context_snapshot": {
+            "project": "workspace",
+            "module_id": "default",
+            "issue_id": "iss_5e22d7d5173b4a858a2c2e2bc55c498f",
+            "references": [
+              {
+                "kind": "document",
+                "object_id": "doc_71b8b96f4c5f413aae49399224db2e7e",
+                "revision": 0
+              }
+            ]
+          }
+        }
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46/turns",
+        "status": 422,
+        "detail": [
+          {
+            "type": "literal_error",
+            "loc": [
+              "body",
+              "context_snapshot",
+              "references",
+              0,
+              "DocumentReference",
+              "kind"
+            ],
+            "msg": "Input should be 'document'",
+            "input": "editor",
+            "ctx": {
+              "expected": "'document'"
+            }
+          },
+          {
+            "type": "int_type",
+            "loc": [
+              "body",
+              "context_snapshot",
+              "references",
+              0,
+              "DocumentReference",
+              "revision"
+            ],
+            "msg": "Input should be a valid integer",
+            "input": "HEAD"
+          },
+          {
+            "type": "string_pattern_mismatch",
+            "loc": [
+              "body",
+              "context_snapshot",
+              "references",
+              0,
+              "EditorReference",
+              "revision"
+            ],
+            "msg": "String should match pattern '^(?:[0-9a-f]{40}|[0-9a-f]{64})$'",
+            "input": "HEAD",
+            "ctx": {
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            }
+          }
+        ],
+        "sent": {
+          "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+          "expected_version": 0,
+          "content": "Discuss",
+          "context_snapshot": {
+            "project": "workspace",
+            "module_id": "default",
+            "issue_id": "iss_5e22d7d5173b4a858a2c2e2bc55c498f",
+            "references": [
+              {
+                "kind": "editor",
+                "object_id": "res://a.gd",
+                "revision": "HEAD"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46/turns",
+        "status": 404,
+        "detail": "business module not found",
+        "sent": {
+          "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+          "expected_version": 0,
+          "content": "Discuss",
+          "context_snapshot": {
+            "project": "workspace",
+            "module_id": "missing",
+            "issue_id": null,
+            "references": []
+          }
+        }
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46/turns",
+        "status": 404,
+        "detail": "version not found: doc_71b8b96f4c5f413aae49399224db2e7e@2",
+        "sent": {
+          "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+          "expected_version": 0,
+          "content": "Discuss",
+          "context_snapshot": {
+            "project": "workspace",
+            "module_id": "default",
+            "issue_id": "iss_5e22d7d5173b4a858a2c2e2bc55c498f",
+            "references": [
+              {
+                "kind": "document",
+                "object_id": "doc_71b8b96f4c5f413aae49399224db2e7e",
+                "revision": 2
+              }
+            ]
+          }
+        }
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "GET",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46",
+        "status": 200,
+        "conversation_version": 0,
+        "turns": []
+      },
+      {
+        "test": "test_context_rejects_inaccessible_or_unversioned_selection_without_recording_a_turn",
+        "method": "POST",
+        "url": "/api/v1/workspace/conversations/939a52fd-13d9-4aef-976c-6279503ddd46/turns",
+        "status": 200,
+        "conversation_version": 2,
+        "turns": [
+          {
+            "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+            "state": "unanswered",
+            "context_snapshot": {
+              "project": "workspace",
+              "module_id": "default",
+              "issue_id": null,
+              "references": [
+                {
+                  "kind": "editor",
+                  "object_id": "res://scenes/Hero.tscn#Arm",
+                  "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+                }
+              ]
+            }
+          }
+        ],
+        "sent": {
+          "id": "3cb2b715-4bb6-4e49-a9a5-a416a6c842f8",
+          "expected_version": 0,
+          "content": "Discuss",
+          "context_snapshot": {
+            "project": "workspace",
+            "module_id": "default",
+            "issue_id": null,
+            "references": [
+              {
+                "kind": "editor",
+                "object_id": "res://scenes/Hero.tscn#Arm",
+                "revision": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+              }
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "style_reverification": {
+    "old_source_hashes": {
+      "customizations/components/tianxuan/server/test_workspace_conversations.py": "ba8d78746665e01e393e87771f044f39a2a6e2ec946ad5c84b9f2b2ec2e6c9e4"
+    },
+    "result": "签发前归一化测试源文件格式并在 Python 3.12.14 复跑 7 项业务与模块用例，全部通过。",
+    "observed_at": "2026-11-21T06:43:25.323397+00:00"
+  }
+}
