@@ -47,6 +47,7 @@ from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
     CommitStatusRequest,
+    DesignSignoffRequest,
     DocCreateRequest,
     DocIssueLinkRequest,
     DocMergeRequest,
@@ -1163,6 +1164,14 @@ def create_app(
     def get_version(doc_id: str, version: int, actor: ActorDep) -> dict[str, Any]:
         store.get_doc_shared(actor, doc_id)
         return store.version(doc_id, version)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/docs/{doc_id}/versions/{version}/signoff")
+    def get_design_signoff(doc_id: str, version: int, actor: ActorDep) -> dict[str, Any]:
+        return {"signoff": store.design_signoff(actor, doc_id, version)}
+
+    @app.post("/api/v1/docs/{doc_id}/versions/{version}/signoff")
+    def confirm_design(doc_id: str, version: int, payload: DesignSignoffRequest, actor: ActorDep) -> dict[str, Any]:
+        return {"signoff": store.design_signoff(actor, doc_id, version, payload.acceptance)}
 
     @app.post("/api/v1/docs/{doc_id}/versions/{version}/restore")
     def restore_version(doc_id: str, version: int, payload: DocRestoreRequest, actor: ActorDep) -> dict[str, Any]:

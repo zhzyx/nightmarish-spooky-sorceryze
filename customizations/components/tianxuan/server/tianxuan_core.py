@@ -70,6 +70,10 @@ CREATE TABLE IF NOT EXISTS doc_versions (
   id TEXT PRIMARY KEY, doc_id TEXT NOT NULL, version INTEGER NOT NULL,
   body_md TEXT NOT NULL, author TEXT NOT NULL, created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS design_signoffs (
+  document_id TEXT NOT NULL, version INTEGER NOT NULL, confirmed_by TEXT NOT NULL,
+  confirmed_at TEXT NOT NULL, acceptance TEXT NOT NULL, PRIMARY KEY(document_id, version)
+);
 CREATE TABLE IF NOT EXISTS issues (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, parent_id TEXT, number INTEGER NOT NULL,
   type TEXT NOT NULL, status TEXT NOT NULL, priority TEXT NOT NULL DEFAULT 'normal',
@@ -1312,6 +1316,38 @@ class Tianxuan:
             raise NotFound(f"version not found: {doc_id}@{version}")
         return dict(row)
 
+    @_connection_call
+    def design_signoff(
+        self, actor: str, doc_id: str, version: int, acceptance: str | None = None
+    ) -> dict[str, Any] | None:
+        if type(version) is not int or not 1 <= version <= 2**63 - 1:
+            raise TianxuanError("version must be a positive SQLite integer")
+        if acceptance is not None:
+            if not self.db.in_transaction:
+                self.db.execute("BEGIN IMMEDIATE")
+            self._require_editor(actor)
+        self.get_doc_shared(actor, doc_id, write=acceptance is not None)
+        self.version(doc_id, version)
+        if acceptance is not None:
+            acceptance = acceptance.strip()
+            if not acceptance or len(acceptance) > 8000:
+                raise TianxuanError("acceptance criteria must contain 1 to 8000 characters")
+            self.db.execute(
+                "INSERT INTO design_signoffs(document_id,version,confirmed_by,confirmed_at,acceptance) "
+                "VALUES(?,?,?,?,?) ON CONFLICT(document_id,version) DO NOTHING",
+                (doc_id, version, actor, _now(), acceptance),
+            )
+        row = self.db.execute(
+            "SELECT document_id,version,confirmed_by,confirmed_at,acceptance FROM design_signoffs "
+            "WHERE document_id=? AND version=?",
+            (doc_id, version),
+        ).fetchone()
+        if row is None:
+            return None
+        if acceptance is not None and (row["acceptance"] != acceptance or row["confirmed_by"] != actor):
+            raise VersionConflict("this revision already has a signoff; reopen to read its receipt")
+        return dict(row)
+
     # ---------- 文曲：评论 ----------
 
     @_connection_call
@@ -2272,6 +2308,7 @@ class Tianxuan:
 
     # ---------- 跨系统：天枢 ↔ 天璇 ----------
 
+    @_connection_call
     def link_external(
         self,
         actor: str,

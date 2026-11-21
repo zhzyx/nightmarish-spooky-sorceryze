@@ -37,7 +37,7 @@ CHATS = "/api/v1/workspace/conversations"
 PROJECT = "u11/studio"
 
 
-def exercise(root, binary):
+def exercise(root, binary, verify_routes=None):
     engine = copy_editor(binary, root / "editor")
     project = root / "project"
     project.mkdir()
@@ -127,6 +127,13 @@ def exercise(root, binary):
             assert len(model_inputs) == 2
             assert not any(method != "GET" and not path.startswith(CHATS + "/") for method, path, _ in native_calls)
             assert not any("/execution" in path for _, path, _ in native_calls)
+            route_results = None
+            if verify_routes:
+                try:
+                    route_results = verify_routes(engine, project, env, store, actor, issues, native)
+                except AssertionError as exc:
+                    raise AssertionError(f"{exc}\nHTTP route diagnostics: {calls[len(native_calls) :]}") from exc
+                route_results["http"] = sorted(set(calls[len(native_calls) :]))
             records = []
             with httpx.Client(base_url=origin, headers={"Authorization": "Bearer " + token}, trust_env=False) as client:
                 for issue, record, prompt in zip(issues, native["records"], model_inputs, strict=True):
@@ -179,6 +186,7 @@ def exercise(root, binary):
         )
     return {
         "editor_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
+        **({"routes": route_results} if verify_routes else {}),
         "native": native,
         "http": native_calls,
         "turns": records,

@@ -228,6 +228,11 @@ class ToolCallRequest(BaseModel):
     call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
+class DesignSignoffRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    acceptance: str = Field(min_length=1, max_length=8000)
+
+
 class DocRestoreRequest(BaseModel):
     expected_version: int = Field(ge=1, strict=True)
     call_id: str | None = Field(default=None, min_length=1, max_length=256)

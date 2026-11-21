@@ -140,6 +140,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 		}
 		MountWorkbenchControl(pSession, "WorkbenchIssueSearch", daqian_issue_search);
 		MountWorkbenchControl(pSession, "WorkbenchDocumentHistory", daqian_document_history);
+		MountWorkbenchControl(pSession, "WorkbenchDesignSignoff", daqian_design_signoff);
 	}
 	MenuButton *pResourceMenu = memnew(MenuButton);
 	pResourceMenu->set_name("WorkbenchResourceSelection");
@@ -222,7 +223,12 @@ void AIChatDock::PrepareWorkbenchConsultation()
 
 void AIChatDock::OpenWorkbenchSidebar()
 {
-	if (idWorkbenchReturnScreen.is_null() && !WorkbenchReferenceLocked())
+	ShowWorkbenchSidebar(true);
+}
+
+void AIChatDock::ShowWorkbenchSidebar(bool p_capture_source)
+{
+	if (p_capture_source && idWorkbenchReturnScreen.is_null() && !WorkbenchReferenceLocked())
 	{
 		if (nConversationIndex < 0)
 		{
@@ -247,8 +253,12 @@ void AIChatDock::OpenWorkbenchSidebar()
 		{
 			EditorDockManager::get_singleton()->force_focus_dock(pScreen);
 		}
+		else
+		{
+			EditorDockManager::get_singleton()->force_focus_dock(this);
+		}
 	}
-	else if (nConversationIndex < 0)
+	else if (p_capture_source && nConversationIndex < 0)
 	{
 		// Entering from an editing surface starts in consultation. Returning from
 		// the expanded view retains the mode selected for this conversation.
@@ -272,6 +282,39 @@ void AIChatDock::OpenWorkbenchSidebar()
 	else if (Control *composer = Object::cast_to<Control>(pConversationView->find_child("ModuleChatInput", true, false)))
 	{
 		composer->grab_focus();
+	}
+}
+
+void AIChatDock::save_layout_to_config(Ref<ConfigFile> &p_layout, const String &p_section) const
+{
+	EditorDock::save_layout_to_config(p_layout, p_section);
+	p_layout->set_value(p_section, "sidebar_visible", pWorkbenchSidebar && pWorkbenchSidebar->is_visible_in_tree());
+	if (pBusinessModules)
+	{
+		p_layout->set_value(p_section, "consultation", pBusinessModules->call("get_consultation_location"));
+	}
+}
+
+void AIChatDock::RestoreWorkbenchLayout(bool p_full, const Dictionary &p_location)
+{
+	if (p_full)
+	{
+		// The old selected tab was a business surface. Return from the full view to an editing surface.
+		EditorMainScreen *pMain = EditorNode::get_editor_main_screen();
+		EditorDock *pEditing = pMain->get_dock_by_name("3D");
+		if (pEditing)
+		{
+			EditorDockManager::get_singleton()->force_focus_dock(pEditing);
+		}
+	}
+	ShowWorkbenchSidebar(false);
+	if (p_full)
+	{
+		ExpandWorkbenchSidebar();
+	}
+	if (pBusinessModules && !p_location.is_empty())
+	{
+		pBusinessModules->call("restore_consultation_location", p_location);
 	}
 }
 

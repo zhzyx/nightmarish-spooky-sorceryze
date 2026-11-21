@@ -1,0 +1,156 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d09",
+  "issue_number": 1858,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1858",
+  "producer": "wave22_d09",
+  "baseline": "962f325d4fb5f38d42c5195b47c5b70b5729f3b8",
+  "verified_at": "2026-11-21T21:39:04.496274+00:00",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d09/dispatch-c8672dc5bab74914a9d42d44e835361b.json",
+  "source_revision": "5ee0d77946b9fbbfd8aa67052b9c7989d19d7396a3622af968d122e4e3772025",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/test_design_signoff.py": "67c8339ddeffd6877ae42dd075b4f21e06978e991ad3338e2598a21fb72aea42",
+    "design-docs/gonggong-ai-workbench-d09.md": "69401be0d3aac529a369bd0f90e9c09e8595d5ab19579547186af3fde91583df",
+    "editor/docks/workbench/design_signoff.gd": "938c96f7b53875f2a8c5cb214874a96f6e698c49cc225ad0b57ef8068b4b290a",
+    "tests/editor/run_workbench_design_signoff.py": "975d002e9123419ef3a6d2b8293a4586184c1460279f8d84b386f46fecbabeca",
+    "tests/editor/workbench_design_signoff.gd": "6cd8b0cad233bc30cec2ac1e82443277dd1e38dc0f23bcfeb823c3b339a4f338",
+    "customizations/components/tianxuan/server/api.py": "833f3deee811ca9509d412a1fb3772e1d61d2e394382ebfd155526b35ff18080",
+    "customizations/components/tianxuan/server/schemas.py": "67edab8d8f32090c9509186b0afd8bdcee8c648e6d9a4094b9597a2acb42ceb0",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "d339b8ef9b5598dbb5b57a07c95c35a50b3cca11ac82b7396c3fab5583872227",
+    "editor/SCsub": "9aa081d903cc14efdf0aa52895f6f5d65c00c1e419923b282a4ed28d1ba9b5c3",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "2ae953e5b21cdff747a93f9c9d1fe4c3e7ae7912dc533257263cc56424d4a687",
+    "editor/docks/workbench/business_session.gd": "7b86db7d04133d6c7f50832069563f78348faf6b7b15c91e995d00b838f53e18"
+  },
+  "intake": {
+    "status": "status:in-progress",
+    "issue_comments": 0,
+    "upstream_macos_observations": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860#issuecomment-7067023618",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1861#issuecomment-7068555775"
+    ],
+    "macos_d09_candidate_run": null
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5, Windows SDK 10.0.26100.0",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared cache> cache_limit=0 --cache-readonly -j6",
+    "exit_code": 0,
+    "header_sha256": "6ea1917862e7417013bf2a4ad02aaba85146afdd94295c5164be290c99248a57",
+    "editor_sha256": "d822f3726ba9cb50cd874e20e3bf2ca033961342d203efd5cbbe5201b5da6428",
+    "observed_invalidation": [
+      "BusinessSession.gen.h",
+      "AIWorkbenchSidebar.cpp",
+      "editor.windows.editor.x86_64.lib",
+      "godot.windows.editor.x86_64.exe"
+    ]
+  },
+  "test_results": {
+    "native_command": "python -X utf8 tests/editor/run_workbench_design_signoff.py --godot <candidate> --report <report>",
+    "native_exit_code": 0,
+    "native_report_sha256": "aed69809c8ad6ac5c3da5cbabcc2b87145e24ad9934d50321489fa6a29fccea0",
+    "native": {
+      "state": "passed",
+      "editor_sha256": "d822f3726ba9cb50cd874e20e3bf2ca033961342d203efd5cbbe5201b5da6428",
+      "native": [
+        [
+          {
+            "body": "One lever opens the bridge.",
+            "unsigned": 1
+          },
+          {
+            "acceptance": "One pull opens the bridge.",
+            "status": "v1 已签认 · 确认人 usr_ec0c43d6148944b6be58695b62ef699a · 2026-11-21T21:37:32.715215+00:00",
+            "version": 1
+          }
+        ],
+        [
+          {
+            "body": "Pull the lever twice.",
+            "unsigned": 2
+          },
+          {
+            "acceptance": "Two pulls open the bridge.",
+            "status": "v2 已签认 · 确认人 usr_ec0c43d6148944b6be58695b62ef699a · 2026-11-21T21:37:36.644528+00:00",
+            "version": 2
+          },
+          {
+            "acceptance": "One pull opens the bridge.",
+            "body": "One lever opens the bridge.",
+            "reopened": 1,
+            "status": "v1 已签认 · 确认人 usr_ec0c43d6148944b6be58695b62ef699a · 2026-11-21T21:37:32.715215+00:00"
+          }
+        ]
+      ],
+      "writes": [
+        {
+          "path": "/api/v1/docs/doc_0cbbe0916f5242e2a7ba36f3fb966f0a/versions/1/signoff",
+          "payload": {
+            "acceptance": "One pull opens the bridge."
+          },
+          "server": 200,
+          "client": 503
+        },
+        {
+          "path": "/api/v1/docs/doc_0cbbe0916f5242e2a7ba36f3fb966f0a/versions/1/signoff",
+          "payload": {
+            "acceptance": "One pull opens the bridge."
+          },
+          "server": 200,
+          "client": 200
+        },
+        {
+          "path": "/api/v1/docs/doc_0cbbe0916f5242e2a7ba36f3fb966f0a/versions/2/signoff",
+          "payload": {
+            "acceptance": "Two pulls open the bridge."
+          },
+          "server": 200,
+          "client": 200
+        }
+      ],
+      "durable_receipts": [
+        {
+          "document_id": "doc_0cbbe0916f5242e2a7ba36f3fb966f0a",
+          "version": 1,
+          "confirmed_by": "usr_ec0c43d6148944b6be58695b62ef699a",
+          "confirmed_at": "2026-11-21T21:37:32.715215+00:00",
+          "acceptance": "One pull opens the bridge."
+        },
+        {
+          "document_id": "doc_0cbbe0916f5242e2a7ba36f3fb966f0a",
+          "version": 2,
+          "confirmed_by": "usr_ec0c43d6148944b6be58695b62ef699a",
+          "confirmed_at": "2026-11-21T21:37:36.644528+00:00",
+          "acceptance": "Two pulls open the bridge."
+        }
+      ],
+      "database_row_count": 2,
+      "viewer_can_read": true,
+      "viewer_write_status": 403,
+      "changed_criteria_status": 409,
+      "created_issues": 0
+    },
+    "fixture": "Two independent private headless editor processes in embedded-window mode. Mouse events at button screen coordinates pass through the root viewport. A real loopback Tianxuan service uses SQLite, authenticated sessions and websockets.",
+    "service_command": "python -m pytest -q customizations/components/tianxuan/server/test_design_signoff.py customizations/components/tianxuan/server/test_api_versions.py customizations/components/tianxuan/server/test_api_sharing.py customizations/components/tianxuan/server/test_workspace_conversations.py",
+    "service_exit_code": 0,
+    "service_result": "14 passed (one Starlette TestClient deprecation warning)",
+    "adjacent_command": "python tests/editor/run_workbench_documents.py --history --godot <candidate> --report <report>",
+    "adjacent_exit_code": 0,
+    "adjacent_report_sha256": "ae565fdcf44adb7a85952ff23a0a8f0c93ca8a6741156ee567e1319cefcbd21c",
+    "adjacent_results": {
+      "state": "passed",
+      "same_title": true,
+      "reopened_revisions": [
+        1,
+        2,
+        3
+      ],
+      "concurrent_head_preserved": true,
+      "signout_cleared": true
+    }
+  },
+  "handoff": {
+    "method": "editor-dependency-handoff/bind-consumer-release",
+    "receiver": "Parent Codex session for independent acceptance, main delivery and issue readback",
+    "consumer_contract": "GET /api/v1/docs/{document_id}/versions/{version}/signoff returns {signoff: null | {document_id,version,confirmed_by,confirmed_at,acceptance}} within document ACLs.",
+    "candidate_status": "Windows candidate locally verified; parent delivery pending"
+  }
+}

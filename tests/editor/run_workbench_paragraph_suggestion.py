@@ -56,10 +56,13 @@ def exercise(root, binary, source_controls, windowed, images):
         id=doc["id"], other=other["id"], body=body, original=original, replacement=replacement, candidate=candidate
     )
     prompts, writes, previews = [], [], []
+    identity_preview_started = root / "identity-preview-started"
 
     def model(request):
         content = json.loads(json.loads(request.content)["messages"][-1]["content"])
         prompts.append(content)
+        if content["instruction"] == "切换身份":
+            identity_preview_started.touch()
         if content["instruction"].startswith("切换"):
             time.sleep(0.25)
         return httpx.Response(
@@ -124,6 +127,7 @@ def exercise(root, binary, source_controls, windowed, images):
                 TIANXUAN_TOKEN=token,
                 TIANXUAN_PROJECT="studio/game",
                 D05_FIXTURE=json.dumps(fixture),
+                D05_IDENTITY_PREVIEW_STARTED=str(identity_preview_started),
             )
             if source_controls:
                 env["D05_SOURCE_CONTROLS"] = "1"
@@ -152,7 +156,7 @@ def exercise(root, binary, source_controls, windowed, images):
                 "切换段落",
                 "切换文档",
                 "切换身份",
-            ]
+            ], [item["instruction"] for item in prompts]
             assert all(p["paragraph"] == original for p in prompts[:3])
             assert [p["writes_seen"] for p in previews[:3]] == [0, 0, 0]
             assert [p["paragraph"] for p in previews[:3]] == [3, 3, 3]

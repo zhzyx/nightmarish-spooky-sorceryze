@@ -3292,8 +3292,8 @@ void TextEdit::gui_input(const Ref<InputEvent> &p_gui_input) {
 			return;
 		}
 
-		// Toggle Tab mode.
-		if (k->is_action("ui_focus_mode", true)) {
+		// Match the original modifiers when toggling Tab mode; caret movement cleared Shift on its copy.
+		if (p_gui_input->is_action("ui_focus_mode", true)) {
 			tab_input_mode = !tab_input_mode;
 			accept_event();
 			return;

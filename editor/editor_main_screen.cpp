@@ -110,7 +110,7 @@ void EditorMainScreen::_update_workspace_menu() {
 	PopupMenu *popup = workspace_menu->get_popup();
 	popup->clear();
 	for (int i = 0; i < get_tab_count(); i++) {
-		if (is_tab_hidden(i)) {
+		if (is_tab_hidden(i) && get_dock(i)->get_layout_key() != "DaqianMainScreen") {
 			continue;
 		}
 		popup->add_icon_radio_check_item(get_tab_icon(i), get_tab_title(i), i);
@@ -122,7 +122,7 @@ void EditorMainScreen::_update_workspace_menu() {
 
 void EditorMainScreen::_select_workspace(int p_tab) {
 	// This is explicit user navigation, not automatic selection while inspecting a node.
-	if (p_tab >= 0 && p_tab < get_tab_count() && !is_tab_hidden(p_tab) && !is_tab_disabled(p_tab)) {
+	if (p_tab >= 0 && p_tab < get_tab_count() && (!is_tab_hidden(p_tab) || get_dock(p_tab)->get_layout_key() == "DaqianMainScreen") && !is_tab_disabled(p_tab)) {
 		set_current_tab(p_tab);
 	}
 }
@@ -201,24 +201,22 @@ bool EditorMainScreen::can_switch_dock() const {
 }
 
 void EditorMainScreen::select_next() {
-	if (get_tab_count() == 0) {
-		return;
-	}
-	if (get_current_tab() < get_tab_count() - 1) {
-		set_current_tab(get_current_tab() + 1);
-	} else {
-		set_current_tab(0);
-	}
+	_select_neighbor(1);
 }
 
 void EditorMainScreen::select_prev() {
-	if (get_tab_count() == 0) {
-		return;
-	}
-	if (get_current_tab() > 0) {
-		set_current_tab(get_current_tab() - 1);
-	} else {
-		set_current_tab(get_tab_count() - 1);
+	_select_neighbor(-1);
+}
+
+void EditorMainScreen::_select_neighbor(int p_step) {
+	const int count = get_tab_count();
+	for (int offset = 1; offset <= count; offset++) {
+		const int next = Math::posmod(get_current_tab() + p_step * offset, count);
+		const String key = get_dock(next)->get_layout_key();
+		if (!(is_tab_hidden(next) && (key == "AIChatMainScreen" || key == "DaqianMainScreen"))) {
+			set_current_tab(next);
+			return;
+		}
 	}
 }
 
