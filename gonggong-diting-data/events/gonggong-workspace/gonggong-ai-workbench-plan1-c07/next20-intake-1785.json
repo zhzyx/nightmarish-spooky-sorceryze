@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-c07",
+  "event_id": "next20-intake-1785",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1785",
+  "occurred_at": "2026-11-21T12:57:37.757761+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1785,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T12:57:33Z",
+    "accepted_dependencies": {
+      "1806": "82adeffcaf7ebcf9a82c742176cbd9e4a2ad6a22",
+      "1869": "fc43b92cdc29f91825a5fd10fd708ec8e118d0fd"
+    },
+    "title": "[方案一 C07] 处理无归属和多归属资产"
+  },
+  "evidence_refs": [],
+  "sha256": "56fedeec189fafa32d632e761b12f839d06113dab764fcbcca89ece704fe5964"
+}

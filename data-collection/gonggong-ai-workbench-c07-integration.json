@@ -1,0 +1,170 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-c07",
+  "issue_number": 1785,
+  "integration_base": "9ab038d900ba277d0e58ad6171a7a0026c3e9a1c",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/business_asset_api.py": "22534b23d6a64fdd7e3a00ee9a230689108759747f10ceda0ad6b8386bfffd56",
+    "customizations/components/tianxuan/server/test_business_assets.py": "c6b393fbeaa610e5692d2f51e02a7ab35adca95ef5e1ff6a67a918d27d45d1e5",
+    "design-docs/gonggong-ai-workbench-c07.md": "ec5ec18b01cd06bf348a613495b705d206dcf457b66a3fb80b25547ca64f1ab7",
+    "editor/SCsub": "32e0974d02c182643554e6b258a2fe0d22ab87ea1fe587bb544920acf4c909a5",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "ab369f55a71bd15ad32ab9eefa6b4bd3fa027771053ceeb3f5214e412b440b0a",
+    "editor/docks/workbench/asset_picker.gd": "3a254175f16532b882e1de712162bac06b2f77a0d68e1e8cfc2647280f292814",
+    "editor/docks/workbench/module_selector.gd": "91b0d4ef147815b86c2eaeb588d5c08cb3053f4cc01ef6f41537df03a03ca1db",
+    "gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-feaa13c3551428f83b68a6447de564a8c620fd894ef7333787ba6e58b1ffbd4f.json": "c93d3f31074ddd39dbc2571961c1320575eed387f2c671ac9f60179d657c2a45",
+    "tests/editor/run_workbench_asset_ownership.py": "30e935d9a521a76629755313f43970264a48bc288c984160efa4d705a2908e15",
+    "tests/editor/workbench_asset_ownership.gd": "a1bb6df32e41eab99b0b9862f63605af9e55eca2c480a544aad3a69294f6cc50"
+  },
+  "verification": {
+    "state": "passed",
+    "ui": {
+      "cancel_preserved_draft": true,
+      "canceled_in_flight": true,
+      "conversation": "c6bc75f4-14a6-4aaa-b52c-3275c60e14ef",
+      "inherited_issue": "iss_7a65a1c423f543c59f9105e6d5be226b",
+      "owners": [
+        "mod_8128613d801c47aba139f372776873e8",
+        "mod_d06146f9c5f84567ba8893ca2e2d7754"
+      ],
+      "selected_module": "mod_d06146f9c5f84567ba8893ca2e2d7754",
+      "shared_reference_only": true,
+      "unowned": "Original draft\n<duobao://shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/unused%2F%E7%8B%AC%E7%AB%8B%20%E6%A8%A1%E5%9E%8B.glb>"
+    },
+    "issue_ids_before": [
+      "iss_7a65a1c423f543c59f9105e6d5be226b"
+    ],
+    "issue_ids_after": [
+      "iss_7a65a1c423f543c59f9105e6d5be226b"
+    ],
+    "sent_snapshots": [
+      {
+        "project": "studio/assets",
+        "module_id": "mod_d06146f9c5f84567ba8893ca2e2d7754",
+        "issue_id": null,
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "duobao:bd631603557f24fa183ca3de5828e510bb841495b17253f402b3b7febaa52099",
+            "revision": "6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2"
+          }
+        ]
+      },
+      {
+        "project": "studio/assets",
+        "module_id": "mod_d06146f9c5f84567ba8893ca2e2d7754",
+        "issue_id": "iss_7a65a1c423f543c59f9105e6d5be226b",
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "duobao:bd631603557f24fa183ca3de5828e510bb841495b17253f402b3b7febaa52099",
+            "revision": "6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2"
+          }
+        ]
+      }
+    ],
+    "native_http": [
+      [
+        "GET",
+        "/api/v1/auth/me",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/delayed.glb",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/unused/独立 模型.glb",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/unused/独立 模型.glb",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/business-modules/mod_d06146f9c5f84567ba8893ca2e2d7754/location",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations",
+        201
+      ],
+      [
+        "PUT",
+        "/api/v1/business-modules/mod_d06146f9c5f84567ba8893ca2e2d7754/location",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/c6bc75f4-14a6-4aaa-b52c-3275c60e14ef/turns",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/business-modules/mod_d06146f9c5f84567ba8893ca2e2d7754/assets",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues/iss_7a65a1c423f543c59f9105e6d5be226b",
+        200
+      ],
+      [
+        "PUT",
+        "/api/v1/business-modules/mod_d06146f9c5f84567ba8893ca2e2d7754/location",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/workspace/conversations/c6bc75f4-14a6-4aaa-b52c-3275c60e14ef/turns",
+        200
+      ]
+    ],
+    "model_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+    "editor_sha256": "dd2db5537467b27f5bc18dd6e71a249828db63ecd7fc7dc74b3cb5be3fde759a"
+  },
+  "observed_at": "2026-11-21T16:44:06.453681+00:00"
+}

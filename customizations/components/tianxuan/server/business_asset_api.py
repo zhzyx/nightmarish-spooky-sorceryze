@@ -9,6 +9,10 @@ from native_store import NativeStore, NativeStoreError, _digest, _identifier, _j
 from tianxuan_core import DEFAULT_PROJECT, NotFound, PermissionDenied, Tianxuan, _connection_call
 
 
+def _asset_id(source: str, revision: str, path: str) -> str:
+    return str(_digest(_json([source, revision, path]).encode()))
+
+
 def _actor(request: Request) -> str:
     return str(_identity(request, allow_project=True)[1])
 
@@ -65,7 +69,7 @@ def _link(
     _module_read(domain, actor, source)
     if path not in native.revision(scope[0], source, revision)["objects"]:
         raise NativeStoreError("Object unavailable")
-    asset_id = _digest(_json([source, revision, path]).encode())
+    asset_id = _asset_id(source, revision, path)
     domain.db.execute(
         "INSERT INTO business_module_assets (tenant_id,project,module_id,asset_id,source_module,revision,path) "
         "VALUES(?,?,?,?,?,?,?) ON CONFLICT(tenant_id,project,module_id,asset_id) DO NOTHING",
@@ -92,10 +96,40 @@ def _linked_asset(
     return scope[0], row["source_module"], row["revision"], row["path"]
 
 
+@_connection_call
+def _asset_context(
+    domain: Tianxuan, native: NativeStore, actor: str, project: str, source: str, revision: str, path: str
+) -> dict[str, Any]:
+    domain._validate_project(project)
+    tenant = domain._tenant_of(actor)
+    _module_read(domain, actor, source)
+    # An empty reverse index can also mean the caller lost access. Verify the source itself first.
+    digest = _digest(native.read(tenant, source, revision, path))
+    asset_id = _asset_id(source, revision, path)
+    owners = []
+    for module_id in _list_modules(domain, actor, project, asset_id):
+        module = domain._business_module(tenant, project, module_id)
+        owners.append({"id": module_id, "name": module["name"]})
+    return {
+        "asset_id": asset_id,
+        "source_module": source,
+        "revision": revision,
+        "path": path,
+        "sha256": digest,
+        "modules": owners,
+    }
+
+
 def create_business_asset_router(domain: Tianxuan, native: NativeStore) -> APIRouter:
     router = APIRouter(prefix=PREFIX)
     collection = "/business-modules/{module_id}/assets"
     item = collection + "/{asset_id}"
+
+    @router.get("/asset-context/{source}/{revision}/{path:path}")
+    async def asset_context(
+        source: str, revision: str, path: str, project: str = DEFAULT_PROJECT, actor: str = Depends(_actor)
+    ) -> Any:
+        return await _call(_asset_context, domain, native, actor, project, source, revision, path)
 
     @router.get(collection)
     def assets(module_id: str, project: str = DEFAULT_PROJECT, actor: str = Depends(_actor)) -> dict[str, Any]:

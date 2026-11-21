@@ -1,0 +1,245 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-c07",
+  "issue_number": 1785,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1785",
+  "upstream": {
+    "C03 #1806": "CLOSED/COMPLETED",
+    "U02 #1869": "CLOSED/COMPLETED",
+    "C06 #1744": "CLOSED/COMPLETED, merged in PR #1936 on source baseline",
+    "D14 #1867": "Main integration PR #1933"
+  },
+  "mac_prior": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1785#issuecomment-7060361063",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1785#issuecomment-7062657668"
+  ],
+  "observed_at": "2026-11-21T14:52:24.119907+00:00",
+  "source_baseline": "8b48bd11844073a0d73499899991f7ee6f3b712f",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/business_asset_api.py": "22534b23d6a64fdd7e3a00ee9a230689108759747f10ceda0ad6b8386bfffd56",
+    "customizations/components/tianxuan/server/test_business_assets.py": "c6b393fbeaa610e5692d2f51e02a7ab35adca95ef5e1ff6a67a918d27d45d1e5",
+    "editor/SCsub": "2bbe9c6f2fb5b926a44ed2e55b190c2a4a867cbafa2d55423428759a9ff02189",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "1bab0f58f7e2c4387b3498aae190d1cc424b2c6b498316e2ebdcec3a4a9ace26",
+    "editor/docks/workbench/module_selector.gd": "096f0c1a42af5149a652fd5984e250ecbc11e4906855d16c5a6b8ad89db436fd",
+    "editor/docks/workbench/asset_picker.gd": "3a254175f16532b882e1de712162bac06b2f77a0d68e1e8cfc2647280f292814",
+    "tests/editor/run_workbench_asset_ownership.py": "30e935d9a521a76629755313f43970264a48bc288c984160efa4d705a2908e15",
+    "tests/editor/workbench_asset_ownership.gd": "a1bb6df32e41eab99b0b9862f63605af9e55eca2c480a544aad3a69294f6cc50",
+    "design-docs/gonggong-ai-workbench-c07.md": "afbcc46ca5d347d77bc932e8a336abc0b9491307cd715a5bc5cacc6b8e0f1d37"
+  },
+  "build": {
+    "platform": "Windows x86_64, MSVC 14.5 and Windows SDK 10.0.26100.0",
+    "command": "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-cache> cache_limit=0 --cache-readonly -j8",
+    "exit_code": 0,
+    "inputs": "SCons derives module_selector.gen.h from both GDScripts. The native sidebar consumes that header.",
+    "sdk": "tools/install_webview2.py --arch x64 --output-dir bin verified the pinned manifest.",
+    "artifact_sha256": {
+      "godot.windows.editor.x86_64.exe": "2ec21e4d60f0492d6624f73cee102ba455b3b269e79dcc36d4fe2a4460052d2e",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+    }
+  },
+  "service_regression": {
+    "exit_code": 0,
+    "summary": "13 passed, 1 Starlette TestClient deprecation warning",
+    "files": [
+      "test_business_assets.py",
+      "test_business_modules.py",
+      "test_workspace_conversations.py",
+      "test_module_locations.py"
+    ]
+  },
+  "static": {
+    "ruff": "4 files (3 Python sources plus editor/SCsub) passed check and format",
+    "mypy": "3 Python sources passed",
+    "clang_format": "AIWorkbenchSidebar.cpp passed --dry-run --Werror"
+  },
+  "original_acceptance": {
+    "requirement": "无关系不擅自建单，多关系需选择，从工单打开沿用原归属。",
+    "command": "python -B -X utf8 tests/editor/run_workbench_asset_ownership.py --godot bin/godot.windows.editor.x86_64.exe --report bin/c07-native.json",
+    "exit_code": 0,
+    "operator": "Windows headless private editor copy with actual registered workbench controls, authenticated loopback Tianxuan, separate real databases, B05 original object.",
+    "target_receipt": {
+      "state": "passed",
+      "ui": {
+        "cancel_preserved_draft": true,
+        "canceled_in_flight": true,
+        "conversation": "fc2a4e49-38eb-4399-b514-d984c8432845",
+        "inherited_issue": "iss_ebc91975770f48b89d342b45012b8e6e",
+        "owners": [
+          "mod_44f6f594a5b348bd98127931e902a0cd",
+          "mod_e1ddf74dc92b4d999458cb9d478c9dd5"
+        ],
+        "selected_module": "mod_44f6f594a5b348bd98127931e902a0cd",
+        "shared_reference_only": true,
+        "unowned": "Original draft\n<duobao://shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/unused%2F%E7%8B%AC%E7%AB%8B%20%E6%A8%A1%E5%9E%8B.glb>"
+      },
+      "issue_ids_before": [
+        "iss_ebc91975770f48b89d342b45012b8e6e"
+      ],
+      "issue_ids_after": [
+        "iss_ebc91975770f48b89d342b45012b8e6e"
+      ],
+      "sent_snapshots": [
+        {
+          "project": "studio/assets",
+          "module_id": "mod_44f6f594a5b348bd98127931e902a0cd",
+          "issue_id": null,
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "duobao:bd631603557f24fa183ca3de5828e510bb841495b17253f402b3b7febaa52099",
+              "revision": "6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2"
+            }
+          ]
+        },
+        {
+          "project": "studio/assets",
+          "module_id": "mod_44f6f594a5b348bd98127931e902a0cd",
+          "issue_id": "iss_ebc91975770f48b89d342b45012b8e6e",
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "duobao:bd631603557f24fa183ca3de5828e510bb841495b17253f402b3b7febaa52099",
+              "revision": "6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2"
+            }
+          ]
+        }
+      ],
+      "native_http": [
+        [
+          "GET",
+          "/api/v1/auth/me",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/delayed.glb",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/unused/独立 模型.glb",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/unused/独立 模型.glb",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/business-modules/mod_44f6f594a5b348bd98127931e902a0cd/location",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations",
+          201
+        ],
+        [
+          "PUT",
+          "/api/v1/business-modules/mod_44f6f594a5b348bd98127931e902a0cd/location",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/fc2a4e49-38eb-4399-b514-d984c8432845/turns",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/business-modules/mod_44f6f594a5b348bd98127931e902a0cd/assets",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/asset-context/shared-character-model/6fd2d4e11b440a819af81cc0da4f5de5fbf1680aa5c719b45899e1b503e715c2/models/suzanne.glb",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_ebc91975770f48b89d342b45012b8e6e",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/business-modules/mod_44f6f594a5b348bd98127931e902a0cd/location",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/workspace/conversations/fc2a4e49-38eb-4399-b514-d984c8432845/turns",
+          200
+        ]
+      ],
+      "model_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+      "editor_sha256": "2ec21e4d60f0492d6624f73cee102ba455b3b269e79dcc36d4fe2a4460052d2e"
+    }
+  },
+  "module_selector_regression": {
+    "command": "python -B -X utf8 tests/editor/run_workbench_business_modules.py --godot bin/godot.windows.editor.x86_64.exe --report bin/c07-final-c06.json",
+    "state": "passed",
+    "module_passes": 4,
+    "explicit_send_snapshot": {
+      "project": "c06/studio",
+      "module_id": "default",
+      "issue_id": null,
+      "references": []
+    }
+  },
+  "method_feedback": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "recalled_revision_at_intake": 2,
+    "intake_head": "943526d643a3cb8216b9464e68cc97ef67822a141ecb8647098190b38726ab5b",
+    "applied_trial": "The loopback service held an actual asset-context response. The probe observed the server marker before canceling and released the server after cancellation. It verified request completion and an unchanged draft/asset selection.",
+    "readback_on_final_baseline": "C06 evidence mismatch reproduced before repair. After restoring the original bytes and preserving the full integration receipt separately, recall returned revision 3 verified and zero unavailable lessons.",
+    "c06_evidence_repair": {
+      "merge": "8b48bd11844073a0d73499899991f7ee6f3b712f",
+      "worker_receipt": {
+        "path": "data-collection/gonggong-ai-workbench-plan1-c06.json",
+        "sha256": "a1a0ffd6c80b7a77f089e7a4b02c4fee5af9e0e9d32304e0771e5be7850244ce"
+      },
+      "main_integration_receipt": {
+        "path": "data-collection/gonggong-ai-workbench-c06-main-integration.json",
+        "sha256": "aa7ff2fa36b0173fb100f2b28bc7dd6330ac35250f4e38c20acc49b77733b64a"
+      },
+      "recalled_head": "1895dcbe80345a24453ba60252a1daa9506e834acef9275faa66b22076ba5e00"
+    }
+  }
+}

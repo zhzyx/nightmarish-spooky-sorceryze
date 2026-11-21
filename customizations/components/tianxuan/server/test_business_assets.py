@@ -126,6 +126,12 @@ def test_scope_and_source_acl_on_every_operation(tmp_path):
             tenant, actor, "seed", [{"module": source, "base": None, "reads": None, "edits": {"model": b"model"}}]
         )["revisions"][source]
         reference = {"source_module": source, "revision": revision, "path": "model"}
+        context = f"{NATIVE}/asset-context/{source}/{revision}/model"
+        independent = client.get(context, params=PROJECT, headers=viewer_auth)
+        assert independent.status_code == 200
+        assert independent.json()["modules"] == []
+        assert independent.json()["sha256"] == hashlib.sha256(b"model").hexdigest()
+        assert client.get(context + "-missing", params=PROJECT, headers=owner_auth).status_code == 422
         url = asset_list("default")
         assert (
             client.post(url, params=PROJECT, headers=owner_auth, json={**reference, "path": "missing"}).status_code
@@ -135,6 +141,10 @@ def test_scope_and_source_acl_on_every_operation(tmp_path):
         link = client.post(url, params=PROJECT, headers=owner_auth, json=reference)
         assert link.status_code == 200, link.text
         row = link.json()
+        resolved = client.get(context, params=PROJECT, headers=viewer_auth).json()
+        assert resolved["modules"] == [{"id": "default", "name": "默认模块"}]
+        assert resolved["asset_id"] == row["asset_id"]
+        assert client.get(context, params={"project": "other"}, headers=viewer_auth).json()["modules"] == []
         item = url + "/" + row["asset_id"]
         reverse = NATIVE + "/assets/" + row["asset_id"] + "/business-modules"
         for identity, project in ((other_auth, PROJECT), (owner_auth, {"project": "another"})):
@@ -148,6 +158,8 @@ def test_scope_and_source_acl_on_every_operation(tmp_path):
         assert client.get(item, params=PROJECT).status_code == 401
         assert client.get(item, params={**PROJECT, "tenant": tenant}, headers=editor_auth).status_code == 422
         domain.set_visibility(actor, doc["id"], "private")
+        assert client.get(context, params=PROJECT, headers=editor_auth).status_code == 403
+        assert client.get(context, params=PROJECT, headers=owner_auth).json() == resolved
         assert client.get(url, params=PROJECT, headers=editor_auth).json()["assets"] == []
         assert client.get(reverse, params=PROJECT, headers=editor_auth).json()["module_ids"] == []
         assert client.post(url, params=PROJECT, headers=editor_auth, json=reference).status_code == 403
