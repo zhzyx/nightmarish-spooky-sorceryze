@@ -370,10 +370,12 @@ def create_app(
             raise ValueError("Native workflow must use authenticated domain store")
         app.include_router(create_native_workflow_router(native_workflow))
     if native_store is not None:
+        from business_asset_api import create_business_asset_router
         from native_api import create_native_router
 
         app.state.native_store = native_store
         app.include_router(create_native_router(native_store))
+        app.include_router(create_business_asset_router(store, native_store))
     app.state.gateway = gateway
     app.state.merge_queue = merge_queue
     app.state.protected_branches = parse_protected_branches(protected_branches)

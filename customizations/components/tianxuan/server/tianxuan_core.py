@@ -81,6 +81,12 @@ CREATE TABLE IF NOT EXISTS business_modules (
   tenant_id TEXT NOT NULL, project TEXT NOT NULL, id TEXT NOT NULL, name TEXT NOT NULL,
   PRIMARY KEY (tenant_id, project, id)
 );
+CREATE TABLE IF NOT EXISTS business_module_assets (
+  tenant_id TEXT NOT NULL, project TEXT NOT NULL, module_id TEXT NOT NULL,
+  asset_id TEXT NOT NULL, source_module TEXT NOT NULL, revision TEXT NOT NULL, path TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, project, module_id, asset_id)
+);
+CREATE INDEX IF NOT EXISTS idx_business_asset_modules ON business_module_assets(tenant_id, project, asset_id);
 CREATE TABLE IF NOT EXISTS doc_issue_links (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
   doc_id TEXT NOT NULL, issue_id TEXT NOT NULL,

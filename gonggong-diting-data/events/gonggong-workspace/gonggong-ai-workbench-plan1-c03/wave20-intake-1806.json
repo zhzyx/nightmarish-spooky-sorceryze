@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-c03",
+  "event_id": "wave20-intake-1806",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1806",
+  "occurred_at": "2026-11-21T05:35:11.909410+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1806,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T05:35:09Z",
+    "accepted_dependencies": {
+      "1827": "280ee10a9a75d013def6b2ed32a94c2a651ec9eb",
+      "1868": "f36cc2bf1b14028a0d7abadd04772536a65dc465"
+    },
+    "title": "[方案一 C03] 关联跨模块的共享资产"
+  },
+  "evidence_refs": [],
+  "sha256": "5c8f232e1b889dc3bef0312201e84c4eafdfdad70361f16a7431afd7f0130eb0"
+}
