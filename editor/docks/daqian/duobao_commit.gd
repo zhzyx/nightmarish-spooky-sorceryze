@@ -8,6 +8,9 @@ var preview := TextEdit.new()
 var message := LineEdit.new()
 var status := Label.new()
 var send := Button.new()
+var inspect := Button.new()
+var displayed_module := ""
+var displayed_revision := ""
 var reload := Button.new()
 var snapshot: Dictionary = {}
 var busy := false
@@ -39,6 +42,11 @@ func _ready() -> void:
 	send.text = "提交所选文件"
 	send.pressed.connect(submit)
 	actions.add_child(send)
+	inspect.name = "InspectNativeRevision"
+	inspect.text = "打开提交详情"
+	inspect.pressed.connect(_inspect_revision)
+	actions.add_child(inspect)
+	inspect.hide()
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(status)
 
@@ -47,12 +55,14 @@ func _working(value: bool) -> void:
 	busy = value
 	send.disabled = value
 	reload.disabled = value
+	inspect.disabled = value
 	message.editable = not value
 	repository.editable = not value
 
 
 func _show(data: Dictionary) -> void:
 	snapshot = data
+	_set_revision(str(data.branch), str(data.base) if data.get("mode") == "native" else "")
 	repository.visible = data.get("mode") != "native"
 	files.clear()
 	preview.text = ""
@@ -76,6 +86,7 @@ func refresh() -> void:
 	if result.get("ok", false):
 		_show(result.data)
 	else:
+		_set_revision("", "")
 		snapshot = {}
 		files.clear()
 		preview.text = ""
@@ -120,7 +131,26 @@ func submit() -> void:
 			snapshot = {}
 			files.clear()
 			preview.text = ""
+		if request.mode == "native":
+			_set_revision(str(request.branch), receipt)
 		status.text = "多宝已接收 %s @ %s" % [request.branch, receipt]
 	else:
 		status.text = str(result.get("error", "提交失败"))
 	_working(false)
+
+
+func _set_revision(source: String, revision: String) -> void:
+	displayed_module = source
+	displayed_revision = revision
+	inspect.visible = not revision.is_empty()
+	inspect.tooltip_text = revision
+
+
+func _inspect_revision() -> void:
+	var sidebar := EditorInterface.get_base_control().find_child("AIWorkbenchSidebar", true, false)
+	var target: Node = sidebar.find_child("issue_revisions", true, false) if sidebar else null
+	if not target:
+		status.text = "工单版本关联控件不可用"
+		return
+	hide()
+	target.open_revision(displayed_module, displayed_revision)

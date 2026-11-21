@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-g12",
+  "issue_number": 1825,
+  "candidate_base": "ab75b08a9fe400968f47f7084ec27dba1d26ebd9",
+  "candidate_file_sha256": {
+    "customizations/components/tianxuan/server/NATIVE_API.md": "ebe769dd29a5bf349e352544b0e6cee230a6eb5abbfb421afdef41ebfffa8e90",
+    "customizations/components/tianxuan/server/api.py": "50fd50f813e82ee8f4c0f3a8c3eafc081cbeb599ae3d90d924f2251644e5861c",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "9d44fd59616c1d7909b64fbe2fa82375931096b6c5782383d95adedf6fd5a3b5",
+    "customizations/components/tianxuan/server/issue_revision_api.py": "ca998b0e49c1b5ef0abe6eb64c1c058da3e87fb9dacf56133e25377a9e16d05c",
+    "customizations/components/tianxuan/server/test_issue_revision_api.py": "862e1e80e226e73db6d5b5ecc76637cf521dab8886b5979fdeed292f9c80940e",
+    "editor/docks/daqian/duobao_commit.gd": "b08b1de792035eadc1c57d6e821b3778ae7b58f234238738e591afd26b891c33",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "32e7abfd3cfbc27554b9f35ec7778d4f86734842f09d395a75b78319f696eab4",
+    "editor/docks/workbench/issue_actions/issue_revisions.gd": "3e03a7f4306aaa473f576c83dc8b7313384ab2a2a3fc3d88b6e729521e7c4b16",
+    "tests/editor/run_workbench_issue_revisions.py": "b13bb38b76edbab30b5ab50bfef966df14de9e8dd402ec24ddfa90f9c471ae8c",
+    "tests/editor/workbench_issue_revisions.gd": "483e14818f657813168dabe17ef2fe66cc1d6f54cf140446316dc3cc196e0b0e"
+  },
+  "environment": "macOS 26.6.2 arm64, Python 3.14.3, Godot 4.8.beta native editor, isolated synthetic accounts/project and independent uvicorn main:app processes in native storage mode",
+  "commands": [
+    "python -m SCons platform=macos arch=arm64 target=editor vulkan=no accesskit=no debug_symbols=no tests=no -j5",
+    "python -m pytest -q customizations/components/tianxuan/server/test_issue_revision_api.py customizations/components/tianxuan/server/test_issue_hierarchy.py customizations/components/tianxuan/server/test_business_assets.py customizations/components/tianxuan/server/test_native_workcopy_commit.py customizations/components/tianxuan/server/test_native_api.py customizations/components/tianxuan/server/test_issue_ancestor_acl.py",
+    "python tests/editor/run_workbench_issue_revisions.py --godot bin/godot.macos.editor.arm64 --report g12-native.json",
+    "python tests/editor/run_workbench_duobao_native_commit.py --godot bin/godot.macos.editor.arm64 --report g11-native.json",
+    "python tests/editor/run_workbench_issue_detail.py --godot bin/godot.macos.editor.arm64 --report i02-native.json"
+  ],
+  "service_regression": {
+    "passed": 39,
+    "warnings": [
+      "FastAPI TestClient deprecation warning for httpx"
+    ],
+    "checks": [
+      "duplicate link replay after tag movement",
+      "stale tag lookup and compare-and-set",
+      "current issue and module permissions",
+      "two tenants with identical content digest",
+      "project-filtered reverse navigation",
+      "ancestors, assigned and unassigned issues"
+    ]
+  },
+  "native_navigation": {
+    "editor_sha256": "40da3281fa5295a8deb383530417a035360f0978b9e184e443c423138bb1593d",
+    "project": "studio/game",
+    "issue_number": 1,
+    "module": "game",
+    "tag": "review",
+    "original_revision": "1ab172946166ecadba45782745ad3fbe5828c09d3f223b14cee5017d317a9b70",
+    "new_tag_target": "f11a0082c538e704bc26dc712037fb58d8e0aee21fcf0bd84f5403d66cd4741b",
+    "views": {
+      "link": {
+        "forward_button": "game @ 1ab172946166 · review",
+        "forward_revision": "模块　game\n修订　1ab172946166ecadba45782745ad3fbe5828c09d3f223b14cee5017d317a9b70\n父修订　无\n文件数　2"
+      },
+      "restart": {
+        "forward_button": "game @ 1ab172946166 · review",
+        "forward_revision": "模块　game\n修订　1ab172946166ecadba45782745ad3fbe5828c09d3f223b14cee5017d317a9b70\n父修订　无\n文件数　2",
+        "issue_detail": "标题　核对地图提交\n负责人　未分配\n状态　backlog\n内容版本　52a70c72f3c089df95765ec73b5230abdf004edecd056fbd4a01a2c42d8118fe",
+        "reverse_button": "#1 核对地图提交",
+        "reverse_revision": "模块　game\n修订　1ab172946166ecadba45782745ad3fbe5828c09d3f223b14cee5017d317a9b70\n父修订　无\n文件数　2"
+      }
+    }
+  },
+  "dependency_regressions": {
+    "G11": {
+      "editor_sha256": "40da3281fa5295a8deb383530417a035360f0978b9e184e443c423138bb1593d",
+      "source_revision": "aabb4eeeeea10cbba51f477a0fd68218e045d7bd8677a474a7cd3574728734e0",
+      "received_revision": "d57c18823f0a4245009a2869df11c795a71dc362fe6795852039307ebb0c2cd9",
+      "post_count": 1,
+      "checks": {
+        "first": {
+          "entry": true,
+          "initial_diff": true,
+          "native_module": true,
+          "preview": true,
+          "unknown_response": true
+        },
+        "restart": {
+          "entry": true,
+          "initial_diff": true,
+          "native_module": true,
+          "preview": true,
+          "received": true,
+          "remaining": true
+        }
+      }
+    },
+    "I02": [
+      "command palette opened sidebar",
+      "assigned and unassigned compared to reopened database",
+      "private and absent results cleared prior detail",
+      "successful refresh after 404, logout cleared the visible record"
+    ]
+  },
+  "build_warnings": [
+    "ranlib reported no symbols in android_editor_gradle_runner and WebPlatformWindows on macOS"
+  ],
+  "validation_scope": "Headless native Godot control signals and visible tree readback. The probes used native Duobao storage, a non-Git materialized checkout and temporary Tianxuan accounts; no production data or on-screen pixel inspection.",
+  "integration_verification": {
+    "base": "174e9ee8262a47bfc8577a80d9eed80ca010d985",
+    "candidate_file_sha256": {
+      "customizations/components/tianxuan/server/NATIVE_API.md": "ebe769dd29a5bf349e352544b0e6cee230a6eb5abbfb421afdef41ebfffa8e90",
+      "customizations/components/tianxuan/server/api.py": "5c2f5e10fe22d14c5fa237d34adebc6bdaa67fb35fae5b2a0d3827e5b2028dd7",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "e1b4da515bd46608bd42684022df127141b9dbb692719e30aa5d704f4768e49e",
+      "customizations/components/tianxuan/server/issue_revision_api.py": "bc49056385c1125a95a449da86dd54b9f7f646e2bca7c1c2e7619c61a915be53",
+      "customizations/components/tianxuan/server/test_issue_revision_api.py": "862e1e80e226e73db6d5b5ecc76637cf521dab8886b5979fdeed292f9c80940e",
+      "editor/docks/daqian/duobao_commit.gd": "b08b1de792035eadc1c57d6e821b3778ae7b58f234238738e591afd26b891c33",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp": "32e7abfd3cfbc27554b9f35ec7778d4f86734842f09d395a75b78319f696eab4",
+      "editor/docks/workbench/issue_actions/issue_revisions.gd": "3e03a7f4306aaa473f576c83dc8b7313384ab2a2a3fc3d88b6e729521e7c4b16",
+      "tests/editor/run_workbench_issue_revisions.py": "b13bb38b76edbab30b5ab50bfef966df14de9e8dd402ec24ddfa90f9c471ae8c",
+      "tests/editor/workbench_issue_revisions.gd": "483e14818f657813168dabe17ef2fe66cc1d6f54cf140446316dc3cc196e0b0e"
+    },
+    "service_tests": "39 passed and 13 passed including issue comments and hierarchy",
+    "editor_sha256": "c8eae2e24e8b4f0f02939882c088a94d43a87ca6e72850072cd033a8a6fb7f92",
+    "native_regressions": [
+      "Passed native G12 issue and revision navigation before and after tag movement",
+      "Passed materialized native selection, server restart and exact revision readback",
+      "Passed I02 native issue detail checks"
+    ]
+  }
+}

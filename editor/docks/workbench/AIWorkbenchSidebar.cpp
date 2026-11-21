@@ -124,6 +124,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 		VBoxContainer *pDetail = MountWorkbenchControl(pSession, "WorkbenchIssueDetail", daqian_issue_detail);
 		if (pDetail)
 		{
+			pDetail->set_meta("open_workbench_sidebar", callable_mp(this, &AIChatDock::OpenWorkbenchSidebar));
 			for (const auto &action : workbench_issue_actions)
 			{
 				if (action.name)
