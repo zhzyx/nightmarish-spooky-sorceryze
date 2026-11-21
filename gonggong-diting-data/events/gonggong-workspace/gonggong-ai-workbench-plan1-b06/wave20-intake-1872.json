@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-b06",
+  "event_id": "wave20-intake-1872",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1872",
+  "occurred_at": "2026-11-21T04:37:15.230514+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1872,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T04:37:12Z",
+    "accepted_dependencies": {
+      "1873": "f1a4fe98b5568820786d2f87b943d1003ce31b7a",
+      "1874": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14"
+    },
+    "title": "[方案一 B06] 核定原生构建与回退边界"
+  },
+  "evidence_refs": [],
+  "sha256": "0350a2bc3ce443708b3096ed92655cb6ea6c469f80383fe1a6ddb62acb2dea2e"
+}
