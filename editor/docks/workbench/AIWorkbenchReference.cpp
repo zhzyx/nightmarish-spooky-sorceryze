@@ -582,6 +582,10 @@ void AIChatDock::WorkbenchDraftChanged()
 	{
 		_queue_history_save();
 	}
+	else
+	{
+		pBusinessModules->call("_save_draft");
+	}
 }
 
 void AIChatDock::ChangeWorkbenchReferenceScope(const String &pModule, const String &pIssue)

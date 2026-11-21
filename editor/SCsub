@@ -26,7 +26,12 @@ if env.editor_build:
 
     env.CommandNoCache(
         "docks/workbench/BusinessSession.gen.h",
-        ["docks/workbench/business_session.gd", "docks/workbench/paragraph_suggestion.gd"],
+        [
+            "docks/workbench/business_session.gd",
+            "docks/workbench/paragraph_suggestion.gd",
+            "docks/workbench/document_history.gd",
+            "docks/workbench/document_collaboration.gd",
+        ],
         env.Run(editor_builders.daqian_scripts_builder),
     )
 

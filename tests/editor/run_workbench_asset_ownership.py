@@ -141,9 +141,13 @@ def exercise(editor, root):
                 )
                 after = [item["id"] for item in domain.list_issues(actor)]
                 assert before == after == [issue["id"]]
-                chat = client.get(BASE + "/workspace/conversations/" + trace["conversation"]).raise_for_status().json()
-                turns = chat["turns"]
-                assert len(turns) == 2
+                conversation_ids = [trace["module_conversation"], trace["conversation"]]
+                assert len(set(conversation_ids)) == 2
+                turns = []
+                for conversation_id in conversation_ids:
+                    chat = client.get(BASE + "/workspace/conversations/" + conversation_id).raise_for_status().json()
+                    (turn,) = chat["turns"]
+                    turns.append(turn)
                 for turn, origin in zip(turns, (None, issue["id"]), strict=True):
                     assert turn["context_snapshot"] == {
                         "project": PROJECT,
