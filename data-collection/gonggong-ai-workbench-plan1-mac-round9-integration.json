@@ -1,0 +1,66 @@
+{
+  "parent_issue": 1709,
+  "business_issues": [
+    1748,
+    1861,
+    1787,
+    1825,
+    1826
+  ],
+  "integration_base": "c0bb1dc8caff184f5c198ea57ccf6c83eae4bbc8",
+  "source_pull_requests": [
+    1986,
+    1982,
+    1985
+  ],
+  "host": "macOS arm64, windowed OpenGL compatibility editor",
+  "checks": {
+    "1748": {
+      "feature": "module drafts",
+      "report_sha256": "be76ac6208c2f3e4416722d98fbd9084f9f418f5c82c4c82edf8352319c9f647",
+      "editor_sha256": "eb8e243f61b847fb8f830badf486c0952d92ebc45b10f3a1cce185e3418e5bf1"
+    },
+    "1861": {
+      "feature": "document history",
+      "report_sha256": "57ad18d5d9ffb0eec70e5db084f40eb2899f9698e98054f421d2064d78df500b",
+      "editor_sha256": "eb8e243f61b847fb8f830badf486c0952d92ebc45b10f3a1cce185e3418e5bf1"
+    },
+    "1787": {
+      "feature": "two-user document edits",
+      "report_sha256": "e3c70cf518c0aa58c0c52c8a81faf867949169ba0237a18e1af1ec042f6faeb6",
+      "editor_sha256": "eb8e243f61b847fb8f830badf486c0952d92ebc45b10f3a1cce185e3418e5bf1"
+    },
+    "1825": {
+      "feature": "issue and revision navigation",
+      "report_sha256": "39e4f5675144d04b3eaed7c13658846e7107075f929372ccbd3d9e8824b64ea9",
+      "editor_sha256": "eb8e243f61b847fb8f830badf486c0952d92ebc45b10f3a1cce185e3418e5bf1"
+    },
+    "1826": {
+      "feature": "exact merge request",
+      "report_sha256": "c5ca60f045c8b8afed8420a2f330b15c1449cdd67a2f7c7adde616f55a40285b",
+      "editor_sha256": "eb8e243f61b847fb8f830badf486c0952d92ebc45b10f3a1cce185e3418e5bf1"
+    },
+    "1750": {
+      "feature": "issue hierarchy",
+      "report_sha256": "57ff402ea2325c7e98af0cfd7829f6e9f1bbb13ff01fdc7008140f417badb2d1",
+      "editor_sha256": "eb8e243f61b847fb8f830badf486c0952d92ebc45b10f3a1cce185e3418e5bf1"
+    },
+    "1831": {
+      "feature": "issue dependencies",
+      "report_sha256": "5587e54cbb58bd2bbc38aa96be220f4e82424c673231f019abc1a107a3905991",
+      "editor_sha256": "eb8e243f61b847fb8f830badf486c0952d92ebc45b10f3a1cce185e3418e5bf1"
+    },
+    "1788": {
+      "feature": "issue comments",
+      "report_sha256": "e5f9145b1e1c7a9f4cdf5c7cb7b5db253d86b83f7f21521e65670bea2ca6cfdf",
+      "editor_sha256": "eb8e243f61b847fb8f830badf486c0952d92ebc45b10f3a1cce185e3418e5bf1"
+    },
+    "1850": {
+      "feature": "issue assignment",
+      "report_sha256": "ff82f334a3e931d649b0fc3be223196b63478db039cdf94b94d282fcf1ee32e8",
+      "editor_sha256": "eb8e243f61b847fb8f830badf486c0952d92ebc45b10f3a1cce185e3418e5bf1"
+    }
+  },
+  "service_regressions_passed": 53,
+  "shared_history": "Preserved main revision 26 and appended three original D12/D06/D07 learning observations through method_learning as revisions 27 through 29."
+}

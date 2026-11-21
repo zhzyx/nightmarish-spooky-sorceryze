@@ -206,3 +206,27 @@ def test_queue_binding_and_creator_permissions(monkeypatch: pytest.MonkeyPatch, 
     ).json()
     assert client.post(f"/api/v1/merge-queue/{second['id']}/cancel", headers=headers).status_code == 200
     assert client.post(f"/api/v1/merge-queue/{second['id']}/retry", headers=headers).status_code == 200
+
+
+def test_exact_request_requires_session_and_is_readable_by_tenant_reviewer(monkeypatch, tmp_path):
+    client, legacy, queue = _setup(monkeypatch, tmp_path)
+    store = client.app.state.store
+    admin = {"Authorization": "Bearer " + store.issue_session(legacy["X-Actor"])}
+    reviewer = _add_editor(client, legacy, "reviewer@example.invalid")
+    reader = {"Authorization": "Bearer " + store.issue_session(reviewer["X-Actor"])}
+    repo = tmp_path / "docs.git"
+    source = GitService().branch_tip(repo, "feature")
+    body = {"source": "feature", "target": "main", "candidate": source}
+    path = "/api/v1/git/repos/docs.git/merge-requests"
+    assert client.post(path, headers=legacy, json=body).status_code == 401
+    assert client.post(path, headers=admin, json={**body, "candidate": source[:12]}).status_code == 422
+    created = client.post(path, headers=admin, json=body)
+    assert created.status_code == 200
+    item = created.json()
+    assert item["check_state"] == "queued"
+    assert client.get(path + "/" + item["id"], headers=reader).json() == item
+    assert client.get(path.replace("docs.git", "wrong.git") + "/" + item["id"], headers=reader).status_code == 404
+    other = store.register("其他租户", "other@example.invalid", "secret-pass")
+    outsider = {"Authorization": "Bearer " + store.issue_session(other["user_id"])}
+    assert client.get(path + "/" + item["id"], headers=outsider).status_code == 404
+    assert queue.count_items() == 1

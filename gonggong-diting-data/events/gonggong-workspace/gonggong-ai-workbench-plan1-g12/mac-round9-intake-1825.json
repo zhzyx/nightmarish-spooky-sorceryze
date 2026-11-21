@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g12",
+  "event_id": "mac-round9-intake-1825",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1825",
+  "occurred_at": "2026-11-21T20:26:15.586682+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1825,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T20:11:52Z",
+    "scope": "补齐工单与多宝精确修订的双向定位，用本机原生工作台分别从工单和提交打开对方，移动标签后验证历史引用；按主线接收结果关闭。"
+  },
+  "evidence_refs": [],
+  "sha256": "3ca31617e5c3106ef19b73d036d6fcad8e09f2fe5f98c0f7cac94978aa7a6fe4"
+}

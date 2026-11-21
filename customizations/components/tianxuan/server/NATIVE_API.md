@@ -4,7 +4,7 @@ Set `TIANXUAN_STORAGE_MODE=native` and an explicit absolute `TIANXUAN_NATIVE_DB`
 
 Existing `TIANXUAN_REQUIRE_KEYS=1`, admitted `TIANXUAN_TENANT_ID`, and HTTPS public-origin restrictions remain unchanged. In isolated non-production mode, register with `/api/v1/auth/register` and acquire a Bearer session via `/api/v1/auth/session`. Native endpoints never trust X-Actor. Actor and tenant come exclusively from the verified production identity or valid session; viewers cannot write.
 
-All paths below start with `/api/v1/native` and require authentication. No query parameters are supported.
+The following candidate routes start with `/api/v1/native`, require authentication and reject query parameters.
 
 * `POST /batches`: `{ "request_key": "stable-key", "changes": [{ "module": "module-a", "base": null, "reads": null, "edits": { "file.txt": "aGVsbG8=" } }] }`. A null base creates a module; otherwise use its exact revision. Base64 values write content; null values delete. Optional `dependencies` pins module revisions or `@batch`. Unknown fields are rejected.
 * `GET /modules/{module}/head`: current revision or null.
@@ -77,3 +77,20 @@ Retry uses the same binding and normal native idempotency. Backups must preserve
 both databases; restoring native content without its source binding cannot make
 private content public. This is application access control, not protection from
 an operator who can directly read either database or a trusted local host API.
+
+
+## Work order revision links (G12)
+
+In the native workbench, open a Tianxuan issue by number, enter the Duobao module and a full SHA-256 revision or `tag:NAME`, then select **关联多宝提交**. Selecting a linked commit opens the exact revision and its readable issues. **多宝提交 → 打开提交详情** opens the materialized project's current G11 revision, or the exact receipt after a successful submission. Select an issue to open its current I02 detail.
+
+These authenticated routes use the native prefix and the workbench session's `project` query parameter. The module is the native version line returned by G11 in its `branch` field. The association key includes tenant, project, issue ID, module and immutable revision.
+
+| Method and path | Input or result |
+| --- | --- |
+| `POST /issues/{issue_id}/revisions` | Send `module`, `revision` and optional `tag`. First insertion checks that the tag still points to the submitted revision. A retry of an existing association returns its original receipt. |
+| `GET /issues/{issue_id}/revisions` | Read the issue’s pinned revisions and their original tag labels under the current module permissions. |
+| `GET /modules/{module}/revisions/{revision}/issue-context` | Read the verified revision’s parent, file count and visible issues in the selected project. |
+| `GET /modules/{module}/tags/{tag}` | Resolve the project's current tag to a full revision. |
+| `PUT /modules/{module}/tags/{tag}` | Set `revision` with the previously observed `expected` revision, or `null` for creation. A conflicting move returns HTTP 409. |
+
+Viewers can follow visible links. Creating one requires issue write access and source module read access. Tag writes require editor access and a readable module. Moving a project tag or advancing the module head preserves existing links. Each direction checks current access on the issue, including its ancestors, and the module before returning linked records.

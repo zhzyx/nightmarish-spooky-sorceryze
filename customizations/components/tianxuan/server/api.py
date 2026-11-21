@@ -55,6 +55,7 @@ from schemas import (
     DocShareRequest,
     DocUpdateRequest,
     DocVisibilityRequest,
+    ExactMergeRequest,
     ExternalLinkRequest,
     ExternalRequirementRequest,
     FieldPermissionRequest,
@@ -103,7 +104,7 @@ from tianxuan_core import (
     VersionConflict,
 )
 from webhooks import summarize_gitea_event, verify_gitea_signature
-from wenqu_bridge import build_ai_index, export_markdown, merge_offline
+from wenqu_bridge import build_ai_index, export_markdown, merge_offline, merge_paragraphs
 from wenqu_bridge import classify as classify_markdown
 
 
@@ -398,11 +399,13 @@ def create_app(
         app.include_router(create_native_workflow_router(native_workflow))
     if native_store is not None:
         from business_asset_api import create_business_asset_router
+        from issue_revision_api import create_issue_revision_router
         from native_api import create_native_router
 
         app.state.native_store = native_store
         app.include_router(create_native_router(native_store))
         app.include_router(create_business_asset_router(store, native_store))
+        app.include_router(create_issue_revision_router(store, native_store))
     app.state.gateway = gateway
     app.state.merge_queue = merge_queue
     app.state.protected_branches = parse_protected_branches(protected_branches)
@@ -979,14 +982,34 @@ def create_app(
 
     # ---------- 文曲：离线草稿合并 ----------
 
-    @app.post("/api/v1/docs/{doc_id}/merge")
-    def merge_doc(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
+    def merge_inputs(doc_id: str, payload: DocMergeRequest, actor: str) -> tuple[dict[str, Any], str]:
         document = store.get_doc_shared(actor, doc_id, write=True)
         if not 1 <= payload.expected_version <= document["version"]:
             raise VersionConflict("draft base version is outside document history")
         base = store.version(doc_id, payload.expected_version)["body_md"]
         if payload.base_md != base:
             raise VersionConflict("draft base content does not match its version")
+        return document, base
+
+    @app.post("/api/v1/docs/{doc_id}/merge/preview")
+    def preview_paragraph_merge(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
+        document, base = merge_inputs(doc_id, payload, actor)
+        remote = document["body_md"]
+        merged, conflicts = merge_paragraphs(base, payload.local_md, remote)
+        if conflicts:
+            return JSONResponse(
+                status_code=409,
+                content={
+                    "status": "conflict",
+                    "remote_md": remote,
+                    "remote_version": document["version"],
+                },
+            )
+        return {"status": "ready", "body_md": merged, "remote_version": document["version"]}
+
+    @app.post("/api/v1/docs/{doc_id}/merge")
+    def merge_doc(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
+        document, base = merge_inputs(doc_id, payload, actor)
         if document["version"] == payload.expected_version:
             updated = store.update_doc(actor, doc_id, payload.local_md, payload.expected_version)
             return {"status": "applied", "doc": notify_document_change(updated)}
@@ -1792,6 +1815,50 @@ def create_app(
     # ---------- 多宝：合入队列 ----------
 
     if merge_queue is not None:
+
+        def exact_request_view(item: dict[str, Any]) -> dict[str, Any]:
+            evidence = item["evidence"]
+            return {
+                "id": item["id"],
+                "source": item["source"],
+                "target": item["target"],
+                **evidence["exact_request"],
+                "check_state": item["check_state"],
+                "checks": [
+                    {"command": check["command"], "exit_code": check["exit_code"]}
+                    for check in evidence.get("checks", [])
+                ],
+            }
+
+        @app.post("/api/v1/git/repos/{name}/merge-requests")
+        def create_exact_request(name: str, payload: ExactMergeRequest, actor: PrivateActorDep) -> dict[str, Any]:
+            if store.role_of(actor) == "viewer":
+                raise PermissionDenied("viewer cannot enqueue merge candidates")
+            repo = _repo_under_root(name)
+            try:
+                item = merge_queue.enqueue(
+                    actor, str(repo), payload.source, payload.target, candidate=payload.candidate
+                )
+            except PolicyError as error:
+                raise HTTPException(status_code=403, detail=str(error)) from error
+            except (GitServiceError, ValueError, OSError) as error:
+                raise HTTPException(status_code=409, detail=str(error)) from error
+            return exact_request_view(item)
+
+        @app.get("/api/v1/git/repos/{name}/merge-requests/{item_id}")
+        def read_exact_request(name: str, item_id: str, actor: PrivateActorDep) -> dict[str, Any]:
+            repo = _repo_under_root(name)
+            try:
+                item = merge_queue.get(item_id)
+            except KeyError as error:
+                raise HTTPException(status_code=404, detail="merge request not found") from error
+            if (
+                item["repo"] != str(repo)
+                or "exact_request" not in item["evidence"]
+                or store.actor_context(item["created_by"])["tenant"] != store.actor_context(actor)["tenant"]
+            ):
+                raise HTTPException(status_code=404, detail="merge request not found")
+            return exact_request_view(item)
 
         @app.post("/api/v1/merge-queue")
         def enqueue_merge(payload: MergeQueueCreateRequest, actor: ActorDep) -> dict[str, Any]:

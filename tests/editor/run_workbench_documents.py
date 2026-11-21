@@ -28,7 +28,37 @@ from api import create_app  # noqa: E402
 from tianxuan_core import Tianxuan  # noqa: E402
 
 
-def exercise(root, binary, manual=False):
+def verify_history(output, store, actor, edits, stale_id, scopes, restores, reads):
+    events = [line.removeprefix("D06_CHECKS=") for line in output.splitlines() if line.startswith("D06_CHECKS=")]
+    assert len(events) == 1
+    revisions = json.loads(events[0])
+    key = revisions["document_id"]
+    assert key == edits["document_id"] and set(scopes) == {"studio/game"}
+    path = f"/api/v1/docs/{key}"
+    route = path + "/versions/1/restore"
+    stale = f"/api/v1/docs/{stale_id}/versions/1/restore"
+    assert [(r, server, client) for r, _, server, client in restores] == [
+        (route, 200, 503),
+        (route, 200, 200),
+        (stale, 409, 409),
+    ]
+    assert restores[0][1] == restores[1][1] and restores[0][1]["call_id"]
+    assert all(payload["expected_version"] == 2 for _, payload, _, _ in restores)
+    assert [v["version"] for v in store.versions(key)] == [1, 2, 3]
+    assert [v["version"] for v in revisions["revisions"]] == [1, 2, 3]
+    a, b = [v["body"] for v in edits["reopened"]]
+    assert a != b and [v["body"] for v in revisions["revisions"]] == [a, b, a]
+    for version, expected in enumerate([a, b, a], start=1):
+        observed = store.version(key, version)
+        assert observed["body_md"] == expected and observed["author"] == actor
+        assert (path + f"/versions/{version}", 200) in reads
+    assert store.get_doc(stale_id)["body_md"] == "Concurrent revision"
+    revisions.update(project=scopes[0], restores=restores, concurrent_head_preserved=True)
+    return revisions
+
+
+def exercise(root, binary, manual=False, history=False):
+    manual = manual or history
     with patch.dict(os.environ, {"GONGGONG_WORKSPACE": ""}):
         editor = copy_editor(binary, root / "engine")
     project = root / "project"
@@ -37,6 +67,8 @@ def exercise(root, binary, manual=False):
     shutil.copyfile(Path(__file__).with_name("workbench_documents.gd"), project / "probe.gd")
     if manual:
         shutil.copyfile(Path(__file__).with_name("workbench_document_edits.gd"), project / "edits.gd")
+    if history:
+        shutil.copyfile(Path(__file__).with_name("workbench_document_history.gd"), project / "history.gd")
     store = Tianxuan(str(root / "business.sqlite"))
     user = store.register("studio", "reader@example.invalid", secrets.token_urlsafe(24))
     actor = user["user_id"]
@@ -55,14 +87,29 @@ def exercise(root, binary, manual=False):
     }
     reads = []
     writes = []
+    restores = []
+    scopes = []
     with patch.dict(os.environ, modes), socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
         api = create_app(store)
 
         @api.middleware("http")
         async def observe(request, call_next):
+            is_restore = history and request.method == "POST" and request.url.path.endswith("/restore")
+            if history and request.url.path.startswith("/api/v1/docs"):
+                scopes.append(request.query_params.get("project"))
+            if is_restore:
+                payload = await request.json()
+                if request.url.path == f"/api/v1/docs/{second['id']}/versions/1/restore":
+                    # Another writer advances the head after the reviewer saw its diff.
+                    store.update_doc(actor, second["id"], "Concurrent revision", 2)
             response = await call_next(request)
-            if manual and request.method in {"POST", "PATCH"}:
+            if is_restore:
+                server_status = response.status_code
+                if not restores and server_status == 200:
+                    response = Response(status_code=503)
+                restores.append((request.url.path, payload, server_status, response.status_code))
+            elif manual and request.method in {"POST", "PATCH"}:
                 server_status = response.status_code
                 if len(writes) == 1 and request.method == "PATCH" and server_status == 200:
                     response = Response(status_code=503)  # Committed write with a lost success response.
@@ -87,6 +134,9 @@ def exercise(root, binary, manual=False):
                 TIANXUAN_PROJECT="studio/game",
                 D02_EXPECT=json.dumps(fixtures),
             )
+            env.pop("D06_HISTORY", None)
+            if history:
+                env["D06_HISTORY"] = "1"
             env.pop("D04_AUTHOR", None)
             if manual:
                 env["D04_AUTHOR"] = actor
@@ -125,7 +175,8 @@ def exercise(root, binary, manual=False):
                 assert len(observations) == 1
                 edits = json.loads(observations[0])
                 created = store.get_doc(edits["document_id"])
-                assert created["created_by"] == actor and created["version"] == 2 and created["title"] == "手工设计"
+                assert created["created_by"] == actor and created["title"] == "手工设计"
+                assert created["version"] == (3 if history else 2)
                 assert len(store.list_docs(actor)) == 3
                 for observed in edits["reopened"]:
                     revision = store.version(created["id"], observed["version"])
@@ -142,6 +193,8 @@ def exercise(root, binary, manual=False):
                     for method, route, server, client in writes
                 ]
                 edits["retry_after_lost_success"] = "one committed revision"
+            if history:
+                revisions = verify_history(output, store, actor, edits, second["id"], scopes, restores, reads)
         finally:
             service.should_exit = True
             thread.join(timeout=10)
@@ -150,6 +203,7 @@ def exercise(root, binary, manual=False):
         "editor_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
         "state": "passed",
         **({"manual_design": edits} if manual else {}),
+        **({"history": revisions} if history else {}),
         "native_selections": trace,
         "service_reads": reads,
         "same_title": True,
@@ -164,8 +218,9 @@ if __name__ == "__main__":
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--manual", action="store_true", help="Also exercise manual creation, save, retry and reopen")
+    parser.add_argument("--history", action="store_true", help="Exercise manual saves, comparison and restore")
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="workbench-documents-") as directory:
-        result = exercise(Path(directory), args.godot.resolve(), manual=args.manual)
+        result = exercise(Path(directory), args.godot.resolve(), manual=args.manual, history=args.history)
     args.report.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("Passed native document and paragraph readback")

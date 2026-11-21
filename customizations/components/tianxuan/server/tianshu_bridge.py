@@ -198,6 +198,25 @@ def workcopy_operation(args: argparse.Namespace) -> dict[str, Any]:
     )
 
 
+def merge_request(args: argparse.Namespace) -> dict[str, Any]:
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", args.repo_name) or args.repo_name in (".", ".."):
+        raise BridgeError("多宝仓库名称无效")
+    path = "/api/v1/git/repos/" + urllib.parse.quote(args.repo_name, safe="") + "/merge-requests"
+    identity = {"actor": args.actor, "token": args.token}
+    if args.command == "merge-request":
+        sent = {"source": args.source, "target": args.target, "candidate": args.candidate}
+        item = _request(args.api, "POST", path, **identity, body=sent)
+        if any(item.get(key) != value for key, value in sent.items()):
+            raise BridgeError("合入请求回执与提交的候选不匹配")
+    else:
+        if not re.fullmatch(r"mr_[0-9a-f]{64}", args.request_id):
+            raise BridgeError("请输入完整的合入请求编号")
+        item = _request(args.api, "GET", path + "/" + args.request_id, **identity)
+        if item.get("id") != args.request_id:
+            raise BridgeError("合入请求回执编号不匹配")
+    return item
+
+
 def branch_operation(args: argparse.Namespace) -> dict[str, Any]:
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", args.repo_name) or args.repo_name in (".", ".."):
         raise BridgeError("多宝仓库名称无效")
@@ -520,6 +539,17 @@ def main(argv: list[str] | None = None) -> int:
         if command != "workcopy-diff":
             workcopy.add_argument("--request", required=True, type=Path)
         workcopy.set_defaults(func=workcopy_operation)
+
+    for command in ("merge-request", "merge-request-status"):
+        merge = sub.add_parser(command)
+        merge.add_argument("--repo-name", required=True)
+        if command == "merge-request":
+            merge.add_argument("--source", required=True)
+            merge.add_argument("--target", required=True)
+            merge.add_argument("--candidate", required=True)
+        else:
+            merge.add_argument("--request-id", required=True)
+        merge.set_defaults(func=merge_request)
 
     for command in ("branch-create", "branch-tip"):
         branch = sub.add_parser(command)
