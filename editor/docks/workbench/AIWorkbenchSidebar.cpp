@@ -36,6 +36,7 @@
 #include "editor/docks/editor_dock_manager.h"
 #include "editor/docks/workbench/AIWorkbenchWindow.h"
 #include "editor/docks/workbench/BusinessSession.gen.h"
+#include "editor/docks/workbench/IssueActions.gen.h"
 #include "editor/docks/workbench/IssueCreation.gen.h"
 #include "editor/docks/workbench/module_selector.gen.h"
 #include "editor/editor_main_screen.h"
@@ -47,6 +48,7 @@
 #include "scene/gui/check_box.h"
 #include "scene/gui/menu_button.h"
 #include "scene/gui/popup_menu.h"
+#include "scene/gui/scroll_container.h"
 #include "scene/gui/text_edit.h"
 #include "scene/main/viewport.h"
 
@@ -94,8 +96,16 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	pWorkbenchSidebar->set_global(false);
 	pWorkbenchSidebar->set_transient(true);
 	pWorkbenchSidebar->set_closable(true);
+	ScrollContainer *pScroll = memnew(ScrollContainer);
+	pScroll->set_name("WorkbenchSidebarScroll");
+	pScroll->set_horizontal_scroll_mode(ScrollContainer::SCROLL_MODE_DISABLED);
+	pScroll->set_follow_focus(true);
+	pScroll->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	pWorkbenchSidebar->add_child(pScroll);
 	pSidebarLayout = memnew(VBoxContainer);
-	pWorkbenchSidebar->add_child(pSidebarLayout);
+	pSidebarLayout->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	pSidebarLayout->set_v_size_flags(Control::SIZE_EXPAND_FILL);
+	pScroll->add_child(pSidebarLayout);
 	Button *pExpand = memnew(Button);
 	pExpand->set_name("ExpandWorkbench");
 	pExpand->set_text(TTR("Expand AI Workbench"));
@@ -111,7 +121,17 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 			pSession->call("install_paragraph_suggestion", refParagraphSuggestion);
 		}
 		MountWorkbenchControl(pSession, "WorkbenchIssueCreation", daqian_issue_creation);
-		MountWorkbenchControl(pSession, "WorkbenchIssueDetail", daqian_issue_detail);
+		VBoxContainer *pDetail = MountWorkbenchControl(pSession, "WorkbenchIssueDetail", daqian_issue_detail);
+		if (pDetail)
+		{
+			for (const auto &action : workbench_issue_actions)
+			{
+				if (action.name)
+				{
+					MountWorkbenchControl(pDetail, action.name, action.chunks);
+				}
+			}
+		}
 	}
 	MenuButton *pResourceMenu = memnew(MenuButton);
 	pResourceMenu->set_name("WorkbenchResourceSelection");

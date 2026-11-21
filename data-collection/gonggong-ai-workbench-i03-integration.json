@@ -1,0 +1,184 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-i03",
+  "issue_number": 1750,
+  "baseline": "be4a10edc786825351f8c7bc6421f725561471ef",
+  "windows_editor_sha256": "fef17c1d1752c90c1d9d845d2d57c9433c7d1194962c47c9da5007d12c980998",
+  "original_evidence_sha256": "613d9339ad3f73f3aa8e5f933c47ab88292bff30bbe1ef0525130b70fba94efd",
+  "registered_controls": [
+    "issue_hierarchy.gd"
+  ],
+  "tests": [
+    "test_issue_hierarchy",
+    "test_issue_ancestor_acl",
+    "test_issue_number",
+    "test_api_doc_issues"
+  ],
+  "server_result": "21 passed, 1 warning in 7.85s",
+  "native": {
+    "hierarchy": {
+      "state": "passed",
+      "editor_sha256": "fef17c1d1752c90c1d9d845d2d57c9433c7d1194962c47c9da5007d12c980998",
+      "native": {
+        "attached": "iss_58028d4d315f4bcbbc56a88d10b2646d",
+        "attached_revision": "efcc9024fa2634d34e4ff2ed246e48dc94fd7b1950139b246aff08d8ff051afb",
+        "cycle_parent": null,
+        "detached": null,
+        "geometry": {
+          "actions_reachable": true,
+          "close_reachable": true,
+          "max_scroll": 486.0,
+          "visible": "[P: (588.0, 122.0), S: (364.0, 510.0)]",
+          "window": "(960, 640)"
+        },
+        "original_revision": "8fce1dbed97b4b4a10fca63cd119fccf70deb87a3d211d829f15e3c3a6d913ce"
+      },
+      "authenticated_requests": [
+        [
+          "GET",
+          "/api/v1/issues/iss_9e5a775fc4fe412bbe135056dc19d994/hierarchy",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/issues/iss_9e5a775fc4fe412bbe135056dc19d994/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_9e5a775fc4fe412bbe135056dc19d994/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_58028d4d315f4bcbbc56a88d10b2646d/hierarchy",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/issues/iss_58028d4d315f4bcbbc56a88d10b2646d/hierarchy",
+          409
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_58028d4d315f4bcbbc56a88d10b2646d/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_9e5a775fc4fe412bbe135056dc19d994/hierarchy",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/issues/iss_9e5a775fc4fe412bbe135056dc19d994/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_9e5a775fc4fe412bbe135056dc19d994/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_58028d4d315f4bcbbc56a88d10b2646d/hierarchy",
+          200
+        ]
+      ],
+      "viewer_after_each_write": [
+        {
+          "http": 200,
+          "parent": "iss_58028d4d315f4bcbbc56a88d10b2646d",
+          "children": [
+            "iss_9e5a775fc4fe412bbe135056dc19d994"
+          ]
+        },
+        {
+          "http": 409,
+          "parent": "iss_58028d4d315f4bcbbc56a88d10b2646d",
+          "children": [
+            "iss_9e5a775fc4fe412bbe135056dc19d994"
+          ]
+        },
+        {
+          "http": 200,
+          "parent": null,
+          "children": []
+        }
+      ],
+      "reopened_issues": [
+        {
+          "number": 1,
+          "title": "设计集合",
+          "body_md": "保留父项",
+          "acceptance": "",
+          "parent_id": null
+        },
+        {
+          "number": 2,
+          "title": "待归类的设计",
+          "body_md": "保留正文",
+          "acceptance": "原验收",
+          "parent_id": null
+        }
+      ]
+    },
+    "detail": {
+      "engine_sha256": "fef17c1d1752c90c1d9d845d2d57c9433c7d1194962c47c9da5007d12c980998",
+      "observed_fields": [
+        "标题　核对场景入口\n负责人　唐敏\n状态　planned\n内容版本　8614f7528a919f2f3a08c7f94cc0f0e3357519dc140093d5defa4df6c07fd3c0",
+        "标题　检查地图\n负责人　未分配\n状态　backlog\n内容版本　00bb603d14ef07d23ca9567483aa50ea8a69d4991859a5a500ec81a6d625ece0"
+      ],
+      "http_readback": [
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/2/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/3/detail",
+          "studio/game",
+          403
+        ],
+        [
+          "/api/v1/issues/by-number/99999/detail",
+          "studio/game",
+          404
+        ],
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ]
+      ],
+      "error_feedback": [
+        "没有权限查看此工单",
+        "当前项目中不存在此编号的工单"
+      ],
+      "checks": [
+        "command palette opened sidebar",
+        "assigned and unassigned compared to reopened database",
+        "private and absent results cleared prior detail",
+        "successful refresh after 404, logout cleared the visible record"
+      ]
+    }
+  },
+  "source_blobs": {
+    "customizations/components/tianxuan/server/api.py": "e978dfd3fd609e104de3f05f2f642b08fc78b8ec",
+    "customizations/components/tianxuan/server/schemas.py": "557e75df6e09b072536f5f90344337872d19cb6f",
+    "customizations/components/tianxuan/server/test_issue_hierarchy.py": "7d2a94b60b14174e3a169668b36c7994a237ba6f",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "3733672f3c0808ada2cbbf7bb252ee1a968635fc",
+    "design-docs/gonggong-ai-workbench-i03.md": "4ee90a2c3fb15901737016635047f5d9d0435f92",
+    "editor/SCsub": "077365e7c2e4a092ccbb558a4aebe2fd1b410840",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "83d13fc1907b74cd902fae881173bea57dbc3dcf",
+    "editor/docks/workbench/issue_actions/issue_hierarchy.gd": "044e0dc4e2e6eeeaecbf8b74abd76dae7c1e54ac",
+    "editor/editor_builders.py": "55d3e887629fae0e3f9b8f432ca35c691ac61b1a",
+    "tests/editor/run_workbench_issue_hierarchy.py": "246bab7bd888dd01d5546f4b352e3e0dd3120ef5",
+    "tests/editor/workbench_issue_hierarchy.gd": "c65fe28c2f14a947731b7fa83d8f18821891cd60"
+  },
+  "observed_at": "2026-11-21T19:49:00.902824+00:00"
+}
