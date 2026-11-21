@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-17f954cb6144e4a2bccabf95a8310e7a33d3f207",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "maliang-save-artifact-20261117",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1427",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7212fa676a92966d5561a999cf68a1375b21cc979956619096cdcdb18905036f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1427",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1428",
+    "action": "delivery",
+    "detection_head": "54684debf89eccdd48e754fb620a64420aad1206",
+    "context_sha256": "c0e2cdde97e41fd8331c52060e06dd12122da20ff0d21107ab7846bab7f8754b",
+    "operator": "Sail-Li",
+    "worker": "mac-round9-operator",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1427",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1990",
+    "diagnosis": "自动验收候选的第一笔没有关联 issue 和 request_id 的采集 JSON；补入本机项目生成、夹具导入及拒绝错误文件的实测回执后，同一验收功能正式签发为 #1990。",
+    "next_action": "实际系统点击在独立 macOS 作业运行，静态检查失败另按真实输出修复并复验。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T21:00:28.949606+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T21:06:45.310088+00:00",
+  "sha256": "e1ba82e2ab78bf66c0950d94d5aa7fca3d1af968c67e180227a4c78d404950e4"
+}
