@@ -1,0 +1,251 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i17",
+  "issue_number": 1758,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1758",
+  "source_revision": "b77b89d5a2fd5d87f3241feae89c9e67e8c4a42980673358bb6482b842d6adff",
+  "dispatch_event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-i17/dispatch-dae8b6f51d954c1bb279003bfec1ee4b.json",
+  "intake": {
+    "result": "passed",
+    "type": "type:development",
+    "status": "status:in-progress",
+    "dependency": 1854,
+    "dependency_state": "CLOSED",
+    "dependency_closed_at": "2026-11-21T17:56:48Z"
+  },
+  "mac_baseline": {
+    "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1758#issuecomment-7067787786",
+    "commit": "a0697dd93dc3381b98d5f921196ff5cd2b2fe50c",
+    "observation": "bug/task persisted; project issue list ignored the label query; no issue-label API was advertised.",
+    "candidate_retest": "unobserved on macOS"
+  },
+  "candidate": {
+    "source_base": "ab75b08a9fe400968f47f7084ec27dba1d26ebd9",
+    "source_git_blobs": {
+      "customizations/components/tianxuan/server/api.py": "a4d03deb2dbc1dc827c8e7a9bb1f31347f51a49b",
+      "customizations/components/tianxuan/server/schemas.py": "8f331fb412bb5ebbb4dc2158d7ab610f745e4241",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "5f27dbb7957fc6ca1a0eff53470a92d07152d1da",
+      "customizations/components/tianxuan/server/test_issue_classification.py": "e35ac3c8970d970b200f5b5aecc50705beb2ecc0",
+      "editor/docks/workbench/issue_actions/issue_classification.gd": "471b01fe431022b0de2e29c6cb4c58349ec6f192",
+      "tests/editor/workbench_issue_classification.gd": "fe678a91c74ad759da624db89803fae8ab08753e",
+      "tests/editor/run_workbench_issue_classification.py": "c69b8ceaaa244c62e8becc5b3280a54ccdda1e83",
+      "design-docs/gonggong-ai-workbench-i17.md": "433750c5644bd5b97d877bc13b8d7c4357ec0cd7"
+    },
+    "platform": "Windows x86_64",
+    "editor_sha256": "11d7bed943429962d27218cd01ebca5bd4111d2bda6e90418dbe1681e1dae26c",
+    "generated_header_sha256": "af2b7eae7deb86d75816c535ffac3c2032fac19cb3a1482357afed1919cd9c38"
+  },
+  "build": {
+    "scons_options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-cache> cache_limit=0 --cache-readonly -j6",
+    "toolchain": "Visual Studio 14.5 / Windows SDK 10.0.26100.0",
+    "initial": {
+      "exit_code": 0,
+      "elapsed": "00:08:52.65",
+      "log_sha256": "c81210fe5325f859d7d88d8403d00ecb680806fbc7f6d0a65ed2289a1579eb3b"
+    },
+    "embedded_input_invalidation": {
+      "change": "Require echoed project and label before displaying issue matches",
+      "observed": [
+        "Generating IssueActions.gen.h",
+        "Compiling AIWorkbenchSidebar.cpp",
+        "Linking editor.windows.editor.x86_64.lib",
+        "Linking godot.windows.editor.x86_64.exe"
+      ],
+      "exit_code": 0,
+      "elapsed": "00:00:23.37",
+      "log_sha256": "6553256714a4a71b68681fea25253efa96f8b73571346660a60286d15c3e3bd9"
+    }
+  },
+  "native_e2e": {
+    "state": "passed",
+    "editor_sha256": "11d7bed943429962d27218cd01ebca5bd4111d2bda6e90418dbe1681e1dae26c",
+    "native_sessions": [
+      {
+        "absent_count": 0,
+        "label": "声音 & 音效",
+        "legacy_filter_rejected": true,
+        "number": 1,
+        "project": "studio/audio",
+        "reopened_id": "iss_b4930f2ef6b34492866115f4727b5153",
+        "result_count": 1,
+        "role": "admin",
+        "save_disabled": false,
+        "type": "bug"
+      },
+      {
+        "absent_count": 0,
+        "label": "声音 & 音效",
+        "legacy_filter_rejected": true,
+        "number": 2,
+        "project": "studio/video",
+        "reopened_id": "iss_8c6699c5e2fa4478bae736d4147fc4ba",
+        "result_count": 1,
+        "role": "admin",
+        "save_disabled": false,
+        "type": "bug"
+      },
+      {
+        "absent_count": 0,
+        "label": "声音 & 音效",
+        "legacy_filter_rejected": true,
+        "number": 1,
+        "project": "studio/audio",
+        "reopened_id": "iss_b4930f2ef6b34492866115f4727b5153",
+        "result_count": 1,
+        "role": "viewer",
+        "save_disabled": true,
+        "type": "bug"
+      },
+      {
+        "absent_count": 0,
+        "label": "声音 & 音效",
+        "legacy_filter_rejected": true,
+        "number": 2,
+        "project": "studio/video",
+        "reopened_id": "iss_8c6699c5e2fa4478bae736d4147fc4ba",
+        "result_count": 1,
+        "role": "viewer",
+        "save_disabled": true,
+        "type": "bug"
+      }
+    ],
+    "classification_puts": [
+      {
+        "project": "studio/audio",
+        "status": 200
+      },
+      {
+        "project": "studio/audio",
+        "status": 200
+      },
+      {
+        "project": "studio/video",
+        "status": 200
+      },
+      {
+        "project": "studio/video",
+        "status": 200
+      },
+      {
+        "project": "studio/audio",
+        "status": 403
+      },
+      {
+        "project": "studio/video",
+        "status": 404
+      },
+      {
+        "project": "studio/audio",
+        "status": 409
+      },
+      {
+        "project": "studio/audio",
+        "status": 200
+      }
+    ],
+    "reopened_database": [
+      {
+        "project": "studio/audio",
+        "number": 1,
+        "id": "iss_b4930f2ef6b34492866115f4727b5153",
+        "title": "同名原单",
+        "type": "bug",
+        "labels": [
+          "声音 & 音效"
+        ]
+      },
+      {
+        "project": "studio/video",
+        "number": 2,
+        "id": "iss_8c6699c5e2fa4478bae736d4147fc4ba",
+        "title": "同名原单",
+        "type": "bug",
+        "labels": [
+          "声音 & 音效"
+        ]
+      },
+      {
+        "project": "studio/audio",
+        "number": 3,
+        "id": "iss_715cb89024f946dd83c401134a72af28",
+        "title": "同名原单",
+        "type": "feature",
+        "labels": []
+      },
+      {
+        "project": "studio/video",
+        "number": 4,
+        "id": "iss_2baa9edbfd2443e5a0fbf8dc534e4dde",
+        "title": "同名原单",
+        "type": "feature",
+        "labels": []
+      }
+    ],
+    "pre_i17_schema_upgrade": "existing issues reopened with empty label sets"
+  },
+  "service_regression": {
+    "runner": "python -m pytest -q",
+    "files": [
+      "customizations/components/tianxuan/server/test_issue_classification.py",
+      "customizations/components/tianxuan/server/test_issue_number.py",
+      "customizations/components/tianxuan/server/test_issue_hierarchy.py",
+      "customizations/components/tianxuan/server/test_business_modules.py",
+      "customizations/components/tianxuan/server/test_issue_ancestor_acl.py",
+      "customizations/components/tianxuan/server/test_work_management.py"
+    ],
+    "terminal": "30 passed, 1 warning in 15.39s",
+    "warning": "FastAPI TestClient httpx deprecation",
+    "classification_coverage": [
+      "Two simultaneous updates from separate database connections permit one coherent type and label set.",
+      "Read-only inherited shares permit lookup and block write; unshared ancestors and other tenants hide results.",
+      "Removing all labels clears search results."
+    ]
+  },
+  "native_regression": {
+    "i02": {
+      "exit_code": 0,
+      "runner": "tests/editor/run_workbench_issue_detail.py",
+      "http_readback": [
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/2/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/3/detail",
+          "studio/game",
+          403
+        ],
+        [
+          "/api/v1/issues/by-number/99999/detail",
+          "studio/game",
+          404
+        ],
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ]
+      ],
+      "sha256_of_report": "8c532003c45ca69e821ccae2c71acdbf23b4cdba55a0651a10a758c4809ec4ab"
+    },
+    "i03": {
+      "exit_code": 0,
+      "runner": "tests/editor/run_workbench_issue_hierarchy.py",
+      "geometry": {
+        "actions_reachable": true,
+        "close_reachable": true,
+        "max_scroll": 830.0,
+        "visible": "[P: (588.0, 122.0), S: (364.0, 510.0)]",
+        "window": "(960, 640)"
+      },
+      "sha256_of_report": "ea732373e4038fd1138d40766210b1fc8ef520406c1f8bab00510e88d0362b86"
+    }
+  },
+  "receipt_scope": "Local source and embedded Windows candidate tested. Parent session owns integration, remote delivery, issue acceptance and closure."
+}

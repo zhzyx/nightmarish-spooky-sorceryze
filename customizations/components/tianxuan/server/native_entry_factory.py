@@ -1180,7 +1180,12 @@ class OrdinaryEntry:
                 order = ["backlog", "planned", "in-progress", "in-review", "done"]
                 if current in order and order.index(current) < order.index(state):
                     self.entry_authority(row["id"])
-                    self.domain.transition_issue(row["actor"], parent, state)
+                    if state == "done":
+                        from issue_lifecycle import close_native_aggregate
+
+                        close_native_aggregate(self.domain, row["actor"], parent, related)
+                    else:
+                        self.domain.transition_issue(row["actor"], parent, state)
         require(
             all(issue["status"] == "done" for issue in issues),
             "Native entry retains unfinished acceptance",

@@ -6,6 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 import pytest
 from api import create_app
 from fastapi.testclient import TestClient
+from issue_lifecycle_test_support import accept_current_issue
 from tianxuan_core import Tianxuan, TianxuanError
 
 
@@ -78,6 +79,8 @@ def test_progress_release_backwards_and_human_gate_across_entries(fixture):
     denied(client.patch(f"/api/v1/issues/{issue}", json={"to_status": "in-review"}))
     assert ok(post(client, issue, "advance", 3, to_status="backlog"))["progress"] == 0
     for status in ("in-progress", "in-review", "done"):
+        if status == "done":
+            accept_current_issue(store, owner, parent)
         assert store.transition_issue(owner, parent, status)["status"] == status
     assert ok(post(client, issue, "advance", 4, to_status="sculpt"))["progress"] == 40
     reviewed = ok(post(client, issue, "advance", 5, to_status="in-review"))
@@ -97,6 +100,8 @@ def test_progress_release_backwards_and_human_gate_across_entries(fixture):
             owner, "flow.configure", dict(issue_id=issue, expected_version=6, **rewritten), call_id="rewrite"
         )
     assert ok(client.get(flow_url(issue))) == before
+    denied(post(client, issue, "judge", 6, to_status="done"))
+    accept_current_issue(store, owner, issue)
     result = ok(post(client, issue, "judge", 6, to_status="done"))
     assert result["progress"] == 100 and result["status"] == "done"
     assert ok(post(client, issue, "judge", 6, to_status="done")) == result
@@ -165,6 +170,8 @@ def test_native_managed_done_without_acceptance_does_not_release_and_rejects_ord
     _, store, owner, client, issue = fixture
     prereq = store.create_issue(owner, "Native")["id"]
     for status in ("in-progress", "in-review", "done"):
+        if status == "done":
+            accept_current_issue(store, owner, prereq)
         store.transition_issue(owner, prereq, status)
     with store.db:
         store.db.execute(

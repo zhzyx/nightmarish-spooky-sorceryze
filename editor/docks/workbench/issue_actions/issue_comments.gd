@@ -123,6 +123,10 @@ func _selected() -> Dictionary:
 	return {} if indices.is_empty() else _thread.get_item_metadata(indices[0])
 
 
+func get_selected_comment_id() -> String:
+	return str(_selected().get("id", ""))
+
+
 func _select(index: int) -> void:
 	var comment: Dictionary = _thread.get_item_metadata(index)
 	_selected_body.text = str(comment.body)

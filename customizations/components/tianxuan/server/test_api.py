@@ -11,6 +11,7 @@ from typing import Any
 import pytest
 from api import create_app
 from fastapi.testclient import TestClient
+from issue_lifecycle_test_support import accept_current_issue
 from tianxuan_core import Tianxuan
 
 
@@ -159,7 +160,7 @@ def test_docs_list_filters_by_kind(client: TestClient, auth: dict[str, str]):
     assert {item["id"] for item in all_docs} == {doc.json()["id"], requirement["id"]}
 
 
-def test_requirement_tickets_transition_and_progress(client: TestClient, auth: dict[str, str]):
+def test_requirement_tickets_transition_and_progress(client: TestClient, auth: dict[str, str], store, account):
     requirement = create_requirement(client, auth)
     assert requirement["kind"] == "requirement"
     assert requirement["progress"] == {}
@@ -187,6 +188,8 @@ def test_requirement_tickets_transition_and_progress(client: TestClient, auth: d
 
     child = next(issue for issue in issues if issue["type"] == "task")
     for status in ("planned", "in-progress", "in-review", "done"):
+        if status == "done":
+            accept_current_issue(store, account["user_id"], child["id"])
         transitioned = client.patch(f"/api/v1/issues/{child['id']}", headers=auth, json={"to_status": status})
         assert transitioned.status_code == 200, transitioned.text
         child = transitioned.json()

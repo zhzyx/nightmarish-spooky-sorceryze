@@ -3,22 +3,26 @@
 import hashlib
 import io
 import json
+import re
 import zipfile
 from typing import Any
 
 from issue_flow import definition
-from tianxuan_core import PermissionDenied, TianxuanError, VersionConflict, _connection_call, _now
-
-
-def module_read(store, actor, module):
-    if module.startswith("requirement-"):
-        store.require_native_module_read(actor, module)
+from tianxuan_core import (
+    NotFound,
+    PermissionDenied,
+    TianxuanError,
+    VersionConflict,
+    _connection_call,
+    _now,
+    require_native_source_read,
+)
 
 
 def authorize(store, actor, payload):
     store._require_tenant_issue(actor, payload["issue_id"], write=True)
     if "module" in payload:
-        module_read(store, actor, payload["module"])
+        require_native_source_read(store, actor, payload["module"])
 
 
 def empty_plan():
@@ -26,11 +30,35 @@ def empty_plan():
 
 
 @_connection_call
-def roadmap(store, actor) -> dict[str, Any]:
+def project_fields(store, actor, project):
+    store._validate_project(project)
+    rows = store.db.execute(
+        "SELECT key,label FROM project_issue_fields WHERE tenant_id=? AND project=? ORDER BY key",
+        (store._tenant_of(actor), project),
+    )
+    return {"project": project, "fields": [dict(row) for row in rows]}
+
+
+@_connection_call
+def define_text_field(store, actor, project, key, label):
+    store._require_editor(actor)
+    store._validate_project(project)
+    if not re.fullmatch(r"[a-zA-Z][a-zA-Z0-9_.-]{0,99}", key) or not bounded_text(label, 100):
+        raise TianxuanError("invalid project text field")
+    store.db.execute(
+        "INSERT INTO project_issue_fields VALUES (?,?,?,?) ON CONFLICT (tenant_id,project,key) "
+        "DO UPDATE SET label=excluded.label",
+        (store._tenant_of(actor), project, key, label.strip()),
+    )
+    return project_fields(store, actor, project)
+
+
+@_connection_call
+def roadmap(store, actor, *, project=None) -> dict[str, Any]:
     if not store.db.in_transaction:
         store.db.execute("BEGIN")
     items = []
-    for issue in store.list_issues(actor):
+    for issue in store.list_issues(actor, project=project):
         plan = empty_plan()
         logged = 0
         for row in store.db.execute(
@@ -59,6 +87,21 @@ def roadmap(store, actor) -> dict[str, Any]:
     return {"items": items}
 
 
+@_connection_call
+def plan_membership(store, actor, issue_id, project):
+    """Read the issue and both group counts from one project-visible snapshot."""
+    if not store.db.in_transaction:
+        store.db.execute("BEGIN")
+    issue = store._require_tenant_issue(actor, issue_id)
+    if issue["project"] != project:
+        raise NotFound("issue not found in project")
+    state = snapshot(store, actor, issue_id)
+    fields = {key: state["plan"][key] for key in ("iteration", "milestone")}
+    items = roadmap(store, actor, project=project)["items"]
+    counts = {key: sum(item["plan"][key] == value for item in items) for key, value in fields.items()}
+    return {"id": issue_id, "version": state["version"], "plan": fields, "counts": counts}
+
+
 def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any]:
     state = dict(
         id=issue_id,
@@ -75,7 +118,7 @@ def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any
     ):
         data = json.loads(row["data"])
         if "module" in data and data["module"] not in checked_modules:
-            module_read(store, actor, data["module"])
+            require_native_source_read(store, actor, data["module"])
             checked_modules.add(data["module"])
         event = dict(
             **data, action=row["action"], version=row["version"], actor=row["actor"], created_at=row["created_at"]
@@ -93,6 +136,53 @@ def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any
 
 
 @_connection_call
+def list_issue_artifacts(store, actor, project, number):
+    issue = store.read_issue_number(actor, project, number)
+    rows = store.db.execute(
+        "SELECT version, data FROM issue_work_events WHERE issue_id=? AND action='work.submit_asset' "
+        "ORDER BY version DESC",
+        (issue["id"],),
+    )
+    references = []
+    for row in rows:
+        data = json.loads(row["data"])
+        try:
+            require_native_source_read(store, actor, data["module"])
+        except (NotFound, PermissionDenied):
+            continue
+        references.append({
+            "version": row["version"],
+            **{k: data[k] for k in ("kind", "module", "revision", "path", "digest")},
+        })
+    return references
+
+
+@_connection_call
+def read_issue_artifact(store, actor, project, number, version):
+    issue = store.read_issue_number(actor, project, number)
+    if not 0 < version < 2**63:
+        raise NotFound("unknown artifact reference")
+    row = store.db.execute(
+        "SELECT data FROM issue_work_events WHERE issue_id=? AND version=? AND action='work.submit_asset'",
+        (issue["id"], version),
+    ).fetchone()
+    if not row:
+        raise NotFound("unknown artifact reference")
+    data = json.loads(row["data"])
+    require_native_source_read(store, actor, data["module"])
+    native = getattr(store, "work_native_store", None)
+    if native is None:
+        raise TianxuanError("native asset store unavailable")
+    try:
+        content = native.read(issue["tenant_id"], data["module"], data["revision"], data["path"])
+    except ValueError as exc:
+        raise VersionConflict("referenced artifact unavailable") from exc
+    if hashlib.sha256(content).hexdigest() != data["digest"]:
+        raise VersionConflict("referenced artifact digest changed")
+    return content
+
+
+@_connection_call
 def read_approved_asset(store, actor, issue_id, kind, module, revision, path) -> bytes:
     """Resolve a pinned input against one snapshot of the current issue and ACL."""
     if kind not in ("concept", "model") or not all(bounded_text(v) for v in (issue_id, module, revision, path)):
@@ -100,7 +190,7 @@ def read_approved_asset(store, actor, issue_id, kind, module, revision, path) ->
     if not store.db.in_transaction:
         store.db.execute("BEGIN")
     store._require_tenant_issue(actor, issue_id)
-    module_read(store, actor, module)
+    require_native_source_read(store, actor, module)
     rows = store.db.execute(
         "SELECT action, data FROM issue_work_events WHERE issue_id=? AND action IN ('work.submit_asset','work.decide') "
         "AND json_extract(data, '$.kind')=? ORDER BY version DESC LIMIT 2",
@@ -137,6 +227,7 @@ def godot_inputs(store, actor, issue_id) -> bytes:
     store._require_tenant_issue(actor, issue_id)
     rows = store.db.execute(
         "SELECT data, version FROM issue_work_events WHERE issue_id=? AND action='work.submit_asset' "
+        "AND json_extract(data, '$.kind') IN ('concept','model') "
         "AND version IN (SELECT MAX(version) FROM issue_work_events WHERE issue_id=? AND action='work.submit_asset' "
         "GROUP BY json_extract(data, '$.kind')) ORDER BY version",
         (issue_id, issue_id),
@@ -235,22 +326,33 @@ def execute(store, actor: str, name: str, payload: dict[str, Any], *, call_id=No
         raise TianxuanError("unknown action or missing call_id")
     if name in ("work.log", "work.decide"):
         payload.setdefault("note", "")
-    if payload.keys() != _KEYS[name] | {"issue_id", "expected_version"}:
+    field_edit = name == "work.plan" and "field_update" in payload
+    keys = {"field_update"} if field_edit else _KEYS[name]
+    if payload.keys() != keys | {"issue_id", "expected_version"}:
         raise TianxuanError("invalid work arguments")
     payload = store._tool_payload(name, payload)
     expected = payload["expected_version"]
     if type(expected) is not int or expected < 0:
         raise TianxuanError("invalid expected_version")
-    data = {key: payload[key] for key in _KEYS[name]}
-    if name == "work.plan":
+    data = {key: payload[key] for key in keys}
+    if field_edit:
+        field = payload["field_update"]
+        if (
+            not isinstance(field, dict)
+            or field.keys() != {"key", "value"}
+            or not bounded_text(field["key"], 100)
+            or not bounded_text(field["value"], 2000, empty=True)
+        ):
+            raise TianxuanError("invalid project text field edit")
+    elif name == "work.plan":
         validate_plan(data["plan"])
     if "note" in data and not bounded_text(data["note"], 4000, empty=True):
         raise TianxuanError("invalid note")
     if name == "work.log" and not minutes(data["minutes"], 1):
         raise TianxuanError("invalid minutes")
+    kinds = ("concept", "model", "attachment") if name == "work.submit_asset" else ("concept", "model")
     if "kind" in data and (
-        data["kind"] not in ("concept", "model")
-        or not all(bounded_text(data[k]) for k in ("module", "revision", "path"))
+        data["kind"] not in kinds or not all(bounded_text(data[k]) for k in ("module", "revision", "path"))
     ):
         raise TianxuanError("invalid asset binding")
     if name == "work.decide" and data["decision"] not in ("approved", "changes_requested"):
@@ -262,6 +364,19 @@ def execute(store, actor: str, name: str, payload: dict[str, Any], *, call_id=No
         ).fetchone()[0]
         if expected != current:
             raise VersionConflict("work version changed")
+        if field_edit:
+            issue = store._require_tenant_issue(actor, issue_id, write=True)
+            definitions = project_fields(store, actor, issue["project"])["fields"]
+            if not any(item["key"] == field["key"] for item in definitions):
+                raise TianxuanError("unknown project text field")
+            # Merge in the authority's transaction. Legacy scalar types and large integers
+            # never pass through the native editor's JSON number conversion.
+            fields = snapshot(store, actor, issue_id)["plan"]["custom_fields"]
+            if field["key"] not in fields and len(fields) >= 100:
+                raise TianxuanError("custom field limit reached")
+            fields[field["key"]] = field["value"]
+            data.clear()
+            data["plan"] = {"custom_fields": fields}
         if name == "work.submit_asset":
             native = getattr(store, "work_native_store", None)
             if native is None:
@@ -270,7 +385,10 @@ def execute(store, actor: str, name: str, payload: dict[str, Any], *, call_id=No
                 content = native.read(store._tenant_of(actor), data["module"], data["revision"], data["path"])
             except ValueError as exc:
                 raise TianxuanError("native asset unavailable") from exc
-            data.update(digest=hashlib.sha256(content).hexdigest(), decision="pending")
+            data.update(
+                digest=hashlib.sha256(content).hexdigest(),
+                decision="attached" if data["kind"] == "attachment" else "pending",
+            )
         elif name == "work.decide":
             row = store.db.execute(
                 "SELECT data FROM issue_work_events WHERE issue_id=? AND action IN ('work.submit_asset','work.decide') "

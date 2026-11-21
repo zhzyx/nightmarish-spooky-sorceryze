@@ -21,6 +21,7 @@ from native_execution_host import EntryConsumer, EntryLedger, SinanProcess
 from native_installation import InstallationManifest, InstalledPlannerRuntime
 from native_requirement_plan import RequirementPlanner, validate_plan
 from native_store import NativeStoreError
+from issue_lifecycle_test_support import accept_current_issue
 from tianxuan_core import NotFound, Tianxuan, TransitionRejected
 
 
@@ -106,6 +107,8 @@ class EntryTests(unittest.IsolatedAsyncioTestCase):
         )
         for issue in (child, parent):
             for state in ("planned", "in-progress", "in-review", "done"):
+                if state == "done":
+                    accept_current_issue(self.domain, self.actor, issue["id"])
                 self.domain.transition_issue(self.actor, issue["id"], state)
         accepted_child = self.domain.get_issue(child["id"])
         self.assertEqual(self.domain.get_doc(requirement["id"])["progress"]["percent"], 100)

@@ -11,6 +11,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
+import issue_lifecycle
 import pytest
 from native_check_runner import NativeCheckRunner
 from native_evidence import EvidenceCache
@@ -562,6 +563,20 @@ def test_definition_change_and_replayed_manual_done_fail_closed(fixture):
     manual = w.domain.create_issue(actor, "manual")
     for state in ["planned", "in-progress", "in-review"]:
         w.domain.transition_issue(actor, manual["id"], state)
+    evidence = w.domain.add_issue_comment(actor, manual["id"], "Manual deliverable reviewed")
+    current = issue_lifecycle.read(w.domain, actor, manual["id"], manual["project"])
+    issue_lifecycle.mutate(
+        w.domain,
+        actor,
+        manual["id"],
+        manual["project"],
+        "accept",
+        expected_version=current["version"],
+        revision=current["revision"],
+        comment=evidence["id"],
+        call_id="manual-accept",
+        asset_version=current["asset_version"],
+    )
     w.domain.transition_issue(actor, manual["id"], "done", call_id="old-done")
     with w._transaction() as db:
         db.execute("INSERT INTO native_managed_issues VALUES (?,?,NULL)", (manual["id"], "host-bound-test"))

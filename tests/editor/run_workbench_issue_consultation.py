@@ -13,6 +13,7 @@ import sys
 import tempfile
 import threading
 import time
+from contextlib import closing
 from pathlib import Path
 from unittest.mock import patch
 from uuid import uuid4
@@ -169,7 +170,7 @@ def exercise(root, binary):
             service.should_exit = True
             thread.join(10)
             store.db.close()
-    with sqlite3.connect(database) as audit:
+    with closing(sqlite3.connect(database)) as audit:
         rows = audit.execute("SELECT tenant, actor, state FROM workspace_conversations").fetchall()
         assert len(rows) == 2
         assert all(tenant == owner["tenant_id"] and user == actor for tenant, user, _ in rows)

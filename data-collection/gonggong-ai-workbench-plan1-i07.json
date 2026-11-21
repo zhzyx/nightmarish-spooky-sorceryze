@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i07",
+  "issue_number": 1789,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1789",
+  "prerequisite": {
+    "issue": 1854,
+    "state": "CLOSED/COMPLETED",
+    "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854#issuecomment-7066884069",
+    "intake_exit_code": 0
+  },
+  "candidate": {
+    "base": "c8d07b74fc4d5b615aca671e57e5e60b8271ca08",
+    "source_git_blobs": {
+      "editor/SCsub": "5083e1ccc06d8546fcc4be167ca3da6958275624",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp": "6e24a33016dc161a785e1e30d6428eca014085cb",
+      "editor/docks/workbench/issue_detail.gd": "37dca74c5b613b9bd6df05fee71c94c7207444cf",
+      "editor/docks/workbench/issue_milestone.gd": "56e4dec7a153d6af59ea2e7664a30f0450ca74a1",
+      "customizations/components/tianxuan/server/work_management.py": "ec9a26023da4562cef2240113b994456eba09993",
+      "customizations/components/tianxuan/server/work_management_api.py": "f8cd293bcaff03346ab555da43b69c332ef1e391",
+      "customizations/components/tianxuan/server/test_work_management.py": "7ebcbb5f8ca112e1c5df3a4bb42e9d6cda606def",
+      "tests/editor/run_workbench_issue_milestone.py": "065c727b1393129b8607647ac94f2e01e4504848",
+      "tests/editor/workbench_issue_milestone.gd": "70b4082d06ae015d4aa643cf4e8fdaf7830f795c"
+    }
+  },
+  "build": {
+    "profile": "Windows x86_64, MSVC, editor tests=yes, default precision, d3d12=no, angle=no, accesskit=no, shared SCons cache read-only, -j6",
+    "invalidation": {
+      "old_header_sha256": "c66da8241611303063f884d26d33c49396811dc8274e1f0896faf5db71a6e07d",
+      "new_header_sha256": "7d080c499487c0bae254bc85f578f1f7c8c6b9e7bcfa53703cbb8c0ad7f0a45a",
+      "observed": [
+        "Generating editor\\docks\\workbench\\IssueCreation.gen.h ...",
+        "Compiling editor\\docks\\workbench\\AIWorkbenchSidebar.cpp ...",
+        "Linking Program bin\\godot.windows.editor.x86_64.exe ...",
+        "Linking Program bin\\godot.windows.editor.x86_64.console.exe ...",
+        "scons: done building targets."
+      ]
+    },
+    "log_sha256": "96738d17259eea88a7b65a00be91ff9123e90776cfb1475b2929a0c89943eca4",
+    "exit_code": 0
+  },
+  "target_receiver": {
+    "control": "WorkbenchIssueDetail/WorkbenchIssueMilestone",
+    "environment": "headless Windows editor, authenticated editor account, isolated native-only Tianxuan HTTP service and SQLite database",
+    "test": "tests/editor/run_workbench_issue_milestone.py",
+    "result": {
+      "engine_sha256": "10776fd19e0e5758393c8e7e401197bd8a826fe8911281f4b6b01f99a66f49b6",
+      "native": {
+        "after": [
+          {
+            "counts": "迭代「第二轮」　2 单\n里程碑「发布」　3 单",
+            "iteration": "第二轮",
+            "milestone": "发布"
+          },
+          {
+            "counts": "迭代「第一轮」　2 单\n里程碑「预览」　1 单",
+            "iteration": "第一轮",
+            "milestone": "预览"
+          },
+          {
+            "counts": "迭代「第一轮」　2 单\n里程碑「发布」　3 单",
+            "iteration": "第一轮",
+            "milestone": "发布"
+          },
+          {
+            "counts": "迭代「第二轮」　2 单\n里程碑「发布」　3 单",
+            "iteration": "第二轮",
+            "milestone": "发布"
+          }
+        ],
+        "before": [
+          {
+            "counts": "迭代「第一轮」　3 单\n里程碑「预览」　2 单",
+            "iteration": "第一轮",
+            "milestone": "预览"
+          },
+          {
+            "counts": "迭代「第一轮」　3 单\n里程碑「预览」　2 单",
+            "iteration": "第一轮",
+            "milestone": "预览"
+          },
+          {
+            "counts": "迭代「第一轮」　3 单\n里程碑「发布」　2 单",
+            "iteration": "第一轮",
+            "milestone": "发布"
+          },
+          {
+            "counts": "迭代「第二轮」　1 单\n里程碑「发布」　2 单",
+            "iteration": "第二轮",
+            "milestone": "发布"
+          }
+        ],
+        "saved": {
+          "counts": "迭代「第二轮」　2 单\n里程碑「发布」　3 单",
+          "iteration": "第二轮",
+          "milestone": "发布"
+        }
+      },
+      "work_plan_http": [
+        [
+          "/api/v1/issues/iss_7b54c79632ab4817a8bfa4a4aa4bad8b/work/plan",
+          "studio/game",
+          200
+        ]
+      ],
+      "other_work_states_unchanged": 5,
+      "stored_patch": {
+        "iteration": "第二轮",
+        "milestone": "发布"
+      },
+      "next_version": 2,
+      "reopened_projection_matches": true
+    }
+  },
+  "service_regressions": {
+    "command": "python -m pytest -q customizations/components/tianxuan/server/test_work_management.py customizations/components/tianxuan/server/test_issue_flow.py",
+    "passed": 15
+  },
+  "method_recall": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 24,
+    "observed": "The embedded script invalidated the generated header and sidebar object, then the linked editor ran the native probe."
+  },
+  "combined_readback": {
+    "engine_sha256": "2c11883f2264b0e3c0ed98f06a8ff1eff044c6c2ca01832eb69df50b873d5343",
+    "probe_sha256": "8435876e733ab7fa04ce3a6d17473873ebb7c8cde9e599a5f7f4aa058e5123fb",
+    "all_native_group_counts_and_patch_match": true
+  },
+  "I02_regression": {
+    "exit_code": 0,
+    "checks": [
+      "command palette opened sidebar",
+      "assigned and unassigned compared to reopened database",
+      "private and absent results cleared prior detail",
+      "successful refresh after 404, logout cleared the visible record"
+    ],
+    "engine_sha256": "10776fd19e0e5758393c8e7e401197bd8a826fe8911281f4b6b01f99a66f49b6"
+  }
+}
