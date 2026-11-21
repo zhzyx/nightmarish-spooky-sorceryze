@@ -1,0 +1,129 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-i19",
+  "issue_number": 1724,
+  "baseline": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+  "design_path": "design-docs/gonggong-ai-workbench-plan1.md",
+  "design_sha256": "fa576b42f5161c6d3363216cb85057bc54e8792a3635287054bd0ec5b8578f60",
+  "verified_complete": 15,
+  "open": 3,
+  "capabilities": [
+    {
+      "capability": "I01",
+      "issue": 1859,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1859#issuecomment-7065373317"
+    },
+    {
+      "capability": "I02",
+      "issue": 1854,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854#issuecomment-7066884069"
+    },
+    {
+      "capability": "I03",
+      "issue": 1750,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1750#issuecomment-7068497120"
+    },
+    {
+      "capability": "I04",
+      "issue": 1831,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1831#issuecomment-7068715757"
+    },
+    {
+      "capability": "I05",
+      "issue": 1788,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1788#issuecomment-7068756315"
+    },
+    {
+      "capability": "I06",
+      "issue": 1850,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850#issuecomment-7069088567"
+    },
+    {
+      "capability": "I07",
+      "issue": 1789,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1789#issuecomment-7069844889"
+    },
+    {
+      "capability": "I08",
+      "issue": 1751,
+      "state": "OPEN",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1751"
+    },
+    {
+      "capability": "I09",
+      "issue": 1752,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1752#issuecomment-7069845106"
+    },
+    {
+      "capability": "I10",
+      "issue": 1753,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1753#issuecomment-7069844687"
+    },
+    {
+      "capability": "I11",
+      "issue": 1754,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1754#issuecomment-7069846734"
+    },
+    {
+      "capability": "I12",
+      "issue": 1790,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1790#issuecomment-7060678033"
+    },
+    {
+      "capability": "I13",
+      "issue": 1755,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755#issuecomment-7063912867"
+    },
+    {
+      "capability": "I14",
+      "issue": 1832,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1832#issuecomment-7069846861"
+    },
+    {
+      "capability": "I15",
+      "issue": 1756,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756#issuecomment-7069953950"
+    },
+    {
+      "capability": "I16",
+      "issue": 1757,
+      "state": "OPEN",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1757"
+    },
+    {
+      "capability": "I17",
+      "issue": 1758,
+      "state": "CLOSED",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1758#issuecomment-7069846615"
+    },
+    {
+      "capability": "I18",
+      "issue": 1759,
+      "state": "OPEN",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1759"
+    }
+  ],
+  "intake_correction": {
+    "issue_number": 1724,
+    "request_id": "gonggong-ai-workbench-plan1-i19",
+    "incident": "0c96a028a105164a8ad816fdc770b35a1158709040a649accb50ef5edc7c9410",
+    "correct_tracker": 2000,
+    "previous_tracker": 1968,
+    "original_assessment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1724#issuecomment-7069916253",
+    "correction": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1724#issuecomment-7069952706",
+    "retry_verified": true
+  }
+}
