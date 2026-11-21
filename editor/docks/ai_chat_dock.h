@@ -301,6 +301,7 @@ class AIChatDock : public EditorDock {
 	ObjectID idWorkbenchReturnScreen;
 	int nConversationIndex = -1;
 	void CaptureWorkbenchSource();
+	void PrepareWorkbenchConsultation();
 	void OpenWorkbenchSidebar();
 	void ExpandWorkbenchSidebar();
 	void CloseWorkbenchSidebar();
