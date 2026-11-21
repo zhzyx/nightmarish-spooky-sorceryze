@@ -1,0 +1,159 @@
+{
+  "issue_number": 1427,
+  "request_id": "maliang-save-artifact-20261117",
+  "source_request_sha256": "5ffe9b8c4cac3e319d76f9a174fbf1b0db6cd8b312ba633f9b8117b2129f61f3",
+  "owner": "mac-round9-export",
+  "platform": {
+    "os": "macOS 26.6.2",
+    "arch": "arm64"
+  },
+  "git_parent": "ab75b08a9fe400968f47f7084ec27dba1d26ebd9",
+  "source_workbench_sha256": "a66b951517879c76a2e722cae619aa3d000c6e47547741aac094d2f355367cbc",
+  "installed_workbench_sha256": "5c6b61c3b5ca72535c40157e917682ecb97cfdb0c026cbb675c941532b4a9dd7",
+  "candidate_binary_sha256": "6a50daf421cf76453779d9329036375d5c5a69135eb5763e14cab8b92af1d903",
+  "historical": {
+    "art": {
+      "receipt_sha256": "6b551e05dc22c33fb6f55c9d944ef1ef5df9859ad60564364922ee6d3d5abe4e",
+      "binary_sha256": "19c658e647d879d887611f9289a047d9a94dfc30a4758343e99885e238d5ad77",
+      "workbench_runtime_sha256": "8f7e3a1244b12d99ff8e0506b14df08482a8d69e2c1366b61f67a44b28729035",
+      "self_selected_steps": [
+        "image",
+        "mesh",
+        "cancel"
+      ],
+      "configured_values_read_back_before_return": [
+        "image",
+        "mesh",
+        "cancel"
+      ],
+      "cancel_action_in_manual_branch": false
+    },
+    "art2": {
+      "receipt_sha256": "de9429f985d8d9ac69b9f433f8ab37e2164aa8fada14e89e381293f076221c51",
+      "binary_sha256": "19c658e647d879d887611f9289a047d9a94dfc30a4758343e99885e238d5ad77",
+      "workbench_runtime_sha256": "8f7e3a1244b12d99ff8e0506b14df08482a8d69e2c1366b61f67a44b28729035",
+      "self_selected_steps": [
+        "image",
+        "mesh",
+        "cancel"
+      ],
+      "configured_values_read_back_before_return": [],
+      "cancel_action_in_manual_branch": false
+    }
+  },
+  "self_copy_cause": "The product set both the starting directory and filename from the cached preview. DirAccess.copy rejects equal paths. The earlier manual drivers sent no cancellation on the cancel-labelled step. art2 logged intended chosen_* before returning and did not assign them. Neither manual receipt identifies what caused the sheet to finish; art recorded changed field readback before completion but received the original paths.",
+  "passive_comparison": {
+    "binary_sha256": "7b70749c63efc3b56b52606f6abccd9718377b79f75b83489c3e1aa7d4f78e74",
+    "workbench_runtime_sha256": "4abda8af61e086a0189de0a288f5479a5ea4386a518df1c92cb585d2daabf45b",
+    "observations": [
+      {
+        "step": "image",
+        "no_action_observation_seconds": 4,
+        "file_selected": [],
+        "canceled_after_public_cancel": 1
+      },
+      {
+        "step": "mesh",
+        "no_action_observation_seconds": 4,
+        "file_selected": [],
+        "canceled_after_public_cancel": 1
+      },
+      {
+        "step": "cancel",
+        "no_action_observation_seconds": 4,
+        "file_selected": [],
+        "canceled_after_public_cancel": 1
+      }
+    ]
+  },
+  "native": {
+    "assertions": {
+      "return_code": 1,
+      "passed": 17,
+      "total": 19,
+      "failed": [
+        "image native selection and exact raw bytes",
+        "mesh native selection and exact raw bytes"
+      ]
+    },
+    "scenarios": [
+      {
+        "step": "image",
+        "initial_dir_relative_to_test": "project",
+        "initial_dir_location": "sandbox/project",
+        "native_name_readback": "chosen-image.png",
+        "native_dir_readback_relative_to_test": "exports",
+        "actions": [
+          "cleanup_cancel"
+        ],
+        "file_selected": [],
+        "canceled": 1,
+        "target_exists": false
+      },
+      {
+        "step": "mesh",
+        "initial_dir_relative_to_test": "project",
+        "initial_dir_location": "sandbox/project",
+        "native_name_readback": "chosen-mesh.glb",
+        "native_dir_readback_relative_to_test": "exports",
+        "actions": [
+          "cleanup_cancel"
+        ],
+        "file_selected": [],
+        "canceled": 1,
+        "target_exists": false
+      },
+      {
+        "step": "cancel",
+        "initial_dir_relative_to_test": "project",
+        "initial_dir_location": "sandbox/project",
+        "native_name_readback": "fed32a4f30884a913b6824e38c9e68fa1554f32be8e5f41ccff4b0b2c1808044.png",
+        "native_dir_readback_relative_to_test": "project",
+        "actions": [
+          "cancel"
+        ],
+        "file_selected": [],
+        "canceled": 1,
+        "target_exists": false
+      }
+    ],
+    "real_positive_saves": 0,
+    "accessibility_trusted": false,
+    "native_default_save_control_available": false,
+    "xcodebuild": "Active developer directory is CommandLineTools; Xcode is unavailable."
+  },
+  "handler_control": {
+    "type": "explicit Godot file_selected invocation after real offline preview generation",
+    "assertions": {
+      "return_code": 0,
+      "passed": 14,
+      "total": 14,
+      "failed": []
+    },
+    "files": {
+      "chosen-image.png": {
+        "size": 75,
+        "sha256": "e6d66889131220f931fddfb05730d647a0992456c63ae0a8154b4ae32ff219ef",
+        "equals_fixture_byte_for_byte": true
+      },
+      "chosen-mesh.glb": {
+        "size": 428,
+        "sha256": "ddf9caad58063e513fba147f96300dab92adfbd684d9c7c35180ff04eb07151b",
+        "equals_fixture_byte_for_byte": true
+      }
+    }
+  },
+  "mesh_regression": {
+    "passed": true,
+    "total_checks": 30,
+    "failures": 0
+  },
+  "commands": {
+    "build": "python -m SCons platform=macos target=editor arch=arm64 vulkan=no use_volk=no accesskit=no -j7",
+    "baseline": "python3 driver/run.py 1427 --binary /private/tmp/r9-doc-build/bin/godot.macos.editor.arm64 --source /private/tmp/r9-export --panel passive",
+    "native": "python3 driver/run.py 1427 --binary /private/tmp/r9-build-export/bin/godot.macos.editor.arm64 --source /private/tmp/r9-export --panel automatic",
+    "handler_control": "python3 driver/run.py 1427 --binary /private/tmp/r9-build-export/bin/godot.macos.editor.arm64 --source /private/tmp/r9-export --panel signal",
+    "regression": "godot.macos.editor.arm64 --headless --path <isolated sample project> --script res://mesh_artifact_node_acceptance.gd"
+  },
+  "remaining": "Natural Save confirmation and its two native destination callbacks remain unverified. No human acceptance was recorded."
+}

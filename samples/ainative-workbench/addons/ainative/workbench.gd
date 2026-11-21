@@ -1175,8 +1175,7 @@ func _save_mesh_artifact(key: String):
 	_show_artifact_result(key)
 	if preview_source_path.is_empty(): return
 	var attempt = int(artifact_nodes[key].get("attempt", 1))
-	open_save_dialog()
-	save_picker.current_file = ("mesh-round-%03d-%s.glb" % [attempt, str(artifact_nodes[key].entry.get("artifact", {}).get("revision", "")).left(12)]).validate_filename()
+	open_save_dialog(("mesh-round-%03d-%s.glb" % [attempt, str(artifact_nodes[key].entry.get("artifact", {}).get("revision", "")).left(12)]).validate_filename())
 
 func _open_artifact_download(key: String):
 	if artifact_nodes.has(key) and artifact_nodes[key].get("kind", "image") == "character":
@@ -3147,15 +3146,20 @@ func set_owners(node: Node, root: Node):
 		child.owner = root
 		set_owners(child, root)
 
-func open_save_dialog():
+func open_save_dialog(suggested_name: String = ""):
 	if preview_source_path.is_empty() or not FileAccess.file_exists(preview_source_path):
 		status.text = "请先预览要保存的图像或网格"
 		return
 	var extension = preview_source_path.get_extension().to_lower()
 	if extension.is_empty(): extension = "png" if preview_resource != null else "glb"
 	save_picker.filters = ["*." + extension + " ; " + ("图像" if preview_resource != null else "人形角色" if extension=="tscn" and not _latest_character_entry(preview_node).is_empty() else "网格") + "生成物"]
-	save_picker.current_dir = preview_source_path.get_base_dir()
-	save_picker.current_file = preview_source_path.get_file()
+	var project_dir = ProjectSettings.globalize_path("res://")
+	var filename = preview_source_path.get_file() if suggested_name.is_empty() else suggested_name
+	var directory = DirAccess.open(project_dir)
+	if directory != null and directory.is_equivalent(preview_source_path, project_dir.path_join(filename)):
+		filename = filename.get_basename() + "-export." + extension
+	save_picker.current_dir = project_dir
+	save_picker.current_file = filename
 	save_picker.popup_centered_ratio(0.7)
 
 func save_preview_to(path: String):
@@ -3164,6 +3168,10 @@ func save_preview_to(path: String):
 		return
 	var target = path
 	if target.get_extension().is_empty(): target += "." + preview_source_path.get_extension().to_lower()
+	var directory = DirAccess.open(preview_source_path.get_base_dir())
+	if directory != null and directory.is_equivalent(preview_source_path, target):
+		status.text = "所选位置是生成物源文件，请选择其他文件名或目录"
+		return
 	var err = DirAccess.copy_absolute(preview_source_path, target)
 	if err != OK:
 		status.text = "保存生成物失败：" + error_string(err)
