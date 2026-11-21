@@ -408,6 +408,8 @@ class IssueCommentCreateRequest(BaseModel):
     """司南工单评论；正文非空由领域层校验。"""
 
     body: str
+    parent_id: str | None = None
+    call_id: str | None = Field(default=None, min_length=1, max_length=256)
 
 
 class CommentCreateRequest(BaseModel):

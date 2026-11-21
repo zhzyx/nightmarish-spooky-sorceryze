@@ -149,6 +149,10 @@ CREATE TABLE IF NOT EXISTS issue_comments (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, issue_id TEXT NOT NULL,
   author TEXT NOT NULL, body TEXT NOT NULL, created_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS issue_comment_replies (
+  comment_id TEXT PRIMARY KEY REFERENCES issue_comments(id),
+  parent_id TEXT NOT NULL REFERENCES issue_comments(id)
+);
 CREATE TABLE IF NOT EXISTS external_links (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
   system TEXT NOT NULL, external_id TEXT NOT NULL,
@@ -335,6 +339,13 @@ def machine_view(body_md: str) -> dict[str, Any]:
 _P = ParamSpec("_P")
 _R = TypeVar("_R")
 _F = TypeVar("_F", bound=Callable[..., Any])
+
+
+_ISSUE_COMMENT_SELECT = (
+    "SELECT c.*, u.name AS author_name, r.parent_id FROM issue_comments c "
+    "LEFT JOIN users u ON u.id=c.author AND u.tenant_id=c.tenant_id "
+    "LEFT JOIN issue_comment_replies r ON r.comment_id=c.id "
+)
 
 
 def _connection_call(method: Callable[Concatenate[Tianxuan, _P], _R]) -> Callable[Concatenate[Tianxuan, _P], _R]:
@@ -1899,23 +1910,38 @@ class Tianxuan:
     # ---------- 司南：工单评论 ----------
 
     @_connection_call
-    def add_issue_comment(self, actor: str, issue_id: str, body: str) -> dict[str, Any]:
+    @_replayable("issue.comment")
+    def add_issue_comment(
+        self, actor: str, issue_id: str, body: str, parent_id: str | None = None, *, call_id: str | None = None
+    ) -> dict[str, Any]:
         self._require_editor(actor)
         if not body.strip():
             raise TianxuanError("issue comment body is required")
         issue = self._require_tenant_issue(actor, issue_id, write=True)
+        if (
+            parent_id is not None
+            and not self.db.execute(
+                "SELECT 1 FROM issue_comments WHERE id=? AND tenant_id=? AND issue_id=?",
+                (parent_id, issue["tenant_id"], issue_id),
+            ).fetchone()
+        ):
+            raise NotFound("parent comment not found in issue")
         comment_id = _id("icmt")
         now = _now()
         self.db.execute(
             "INSERT INTO issue_comments (id, tenant_id, issue_id, author, body, created_at) VALUES (?, ?, ?, ?, ?, ?)",
             (comment_id, issue["tenant_id"], issue_id, actor, body, now),
         )
+        if parent_id is not None:
+            self.db.execute(
+                "INSERT INTO issue_comment_replies (comment_id, parent_id) VALUES (?, ?)", (comment_id, parent_id)
+            )
         self._event(issue["tenant_id"], "issue.comment_added", actor, comment_id, {"issue_id": issue_id})
         return self.get_issue_comment(comment_id)
 
     @_connection_call
     def get_issue_comment(self, comment_id: str) -> dict[str, Any]:
-        row = self.db.execute("SELECT * FROM issue_comments WHERE id = ?", (comment_id,)).fetchone()
+        row = self.db.execute(_ISSUE_COMMENT_SELECT + "WHERE c.id = ?", (comment_id,)).fetchone()
         if row is None:
             raise NotFound(f"issue comment not found: {comment_id}")
         return dict(row)
@@ -1924,7 +1950,7 @@ class Tianxuan:
     def list_issue_comments(self, actor: str, issue_id: str) -> list[dict[str, Any]]:
         issue = self._require_tenant_issue(actor, issue_id)
         rows = self.db.execute(
-            "SELECT * FROM issue_comments WHERE tenant_id = ? AND issue_id = ? ORDER BY created_at, rowid",
+            _ISSUE_COMMENT_SELECT + "WHERE c.tenant_id = ? AND c.issue_id = ? ORDER BY c.created_at, c.rowid",
             (issue["tenant_id"], issue_id),
         ).fetchall()
         return [dict(row) for row in rows]
@@ -2557,6 +2583,9 @@ class Tianxuan:
 
     def _authorize_tool(self, actor: str, name: str, payload: dict[str, Any], result: Any = None) -> None:
         self._require_editor(actor)
+        if name == "issue.comment":
+            self._require_tenant_issue(actor, payload["issue_id"], write=True)
+            return
         if name == "module.create":
             if result is not None:
                 self._business_module(self._tenant_of(actor), payload["project"], result["id"])

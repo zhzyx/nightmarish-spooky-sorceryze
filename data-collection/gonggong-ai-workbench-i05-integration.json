@@ -1,0 +1,138 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-i05",
+  "issue_number": 1788,
+  "baseline": "ab75b08a9fe400968f47f7084ec27dba1d26ebd9",
+  "windows_editor_sha256": "549438f752136cc52cb454b80322284b54e15de2a5d73d45d50e754ff9580385",
+  "original_evidence_sha256": "ba3929291f8c6ed2095acce0e5f03f62bb0523322ffb0093bba71475ba441696",
+  "registered_controls": [
+    "issue_comments.gd",
+    "issue_hierarchy.gd"
+  ],
+  "tests": [
+    "test_issue_comments",
+    "test_issue_ancestor_acl",
+    "test_api_doc_issues"
+  ],
+  "server_result": "24 passed, 1 warning in 7.27s",
+  "native": {
+    "comments": {
+      "engine_sha256": "549438f752136cc52cb454b80322284b54e15de2a5d73d45d50e754ff9580385",
+      "comment_post_status": [
+        503,
+        200,
+        200,
+        200
+      ],
+      "verified_thread": [
+        {
+          "id": "icmt_16a93ab15ba048a2ac599905b3dd3897",
+          "tenant_id": "ten_21f1594310c54028b22139d305f9ab55",
+          "issue_id": "iss_e2c456e51c1d43c4aa59c2e87ffc3e7b",
+          "author": "usr_405d37a0be1044f2bdabf39ce93be4a2",
+          "body": "入口截图已更新",
+          "created_at": "2026-11-21T20:08:11.480636+00:00",
+          "author_name": "林川",
+          "parent_id": null
+        },
+        {
+          "id": "icmt_7cfde91f33dc4d8080b8750b8d12436b",
+          "tenant_id": "ten_21f1594310c54028b22139d305f9ab55",
+          "issue_id": "iss_e2c456e51c1d43c4aa59c2e87ffc3e7b",
+          "author": "usr_e3bcba3b28c842ab9f1c1ced34c0e770",
+          "body": "请补上验收步骤\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径",
+          "created_at": "2026-11-21T20:08:15.245900+00:00",
+          "author_name": "唐敏",
+          "parent_id": "icmt_16a93ab15ba048a2ac599905b3dd3897"
+        },
+        {
+          "id": "icmt_140ec9042895473c9d0b5c7a9140feaa",
+          "tenant_id": "ten_21f1594310c54028b22139d305f9ab55",
+          "issue_id": "iss_e2c456e51c1d43c4aa59c2e87ffc3e7b",
+          "author": "usr_405d37a0be1044f2bdabf39ce93be4a2",
+          "body": "已补充第二步",
+          "created_at": "2026-11-21T20:08:18.937986+00:00",
+          "author_name": "林川",
+          "parent_id": "icmt_7cfde91f33dc4d8080b8750b8d12436b"
+        }
+      ],
+      "editor_launches": [
+        {
+          "phase": 0,
+          "restored": -1,
+          "selected": 0
+        },
+        {
+          "phase": 1,
+          "restored": -1,
+          "selected": 1
+        },
+        {
+          "phase": 2,
+          "restored": 0,
+          "selected": 1
+        },
+        {
+          "phase": 3,
+          "restored": 1,
+          "selected": 0
+        }
+      ],
+      "pass": true
+    },
+    "detail": {
+      "engine_sha256": "549438f752136cc52cb454b80322284b54e15de2a5d73d45d50e754ff9580385",
+      "observed_fields": [
+        "标题　核对场景入口\n负责人　唐敏\n状态　planned\n内容版本　9b5860f6aca0b399037cb2c021842d2aec1a3b1304c069042d2629ad4a38c4b1",
+        "标题　检查地图\n负责人　未分配\n状态　backlog\n内容版本　143b1ccfed94f2c3ba882fa23b39c7bf2bd4a5333b42ee2c76b000956fed7776"
+      ],
+      "http_readback": [
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/2/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/3/detail",
+          "studio/game",
+          403
+        ],
+        [
+          "/api/v1/issues/by-number/99999/detail",
+          "studio/game",
+          404
+        ],
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ]
+      ],
+      "error_feedback": [
+        "没有权限查看此工单",
+        "当前项目中不存在此编号的工单"
+      ],
+      "checks": [
+        "command palette opened sidebar",
+        "assigned and unassigned compared to reopened database",
+        "private and absent results cleared prior detail",
+        "successful refresh after 404, logout cleared the visible record"
+      ]
+    }
+  },
+  "source_blobs": {
+    "customizations/components/tianxuan/server/api.py": "6a200b78600b678d5a2df1c803746eb9e6d601e3",
+    "customizations/components/tianxuan/server/schemas.py": "f0acc2e7a69b739a24e7c08c04e82a394285f1a2",
+    "customizations/components/tianxuan/server/test_issue_comments.py": "dac5af5c5461be5721aeb21e280f99e9a3c26d9f",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "f8b891beec31d6080a6f027937b14c26834c9eb4",
+    "design-docs/gonggong-ai-workbench-i05.md": "0ff89b729434ab4a733c155eec5ce822628a7538",
+    "editor/docks/workbench/issue_actions/issue_comments.gd": "c8a636a843b7ec0de414f103504f50afeed13cc1",
+    "tests/editor/run_workbench_issue_comments.py": "e4cee196b46f0f7cb3c23be21528e58a98e24b57",
+    "tests/editor/workbench_issue_comments.gd": "6b98cc5658337317f976b3fe578c2ac3b8f273fa"
+  },
+  "observed_at": "2026-11-21T20:08:37.658026+00:00"
+}

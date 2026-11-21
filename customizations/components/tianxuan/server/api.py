@@ -803,7 +803,9 @@ def create_app(
 
     @app.post("/api/v1/issues/{issue_id}/comments")
     def create_issue_comment(issue_id: str, payload: IssueCommentCreateRequest, actor: ActorDep) -> dict[str, Any]:
-        return store.add_issue_comment(actor, issue_id, payload.body)  # type: ignore[no-any-return]
+        return store.add_issue_comment(  # type: ignore[no-any-return]
+            actor, issue_id, payload.body, payload.parent_id, call_id=payload.call_id
+        )
 
     @app.get("/api/v1/issues/{issue_id}/comments")
     def list_issue_comments(issue_id: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
