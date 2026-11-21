@@ -9,6 +9,8 @@ var environment_ready := false
 var environment_cleanup_active := false
 var observed_runtime: Dictionary = {}
 
+var duobao_branches_script: Script
+var duobao_dialog: AcceptDialog
 var canvas_script: Script
 var spatial_script: Script
 var spatial_workbench: EditorPlugin
@@ -199,6 +201,7 @@ var offline := false
 var toolbar: HFlowContainer
 var advanced_bar: HFlowContainer
 var inflight_dialog: AcceptDialog
+var duobao_branches_button: Button
 var historical_issue_button: Button
 var historical_issue_dialog: AcceptDialog
 var archive_history_button: Button
@@ -329,6 +332,8 @@ func _ready() -> void:
 	connection_button.tooltip_text = "工作区连接"
 	connection_button.accessibility_name = "工作区连接"
 	refresh_button = _button(row, "刷新", _manual_refresh)
+	if duobao_branches_script:
+		duobao_branches_button = _button(row, "多宝分支", _open_duobao_branches)
 	historical_issue_button = _button(row, "历史工单", _open_historical_issue)
 	archive_history_button = _button(row, "多宝历史", _open_archive_history)
 	advanced_button = _button(row, "筛选与跟进 ▾", _toggle_advanced)
@@ -1437,6 +1442,27 @@ func _opened() -> void:
 			_mark_layer_event("ready", project_mode)
 		elif Time.get_ticks_msec() >= auto_refresh_after:
 			auto_refresh_pending = true
+
+
+func _open_duobao_branches() -> void:
+	if not is_instance_valid(duobao_dialog):
+		duobao_dialog = duobao_branches_script.new()
+		duobao_dialog.set("remote_command", _tianxuan_command)
+		duobao_dialog.set("local_command", _duobao_workcopy_command)
+		add_child(duobao_dialog)
+	duobao_dialog.popup_centered()
+	duobao_dialog.call("refresh")
+
+
+func _duobao_workcopy_command(arguments: Array) -> Dictionary:
+	var host := _host_root()
+	var entry := host.path_join("customizations/components/tianxuan/server/branch_workspace.py")
+	if host.is_empty() or not FileAccess.file_exists(entry):
+		return {"ok":false,"error":"未找到已安装的多宝工作副本工具"}
+	var args := PackedStringArray([entry])
+	args.append_array(PackedStringArray(arguments))
+	args.append_array(["--project", ProjectSettings.globalize_path("res://")])
+	return await _host_command(args, "--result", {})
 
 
 func _tianxuan_command(arguments: Array) -> Dictionary:
@@ -2947,7 +2973,7 @@ func _gate_visibility(opened: bool) -> void:
 	result_count.visible = current.is_empty()
 	connection_button.text = "" if opened else "工作区连接"
 	for child in toolbar.get_children():
-		child.visible = opened or child in [refresh_button, connection_button, historical_issue_button, archive_history_button]
+		child.visible = opened or child in [refresh_button, connection_button, historical_issue_button, archive_history_button, duobao_branches_button]
 	return_button.visible = opened and not current.is_empty()
 	search.visible = opened and current.is_empty()
 	pending_menu.visible = opened and current.is_empty()

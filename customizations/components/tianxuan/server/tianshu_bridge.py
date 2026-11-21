@@ -131,6 +131,29 @@ def _request(
     return parsed
 
 
+def branch_operation(args: argparse.Namespace) -> dict[str, Any]:
+    if not re.fullmatch(r"[A-Za-z0-9_.-]+", args.repo_name) or args.repo_name in (".", ".."):
+        raise BridgeError("多宝仓库名称无效")
+    if not args.branch.strip() or args.branch.startswith("-"):
+        raise BridgeError("分支名称无效")
+    path = "/api/v1/git/repos/" + urllib.parse.quote(args.repo_name, safe="")
+    identity = {"actor": args.actor, "token": args.token}
+    if args.command == "branch-create":
+        if not re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", args.start):
+            raise BridgeError("创建起点须为完整提交 OID")
+        created = _request(
+            args.api, "POST", path + "/branches", **identity, body={"name": args.branch, "start": args.start}
+        )
+        if created.get("sha") != args.start or created.get("branch") != args.branch:
+            raise BridgeError("多宝创建回执不匹配，请回读后再试")
+    tip = _request(args.api, "GET", path + "/branch-tip", **identity, params={"branch": args.branch})
+    if tip.get("branch") != args.branch or not re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", str(tip.get("sha", ""))):
+        raise BridgeError("未收到目标分支的精确提交")
+    if args.command == "branch-create" and tip["sha"] != args.start:
+        raise BridgeError("分支在创建后已前移，请重新读取")
+    return {"branch": args.branch, "sha": tip["sha"]}
+
+
 def status(args: argparse.Namespace) -> dict[str, Any]:
     health = _request(args.api, "GET", "/api/v1/health", actor=args.actor, token=args.token)
     capabilities = _request(args.api, "GET", "/api/v1/capabilities", actor=args.actor, token=args.token)
@@ -389,6 +412,14 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("status", help="天璇健康与 Gitea 状态").set_defaults(func=status)
+
+    for command in ("branch-create", "branch-tip"):
+        branch = sub.add_parser(command)
+        branch.add_argument("--repo-name", required=True)
+        branch.add_argument("--branch", required=True)
+        if command == "branch-create":
+            branch.add_argument("--start", required=True)
+        branch.set_defaults(func=branch_operation)
 
     p = sub.add_parser("context", help="读取外部工单在天璇内的需求/文档/工单")
     p.add_argument("--system", default="tianshu")

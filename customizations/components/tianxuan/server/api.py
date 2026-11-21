@@ -1459,6 +1459,14 @@ def create_app(
         except (GitServiceError, OSError) as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
+    @app.get("/api/v1/git/repos/{name}/branch-tip")
+    def git_branch_tip(name: str, actor: ActorDep, branch: str = Query(min_length=1)) -> dict[str, str]:
+        repo = _repo_under_root(name)
+        try:
+            return {"branch": branch, "sha": GitService().branch_tip(repo, branch)}
+        except (GitServiceError, OSError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
     @app.get("/api/v1/git/repos/{name}/log")
     def git_log(
         name: str,
