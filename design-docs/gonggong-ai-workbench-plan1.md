@@ -1312,6 +1312,8 @@
 
 ### G04
 
+[交付清单与验证](gonggong-ai-workbench-g04.md)
+
 **导入并核对全部分支引用** · [G04 #1846](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1846)
 
 接入分支名和 tip 对照表，处理非主分支。

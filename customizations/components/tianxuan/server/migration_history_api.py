@@ -6,7 +6,7 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-OPERATIONS = ("search", "detail", "body", "commits", "commit", "file", "attachment")
+OPERATIONS = ("branches", "search", "detail", "body", "commits", "commit", "file", "attachment")
 HISTORY_TOOLS = frozenset("migration.history." + name for name in OPERATIONS)
 
 
@@ -55,7 +55,7 @@ class Attachment(Scope):
 
 
 def history_routes(store, actor_dependency, native_store):
-    from history_git import commit_mapping, list_commits, read_file
+    from history_git import commit_mapping, list_branches, list_commits, read_file
     from history_records import read_attachment, record_detail, search_records
     from migration_status import read_import_status
 
@@ -63,6 +63,7 @@ def history_routes(store, actor_dependency, native_store):
 
     def execute(actor, operation, payload):
         model = {
+            "branches": Page,
             "search": Search,
             "detail": Detail,
             "body": Body,
@@ -83,6 +84,8 @@ def history_routes(store, actor_dependency, native_store):
             raise HTTPException(404, "Publication unavailable")
         scope = (native_store.database, tenant, project, publication["revision"])
         try:
+            if operation == "branches":
+                return list_branches(*scope, **args)
             if operation == "search":
                 return search_records(*scope, **args)
             if operation == "detail":
@@ -111,7 +114,7 @@ def history_routes(store, actor_dependency, native_store):
 
     @router.get("/{operation}")
     def read(
-        operation: Literal["search", "detail", "body", "commits", "commit", "file", "attachment"],
+        operation: Literal["branches", "search", "detail", "body", "commits", "commit", "file", "attachment"],
         request: Request,
         actor: str = Depends(actor_dependency),
     ):
