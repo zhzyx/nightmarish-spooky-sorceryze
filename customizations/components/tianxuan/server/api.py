@@ -66,6 +66,7 @@ from schemas import (
     IdentityResolveRequest,
     InviteAcceptRequest,
     InviteCreateRequest,
+    IssueAssigneeRequest,
     IssueCommentCreateRequest,
     IssueModuleRequest,
     IssueParentRequest,
@@ -790,6 +791,15 @@ def create_app(
     @app.get("/api/v1/issues/{issue_id}")
     def read_issue(issue_id: str, actor: ActorDep) -> dict[str, Any]:
         return cast(dict[str, Any], store.read_issue(actor, issue_id))
+
+    @app.put("/api/v1/issues/{issue_id}/assignee")
+    def set_issue_assignee(
+        issue_id: str, payload: IssueAssigneeRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(
+            dict[str, Any],
+            store.set_issue_assignee(actor, issue_id, project, payload.assignee_id, payload.expected_assignee_id),
+        )
 
     @app.put("/api/v1/issues/{issue_id}/module")
     def set_issue_module(
