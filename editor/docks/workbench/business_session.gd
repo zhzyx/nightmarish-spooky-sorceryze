@@ -30,6 +30,15 @@ func _ready() -> void:
 	choose.text = "天璇账号"
 	choose.pressed.connect(_toggle_form)
 	actions.add_child(choose)
+	var document_view := DocumentView.new()
+	document_view.name = "WorkbenchDocuments"
+	document_view.session = self
+	add_child(document_view)
+	var open_docs := Button.new()
+	open_docs.name = "OpenWorkbenchDocuments"
+	open_docs.text = "设计文档"
+	open_docs.pressed.connect(document_view.browse)
+	actions.add_child(open_docs)
 	_sign_out.name = "SignOut"
 	_sign_out.text = "退出"
 	_sign_out.pressed.connect(_sign_out_pressed)
@@ -195,3 +204,122 @@ func _exchange(method: int, route: String, credential: String, payload: Dictiona
 					reply.data = parsed
 	http.queue_free()
 	return reply
+
+
+class DocumentView extends AcceptDialog:
+	var session: Node
+	var documents := ItemList.new()
+	var paragraphs := OptionButton.new()
+	var body := TextEdit.new()
+	var status := Label.new()
+	var reference := {}
+	var ranges: Array[Vector2i] = []
+	var generation := 0
+
+	func _ready() -> void:
+		title = "设计文档"
+		var box := VBoxContainer.new()
+		box.custom_minimum_size = Vector2(510,360) * EditorInterface.get_editor_scale()
+		add_child(box)
+		documents.name = "DocumentList"
+		documents.custom_minimum_size.y = 95 * EditorInterface.get_editor_scale()
+		documents.item_selected.connect(_select_document)
+		box.add_child(documents)
+		status.name = "DocumentStatus"
+		box.add_child(status)
+		paragraphs.name = "DocumentParagraph"
+		paragraphs.item_selected.connect(_jump)
+		box.add_child(paragraphs)
+		body.name = "DocumentBody"
+		body.editable = false
+		body.selecting_enabled = true
+		body.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+		body.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		box.add_child(body)
+		get_ok_button().text = "关闭"
+		session.identity_changed.connect(reset_view)
+
+	func _clear_body() -> void:
+		reference.clear()
+		body.clear()
+		ranges.clear()
+		paragraphs.clear()
+		paragraphs.disabled = true
+
+	func reset_view() -> void:
+		generation += 1
+		documents.clear()
+		_clear_body()
+		status.text = ""
+		hide()
+
+	func browse() -> void:
+		reset_view()
+		popup_centered()
+		if session.get_identity().is_empty():
+			status.text = "请先登录天璇。"
+			return
+		var request := generation
+		status.text = "正在读取文档…"
+		var result: Dictionary = await session.api_request(HTTPClient.METHOD_GET, "/api/v1/docs")
+		if request != generation:
+			return
+		if result.status != 200 or not result.data.get("docs") is Array:
+			status.text = "无法读取此账号的文档。"
+			return
+		for item in result.data.docs:
+			var row := documents.add_item("%s · v%d · %s" % [item.title, item.version, item.id])
+			documents.set_item_metadata(row, {"id": str(item.id), "version": int(item.version)})
+		status.text = "请选择文档。" if documents.item_count else "此账号没有可读取的文档。"
+
+	func _select_document(index: int) -> void:
+		var selected: Dictionary = documents.get_item_metadata(index)
+		open_document(selected.id, selected.version, 1)
+
+	# Paragraph numbers refer to non-blank blocks in this exact Markdown revision.
+	func open_document(id: String, version: int, paragraph: int) -> void:
+		generation += 1
+		var request := generation
+		_clear_body()
+		if not visible:
+			popup_centered()
+		status.text = "正在读取指定修订…"
+		if id.is_empty() or version < 1 or paragraph < 1 or session.get_identity().is_empty():
+			status.text = "文档、修订、段落或登录身份无效。"
+			return
+		var route := "/api/v1/docs/" + id.uri_encode() + "/versions/" + str(version)
+		var reply: Dictionary = await session.api_request(HTTPClient.METHOD_GET, route)
+		if request != generation:
+			return
+		if reply.status != 200 or int(reply.data.get("version",0)) != version or not reply.data.get("body_md") is String:
+			status.text = "无法读取指定文档修订。"
+			return
+		body.text = str(reply.data.body_md).replace("\r\n","\n")
+		var start := -1
+		for line in range(body.get_line_count() + 1):
+			var blank := line == body.get_line_count() or body.get_line(line).strip_edges().is_empty()
+			if not blank and start < 0:
+				start = line
+			elif blank and start >= 0:
+				ranges.append(Vector2i(start, line - 1))
+				paragraphs.add_item("%d · %s" % [ranges.size(),body.get_line(start).strip_edges().left(54)])
+				start = -1
+		if paragraph > ranges.size() and not (ranges.is_empty() and paragraph == 1):
+			_clear_body()
+			status.text = "此修订没有指定段落。"
+			return
+		reference = {"document_id": id, "version": version, "paragraph": 0}
+		status.text = "%s · v%d" % [id,version]
+		paragraphs.disabled = ranges.is_empty()
+		if not ranges.is_empty():
+			paragraphs.select(paragraph - 1)
+			_jump(paragraph - 1)
+
+	func _jump(index: int) -> void:
+		if index < 0 or index >= ranges.size():
+			return
+		var span := ranges[index]
+		body.set_caret_line(span.x)
+		body.select(span.x,0,span.y,body.get_line(span.y).length())
+		body.center_viewport_to_caret()
+		reference.paragraph = index + 1

@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-d02",
+  "event_id": "next20-intake-1865",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1865",
+  "occurred_at": "2026-11-21T14:22:06.760872+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1865,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T14:22:02Z",
+    "accepted_dependencies": {
+      "1867": "75419237e87776e6de3b5a20a921f2d7381d3977"
+    },
+    "title": "[方案一 D02] 在 Godot 打开设计文档"
+  },
+  "evidence_refs": [],
+  "sha256": "88604be4c81d068d48827dc239838aa43ced2cc903267dcd296d8dc4f7d365a1"
+}
