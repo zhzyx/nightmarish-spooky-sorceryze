@@ -48,6 +48,7 @@ ObjectId = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1,
 
 class DocumentReference(Payload):
     kind: Literal["document"]
+    paragraph: int | None = Field(default=None, strict=True, ge=1)
     object_id: ObjectId
     revision: int = Field(strict=True, ge=1, le=2**63 - 1)
 
@@ -318,12 +319,26 @@ class Conversations:
         for reference in snapshot.references:
             if isinstance(reference, DocumentReference):
                 self.domain.get_doc_shared(actor, reference.object_id)
-                self.domain.version(reference.object_id, reference.revision)
+                version = self.domain.version(reference.object_id, reference.revision)
+                if reference.paragraph is not None:
+                    count = 0
+                    inside = False
+                    for line in version["body_md"].splitlines():
+                        nonblank = bool(line.strip())
+                        if nonblank and not inside:
+                            count += 1
+                        inside = nonblank
+                    if reference.paragraph > count:
+                        raise conflict("paragraph does not exist in the specified document revision")
 
     def turn(self, actor: str, key: str, payload: Turn, gateway: ModelGateway | None) -> dict[str, Any]:
         owner = self.owner(actor)
         turn_id = str(payload.id)
         snapshot = payload.context_snapshot.model_dump() if payload.context_snapshot is not None else None
+        if snapshot is not None:
+            for ref in snapshot["references"]:
+                if ref.get("paragraph") is None:
+                    ref.pop("paragraph", None)
         with self.transaction() as db:
             record = self.get(db, owner, key)
             for turn in record["turns"]:

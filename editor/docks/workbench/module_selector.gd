@@ -12,6 +12,7 @@ var issues: OptionButton
 var page: Label
 var history: TextEdit
 var composer: TextEdit
+var document_links := MenuButton.new()
 var send: Button
 var http: HTTPRequest
 var session: Node
@@ -74,6 +75,11 @@ func _ready() -> void:
 	var reference_host := VBoxContainer.new()
 	reference_host.name = "ModuleReferenceHost"
 	content.add_child(reference_host)
+	document_links.name = "SentDocumentReferences"
+	document_links.text = "消息中的文档段落"
+	document_links.hide()
+	document_links.get_popup().id_pressed.connect(_open_sent_reference)
+	content.add_child(document_links)
 	composer.name = "ModuleChatInput"
 	composer.custom_minimum_size.y = 70 * EditorInterface.get_editor_scale()
 	composer.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
@@ -122,6 +128,8 @@ func _identity_changed() -> void:
 	location_dirty = false
 	composer.clear()
 	history.clear()
+	document_links.hide()
+	document_links.get_popup().clear()
 	issues.clear()
 	page.text = ""
 	content.hide()
@@ -377,6 +385,54 @@ func _render() -> void:
 		if conversation.current.get(revision.stage) == revision.revision and revision.confirmed_at == null:
 			messages.append("设计草稿 · " + revision.body)
 	history.text = "\n\n".join(messages)
+	var menu := document_links.get_popup()
+	menu.clear()
+	for turn in conversation.get("turns", []):
+		var snapshot = turn.get("context_snapshot")
+		if snapshot is Dictionary:
+			for ref in snapshot.get("references", []):
+				if ref.get("kind") == "document" and int(ref.get("paragraph", 0)) > 0:
+					menu.add_item("%s · v%d · 第 %d 段" % [ref.object_id,ref.revision,ref.paragraph])
+					menu.set_item_metadata(menu.item_count - 1, ref)
+	document_links.visible = menu.item_count > 0
+
+
+func stage_document_reference(ref: Dictionary) -> bool:
+	var input: TextEdit = composer if not module_id.is_empty() else get_parent().find_child("ChatInput", true, false)
+	if busy or not is_instance_valid(input):
+		return false
+	var locator := "<tianxuan-doc://%s/%d/%d>" % [str(ref.document_id).uri_encode(),ref.version,ref.paragraph]
+	if not input.text.contains(locator):
+		input.deselect()
+		input.set_caret_line(input.get_line_count()-1)
+		input.set_caret_column(input.get_line(input.get_caret_line()).length())
+		input.insert_text_at_caret(("" if input.text.is_empty() else "\n") + locator)
+	input.grab_focus()
+	return true
+
+
+func _document_references(text: String) -> Array:
+	var pattern := RegEx.new()
+	pattern.compile("<tianxuan-doc://([^/<>\\s]+)/([1-9][0-9]{0,17})/([1-9][0-9]{0,8})>")
+	var references := []
+	for match_ in pattern.search_all(text):
+		var ref := {"kind":"document","object_id":match_.get_string(1).uri_decode(),"revision":int(match_.get_string(2)),"paragraph":int(match_.get_string(3))}
+		if not references.has(ref):
+			references.append(ref)
+	return references
+
+
+func _open_sent_reference(id: int) -> void:
+	if not is_instance_valid(session):
+		return
+	var menu := document_links.get_popup()
+	var index := menu.get_item_index(id)
+	if index < 0:
+		return
+	var ref: Dictionary = menu.get_item_metadata(index)
+	var view = session.find_child("WorkbenchDocuments",true,false)
+	if is_instance_valid(view):
+		view.open_document(ref.object_id, int(ref.revision), int(ref.paragraph))
 
 
 func _uuid() -> String:
@@ -399,9 +455,9 @@ func _send() -> void:
 		_notice("正文与引用合计超过 8000 字符，请缩短后发送。")
 		return
 	var references: Array = frozen.references.duplicate()
-	for asset in _asset_references(_draft_key(), body):
-		if not references.has(asset):
-			references.append(asset)
+	for reference in _asset_references(_draft_key(), body) + _document_references(body):
+		if not references.has(reference):
+			references.append(reference)
 	if references.size() > 16:
 		_notice("每条消息最多可引用 16 个对象。")
 		return

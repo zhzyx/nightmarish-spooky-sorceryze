@@ -217,6 +217,7 @@ class DocumentView extends AcceptDialog:
 	var body := TextEdit.new()
 	var status := Label.new()
 	var reference := {}
+	var cite := Button.new()
 	var ranges: Array[Vector2i] = []
 	var generation := 0
 	var create := Button.new()
@@ -258,6 +259,11 @@ class DocumentView extends AcceptDialog:
 		body.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 		body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		box.add_child(body)
+		cite.name = "CiteDocumentParagraph"
+		cite.text = "引用此段"
+		cite.disabled = true
+		cite.pressed.connect(_cite)
+		box.add_child(cite)
 		get_ok_button().text = "关闭"
 		session.identity_changed.connect(reset_view)
 
@@ -366,6 +372,7 @@ class DocumentView extends AcceptDialog:
 
 	func _clear_body() -> void:
 		edit.disabled = true
+		cite.disabled = true
 		reference.clear()
 		body.clear()
 		ranges.clear()
@@ -451,3 +458,13 @@ class DocumentView extends AcceptDialog:
 		body.select(span.x,0,span.y,body.get_line(span.y).length())
 		body.center_viewport_to_caret()
 		reference.paragraph = index + 1
+		cite.disabled = false
+
+	func _cite() -> void:
+		if reference.is_empty() or cite.disabled:
+			return
+		var panel = get_tree().root.find_child("WorkbenchBusinessModules", true, false)
+		if not is_instance_valid(panel) or not panel.stage_document_reference(reference):
+			status.text = "无法向当前会话加入段落引用。"
+			return
+		hide()
