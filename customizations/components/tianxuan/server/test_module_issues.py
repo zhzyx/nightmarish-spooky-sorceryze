@@ -123,3 +123,27 @@ def test_scoped_issues_and_acl():
         assert client.put(url, params=PROJECT, json={"module_id": module}).json()["id"] == public["id"]
         assert client.get(ISSUES, params=params).json()["issues"] == [root, child]
     store.db.close()
+
+
+def test_literal_keyword_and_assignee_search():
+    store = Tianxuan()
+    owner = store.register("studio", "owner@example.org", "fixture-pass")["user_id"]
+    reader = store.add_member(owner, "reader@example.org", "fixture-pass", name="林青", role="viewer")["user_id"]
+    shared = store.create_issue(owner, "校验 10%_资源", body_md="Straße", acceptance="完成 §2", **PROJECT)
+    unassigned = store.create_issue(owner, "校验 10%_资源", **PROJECT)
+    with store.db:
+        store.db.execute("INSERT INTO issue_assignees VALUES (?,?)", (shared["id"], reader))
+    headers = {"Authorization": "Bearer " + store.issue_session(reader)}
+    with TestClient(create_app(store), headers=headers) as client:
+
+        def search(**filters):
+            response = client.get(ISSUES, params={**PROJECT, **filters})
+            assert response.status_code == 200, response.text
+            return response.json()["issues"]
+
+        assert search(q="%_") == [shared, unassigned]
+        assert search(q="%_missing") == []
+        assert search(q="STRASSE", assignee=reader) == [shared]
+        assert search(q="§2", assignee="林青") == [shared]
+        assert search(assignee="林") == []
+    store.db.close()

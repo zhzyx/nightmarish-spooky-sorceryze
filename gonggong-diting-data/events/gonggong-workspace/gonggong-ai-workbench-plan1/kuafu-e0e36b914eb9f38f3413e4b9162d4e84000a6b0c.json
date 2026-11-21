@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e0e36b914eb9f38f3413e4b9162d4e84000a6b0c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3fe9821f8dd2f01f618d5e34417cec0f0acf6a7ad90df5abcf952390c67d1eca",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1996",
+    "action": "validation",
+    "detection_head": "ac11937e34e8cf0956288cc9ad56397d559f0e9c",
+    "context_sha256": "948f50b7427fc8fdc2dc5421762a6e37f041a7f6537983f77b409f5c5864764f",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-operator",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1992",
+    "diagnosis": "上游验收脚本 with sqlite3.connect 仅管理事务，没有关闭审计连接。Windows 在业务断言全部通过后删除还打开的 domain.db 时返回 WinError 32，导致报告没有写出。已增加显式关闭连接，Windows 重跑原生用例并正常移除临时目录、写出报告。",
+    "next_action": "将兼容修复随 #1709 组合回归候选正式签发，复核远端 CI 和主线接收后关闭跟踪。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T21:30:52.620652+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T21:33:37.596469+00:00",
+  "sha256": "52d713c7e542525c88d3033a741243156fe598d894ae2cd50df2471c6e3d3b67"
+}

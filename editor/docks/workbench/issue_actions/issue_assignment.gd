@@ -91,7 +91,7 @@ func _toggle() -> void:
 				human = step.human
 		if not human:
 			for edge in state.edges:
-				if edge.from == detail.status:
+				if edge.from == detail.status and edge.to != "done":
 					stage.add_item(edge.to)
 		feedback.text = "当前阶段需要人工判断" if human else ""
 		if not human and stage.item_count == 0:

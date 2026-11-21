@@ -1,0 +1,213 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i14",
+  "issue_number": 1832,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1832",
+  "observed_at": "2026-11-22T03:47:19.723189+08:00",
+  "baseline": "46c88f41e73d86a3804a3426b5ae7b4b2d9d5946",
+  "prerequisite": {
+    "issue": 1854,
+    "state": "CLOSED",
+    "state_reason": "COMPLETED",
+    "closed_at": "2026-11-21T17:56:48Z"
+  },
+  "intake_exit_code": 0,
+  "source_git_blob": {
+    "customizations/components/tianxuan/server/native_api.py": "02b4e6124afcf704098861994c2ff101e4ae72d4",
+    "customizations/components/tianxuan/server/test_godot_inputs.py": "07717a4a8778c81ede6e9ef3bccccbc3b427387c",
+    "customizations/components/tianxuan/server/test_issue_artifacts.py": "d4b52ecbd7f4d74eeb0be429ebeed41bf79b1615",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "6e469b40d9bc1a8b46a4d91cbeb3008e18106928",
+    "customizations/components/tianxuan/server/work_management.py": "2009032e529e138e21af7d2542cf3816f386c073",
+    "customizations/components/tianxuan/server/work_management_api.py": "b9270f48427acec945274d23355436be2867b6d6",
+    "design-docs/gonggong-ai-workbench-i14.md": "abb2be4bb9f1ccd212e361bf175bc87b738151e2",
+    "editor/SCsub": "c7465b72cd658d5c4d8868fd546a8d5dc448e354",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "b573f7e28abbfb4aedc0aa5a6d9a8f615185ad28",
+    "editor/docks/workbench/business_session.gd": "8050638276817f22a8d358499f0ab8006a3c14e2",
+    "editor/docks/workbench/issue_artifacts.gd": "2d3b80f80c7011f6d77d545476fdac8f8497fccc",
+    "tests/editor/run_workbench_issue_artifacts.py": "42f4973e7ea95d306c8d24b482f91ba3a19eec2f",
+    "tests/editor/run_workbench_issue_detail.py": "b83e29c6a6d89a145dec8f4caea972886f993115",
+    "tests/editor/workbench_issue_artifacts.gd": "360ba7fb7cb1c6dc9cd87714ba0368a99d092a6a",
+    "tests/editor/workbench_issue_detail.gd": "d52569a9f59e895889efe0444fd38bc09541c2d1"
+  },
+  "source_sha256": {
+    "customizations/components/tianxuan/server/native_api.py": "e856d7d03f0aaf88838d42cb8c4f6b03b8f57ab37e7a92c4597ad4ac47bffc72",
+    "customizations/components/tianxuan/server/test_godot_inputs.py": "ab1803d10ac2484bc8d0efd88ea21f832dab4436b14a2304a5ca24494362c399",
+    "customizations/components/tianxuan/server/test_issue_artifacts.py": "1aa1e9c06f699f5de118a41e408b4c06cac7e43856802741633eed49795aeb98",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "9eae52fcc5c112d443b7d86ef19860f5288341d85b2c923eae4022635a8fd75b",
+    "customizations/components/tianxuan/server/work_management.py": "88252c602f53dbbd953836aeb424c82a17b6536ec059604303bd99901d124d01",
+    "customizations/components/tianxuan/server/work_management_api.py": "a87d7349f2d02145095456ae607bf790a8770a96cac30113cd7b92e3bf21b891",
+    "design-docs/gonggong-ai-workbench-i14.md": "f682f3186c38731e48199ecf752da9ab6212fff577f2f1ae5950e389c4b68631",
+    "editor/SCsub": "5a854bd2cebd07525dd42b5fe01e6aeb8442c209c6b30178a07fb24a786067fa",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "18503973fd69debd9dc27060b97ffaea2ed725a2f92a94ed85e9a63be6f6df17",
+    "editor/docks/workbench/business_session.gd": "dc7a642cd292922271e9ea30d14e5a01c49dde956880ceffab6429f15295d96d",
+    "editor/docks/workbench/issue_artifacts.gd": "619da6efeb5e379724594b12bf54c9ca66c8dbff39fd9d323013a782c9a53341",
+    "tests/editor/run_workbench_issue_artifacts.py": "5779fde32fca6b2596de91edf11f754868fe39d1b70e4d6da7457e7da7098a4e",
+    "tests/editor/run_workbench_issue_detail.py": "c8d7202ce49e88d91fc311a878580e8e5cb384763709797dfff7b1af89051a54",
+    "tests/editor/workbench_issue_artifacts.gd": "a71b57c00eec5a55dd70422c9d5c9bdc7bde081f09c84ed1590c0740a27086dc",
+    "tests/editor/workbench_issue_detail.gd": "79ced90bb96b113993a7321ab3b2ecc3e3d5161e6c3da1492394802a9211acc6"
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "MSVC 14.5, Windows SDK 10.0.26100.0, SCons 4.11.1",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j6",
+    "sdk": "Pinned manifest verified by tools/install_webview2.py --arch x64 --output-dir bin",
+    "initial": "A build whose graph was created before the new GDScript input failed at AIWorkbenchSidebar.cpp (C2065). A new SCons invocation read the current graph and built the candidate successfully.",
+    "graph_refresh_exit_code": 0,
+    "graph_refresh_log_sha256": "845e02ec2ae39e8c1c9afd881d09039b5cbfc45b0c091a8ecf0cb532f8354f3d",
+    "invalidation": "After switching the download to a sibling temporary file, SCons regenerated BusinessSession.gen.h and IssueCreation.gen.h, recompiled AIWorkbenchSidebar.cpp and relinked the editor.",
+    "final_log_sha256": "0140c847409ab646d3ac419b08d8b3bbe13bcdfd9b1e0df05ce5a855f05a9de1",
+    "generated_headers": {
+      "BusinessSession.gen.h": "643cdbce886955ce71eed3509047b234df3e81fdd6c4339db7dea59e2e7a3c6e",
+      "IssueCreation.gen.h": "b4dbf4550f51b7b5a9757eace0f73d2b273046b69c9c8e82bb426f28dfe94584"
+    },
+    "exit_code": 0
+  },
+  "service_tests": {
+    "passed": 32,
+    "skipped": 0,
+    "exit_code": 0,
+    "runner": "pytest -q",
+    "files": [
+      "test_issue_artifacts.py",
+      "test_work_management.py",
+      "test_approved_asset.py",
+      "test_godot_inputs.py",
+      "test_native_api.py"
+    ],
+    "readback": "32 passed, 1 warning in 28.74s",
+    "log_sha256": "08e18d08df721c4b5e7b537f61ac1249f4d93bd0d76e8d17e71713b08ee95f26",
+    "warning": "Existing Starlette TestClient deprecation.",
+    "isolation": "The optional CLI import regression initially reported WinError 32 at staging-directory rename with the in-tree editor path. Repeated all 32 tests using an isolated copy of the same executable from editor_test_isolation.copy_editor with GONGGONG_WORKSPACE cleared. The real Godot import, protected approvals, attachment-only exclusion and two-version readbacks all passed."
+  },
+  "native_consumer": {
+    "engine_sha256": "7eee98cd0a7c0701a6cf7d773e846d38b2edc90f227291fe58cbfc8ba13ae6fd",
+    "http_readback": [
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/1",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/2",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/3",
+        "studio/game",
+        409
+      ]
+    ],
+    "native_selection": [
+      {
+        "label": "附件 · characters/hero.bin · #1 (de6a6c8ddf73)",
+        "message": "已保存所选版本　selected-2.bin",
+        "reference": {
+          "digest": "8467c8c12cf6e00ce0a636eb6a9ee831d0e639e7b03cf3e047fefaad8abc3bfc",
+          "kind": "attachment",
+          "module": "art",
+          "path": "characters/hero.bin",
+          "revision": "de6a6c8ddf736edf6e3bcb3d58b282d0ce013ba558c8d771e0fce1f888d583e7",
+          "version": 1.0
+        }
+      },
+      {
+        "label": "附件 · characters/hero.bin · #2 (fae4311a22fb)",
+        "message": "已保存所选版本　selected-1.bin",
+        "reference": {
+          "digest": "141092a075d222ad0b4a078be37ce25e2376ba3136fdb72ea728d3b88639eea7",
+          "kind": "attachment",
+          "module": "art",
+          "path": "characters/hero.bin",
+          "revision": "fae4311a22fb6f358a50c3bc4bcfe96c79b4494c9bcddb5ec3c8a5fb0df4d397",
+          "version": 2.0
+        }
+      },
+      {
+        "label": "模型 · characters/hero.bin · #3 (637b8b8ab4ab)",
+        "message": "引用已失效，找不到所选版本的文件",
+        "reference": {
+          "digest": "5b720147b6918dfc19baa0d7767cab75b76e17998837d04af43f2f3463c5350f",
+          "kind": "model",
+          "module": "art",
+          "path": "characters/hero.bin",
+          "revision": "637b8b8ab4ab6eb488e7ab8301e52a277c5971407a3f1f7a41a6f37569b812bb",
+          "version": 3.0
+        }
+      }
+    ],
+    "saved_sha256": [
+      "8467c8c12cf6e00ce0a636eb6a9ee831d0e639e7b03cf3e047fefaad8abc3bfc",
+      "141092a075d222ad0b4a078be37ce25e2376ba3136fdb72ea728d3b88639eea7"
+    ],
+    "stale_destination_created": false,
+    "logout_cleared_references": true
+  },
+  "i02_regression": {
+    "exit_code": 0,
+    "engine_sha256": "7eee98cd0a7c0701a6cf7d773e846d38b2edc90f227291fe58cbfc8ba13ae6fd",
+    "checks": [
+      "command palette opened sidebar",
+      "assigned and unassigned compared to reopened database",
+      "private and absent results cleared prior detail",
+      "successful refresh after 404, logout cleared the visible record"
+    ],
+    "http_readback": [
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/2/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/3/detail",
+        "studio/game",
+        403
+      ],
+      [
+        "/api/v1/issues/by-number/99999/detail",
+        "studio/game",
+        404
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ]
+    ]
+  },
+  "dynamic_precheck": {
+    "engine_sha256": "d839126554ebfd69f283832c552ae257a2423a63b13c3bce9e6753adfc469cfa",
+    "scope": "Temporary script mounting in an isolated D12 editor prior to the final embedded I14 probe.",
+    "exit_code": 0
+  },
+  "method_recall": {
+    "scope": "gonggong-workspace",
+    "methods": [
+      "editor-dependency-handoff / bind-consumer-release r26",
+      "godot-build-placement / trace-native-consumer r24"
+    ],
+    "application": "Bound exact source bytes, header invalidation, binary digest and independent saved-byte comparison. Remote handoff and original issue closure are tracked by the publisher."
+  },
+  "acceptance": {
+    "source": "Issue #1832 and design I14",
+    "two_revisions": "Two immutable revisions of characters/hero.bin remained available together. The actual native save picker selected each revision, and both resulting byte streams matched the original submissions.",
+    "unavailable_reference": "Removed the third item's blob from the fixture native store. The 409 produced a visible expired-reference message and no destination file or pending temporary remained.",
+    "access": "HTTP tests checked identity, tenant, project, private ancestor and revoked source permissions. The native probe used a viewer and cleared the selector at logout.",
+    "candidate_receiver": "Windows embedded I14 control in an isolated editor received the measured bytes. Parent session owns main delivery and Issue receipt."
+  }
+}

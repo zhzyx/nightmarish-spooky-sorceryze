@@ -133,7 +133,12 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 					MountWorkbenchControl(pDetail, action.name, action.chunks);
 				}
 			}
+			MountWorkbenchControl(pDetail, "WorkbenchIssueTime", daqian_issue_time);
+			MountWorkbenchControl(pDetail, "WorkbenchIssueCustomFields", daqian_issue_custom_fields);
+			MountWorkbenchControl(pDetail, "WorkbenchIssueMilestone", daqian_issue_milestone);
+			MountWorkbenchControl(pDetail, "WorkbenchIssueArtifacts", daqian_issue_artifacts);
 		}
+		MountWorkbenchControl(pSession, "WorkbenchIssueSearch", daqian_issue_search);
 		MountWorkbenchControl(pSession, "WorkbenchDocumentHistory", daqian_document_history);
 	}
 	MenuButton *pResourceMenu = memnew(MenuButton);

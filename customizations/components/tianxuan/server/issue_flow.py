@@ -92,7 +92,7 @@ def bump(store, issue_id):
 
 def transition(store, actor, issue, target, *, human=False):
     issue_id, current = issue["id"], issue["status"]
-    _, _, stages, edges = definition(store, issue_id)
+    version, _, stages, edges = definition(store, issue_id)
     stage = {s["id"]: s for s in stages}
     if {"from": current, "to": target} not in edges:
         raise TransitionRejected(f"{current} -> {target} is not allowed")
@@ -105,8 +105,22 @@ def transition(store, actor, issue, target, *, human=False):
         and any(not d["accepted"] for d in deps)
     ):
         raise TransitionRejected("prerequisite has not been accepted")
+    if target == "done":
+        from issue_lifecycle import record_close
+
+        record_close(store, actor, issue, version)
+    move(store, actor, issue, target)
+
+
+def move(store, actor, issue, target):
+    issue_id, current = issue["id"], issue["status"]
     store.db.execute("UPDATE issues SET status=?, updated_at=? WHERE id=?", (target, _now(), issue_id))
-    store._event(issue["tenant_id"], "issue.transitioned", actor, issue_id, {"from": current, "to": target})
+    change = {"from": current, "to": target}
+    if target == "done":
+        change["lifecycle"] = "closed"
+    elif current in ("done", "cancelled"):
+        change["lifecycle"] = "reopened"
+    store._event(issue["tenant_id"], "issue.transitioned", actor, issue_id, change)
     bump(store, issue_id)
     if issue["requirement_id"]:
         store.sync_progress(issue["requirement_id"], actor=actor)

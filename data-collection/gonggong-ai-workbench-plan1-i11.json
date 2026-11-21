@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "issue_number": 1754,
+  "request_id": "gonggong-ai-workbench-plan1-i11",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1754",
+  "observed_at": "2026-11-21T20:25:19.077579+00:00",
+  "baseline": "a0697dd93dc3381b98d5f921196ff5cd2b2fe50c",
+  "source_git_blobs": {
+    "editor/SCsub": "54da651d4832ed4d9f886d88cff8b742ddcdd73a",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "1b7fdaa80943a37958ed49be5e3bd7ba80160fa2",
+    "editor/docks/workbench/issue_search.gd": "4769dcb3f4a6b8a87584f8dbb5bb4f5b7a0b9846",
+    "customizations/components/tianxuan/server/api.py": "7ddb5d7da65c0c189fd6ee7ef2ae3bb57734d533",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "f5dd8d12496722712b5db5e495cf29cc50b2aeab",
+    "customizations/components/tianxuan/server/test_module_issues.py": "95a99837a376eb9a36cd1164342da703624c19a7",
+    "tests/editor/workbench_issue_search.gd": "7b86622babd752c975a0cee68f83b103bcaf79a4",
+    "tests/editor/run_workbench_issue_search.py": "65922fea958d05bd7d5715bbab2df9c7b20d66ee",
+    "design-docs/gonggong-ai-workbench-i11.md": "fd9702bd31381c91a8173b5cdc60c6f04550b024"
+  },
+  "prerequisites": {
+    "intake_exit_code": 0,
+    "I02": {
+      "issue": 1854,
+      "status": "closed",
+      "closed_at": "2026-11-21T17:56:48Z"
+    },
+    "macos_observation": {
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1754#issuecomment-7067785918",
+      "baseline": "a0697dd93dc3381b98d5f921196ff5cd2b2fe50c",
+      "scope": "Pre-implementation module/status HTTP filtering and clear; assignee and keyword were previously ignored."
+    }
+  },
+  "dynamic_probe": {
+    "mode": "source adapter mounted into the existing I02 editor, isolated native sidebar with live HTTP service",
+    "editor_sha256": "2c4750036c9fbee27579a5822b7f7845a32bda52540ad2c7d25d900e2428d9e6",
+    "observed": {
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "empty": [],
+      "initial": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "left": [
+        1
+      ],
+      "left_detail_id": "iss_285399231e794244ab09282e9b611895",
+      "legacy_feedback": "服务未确认负责人或关键字筛选，请更新天璇服务",
+      "reopened": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "right": [
+        2
+      ],
+      "right_detail_id": "iss_7198f511c7b041cd9d462c9ca18bbcb4"
+    },
+    "exit_code": 0
+  },
+  "native_build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5, Windows SDK 10.0.26100.0, SCons 4.11.1",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j6",
+    "first_build": {
+      "base": "46c88f41e73d86a3804a3426b5ae7b4b2d9d5946",
+      "files": {
+        "data-collection/receipts/i11/build.log": "dccf37006988380a5e3d2014cca808e9c352b0c0cf8d8e7616391d9e93b30d5a",
+        "editor/docks/workbench/IssueCreation.gen.h": "689b23bdae7be8e7674b3d8fc3ec1aff7fd0a3aac473e74a32aab813e46a6b7d",
+        "bin/godot.windows.editor.x86_64.exe": "d6ff6ac3ba5a8954c5ebdf34531b325b4e3c64b806f369fa04513fc8b342523d"
+      }
+    },
+    "first_exit_code": 0,
+    "final_exit_code": 0,
+    "generated_header_sha256": "5041d913a661b1adece715ee1858f69ba5dec45c329eedc87b82f77a1f69cf65",
+    "editor_sha256": "f6229b2f02e0ce15c33946c26f0ef9af4ce2e699eabc21aba6ce0329974955b1",
+    "final_build_log_sha256": "0c61029a8d40def938d66996a814f9fa6b40e362ca20878ac8f227fcf12870b2",
+    "invalidation": [
+      "Regenerated BusinessSession.gen.h and IssueCreation.gen.h",
+      "Recompiled AIWorkbenchSidebar.cpp",
+      "Relinked Windows editor"
+    ]
+  },
+  "candidate_probe": {
+    "mode": "compiled native sidebar, headless, private editor and project, authenticated loopback Tianxuan service",
+    "exit_code": 0,
+    "editor_sha256": "f6229b2f02e0ce15c33946c26f0ef9af4ce2e699eabc21aba6ce0329974955b1",
+    "fixture": {
+      "owner_name": "顾青",
+      "owner_id": "usr_3369c8eafe5040cbb017c61d57ece75a",
+      "title": "检查场景",
+      "keyword": "Alpha & 复核",
+      "left": "mod_4d6ad2dec66049ff815795853b7fa752",
+      "right": "mod_d7bf9c1185674d1eb3401105974a1502",
+      "visible": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "left_number": 1,
+      "left_id": "iss_3bf7308777fb4c109225dae4038fa351",
+      "right_number": 2,
+      "right_id": "iss_afe2fcedfadb428d849b4125471fd945"
+    },
+    "observed": {
+      "cleared": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "empty": [],
+      "initial": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "left": [
+        1
+      ],
+      "left_detail_id": "iss_3bf7308777fb4c109225dae4038fa351",
+      "legacy_feedback": "服务未确认负责人或关键字筛选，请更新天璇服务",
+      "reopened": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "right": [
+        2
+      ],
+      "right_detail_id": "iss_afe2fcedfadb428d849b4125471fd945"
+    },
+    "http_reads": [
+      [
+        "/api/v1/issues",
+        {
+          "project": "studio/game"
+        },
+        200
+      ],
+      [
+        "/api/v1/issues",
+        {
+          "module_id": "mod_4d6ad2dec66049ff815795853b7fa752",
+          "assignee": "顾青",
+          "status": "planned",
+          "q": "Alpha & 复核",
+          "project": "studio/game"
+        },
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        {
+          "project": "studio/game"
+        },
+        200
+      ],
+      [
+        "/api/v1/issues",
+        {
+          "project": "studio/game"
+        },
+        200
+      ],
+      [
+        "/api/v1/issues",
+        {
+          "module_id": "mod_d7bf9c1185674d1eb3401105974a1502",
+          "assignee": "顾青",
+          "status": "planned",
+          "q": "Alpha & 复核",
+          "project": "studio/game"
+        },
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/2/detail",
+        {
+          "project": "studio/game"
+        },
+        200
+      ],
+      [
+        "/api/v1/issues",
+        {
+          "project": "studio/game"
+        },
+        200
+      ],
+      [
+        "/api/v1/issues",
+        {
+          "module_id": "mod_4d6ad2dec66049ff815795853b7fa752",
+          "assignee": "usr_3369c8eafe5040cbb017c61d57ece75a",
+          "status": "done",
+          "q": "Alpha & 复核",
+          "project": "studio/game"
+        },
+        200
+      ],
+      [
+        "/api/v1/issues",
+        {
+          "project": "studio/game"
+        },
+        200
+      ],
+      [
+        "/api/v1/issues",
+        {
+          "q": "legacy-filter",
+          "project": "studio/game"
+        },
+        200
+      ],
+      [
+        "/api/v1/issues",
+        {
+          "q": "slow-request",
+          "project": "studio/game"
+        },
+        200
+      ]
+    ],
+    "signed_out_delayed_response": "discarded after the service acknowledged receiving the pending request"
+  },
+  "regression": {
+    "service_pytest": {
+      "files": [
+        "test_module_issues.py",
+        "test_issue_number.py",
+        "test_issue_ancestor_acl.py",
+        "test_paragraph_suggestion.py"
+      ],
+      "passed": 22,
+      "exit_code": 0,
+      "warnings": [
+        "Starlette TestClient httpx deprecation"
+      ]
+    },
+    "native_reports": {
+      "i02": {
+        "runner": "run_workbench_issue_detail.py",
+        "exit_code": 0,
+        "raw_report_sha256": "e7c5e3d092ad87738580dba1b19e32c0612ae0ab58b43baa54f447fbf919eace"
+      },
+      "c07": {
+        "runner": "run_workbench_asset_ownership.py",
+        "exit_code": 0,
+        "raw_report_sha256": "05b29580eecf607119f31479b7277e4ad81c53618296667bf8cbacb5d806c32a"
+      },
+      "d05": {
+        "runner": "run_workbench_paragraph_suggestion.py",
+        "exit_code": 0,
+        "raw_report_sha256": "100a897617ddac71a45ad0226402ba9a9e6278c7ac00a28fc8078dab2cac4e83"
+      }
+    },
+    "c07_fixture": "Inherited GONGGONG_WORKSPACE rejected before editor launch on first attempt. Clean process environment passed on the same candidate.",
+    "ruff": "passed",
+    "mypy": "passed for api.py and tianxuan_core.py"
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "applied": [
+      "godot-build-placement / trace-native-consumer r24",
+      "editor-dependency-handoff / bind-consumer-release r26"
+    ]
+  },
+  "delivery": "Windows implementation and tested source candidate handed to parent for integration, remote main readback and issue completion."
+}

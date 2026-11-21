@@ -112,6 +112,23 @@ def test_native_input_consumes_only_current_approved_complete_set(studio):
     assert store.get_issue(issue)["status"] == "backlog"
 
 
+def test_attached_files_keep_existing_approved_input_set(studio):
+    _, _, client, issue, _ = studio
+    revision = publish(client, "with-notes")
+    success(command(client, issue, 0, "submit_asset", "concept", revision))
+    success(command(client, issue, 1, "decide", "concept", revision, decision="approved"))
+    endpoint = f"/api/v1/issues/{issue}/work"
+    approved = package(client.get(endpoint + "/godot-inputs"))
+    reference = dict(kind="attachment", module="art", revision=revision, path="revision.txt")
+    success(client.post(endpoint + "/submit_asset", json=dict(reference, expected_version=2, call_id="notes")))
+    rejected(
+        client.post(
+            endpoint + "/decide", json=dict(reference, expected_version=3, decision="approved", call_id="judge")
+        )
+    )
+    assert package(client.get(endpoint + "/godot-inputs")) == approved
+
+
 def test_no_cross_issue_override_or_stale_authority(studio):
     store, actor, client, issue, req = studio
     rev = publish(client, "private")
