@@ -387,6 +387,13 @@ class ModuleLocationRequest(BaseModel):
     position: str = Field(min_length=1, max_length=2048)
 
 
+class IssueParentRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    parent_number: int | None = Field(ge=1, le=2**63 - 1)
+    expected_parent_id: str | None
+
+
 class IssueTransitionRequest(BaseModel):
     """司南工单状态迁移。"""
 

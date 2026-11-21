@@ -68,6 +68,7 @@ from schemas import (
     InviteCreateRequest,
     IssueCommentCreateRequest,
     IssueModuleRequest,
+    IssueParentRequest,
     IssueTransitionRequest,
     LoginRequest,
     MemberCreateRequest,
@@ -772,6 +773,19 @@ def create_app(
     @app.get("/api/v1/issues/by-number/{number}/detail")
     def read_issue_detail(number: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
         return cast(dict[str, Any], store.read_issue_detail(actor, project, number))
+
+    @app.get("/api/v1/issues/{issue_id}/hierarchy")
+    def issue_hierarchy(issue_id: str, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
+        return cast(dict[str, Any], store.issue_hierarchy(actor, issue_id, project))
+
+    @app.put("/api/v1/issues/{issue_id}/hierarchy")
+    def set_issue_parent(
+        issue_id: str, payload: IssueParentRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(
+            dict[str, Any],
+            store.set_issue_parent(actor, issue_id, project, payload.parent_number, payload.expected_parent_id),
+        )
 
     @app.get("/api/v1/issues/{issue_id}")
     def read_issue(issue_id: str, actor: ActorDep) -> dict[str, Any]:

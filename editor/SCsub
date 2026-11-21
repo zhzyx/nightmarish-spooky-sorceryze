@@ -42,6 +42,12 @@ if env.editor_build:
         env.Run(editor_builders.daqian_scripts_builder),
     )
 
+    env.CommandNoCache(
+        "docks/workbench/IssueActions.gen.h",
+        env.Glob("docks/workbench/issue_actions/*.gd"),
+        env.Run(editor_builders.workbench_issue_actions_builder),
+    )
+
     graph_sources = ["docks/daqian/graph_layout.gd", "docks/daqian/issue_graph.gd"]
     desktop_ui = env["platform"] in ("windows", "macos", "linuxbsd")
     if desktop_ui:

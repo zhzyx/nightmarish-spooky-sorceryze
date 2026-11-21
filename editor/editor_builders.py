@@ -130,6 +130,18 @@ extern const EditorTranslationList _{category}_translations[];
 """)
 
 
+def _write_daqian_script(header, path):
+    code = path.read_text(encoding="utf-8")
+    if ')DAQIAN"' in code:
+        raise ValueError("Unexpected raw string delimiter in editor script")
+    # MSVC limits individual string literals, including raw literals.
+    # Split on Unicode code points so every chunk remains valid UTF-8.
+    header.write(f"static constexpr const char *daqian_{path.stem}[] = {{\n")
+    for offset in range(0, len(code), 1024):
+        header.write(f'R"DAQIAN({code[offset : offset + 1024]})DAQIAN",\n')
+    header.write("nullptr,\n};\n")
+
+
 def daqian_scripts_builder(target, source, env):
     """Embed reviewed editor tools in the binary, independently of the open project."""
     from pathlib import Path
@@ -137,15 +149,23 @@ def daqian_scripts_builder(target, source, env):
     with methods.generated_wrapper(str(target[0])) as header:
         for entry in source:
             path = Path(str(entry))
-            code = path.read_text(encoding="utf-8")
-            if ')DAQIAN"' in code:
-                raise ValueError("Unexpected raw string delimiter in editor script")
-            # MSVC limits individual string literals, including raw literals.
-            # Split on Unicode code points so every chunk remains valid UTF-8.
-            header.write(f"static constexpr const char *daqian_{path.stem}[] = {{\n")
-            for offset in range(0, len(code), 1024):
-                header.write(f'R"DAQIAN({code[offset : offset + 1024]})DAQIAN",\n')
-            header.write("nullptr,\n};\n")
+            _write_daqian_script(header, path)
+
+
+def workbench_issue_actions_builder(target, source, env):
+    """Embed the controls installed in the native issue detail view."""
+    from pathlib import Path
+
+    scripts = sorted(Path(str(entry)) for entry in source)
+    with methods.generated_wrapper(str(target[0])) as header:
+        for script in scripts:
+            _write_daqian_script(header, script)
+        header.write(
+            "static const struct { const char *name; const char *const *chunks; } workbench_issue_actions[] = {\n"
+        )
+        for script in scripts:
+            header.write(f'{{"{script.stem}", daqian_{script.stem}}},\n')
+        header.write("{nullptr, nullptr},\n};\n")
 
 
 def daqian_board_builder(target, source, env):

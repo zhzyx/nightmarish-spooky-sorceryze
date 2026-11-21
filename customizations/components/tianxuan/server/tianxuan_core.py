@@ -1549,15 +1549,64 @@ class Tianxuan:
         snapshot = self.issue_snapshot(actor, issue["id"])
         return issue | {"assignee": dict(assignee) if assignee else None, "revision": snapshot["revision"]}
 
+    def _project_issue(self, actor: str, issue_id: str, project: str, *, write: bool = False) -> dict[str, Any]:
+        issue = self._require_tenant_issue(actor, issue_id, write=write)
+        self._validate_project(project)
+        if issue["project"] != project:
+            raise NotFound("issue not found in project")
+        return issue
+
+    @_connection_call
+    def issue_hierarchy(self, actor: str, issue_id: str, project: str) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        issue = self._project_issue(actor, issue_id, project)
+        parent = self.get_issue(issue["parent_id"]) if issue["parent_id"] else None
+        rows = self.db.execute(
+            "SELECT * FROM issues WHERE tenant_id=? AND parent_id=? ORDER BY number",
+            (issue["tenant_id"], issue_id),
+        ).fetchall()
+
+        def summary(row: dict[str, Any]) -> dict[str, Any]:
+            return {field: row[field] for field in ("id", "number", "title")}
+
+        return {
+            "parent": summary(parent) if parent else None,
+            "children": [summary(row) for row in self._visible_issues(actor, rows)],
+        }
+
+    @_connection_call
+    def set_issue_parent(
+        self, actor: str, issue_id: str, project: str, parent_number: int | None, expected_parent_id: str | None
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._project_issue(actor, issue_id, project, write=True)
+        parent_id = None
+        if parent_number is not None:
+            proposed = self.read_issue_number(actor, issue["project"], parent_number)
+            parent_id = proposed["id"]
+            self._require_tenant_issue(actor, parent_id, write=True)
+            ancestor = proposed
+            while True:
+                if ancestor["id"] == issue_id:
+                    raise VersionConflict("Parent relationship would form a cycle")
+                if ancestor["parent_id"] is None:
+                    break
+                ancestor = self.get_issue(ancestor["parent_id"])
+        if issue["parent_id"] != parent_id:
+            if issue["parent_id"] != expected_parent_id:
+                raise VersionConflict("Parent relationship changed; reload issue")
+            self.db.execute("UPDATE issues SET parent_id=?,updated_at=? WHERE id=?", (parent_id, _now(), issue_id))
+        return self.issue_hierarchy(actor, issue_id, project)
+
     @_connection_call
     def set_issue_module(self, actor: str, issue_id: str, project: str, module_id: str) -> dict[str, Any]:
         if not self.db.in_transaction:
             self.db.execute("BEGIN IMMEDIATE")
         self._require_editor(actor)
-        issue = self._require_tenant_issue(actor, issue_id, write=True)
-        self._validate_project(project)
-        if issue["project"] != project:
-            raise NotFound("issue not found in project")
+        issue = self._project_issue(actor, issue_id, project, write=True)
         self._business_module(issue["tenant_id"], project, module_id)
         if issue["module_id"] == module_id:
             return issue
