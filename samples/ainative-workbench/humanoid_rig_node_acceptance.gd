@@ -1,5 +1,6 @@
 extends SceneTree
 ## Node-adapter checks use a synthetic T-pose fixture, not production visual acceptance.
+const HumanoidRigNode = preload("res://addons/ainative/humanoid_rig_node.gd")
 var panel
 var failures = 0
 var checks: Array = []
@@ -17,7 +18,7 @@ func double_click(control: Control):
 	control.gui_input.emit(event)
 
 func human_node(source: String) -> Dictionary:
-	return {"id":"rig","type":"humanoid_rig","version":"1","provider":"local-humanoid-rig","source":source,"image_context":"","text":"","parameters":{"height_m":1.8},"x":30.0,"y":40.0}
+	return {"id":"rig","type":"humanoid_rig","version":"1","provider":"local-humanoid-rig","source":source,"image_context":"","text":"","parameters":{"height_m":1.8,"max_repair_attempts":3},"x":30.0,"y":40.0}
 
 func accepted_ai_receipt(source_sha: String) -> Dictionary:
 	return {
@@ -98,6 +99,12 @@ func run():
 	check(panel.node_label("humanoid_rig")=="创建人形17根骨骼" and panel._generator_provider("humanoid_rig")=="local-humanoid-rig","humanoid node has Chinese label and local provider")
 	check(panel.node_run_blocker("rig").is_empty(),"local rig does not require an AI service")
 	check(panel.graph.get_node("rig/PortTypes/OutputType").text=="输出：人形角色（17骨＋root）","node explains seventeen anatomical bones plus root")
+	check(panel.parameter_form.rows.max_repair_attempts.visible and HumanoidRigNode.MAX_ATTEMPTS==12,"humanoid node exposes a bounded configurable repair count")
+	panel.parameter_form._set_parameter("max_repair_attempts",6)
+	check(panel.parameter_form.parameters().get("max_repair_attempts",0)==6,"repair count edits are preserved as an integer parameter")
+	panel.parameter_form._set_parameter("max_repair_attempts",3)
+	var invalid_attempts = HumanoidRigNode.run(source,{"height_m":1.8,"max_repair_attempts":0},root,panel.state_dir.path_join("invalid-attempts.tscn"))
+	check(invalid_attempts.get("code","")=="invalid_repair_attempts","repair count rejects zero instead of silently retrying")
 	panel.run_node_preview("rig")
 	print(panel.status.text)
 	var entry: Dictionary = panel._latest_character_entry("rig")
@@ -210,7 +217,7 @@ func run():
 	while (not panel.jobs.is_empty() or panel.auto_step or panel.creating) and Time.get_ticks_msec()<deadline: await process_frame
 	check(panel.jobs.is_empty() and not panel.auto_step and not panel.creating,"whole-workflow run finishes with a local terminal node")
 	check(not panel._latest_character_entry("rig").is_empty(),"whole-workflow run continues from upstream preview to local rig")
-	# Persistent bone asymmetry exercises bounded repair and non-blocking limited delivery.
+	# Persistent bone asymmetry exercises bounded repair and blocks normal delivery.
 	panel.controller.reset()
 	panel.preview_history.clear()
 	var limited_source = ProjectSettings.globalize_path("res://fixtures/humanoid_limited.glb")
@@ -220,12 +227,12 @@ func run():
 	panel.select_node("rig")
 	panel.run_node_preview("rig")
 	var limited_entry = panel._latest_character_entry("rig")
-	check(not limited_entry.is_empty() and limited_entry.get("provenance",{}).get("capability_limited",false),"unresolved bone issues still produce a limited editable character")
-	check(not limited_entry.is_empty() and limited_entry.get("provenance",{}).get("validation",{}).get("scene_valid",false),"limited delivery retains a structurally valid skeleton and skin")
-	check(not limited_entry.is_empty() and limited_entry.get("provenance",{}).get("attempts",[]).size()>=2,"limited delivery records actual repair retries")
-	check(panel.capability_notice_dialog.visible and panel.capability_notice_dialog.dialog_text.contains("未通过完整"),"limited delivery opens a Chinese non-blocking warning")
-	panel.capability_notice_dialog.hide()
-	# A language-model rejection also remains limited even when every local numeric gate passed.
+	check(limited_entry.is_empty(),"unresolved local ROM issues cannot create a normal character artifact")
+	check(panel.failure_dialog.visible and panel.failure_text.text.contains("已阻断正常角色交付"),"local ROM rejection opens an explicit blocking failure")
+	check(panel.failure_text.text.contains("失败草稿"),"rejected candidate is retained only as a labelled manual draft")
+	check(not panel.capability_notice_dialog.visible,"rejected local candidate does not reuse the capability-limited success dialog")
+	panel.failure_dialog.hide()
+	# A language-model rejection is blocked even when every local numeric gate passed.
 	panel.controller.reset()
 	panel.preview_history.clear()
 	panel.humanoid_text_review_fixture = accepted_text_receipt()
@@ -239,10 +246,10 @@ func run():
 	panel.select_node("rig")
 	panel.run_node_preview("rig")
 	var text_rejected = panel._latest_character_entry("rig")
-	check(not text_rejected.is_empty() and text_rejected.get("provenance",{}).get("validation",{}).get("passed",false),"text rejection fixture still passes the independent local numeric gates")
-	check(not text_rejected.is_empty() and text_rejected.get("provenance",{}).get("capability_limited",false) and not text_rejected.get("provenance",{}).get("passed",true),"text rejection prevents a fully passed delivery")
-	check(panel.capability_notice_dialog.visible and panel.capability_notice_dialog.dialog_text.contains("合成文本回执"),"text-only rejection reaches the Chinese capability warning")
-	panel.capability_notice_dialog.hide()
+	check(text_rejected.is_empty(),"text rejection cannot create a normal character artifact")
+	check(panel.failure_dialog.visible and panel.failure_text.text.contains("合成文本回执"),"text-only rejection reaches the blocking failure dialog")
+	check(not panel.capability_notice_dialog.visible,"text rejection does not reuse the capability-limited success dialog")
+	panel.failure_dialog.hide()
 	await finish()
 
 func finish():

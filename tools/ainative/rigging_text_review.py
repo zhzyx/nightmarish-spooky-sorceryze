@@ -13,7 +13,7 @@ from pathlib import Path
 import api_planner
 from extensions import canonical, require
 
-MAX_ATTEMPTS = 3
+MAX_ATTEMPTS = 12
 STAGES = ("skeleton", "skin", "rest", "rom", "capability")
 TARGETS = ("none", "rigging_node", "joint_corrections", "skin_weights", "rom_animation")
 COMMANDS = ("none", "refit_sagittal_leg_corrections", "clean_and_refit")

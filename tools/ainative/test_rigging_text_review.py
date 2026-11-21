@@ -130,6 +130,21 @@ class RiggingTextReviewTests(unittest.TestCase):
             self.assertNotIn("image_url", json.dumps(body))
             self.assertNotIn("base64", json.dumps(body))
 
+    def test_configured_retry_limit_up_to_twelve_is_accepted(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            request = self.request(root)
+            request.update(
+                attempts=[dict(attempt=index + 1, repair="肩胸权重边界迭代") for index in range(4)],
+                retry_count=4,
+                max_retries=12,
+            )
+            with patch.object(rigging_text_review, "_request_ai", return_value=(accepted_document(), {"provider": "fixture"})) as call:
+                result = rigging_text_review.review_candidate(request)
+            self.assertEqual(result["retry_count"], 4)
+            self.assertEqual(result["max_retries"], 12)
+            self.assertEqual(call.call_args.args[0]["max_retries"], 12)
+
     def test_editor_host_dispatches_text_review_command(self):
         import editor_host
 

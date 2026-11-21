@@ -2446,7 +2446,7 @@ func _start_humanoid_text_review(id: String, input_entry: Dictionary, result: Di
 		"validation":result.validation.duplicate(true),
 		"attempts":attempts,
 		"retry_count":attempts.size(),
-		"max_retries":HumanoidRigNode.MAX_ATTEMPTS
+		"max_retries":int(result.get("max_repair_attempts",HumanoidRigNode.DEFAULT_MAX_ATTEMPTS))
 	})
 
 func _complete_humanoid_text_review(data: Dictionary, request: Dictionary):
@@ -2467,8 +2467,15 @@ func _complete_humanoid_text_review(data: Dictionary, request: Dictionary):
 	if not shape_valid or not hashes_valid or data.get("source_sha256","")!=str(result.source_sha256) or data.get("candidate_sha256","")!=str(result.sha256):
 		_fail_humanoid_text_result(result,"文本审核回执无效，或候选在审核期间发生变化；本次结果未加入工作流。")
 		return
-	result.capability_limited = result.get("capability_limited",false) or not data.passed
-	result.passed = result.get("validation",{}).get("passed",false) and data.passed and not result.capability_limited
+	if not data.passed:
+		var problems: Array = []
+		for issue in data.get("issues",[]): problems.append(str(issue.get("message",issue)))
+		var message = "纯文本审核未通过，已阻断正常角色交付；候选未加入工作流。\n"+str(data.get("summary",""))
+		if not problems.is_empty(): message += "\n未解决问题：\n"+"\n".join(problems)
+		_fail_humanoid_text_result(result,message)
+		return
+	result.capability_limited = false
+	result.passed = result.get("validation",{}).get("passed",false)
 	result.text_review = data.duplicate(true)
 	_finish_humanoid(id,input_entry,result)
 
@@ -2523,6 +2530,9 @@ func _finish_humanoid(id: String, input_entry: Dictionary, result: Dictionary):
 	if matching.is_empty():
 		_fail_humanoid_text_result(result,"骨骼节点已不存在，无法发布文本审核候选。")
 		return
+	if result.get("capability_limited",false) or not result.get("passed",false) or not result.get("validation",{}).get("passed",false):
+		_fail_humanoid_text_result(result,"本地实测或文本审核未通过，已阻断正常角色交付；候选未加入工作流。")
+		return
 	var source_path = str(input_entry.get("path",""))
 	var source_snapshot = _snapshot_file(source_path)
 	if source_snapshot.is_empty():
@@ -2573,8 +2583,7 @@ func _finish_humanoid(id: String, input_entry: Dictionary, result: Dictionary):
 		_update_preview_maximize_controls()
 	else:
 		result.scene.free()
-	status.text = "已生成 17 根解剖骨＋独立 root，并通过本地实测、保存重载与纯文本审核；双击角色进入绑定调整。" if not result.capability_limited else "已保留能力受限角色；本地实测或文本审核未通过，请查看告警并进入绑定页签修正。"
-	if result.capability_limited: _humanoid_capability_notice(id,entry)
+	status.text = "已生成 17 根解剖骨＋独立 root，并通过本地实测、保存重载与纯文本审核；双击角色进入绑定调整。"
 
 func run_node_preview(id: String):
 	cache_full_run = false

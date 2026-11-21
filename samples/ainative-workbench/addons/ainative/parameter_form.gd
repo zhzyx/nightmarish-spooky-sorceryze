@@ -4,9 +4,10 @@ extends VBoxContainer
 const HUMANOID_RIG = "humanoid_rig"
 const HUMAN_SHAPE = "human_shape_adjust"
 const DECIMALS = ["denoise", "mesh_threshold", "height_m", "head_ratio", "arm_length_scale", "leg_length_scale", "build"]
-const DEFAULTS = {"prompt":"", "seed":0, "width":512, "height":512, "height_m":1.8, "head_ratio":7.5, "arm_length_scale":1.0, "leg_length_scale":1.0, "build":0.0, "steps":1, "denoise":0.65, "mesh_steps":20, "mesh_resolution":512, "octree_resolution":128, "mesh_algorithm":"surface net", "mesh_threshold":0.6}
+const DEFAULTS = {"prompt":"", "seed":0, "width":512, "height":512, "height_m":1.8, "max_repair_attempts":3, "head_ratio":7.5, "arm_length_scale":1.0, "leg_length_scale":1.0, "build":0.0, "steps":1, "denoise":0.65, "mesh_steps":20, "mesh_resolution":512, "octree_resolution":128, "mesh_algorithm":"surface net", "mesh_threshold":0.6}
 const NUMBERS = {
 	"width":["图像宽度",64,1024,8], "height":["图像高度",64,1024,8], "height_m":["目标身高（米）",0.2,4.0,0.01],
+	"max_repair_attempts":["最大拟合／纠错轮次（含首次）",1,12,1],
 	"head_ratio":["目标头身比",3.0,12.0,0.1], "arm_length_scale":["臂长倍率",0.75,1.35,0.01],
 	"leg_length_scale":["腿长倍率",0.75,1.35,0.01], "build":["胖瘦（-1 至 1）",-1.0,1.0,0.05],
 	"seed":["随机种子",0,9007199254740991,1], "steps":["图像采样步数",1,8,1],
@@ -75,7 +76,7 @@ func _init():
 	cli_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	cli_hint.hide()
 	add_child(cli_hint)
-	for key in ["width", "height", "height_m", "head_ratio", "arm_length_scale", "leg_length_scale", "build"]: _number_field(self, key)
+	for key in ["width", "height", "height_m", "max_repair_attempts", "head_ratio", "arm_length_scale", "leg_length_scale", "build"]: _number_field(self, key)
 	pose_row = HBoxContainer.new()
 	var pose_label = Label.new()
 	pose_label.text = "参考姿态（AINative 自动校验）"
@@ -251,11 +252,12 @@ func configure(node_kind: String, parameters: Dictionary, node_version: String =
 	rows.outputs.visible = kind in ["generate_image", "text_to_image", "image_to_image"]
 	outputs_edit.visible = rows.outputs.visible and not _automatic_outputs
 	copy_hint.visible = not generator
-	copy_hint.text = "使用现有解剖模板生成 17 根骨骼＋独立 root，自动检查蒙皮和抬臂／下蹲／转身；双击角色生成物可继续调整。" if kind == HUMANOID_RIG else "直接预览输入图像或模型，无需生成参数。"
+	copy_hint.text = "使用解剖模板生成 17 根骨骼＋独立 root，按失败项迭代修正肩胸权重、腿部骨点或拓扑；只有完整验收通过才交付角色。轮次包含首次拟合，更多轮次不保证质量。" if kind == HUMANOID_RIG else "直接预览输入图像或模型，无需生成参数。"
 	advanced_toggle.visible = generator and not shape
 	rows.width.visible = image_stage
 	rows.height.visible = image_stage
 	rows.height_m.visible = kind == HUMANOID_RIG or shape
+	rows.max_repair_attempts.visible = kind == HUMANOID_RIG
 	for key in ["head_ratio", "arm_length_scale", "leg_length_scale", "build"]:
 		rows[key].visible = shape
 	pose_row.visible = false
@@ -297,6 +299,7 @@ func _apply_cli_controls():
 		advanced_toggle.hide()
 		advanced_box.hide()
 		rows.height_m.show()
+		rows.max_repair_attempts.show()
 		return
 	if kind == HUMAN_SHAPE:
 		cli_hint.text = '常规流程只需五项体态参数。AINative 默认渲染源 GLB，使用 Kimi 视觉估计 T／A 姿态和 15 个人体关键点，自动写入源 SHA-256 并做网格几何校验；不调用 Tripo 生成。此步骤需要可用的 KIMI_API_KEY，输出后仍需重新审核和绑骨。开发者 JSON 可显式覆盖 landmarks。'
@@ -428,7 +431,7 @@ func parameters():
 			if not draft.is_valid_float() or not is_finite(draft.to_float()):
 				_set_error(NUMBERS[key][0] + "必须是有效数字")
 				return null
-			_set_parameter(key, draft.to_float())
+			_set_parameter(key, int(draft.to_float()) if key == "max_repair_attempts" else draft.to_float())
 	var result = _parse_raw()
 	if not result is Dictionary:
 		_set_error("参数格式无效，请修正开发者选项中的参数对象")

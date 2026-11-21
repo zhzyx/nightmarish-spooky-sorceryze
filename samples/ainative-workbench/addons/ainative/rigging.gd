@@ -22,7 +22,7 @@ static func source_extras(path: String) -> Dictionary:
 
 static func defaults(path: String) -> Dictionary:
 	var extras = source_extras(path)
-	return {'source_sha256':FileAccess.get_sha256(path),'route':'standard','height_m':1.8,'yaw_degrees':0.0,'auto_orient':true,'crop_below_y':-10000.0,'clean_faces':false,'reference_pose':'T','confirmed_humanoid':false,'joints':{},'weights':{},'weights_geometry':'','head_landmarks':extras.get('maliang_head_landmarks',{}),'head_review':extras.get('maliang_head_review',{})}
+	return {'source_sha256':FileAccess.get_sha256(path),'route':'standard','height_m':1.8,'yaw_degrees':0.0,'auto_orient':true,'crop_below_y':-10000.0,'clean_faces':false,'shoulder_gate_strength':0.0,'reference_pose':'T','confirmed_humanoid':false,'joints':{},'weights':{},'weights_geometry':'','head_landmarks':extras.get('maliang_head_landmarks',{}),'head_review':extras.get('maliang_head_review',{})}
 
 static func head_contract_error(p: Dictionary) -> String:
 	var review = p.get('head_review',{})
@@ -47,13 +47,14 @@ static func head_contract_error(p: Dictionary) -> String:
 	return ''
 
 static func geometry_key(p: Dictionary) -> String:
-	return JSON.stringify([p.source_sha256,p.height_m,p.yaw_degrees,p.crop_below_y,p.clean_faces,'anatomical-segments-v1-shoulder-gate-v2']).sha256_text()
+	return JSON.stringify([p.source_sha256,p.height_m,p.yaw_degrees,p.crop_below_y,p.clean_faces,p.get('shoulder_gate_strength',0.0),'anatomical-segments-v1-shoulder-gate-v2']).sha256_text()
 
-static func upper_arm_weight_falloff(point: Vector3, shoulder: Vector3, height: float) -> float:
-	# Keep the inner chest out of the upper-arm chain; blend only across the
-	# anatomical shoulder and the upper-arm/underarm transition.
-	var lateral = smoothstep(absf(shoulder.x)-height*.01,absf(shoulder.x)+height*.04,absf(point.x))
-	var below_shoulder = smoothstep(shoulder.y-height*.12,shoulder.y-height*.025,point.y)
+static func upper_arm_weight_falloff(point: Vector3, shoulder: Vector3, height: float, strength: float = 0.0) -> float:
+	# Keep the inner chest out of the upper-arm chain; bounded retries can
+	# tighten this gate without changing bone placement or repeating a fit.
+	var gate = clampf(strength,0.0,1.0)
+	var lateral = smoothstep(absf(shoulder.x)-height*(.01-.012*gate),absf(shoulder.x)+height*.04,absf(point.x))
+	var below_shoulder = smoothstep(shoulder.y-height*(.12-.04*gate),shoulder.y-height*(.025-.01*gate),point.y)
 	return lateral*below_shoulder
 
 static func fit_t_pose_yaw(source_bounds: AABB, p: Dictionary) -> float:
@@ -69,9 +70,10 @@ static func fit_t_pose_yaw(source_bounds: AABB, p: Dictionary) -> float:
 static func build(path: String, p: Dictionary) -> Dictionary:
 	if not FileAccess.file_exists(path) or FileAccess.get_sha256(path) != p.get('source_sha256',''): return {'error':'源文件哈希不匹配；请重新打开源文件。'}
 	if p.get('route') not in ['standard','free'] or p.get('reference_pose') not in ['T','marked']: return {'error':'请选择标准或自由路线，并使用 Y 轴向上的 T 形参考姿势。'}
-	for key in ['height_m','yaw_degrees','crop_below_y']:
+	for key in ['height_m','yaw_degrees','crop_below_y','shoulder_gate_strength']:
 		if not (p.get(key) is float or p.get(key) is int) or not is_finite(float(p[key])): return {'error':'参数必须为有限数值：'+key}
 	if p.height_m < 0.2 or p.height_m > 4.0: return {'error':'身高必须在 0.2–4 米之间。'}
+	if p.shoulder_gate_strength < 0.0 or p.shoulder_gate_strength > 1.0: return {'error':'肩胸权重边界强度必须在 0–1 之间。'}
 	if not p.get('joints') is Dictionary or not p.get('weights') is Dictionary: return {'error':'关节和权重修正必须为对象。'}
 	var head_problem = head_contract_error(p)
 	if not head_problem.is_empty(): return {'error':head_problem}
@@ -231,7 +233,7 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 				var delta = end-positions[bi]
 				var near = positions[bi]+delta*clampf((vertices[vi]-positions[bi]).dot(delta)/maxf(delta.length_squared(),1e-10),0,1)
 				var score = 1.0/pow(maxf(vertices[vi].distance_to(near),.015*h),4)
-				if bi in [5,8]: score *= upper_arm_weight_falloff(vertices[vi],positions[bi],h)
+				if bi in [5,8]: score *= upper_arm_weight_falloff(vertices[vi],positions[bi],h,float(p.get('shoulder_gate_strength',0.0)))
 				scores.append([score,bi])
 			scores.sort_custom(func(x,y): return x[0]>y[0])
 			var values = {}

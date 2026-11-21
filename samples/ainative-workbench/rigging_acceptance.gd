@@ -30,6 +30,12 @@ func run():
 	orientation.yaw_degrees = 0.0
 	orientation.route = 'free'
 	check(is_zero_approx(Rig.fit_t_pose_yaw(z_wide,orientation)),'marked free meshes keep explicit orientation')
+	var shoulder = Vector3(.234,1.368,0)
+	var chest_edge = Vector3(.25,1.30,0)
+	var base_gate = Rig.upper_arm_weight_falloff(chest_edge,shoulder,1.8,0.0)
+	var tight_gate = Rig.upper_arm_weight_falloff(chest_edge,shoulder,1.8,1.0)
+	check(tight_gate<base_gate,'targeted retry tightens upper-arm influence at the chest edge')
+	check(Rig.upper_arm_weight_falloff(Vector3(.45,1.368,0),shoulder,1.8,1.0)>0.0,'shoulder gate preserves the lateral upper arm')
 	var result = Rig.build(args[0],p)
 	if result.has('error'): print(JSON.stringify(result)); quit(1); return
 	root.add_child(result.scene)
