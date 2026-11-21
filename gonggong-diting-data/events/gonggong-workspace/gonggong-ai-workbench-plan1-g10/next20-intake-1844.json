@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g10",
+  "event_id": "next20-intake-1844",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1844",
+  "occurred_at": "2026-11-21T12:40:33.606096+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1844,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T12:40:27Z",
+    "accepted_dependencies": {
+      "1846": "559c54fa8242f2ec48c21269073d92c3ff437071",
+      "1869": "fc43b92cdc29f91825a5fd10fd708ec8e118d0fd"
+    },
+    "title": "[方案一 G10] 在 Godot 创建和切换多宝分支"
+  },
+  "evidence_refs": [],
+  "sha256": "73f3d23b16f6d11e858e6068529430e9afe87b70608ec16909690435acb66cfe"
+}

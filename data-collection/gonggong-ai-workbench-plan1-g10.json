@@ -1,0 +1,104 @@
+{
+  "issue_number": 1844,
+  "request_id": "gonggong-ai-workbench-plan1-g10",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1844",
+  "baseline": "27410222cdf359ce2fb71049fc7b5831564091f0",
+  "accepted_dependencies": {
+    "1846": "559c54fa8242f2ec48c21269073d92c3ff437071",
+    "1869": "fc43b92cdc29f91825a5fd10fd708ec8e118d0fd"
+  },
+  "observed_at": "2026-11-21T14:06:15.426366+00:00",
+  "native": {
+    "windows_or_host_editor": "ef7d71d98f1882e918b17c1075e24029ac871424921b87d0c912796db767e314",
+    "explicit_base": "4db9a6956de3715a54e81de4df372f15a29860dc",
+    "original_head": "a6d13cca77f4905a09fd9ff2fb84eb3fd7fbf8be",
+    "checks": {
+      "first": {
+        "created": true,
+        "denied": true,
+        "dirty_buffer": true,
+        "entry": true,
+        "start": true,
+        "start_tip": true,
+        "switched": true
+      },
+      "restart": {
+        "entry": true,
+        "recoverable": true,
+        "restored": true,
+        "returned": true,
+        "start": true,
+        "start_tip": true
+      }
+    },
+    "independent_git_and_file_readback": true
+  },
+  "local_regression": {
+    "real_repositories": 4,
+    "targeted_api_regressions": 7
+  },
+  "independent_review": {
+    "source": "Codex independent review on two distinct worktree roles",
+    "checks": [
+      "source branch shares a tag name",
+      "target revision omits the nested open project",
+      "multiple snapshots at one branch and tip, stale recovery id and conflict retry",
+      "tag-only names cannot satisfy exact branch queries or creation"
+    ]
+  },
+  "files": {
+    "customizations/components/tianxuan/server/branch_workspace.py": "4f3cccfc81f406c4605880aa87ebfb7998d24780",
+    "customizations/components/tianxuan/server/test_branch_workspace.py": "d426c2c85e5ae2858fed09698e6aaeb97442eae6",
+    "editor/docks/daqian/duobao_branches.gd": "c1dbe5ea41646088e9b6891dc31c4dce480bcd11",
+    "tests/editor/run_workbench_duobao_branches.py": "0a005be42480e12b4c3a647c5c37a121ae63420a",
+    "tests/editor/workbench_duobao_branches.gd": "1e3fe8789b5e3d87da2f9c6979dcd04cc500bdf1",
+    "customizations/components/tianxuan/duobao/git_service.py": "b5bf3ea4ec4ea2ae405babd8e8fa75701d6a1632",
+    "customizations/components/tianxuan/server/api.py": "be45df56c44ad213367cbf0454897f1837760a8f",
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "3b925581541c8fc8cb47609d573ad954c1703eb5",
+    "editor/SCsub": "f303a3162f60cc3114c417a4dc548afc50d2b562",
+    "editor/docks/daqian/workspace.gd": "146f9a144f165524f3e8b9e9a4401065a0a27bcf",
+    "editor/docks/daqian_dock.cpp": "e0f629cc0f45c0597a7901915ba5355344a3f582"
+  },
+  "main_integration": {
+    "base": "8b48bd11844073a0d73499899991f7ee6f3b712f",
+    "editor_receipt": {
+      "windows_or_host_editor": "7e96fda6a5dfdc977a741e47fed54282b643e3af64cf400778285455242379d2",
+      "explicit_base": "caa040d34323aeae5f092fcaffe3e25283f8efad",
+      "original_head": "a69bf8620a18953989d743d96288d3d1933f8723",
+      "checks": {
+        "first": {
+          "created": true,
+          "denied": true,
+          "dirty_buffer": true,
+          "entry": true,
+          "start": true,
+          "start_tip": true,
+          "switched": true
+        },
+        "restart": {
+          "entry": true,
+          "recoverable": true,
+          "restored": true,
+          "returned": true,
+          "start": true,
+          "start_tip": true
+        }
+      },
+      "independent_git_and_file_readback": true
+    },
+    "files": {
+      "customizations/components/tianxuan/duobao/git_service.py": "b5bf3ea4ec4ea2ae405babd8e8fa75701d6a1632",
+      "customizations/components/tianxuan/server/api.py": "be45df56c44ad213367cbf0454897f1837760a8f",
+      "customizations/components/tianxuan/server/branch_workspace.py": "20d547199a50977ecede273bc61b65b735c26c46",
+      "customizations/components/tianxuan/server/test_branch_workspace.py": "d426c2c85e5ae2858fed09698e6aaeb97442eae6",
+      "customizations/components/tianxuan/server/tianshu_bridge.py": "52efd800e766b76cfea24ba533735adc1870d254",
+      "design-docs/gonggong-ai-workbench-g10.md": "88dcef0af783747e34acfc3f47066b6cec3bc171",
+      "editor/SCsub": "d82fd8cdce43a6049f894318f7158468eb1e4464",
+      "editor/docks/daqian/duobao_branches.gd": "c1dbe5ea41646088e9b6891dc31c4dce480bcd11",
+      "editor/docks/daqian/workspace.gd": "3a862573842ddf710f6de97bbe503d972ffec8c3",
+      "editor/docks/daqian_dock.cpp": "e0f629cc0f45c0597a7901915ba5355344a3f582",
+      "tests/editor/run_workbench_duobao_branches.py": "89deb331e550a5be10f5449dfffee6f2093995d5",
+      "tests/editor/workbench_duobao_branches.gd": "1e3fe8789b5e3d87da2f9c6979dcd04cc500bdf1"
+    }
+  }
+}
