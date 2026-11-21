@@ -1,0 +1,139 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g06",
+  "issue_number": 1824,
+  "observed_at": "2026-11-21T06:10:02.532689+00:00",
+  "source_baseline": "4fd77e6fe08d1a9379cf4b16f9c431c2325b91eb",
+  "python": "3.12.14",
+  "git": "git version 2.53.0.windows.3",
+  "candidate_sha256": {
+    "customizations/components/tianxuan/migration/audit_external_objects.py": "2e8faf5de27b0a64eeb951acbb27d1e75def0d29cf1eaa3c020a9f5fe09f04d4",
+    "customizations/components/tianxuan/migration/test_audit_external_objects.py": "a89f7f4906427edc798db5c8afd5c5e24849a0b7e1a7579bb19470fc590e3d5b"
+  },
+  "source_snapshot": {
+    "inventory": "data-collection/gonggong-ai-workbench-g01-inventory.json",
+    "observed_at": "2026-11-21T04:43:01.384169+00:00",
+    "audit": {
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze.git",
+      "head": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+      "inventory_sha256": "b46b2a6a81802722c4769ac61923cd6d2e9f9c80d77ba4ffcb35388ef60735a1",
+      "ref_count": 1640,
+      "object_counts": {
+        "commit": 2656,
+        "tree": 15423,
+        "blob": 36394
+      },
+      "pointer_candidate_blobs": 4824,
+      "gitlink_tree_entries": 0,
+      "lfs": [],
+      "submodules": [],
+      "complete": true
+    }
+  },
+  "isolated_target": {
+    "publication": {
+      "source": "sample/repo",
+      "source_revision": "e3376d25da235dbb63415546958a6c10609e4e2f",
+      "records_sha256": "839f70ed8be0c11b31a227ce5cd424fde84d945dc9c18628f1df3a070208092a",
+      "counts": {
+        "commit": 2
+      },
+      "binary_count": 3,
+      "catalog_sha256": "540ec4ff38fce2bc8008d4bdae362e38cfc56ce087b3246f8b5dda4720c0c653",
+      "module": "migration-70695b4d638c908a35cd8221907fcd71ddc2021096feea864fb2b61e15291cef",
+      "revision": "a20850e5d9a9ce58d237ed4722501f369fd5991a6c6a3aa92350f769356b6bdf",
+      "historical_policy": "record_only",
+      "tenant": "owners",
+      "project": "g06",
+      "published_by": "operator",
+      "published_at": "2026-11-21T06:09:33.809319+00:00",
+      "imported_at": "2026-11-21T06:09:33.797320+00:00"
+    },
+    "lfs_source_id": "github:sample/repo/lfs/92e912cecf03f5b070472ddaba2dffdf601b5f5ca63a21f0f48162257277559b",
+    "lfs_export": {
+      "sha256": "92e912cecf03f5b070472ddaba2dffdf601b5f5ca63a21f0f48162257277559b",
+      "size": 24
+    },
+    "submodule_head": "109f5aa8c9215113133709148768781d143ceb64",
+    "verified": {
+      "source": "https://github.com/sample/repo.git",
+      "head": "e3376d25da235dbb63415546958a6c10609e4e2f",
+      "inventory_sha256": "0420a6962b8cc71d36850e473f4dc87bfa3749322c7b2a07c0862584ae82fb25",
+      "ref_count": 1,
+      "object_counts": {
+        "commit": 2,
+        "tree": 3,
+        "blob": 2
+      },
+      "pointer_candidate_blobs": 2,
+      "gitlink_tree_entries": 1,
+      "lfs": [
+        {
+          "pointer_blob": "db5508e9274edfe82e19348919f4d167d0cf9432",
+          "oid": "92e912cecf03f5b070472ddaba2dffdf601b5f5ca63a21f0f48162257277559b",
+          "size": 24,
+          "status": "verified",
+          "actual_sha256": "92e912cecf03f5b070472ddaba2dffdf601b5f5ca63a21f0f48162257277559b",
+          "actual_size": 24
+        }
+      ],
+      "submodules": [
+        {
+          "path": "vendor/模块",
+          "revision": "c9bba7b8d96c3ef6943641894be31136edf8ba3a",
+          "root_tree": "b452c132608841cb16f3a117ed45e476cb86297d",
+          "example_commit": "d5e642e2d125818ca7f2ce1d3c33624c0ff69090",
+          "status": "verified",
+          "actual_oid": "c9bba7b8d96c3ef6943641894be31136edf8ba3a",
+          "commit_tree": "4b825dc642cb6eb9a060e54bf8d69288fbee4904"
+        }
+      ],
+      "complete": true
+    },
+    "missing": {
+      "source": "https://github.com/sample/repo.git",
+      "head": "e3376d25da235dbb63415546958a6c10609e4e2f",
+      "inventory_sha256": "0420a6962b8cc71d36850e473f4dc87bfa3749322c7b2a07c0862584ae82fb25",
+      "ref_count": 1,
+      "object_counts": {
+        "commit": 2,
+        "tree": 3,
+        "blob": 2
+      },
+      "pointer_candidate_blobs": 2,
+      "gitlink_tree_entries": 1,
+      "lfs": [
+        {
+          "pointer_blob": "db5508e9274edfe82e19348919f4d167d0cf9432",
+          "oid": "92e912cecf03f5b070472ddaba2dffdf601b5f5ca63a21f0f48162257277559b",
+          "size": 24,
+          "status": "missing_payload"
+        }
+      ],
+      "submodules": [
+        {
+          "path": "vendor/模块",
+          "revision": "c9bba7b8d96c3ef6943641894be31136edf8ba3a",
+          "root_tree": "b452c132608841cb16f3a117ed45e476cb86297d",
+          "example_commit": "d5e642e2d125818ca7f2ce1d3c33624c0ff69090",
+          "status": "missing_revision"
+        }
+      ],
+      "complete": false
+    }
+  },
+  "verification": {
+    "args": [
+      "-m",
+      "pytest",
+      "-q",
+      "-p",
+      "no:cacheprovider",
+      "--basetemp",
+      ".g06-verification/test-final",
+      "customizations/components/tianxuan/migration/test_audit_external_objects.py",
+      "customizations/components/tianxuan/migration/test_import_git_history.py"
+    ],
+    "returncode": 0,
+    "stdout": "....                                                                     [100%]\n4 passed in 23.48s"
+  }
+}
