@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-266faf8c1d0d304601002d25b292112ec77b9f4354795d86d737ffd6ffd8b86a",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1830",
+  "occurred_at": "2026-11-21T14:29:09.727626+00:00",
+  "evidence_refs": [
+    "ind1709-windows-references-1830",
+    "learn-6116496f0c5207f05de1c69ad3e5bd514ca0e0506168f7b08aa85b8d686cbdc1"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 21,
+    "previous": "3af14bb9fc2eb748937c9402f6a3f6abe542db3b1e253cf85033cf46054d81fc",
+    "action": "applied",
+    "details": {
+      "task": "U09 #1830",
+      "observed": "The selected native Godot inputs were compiled in this worktree using a read-only shared SCons cache. The final modified AIWorkbenchReference.cpp produced a new object and the editor was relinked. The isolated copied executable had the same SHA-256 in all three probes. Opening an ordinary sidebar and sending via loopback exercised that executable."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-u09.json",
+        "sha256": "2aeb6c513b2d2efaecf443d3aaadec627070aa7f6c9bf9d7727ec834c7580643"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u09/ind1709-windows-references-1830.json",
+      "sha256": "dda4222feb65b9a537027cf3cc615aa463cafa2306a02fc12500ac0ab78b764f"
+    }
+  },
+  "sha256": "877de6ca0ead9eb817944a4083eca3e343864ff2c57deafdbb8bd053ea852ccf"
+}

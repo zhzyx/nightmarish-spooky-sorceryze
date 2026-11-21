@@ -43,6 +43,8 @@
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/check_box.h"
+#include "scene/gui/menu_button.h"
+#include "scene/gui/popup_menu.h"
 #include "scene/gui/text_edit.h"
 #include "scene/main/viewport.h"
 
@@ -89,6 +91,13 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 			pSidebarLayout->add_child(pSession);
 		}
 	}
+	MenuButton *pResourceMenu = memnew(MenuButton);
+	pResourceMenu->set_name("WorkbenchResourceSelection");
+	pResourceMenu->set_text(TTR("Attach Resource"));
+	pResourceMenu->get_popup()->add_item(TTR("From Inspector"), 0);
+	pResourceMenu->get_popup()->add_item(TTR("From FileSystem"), 1);
+	pResourceMenu->get_popup()->connect(SNAME("id_pressed"), callable_mp(this, &AIChatDock::AddWorkbenchResourceSelection));
+	pSidebarLayout->add_child(pResourceMenu);
 	Button *pClose = memnew(Button);
 	pClose->set_text(TTR("Close AI Workbench"));
 	pClose->set_name("CloseWorkbench");
@@ -127,7 +136,10 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 		{
 			VBoxContainer *selector = memnew(VBoxContainer);
 			selector->set_name("WorkbenchBusinessModules");
+			pBusinessModules = selector;
 			selector->set_script(selector_script);
+			selector->set_meta("change_reference_scope", callable_mp(this, &AIChatDock::ChangeWorkbenchReferenceScope));
+			selector->set_meta("freeze_references", callable_mp(this, &AIChatDock::FreezeBusinessReferences));
 			selector->set_meta("workbench_sidebar", pWorkbenchSidebar);
 			pConversationView->add_child(selector);
 			pConversationView->move_child(selector, 0);
@@ -156,6 +168,22 @@ void AIChatDock::CaptureWorkbenchSource()
 
 void AIChatDock::OpenWorkbenchSidebar()
 {
+	if (idWorkbenchReturnScreen.is_null() && !WorkbenchReferenceLocked())
+	{
+		if (nConversationIndex < 0)
+		{
+			StageWorkbenchPageReference();
+		}
+		Control *pScreen = EditorNode::get_editor_main_screen()->get_current_tab_control();
+		if (pScreen && (pScreen->get_name() == SNAME("2D") || pScreen->get_name() == SNAME("3D")))
+		{
+			StageWorkbenchSelection();
+		}
+		else
+		{
+			CaptureWorkbenchScriptSelection();
+		}
+	}
 	if (idWorkbenchReturnScreen.is_valid())
 	{
 		EditorDock *pScreen = ObjectDB::get_instance<EditorDock>(idWorkbenchReturnScreen);

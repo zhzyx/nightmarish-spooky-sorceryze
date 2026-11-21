@@ -102,6 +102,13 @@ func _run() -> void:
 	var input := panel.find_child("ModuleChatInput", true, false) as TextEdit
 	if not await _choose(ai) or not _observe(fixture[0], ""):
 		return
+	if OS.get_environment("U15_BUSINESS_REFERENCES") == "1":
+		var probe = load("res://reference_probe.gd")
+		if not probe or not probe.has_method("exercise"):
+			_fail("Cannot load the U15 module reference probe")
+			return
+		await probe.exercise(self, fixture)
+		return
 	input.insert_text_at_caret("A pending")
 	if not await _choose(bi) or not _observe(fixture[1], ""):
 		return
