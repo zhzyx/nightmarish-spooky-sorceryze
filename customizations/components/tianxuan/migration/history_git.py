@@ -165,6 +165,26 @@ def commit_mapping(database, tenant, project, revision, commit, *, cache_dir=Non
     }
 
 
+def list_branches(database, tenant, project, revision, *, offset=0, limit=20, cache_dir=None):
+    """Page through full branch refs of the published bundle in Git refname order."""
+    if type(offset) is not int or not 0 <= offset <= 10000000 or type(limit) is not int or not 1 <= limit <= 100:
+        raise ValueError("Invalid branch page")
+    repo = _mirror(database, tenant, project, revision, cache_dir)
+    records = _git(
+        repo,
+        "for-each-ref",
+        "--sort=refname",
+        f"--count={offset + limit + 1}",
+        "--format=%(refname)%00%(objectname)",
+        "refs/heads/",
+    ).splitlines()
+    items = []
+    for record in records[offset : offset + limit]:
+        ref, tip = record.split(b"\0", 1)
+        items.append({"ref": ref.decode("utf-8"), "tip": tip.decode("ascii")})
+    return {"items": items, "next_offset": offset + limit if len(records) > offset + limit else None}
+
+
 def list_commits(database, tenant, project, revision, *, commit=None, path=None, offset=0, limit=50, cache_dir=None):
     if type(offset) is not int or offset < 0 or offset > 2**31 - 1 or type(limit) is not int or not 1 <= limit <= 100:
         raise ValueError("Invalid history page")

@@ -117,6 +117,9 @@ def test_published_merge_mapping(tmp_path):
     tree = git("write-tree")
     merge = git("commit-tree", tree, "-p", left, "-p", right, "-m", "merge")
     git("update-ref", "refs/heads/main", merge)
+    git("update-ref", "refs/heads/releases/shared", right)
+    git("update-ref", "refs/heads/teams/shared", left)
+    git("update-ref", "refs/tags/shared", root)
     bundle = tmp_path / "history.bundle"
     git("bundle", "create", str(bundle), "--all")
     (tmp_path / "records.jsonl").write_bytes(b"")
@@ -145,6 +148,22 @@ def test_published_merge_mapping(tmp_path):
     base = "/api/v1/migration/history/commit"
     headers = {"X-Actor": actor}
     query = {"project": "demo", "revision": receipt["revision"], "commit": merge}
+    scope = {"project": "demo", "revision": receipt["revision"]}
+    branch_url = "/api/v1/migration/history/branches"
+    page = client.get(branch_url, headers=headers, params={**scope, "limit": 2})
+    assert page.status_code == 200
+    assert page.json() == {
+        "items": [{"ref": "refs/heads/main", "tip": merge}, {"ref": "refs/heads/releases/shared", "tip": right}],
+        "next_offset": 2,
+    }
+    tail = client.post(
+        "/api/v1/tools",
+        headers=headers,
+        json={"name": "migration.history.branches", "payload": {**scope, "offset": 2}},
+    )
+    assert tail.status_code == 200
+    assert tail.json() == {"items": [{"ref": "refs/heads/teams/shared", "tip": left}], "next_offset": None}
+    assert client.get(branch_url, headers=headers, params={**scope, "revision": "0" * 64}).status_code == 404
     response = client.get(base, headers=headers, params=query)
     assert response.status_code == 200
     assert response.json() == {
@@ -168,3 +187,4 @@ def test_published_merge_mapping(tmp_path):
         assert client.get(base, headers=headers, params={**query, param: value}).status_code == code
     outsider = store.register("others", "other@test.invalid", "test-password")["user_id"]
     assert client.get(base, headers={"X-Actor": outsider}, params=query).status_code == 404
+    assert client.get(branch_url, headers={"X-Actor": outsider}, params=scope).status_code == 404
