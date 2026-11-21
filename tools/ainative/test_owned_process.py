@@ -118,6 +118,55 @@ class AdapterProcessTests(unittest.TestCase):
             finally:
                 command.close()
 
+    @unittest.skipUnless(sys.platform == "darwin", "Darwin exit notification ordering")
+    def test_group_signal_denial_before_exit_becomes_observable(self):
+        with tempfile.TemporaryDirectory() as folder, tempfile.TemporaryFile() as output:
+            release = Path(folder) / "finish"
+            script = "import pathlib,sys,time\nwhile not pathlib.Path(sys.argv[1]).exists(): time.sleep(.001)\n"
+            command = OwnedCommand(
+                [sys.executable, "-c", script, str(release)], stdout=output, stderr=None, env=None, limit=100
+            )
+
+            observe = command.poll
+            first_observation = []
+
+            def observe_exit():
+                status = observe()
+                if not first_observation:
+                    first_observation.append(status)
+                    release.touch()
+                return status
+
+            try:
+                with (
+                    patch("os.killpg", side_effect=PermissionError("exit notification is pending")),
+                    patch.object(command, "poll", side_effect=observe_exit),
+                ):
+                    command.close()
+                self.assertEqual(first_observation, [None])
+                self.assertEqual(command.process.returncode, 0)
+            finally:
+                release.touch(exist_ok=True)
+                command.process.wait(timeout=5)
+
+    @unittest.skipUnless(sys.platform == "darwin", "Darwin group ownership")
+    def test_unverified_group_cleanup_can_be_retried_with_the_pinned_leader(self):
+        with tempfile.TemporaryFile() as output:
+            command = OwnedCommand([sys.executable, "-c", "pass"], stdout=output, stderr=None, env=None, limit=100)
+            try:
+                with (
+                    patch("os.killpg", side_effect=PermissionError("denied")),
+                    patch("owned_process._darwin_group_quiet", return_value=False),
+                    self.assertRaises(PermissionError),
+                ):
+                    command.close()
+                self.assertFalse(command.closed)
+                self.assertIsNone(command.process.returncode)
+            finally:
+                command.close()
+            self.assertEqual(command.process.returncode, 0)
+            self.assertTrue(all(stream.closed for stream in command.outputs))
+
     @unittest.skipUnless(sys.platform == "darwin", "Darwin native provenance profile")
     def test_owned_cleanup_inside_native_protection_profile(self):
         code = (

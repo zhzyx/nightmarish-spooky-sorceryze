@@ -294,7 +294,18 @@ class OwnedCommand:
                     except ProcessLookupError:
                         pass
                     except PermissionError:
-                        if sys.platform != "darwin" or self.poll() is None or not _darwin_group_quiet(self.process.pid):
+                        if sys.platform != "darwin":
+                            raise
+                        # A group can stop accepting signals just before waitid exposes the leader's exit.
+                        # Keep the unreaped leader pinned throughout the bounded observation window.
+                        deadline = time.monotonic() + 0.5
+                        while self.poll() is None:
+                            if time.monotonic() >= deadline:
+                                self.closed = False  # The pinned leader and its pipes still need cleanup.
+                                raise
+                            time.sleep(0.005)
+                        if not _darwin_group_quiet(self.process.pid):
+                            self.closed = False
                             raise
                 elif self.job is not None:
                     if self.assigned:
