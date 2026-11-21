@@ -1,0 +1,312 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-c02",
+  "issue_number": 1866,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1866",
+  "source_baseline": "f36cc2bf1b14028a0d7abadd04772536a65dc465",
+  "observed_at": "2026-11-21T05:37:48.045666+00:00",
+  "upstream": {
+    "number": 1868,
+    "state": "CLOSED",
+    "stateReason": "COMPLETED",
+    "closedAt": "2026-11-21T05:28:14Z"
+  },
+  "runtime": {
+    "pytest": "9.2.0",
+    "fastapi": "0.165.0",
+    "starlette": "1.10.0",
+    "httpx": "0.28.1",
+    "python": "3.12.14"
+  },
+  "sqlite_query_plan": "SEARCH issues USING INDEX idx_issues_module (tenant_id=? AND project=? AND module_id=?)",
+  "native_api_testclient_readback": [
+    {
+      "method": "POST",
+      "path": "/api/v1/business-modules?project=studio%2Fgame",
+      "status": 200,
+      "object": {
+        "id": "mod_b5c0a37aebbc47e8bb604f478e7757d3",
+        "project": "studio/game",
+        "name": "场景"
+      },
+      "arguments": {
+        "name": "场景",
+        "call_id": "main"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/business-modules?project=studio%2Fgame",
+      "status": 200,
+      "object": {
+        "id": "mod_0ef271a376304103b638318edc785575",
+        "project": "studio/game",
+        "name": "场景"
+      },
+      "arguments": {
+        "name": "场景",
+        "call_id": "side"
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tools",
+      "status": 200,
+      "object": {
+        "id": "iss_3e56212731e54e0d8b35ce43d8e0f09e",
+        "number": 1,
+        "title": "检查",
+        "project": "studio/game",
+        "module_id": "mod_b5c0a37aebbc47e8bb604f478e7757d3"
+      },
+      "arguments": {
+        "name": "issue.create",
+        "call_id": "first",
+        "payload": {
+          "project": "studio/game",
+          "module_id": "mod_b5c0a37aebbc47e8bb604f478e7757d3",
+          "title": "检查"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tools",
+      "status": 200,
+      "object": {
+        "id": "iss_7e49c21debea492497db3e2aca0ae825",
+        "number": 2,
+        "title": "检查",
+        "project": "studio/game",
+        "module_id": "mod_b5c0a37aebbc47e8bb604f478e7757d3"
+      },
+      "arguments": {
+        "name": "issue.create",
+        "call_id": "second",
+        "payload": {
+          "project": "studio/game",
+          "module_id": "mod_b5c0a37aebbc47e8bb604f478e7757d3",
+          "title": "检查"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tools",
+      "status": 200,
+      "object": {
+        "id": "iss_66cf457b8f524327a77234931222fd17",
+        "number": 3,
+        "title": "检查",
+        "project": "studio/game",
+        "module_id": "mod_0ef271a376304103b638318edc785575"
+      },
+      "arguments": {
+        "name": "issue.create",
+        "call_id": "third",
+        "payload": {
+          "project": "studio/game",
+          "module_id": "mod_0ef271a376304103b638318edc785575",
+          "title": "检查"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/issues/iss_3e56212731e54e0d8b35ce43d8e0f09e",
+      "status": 200,
+      "object": {
+        "id": "iss_3e56212731e54e0d8b35ce43d8e0f09e",
+        "number": 1,
+        "title": "检查",
+        "project": "studio/game",
+        "module_id": "mod_b5c0a37aebbc47e8bb604f478e7757d3"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/issues/iss_7e49c21debea492497db3e2aca0ae825",
+      "status": 200,
+      "object": {
+        "id": "iss_7e49c21debea492497db3e2aca0ae825",
+        "number": 2,
+        "title": "检查",
+        "project": "studio/game",
+        "module_id": "mod_b5c0a37aebbc47e8bb604f478e7757d3"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/issues/iss_66cf457b8f524327a77234931222fd17",
+      "status": 200,
+      "object": {
+        "id": "iss_66cf457b8f524327a77234931222fd17",
+        "number": 3,
+        "title": "检查",
+        "project": "studio/game",
+        "module_id": "mod_0ef271a376304103b638318edc785575"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/issues?project=studio%2Fgame&module_id=mod_b5c0a37aebbc47e8bb604f478e7757d3",
+      "status": 200,
+      "issue_ids": [
+        "iss_3e56212731e54e0d8b35ce43d8e0f09e",
+        "iss_7e49c21debea492497db3e2aca0ae825"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tools",
+      "status": 200,
+      "issue_ids": [
+        "iss_3e56212731e54e0d8b35ce43d8e0f09e",
+        "iss_7e49c21debea492497db3e2aca0ae825"
+      ],
+      "arguments": {
+        "name": "issue.list",
+        "payload": {
+          "project": "studio/game",
+          "module_id": "mod_b5c0a37aebbc47e8bb604f478e7757d3"
+        }
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/issues/iss_7e49c21debea492497db3e2aca0ae825/module?project=studio%2Fgame",
+      "status": 200,
+      "object": {
+        "id": "iss_7e49c21debea492497db3e2aca0ae825",
+        "number": 2,
+        "title": "检查",
+        "project": "studio/game",
+        "module_id": "mod_0ef271a376304103b638318edc785575"
+      },
+      "arguments": {
+        "module_id": "mod_0ef271a376304103b638318edc785575"
+      }
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/issues/iss_7e49c21debea492497db3e2aca0ae825/module?project=studio%2Fgame",
+      "status": 200,
+      "object": {
+        "id": "iss_7e49c21debea492497db3e2aca0ae825",
+        "number": 2,
+        "title": "检查",
+        "project": "studio/game",
+        "module_id": "mod_0ef271a376304103b638318edc785575"
+      },
+      "arguments": {
+        "module_id": "mod_0ef271a376304103b638318edc785575"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/issues?project=studio%2Fgame&module_id=mod_b5c0a37aebbc47e8bb604f478e7757d3",
+      "status": 200,
+      "issue_ids": [
+        "iss_3e56212731e54e0d8b35ce43d8e0f09e"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tools",
+      "status": 200,
+      "issue_ids": [
+        "iss_3e56212731e54e0d8b35ce43d8e0f09e"
+      ],
+      "arguments": {
+        "name": "issue.list",
+        "payload": {
+          "project": "studio/game",
+          "module_id": "mod_b5c0a37aebbc47e8bb604f478e7757d3"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/issues?project=studio%2Fgame&module_id=mod_0ef271a376304103b638318edc785575",
+      "status": 200,
+      "issue_ids": [
+        "iss_7e49c21debea492497db3e2aca0ae825",
+        "iss_66cf457b8f524327a77234931222fd17"
+      ]
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tools",
+      "status": 200,
+      "issue_ids": [
+        "iss_7e49c21debea492497db3e2aca0ae825",
+        "iss_66cf457b8f524327a77234931222fd17"
+      ],
+      "arguments": {
+        "name": "issue.list",
+        "payload": {
+          "project": "studio/game",
+          "module_id": "mod_0ef271a376304103b638318edc785575"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/issues?project=studio%2Fgame&module_id=default",
+      "status": 200,
+      "issue_ids": []
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tools",
+      "status": 200,
+      "issue_ids": [],
+      "arguments": {
+        "name": "issue.list",
+        "payload": {
+          "project": "studio/game",
+          "module_id": "default"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/issues",
+      "status": 200,
+      "issue_ids": [
+        "iss_3e56212731e54e0d8b35ce43d8e0f09e",
+        "iss_7e49c21debea492497db3e2aca0ae825",
+        "iss_66cf457b8f524327a77234931222fd17"
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/issues/iss_7e49c21debea492497db3e2aca0ae825",
+      "status": 200,
+      "object": {
+        "id": "iss_7e49c21debea492497db3e2aca0ae825",
+        "number": 2,
+        "title": "检查",
+        "project": "studio/game",
+        "module_id": "mod_0ef271a376304103b638318edc785575"
+      }
+    }
+  ],
+  "candidate_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "e43c56805325ac31a9e1114e3040442966cf8a3a",
+    "customizations/components/tianxuan/server/schemas.py": "19d976d511d46ae07f9d21a8bfdae315abc0a47f",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "8fc2dd1d8713742c71b66f27a287bfd2d59710f2",
+    "customizations/components/tianxuan/server/test_module_issues.py": "35835c059089f3bf7dc4bbe6bfce44abf7ea06ed",
+    "customizations/components/tianxuan/server/test_business_modules.py": "b6f60e535bb5a0308c8c91d4dbf16e76411159e3",
+    "design-docs/gonggong-ai-workbench-c02.md": "47d0d7b0f0b91a110d0ce876e2d27a7518e491b8"
+  },
+  "verification": {
+    "cwd": "customizations/components/tianxuan/server",
+    "command": "python -B -X utf8 -m pytest -p no:cacheprovider -q test_module_issues.py test_business_modules.py test_tool_receipts.py test_migration_api.py test_issue_ancestor_acl.py test_api_session.py test_scope_idempotency.py test_work_management.py test_api_auth_mode.py",
+    "pytest_summary": "100 passed, 1 warning in 28.11s",
+    "warning": "Starlette TestClient httpx deprecation",
+    "exit_code": 0,
+    "ruff_check": "All checks passed!",
+    "ruff_format": "5 files already formatted",
+    "mypy_at_repository_root": "Success: no issues found in 5 source files"
+  }
+}

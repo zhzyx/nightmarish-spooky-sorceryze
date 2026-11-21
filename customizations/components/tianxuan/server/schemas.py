@@ -358,6 +358,12 @@ class BusinessModuleCreate(BusinessModuleName):
     call_id: str = Field(min_length=1, max_length=256)
 
 
+class IssueModuleRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    module_id: str = Field(min_length=1)
+
+
 class IssueTransitionRequest(BaseModel):
     """司南工单状态迁移。"""
 

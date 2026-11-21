@@ -406,6 +406,7 @@ class Tianxuan:
         self._migrate_docs()
         self._migrate_doc_shares()
         self._migrate_issue_modules()
+        self.db.execute("CREATE INDEX IF NOT EXISTS idx_issues_module ON issues(tenant_id, project, module_id, number)")
         self.db.commit()
 
     def _migrate_issue_modules(self) -> None:
@@ -1427,10 +1428,50 @@ class Tianxuan:
         return dict(row)
 
     @_connection_call
-    def list_issues(self, actor: str, requirement_id: str | None = None) -> list[dict[str, Any]]:
+    def read_issue(self, actor: str, issue_id: str) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        return self._require_tenant_issue(actor, issue_id)
+
+    @_connection_call
+    def set_issue_module(self, actor: str, issue_id: str, project: str, module_id: str) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._require_tenant_issue(actor, issue_id, write=True)
+        self._validate_project(project)
+        if issue["project"] != project:
+            raise NotFound("issue not found in project")
+        self._business_module(issue["tenant_id"], project, module_id)
+        if issue["module_id"] == module_id:
+            return issue
+        self.db.execute("UPDATE issues SET module_id=?, updated_at=? WHERE id=?", (module_id, _now(), issue_id))
+        return self.get_issue(issue_id)
+
+    @_connection_call
+    def list_issues(
+        self,
+        actor: str,
+        requirement_id: str | None = None,
+        *,
+        project: str | None = None,
+        module_id: str | None = None,
+    ) -> list[dict[str, Any]]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
         tenant_id = self._tenant_of(actor)
         sql = "SELECT * FROM issues WHERE tenant_id = ?"
         args: list[str] = [tenant_id]
+        if project is None and module_id is not None:
+            project = DEFAULT_PROJECT
+        if project is not None:
+            self._validate_project(project)
+            sql += " AND project = ?"
+            args.append(project)
+            if module_id is not None:
+                self._business_module(tenant_id, project, module_id)
+                sql += " AND module_id = ?"
+                args.append(module_id)
         if requirement_id:
             sql += " AND requirement_id = ?"
             args.append(requirement_id)
@@ -2515,5 +2556,12 @@ class Tianxuan:
         if name == "doc.list":
             return {"docs": self.list_docs(actor, payload.get("kind"))}
         if name == "issue.list":
-            return {"issues": self.list_issues(actor, payload.get("requirement_id"))}
+            return {
+                "issues": self.list_issues(
+                    actor,
+                    payload.get("requirement_id"),
+                    project=payload.get("project"),
+                    module_id=payload.get("module_id"),
+                )
+            }
         raise UnknownTool(f"unknown tool: {name}")

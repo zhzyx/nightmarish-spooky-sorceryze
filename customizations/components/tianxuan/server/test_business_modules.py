@@ -87,6 +87,7 @@ def test_existing_database_and_create_receipt_migrate_once(tmp_path):
     migrated = store.create_issue(actor, "imported")
     child = store.create_issue(actor, "child", parent_id=migrated["id"])
     # The previous schema had neither reference field; migration.start kept the project in its receipt.
+    store.db.execute("DROP INDEX idx_issues_module")
     store.db.execute("ALTER TABLE issues DROP COLUMN project")
     store.db.execute("ALTER TABLE issues DROP COLUMN module_id")
     store.db.execute("DROP TABLE business_modules")

@@ -134,6 +134,8 @@
 
 ### C02
 
+[交付清单与验证](gonggong-ai-workbench-c02.md)
+
 **建立模块和工单关系** · [C02 #1866](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1866)
 
 保存一模块多工单的查询和关联。
