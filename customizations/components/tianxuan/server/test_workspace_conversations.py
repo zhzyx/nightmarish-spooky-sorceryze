@@ -11,7 +11,7 @@ from api import create_app
 from fastapi.testclient import TestClient
 from gateway import ModelGateway
 from tianxuan_core import Tianxuan
-from workspace_conversations import require_workspace_approval
+from workspace_conversations import extend_draft, require_workspace_approval
 
 ROOT = "/api/v1/workspace/conversations"
 
@@ -23,6 +23,16 @@ def headers(store, issuer, user):
 def get_state(response, status=200):
     assert response.status_code == status, response.text
     return response.json()
+
+
+def test_extend_draft_preserves_markdown_and_discards_only_echoed_blocks():
+    body = "  Handwritten paragraph.\r\n\r\nAnother one."
+    response = "Another one.\n\n```text\nexample\n\nAnother one.\n```"
+    assert extend_draft(body, response) == body + "\n\n```text\nexample\n\nAnother one.\n```"
+    assert extend_draft(body, body) == body
+    assert extend_draft("Same paragraph.", "Same\nparagraph.  \n\nNew.") == "Same paragraph.\n\nNew."
+    code = "    start()\n\n    shared()\n\n    end()"
+    assert extend_draft("    shared()", code) == "    shared()\n\n" + code
 
 
 def test_context_snapshot_survives_selection_revision_and_module_changes(tmp_path, monkeypatch):
@@ -319,7 +329,24 @@ def test_conversation_and_confirmations_are_private_durable_and_idempotent(tmp_p
             ).status_code
             == 409
         )
-        direction = draft("direction", "Lighting direction")
+        direction = draft("direction", "    Lighting direction\n")
+        assert conversation["revisions"][-1]["body"] == "    Lighting direction\n"
+
+        def suggestion(**fields):
+            return client.post(
+                url + "/design/direction/suggest",
+                headers=owner_headers,
+                json={"lang": "zh", "expected_version": conversation["version"], **fields},
+            )
+
+        assert get_state(suggestion())["content"] == "    Lighting direction\n\nstage suggestion"
+        assert json.loads(calls[-1][1]["content"])["existing_draft"] == "    Lighting direction\n"
+        assert get_state(suggestion(draft_body="stage suggestion"))["content"] == "stage suggestion"
+        assert json.loads(calls[-1][1]["content"])["existing_draft"] == "stage suggestion"
+        assert get_state(suggestion(draft_body=""))["content"] == "stage suggestion"
+        assert suggestion(draft_body="X" * 8000).status_code == 422
+        assert get_state(client.get(url, headers=owner_headers)) == conversation
+
         newer = draft("direction", "Revised lighting direction")
         assert (
             client.post(
