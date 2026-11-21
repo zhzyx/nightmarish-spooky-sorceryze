@@ -62,6 +62,7 @@ if env.editor_build:
             "docks/daqian/operation_details.gd",
             "docks/daqian/issue_inspector.gd",
             "docks/daqian/duobao_branches.gd",
+            "docks/daqian/duobao_commit.gd",
             "docks/daqian/canvas_context.gd",
             "docks/daqian/spatial_workbench.gd",
             "docks/daqian/workspace.gd",

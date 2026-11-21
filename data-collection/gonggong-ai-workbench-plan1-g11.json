@@ -1,0 +1,158 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g11",
+  "issue_number": 1838,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1838",
+  "observed_at": "2026-11-21T17:46:21.739179+00:00",
+  "baseline": "373430fb1c8e8345841365e0957f2ce54a9be57c",
+  "dependency": {
+    "issue": 1844,
+    "merge_commit": "c855f7699df2ef22bc6c3544b0dc7f96dca180fb",
+    "state": "CLOSED"
+  },
+  "source_feedback": {
+    "macos_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1838#issuecomment-7065757542",
+    "observed_on_macos": "Caller-selected A received by authenticated NativeStore, one persisted receipt after restart. The Godot selection through the native materialized project was pending."
+  },
+  "platform": "Windows x86_64; compiled Godot editor headless; real materialization, authenticated native-only service and separate Git-compatible service",
+  "materialized_native": {
+    "editor_sha256": "afa7589039fcc28108dda5809ee52948ca4ea0d82f1d530038c925907cbc064d",
+    "source_revision": "aabb4eeeeea10cbba51f477a0fd68218e045d7bd8677a474a7cd3574728734e0",
+    "received_revision": "d57c18823f0a4245009a2869df11c795a71dc362fe6795852039307ebb0c2cd9",
+    "request_key": "g11-310a3af6621aeb3a23923e6b7e60926d1d82c16419309a375e5fce961c25bb1d",
+    "posted_edits": [
+      "A.txt"
+    ],
+    "receipt_lookups": [
+      false,
+      true
+    ],
+    "post_count": 1,
+    "total_revisions_including_seed": 2,
+    "matching_receipts": 1,
+    "native_only": true,
+    "git_checkout": false,
+    "service_and_editor_restarted": true,
+    "service_pids": [
+      99968,
+      53368
+    ],
+    "checks": {
+      "first": {
+        "entry": true,
+        "initial_diff": true,
+        "native_module": true,
+        "preview": true,
+        "unknown_response": true
+      },
+      "restart": {
+        "entry": true,
+        "initial_diff": true,
+        "native_module": true,
+        "preview": true,
+        "received": true,
+        "remaining": true
+      }
+    },
+    "B": {
+      "exact_remote_revision": "original B",
+      "materialized_file": "working B"
+    }
+  },
+  "git_compatible_native_control": {
+    "editor_sha256": "afa7589039fcc28108dda5809ee52948ca4ea0d82f1d530038c925907cbc064d",
+    "baseline": "5e090a480616635bf9919237e4f3204010a692f7",
+    "branch": "work/g11",
+    "authoritative_receipts": [
+      "28ccc83e847dc993a30fa25de7fe843f6b10bff9"
+    ],
+    "lookup_branch_tips": [
+      "5e090a480616635bf9919237e4f3204010a692f7",
+      "28ccc83e847dc993a30fa25de7fe843f6b10bff9"
+    ],
+    "additional_commits": 1,
+    "changed_paths": [
+      "A.txt"
+    ],
+    "B": {
+      "remote": "original",
+      "index": "staged B",
+      "working_tree": "working B"
+    },
+    "checks": {
+      "entry": true,
+      "initial_diff": true,
+      "preview": true,
+      "received": true,
+      "remaining": true,
+      "unknown_response": true
+    }
+  },
+  "predecessor_native_regression": {
+    "windows_or_host_editor": "afa7589039fcc28108dda5809ee52948ca4ea0d82f1d530038c925907cbc064d",
+    "explicit_base": "b52d070463f003020951dc0965f16bca772f6c0c",
+    "original_head": "384ed3caf35778cec411e5d17f6770b4813876e3",
+    "checks": {
+      "first": {
+        "created": true,
+        "denied": true,
+        "dirty_buffer": true,
+        "entry": true,
+        "start": true,
+        "start_tip": true,
+        "switched": true
+      },
+      "restart": {
+        "entry": true,
+        "recoverable": true,
+        "restored": true,
+        "returned": true,
+        "start": true,
+        "start_tip": true
+      }
+    },
+    "independent_git_and_file_readback": true
+  },
+  "checks": {
+    "command": "python -m pytest -q customizations/components/tianxuan/server/test_selected_commit.py customizations/components/tianxuan/server/test_native_workcopy_commit.py customizations/components/tianxuan/server/test_branch_workspace.py customizations/components/tianxuan/server/test_tianshu_bridge.py customizations/components/tianxuan/server/test_api_git_repo.py customizations/components/tianxuan/server/test_native_api.py customizations/components/tianxuan/migration/test_sync_merged_pull.py customizations/components/tianxuan/duobao/test_native_store.py",
+    "passed": 63,
+    "warnings": [
+      "Starlette TestClient deprecation for httpx"
+    ],
+    "selection_regressions": [
+      "lost receipt, service and editor restart",
+      "native binary addition and deletion, nested project scope, changed selection, scoped lookup and tenant isolation",
+      "concurrent Git replay, binary content, Unicode literal path, deletion, stale bytes and advanced remote",
+      "partial Git index, authenticated session, protected target, read-only actor and request limit",
+      "staged descendant survives replacement of a directory by a regular file"
+    ]
+  },
+  "native_commands": [
+    "python tests/editor/run_workbench_duobao_native_commit.py --godot bin/godot.windows.editor.x86_64.exe --report <receipt>",
+    "python tests/editor/run_workbench_duobao_commit.py --godot bin/godot.windows.editor.x86_64.exe --report <receipt>",
+    "python tests/editor/run_workbench_duobao_branches.py --godot bin/godot.windows.editor.x86_64.exe --report <receipt>"
+  ],
+  "learning": {
+    "scope": "godot-build-placement",
+    "initial_verified_revision": 21,
+    "observed": "editor/SCsub embeds the control; tested compiled Windows binary with its installed host scripts, no-Git materialized project and Git checkout"
+  },
+  "files": {
+    "customizations/components/tianxuan/duobao/native_store.py": "775dea06ad53ebc69c26fc2d5896c7252ded35ac",
+    "customizations/components/tianxuan/server/api.py": "3fa485c4af726358cc2e2fe3e75e22c49f1ca9f7",
+    "customizations/components/tianxuan/server/native_api.py": "6de37e39a68ba5e11c5981d4eb830fd6facad97e",
+    "customizations/components/tianxuan/server/native_workcopy_commit.py": "d94876c2e5846c9225320274381d8ab580840c81",
+    "customizations/components/tianxuan/server/schemas.py": "cf075c6fa1d7d909ad135c657e6b93442a9b14b5",
+    "customizations/components/tianxuan/server/selected_commit.py": "08a168f93cd5378130323cbaa24f6a0f3bf78296",
+    "customizations/components/tianxuan/server/test_native_workcopy_commit.py": "b4603d7a15069022c8425ccf05c2e79af3f858d4",
+    "customizations/components/tianxuan/server/test_selected_commit.py": "65d409b0cae39e3d45bdee5635b246d5ac5e9351",
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "c2f96cb2c82d1c5134fb97ace24ebf511a1c824e",
+    "design-docs/gonggong-ai-workbench-g11.md": "1ffb889e5288b9122dcee922dd53c4213221e328",
+    "editor/SCsub": "5fcd0382c77efec7dcb1ed8b1e78f5185eca7c86",
+    "editor/docks/daqian/duobao_commit.gd": "800353132eb60cef9536022a141541207a6cf37c",
+    "editor/docks/daqian/workspace.gd": "e1a90cd740b9a92b5facadd872eb9955cb6d164a",
+    "editor/docks/daqian_dock.cpp": "f8a6197708be5c099cd9f38f8d0ceb9a7d8166b8",
+    "tests/editor/run_workbench_duobao_commit.py": "5869c99306af5fe4c9b35877ba9ae466b64fefc0",
+    "tests/editor/run_workbench_duobao_native_commit.py": "8e1c80858d4f8cd1d3dfd9f84ed893ad8eac5ef8",
+    "tests/editor/workbench_duobao_commit.gd": "bf67652ade6832173b35a343ee50264f89ddae35"
+  }
+}

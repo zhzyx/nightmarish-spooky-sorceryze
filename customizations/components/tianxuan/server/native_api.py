@@ -201,7 +201,9 @@ def _fields(value: Any, required: set[str], optional: set[str] | None = None) ->
     return value
 
 
-async def _body(request: Request) -> Any:
+async def _body(request: Request, max_bytes: int | None = None) -> Any:
+    if max_bytes is None:
+        max_bytes = MAX_BODY
     length = request.headers.get("content-length")
     if length is not None:
         try:
@@ -210,11 +212,11 @@ async def _body(request: Request) -> Any:
             raise HTTPException(422, "invalid content length") from None
         if size < 0:
             raise HTTPException(422, "invalid content length")
-        if size > MAX_BODY:
+        if size > max_bytes:
             raise HTTPException(413, "request too large")
     data = bytearray()
     async for chunk in request.stream():
-        if len(data) + len(chunk) > MAX_BODY:
+        if len(data) + len(chunk) > max_bytes:
             raise HTTPException(413, "request too large")
         data.extend(chunk)
     try:
@@ -466,11 +468,20 @@ def create_native_router(store: NativeStore) -> APIRouter:
         key, changes = _changes(await _body(request))
         return await _call(store.submit, tenant, actor, key, changes)
 
+    @router.get("/batches/{request_key}")
+    async def batch_receipt(request_key: str, request: Request) -> Any:
+        tenant, actor = await run_in_threadpool(_identity, request)
+        result = await _call(store.batch_receipt, tenant, actor, request_key)
+        if result:
+            for module in result["revisions"]:
+                await _call(_module_read, request.app.state.store, actor, module)
+        return {"tenant": tenant, "request_key": request_key, "receipt": result}
+
     @router.get("/modules/{module}/head")
     async def head(module: str, request: Request) -> Any:
         tenant, actor = await run_in_threadpool(_identity, request)
         await _call(_module_read, request.app.state.store, actor, module)
-        return {"revision": await _call(store.head, tenant, module)}
+        return {"revision": await _call(store.head, tenant, module), "tenant": tenant}
 
     @router.get("/modules/{module}/revisions/{revision}")
     async def revision(module: str, revision: str, request: Request) -> Any:

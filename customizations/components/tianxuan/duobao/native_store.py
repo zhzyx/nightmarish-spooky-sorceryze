@@ -176,6 +176,16 @@ class NativeStore:
         result: dict[str, Any] = json.loads(row["payload"])
         return result
 
+    def batch_receipt(self, tenant: str, actor: str, request_key: str) -> dict[str, Any] | None:
+        for part in (tenant, actor, request_key):
+            _identifier(part)
+        with self._connection() as db:
+            row = db.execute(
+                "SELECT result FROM native_receipts WHERE tenant=? AND actor=? AND request_key=?",
+                (tenant, actor, request_key),
+            ).fetchone()
+            return json.loads(row["result"]) if row else None
+
     def head(self, tenant: str, module: str) -> str | None:
         _identifier(tenant)
         _identifier(module)

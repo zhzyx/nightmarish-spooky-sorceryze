@@ -74,6 +74,20 @@ class RepoLinkRequest(BaseModel):
     name: str
 
 
+class SelectedGitFile(BaseModel):
+    path: str = Field(min_length=1, max_length=4096)
+    mode: str
+    content: str | None = Field(max_length=22369624)
+
+
+class SelectedGitCommitRequest(BaseModel):
+    branch: str = Field(min_length=1, max_length=1024)
+    base: str
+    sha: str
+    commit: str = Field(min_length=1, max_length=32768)
+    files: list[SelectedGitFile] = Field(min_length=1, max_length=1024)
+
+
 class GitBranchCreateRequest(BaseModel):
     """在本地裸仓库中基于已有提交创建分支。"""
 

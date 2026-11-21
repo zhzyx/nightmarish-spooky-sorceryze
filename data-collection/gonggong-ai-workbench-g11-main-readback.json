@@ -1,0 +1,37 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g11",
+  "issue_number": 1838,
+  "baseline": "a0697dd93dc3381b98d5f921196ff5cd2b2fe50c",
+  "editor": "dd90973c24f6d0a8db824bcc6a0df7ddf0e8cc77eeb489ad570ec2b96a8f4586",
+  "native_received": "d57c18823f0a4245009a2869df11c795a71dc362fe6795852039307ebb0c2cd9",
+  "native_request": "g11-310a3af6621aeb3a23923e6b7e60926d1d82c16419309a375e5fce961c25bb1d",
+  "native_posts": 1,
+  "git_receipts": [
+    "b8332977cfb9a181ba7fe6ca805052ed56dbdd16"
+  ],
+  "git_remaining": {
+    "remote": "original",
+    "index": "staged B",
+    "working_tree": "working B"
+  },
+  "updated_files": {
+    "customizations/components/tianxuan/duobao/native_store.py": "775dea06ad53ebc69c26fc2d5896c7252ded35ac",
+    "customizations/components/tianxuan/server/api.py": "e3df71ab2cf768b16b490cbcd504a98b25ed1b19",
+    "customizations/components/tianxuan/server/native_api.py": "6de37e39a68ba5e11c5981d4eb830fd6facad97e",
+    "customizations/components/tianxuan/server/native_workcopy_commit.py": "506ef93af63fbeb8781c837ef3549f63c6c85214",
+    "customizations/components/tianxuan/server/schemas.py": "cf075c6fa1d7d909ad135c657e6b93442a9b14b5",
+    "customizations/components/tianxuan/server/selected_commit.py": "41a0e24d51b52e5de391524f64701a259e0ba653",
+    "customizations/components/tianxuan/server/test_native_workcopy_commit.py": "b4603d7a15069022c8425ccf05c2e79af3f858d4",
+    "customizations/components/tianxuan/server/test_selected_commit.py": "65d409b0cae39e3d45bdee5635b246d5ac5e9351",
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "1d85991c4870691872849f15021bc2054f4f3c3f",
+    "design-docs/gonggong-ai-workbench-g11.md": "1ffb889e5288b9122dcee922dd53c4213221e328",
+    "editor/SCsub": "d39bb64c20f0e5ea0277b3ef43f739c494ee65c3",
+    "editor/docks/daqian/duobao_commit.gd": "800353132eb60cef9536022a141541207a6cf37c",
+    "editor/docks/daqian/workspace.gd": "e1a90cd740b9a92b5facadd872eb9955cb6d164a",
+    "editor/docks/daqian_dock.cpp": "f8a6197708be5c099cd9f38f8d0ceb9a7d8166b8",
+    "tests/editor/run_workbench_duobao_commit.py": "5869c99306af5fe4c9b35877ba9ae466b64fefc0",
+    "tests/editor/run_workbench_duobao_native_commit.py": "8e1c80858d4f8cd1d3dfd9f84ed893ad8eac5ef8",
+    "tests/editor/workbench_duobao_commit.gd": "bf67652ade6832173b35a343ee50264f89ddae35"
+  },
+  "observed_at": "2026-11-21T19:30:06.367749+00:00"
+}
