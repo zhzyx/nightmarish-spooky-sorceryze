@@ -755,6 +755,10 @@ def create_app(
     def read_issue_number(number: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
         return cast(dict[str, Any], store.read_issue_number(actor, project, number))
 
+    @app.get("/api/v1/issues/by-number/{number}/detail")
+    def read_issue_detail(number: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
+        return cast(dict[str, Any], store.read_issue_detail(actor, project, number))
+
     @app.get("/api/v1/issues/{issue_id}")
     def read_issue(issue_id: str, actor: ActorDep) -> dict[str, Any]:
         return cast(dict[str, Any], store.read_issue(actor, issue_id))

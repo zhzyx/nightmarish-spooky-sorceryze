@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i02",
+  "issue_number": 1854,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854",
+  "prerequisites": {
+    "intake_exit_code": 0,
+    "I01": {
+      "issue_number": 1859,
+      "status": "CLOSED/COMPLETED",
+      "accepted_main": "4c56b3fe48a2d1689259291d02580d2317a9ef12",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1859#issuecomment-7065373317"
+    },
+    "I02_issue_comments_at_intake": 0,
+    "upstream_macos": {
+      "scope": "D14 isolated accounts, credential revocation and session reauthentication",
+      "sources": [
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7060361368",
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7062658872"
+      ]
+    }
+  },
+  "initial_build": {
+    "base": "4c56b3fe48a2d1689259291d02580d2317a9ef12",
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5, Windows SDK 10.0.26100.0, SCons",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j8",
+    "exit_code": 0,
+    "full_log_sha256": "2d7f4319d8947b9a1c091ce9d504e8c702888ceb93d793c8d2e3b24cdf016d4c",
+    "full_engine_sha256": "340a17c55c12e2ddda9c3101eb330ad4ac36f3a43bd4f16bd690906a168aaf5b",
+    "full_generated_header_sha256": "30b0ba14f318004a36e49507616a9e8db9174dae43aab6aca17b80157a0a83c1",
+    "invalidation": {
+      "change": "Clear the previous record as soon as the visible number is edited",
+      "observed": [
+        "Generating editor/docks/workbench/IssueCreation.gen.h",
+        "Compiling editor/docks/workbench/AIWorkbenchSidebar.cpp",
+        "Linking editor static library and Windows editor executable"
+      ],
+      "log_sha256": "9e4797c9f19ba40a3005298da16609f982010001730ff485c8c380e8932b4214",
+      "engine_sha256": "47c69e720ff06f45845e7460c7497c6d0a31a1e2a8e379da9d2aeeeb850ed084",
+      "generated_header_sha256": "c66da8241611303063f884d26d33c49396811dc8274e1f0896faf5db71a6e07d",
+      "elapsed_seconds": 19.7,
+      "exit_code": 0,
+      "consumer_exit_codes": {
+        "I02": 0,
+        "I01": 0
+      }
+    }
+  },
+  "service_tests": {
+    "command": "python -m pytest -q customizations/components/tianxuan/server/test_issue_number.py customizations/components/tianxuan/server/test_module_issues.py customizations/components/tianxuan/server/test_issue_ancestor_acl.py",
+    "passed": 17,
+    "exit_code": 0,
+    "warnings": [
+      "Starlette TestClient httpx deprecation"
+    ]
+  },
+  "static_checks": {
+    "ruff_check": "4 Python files passed",
+    "ruff_format": "4 Python files passed",
+    "mypy": "api.py and tianxuan_core.py passed"
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "methods": [
+      "editor-dependency-handoff / bind-consumer-release r23",
+      "godot-build-placement / trace-native-consumer r21"
+    ],
+    "applied": "In the isolated worktree, verified script invalidation through generated header, sidebar compilation and editor relink. Bind native readbacks from final consumer to its baseline, changed source bytes and executable."
+  },
+  "observed_at": "2026-11-22T01:28:29.197808+08:00",
+  "baseline": "373430fb1c8e8345841365e0957f2ce54a9be57c",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/api.py": "bef92c734e14be7f7f67b3e1e404d2f1c4d3f1ec7f903a935545f6e05f498f48",
+    "customizations/components/tianxuan/server/test_issue_number.py": "8193aca68b9b56e739bb71f060652143b44ef20ada9298587a587a2be252ab47",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "f0e7c333102f6dd340704efd92b6d7894b19aaed4c226640de0df76eb290dbe7",
+    "design-docs/gonggong-ai-workbench-i02.md": "a099cb31349acb39df9e347210ff32da80e400782f5d79a9044cffaf2ccda6cf",
+    "editor/SCsub": "68e113fd0a7a5d981bedf5a4d4117538950dc86f5724369c6ba936b819781104",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "d18e4a36182dc11ac13e9617098528475ee384d1e01c1d00b719931b92ae43d5",
+    "editor/docks/workbench/issue_detail.gd": "09438f9af7b80b6ec40c113fac5ff5b9dde685d1c9b0386495d7412aad6693bf",
+    "tests/editor/run_workbench_issue_detail.py": "eb8fdcf8e257ef04b74edfc5142c91c7d913177c9bda85a4c4271a983412cb65",
+    "tests/editor/workbench_issue_detail.gd": "3c76cfca6148ec0e427014f6c3c7194440926ecf7e5b2dafbece80882400029c"
+  },
+  "source_git_blob": {
+    "customizations/components/tianxuan/server/api.py": "d2bf20112ccf4947ffac652da6fe421d2dbeb147",
+    "customizations/components/tianxuan/server/test_issue_number.py": "db27a457f6313b0f1bc211ed52db31594caf7b31",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "3293745f29cbf6cf939f08cd56e6787edda27d9c",
+    "design-docs/gonggong-ai-workbench-i02.md": "52bc4ea703e631bb6cf8ff6ede49f82e1b827fec",
+    "editor/SCsub": "68589c1985b9b81beef5efe4017eaceee64a5b57",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "f5e492942160c304416cf61d8cac79d40f6a92c4",
+    "editor/docks/workbench/issue_detail.gd": "8f263975c3fc215b0ec52a6fbfe4fdc53b14e8b8",
+    "tests/editor/run_workbench_issue_detail.py": "d485b0c12c0c5934cf5f209e31cced17b94f85ab",
+    "tests/editor/workbench_issue_detail.gd": "aea439e494ea85f415d1a5757a1829bfb9b20e8c"
+  },
+  "intermediate_main": {
+    "baseline": "0576491bc51fad512e819cab7aa1f78fdd75c6ed",
+    "native_I02_exit_code": 0,
+    "engine_sha256": "4bda413d7ff189c629dc9e8be5717844fd44e65a419b1ffcd02f1b79a0f24c14"
+  },
+  "integration": {
+    "received_pr": 1958,
+    "baseline": "373430fb1c8e8345841365e0957f2ce54a9be57c",
+    "platform": "Windows x86_64",
+    "build_exit_code": 0,
+    "build_log_sha256": "f36d29445256e942f09c127757fbb493d1dd629595bb9e50aacf27176c1a63e2",
+    "generated_header_sha256": "c66da8241611303063f884d26d33c49396811dc8274e1f0896faf5db71a6e07d",
+    "engine_sha256": "2c4750036c9fbee27579a5822b7f7845a32bda52540ad2c7d25d900e2428d9e6",
+    "native_commands": [
+      "python tests/editor/run_workbench_issue_detail.py --godot bin/godot.windows.editor.x86_64.exe --report <local-report>",
+      "python tests/editor/run_workbench_issue_creation.py --godot bin/godot.windows.editor.x86_64.exe --report <local-report>",
+      "python tests/editor/run_workbench_asset_ownership.py --godot bin/godot.windows.editor.x86_64.exe --report <local-report>"
+    ],
+    "I02_consumer": {
+      "exit_code": 0,
+      "entry": "Open AI Workbench > 工单详情 > 读取详情",
+      "fixture": "Isolated editor copy, native-only Tianxuan HTTP service and temporary SQLite database. The first record had a named assignee different from its creator. The second had no assignment. The third inherited private requirement ACL.",
+      "engine_sha256": "2c4750036c9fbee27579a5822b7f7845a32bda52540ad2c7d25d900e2428d9e6",
+      "observed_fields": [
+        "标题　核对场景入口\n负责人　唐敏\n状态　planned\n内容版本　7540cc2cb298c9609d9a159c7bf362b46c4289aa53ca79181c8cfd28eb41e2d4",
+        "标题　检查地图\n负责人　未分配\n状态　backlog\n内容版本　b8b9a5f8d177162974afbe45e22b9c46d7fa59b2ee9bbb5755cf5a59f16d6526"
+      ],
+      "http_readback": [
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/2/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/3/detail",
+          "studio/game",
+          403
+        ],
+        [
+          "/api/v1/issues/by-number/99999/detail",
+          "studio/game",
+          404
+        ],
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ]
+      ],
+      "error_feedback": [
+        "没有权限查看此工单",
+        "当前项目中不存在此编号的工单"
+      ],
+      "checks": [
+        "command palette opened sidebar",
+        "assigned and unassigned compared to reopened database",
+        "private and absent results cleared prior detail",
+        "successful refresh after 404, logout cleared the visible record"
+      ]
+    },
+    "I01_creation_regression": {
+      "exit_code": 0,
+      "authority": {
+        "id": "iss_44d872e119ae45ed827edfb3c7a2d1e3",
+        "module_id": "mod_1053f5dc087b4eca9dcafd2a3d4d52e2",
+        "number": 1,
+        "project": "studio/game"
+      },
+      "first_response": "创建结果待确认，请重试同一请求",
+      "visible_receipt": "#1 · 场景（mod_1053f5dc087b4eca9dcafd2a3d4d52e2） · 检查建单回执",
+      "call_id": "44c29500d81f8785f5ff7ea08451340f",
+      "committed_create_statuses": [
+        200,
+        200
+      ],
+      "reopened_module_records": 1,
+      "create_receipts": 1
+    },
+    "C07_asset_ownership_regression": {
+      "exit_code": 0,
+      "state": "passed",
+      "same_engine_sha256": "2c4750036c9fbee27579a5822b7f7845a32bda52540ad2c7d25d900e2428d9e6",
+      "cancel_preserved_draft": true,
+      "issue_ids_unchanged": true,
+      "shared_reference_only": true,
+      "environment": "First probe preflight rejected an inherited GONGGONG_WORKSPACE. The rerun removed that environment variable only for the test process and passed."
+    }
+  },
+  "acceptance": {
+    "native_matches_authority": "Each of the two visible four-field labels was compared with a reopened Tianxuan database and content snapshot. The native detail object matched the authority in full.",
+    "permission_or_missing": "Real viewer HTTP 403 and project-scoped 404 produced distinct native messages. Both discarded earlier detail. A later successful read restored the correct record.",
+    "candidate_and_target_receipt": "See integration for exact Windows artifact digest, compiled consumer observations and regression exits. GitHub delivery receipt is recorded on issue #1854 by its publisher."
+  }
+}

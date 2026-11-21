@@ -106,6 +106,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	if (pSession)
 	{
 		MountWorkbenchControl(pSession, "WorkbenchIssueCreation", daqian_issue_creation);
+		MountWorkbenchControl(pSession, "WorkbenchIssueDetail", daqian_issue_detail);
 	}
 	MenuButton *pResourceMenu = memnew(MenuButton);
 	pResourceMenu->set_name("WorkbenchResourceSelection");
