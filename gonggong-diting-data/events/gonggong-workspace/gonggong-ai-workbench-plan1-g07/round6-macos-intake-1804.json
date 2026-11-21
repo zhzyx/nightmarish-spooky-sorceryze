@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g07",
+  "event_id": "round6-macos-intake-1804",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1804",
+  "occurred_at": "2026-11-21T14:23:02.743041+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1804,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T12:54:25Z",
+    "scope": "Check the captured mirror for missing reachable Git objects before importing or replaying a catalog"
+  },
+  "evidence_refs": [],
+  "sha256": "efe20b6a8a1fa3b936244afeaa8edc6ef9e89f101ee5e3d55e63224dff37c08a"
+}

@@ -30,6 +30,11 @@ def verify_captured_refs(mirror, bundle, history):
             differences["HEAD"] = {"report": history["head"], "mirror": mirror_head, "bundle": archived_head}
         raise ValueError("Git mirror, report and bundle differ: " + json.dumps(differences, sort_keys=True))
 
+    # --quiet suppresses healthy objects but preserves the ?OID records for missing ones.
+    missing = git(mirror, "--no-replace-objects", "rev-list", "--objects", "--all", "--quiet", "--missing=print")
+    if missing:
+        raise ValueError("Missing reachable Git objects in mirror: " + ", ".join(sorted(missing.splitlines())))
+
 
 def archive(inventory, git_dir, attachment_dir, database, tenant, actor):
     manifest = json.loads(inventory.read_bytes())

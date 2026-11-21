@@ -117,3 +117,27 @@ def test_changed_snapshot_preserves_current_publication(snapshot, tmp_path):
     with pytest.raises(ValueError, match="commit count"):
         import_git_history(*args)
     assert read_import_status(db, "owners", "isolated") == first["publication"]
+
+
+@pytest.mark.parametrize("revision", ["HEAD:main", "HEAD^{tree}"])
+def test_missing_reachable_object_blocks_initial_import_and_replay(snapshot, tmp_path, revision):
+    folder, git = snapshot
+    db = tmp_path / "published.sqlite"
+    fresh = tmp_path / "new.sqlite"
+    args = ("owners", "operator", "isolated")
+    publication = import_git_history(folder, db, *args)["publication"]
+    counts = row_counts(db)
+    oid = git("rev-parse", revision)
+    obj = folder / "archive.git" / "objects" / oid[:2] / oid[2:]
+    held = tmp_path / "held-object"
+    obj.rename(held)
+    try:
+        for target in (fresh, db):
+            with pytest.raises(ValueError, match=oid):
+                import_git_history(folder, target, *args)
+        assert not fresh.exists()
+        assert row_counts(db) == counts
+        assert read_import_status(db, "owners", "isolated") == publication
+    finally:
+        held.rename(obj)
+    assert import_git_history(folder, db, *args)["publication"] == publication
