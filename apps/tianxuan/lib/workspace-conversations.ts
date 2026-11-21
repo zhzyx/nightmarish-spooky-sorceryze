@@ -1,9 +1,20 @@
 export const stages = ["direction", "plan", "design"] as const;
 export type Stage = (typeof stages)[number];
 
+export type MessageContext = {
+  project: string;
+  module_id: string;
+  issue_id: string | null;
+  references: (
+    | { kind: "document"; object_id: string; revision: number }
+    | { kind: "editor"; object_id: string; revision: string }
+  )[];
+};
+
 export type Turn = {
   id: string;
   content: string;
+  context_snapshot?: MessageContext;
   state: "pending" | "answered" | "unanswered";
   answer: string | null;
   model: string | null;
