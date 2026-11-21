@@ -666,27 +666,27 @@
 
 #### 原生工单能力核对
 
-以下记录以 2026-11-22 核对的主线 `a0697dd9` 为基线。点击已验项可查看验收回执，其余链接直达对应的开放工单。后续关闭能力项时，在同一行补入目标接收回执。
+以下记录以 2026-11-22 核对的主线 `06ef33adbb16` 为基线。点击已验项可查看验收回执，其余链接直达对应的开放工单。后续关闭能力项时，在同一行补入目标接收回执。
 
 | 设计项与工单 | 已有入口 | 已验边界或待补场景 |
 | --- | --- | --- |
 | [I01 · 已验 #1859](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1859#issuecomment-7065373317) | 原生「新建工单」→ 天璇编号 | 丢失首次回执后重试仍只有一个编号。 |
 | [I02 · 已验 #1854](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854#issuecomment-7066884069) | 原生「工单详情」→ 按项目和编号读取 | 无权或编号不存在时清空旧详情。 |
-| [I03 · 开放 #1750](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1750) | 建单可指定父单，服务读回父单 ID | 既有单增挂、解除和成环请求均返回 422，仍缺关系编辑和业务防环。 |
-| [I04 · 开放 #1831](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1831) | 天璇工单依赖与验收状态 | 上游进程退出后下游仍阻塞，验收后放行；需由原生详情显示原因并维护依赖。 |
-| [I05 · 开放 #1788](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1788) | 工单评论接口、模块侧栏的评论位置 | 双用户顺序及评论 ID 经重开保留；仍需从原生详情回复并定位到具体评论。 |
-| [I06 · 开放 #1850](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850) | 原生详情显示负责人和状态，服务可推进状态 | 只读推进返回 403；负责人变更请求返回 422，仍缺可编辑入口。 |
-| [I07 · 开放 #1789](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1789) | 工单计划及路线图接口 | 仅移动 A 后详情和路线图一致，B 保持原归属；仍需原生迭代、里程碑维护。 |
+| [I03 · 已验 #1750](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1750#issuecomment-7068497120) | 原生详情增挂或解除父子关系 | 成环请求返回 409。另一账号及重开的数据库均读回原有正文与正确层级。 |
+| [I04 · 已验 #1831](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1831#issuecomment-7068715757) | 原生详情维护依赖与阻塞原因 | 上游生产结束后仍阻塞，独立验收通过才放行；支持移除和并发更新后的回读。 |
+| [I05 · 已验 #1788](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1788#issuecomment-7068756315) | 原生详情回复及定位评论 | 两个账号的作者、原文和父评论经数据库核对；重启后可返回原楼层。 |
+| [I06 · 已验 #1850](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850#issuecomment-7069088567) | 原生详情编辑负责人和状态 | 独立账号读回操作结果；受限账号不能借此推进工单。 |
+| [I07 · 已验 #1789](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1789#issuecomment-7069844889) | 原生详情维护迭代与里程碑 | 更改一张工单后其余五单归属不变，重开数据库后投影一致。 |
 | [I08 · 开放 #1751](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1751) | 天璇路线图按计划列出工单，返回的行缺少模块、父单标识和展示编号 | 需从原生模块路线图逐层打开父单和子单，并核对天璇原单编号及里程碑。 |
-| [I09 · 开放 #1752](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1752) | 工单计划的阶段与自定义字段 | 部分更新会替换字段字典，未提交旧键会丢失；需保留未知字段并校验项目隔离。 |
-| [I10 · 开放 #1753](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1753) | 计划工时、工时日志及天璇读回 | 重放并重开后实际工时仍为 43 分钟、两笔日志；仍缺原生录入与合计展示。 |
-| [I11 · 开放 #1754](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1754) | 原生模块工单选择器、天璇工单列表 | 模块和状态可筛选；未声明的关键字、负责人被忽略，空结果后需可清除筛选。 |
+| [I09 · 已验 #1752](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1752#issuecomment-7069845106) | 原生详情编辑自定义字段与阶段 | 两张工单分别写入后从存储重开回读；切换与登出清除上一工单上下文。 |
+| [I10 · 已验 #1753](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1753#issuecomment-7069844687) | 原生工时面板登记预计和实际分钟数 | 回执丢失后以同一请求重试，重开后核对登记及总分钟数。 |
+| [I11 · 已验 #1754](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1754#issuecomment-7069846734) | 原生检索与筛选结果可定位工单详情 | 同名工单按项目和条件定位；无结果、清空条件和重开均经实测。 |
 | [I12 · 已验 #1790](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1790#issuecomment-7060678033) | 天枢历史工单原件入口 | 按原标识读取正文；失效标识可定位，读取保留源单状态。 |
 | [I13 · 已验 #1755](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755#issuecomment-7063912867) | 天枢在途工单入口 | 冷启动后按账号读取在途原单，旧请求失效，读取不会变更原单。 |
-| [I14 · 开放 #1832](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1832) | 工单获批产物接口、多宝精确修订 | 多宝按修订读回同路径的两个 PNG。工单接口仅放行当前获批绑定，旧审批返回 409；仍缺原生详情历史引用和失效提示。 |
-| [I15 · 开放 #1756](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756) | 天璇状态流转与业务验收 | 原生关闭需要接收证据；重开后须回读历史，缺证据的完成请求不能放行。 |
+| [I14 · 已验 #1832](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1832#issuecomment-7069846861) | 原生详情选择和导出指定产物修订 | 导出摘要与所选修订相同；过期选择不创建文件，登出后清除引用。 |
+| [I15 · 已验 #1756](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756#issuecomment-7069953950) | 原生详情提交验收、关闭及重开 | 按同一键重试保持幂等，数据库重启保留验收与状态历史；托管工单拒绝重放人工关闭回执。 |
 | [I16 · 开放 #1757](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1757) | 原生咨询会话与天璇工单工具 | 咨询应保持只读；显式授权后的变更需绑定当前工单并由 UI、服务各自读回。 |
-| [I17 · 开放 #1758](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1758) | 工单类型可读取，列表按项目隔离 | 同名标签参数被列表忽略，仍缺项目级标签维护、回查和原生分类编辑。 |
+| [I17 · 已验 #1758](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1758#issuecomment-7069846615) | 原生详情维护工单分类与标签 | 项目隔离及重新打开已验；旧库迁移后原工单从空标签集合开始。 |
 | [I18 · 开放 #1759](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1759) | 文件对象和工单产物已有版本读取入口 | 需验证用户所选附件的上传、同摘要下载、重试去重及与当前工单的绑定。 |
 
 ### U10
