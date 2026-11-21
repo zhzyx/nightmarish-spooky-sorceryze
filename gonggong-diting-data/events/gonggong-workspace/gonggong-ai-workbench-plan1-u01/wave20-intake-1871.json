@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-u01",
+  "event_id": "wave20-intake-1871",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1871",
+  "occurred_at": "2026-11-21T05:44:59.023408+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1871,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T05:44:55Z",
+    "accepted_dependencies": {
+      "1872": "ab02c5451b8e966b0b0408f776e21c836051ac2f"
+    },
+    "title": "[方案一 U01] 注册全局原生命令"
+  },
+  "evidence_refs": [],
+  "sha256": "8197152c144b65eb6c6e0b369d1f385fc41c5447667326b1822a36d6e9d5bacc"
+}

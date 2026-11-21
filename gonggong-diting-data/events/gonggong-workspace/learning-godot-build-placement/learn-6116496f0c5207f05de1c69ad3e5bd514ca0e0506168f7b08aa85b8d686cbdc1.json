@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-6116496f0c5207f05de1c69ad3e5bd514ca0e0506168f7b08aa85b8d686cbdc1",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1871",
+  "occurred_at": "2026-11-21T06:01:51.209071+00:00",
+  "evidence_refs": [
+    "dispatch-b73718a13e204dacba17563fd7237920",
+    "learn-f50fb6eeff40b36dfa2d5abd8878213b673eec1fc6363caf3e0625f61cb5b66a"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 20,
+    "previous": "d306043838773c972591351c230cd9898d946cce1639f2d04a179e3bd849f18f",
+    "action": "applied",
+    "details": {
+      "task": "#1871 Windows editor global command in EditorNode.",
+      "observed": "Built the changed native source in the isolated worktree, linked the candidate editor, verified the packaged sidecars and exercised 24 real command palette invocations across six legacy/new/restart layouts. The previous installation predated the Tianxuan tab and could not validate this candidate."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-u01.json",
+        "sha256": "5b40e9c2af7dd3ecfbe1ae2441d4460c0625e5d7b08569bb596c9c4f8d3fa5ae"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u01/dispatch-b73718a13e204dacba17563fd7237920.json",
+      "sha256": "1b4207fcd42f38eddd953e9f1170c608168a783c4772904fa37d2d190a3aa1f9"
+    }
+  },
+  "sha256": "3af14bb9fc2eb748937c9402f6a3f6abe542db3b1e253cf85033cf46054d81fc"
+}

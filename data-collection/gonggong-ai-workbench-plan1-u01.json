@@ -1,0 +1,498 @@
+{
+  "issue_number": 1871,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1871",
+  "request_id": "gonggong-ai-workbench-plan1-u01",
+  "observed_at": "2026-11-21T06:01:27.725818+00:00",
+  "source_baseline": "3529bafbd35d3afe806c7d994f0a85b98dccc217",
+  "artifacts": {
+    "editor/editor_node.cpp": "47722a8243a941ee8608fb27ca9a04254d8c860f",
+    "tests/editor/run_ai_chat_tab_order.py": "da9ecd885a2c287521ab745b893ae30400c0edb4",
+    "tests/editor/ai_chat_tab_order.gd": "b0cfc64f61b660510b0f61d7100c1f2a5471dfe4",
+    "design-docs/gonggong-ai-workbench-u01.md": "f78200b292e3036bf19a8976b05504ebe6d47dd7"
+  },
+  "build": {
+    "toolchain": "Windows x86_64, Visual Studio 14.5, Windows SDK 10.0.26100.0, SCons 4.11.1, Python 3.14.3",
+    "commands": [
+      "py tools/install_webview2.py --arch x64 --output-dir bin",
+      "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=D:/GongGong/data-collection/receipts/duobao-1382/scons-cache cache_limit=0 --cache-readonly -j18",
+      "py tools/package_tianshu_ui.py --output bin/tianshu-ui.json",
+      "py tools/package_tianshu_board.py --output bin/tianshu-board.json"
+    ],
+    "prerequisite": "For this fresh worktree the existing verified SDK was copied, with each file checked against thirdparty/webview2/manifest.json; install_webview2.py verified the pinned SDK and materialized the x64 sidecar.",
+    "native_input": "editor/editor_node.cpp compiled; editor and console wrapper linked in this worktree; SCons exited 0 (00:05:09.52).",
+    "sha256": {
+      "godot.windows.editor.x86_64.exe": "5f5c09fbbdc6e471a35a6b8cef44419ea743a7493676ac68661d99e90ae94453",
+      "godot.windows.editor.x86_64.console.exe": "1efd414d5358eba747d02779d63dc5835187b022b87321749affdda7a93624df",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "6195d60e0ff7649428615e6ffb2ee9fd0f7a871343640fd71e402b0dbd81e914",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "u01-build.log": "7e160f7e06b5e1e0c0fccb50a9230da6f8c808f25308d955ed95bb10e01ea237"
+    }
+  },
+  "native_regression": {
+    "command": "bin/godot.windows.editor.x86_64.console.exe --headless --test --test-case=*[AIChat]*",
+    "fixture": "Private editable runtime copy and disposable home from tests/editor/editor_test_isolation.py and sanitized_environment(), with the checked-out source root as cwd for Godot test data.",
+    "exit_code": 0,
+    "doctest": [
+      "[doctest] test cases:  115 |  115 passed | 0 failed | 1486 skipped",
+      "[doctest] assertions: 1909 | 1909 passed | 0 failed |"
+    ],
+    "stderr": [
+      "Two instances of an Object being freed while emitting a signal.",
+      "EditorSettings not instantiated while getting interface/theme/base_spacing."
+    ],
+    "output_sha256": "529daeb2d775dc6816111151938d5f5344c9f49ac9659c13ea4c70df21580729",
+    "diagnostic": "Initial launch from the empty temporary directory lacked the engine's test data; rerun from the candidate source root."
+  },
+  "targeted_verification": {
+    "command": "py tests/editor/run_ai_chat_tab_order.py --godot bin/godot.windows.editor.x86_64.exe --report bin/u01-candidate-order.json --workbench-command",
+    "fixture": "Absolute paths resolved relative to the source checkout, command run in system TEMP with GONGGONG_WORKSPACE cleared. Private engine copies and disposable projects.",
+    "source": "Candidate real command palette activated the stable command using the selected Tree item; root.find_children checked the full set of live workbench layout-key dock instances.",
+    "exit_code": 0,
+    "total_invocations": 24,
+    "raw_report_sha256": "92cab64eb1fd364fe55770805724e191c0e43c161c5749c3c5bd0953a0189ecb",
+    "report": {
+      "state": "passed",
+      "mode": "headless",
+      "binary_sha256": "5f5c09fbbdc6e471a35a6b8cef44419ea743a7493676ac68661d99e90ae94453",
+      "phases": [
+        {
+          "current": 0,
+          "initial_selected_key": "AIChatMainScreen",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "initial",
+          "slot": 11,
+          "workbench": {
+            "invocations": [
+              {
+                "dock_ids": [
+                  596748830801
+                ],
+                "from": "2D",
+                "instance_id": 596748830801,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596748830801
+                ],
+                "from": "AI Chat",
+                "instance_id": 596748830801,
+                "repeat": true,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596748830801
+                ],
+                "from": "Script",
+                "instance_id": 596748830801,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596748830801
+                ],
+                "from": "AI Chat",
+                "instance_id": 596748830801,
+                "repeat": true,
+                "tab_count": 10
+              }
+            ],
+            "key": "editor/open_ai_workbench",
+            "original_instance_id": 596748830801
+          },
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        },
+        {
+          "current": 0,
+          "initial_selected_key": "2D",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "legacy_maliang_last",
+          "slot": 11,
+          "workbench": {
+            "invocations": [
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "2D",
+                "instance_id": 596681721937,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "AI Chat",
+                "instance_id": 596681721937,
+                "repeat": true,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "Script",
+                "instance_id": 596681721937,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "AI Chat",
+                "instance_id": 596681721937,
+                "repeat": true,
+                "tab_count": 10
+              }
+            ],
+            "key": "editor/open_ai_workbench",
+            "original_instance_id": 596681721937
+          },
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        },
+        {
+          "current": 0,
+          "initial_selected_key": "AINativeMainScreen",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "legacy_maliang_selected",
+          "slot": 11,
+          "workbench": {
+            "invocations": [
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "2D",
+                "instance_id": 596681721937,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "AI Chat",
+                "instance_id": 596681721937,
+                "repeat": true,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "Script",
+                "instance_id": 596681721937,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "AI Chat",
+                "instance_id": 596681721937,
+                "repeat": true,
+                "tab_count": 10
+              }
+            ],
+            "key": "editor/open_ai_workbench",
+            "original_instance_id": 596681721937
+          },
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        },
+        {
+          "current": 0,
+          "initial_selected_key": "2D",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "pre_daqian_layout",
+          "slot": 11,
+          "workbench": {
+            "invocations": [
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "2D",
+                "instance_id": 596681721937,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "AI Chat",
+                "instance_id": 596681721937,
+                "repeat": true,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "Script",
+                "instance_id": 596681721937,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "AI Chat",
+                "instance_id": 596681721937,
+                "repeat": true,
+                "tab_count": 10
+              }
+            ],
+            "key": "editor/open_ai_workbench",
+            "original_instance_id": 596681721937
+          },
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        },
+        {
+          "current": 0,
+          "initial_selected_key": "2D",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "pre_maliang_layout",
+          "slot": 11,
+          "workbench": {
+            "invocations": [
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "2D",
+                "instance_id": 596681721937,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "AI Chat",
+                "instance_id": 596681721937,
+                "repeat": true,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "Script",
+                "instance_id": 596681721937,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "AI Chat",
+                "instance_id": 596681721937,
+                "repeat": true,
+                "tab_count": 10
+              }
+            ],
+            "key": "editor/open_ai_workbench",
+            "original_instance_id": 596681721937
+          },
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        },
+        {
+          "current": 0,
+          "initial_selected_key": "AIChatMainScreen",
+          "labels": [
+            "AI Chat",
+            "马良",
+            "天枢",
+            "天璇",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "设置"
+          ],
+          "phase": "restart",
+          "slot": 11,
+          "workbench": {
+            "invocations": [
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "2D",
+                "instance_id": 596681721937,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "AI Chat",
+                "instance_id": 596681721937,
+                "repeat": true,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "Script",
+                "instance_id": 596681721937,
+                "repeat": false,
+                "tab_count": 10
+              },
+              {
+                "dock_ids": [
+                  596681721937
+                ],
+                "from": "AI Chat",
+                "instance_id": 596681721937,
+                "repeat": true,
+                "tab_count": 10
+              }
+            ],
+            "key": "editor/open_ai_workbench",
+            "original_instance_id": 596681721937
+          },
+          "saved_order": [
+            "AIChatMainScreen",
+            "AINativeMainScreen",
+            "DaqianMainScreen",
+            "WebPlatformMainScreen",
+            "2D",
+            "3D",
+            "Script",
+            "Game",
+            "Asset Store",
+            "UnifiedSettingsMainScreen"
+          ]
+        }
+      ],
+      "test_sha256": {
+        "run_ai_chat_tab_order.py": "0789524129ac29421bbb016f15f40d6588c7ea25083d2660ce45802ac2819a0b",
+        "ai_chat_tab_order.gd": "3a4cd064f424bca3ba22df178f1ac7a3ed26010bcac5a41d78a8034be18c0f79"
+      }
+    }
+  }
+}

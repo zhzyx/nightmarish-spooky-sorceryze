@@ -206,6 +206,8 @@
 
 ### U01
 
+[交付清单与验证](gonggong-ai-workbench-u01.md)
+
 **注册全局原生命令** · [U01 #1871](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1871)
 
 给工作台建立唯一可路由的打开命令，保留已有布局可启动。
