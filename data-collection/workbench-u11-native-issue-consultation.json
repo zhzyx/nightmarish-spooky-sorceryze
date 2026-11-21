@@ -1,0 +1,215 @@
+{
+  "editor_sha256": "48724610925c403905e7feb0bc1be24a7ba351a9c758370fbbe99ce6cf75f649",
+  "native": {
+    "identity": {
+      "id": "usr_b07b24a60128429ab333ebc5dbe4ae3a",
+      "name": "owner",
+      "project": "u11/studio",
+      "role": "admin"
+    },
+    "logout_cleared": true,
+    "records": [
+      {
+        "chat": "e96b173a-7b39-5748-a010-f967e29de80d",
+        "issue": "iss_10647a7de1c0430593921ddb1e037bcb",
+        "mode_label": "仅咨询 · #1 · 4c79d81139651d7cdcccb9bb39c4f3cad838f842ea8054d97b3bbd8b609c9e80",
+        "revision": "4c79d81139651d7cdcccb9bb39c4f3cad838f842ea8054d97b3bbd8b609c9e80",
+        "turn": "bf79824a-78cc-4f1d-86ee-cc9e18326374"
+      },
+      {
+        "chat": "f189a83a-38b9-5ce4-aa6b-807c93d83d14",
+        "issue": "iss_99a1c89912834d9a9ffffb4d225c0ac5",
+        "mode_label": "仅咨询 · #2 · 88bcf98d8fb4b73b6590ff46f038bad5c43f7523ba4a0d50f94be6018c5344fb",
+        "revision": "88bcf98d8fb4b73b6590ff46f038bad5c43f7523ba4a0d50f94be6018c5344fb",
+        "turn": "9a55cf42-dda8-4b33-aca8-f19504a4b2ed"
+      }
+    ],
+    "reopened_first": true
+  },
+  "http": [
+    [
+      "GET",
+      "/api/v1/auth/me",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/by-number/1/detail",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_10647a7de1c0430593921ddb1e037bcb/work/flow",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_10647a7de1c0430593921ddb1e037bcb/comments",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_10647a7de1c0430593921ddb1e037bcb/hierarchy",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/native/issues/iss_10647a7de1c0430593921ddb1e037bcb/revisions",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues",
+      200
+    ],
+    [
+      "POST",
+      "/api/v1/workspace/conversations/for-issue/iss_10647a7de1c0430593921ddb1e037bcb",
+      200
+    ],
+    [
+      "POST",
+      "/api/v1/workspace/conversations/e96b173a-7b39-5748-a010-f967e29de80d/turns",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/by-number/2/detail",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_99a1c89912834d9a9ffffb4d225c0ac5/comments",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_99a1c89912834d9a9ffffb4d225c0ac5/work/flow",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/native/issues/iss_99a1c89912834d9a9ffffb4d225c0ac5/revisions",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_99a1c89912834d9a9ffffb4d225c0ac5/hierarchy",
+      200
+    ],
+    [
+      "POST",
+      "/api/v1/workspace/conversations/for-issue/iss_99a1c89912834d9a9ffffb4d225c0ac5",
+      200
+    ],
+    [
+      "POST",
+      "/api/v1/workspace/conversations/f189a83a-38b9-5ce4-aa6b-807c93d83d14/turns",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/by-number/1/detail",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_10647a7de1c0430593921ddb1e037bcb/comments",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/native/issues/iss_10647a7de1c0430593921ddb1e037bcb/revisions",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_10647a7de1c0430593921ddb1e037bcb/hierarchy",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_10647a7de1c0430593921ddb1e037bcb/work/flow",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues",
+      200
+    ],
+    [
+      "POST",
+      "/api/v1/workspace/conversations/for-issue/iss_10647a7de1c0430593921ddb1e037bcb",
+      200
+    ]
+  ],
+  "turns": [
+    {
+      "conversation": "e96b173a-7b39-5748-a010-f967e29de80d",
+      "turn": {
+        "id": "bf79824a-78cc-4f1d-86ee-cc9e18326374",
+        "content": "咨询 0\n\n[工单详情 · 仅作为引用]\n#1 核对入口\n桥梁方案 <tianxuan-doc://example/1/1>\n验收：\n负责人：未分配\n状态：backlog",
+        "state": "answered",
+        "answer": "已核对该工单。",
+        "model": "fixture",
+        "error": null,
+        "context_snapshot": {
+          "project": "u11/studio",
+          "module_id": "default",
+          "issue_id": "iss_10647a7de1c0430593921ddb1e037bcb",
+          "references": [
+            {
+              "kind": "issue",
+              "object_id": "iss_10647a7de1c0430593921ddb1e037bcb",
+              "revision": "4c79d81139651d7cdcccb9bb39c4f3cad838f842ea8054d97b3bbd8b609c9e80"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "conversation": "f189a83a-38b9-5ce4-aa6b-807c93d83d14",
+      "turn": {
+        "id": "9a55cf42-dda8-4b33-aca8-f19504a4b2ed",
+        "content": "咨询 1\n\n[工单详情 · 仅作为引用]\n#2 核对入口\n隧道方案\n验收：\n负责人：未分配\n状态：backlog",
+        "state": "answered",
+        "answer": "已核对该工单。",
+        "model": "fixture",
+        "error": null,
+        "context_snapshot": {
+          "project": "u11/studio",
+          "module_id": "default",
+          "issue_id": "iss_99a1c89912834d9a9ffffb4d225c0ac5",
+          "references": [
+            {
+              "kind": "issue",
+              "object_id": "iss_99a1c89912834d9a9ffffb4d225c0ac5",
+              "revision": "88bcf98d8fb4b73b6590ff46f038bad5c43f7523ba4a0d50f94be6018c5344fb"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "changed_revision": "72956ed63e3379a9e1408b6801e4d6c74af70e8716c9c97e6464b544befe992a",
+  "stale_status": 409,
+  "stored_executions": 0,
+  "other_account_chat_read": 404,
+  "model_transport": "isolated fixture",
+  "request_id": "gonggong-ai-workbench-plan1-u11",
+  "issue_number": 1811,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1811",
+  "host": "macOS arm64 native controls, headless",
+  "regressions": [
+    "I02 issue details",
+    "C06 native modules",
+    "U15 reference removal",
+    "module draft persistence"
+  ],
+  "figure": "The actual local HTTP service used an on-disk store and an isolated model transport."
+}

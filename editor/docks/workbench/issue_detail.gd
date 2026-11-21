@@ -2,6 +2,7 @@
 extends VBoxContainer
 
 signal detail_changed
+signal consultation_requested
 
 var _session: Node
 var _generation := 0
@@ -11,6 +12,7 @@ var _form := VBoxContainer.new()
 var _number := LineEdit.new()
 var _status := Label.new()
 var _fields := Label.new()
+var _consult := Button.new()
 
 
 func _ready() -> void:
@@ -36,6 +38,10 @@ func _ready() -> void:
 	_fields.name = "IssueDetailFields"
 	_fields.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	_form.add_child(_fields)
+	_consult.name = "ConsultIssueDetail"
+	_consult.text = "就此工单咨询"
+	_consult.pressed.connect(func(): consultation_requested.emit())
+	_form.add_child(_consult)
 	_session.identity_changed.connect(_reset)
 	_reset()
 
@@ -47,6 +53,7 @@ func get_detail() -> Dictionary:
 func _clear() -> void:
 	_generation += 1
 	_detail.clear()
+	_consult.hide()
 	_fields.text = ""
 	_status.text = ""
 	detail_changed.emit()
@@ -112,6 +119,7 @@ func open_issue(number: int) -> void:
 				if owner.is_empty():
 					owner = str(data.assignee.id)
 			_detail = data.duplicate(true)
+			_consult.show()
 			_fields.text = "标题　%s\n负责人　%s\n状态　%s\n内容版本　%s" % [data.title, owner, data.status, data.revision]
 			_status.text = "#%d" % number
 			detail_changed.emit()

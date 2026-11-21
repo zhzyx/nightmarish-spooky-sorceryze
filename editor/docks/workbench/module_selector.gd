@@ -26,6 +26,7 @@ var module_id := ""
 var location := {}
 var conversation := {}
 var issue_details := {}
+var consultation_detail := {}
 var comments: Array = []
 var drafts := {}
 var pending_turn := {}
@@ -118,6 +119,9 @@ func _bind_session() -> void:
 		session = sidebar.find_child("WorkbenchBusinessSession", true, false)
 	if is_instance_valid(session):
 		managed_identity = true
+		var detail := session.find_child("WorkbenchIssueDetail", true, false)
+		if detail:
+			detail.consultation_requested.connect(_open_issue_consultation.bind(detail))
 		session.connect("identity_changed", _identity_changed)
 		if session.has_signal("identity_resetting"):
 			session.connect("identity_resetting", _save_draft)
@@ -131,6 +135,7 @@ func _identity_changed() -> void:
 	location = {}
 	conversation = {}
 	issue_details.clear()
+	consultation_detail.clear()
 	comments.clear()
 	drafts.clear()
 	pending_turn.clear()
@@ -271,7 +276,7 @@ func _select(index: int) -> void:
 				picker.add_item(label)
 				picker.set_item_metadata(picker.item_count - 1, item.id)
 			picker.show_popup()
-	elif target != module_id:
+	elif target != module_id or not consultation_detail.is_empty():
 		await _switch_to(target)
 	if identity_generation == generation:
 		_lock(false)
@@ -289,7 +294,10 @@ func _save_location() -> bool:
 
 func _draft_key(issue_id: Variant) -> String:
 	var identity: Dictionary = session.get_identity() if managed_identity else {}
-	return JSON.stringify([api, identity.get("id"), project, ProjectSettings.globalize_path("res://"), module_id, issue_id])
+	var scope := [api, identity.get("id"), project, ProjectSettings.globalize_path("res://"), module_id, issue_id]
+	if not consultation_detail.is_empty() and consultation_detail.id == issue_id:
+		scope.append("issue_consultation")
+	return JSON.stringify(scope)
 
 
 func _read_draft(key: String) -> Dictionary:
@@ -375,6 +383,54 @@ func _switch_to(target: String) -> void:
 			next_chat = await _request(CONVERSATIONS + "/" + str(next_location.conversation_id).uri_encode())
 			if next_chat.get("id") != next_location.conversation_id:
 				return
+	_show_location(target, next_location, next_chat, next_issues, next_comments, {})
+
+
+func _open_issue_consultation(view: Node) -> void:
+	if busy or not _authenticated():
+		return
+	var detail: Dictionary = view.get_detail()
+	if detail.is_empty() or detail.project != project:
+		return
+	var generation := identity_generation
+	_lock(true)
+	_notice("")
+	await _read_issue_consultation(view, detail)
+	if generation == identity_generation:
+		_lock(false)
+
+
+func _read_issue_consultation(view: Node, detail: Dictionary) -> void:
+	var generation := identity_generation
+	var target: String = detail.module_id
+	if not module_id.is_empty():
+		if not _save_draft() or not await _save_location():
+			return
+	if generation != identity_generation or view.get_detail() != detail:
+		return
+	var list := await _request("/api/v1/issues?module_id=" + target.uri_encode())
+	if generation != identity_generation or not list.get("issues") is Array or view.get_detail() != detail:
+		return
+	if not list.issues.any(func(item): return item.id == detail.id):
+		_notice("工单归属或读权已变化，请重新读取详情。")
+		return
+	var chat := await _request(CONVERSATIONS + "/for-issue/" + str(detail.id).uri_encode(), HTTPClient.METHOD_POST)
+	if generation != identity_generation or not chat.has("id") or view.get_detail() != detail:
+		return
+	var known_module := false
+	for i in picker.item_count:
+		if picker.get_item_metadata(i) == target:
+			known_module = true
+			break
+	if not known_module:
+		picker.add_item(target)
+		picker.set_item_metadata(picker.item_count - 1, target)
+	var selected := {"issue_id": detail.id, "conversation_id": chat.id, "position": "issue/details"}
+	_show_location(target, selected, chat, list.issues, [], detail)
+
+
+func _show_location(target: String, next_location: Dictionary, next_chat: Dictionary, next_issues: Array, next_comments: Array, detail: Dictionary) -> void:
+	consultation_detail = detail
 	# Publish all controls together after the target's authenticated reads succeed.
 	module_id = target
 	location = next_location
@@ -437,6 +493,7 @@ func _change_issue(index: int) -> void:
 		return
 	if saved.get("location") == next:
 		issues.select(index)
+		consultation_detail = {}
 		location = next
 		location_dirty = false
 		comments.clear()
@@ -463,6 +520,8 @@ func _render() -> void:
 	if asset_picker:
 		asset_picker.update_issue_button()
 	page.text = location.get("position", "")
+	if not consultation_detail.is_empty():
+		page.text = "仅咨询 · #%d · %s" % [int(consultation_detail.number), consultation_detail.revision]
 	page.tooltip_text = page.text
 	var messages := PackedStringArray()
 	var issue: Dictionary = issue_details.get(location.get("issue_id"), {})
@@ -493,8 +552,8 @@ func _render() -> void:
 	var published := conversation.get("requirement_id") != null
 	var revision := _direction()
 	design_action.text = "打开本次咨询的需求文档" if published else "从咨询形成方向草稿"
-	design_action.visible = (published and is_instance_valid(session)) or (
-		not published and not conversation.get("turns", []).is_empty() and revision.get("confirmed_at") == null)
+	design_action.visible = consultation_detail.is_empty() and ((published and is_instance_valid(session)) or (
+		not published and not conversation.get("turns", []).is_empty() and revision.get("confirmed_at") == null))
 
 
 func stage_document_reference(ref: Dictionary) -> bool:
@@ -562,10 +621,22 @@ func _uuid() -> String:
 	return "%s-%s-%s-%s-%s" % [hex.substr(0, 8), hex.substr(8, 4), hex.substr(12, 4), hex.substr(16, 4), hex.substr(20, 12)]
 
 
+func _issue_excerpt(text: String, limit: int) -> String:
+	return text if text.length() <= limit else text.left(limit) + "…"
+
+
 func _send() -> void:
 	if busy or module_id.is_empty() or composer.text.strip_edges().is_empty():
 		return
-	var frozen: Dictionary = get_meta("freeze_references").call(redact_reference(composer.text.strip_edges()))
+	var question := composer.text.strip_edges()
+	if not consultation_detail.is_empty():
+		var data := consultation_detail
+		var owner := "未分配"
+		if data.assignee is Dictionary:
+			owner = str(data.assignee.name) if data.assignee.name else str(data.assignee.id)
+		question += "\n\n[工单详情 · 仅作为引用]\n#%d %s\n%s\n验收：%s\n负责人：%s\n状态：%s" % [
+			int(data.number), data.title, _issue_excerpt(data.body_md, 2000), _issue_excerpt(data.acceptance, 1000), owner, data.status]
+	var frozen: Dictionary = get_meta("freeze_references").call(redact_reference(question))
 	if frozen.is_empty():
 		_notice("引用已失效，请移除或重新选择后发送。")
 		return
@@ -574,7 +645,10 @@ func _send() -> void:
 		_notice("正文与引用合计超过 8000 字符，请缩短后发送。")
 		return
 	var references: Array = frozen.references.duplicate()
-	for reference in _asset_references(_draft_key(location.get("issue_id")), body) + _document_references(body):
+	if not consultation_detail.is_empty():
+		references.append({"kind": "issue", "object_id": consultation_detail.id, "revision": consultation_detail.revision})
+	var citation_text := body if consultation_detail.is_empty() else composer.text
+	for reference in _asset_references(_draft_key(location.get("issue_id")), citation_text) + _document_references(citation_text):
 		if not references.has(reference):
 			references.append(reference)
 	if references.size() > 16:
@@ -637,7 +711,10 @@ func _send() -> void:
 			if latest.get("id") == location.conversation_id:
 				conversation = latest
 				_render()
-				_notice("会话已更新，请查看后重新发送草稿。")
+				if consultation_detail.is_empty():
+					_notice("会话已更新，请查看后重新发送草稿。")
+				else:
+					_notice("会话或工单修订已更新，请重新读取工单详情，核对草稿后发送。")
 	if generation == identity_generation:
 		_lock(false)
 
