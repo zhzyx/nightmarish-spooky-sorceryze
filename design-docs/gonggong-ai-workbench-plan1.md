@@ -1324,6 +1324,8 @@
 
 ### G05
 
+[交付清单与验证](gonggong-ai-workbench-g05.md)
+
 **导入轻量和附注标签** · [G05 #1823](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1823)
 
 保留两类标签的指向、附注对象及原始标识。

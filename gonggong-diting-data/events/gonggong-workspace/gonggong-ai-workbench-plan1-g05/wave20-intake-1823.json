@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g05",
+  "event_id": "wave20-intake-1823",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1823",
+  "occurred_at": "2026-11-21T05:57:27.159193+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1823,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T05:57:21Z",
+    "accepted_dependencies": {
+      "1849": "4fd77e6fe08d1a9379cf4b16f9c431c2325b91eb"
+    },
+    "title": "[方案一 G05] 导入轻量和附注标签"
+  },
+  "evidence_refs": [],
+  "sha256": "62d13957d815778b5c6fc60593afb67ef80ccee77ba72ab66fc2bae461239f9c"
+}

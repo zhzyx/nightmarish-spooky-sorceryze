@@ -1,5 +1,6 @@
 """Read published Git history without a checkout, hooks, filters or archive programs."""
 
+import base64
 import hashlib
 import json
 import os
@@ -16,7 +17,7 @@ MAX_FILE_SIZE = 1024 * 1024
 OID = re.compile(r"(?:[0-9a-f]{40}|[0-9a-f]{64})")
 
 
-def _git(repo, *args, data=None):
+def _git(repo, *args, data=None, stdout=subprocess.PIPE):
     env = {k: v for k, v in os.environ.items() if not k.upper().startswith("GIT_")}
     env.update(
         GIT_CONFIG_NOSYSTEM="1",
@@ -39,7 +40,8 @@ def _git(repo, *args, data=None):
             *args,
         ],
         input=data,
-        capture_output=True,
+        stdout=stdout,
+        stderr=subprocess.PIPE,
         env=env,
         timeout=300,
     )
@@ -124,6 +126,63 @@ def _check_commit(repo, commit):
         or not _git(repo, "for-each-ref", "--count=1", "--format=%(objectname)", "--contains", commit).strip()
     ):
         raise ValueError("Commit is outside archived history")
+
+
+def list_tags(database, tenant, project, revision, *, offset=0, limit=50, cache_dir=None):
+    """Read the exact ref, immediate target and recursively peeled target from the published bundle."""
+    if type(offset) is not int or not 0 <= offset <= 10000000 or type(limit) is not int or not 1 <= limit <= 100:
+        raise ValueError("Invalid tag page")
+    repo = _mirror(database, tenant, project, revision, cache_dir)
+    fields = "%(refname)%00%(objectname)%00%(objecttype)%00%(object)%00%(type)%00%(*objectname)%00%(*objecttype)"
+    raw = _git(
+        repo, "for-each-ref", "--sort=refname", f"--count={offset + limit + 1}", "--format=" + fields, "refs/tags/"
+    )
+    page = raw.splitlines()[offset:]
+    items = []
+    for line in page[:limit]:
+        ref, oid, kind, target, target_type, peeled, peeled_type = line.decode("utf-8").split("\0")
+        items.append(
+            dict(
+                ref=ref,
+                oid=oid,
+                kind="annotated" if kind == "tag" else "lightweight",
+                target_oid=target or oid,
+                target_type=target_type or kind,
+                peeled_oid=peeled or oid,
+                peeled_type=peeled_type or kind,
+            )
+        )
+    return {"items": items, "next_offset": offset + limit if len(page) > limit else None}
+
+
+def read_tag_object(database, tenant, project, revision, oid, *, byte_offset=0, cache_dir=None):
+    """Return exact bytes from a Git tag object in pages suitable for Web and AI clients."""
+    if not isinstance(oid, str) or not OID.fullmatch(oid):
+        raise ValueError("Expected a full lowercase tag object ID")
+    if type(byte_offset) is not int or byte_offset < 0:
+        raise ValueError("Invalid tag object offset")
+    repo = _mirror(database, tenant, project, revision, cache_dir)
+    info = _git(repo, "cat-file", "--batch-check", data=oid.encode("ascii") + b"\n").split()
+    if len(info) != 3 or info[:2] != [oid.encode("ascii"), b"tag"]:
+        raise LookupError("Tag object absent from published history")
+    size = int(info[2])
+    if byte_offset > size:
+        raise ValueError("Offset exceeds tag object size")
+    # Spool verbatim bytes so a large annotation never has to fit in a response or in server memory.
+    with tempfile.TemporaryFile() as raw:
+        _git(repo, "cat-file", "tag", oid, stdout=raw)
+        if raw.tell() != size:
+            raise ValueError("Archived tag size differs from its header")
+        raw.seek(byte_offset)
+        data = raw.read(49152)
+    end = byte_offset + len(data)
+    return dict(
+        oid=oid,
+        size=size,
+        encoding="base64",
+        data=base64.b64encode(data).decode("ascii"),
+        next_offset=end if end < size else None,
+    )
 
 
 def commit_mapping(database, tenant, project, revision, commit, *, cache_dir=None):
