@@ -78,6 +78,9 @@ CREATE TABLE IF NOT EXISTS issues (
   project TEXT NOT NULL DEFAULT 'workspace', module_id TEXT NOT NULL DEFAULT 'default'
 );
 CREATE INDEX IF NOT EXISTS idx_issues_tenant_number ON issues(tenant_id, number);
+CREATE TABLE IF NOT EXISTS issue_assignees (
+  issue_id TEXT PRIMARY KEY REFERENCES issues(id), user_id TEXT NOT NULL REFERENCES users(id)
+);
 CREATE TABLE IF NOT EXISTS business_modules (
   tenant_id TEXT NOT NULL, project TEXT NOT NULL, id TEXT NOT NULL, name TEXT NOT NULL,
   PRIMARY KEY (tenant_id, project, id)
@@ -1524,6 +1527,18 @@ class Tianxuan:
         if row is None:
             raise NotFound("issue number not found in project")
         return self._require_tenant_issue(actor, row["id"])
+
+    @_connection_call
+    def read_issue_detail(self, actor: str, project: str, number: int) -> dict[str, Any]:
+        """Resolve the numbered record, its assignee and definition in one read transaction."""
+        issue = self.read_issue_number(actor, project, number)
+        assignee = self.db.execute(
+            "SELECT u.id, u.name FROM issue_assignees a JOIN users u ON u.id=a.user_id "
+            "WHERE a.issue_id=? AND u.tenant_id=?",
+            (issue["id"], issue["tenant_id"]),
+        ).fetchone()
+        snapshot = self.issue_snapshot(actor, issue["id"])
+        return issue | {"assignee": dict(assignee) if assignee else None, "revision": snapshot["revision"]}
 
     @_connection_call
     def set_issue_module(self, actor: str, issue_id: str, project: str, module_id: str) -> dict[str, Any]:

@@ -35,3 +35,39 @@ def test_number_lookup_scope_and_visibility(tmp_path):
         assert client.get(base + str(child["number"])).status_code == 404
         assert client.get(base + str(other["number"])).json() == other
     store.db.close()
+
+
+def test_detail_uses_current_definition_and_independent_assignee(tmp_path):
+    path = str(tmp_path / "domain.db")
+    store = Tianxuan(path)
+    admin = store.register("studio", "owner@example.invalid", "fixture-pass")["user_id"]
+    viewer = store.add_member(admin, "reader@example.invalid", "fixture-pass", name="Reader", role="viewer")["user_id"]
+    req = store.create_requirement(admin, "req", "Original", "why", "scope", "done")
+    issue = store.create_issue(admin, "Fix", requirement_id=req["id"])
+    route = f"/api/v1/issues/by-number/{issue['number']}/detail"
+    token = store.issue_session(viewer)
+    # A pre-I02 database has issues but no assignment relation.
+    store.db.execute("DROP TABLE issue_assignees")
+    store.db.close()
+    store = Tianxuan(path)
+    with TestClient(create_app(store)) as client:
+        client.headers["Authorization"] = "Bearer " + token
+        before = client.get(route).json()
+        assert before["assignee"] is None
+        assert before["revision"] == store.issue_snapshot(viewer, issue["id"])["revision"]
+        with store.db:
+            store.db.execute("INSERT INTO issue_assignees VALUES (?,?)", (issue["id"], viewer))
+        store.transition_issue(admin, issue["id"], "planned")
+        assigned = client.get(route).json()
+        assert assigned["assignee"] == {"id": viewer, "name": "Reader"}
+        assert assigned["status"] == "planned"
+        assert assigned["revision"] == before["revision"]
+        store.update_doc(admin, req["id"], "Changed requirement", req["version"])
+        changed = client.get(route).json()
+        assert changed["revision"] != before["revision"]
+        assert changed["revision"] == store.issue_snapshot(viewer, issue["id"])["revision"]
+        store.set_visibility(admin, req["id"], "private")
+        assert client.get(route).status_code == 403
+        assert client.get(route, params={"project": "other"}).status_code == 404
+        assert client.get("/api/v1/issues/by-number/99999/detail").status_code == 404
+    store.db.close()
