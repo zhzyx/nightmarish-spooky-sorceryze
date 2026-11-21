@@ -101,7 +101,7 @@ from tianxuan_core import (
     VersionConflict,
 )
 from webhooks import summarize_gitea_event, verify_gitea_signature
-from wenqu_bridge import build_ai_index, export_markdown, merge_offline
+from wenqu_bridge import build_ai_index, export_markdown, merge_offline, merge_paragraphs
 from wenqu_bridge import classify as classify_markdown
 
 
@@ -953,14 +953,34 @@ def create_app(
 
     # ---------- 文曲：离线草稿合并 ----------
 
-    @app.post("/api/v1/docs/{doc_id}/merge")
-    def merge_doc(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
+    def merge_inputs(doc_id: str, payload: DocMergeRequest, actor: str) -> tuple[dict[str, Any], str]:
         document = store.get_doc_shared(actor, doc_id, write=True)
         if not 1 <= payload.expected_version <= document["version"]:
             raise VersionConflict("draft base version is outside document history")
         base = store.version(doc_id, payload.expected_version)["body_md"]
         if payload.base_md != base:
             raise VersionConflict("draft base content does not match its version")
+        return document, base
+
+    @app.post("/api/v1/docs/{doc_id}/merge/preview")
+    def preview_paragraph_merge(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
+        document, base = merge_inputs(doc_id, payload, actor)
+        remote = document["body_md"]
+        merged, conflicts = merge_paragraphs(base, payload.local_md, remote)
+        if conflicts:
+            return JSONResponse(
+                status_code=409,
+                content={
+                    "status": "conflict",
+                    "remote_md": remote,
+                    "remote_version": document["version"],
+                },
+            )
+        return {"status": "ready", "body_md": merged, "remote_version": document["version"]}
+
+    @app.post("/api/v1/docs/{doc_id}/merge")
+    def merge_doc(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
+        document, base = merge_inputs(doc_id, payload, actor)
         if document["version"] == payload.expected_version:
             updated = store.update_doc(actor, doc_id, payload.local_md, payload.expected_version)
             return {"status": "applied", "doc": notify_document_change(updated)}

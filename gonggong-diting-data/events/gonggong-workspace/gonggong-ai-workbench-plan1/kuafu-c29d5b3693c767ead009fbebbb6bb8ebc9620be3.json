@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c29d5b3693c767ead009fbebbb6bb8ebc9620be3",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e96bed17ff2a1f2e2aa2504d9d6bd80b41b7057aecda47a5b33c347bb78f7b58",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1970",
+    "action": "intake",
+    "detection_head": "a0697dd93dc3381b98d5f921196ff5cd2b2fe50c",
+    "context_sha256": "74fd48e8234dfede64e37104de36e5afeca5af2871ed9987c8859df85197c9d4",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-operator",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44941245511",
+    "diagnosis": "批次收尾脚本在总单 intake-only 调用遗漏 work-items.json 中的租户参数。已补齐 gonggong-workspace，原工作树同一主线返回 #1709 in-progress。",
+    "next_action": "回读同一候选的三个子单门禁，执行签发并核对远端结果。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T19:29:59.276185+00:00",
+    "attempted": "对比成功子卡 intake 的参数并重跑总单入口，得到有效回执。",
+    "repair_owner": "Sail-Li",
+    "continuable": "工单原生探针及其他独立卡持续推进。"
+  },
+  "occurred_at": "2026-11-21T19:32:18.288303+00:00",
+  "sha256": "e025d4dc953ef65483e2f89e6cbcdf26162e89462a26941c6ce0eed11357b3a6"
+}

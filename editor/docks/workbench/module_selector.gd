@@ -31,6 +31,7 @@ var drafts := {}
 var pending_turn := {}
 var asset_picker
 var staged_assets := {}
+var restoring_draft := false
 var busy := false
 var location_dirty := false
 var last_status := 0
@@ -86,6 +87,8 @@ func _ready() -> void:
 	composer.custom_minimum_size.y = 70 * EditorInterface.get_editor_scale()
 	composer.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	composer.placeholder_text = "输入此模块的问题…"
+	composer.text_changed.connect(_save_draft)
+	composer.text_set.connect(_save_draft)
 	content.add_child(composer)
 	send.text = "发送"
 	send.name = "ModuleSend"
@@ -116,6 +119,8 @@ func _bind_session() -> void:
 	if is_instance_valid(session):
 		managed_identity = true
 		session.connect("identity_changed", _identity_changed)
+		if session.has_signal("identity_resetting"):
+			session.connect("identity_resetting", _save_draft)
 		_identity_changed()
 
 
@@ -135,6 +140,7 @@ func _identity_changed() -> void:
 		asset_picker.reset()
 	location_dirty = false
 	composer.clear()
+	composer.clear_undo_history()
 	history.clear()
 	document_links.hide()
 	document_links.get_popup().clear()
@@ -281,14 +287,68 @@ func _save_location() -> bool:
 	return true
 
 
-func _draft_key() -> String:
-	return JSON.stringify([module_id, location.get("issue_id"), location.get("conversation_id")])
+func _draft_key(issue_id: Variant) -> String:
+	var identity: Dictionary = session.get_identity() if managed_identity else {}
+	return JSON.stringify([api, identity.get("id"), project, ProjectSettings.globalize_path("res://"), module_id, issue_id])
+
+
+func _read_draft(key: String) -> Dictionary:
+	if managed_identity:
+		return get_meta("read_draft").call(key)
+	return drafts.get(key, {})
+
+
+func _save_draft() -> bool:
+	if restoring_draft or module_id.is_empty():
+		return true
+	var key := _draft_key(location.get("issue_id"))
+	var record := {"text": redact_reference(composer.text), "conversation_id": location.get("conversation_id"),
+		"pending": pending_turn.get(key, {})}
+	var assets: Dictionary = {}
+	for locator in staged_assets.get(key, {}):
+		if str(record.text).contains(locator) and redact_reference(locator) == locator:
+			assets[locator] = staged_assets[key][locator]
+	record["assets"] = assets
+	if not managed_identity:
+		drafts[key] = record
+		return true
+	if not get_meta("write_draft").call(key, record):
+		_notice("无法保存当前草稿，请检查编辑器数据目录。")
+		return false
+	return true
+
+
+func _saved_draft_hash(record: Dictionary) -> String:
+	return JSON.stringify([record.get("text", ""), record.get("references", []), record.get("excerpts", {}), record.get("assets", {})]).sha256_text()
+
+
+func _restore_draft() -> void:
+	restoring_draft = true
+	_reset_reference_scope()
+	var key := _draft_key(location.get("issue_id"))
+	var record := {} if module_id.is_empty() else _read_draft(key)
+	staged_assets[key] = record.get("assets", {})
+	var pending: Dictionary = record.get("pending", {})
+	composer.text = record.get("text", "")
+	composer.clear_undo_history()
+	if not module_id.is_empty():
+		get_meta("restore_references").call(record)
+	if pending.has("id") and conversation.get("turns", []).any(func(turn): return turn.id == pending.id):
+		# A committed reply may arrive after the editor closed. Preserve any later
+		# edits to either the text or the reference list.
+		if pending.get("draft_hash") == _saved_draft_hash(record):
+			composer.clear()
+			composer.clear_undo_history()
+			staged_assets.erase(key)
+			_reset_reference_scope()
+		pending = {}
+	pending_turn[key] = pending
+	restoring_draft = false
 
 
 func _switch_to(target: String) -> void:
 	if not module_id.is_empty():
-		drafts[_draft_key()] = composer.text
-		if not await _save_location():
+		if not _save_draft() or not await _save_location():
 			return
 	var next_location := {}
 	var next_chat := {}
@@ -336,28 +396,54 @@ func _switch_to(target: String) -> void:
 		issues.set_item_metadata(issues.item_count - 1, issue.id)
 		if issue.id == location.get("issue_id"):
 			issues.select(issues.item_count - 1)
-	_reset_reference_scope()
+	_restore_draft()
 	_render()
-	composer.text = drafts.get(_draft_key(), "")
 	if content.visible:
 		composer.grab_focus()
 
 
 func _choose_issue(index: int) -> void:
-	if busy or location.get("issue_id") == issues.get_item_metadata(index):
+	if not busy:
+		await _change_issue(index)
+
+
+func _change_issue(index: int) -> void:
+	var previous := issues.selected
+	for i in issues.item_count:
+		if issues.get_item_metadata(i) == location.get("issue_id"):
+			previous = i
+			break
+	var target = issues.get_item_metadata(index)
+	issues.select(previous)
+	if location.get("issue_id") == target or not _save_draft():
 		return
-	_set_issue(index)
-
-
-func _set_issue(index: int) -> void:
-	drafts[_draft_key()] = composer.text
-	comments.clear()
-	location.issue_id = issues.get_item_metadata(index)
-	location.position = "module/overview" if location.issue_id == null else "issue/details"
-	location_dirty = true
-	_reset_reference_scope()
-	composer.text = drafts.get(_draft_key(), "")
-	_render()
+	var generation := identity_generation
+	_lock(true)
+	var record := _read_draft(_draft_key(target))
+	var chat := {}
+	var id = record.get("conversation_id")
+	if id != null:
+		chat = await _request(CONVERSATIONS + "/" + str(id).uri_encode())
+		if generation != identity_generation:
+			return
+		if chat.get("id") != id:
+			_lock(false)
+			return
+	var next := {"issue_id": target, "conversation_id": id,
+		"position": "module/overview" if target == null else "issue/details"}
+	var can_save: bool = not managed_identity or session.get_identity().get("role") != "viewer"
+	var saved := await _request(_location_path(module_id), HTTPClient.METHOD_PUT, next) if can_save else {"location": next}
+	if generation != identity_generation:
+		return
+	if saved.get("location") == next:
+		issues.select(index)
+		location = next
+		location_dirty = false
+		comments.clear()
+		conversation = chat
+		_restore_draft()
+		_render()
+	_lock(false)
 
 
 func _reset_reference_scope() -> void:
@@ -479,7 +565,7 @@ func _uuid() -> String:
 func _send() -> void:
 	if busy or module_id.is_empty() or composer.text.strip_edges().is_empty():
 		return
-	var frozen: Dictionary = get_meta("freeze_references").call(composer.text.strip_edges())
+	var frozen: Dictionary = get_meta("freeze_references").call(redact_reference(composer.text.strip_edges()))
 	if frozen.is_empty():
 		_notice("引用已失效，请移除或重新选择后发送。")
 		return
@@ -488,7 +574,7 @@ func _send() -> void:
 		_notice("正文与引用合计超过 8000 字符，请缩短后发送。")
 		return
 	var references: Array = frozen.references.duplicate()
-	for reference in _asset_references(_draft_key(), body) + _document_references(body):
+	for reference in _asset_references(_draft_key(location.get("issue_id")), body) + _document_references(body):
 		if not references.has(reference):
 			references.append(reference)
 	if references.size() > 16:
@@ -499,43 +585,49 @@ func _send() -> void:
 	_lock(true)
 	_notice("")
 	if location.conversation_id == null:
-		var draft_key := _draft_key()
+		var draft_key := _draft_key(location.issue_id)
 		var create_id: String = pending_turn.get(draft_key, {}).get("create_id", "")
 		if create_id.is_empty():
 			create_id = _uuid()
 			pending_turn[draft_key] = {"create_id": create_id}
+		if not _save_draft():
+			_lock(false)
+			return
 		var created := await _request(CONVERSATIONS, HTTPClient.METHOD_POST, {"id": create_id})
 		if generation != identity_generation:
 			return
 		if not created.has("id"):
 			_lock(false)
 			return
-		pending_turn.erase(draft_key)
-		drafts.erase(draft_key)
-		var asset_refs: Dictionary = staged_assets.get(draft_key, {})
-		staged_assets.erase(draft_key)
 		location.conversation_id = created.id
-		if not asset_refs.is_empty():
-			staged_assets[_draft_key()] = asset_refs
 		conversation = created
 		location_dirty = true
 	if await _save_location():
-		var key := _draft_key()
-		var turn: Dictionary = pending_turn.get(key, {})
-		if turn.get("content") != body or turn.get("context_snapshot") != snapshot:
-			turn = {"id": _uuid(), "content": body, "expected_version": conversation.version,
-				"context_snapshot": snapshot}
-		pending_turn[key] = turn
+		var key := _draft_key(location.issue_id)
+		var pending: Dictionary = pending_turn.get(key, {})
+		var fingerprint := JSON.stringify([body, snapshot]).sha256_text()
+		if pending.get("fingerprint") != fingerprint:
+			if not _save_draft():
+				_lock(false)
+				return
+			pending = {"id": _uuid(), "fingerprint": fingerprint, "expected_version": conversation.version,
+				"draft_hash": _saved_draft_hash(_read_draft(key))}
+		pending_turn[key] = pending
+		if not _save_draft():
+			_lock(false)
+			return
+		var turn := {"id": pending.id, "content": body, "expected_version": pending.expected_version,
+			"context_snapshot": snapshot}
 		var result := await _request(CONVERSATIONS + "/" + str(location.conversation_id).uri_encode() + "/turns", HTTPClient.METHOD_POST, turn)
 		if generation != identity_generation:
 			return
 		if result.get("id") == location.conversation_id:
 			conversation = result
-			composer.clear()
-			_reset_reference_scope()
-			drafts.erase(key)
 			staged_assets.erase(key)
 			pending_turn.erase(key)
+			_reset_reference_scope()
+			composer.clear()
+			_save_draft()
 			_render()
 		elif last_status == 409:
 			pending_turn.erase(key)
@@ -551,11 +643,11 @@ func _send() -> void:
 
 
 # Asset-origin navigation chooses a module; only an explicit issue-origin action inherits an issue.
-func select_asset_module(target: String, owners: Array) -> void:
+func select_asset_module(target: String, owners: Array) -> bool:
 	if module_id != target:
 		await _switch_to(target)
 	if module_id != target:
-		return
+		return false
 	var listed := false
 	for index in picker.item_count:
 		if picker.get_item_metadata(index) == target:
@@ -569,8 +661,8 @@ func select_asset_module(target: String, owners: Array) -> void:
 				break
 	_select_current()
 	if location.get("issue_id") != null:
-		issues.select(0)
-		_set_issue(0)
+		await _change_issue(0)
+	return module_id == target and location.get("issue_id") == null
 
 
 func stage_asset_reference(asset: Dictionary) -> void:
@@ -579,7 +671,7 @@ func stage_asset_reference(asset: Dictionary) -> void:
 		return
 	var locator := "<duobao://%s/%s/%s>" % [asset.source_module, asset.revision, str(asset.path).uri_encode()]
 	if not module_id.is_empty():
-		var key := _draft_key()
+		var key := _draft_key(location.get("issue_id"))
 		var refs: Dictionary = staged_assets.get(key, {})
 		# Preserve the service's per-message reference limit. Editing a citation out releases its slot.
 		for existing in refs.keys():
@@ -595,6 +687,8 @@ func stage_asset_reference(asset: Dictionary) -> void:
 		input.set_caret_column(input.get_line(input.get_caret_line()).length())
 		input.deselect()
 		input.insert_text_at_caret(("" if input.text.is_empty() else "\n") + locator)
+	if not module_id.is_empty():
+		_save_draft()
 	input.grab_focus()
 
 

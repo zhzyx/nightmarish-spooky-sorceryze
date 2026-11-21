@@ -82,8 +82,25 @@ func run() -> void:
 		if not await edits.run(self, view, opener, OS.get_environment("D04_AUTHOR")):
 			quit(1)
 			return
+	if OS.has_environment("D06_HISTORY"):
+		var probe = load("res://history.gd").new()
+		if not await probe.exercise(self, view, items[1]):
+			quit(1)
+			return
 	await view.open_document(items[0].id, 1, 1)
+	if OS.has_environment("D06_HISTORY"):
+		view.history.pressed.emit()
+		var history = session.get_node("WorkbenchDocumentHistory")
+		until = Time.get_ticks_msec() + 12000
+		while history.read.disabled and Time.get_ticks_msec() < until:
+			await process_frame
+		if not check(history.dialog.visible and history.source.item_count == 1, "Single-revision history unavailable"):
+			return
 	session.find_child("SignOut",true,false).pressed.emit()
+	if OS.has_environment("D06_HISTORY"):
+		var history = session.get_node("WorkbenchDocumentHistory")
+		if not check(not history.dialog.visible and history.source.item_count == 0 and history.diff.text.is_empty(), "Signed-out account history remained visible"):
+			return
 	if not check(not view.visible and view.reference.is_empty() and view.body.text.is_empty() and list.item_count == 0,"Previous account's document remained visible"):
 		return
 	print("D02_CHECKS=",JSON.stringify(trace))
