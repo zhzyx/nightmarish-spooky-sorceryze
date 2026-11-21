@@ -105,6 +105,11 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	VBoxContainer *pSession = MountWorkbenchControl(pSidebarLayout, "WorkbenchBusinessSession", daqian_business_session);
 	if (pSession)
 	{
+		Ref<Script> refParagraphSuggestion = LoadWorkbenchControlScript(daqian_paragraph_suggestion);
+		if (refParagraphSuggestion.is_valid())
+		{
+			pSession->call("install_paragraph_suggestion", refParagraphSuggestion);
+		}
 		MountWorkbenchControl(pSession, "WorkbenchIssueCreation", daqian_issue_creation);
 		MountWorkbenchControl(pSession, "WorkbenchIssueDetail", daqian_issue_detail);
 	}

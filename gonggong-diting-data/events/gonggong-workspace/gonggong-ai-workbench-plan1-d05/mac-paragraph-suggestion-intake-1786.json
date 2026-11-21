@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-d05",
+  "event_id": "mac-paragraph-suggestion-intake-1786",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1786",
+  "occurred_at": "2026-11-21T18:19:27.920224+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1786,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T18:13:40Z",
+    "scope": "Preview and explicitly accept an edit to a single versioned paragraph on macOS, preserving all surrounding bytes"
+  },
+  "evidence_refs": [],
+  "sha256": "f719c51e98c94ed3efa09f010e7d53a22bff82fd656f2325547eb782263b1fad"
+}
