@@ -30,3 +30,4 @@ if env["platform"] == "macos":
     env.add_source_files(env.editor_sources, "WebPlatformMacOS.mm")
 env.add_source_files(env.editor_sources, "production/*.cpp")
 env.add_source_files(env.editor_sources, "receipts/*.cpp")
+env.add_source_files(env.editor_sources, "workbench/*.cpp")

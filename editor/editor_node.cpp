@@ -9623,7 +9623,7 @@ EditorNode::EditorNode() {
 	// AI Chat is registered first so it is the opening main-screen tab.
 	AIChatDock *pWorkbenchDock = memnew(AIChatDock);
 	editor_dock_manager->add_dock(pWorkbenchDock);
-	command_palette->add_command(TTR("Open AI Workbench"), "editor/open_ai_workbench", callable_mp(editor_dock_manager, &EditorDockManager::force_focus_dock).bind(pWorkbenchDock));
+	pWorkbenchDock->RegisterWorkbenchSidebar(command_palette);
 	editor_dock_manager->add_dock(create_daqian_dock());
 	editor_dock_manager->add_dock(CreateWebPlatformDock());
 #ifdef MACOS_ENABLED

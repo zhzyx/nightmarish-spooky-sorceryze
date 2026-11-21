@@ -594,6 +594,9 @@ void AIChatDock::_draft_changed() {
 void AIChatDock::_update_composer_height() {
 	int max_lines = 8;
 	const Control *surface = daqian_chat_host.is_valid() ? static_cast<const Control *>(chat_layout) : this;
+	if (nConversationIndex >= 0) {
+		surface = pSidebarLayout;
+	}
 	if (surface->is_inside_tree() && input->get_line_height() > 0) {
 		const real_t viewport_height = surface->get_viewport_rect().size.y - surface->get_global_position().y;
 		const bool compact_surface = surface->get_size().x < 640 * EDSCALE || viewport_height < 640 * EDSCALE;
@@ -5076,6 +5079,7 @@ bool AIChatDock::_mount_daqian_chat(Control *p_host) {
 	if (daqian_chat_host.is_valid()) {
 		return daqian_chat_host == p_host->get_instance_id();
 	}
+	DismissWorkbenchSidebar();
 	daqian_chat_host = p_host->get_instance_id();
 	// Only transfer the view. Requests, timers, queues and their callbacks stay on the dock.
 	p_host->connect(SceneStringName(tree_exiting), callable_mp(this, &AIChatDock::_unmount_daqian_chat));
@@ -8122,8 +8126,11 @@ void AIChatDock::_notification(int p_what) {
 		add_agent->add_theme_color_override("icon_normal_color", Color(0.6f, 0.6f, 0.6f, 0.8f));
 		add_agent_placeholder->set_custom_minimum_size(add_agent->get_minimum_size());
 		callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
-	} else if (p_what == NOTIFICATION_VISIBILITY_CHANGED && daqian_chat_host.is_valid() && is_visible_in_tree()) {
-		_unmount_daqian_chat();
+	} else if (p_what == NOTIFICATION_VISIBILITY_CHANGED && is_visible_in_tree()) {
+		DismissWorkbenchSidebar();
+		if (daqian_chat_host.is_valid()) {
+			_unmount_daqian_chat();
+		}
 	} else if (p_what == NOTIFICATION_LAYOUT_DIRECTION_CHANGED) {
 		callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
 	} else if (p_what == NOTIFICATION_PROCESS) {
@@ -8842,6 +8849,11 @@ void fragment() {
 	engine_build_timer->connect("timeout", callable_mp(this, &AIChatDock::_poll_engine_build));
 	add_child(engine_build_timer);
 
+	// The sidebar borrows this view while the session, requests and timers stay on the main dock.
+	pConversationView = memnew(VBoxContainer);
+	pConversationView->set_v_size_flags(SIZE_EXPAND_FILL);
+	pConversationView->add_theme_constant_override("separation", 6 * EDSCALE);
+	layout->add_child(pConversationView);
 	chat_scroll = memnew(ScrollContainer);
 	chat_scroll->set_name("ChatScroll");
 	chat_scroll->set_v_size_flags(SIZE_EXPAND_FILL);
@@ -8851,7 +8863,7 @@ void fragment() {
 	// "value_changed", which also fires when a layout update clamps the range.
 	chat_scroll->get_v_scroll_bar()->connect("scrolling", callable_mp(this, &AIChatDock::_chat_scrolled));
 	chat_scroll->get_v_scroll_bar()->connect("changed", callable_mp(this, &AIChatDock::_queue_chat_scroll_update));
-	layout->add_child(chat_scroll);
+	pConversationView->add_child(chat_scroll);
 	message_list = memnew(VBoxContainer);
 	message_list->set_name("Messages");
 	message_list->set_h_size_flags(SIZE_EXPAND_FILL);
@@ -8865,7 +8877,7 @@ void fragment() {
 	composer_style->set_content_margin_all(12 * EDSCALE);
 	composer_style->set_corner_radius_all(8 * EDSCALE);
 	composer_panel->add_theme_style_override("panel", composer_style);
-	layout->add_child(composer_panel);
+	pConversationView->add_child(composer_panel);
 	VBoxContainer *composer = memnew(VBoxContainer);
 	composer->set_name("ChatComposer");
 	composer->add_theme_constant_override("separation", 6 * EDSCALE);
