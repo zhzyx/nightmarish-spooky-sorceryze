@@ -1,0 +1,605 @@
+{
+  "request_id": "maliang-context-menu-first-20261107",
+  "issue_number": 411,
+  "base": "a0697dd93dc3381b98d5f921196ff5cd2b2fe50c",
+  "platform": {
+    "macOS": "26.6.2",
+    "arch": "arm64"
+  },
+  "source_hashes": {
+    "samples/ainative-workbench/addons/ainative/workbench.gd": {
+      "baseline": "705b7ed1f9052271d5b26eff4dd20d21e20f7626553d1a5f4264f18f7bd8b6f3",
+      "candidate": "e8fc365478cdc8c50e642b813f69d1db8bb1fae2f89f9f2735e4f8c778b0ae76"
+    },
+    "samples/ainative-workbench/context_menu_acceptance.gd": {
+      "baseline": "41dda72151d1f96c237692c97984711d1e486f3c85d6ad30e5465ba852fc5289",
+      "candidate": "d9d4c8b2709f8aa29398846fe3913a70d771e0ab97be82e9412dac5932b726f9"
+    }
+  },
+  "isolated_editor": {
+    "baseline": {
+      "assertions": 102,
+      "failures": [
+        "context menu remains inside the window at size (1100, 800)",
+        "context menu remains inside the window at size (1440, 1000)",
+        "context menu remains inside the window at size (1100, 800)",
+        "context menu remains inside the window at size (1440, 1000)",
+        "scaled edge menu fits host in embedded mode false"
+      ],
+      "appkit_overflow_pixels": [
+        {
+          "size_case": "1100",
+          "left": 0,
+          "right": 78.0,
+          "top": 0,
+          "bottom": 234.0
+        },
+        {
+          "size_case": "1440",
+          "left": 0,
+          "right": 110.0,
+          "top": 0,
+          "bottom": 266.0
+        }
+      ],
+      "godot_rects": [
+        {
+          "click": "(602.0, 680.0)",
+          "embedded": false,
+          "graph_local": "(634.0, 761.0)",
+          "menu": "[P: (602, 680), S: (576, 420)]",
+          "screen": "[P: (0, 66), S: (2940, 1726)]",
+          "window": "[P: (0, 66), S: (1100, 800)]"
+        },
+        {
+          "click": "(974.0, 912.0)",
+          "embedded": false,
+          "graph_local": "(974.0, 761.0)",
+          "menu": "[P: (974, 912), S: (576, 420)]",
+          "screen": "[P: (0, 66), S: (2940, 1726)]",
+          "window": "[P: (0, 66), S: (1440, 1000)]"
+        }
+      ],
+      "clicks": [
+        {
+          "anchor": "(1157, 961)",
+          "area": "[P: (340, 194), S: (1440, 1000)]",
+          "edge_click": "(646.0, 367.0)",
+          "embedded": false,
+          "expected": "(524.0, 304.6667)",
+          "menu": "[P: (1157, 961), S: (432, 330)]",
+          "scale": 1.25,
+          "scroll": "(140.0, 90.0)",
+          "visible": "[P: (8.0, 247.0), S: (686.0, 407.0)]",
+          "zoom": 1.5
+        },
+        {
+          "anchor": "(654, 614)",
+          "area": "[P: (0, 0), S: (1152, 800)]",
+          "edge_click": "(646.0, 367.0)",
+          "embedded": true,
+          "expected": "(524.0, 304.6667)",
+          "menu": "[P: (654, 536), S: (346, 264)]",
+          "scale": 1.25,
+          "scroll": "(140.0, 90.0)",
+          "visible": "[P: (8.0, 247.0), S: (686.0, 407.0)]",
+          "zoom": 1.5
+        }
+      ],
+      "placement": [
+        {
+          "embedded": false,
+          "expected": "(524.0, 304.6667)",
+          "graph": "(524.0, 304.6667)",
+          "model": "(524.0, 304.6667)"
+        },
+        {
+          "embedded": true,
+          "expected": "(524.0, 304.6667)",
+          "graph": "(524.0, 304.6667)",
+          "model": "(524.0, 304.6667)"
+        }
+      ],
+      "standalone_headless_failures": [
+        "generation accepts the effective prompt from node instructions without a parameter prompt",
+        "image-to-mesh permits a source image without a text prompt"
+      ]
+    },
+    "candidate": {
+      "assertions": 102,
+      "failures": [],
+      "appkit_overflow_pixels": [
+        {
+          "size_case": "1100",
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        },
+        {
+          "size_case": "1440",
+          "left": 0,
+          "right": 0,
+          "top": 0,
+          "bottom": 0
+        }
+      ],
+      "godot_rects": [
+        {
+          "click": "(2502.0, 1565.0)",
+          "embedded": false,
+          "graph_local": "(2502.0, 1122.0)",
+          "menu": "[P: (2502, 1528), S: (346, 264)]",
+          "screen": "[P: (0, 66), S: (2940, 1726)]",
+          "window": "[P: (0, 66), S: (2940, 1726)]"
+        },
+        {
+          "click": "(942.0, 880.0)",
+          "embedded": false,
+          "graph_local": "(974.0, 761.0)",
+          "menu": "[P: (864, 646), S: (576, 420)]",
+          "screen": "[P: (0, 66), S: (2940, 1726)]",
+          "window": "[P: (0, 66), S: (1440, 1000)]"
+        }
+      ],
+      "clicks": [
+        {
+          "anchor": "(2692, 1630)",
+          "area": "[P: (340, 194), S: (2940, 1726)]",
+          "edge_click": "(1874.0, 749.0)",
+          "embedded": false,
+          "expected": "(1342.667, 559.3333)",
+          "menu": "[P: (2508, 1462), S: (432, 330)]",
+          "scale": 1.25,
+          "scroll": "(140.0, 90.0)",
+          "visible": "[P: (8.0, 400.0), S: (1886.0, 761.0)]",
+          "zoom": 1.5
+        },
+        {
+          "anchor": "(1854, 1194)",
+          "area": "[P: (0, 0), S: (2352, 1380)]",
+          "edge_click": "(1846.0, 947.0)",
+          "embedded": true,
+          "expected": "(1324.0, 691.3333)",
+          "menu": "[P: (1854, 1116), S: (346, 264)]",
+          "scale": 1.25,
+          "scroll": "(140.0, 90.0)",
+          "visible": "[P: (8.0, 247.0), S: (1886.0, 987.0)]",
+          "zoom": 1.5
+        }
+      ],
+      "placement": [
+        {
+          "embedded": false,
+          "expected": "(1342.667, 559.3333)",
+          "graph": "(1342.667, 559.3333)",
+          "model": "(1342.667, 559.3333)"
+        },
+        {
+          "embedded": true,
+          "expected": "(1324.0, 691.3333)",
+          "graph": "(1324.0, 691.3333)",
+          "model": "(1324.0, 691.3333)"
+        }
+      ],
+      "standalone_headless_failures": [
+        "generation accepts the effective prompt from node instructions without a parameter prompt",
+        "image-to-mesh permits a source image without a text prompt"
+      ]
+    }
+  },
+  "rebuilt_builtin_editor": {
+    "sha256": "1e29cd541e592bdc041e12dc1783f95e7075090f946e43fcc91d5e348a9443a5",
+    "loaded_workbench_sha256": "4abda8af61e086a0189de0a288f5479a5ea4386a518df1c92cb585d2daabf45b",
+    "fixture_sha256": "974afc00a04fdab611b82ecbadd17f04f6ee86db47c558116214bd1ea10dfec8",
+    "display": "macOS",
+    "project_addons": false,
+    "assertions": 84,
+    "failures": 0
+  },
+  "limitations": [
+    "The standalone headless fixture has the same two generation-service eligibility failures before and after the change.",
+    "The windowed tests dispatch viewport input in an isolated editor. Exit logs contain resource-release warnings.",
+    "The formal shared installation and Finder reopen remain with the installation handoff."
+  ],
+  "updated_menu_suite": {
+    "checks": 85,
+    "fixture_sha256": "abbd1cea23e9bad7b76dd6037053eebe43ead6fcaad6a5ce077e802d80faa6ff",
+    "failures": 0
+  },
+  "parameter_form_regression": {
+    "checks": 48,
+    "fixture_sha256": "24ade210661d586be1b2d54dbcced45ad9a03cf248e6869dc136e7147d9a47fe",
+    "failures": 0
+  },
+  "native_history_submenu": {
+    "before_right_overflow_px": 344,
+    "after": [
+      {
+        "actual_embedded": false,
+        "canvas": "[P: (8.0, 247.0), S: (634.0, 480.0)]",
+        "child_visible": true,
+        "click": "(607.0, 487.0)",
+        "embedded": false,
+        "fits_history": true,
+        "fits_main": true,
+        "history": "[P: (180, 550), S: (344, 142)]",
+        "history_index": 2,
+        "host": "[P: (0, 66), S: (1100, 800)]",
+        "main": "[P: (524, 446), S: (576, 420)]",
+        "menu_opened": true,
+        "node": "[P: (547.0, 452.0), S: (606.0, 264.0)]",
+        "node_ids": [
+          "a"
+        ],
+        "opened": true,
+        "scale": 1.0
+      },
+      {
+        "actual_embedded": false,
+        "canvas": "[P: (8.0, 247.0), S: (934.0, 680.0)]",
+        "child_visible": true,
+        "click": "(907.0, 587.0)",
+        "embedded": false,
+        "fits_history": true,
+        "fits_main": true,
+        "history": "[P: (520, 750), S: (344, 142)]",
+        "history_index": 2,
+        "host": "[P: (0, 66), S: (1440, 1000)]",
+        "main": "[P: (864, 646), S: (576, 420)]",
+        "menu_opened": true,
+        "node": "[P: (847.0, 552.0), S: (606.0, 264.0)]",
+        "node_ids": [
+          "a"
+        ],
+        "opened": true,
+        "scale": 1.0
+      },
+      {
+        "actual_embedded": true,
+        "canvas": "[P: (8.0, 247.0), S: (594.0, 480.0)]",
+        "child_visible": true,
+        "click": "(567.0, 487.0)",
+        "embedded": true,
+        "fits_history": true,
+        "fits_main": true,
+        "history": "[P: (180, 484), S: (344, 142)]",
+        "history_index": 2,
+        "host": "[P: (0, 0), S: (1100, 800)]",
+        "main": "[P: (524, 380), S: (576, 420)]",
+        "menu_opened": true,
+        "node": "[P: (507.0, 452.0), S: (606.0, 264.0)]",
+        "node_ids": [
+          "a"
+        ],
+        "opened": true,
+        "scale": 1.0
+      },
+      {
+        "actual_embedded": true,
+        "canvas": "[P: (8.0, 247.0), S: (934.0, 680.0)]",
+        "child_visible": true,
+        "click": "(907.0, 587.0)",
+        "embedded": true,
+        "fits_history": true,
+        "fits_main": true,
+        "history": "[P: (520, 684), S: (344, 142)]",
+        "history_index": 2,
+        "host": "[P: (0, 0), S: (1440, 1000)]",
+        "main": "[P: (864, 580), S: (576, 420)]",
+        "menu_opened": true,
+        "node": "[P: (847.0, 552.0), S: (606.0, 264.0)]",
+        "node_ids": [
+          "a"
+        ],
+        "opened": true,
+        "scale": 1.0
+      },
+      {
+        "actual_embedded": false,
+        "canvas": "[P: (8.0, 247.0), S: (562.0, 382.0)]",
+        "child_visible": true,
+        "click": "(535.0, 438.0)",
+        "embedded": false,
+        "fits_history": true,
+        "fits_main": false,
+        "history": "[P: (110, 472), S: (430, 178)]",
+        "history_index": 2,
+        "host": "[P: (0, 66), S: (1260, 800)]",
+        "main": "[P: (540, 342), S: (720, 525)]",
+        "menu_opened": true,
+        "node": "[P: (475.0, 403.0), S: (606.0, 264.0)]",
+        "node_ids": [
+          "a"
+        ],
+        "opened": true,
+        "scale": 1.25
+      },
+      {
+        "actual_embedded": false,
+        "canvas": "[P: (8.0, 247.0), S: (646.0, 480.0)]",
+        "child_visible": true,
+        "click": "(619.0, 487.0)",
+        "embedded": false,
+        "fits_history": true,
+        "fits_main": false,
+        "history": "[P: (290, 672), S: (430, 178)]",
+        "history_index": 2,
+        "host": "[P: (0, 66), S: (1440, 1000)]",
+        "main": "[P: (720, 542), S: (720, 525)]",
+        "menu_opened": true,
+        "node": "[P: (559.0, 452.0), S: (606.0, 264.0)]",
+        "node_ids": [
+          "a"
+        ],
+        "opened": true,
+        "scale": 1.25
+      },
+      {
+        "actual_embedded": true,
+        "canvas": "[P: (8.0, 247.0), S: (562.0, 382.0)]",
+        "child_visible": true,
+        "click": "(535.0, 438.0)",
+        "embedded": true,
+        "fits_history": true,
+        "fits_main": true,
+        "history": "[P: (2, 324), S: (344, 142)]",
+        "history_index": 2,
+        "host": "[P: (0, 0), S: (1008, 640)]",
+        "main": "[P: (432, 220), S: (576, 420)]",
+        "menu_opened": true,
+        "node": "[P: (475.0, 403.0), S: (606.0, 264.0)]",
+        "node_ids": [
+          "a"
+        ],
+        "opened": true,
+        "scale": 1.25
+      },
+      {
+        "actual_embedded": true,
+        "canvas": "[P: (8.0, 247.0), S: (646.0, 480.0)]",
+        "child_visible": true,
+        "click": "(619.0, 487.0)",
+        "embedded": true,
+        "fits_history": true,
+        "fits_main": true,
+        "history": "[P: (232, 484), S: (344, 142)]",
+        "history_index": 2,
+        "host": "[P: (0, 0), S: (1152, 800)]",
+        "main": "[P: (576, 380), S: (576, 420)]",
+        "menu_opened": true,
+        "node": "[P: (559.0, 452.0), S: (606.0, 264.0)]",
+        "node_ids": [
+          "a"
+        ],
+        "opened": true,
+        "scale": 1.25
+      }
+    ],
+    "selection": [
+      {
+        "after": "r8-previous",
+        "before": "r8-existing",
+        "history_hidden": true,
+        "main_hidden": true,
+        "mode": false,
+        "node": "a",
+        "run": "run-previous",
+        "scale": 1.0,
+        "size": "(1100, 800)"
+      },
+      {
+        "after": "r8-previous",
+        "before": "r8-existing",
+        "history_hidden": true,
+        "main_hidden": true,
+        "mode": false,
+        "node": "a",
+        "run": "run-previous",
+        "scale": 1.0,
+        "size": "(1440, 1000)"
+      },
+      {
+        "after": "r8-previous",
+        "before": "r8-existing",
+        "history_hidden": true,
+        "main_hidden": true,
+        "mode": true,
+        "node": "a",
+        "run": "run-previous",
+        "scale": 1.0,
+        "size": "(1100, 800)"
+      },
+      {
+        "after": "r8-previous",
+        "before": "r8-existing",
+        "history_hidden": true,
+        "main_hidden": true,
+        "mode": true,
+        "node": "a",
+        "run": "run-previous",
+        "scale": 1.0,
+        "size": "(1440, 1000)"
+      },
+      {
+        "after": "r8-previous",
+        "before": "r8-existing",
+        "history_hidden": true,
+        "main_hidden": true,
+        "mode": false,
+        "node": "a",
+        "run": "run-previous",
+        "scale": 1.25,
+        "size": "(1100, 800)"
+      },
+      {
+        "after": "r8-previous",
+        "before": "r8-existing",
+        "history_hidden": true,
+        "main_hidden": true,
+        "mode": false,
+        "node": "a",
+        "run": "run-previous",
+        "scale": 1.25,
+        "size": "(1440, 1000)"
+      },
+      {
+        "after": "r8-previous",
+        "before": "r8-existing",
+        "history_hidden": true,
+        "main_hidden": true,
+        "mode": true,
+        "node": "a",
+        "run": "run-previous",
+        "scale": 1.25,
+        "size": "(1100, 800)"
+      },
+      {
+        "after": "r8-previous",
+        "before": "r8-existing",
+        "history_hidden": true,
+        "main_hidden": true,
+        "mode": true,
+        "node": "a",
+        "run": "run-previous",
+        "scale": 1.25,
+        "size": "(1440, 1000)"
+      }
+    ],
+    "appkit_frames": [
+      {
+        "windows": [
+          {
+            "window": 15773,
+            "frame_points": "{{0, 523}, {550, 400}}",
+            "parent": 0,
+            "title": "R8 History review - Godot Engine",
+            "class": "GodotWindow",
+            "content_points": "{{0, 523}, {550, 400}}",
+            "scale": 2
+          },
+          {
+            "window": 15785,
+            "frame_points": "{{262, 523}, {288, 210}}",
+            "parent": 15773,
+            "title": "",
+            "class": "GodotWindow",
+            "content_points": "{{262, 523}, {288, 210}}",
+            "scale": 2
+          },
+          {
+            "window": 15787,
+            "frame_points": "{{90, 610}, {172, 71}}",
+            "parent": 15785,
+            "title": "",
+            "class": "GodotWindow",
+            "content_points": "{{90, 610}, {172, 71}}",
+            "scale": 2
+          }
+        ],
+        "size_case": "history-1100-1.0"
+      },
+      {
+        "windows": [
+          {
+            "window": 15773,
+            "frame_points": "{{0, 423}, {720, 500}}",
+            "parent": 0,
+            "title": "R8 History review - Godot Engine",
+            "class": "GodotWindow",
+            "content_points": "{{0, 423}, {720, 500}}",
+            "scale": 2
+          },
+          {
+            "window": 15789,
+            "frame_points": "{{432, 423}, {288, 210}}",
+            "parent": 15773,
+            "title": "",
+            "class": "GodotWindow",
+            "content_points": "{{432, 423}, {288, 210}}",
+            "scale": 2
+          },
+          {
+            "window": 15791,
+            "frame_points": "{{260, 510}, {172, 71}}",
+            "parent": 15789,
+            "title": "",
+            "class": "GodotWindow",
+            "content_points": "{{260, 510}, {172, 71}}",
+            "scale": 2
+          }
+        ],
+        "size_case": "history-1440-1.0"
+      },
+      {
+        "windows": [
+          {
+            "window": 15773,
+            "frame_points": "{{0, 523}, {630, 400}}",
+            "parent": 0,
+            "title": "R8 History review - Godot Engine",
+            "class": "GodotWindow",
+            "content_points": "{{0, 523}, {630, 400}}",
+            "scale": 2
+          },
+          {
+            "window": 15793,
+            "frame_points": "{{270, 523}, {360, 262}}",
+            "parent": 15773,
+            "title": "",
+            "class": "GodotWindow",
+            "content_points": "{{270, 523}, {360, 262}}",
+            "scale": 2
+          },
+          {
+            "window": 15795,
+            "frame_points": "{{55, 631}, {215, 89}}",
+            "parent": 15793,
+            "title": "",
+            "class": "GodotWindow",
+            "content_points": "{{55, 631}, {215, 89}}",
+            "scale": 2
+          }
+        ],
+        "size_case": "history-1100-1.25"
+      },
+      {
+        "windows": [
+          {
+            "window": 15773,
+            "frame_points": "{{0, 423}, {720, 500}}",
+            "parent": 0,
+            "title": "R8 History review - Godot Engine",
+            "class": "GodotWindow",
+            "content_points": "{{0, 423}, {720, 500}}",
+            "scale": 2
+          },
+          {
+            "window": 15797,
+            "frame_points": "{{360, 423}, {360, 262}}",
+            "parent": 15773,
+            "title": "",
+            "class": "GodotWindow",
+            "content_points": "{{360, 423}, {360, 262}}",
+            "scale": 2
+          },
+          {
+            "window": 15799,
+            "frame_points": "{{145, 531}, {215, 89}}",
+            "parent": 15797,
+            "title": "",
+            "class": "GodotWindow",
+            "content_points": "{{145, 531}, {215, 89}}",
+            "scale": 2
+          }
+        ],
+        "size_case": "history-1440-1.25"
+      }
+    ],
+    "geometry_note": "At UI scale 1.25 the Godot integer main-menu rectangle reports a one-pixel difference at the bottom. The AppKit window frames are inside the host."
+  },
+  "independent_compiled_suite": {
+    "assertions": 103,
+    "failures": 0
+  }
+}
