@@ -1,0 +1,248 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g02",
+  "issue_number": 1852,
+  "observed_at": "2026-11-21T04:49:14.115981+00:00",
+  "source_baseline": "0e1dcb293a55e3034bf92b4e02bc6b0028e5fb14",
+  "fixture": "Isolated sample/repo created by test_published_merge_mapping",
+  "git": "git version 2.53.0.windows.3",
+  "fastapi": "0.162.7",
+  "python": "3.12.14",
+  "source_commit": "5b055008d6c3a46b82546094b45fa77a9ee8c123",
+  "raw_source_headers": [
+    "tree 485cd1dd0cbf61b435801f2913d099bc65df5f51",
+    "parent d14a7eed9b9d6e18ba258a13448c01cc072ea826",
+    "parent 9e1f4e8a515c5e40ca5bdb76db6545fa246360da",
+    "author Source Author <author@example.invalid> 1794973530 +0530",
+    "committer Merge Operator <merge@example.invalid> 1795086000 -0400"
+  ],
+  "bundle_sha256": "6d5b13fef7d1ac516d0280d2116d39c4ccfef9b0fe618b1ca4d9a58bc735646e",
+  "calls": [
+    {
+      "method": "GET",
+      "path": "/api/v1/migration/history/commit",
+      "input": {
+        "project": "demo",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "commit": "5b055008d6c3a46b82546094b45fa77a9ee8c123"
+      },
+      "status": 200,
+      "body": {
+        "source_id": "github:sample/repo/commit/5b055008d6c3a46b82546094b45fa77a9ee8c123",
+        "tenant": "ten_38ebcf52693749fb9260b1522b3e67ec",
+        "project": "demo",
+        "module": "migration-90d45b6f6c8ec1725d52d771369dc94e3f525b3c454f976b77a905a85b8ac802",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "oid": "5b055008d6c3a46b82546094b45fa77a9ee8c123",
+        "tree": "485cd1dd0cbf61b435801f2913d099bc65df5f51",
+        "parents": [
+          "d14a7eed9b9d6e18ba258a13448c01cc072ea826",
+          "9e1f4e8a515c5e40ca5bdb76db6545fa246360da"
+        ],
+        "author": {
+          "name": "Source Author",
+          "email": "author@example.invalid",
+          "time": "2026-11-18T09:15:30+05:30"
+        },
+        "committer": {
+          "name": "Merge Operator",
+          "email": "merge@example.invalid",
+          "time": "2026-11-19T07:00:00-04:00"
+        }
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tools",
+      "input": null,
+      "status": 200,
+      "body": {
+        "source_id": "github:sample/repo/commit/5b055008d6c3a46b82546094b45fa77a9ee8c123",
+        "tenant": "ten_38ebcf52693749fb9260b1522b3e67ec",
+        "project": "demo",
+        "module": "migration-90d45b6f6c8ec1725d52d771369dc94e3f525b3c454f976b77a905a85b8ac802",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "oid": "5b055008d6c3a46b82546094b45fa77a9ee8c123",
+        "tree": "485cd1dd0cbf61b435801f2913d099bc65df5f51",
+        "parents": [
+          "d14a7eed9b9d6e18ba258a13448c01cc072ea826",
+          "9e1f4e8a515c5e40ca5bdb76db6545fa246360da"
+        ],
+        "author": {
+          "name": "Source Author",
+          "email": "author@example.invalid",
+          "time": "2026-11-18T09:15:30+05:30"
+        },
+        "committer": {
+          "name": "Merge Operator",
+          "email": "merge@example.invalid",
+          "time": "2026-11-19T07:00:00-04:00"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/migration/history/commit",
+      "input": {
+        "project": "demo",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "commit": "d14a7eed9b9d6e18ba258a13448c01cc072ea826"
+      },
+      "status": 200,
+      "body": {
+        "source_id": "github:sample/repo/commit/d14a7eed9b9d6e18ba258a13448c01cc072ea826",
+        "tenant": "ten_38ebcf52693749fb9260b1522b3e67ec",
+        "project": "demo",
+        "module": "migration-90d45b6f6c8ec1725d52d771369dc94e3f525b3c454f976b77a905a85b8ac802",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "oid": "d14a7eed9b9d6e18ba258a13448c01cc072ea826",
+        "tree": "cd2a5195895464ab61bc82ca0dd631077634fa42",
+        "parents": [
+          "14f68f77304b2add9aedf2570be512f0f59591ca"
+        ],
+        "author": {
+          "name": "Source Author",
+          "email": "author@example.invalid",
+          "time": "2026-11-18T09:15:30+05:30"
+        },
+        "committer": {
+          "name": "Merge Operator",
+          "email": "merge@example.invalid",
+          "time": "2026-11-19T07:00:00-04:00"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/migration/history/commit",
+      "input": {
+        "project": "demo",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "commit": "9e1f4e8a515c5e40ca5bdb76db6545fa246360da"
+      },
+      "status": 200,
+      "body": {
+        "source_id": "github:sample/repo/commit/9e1f4e8a515c5e40ca5bdb76db6545fa246360da",
+        "tenant": "ten_38ebcf52693749fb9260b1522b3e67ec",
+        "project": "demo",
+        "module": "migration-90d45b6f6c8ec1725d52d771369dc94e3f525b3c454f976b77a905a85b8ac802",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "oid": "9e1f4e8a515c5e40ca5bdb76db6545fa246360da",
+        "tree": "e08beebdd268a3ce54dad0c170cbf345e3e29c32",
+        "parents": [
+          "14f68f77304b2add9aedf2570be512f0f59591ca"
+        ],
+        "author": {
+          "name": "Source Author",
+          "email": "author@example.invalid",
+          "time": "2026-11-18T09:15:30+05:30"
+        },
+        "committer": {
+          "name": "Merge Operator",
+          "email": "merge@example.invalid",
+          "time": "2026-11-19T07:00:00-04:00"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/migration/history/commit",
+      "input": {
+        "project": "demo",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "commit": "14f68f77304b2add9aedf2570be512f0f59591ca"
+      },
+      "status": 200,
+      "body": {
+        "source_id": "github:sample/repo/commit/14f68f77304b2add9aedf2570be512f0f59591ca",
+        "tenant": "ten_38ebcf52693749fb9260b1522b3e67ec",
+        "project": "demo",
+        "module": "migration-90d45b6f6c8ec1725d52d771369dc94e3f525b3c454f976b77a905a85b8ac802",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "oid": "14f68f77304b2add9aedf2570be512f0f59591ca",
+        "tree": "538a402f5a94fa204e7d1a34ca25fe5ddc1f3986",
+        "parents": [],
+        "author": {
+          "name": "Source Author",
+          "email": "author@example.invalid",
+          "time": "2026-11-18T09:15:30+05:30"
+        },
+        "committer": {
+          "name": "Merge Operator",
+          "email": "merge@example.invalid",
+          "time": "2026-11-19T07:00:00-04:00"
+        }
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/migration/history/commit",
+      "input": {
+        "project": "demo",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "commit": "main"
+      },
+      "status": 422,
+      "body": {
+        "detail": "Invalid history query"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/migration/history/commit",
+      "input": {
+        "project": "demo",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "commit": "485cd1dd0cbf61b435801f2913d099bc65df5f51"
+      },
+      "status": 422,
+      "body": {
+        "detail": "Invalid or unsupported archive content or query"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/migration/history/commit",
+      "input": {
+        "project": "demo",
+        "revision": "0000000000000000000000000000000000000000000000000000000000000000",
+        "commit": "5b055008d6c3a46b82546094b45fa77a9ee8c123"
+      },
+      "status": 404,
+      "body": {
+        "detail": "Publication unavailable"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/migration/history/commit",
+      "input": {
+        "project": "demo",
+        "revision": "6d71e4194aaea2a14dc85c1183eb5aa5e2c31188b1f697ba6ca97544f2cac285",
+        "commit": "5b055008d6c3a46b82546094b45fa77a9ee8c123"
+      },
+      "status": 404,
+      "body": {
+        "detail": "Publication unavailable"
+      }
+    }
+  ],
+  "test_runs": [
+    {
+      "entry": "test_migration_history_api.py",
+      "passed": 2
+    },
+    {
+      "entry": "test_history_git.py",
+      "passed": 5
+    }
+  ],
+  "candidate_git_blobs": {
+    "customizations/components/tianxuan/migration/history_git.py": "0763f31727dd86cfb41b92e54b01991c6abd13a2",
+    "customizations/components/tianxuan/server/migration_history_api.py": "5aceea4d01130f7fdcc1218799ab5a2d99a3ed74",
+    "customizations/components/tianxuan/server/test_migration_history_api.py": "4b13aed6e4ff6e68dc9b3ac0d4393583b24eb52b",
+    "customizations/components/tianxuan/migration/README.md": "6129f0a6b3ec157834a6e388ba79e04932391b38",
+    "design-docs/gonggong-ai-workbench-g02.md": "ddc57159850b2c87bff40e4014e47a74baade86b"
+  },
+  "final_verification": "7 passed, 1 warning, 14 subtests passed in 5.37s",
+  "warning": "StarletteDeprecationWarning from fastapi.testclient for httpx in the installed test environment"
+}
