@@ -271,6 +271,9 @@ func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: 
 	var composer := sidebar.find_child("ChatInput", true, false) as TextEdit
 	var messages := sidebar.find_child("Messages", true, false) as VBoxContainer
 	var scroll := sidebar.find_child("ChatScroll", true, false) as ScrollContainer
+	var mode := sidebar.find_child("ConsultationOnly", true, false) as CheckBox
+	if not _check(mode != null and mode.button_pressed, "Unbound workbench entry should default to consultation"):
+		return false
 	var expand := sidebar.find_child("ExpandWorkbench", true, false) as Button
 	var restore := dock.find_child("RestoreWorkbenchSidebar", true, false) as Button
 	if not _check(expand != null and restore != null and expand.is_visible_in_tree(), "Missing workbench view controls"):
@@ -286,6 +289,7 @@ func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: 
 	composer.text = draft
 	await _settle_layout()
 	for attempt in 2:
+		mode.button_pressed = (attempt == 0)
 		var offset := 193 + 127 * attempt
 		scroll.scroll_vertical = offset
 		if not _check(scroll.scroll_vertical == offset, "Sidebar fixture could not scroll to " + str(offset)):
@@ -320,6 +324,8 @@ func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: 
 		elif not await _invoke_workbench():
 			return false
 		await _settle_layout()
+		if not _check(mode.button_pressed == (attempt == 0), "Changing the workbench view reset the selected conversation mode"):
+			return false
 		if not _check(tabs.get_current_tab_control() == source_screen and sidebar.is_visible_in_tree() and sidebar.is_ancestor_of(composer) and composer.has_focus(), "Return did not restore Script and its native sidebar"):
 			return false
 		if not _check(composer.text == draft and _selection_state(composer) == full_selection and sidebar.is_ancestor_of(messages) and scroll.scroll_vertical == full_offset and _selection_state(code) == selection, "Returned conversation or script state changed: " + str([_selection_state(composer), scroll.scroll_vertical, _selection_state(code)])):
@@ -369,6 +375,17 @@ func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: 
 	if not await _invoke_workbench():
 		return false
 	_press_workbench_button(expand)
+	await _settle_layout()
+	var sessions := dock.find_child("AgentTabs", true, false) as TabBar
+	var previous_tab := sessions.current_tab
+	mode.button_pressed = false
+	dock.find_child("AddAgent", true, false).pressed.emit()
+	await _settle_layout()
+	var new_tab := sessions.current_tab
+	if not _check(new_tab != previous_tab and mode.button_pressed, "New workbench session inherited another session's mode"):
+		return false
+	sessions.current_tab = previous_tab
+	sessions.tab_close_pressed.emit(new_tab)
 	await _settle_layout()
 	plugin.remove_dock(temporary_screen)
 	temporary_screen.free()

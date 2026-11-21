@@ -4513,6 +4513,10 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	snapshot_changes_before->set_text(String());
 	snapshot_changes_after->set_text(String());
 	GetAiSession().strConversation = p_session.stData.strConversation.is_empty() ? new_conversation_id() : p_session.stData.strConversation;
+	if (nConversationIndex >= 0 || idWorkbenchReturnScreen.is_valid()) {
+		// The shared composer now belongs to a different workbench session.
+		consultation_only->set_pressed(true);
+	}
 	message_list = p_session.stView.pMessageList;
 	chat_follow_latest = p_session.stView.bFollowLatest;
 	chat_scroll_position = p_session.stView.nScroll;
