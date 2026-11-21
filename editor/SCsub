@@ -43,7 +43,15 @@ if env.editor_build:
 
     env.CommandNoCache(
         "docks/workbench/IssueCreation.gen.h",
-        ["docks/workbench/issue_creation.gd", "docks/workbench/issue_detail.gd"],
+        [
+            "docks/workbench/issue_creation.gd",
+            "docks/workbench/issue_detail.gd",
+            "docks/workbench/issue_time.gd",
+            "docks/workbench/issue_custom_fields.gd",
+            "docks/workbench/issue_milestone.gd",
+            "docks/workbench/issue_search.gd",
+            "docks/workbench/issue_artifacts.gd",
+        ],
         env.Run(editor_builders.daqian_scripts_builder),
     )
 

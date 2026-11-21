@@ -1,0 +1,431 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-u11",
+  "issue_number": 1811,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1811",
+  "observed_at": "2026-11-21T20:49:51.779194+00:00",
+  "source_baseline": "265df5191c0e56d75ab959a83dfd254e6889a113",
+  "source_sha256_lf": {
+    "customizations/components/tianxuan/server/workspace_conversations.py": "5c4a04999095b96b14a7facc22ea66f0c11bfe6d29f3c611979bf6483cfdee3c",
+    "customizations/components/tianxuan/server/test_issue_consultation.py": "396aac695a7b5ba7be3886398956935db574c8faf51e3517cec95ea9996b2a0c",
+    "editor/docks/workbench/module_selector.gd": "ccb6fdd64f86c6d349a288473456a00d7b2f2d8c74b9b3c0324544c473f48591",
+    "editor/docks/workbench/issue_actions/issue_consultation.gd": "57bff1298b2f8f534bc6956581392781945c400daf8345aef94fd97c882ed151",
+    "tests/editor/workbench_issue_consultation.gd": "455491ee04c302110887cda55b533a7f30b40bc4a4b87b128b20f32d2e30a4ea",
+    "tests/editor/run_workbench_issue_consultation.py": "99154402a404287a919a45227b51980ce6c64d80d28d73959c0bb2eb053a8dc5",
+    "design-docs/gonggong-ai-workbench-u11.md": "ed190c0e38c03b7755fb41fac665e08a7c7fd9ec272e3f834df3f89a373e8ad0"
+  },
+  "origin": {
+    "issue_snapshot_sha256": "65a6239f12a011a82e6747167a0a0453bcd6b75ec3c6eb45164c9d36930a543a",
+    "intake_exit": 0,
+    "dependency_state": {
+      "C05 #1864": "CLOSED/COMPLETED",
+      "I02 #1854": "CLOSED/COMPLETED"
+    },
+    "mac_observation": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1811#issuecomment-7067766533",
+    "mac_baseline": "a0697dd93dc3381b98d5f921196ff5cd2b2fe50c",
+    "mac_result": "On the previous macOS binary the detail control displayed A while the chat stayed bound to B. Only manual module navigation selected the intended room. No execution entries appeared in either room.",
+    "candidate_host": "Windows x86_64, isolated headless Godot, authenticated loopback Tianxuan, fixture model transport"
+  },
+  "build": {
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<read-only shared cache> cache_limit=0 --cache-readonly -j6",
+    "compiler": "Visual Studio 14.5, Windows SDK 10.0.26100.0",
+    "full_exit": 0,
+    "rebuild_exit": 0,
+    "full_elapsed": "00:11:57.40",
+    "rebuild_elapsed": "00:00:19.23",
+    "rebuilt": [
+      "editor/docks/workbench/IssueActions.gen.h",
+      "editor/docks/workbench/module_selector.gen.h",
+      "AIWorkbenchSidebar.cpp",
+      "editor static library",
+      "Windows editor and console launcher"
+    ],
+    "full_log_sha256": "a08dc5e8fad04786cdb08e94ca38097efcd139ee39f1aa78345fe07f03885bb0",
+    "rebuild_log_sha256": "97b7721403e46cd3fbf64bca65d3450cffd318a265f0e6f40a2c2d70487e1e47",
+    "artifact_sha256": {
+      "bin/godot.windows.editor.x86_64.exe": "33e43e4fd5fcaf1b4ef3583fc12b13c08db91f3045c802b462a9d708b39664e6",
+      "editor/docks/workbench/IssueActions.gen.h": "a6ddab96358f328caddebc754ad604acb02485aa4fdb7c7f5daf041456e59873",
+      "editor/docks/workbench/module_selector.gen.h": "82b97e64442b9a1e2c3c2ceab0842da5dce1a2f4e1ef555879047be27bbb5973"
+    }
+  },
+  "target_receipt": {
+    "command": "python -X utf8 tests/editor/run_workbench_issue_consultation.py --godot bin/godot.windows.editor.x86_64.exe --report bin/u11.json",
+    "exit_code": 0,
+    "scenarios": {
+      "same_module": {
+        "engine_sha256": "33e43e4fd5fcaf1b4ef3583fc12b13c08db91f3045c802b462a9d708b39664e6",
+        "headless_exit": 0,
+        "native_previews": [
+          {
+            "chat": "4c6c1a1d-076f-43ab-a3af-93c6c706aea5",
+            "draft": "",
+            "issue": "iss_27c2fb6882434c7fa8beca8883843bc7",
+            "preview": "只咨询 · #1 同名工单\n工单 iss_27c2fb6882434c7fa8beca8883843bc7 · 内容版本 4040ae08b87d3473bac4714a385c2fc5b428c81befb198ae96ca20c8a109cc4e\n会话 4c6c1a1d-076f-43ab-a3af-93c6c706aea5",
+            "revision": "4040ae08b87d3473bac4714a385c2fc5b428c81befb198ae96ca20c8a109cc4e"
+          },
+          {
+            "chat": "f46bffed-5667-42ce-95aa-312c2434cf3b",
+            "draft": "B unsent",
+            "issue": "iss_54f4313537bc42bd8eaa9734686131f9",
+            "preview": "只咨询 · #2 同名工单\n工单 iss_54f4313537bc42bd8eaa9734686131f9 · 内容版本 39aa62d3bcc52e4229f047c2962ac28504bd4c37a275c2808daadbdc98c8248b\n会话 f46bffed-5667-42ce-95aa-312c2434cf3b",
+            "revision": "39aa62d3bcc52e4229f047c2962ac28504bd4c37a275c2808daadbdc98c8248b"
+          },
+          {
+            "chat": "4c6c1a1d-076f-43ab-a3af-93c6c706aea5",
+            "draft": "A unsent",
+            "issue": "iss_27c2fb6882434c7fa8beca8883843bc7",
+            "preview": "只咨询 · #1 同名工单\n工单 iss_27c2fb6882434c7fa8beca8883843bc7 · 内容版本 084852b86984dcc00dcd66ec0d13914f315d86761fd55f7a200e59123431d2b9\n会话 4c6c1a1d-076f-43ab-a3af-93c6c706aea5",
+            "revision": "084852b86984dcc00dcd66ec0d13914f315d86761fd55f7a200e59123431d2b9"
+          },
+          {
+            "chat": "f46bffed-5667-42ce-95aa-312c2434cf3b",
+            "draft": "B next",
+            "issue": "iss_54f4313537bc42bd8eaa9734686131f9",
+            "preview": "只咨询 · #2 同名工单\n工单 iss_54f4313537bc42bd8eaa9734686131f9 · 内容版本 39aa62d3bcc52e4229f047c2962ac28504bd4c37a275c2808daadbdc98c8248b\n会话 f46bffed-5667-42ce-95aa-312c2434cf3b",
+            "revision": "39aa62d3bcc52e4229f047c2962ac28504bd4c37a275c2808daadbdc98c8248b"
+          }
+        ],
+        "stored_rooms": [
+          {
+            "issue": "iss_27c2fb6882434c7fa8beca8883843bc7",
+            "chat": "4c6c1a1d-076f-43ab-a3af-93c6c706aea5",
+            "execution": null,
+            "past_executions": [],
+            "turns": [
+              {
+                "project": "studio/u11",
+                "module_id": "mod_51b531bcdd34440d94cd29fcbe63d4e0",
+                "issue_id": "iss_27c2fb6882434c7fa8beca8883843bc7",
+                "references": [
+                  {
+                    "kind": "issue",
+                    "object_id": "iss_27c2fb6882434c7fa8beca8883843bc7",
+                    "revision": "4040ae08b87d3473bac4714a385c2fc5b428c81befb198ae96ca20c8a109cc4e"
+                  }
+                ]
+              },
+              {
+                "project": "studio/u11",
+                "module_id": "mod_51b531bcdd34440d94cd29fcbe63d4e0",
+                "issue_id": "iss_27c2fb6882434c7fa8beca8883843bc7",
+                "references": [
+                  {
+                    "kind": "issue",
+                    "object_id": "iss_27c2fb6882434c7fa8beca8883843bc7",
+                    "revision": "084852b86984dcc00dcd66ec0d13914f315d86761fd55f7a200e59123431d2b9"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "issue": "iss_54f4313537bc42bd8eaa9734686131f9",
+            "chat": "f46bffed-5667-42ce-95aa-312c2434cf3b",
+            "execution": null,
+            "past_executions": [],
+            "turns": [
+              {
+                "project": "studio/u11",
+                "module_id": "mod_51b531bcdd34440d94cd29fcbe63d4e0",
+                "issue_id": "iss_54f4313537bc42bd8eaa9734686131f9",
+                "references": [
+                  {
+                    "kind": "issue",
+                    "object_id": "iss_54f4313537bc42bd8eaa9734686131f9",
+                    "revision": "39aa62d3bcc52e4229f047c2962ac28504bd4c37a275c2808daadbdc98c8248b"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "model_fixture_received": [
+          {
+            "content": "A first\n\n[工单详情] #1 同名工单\n负责人 未分配 · 状态 backlog",
+            "context_snapshot": {
+              "project": "studio/u11",
+              "module_id": "mod_51b531bcdd34440d94cd29fcbe63d4e0",
+              "issue_id": "iss_27c2fb6882434c7fa8beca8883843bc7",
+              "references": [
+                {
+                  "kind": "issue",
+                  "object_id": "iss_27c2fb6882434c7fa8beca8883843bc7",
+                  "revision": "4040ae08b87d3473bac4714a385c2fc5b428c81befb198ae96ca20c8a109cc4e"
+                }
+              ]
+            }
+          },
+          {
+            "content": "B first\n\n[工单详情] #2 同名工单\n负责人 未分配 · 状态 backlog",
+            "context_snapshot": {
+              "project": "studio/u11",
+              "module_id": "mod_51b531bcdd34440d94cd29fcbe63d4e0",
+              "issue_id": "iss_54f4313537bc42bd8eaa9734686131f9",
+              "references": [
+                {
+                  "kind": "issue",
+                  "object_id": "iss_54f4313537bc42bd8eaa9734686131f9",
+                  "revision": "39aa62d3bcc52e4229f047c2962ac28504bd4c37a275c2808daadbdc98c8248b"
+                }
+              ]
+            }
+          },
+          {
+            "content": "A next\n\n[工单详情] #1 同名工单\n负责人 未分配 · 状态 backlog",
+            "context_snapshot": {
+              "project": "studio/u11",
+              "module_id": "mod_51b531bcdd34440d94cd29fcbe63d4e0",
+              "issue_id": "iss_27c2fb6882434c7fa8beca8883843bc7",
+              "references": [
+                {
+                  "kind": "issue",
+                  "object_id": "iss_27c2fb6882434c7fa8beca8883843bc7",
+                  "revision": "084852b86984dcc00dcd66ec0d13914f315d86761fd55f7a200e59123431d2b9"
+                }
+              ]
+            }
+          }
+        ],
+        "editor_writes": [
+          "/api/v1/workspace/conversations/for-issue/iss_27c2fb6882434c7fa8beca8883843bc7",
+          "/api/v1/business-modules/mod_51b531bcdd34440d94cd29fcbe63d4e0/location",
+          "/api/v1/workspace/conversations/4c6c1a1d-076f-43ab-a3af-93c6c706aea5/turns",
+          "/api/v1/workspace/conversations/for-issue/iss_54f4313537bc42bd8eaa9734686131f9",
+          "/api/v1/business-modules/mod_51b531bcdd34440d94cd29fcbe63d4e0/location",
+          "/api/v1/workspace/conversations/f46bffed-5667-42ce-95aa-312c2434cf3b/turns",
+          "/api/v1/workspace/conversations/for-issue/iss_27c2fb6882434c7fa8beca8883843bc7",
+          "/api/v1/business-modules/mod_51b531bcdd34440d94cd29fcbe63d4e0/location",
+          "/api/v1/workspace/conversations/4c6c1a1d-076f-43ab-a3af-93c6c706aea5/turns",
+          "/api/v1/workspace/conversations/for-issue/iss_54f4313537bc42bd8eaa9734686131f9"
+        ],
+        "execution_requests": 0,
+        "different_revision_before_first_send": true
+      },
+      "separate_modules": {
+        "engine_sha256": "33e43e4fd5fcaf1b4ef3583fc12b13c08db91f3045c802b462a9d708b39664e6",
+        "headless_exit": 0,
+        "native_previews": [
+          {
+            "chat": "5a12483c-8324-4fd5-9cb1-c8c4ef741442",
+            "draft": "",
+            "issue": "iss_a0975bea5cb54faabb794cc6013b57b0",
+            "preview": "只咨询 · #1 同名工单\n工单 iss_a0975bea5cb54faabb794cc6013b57b0 · 内容版本 caee65d3c0ef7c46a8bb7030f2ed5cb9063537c74ab073c17c3d5c0cf295737d\n会话 5a12483c-8324-4fd5-9cb1-c8c4ef741442",
+            "revision": "caee65d3c0ef7c46a8bb7030f2ed5cb9063537c74ab073c17c3d5c0cf295737d"
+          },
+          {
+            "chat": "962d64df-d853-4d85-92f1-328d5a774846",
+            "draft": "B unsent",
+            "issue": "iss_2c4dc2b3dc854243bc99daa67f7282a3",
+            "preview": "只咨询 · #2 同名工单\n工单 iss_2c4dc2b3dc854243bc99daa67f7282a3 · 内容版本 34c9aae9c0eae25dffda9df44157a3ac8dd0fcce6ac7ed36cad3bd343d22ffef\n会话 962d64df-d853-4d85-92f1-328d5a774846",
+            "revision": "34c9aae9c0eae25dffda9df44157a3ac8dd0fcce6ac7ed36cad3bd343d22ffef"
+          },
+          {
+            "chat": "5a12483c-8324-4fd5-9cb1-c8c4ef741442",
+            "draft": "A unsent",
+            "issue": "iss_a0975bea5cb54faabb794cc6013b57b0",
+            "preview": "只咨询 · #1 同名工单\n工单 iss_a0975bea5cb54faabb794cc6013b57b0 · 内容版本 9003a64193ee7b6b13993d68752463fa8972238b1bc1f421d1edb1e946f6ae46\n会话 5a12483c-8324-4fd5-9cb1-c8c4ef741442",
+            "revision": "9003a64193ee7b6b13993d68752463fa8972238b1bc1f421d1edb1e946f6ae46"
+          },
+          {
+            "chat": "962d64df-d853-4d85-92f1-328d5a774846",
+            "draft": "B next",
+            "issue": "iss_2c4dc2b3dc854243bc99daa67f7282a3",
+            "preview": "只咨询 · #2 同名工单\n工单 iss_2c4dc2b3dc854243bc99daa67f7282a3 · 内容版本 34c9aae9c0eae25dffda9df44157a3ac8dd0fcce6ac7ed36cad3bd343d22ffef\n会话 962d64df-d853-4d85-92f1-328d5a774846",
+            "revision": "34c9aae9c0eae25dffda9df44157a3ac8dd0fcce6ac7ed36cad3bd343d22ffef"
+          }
+        ],
+        "stored_rooms": [
+          {
+            "issue": "iss_a0975bea5cb54faabb794cc6013b57b0",
+            "chat": "5a12483c-8324-4fd5-9cb1-c8c4ef741442",
+            "execution": null,
+            "past_executions": [],
+            "turns": [
+              {
+                "project": "studio/u11",
+                "module_id": "mod_8656f1a4e8f9446191dfcc9162a034bb",
+                "issue_id": "iss_a0975bea5cb54faabb794cc6013b57b0",
+                "references": [
+                  {
+                    "kind": "issue",
+                    "object_id": "iss_a0975bea5cb54faabb794cc6013b57b0",
+                    "revision": "caee65d3c0ef7c46a8bb7030f2ed5cb9063537c74ab073c17c3d5c0cf295737d"
+                  }
+                ]
+              },
+              {
+                "project": "studio/u11",
+                "module_id": "mod_8656f1a4e8f9446191dfcc9162a034bb",
+                "issue_id": "iss_a0975bea5cb54faabb794cc6013b57b0",
+                "references": [
+                  {
+                    "kind": "issue",
+                    "object_id": "iss_a0975bea5cb54faabb794cc6013b57b0",
+                    "revision": "9003a64193ee7b6b13993d68752463fa8972238b1bc1f421d1edb1e946f6ae46"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "issue": "iss_2c4dc2b3dc854243bc99daa67f7282a3",
+            "chat": "962d64df-d853-4d85-92f1-328d5a774846",
+            "execution": null,
+            "past_executions": [],
+            "turns": [
+              {
+                "project": "studio/u11",
+                "module_id": "mod_802dcf0ab56d4fef892a14b77817f254",
+                "issue_id": "iss_2c4dc2b3dc854243bc99daa67f7282a3",
+                "references": [
+                  {
+                    "kind": "issue",
+                    "object_id": "iss_2c4dc2b3dc854243bc99daa67f7282a3",
+                    "revision": "34c9aae9c0eae25dffda9df44157a3ac8dd0fcce6ac7ed36cad3bd343d22ffef"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "model_fixture_received": [
+          {
+            "content": "A first\n\n[工单详情] #1 同名工单\n负责人 未分配 · 状态 backlog",
+            "context_snapshot": {
+              "project": "studio/u11",
+              "module_id": "mod_8656f1a4e8f9446191dfcc9162a034bb",
+              "issue_id": "iss_a0975bea5cb54faabb794cc6013b57b0",
+              "references": [
+                {
+                  "kind": "issue",
+                  "object_id": "iss_a0975bea5cb54faabb794cc6013b57b0",
+                  "revision": "caee65d3c0ef7c46a8bb7030f2ed5cb9063537c74ab073c17c3d5c0cf295737d"
+                }
+              ]
+            }
+          },
+          {
+            "content": "B first\n\n[工单详情] #2 同名工单\n负责人 未分配 · 状态 backlog",
+            "context_snapshot": {
+              "project": "studio/u11",
+              "module_id": "mod_802dcf0ab56d4fef892a14b77817f254",
+              "issue_id": "iss_2c4dc2b3dc854243bc99daa67f7282a3",
+              "references": [
+                {
+                  "kind": "issue",
+                  "object_id": "iss_2c4dc2b3dc854243bc99daa67f7282a3",
+                  "revision": "34c9aae9c0eae25dffda9df44157a3ac8dd0fcce6ac7ed36cad3bd343d22ffef"
+                }
+              ]
+            }
+          },
+          {
+            "content": "A next\n\n[工单详情] #1 同名工单\n负责人 未分配 · 状态 backlog",
+            "context_snapshot": {
+              "project": "studio/u11",
+              "module_id": "mod_8656f1a4e8f9446191dfcc9162a034bb",
+              "issue_id": "iss_a0975bea5cb54faabb794cc6013b57b0",
+              "references": [
+                {
+                  "kind": "issue",
+                  "object_id": "iss_a0975bea5cb54faabb794cc6013b57b0",
+                  "revision": "9003a64193ee7b6b13993d68752463fa8972238b1bc1f421d1edb1e946f6ae46"
+                }
+              ]
+            }
+          }
+        ],
+        "editor_writes": [
+          "/api/v1/workspace/conversations/for-issue/iss_a0975bea5cb54faabb794cc6013b57b0",
+          "/api/v1/business-modules/mod_8656f1a4e8f9446191dfcc9162a034bb/location",
+          "/api/v1/workspace/conversations/5a12483c-8324-4fd5-9cb1-c8c4ef741442/turns",
+          "/api/v1/workspace/conversations/for-issue/iss_2c4dc2b3dc854243bc99daa67f7282a3",
+          "/api/v1/business-modules/mod_802dcf0ab56d4fef892a14b77817f254/location",
+          "/api/v1/workspace/conversations/962d64df-d853-4d85-92f1-328d5a774846/turns",
+          "/api/v1/workspace/conversations/for-issue/iss_a0975bea5cb54faabb794cc6013b57b0",
+          "/api/v1/business-modules/mod_8656f1a4e8f9446191dfcc9162a034bb/location",
+          "/api/v1/workspace/conversations/5a12483c-8324-4fd5-9cb1-c8c4ef741442/turns",
+          "/api/v1/workspace/conversations/for-issue/iss_2c4dc2b3dc854243bc99daa67f7282a3"
+        ],
+        "execution_requests": 0,
+        "different_revision_before_first_send": true
+      }
+    }
+  },
+  "regressions": {
+    "I02": {
+      "exit": 0,
+      "checks": [
+        "command palette opened sidebar",
+        "assigned and unassigned compared to reopened database",
+        "private and absent results cleared prior detail",
+        "successful refresh after 404, logout cleared the visible record"
+      ],
+      "http_readback": [
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/2/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/3/detail",
+          "studio/game",
+          403
+        ],
+        [
+          "/api/v1/issues/by-number/99999/detail",
+          "studio/game",
+          404
+        ],
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ]
+      ]
+    },
+    "C06": {
+      "exit": 0,
+      "state": "passed",
+      "real_account_switch": true,
+      "last_position_saved": {
+        "issue_id": null,
+        "conversation_id": "b274451d-e872-49cb-af97-490c37b078b8",
+        "position": "module/overview"
+      }
+    },
+    "server": {
+      "tests": [
+        "test_workspace_conversations.py",
+        "test_module_issues.py",
+        "test_issue_consultation.py"
+      ],
+      "passed": 9,
+      "exit": 0,
+      "known_warning": "Starlette TestClient httpx deprecation"
+    },
+    "python_lint_and_format": {
+      "files": 3,
+      "exit": 0
+    }
+  },
+  "method_learning": {
+    "tenant": "gonggong-workspace",
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 25,
+    "applied": "The initial SCons graph predated the new action. The final invocation regenerated both embedded headers, recompiled their sidebar consumer and relinked the editor. Both native target scenarios were repeated on the relinked executable. Dynamic injection on a previous binary was used only for preliminary diagnosis.",
+    "editor_handoff": {
+      "scope": "editor-dependency-handoff",
+      "lesson": "bind-consumer-release",
+      "revision": 26,
+      "applied": "C05 and I02 completion was read from GitHub before implementation. This recorded standalone candidate still requires the parent to verify its final integration."
+    }
+  },
+  "cleanup": "Each fixture copied its editor and project into its own system TemporaryDirectory; those directories and the preliminary source-injection script were removed. The candidate binary, build logs and original reports in this worktree remain for the parent receiving the change."
+}

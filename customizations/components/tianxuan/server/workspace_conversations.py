@@ -11,7 +11,7 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Annotated, Any, Literal, cast
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from access_control import COOKIE, SESSION_COOKIE
 from fastapi import APIRouter, HTTPException, Request
@@ -59,11 +59,17 @@ class EditorReference(Payload):
     revision: str = Field(pattern=r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
 
 
+class IssueReference(Payload):
+    kind: Literal["issue"]
+    object_id: ObjectId
+    revision: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class MessageContext(Payload):
     project: str = Field(pattern=PROJECT_PATTERN)
     module_id: ObjectId
     issue_id: ObjectId | None = None
-    references: list[DocumentReference | EditorReference] = Field(max_length=16)
+    references: list[DocumentReference | EditorReference | IssueReference] = Field(max_length=16)
 
 
 class Turn(Version):
@@ -248,6 +254,13 @@ class Conversations:
             raise HTTPException(404, "conversation unavailable")
         result = dict(row)
         state = json.loads(result.pop("state"))
+        if table_exists(db, "workspace_issue_conversations"):
+            bound = db.execute(
+                "SELECT issue FROM workspace_issue_conversations WHERE tenant=? AND actor=? AND conversation=?",
+                (*owner, key),
+            ).fetchone()
+            if bound:
+                result["consultation_issue_id"] = bound["issue"]
         return {"requirement_version": None, "execution": None, "past_executions": [], **state, **result}
 
     def save(self, db: sqlite3.Connection, owner: tuple[str, str], record: dict[str, Any]) -> dict[str, Any]:
@@ -302,6 +315,10 @@ class Conversations:
 
     def create(self, actor: str, key: str) -> dict[str, Any]:
         owner = self.owner(actor)
+        with self.transaction() as db:
+            return self.create_in(db, owner, key)
+
+    def create_in(self, db: sqlite3.Connection, owner: tuple[str, str], key: str) -> dict[str, Any]:
         state: dict[str, Any] = {
             "turns": [],
             "revisions": [],
@@ -311,13 +328,45 @@ class Conversations:
             "execution": None,
             "past_executions": [],
         }
+        self.ensure_schema(db)
+        db.execute(
+            "INSERT OR IGNORE INTO workspace_conversations VALUES (?,?,?,?,?,?,?)",
+            (key, *owner, "", now(), 0, json.dumps(state)),
+        )
+        return self.get(db, owner, key)
+
+    def for_issue(self, actor: str, project: str, module_id: str, issue_id: str) -> dict[str, Any]:
+        owner = self.owner(actor)
         with self.transaction() as db:
-            self.ensure_schema(db)
+            issue = self.domain.read_issue(actor, issue_id)
+            if (issue["project"], issue["module_id"]) != (project, module_id):
+                raise conflict("selected issue no longer belongs to this project and module")
             db.execute(
-                "INSERT OR IGNORE INTO workspace_conversations VALUES (?,?,?,?,?,?,?)",
-                (key, *owner, "", now(), 0, json.dumps(state)),
+                "CREATE TABLE IF NOT EXISTS workspace_issue_conversations ("
+                "tenant TEXT NOT NULL, actor TEXT NOT NULL, issue TEXT NOT NULL, conversation TEXT NOT NULL, "
+                "PRIMARY KEY (tenant,actor,issue), UNIQUE (tenant,actor,conversation))"
             )
-            return self.get(db, owner, key)
+            # Capture the old C06 room before navigation overwrites the module's last location.
+            location = self.domain.module_location(actor, project, issue["module_id"])
+            if location and location["issue_id"] and location["conversation_id"]:
+                prior = self.get(db, owner, location["conversation_id"])
+                if all(
+                    (turn.get("context_snapshot") or {}).get("issue_id", location["issue_id"]) == location["issue_id"]
+                    for turn in prior["turns"]
+                ):
+                    db.execute(
+                        "INSERT OR IGNORE INTO workspace_issue_conversations VALUES (?,?,?,?)",
+                        (*owner, location["issue_id"], prior["id"]),
+                    )
+            bound = db.execute(
+                "SELECT conversation FROM workspace_issue_conversations WHERE tenant=? AND actor=? AND issue=?",
+                (*owner, issue_id),
+            ).fetchone()
+            if bound:
+                return self.get(db, owner, bound["conversation"])
+            chat = self.create_in(db, owner, str(uuid4()))
+            db.execute("INSERT INTO workspace_issue_conversations VALUES (?,?,?,?)", (*owner, issue_id, chat["id"]))
+            return chat | {"consultation_issue_id": issue_id}
 
     @staticmethod
     def check(record: dict[str, Any], version: int) -> None:
@@ -367,6 +416,8 @@ class Conversations:
             if (issue["project"], issue["module_id"]) != (snapshot.project, snapshot.module_id):
                 raise conflict("selected issue no longer belongs to this project and module")
         for reference in snapshot.references:
+            if isinstance(reference, IssueReference) and reference.object_id != snapshot.issue_id:
+                raise conflict("issue reference differs from the selected issue")
             if isinstance(reference, DocumentReference):
                 self.domain.get_doc_shared(actor, reference.object_id)
                 version = self.domain.version(reference.object_id, reference.revision)
@@ -403,6 +454,11 @@ class Conversations:
                 raise conflict("resolve the pending turn first")
             if payload.context_snapshot is not None:
                 self.check_selection(actor, owner[0], payload.context_snapshot)
+                if (
+                    "consultation_issue_id" in record
+                    and record["consultation_issue_id"] != payload.context_snapshot.issue_id
+                ):
+                    raise conflict("conversation belongs to another issue")
             context = self.context(record)
             message: dict[str, Any] = {
                 "id": turn_id,
@@ -701,6 +757,10 @@ def create_workspace_conversation_router(
     @router.post("", status_code=201)
     def create(request: Request, payload: Create):
         return service.create(workspace_actor(request, write=True), str(payload.id))
+
+    @router.post("/for-issue/{issue_id}")
+    def for_issue(request: Request, issue_id: str, project: str, module_id: str):
+        return service.for_issue(workspace_actor(request, write=True), project, module_id, issue_id)
 
     @router.get("/{key}")
     def get(request: Request, key: UUID):

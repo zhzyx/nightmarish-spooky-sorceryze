@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-u11",
+  "event_id": "wave22-windows-issues-1811",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1811",
+  "occurred_at": "2026-11-21T20:25:14.778907+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1811,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T20:25:12Z",
+    "accepted_dependencies": {
+      "1864": "c82b8bc3a22112af8e2b3f78e6a1f224b3161ea5",
+      "1854": "c8d07b74fc4d5b615aca671e57e5e60b8271ca08"
+    }
+  },
+  "evidence_refs": [],
+  "sha256": "3e12e88cb8eab4b6c29d0b82e79e493a7db1a13c198cce9e1c8d903e2521b826"
+}

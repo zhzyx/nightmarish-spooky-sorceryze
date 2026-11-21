@@ -20,6 +20,8 @@ func _ready() -> void:
 	_open.pressed.connect(_toggle)
 	add_child(_open)
 	add_child(_form)
+	move_child(_open, 0)
+	move_child(_form, 1)
 	_number.name = "IssueDetailNumber"
 	_number.placeholder_text = "天璇工单编号"
 	_number.text_changed.connect(func(_value: String): _clear())

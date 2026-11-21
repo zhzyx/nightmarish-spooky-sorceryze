@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i09",
+  "issue_number": 1752,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1752",
+  "baseline": "c8d07b74fc4d5b615aca671e57e5e60b8271ca08",
+  "observed_at": "2026-11-21T19:00:24.938569+00:00",
+  "source_revision_sha256": "91f4b0d926e976cb6c304714f2696a182e7629695b349194e00049bd2efac768",
+  "prerequisites": {
+    "intake_exit_code": 0,
+    "I02": {
+      "number": 1854,
+      "state": "CLOSED/COMPLETED"
+    }
+  },
+  "method_recall": {
+    "tenant": "gonggong-workspace",
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 24,
+    "observed": "Changing an embedded sidebar script invalidated the generated header, native sidebar object and linked editor. Windows candidate consumer checks used this rebuilt executable."
+  },
+  "native_build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5, Windows SDK 10.0.26100.0, SCons 4.11.1",
+    "arguments": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j6",
+    "baseline_exit": 0,
+    "baseline_log_sha256": "f9c3b1bfc9fcd899e4ae0c540acaf4a06d98657bde7fccfdf97370aadedba395",
+    "previous_engine_sha256": "694780a7e343d58dbe1ab00fea25804c403ea393258bae388066ffd4823e1145",
+    "previous_header_sha256": "c66da8241611303063f884d26d33c49396811dc8274e1f0896faf5db71a6e07d",
+    "feature_build": {
+      "exit_code": 0,
+      "log_sha256": "35b2580b2146969f6a24b485ef28f275b0baff6eb2e25d62ba4958b4195808c6",
+      "first_passing_engine_sha256": "d5df91db16d7632ba28d7031b99c8ea5c88f8212ab11ead3558bea4e3db08308",
+      "I09_exit": 0,
+      "I02_exit": 0
+    },
+    "final_change": "Removed trailing blank lines found by the staged diff check. Rebuilt the embedded GDScript and reran both native consumers on the final bytes.",
+    "candidate_exit": 0,
+    "candidate_log_sha256": "2ab90d77281fdcd266852ce0d04c3baedeb5422599c7733c748fc5f8c14bcc0d",
+    "header_sha256": "3734ce729046f07a31f7a64e61bb3d69f1ff44e6e936b33f6c0f227cf019b3b3",
+    "engine_sha256": "1122b790ec5195b4db8aa3f6f564d928d0cea73e39e5268c58bf3945af2dd3d9",
+    "invalidation": [
+      "Generating editor\\docks\\workbench\\IssueCreation.gen.h ...",
+      "Compiling editor\\docks\\workbench\\AIWorkbenchSidebar.cpp ...",
+      "Linking Static Library bin\\obj\\editor\\editor.windows.editor.x86_64.lib ...",
+      "Linking Program bin\\godot.windows.editor.x86_64.exe ...",
+      "Linking Program bin\\godot.windows.editor.x86_64.console.exe ..."
+    ]
+  },
+  "directed_service_tests": {
+    "pytest_exit_code": 0,
+    "passed": 15,
+    "files": [
+      "test_work_management.py",
+      "test_issue_flow.py"
+    ],
+    "checks": [
+      "pre-feature database migration",
+      "project and tenant field isolation",
+      "viewer denied schema write",
+      "foreign project/field rejected",
+      "same call replay and stale version rejection",
+      "work.plan and flow regressions"
+    ]
+  },
+  "service_regressions": {
+    "pytest_exit_code": 0,
+    "passed": 17,
+    "files": [
+      "test_issue_number.py",
+      "test_issue_ancestor_acl.py",
+      "test_module_issues.py"
+    ]
+  },
+  "static": {
+    "ruff_check": "passed",
+    "mypy": "3 service modules passed"
+  },
+  "native_consumer": {
+    "exit_code": 0,
+    "entry": "Open AI Workbench > 工单详情 > 字段与阶段",
+    "engine_sha256": "1122b790ec5195b4db8aa3f6f564d928d0cea73e39e5268c58bf3945af2dd3d9",
+    "controls": [
+      {
+        "field": "地图",
+        "project": "studio/game",
+        "stage": "layout",
+        "value": "平原"
+      },
+      {
+        "field": "镜头",
+        "project": "studio/film",
+        "stage": "cut",
+        "value": "近景"
+      }
+    ],
+    "reopened_authority": [
+      {
+        "project": "studio/game",
+        "stage": "layout",
+        "version": 2,
+        "plan": {
+          "iteration": "week 2",
+          "milestone": "RC1",
+          "roadmap": "studio/game",
+          "status": "art",
+          "estimated_minutes": 75,
+          "custom_fields": {
+            "legacyFlag": false,
+            "legacyInteger": 1152921504606846977,
+            "legacyNote": "历史资料",
+            "map": "平原"
+          }
+        }
+      },
+      {
+        "project": "studio/film",
+        "stage": "cut",
+        "version": 2,
+        "plan": {
+          "iteration": "week 2",
+          "milestone": "RC1",
+          "roadmap": "studio/film",
+          "status": "art",
+          "estimated_minutes": 75,
+          "custom_fields": {
+            "legacyFlag": false,
+            "legacyInteger": 1152921504606846977,
+            "legacyNote": "历史资料",
+            "shot": "近景"
+          }
+        }
+      }
+    ],
+    "http_writes": [
+      [
+        "/api/v1/issues/iss_561da8e8e0ad443889339c845a1d33a9/work/plan",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/iss_561da8e8e0ad443889339c845a1d33a9/work/flow/advance",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/iss_15d239e11ad244b1ae51feb13dd3e400/work/plan",
+        "studio/film",
+        200
+      ],
+      [
+        "/api/v1/issues/iss_15d239e11ad244b1ae51feb13dd3e400/work/flow/advance",
+        "studio/film",
+        200
+      ]
+    ],
+    "switch_cleared": true,
+    "logout_cleared": true
+  },
+  "native_I02_regression": {
+    "exit_code": 0,
+    "engine_sha256": "1122b790ec5195b4db8aa3f6f564d928d0cea73e39e5268c58bf3945af2dd3d9",
+    "checks": [
+      "command palette opened sidebar",
+      "assigned and unassigned compared to reopened database",
+      "private and absent results cleared prior detail",
+      "successful refresh after 404, logout cleared the visible record"
+    ]
+  },
+  "source_sha256": {
+    "editor/SCsub": "7d9aa12b7edc27821aeffe241ab71efb4850d70810fc5381800e8c1e4c8838c9",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "9cc49eb0ed04e59f1709bfe4f22e0f2bbdaf6d7a1a69d45db482b8056da74328",
+    "editor/docks/workbench/issue_custom_fields.gd": "d8b679bba9860fc634dfb41b149ff1140dbac49c432889f61a650bbca37a933a",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "7e72692f75ba323dd302f25c0e117203122b7da5d96167b2af8b1badcccf6e84",
+    "customizations/components/tianxuan/server/work_management.py": "061e6558eb4b44b3031be83698b992e3bc28d7002144974ad585edc74a6f18f5",
+    "customizations/components/tianxuan/server/work_management_api.py": "2852036bf7bc2d9cc1c446d0d7b50c9dcf6c13b8754c58bb8bd7d00b710f610f",
+    "customizations/components/tianxuan/server/test_work_management.py": "a4a738438172938139c4aa1d2af763f6cebacb9b8cff2e99e622788134a9da86",
+    "tests/editor/run_workbench_issue_custom_fields.py": "d59a978aa284760e3812501a81422048b7623fce52dae53c64792951a11bc1ac",
+    "tests/editor/workbench_issue_custom_fields.gd": "9f4579f01fcb12c44a5495b28248ccb76854a976927b1cd9bd38059a2113fb0d",
+    "design-docs/gonggong-ai-workbench-i09.md": "d9fd8aec1635ffaf5fb8438a753fa89dbd07b2b694e64d75fbfab02787b4efd1"
+  },
+  "source_git_blob": {
+    "editor/SCsub": "b4176f6a5c6514745433a9658e8b802d86ff748e",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "a371c8638f356657be395a8e51da10b682056a15",
+    "editor/docks/workbench/issue_custom_fields.gd": "6fca5e8cb520891dae66b8ccef01c495a7c92137",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "9afe10ed4b79e147ad6838b18b74d9cc1c0fbe3c",
+    "customizations/components/tianxuan/server/work_management.py": "94ce715d7efcb5c8d1244e398bf3bef5db9ac94c",
+    "customizations/components/tianxuan/server/work_management_api.py": "04bde691e1f5689a05305df2e564f67a607c0c01",
+    "customizations/components/tianxuan/server/test_work_management.py": "e115f56069d84ab5166a5687ab8331975440f9e6",
+    "tests/editor/run_workbench_issue_custom_fields.py": "46553540385fc5dbe439358d443d13150ecc9a8a",
+    "tests/editor/workbench_issue_custom_fields.gd": "b09283cb4ed0f7515832a38edf33276b49f13a99",
+    "design-docs/gonggong-ai-workbench-i09.md": "b6d5b1bf459405cab8f70d108afd2c01d29a84ee"
+  },
+  "acceptance": {
+    "projects": "Only the active project's defined text field and configured target stage were available in the real sidebar.",
+    "round_trip": "Reopened Tianxuan plans matched original plans with only the selected key changed. Milestone, estimated minutes, iteration, roadmap, independent plan status and unknown string, boolean and 64-bit integer were retained.",
+    "delivery": "Independent worker candidate and receiving Tianxuan database verified. Repository integration and GitHub close/readback belong to the parent publisher."
+  }
+}

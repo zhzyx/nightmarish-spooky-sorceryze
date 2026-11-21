@@ -16,6 +16,7 @@ from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
 from native_store import Conflict, NativeStore, NativeStoreError
 from starlette.concurrency import run_in_threadpool
+from tianxuan_core import require_native_source_read as _module_read
 
 PREFIX = "/api/v1/native"
 MAX_BODY = 8 * 1024 * 1024
@@ -283,57 +284,6 @@ async def _call(function: Callable[..., Any], *args: Any) -> Any:
         if code in {5, 6}:
             raise HTTPException(503, "native storage busy", headers={"Retry-After": "1"}) from None
         raise HTTPException(500, "native storage failure") from None
-
-
-def _module_read(domain: Any, actor: str, module: str) -> None:
-    _module_read_once(domain, actor, module, set())
-
-
-def _module_read_once(domain: Any, actor: str, module: str, seen: set[str]) -> None:
-    if module in seen:
-        return
-    seen.add(module)
-    if module.startswith("requirement-"):
-        domain.require_native_module_read(actor, module)
-        return
-    catalog_module = re.fullmatch(r"(entry-[a-f0-9]{64})-.+", module)
-    integration_module = re.fullmatch(r"integration-([a-f0-9]{64})", module)
-    if not catalog_module and not integration_module:
-        return
-    with domain._connection_lock:
-        db = domain.db
-        tenant = domain.actor_context(actor)["tenant"]
-        if (
-            integration_module
-            and db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='native_integrations'").fetchone()
-        ):
-            row = db.execute(
-                "SELECT plan FROM native_integrations WHERE id=? AND json_extract(plan,'$.tenant')=?",
-                (integration_module[1], tenant),
-            ).fetchone()
-            if row:
-                plan = json.loads(row["plan"])
-                for name in plan["base"]:
-                    _module_read_once(domain, actor, name, seen)
-                for original in plan["originals"]:
-                    contract = original["contract"]
-                    domain._require_tenant_issue(actor, contract["issue"])
-                    for requirement in contract["source"]["definition"]["requirements"]:
-                        domain.get_doc_shared(actor, requirement["id"])
-                    for name in contract["selected"]:
-                        _module_read_once(domain, actor, name, seen)
-        if (
-            catalog_module
-            and db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='native_entry_catalogs'").fetchone()
-        ):
-            row = db.execute(
-                "SELECT json_extract(origin,'$.requirement') AS requirement FROM native_entry_catalogs "
-                "WHERE product=? AND json_extract(origin,'$.tenant')=? "
-                "AND EXISTS (SELECT 1 FROM json_each(origin,'$.modules') WHERE value=?)",
-                (catalog_module[1], tenant, module),
-            ).fetchone()
-            if row:
-                domain._require_requirement(actor, row["requirement"])
 
 
 def _compose(store: NativeStore, domain: Any, tenant: str, actor: str, selected: dict[str, str]) -> dict[str, Any]:

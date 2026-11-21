@@ -5,20 +5,67 @@ from typing import Literal
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import Response
 from issue_flow import execute_flow
-from work_management import execute, godot_inputs, read_approved_asset
+from tianxuan_core import DEFAULT_PROJECT
+from work_management import (
+    define_text_field,
+    execute,
+    godot_inputs,
+    list_issue_artifacts,
+    plan_membership,
+    project_fields,
+    read_approved_asset,
+    read_issue_artifact,
+)
 
 
 def create_work_router(store, actor_dependency):
     router = APIRouter(prefix="/api/v1")
     actor_dep = Depends(actor_dependency)
 
+    def issue_actor(issue_id: str, project: str | None = None, actor: str = actor_dep):
+        if project is not None and store.read_issue(actor, issue_id)["project"] != project:
+            raise HTTPException(404, "issue not found in project")
+        return actor
+
+    scoped_actor = Depends(issue_actor)
+
+    @router.get("/work/field-definitions")
+    def fields(project: str, actor: str = actor_dep):
+        return project_fields(store, actor, project)
+
+    @router.put("/work/field-definitions/{key}")
+    def define_field(key: str, project: str, body: dict, actor: str = actor_dep):
+        if body.keys() != {"label"}:
+            raise HTTPException(422, "text field label required")
+        return define_text_field(store, actor, project, key, body["label"])
+
     @router.get("/work/roadmap")
     def roadmap(actor: str = actor_dep):
         return store.dispatch_tool(actor, "work.roadmap", {})
 
     @router.get("/issues/{issue_id}/work")
-    def read(issue_id: str, actor: str = actor_dep):
+    def read(issue_id: str, actor: str = scoped_actor):
         return store.dispatch_tool(actor, "work.read", {"issue_id": issue_id})
+
+    @router.get("/issues/{issue_id}/work/plan")
+    def read_plan(issue_id: str, project: str, actor: str = actor_dep):
+        return plan_membership(store, actor, issue_id, project)
+
+    @router.get("/issues/by-number/{number}/artifacts")
+    def artifacts(number: int, project: str = DEFAULT_PROJECT, actor: str = actor_dep):
+        return {"artifacts": list_issue_artifacts(store, actor, project, number)}
+
+    @router.get("/issues/by-number/{number}/artifacts/{version}", response_class=Response)
+    def artifact(number: int, version: int, project: str = DEFAULT_PROJECT, actor: str = actor_dep):
+        return Response(
+            read_issue_artifact(store, actor, project, number, version),
+            media_type="application/octet-stream",
+            headers={
+                "Cache-Control": "private, no-store",
+                "Content-Disposition": "attachment",
+                "X-Content-Type-Options": "nosniff",
+            },
+        )
 
     @router.get("/issues/{issue_id}/work/godot-inputs", response_class=Response)
     def current_godot_inputs(issue_id: str, request: Request, actor: str = actor_dep):
@@ -50,7 +97,7 @@ def create_work_router(store, actor_dependency):
         )
 
     @router.get("/issues/{issue_id}/work/flow")
-    def read_flow(issue_id: str, actor: str = actor_dep):
+    def read_flow(issue_id: str, actor: str = scoped_actor):
         return store.dispatch_tool(actor, "flow.read", {"issue_id": issue_id})
 
     @router.post("/issues/{issue_id}/work/flow/{operation}")
@@ -58,7 +105,7 @@ def create_work_router(store, actor_dependency):
         issue_id: str,
         operation: Literal["configure", "dependencies", "advance", "judge"],
         body: dict,
-        actor: str = actor_dep,
+        actor: str = scoped_actor,
     ):
         if "issue_id" in body:
             raise HTTPException(422, "issue_id belongs in the request path")
@@ -71,7 +118,7 @@ def create_work_router(store, actor_dependency):
         issue_id: str,
         operation: Literal["plan", "log", "submit_asset", "decide"],
         body: dict,
-        actor: str = actor_dep,
+        actor: str = scoped_actor,
     ):
         if "issue_id" in body:
             raise HTTPException(422, "issue_id belongs in the request path")

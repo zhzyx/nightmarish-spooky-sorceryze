@@ -26,6 +26,8 @@ var module_id := ""
 var location := {}
 var conversation := {}
 var issue_details := {}
+var consultation_sources := {}
+var consultation_preview := Label.new()
 var comments: Array = []
 var drafts := {}
 var pending_turn := {}
@@ -70,6 +72,10 @@ func _ready() -> void:
 	page.name = "ModulePagePosition"
 	page.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	content.add_child(page)
+	consultation_preview.name = "IssueConsultationBinding"
+	consultation_preview.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+	consultation_preview.hide()
+	content.add_child(consultation_preview)
 	history.name = "ModuleConversation"
 	history.editable = false
 	history.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
@@ -136,6 +142,9 @@ func _identity_changed() -> void:
 	pending_turn.clear()
 	_reset_reference_scope()
 	staged_assets.clear()
+	consultation_sources.clear()
+	consultation_preview.text = ""
+	consultation_preview.hide()
 	if asset_picker:
 		asset_picker.reset()
 	location_dirty = false
@@ -258,23 +267,28 @@ func _select(index: int) -> void:
 	elif target == null:
 		var response := await _request(MODULES)
 		if response.get("modules") is Array:
-			picker.clear()
-			picker.add_item("本机会话")
-			picker.set_item_metadata(0, "")
-			var counts := {}
-			for item in response.modules:
-				counts[item.name] = counts.get(item.name, 0) + 1
-			for item in response.modules:
-				var label := str(item.name)
-				if counts[label] > 1:
-					label += " · " + str(item.id)
-				picker.add_item(label)
-				picker.set_item_metadata(picker.item_count - 1, item.id)
+			_populate_modules(response.modules)
 			picker.show_popup()
 	elif target != module_id:
 		await _switch_to(target)
 	if identity_generation == generation:
 		_lock(false)
+
+
+func _populate_modules(modules: Array) -> void:
+	picker.clear()
+	picker.add_item("本机会话")
+	picker.set_item_metadata(0, "")
+	var counts := {}
+	for item in modules:
+		counts[item.name] = counts.get(item.name, 0) + 1
+	for item in modules:
+		var label := str(item.name)
+		if counts[label] > 1:
+			label += " · " + str(item.id)
+		picker.add_item(label)
+		picker.set_item_metadata(picker.item_count - 1, item.id)
+	_select_current()
 
 
 func _save_location() -> bool:
@@ -309,6 +323,8 @@ func _save_draft() -> bool:
 		if str(record.text).contains(locator) and redact_reference(locator) == locator:
 			assets[locator] = staged_assets[key][locator]
 	record["assets"] = assets
+	if consultation_sources.has(conversation.get("id")):
+		record["consultation"] = consultation_sources[conversation.id]
 	if not managed_identity:
 		drafts[key] = record
 		return true
@@ -319,7 +335,10 @@ func _save_draft() -> bool:
 
 
 func _saved_draft_hash(record: Dictionary) -> String:
-	return JSON.stringify([record.get("text", ""), record.get("references", []), record.get("excerpts", {}), record.get("assets", {})]).sha256_text()
+	var fields := [record.get("text", ""), record.get("references", []), record.get("excerpts", {}), record.get("assets", {})]
+	if record.has("consultation"):
+		fields.append(record.consultation)
+	return JSON.stringify(fields).sha256_text()
 
 
 func _restore_draft() -> void:
@@ -327,6 +346,9 @@ func _restore_draft() -> void:
 	_reset_reference_scope()
 	var key := _draft_key(location.get("issue_id"))
 	var record := {} if module_id.is_empty() else _read_draft(key)
+	var source: Dictionary = record.get("consultation", {})
+	if not source.is_empty() and source.get("id") == location.get("issue_id") and record.get("conversation_id") == conversation.get("id") and conversation.has("id") and not consultation_sources.has(conversation.id):
+		consultation_sources[conversation.id] = source
 	staged_assets[key] = record.get("assets", {})
 	var pending: Dictionary = record.get("pending", {})
 	composer.text = record.get("text", "")
@@ -346,7 +368,20 @@ func _restore_draft() -> void:
 	restoring_draft = false
 
 
-func _switch_to(target: String) -> void:
+func open_issue_consultation(detail: Node) -> void:
+	var source: Dictionary = detail.get_detail()
+	if busy or source.is_empty() or source.get("project") != project:
+		_notice("请等待当前请求完成，再从工单详情打开咨询。")
+		return
+	var generation := identity_generation
+	_lock(true)
+	_notice("")
+	await _switch_to(source.module_id, source, detail)
+	if identity_generation == generation:
+		_lock(false)
+
+
+func _switch_to(target: String, source := {}, detail: Node = null) -> void:
 	if not module_id.is_empty():
 		if not _save_draft() or not await _save_location():
 			return
@@ -355,10 +390,17 @@ func _switch_to(target: String) -> void:
 	var next_issues: Array = []
 	var next_comments: Array = []
 	if not target.is_empty():
-		var result := await _request(_location_path(target))
-		if not result.has("location"):
-			return
-		next_location = result.location if result.location != null else {"issue_id": null, "conversation_id": null, "position": "module/overview"}
+		if source.is_empty():
+			var result := await _request(_location_path(target))
+			if not result.has("location"):
+				return
+			next_location = result.location if result.location != null else {"issue_id": null, "conversation_id": null, "position": "module/overview"}
+		else:
+			var available := await _request(MODULES)
+			if not available.get("modules") is Array or not available.modules.any(func(item): return item.id == target):
+				return
+			_populate_modules(available.modules)
+			next_location = {"issue_id": source.id, "conversation_id": null, "position": "issue/consultation"}
 		var issue_result := await _request("/api/v1/issues?module_id=" + target.uri_encode())
 		if not issue_result.get("issues") is Array:
 			return
@@ -371,7 +413,15 @@ func _switch_to(target: String) -> void:
 			if not thread.get("comments") is Array:
 				return
 			next_comments = thread.comments
-		if next_location.conversation_id != null:
+		if not source.is_empty():
+			if detail.get_detail() != source:
+				return
+			var route := CONVERSATIONS + "/for-issue/" + str(source.id).uri_encode() + "?module_id=" + target.uri_encode()
+			next_chat = await _request(route, HTTPClient.METHOD_POST)
+			if next_chat.get("consultation_issue_id") != source.id or detail.get_detail() != source:
+				return
+			next_location.conversation_id = next_chat.id
+		elif next_location.conversation_id != null:
 			next_chat = await _request(CONVERSATIONS + "/" + str(next_location.conversation_id).uri_encode())
 			if next_chat.get("id") != next_location.conversation_id:
 				return
@@ -381,7 +431,13 @@ func _switch_to(target: String) -> void:
 	conversation = next_chat
 	comments = next_comments
 	issue_details.clear()
-	location_dirty = false
+	location_dirty = not source.is_empty()
+	if not source.is_empty():
+		var owner: Variant = source.get("assignee")
+		if owner is Dictionary:
+			owner = {"id": owner.id, "name": redact_reference(str(owner.get("name", "")))}
+		consultation_sources[next_chat.id] = {"id": source.id, "revision": source.revision,
+			"number": source.number, "title": redact_reference(source.title), "assignee": owner, "status": source.status}
 	_select_current()
 	content.visible = not module_id.is_empty()
 	size_flags_vertical = Control.SIZE_EXPAND_FILL if content.visible else Control.SIZE_SHRINK_BEGIN
@@ -464,6 +520,10 @@ func _render() -> void:
 		asset_picker.update_issue_button()
 	page.text = location.get("position", "")
 	page.tooltip_text = page.text
+	var source: Dictionary = consultation_sources.get(conversation.get("id"), {})
+	consultation_preview.visible = not source.is_empty()
+	if not source.is_empty():
+		consultation_preview.text = "只咨询 · #%d %s\n工单 %s · 内容版本 %s\n会话 %s" % [source.number, source.title, source.id, source.revision, conversation.id]
 	var messages := PackedStringArray()
 	var issue: Dictionary = issue_details.get(location.get("issue_id"), {})
 	if not str(issue.get("body_md", "")).is_empty():
@@ -570,10 +630,18 @@ func _send() -> void:
 		_notice("引用已失效，请移除或重新选择后发送。")
 		return
 	var body: String = frozen.content
+	var source: Dictionary = consultation_sources.get(conversation.get("id"), {})
+	if not source.is_empty():
+		var owner := str(source.assignee.name) if source.assignee is Dictionary else "未分配"
+		if owner.is_empty() and source.assignee is Dictionary:
+			owner = str(source.assignee.id)
+		body += redact_reference("\n\n[工单详情] #%d %s\n负责人 %s · 状态 %s" % [source.number, source.title, owner, source.status])
 	if body.length() > 8000:
 		_notice("正文与引用合计超过 8000 字符，请缩短后发送。")
 		return
 	var references: Array = frozen.references.duplicate()
+	if not source.is_empty():
+		references.append({"kind": "issue", "object_id": source.id, "revision": source.revision})
 	for reference in _asset_references(_draft_key(location.get("issue_id")), body) + _document_references(body):
 		if not references.has(reference):
 			references.append(reference)

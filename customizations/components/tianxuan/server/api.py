@@ -68,6 +68,7 @@ from schemas import (
     InviteAcceptRequest,
     InviteCreateRequest,
     IssueAssigneeRequest,
+    IssueClassificationRequest,
     IssueCommentCreateRequest,
     IssueModuleRequest,
     IssueParentRequest,
@@ -764,11 +765,26 @@ def create_app(
         requirement_id: str | None = Query(default=None),
         project: str | None = Query(default=None),
         module_id: str | None = Query(default=None),
-    ) -> dict[str, list[dict[str, Any]]]:
-        issues = store.list_issues(actor, requirement_id, project=project, module_id=module_id)
-        if status is not None:
-            issues = [issue for issue in issues if issue["status"] == status]
-        return {"issues": issues}
+        assignee: str | None = Query(default=None),
+        q: str | None = Query(default=None),
+        label: str | None = Query(default=None, min_length=1, max_length=128),
+    ) -> dict[str, Any]:
+        issues = store.list_issues(
+            actor,
+            requirement_id,
+            project=project,
+            module_id=module_id,
+            status=status,
+            assignee=assignee,
+            keyword=q,
+            label=label,
+        )
+        result: dict[str, Any] = {"issues": issues}
+        if assignee or q:
+            result["applied_search"] = {"assignee": assignee or "", "q": q or ""}
+        if label is not None:
+            result["label_filter"] = {"name": label.strip(), "project": project or DEFAULT_PROJECT}
+        return result
 
     @app.get("/api/v1/issues/by-number/{number}")
     def read_issue_number(number: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
@@ -777,6 +793,17 @@ def create_app(
     @app.get("/api/v1/issues/by-number/{number}/detail")
     def read_issue_detail(number: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
         return cast(dict[str, Any], store.read_issue_detail(actor, project, number))
+
+    @app.put("/api/v1/issues/{issue_id}/classification")
+    def set_issue_classification(
+        issue_id: str, payload: IssueClassificationRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(
+            dict[str, Any],
+            store.set_issue_classification(
+                actor, issue_id, project, payload.type, payload.labels, payload.expected_type, payload.expected_labels
+            ),
+        )
 
     @app.get("/api/v1/issues/{issue_id}/hierarchy")
     def issue_hierarchy(issue_id: str, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:

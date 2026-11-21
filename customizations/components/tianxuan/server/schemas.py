@@ -400,6 +400,15 @@ class ModuleLocationRequest(BaseModel):
     position: str = Field(min_length=1, max_length=2048)
 
 
+class IssueClassificationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    type: str
+    labels: list[str] = Field(max_length=100)
+    expected_type: str
+    expected_labels: list[str] = Field(max_length=100)
+
+
 class IssueParentRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
