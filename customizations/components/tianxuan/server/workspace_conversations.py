@@ -11,7 +11,7 @@ from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Annotated, Any, Literal, cast
-from uuid import UUID
+from uuid import NAMESPACE_URL, UUID, uuid5
 
 from access_control import COOKIE, SESSION_COOKIE
 from fastapi import APIRouter, HTTPException, Request
@@ -59,11 +59,17 @@ class EditorReference(Payload):
     revision: str = Field(pattern=r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
 
 
+class IssueReference(Payload):
+    kind: Literal["issue"]
+    object_id: ObjectId
+    revision: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
 class MessageContext(Payload):
     project: str = Field(pattern=PROJECT_PATTERN)
     module_id: ObjectId
     issue_id: ObjectId | None = None
-    references: list[DocumentReference | EditorReference] = Field(max_length=16)
+    references: list[DocumentReference | EditorReference | IssueReference] = Field(max_length=16)
 
 
 class Turn(Version):
@@ -367,7 +373,12 @@ class Conversations:
             if (issue["project"], issue["module_id"]) != (snapshot.project, snapshot.module_id):
                 raise conflict("selected issue no longer belongs to this project and module")
         for reference in snapshot.references:
-            if isinstance(reference, DocumentReference):
+            if isinstance(reference, IssueReference):
+                if reference.object_id != snapshot.issue_id:
+                    raise conflict("reference does not match the selected issue")
+                if self.domain.issue_snapshot(actor, reference.object_id)["revision"] != reference.revision:
+                    raise conflict("issue definition changed; reopen its detail")
+            elif isinstance(reference, DocumentReference):
                 self.domain.get_doc_shared(actor, reference.object_id)
                 version = self.domain.version(reference.object_id, reference.revision)
                 if reference.paragraph is not None:
@@ -701,6 +712,15 @@ def create_workspace_conversation_router(
     @router.post("", status_code=201)
     def create(request: Request, payload: Create):
         return service.create(workspace_actor(request, write=True), str(payload.id))
+
+    @router.post("/for-issue/{issue_id}")
+    def open_issue_consultation(request: Request, issue_id: str, project: str):
+        actor = workspace_actor(request, write=True)
+        issue = domain.read_issue(actor, issue_id)
+        if issue["project"] != project:
+            raise HTTPException(404, "issue unavailable in this project")
+        identity = json.dumps(["tianxuan/issue-consultation", issue["tenant_id"], actor, issue_id])
+        return service.create(actor, str(uuid5(NAMESPACE_URL, identity)))
 
     @router.get("/{key}")
     def get(request: Request, key: UUID):
