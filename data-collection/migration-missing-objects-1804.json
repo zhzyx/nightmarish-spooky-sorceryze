@@ -1,0 +1,13 @@
+{
+  "issue_number": 1804,
+  "request_id": "gonggong-ai-workbench-plan1-g07",
+  "source_revision": "07fe7a37aeb78000674b61cc0d3e068cd73aeb25",
+  "prior_result": "A missing blob or tree in the isolated mirror passed initial import and replay while the complete bundle remained present.",
+  "candidate_result": "Both imports reject the missing OID before publishing, existing publication and row counts match.",
+  "mac_regression": {
+    "passed": 24,
+    "subtests_passed": 16
+  },
+  "independent_review": "Removed a non-HEAD historical blob and subtree, four failed imports, restored objects and repacked with identical replay receipt.",
+  "scope": "Reachable mirror object existence; full byte/content-hash comparison across captures remains open."
+}
