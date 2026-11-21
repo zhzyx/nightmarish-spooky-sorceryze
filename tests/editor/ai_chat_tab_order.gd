@@ -48,6 +48,80 @@ func _key(keycode: Key, unicode_value := 0, alt := false):
 	key.pressed = false
 	root.push_input(key)
 
+func _shortcut_key(keycode: Key, command := false, shift := false, alt := false) -> InputEventKey:
+	var event := InputEventKey.new()
+	event.keycode = keycode
+	event.meta_pressed = command and OS.has_feature("macos")
+	event.ctrl_pressed = command and not OS.has_feature("macos")
+	event.shift_pressed = shift
+	event.alt_pressed = alt
+	return event
+
+func _send_shortcut(event: InputEventKey):
+	event.pressed = true
+	root.push_input(event)
+	event.pressed = false
+	root.push_input(event)
+
+func _check_workbench_shortcut(dock: Node, sample: Dictionary) -> bool:
+	var shortcut := EditorInterface.get_editor_settings().get_shortcut(WORKBENCH_COMMAND)
+	if not _check(shortcut != null, "Missing dedicated workbench shortcut in Editor Settings"):
+		return false
+	var sidebar := root.find_child("AIWorkbenchSidebar", true, false) as EditorDock
+	var composer := dock.find_child("ChatInput", true, false) as TextEdit
+	var source := LineEdit.new()
+	root.add_child(source)
+	source.text = "source draft"
+	source.grab_focus()
+	var defaults := shortcut.events
+	var default_key := _shortcut_key(KEY_M, true, true)
+	if not _check(shortcut.matches_event(default_key), "Default workbench binding changed"):
+		return false
+	_send_shortcut(default_key)
+	await process_frame
+	if not _check(sidebar.is_visible_in_tree() and sidebar.is_ancestor_of(composer) and composer.has_focus(), "Default key did not focus the original sidebar composer"):
+		return false
+	sample["default"] = defaults[0].as_text()
+	sample["sidebar"] = sidebar.get_instance_id()
+	sample["composer"] = composer.get_instance_id()
+	sidebar.close()
+	await process_frame
+	if not _check(source.has_focus(), "Closing the shortcut-opened sidebar did not restore source focus"):
+		return false
+
+	var replacement := _shortcut_key(KEY_P, false, true, true)
+	shortcut.events = [replacement]
+	_send_shortcut(default_key)
+	await process_frame
+	if not _check(not sidebar.is_visible_in_tree() and source.has_focus(), "Old binding still invoked workbench after rebinding"):
+		return false
+	sample["old_binding_inactive"] = true
+	_send_shortcut(replacement.duplicate())
+	await process_frame
+	if not _check(sidebar.is_visible_in_tree() and sidebar.is_ancestor_of(composer) and composer.has_focus(), "Rebound key did not focus the same composer"):
+		return false
+	sample["rebound"] = replacement.as_text()
+
+	var original_draft := composer.text
+	composer.text = "workbench selection"
+	var select_all := _shortcut_key(KEY_A, true)
+	shortcut.events = [select_all]
+	_send_shortcut(select_all.duplicate())
+	if not _check(composer.get_selected_text() == composer.text and composer.has_focus(), "Workbench intercepted select-all in the chat composer"):
+		return false
+	sample["chat_select_all"] = composer.get_selected_text()
+	composer.text = original_draft
+	sidebar.close()
+	await process_frame
+	_send_shortcut(select_all.duplicate())
+	if not _check(source.get_selected_text() == source.text and not sidebar.is_visible_in_tree(), "Workbench intercepted select-all in the source input"):
+		return false
+	sample["source_select_all"] = source.get_selected_text()
+	shortcut.events = defaults
+	source.queue_free()
+	await process_frame
+	return true
+
 func _visible_rect(control: Control) -> Rect2:
 	var visible := control.get_global_rect().intersection(Rect2(Vector2.ZERO, Vector2(root.size)))
 	var parent := control.get_parent()
@@ -494,6 +568,10 @@ func _run():
 			return
 		sample["title_button"] = clicks
 	if "--workbench-command" in OS.get_cmdline_user_args():
+		var shortcut_sample := {}
+		if not await _check_workbench_shortcut(dock, shortcut_sample):
+			return
+		sample["workbench_shortcut"] = shortcut_sample
 		var invocations := []
 		if not await _check_workbench_command(tabs, dock, invocations):
 			return
