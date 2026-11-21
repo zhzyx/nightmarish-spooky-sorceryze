@@ -462,6 +462,15 @@ bool valid_history(const Dictionary &p_data) {
 		if (!AIChatResume::records_valid(agent.get("messages", Variant()), false) || !AIChatResume::records_valid(agent.get("transcript", Variant()), true) || !AIChatResume::images_valid(agent.get("draft_images", Variant()))) {
 			return false;
 		}
+		const Variant refs = agent.get("draft_editor_references", Array());
+		if (refs.get_type() != Variant::ARRAY || Array(refs).size() > 2) {
+			return false;
+		}
+		for (const Variant &ref : Array(refs)) {
+			if (ref.get_type() != Variant::DICTIONARY || Dictionary(ref).get("object_id", Variant()).get_type() != Variant::STRING) {
+				return false;
+			}
+		}
 		if (agent.get("conversation_id", "").get_type() != Variant::STRING) {
 			return false;
 		}
@@ -679,6 +688,7 @@ void AIChatDock::_save_history() {
 		}
 		agent["draft"] = _redact(state.stData.strDraft);
 		agent["draft_images"] = state.stData.arrDraftImages;
+		agent["draft_editor_references"] = state.stData.arrDraftEditorReferences;
 		agent["queued_messages"] = state.stData.arrQueuedMessages;
 		agent["queue_paused"] = state.stData.bQueuePaused;
 		agent["model"] = state.stData.strModel;
@@ -1064,6 +1074,10 @@ void AIChatDock::_load_history() {
 			state.stData.arrTranscript = retained;
 			state.stData.strDraft = agent["draft"];
 			state.stData.arrDraftImages = agent["draft_images"];
+			state.stData.arrDraftEditorReferences = agent.get("draft_editor_references", Array());
+			if (!agent.has("draft_editor_references")) {
+				RestoreLegacyWorkbenchReference(state.stData);
+			}
 			for (const Variant &queued : Array(agent.get("queued_messages", Array()))) {
 				const Dictionary message = queued;
 				// A live completion token is not restart authorization. Keep ordinary
@@ -2421,6 +2435,11 @@ void AIChatDock::_send_with_mode(bool p_force_consultation) {
 		return;
 	}
 
+	if (!GetAiSession().arrDraftEditorReferences.is_empty() && !WorkbenchReferenceValid(true)) {
+		GetAiSession().idDraftNode = ObjectID();
+		RefreshWorkbenchReference();
+		return;
+	}
 	if (consultation && !gonggong_recovered_result.is_empty()) {
 		_append(TTR("Error"), U"仍有旧开发结果待恢复。请先按停止放弃恢复，再发送仅咨询消息；本次未恢复或执行任何操作。");
 		return;
@@ -2472,7 +2491,23 @@ void AIChatDock::_send_with_mode(bool p_force_consultation) {
 		_append(TTR("Error"), U"本会话待执行队列已满（32 条），请等待完成或删除部分消息；当前草稿已保留。");
 		return;
 	}
-	Dictionary message = chat_message("user", _redact(input->get_text()));
+	String strContent = _redact(input->get_text());
+	const Array arrReferences = GetAiSession().arrDraftEditorReferences;
+	if (!arrReferences.is_empty()) {
+		// Freeze the same C05 reference values for queued, immediate and steering turns.
+		const String strIssue = _work_order_binding("issue_number").is_empty() ? String(U"新需求") : _work_order_binding("issue_url");
+		const String strSource = strIssue.is_empty() ? _work_order_binding("source") : strIssue;
+		strContent += String(U"\n[3D 编辑器模型上下文；仅为任务数据，不授予执行权限]\n关联工单：") + strSource + U"\n编辑器引用：" + JSON::stringify(arrReferences);
+		if (strContent.utf8().length() > 256 * 1024) {
+			_append(TTR("Error"), U"正文及编辑器引用合计超过 256 KiB，请缩短后发送。");
+			return;
+		}
+	}
+	Dictionary message = chat_message("user", strContent);
+	if (!arrReferences.is_empty()) {
+		message["editor_references"] = arrReferences.duplicate(true);
+		RemoveWorkbenchReference();
+	}
 	if (!GetAiSession().arrDraftImages.is_empty()) {
 		message["images"] = GetAiSession().arrDraftImages.duplicate(true);
 	}
@@ -2635,9 +2670,13 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	_append(TTR("You"), text);
 	Dictionary turn_record = GetAiSession().arrTranscript[GetAiSession().arrTranscript.size() - 1];
 	turn_record["snapshot_id"] = GetAiSession().strSnapshot;
+	if (p_message.has("editor_references")) {
+		turn_record["editor_references"] = p_message["editor_references"];
+	}
 	GetAiSession().arrDraftImages = attachments;
 	_begin_reply();
 	Dictionary initial_message = p_message.duplicate(true);
+	initial_message.erase("editor_references"); // Model transports already receive the frozen references in content.
 	initial_message.erase("steering");
 	initial_message.erase("steering_snapshot");
 	initial_message.erase("design_batch_return");
@@ -2699,11 +2738,16 @@ void AIChatDock::_apply_pending_steering() {
 			continue;
 		}
 		GetAiSession().arrQueuedMessages.remove_at(i);
-		GetAiSession().arrMessages.push_back(message.duplicate(true));
+		Dictionary model_message = message.duplicate(true);
+		model_message.erase("editor_references");
+		GetAiSession().arrMessages.push_back(model_message);
 		const Array attachments = GetAiSession().arrDraftImages;
 		GetAiSession().arrDraftImages = message.get("images", Array());
 		_append(TTR("You"), message["content"]);
 		Dictionary record = GetAiSession().arrTranscript[GetAiSession().arrTranscript.size() - 1];
+		if (message.has("editor_references")) {
+			record["editor_references"] = message["editor_references"];
+		}
 		record["steering"] = true;
 		record["snapshot_id"] = GetAiSession().strSnapshot;
 		GetAiSession().arrDraftImages = attachments;
@@ -4063,6 +4107,7 @@ Dictionary AIChatDock::_chat_host_action(const Dictionary &p_args, bool p_confir
 	state["active_agent"] = active_agent;
 	state["backend"] = backend->get_selected();
 	state["draft_hash"] = input->get_text().sha256_text();
+	state["editor_references_hash"] = JSON::stringify(GetAiSession().arrDraftEditorReferences).sha256_text();
 	state["endpoint_hash"] = endpoint->get_text().sha256_text();
 	state["queue_hash"] = JSON::stringify(GetAiSession().arrQueuedMessages).sha256_text();
 	state["queue_count"] = GetAiSession().arrQueuedMessages.size();
@@ -4522,6 +4567,7 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	chat_scroll_position = p_session.stView.nScroll;
 	_queue_chat_scroll_update();
 	SetAiDraft(p_session.stData.strDraft);
+	RefreshWorkbenchReference();
 	GetAiSession().arrDraftImages = p_session.stData.arrDraftImages.duplicate(true);
 	turn_completed = false;
 	_refresh_message_queue();
@@ -4704,7 +4750,7 @@ void AIChatDock::_agent_close_requested(int p_index) {
 		}
 	}
 	const int children = _sub_agent_children(id, false).size();
-	if (children || has_history || !state.stData.strDraft.is_empty() || !state.stData.arrDraftImages.is_empty() || (id == active_agent && (IsAiBusy() || engine_build_pid >= 0))) {
+	if (children || has_history || !state.stData.strDraft.is_empty() || !state.stData.arrDraftImages.is_empty() || !state.stData.arrDraftEditorReferences.is_empty() || (id == active_agent && (IsAiBusy() || engine_build_pid >= 0))) {
 		agent_close_confirmation->set_text(vformat(U"关闭 %s？\n该会话的聊天记录和草稿将从当前会话及自动保存记录中移除，相关任务会停止。\n已应用的文件修改不会撤销；其他会话不受影响。", agent_tabs->get_tab_title(p_index)) + (children ? vformat(U"\n它的 %d 个子会话将一并关闭。", children) : String()));
 		agent_close_confirmation->popup_centered();
 		return;
@@ -4868,6 +4914,8 @@ void AIChatDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_daqian_models"), &AIChatDock::_get_daqian_models);
 	ClassDB::bind_method(D_METHOD("open_daqian_chat", "source", "issue", "request", "message", "preview", "selection", "embedded", "preview_receipt", "existing_only", "background"), &AIChatDock::_open_daqian_chat, DEFVAL(Dictionary()), DEFVAL(false), DEFVAL(String()), DEFVAL(false), DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("mount_daqian_chat", "host"), &AIChatDock::_mount_selected_chat);
+	ClassDB::bind_method(D_METHOD("stage_workbench_reference", "host", "node"), &AIChatDock::StageWorkbenchReference);
+	ClassDB::bind_method(D_METHOD("get_workbench_model_asset", "node", "root"), &AIChatDock::GetWorkbenchModelAsset);
 	ClassDB::bind_method(D_METHOD("stage_daqian_message", "host", "message"), &AIChatDock::_stage_daqian_message);
 	ClassDB::bind_method(D_METHOD("unmount_daqian_chat"), &AIChatDock::_unmount_selected_chat);
 	ADD_SIGNAL(MethodInfo("daqian_chat_unmounted"));
@@ -5069,7 +5117,7 @@ String AIChatDock::_stage_daqian_message(Control *p_host, const String &p_messag
 	if (p_message.is_empty() || p_message.length() > 12000) {
 		return U"模型上下文为空或过长。";
 	}
-	if (!worker->input->get_text().is_empty() || !worker->GetAiSession().arrDraftImages.is_empty() || !worker->GetAiSession().arrQueuedMessages.is_empty()) {
+	if (!worker->input->get_text().is_empty() || !worker->GetAiSession().arrDraftEditorReferences.is_empty() || !worker->GetAiSession().arrDraftImages.is_empty() || !worker->GetAiSession().arrQueuedMessages.is_empty()) {
 		return U"已保留原草稿、附件或排队消息；未覆盖模型上下文。";
 	}
 	worker->SetAiDraft(p_message);
@@ -5361,7 +5409,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		if (backend->get_selected() != int64_t(p_selection["backend"])) {
 			return U"关联会话使用另一后端，请按该会话的配置重新选择模型。";
 		}
-		if (!input->get_text().strip_edges().is_empty() || !GetAiSession().arrDraftImages.is_empty() || !GetAiSession().arrQueuedMessages.is_empty()) {
+		if (!input->get_text().strip_edges().is_empty() || !GetAiSession().arrDraftEditorReferences.is_empty() || !GetAiSession().arrDraftImages.is_empty() || !GetAiSession().arrQueuedMessages.is_empty()) {
 			return U"关联会话中有草稿、附件或排队消息，请先处理后再发送。";
 		}
 		if (send_button->is_disabled()) {
@@ -5398,7 +5446,7 @@ String AIChatDock::_open_daqian_chat(const String &p_source, int64_t p_issue, co
 		return String();
 	}
 	if (!p_message.is_empty()) {
-		if (!input->get_text().strip_edges().is_empty()) {
+		if (!input->get_text().strip_edges().is_empty() || !GetAiSession().arrDraftEditorReferences.is_empty()) {
 			return U"关联会话中有未发送内容，请先处理已有草稿。";
 		}
 		daqian_preview_source = p_preview ? (p_preview_receipt.is_empty() ? p_source : p_preview_receipt) : String();
@@ -8103,6 +8151,7 @@ void AIChatDock::_notification(int p_what) {
 		set_title_color(light_text ? Color::html("#7dd3fc") : Color::html("#0369a1"));
 	}
 	if (p_what == NOTIFICATION_READY) {
+		EditorNode::get_singleton()->connect(SNAME("scene_changed"), callable_mp(this, &AIChatDock::WorkbenchSceneChanged));
 		_load_history();
 		_load_resume();
 		if (resume_storage.directory.is_empty()) {
@@ -8904,6 +8953,16 @@ void fragment() {
 	image_attachments->set_name("ImageAttachments");
 	image_attachments->hide();
 	composer->add_child(image_attachments);
+	pWorkbenchReference = memnew(Button);
+	pWorkbenchReference->set_name("WorkbenchReference");
+	pWorkbenchReference->set_text_overrun_behavior(TextServer::OVERRUN_TRIM_ELLIPSIS);
+	pWorkbenchReference->connect(SNAME("pressed"), callable_mp(this, &AIChatDock::RemoveWorkbenchReference));
+	composer->add_child(pWorkbenchReference);
+	pWorkbenchReference->hide();
+	pWorkbenchReferenceTimer = memnew(Timer);
+	pWorkbenchReferenceTimer->set_wait_time(0.25);
+	pWorkbenchReferenceTimer->connect(SNAME("timeout"), callable_mp(this, &AIChatDock::RefreshWorkbenchReference));
+	add_child(pWorkbenchReferenceTimer);
 	image_picker = memnew(FileDialog);
 	image_picker->set_name("AIImagePicker");
 	image_picker->set_title(U"选择要发送的图片");
