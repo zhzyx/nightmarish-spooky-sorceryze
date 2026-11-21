@@ -6,6 +6,7 @@ from wenqu import (
     classify,
     export_markdown,
     merge_offline,
+    merge_paragraphs,
     normalize_markdown,
     search,
 )
@@ -268,6 +269,18 @@ class MergeTests(unittest.TestCase):
         self.assertIn("<<<<<<< local", merged)
         self.assertIn("local", merged)
         self.assertIn("remote", merged)
+
+
+class ParagraphMergeTests(unittest.TestCase):
+    def test_concurrent_edits_preserve_raw_markdown(self):
+        base = "第一段  \r\n第二行\r\n \r\n末段\r\n"
+        local = base.replace("第一段", "开头")
+        remote = base.replace("末段", "结尾")
+        self.assertEqual(merge_paragraphs(base, local, remote), (local.replace("末段", "结尾"), []))
+        self.assertTrue(merge_paragraphs(base, local, base.replace("第二行", "同段异行"))[1])
+
+    def test_inserting_a_paragraph_beside_an_edited_paragraph(self):
+        self.assertEqual(merge_paragraphs("a\n\nb", "A\n\nb", "c\n\na\n\nb"), ("c\n\nA\n\nb", []))
 
 
 class NormalizeTests(unittest.TestCase):

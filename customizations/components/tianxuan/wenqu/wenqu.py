@@ -19,6 +19,7 @@ __all__ = [
     "classify",
     "export_markdown",
     "merge_offline",
+    "merge_paragraphs",
     "normalize_markdown",
     "search",
 ]
@@ -446,23 +447,23 @@ def _hunks(base: list[str], side: list[str], name: str) -> list[_Hunk]:
     return hunks
 
 
-def _hunk_overlaps(first: _Hunk, second: _Hunk) -> bool:
+def _hunk_overlaps(first: _Hunk, second: _Hunk, include_edges: bool) -> bool:
     first_start, first_end = first["start"], first["end"]
     second_start, second_end = second["start"], second["end"]
     if first_start == first_end and second_start == second_end:
         return first_start == second_start
     if first_start == first_end:
-        return second_start <= first_start <= second_end
+        return second_start <= first_start <= second_end if include_edges else second_start < first_start < second_end
     if second_start == second_end:
-        return first_start <= second_start <= first_end
+        return first_start <= second_start <= first_end if include_edges else first_start < second_start < first_end
     return max(first_start, second_start) < min(first_end, second_end)
 
 
-def _group_hunks(hunks: list[_Hunk]) -> list[list[_Hunk]]:
+def _group_hunks(hunks: list[_Hunk], include_edges: bool) -> list[list[_Hunk]]:
     groups: list[list[_Hunk]] = []
     for hunk in sorted(hunks, key=lambda item: (item["start"], item["end"])):
         matched = next(
-            (group for group in groups if any(_hunk_overlaps(hunk, other) for other in group)),
+            (group for group in groups if any(_hunk_overlaps(hunk, other, include_edges) for other in group)),
             None,
         )
         if matched is None:
@@ -474,7 +475,11 @@ def _group_hunks(hunks: list[_Hunk]) -> list[list[_Hunk]]:
         merged = False
         for index in range(len(groups)):
             for other_index in range(index + 1, len(groups)):
-                if any(_hunk_overlaps(first, second) for first in groups[index] for second in groups[other_index]):
+                if any(
+                    _hunk_overlaps(first, second, include_edges)
+                    for first in groups[index]
+                    for second in groups[other_index]
+                ):
                     groups[index].extend(groups.pop(other_index))
                     merged = True
                     break
@@ -514,14 +519,32 @@ def merge_offline(base: str, local: str, remote: str) -> tuple[str, list[str]]:
     base_lines = _merge_lines(base)
     local_lines = _merge_lines(local)
     remote_lines = _merge_lines(remote)
-    if local_lines == base_lines:
-        return _finish_lines(remote_lines), []
-    if remote_lines == base_lines:
-        return _finish_lines(local_lines), []
-    if local_lines == remote_lines:
-        return _finish_lines(local_lines), []
+    merged, conflicts = _merge_units(base_lines, local_lines, remote_lines)
+    return _finish_lines(merged), conflicts
 
-    groups = _group_hunks(_hunks(base_lines, remote_lines, "remote") + _hunks(base_lines, local_lines, "local"))
+
+def merge_paragraphs(base: str, local: str, remote: str) -> tuple[str, list[str]]:
+    """Match D04's blank-line paragraphs while preserving Markdown whitespace and line endings."""
+    separator = re.compile(r"(\r?\n(?:[^\S\r\n]*\r?\n)+)")
+    merged, conflicts = _merge_units(
+        separator.split(base), separator.split(local), separator.split(remote), include_edges=False
+    )
+    return "".join(merged), conflicts
+
+
+def _merge_units(
+    base_lines: list[str], local_lines: list[str], remote_lines: list[str], *, include_edges: bool = True
+) -> tuple[list[str], list[str]]:
+    if local_lines == base_lines:
+        return remote_lines, []
+    if remote_lines == base_lines:
+        return local_lines, []
+    if local_lines == remote_lines:
+        return local_lines, []
+
+    groups = _group_hunks(
+        _hunks(base_lines, remote_lines, "remote") + _hunks(base_lines, local_lines, "local"), include_edges
+    )
     merged: list[str] = []
     conflicts: list[str] = []
     position = 0
@@ -544,4 +567,4 @@ def merge_offline(base: str, local: str, remote: str) -> tuple[str, list[str]]:
             conflicts.append(_conflict_label(start, end, len(local_segment), len(remote_segment)))
         position = end
     merged.extend(base_lines[position:])
-    return _finish_lines(merged), conflicts
+    return merged, conflicts

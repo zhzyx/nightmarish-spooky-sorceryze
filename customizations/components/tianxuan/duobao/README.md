@@ -79,6 +79,9 @@ HTTP/API（`server/api.py`）已暴露：
 - 本地仓库分支：`POST /api/v1/git/repos/{name}/branches`、`DELETE /api/v1/git/repos/{name}/branches/{branch}`。
 - 仓库导入：`POST /api/v1/git/import`（仅 admin；`TIANXUAN_IMPORT_ALLOW_LOCAL` 控制本机来源，`TIANXUAN_IMPORT_ALLOWED_HOSTS` 限制远端主机）。
 - 合入队列：`/api/v1/merge-queue` 入队、列表、处理、状态、重试、取消。
+- 在编辑器天枢工具栏打开“多宝合入”，填写仓库、来源和目标分支。读取来源候选或填写完整提交，再发起合入请求。使用“刷新检查”读取结果，“读取目标分支”单独读取目标当前提交。编辑器重启后可凭仓库名及请求编号刷新。
+- 已认证的账户在 Git 存储模式调用 `POST /api/v1/git/repos/{name}/merge-requests`，提交 `source`、`target`、`candidate`。服务核对来源分支的完整 OID，同时锁定目标基线。相同账户和精确输入对重放同一回执。
+- `GET /api/v1/git/repos/{name}/merge-requests/{id}` 返回来源候选、目标基线、当前 `check_state` 和各项检查退出码。队列 worker 在这两个提交上运行合并预检及配置的检查，`checked` 表示预检通过、待合入。任一分支偏离或不可读取时返回 `stale`。独立的 `GET /api/v1/git/repos/{name}/branch-tip?branch=…` 返回实际分支尖端。
 - Gitea：`/api/v1/repos` 列表/创建/读取、`branches`、`pulls` 列表/创建/合并，`pulls/{number}/reviews` 列表/提交，`commits/{sha}/statuses` 列表与 `statuses/{sha}` 写入。
 
 Web `/repos` 已接入本地仓库浏览、合入队列面板与 Gitea PR 面板；文件树面板的后端接口已就绪，前端仍使用演示数据（见 #1188）。

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g13",
+  "event_id": "mac-round9-intake-1826",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1826",
+  "occurred_at": "2026-11-21T20:35:31.078027+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1826,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T20:11:54Z",
+    "scope": "从多宝原生界面按来源、目标和精确候选发起合入，验证来源新增提交后旧检查失效且目标可独立读回；通过交付门禁后关闭。"
+  },
+  "evidence_refs": [],
+  "sha256": "b7eb7df0c498cfbd0c545f6f105611d79c2f9cbc514c55a6c7de0859cdae622b"
+}

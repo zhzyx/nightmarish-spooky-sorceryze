@@ -160,6 +160,12 @@ class CommitStatusRequest(BaseModel):
     target_url: str = ""
 
 
+class ExactMergeRequest(BaseModel):
+    source: str
+    target: str
+    candidate: str = Field(pattern=r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")
+
+
 class MergeQueueCreateRequest(BaseModel):
     """多宝合入队列候选。"""
 

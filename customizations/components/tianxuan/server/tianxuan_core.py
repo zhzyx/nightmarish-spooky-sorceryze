@@ -96,6 +96,16 @@ CREATE TABLE IF NOT EXISTS business_module_assets (
   PRIMARY KEY (tenant_id, project, module_id, asset_id)
 );
 CREATE INDEX IF NOT EXISTS idx_business_asset_modules ON business_module_assets(tenant_id, project, asset_id);
+CREATE TABLE IF NOT EXISTS issue_revision_links (
+  tenant_id TEXT NOT NULL, project TEXT NOT NULL, issue_id TEXT NOT NULL REFERENCES issues(id),
+  module TEXT NOT NULL, revision TEXT NOT NULL, tag TEXT,
+  PRIMARY KEY (tenant_id, project, issue_id, module, revision)
+);
+CREATE INDEX IF NOT EXISTS idx_revision_issues ON issue_revision_links(tenant_id, project, module, revision);
+CREATE TABLE IF NOT EXISTS project_revision_tags (
+  tenant_id TEXT NOT NULL, project TEXT NOT NULL, module TEXT NOT NULL, tag TEXT NOT NULL, revision TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, project, module, tag)
+);
 CREATE TABLE IF NOT EXISTS doc_issue_links (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
   doc_id TEXT NOT NULL, issue_id TEXT NOT NULL,

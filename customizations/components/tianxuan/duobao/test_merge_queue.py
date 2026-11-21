@@ -350,3 +350,31 @@ def test_worker_registry_tracks_heartbeat(tmp_path: Path) -> None:
         assert queue.worker_running is False
     finally:
         queue.close()
+
+
+@pytest.mark.parametrize("moving_branch", ["feature", "main"])
+def test_exact_request_drift_during_checks(tmp_path: Path, monkeypatch, moving_branch: str) -> None:
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "feature", {"candidate.txt": "pinned"})
+    base = service.branch_tip(repo, "main")
+    candidate = service.branch_tip(repo, "feature")
+    queue = MergeQueue(str(tmp_path / "queue.db"), service, checks=[["fixture"]])
+    item = queue.enqueue("worker", str(repo), "feature", "main", candidate=candidate)
+
+    def advance(worktree, check):
+        assert (worktree / "candidate.txt").read_text() == "pinned"
+        assert service.log(worktree, "HEAD", 1)[0]["sha"] == base
+        service.commit(repo, moving_branch, "advance", {"later.txt": "later"}, "T", "t@example.invalid")
+        return {"command": "fixture", "exit_code": 0}
+
+    monkeypatch.setattr(queue, "_run_check", advance)
+    received = queue.process_next()
+    assert received["check_state"] == received["status"] == "stale"
+    assert received["evidence"]["exact_request"] == {"candidate": candidate, "target_base": base}
+    assert queue.get(item["id"])["check_state"] == "stale"
+    if moving_branch == "feature":
+        assert service.branch_tip(repo, "main") == base
+    else:
+        replacement = queue.enqueue("worker", str(repo), "feature", "main", candidate=candidate)
+        assert replacement["id"] != item["id"] and replacement["check_state"] == "queued"
+    queue.close()

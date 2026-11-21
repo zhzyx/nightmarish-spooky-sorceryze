@@ -229,9 +229,10 @@ func _confirm() -> void:
 			if valid:
 				# Confirmation commits the choice. Earlier dismissal invalidates every outstanding read.
 				dialog.hide()
+				var located := true
 				if not target.is_empty() and origin_issue.is_empty():
-					await host.select_asset_module(target, fresh.modules)
-				if generation == host.identity_generation and (target.is_empty() or host.module_id == target):
+					located = await host.select_asset_module(target, fresh.modules)
+				if located and generation == host.identity_generation and (target.is_empty() or host.module_id == target):
 					host.stage_asset_reference(asset)
 			else:
 				_invalidate()

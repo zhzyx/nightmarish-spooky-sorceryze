@@ -92,7 +92,7 @@ def exercise(root, binary):
                 line.removeprefix("U10_RESULT=") for line in output.splitlines() if line.startswith("U10_RESULT=")
             ]
             if result.returncode or "SCRIPT ERROR" in output or len(checks) != 1:
-                raise RuntimeError(output[-5500:])
+                raise RuntimeError(f"Observed HTTP {reads!r}\n" + output[-5500:])
             trace = json.loads(checks[0])
             expected = {"kind": "document", "object_id": doc["id"], "revision": 1, "paragraph": 2}
             assert trace["sent"] == expected and trace["current_version"] == 2
