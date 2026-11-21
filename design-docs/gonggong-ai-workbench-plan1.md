@@ -108,6 +108,8 @@
 
 ### K00
 
+[交付清单与验证](gonggong-ai-workbench-k00.md)
+
 **基础接口与归属已核对** · [K00 #1718](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1718)
 
 核收入口、复用接口、运行路径、历史映射与回退边界。
