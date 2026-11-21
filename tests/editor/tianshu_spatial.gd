@@ -95,6 +95,9 @@ func run() -> void:
 		var restored_label: Button = workspace.chat.find_child("WorkbenchReference", true, false)
 		var restored_input: TextEdit = workspace.chat.find_child("ChatInput", true, false)
 		var restored_send: Button = workspace.chat.find_child("Send", true, false)
+		var ready_by := Time.get_ticks_msec() + 5000
+		while Time.get_ticks_msec() < ready_by and (not restored_label.is_visible_in_tree() or not restored_label.text.contains("引用已失效")):
+			await process_frame
 		var expected := "legacy question" if OS.get_environment("TIANSHU_REFERENCE_RESTORE") == "legacy" else "must stay in draft: same-named node in newly opened scene"
 		check(restored_input.text == expected, "reopened the original user draft")
 		check(restored_label.is_visible_in_tree() and restored_label.text.contains("引用已失效"), "disk history never reuses another process's node identity")
