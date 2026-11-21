@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g06",
+  "event_id": "wave20-intake-1824",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1824",
+  "occurred_at": "2026-11-21T05:58:02.238696+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1824,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T05:57:59Z",
+    "accepted_dependencies": {
+      "1837": "3529bafbd35d3afe806c7d994f0a85b98dccc217",
+      "1849": "4fd77e6fe08d1a9379cf4b16f9c431c2325b91eb"
+    },
+    "title": "[方案一 G06] 核对大文件及子模块引用"
+  },
+  "evidence_refs": [],
+  "sha256": "9d7784d081bbfcdb7c2c2b19c4ece1cb8688054068bf5b6322d3c35d8cf208ce"
+}
