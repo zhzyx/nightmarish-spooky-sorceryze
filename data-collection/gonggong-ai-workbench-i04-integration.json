@@ -1,0 +1,93 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-i04",
+  "issue_number": 1831,
+  "baseline": "ab75b08a9fe400968f47f7084ec27dba1d26ebd9",
+  "windows_editor_sha256": "b16e9ed7f7137bcc711ac837b6225eed7d0f4d4fe639d0a82d41a10e19ca68c5",
+  "original_evidence_sha256": "7e37635ab4e5e848f64156e979580ad767866a2e768e3f03335fc0289ce945c3",
+  "registered_controls": [
+    "issue_dependencies.gd",
+    "issue_hierarchy.gd"
+  ],
+  "tests": [
+    "test_issue_flow"
+  ],
+  "server_result": "7 passed, 1 warning in 3.23s",
+  "native": {
+    "dependencies": {
+      "engine_sha256": "b16e9ed7f7137bcc711ac837b6225eed7d0f4d4fe639d0a82d41a10e19ca68c5",
+      "upstream_terminal": "produced",
+      "release": {
+        "release": "95e8e0381fbe969907bd9d89f4dc48f29f4c1a4f5dfe950898d24310cb876a21",
+        "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8"
+      },
+      "ui": {
+        "accepted_row": "a　done　已验收",
+        "after": 200,
+        "before": 409,
+        "blocked_row": "a　in-review　未验收，阻塞推进"
+      },
+      "edit_http_statuses": [
+        200,
+        409,
+        200,
+        200
+      ],
+      "persisted_downstream": {
+        "status": "in-progress",
+        "version": 4,
+        "content_revision": "052bef9768e0b171336baa6733fbbe65655565e5d704ded29611c5d74fd0e0a1"
+      }
+    },
+    "detail": {
+      "engine_sha256": "b16e9ed7f7137bcc711ac837b6225eed7d0f4d4fe639d0a82d41a10e19ca68c5",
+      "observed_fields": [
+        "标题　核对场景入口\n负责人　唐敏\n状态　planned\n内容版本　0d9868814e357d45b980a0ce57afd36096b34a0fdec3283873b1dd287ea3a171",
+        "标题　检查地图\n负责人　未分配\n状态　backlog\n内容版本　c4137b04f0573a20dd15d692f4a4e9c54421383bc0d465caa77a8051e9eb881f"
+      ],
+      "http_readback": [
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/2/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/3/detail",
+          "studio/game",
+          403
+        ],
+        [
+          "/api/v1/issues/by-number/99999/detail",
+          "studio/game",
+          404
+        ],
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ]
+      ],
+      "error_feedback": [
+        "没有权限查看此工单",
+        "当前项目中不存在此编号的工单"
+      ],
+      "checks": [
+        "command palette opened sidebar",
+        "assigned and unassigned compared to reopened database",
+        "private and absent results cleared prior detail",
+        "successful refresh after 404, logout cleared the visible record"
+      ]
+    }
+  },
+  "source_blobs": {
+    "design-docs/gonggong-ai-workbench-i04.md": "583f4de12479e86657c5ec2caad2d379a630c413",
+    "editor/docks/workbench/issue_actions/issue_dependencies.gd": "d24f70114366643925cd25b0c1dd7799ba0d2a95",
+    "tests/editor/run_workbench_issue_dependencies.py": "3ec12dcd971f7387a2b008c92a65ee8d6fe3157e",
+    "tests/editor/workbench_issue_dependencies.gd": "34a30d68cf5a0930075f2b05f1ae097109114822"
+  },
+  "observed_at": "2026-11-21T20:09:46.155765+00:00"
+}
