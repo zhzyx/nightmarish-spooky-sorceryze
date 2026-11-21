@@ -1,0 +1,195 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i06",
+  "issue_number": 1850,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850",
+  "source_revision": "b58730f9b13aab1f41ffd9eb1d33e092454a0357c4690d67cb2110492ae4568a",
+  "base_commit": "c8d07b74fc4d5b615aca671e57e5e60b8271ca08",
+  "intake": {
+    "exit_code": 0,
+    "status": "status:in-progress",
+    "comments_at_intake": 0,
+    "dependency": {
+      "issue": 1854,
+      "state": "CLOSED/COMPLETED",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854#issuecomment-7066884069"
+    },
+    "upstream_macos": {
+      "scope": "D14 accounts, session isolation and credential revocation",
+      "sources": [
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7060361368",
+        "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1867#issuecomment-7062658872"
+      ]
+    }
+  },
+  "service_tests": {
+    "command": "python -m pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_issue_assignee.py customizations/components/tianxuan/server/test_issue_number.py customizations/components/tianxuan/server/test_issue_flow.py customizations/components/tianxuan/server/test_issue_ancestor_acl.py",
+    "exit_code": 0,
+    "result": "23 passed, 1 warning in 23.61s",
+    "warning": "Starlette TestClient / httpx import deprecation"
+  },
+  "native_test": {
+    "platform": "Windows x86_64, three isolated headless --editor processes, authenticated local native-only Tianxuan server",
+    "command": "python tests/editor/run_workbench_issue_assignment.py --godot bin/godot.windows.editor.x86_64.exe --report <local report>",
+    "exit_code": 0,
+    "engine_sha256": "7c87d020985b230bc1a0a157ed39dfefbedf756b4f6a0c7976d3bf600b26a917",
+    "edits": [
+      [
+        "PUT",
+        "/api/v1/issues/{id}/assignee",
+        200
+      ],
+      [
+        "POST",
+        "/api/v1/issues/{id}/work/flow/advance",
+        200
+      ],
+      [
+        "PUT",
+        "/api/v1/issues/{id}/assignee",
+        403
+      ],
+      [
+        "POST",
+        "/api/v1/issues/{id}/work/flow/advance",
+        403
+      ]
+    ],
+    "native_views": {
+      "write": [
+        {
+          "owner": null,
+          "revision": "2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132",
+          "status": "backlog",
+          "visible": "标题　场景检查\n负责人　未分配\n状态　backlog\n内容版本　2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132"
+        },
+        {
+          "owner": "陈墨",
+          "revision": "2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132",
+          "status": "backlog",
+          "visible": "标题　场景检查\n负责人　陈墨\n状态　backlog\n内容版本　2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132"
+        },
+        {
+          "owner": "陈墨",
+          "revision": "2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132",
+          "status": "planned",
+          "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132"
+        }
+      ],
+      "acl": [
+        {
+          "owner": "陈墨",
+          "revision": "2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132",
+          "status": "planned",
+          "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132"
+        },
+        {
+          "owner": "陈墨",
+          "revision": "2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132",
+          "status": "planned",
+          "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132"
+        }
+      ],
+      "viewer": [
+        {
+          "owner": "陈墨",
+          "revision": "2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132",
+          "status": "planned",
+          "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　2d51403c720fa215edeb7141272cbf6dec40506ce1c1ba645c7e2b2674f14132"
+        }
+      ]
+    },
+    "reopened_database_matches": true
+  },
+  "build": {
+    "target": "Windows x86_64 editor, tests=yes, Visual Studio 14.5, SDK 10.0.26100.0",
+    "source_inputs_git_blobs": {
+      "editor/docks/workbench/issue_actions/issue_assignment.gd": "7b89258b97a032678cdb0828bfbac55e4e668e96",
+      "editor/SCsub": "5979891701fc9d70016bf3a6a3070207cecc231d",
+      "editor/editor_builders.py": "8bdc6d85d1157377234f7926c0cfb8051e652883",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp": "c3899d6af739a4a2df8b7de7a12d3baca1c09351",
+      "customizations/components/tianxuan/server/api.py": "a7383d669abdef03d2b47d091adcb2b76ee9a3c7",
+      "customizations/components/tianxuan/server/schemas.py": "aba422c94d4b87c990c5035600db412aa76f63b9",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "585bbef59fbc424645c6cb1d7a1500b340e07cca",
+      "customizations/components/tianxuan/server/test_issue_assignee.py": "6e250e968448e86be3f0b5ba5644c765291fd489",
+      "tests/editor/run_workbench_issue_assignment.py": "facddae9837562cf7fab49eae934c781b15ca1e9",
+      "tests/editor/workbench_issue_assignment.gd": "7386c9bfd1327dde375d19a7f17a133922e329d3"
+    },
+    "initial": {
+      "exit_code": 0,
+      "elapsed": "00:26:37.12",
+      "log_sha256": "dbacf4a64f55197fcde9c2d3969594ef0121f6a44540d95b50dda73a9d0105da",
+      "engine_sha256": "ed33ccc50183bd25d14b36045a67dd2450545710b1c8890316c7ec62af37df15",
+      "control_sha256": "eb4f30187cb35c3d56a38d251542633c9233320527e86153bbf5fb591995d98c",
+      "header_sha256": "f068a56a886bf68540ee0b6247f2dbeceb4dce871cdcbe5e52f641f5f71e8782",
+      "native_test_exit_code": 0
+    },
+    "incremental": {
+      "change": "Disable both selectors until editable and throughout the write, including read-only sessions.",
+      "exit_code": 0,
+      "elapsed": "00:00:26.98",
+      "log_sha256": "2e3f1438dbc2a6796505193a8c8b656788078bd01421172a0ef503041dd0ed56",
+      "observed": [
+        "Generating editor\\docks\\workbench\\IssueActions.gen.h ...",
+        "Compiling editor\\docks\\workbench\\AIWorkbenchSidebar.cpp ...",
+        "Linking Static Library bin\\obj\\editor\\editor.windows.editor.x86_64.lib ...",
+        "Linking Program bin\\godot.windows.editor.x86_64.exe ...",
+        "Linking Program bin\\godot.windows.editor.x86_64.console.exe ..."
+      ],
+      "control_sha256": "2ceba3ba7ef9a80cf53c6028be692d81420f7df0a4cc86c9f48f7b59490a24db",
+      "header_sha256": "5a46996149f640f53c94e77e93d38b89bfe765cb12d33b57dc8b406db25ef87d",
+      "engine_sha256": "7c87d020985b230bc1a0a157ed39dfefbedf756b4f6a0c7976d3bf600b26a917"
+    }
+  },
+  "I02_regression": {
+    "command": "python tests/editor/run_workbench_issue_detail.py --godot bin/godot.windows.editor.x86_64.exe --report <local report>",
+    "exit_code": 0,
+    "engine_sha256": "7c87d020985b230bc1a0a157ed39dfefbedf756b4f6a0c7976d3bf600b26a917",
+    "observed_fields": [
+      "标题　核对场景入口\n负责人　唐敏\n状态　planned\n内容版本　8189a1eb040fbeef5fdf71220d3c4bfb6364f9f6dabb9490243b946b22b23342",
+      "标题　检查地图\n负责人　未分配\n状态　backlog\n内容版本　52b7d7975230ee7bc68eadc103604931bb745456d4bcf4e180e5c759bef99568"
+    ],
+    "http_readback": [
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/2/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/3/detail",
+        "studio/game",
+        403
+      ],
+      [
+        "/api/v1/issues/by-number/99999/detail",
+        "studio/game",
+        404
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ]
+    ],
+    "error_feedback": [
+      "没有权限查看此工单",
+      "当前项目中不存在此编号的工单"
+    ],
+    "checks": [
+      "command palette opened sidebar",
+      "assigned and unassigned compared to reopened database",
+      "private and absent results cleared prior detail",
+      "successful refresh after 404, logout cleared the visible record"
+    ]
+  },
+  "acceptance": {
+    "another_view": "Independent read-ACL editor and viewer rendered the exact same issue fields as the writer, followed by readback through a reopened database.",
+    "denied": "Both mutations attempted by the document read-ACL editor returned 403. Reopening before and after the denied transition matched the writer's latest detail. Viewer selectors and submit buttons were disabled.",
+    "target": "Compiled sidebar opened through the command palette; product server accepted and persisted both authorized changes. The parent publisher records GitHub delivery and closure."
+  }
+}

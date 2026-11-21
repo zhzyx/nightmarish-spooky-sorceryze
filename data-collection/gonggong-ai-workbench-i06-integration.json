@@ -1,0 +1,345 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-i06",
+  "issue_number": 1850,
+  "baseline": "174e9ee8262a47bfc8577a80d9eed80ca010d985",
+  "windows_editor_sha256": "f3c6f6fcff3efa235be3633a05230e218b85fc1840b71401b705225a7adc2432",
+  "original_evidence_sha256": "a234d038e5315cb7a274751a07dda5e1305d45f0d3177500b235d8f0b0f02da4",
+  "registered_controls": [
+    "issue_assignment.gd",
+    "issue_comments.gd",
+    "issue_dependencies.gd",
+    "issue_hierarchy.gd"
+  ],
+  "tests": [
+    "test_issue_assignee",
+    "test_issue_hierarchy",
+    "test_issue_flow",
+    "test_issue_comments",
+    "test_issue_ancestor_acl",
+    "test_api_doc_issues"
+  ],
+  "server_result": "35 passed, 1 warning in 14.89s",
+  "native": {
+    "hierarchy": {
+      "state": "passed",
+      "editor_sha256": "f3c6f6fcff3efa235be3633a05230e218b85fc1840b71401b705225a7adc2432",
+      "native": {
+        "attached": "iss_c87ec2d0128e4eeeb97165ddc765d5c8",
+        "attached_revision": "b7e0b932d90e75083c3d65e40f99f215840efa334a3286c9fcff6ab0290c1f6b",
+        "cycle_parent": null,
+        "detached": null,
+        "geometry": {
+          "actions_reachable": true,
+          "close_reachable": true,
+          "max_scroll": 920.0,
+          "visible": "[P: (588.0, 122.0), S: (364.0, 510.0)]",
+          "window": "(960, 640)"
+        },
+        "original_revision": "a2bc2b6b4d1dd11ebffbace9e0a4a5ef8f452a5e8e7cd9f3f68b2a9d655b5695"
+      },
+      "authenticated_requests": [
+        [
+          "GET",
+          "/api/v1/issues/iss_518a789e4e96448e893a9d530c98c098/hierarchy",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/issues/iss_518a789e4e96448e893a9d530c98c098/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_518a789e4e96448e893a9d530c98c098/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_c87ec2d0128e4eeeb97165ddc765d5c8/hierarchy",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/issues/iss_c87ec2d0128e4eeeb97165ddc765d5c8/hierarchy",
+          409
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_c87ec2d0128e4eeeb97165ddc765d5c8/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_518a789e4e96448e893a9d530c98c098/hierarchy",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/issues/iss_518a789e4e96448e893a9d530c98c098/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_518a789e4e96448e893a9d530c98c098/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_c87ec2d0128e4eeeb97165ddc765d5c8/hierarchy",
+          200
+        ]
+      ],
+      "viewer_after_each_write": [
+        {
+          "http": 200,
+          "parent": "iss_c87ec2d0128e4eeeb97165ddc765d5c8",
+          "children": [
+            "iss_518a789e4e96448e893a9d530c98c098"
+          ]
+        },
+        {
+          "http": 409,
+          "parent": "iss_c87ec2d0128e4eeeb97165ddc765d5c8",
+          "children": [
+            "iss_518a789e4e96448e893a9d530c98c098"
+          ]
+        },
+        {
+          "http": 200,
+          "parent": null,
+          "children": []
+        }
+      ],
+      "reopened_issues": [
+        {
+          "number": 1,
+          "title": "设计集合",
+          "body_md": "保留父项",
+          "acceptance": "",
+          "parent_id": null
+        },
+        {
+          "number": 2,
+          "title": "待归类的设计",
+          "body_md": "保留正文",
+          "acceptance": "原验收",
+          "parent_id": null
+        }
+      ]
+    },
+    "dependencies": {
+      "engine_sha256": "f3c6f6fcff3efa235be3633a05230e218b85fc1840b71401b705225a7adc2432",
+      "upstream_terminal": "produced",
+      "release": {
+        "release": "a5ab9201dd70ca4ea9050ec90568f15bdba85153fed305d594a17b63b2a40b7b",
+        "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8"
+      },
+      "ui": {
+        "accepted_row": "a　done　已验收",
+        "after": 200,
+        "before": 409,
+        "blocked_row": "a　in-review　未验收，阻塞推进"
+      },
+      "edit_http_statuses": [
+        200,
+        409,
+        200,
+        200
+      ],
+      "persisted_downstream": {
+        "status": "in-progress",
+        "version": 4,
+        "content_revision": "4811a3c84ff50d21bee7006d810edcfa026a191a2f0fb88fcfd4dcaa44e3bb61"
+      }
+    },
+    "comments": {
+      "engine_sha256": "f3c6f6fcff3efa235be3633a05230e218b85fc1840b71401b705225a7adc2432",
+      "comment_post_status": [
+        503,
+        200,
+        200,
+        200
+      ],
+      "verified_thread": [
+        {
+          "id": "icmt_cc564752d47447baa8aaeb7105d57b81",
+          "tenant_id": "ten_0d77816b40b148158c283af088043ce2",
+          "issue_id": "iss_bad54783f86846a7a8c0ff2856a471ad",
+          "author": "usr_abf4c71d347b433db4deb912795a00ab",
+          "body": "入口截图已更新",
+          "created_at": "2026-11-21T20:30:56.583364+00:00",
+          "author_name": "林川",
+          "parent_id": null
+        },
+        {
+          "id": "icmt_7896210589e7431ba6ec0621efc4933c",
+          "tenant_id": "ten_0d77816b40b148158c283af088043ce2",
+          "issue_id": "iss_bad54783f86846a7a8c0ff2856a471ad",
+          "author": "usr_4ef53e4561e74fc5a4e79066189e8201",
+          "body": "请补上验收步骤\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径",
+          "created_at": "2026-11-21T20:31:01.337217+00:00",
+          "author_name": "唐敏",
+          "parent_id": "icmt_cc564752d47447baa8aaeb7105d57b81"
+        },
+        {
+          "id": "icmt_85047c2d748d4e4fb363606124821a0f",
+          "tenant_id": "ten_0d77816b40b148158c283af088043ce2",
+          "issue_id": "iss_bad54783f86846a7a8c0ff2856a471ad",
+          "author": "usr_abf4c71d347b433db4deb912795a00ab",
+          "body": "已补充第二步",
+          "created_at": "2026-11-21T20:31:05.893664+00:00",
+          "author_name": "林川",
+          "parent_id": "icmt_7896210589e7431ba6ec0621efc4933c"
+        }
+      ],
+      "editor_launches": [
+        {
+          "phase": 0,
+          "restored": -1,
+          "selected": 0
+        },
+        {
+          "phase": 1,
+          "restored": -1,
+          "selected": 1
+        },
+        {
+          "phase": 2,
+          "restored": 0,
+          "selected": 1
+        },
+        {
+          "phase": 3,
+          "restored": 1,
+          "selected": 0
+        }
+      ],
+      "pass": true
+    },
+    "assignment": {
+      "engine_sha256": "f3c6f6fcff3efa235be3633a05230e218b85fc1840b71401b705225a7adc2432",
+      "edits": [
+        [
+          "PUT",
+          "/api/v1/issues/{id}/assignee",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/{id}/work/flow/advance",
+          200
+        ],
+        [
+          "PUT",
+          "/api/v1/issues/{id}/assignee",
+          403
+        ],
+        [
+          "POST",
+          "/api/v1/issues/{id}/work/flow/advance",
+          403
+        ]
+      ],
+      "native_views": {
+        "write": [
+          {
+            "owner": null,
+            "revision": "e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2",
+            "status": "backlog",
+            "visible": "标题　场景检查\n负责人　未分配\n状态　backlog\n内容版本　e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2"
+          },
+          {
+            "owner": "陈墨",
+            "revision": "e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2",
+            "status": "backlog",
+            "visible": "标题　场景检查\n负责人　陈墨\n状态　backlog\n内容版本　e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2"
+          },
+          {
+            "owner": "陈墨",
+            "revision": "e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2",
+            "status": "planned",
+            "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2"
+          }
+        ],
+        "acl": [
+          {
+            "owner": "陈墨",
+            "revision": "e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2",
+            "status": "planned",
+            "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2"
+          },
+          {
+            "owner": "陈墨",
+            "revision": "e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2",
+            "status": "planned",
+            "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2"
+          }
+        ],
+        "viewer": [
+          {
+            "owner": "陈墨",
+            "revision": "e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2",
+            "status": "planned",
+            "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　e7727317f41df1b3ca0562a2553c083b49a8c0fd75e4976e0882ce83b7d68ec2"
+          }
+        ]
+      },
+      "reopened_database_matches": true
+    },
+    "detail": {
+      "engine_sha256": "f3c6f6fcff3efa235be3633a05230e218b85fc1840b71401b705225a7adc2432",
+      "observed_fields": [
+        "标题　核对场景入口\n负责人　唐敏\n状态　planned\n内容版本　cae290d39ed66200aed5ad24cec3772c20cb1d6f087f77bc10701baedc3bb343",
+        "标题　检查地图\n负责人　未分配\n状态　backlog\n内容版本　1e628d9e82becf54f42f054166cb122cacf3cc3011730e453bee8ff8a8a47604"
+      ],
+      "http_readback": [
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/2/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/3/detail",
+          "studio/game",
+          403
+        ],
+        [
+          "/api/v1/issues/by-number/99999/detail",
+          "studio/game",
+          404
+        ],
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ]
+      ],
+      "error_feedback": [
+        "没有权限查看此工单",
+        "当前项目中不存在此编号的工单"
+      ],
+      "checks": [
+        "command palette opened sidebar",
+        "assigned and unassigned compared to reopened database",
+        "private and absent results cleared prior detail",
+        "successful refresh after 404, logout cleared the visible record"
+      ]
+    }
+  },
+  "source_blobs": {
+    "customizations/components/tianxuan/server/api.py": "6022e3b605ad4856fdb67be0251169a7dd716662",
+    "customizations/components/tianxuan/server/schemas.py": "37de6396c0767a4c200f8b8bcbb6695c31d40d32",
+    "customizations/components/tianxuan/server/test_issue_assignee.py": "6e250e968448e86be3f0b5ba5644c765291fd489",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "37e7accb4304aee60df9f58f8527eec0a8dcf9b2",
+    "design-docs/gonggong-ai-workbench-i06.md": "ec301d5273af5b65b8faf548bcd36df36e330237",
+    "editor/docks/workbench/issue_actions/issue_assignment.gd": "7b89258b97a032678cdb0828bfbac55e4e668e96",
+    "tests/editor/run_workbench_issue_assignment.py": "facddae9837562cf7fab49eae934c781b15ca1e9",
+    "tests/editor/workbench_issue_assignment.gd": "7386c9bfd1327dde375d19a7f17a133922e329d3"
+  },
+  "observed_at": "2026-11-21T20:31:54.017213+00:00"
+}

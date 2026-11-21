@@ -379,6 +379,13 @@ class IssueModuleRequest(BaseModel):
     module_id: str = Field(min_length=1)
 
 
+class IssueAssigneeRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    assignee_id: str | None = Field(min_length=1, max_length=256)
+    expected_assignee_id: str | None = Field(min_length=1, max_length=256)
+
+
 class ModuleLocationRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 

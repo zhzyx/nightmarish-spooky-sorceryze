@@ -1613,6 +1613,36 @@ class Tianxuan:
         return self.issue_hierarchy(actor, issue_id, project)
 
     @_connection_call
+    def set_issue_assignee(
+        self, actor: str, issue_id: str, project: str, assignee_id: str | None, expected_assignee_id: str | None
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._require_tenant_issue(actor, issue_id, write=True)
+        self._validate_project(project)
+        if issue["project"] != project:
+            raise NotFound("issue not found in project")
+        if assignee_id is not None:
+            self._require_tenant_object(actor, "users", assignee_id)
+        row = self.db.execute("SELECT user_id FROM issue_assignees WHERE issue_id=?", (issue_id,)).fetchone()
+        previous = row["user_id"] if row else None
+        if previous != assignee_id:
+            if previous != expected_assignee_id:
+                raise VersionConflict("issue assignee changed")
+            if assignee_id is None:
+                self.db.execute("DELETE FROM issue_assignees WHERE issue_id=?", (issue_id,))
+            else:
+                self.db.execute(
+                    "INSERT INTO issue_assignees(issue_id,user_id) VALUES (?,?) "
+                    "ON CONFLICT(issue_id) DO UPDATE SET user_id=excluded.user_id",
+                    (issue_id, assignee_id),
+                )
+            self.db.execute("UPDATE issues SET updated_at=? WHERE id=?", (_now(), issue_id))
+            self._event(issue["tenant_id"], "issue.assigned", actor, issue_id, {"from": previous, "to": assignee_id})
+        return self.read_issue_detail(actor, project, issue["number"])
+
+    @_connection_call
     def set_issue_module(self, actor: str, issue_id: str, project: str, module_id: str) -> dict[str, Any]:
         if not self.db.in_transaction:
             self.db.execute("BEGIN IMMEDIATE")
