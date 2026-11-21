@@ -44,7 +44,8 @@ def generate_bundle(target, source, env):
         if target_bin != "":
             shutil.copy(target_bin, app_dir + "/Contents/MacOS/Godot")
         slot = env.extra_suffix if env["extra_suffix"] in ("self_update_a", "self_update_b") else ""
-        shutil.copy(f"{bin_dir}/tianshu-ui{slot}.json", app_dir + "/Contents/Resources/tianshu-ui.json")
+        for package in ("tianshu-ui", "tianshu-board"):
+            shutil.copy(f"{bin_dir}/{package}{slot}.json", f"{app_dir}/Contents/Resources/{package}.json")
         if "mono" in env.module_version_string:
             shutil.copytree(env.Dir("#bin/GodotSharp").abspath, app_dir + "/Contents/Resources/GodotSharp")
         version = get_version_info("", True)
