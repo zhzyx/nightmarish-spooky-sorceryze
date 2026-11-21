@@ -308,8 +308,10 @@ func _set_node_file(field: String, selection):
 func _ready():
 	controller.command_completed.connect(_controller_completed)
 	controller.command_failed.connect(_controller_failed)
-	custom_minimum_size = Vector2(900, 520)
 	var builtin = get_meta('ainative_builtin',false)
+	# The embedded editor shares horizontal space with the workbench sidebar.
+	# Wide tools remain reachable in WorkbenchScroll.
+	custom_minimum_size = Vector2(0 if builtin else 900, 520)
 	if builtin:
 		var navigation = HFlowContainer.new()
 		navigation.name = 'AINativeNavigation'

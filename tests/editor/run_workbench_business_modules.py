@@ -18,6 +18,7 @@ from uuid import uuid4
 import httpx
 import uvicorn
 from editor_test_isolation import copy_editor
+from run_unified_settings_native import sanitized_environment
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "customizations/components/tianxuan/server"))
@@ -91,7 +92,7 @@ def seed(client, store, actor):
     return fixtures
 
 
-def exercise(editor, root):
+def exercise(editor, root, references=False):
     private = copy_editor(editor, root / "editor")
     project = root / "project"
     project.mkdir()
@@ -139,16 +140,26 @@ def exercise(editor, root):
                 )["token"]
                 client.headers["Authorization"] = "Bearer " + token
                 fixtures = seed(client, store, account["user_id"])
-                env = os.environ | dict(
+                if references:
+                    shutil.copyfile(
+                        Path(__file__).with_name("workbench_business_references.gd"), project / "reference_probe.gd"
+                    )
+                    for folder in ("alpha", "beta"):
+                        (project / folder).mkdir()
+                        (project / folder / "same.gd").write_text(
+                            f'extends Node\nconst MARKER = "{folder} u15-business-fixture {token}"\n',
+                            encoding="utf-8",
+                            newline="\n",
+                        )
+                env = sanitized_environment(root) | dict(
                     TIANXUAN_API=base,
                     TIANXUAN_TOKEN=token,
                     TIANXUAN_PROJECT=PROJECT,
                     C06_FIXTURE=json.dumps(fixtures),
+                    U15_BUSINESS_REFERENCES="1" if references else "0",
                     C06_SECOND_PASSWORD=password,
                     C06_SECOND_ID=second,
                 )
-                for k in ("APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "XDG_CACHE_HOME"):
-                    env[k] = str(root / k)
                 calls.clear()
                 run = subprocess.run(
                     [str(private), "--headless", "--editor", "--path", str(project), "--script", "res://probe.gd"],
@@ -161,6 +172,45 @@ def exercise(editor, root):
                     timeout=90,
                 )
                 assert run.returncode == 0 and "SCRIPT ERROR" not in run.stderr, run.stdout + run.stderr
+                if references:
+                    evidence = json.loads(
+                        next(
+                            line.removeprefix("U15_BUSINESS=")
+                            for line in run.stdout.splitlines()
+                            if line.startswith("U15_BUSINESS=")
+                        )
+                    )
+                    turns = []
+                    native_calls = list(calls)
+                    assert [
+                        path for method, path, _ in native_calls if method == "POST" and path.startswith(CHATS)
+                    ] == [CHATS + "/" + f["conversation_id"] + "/turns" for f in fixtures]
+                    for fixture in fixtures:
+                        chat = success(client.get(CHATS + "/" + fixture["conversation_id"]))
+                        assert len(chat["turns"]) == 2
+                        turn = chat["turns"][-1]
+                        turns.append({"content": turn["content"], "context_snapshot": turn["context_snapshot"]})
+                    beta = evidence["selected"][1]
+                    for i, turn in enumerate(turns):
+                        assert turn["context_snapshot"] == {
+                            "project": PROJECT,
+                            "module_id": fixtures[i]["module_id"],
+                            "issue_id": fixtures[i]["issue_id"],
+                            "references": [beta] if i == 0 else [],
+                        }
+                    prefix, context = turns[0]["content"].split("编辑器引用：")
+                    encoded, excerpt = context.split("\n选段 · ")
+                    assert prefix.startswith("keep beta\n") and json.loads(encoded) == [beta]
+                    assert excerpt == beta["object_id"] + ':\nconst MARKER = "beta [REDACTED] [REDACTED]"'
+                    assert all(value not in turns[0]["content"] for value in ("alpha", token, "u15-business-fixture"))
+                    assert turns[1]["content"] == "module B clean"
+                    return {
+                        "state": "passed",
+                        "editor_exit": run.returncode,
+                        "controls": evidence,
+                        "stored_turns": turns,
+                        "native_http": native_calls,
+                    }
                 trace = json.loads(
                     next(
                         line.removeprefix("C06_NATIVE=")
@@ -219,11 +269,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", required=True, type=Path)
     parser.add_argument("--report", required=True, type=Path)
+    parser.add_argument("--references", action="store_true", help="Exercise U15 on two authenticated module issues")
     args = parser.parse_args()
     # The fixture never uses a configured external model.
-    for key in ("TIANXUAN_CHAT_BASE_URL", "TIANXUAN_CHAT_MODEL_KEY", "TIANXUAN_CHAT_MODEL"):
+    for key in ("GONGGONG_WORKSPACE", "TIANXUAN_CHAT_BASE_URL", "TIANXUAN_CHAT_MODEL_KEY", "TIANXUAN_CHAT_MODEL"):
         os.environ.pop(key, None)
     with tempfile.TemporaryDirectory(prefix="c06-native-", ignore_cleanup_errors=os.name == "nt") as directory:
-        result = exercise(args.godot.resolve(), Path(directory))
+        result = exercise(args.godot.resolve(), Path(directory), args.references)
     result["editor_sha256"] = hashlib.sha256(args.godot.read_bytes()).hexdigest()
     args.report.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

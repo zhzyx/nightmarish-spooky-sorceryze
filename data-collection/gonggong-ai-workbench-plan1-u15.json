@@ -1,0 +1,363 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-u15",
+  "issue_number": 1810,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1810",
+  "observed_at": "2026-11-21T14:15:52.167064+00:00",
+  "source_base": "12ba791efe3631375ad8b7ba70d8adf2f95b779c",
+  "integrated_patches": {
+    "u07": {
+      "base": "e415518a44a2dde7fdbdc5014bb0e7d0527f32ef",
+      "sha256": "67c3c8490e5ed585a4a15807e4dced9d35882c46f5ee9cd31fb8c8b60d261bae"
+    },
+    "u08": {
+      "base": "217cd6c7641af1b6bddeed284599992d9f800a91",
+      "sha256": "6169aefeb022d7628aa9a4f211088ca12fd326392a0a38b8e745940f5a96b972"
+    },
+    "u09": {
+      "base": "e415518a44a2dde7fdbdc5014bb0e7d0527f32ef",
+      "sha256": "f125f7f73f75dd746a12c7f502ff3f3715212b971bbb8b15fcfd359c59ebfe8b"
+    },
+    "u12": {
+      "base": "e415518a44a2dde7fdbdc5014bb0e7d0527f32ef",
+      "sha256": "ccf019e03e8fd78bbd83dbf71e81a9e85afca76caf68c6c5194f9ec31b9425ad"
+    }
+  },
+  "source_sha256": {
+    "design-docs/gonggong-ai-workbench-u07.md": "971fe180fc1f8ab37c19730898aa7d3135a7c54a83bdcbb461914ba13f834988",
+    "design-docs/gonggong-ai-workbench-u08.md": "4d085761f9abd8b0464e935e3777b97ffce4205cd94637ee7243fa19118e258a",
+    "design-docs/gonggong-ai-workbench-u09.md": "1fbf10f74582e390021b4da6536467f5e062b646e326f4b7b0acd59f67249a80",
+    "design-docs/gonggong-ai-workbench-u12.md": "37c098dc82bc29ce5ab1417036fe3362239479fd154b1a45335a3cbe968abea5",
+    "design-docs/gonggong-ai-workbench-u15.md": "9c1a14f267c7c8b46b7773f8cb43a0782d1fc5744029dc8249ae39e07168e7a5",
+    "editor/docks/AIChatController.h": "888fc8abb9d89a208ea8c5b49956d40c249bd91563a7811de2991c8d35fbc143",
+    "editor/docks/ai_chat_dock.cpp": "74989c35d745c92400d64664cf265a61ca30e2d13340117a2bf3cc89838cdd3a",
+    "editor/docks/ai_chat_dock.h": "2d80341b16b7866f513cf0a22e0303fd70257b56717b637aa1b55a8ffa19a8bf",
+    "editor/docks/ai_chat_gonggong.cpp": "daff13e3059b9576705ce4766051c7884862bdc591d90efb80a4c4ffe4e166df",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "7de35abef426a11d5dfbcc9222769884781df18783aa7f92300e463bc806ed56",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "e332cbbfccd5ec8979f9c6c390200bdc17069b9978278a59db89e2dfe3b06946",
+    "editor/editor_main_screen.cpp": "ecc5721d7e4a114ee759c1692a0e118ec837a787e0f43b53aae16cb820c11d1f",
+    "editor/plugins/editor_plugin.cpp": "7ce38a71101367812a166436d4fa3b78094b1caf54fecd27638db0aa7523d92a",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "491a88e17cee33c7cfbb22f1e5fde0dc0ad351f574c21b0537ee5d589af7afba",
+    "tests/editor/run_tianshu_spatial.py": "7dfe4c794cbb86b2ef1a8c9e39ae7c33041a8374202197d986fe42311f93b544",
+    "tests/editor/run_workbench_page_reference.py": "99e18ee0ac972717bbd780a737ce7546c940c42970d66a2f29abee820352d784",
+    "tests/editor/run_workbench_reference_removal.py": "0bc8192660bba8ee76b4f279e84cd55a3f873d5f29d4a908d375f7d806428115",
+    "tests/editor/run_workbench_resource_selection.py": "f50c544ad233e29f1fcd2f317d979191407a8360d8e90455dc106d1e8c44cd9c",
+    "tests/editor/workbench_page_reference.gd": "6960d88a962ce64500aabfaeb2e902c0280a16b747766aa3ca7ed81a4d189b8a",
+    "tests/editor/workbench_reference_queue_restore.gd": "bc856513387ee2f9e4d7cd251ae6a2970eceec86baded75162164d9724ede68c",
+    "tests/editor/workbench_reference_removal.gd": "93236e0805c8fc40876372e1b9d73b424b8c209d9d3caee88975d874d1745d81",
+    "tests/editor/workbench_resource_selection.gd": "29c3af37cb602631a49857a9748e627198f67b68048ee3cbd77a757758ad50b5",
+    "tests/editor/workbench_scene_selection.gd": "95fdf4deb0a0f7ae45b77d0f4d319573d795739043901fba91701ffd3e8edddb",
+    "tests/editor/workbench_script_selection.gd": "41ba48f0b9ec0d2a3b95a9b575192a114d8a611a4cd7df01558dd8b75d4af34f"
+  },
+  "build": {
+    "platform": "Windows x86_64, MSVC 14.5, SDK 10.0.26100.0",
+    "scons": "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<read-only shared cache> cache_limit=0 --cache-readonly -j8",
+    "exit": 0,
+    "log_sha256": "b62198db780bb07d4146b162fa42935903e6f31706443d66fadf38fc7986d1b7",
+    "engine_sha256": "f6ce30ad76046cbfc64fafb0b7f056d1fd93edd601ff84b21f00fa26509d72fe",
+    "console_wrapper_sha256": "e629ec1e363c220da6f714faab10cf58e30f697f00c27be8a5611b92b9ff2918"
+  },
+  "method_recall": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "applied": "Rechecked all four exact producer patches before integration and exercised the combined receiver and cold-restore paths. The standalone receipts cannot certify the combined executable."
+  },
+  "acceptance": {
+    "probe": "tests/editor/run_workbench_reference_removal.py",
+    "process": "private headless editor, real script selections and queued-turn resume, isolated settings, loopback HTTP. The restored queue is seeded from the previous native turn in the shipping history format.",
+    "passed": true,
+    "exit": 0,
+    "messages": [
+      "retain beta\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：#1810 · gonggong-ai-workbench-plan1-u15\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://beta/same.gd#L2:1-L2:59\",\"revision\":\"f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\"}]\n选段 · res://beta/same.gd#L2:1-L2:59:\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+      "restore queued\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：#1810 · gonggong-ai-workbench-plan1-u15\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://beta/same.gd#L2:1-L2:59\",\"revision\":\"f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\"}]\n选段 · res://beta/same.gd#L2:1-L2:59:\nconst MARKER = \"beta [REDACTED] [REDACTED]\""
+    ],
+    "controls": {
+      "after": "移除 · res://beta/same.gd#L2:1-L2:59\nf9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+      "before": [
+        "移除 · res://alpha/same.gd#L2:1-L2:60\n209f4c87fadf95447ec04a2b1ccdf90d6586a238f87cf2d53adfa6216b1ae5d8\nconst MARKER = \"alpha [REDACTED] [REDACTED]\"",
+        "移除 · res://beta/same.gd#L2:1-L2:59\nf9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\nconst MARKER = \"beta [REDACTED] [REDACTED]\""
+      ],
+      "history": [
+        {
+          "kind": "editor",
+          "object_id": "res://beta/same.gd#L2:1-L2:59",
+          "revision": "f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a"
+        }
+      ],
+      "issue_after": "项目 · U15 project\n工单 · #1810 · gonggong-ai-workbench-plan1-u15",
+      "issue_before": "项目 · U15 project\n工单 · #1810 · gonggong-ai-workbench-plan1-u15",
+      "selected": [
+        {
+          "kind": "editor",
+          "object_id": "res://alpha/same.gd#L2:1-L2:60",
+          "revision": "209f4c87fadf95447ec04a2b1ccdf90d6586a238f87cf2d53adfa6216b1ae5d8"
+        },
+        {
+          "kind": "editor",
+          "object_id": "res://beta/same.gd#L2:1-L2:59",
+          "revision": "f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a"
+        }
+      ]
+    },
+    "restored_queue_exit": 0,
+    "persisted_draft_and_backup_scrubbed": true
+  },
+  "regressions": {
+    "u07": {
+      "command": "tests/editor/run_tianshu_spatial.py --scene-selection",
+      "requests": 4,
+      "drafts": [
+        {
+          "draft": "2D selection 1",
+          "label": "清空引用 · res://selection-2D.tscn#Right/SharedLeaf",
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "res://selection-2D.tscn#Right/SharedLeaf",
+              "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+            }
+          ]
+        },
+        {
+          "draft": "2D selection 3",
+          "label": "清空引用 · res://selection-2D.tscn#Right/SharedLeaf、res://selection-2D.tscn#Left/SharedLeaf、res://selection-2D.tscn#Other/SharedLeaf",
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "res://selection-2D.tscn#Right/SharedLeaf",
+              "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+            },
+            {
+              "kind": "editor",
+              "object_id": "res://selection-2D.tscn#Left/SharedLeaf",
+              "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+            },
+            {
+              "kind": "editor",
+              "object_id": "res://selection-2D.tscn#Other/SharedLeaf",
+              "revision": "8ed4b1c5555b0f375d94bd0c4f163ca6d79a48e6bcc6dc06098433f438782a5a"
+            }
+          ]
+        },
+        {
+          "draft": "3D selection 1",
+          "label": "清空引用 · res://selection-3D.tscn#Right/SharedLeaf",
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "res://selection-3D.tscn#Right/SharedLeaf",
+              "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+            }
+          ]
+        },
+        {
+          "draft": "3D selection 3",
+          "label": "清空引用 · res://selection-3D.tscn#Right/SharedLeaf、res://selection-3D.tscn#Left/SharedLeaf、res://selection-3D.tscn#Other/SharedLeaf",
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "res://selection-3D.tscn#Right/SharedLeaf",
+              "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+            },
+            {
+              "kind": "editor",
+              "object_id": "res://selection-3D.tscn#Left/SharedLeaf",
+              "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+            },
+            {
+              "kind": "editor",
+              "object_id": "res://selection-3D.tscn#Other/SharedLeaf",
+              "revision": "6f3cfdf87ad5dd0951d945a050869711e591c06372989ee6e227daada8c90a77"
+            }
+          ]
+        }
+      ],
+      "reopen_exits": [
+        0
+      ]
+    },
+    "u08": {
+      "runner_sha256": "37ba6695f83c8e84fc22b1d7f3947953dc71dbd0455918a567b72f2924a7ffa9",
+      "observations": [
+        {
+          "marker": "selection-test-0",
+          "path": "res://alpha/same.gd",
+          "removed": false,
+          "revision": "982e75a2d88fac2dd0cd68b933af3abf336992a8d03116485e3f8056be5b2f51"
+        },
+        {
+          "marker": "selection-test-1",
+          "path": "res://beta/same.gd",
+          "removed": false,
+          "revision": "a8aac7c9e2d19e8a008d1bd85232508d72d67c72b5a59af9d847d8af85ec7679"
+        },
+        {
+          "marker": "selection-test-2",
+          "path": "res://alpha/same.gd",
+          "removed": true,
+          "revision": "982e75a2d88fac2dd0cd68b933af3abf336992a8d03116485e3f8056be5b2f51"
+        }
+      ],
+      "latest_user_messages": [
+        "selection-test-0\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：新需求\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://alpha/same.gd#L2:1-L2:21\",\"revision\":\"982e75a2d88fac2dd0cd68b933af3abf336992a8d03116485e3f8056be5b2f51\"}]\n选段 · res://alpha/same.gd#L2:1-L2:21:\nconst NAME = \"alpha\"",
+        "selection-test-1\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：新需求\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://beta/same.gd#L2:1-L2:20\",\"revision\":\"a8aac7c9e2d19e8a008d1bd85232508d72d67c72b5a59af9d847d8af85ec7679\"}]\n选段 · res://beta/same.gd#L2:1-L2:20:\nconst NAME = \"beta\"",
+        "selection-test-2"
+      ]
+    },
+    "u09": {
+      "passed": true,
+      "exit": 0,
+      "received_references": [
+        {
+          "kind": "editor",
+          "object_id": "res://north/SameGradient.tres",
+          "revision": "da10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+        },
+        {
+          "kind": "editor",
+          "object_id": "res://south/SameGradient.tres",
+          "revision": "1bfd728e964cda28c57718bd5ea3ce8c3a3f2e80bee318fd7a263dc9cf556eee"
+        },
+        {
+          "kind": "editor",
+          "object_id": "temporary://6b01a65c-1ea44-3050f7-b469fbf8/Gradient/-9223370476003187812",
+          "revision": "4e5bf11e2b1554216cb12d62df2f4a25b66493f93c7f9d44899733039fda1bcd"
+        }
+      ],
+      "controls_and_history": {
+        "distinct_unsaved": "-9223370475147549792",
+        "draft_after_removal": "stale draft stays",
+        "draft_label": "清空引用 · res://north/SameGradient.tres、res://south/SameGradient.tres、临时资源 · temporary://6b01a65c-1ea44-3050f7-b469fbf8/Gradient/-9223370476003187812",
+        "history": [
+          {
+            "kind": "editor",
+            "object_id": "res://north/SameGradient.tres",
+            "revision": "da10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://south/SameGradient.tres",
+            "revision": "1bfd728e964cda28c57718bd5ea3ce8c3a3f2e80bee318fd7a263dc9cf556eee"
+          },
+          {
+            "kind": "editor",
+            "object_id": "temporary://6b01a65c-1ea44-3050f7-b469fbf8/Gradient/-9223370476003187812",
+            "revision": "4e5bf11e2b1554216cb12d62df2f4a25b66493f93c7f9d44899733039fda1bcd"
+          }
+        ],
+        "saved_label": "清空引用 · res://north/SameGradient.tres、res://south/SameGradient.tres",
+        "saved_temporary_blocked": true,
+        "stale_send_blocked": true
+      }
+    },
+    "u12": {
+      "history_matches_receiver": true,
+      "editor_exit": 0,
+      "previews": [
+        {
+          "bounds": [
+            {
+              "composer": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+              "reference": "[P: (614.0, 597.0), S: (326.0, 69.0)]",
+              "window_width": 960
+            },
+            {
+              "composer": "[P: (854.0, 750.0), S: (326.0, 91.0)]",
+              "reference": "[P: (854.0, 597.0), S: (326.0, 69.0)]",
+              "window_width": 1200
+            },
+            {
+              "composer": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+              "reference": "[P: (1094.0, 597.0), S: (326.0, 69.0)]",
+              "window_width": 1440
+            }
+          ],
+          "composer": 618659876094,
+          "module": "AINativeMainScreen",
+          "name": "马良",
+          "preview": "页面：马良\n模块：AINativeMainScreen\n可读范围：页面名、模块标识"
+        },
+        {
+          "bounds": [
+            {
+              "composer": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+              "reference": "[P: (614.0, 597.0), S: (326.0, 69.0)]",
+              "window_width": 960
+            },
+            {
+              "composer": "[P: (854.0, 750.0), S: (326.0, 91.0)]",
+              "reference": "[P: (854.0, 597.0), S: (326.0, 69.0)]",
+              "window_width": 1200
+            },
+            {
+              "composer": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+              "reference": "[P: (1094.0, 597.0), S: (326.0, 69.0)]",
+              "window_width": 1440
+            }
+          ],
+          "composer": 618659876094,
+          "module": "res://addons/notes/plugin.gd",
+          "name": "R4 Notes",
+          "preview": "页面：R4 Notes\n模块：res://addons/notes/plugin.gd\n可读范围：页面名、模块标识"
+        }
+      ],
+      "received_page_snapshots": [
+        {
+          "module_id": "AINativeMainScreen",
+          "page_name": "马良",
+          "readable_scope": [
+            "page_name",
+            "module_id"
+          ],
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "editor-page://AINativeMainScreen#%E9%A9%AC%E8%89%AF",
+              "revision": "d843e95bef14d21538bdf8fa341a26428c48fd0ccef6c5e8d234b3c9ea0bd843"
+            }
+          ]
+        },
+        {
+          "module_id": "res://addons/notes/plugin.gd",
+          "page_name": "R4 Notes",
+          "readable_scope": [
+            "page_name",
+            "module_id"
+          ],
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "editor-page://res%3A%2F%2Faddons%2Fnotes%2Fplugin.gd#R4%20Notes",
+              "revision": "0a664c611ed1e2ca15837dbc5a133920f63172df423e536fffc23463a8d56b6d"
+            }
+          ]
+        }
+      ],
+      "request_count": 3,
+      "last_user_content_after_removal": "only the typed question",
+      "source_draft_preserved": true,
+      "source_draft_absent_in_full_requests": true,
+      "rename_rejected_before_removal": true
+    },
+    "c08": {
+      "command": "tests/editor/run_tianshu_spatial.py --references",
+      "requests": [
+        [
+          "inspect original\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：https://github.com/fixture/project/issues/8 · reference-fixture\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://reference-a.tscn#Hero\",\"revision\":\"e8e71067cfc4bfde07c81342024c13d76b4d18a13ba5595707d3031e1fa810bf\"},{\"kind\":\"editor\",\"object_id\":\"res://hero-mesh.tres\",\"revision\":\"495a5662ca84bcde04022009797fb83556e9a2620acb6b5a582e807d35f4fd1e\"}]"
+        ]
+      ],
+      "reopen_exits": {
+        "stale": 0,
+        "legacy": 0
+      }
+    }
+  },
+  "raw_report_sha256": {
+    "u07": "645b964e555a2c7965df53a333927568ddb597364e38b0a54a64ab57834fa5f1",
+    "u08-proof": "c858a644e4881db1910eb813f35640dcde3321d3da6395e91fa9261e5a99b43d",
+    "u09": "3198ba825a798267943d6aa58c2c4db8a887cbd0ef1a74d6ec56181603685a5e",
+    "u12": "3911511d180c56c24104ec43ad0f58e983340d35c019f2edf56b593ec0417a5c",
+    "u15": "8d92d4518dd6516b5fefaebe581405d512ac37842d3626765f42ca1a72ce6f0e",
+    "c08": "bc595b5a409809cfa87377ce7d615976006db6849267d0218246038f1044af7d"
+  },
+  "scope": "Local candidate only. HTTP model is a fixture. Native project has no business module binding in the U15 script case. Page regression covers registered module IDs. Headless teardown emitted RID/ObjectDB warnings. No production service or credentials were used."
+}

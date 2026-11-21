@@ -1,0 +1,322 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64; isolated headless editor, loopback transports",
+  "source_base": "4c56b3fe48a2d1689259291d02580d2317a9ef12",
+  "candidate_editor_sha256": "5bf5b130d1cb6db172e57adfa2d398187e37edc044180729330ed65dd575728f",
+  "verified_at": "2026-11-21T16:12:50.749926+00:00",
+  "cards": {
+    "u07": {
+      "issue_number": 1828,
+      "passed": true,
+      "summary": "2D 和 3D 单选、多选、失效及冷启动草稿均经原生侧栏与模型接收回读。",
+      "source_evidence": "data-collection/gonggong-ai-workbench-plan1-u07.json"
+    },
+    "u08": {
+      "issue_number": 1829,
+      "passed": true,
+      "summary": "两个同名脚本的完整路径、选区和缓冲区摘要与发送内容一致。更新测试凭据后预览、队列、历史和回环接收均完成脱敏。",
+      "source_evidence": "data-collection/gonggong-ai-workbench-plan1-u08.json"
+    },
+    "u09": {
+      "issue_number": 1830,
+      "passed": true,
+      "summary": "文件系统和检查器选出的同名资源以完整项目路径区分，未保存资源有临时身份，三条引用与接收端及会话历史一致。",
+      "source_evidence": "data-collection/gonggong-ai-workbench-plan1-u09.json"
+    },
+    "u12": {
+      "issue_number": 1809,
+      "passed": true,
+      "summary": "马良与 R4 Notes 在 960、1200、1440 像素三档窗口均显示页面名、模块和实际可读范围。发送只包含预览的范围，原页草稿保留。",
+      "source_evidence": "data-collection/gonggong-ai-workbench-plan1-u12.json"
+    },
+    "u15": {
+      "issue_number": 1810,
+      "passed": true,
+      "summary": "在已绑定工单的草稿中移除一份同名脚本，模型实收、历史和界面剩余引用一致，原工单绑定保留。轮换占位凭据及恢复队列后也已复验。 在真实模块的两个工单发送时，天璇只收到当前工单保留的引用。切换账号和项目后的原草稿隔离检查通过。",
+      "source_evidence": "data-collection/gonggong-ai-workbench-plan1-u15.json"
+    }
+  },
+  "tests": {
+    "u07": {
+      "report_sha256": "cf980d96845ff7c6b051332c68ae2bc488aa92bfa4c20be7872d1eca2ef73777"
+    },
+    "u09": {
+      "report_sha256": "77ca40b4685139b7f91d70abcdbc1bf277dd09e0be8d9b24d94644e0b3c43612"
+    },
+    "u12": {
+      "report_sha256": "7a4f4c87aef8024d357be0ef0c7870c9ccdb0cc632b2e53521a44146ed678648"
+    },
+    "u15": {
+      "report_sha256": "3213518f0d513e645bc49a6424eecf95b1ef3e9c426df334ef774de3304591bc"
+    },
+    "i13": {
+      "report_sha256": "ab0b6d9f87018d72e7b94988c35fd861bcf7e549e9ebcf393cb4a5a3fe1b8307"
+    },
+    "layout": {
+      "report_sha256": "b999fcda3caac39af4ce0b1969722e5a63f1eeb637132b1e3eccdf0ec92d082b"
+    },
+    "c08": {
+      "report_sha256": "f4e02494880b850c05cca576dc067229896f77f794631abafd24a77cd0400415"
+    },
+    "u08": {
+      "report_sha256": "91be9c9d622cfaefb295f6a606aaca9ce8c74a80794ed2131a787772dddd1199"
+    },
+    "business-module": {
+      "report_sha256": "2ae5b749fdce10ae111e01e6c043a956ca88f5bab76754a715dd434a578f959b"
+    },
+    "business-session": {
+      "report_sha256": "27cde665fc5816bab6e3f65c76a5491ac27e400f6d17b782edb6b07186a2aaf0"
+    },
+    "business-references": {
+      "report_sha256": "2b2a469200d2cfc4fc2c743cbb4b464f59523bea3e3b64f4016d070b17d5192e"
+    },
+    "auxiliary-window": {
+      "report_sha256": "cb9018388acdfbef8cb8e89816eb9539034313afa6205c016bbe4b34f868f48c"
+    },
+    "business-documents": {
+      "report_sha256": "01a3d86a2c74fb00f8b06203b054e9d407d3c12272a912b5919863edf461459c"
+    },
+    "business-duobao": {
+      "report_sha256": "48997205a6f4c06b7ab07526334813a8326b1788d2cdd4f24a30dc018acd63a6"
+    },
+    "business-issue": {
+      "report_sha256": "130c18480ec9e2721ef85f66e78d0fe95b2e788f9c7c8070b062b162cda2b186"
+    }
+  },
+  "observations": {
+    "scene_model_calls": 4,
+    "script_messages": 3,
+    "resource_references": [
+      {
+        "kind": "editor",
+        "object_id": "res://north/SameGradient.tres",
+        "revision": "da10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+      },
+      {
+        "kind": "editor",
+        "object_id": "res://south/SameGradient.tres",
+        "revision": "1bfd728e964cda28c57718bd5ea3ce8c3a3f2e80bee318fd7a263dc9cf556eee"
+      },
+      {
+        "kind": "editor",
+        "object_id": "temporary://6b01c2c5-1ed5c-2dd8d9-32d0c333/Gradient/-9223370460417153228",
+        "revision": "581fa366bff6abb800159d303f836c868e32918c3531b410dbd31c6ea757bb2e"
+      }
+    ],
+    "page_snapshots": [
+      {
+        "module_id": "AINativeMainScreen",
+        "page_name": "马良",
+        "readable_scope": [
+          "page_name",
+          "module_id"
+        ],
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "editor-page://AINativeMainScreen#%E9%A9%AC%E8%89%AF",
+            "revision": "d843e95bef14d21538bdf8fa341a26428c48fd0ccef6c5e8d234b3c9ea0bd843"
+          }
+        ]
+      },
+      {
+        "module_id": "res://addons/notes/plugin.gd",
+        "page_name": "R4 Notes",
+        "readable_scope": [
+          "page_name",
+          "module_id"
+        ],
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "editor-page://res%3A%2F%2Faddons%2Fnotes%2Fplugin.gd#R4%20Notes",
+            "revision": "0a664c611ed1e2ca15837dbc5a133920f63172df423e536fffc23463a8d56b6d"
+          }
+        ]
+      }
+    ],
+    "page_geometry": [
+      {
+        "bounds": [
+          {
+            "composer": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (614.0, 599.0), S: (326.0, 69.0)]",
+            "window_width": 960
+          },
+          {
+            "composer": "[P: (854.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (854.0, 599.0), S: (326.0, 69.0)]",
+            "window_width": 1200
+          },
+          {
+            "composer": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (1094.0, 599.0), S: (326.0, 69.0)]",
+            "window_width": 1440
+          }
+        ],
+        "composer": 618777316613,
+        "module": "AINativeMainScreen",
+        "name": "马良",
+        "preview": "页面：马良\n模块：AINativeMainScreen\n可读范围：页面名、模块标识"
+      },
+      {
+        "bounds": [
+          {
+            "composer": "[P: (614.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (614.0, 599.0), S: (326.0, 69.0)]",
+            "window_width": 960
+          },
+          {
+            "composer": "[P: (854.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (854.0, 599.0), S: (326.0, 69.0)]",
+            "window_width": 1200
+          },
+          {
+            "composer": "[P: (1094.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (1094.0, 599.0), S: (326.0, 69.0)]",
+            "window_width": 1440
+          }
+        ],
+        "composer": 618777316613,
+        "module": "res://addons/notes/plugin.gd",
+        "name": "R4 Notes",
+        "preview": "页面：R4 Notes\n模块：res://addons/notes/plugin.gd\n可读范围：页面名、模块标识"
+      }
+    ],
+    "page_draft_preserved": true,
+    "remove_and_send": {
+      "after": "移除 · res://beta/same.gd#L2:1-L2:59\nf9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+      "before": [
+        "移除 · res://alpha/same.gd#L2:1-L2:60\n209f4c87fadf95447ec04a2b1ccdf90d6586a238f87cf2d53adfa6216b1ae5d8\nconst MARKER = \"alpha [REDACTED] [REDACTED]\"",
+        "移除 · res://beta/same.gd#L2:1-L2:59\nf9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\nconst MARKER = \"beta [REDACTED] [REDACTED]\""
+      ],
+      "history": [
+        {
+          "kind": "editor",
+          "object_id": "res://beta/same.gd#L2:1-L2:59",
+          "revision": "f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a"
+        }
+      ],
+      "issue_after": "项目 · U15 project\n工单 · #1810 · gonggong-ai-workbench-plan1-u15",
+      "issue_before": "项目 · U15 project\n工单 · #1810 · gonggong-ai-workbench-plan1-u15",
+      "selected": [
+        {
+          "kind": "editor",
+          "object_id": "res://alpha/same.gd#L2:1-L2:60",
+          "revision": "209f4c87fadf95447ec04a2b1ccdf90d6586a238f87cf2d53adfa6216b1ae5d8"
+        },
+        {
+          "kind": "editor",
+          "object_id": "res://beta/same.gd#L2:1-L2:59",
+          "revision": "f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a"
+        }
+      ]
+    },
+    "restored_queue_exit": 0,
+    "persisted_scrubbed": true,
+    "inflight_read_count": 6
+  },
+  "business_reference_verification": {
+    "controls": {
+      "after": "移除 · res://beta/same.gd#L2:1-L2:112\n4e6db490c13198e17fa14fb49cc25b39ecad33976d40c5029495e4f275bcfb20\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+      "before": [
+        "移除 · res://alpha/same.gd#L2:1-L2:113\n451181f54121ee0ee424297dd579b5fb0611ee4ab694f36c39796cee42f2b731\nconst MARKER = \"alpha [REDACTED] [REDACTED]\"",
+        "移除 · res://beta/same.gd#L2:1-L2:112\n4e6db490c13198e17fa14fb49cc25b39ecad33976d40c5029495e4f275bcfb20\nconst MARKER = \"beta [REDACTED] [REDACTED]\""
+      ],
+      "context_before_and_after": "模块 · Lighting · mod_d7a690a5ee324946adf093b88dc875a5\n工单 · #1  Review",
+      "input_rect": "[P: (1022.0, 746.0), S: (410.0, 70.0)]",
+      "issue_id": "iss_b239411d4833461d96c6125174955300",
+      "issue_switch_cleared": true,
+      "logout_cleared": true,
+      "module": "mod_d7a690a5ee324946adf093b88dc875a5",
+      "module_switch_cleared": true,
+      "rows_rect": "[P: (1022.0, 598.0), S: (410.0, 130.0)]",
+      "second_account_project": "c06/other",
+      "selected": [
+        {
+          "kind": "editor",
+          "object_id": "res://alpha/same.gd#L2:1-L2:113",
+          "revision": "451181f54121ee0ee424297dd579b5fb0611ee4ab694f36c39796cee42f2b731"
+        },
+        {
+          "kind": "editor",
+          "object_id": "res://beta/same.gd#L2:1-L2:112",
+          "revision": "4e6db490c13198e17fa14fb49cc25b39ecad33976d40c5029495e4f275bcfb20"
+        }
+      ]
+    },
+    "stored_turns": [
+      {
+        "content": "keep beta\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：#1  Review\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://beta/same.gd#L2:1-L2:112\",\"revision\":\"4e6db490c13198e17fa14fb49cc25b39ecad33976d40c5029495e4f275bcfb20\"}]\n选段 · res://beta/same.gd#L2:1-L2:112:\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+        "context_snapshot": {
+          "project": "c06/studio",
+          "module_id": "mod_d7a690a5ee324946adf093b88dc875a5",
+          "issue_id": "iss_b239411d4833461d96c6125174955300",
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "res://beta/same.gd#L2:1-L2:112",
+              "revision": "4e6db490c13198e17fa14fb49cc25b39ecad33976d40c5029495e4f275bcfb20"
+            }
+          ]
+        }
+      },
+      {
+        "content": "module B clean",
+        "context_snapshot": {
+          "project": "c06/studio",
+          "module_id": "mod_3a28ef2af33e421ba3d917de6f6c02d8",
+          "issue_id": "iss_7c949cba038b42d496dbed6966e46988",
+          "references": []
+        }
+      }
+    ]
+  },
+  "reverification": {
+    "previous_pulls": [
+      1937,
+      1943
+    ],
+    "tracker": 1938,
+    "verified": [
+      "mypy on candidate Python files",
+      "clang-format and ruff formatting",
+      "werror build for the original MSVC C4456 diagnostic",
+      "isolated native tests for references, account, business module, inflight work orders and sidebar controls"
+    ],
+    "native_predecessors": [
+      1927,
+      1932,
+      1933,
+      1936
+    ]
+  },
+  "source_git_blobs": {
+    "editor/docks/AIChatController.h": "5204aed2da5e73235e8af0c4cec26077a86d11b6",
+    "editor/docks/ai_chat_dock.cpp": "811f0a6c2ba73c2fc0768ec7697a3d82ede86bbe",
+    "editor/docks/ai_chat_dock.h": "5e641ce0ab803a70c2b6c3cc827ae43c97e92628",
+    "editor/docks/ai_chat_gonggong.cpp": "fec08716a00cc9ffe09185126a944075331b971b",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "bb41793113ba6aeb74732f1c7617024761ad8a89",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "e1027b7651599f9e2ac6b5fd2ac41ff084d872dd",
+    "editor/docks/workbench/business_session.gd": "b6548fdca608963db581d97f3588a44d3fe90596",
+    "editor/docks/workbench/module_selector.gd": "cb9d2b083520edf02712ede8c566f8d4a50e8443",
+    "editor/editor_main_screen.cpp": "52684694d8d31aeec082bcfd7aa56c4c241c7a64",
+    "editor/plugins/editor_plugin.cpp": "da1b0b37f13175eb40fffc03ffa04f6a876813a2",
+    "samples/ainative-workbench/addons/ainative/workbench.gd": "841ec579bf6966c25490be938ded25e743235514",
+    "tests/editor/run_tianshu_spatial.py": "1aea295b7500c266e33c17fe3d20c987656d11b4",
+    "tests/editor/run_workbench_business_modules.py": "48247036777076444af14988aad327438ce65524",
+    "tests/editor/run_workbench_page_reference.py": "c1a7524c253a5a25f7448111e7de17e6dafb841e",
+    "tests/editor/run_workbench_reference_removal.py": "c9f5f7f2ac65c0a33a0e470cded84c6b0ad3341b",
+    "tests/editor/run_workbench_resource_selection.py": "5d578c70607f10ec3ef10f122f8528bcfafd6fb0",
+    "tests/editor/tianshu_spatial.gd": "5dcec86ef62b911393226021d65eea8f5cd47b8c",
+    "tests/editor/workbench_business_modules.gd": "0d81b2eb9d771a883b33f2813ce02b2c05dcacf2",
+    "tests/editor/workbench_business_references.gd": "4c273450b95a3e01719849b6307909151b6a0e63",
+    "tests/editor/workbench_page_reference.gd": "863eefb0d74e471afbedda4115e25a3867063a56",
+    "tests/editor/workbench_reference_queue_restore.gd": "6365020b9f3c022ab815eefbf68c461e346cc292",
+    "tests/editor/workbench_reference_removal.gd": "88ef9cacf041f2c0adef5246838efa5a48d67c74",
+    "tests/editor/workbench_resource_selection.gd": "5ca5d1bd62520218d8890d50571598b2d9016a8e",
+    "tests/editor/workbench_scene_selection.gd": "84d6bedc21d9ef08e87ff8141ea2eca0a8cc871b",
+    "tests/editor/workbench_script_selection.gd": "28baa4eb18ae99c4a7bc78e11218454dea59236a"
+  }
+}
