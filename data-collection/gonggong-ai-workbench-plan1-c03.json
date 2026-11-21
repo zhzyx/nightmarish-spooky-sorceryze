@@ -1,0 +1,104 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-c03",
+  "issue_number": 1806,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1806",
+  "source_baseline": "280ee10a9a75d013def6b2ed32a94c2a651ec9eb",
+  "observed_at": "2026-11-21T05:47:57.384122+00:00",
+  "candidate_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "c19690b76625d9569a2549cd13f92d1edb94c484",
+    "customizations/components/tianxuan/server/business_asset_api.py": "56aa7ccc6d3dca73142204d9149044a5fdf818fd",
+    "customizations/components/tianxuan/server/native_api.py": "1d66eada0c901aeee640055b7c6509c1e3ea4fd0",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "2197158426a0acb254b3f93fc8d68746e7d7ce31",
+    "customizations/components/tianxuan/server/test_business_assets.py": "203a315bcda533232ef79833ed074a8c264decdf",
+    "design-docs/gonggong-ai-workbench-c03.md": "eb287873403a01dce0616a4afeebb2ff79737c08"
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "pytest": "9.2.0",
+    "fastapi": "0.165.0",
+    "starlette": "1.10.0",
+    "httpx": "0.28.1"
+  },
+  "upstream": [
+    {
+      "closedAt": "2026-11-21T05:35:01Z",
+      "number": 1827,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED"
+    },
+    {
+      "closedAt": "2026-11-21T05:28:14Z",
+      "number": 1868,
+      "state": "CLOSED",
+      "stateReason": "COMPLETED"
+    }
+  ],
+  "verification": {
+    "cwd": ".",
+    "suites": [
+      "customizations/components/tianxuan/server/test_business_assets.py",
+      "customizations/components/tianxuan/server/test_business_modules.py",
+      "customizations/components/tianxuan/server/test_native_api.py"
+    ],
+    "exit_code": 0,
+    "pytest_summary": "22 passed, 1 warning in 9.69s",
+    "warning": "Starlette TestClient httpx deprecation",
+    "ruff_check": "All checks passed!",
+    "ruff_format_check": "5 files already formatted",
+    "mypy": "Success: no issues found in 5 source files"
+  },
+  "target_receipt": {
+    "consumer": "Tianxuan authenticated native HTTP endpoints and persisted module-asset relation index",
+    "source_module": "shared-character-model",
+    "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89",
+    "path": "models/suzanne.glb",
+    "asset_id": "48b1d8c2f7039541c04da26dc0d089a56bb874f51de5767278d995d0f77be982",
+    "model_bytes": 70636,
+    "project": "studio/game",
+    "opened_sha256_by_module": {
+      "mod_ffbdd535008e43b386da3e4a2acf701c": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+      "mod_23a9535a255248c794ab06c8a5cce1d7": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+    },
+    "reverse_index_before": [
+      "mod_23a9535a255248c794ab06c8a5cce1d7",
+      "mod_ffbdd535008e43b386da3e4a2acf701c"
+    ],
+    "removed_module": "mod_ffbdd535008e43b386da3e4a2acf701c",
+    "unlink_status": 204,
+    "restart_removed_open_status": 404,
+    "restart_reverse_index": [
+      "mod_23a9535a255248c794ab06c8a5cce1d7"
+    ],
+    "restart_kept_open_status": 200,
+    "restart_kept_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+  },
+  "main_integration": {
+    "main": "62b3f5ec7e10b65409466615a4f46b9f41ba7389",
+    "worker_base": "280ee10a9a75d013def6b2ed32a94c2a651ec9eb",
+    "worker_receipt_blob": "651a66e5c86f8c7d3bd7c09da8349c7b6cec8d0f",
+    "original_and_integrated_blobs": {
+      "customizations/components/tianxuan/server/api.py": {
+        "base": "653a8beae5597fba56e3b15799e17351097b2403",
+        "main": "e43c56805325ac31a9e1114e3040442966cf8a3a",
+        "worker": "c19690b76625d9569a2549cd13f92d1edb94c484",
+        "integrated": "9e9001526b0324221a63ec979728970b3f7047e1"
+      },
+      "customizations/components/tianxuan/server/tianxuan_core.py": {
+        "base": "dfa66b698d5a01e329b0c1aa035c0bedffbbd913",
+        "main": "8fc2dd1d8713742c71b66f27a287bfd2d59710f2",
+        "worker": "2197158426a0acb254b3f93fc8d68746e7d7ce31",
+        "integrated": "295c9bd992ed04a4f0fcb548d960d44f05fd0704"
+      }
+    },
+    "final_artifacts": {
+      "customizations/components/tianxuan/server/api.py": "9e9001526b0324221a63ec979728970b3f7047e1",
+      "customizations/components/tianxuan/server/business_asset_api.py": "56aa7ccc6d3dca73142204d9149044a5fdf818fd",
+      "customizations/components/tianxuan/server/native_api.py": "1d66eada0c901aeee640055b7c6509c1e3ea4fd0",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "295c9bd992ed04a4f0fcb548d960d44f05fd0704",
+      "customizations/components/tianxuan/server/test_business_assets.py": "203a315bcda533232ef79833ed074a8c264decdf",
+      "design-docs/gonggong-ai-workbench-c03.md": "eb287873403a01dce0616a4afeebb2ff79737c08"
+    },
+    "verification": "已在 C02 合入后的主线上整合两个共改文件并再验权限、模块和共享资产 12 项，全部通过。",
+    "observed_at": "2026-11-21T06:19:37.513783+00:00"
+  }
+}

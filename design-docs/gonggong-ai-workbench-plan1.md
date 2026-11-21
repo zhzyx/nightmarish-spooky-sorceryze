@@ -146,6 +146,8 @@
 
 ### C03
 
+[交付清单与验证](gonggong-ai-workbench-c03.md)
+
 **关联跨模块的共享资产** · [C03 #1806](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1806)
 
 为同一资源标识保存显式的多个模块关系。

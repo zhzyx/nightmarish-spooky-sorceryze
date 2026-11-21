@@ -171,7 +171,9 @@ def create_native_workflow_router(workflow) -> APIRouter:
     return router
 
 
-def _identity(request: Request, *, refresh: bool = False, read_only: bool = False) -> tuple[str, str]:
+def _identity(
+    request: Request, *, refresh: bool = False, read_only: bool = False, allow_project: bool = False
+) -> tuple[str, str]:
     store = request.app.state.store
     actor = getattr(request.state, "verified_actor", None)
     if actor and refresh:
@@ -187,7 +189,8 @@ def _identity(request: Request, *, refresh: bool = False, read_only: bool = Fals
     context = store.actor_context(actor)
     if request.method != "GET" and not read_only and context["role"] == "viewer":
         raise HTTPException(403, "read-only account")
-    if request.query_params:
+    query_keys = [key for key, _ in request.query_params.multi_items()]
+    if query_keys and not (allow_project and query_keys == ["project"]):
         raise HTTPException(422, "query parameters are not supported")
     return context["tenant"], str(actor)
 
