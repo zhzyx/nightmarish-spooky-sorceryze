@@ -40,6 +40,8 @@ from gitea_bridge import GiteaClient, GiteaError
 from identity import allow_identity_attempt, get_identity_adapter
 from markdown_render import render_markdown
 from schemas import (
+    BusinessModuleCreate,
+    BusinessModuleName,
     CommentCreateRequest,
     CommentResolveRequest,
     CommitStatusRequest,
@@ -83,6 +85,7 @@ from schemas import (
     ToolCallRequest,
 )
 from tianxuan_core import (
+    DEFAULT_PROJECT,
     NotFound,
     PermissionDenied,
     StorageBusy,
@@ -680,6 +683,20 @@ def create_app(
         return {"issues": store.plan_tickets(actor, doc_id, tickets, call_id=payload.call_id)}
 
     # ---------- 司南：工单 ----------
+
+    @app.get("/api/v1/business-modules")
+    def business_modules(actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, list[dict[str, Any]]]:
+        return {"modules": store.list_business_modules(actor, project)}
+
+    @app.post("/api/v1/business-modules")
+    def create_module(payload: BusinessModuleCreate, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
+        return cast(dict[str, Any], store.create_business_module(actor, project, payload.name, call_id=payload.call_id))
+
+    @app.patch("/api/v1/business-modules/{module_id}")
+    def rename_module(
+        module_id: str, payload: BusinessModuleName, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(dict[str, Any], store.rename_business_module(actor, project, module_id, payload.name))
 
     @app.get("/api/v1/issues")
     def list_issues(

@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
-from tianxuan_core import _connection_call
+from tianxuan_core import DEFAULT_PROJECT, PROJECT_PATTERN, _connection_call
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "migration"))
 from migration_status import read_import_status
@@ -17,9 +17,7 @@ from routing import tenant_entry
 
 class Selection(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    project: str = Field(
-        default="workspace", pattern=r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,99}(/[a-zA-Z0-9][a-zA-Z0-9_.-]{0,99})?$"
-    )
+    project: str = Field(default=DEFAULT_PROJECT, pattern=PROJECT_PATTERN)
     requirement: str | None = Field(default=None, min_length=1, max_length=200)
 
 
@@ -106,7 +104,9 @@ def migration_routes(store, actor_dependency, native_store):
             )
             response = {"entry": entry, "url": url}
         else:
-            issue = store.create_issue(actor, scope.title.strip(), requirement_id=scope.requirement)
+            issue = store.create_issue(
+                actor, scope.title.strip(), requirement_id=scope.requirement, project=scope.project
+            )
             response = {"entry": entry, "issue_id": issue["id"], "url": "/issues/" + issue["id"]}
         store.db.execute("INSERT INTO migration_starts VALUES(?,?,?,?,?)", (*key, request, json.dumps(response)))
         return response

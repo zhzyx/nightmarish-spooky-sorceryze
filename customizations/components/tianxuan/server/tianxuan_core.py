@@ -74,7 +74,12 @@ CREATE TABLE IF NOT EXISTS issues (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, parent_id TEXT, number INTEGER NOT NULL,
   type TEXT NOT NULL, status TEXT NOT NULL, priority TEXT NOT NULL DEFAULT 'normal',
   title TEXT NOT NULL, body_md TEXT NOT NULL DEFAULT '', acceptance TEXT NOT NULL DEFAULT '',
-  requirement_id TEXT, created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL
+  requirement_id TEXT, created_by TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+  project TEXT NOT NULL DEFAULT 'workspace', module_id TEXT NOT NULL DEFAULT 'default'
+);
+CREATE TABLE IF NOT EXISTS business_modules (
+  tenant_id TEXT NOT NULL, project TEXT NOT NULL, id TEXT NOT NULL, name TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, project, id)
 );
 CREATE TABLE IF NOT EXISTS doc_issue_links (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL,
@@ -168,6 +173,9 @@ CREATE INDEX IF NOT EXISTS game_config_clients_doc ON game_config_clients(doc_id
 """
 
 _FIELD_FIELDS = {"title", "body_md", "status", "visibility"}
+DEFAULT_PROJECT = "workspace"
+DEFAULT_MODULE_ID = "default"
+PROJECT_PATTERN = r"^[a-zA-Z0-9][a-zA-Z0-9_.-]{0,99}(/[a-zA-Z0-9][a-zA-Z0-9_.-]{0,99})?$"
 _ROLE_RANK = {"viewer": 0, "editor": 1, "admin": 2}
 
 ISSUE_TRANSITIONS = {
@@ -397,7 +405,34 @@ class Tianxuan:
         self._migrate_users()
         self._migrate_docs()
         self._migrate_doc_shares()
+        self._migrate_issue_modules()
         self.db.commit()
+
+    def _migrate_issue_modules(self) -> None:
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(issues)")}
+        if {"project", "module_id"} <= columns:
+            return
+        # Serialize the column check and the backfill across independent service starts.
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        columns = {row[1] for row in self.db.execute("PRAGMA table_info(issues)")}
+        if "project" not in columns:
+            self.db.execute("ALTER TABLE issues ADD COLUMN project TEXT NOT NULL DEFAULT 'workspace'")
+            if self.db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='migration_starts'").fetchone():
+                self.db.execute(
+                    "UPDATE issues SET project=COALESCE(json_extract(s.request, '$.project'), 'workspace') "
+                    "FROM migration_starts AS s WHERE s.tenant=issues.tenant_id "
+                    "AND json_extract(s.result, '$.issue_id')=issues.id"
+                )
+                self.db.execute(
+                    "WITH RECURSIVE scoped(id, tenant_id, project) AS ("
+                    "SELECT id, tenant_id, project FROM issues WHERE project <> 'workspace' UNION "
+                    "SELECT child.id, child.tenant_id, scoped.project FROM issues child JOIN scoped "
+                    "ON child.parent_id=scoped.id AND child.tenant_id=scoped.tenant_id WHERE child.project='workspace') "
+                    "UPDATE issues SET project=scoped.project FROM scoped WHERE issues.id=scoped.id"
+                )
+        if "module_id" not in columns:
+            self.db.execute("ALTER TABLE issues ADD COLUMN module_id TEXT NOT NULL DEFAULT 'default'")
 
     def _migrate_doc_shares(self) -> None:
         columns = {row[1] for row in self.db.execute("PRAGMA table_info(doc_shares)")}
@@ -1267,6 +1302,66 @@ class Tianxuan:
 
     # ---------- 司南：工单 ----------
 
+    @staticmethod
+    def _validate_project(project: str) -> None:
+        if not isinstance(project, str) or not re.fullmatch(PROJECT_PATTERN, project):
+            raise TianxuanError("invalid project key")
+
+    @staticmethod
+    def _module_name(name: str) -> str:
+        if not isinstance(name, str) or not 1 <= len(name.strip()) <= 200:
+            raise TianxuanError("module name must contain 1 to 200 characters")
+        return name.strip()
+
+    def _business_module(self, tenant: str, project: str, module_id: str) -> dict[str, Any]:
+        if not isinstance(module_id, str):
+            raise TianxuanError("invalid module ID")
+        row = self.db.execute(
+            "SELECT id, project, name FROM business_modules WHERE tenant_id=? AND project=? AND id=?",
+            (tenant, project, module_id),
+        ).fetchone()
+        if row:
+            return dict(row)
+        if module_id == DEFAULT_MODULE_ID:
+            return {"id": DEFAULT_MODULE_ID, "project": project, "name": "默认模块"}
+        raise NotFound("business module not found")
+
+    @_connection_call
+    def list_business_modules(self, actor: str, project: str) -> list[dict[str, Any]]:
+        tenant = self._tenant_of(actor)
+        self._validate_project(project)
+        rows = self.db.execute(
+            "SELECT id, project, name FROM business_modules WHERE tenant_id=? AND project=? AND id<>? ORDER BY name,id",
+            (tenant, project, DEFAULT_MODULE_ID),
+        )
+        return [self._business_module(tenant, project, DEFAULT_MODULE_ID), *map(dict, rows)]
+
+    @_connection_call
+    @_replayable("module.create")
+    def create_business_module(self, actor: str, project: str, name: str, *, call_id: str) -> dict[str, Any]:
+        self._require_editor(actor)
+        tenant = self._tenant_of(actor)
+        self._validate_project(project)
+        module_id = _id("mod")
+        self.db.execute(
+            "INSERT INTO business_modules (tenant_id, project, id, name) VALUES (?,?,?,?)",
+            (tenant, project, module_id, self._module_name(name)),
+        )
+        return self._business_module(tenant, project, module_id)
+
+    @_connection_call
+    def rename_business_module(self, actor: str, project: str, module_id: str, name: str) -> dict[str, Any]:
+        self._require_editor(actor)
+        tenant = self._tenant_of(actor)
+        self._validate_project(project)
+        self._business_module(tenant, project, module_id)
+        self.db.execute(
+            "INSERT INTO business_modules (tenant_id, project, id, name) VALUES (?,?,?,?) "
+            "ON CONFLICT (tenant_id, project, id) DO UPDATE SET name=excluded.name",
+            (tenant, project, module_id, self._module_name(name)),
+        )
+        return self._business_module(tenant, project, module_id)
+
     @_connection_call
     @_replayable("issue.create", legacy=False)
     def create_issue(
@@ -1280,11 +1375,20 @@ class Tianxuan:
         parent_id: str | None = None,
         body_md: str = "",
         *,
+        project: str | None = None,
+        module_id: str | None = None,
         call_id: str | None = None,
     ) -> dict[str, Any]:
         self._require_editor(actor)
         tenant_id = self._tenant_of(actor)
         self._require_issue_references(actor, requirement_id, parent_id, write=True)
+        parent = self.get_issue(parent_id) if parent_id else None
+        if project is None:
+            project = parent["project"] if parent else DEFAULT_PROJECT
+        self._validate_project(project)
+        if module_id is None:
+            module_id = parent["module_id"] if parent and parent["project"] == project else DEFAULT_MODULE_ID
+        self._business_module(tenant_id, project, module_id)
         number = self.db.execute(
             "SELECT COALESCE(MAX(number), 0) + 1 FROM issues WHERE tenant_id = ?", (tenant_id,)
         ).fetchone()[0]
@@ -1292,8 +1396,8 @@ class Tianxuan:
         now = _now()
         self.db.execute(
             "INSERT INTO issues (id, tenant_id, parent_id, number, type, status, priority, title, body_md, "
-            "acceptance, requirement_id, created_by, created_at, updated_at) "
-            "VALUES (?, ?, ?, ?, ?, 'backlog', ?, ?, ?, ?, ?, ?, ?, ?)",
+            "acceptance, requirement_id, created_by, created_at, updated_at, project, module_id) "
+            "VALUES (?, ?, ?, ?, ?, 'backlog', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (
                 issue_id,
                 tenant_id,
@@ -1308,6 +1412,8 @@ class Tianxuan:
                 actor,
                 now,
                 now,
+                project,
+                module_id,
             ),
         )
         self._event(tenant_id, "issue.created", actor, issue_id, {"number": number, "title": title})
@@ -2222,6 +2328,11 @@ class Tianxuan:
     @staticmethod
     def _tool_payload(name: str, payload: dict[str, Any]) -> dict[str, Any]:
         payload = dict(payload)
+        if name == "issue.create":
+            # Keep previously recorded call IDs and implicit replay keys valid.
+            for key in ("project", "module_id"):
+                if payload.get(key) is None:
+                    payload.pop(key, None)
         if name == "requirement.plan":
             defaults = {"title": "未命名工单", "type": "task", "acceptance": "", "priority": "normal", "body_md": ""}
             tickets = payload["tickets"]
@@ -2240,6 +2351,10 @@ class Tianxuan:
 
     def _authorize_tool(self, actor: str, name: str, payload: dict[str, Any], result: Any = None) -> None:
         self._require_editor(actor)
+        if name == "module.create":
+            if result is not None:
+                self._business_module(self._tenant_of(actor), payload["project"], result["id"])
+            return
         if name.startswith("flow."):
             from issue_flow import authorize
 

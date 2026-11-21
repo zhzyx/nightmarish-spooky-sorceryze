@@ -116,6 +116,8 @@
 
 ### C01
 
+[交付清单与验证](gonggong-ai-workbench-c01.md)
+
 **建立业务模块稳定标识** · [C01 #1868](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1868)
 
 接入项目内模块标识、名称及旧数据默认映射。
