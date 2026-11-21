@@ -183,6 +183,42 @@ class BridgeTests(unittest.TestCase):
             args.command = "status"
             self.assertEqual(set(dispatch(args, {"run": root_run})["nodes"]), {"first"})
 
+    def test_cached_upstream_output_is_a_direct_immutable_input(self):
+        import base64
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fixtures(root)
+            data = (root / "sample.png").read_bytes()
+            reference = {"id": "cached-upstream", "revision": hashlib.sha256(data).hexdigest()}
+            asset = {
+                **reference,
+                "type": "image",
+                "payload": {
+                    "content_base64": base64.b64encode(data).decode(),
+                    "content_sha256": reference["revision"],
+                    "extension": ".png",
+                    "provenance": {},
+                },
+            }
+            graph = model(root / "missing-source.png")
+            graph["nodes"] = [dict(graph["nodes"][0], id="target", source="", source_paths=[], ignore_cache=True)]
+            graph["edges"] = [{
+                "from": "upstream",
+                "to": "target",
+                "cached_input": {"reference": reference, "artifacts": [asset]},
+            }]
+            args = argparse.Namespace(db=str(root / "db"), factory="editor_demo:factory", command="create")
+            run = dispatch(args, {"model": graph, "target": "target"})["run_id"]
+            args.command = "step"
+            state = dispatch(args, {"run": run})
+            self.assertEqual(state["state"], "succeeded")
+            self.assertEqual(set(state["nodes"]), {"target"})
+            self.assertEqual(state["nodes"]["target"]["job"]["outputs"]["result"], reference)
+            args.command = "preview"
+            preview = dispatch(args, {"run": run, "node": "target"})
+            self.assertEqual(Path(preview["path"]).read_bytes(), data)
+
     def test_target_invalid_identity_missing_dependency_and_cycle_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

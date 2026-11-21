@@ -40,6 +40,8 @@ var mesh_focus := Vector3.ZERO
 var mesh_frame_distance := 1.0
 var preview_root: Node3D
 var dialog: ConfirmationDialog
+var run_all_dialog: ConfirmationDialog
+var run_all_button: Button
 var capability_notice_dialog: AcceptDialog
 var capability_notices: Dictionary = {}
 var failure_dialog: AcceptDialog
@@ -78,6 +80,7 @@ var preview_target: String:
 	get: return controller.preview_target
 	set(value): controller.preview_target = value
 var preview_history: Dictionary = {}
+var cache_full_run := false
 # Image artifacts are presentation-only graph nodes; they never enter the execution DAG.
 var artifact_nodes: Dictionary = {}
 var dismissed_artifacts: Dictionary = {}
@@ -415,6 +418,17 @@ func _ready():
 		workflow_menu.get_popup().set_item_disabled(1, is_graph_busy())
 		workflow_menu.get_popup().set_item_tooltip(1, "请等待运行结束或取消后再打开" if is_graph_busy() else "打开保存的工作流"))
 	button(bar, "运行", start_run)
+	run_all_button = button(bar, "全部重跑", request_run_all)
+	run_all_button.name = "RunAllButton"
+	run_all_button.tooltip_text = "清空所有节点的缓存结果，并重新运行整个工作流"
+	run_all_dialog = ConfirmationDialog.new()
+	run_all_dialog.name = "RunAllConfirmation"
+	run_all_dialog.title = "确认全部重跑"
+	run_all_dialog.dialog_text = "全部重跑将清空所有节点的现有缓存结果，并重新运行全部节点。\n\n此操作无法撤销，是否继续？"
+	run_all_dialog.ok_button_text = "清空缓存并重跑"
+	run_all_dialog.cancel_button_text = "取消"
+	run_all_dialog.confirmed.connect(confirm_run_all)
+	add_child(run_all_dialog)
 	button(bar, "取消", cancel_run)
 	button(bar, "继续运行", resume_run)
 	var context_hint = Label.new()
@@ -1203,7 +1217,7 @@ func _layout_graph_with_artifacts():
 	if graph.zoom > fit_zoom: graph.zoom = fit_zoom
 	graph.scroll_offset = Vector2.ZERO
 
-func rebuild(layout_artifacts: bool = true):
+func rebuild():
 	graph.clear_connections()
 	artifact_nodes.clear()
 	for child in graph.get_children():
@@ -1295,7 +1309,7 @@ func rebuild(layout_artifacts: bool = true):
 			graph.connect_node(str(artifact_nodes[chain.back()].id), 0, edge.to, 0)
 		else:
 			graph.connect_node(edge.from, from_port, edge.to, 0)
-	if layout_artifacts: _schedule_artifact_layout()
+	_schedule_artifact_layout()
 
 func _merged_requirements(primary: String, supplementary: String) -> String:
 	var main = primary.strip_edges()
@@ -1469,7 +1483,94 @@ func _find_output_entry(source_id: String, reference: Dictionary) -> Dictionary:
 		if not found.is_empty(): return found
 	return {}
 
-func execution_model() -> Dictionary:
+func _cache_fingerprint(node_id: String, graph_model: Dictionary = {}, visiting: Array = []) -> String:
+	if graph_model.is_empty(): graph_model = model().duplicate(true)
+	if node_id in visiting: return ""
+	var matching = graph_model.get("nodes", []).filter(func(node): return str(node.get("id", "")) == node_id)
+	if matching.is_empty(): return ""
+	var definition: Dictionary = matching[0].duplicate(true)
+	definition.erase("x")
+	definition.erase("y")
+	for field in ["source", "image_context"]:
+		var snapshots: Array = definition.get(field + "_snapshots", []).duplicate(true)
+		if snapshots.is_empty() and definition.get(field + "_snapshot", {}) is Dictionary and not definition.get(field + "_snapshot", {}).is_empty(): snapshots = [definition.get(field + "_snapshot")]
+		var paths = _node_paths(definition, field)
+		var normalized: Array = []
+		for index in maxi(paths.size(), snapshots.size()):
+			var snapshot: Dictionary = {}
+			var path = str(paths[index]) if index < paths.size() else ""
+			if not path.is_empty() and FileAccess.file_exists(path):
+				var digest = FileAccess.get_sha256(path)
+				if not digest.is_empty(): snapshot = {"content_sha256": digest, "extension": "." + path.get_extension().to_lower()}
+			if snapshot.is_empty() and index < snapshots.size() and snapshots[index] is Dictionary: snapshot = snapshots[index]
+			if not snapshot.is_empty(): normalized.append({"content_sha256": str(snapshot.get("content_sha256", "")), "extension": str(snapshot.get("extension", ""))})
+		definition[field + "_snapshots"] = normalized
+		definition.erase(field + "_snapshot")
+	var branch = visiting.duplicate()
+	branch.append(node_id)
+	var dependencies: Array = []
+	for edge in graph_model.get("edges", []):
+		if str(edge.get("to", "")) != node_id: continue
+		var dependency = {"input": str(edge.get("input", "source")), "output": str(edge.get("output", "result"))}
+		if edge.has("artifact"):
+			dependency["artifact"] = edge.artifact.duplicate(true)
+		else:
+			dependency["from"] = str(edge.get("from", ""))
+			dependency["fingerprint"] = _cache_fingerprint(dependency.from, graph_model, branch)
+		dependencies.append(dependency)
+	var hash_context = HashingContext.new()
+	if hash_context.start(HashingContext.HASH_SHA256) != OK or hash_context.update(JSON.stringify({"node": definition, "dependencies": dependencies}, "", true, true).to_utf8_buffer()) != OK: return ""
+	return hash_context.finish().hex_encode()
+
+func _cached_output_asset(entry: Dictionary, node_id: String) -> Dictionary:
+	var kind = str(entry.get("type", ""))
+	var token = str(entry.get("token", ""))
+	if kind not in ["image", "mesh"] or token.is_empty(): return {}
+	var snapshot: Dictionary = entry.get("snapshot", {}).duplicate(true)
+	if snapshot.is_empty(): snapshot = _snapshot_file(str(entry.get("path", "")))
+	if not _valid_input_snapshots([snapshot]): return {}
+	var extension = str(snapshot.get("extension", "")).to_lower()
+	if kind == "image" and extension not in [".png", ".jpg", ".jpeg"]: return {}
+	if kind == "mesh" and extension not in [".glb", ".gltf"]: return {}
+	var reference = {"id": "cached-%s-%s" % [node_id, token], "revision": str(snapshot.content_sha256)}
+	var payload = snapshot.duplicate(true)
+	payload["provenance"] = entry.get("provenance", {}).duplicate(true)
+	return {"reference": reference, "asset": {"id": reference.id, "revision": reference.revision, "type": kind, "payload": payload}}
+
+func _cached_output(node_id: String, output: String) -> Dictionary:
+	var history: Array = preview_history.get(node_id, [])
+	if history.is_empty() or not history.back() is Dictionary: return {}
+	var entry: Dictionary = history.back()
+	var fingerprint = str(entry.get("cache_fingerprint", ""))
+	if not fingerprint.is_empty() and fingerprint != _cache_fingerprint(node_id): return {}
+	if output == "result":
+		var primary = _cached_output_asset(entry, node_id)
+		if primary.is_empty(): return {}
+		return {"reference": primary.reference, "artifacts": [primary.asset]}
+	if output != "image_set" or not entry.get("images", []) is Array or entry.get("images", []).is_empty(): return {}
+	var artifacts: Array = []
+	var items: Array = []
+	for index in entry.images.size():
+		var member = entry.images[index]
+		if not member is Dictionary: return {}
+		var cached = _cached_output_asset(member, node_id)
+		if cached.is_empty(): return {}
+		artifacts.append(cached.asset)
+		items.append({"artifact": cached.reference, "label": str(member.get("label", "独立图片")), "index": index})
+	var body = {"schema_version": 1, "items": items, "count": items.size()}
+	var hash_context = HashingContext.new()
+	if hash_context.start(HashingContext.HASH_SHA256) != OK or hash_context.update(JSON.stringify(body, "", true, true).to_utf8_buffer()) != OK: return {}
+	var reference = {"id": "cached-%s-%s-image-set" % [node_id, str(entry.get("token", ""))], "revision": hash_context.finish().hex_encode()}
+	var collection = {"id": reference.id, "revision": reference.revision, "type": "image_set", "payload": body, "dependencies": items.map(func(item): return item.artifact)}
+	artifacts.append(collection)
+	return {"reference": reference, "artifacts": artifacts}
+
+func _has_reusable_cache(data: Dictionary) -> bool:
+	var node_id = str(data.get("id", ""))
+	var output = "image_set" if _queue_only_node(data) else "result"
+	return not _cached_output(node_id, output).is_empty()
+
+func execution_model(reuse_cache: bool = true, rerun_node: String = "") -> Dictionary:
 	var executable = model().duplicate(true)
 	for edge in executable.edges:
 		if not edge.has("artifact"): continue
@@ -1484,6 +1585,41 @@ func execution_model() -> Dictionary:
 			return {}
 		snapshot["provenance"] = entry.get("provenance", {}).duplicate(true)
 		edge["artifact_snapshot"] = snapshot
+	if not reuse_cache: return executable
+	var cached: Dictionary = {}
+	for data in executable.nodes:
+		var node_id = str(data.id)
+		if node_id != rerun_node and _has_reusable_cache(data): cached[node_id] = true
+	# A cached node is reusable only when its whole dependency chain is also reusable.
+	# Otherwise an invalidated upstream would disappear while its stale downstream remained.
+	var changed = true
+	while changed:
+		changed = false
+		for edge in executable.edges:
+			if edge.has("artifact"): continue
+			var source = str(edge.from)
+			var target = str(edge.to)
+			if cached.has(source) and _cached_output(source, str(edge.get("output", "result"))).is_empty():
+				cached.erase(source)
+				changed = true
+			if cached.has(target) and not cached.has(source):
+				cached.erase(target)
+				changed = true
+	var remaining: Array = []
+	var remaining_ids: Array = []
+	for data in executable.nodes:
+		if cached.has(str(data.id)): continue
+		remaining.append(data)
+		remaining_ids.append(str(data.id))
+	var planned_edges: Array = []
+	for edge in executable.edges:
+		if not remaining_ids.has(str(edge.to)): continue
+		if cached.has(str(edge.from)) and not edge.has("artifact"):
+			edge["cached_input"] = _cached_output(str(edge.from), str(edge.get("output", "result")))
+		planned_edges.append(edge)
+	executable.nodes = remaining
+	executable.edges = planned_edges
+	executable["reused_nodes"] = cached.keys()
 	return executable
 
 func _snapshot_file(path: String) -> Dictionary:
@@ -1528,6 +1664,7 @@ func _snapshot_output_entry(entry: Dictionary, node_id: String) -> Dictionary:
 		"provenance": entry.get("provenance", {}).duplicate(true),
 		"snapshot": snapshot
 	}
+	if entry.has("cache_fingerprint"): saved["cache_fingerprint"] = str(entry.cache_fingerprint)
 	if entry.has("images"):
 		if not entry.images is Array or entry.images.is_empty(): return {}
 		var images: Array = []
@@ -1624,6 +1761,7 @@ func _snapshot_current_result(node_id: String, state: Dictionary) -> Dictionary:
 	var primary: Dictionary = images[0].duplicate(true)
 	primary.erase("label")
 	primary["description"] = JSON.stringify(state.get("request", {}), "  ", true, true)
+	primary["cache_fingerprint"] = _cache_fingerprint(node_id)
 	if references.size() > 1 or not image_set.is_empty(): primary["images"] = images
 	if primary.get("type", "") == "mesh":
 		var iterations: Array = []
@@ -1749,6 +1887,7 @@ func _valid_output_entry(entry, node_id: String) -> bool:
 	for key in ["type", "preview_token", "run", "node"]:
 		if not entry.get(key) is String: return false
 	if entry.has("description") and not entry.description is String: return false
+	if entry.has("cache_fingerprint") and not entry.cache_fingerprint is String: return false
 	if entry.has("provenance") and not entry.provenance is Dictionary: return false
 	if entry.node != node_id or entry.preview_token.is_empty() or not _valid_artifact_reference(entry.artifact): return false
 	if not _valid_input_snapshots([entry.snapshot]): return false
@@ -1827,6 +1966,7 @@ func _restore_output_entry(saved: Dictionary, directory: String):
 		"provenance": saved.get("provenance", {}).duplicate(true),
 		"path": path
 	}
+	if saved.has("cache_fingerprint"): entry["cache_fingerprint"] = saved.cache_fingerprint
 	if saved.has("images"):
 		var images: Array = []
 		for item in saved.images:
@@ -1963,6 +2103,11 @@ func open_graph():
 	var legacy = service_draft()
 	for data in nodes: _migrate_node_models(data, legacy)
 	edges = value.edges
+	# Older workflows did not store a definition fingerprint. Bind their restored
+	# results to the definition at open time so later edits still invalidate them.
+	for node_id in preview_history:
+		for entry in preview_history[node_id]:
+			if entry is Dictionary and str(entry.get("cache_fingerprint", "")).is_empty(): entry["cache_fingerprint"] = _cache_fingerprint(str(node_id))
 	selected_id = ""
 	rebuild()
 	if not nodes.is_empty(): select_node(nodes[0].id)
@@ -1976,7 +2121,7 @@ func open_graph():
 	status.text += "；文件：" + path_edit.text
 	if not remembered: status.text += "（未能记录最近路径）"
 
-func _reject_missing_run_resources(target: String = "") -> bool:
+func _reject_missing_run_resources(target: String = "", reuse_cache: bool = true) -> bool:
 	var pending: Array = nodes.map(func(node): return str(node.id)) if target.is_empty() else [target]
 	var visited: Array = []
 	var missing: Array = []
@@ -1984,26 +2129,28 @@ func _reject_missing_run_resources(target: String = "") -> bool:
 		var node_id = str(pending.pop_back())
 		if node_id in visited: continue
 		visited.append(node_id)
+		var matching = nodes.filter(func(node): return node.id == node_id)
+		if matching.is_empty(): continue
+		var data: Dictionary = matching[0]
+		if reuse_cache and node_id != target and _has_reusable_cache(data): continue
 		for edge in edges:
 			if edge.to == node_id and not edge.has("artifact"): pending.append(str(edge.from))
-		for data in nodes:
-			if data.id != node_id: continue
-			var changed = false
-			for field in ["source", "image_context"]:
-				var paths = _node_paths(data, field)
-				for index in paths.size():
-					var path = str(paths[index])
-					if path.is_empty() or FileAccess.file_exists(path): continue
-					missing.append("节点 " + node_id + " · " + ("源文件" if field == "source" else "参考图像") + "：\n" + path)
-					paths[index] = ""
-					changed = true
-				data[field + "_paths"] = paths
-				data[field] = str(paths[0]) if not paths.is_empty() else ""
-				if selected_id == node_id:
-					var edit = source_edit if field == "source" else context_edit
-					edit.text = " ; ".join(paths)
-					edit.tooltip_text = edit.text
-			if changed and selected_id == node_id: _sync_node_files(data)
+		var changed = false
+		for field in ["source", "image_context"]:
+			var paths = _node_paths(data, field)
+			for index in paths.size():
+				var path = str(paths[index])
+				if path.is_empty() or FileAccess.file_exists(path): continue
+				missing.append("节点 " + node_id + " · " + ("源文件" if field == "source" else "参考图像") + "：\n" + path)
+				paths[index] = ""
+				changed = true
+			data[field + "_paths"] = paths
+			data[field] = str(paths[0]) if not paths.is_empty() else ""
+			if selected_id == node_id:
+				var edit = source_edit if field == "source" else context_edit
+				edit.text = " ; ".join(paths)
+				edit.tooltip_text = edit.text
+		if changed and selected_id == node_id: _sync_node_files(data)
 	if missing.is_empty(): return false
 	var message = "无法运行：以下输入路径的资源已不存在，对应路径已清空。请重新选择文件后再运行。\n\n" + "\n\n".join(missing)
 	status.text = message
@@ -2012,6 +2159,7 @@ func _reject_missing_run_resources(target: String = "") -> bool:
 	return true
 
 func run_node_preview(id: String):
+	cache_full_run = false
 	if is_graph_busy():
 		status.text = "正在运行，请等待结果或先取消"
 		return
@@ -2026,16 +2174,44 @@ func run_node_preview(id: String):
 	if service_config_link != null: service_config_link.hide()
 	preview_token = ""
 	artifact_preview_queue.clear()
-	status.text = "正在运行选中节点及必要的上游节点…"
-	var executable = execution_model()
+	var executable = execution_model(true, id)
 	if executable.is_empty(): return
+	var reused = executable.get("reused_nodes", []).size()
+	for data in executable.nodes:
+		if str(data.id) == id: data["ignore_cache"] = true
+	status.text = "正在运行选中节点，已复用 %d 个上游缓存结果…" % reused if reused > 0 else "正在运行选中节点及必要的上游节点…"
 	_configure_controller()
 	controller.start(executable, id)
 
-func start_run():
+func request_run_all():
+	if is_graph_busy():
+		status.text = "正在运行，请等待结果或先取消"
+		return
+	if nodes.is_empty():
+		status.text = "请先添加节点"
+		return
+	if not apply_fields(): return
+	run_all_dialog.popup_centered(Vector2i(540, 220))
+
+func confirm_run_all():
+	if is_graph_busy(): return
+	controller.reset()
+	preview_history.clear()
+	dismissed_artifacts.clear()
+	artifact_preview_queue.clear()
+	clear_preview()
+	rebuild()
+	start_run(true)
+
+func start_run(force_rerun: bool = false):
+	cache_full_run = true
 	if is_graph_busy() or not apply_fields(): return
-	if _reject_missing_run_resources(): return
+	if nodes.is_empty():
+		status.text = "请先添加节点"
+		return
+	if _reject_missing_run_resources("", not force_rerun): return
 	for data in nodes:
+		if not force_rerun and _has_reusable_cache(data): continue
 		var blocker = node_run_blocker(data.id)
 		if not blocker.is_empty():
 			_show_run_problem(blocker)
@@ -2043,10 +2219,18 @@ func start_run():
 	if service_config_link != null: service_config_link.hide()
 	preview_token = ""
 	artifact_preview_queue.clear()
-	var executable = execution_model()
+	var executable = execution_model(not force_rerun)
 	if executable.is_empty(): return
+	var reused = executable.get("reused_nodes", []).size()
+	if force_rerun:
+		for data in executable.nodes: data["ignore_cache"] = true
 	_configure_controller()
-	controller.start(executable)
+	if not executable.nodes.is_empty():
+		status.text = "正在运行 %d 个未缓存节点，已复用 %d 个缓存结果…" % [executable.nodes.size(), reused] if reused > 0 else "正在运行全部节点…" if force_rerun else "正在运行工作流…"
+		controller.start(executable)
+	else:
+		controller.reset()
+		status.text = "所有节点均已有结果缓存，本次运行直接完成，未重新生成。"
 
 func resume_run():
 	_configure_controller()
@@ -2082,10 +2266,10 @@ func launch(command: String, spec: Dictionary):
 	controller.submit(command, spec)
 
 func _queue_completed_image_previews(data: Dictionary):
-	if data.get("state", "") != "succeeded": return
+	if data.get("state", "") not in ["succeeded", "failed"]: return
 	for data_node in nodes:
 		var kind = str(data_node.get("type", ""))
-		if not _is_image_kind(kind) and not _is_mesh_kind(kind): continue
+		if (kind != "copy" or not cache_full_run) and not _is_image_kind(kind) and not _is_mesh_kind(kind): continue
 		var node_id = str(data_node.id)
 		var state = data.get("nodes", {}).get(node_id, {})
 		if state.get("state", "") != "succeeded" or artifact_preview_queue.has(node_id): continue
@@ -2263,6 +2447,7 @@ func remember_preview(data: Dictionary, node_id: String, result_run: String):
 		var entry = data.duplicate(true)
 		entry["run"] = result_run
 		entry["node"] = node_id
+		entry["cache_fingerprint"] = _cache_fingerprint(node_id)
 		entry["description"] = JSON.stringify(current.get("nodes", {}).get(node_id, {}).get("request", {}), "  ", true, true)
 		history.append(entry)
 		preview_history[node_id] = history
@@ -2593,6 +2778,7 @@ func node_run_blocker(id: String) -> String:
 		var matching = nodes.filter(func(n): return n.id == next_id)
 		if matching.is_empty(): return "缺少必要的上游节点"
 		var data: Dictionary = matching[0]
+		if next_id != id and _has_reusable_cache(data): continue
 		_clear_image_mesh_text(data)
 		var kind: String = data.get("type", "copy")
 		if _retired_mesh_node(data): return RETIRED_GPT_MESH_NOTICE
@@ -2788,8 +2974,7 @@ func create_context_node(kind: String):
 	nodes.append(data)
 	node_picker.hide()
 	context_menu.hide()
-	# Adding a formal node must not re-layout existing artifacts and move it away from the pointer.
-	rebuild(false)
+	rebuild()
 	for child in graph.get_children():
 		if child is GraphNode: child.selected = str(child.name) == id
 	select_node(id)

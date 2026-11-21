@@ -68,9 +68,9 @@ def target_graph(model, target):
     for edge in model["edges"]:
         if not isinstance(edge, dict) or not isinstance(edge.get("from"), str) or not isinstance(edge.get("to"), str):
             raise ValueError("invalid edge")
-        # A selected generation iteration is an immutable file input, not a
-        # request to regenerate its original upstream node.
-        if edge["to"] in incoming and "artifact" not in edge:
+        # A selected generation iteration or a cached upstream output is an
+        # immutable file input, not a request to regenerate its original node.
+        if edge["to"] in incoming and "artifact" not in edge and "cached_input" not in edge:
             incoming[edge["to"]].append(edge["from"])
     required, pending = set(), [target]
     while pending:
@@ -185,6 +185,30 @@ def compile_graph(model):
             port = edge.get("input", "source")
             if port in links or port in selected_ports:
                 raise ValueError("duplicate linked port")
+            if "cached_input" in edge:
+                cached = edge["cached_input"]
+                if (
+                    "artifact" in edge
+                    or not isinstance(cached, dict)
+                    or set(cached) != {"reference", "artifacts"}
+                    or not isinstance(cached["reference"], dict)
+                    or set(cached["reference"]) != {"id", "revision"}
+                    or not isinstance(cached["artifacts"], list)
+                    or not cached["artifacts"]
+                ):
+                    raise ValueError("invalid cached input")
+                reference = cached["reference"]
+                for asset in cached["artifacts"]:
+                    if not isinstance(asset, dict) or not isinstance(asset.get("id"), str) or not asset["id"]:
+                        raise ValueError("invalid cached artifact")
+                    existing = next((item for item in assets if item["id"] == asset["id"]), None)
+                    if existing is not None and canonical(existing) != canonical(asset):
+                        raise ValueError("conflicting cached artifact")
+                    if existing is None:
+                        assets.append(copy.deepcopy(asset))
+                inputs[port] = dict(reference)
+                selected_ports.add(port)
+                continue
             if "artifact" not in edge:
                 links[port] = {"node": edge["from"], "port": edge.get("output", "result")}
                 inputs.pop(port, None)
@@ -219,20 +243,24 @@ def compile_graph(model):
                 assets.append(asset)
             inputs[port] = dict(reference)
             selected_ports.add(port)
-        graph.append(
-            dict(
-                id=n["id"],
-                provider=n.get("provider", "local-copy"),
-                request=dict(
-                    node=kind,
-                    version=n.get("version", "1"),
-                    inputs=inputs,
-                    parameters=n["parameters"],
-                    context=context,
-                ),
-                links=links,
-            )
+        compiled = dict(
+            id=n["id"],
+            provider=n.get("provider", "local-copy"),
+            request=dict(
+                node=kind,
+                version=n.get("version", "1"),
+                inputs=inputs,
+                parameters=n["parameters"],
+                context=context,
+            ),
+            links=links,
         )
+        if "ignore_cache" in n:
+            if not isinstance(n["ignore_cache"], bool):
+                raise ValueError("invalid cache bypass flag")
+            if n["ignore_cache"]:
+                compiled["ignore_cache"] = True
+        graph.append(compiled)
     return graph, dict(schema_version=1, artifacts=assets)
 
 

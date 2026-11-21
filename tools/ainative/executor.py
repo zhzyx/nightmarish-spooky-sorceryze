@@ -129,12 +129,15 @@ class Executor:
         """graph: [{id, provider, request, links:{input:{node,port}}}]."""
         graph = json.loads(canonical(graph))
         require(isinstance(graph, list) and bool(graph), "nonempty graph required")
+        required = {"id", "provider", "request", "links"}
+        optional = required | {"ignore_cache"}
         require(
             all(
                 isinstance(n, dict)
-                and set(n) == {"id", "provider", "request", "links"}
+                and set(n) in (required, optional)
                 and isinstance(n["id"], str)
                 and n["id"]
+                and isinstance(n.get("ignore_cache", False), bool)
                 for n in graph
             ),
             "invalid graph node",
@@ -283,7 +286,9 @@ class Executor:
                             canonical([run_id, node_id, node["attempt"], key]).encode()
                         ).hexdigest(),
                     )
-                    cached = self.db.execute("SELECT body FROM cache WHERE key=?", (key,)).fetchone()
+                    cached = None
+                    if not node.get("ignore_cache", False):
+                        cached = self.db.execute("SELECT body FROM cache WHERE key=?", (key,)).fetchone()
                     if cached:
                         result = json.loads(cached[0])
                         validate_outputs(
@@ -395,8 +400,9 @@ class Executor:
                         try:
                             merged = merge_manifest(run["manifest"], result)
                             self._assets(result)
+                            operation = "INSERT OR REPLACE" if current.get("ignore_cache", False) else "INSERT OR IGNORE"
                             self.db.execute(
-                                "INSERT OR IGNORE INTO cache VALUES(?,?)",
+                                operation + " INTO cache VALUES(?,?)",
                                 (current["key"], canonical({"job": snapshot, "manifest": result})),
                             )
                         except (ValueError, KeyError, TypeError):

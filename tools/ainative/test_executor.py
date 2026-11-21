@@ -169,6 +169,19 @@ class ExecutorTests(unittest.TestCase):
         self.finish(self.create())
         self.assertEqual(self.provider.submits, 1)
 
+    def test_forced_node_bypasses_and_refreshes_invocation_cache(self):
+        first = self.create()
+        original = self.finish(first)["outputs"]["first"]
+        forced_graph = copy.deepcopy(self.graph)
+        forced_graph[0]["ignore_cache"] = True
+        forced = self.executor.create(forced_graph, self.manifest)
+        replacement = self.finish(forced)["outputs"]["first"]
+        self.assertEqual(self.provider.submits, 2)
+        self.assertNotEqual(replacement["result"], original["result"])
+        cached = self.create()
+        self.assertEqual(self.finish(cached)["outputs"]["first"], replacement)
+        self.assertEqual(self.provider.submits, 2)
+
     def test_node_preview_is_immutable_and_cache_survives_target_run(self):
         second = copy.deepcopy(self.graph[0])
         second["id"] = "second"
