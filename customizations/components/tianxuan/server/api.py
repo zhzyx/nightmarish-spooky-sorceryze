@@ -70,6 +70,7 @@ from schemas import (
     LoginRequest,
     MemberCreateRequest,
     MergeQueueCreateRequest,
+    ModuleLocationRequest,
     PullRequestCreateRequest,
     PullRequestMergeRequest,
     PullRequestReviewRequest,
@@ -146,6 +147,16 @@ def _websocket_actor(store: Tianxuan, query_params: Any, *, allow_header: bool =
 
 
 ActorDep = Annotated[str, Depends(_require_actor)]
+
+
+def _private_actor(request: Request) -> str:
+    # A private location always needs an authenticated session, including in legacy mode.
+    if not getattr(request.state, "verified_actor", None) and not request.headers.get("authorization"):
+        raise HTTPException(status_code=401, detail="authenticated account required")
+    return _require_actor(request, x_actor=None, authorization=request.headers.get("authorization"))
+
+
+PrivateActorDep = Annotated[str, Depends(_private_actor)]
 
 
 class DocRooms:
@@ -700,6 +711,32 @@ def create_app(
         module_id: str, payload: BusinessModuleName, actor: ActorDep, project: str = DEFAULT_PROJECT
     ) -> dict[str, Any]:
         return cast(dict[str, Any], store.rename_business_module(actor, project, module_id, payload.name))
+
+    @app.get("/api/v1/business-modules/{module_id}/location")
+    def module_location(
+        module_id: str, actor: PrivateActorDep, response: Response, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        response.headers["Cache-Control"] = "private, no-store"
+        return {"location": store.module_location(actor, project, module_id)}
+
+    @app.put("/api/v1/business-modules/{module_id}/location")
+    def save_module_location(
+        module_id: str,
+        payload: ModuleLocationRequest,
+        actor: PrivateActorDep,
+        response: Response,
+        project: str = DEFAULT_PROJECT,
+    ) -> dict[str, Any]:
+        response.headers["Cache-Control"] = "private, no-store"
+        location = store.save_module_location(
+            actor,
+            project,
+            module_id,
+            payload.issue_id,
+            str(payload.conversation_id) if payload.conversation_id else None,
+            payload.position,
+        )
+        return {"location": location}
 
     @app.get("/api/v1/issues")
     def list_issues(

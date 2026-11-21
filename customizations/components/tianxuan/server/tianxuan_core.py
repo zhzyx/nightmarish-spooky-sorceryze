@@ -81,6 +81,11 @@ CREATE TABLE IF NOT EXISTS business_modules (
   tenant_id TEXT NOT NULL, project TEXT NOT NULL, id TEXT NOT NULL, name TEXT NOT NULL,
   PRIMARY KEY (tenant_id, project, id)
 );
+CREATE TABLE IF NOT EXISTS module_work_locations (
+  tenant_id TEXT NOT NULL, actor TEXT NOT NULL, project TEXT NOT NULL, module_id TEXT NOT NULL,
+  issue_id TEXT, conversation_id TEXT, position TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, actor, project, module_id)
+);
 CREATE TABLE IF NOT EXISTS business_module_assets (
   tenant_id TEXT NOT NULL, project TEXT NOT NULL, module_id TEXT NOT NULL,
   asset_id TEXT NOT NULL, source_module TEXT NOT NULL, revision TEXT NOT NULL, path TEXT NOT NULL,
@@ -1332,6 +1337,71 @@ class Tianxuan:
         if module_id == DEFAULT_MODULE_ID:
             return {"id": DEFAULT_MODULE_ID, "project": project, "name": "默认模块"}
         raise NotFound("business module not found")
+
+    def _module_location_key(self, actor: str, project: str, module_id: str) -> tuple[str, str, str, str]:
+        tenant = self._tenant_of(actor)
+        self._validate_project(project)
+        self._business_module(tenant, project, module_id)
+        return tenant, actor, project, module_id
+
+    def _require_location_targets(
+        self, key: tuple[str, str, str, str], issue_id: str | None, conversation_id: str | None
+    ) -> None:
+        tenant, actor, project, module_id = key
+        if issue_id is not None:
+            issue = self._require_tenant_issue(actor, issue_id)
+            if (issue["project"], issue["module_id"]) != (project, module_id):
+                raise NotFound("issue not found in module")
+        if conversation_id is not None:
+            # Workspace conversations are provisioned on first creation and IDs are owner-scoped.
+            exists = self.db.execute(
+                "SELECT 1 FROM sqlite_master WHERE type='table' AND name='workspace_conversations'"
+            ).fetchone()
+            if (
+                not exists
+                or not self.db.execute(
+                    "SELECT 1 FROM workspace_conversations WHERE tenant=? AND actor=? AND id=?",
+                    (tenant, actor, conversation_id),
+                ).fetchone()
+            ):
+                raise NotFound("conversation unavailable")
+
+    @_connection_call
+    def module_location(self, actor: str, project: str, module_id: str) -> dict[str, Any] | None:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        key = self._module_location_key(actor, project, module_id)
+        row = self.db.execute(
+            "SELECT issue_id, conversation_id, position FROM module_work_locations "
+            "WHERE tenant_id=? AND actor=? AND project=? AND module_id=?",
+            key,
+        ).fetchone()
+        if row is None:
+            return None
+        try:
+            self._require_location_targets(key, row["issue_id"], row["conversation_id"])
+        except (PermissionDenied, NotFound):
+            return None
+        return dict(row)
+
+    @_connection_call
+    def save_module_location(
+        self, actor: str, project: str, module_id: str, issue_id: str | None, conversation_id: str | None, position: str
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        key = self._module_location_key(actor, project, module_id)
+        if not isinstance(position, str) or not 1 <= len(position) <= 2048:
+            raise TianxuanError("position must contain 1 to 2048 characters")
+        self._require_location_targets(key, issue_id, conversation_id)
+        self.db.execute(
+            "INSERT INTO module_work_locations (tenant_id, actor, project, module_id, issue_id, conversation_id, position) "
+            "VALUES (?,?,?,?,?,?,?) ON CONFLICT (tenant_id, actor, project, module_id) DO UPDATE SET "
+            "issue_id=excluded.issue_id, conversation_id=excluded.conversation_id, position=excluded.position",
+            (*key, issue_id, conversation_id, position),
+        )
+        return {"issue_id": issue_id, "conversation_id": conversation_id, "position": position}
 
     @_connection_call
     def list_business_modules(self, actor: str, project: str) -> list[dict[str, Any]]:

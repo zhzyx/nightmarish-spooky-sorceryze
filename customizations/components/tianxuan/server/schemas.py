@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from typing import Any
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -362,6 +363,14 @@ class IssueModuleRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     module_id: str = Field(min_length=1)
+
+
+class ModuleLocationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    issue_id: str | None = Field(default=None, min_length=1, max_length=256)
+    conversation_id: UUID | None = None
+    position: str = Field(min_length=1, max_length=2048)
 
 
 class IssueTransitionRequest(BaseModel):
