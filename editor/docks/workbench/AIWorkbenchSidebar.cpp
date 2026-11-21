@@ -41,7 +41,7 @@
 #include "scene/gui/text_edit.h"
 #include "scene/main/viewport.h"
 
-void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette)
+void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button *pTitleButton)
 {
 	// The view controls and command palette take focus before moving the composer.
 	input->set_deselect_on_focus_loss_enabled(false);
@@ -80,6 +80,8 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette)
 	pWorkbenchSidebar->connect(SNAME("closed"), callable_mp(this, &AIChatDock::CloseWorkbenchSidebar));
 	pPalette->connect(SNAME("about_to_popup"), callable_mp(this, &AIChatDock::CaptureWorkbenchSource));
 	pPalette->add_command(TTR("Open AI Workbench"), "editor/open_ai_workbench", callable_mp(this, &AIChatDock::OpenWorkbenchSidebar));
+	pTitleButton->connect(SNAME("button_down"), callable_mp(this, &AIChatDock::CaptureWorkbenchSource));
+	pTitleButton->connect(SNAME("pressed"), callable_mp(this, &AIChatDock::OpenWorkbenchSidebar));
 }
 
 void AIChatDock::CaptureWorkbenchSource()

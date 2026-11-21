@@ -233,6 +233,53 @@ func _settle_layout():
 	for frame in 4:
 		await process_frame
 
+func _check_title_button(tabs: TabContainer, dock: EditorDock, samples: Array) -> bool:
+	var buttons := root.find_children("OpenAIWorkbench", "Button", true, false)
+	var sidebars := root.find_children("AIWorkbenchSidebar", "EditorDock", true, false)
+	if not _check(buttons.size() == 1 and sidebars.size() == 1, "Expected one workbench button and one sidebar"):
+		return false
+	var button := buttons[0] as Button
+	var sidebar := sidebars[0] as EditorDock
+	var composer := dock.find_child("ChatInput", true, false) as TextEdit
+	if not _check(button.get_parent().get_parent().is_class("EditorTitleBar") and composer != null, "Missing title bar button or original composer"):
+		return false
+	for screen in ["2D", "3D", "Script"]:
+		EditorInterface.set_main_screen_editor(screen)
+		await _settle_layout()
+		var source := tabs.get_current_tab_control()
+		if not _check(tabs.get_tab_title(tabs.current_tab) == screen and not sidebar.is_visible_in_tree(), "Could not start in " + screen):
+			return false
+		for attempt in 2:
+			if composer.has_focus():
+				composer.release_focus()
+			var center := button.get_global_transform_with_canvas() * (button.size / 2)
+			root.notify_mouse_entered()
+			var motion := InputEventMouseMotion.new()
+			motion.position = center
+			motion.global_position = center
+			root.push_input(motion, true)
+			if not _check(button.is_visible_in_tree() and root.gui_get_hovered_control() == button, "Cannot hit the workbench button from " + screen):
+				return false
+			var click := InputEventMouseButton.new()
+			click.position = center
+			click.global_position = center
+			click.button_index = MOUSE_BUTTON_LEFT
+			click.button_mask = MOUSE_BUTTON_MASK_LEFT
+			click.pressed = true
+			root.push_input(click, true)
+			click.button_mask = 0
+			click.pressed = false
+			root.push_input(click, true)
+			await _settle_layout()
+			if not _check(tabs.get_current_tab_control() == source and sidebar.is_visible_in_tree() and sidebar.is_ancestor_of(composer) and composer.has_focus(), "Title button failed to open and focus original conversation from " + screen):
+				return false
+			if not _check(root.find_children("AIWorkbenchSidebar", "EditorDock", true, false) == sidebars, "Button created a duplicate sidebar"):
+				return false
+			samples.append({"from": screen, "repeat": attempt > 0, "button": button.get_instance_id(), "sidebar": sidebar.get_instance_id(), "composer": composer.get_instance_id(), "has_focus": composer.has_focus()})
+		sidebar.close()
+		await _settle_layout()
+	return true
+
 func _press_workbench_button(button: Button):
 	button.grab_focus()
 	_key(KEY_SPACE, 32)
@@ -441,6 +488,11 @@ func _run():
 	if not _check(dock.is_visible_in_tree() and dock.find_child("ChatInput", true, false) != null, "AI Chat cannot be used after switching"):
 		return
 	var sample := {"labels": labels, "current": tabs.get_current_tab(), "initial_selected_key": selected_key, "slot": dock.get_default_slot(), "phase": OS.get_environment("AI_CHAT_ORDER_PHASE")}
+	if "--workbench-button" in OS.get_cmdline_user_args():
+		var clicks := []
+		if not await _check_title_button(tabs, dock, clicks):
+			return
+		sample["title_button"] = clicks
 	if "--workbench-command" in OS.get_cmdline_user_args():
 		var invocations := []
 		if not await _check_workbench_command(tabs, dock, invocations):

@@ -25,7 +25,13 @@ def main():
     parser.add_argument(
         "--workbench-command", action="store_true", help="Exercise the global workbench command in each layout"
     )
+    parser.add_argument("--workbench-button", action="store_true", help="Click the editor title bar workbench button")
     args = parser.parse_args()
+    probes = []
+    if args.workbench_command:
+        probes.append("--workbench-command")
+    if args.workbench_button:
+        probes.append("--workbench-button")
     binary = args.godot.resolve()
     report = {
         "state": "running",
@@ -103,7 +109,7 @@ def main():
                         str(project),
                         "--script",
                         "res://order.gd",
-                        *(["--", "--workbench-command"] if args.workbench_command else []),
+                        *(["--", *probes] if probes else []),
                     ],
                     env=env,
                     capture_output=True,

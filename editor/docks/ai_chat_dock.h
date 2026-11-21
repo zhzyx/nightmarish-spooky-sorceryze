@@ -888,7 +888,7 @@ protected:
 	void _notification(int p_what);
 
 public:
-	void RegisterWorkbenchSidebar(EditorCommandPalette *pPalette);
+	void RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button *pTitleButton);
 	// Main-thread APIs. Snapshots are detached, contain no credentials, and never select a model.
 	Dictionary GetModelCatalogSnapshot() const;
 	Dictionary GetAiWorkflowSnapshot() const;
