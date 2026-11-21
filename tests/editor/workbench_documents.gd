@@ -77,6 +77,11 @@ func run() -> void:
 	await view.open_document(items[0].id, 1, 40)
 	if not check(view.reference.is_empty() and view.body.text.is_empty(),"Missing paragraph showed old body"):
 		return
+	if OS.has_environment("D04_AUTHOR"):
+		var edits = load("res://edits.gd").new()
+		if not await edits.run(self, view, opener, OS.get_environment("D04_AUTHOR")):
+			quit(1)
+			return
 	await view.open_document(items[0].id, 1, 1)
 	session.find_child("SignOut",true,false).pressed.emit()
 	if not check(not view.visible and view.reference.is_empty() and view.body.text.is_empty() and list.item_count == 0,"Previous account's document remained visible"):
