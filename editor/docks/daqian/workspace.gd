@@ -2665,10 +2665,19 @@ func _bind_issue_link(link: LinkButton, item: Dictionary) -> void:
 	var number := int(item.get("number", 0))
 	var repo := str(board.get("repo", actor.get("repo", "")))
 	var canonical := "https://github.com/%s/issues/%d" % [repo, number]
-	link.uri = canonical if number > 0 and repo.split("/").size() == 2 and item.get("url") == canonical else ""
+	link.tooltip_text = canonical if number > 0 and repo.split("/").size() == 2 and item.get("url") == canonical else ""
 	link.text = "#%d" % number
-	link.tooltip_text = link.uri
-	link.visible = not link.uri.is_empty()
+	link.visible = not link.tooltip_text.is_empty()
+	var open := _open_workbench_issue_link.bind(link)
+	if not link.pressed.is_connected(open):
+		link.pressed.connect(open)
+
+
+func _open_workbench_issue_link(link: LinkButton) -> void:
+	var sidebar := get_tree().root.find_child("AIWorkbenchSidebar", true, false)
+	var detail := sidebar.find_child("WorkbenchIssueDetail", true, false) if sidebar else null
+	if detail and not link.tooltip_text.is_empty():
+		detail.open_issue_link(link.tooltip_text)
 
 
 func _add_issue_row(item: Dictionary, issue_state: String, suffix: String, running: PackedStringArray, parent: TreeItem, line: TreeItem = null) -> TreeItem:

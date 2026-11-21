@@ -17,6 +17,7 @@ from work_management import (
     project_fields,
     read_approved_asset,
     read_issue_artifact,
+    roadmap,
 )
 
 
@@ -51,8 +52,8 @@ def create_work_router(store, actor_dependency):
         return define_text_field(store, actor, project, key, body["label"])
 
     @router.get("/work/roadmap")
-    def roadmap(actor: str = actor_dep):
-        return store.dispatch_tool(actor, "work.roadmap", {})
+    def read_roadmap(project: str | None = None, actor: str = actor_dep):
+        return roadmap(store, actor, project=project)
 
     @router.get("/issues/{issue_id}/work")
     def read(issue_id: str, actor: str = scoped_actor):

@@ -6,6 +6,8 @@ var _session: Node
 var _generation := 0
 var _route := ""
 var _versions := OptionButton.new()
+var _upload := Button.new()
+var _source := FileDialog.new()
 var _save := Button.new()
 var _status := Label.new()
 var _picker := FileDialog.new()
@@ -22,6 +24,16 @@ func _ready() -> void:
 	_versions.fit_to_longest_item = false
 	_versions.item_selected.connect(_selected)
 	add_child(_versions)
+	_upload.name = "UploadIssueArtifact"
+	_upload.text = "添加本机文件…"
+	_upload.pressed.connect(func(): _source.popup_centered_ratio(0.55))
+	add_child(_upload)
+	_source.name = "IssueArtifactSource"
+	_source.title = "选择工单附件"
+	_source.access = FileDialog.ACCESS_FILESYSTEM
+	_source.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	_source.file_selected.connect(_upload_file)
+	add_child(_source)
 	_save.name = "SaveIssueArtifact"
 	_save.text = "另存所选版本…"
 	_save.pressed.connect(_choose_destination)
@@ -38,8 +50,11 @@ func _ready() -> void:
 	_refresh()
 
 
-func _refresh() -> void:
+func _refresh(preferred_version := -1) -> void:
 	_generation += 1
+	_source.hide()
+	_upload.disabled = true
+	_versions.disabled = false
 	_picker.hide()
 	_versions.clear()
 	_versions.hide()
@@ -58,14 +73,23 @@ func _refresh() -> void:
 	if reply.status != 200 or not reply.data.get("artifacts") is Array:
 		_feedback(reply.status)
 		return
+	_upload.disabled = not issue.get("can_classify", false)
+	var selected_index := 0
 	for reference: Dictionary in reply.data.artifacts:
 		var kind: String = {"concept": "概念图", "model": "模型", "attachment": "附件"}.get(reference.kind, "产物")
 		_versions.add_item("%s · %s · #%d (%s)" % [kind, reference.path, int(reference.version), str(reference.revision).left(12)])
 		_versions.set_item_metadata(_versions.item_count - 1, reference)
+		if int(reference.version) == preferred_version:
+			selected_index = _versions.item_count - 1
 	_versions.visible = _versions.item_count > 0
 	_save.disabled = not _versions.visible
 	if _versions.visible:
-		_selected(0)
+		_versions.select(selected_index)
+		_selected(selected_index)
+		if preferred_version > 0:
+			var reference: Dictionary = _versions.get_item_metadata(selected_index)
+			if int(reference.version) == preferred_version:
+				_status.text = "附件 #%d 已绑定 · SHA-256 %s" % [preferred_version, reference.digest]
 	else:
 		_status.text = "此工单暂无可查看的附件或产物"
 
@@ -73,8 +97,52 @@ func _refresh() -> void:
 func _selected(index: int) -> void:
 	_generation += 1
 	var reference: Dictionary = _versions.get_item_metadata(index)
-	_versions.tooltip_text = "%s\n%s\n%s" % [reference.module, reference.path, reference.revision]
+	_versions.tooltip_text = "%s\n%s\n%s\nSHA-256 %s" % [reference.module, reference.path, reference.revision, reference.digest]
 	_status.text = ""
+
+
+func _upload_file(path: String) -> void:
+	if _upload.disabled or not is_visible_in_tree():
+		return
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		_status.text = "无法读取所选文件"
+		return
+	var size := file.get_length()
+	if size > 1024 * 1024:
+		_status.text = "单个附件最多 1 MiB"
+		return
+	var content := file.get_buffer(size)
+	if content.size() != size or file.get_length() != size:
+		_status.text = "文件读取不完整，请重新选择"
+		return
+	file.close()
+	_generation += 1
+	var attempt := _generation
+	_upload.disabled = true
+	_versions.disabled = true
+	_save.disabled = true
+	_status.text = "正在上传附件…"
+	var reply: Dictionary = await _session.api_request(HTTPClient.METHOD_POST, _route, {
+		"name": path.get_file(), "content": Marshalls.raw_to_base64(content) if size else "",
+	})
+	if attempt != _generation:
+		return
+	if reply.status == 200 and int(reply.data.get("version", 0)) > 0:
+		await _refresh(int(reply.data.version))
+		return
+	_upload.disabled = false
+	_versions.disabled = false
+	_save.disabled = not _versions.visible
+	match int(reply.status):
+		0, 500, 502, 503, 504:
+			_status.text = "尚未收到上传回执，请重新选择同一文件核对"
+		403:
+			_status.text = "没有权限为此工单添加附件"
+		413:
+			_status.text = "单个附件最多 1 MiB"
+		_:
+			_status.text = "附件上传失败（%d），请重新读取工单" % int(reply.status)
 
 
 func _choose_destination() -> void:

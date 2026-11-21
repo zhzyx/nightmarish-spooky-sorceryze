@@ -1,0 +1,553 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "a90fb827fdf95f03cf103ea8c9fecc7332910788",
+  "editor_sha256": "8bdf5d66f4106f36b44128a5cfc486d65d5c1010ec73e2d9cd3486f39ba7611c",
+  "source_git_blobs": {
+    "customizations/components/godot-host/README.md": "301a34b9d3199cdaa962b96e45b597ff32d43e8f",
+    "customizations/components/tianxuan/server/api.py": "ab950fe0c3ad921d3f234c32d614f249af90e3ae",
+    "customizations/components/tianxuan/server/schemas.py": "fa5aea0e6fa3bbfc31dcd85b594c5d81396b6b3c",
+    "customizations/components/tianxuan/server/test_design_signoff.py": "694627e84038fe6d77b5f6d6992c2effb752e5a0",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "e4fb28949cfd0de26d33e4b75745bdc7fa52ebec",
+    "editor/SCsub": "0bfd7137866510c62ec5f6a8e116c3e2610bb021",
+    "editor/docks/ai_chat_dock.h": "199e8d26c54572a4e1c14328c0827e981228c713",
+    "editor/docks/daqian/workspace.gd": "3b053d5bee4ac7be4869b1aa6f775224d1da2310",
+    "editor/docks/editor_dock.cpp": "3534855c390af048c79079f76f403d3cddc97921",
+    "editor/docks/editor_dock_manager.cpp": "ddd5298990ee2370f09c842bb8dea958e9bff2a5",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "b57ad4c774b75d73e75b2e2c3e00e4747401519e",
+    "editor/docks/workbench/business_session.gd": "17017374312fb532621dbfe2e142e0932eb6dac2",
+    "editor/docks/workbench/design_signoff.gd": "f466f2a1a4e9eb83ee3a431daf33513cebacd917",
+    "editor/docks/workbench/document_collaboration.gd": "a0918fbcefb3cf15012ae755f15eedb698e1f74b",
+    "editor/docks/workbench/issue_detail.gd": "37293af2a3f3b73a07ecb66f062a8d2a44030f45",
+    "editor/docks/workbench/module_selector.gd": "0603731482216a585e6f3f8563d4c1f03c09a3eb",
+    "editor/editor_main_screen.cpp": "bfedabcd3cd566c9cfddf43ecd41fdc4233c51b4",
+    "editor/editor_main_screen.h": "454e729a89444bf2d5116610138e1433ba925928",
+    "scene/gui/text_edit.cpp": "d87d326008c488224e0349c84db00d95d4034833",
+    "tests/editor/ai_chat_tab_order.gd": "b305cd39992fdcda48d40cd1966ab668cc01145c",
+    "tests/editor/daqian_ai_entry.gd": "acc4ac8e8ae2f52d11b303688da6098e268f7c0c",
+    "tests/editor/daqian_graph.gd": "3dfd1be50140b7d917770c3132656a2095afd18b",
+    "tests/editor/daqian_issue_details.gd": "95a6517644fc55151bcd27ece6a151588b8e18b9",
+    "tests/editor/run_workbench_context_milestone.py": "a5951ce67c4ae47c5cfaf2010731b7bd1750ed5e",
+    "tests/editor/run_workbench_design_signoff.py": "0c4a0614294fa4c33869f40a9bf92cc306e02b78",
+    "tests/editor/run_workbench_issue_consultation.py": "063b17165d8bbeea93685fdcd0b80f2c8c7e01ea",
+    "tests/editor/run_workbench_legacy_routes.py": "9701a8988ce992d3ebba4d34f2496f926bd87f46",
+    "tests/editor/run_workbench_offline_document.py": "f78e0379e79f67b0237334755f5e0a27045d499a",
+    "tests/editor/run_workbench_paragraph_suggestion.py": "72b13b9f63f294043bad728427fa5f72c5d63580",
+    "tests/editor/workbench_context_milestone.gd": "1487ea1fc605dc2b4726b55534494a81e3a0d5cf",
+    "tests/editor/workbench_design_signoff.gd": "62e5bb103070b27129f6d0e18dd5dd6089d52108",
+    "tests/editor/workbench_legacy_routes.gd": "c841a59f1018e1439a76401e5501306248d988ed",
+    "tests/editor/workbench_offline_document.gd": "0300ce9d957160f8948d47164518ab449f980253",
+    "tests/editor/workbench_paragraph_suggestion.gd": "207974674a49201cf5f07bd5e3dbe1d7ced2099d"
+  },
+  "checks": {
+    "d12": "879c4a30462ccd1d1ad5abb36aee80886c7fba59d4cf5082ce3ecad33e64ced5",
+    "d04": "86620226baba334b0c5df27b049f330a9eeea3b923e67fd2e7a40c95b41ac8dc",
+    "c07": "3792b812c51da479e1efedf5373d6130d8b464f5ae41943f0ffa09004cb875f7",
+    "c06": "4919cc6ae67c73b0b132c26f6bbd6f1d5e2bf8ab6d9bf0aa3e55a795de834e7c",
+    "u15": "ff0ef0c2f366f768c723a589b7c80bda7f5477181b827432d8677d71153db9a0",
+    "d14": "b722e1bb4cabb749114b158918db16bf97f912690a7d37825769b560d107c5cb",
+    "i01": "ae141a7f7ee93016c57aff18976934d45908f3b1785f0675c176771c0c96ee7b",
+    "i02": "e3f5bbc2c6652e86a806c1625dc9f9cf65e1ac872ceb67514817db83b975e00b",
+    "u10": "399b4ea0858b9825f24f6f214f86adb91cc29cbd74481f6984b808113a65b924",
+    "d03": "7b8e8ba22f3bc82774aa3c5409ccecb6f5d851b73bb5bbbdb2ae8b2ac3db231c",
+    "g11": "d8186d727540bd12b6fa6463f0b88a619b298f6a7ab976d653f12e41ad410945",
+    "d05": "53e8d8bc351942ea29d71dabf5569bd3cc4d6f40eee83c56165e8221ea5262cc",
+    "i03": "09ac484be78b74d446c7327071757cd891c04943ba52a0fa7c6456a510877d56",
+    "i04": "771ab633fd83a603a0a8e14936434e61b7b08b8ebc687b58fa3a940dba856e9b",
+    "i05": "7487f16643677e1fa1d77cca1bfbeabb9791bb1e000d69467ca59f2fa639e384",
+    "i06": "109ea6fe78c61c7b95ff784ebe4ec0607cd0e281cfd9098d378e19677c9a56fe",
+    "i07": "bd1a2efeb7e8e8530737243fada5b624316890eba1f9fd468fc8353b7f58673c",
+    "i09": "e9fd84b7971b1e886173a9f023d24e7971985381815627ba1aecb7bd86e32402",
+    "i10": "0023d31645f989add8bd04f78ddade6a1cc37b328eaa2fa0f93f765fc8438c02",
+    "i11": "aa254df04dad0fce6b52d4ee8ea3836995530f1208b5f601d92865c81ff259da",
+    "i14": "16a3c713c6b7dd470db22fe62b355910d895e9663c308357cd3b2f15cc3b2db8",
+    "i17": "82407b6b10130df59cd28fae44033186dedeff9d0a63ffd064dd8fbe4356b792",
+    "u11": "d6b4b9458d14069464a2228b6dc1f86d3c4818cd92ba4731cb5d2fbab181e00a",
+    "d06": "37ff63d0a6bba14b5a7ccd1ef761ad239bad1f6b9b33ddef2ce164fe67f1e9a4",
+    "d07": "817a8ed516ebe4f4ab931cfea667c092a13f2895ae95e74a8d9b59b61cad9bf1",
+    "g12": "0e82c9c756c9e05f1133f6e7a5d3cce2d6d40c16f938780520239f3f5715860c",
+    "g13": "4d8c84b4e960ffd2b0bbd5ea9aa02618aed881105ddb3f9eac3817e682051504",
+    "i15": "cb2e31e63d3e7d0b27d7045062f1acc11eeda04be593ebedf540cb141969c349",
+    "d08": "4cb330365d082e7d1762d8cf099a2d9914e4c197da7a31eb738e2077329d4fbd",
+    "d09": "95d4cf492b9fcfe3fbe0a54b56b9f4431c6bf6814d913583985a534400ecfb9e",
+    "k01": "f1c43be3ffa87deb2bee8a076cf13d985d10492b6d495cb388c8363fc77fd76a",
+    "u13": "5d6ec916094741f3dce5708f36614acc700fa8ddba4850c0cfb67c6fdde2b1ee"
+  },
+  "issues": {
+    "d09": 1858,
+    "d08": 1746,
+    "u13": 1791,
+    "k01": 1717
+  },
+  "observed": "2026-11-21T22:23:45.915967+00:00",
+  "combined_regressions": {
+    "editor_sha256": "8bdf5d66f4106f36b44128a5cfc486d65d5c1010ec73e2d9cd3486f39ba7611c",
+    "source_base": "a90fb827fdf95f03cf103ea8c9fecc7332910788",
+    "text_edit_tests": 22,
+    "text_edit_assertions": 6446,
+    "layout_report": "78691777d7a6acea66241326fc8cbbe097cf5c3e4620460438323280449eae70",
+    "palette_report": "270274d919ac0d1ca31d901b5638d4d5f1a03b1fa5a07e110e949ac6eb868366",
+    "design_service": "14 passed, 1 warning in 5.75s",
+    "observed": "2026-11-21T22:13:42.763619+00:00"
+  },
+  "results": {
+    "d09": {
+      "state": "passed",
+      "editor_sha256": "8bdf5d66f4106f36b44128a5cfc486d65d5c1010ec73e2d9cd3486f39ba7611c",
+      "writes": [
+        {
+          "path": "/api/v1/docs/doc_c2059cdbe3714249b3f173abbf04010a/versions/1/signoff",
+          "payload": {
+            "acceptance": "One pull opens the bridge."
+          },
+          "server": 200,
+          "client": 503
+        },
+        {
+          "path": "/api/v1/docs/doc_c2059cdbe3714249b3f173abbf04010a/versions/1/signoff",
+          "payload": {
+            "acceptance": "One pull opens the bridge."
+          },
+          "server": 200,
+          "client": 200
+        },
+        {
+          "path": "/api/v1/docs/doc_c2059cdbe3714249b3f173abbf04010a/versions/2/signoff",
+          "payload": {
+            "acceptance": "Two pulls open the bridge."
+          },
+          "server": 200,
+          "client": 200
+        }
+      ],
+      "durable_receipts": [
+        {
+          "document_id": "doc_c2059cdbe3714249b3f173abbf04010a",
+          "version": 1,
+          "confirmed_by": "usr_58dfc4dabc024a778616de619c31317d",
+          "confirmed_at": "2026-11-21T22:23:08.305618+00:00",
+          "acceptance": "One pull opens the bridge."
+        },
+        {
+          "document_id": "doc_c2059cdbe3714249b3f173abbf04010a",
+          "version": 2,
+          "confirmed_by": "usr_58dfc4dabc024a778616de619c31317d",
+          "confirmed_at": "2026-11-21T22:23:11.935112+00:00",
+          "acceptance": "Two pulls open the bridge."
+        }
+      ],
+      "database_row_count": 2,
+      "viewer_can_read": true,
+      "viewer_write_status": 403,
+      "changed_criteria_status": 409,
+      "created_issues": 0
+    },
+    "d08": {
+      "state": "passed",
+      "editor_sha256": "8bdf5d66f4106f36b44128a5cfc486d65d5c1010ec73e2d9cd3486f39ba7611c",
+      "scenarios": {
+        "unchanged": {
+          "windows": {
+            "disconnect": {
+              "comparison": {
+                "local": "离线时人的文字\n\n第二段草稿",
+                "requires_review": false,
+                "server": "第一段\n\n设计原文",
+                "version": 1.0
+              },
+              "offline": {
+                "draft": {
+                  "base_md": "第一段\n\n设计原文",
+                  "body_md": "离线时人的文字\n\n第二段草稿",
+                  "version": 1.0
+                },
+                "http_status": 0
+              },
+              "saved": {
+                "body_md": "离线时人的文字\n\n第二段草稿",
+                "version": 2
+              },
+              "websocket_reconnected": true
+            }
+          },
+          "service_patches": [
+            {
+              "path": "/api/v1/docs/doc_c44062243d7b4032a5f3f7e4ff1afc54",
+              "project": "studio/game",
+              "expected_version": 1,
+              "body_md": "离线时人的文字\n\n第二段草稿",
+              "status": 200
+            }
+          ]
+        },
+        "advanced": {
+          "windows": {
+            "disconnect": {
+              "comparison": {
+                "local": "离线时人的文字\n\n第二段草稿",
+                "requires_review": true,
+                "server": "在线协作者的修订\n\n设计原文",
+                "version": 2.0
+              },
+              "offline": {
+                "draft": {
+                  "base_md": "第一段\n\n设计原文",
+                  "body_md": "离线时人的文字\n\n第二段草稿",
+                  "version": 1.0
+                },
+                "http_status": 0
+              },
+              "other_account": {
+                "account": "usr_524c854b23e942208f8e92156dc75169",
+                "body_md": "在线协作者的修订\n\n设计原文",
+                "document": "doc_62961164989c4d8492ec87b3c12550b8",
+                "project": "studio/game"
+              },
+              "other_document": {
+                "account": "usr_b4a14714945d4fb1b00280c6c7330525",
+                "body_md": "独立正文",
+                "document": "doc_f442d868d82948d8aef0dd348c89ec66",
+                "project": "studio/game"
+              },
+              "other_project": {
+                "account": "usr_b4a14714945d4fb1b00280c6c7330525",
+                "body_md": "在线协作者的修订\n\n设计原文",
+                "document": "doc_62961164989c4d8492ec87b3c12550b8",
+                "project": "studio/other"
+              },
+              "websocket_reconnected": true
+            },
+            "resume": {
+              "comparison": {
+                "local": "离线时人的文字\n\n第二段草稿",
+                "requires_review": true,
+                "server": "在线协作者的修订\n\n设计原文",
+                "version": 2.0
+              },
+              "saved": {
+                "body_md": "在线协作者的修订\n\n离线时人的文字",
+                "version": 3
+              }
+            }
+          },
+          "service_patches": [
+            {
+              "path": "/api/v1/docs/doc_62961164989c4d8492ec87b3c12550b8",
+              "project": "studio/game",
+              "expected_version": 2.0,
+              "body_md": "在线协作者的修订\n\n离线时人的文字",
+              "status": 200
+            }
+          ]
+        },
+        "http_only": {
+          "windows": {
+            "disconnect": {
+              "comparison": {
+                "local": "离线时人的文字\n\n第二段草稿",
+                "requires_review": false,
+                "server": "第一段\n\n设计原文",
+                "version": 1.0
+              },
+              "offline": {
+                "draft": {
+                  "base_md": "第一段\n\n设计原文",
+                  "body_md": "离线时人的文字\n\n第二段草稿",
+                  "version": 1.0
+                },
+                "http_status": 0
+              },
+              "saved": {
+                "body_md": "离线时人的文字\n\n第二段草稿",
+                "version": 2
+              },
+              "websocket_reconnected": false
+            }
+          },
+          "service_patches": [
+            {
+              "path": "/api/v1/docs/doc_4f9f2dbdbe3f48d589a91b77d65e44bf",
+              "project": "studio/game",
+              "expected_version": 1,
+              "body_md": "离线时人的文字\n\n第二段草稿",
+              "status": 200
+            }
+          ]
+        }
+      }
+    },
+    "u13": {
+      "stored_executions": 0,
+      "editor_sha256": "8bdf5d66f4106f36b44128a5cfc486d65d5c1010ec73e2d9cd3486f39ba7611c",
+      "result": "passed",
+      "legacy_saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ],
+      "phases": [
+        {
+          "phase": "legacy_chat",
+          "loaded_layout_sha256": "a65cf2d014b3a556cf316436aac6318cc0c8224491c5ac89327e8a86ffb2d8bc",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 0,
+          "saved_sidebar": false,
+          "observed": {
+            "expanded": true,
+            "selected": "AI Chat",
+            "sidebar": false,
+            "top_button": "OpenAIWorkbench",
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "legacy_tianshu",
+          "loaded_layout_sha256": "674f8b1717b8193f19d0cb971f1b78167a7be2d7c1323a10d0deb7c4da21e8cc",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": true,
+          "observed": {
+            "expanded": true,
+            "rejected": [
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9998"
+              },
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9999"
+              },
+              {
+                "feedback": "工单链接无效",
+                "link": "https://unrelated.invalid/issues/iss_fba0d90eb4f5428ab60c4d5779513f42"
+              }
+            ],
+            "selected": "AI Chat",
+            "sidebar": false,
+            "top_button": "OpenAIWorkbench",
+            "trace": [
+              {
+                "chat": "18e99a1b-66f4-5f48-a777-8f4fb41c42db",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "49fd61f4-f8ed-4808-8544-5bfa5a3aea10"
+              },
+              {
+                "chat": "4ca966f2-a259-5daf-a322-2e998846944a",
+                "link": "/issues/iss_fba0d90eb4f5428ab60c4d5779513f42",
+                "turn": "ec5128f4-75ac-463c-9180-d4feeb6e7b67"
+              },
+              {
+                "chat": "18e99a1b-66f4-5f48-a777-8f4fb41c42db",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "49fd61f4-f8ed-4808-8544-5bfa5a3aea10"
+              },
+              {
+                "chat": "4ca966f2-a259-5daf-a322-2e998846944a",
+                "link": "/issues/iss_fba0d90eb4f5428ab60c4d5779513f42",
+                "turn": "ec5128f4-75ac-463c-9180-d4feeb6e7b67"
+              }
+            ],
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "restart",
+          "loaded_layout_sha256": "1f15630b694be77d0c30252cefa7bd1ab0c8850f8b406184a28e17deaabdae3d",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": true,
+          "observed": {
+            "expanded": false,
+            "rejected": [
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9998"
+              },
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9999"
+              },
+              {
+                "feedback": "工单链接无效",
+                "link": "https://unrelated.invalid/issues/iss_fba0d90eb4f5428ab60c4d5779513f42"
+              }
+            ],
+            "restored_turn": "ec5128f4-75ac-463c-9180-d4feeb6e7b67",
+            "selected": "Script",
+            "sidebar": true,
+            "top_button": "OpenAIWorkbench",
+            "trace": [
+              {
+                "chat": "18e99a1b-66f4-5f48-a777-8f4fb41c42db",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "49fd61f4-f8ed-4808-8544-5bfa5a3aea10"
+              },
+              {
+                "chat": "4ca966f2-a259-5daf-a322-2e998846944a",
+                "link": "/issues/iss_fba0d90eb4f5428ab60c4d5779513f42",
+                "turn": "ec5128f4-75ac-463c-9180-d4feeb6e7b67"
+              },
+              {
+                "chat": "18e99a1b-66f4-5f48-a777-8f4fb41c42db",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "49fd61f4-f8ed-4808-8544-5bfa5a3aea10"
+              },
+              {
+                "chat": "4ca966f2-a259-5daf-a322-2e998846944a",
+                "link": "/issues/iss_fba0d90eb4f5428ab60c4d5779513f42",
+                "turn": "ec5128f4-75ac-463c-9180-d4feeb6e7b67"
+              }
+            ],
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "other_project",
+          "loaded_layout_sha256": "1f15630b694be77d0c30252cefa7bd1ab0c8850f8b406184a28e17deaabdae3d",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": true,
+          "observed": {
+            "expanded": false,
+            "foreign_project_cleared": true,
+            "selected": "Script",
+            "sidebar": true,
+            "top_button": "OpenAIWorkbench",
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "unchanged",
+          "loaded_layout_sha256": "021aeec43a8f5ac984702753b1dc1902854e90340952a1c8f0de6790b1287027",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": false,
+          "observed": {
+            "expanded": false,
+            "selected": "Script",
+            "sidebar": false,
+            "top_button": "OpenAIWorkbench",
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        }
+      ]
+    },
+    "k01": {
+      "state": "passed",
+      "editor_sha256": "8bdf5d66f4106f36b44128a5cfc486d65d5c1010ec73e2d9cd3486f39ba7611c",
+      "sample": {
+        "model_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+        "modules": [
+          "mod_e3fd444c5dcb480f832934d3d34516f9",
+          "mod_cc06a20ce44846f4b827103e3bdd1727"
+        ],
+        "asset": {
+          "source_module": "shared-character-model",
+          "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89",
+          "path": "models/suzanne.glb"
+        },
+        "entry": "shortcut",
+        "answer": "K01 movement consultation received"
+      },
+      "received_turn": {
+        "id": "aed6f168-c1b1-4ef6-a357-2e714cd61c29",
+        "content": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>\nK01 shared model consultation",
+        "state": "answered",
+        "answer": "K01 movement consultation received",
+        "model": "fixture",
+        "error": null,
+        "context_snapshot": {
+          "project": "k01/character",
+          "module_id": "mod_e3fd444c5dcb480f832934d3d34516f9",
+          "issue_id": null,
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "duobao:48b1d8c2f7039541c04da26dc0d089a56bb874f51de5767278d995d0f77be982",
+              "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+            }
+          ]
+        }
+      },
+      "conversation_writes": [
+        [
+          "/api/v1/workspace/conversations",
+          201
+        ],
+        [
+          "/api/v1/workspace/conversations/3003bb02-38a7-43c3-b77a-a7ff10be6af0/turns",
+          200
+        ]
+      ],
+      "model_call_count": 1,
+      "received_by_model": {
+        "content": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>\nK01 shared model consultation",
+        "context_snapshot": {
+          "project": "k01/character",
+          "module_id": "mod_e3fd444c5dcb480f832934d3d34516f9",
+          "issue_id": null,
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "duobao:48b1d8c2f7039541c04da26dc0d089a56bb874f51de5767278d995d0f77be982",
+              "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

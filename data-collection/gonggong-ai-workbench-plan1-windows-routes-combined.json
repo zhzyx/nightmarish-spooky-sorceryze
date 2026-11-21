@@ -1,0 +1,918 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "42eb64e29556f7405d037935612e90edfa4ccd48",
+  "editor_sha256": "665d2268f23cdc8a04a99c91655765fc383def0401442cc6ff1d3f561fa4b260",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "c990ed6187a664bb38d8bb34c70faa5e682d663e",
+    "customizations/components/tianxuan/server/issue_upload_api.py": "adfb45fb582a0a6a0b9784e610e85e6dbda8b01a",
+    "customizations/components/tianxuan/server/native_api.py": "ac0b749b5f24f63a22602f2f0ab84d339bff04e2",
+    "customizations/components/tianxuan/server/schemas.py": "fa5aea0e6fa3bbfc31dcd85b594c5d81396b6b3c",
+    "customizations/components/tianxuan/server/test_design_signoff.py": "694627e84038fe6d77b5f6d6992c2effb752e5a0",
+    "customizations/components/tianxuan/server/test_issue_upload.py": "1529862dca6d6ab0e4700499584fcd89db938ad6",
+    "customizations/components/tianxuan/server/test_work_management.py": "e6c64ab41d00fadf302b41441897d11198dd4b83",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "006b6d175a830d79cbf8d5af317e44c7b13c4188",
+    "customizations/components/tianxuan/server/work_management.py": "5bf610ecea97bfb862cffff11c0314fa0c5a39ed",
+    "customizations/components/tianxuan/server/work_management_api.py": "abd7fdc16cea971cbe0ae6f9cc9d9d31e3409f75",
+    "editor/SCsub": "3cdd0a91d80de0e0148156d7ee64c88bc6e92efc",
+    "editor/docks/ai_chat_dock.h": "199e8d26c54572a4e1c14328c0827e981228c713",
+    "editor/docks/daqian/workspace.gd": "3b053d5bee4ac7be4869b1aa6f775224d1da2310",
+    "editor/docks/editor_dock.cpp": "3534855c390af048c79079f76f403d3cddc97921",
+    "editor/docks/editor_dock_manager.cpp": "ddd5298990ee2370f09c842bb8dea958e9bff2a5",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "3ca042860608b05a9e67bcdb9b6d7b2483d7c42e",
+    "editor/docks/workbench/business_session.gd": "17017374312fb532621dbfe2e142e0932eb6dac2",
+    "editor/docks/workbench/design_signoff.gd": "f466f2a1a4e9eb83ee3a431daf33513cebacd917",
+    "editor/docks/workbench/document_collaboration.gd": "a0918fbcefb3cf15012ae755f15eedb698e1f74b",
+    "editor/docks/workbench/issue_artifacts.gd": "c6be6de93007d108b247f7c9d7c6da018654b85f",
+    "editor/docks/workbench/issue_detail.gd": "37293af2a3f3b73a07ecb66f062a8d2a44030f45",
+    "editor/docks/workbench/issue_roadmap.gd": "f23b84356e125c19ed49fde6e7c5153c9e0283ea",
+    "editor/docks/workbench/module_selector.gd": "0603731482216a585e6f3f8563d4c1f03c09a3eb",
+    "editor/editor_main_screen.cpp": "bfedabcd3cd566c9cfddf43ecd41fdc4233c51b4",
+    "editor/editor_main_screen.h": "454e729a89444bf2d5116610138e1433ba925928",
+    "scene/gui/text_edit.cpp": "d87d326008c488224e0349c84db00d95d4034833",
+    "tests/editor/ai_chat_tab_order.gd": "b305cd39992fdcda48d40cd1966ab668cc01145c",
+    "tests/editor/daqian_ai_entry.gd": "acc4ac8e8ae2f52d11b303688da6098e268f7c0c",
+    "tests/editor/daqian_graph.gd": "3dfd1be50140b7d917770c3132656a2095afd18b",
+    "tests/editor/daqian_issue_details.gd": "95a6517644fc55151bcd27ece6a151588b8e18b9",
+    "tests/editor/run_workbench_context_milestone.py": "a5951ce67c4ae47c5cfaf2010731b7bd1750ed5e",
+    "tests/editor/run_workbench_design_signoff.py": "0c4a0614294fa4c33869f40a9bf92cc306e02b78",
+    "tests/editor/run_workbench_issue_consultation.py": "063b17165d8bbeea93685fdcd0b80f2c8c7e01ea",
+    "tests/editor/run_workbench_issue_detail.py": "066818ca18dd6e5be14be905af64ccc17c51ff35",
+    "tests/editor/run_workbench_issue_roadmap.py": "66c5d0e3380293bbde5f64f1f0c7c6ef7c420422",
+    "tests/editor/run_workbench_issue_upload.py": "23d04efa3acffff56ec9483ca9962eafe57d7bd8",
+    "tests/editor/run_workbench_legacy_routes.py": "9701a8988ce992d3ebba4d34f2496f926bd87f46",
+    "tests/editor/run_workbench_offline_document.py": "f78e0379e79f67b0237334755f5e0a27045d499a",
+    "tests/editor/run_workbench_paragraph_suggestion.py": "72b13b9f63f294043bad728427fa5f72c5d63580",
+    "tests/editor/workbench_context_milestone.gd": "1487ea1fc605dc2b4726b55534494a81e3a0d5cf",
+    "tests/editor/workbench_design_signoff.gd": "62e5bb103070b27129f6d0e18dd5dd6089d52108",
+    "tests/editor/workbench_issue_roadmap.gd": "01374bc5efcb5783f37055f81a7556d3d50c8f82",
+    "tests/editor/workbench_issue_upload.gd": "9c4d54fcb2c3a152459db961121fff4e8f3a4531",
+    "tests/editor/workbench_legacy_routes.gd": "c841a59f1018e1439a76401e5501306248d988ed",
+    "tests/editor/workbench_offline_document.gd": "0300ce9d957160f8948d47164518ab449f980253",
+    "tests/editor/workbench_paragraph_suggestion.gd": "207974674a49201cf5f07bd5e3dbe1d7ced2099d"
+  },
+  "checks": {
+    "d12": "bc8dbed1429c85d82080d30cab2a3af78557ae01886e589c146ffc79be0799a9",
+    "d04": "275c79a9fb9a75daacd9af38367ad8128bbae3731f1672187fc45a6f3a1e73e1",
+    "c07": "dc8242eaa892ddbcb63d1cc156c7c0667874dec91bc3dd81f0c517453d01ca58",
+    "c06": "bdf58c828ceadb61557fc88c39f83164071ec0e84d42dacb71cb8eb050ba3473",
+    "u15": "e9e6fff940a7d082b334a29066b6ad2cb311155c2e0fa35c50b5ba017b91e3cc",
+    "d14": "d4fb68be87df65475cf66ea4f3bce6314e2b65ce4c555c00eaf571bb420d1d89",
+    "i01": "f864a0dd51e3cb3c3c4027c62389585857835745a88a68a4061ca5b1be7ac859",
+    "i02": "28f056c3f5745a70cb5f800330edb8cf0d50259d63a20b7344b640a8330dc16a",
+    "u10": "220a55f5d18d59ef68c83ba7d5be0fefd3f1c244c777110ec1db88baf80c2d63",
+    "d03": "a6a7b76f5ef08cd4aac75a28655e06683978da81d2893f474671aaf868a51992",
+    "g11": "786a471976b4cbdb36eddcba851a5350a6d84a6cf1a4c8db97c294293461386b",
+    "d05": "d32ca1cb1383069fa241073782623ed15439da2f9352324672bba5f54eec55b7",
+    "i03": "153ccf4792c52426278960de13e5a53dd05b65f8f623a635048a18624ed4928e",
+    "i04": "40e2d25f65e18f18b38adc5f309592090e1685b8afc2c816b6f744322f0133df",
+    "i05": "e71fc9d980bf69263e35e61e5476a447fe4e5c652ce2784e34d603259370dd6c",
+    "i06": "21ceda83ebdab51bf9e5936b02aab8e30debd8a0530781acc2f06e2720497f61",
+    "i07": "f9e10f4665fdfe538895cb40cde8615f92034788d8ef30eb697870fde2509c8e",
+    "i09": "ec9f5bdb939300b7546cfd55fb70ab127f159ec64014531d85eeaa8c1a566c1f",
+    "i10": "207d8df7ed2b4f981bfb77007b4231e571872a5b4054d7529472847abd799a18",
+    "i11": "3aad6ad614228546c08831a23c7971f6144c9583d78f9f8c04487a572ae63a95",
+    "i14": "37f964bb65d5bc9bcad8bb8a2f8e633194eff715359b8abd64a288a022406718",
+    "i17": "f9fc152aabdff966a15f5c709f23d1eabe6a3df8c6b3a3373cd871a501dad525",
+    "u11": "9d3672d0eff47ebdcdb8f42e692c6228e5887ba8e16ad24a05f64e8314e737e6",
+    "d06": "42dd7cee8f28cffeb90109502fddf1eee8f502fee0515b0bd2c769432f01f67e",
+    "d07": "ab24a971b0f12b3db465f75127ee2badc8592c8a6d50717e9f86eb88f23611b1",
+    "g12": "d8ba2e93241509a96aadcc6b8f256fe03e38a5212aa4f58f09a3f4395eec20d8",
+    "g13": "f3f9f32934a2bab81ce9f8b7c44349d45bd61e1abefae4609f07c8e44cc94f0a",
+    "i15": "49ebec2741d8ba26d9392292066671cd866dab40e4a40a05161e842b80c13658",
+    "d08": "e34b5c9a3c2b7961024db2999a8210ee8a3447dc64f7b29c8e37b53e6d082f2e",
+    "d09": "9e113de524f5863b5ee1c1e8116bf9f10e32f16816ff65443d92649e6238bebb",
+    "k01": "fe07d672b7395ed44191476e0e4a6e105e930fd35aacbf0d9ebe604a8351066d",
+    "u13": "b8265e3214036985682445c7f20e9e1f6379a699d0ff87eb504f81173d0043a7",
+    "i08": "c3a75e7deb40f5562a642ba4163558ffc2cebbb3235576b0f24d77b3986cce94",
+    "i18": "0d380c34a4ac9de0c8e61b4801f3e29442455e6d5a7e66e8f601e441c5b3ce53"
+  },
+  "issues": {
+    "d09": 1858,
+    "d08": 1746,
+    "u13": 1791,
+    "k01": 1717,
+    "i08": 1751,
+    "i18": 1759
+  },
+  "observed": "2026-11-21T22:52:20.622810+00:00",
+  "combined_roadmap_to_attachment": [
+    {
+      "restarted": false,
+      "child_number": 2,
+      "child_id": "iss_a1434eff5b274458b7d3804081ed5b07",
+      "parent_id": "iss_fbb93bafe21a44a6b83a2442bf77dc12",
+      "module": "mod_887d1cc3b53f4fd5a774c4ef99551195",
+      "milestone": "预览",
+      "stored_digest": "9191ca6680cb93397b5fbf932098ed17e816891b9698b8fb4a70c3abad490531",
+      "attachment_version": 2,
+      "object_revision": "8de88a2ad8a1f7089628bdf3a51e308139292f772c4730daf8357c0754d395ef",
+      "other_project_excluded": true,
+      "same_title_peer_empty": true
+    },
+    {
+      "restarted": true,
+      "child_number": 2,
+      "child_id": "iss_a1434eff5b274458b7d3804081ed5b07",
+      "parent_id": "iss_fbb93bafe21a44a6b83a2442bf77dc12",
+      "module": "mod_887d1cc3b53f4fd5a774c4ef99551195",
+      "milestone": "预览",
+      "stored_digest": "9191ca6680cb93397b5fbf932098ed17e816891b9698b8fb4a70c3abad490531",
+      "attachment_version": 2,
+      "object_revision": "8de88a2ad8a1f7089628bdf3a51e308139292f772c4730daf8357c0754d395ef",
+      "other_project_excluded": true,
+      "same_title_peer_empty": true
+    }
+  ],
+  "combined_regressions": {
+    "editor_sha256": "665d2268f23cdc8a04a99c91655765fc383def0401442cc6ff1d3f561fa4b260",
+    "source_base": "42eb64e29556f7405d037935612e90edfa4ccd48",
+    "text_edit_tests": 22,
+    "text_edit_assertions": 6446,
+    "layout_report": "ddd035c80746310fca80aa9cff36bdb2110554a0f45076bef76fb8c869f19025",
+    "palette_report": "f8220b93647f7667c7d647df6aeb150d651e80e97823960abff975bd3e9dac7a",
+    "design_service": "14 passed, 1 warning in 5.00s",
+    "observed": "2026-11-21T22:48:11.334367+00:00"
+  },
+  "trusted_host_recovery": {
+    "host_readme_sha256": "e5baca4f2f95558dd8147ee741675484ed423f8701baa30c4de7d9956e673c65",
+    "interruption_cases": 3,
+    "journal_boundary_cases": 5,
+    "runtime_setup": true,
+    "original_request": true,
+    "prior_failure": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44956752719/artifacts/14728382219"
+  },
+  "service_regressions": {
+    "base": "42eb64e29556f7405d037935612e90edfa4ccd48",
+    "tree": "7107545cc6062c3868b03289815d00a33dd7de1b",
+    "files": [
+      "test_work_management.py",
+      "test_issue_flow.py",
+      "test_issue_artifacts.py",
+      "test_issue_upload.py",
+      "test_module_issues.py"
+    ],
+    "result": "23 passed, 1 warning in 12.88s",
+    "observed": "2026-11-21T22:46:28.197423+00:00"
+  },
+  "results": {
+    "d09": {
+      "state": "passed",
+      "editor_sha256": "665d2268f23cdc8a04a99c91655765fc383def0401442cc6ff1d3f561fa4b260",
+      "writes": [
+        {
+          "path": "/api/v1/docs/doc_54cd024863494a898a7d57b86b99209d/versions/1/signoff",
+          "payload": {
+            "acceptance": "One pull opens the bridge."
+          },
+          "server": 200,
+          "client": 503
+        },
+        {
+          "path": "/api/v1/docs/doc_54cd024863494a898a7d57b86b99209d/versions/1/signoff",
+          "payload": {
+            "acceptance": "One pull opens the bridge."
+          },
+          "server": 200,
+          "client": 200
+        },
+        {
+          "path": "/api/v1/docs/doc_54cd024863494a898a7d57b86b99209d/versions/2/signoff",
+          "payload": {
+            "acceptance": "Two pulls open the bridge."
+          },
+          "server": 200,
+          "client": 200
+        }
+      ],
+      "durable_receipts": [
+        {
+          "document_id": "doc_54cd024863494a898a7d57b86b99209d",
+          "version": 1,
+          "confirmed_by": "usr_c78147bcd02d4200a3aa0a111fe10a9f",
+          "confirmed_at": "2026-11-21T22:51:26.425010+00:00",
+          "acceptance": "One pull opens the bridge."
+        },
+        {
+          "document_id": "doc_54cd024863494a898a7d57b86b99209d",
+          "version": 2,
+          "confirmed_by": "usr_c78147bcd02d4200a3aa0a111fe10a9f",
+          "confirmed_at": "2026-11-21T22:51:29.952447+00:00",
+          "acceptance": "Two pulls open the bridge."
+        }
+      ],
+      "database_row_count": 2,
+      "viewer_can_read": true,
+      "viewer_write_status": 403,
+      "changed_criteria_status": 409,
+      "created_issues": 0
+    },
+    "d08": {
+      "state": "passed",
+      "editor_sha256": "665d2268f23cdc8a04a99c91655765fc383def0401442cc6ff1d3f561fa4b260",
+      "scenarios": {
+        "unchanged": {
+          "windows": {
+            "disconnect": {
+              "comparison": {
+                "local": "离线时人的文字\n\n第二段草稿",
+                "requires_review": false,
+                "server": "第一段\n\n设计原文",
+                "version": 1.0
+              },
+              "offline": {
+                "draft": {
+                  "base_md": "第一段\n\n设计原文",
+                  "body_md": "离线时人的文字\n\n第二段草稿",
+                  "version": 1.0
+                },
+                "http_status": 0
+              },
+              "saved": {
+                "body_md": "离线时人的文字\n\n第二段草稿",
+                "version": 2
+              },
+              "websocket_reconnected": true
+            }
+          },
+          "service_patches": [
+            {
+              "path": "/api/v1/docs/doc_bb7b5800202041c09fca13cc780a5c74",
+              "project": "studio/game",
+              "expected_version": 1,
+              "body_md": "离线时人的文字\n\n第二段草稿",
+              "status": 200
+            }
+          ]
+        },
+        "advanced": {
+          "windows": {
+            "disconnect": {
+              "comparison": {
+                "local": "离线时人的文字\n\n第二段草稿",
+                "requires_review": true,
+                "server": "在线协作者的修订\n\n设计原文",
+                "version": 2.0
+              },
+              "offline": {
+                "draft": {
+                  "base_md": "第一段\n\n设计原文",
+                  "body_md": "离线时人的文字\n\n第二段草稿",
+                  "version": 1.0
+                },
+                "http_status": 0
+              },
+              "other_account": {
+                "account": "usr_4487facb09ee4f67b75411f0fd34aa82",
+                "body_md": "在线协作者的修订\n\n设计原文",
+                "document": "doc_52f03419b7484fa3a04c8fdde3f4d314",
+                "project": "studio/game"
+              },
+              "other_document": {
+                "account": "usr_7c65989f80ff48a0abcefbfde9bfe213",
+                "body_md": "独立正文",
+                "document": "doc_48c10bdd80494c1184f0c312063bc834",
+                "project": "studio/game"
+              },
+              "other_project": {
+                "account": "usr_7c65989f80ff48a0abcefbfde9bfe213",
+                "body_md": "在线协作者的修订\n\n设计原文",
+                "document": "doc_52f03419b7484fa3a04c8fdde3f4d314",
+                "project": "studio/other"
+              },
+              "websocket_reconnected": true
+            },
+            "resume": {
+              "comparison": {
+                "local": "离线时人的文字\n\n第二段草稿",
+                "requires_review": true,
+                "server": "在线协作者的修订\n\n设计原文",
+                "version": 2.0
+              },
+              "saved": {
+                "body_md": "在线协作者的修订\n\n离线时人的文字",
+                "version": 3
+              }
+            }
+          },
+          "service_patches": [
+            {
+              "path": "/api/v1/docs/doc_52f03419b7484fa3a04c8fdde3f4d314",
+              "project": "studio/game",
+              "expected_version": 2.0,
+              "body_md": "在线协作者的修订\n\n离线时人的文字",
+              "status": 200
+            }
+          ]
+        },
+        "http_only": {
+          "windows": {
+            "disconnect": {
+              "comparison": {
+                "local": "离线时人的文字\n\n第二段草稿",
+                "requires_review": false,
+                "server": "第一段\n\n设计原文",
+                "version": 1.0
+              },
+              "offline": {
+                "draft": {
+                  "base_md": "第一段\n\n设计原文",
+                  "body_md": "离线时人的文字\n\n第二段草稿",
+                  "version": 1.0
+                },
+                "http_status": 0
+              },
+              "saved": {
+                "body_md": "离线时人的文字\n\n第二段草稿",
+                "version": 2
+              },
+              "websocket_reconnected": false
+            }
+          },
+          "service_patches": [
+            {
+              "path": "/api/v1/docs/doc_48f8311605bb4c148de3870a276cb571",
+              "project": "studio/game",
+              "expected_version": 1,
+              "body_md": "离线时人的文字\n\n第二段草稿",
+              "status": 200
+            }
+          ]
+        }
+      }
+    },
+    "u13": {
+      "stored_executions": 0,
+      "editor_sha256": "665d2268f23cdc8a04a99c91655765fc383def0401442cc6ff1d3f561fa4b260",
+      "result": "passed",
+      "legacy_saved_order": [
+        "AIChatMainScreen",
+        "AINativeMainScreen",
+        "DaqianMainScreen",
+        "WebPlatformMainScreen",
+        "2D",
+        "3D",
+        "Script",
+        "Game",
+        "Asset Store",
+        "UnifiedSettingsMainScreen"
+      ],
+      "phases": [
+        {
+          "phase": "legacy_chat",
+          "loaded_layout_sha256": "a65cf2d014b3a556cf316436aac6318cc0c8224491c5ac89327e8a86ffb2d8bc",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 0,
+          "saved_sidebar": false,
+          "observed": {
+            "expanded": true,
+            "selected": "AI Chat",
+            "sidebar": false,
+            "top_button": "OpenAIWorkbench",
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "legacy_tianshu",
+          "loaded_layout_sha256": "674f8b1717b8193f19d0cb971f1b78167a7be2d7c1323a10d0deb7c4da21e8cc",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": true,
+          "observed": {
+            "expanded": true,
+            "rejected": [
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9998"
+              },
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9999"
+              },
+              {
+                "feedback": "工单链接无效",
+                "link": "https://unrelated.invalid/issues/iss_03086fb221df4325a4309cb8bb34b6b8"
+              }
+            ],
+            "selected": "AI Chat",
+            "sidebar": false,
+            "top_button": "OpenAIWorkbench",
+            "trace": [
+              {
+                "chat": "025bddd1-f04f-5af9-bbc1-21b33c67c3e7",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "ce236c9b-8bdf-41a5-8b70-77c4daabd82b"
+              },
+              {
+                "chat": "bcf1e0e0-9255-56bd-8027-99134aee0711",
+                "link": "/issues/iss_03086fb221df4325a4309cb8bb34b6b8",
+                "turn": "708d8024-3c65-41aa-8d97-784b7313c73b"
+              },
+              {
+                "chat": "025bddd1-f04f-5af9-bbc1-21b33c67c3e7",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "ce236c9b-8bdf-41a5-8b70-77c4daabd82b"
+              },
+              {
+                "chat": "bcf1e0e0-9255-56bd-8027-99134aee0711",
+                "link": "/issues/iss_03086fb221df4325a4309cb8bb34b6b8",
+                "turn": "708d8024-3c65-41aa-8d97-784b7313c73b"
+              }
+            ],
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "restart",
+          "loaded_layout_sha256": "0d456ba5a39d139458e242deff4cb9ec062ddedbf6239a94b752b400ea2313c0",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": true,
+          "observed": {
+            "expanded": false,
+            "rejected": [
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9998"
+              },
+              {
+                "feedback": "当前项目没有唯一关联的天璇工单",
+                "link": "https://github.com/old/studio/issues/9999"
+              },
+              {
+                "feedback": "工单链接无效",
+                "link": "https://unrelated.invalid/issues/iss_03086fb221df4325a4309cb8bb34b6b8"
+              }
+            ],
+            "restored_turn": "708d8024-3c65-41aa-8d97-784b7313c73b",
+            "selected": "Script",
+            "sidebar": true,
+            "top_button": "OpenAIWorkbench",
+            "trace": [
+              {
+                "chat": "025bddd1-f04f-5af9-bbc1-21b33c67c3e7",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "ce236c9b-8bdf-41a5-8b70-77c4daabd82b"
+              },
+              {
+                "chat": "bcf1e0e0-9255-56bd-8027-99134aee0711",
+                "link": "/issues/iss_03086fb221df4325a4309cb8bb34b6b8",
+                "turn": "708d8024-3c65-41aa-8d97-784b7313c73b"
+              },
+              {
+                "chat": "025bddd1-f04f-5af9-bbc1-21b33c67c3e7",
+                "link": "https://github.com/old/studio/issues/803",
+                "turn": "ce236c9b-8bdf-41a5-8b70-77c4daabd82b"
+              },
+              {
+                "chat": "bcf1e0e0-9255-56bd-8027-99134aee0711",
+                "link": "/issues/iss_03086fb221df4325a4309cb8bb34b6b8",
+                "turn": "708d8024-3c65-41aa-8d97-784b7313c73b"
+              }
+            ],
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "other_project",
+          "loaded_layout_sha256": "0d456ba5a39d139458e242deff4cb9ec062ddedbf6239a94b752b400ea2313c0",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": true,
+          "observed": {
+            "expanded": false,
+            "foreign_project_cleared": true,
+            "selected": "Script",
+            "sidebar": true,
+            "top_button": "OpenAIWorkbench",
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        },
+        {
+          "phase": "unchanged",
+          "loaded_layout_sha256": "021aeec43a8f5ac984702753b1dc1902854e90340952a1c8f0de6790b1287027",
+          "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+          "saved_selection": 6,
+          "saved_sidebar": false,
+          "observed": {
+            "expanded": false,
+            "selected": "Script",
+            "sidebar": false,
+            "top_button": "OpenAIWorkbench",
+            "visible_tabs": [
+              "AINative",
+              "WebPlatform",
+              "2D",
+              "3D",
+              "Script",
+              "Game",
+              "Asset Store",
+              "UnifiedSettings"
+            ]
+          }
+        }
+      ]
+    },
+    "k01": {
+      "state": "passed",
+      "editor_sha256": "665d2268f23cdc8a04a99c91655765fc383def0401442cc6ff1d3f561fa4b260",
+      "sample": {
+        "model_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+        "modules": [
+          "mod_01c70e9b7ca64aafb07c72bf8c558d76",
+          "mod_5062144863164e8ca285971f55607b37"
+        ],
+        "asset": {
+          "source_module": "shared-character-model",
+          "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89",
+          "path": "models/suzanne.glb"
+        },
+        "entry": "shortcut",
+        "answer": "K01 movement consultation received"
+      },
+      "received_turn": {
+        "id": "a7121417-bd75-40b1-8248-528c51fc5278",
+        "content": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>\nK01 shared model consultation",
+        "state": "answered",
+        "answer": "K01 movement consultation received",
+        "model": "fixture",
+        "error": null,
+        "context_snapshot": {
+          "project": "k01/character",
+          "module_id": "mod_01c70e9b7ca64aafb07c72bf8c558d76",
+          "issue_id": null,
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "duobao:48b1d8c2f7039541c04da26dc0d089a56bb874f51de5767278d995d0f77be982",
+              "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+            }
+          ]
+        }
+      },
+      "conversation_writes": [
+        [
+          "/api/v1/workspace/conversations",
+          201
+        ],
+        [
+          "/api/v1/workspace/conversations/ac77f0ef-1bd7-4698-b7c2-2435059b7c9d/turns",
+          200
+        ]
+      ],
+      "model_call_count": 1,
+      "received_by_model": {
+        "content": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>\nK01 shared model consultation",
+        "context_snapshot": {
+          "project": "k01/character",
+          "module_id": "mod_01c70e9b7ca64aafb07c72bf8c558d76",
+          "issue_id": null,
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "duobao:48b1d8c2f7039541c04da26dc0d089a56bb874f51de5767278d995d0f77be982",
+              "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+            }
+          ]
+        }
+      }
+    },
+    "i08": {
+      "engine_sha256": "665d2268f23cdc8a04a99c91655765fc383def0401442cc6ff1d3f561fa4b260",
+      "role": "viewer",
+      "first": {
+        "details": [
+          {
+            "id": "iss_7a3361d476e34945a4f09170cc8386d7",
+            "milestone": "预览",
+            "number": 1.0,
+            "path": [
+              "场景",
+              "预览（项目共 4 单）",
+              "#1 · 设计"
+            ],
+            "title": "设计"
+          },
+          {
+            "id": "iss_52bd595ec2b44e458a8773a69b60bfee",
+            "milestone": "预览",
+            "number": 2.0,
+            "path": [
+              "场景",
+              "预览（项目共 4 单）",
+              "#1 · 设计",
+              "#2 · 审阅"
+            ],
+            "title": "审阅"
+          },
+          {
+            "id": "iss_a1869addbae24343a90e5098302587f4",
+            "milestone": "预览",
+            "number": 3.0,
+            "path": [
+              "场景",
+              "预览（项目共 4 单）",
+              "#1 · 设计",
+              "#2 · 审阅",
+              "#3 · 审阅"
+            ],
+            "title": "审阅"
+          },
+          {
+            "id": "iss_ee1c7fa434254228bd701565570b7d32",
+            "milestone": "发布",
+            "number": 4.0,
+            "path": [
+              "音效",
+              "发布（项目共 1 单）",
+              "上级 · #1 · 设计",
+              "#4 · 审阅"
+            ],
+            "title": "审阅"
+          },
+          {
+            "id": "iss_bc3c7cab84f74a92b63af278796aa0c9",
+            "milestone": "预览",
+            "number": 6.0,
+            "path": [
+              "音效",
+              "预览（项目共 4 单）",
+              "#6 · 审阅"
+            ],
+            "title": "审阅"
+          },
+          {
+            "id": "iss_a65ecf26e4da495aa2a800409aa8d440",
+            "milestone": "",
+            "number": 5.0,
+            "path": [
+              "音效",
+              "未设置里程碑（项目共 1 单）",
+              "#5 · 待排期"
+            ],
+            "title": "待排期"
+          }
+        ],
+        "requests": [
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/1/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/2/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/3/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/4/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/6/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/5/detail",
+            "studio/game",
+            200
+          ]
+        ]
+      },
+      "first_receipt_sha256": "5673612a0f84a72d48b6744ad72f25ca63ed406f9e3b232a3481339dc45df181",
+      "reopened_receipt_sha256": "5673612a0f84a72d48b6744ad72f25ca63ed406f9e3b232a3481339dc45df181"
+    },
+    "i18": {
+      "saved_sha256": [
+        "2b595e48c1b5963bff9b05ea34bd185f58e66ee7560394c6423dac349c9a8d73",
+        "babf5d00b1013cd674c603b5d344edb5308a922718f5ee072f0fbd0fbcd37345"
+      ],
+      "engine_sha256": "665d2268f23cdc8a04a99c91655765fc383def0401442cc6ff1d3f561fa4b260",
+      "native_controls": {
+        "downloads": [
+          {
+            "message": "已保存所选版本　saved-2.bin",
+            "version": 2.0
+          },
+          {
+            "message": "已保存所选版本　saved-1.bin",
+            "version": 1.0
+          }
+        ],
+        "retry_feedback": "尚未收到上传回执，请重新选择同一文件核对",
+        "selections": [
+          {
+            "digest": "2b595e48c1b5963bff9b05ea34bd185f58e66ee7560394c6423dac349c9a8d73",
+            "kind": "attachment",
+            "module": "requirement-attachment-iss_6e0ae256e4e04f26b14a6624da34b296-4c8d695b7c6db74cd0d56053cb437a65ef2dd4edc7c729fda102db5195068379",
+            "path": "角色.bin",
+            "revision": "5d6937e9861a576a5ca5fa24fe66a1d0a8c682a6cad6c03f43a6a8354d94dc32",
+            "version": 1.0
+          },
+          {
+            "digest": "2b595e48c1b5963bff9b05ea34bd185f58e66ee7560394c6423dac349c9a8d73",
+            "kind": "attachment",
+            "module": "requirement-attachment-iss_6e0ae256e4e04f26b14a6624da34b296-4c8d695b7c6db74cd0d56053cb437a65ef2dd4edc7c729fda102db5195068379",
+            "path": "角色.bin",
+            "revision": "5d6937e9861a576a5ca5fa24fe66a1d0a8c682a6cad6c03f43a6a8354d94dc32",
+            "version": 1.0
+          },
+          {
+            "digest": "babf5d00b1013cd674c603b5d344edb5308a922718f5ee072f0fbd0fbcd37345",
+            "kind": "attachment",
+            "module": "requirement-attachment-iss_6e0ae256e4e04f26b14a6624da34b296-e1a313aa45978a05dc63005c40eabacb18a34de60479058f71015426068cbd5d",
+            "path": "角色.bin",
+            "revision": "faf82f8fab1467009ebdb94f61a92883d15d4ab45138449a1b92a23c5c853fdc",
+            "version": 2.0
+          },
+          {
+            "digest": "2b595e48c1b5963bff9b05ea34bd185f58e66ee7560394c6423dac349c9a8d73",
+            "kind": "attachment",
+            "module": "requirement-attachment-iss_6e0ae256e4e04f26b14a6624da34b296-4c8d695b7c6db74cd0d56053cb437a65ef2dd4edc7c729fda102db5195068379",
+            "path": "角色.bin",
+            "revision": "5d6937e9861a576a5ca5fa24fe66a1d0a8c682a6cad6c03f43a6a8354d94dc32",
+            "version": 1.0
+          }
+        ]
+      },
+      "http": [
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          503
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts/2",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts/1",
+          "studio/game",
+          200
+        ]
+      ],
+      "storage_versions_after_each_post": [
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          1
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          2,
+          1
+        ]
+      ],
+      "native_revision_count": 2,
+      "wrong_project_http": {
+        "list": 404,
+        "download": 404,
+        "upload": 404
+      }
+    }
+  }
+}

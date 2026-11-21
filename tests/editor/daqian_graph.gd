@@ -537,7 +537,7 @@ func run() -> void:
 	delay_detail = true
 	detail_reads.clear()
 	workspace.overview.get_node("i_1/OpenIssue").pressed.emit()
-	check(workspace.issue_link.uri == issues[0].url and "已完成" in workspace.work_status.text, "issue detail lost link or status")
+	check(workspace.issue_link.tooltip_text == issues[0].url and "已完成" in workspace.work_status.text, "issue detail lost link or status")
 	check(workspace.current == issues[0].url and graph.visible, "cached detail must appear before remote reply")
 	var edited := "legacy_note"
 	var cached_plan := {"nodes":{edited:{"kind":"text", "title":"Notes", "value":""}}, "edges":[]}

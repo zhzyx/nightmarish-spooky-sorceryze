@@ -158,6 +158,9 @@ func run() -> void:
 	if not require(not dialog.visible and dialog.preview.text.is_empty() and view.reference.document_id == fixture.other, "Old document restored a delayed preview"):
 		return
 	start_preview("切换身份")
+	var started := OS.get_environment("D05_IDENTITY_PREVIEW_STARTED")
+	if not await wait_for(func(): return FileAccess.file_exists(started), "Identity preview never reached the model"):
+		return
 	session.find_child("SignOut", true, false).pressed.emit()
 	await create_timer(0.5).timeout
 	if not require(not dialog.visible and not view.visible and dialog.preview.text.is_empty() and view.reference.is_empty(), "Signed-out identity retained a preview"):

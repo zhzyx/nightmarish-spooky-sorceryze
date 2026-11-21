@@ -303,6 +303,7 @@ class AIChatDock : public EditorDock {
 	void CaptureWorkbenchSource();
 	void PrepareWorkbenchConsultation();
 	void OpenWorkbenchSidebar();
+	void ShowWorkbenchSidebar(bool p_capture_source);
 	void ExpandWorkbenchSidebar();
 	void CloseWorkbenchSidebar();
 	void DismissWorkbenchSidebar();
@@ -919,6 +920,8 @@ protected:
 	void shortcut_input(const Ref<InputEvent> &p_event) override;
 
 public:
+	void save_layout_to_config(Ref<ConfigFile> &p_layout, const String &p_section) const override;
+	void RestoreWorkbenchLayout(bool p_full, const Dictionary &p_location);
 	void RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button *pTitleButton);
 	// Main-thread APIs. Snapshots are detached, contain no credentials, and never select a model.
 	Dictionary GetModelCatalogSnapshot() const;
