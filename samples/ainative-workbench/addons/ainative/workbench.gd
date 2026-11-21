@@ -1203,7 +1203,7 @@ func _layout_graph_with_artifacts():
 	if graph.zoom > fit_zoom: graph.zoom = fit_zoom
 	graph.scroll_offset = Vector2.ZERO
 
-func rebuild():
+func rebuild(layout_artifacts: bool = true):
 	graph.clear_connections()
 	artifact_nodes.clear()
 	for child in graph.get_children():
@@ -1295,7 +1295,7 @@ func rebuild():
 			graph.connect_node(str(artifact_nodes[chain.back()].id), 0, edge.to, 0)
 		else:
 			graph.connect_node(edge.from, from_port, edge.to, 0)
-	_schedule_artifact_layout()
+	if layout_artifacts: _schedule_artifact_layout()
 
 func _merged_requirements(primary: String, supplementary: String) -> String:
 	var main = primary.strip_edges()
@@ -2788,7 +2788,8 @@ func create_context_node(kind: String):
 	nodes.append(data)
 	node_picker.hide()
 	context_menu.hide()
-	rebuild()
+	# Adding a formal node must not re-layout existing artifacts and move it away from the pointer.
+	rebuild(false)
 	for child in graph.get_children():
 		if child is GraphNode: child.selected = str(child.name) == id
 	select_node(id)

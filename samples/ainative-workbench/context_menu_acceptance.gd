@@ -132,6 +132,10 @@ func run():
 		for i in panel.node_picker_list.item_count: kinds.append(panel.node_picker_list.get_item_metadata(i))
 		check(kinds.has("text_to_mesh") and kinds.has("image_to_mesh") and not kinds.has("text_to_image"), "node search filters generation types by their Chinese names")
 		panel.node_picker.hide()
+	# Existing artifacts must not trigger a full layout that moves the new node away.
+	panel.preview_history["a"] = [{"type": "image", "path": fixture_image, "label": "结果", "token": "context-create", "artifact": {"id": "context-create", "revision": "context-create"}}]
+	panel.rebuild()
+	await settle()
 	# Node creation must use the canvas coordinate under a zoomed/scrolled click.
 	panel.context_menu.hide()
 	panel.graph.zoom = 1.5
