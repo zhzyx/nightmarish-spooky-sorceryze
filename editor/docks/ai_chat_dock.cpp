@@ -8126,6 +8126,11 @@ void AIChatDock::_notification(int p_what) {
 		add_agent->add_theme_color_override("icon_normal_color", Color(0.6f, 0.6f, 0.6f, 0.8f));
 		add_agent_placeholder->set_custom_minimum_size(add_agent->get_minimum_size());
 		callable_mp(this, &AIChatDock::_update_agent_add_button).call_deferred();
+	} else if (p_what == NOTIFICATION_VISIBILITY_CHANGED && !is_visible_in_tree() && idWorkbenchReturnScreen.is_valid()) {
+		// Explicit navigation away from the full view ends this round trip.
+		idWorkbenchReturnScreen = ObjectID();
+		idSidebarSource = ObjectID();
+		pRestoreSidebar->hide();
 	} else if (p_what == NOTIFICATION_VISIBILITY_CHANGED && is_visible_in_tree()) {
 		DismissWorkbenchSidebar();
 		if (daqian_chat_host.is_valid()) {
