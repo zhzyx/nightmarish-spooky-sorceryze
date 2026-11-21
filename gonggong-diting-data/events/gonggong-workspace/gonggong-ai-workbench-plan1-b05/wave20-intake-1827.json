@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-b05",
+  "event_id": "wave20-intake-1827",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1827",
+  "occurred_at": "2026-11-21T04:37:14.362696+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1827,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-21T04:37:11Z",
+    "accepted_dependencies": {
+      "1873": "f1a4fe98b5568820786d2f87b943d1003ce31b7a",
+      "1870": "5750a0f0826da805bbe9a462826b030605e1ce59"
+    },
+    "title": "[方案一 B05] 建立最小业务样例"
+  },
+  "evidence_refs": [],
+  "sha256": "ea562ea7b471d974ce35377c5c837663d7393b7862d566343f8d00627e7c6623"
+}

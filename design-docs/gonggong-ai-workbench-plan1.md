@@ -72,6 +72,8 @@
 
 ### B05
 
+[交付清单与验证](gonggong-ai-workbench-b05.md)
+
 **建立最小业务样例** · [B05 #1827](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1827)
 
 建立角色移动、角色动画两个模块及一个共用资产的隔离样例。

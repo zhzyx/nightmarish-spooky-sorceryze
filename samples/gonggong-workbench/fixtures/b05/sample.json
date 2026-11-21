@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "issue_title": "检查角色表现",
+  "asset": {
+    "module": "shared-character-model",
+    "path": "models/suzanne.glb",
+    "repo_source": "tests/data/models/suzanne.glb",
+    "sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+  },
+  "modules": [
+    {
+      "id": "character-movement",
+      "title": "角色移动",
+      "actor": "movement",
+      "settings": {"speed_m_per_s": 3.0}
+    },
+    {
+      "id": "character-animation",
+      "title": "角色动画",
+      "actor": "animation",
+      "settings": {"clip": "idle", "loop": true}
+    }
+  ]
+}
