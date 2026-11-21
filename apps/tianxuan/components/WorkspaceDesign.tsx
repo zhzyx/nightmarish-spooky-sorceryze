@@ -11,6 +11,8 @@ const labels: Record<Stage, [string, string]> = {
   design: ["详细设计", "Detailed design"],
 };
 
+type DraftFields = { body: string; title: string; acceptance: string; basedOn?: number };
+
 type Props = {
   conversation: Conversation;
   editable: boolean;
@@ -29,25 +31,39 @@ export function WorkspaceDesign({ conversation, editable, busy, change }: Props)
     stages.find((_, index) => !active[index]?.confirmed_at) ?? "design");
   const index = stages.indexOf(stage);
   const revision = active[index];
-  const [body, setBody] = useState("");
-  const [title, setTitle] = useState("");
-  const [acceptance, setAcceptance] = useState("");
+  const saved = { body: revision?.body ?? "", title: revision?.title ?? "",
+    acceptance: revision?.acceptance ?? "", basedOn: revision?.revision };
+  const [drafts, setDrafts] = useState<Partial<Record<Stage, DraftFields>>>({});
+  const local = drafts[stage];
+  const { body, title, acceptance } = local ?? saved;
   const [suggesting, setSuggesting] = useState(false);
   const [suggestionError, setSuggestionError] = useState(false);
+  useEffect(() => { setSuggestionError(false); }, [stage]);
 
-  useEffect(() => {
-    setBody(revision?.body ?? "");
-    setTitle(revision?.title ?? "");
-    setAcceptance(revision?.acceptance ?? "");
-    setSuggestionError(false);
-  }, [stage, revision?.revision, revision?.body, revision?.title, revision?.acceptance]);
+  function edit(fields: Partial<DraftFields>) {
+    setDrafts((previous) => ({ ...previous, [stage]: { ...(previous[stage] ?? saved), ...fields } }));
+  }
+
+  function clearLocal() {
+    setDrafts((previous) => {
+      const next = { ...previous };
+      delete next[stage];
+      return next;
+    });
+  }
 
   const validPrefix = index === 0 || active.slice(0, index).every((item) => Boolean(item?.confirmed_at));
   const canEdit = editable && !conversation.requirement_id && validPrefix;
   const locked = busy || suggesting;
+  const bodyTooLong = Array.from(body).length > 8000;
   const detailsComplete = stage !== "design" || Boolean(title.trim() && acceptance.trim());
-  const changed = body.trim() !== revision?.body ||
-    (stage === "design" && (title.trim() !== revision?.title || acceptance.trim() !== revision?.acceptance));
+  const unsaved = stages.filter((name, position) => {
+    const draft = drafts[name];
+    const stored = active[position];
+    return draft && (draft.body !== (stored?.body ?? "") || (name === "design" &&
+      (draft.title.trim() !== (stored?.title ?? "") || draft.acceptance.trim() !== (stored?.acceptance ?? ""))));
+  });
+  const changed = unsaved.includes(stage);
   const prefix = `/${conversation.id}/design/${stage}`;
 
   async function suggest() {
@@ -55,10 +71,13 @@ export function WorkspaceDesign({ conversation, editable, busy, change }: Props)
     setSuggestionError(false);
     try {
       const reply = await workspaceRequest<{ content: string }>(prefix + "/suggest", {
-        expected_version: conversation.version, lang: locale,
+        expected_version: conversation.version, lang: locale, draft_body: body,
       });
-      if (reply.content.length > 8000) throw new Error("draft too long");
-      setBody(reply.content);
+      if (Array.from(reply.content).length > 8000) throw new Error("draft too long");
+      setDrafts((previous) => {
+        const current = previous[stage] ?? saved;
+        return current.body === body ? { ...previous, [stage]: { ...current, body: reply.content } } : previous;
+      });
     } catch {
       setSuggestionError(true);
     } finally {
@@ -77,31 +96,46 @@ export function WorkspaceDesign({ conversation, editable, busy, change }: Props)
           </button>
         ))}
       </nav>
+      {local && changed && (local.basedOn !== saved.basedOn || !canEdit) && (
+        <div role="status">
+          <p>{zh ? "该阶段已更新。你的本地草稿已保留，可核对已保存的内容。" :
+            "This stage has changed. Your local draft is available to compare with the saved version."}</p>
+          <pre>{[saved.title, saved.body, saved.acceptance].filter(Boolean).join("\n\n")}</pre>
+          {!canEdit && <pre>{[title, body, acceptance].filter(Boolean).join("\n\n")}</pre>}
+          <button type="button" disabled={locked} onClick={clearLocal}>{zh ? "采用已保存版本" : "Use saved version"}</button>
+        </div>
+      )}
       {canEdit ? (
         <div className="workspace-stage-editor">
           {stage === "design" && <div className="workspace-stage-field">
             <label htmlFor={`${field}-title`}>{zh ? "需求标题" : "Requirement title"}</label>
-            <input id={`${field}-title`} value={title} maxLength={150} onChange={(event) => setTitle(event.target.value)} />
+            <input id={`${field}-title`} value={title} readOnly={busy} maxLength={150} onChange={(event) => edit({ title: event.target.value })} />
           </div>}
           <div className="workspace-stage-field">
             <label htmlFor={`${field}-body`}>{label(stage)}</label>
-            <textarea id={`${field}-body`} rows={5} value={body} maxLength={8000}
-              onChange={(event) => setBody(event.target.value)} />
+            <textarea id={`${field}-body`} rows={5} value={body} readOnly={busy} aria-invalid={bodyTooLong}
+              onChange={(event) => edit({ body: event.target.value })} />
           </div>
           {stage === "design" && <div className="workspace-stage-field">
             <label htmlFor={`${field}-acceptance`}>{zh ? "验收标准" : "Acceptance criteria"}</label>
-            <textarea id={`${field}-acceptance`} rows={3} value={acceptance} maxLength={8000}
-              onChange={(event) => setAcceptance(event.target.value)} />
+            <textarea id={`${field}-acceptance`} rows={3} value={acceptance} readOnly={busy} maxLength={8000}
+              onChange={(event) => edit({ acceptance: event.target.value })} />
           </div>}
           <div className="workspace-starters">
-            <button type="button" disabled={locked || Boolean(body.trim())} onClick={suggest}>
-              {suggesting ? (zh ? "生成中…" : "Drafting…") : (zh ? "从对话生成草稿" : "Draft from conversation")}
+            <button type="button" disabled={locked || bodyTooLong} onClick={suggest}>
+              {suggesting ? (zh ? "生成中…" : "Drafting…") : body.trim()
+                ? (zh ? "从对话补充草稿" : "Extend draft from conversation")
+                : (zh ? "从对话生成草稿" : "Draft from conversation")}
             </button>
-            <button type="button" disabled={locked || !changed || !body.trim() || !detailsComplete}
-              onClick={() => void change((current) => workspaceRequest(prefix + "/drafts", {
-                expected_version: current.version, body,
-                ...(stage === "design" ? { title, acceptance } : {}),
-              }))}>
+            <button type="button" disabled={locked || bodyTooLong || !changed || !body.trim() || !detailsComplete}
+              onClick={() => void change(async (current) => {
+                const result = await workspaceRequest<Conversation>(prefix + "/drafts", {
+                  expected_version: current.version, body,
+                  ...(stage === "design" ? { title, acceptance } : {}),
+                });
+                clearLocal();
+                return result;
+              })}>
               {zh ? "保存新版本" : "Save new revision"}
             </button>
             {revision && !revision.confirmed_at && (
@@ -114,6 +148,7 @@ export function WorkspaceDesign({ conversation, editable, busy, change }: Props)
               </button>
             )}
           </div>
+          {bodyTooLong && <p role="alert">{zh ? "草稿超过 8000 字符，请缩短后继续。" : "Shorten the draft to 8,000 characters to continue."}</p>}
           {suggestionError && <p role="alert">{zh ? "无法生成草稿。你可以直接填写。" : "Drafting failed. You can edit the draft here."}</p>}
           {revision?.confirmed_at && changed && index < stages.length - 1 && active[index + 1] && (
             <p>{zh ? "保存此修订后，后续阶段需要重新确认。" : "Saving this revision requires downstream stages to be confirmed again."}</p>
@@ -141,7 +176,7 @@ export function WorkspaceDesign({ conversation, editable, busy, change }: Props)
           {zh ? "打开已保存需求" : "Open saved requirement"}
         </Link>
       ) : editable && active.every((item) => Boolean(item?.confirmed_at)) && (
-        <button type="button" className="btn btn-ghost" disabled={locked || changed}
+        <button type="button" className="btn btn-ghost" disabled={locked || unsaved.length > 0}
           onClick={() => void change((current) => workspaceRequest(`/${current.id}/requirement`, {
             expected_version: current.version, lang: locale,
           }))}>
