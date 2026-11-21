@@ -1,0 +1,584 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "ac11937e34e8cf0956288cc9ad56397d559f0e9c",
+  "editor_sha256": "671593e89e5f65d07552d3725989ccba9f67592612f440ab2db2a973d74cf6ce",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "af71a7a44d7908a33b0ba9dcd602cb6066b55c7d",
+    "customizations/components/tianxuan/server/issue_flow.py": "3468efbb419ebfa0a01ff9e91cf91492f23b2a4e",
+    "customizations/components/tianxuan/server/issue_lifecycle.py": "5e67a51211c494f6fb31a6ddb2454e074b1fa27a",
+    "customizations/components/tianxuan/server/issue_lifecycle_test_support.py": "5b5cea18cd4d6402eeb0b3db103b3a116f9f45ff",
+    "customizations/components/tianxuan/server/native_api.py": "c5c056f227df38b2f0e7f76bccd479d95ad6586d",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "e3ae7dd90c0bdaa3a8776a0c01731bcc5f809dca",
+    "customizations/components/tianxuan/server/schemas.py": "347b624b3a5d8c6ff24ce3a77f62c2fd7fd3e9f4",
+    "customizations/components/tianxuan/server/test_api.py": "a72d49a60a05c9da0518175b774844e44e6d3e99",
+    "customizations/components/tianxuan/server/test_e2e.py": "4302f2272b16f5d8de366aa0d9c00a6a403de18a",
+    "customizations/components/tianxuan/server/test_godot_inputs.py": "07717a4a8778c81ede6e9ef3bccccbc3b427387c",
+    "customizations/components/tianxuan/server/test_issue_artifacts.py": "d4b52ecbd7f4d74eeb0be429ebeed41bf79b1615",
+    "customizations/components/tianxuan/server/test_issue_classification.py": "837cc15624b59762ce026cc828eb83c70a279974",
+    "customizations/components/tianxuan/server/test_issue_flow.py": "e1ca56fcc8d6d9a20ec02f2b0c28a76f24a0e457",
+    "customizations/components/tianxuan/server/test_issue_lifecycle.py": "7d53a19466d560e726d068d5464bbd3db4056687",
+    "customizations/components/tianxuan/server/test_module_issues.py": "95a99837a376eb9a36cd1164342da703624c19a7",
+    "customizations/components/tianxuan/server/test_native_entry.py": "0e1c8710b795e092ec994001ef7260a488240ce2",
+    "customizations/components/tianxuan/server/test_tianxuan_core.py": "58613c261de2c29508aeccb67d05abc060d58361",
+    "customizations/components/tianxuan/server/test_work_management.py": "15ab5f5369ab6ca63804129af43c67f21df9dd79",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "601391a22403952df90ee3e8e51b0e0f82f75d06",
+    "customizations/components/tianxuan/server/work_management.py": "069decdb4faae2c4474c15b1c1471ee876e39e1b",
+    "customizations/components/tianxuan/server/work_management_api.py": "1b54d954e77725b16baed818762fbaa2694e862a",
+    "editor/SCsub": "e9650d377ec1725986d55a5755bd6decf7f94058",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "9012f31b59411252ee67810f6ea3dade51e6c44a",
+    "editor/docks/workbench/business_session.gd": "5656093f62ea5f9a6c0b78d88b1ebd2a9eaa18a5",
+    "editor/docks/workbench/issue_actions/issue_assignment.gd": "00220268077e714a5c7d385e7069eab9a957659e",
+    "editor/docks/workbench/issue_actions/issue_classification.gd": "471b01fe431022b0de2e29c6cb4c58349ec6f192",
+    "editor/docks/workbench/issue_actions/issue_comments.gd": "1826e6d71e27a0a54ce4f7854395fd7975f97aca",
+    "editor/docks/workbench/issue_actions/issue_lifecycle.gd": "bd83c3b031bd1ba7bb5db7cd496742072b53f0ca",
+    "editor/docks/workbench/issue_artifacts.gd": "74a82c11ec8f8ba7783c22d63237a6a5f547f849",
+    "editor/docks/workbench/issue_custom_fields.gd": "6fca5e8cb520891dae66b8ccef01c495a7c92137",
+    "editor/docks/workbench/issue_detail.gd": "2d525f0833459c961a54479f71c34cffb2096f98",
+    "editor/docks/workbench/issue_milestone.gd": "56e4dec7a153d6af59ea2e7664a30f0450ca74a1",
+    "editor/docks/workbench/issue_search.gd": "4769dcb3f4a6b8a87584f8dbb5bb4f5b7a0b9846",
+    "editor/docks/workbench/issue_time.gd": "c5a92cdb699f29d4d354b7df0ae9d2d1232ca346",
+    "tests/editor/run_workbench_issue_artifacts.py": "42f4973e7ea95d306c8d24b482f91ba3a19eec2f",
+    "tests/editor/run_workbench_issue_classification.py": "c69b8ceaaa244c62e8becc5b3280a54ccdda1e83",
+    "tests/editor/run_workbench_issue_consultation.py": "0d3b33ed3eeaa14389d5ca9196c6c31e1d9c774b",
+    "tests/editor/run_workbench_issue_custom_fields.py": "46553540385fc5dbe439358d443d13150ecc9a8a",
+    "tests/editor/run_workbench_issue_detail.py": "b83e29c6a6d89a145dec8f4caea972886f993115",
+    "tests/editor/run_workbench_issue_lifecycle.py": "3f387aaf18202f238fedebd615362574adbf9b5c",
+    "tests/editor/run_workbench_issue_milestone.py": "065c727b1393129b8607647ac94f2e01e4504848",
+    "tests/editor/run_workbench_issue_search.py": "65922fea958d05bd7d5715bbab2df9c7b20d66ee",
+    "tests/editor/run_workbench_issue_time.py": "97a7377ca24ef14377cde1a8eed551b97898cf12",
+    "tests/editor/workbench_issue_artifacts.gd": "360ba7fb7cb1c6dc9cd87714ba0368a99d092a6a",
+    "tests/editor/workbench_issue_classification.gd": "fe678a91c74ad759da624db89803fae8ab08753e",
+    "tests/editor/workbench_issue_custom_fields.gd": "b09283cb4ed0f7515832a38edf33276b49f13a99",
+    "tests/editor/workbench_issue_detail.gd": "d52569a9f59e895889efe0444fd38bc09541c2d1",
+    "tests/editor/workbench_issue_lifecycle.gd": "e914920eec388c87a13161526a7b4128d7192041",
+    "tests/editor/workbench_issue_milestone.gd": "70b4082d06ae015d4aa643cf4e8fdaf7830f795c",
+    "tests/editor/workbench_issue_search.gd": "7b86622babd752c975a0cee68f83b103bcaf79a4",
+    "tests/editor/workbench_issue_time.gd": "db924b1cd9b11a0e989a2fe4f0299fe52208c11f"
+  },
+  "checks": {
+    "d12": "b1338dd74a32d5c6fe1ce67d695b92024c27f9a04539a8b5719c2a47c023a32d",
+    "d04": "3ce6f3efdbad46b0739bbcbaa466f9fafe74dbbcf40d880857dd445bdd2b483d",
+    "c07": "37b00f35c45212a3f4a1431984d4461798cf6a2d58d6d2a60e3a4e8e5a9d3748",
+    "c06": "5e216b2abeaf1256d57b1b58b257b4cbc5ecf7459fb2eced95771fbe2c5890f9",
+    "u15": "f0e765fa5875f0fdf9fe4d2fef934ce4c5cd8f7fdb2f054e51b0751dd41eb8d2",
+    "d14": "a8b75f1a64f5365d33068bddf723d0ad937ca0d37fc33482d6d4d2049f289cea",
+    "i01": "4d48791ff9c6707d5dc1f60b6fdc768eefe13d5d1688b6aa7e92616b92c70c43",
+    "i02": "c92b9f0b45e7f0216d1c0f6d83871cb87abb6cb9bcebb394c4b2111a14fea575",
+    "u10": "8358aa64660d3ad5bbe0703983f8fead5e596b025028cfc383689566976122bd",
+    "d03": "8fc6ac9f3c046cbe498904a5d0f7e4ac76b9bd851d2e082439abb7b6d4194119",
+    "g11": "a5569581b74d23ede9b7204e8535d18345714bc93b8fe72ecea852dbf8e0b4ec",
+    "d05": "47ec2480b73a63343d467136be533fefe40d124f794d7cf152114b0a03f17440",
+    "i03": "393f5353ba5abb99fc4633707b22ffe07d4735b4c6a4b302c1d647a721ba4a73",
+    "i04": "09ce285dccab0ab2594d0bac064f47cd9e94d86286d1b0bd713c8ef555ca76e0",
+    "i05": "24243b980acbba6d8fafb21b8cc2da6f726552809450fd0d954728aa882b9dd0",
+    "i06": "5c833b3f81bfbd181a25fa28e014cf0624ecf07a07f366db3c642fe0d606cab6",
+    "i07": "770c13fd59488de25e75f735c70fdade0520c2dda1453d28e7bad1ffba3ab42a",
+    "i09": "130f731f18098357d7b833c01aefb4ec31122b4f7d5503456e116ce137fe5637",
+    "i10": "841daf1bb7dfdbe6504bb1bad4c50726d33552cba8835b71c20d7ffc010ed015",
+    "i11": "e9310edb1d45036e9bc482f2ca644aab65f125b34270c32e006a5e89c7fd5c33",
+    "i14": "4a674bab219a7c305a7d7bd126ff01c85a79b8bd4e68781c1159c4588c23b337",
+    "i17": "4d8db05214a3970ccdbf084a36599b07639fbf777d82da91b56cca9ce77163d0",
+    "u11": "14afec7c39398a41049b5ee631905f4108ef465389fc25311c04f6fac853215c",
+    "d06": "d92a8a88b1a8e7bce3612791cdd544230fd61e8f485809012bb0c34541fc3647",
+    "d07": "f7f6d1e3793ba9643047e1cdbb9a50e0fc2a3e708cc011272304b05ddaefa8bd",
+    "g12": "eb10fe7caf1ee4a60acede04e5afa21d038825e42d94e84032c1ad52b29dd2c0",
+    "g13": "e272686f395bd05c53426a55da5d31c11816c5d65f53dbf3d8ea149b9eb9abb0",
+    "i15": "e97af3cec8293b424072ac79e2d221ed015a8153ae7146994885b0852013fc79"
+  },
+  "issues": {
+    "i07": 1789,
+    "i09": 1752,
+    "i10": 1753,
+    "i11": 1754,
+    "i14": 1832,
+    "i17": 1758,
+    "i15": 1756
+  },
+  "observed": "2026-11-21T21:37:41.444085+00:00",
+  "combined_plan_operations": {
+    "passed": true,
+    "operations": 5,
+    "membership": {
+      "id": "iss_78644d5a3af54cd88aac64b3cb738c91",
+      "version": 5,
+      "plan": {
+        "iteration": "S3",
+        "milestone": "RC2"
+      },
+      "counts": {
+        "iteration": 1,
+        "milestone": 1
+      }
+    },
+    "estimated_minutes": 80,
+    "logged_minutes": 15,
+    "custom_fields": {
+      "unknown_number": 1152921504606846977,
+      "reviewer": "Jade"
+    },
+    "other_version": 0,
+    "observed": "2026-11-21T21:33:41.146042+00:00"
+  },
+  "service_regressions": {
+    "result": "130 passed, 1 warning in 72.60s (0:01:12)",
+    "files": [
+      "test_issue_artifacts.py",
+      "test_issue_classification.py",
+      "test_work_management.py",
+      "test_issue_flow.py",
+      "test_module_issues.py",
+      "test_godot_inputs.py",
+      "test_native_api.py",
+      "test_approved_asset.py",
+      "test_issue_lifecycle.py",
+      "test_issue_comments.py",
+      "test_native_entry.py",
+      "test_tianxuan_core.py",
+      "test_api.py",
+      "test_e2e.py",
+      "test_issue_assignee.py",
+      "test_issue_hierarchy.py",
+      "test_issue_number.py",
+      "test_issue_ancestor_acl.py",
+      "test_native_entry_normal.py",
+      "test_tianshu_bridge.py"
+    ],
+    "editor_sha256": "671593e89e5f65d07552d3725989ccba9f67592612f440ab2db2a973d74cf6ce",
+    "observed": "2026-11-21T21:33:39.574963+00:00"
+  },
+  "results": {
+    "i07": {
+      "native": {
+        "after": [
+          {
+            "counts": "迭代「第二轮」　2 单\n里程碑「发布」　3 单",
+            "iteration": "第二轮",
+            "milestone": "发布"
+          },
+          {
+            "counts": "迭代「第一轮」　2 单\n里程碑「预览」　1 单",
+            "iteration": "第一轮",
+            "milestone": "预览"
+          },
+          {
+            "counts": "迭代「第一轮」　2 单\n里程碑「发布」　3 单",
+            "iteration": "第一轮",
+            "milestone": "发布"
+          },
+          {
+            "counts": "迭代「第二轮」　2 单\n里程碑「发布」　3 单",
+            "iteration": "第二轮",
+            "milestone": "发布"
+          }
+        ],
+        "before": [
+          {
+            "counts": "迭代「第一轮」　3 单\n里程碑「预览」　2 单",
+            "iteration": "第一轮",
+            "milestone": "预览"
+          },
+          {
+            "counts": "迭代「第一轮」　3 单\n里程碑「预览」　2 单",
+            "iteration": "第一轮",
+            "milestone": "预览"
+          },
+          {
+            "counts": "迭代「第一轮」　3 单\n里程碑「发布」　2 单",
+            "iteration": "第一轮",
+            "milestone": "发布"
+          },
+          {
+            "counts": "迭代「第二轮」　1 单\n里程碑「发布」　2 单",
+            "iteration": "第二轮",
+            "milestone": "发布"
+          }
+        ],
+        "saved": {
+          "counts": "迭代「第二轮」　2 单\n里程碑「发布」　3 单",
+          "iteration": "第二轮",
+          "milestone": "发布"
+        }
+      },
+      "other_work_states_unchanged": 5,
+      "stored_patch": {
+        "iteration": "第二轮",
+        "milestone": "发布"
+      },
+      "reopened_projection_matches": true,
+      "engine_sha256": "671593e89e5f65d07552d3725989ccba9f67592612f440ab2db2a973d74cf6ce"
+    },
+    "i09": {
+      "controls": [
+        {
+          "field": "地图",
+          "project": "studio/game",
+          "stage": "layout",
+          "value": "平原"
+        },
+        {
+          "field": "镜头",
+          "project": "studio/film",
+          "stage": "cut",
+          "value": "近景"
+        }
+      ],
+      "switch_cleared": true,
+      "logout_cleared": true,
+      "engine_sha256": "671593e89e5f65d07552d3725989ccba9f67592612f440ab2db2a973d74cf6ce"
+    },
+    "i10": {
+      "reopened": [
+        "预计 75 分钟 · 已登记 35 分钟",
+        "12 分钟　核对草图\n23 分钟　调整模型"
+      ],
+      "after_first": "预计 75 分钟 · 已登记 12 分钟",
+      "after_retry": [
+        "预计 75 分钟 · 已登记 35 分钟",
+        "12 分钟　核对草图\n23 分钟　调整模型"
+      ],
+      "ambiguous_status": "工时回执待确认，请重试同一请求",
+      "engine_sha256": "671593e89e5f65d07552d3725989ccba9f67592612f440ab2db2a973d74cf6ce"
+    },
+    "i11": {
+      "editor_sha256": "671593e89e5f65d07552d3725989ccba9f67592612f440ab2db2a973d74cf6ce",
+      "observed": {
+        "cleared": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "empty": [],
+        "initial": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "left": [
+          1
+        ],
+        "left_detail_id": "iss_d5fd589f0bb64bc2ad8410d0a29540aa",
+        "legacy_feedback": "服务未确认负责人或关键字筛选，请更新天璇服务",
+        "reopened": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "right": [
+          2
+        ],
+        "right_detail_id": "iss_8733cc1df91944a1baf09763403d3811"
+      }
+    },
+    "i14": {
+      "http_readback": [
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts/1",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts/2",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/1/artifacts/3",
+          "studio/game",
+          409
+        ]
+      ],
+      "native_selection": [
+        {
+          "label": "附件 · characters/hero.bin · #1 (de6a6c8ddf73)",
+          "message": "已保存所选版本　selected-2.bin",
+          "reference": {
+            "digest": "8467c8c12cf6e00ce0a636eb6a9ee831d0e639e7b03cf3e047fefaad8abc3bfc",
+            "kind": "attachment",
+            "module": "art",
+            "path": "characters/hero.bin",
+            "revision": "de6a6c8ddf736edf6e3bcb3d58b282d0ce013ba558c8d771e0fce1f888d583e7",
+            "version": 1.0
+          }
+        },
+        {
+          "label": "附件 · characters/hero.bin · #2 (fae4311a22fb)",
+          "message": "已保存所选版本　selected-1.bin",
+          "reference": {
+            "digest": "141092a075d222ad0b4a078be37ce25e2376ba3136fdb72ea728d3b88639eea7",
+            "kind": "attachment",
+            "module": "art",
+            "path": "characters/hero.bin",
+            "revision": "fae4311a22fb6f358a50c3bc4bcfe96c79b4494c9bcddb5ec3c8a5fb0df4d397",
+            "version": 2.0
+          }
+        },
+        {
+          "label": "模型 · characters/hero.bin · #3 (637b8b8ab4ab)",
+          "message": "引用已失效，找不到所选版本的文件",
+          "reference": {
+            "digest": "5b720147b6918dfc19baa0d7767cab75b76e17998837d04af43f2f3463c5350f",
+            "kind": "model",
+            "module": "art",
+            "path": "characters/hero.bin",
+            "revision": "637b8b8ab4ab6eb488e7ab8301e52a277c5971407a3f1f7a41a6f37569b812bb",
+            "version": 3.0
+          }
+        }
+      ],
+      "saved_sha256": [
+        "8467c8c12cf6e00ce0a636eb6a9ee831d0e639e7b03cf3e047fefaad8abc3bfc",
+        "141092a075d222ad0b4a078be37ce25e2376ba3136fdb72ea728d3b88639eea7"
+      ],
+      "stale_destination_created": false,
+      "logout_cleared_references": true,
+      "engine_sha256": "671593e89e5f65d07552d3725989ccba9f67592612f440ab2db2a973d74cf6ce"
+    },
+    "i17": {
+      "state": "passed",
+      "editor_sha256": "671593e89e5f65d07552d3725989ccba9f67592612f440ab2db2a973d74cf6ce",
+      "native_sessions": [
+        {
+          "absent_count": 0,
+          "label": "声音 & 音效",
+          "legacy_filter_rejected": true,
+          "number": 1,
+          "project": "studio/audio",
+          "reopened_id": "iss_a106fe411ea540598317b602b268b91e",
+          "result_count": 1,
+          "role": "admin",
+          "save_disabled": false,
+          "type": "bug"
+        },
+        {
+          "absent_count": 0,
+          "label": "声音 & 音效",
+          "legacy_filter_rejected": true,
+          "number": 2,
+          "project": "studio/video",
+          "reopened_id": "iss_79b5a2c7af8e4e87ad48b5491040c637",
+          "result_count": 1,
+          "role": "admin",
+          "save_disabled": false,
+          "type": "bug"
+        },
+        {
+          "absent_count": 0,
+          "label": "声音 & 音效",
+          "legacy_filter_rejected": true,
+          "number": 1,
+          "project": "studio/audio",
+          "reopened_id": "iss_a106fe411ea540598317b602b268b91e",
+          "result_count": 1,
+          "role": "viewer",
+          "save_disabled": true,
+          "type": "bug"
+        },
+        {
+          "absent_count": 0,
+          "label": "声音 & 音效",
+          "legacy_filter_rejected": true,
+          "number": 2,
+          "project": "studio/video",
+          "reopened_id": "iss_79b5a2c7af8e4e87ad48b5491040c637",
+          "result_count": 1,
+          "role": "viewer",
+          "save_disabled": true,
+          "type": "bug"
+        }
+      ],
+      "classification_puts": [
+        {
+          "project": "studio/audio",
+          "status": 200
+        },
+        {
+          "project": "studio/audio",
+          "status": 200
+        },
+        {
+          "project": "studio/video",
+          "status": 200
+        },
+        {
+          "project": "studio/video",
+          "status": 200
+        },
+        {
+          "project": "studio/audio",
+          "status": 403
+        },
+        {
+          "project": "studio/video",
+          "status": 404
+        },
+        {
+          "project": "studio/audio",
+          "status": 409
+        },
+        {
+          "project": "studio/audio",
+          "status": 200
+        }
+      ],
+      "reopened_database": [
+        {
+          "project": "studio/audio",
+          "number": 1,
+          "id": "iss_a106fe411ea540598317b602b268b91e",
+          "title": "同名原单",
+          "type": "bug",
+          "labels": [
+            "声音 & 音效"
+          ]
+        },
+        {
+          "project": "studio/video",
+          "number": 2,
+          "id": "iss_79b5a2c7af8e4e87ad48b5491040c637",
+          "title": "同名原单",
+          "type": "bug",
+          "labels": [
+            "声音 & 音效"
+          ]
+        },
+        {
+          "project": "studio/audio",
+          "number": 3,
+          "id": "iss_a771b1f2b10c44408cc023a1b2d08ff6",
+          "title": "同名原单",
+          "type": "feature",
+          "labels": []
+        },
+        {
+          "project": "studio/video",
+          "number": 4,
+          "id": "iss_09d7f15c98984c69a3cf1ba408836db0",
+          "title": "同名原单",
+          "type": "feature",
+          "labels": []
+        }
+      ],
+      "pre_i17_schema_upgrade": "existing issues reopened with empty label sets"
+    },
+    "i15": {
+      "engine_sha256": "671593e89e5f65d07552d3725989ccba9f67592612f440ab2db2a973d74cf6ce",
+      "views": {
+        "close": {
+          "history": "2026-11-21T21:37:27.453454+00:00　确认验收　in-review → in-review　usr_10549340790c4e27b75a6fdf2196b979　icmt_f298cc6f5fe54d4584d741a76f25d095\n2026-11-21T21:37:27.522785+00:00　关闭　in-review → done　usr_10549340790c4e27b75a6fdf2196b979　icmt_f298cc6f5fe54d4584d741a76f25d095",
+          "id": "iss_ab50da4b553140b68ecadcfc5c5f78eb",
+          "number": 1,
+          "revision": "775373ef90ebfb913802a0a29d30370b2dd5dd186923fc72a3c66abfd573f8de",
+          "status": "done"
+        },
+        "viewer_closed": {
+          "history": "2026-11-21T21:37:27.453454+00:00　确认验收　in-review → in-review　usr_10549340790c4e27b75a6fdf2196b979　icmt_f298cc6f5fe54d4584d741a76f25d095\n2026-11-21T21:37:27.522785+00:00　关闭　in-review → done　usr_10549340790c4e27b75a6fdf2196b979　icmt_f298cc6f5fe54d4584d741a76f25d095",
+          "id": "iss_ab50da4b553140b68ecadcfc5c5f78eb",
+          "number": 1,
+          "revision": "775373ef90ebfb913802a0a29d30370b2dd5dd186923fc72a3c66abfd573f8de",
+          "status": "done"
+        },
+        "reopen": {
+          "history": "2026-11-21T21:37:27.453454+00:00　确认验收　in-review → in-review　usr_10549340790c4e27b75a6fdf2196b979　icmt_f298cc6f5fe54d4584d741a76f25d095\n2026-11-21T21:37:27.522785+00:00　关闭　in-review → done　usr_10549340790c4e27b75a6fdf2196b979　icmt_f298cc6f5fe54d4584d741a76f25d095\n2026-11-21T21:37:36.040578+00:00　重开　done → in-review　usr_8f682458954f45fcb9edf4757b36b89e",
+          "id": "iss_ab50da4b553140b68ecadcfc5c5f78eb",
+          "number": 1,
+          "revision": "775373ef90ebfb913802a0a29d30370b2dd5dd186923fc72a3c66abfd573f8de",
+          "status": "in-review"
+        },
+        "viewer_open": {
+          "history": "2026-11-21T21:37:27.453454+00:00　确认验收　in-review → in-review　usr_10549340790c4e27b75a6fdf2196b979　icmt_f298cc6f5fe54d4584d741a76f25d095\n2026-11-21T21:37:27.522785+00:00　关闭　in-review → done　usr_10549340790c4e27b75a6fdf2196b979　icmt_f298cc6f5fe54d4584d741a76f25d095\n2026-11-21T21:37:36.040578+00:00　重开　done → in-review　usr_8f682458954f45fcb9edf4757b36b89e",
+          "id": "iss_ab50da4b553140b68ecadcfc5c5f78eb",
+          "number": 1,
+          "revision": "775373ef90ebfb913802a0a29d30370b2dd5dd186923fc72a3c66abfd573f8de",
+          "status": "in-review"
+        }
+      },
+      "writes_server_client": [
+        [
+          "close",
+          409,
+          409
+        ],
+        [
+          "accept",
+          200,
+          200
+        ],
+        [
+          "close",
+          200,
+          503
+        ],
+        [
+          "reopen",
+          null,
+          503
+        ],
+        [
+          "reopen",
+          200,
+          200
+        ],
+        [
+          "close",
+          409,
+          409
+        ]
+      ],
+      "same_retry_key": true,
+      "verified_history_after_restart": [
+        {
+          "version": 2,
+          "kind": "accepted",
+          "actor": "usr_10549340790c4e27b75a6fdf2196b979",
+          "previous": "in-review",
+          "target": "in-review",
+          "revision": "775373ef90ebfb913802a0a29d30370b2dd5dd186923fc72a3c66abfd573f8de",
+          "evidence": "icmt_f298cc6f5fe54d4584d741a76f25d095",
+          "asset_version": 0,
+          "created_at": "2026-11-21T21:37:27.453454+00:00"
+        },
+        {
+          "version": 3,
+          "kind": "closed",
+          "actor": "usr_10549340790c4e27b75a6fdf2196b979",
+          "previous": "in-review",
+          "target": "done",
+          "revision": "775373ef90ebfb913802a0a29d30370b2dd5dd186923fc72a3c66abfd573f8de",
+          "evidence": "icmt_f298cc6f5fe54d4584d741a76f25d095",
+          "asset_version": 0,
+          "created_at": "2026-11-21T21:37:27.522785+00:00"
+        },
+        {
+          "version": 4,
+          "kind": "reopened",
+          "actor": "usr_8f682458954f45fcb9edf4757b36b89e",
+          "previous": "done",
+          "target": "in-review",
+          "revision": "775373ef90ebfb913802a0a29d30370b2dd5dd186923fc72a3c66abfd573f8de",
+          "evidence": null,
+          "asset_version": 0,
+          "created_at": "2026-11-21T21:37:36.040578+00:00"
+        }
+      ],
+      "passed": true
+    }
+  }
+}

@@ -78,6 +78,15 @@ CREATE TABLE IF NOT EXISTS issues (
   project TEXT NOT NULL DEFAULT 'workspace', module_id TEXT NOT NULL DEFAULT 'default'
 );
 CREATE INDEX IF NOT EXISTS idx_issues_tenant_number ON issues(tenant_id, number);
+CREATE TABLE IF NOT EXISTS project_issue_fields (
+  tenant_id TEXT NOT NULL, project TEXT NOT NULL, key TEXT NOT NULL, label TEXT NOT NULL,
+  PRIMARY KEY (tenant_id, project, key)
+);
+CREATE TABLE IF NOT EXISTS issue_labels (
+  issue_id TEXT NOT NULL REFERENCES issues(id) ON DELETE CASCADE, name TEXT NOT NULL,
+  PRIMARY KEY (issue_id, name)
+);
+CREATE INDEX IF NOT EXISTS idx_issue_labels_name ON issue_labels(name, issue_id);
 CREATE TABLE IF NOT EXISTS issue_assignees (
   issue_id TEXT PRIMARY KEY REFERENCES issues(id), user_id TEXT NOT NULL REFERENCES users(id)
 );
@@ -126,6 +135,11 @@ CREATE INDEX IF NOT EXISTS idx_import_jobs_tenant ON import_jobs(tenant_id, crea
 CREATE TABLE IF NOT EXISTS issue_flows (
     issue_id TEXT PRIMARY KEY REFERENCES issues(id), version INTEGER NOT NULL, definition TEXT
 );
+CREATE TABLE IF NOT EXISTS issue_lifecycle (
+    issue_id TEXT NOT NULL REFERENCES issues(id), version INTEGER NOT NULL, kind TEXT NOT NULL,
+    actor TEXT NOT NULL, previous TEXT NOT NULL, target TEXT NOT NULL, revision TEXT NOT NULL,
+    evidence TEXT, asset_version INTEGER NOT NULL, created_at TEXT NOT NULL, PRIMARY KEY(issue_id,version,kind,revision,asset_version)
+);
 CREATE TABLE IF NOT EXISTS issue_dependencies (
     issue_id TEXT NOT NULL REFERENCES issues(id), dependency TEXT NOT NULL REFERENCES issues(id),
     PRIMARY KEY(issue_id,dependency)
@@ -149,6 +163,7 @@ CREATE TABLE IF NOT EXISTS events (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, type TEXT NOT NULL, actor TEXT NOT NULL,
   target TEXT NOT NULL, payload TEXT NOT NULL DEFAULT '{}', created_at TEXT NOT NULL
 );
+CREATE INDEX IF NOT EXISTS idx_issue_transition_events ON events(tenant_id,target) WHERE type='issue.transitioned';
 CREATE TABLE IF NOT EXISTS comments (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, doc_id TEXT NOT NULL, parent_id TEXT,
   author TEXT NOT NULL, body TEXT NOT NULL, resolved INTEGER NOT NULL DEFAULT 0,
@@ -356,6 +371,57 @@ _ISSUE_COMMENT_SELECT = (
     "LEFT JOIN users u ON u.id=c.author AND u.tenant_id=c.tenant_id "
     "LEFT JOIN issue_comment_replies r ON r.comment_id=c.id "
 )
+
+
+def require_native_source_read(domain: Any, actor: str, module: str) -> None:
+    _module_read_once(domain, actor, module, set())
+
+
+def _module_read_once(domain: Any, actor: str, module: str, seen: set[str]) -> None:
+    if module in seen:
+        return
+    seen.add(module)
+    if module.startswith("requirement-"):
+        domain.require_native_module_read(actor, module)
+        return
+    catalog_module = re.fullmatch(r"(entry-[a-f0-9]{64})-.+", module)
+    integration_module = re.fullmatch(r"integration-([a-f0-9]{64})", module)
+    if not catalog_module and not integration_module:
+        return
+    with domain._connection_lock:
+        db = domain.db
+        tenant = domain.actor_context(actor)["tenant"]
+        if (
+            integration_module
+            and db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='native_integrations'").fetchone()
+        ):
+            row = db.execute(
+                "SELECT plan FROM native_integrations WHERE id=? AND json_extract(plan,'$.tenant')=?",
+                (integration_module[1], tenant),
+            ).fetchone()
+            if row:
+                plan = json.loads(row["plan"])
+                for name in plan["base"]:
+                    _module_read_once(domain, actor, name, seen)
+                for original in plan["originals"]:
+                    contract = original["contract"]
+                    domain._require_tenant_issue(actor, contract["issue"])
+                    for requirement in contract["source"]["definition"]["requirements"]:
+                        domain.get_doc_shared(actor, requirement["id"])
+                    for name in contract["selected"]:
+                        _module_read_once(domain, actor, name, seen)
+        if (
+            catalog_module
+            and db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='native_entry_catalogs'").fetchone()
+        ):
+            row = db.execute(
+                "SELECT json_extract(origin,'$.requirement') AS requirement FROM native_entry_catalogs "
+                "WHERE product=? AND json_extract(origin,'$.tenant')=? "
+                "AND EXISTS (SELECT 1 FROM json_each(origin,'$.modules') WHERE value=?)",
+                (catalog_module[1], tenant, module),
+            ).fetchone()
+            if row:
+                domain._require_requirement(actor, row["requirement"])
 
 
 def _connection_call(method: Callable[Concatenate[Tianxuan, _P], _R]) -> Callable[Concatenate[Tianxuan, _P], _R]:
@@ -1568,7 +1634,52 @@ class Tianxuan:
             (issue["id"], issue["tenant_id"]),
         ).fetchone()
         snapshot = self.issue_snapshot(actor, issue["id"])
-        return issue | {"assignee": dict(assignee) if assignee else None, "revision": snapshot["revision"]}
+        try:
+            self._require_editor(actor)
+            self._require_issue_references(actor, issue["requirement_id"], issue["parent_id"], write=True)
+            can_classify = True
+        except PermissionDenied:
+            can_classify = False
+        return issue | {
+            "can_classify": can_classify,
+            "assignee": dict(assignee) if assignee else None,
+            "revision": snapshot["revision"],
+            "labels": self._issue_labels(issue["id"]),
+        }
+
+    def _issue_labels(self, issue_id: str) -> list[str]:
+        rows = self.db.execute("SELECT name FROM issue_labels WHERE issue_id=? ORDER BY name", (issue_id,))
+        return [row["name"] for row in rows]
+
+    @_connection_call
+    def set_issue_classification(
+        self,
+        actor: str,
+        issue_id: str,
+        project: str,
+        issue_type: str,
+        labels: list[str],
+        expected_type: str,
+        expected_labels: list[str],
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._project_issue(actor, issue_id, project, write=True)
+        issue_type = issue_type.strip()
+        if not issue_type or len(issue_type) > 128 or not issue_type.isprintable():
+            raise TianxuanError("issue type must be a single line of 1 to 128 characters")
+        names = sorted({name.strip() for name in labels})
+        if len(names) > 100 or any(not name or len(name) > 128 or not name.isprintable() for name in names):
+            raise TianxuanError("issue labels must contain up to 100 names of 1 to 128 characters")
+        previous = self._issue_labels(issue_id)
+        if (issue_type, names) != (issue["type"], previous):
+            if (expected_type, sorted(set(expected_labels))) != (issue["type"], previous):
+                raise VersionConflict("issue classification changed; reload issue")
+            self.db.execute("UPDATE issues SET type=?,updated_at=? WHERE id=?", (issue_type, _now(), issue_id))
+            self.db.execute("DELETE FROM issue_labels WHERE issue_id=?", (issue_id,))
+            self.db.executemany("INSERT INTO issue_labels(issue_id,name) VALUES (?,?)", ((issue_id, n) for n in names))
+        return {"type": issue_type, "labels": names}
 
     def _project_issue(self, actor: str, issue_id: str, project: str, *, write: bool = False) -> dict[str, Any]:
         issue = self._require_tenant_issue(actor, issue_id, write=write)
@@ -1672,13 +1783,17 @@ class Tianxuan:
         *,
         project: str | None = None,
         module_id: str | None = None,
+        status: str | None = None,
+        assignee: str | None = None,
+        keyword: str | None = None,
+        label: str | None = None,
     ) -> list[dict[str, Any]]:
         if not self.db.in_transaction:
             self.db.execute("BEGIN")
         tenant_id = self._tenant_of(actor)
         sql = "SELECT * FROM issues WHERE tenant_id = ?"
         args: list[str] = [tenant_id]
-        if project is None and module_id is not None:
+        if project is None and (module_id is not None or label is not None):
             project = DEFAULT_PROJECT
         if project is not None:
             self._validate_project(project)
@@ -1688,10 +1803,29 @@ class Tianxuan:
                 self._business_module(tenant_id, project, module_id)
                 sql += " AND module_id = ?"
                 args.append(module_id)
+        if label is not None:
+            sql += " AND id IN (SELECT issue_id FROM issue_labels WHERE name=?)"
+            args.append(label.strip())
         if requirement_id:
             sql += " AND requirement_id = ?"
             args.append(requirement_id)
+        if status is not None:
+            sql += " AND status = ?"
+            args.append(status)
+        if assignee:
+            sql += (
+                " AND EXISTS (SELECT 1 FROM issue_assignees a JOIN users u ON u.id=a.user_id"
+                " WHERE a.issue_id=issues.id AND u.tenant_id=issues.tenant_id AND (u.id=? OR u.name=?))"
+            )
+            args.extend((assignee, assignee))
         rows = self.db.execute(sql + " ORDER BY number", args).fetchall()
+        if keyword:
+            needle = keyword.casefold()
+            rows = [
+                row
+                for row in rows
+                if any(needle in row[field].casefold() for field in ("title", "body_md", "acceptance"))
+            ]
         return self._visible_issues(actor, rows)
 
     def _visible_issues(self, actor: str, rows: list[sqlite3.Row]) -> list[dict[str, Any]]:
@@ -2629,6 +2763,9 @@ class Tianxuan:
         if name == "module.create":
             if result is not None:
                 self._business_module(self._tenant_of(actor), payload["project"], result["id"])
+            return
+        if name.startswith("lifecycle."):
+            self._project_issue(actor, payload["issue_id"], payload["project"], write=True)
             return
         if name.startswith("flow."):
             from issue_flow import authorize

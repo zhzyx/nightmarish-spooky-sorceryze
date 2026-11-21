@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-6a783439426e59314f94fc607901daf5a1b4978a88b5fc64139e9381a69d4e4c",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1754",
+  "occurred_at": "2026-11-21T20:26:24.9577673+00:00",
+  "evidence_refs": [
+    "wave22-windows-intake-1754",
+    "learn-acd7ee37a18898788c6d20fb49742f59ba00105d1c32e2e2bd22deb457f9866b"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 27,
+    "previous": "5439068310d9cc9da738d01278b88d2870050a4b4a097820090eb18ba23c0174",
+    "action": "applied",
+    "details": {
+      "task": "I11 #1754 Windows native issue search, source candidate to consuming I02 detail",
+      "observed": "A source-mounted probe and a compiled candidate independently opened both same-title rows by their distinct IDs. The a0697dd9 integrated candidate also passed the upstream detail, paragraph and asset probes."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-i11.json",
+        "sha256": "77d6a463d4f73f7592cad40e887ce249033c554b471c33d091cee5f6a1d3cf8a"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-i11/wave22-windows-intake-1754.json",
+      "sha256": "9ec8595f9ae92b80feb2e26c159883bcedbd2e2eae7e79f754691115bcaec8d1"
+    }
+  },
+  "sha256": "e9becd4edafdb8e7f69e15ce80a657995c2061aa9c65f9370eb01ef16c34e531"
+}

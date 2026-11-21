@@ -18,8 +18,9 @@ def work(tmp_path):
     store = Tianxuan(str(path))
     owner = store.register("studio", "owner@example.invalid", "password")["user_id"]
     issue = store.create_issue(owner, "Historical ticket")["id"]
-    # Reopen a pre-feature database with its existing ticket and no work event table.
+    # Reopen a pre-feature database with its existing ticket.
     store.db.execute("DROP TABLE issue_work_events")
+    store.db.execute("DROP TABLE project_issue_fields")
     store.db.commit()
     store.db.close()
     store = Tianxuan(str(path))
@@ -62,6 +63,95 @@ def test_historical_issue_plan_and_persistent_replay(work):
             )
     finally:
         reopened.db.close()
+
+
+def test_project_field_update_preserves_plan_and_large_legacy_integer(work):
+    path, store, _, client, actor, issue = work
+    headers = {"Authorization": "Bearer " + store.issue_session(actor)}
+    definitions = "/api/v1/work/field-definitions"
+    for project, key, label in [("workspace", "area", "区域"), ("other", "review", "审核人")]:
+        reply = client.put(f"{definitions}/{key}", params={"project": project}, headers=headers, json={"label": label})
+        assert reply.status_code == 200
+        assert reply.json() == {"project": project, "fields": [{"key": key, "label": label}]}
+    assert client.put(
+        f"{definitions}/area", params={"project": "other"}, headers=headers, json={"label": "片场"}
+    ).is_success
+    assert client.get(definitions, params={"project": "workspace"}, headers=headers).json()["fields"] == [
+        {"key": "area", "label": "区域"}
+    ]
+    foreign = store.register("Other tenant", "other@example.invalid", "password")["user_id"]
+    assert (
+        client.get(
+            definitions,
+            params={"project": "workspace"},
+            headers={"Authorization": "Bearer " + store.issue_session(foreign)},
+        ).json()["fields"]
+        == []
+    )
+    reader = store.add_member(actor, "viewer@example.invalid", "password", role="viewer")["user_id"]
+    assert (
+        client.put(
+            f"{definitions}/blocked",
+            params={"project": "workspace"},
+            headers={"Authorization": "Bearer " + store.issue_session(reader)},
+            json={"label": "blocked"},
+        ).status_code
+        == 403
+    )
+
+    old = {"custom_fields": {"legacy": 2**60 + 1, "signed": False}, "milestone": "RC1", "estimated_minutes": 80}
+    url = f"/api/v1/issues/{issue}/work/plan"
+    assert client.post(url, headers=headers, json={"expected_version": 0, "call_id": "seed", "plan": old}).is_success
+    edit = {"expected_version": 1, "call_id": "field", "field_update": {"key": "area", "value": "south"}}
+    assert client.post(url, params={"project": "other"}, headers=headers, json=edit).status_code == 404
+    assert (
+        client.get(f"/api/v1/issues/{issue}/work/flow", params={"project": "other"}, headers=headers).status_code == 404
+    )
+    invalid = dict(edit, field_update={"key": "review", "value": "foreign"})
+    assert client.post(url, headers=headers, json=invalid).is_client_error
+    reply = client.post(url, headers=headers, json=edit)
+    assert reply.status_code == 200, reply.text
+    assert reply.json()["plan"]["custom_fields"] == old["custom_fields"] | {"area": "south"}
+    assert client.post(url, headers=headers, json=edit).json() == reply.json()
+    assert client.post(url, headers=headers, json=dict(edit, call_id="stale")).status_code == 409
+    reopened = Tianxuan(str(path))
+    try:
+        plan = reopened.dispatch_tool(actor, "work.read", {"issue_id": issue})["plan"]
+        assert plan == reply.json()["plan"]
+        assert plan["milestone"] == "RC1" and plan["estimated_minutes"] == 80
+    finally:
+        reopened.db.close()
+
+
+def test_plan_membership_empty_groups_partial_update_and_stale_move(work):
+    _, store, _, client, actor, issue = work
+    project = store.get_issue(issue)["project"]
+    store.create_issue(actor, "Unscheduled", project=project)
+    store.create_issue(actor, "Other project", project="elsewhere")
+    url = f"/api/v1/issues/{issue}/work/plan"
+    headers = {"Authorization": "Bearer " + store.issue_session(actor)}
+
+    def read():
+        return client.get(url, headers=headers, params={"project": project}).raise_for_status().json()
+
+    assert read() == {
+        "id": issue,
+        "version": 0,
+        "plan": {"iteration": "", "milestone": ""},
+        "counts": {"iteration": 2, "milestone": 2},
+    }
+    assert client.get(url, headers=headers, params={"project": "elsewhere"}).status_code == 404
+    first = dict(expected_version=0, plan={"iteration": "Sprint"}, call_id="move")
+    assert client.post(url, headers=headers, json=first).status_code == 200
+    assert read()["counts"] == {"iteration": 1, "milestone": 2}
+    assert (
+        client.post(url, headers=headers, json=dict(first, plan={"milestone": "stale"}, call_id="late")).status_code
+        == 409
+    )
+    assert read()["plan"] == {"iteration": "Sprint", "milestone": ""}
+    clear = dict(expected_version=1, plan={"iteration": ""}, call_id="clear")
+    assert client.post(url, headers=headers, json=clear).status_code == 200
+    assert read()["counts"] == {"iteration": 2, "milestone": 2}
 
 
 @pytest.mark.parametrize("same_key", [False, True])

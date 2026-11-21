@@ -173,7 +173,7 @@ func _authenticate(email: String, secret: String, project: String) -> void:
 
 
 # Routes belong to the configured deployment. Each request captures its verified session.
-func api_request(method: int, route: String, payload: Dictionary = {}, timeout_seconds: float = 12.0) -> Dictionary:
+func api_request(method: int, route: String, payload: Dictionary = {}, timeout_seconds: float = 12.0, download_path := "") -> Dictionary:
 	if _identity.is_empty():
 		return {"status": 401, "data": {}}
 	if not route.begins_with("/api/v1/") or "#" in route or "\\" in route or "\n" in route or "\r" in route:
@@ -183,7 +183,7 @@ func api_request(method: int, route: String, payload: Dictionary = {}, timeout_s
 			return {"status": 0, "data": {}}
 	var scoped_route := route + ("&" if "?" in route else "?") + "project=" + str(_identity.project).uri_encode()
 	var attempt := _generation
-	var reply := await _exchange(method, scoped_route, _token, payload, timeout_seconds)
+	var reply := await _exchange(method, scoped_route, _token, payload, timeout_seconds, download_path)
 	if attempt != _generation:
 		return {"status": 0, "data": {}}
 	if reply.status == 401:
@@ -203,13 +203,14 @@ func join_document_room(id: String) -> WebSocketPeer:
 	return peer if peer.connect_to_url(url) == OK else null
 
 
-func _exchange(method: int, route: String, credential: String, payload: Dictionary, timeout_seconds: float = 12.0) -> Dictionary:
+func _exchange(method: int, route: String, credential: String, payload: Dictionary, timeout_seconds: float = 12.0, download_path := "") -> Dictionary:
 	var http := HTTPRequest.new()
 	http.max_redirects = 0
 	http.timeout = timeout_seconds
-	http.body_size_limit = 8 * 1024 * 1024
+	http.body_size_limit = 8 * 1024 * 1024 if download_path.is_empty() else -1
+	http.download_file = download_path
 	add_child(http)
-	var headers := PackedStringArray(["Accept: application/json"])
+	var headers := PackedStringArray(["Accept: application/json" if download_path.is_empty() else "Accept: application/octet-stream"])
 	if not credential.is_empty():
 		headers.append("Authorization: Bearer " + credential)
 	var body := ""
@@ -219,10 +220,12 @@ func _exchange(method: int, route: String, credential: String, payload: Dictiona
 	var reply := {"status": 0, "data": {}}
 	if http.request(_origin + route, headers, method, body) == OK:
 		var response: Array = await http.request_completed
+		if response[0] in [HTTPRequest.RESULT_DOWNLOAD_FILE_CANT_OPEN, HTTPRequest.RESULT_DOWNLOAD_FILE_WRITE_ERROR]:
+			reply.write_failed = true
 		if response[0] == HTTPRequest.RESULT_SUCCESS:
 			reply.status = int(response[1])
 			var bytes: PackedByteArray = response[3]
-			if not bytes.is_empty():
+			if not bytes.is_empty() and download_path.is_empty():
 				var parsed: Variant = JSON.parse_string(bytes.get_string_from_utf8())
 				if parsed is Dictionary:
 					reply.data = parsed

@@ -21,11 +21,11 @@ func wait_for(condition: Callable) -> bool:
 	return condition.call()
 
 
-func run() -> void:
+func open_workbench() -> Node:
 	await create_timer(1).timeout
 	var dock := root.find_child("AIWorkbenchSidebar", true, false)
 	if not require(dock != null, "sidebar missing"):
-		return
+		return null
 	var palette := EditorInterface.get_command_palette()
 	var key := InputEventShortcut.new()
 	key.shortcut = EditorInterface.get_editor_settings().get_shortcut("editor/command_palette")
@@ -36,9 +36,16 @@ func run() -> void:
 	search.text = "editor/open_ai_workbench"
 	search.text_changed.emit(search.text)
 	if not require(results.get_selected().get_metadata(0) == search.text, "command not selected"):
-		return
+		return null
 	results.item_activated.emit()
 	await process_frame
+	return dock
+
+
+func run() -> void:
+	var dock := await open_workbench()
+	if dock == null:
+		return
 	var session := dock.find_child("WorkbenchBusinessSession", true, false)
 	view = dock.find_child("WorkbenchIssueDetail", true, false)
 	if not require(view != null, "detail adapter missing"):
@@ -71,5 +78,5 @@ func run() -> void:
 	open.pressed.emit()
 	if not require(input.text.is_empty() and fields.text.is_empty() and view.get_detail().is_empty() and status.text == "请先登录天璇", "signed-out state"):
 		return
-	print("I02_REPORT=" + JSON.stringify(records))
+	print("WORKBENCH_REPORT=" + JSON.stringify(records))
 	quit(0)

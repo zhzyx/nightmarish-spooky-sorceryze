@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i15",
+  "issue_number": 1756,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756",
+  "source_revision": "9a697d521815225af439916492233492a41f7c74aaffdb3aa0c9e897ed3123fd",
+  "tested_base": "c0bb1dc8caff184f5c198ea57ccf6c83eae4bbc8",
+  "recorded_at": "2026-11-21T21:15:57.467389+00:00",
+  "intake": {
+    "status": "status:in-progress",
+    "exit_code": 0,
+    "issue_comments": 0,
+    "dependency": 1850,
+    "dependency_state": "CLOSED/COMPLETED",
+    "macos_observation": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850#issuecomment-7067781078",
+    "upstream_acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850#issuecomment-7069007188",
+    "method_recall": "gonggong-workspace/editor-dependency-handoff: bind-consumer-release; this handoff binds the four native probes to the same executable digest"
+  },
+  "candidate": {
+    "platform": "Windows x86_64",
+    "build": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-cache> cache_limit=0 --cache-readonly -j6",
+    "sdk": "Pinned WebView2 verified by tools/install_webview2.py --arch x64 --output-dir bin",
+    "embedded_inputs_rebuilt": [
+      "IssueActions.gen.h",
+      "AIWorkbenchSidebar.cpp",
+      "editor.windows.editor.x86_64.lib",
+      "godot.windows.editor.x86_64.exe"
+    ],
+    "engine_sha256": "b0d792f4d97a0c397a5cbe0b6aa58704ce72ce276477fe745b84a0f9f59d0e83",
+    "tested_source_sha256_lf": {
+      "customizations/components/tianxuan/server/issue_lifecycle.py": "dca3ea8f0f0bc9d7eb4dc8eb531b9ff6c34cf4548c0054768b1c52842ce4999c",
+      "customizations/components/tianxuan/server/issue_lifecycle_test_support.py": "aa3e9028c1fc55f965d4d47dc10f273ecf6ec2eca0532112ffc3c40c87364a22",
+      "customizations/components/tianxuan/server/test_issue_lifecycle.py": "c311fbbf65d1ce1489766220adc5a9306f2d4ddbb65fada146e13a7f38be693b",
+      "editor/docks/workbench/issue_actions/issue_lifecycle.gd": "72c5858e8bf07ae954af0e801240f49cf198e9f18ec216b3c81dfd41f7e52b3a",
+      "tests/editor/run_workbench_issue_lifecycle.py": "21662a1e206a0cc8c2a4ce7720163e4d4786632731c40ae13c797c2d1d3f2b3a",
+      "tests/editor/workbench_issue_lifecycle.gd": "7611b386e93948b9268f9167355cb5cc429f68fbcc445078fad38726688b061d",
+      "customizations/components/tianxuan/server/issue_flow.py": "83d30006ac7c99874cc5bae5b4c5cf789f6aa7f88cf309efa2e03b452f46e030",
+      "customizations/components/tianxuan/server/native_entry_factory.py": "b2db39824bf75bc7622855efcec60ba2f4180aef5b687a835a4c4dd9295d8e13",
+      "customizations/components/tianxuan/server/test_api.py": "122a7d81ee49b464e0a0a68f9fae86d684405615dc5ab41e7afc0456a5fb47e7",
+      "customizations/components/tianxuan/server/test_e2e.py": "61c54a00ed6575ddc74ea8f921f6721041caa75fd9b3fdf7986bbf5ac8afa256",
+      "customizations/components/tianxuan/server/test_issue_flow.py": "457219b1bc5d812edce5768475049806e286f7c375e9654a17e29c465bd5405d",
+      "customizations/components/tianxuan/server/test_native_entry.py": "2b503215cd39f399f56a3f69ca41d0a17850cf160b5d496c9c083481255f7410",
+      "customizations/components/tianxuan/server/test_tianxuan_core.py": "19b5b85a8e5f473f5333d9af4eebfcb25284ee7b53edafd5fdcd9e332fd0e511",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "3b3fd7d04fd82f73a0fc46ac637c43f5c2a5a8b83d5907809ebcd5fd31939309",
+      "customizations/components/tianxuan/server/work_management_api.py": "b058a7de10ee2bc0eca81587e879cafce5a0f8bca38475f69008ac13c1cef7e8",
+      "editor/docks/workbench/issue_actions/issue_assignment.gd": "50edbacad48b925d3c33854faba8bda22ac825da13806b72518fb658e65ff32c",
+      "editor/docks/workbench/issue_actions/issue_comments.gd": "a03b45ec2b1d365832d8f2ec778edce62bf3d3cfaa005bcbf1b1853be5fe0e8b"
+    }
+  },
+  "service_tests": {
+    "command": "python -X utf8 -m pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_issue_lifecycle.py customizations/components/tianxuan/server/test_issue_flow.py customizations/components/tianxuan/server/test_issue_comments.py customizations/components/tianxuan/server/test_issue_assignee.py customizations/components/tianxuan/server/test_issue_hierarchy.py customizations/components/tianxuan/server/test_issue_number.py customizations/components/tianxuan/server/test_issue_ancestor_acl.py customizations/components/tianxuan/server/test_work_management.py customizations/components/tianxuan/server/test_api.py customizations/components/tianxuan/server/test_e2e.py customizations/components/tianxuan/server/test_tianxuan_core.py customizations/components/tianxuan/server/test_native_entry.py customizations/components/tianxuan/server/test_native_entry_normal.py customizations/components/tianxuan/server/test_tianshu_bridge.py",
+    "result": "98 passed, 1 warning in 35.46s",
+    "warning": "Starlette TestClient / httpx deprecation",
+    "exit_code": 0,
+    "checks": [
+      "ordinary legacy PATCH / issue.transition / flow.advance and human flow.judge require current registered evidence",
+      "wrong issue comment, stale criteria, wrong project, viewer, revoked ancestor ACL and unaccepted native tasks denied",
+      "submitted assets require latest pinned human decision, content verification, and stable work version",
+      "migration and reopen with and without a retained historical completion event",
+      "native aggregate trusted mapped child receipts and real two-user installed native execution, protected pending child",
+      "requirement progress, bridge, dependencies, hierarchy, numbers, comments and assignment regressions"
+    ]
+  },
+  "native_test": {
+    "command": "python tests/editor/run_workbench_issue_lifecycle.py --godot bin/godot.windows.editor.x86_64.exe --report <report>",
+    "exit_code": 0,
+    "engine_sha256": "b0d792f4d97a0c397a5cbe0b6aa58704ce72ce276477fe745b84a0f9f59d0e83",
+    "views": {
+      "close": {
+        "history": "2026-11-21T21:14:42.961447+00:00　确认验收　in-review → in-review　usr_705a217f81fe42aba456531756ad2320　icmt_877bde28840b44079cc8794ee4e92009\n2026-11-21T21:14:43.037107+00:00　关闭　in-review → done　usr_705a217f81fe42aba456531756ad2320　icmt_877bde28840b44079cc8794ee4e92009",
+        "id": "iss_dd589784c9084dbdbe4baa87a4cbb046",
+        "number": 1,
+        "revision": "8b22adbae5d8ebb494b0238c5b967f401ac82ac340ee177c3285274ed431a276",
+        "status": "done"
+      },
+      "viewer_closed": {
+        "history": "2026-11-21T21:14:42.961447+00:00　确认验收　in-review → in-review　usr_705a217f81fe42aba456531756ad2320　icmt_877bde28840b44079cc8794ee4e92009\n2026-11-21T21:14:43.037107+00:00　关闭　in-review → done　usr_705a217f81fe42aba456531756ad2320　icmt_877bde28840b44079cc8794ee4e92009",
+        "id": "iss_dd589784c9084dbdbe4baa87a4cbb046",
+        "number": 1,
+        "revision": "8b22adbae5d8ebb494b0238c5b967f401ac82ac340ee177c3285274ed431a276",
+        "status": "done"
+      },
+      "reopen": {
+        "history": "2026-11-21T21:14:42.961447+00:00　确认验收　in-review → in-review　usr_705a217f81fe42aba456531756ad2320　icmt_877bde28840b44079cc8794ee4e92009\n2026-11-21T21:14:43.037107+00:00　关闭　in-review → done　usr_705a217f81fe42aba456531756ad2320　icmt_877bde28840b44079cc8794ee4e92009\n2026-11-21T21:14:50.820664+00:00　重开　done → in-review　usr_d82375be85bb4075a47560203205047f",
+        "id": "iss_dd589784c9084dbdbe4baa87a4cbb046",
+        "number": 1,
+        "revision": "8b22adbae5d8ebb494b0238c5b967f401ac82ac340ee177c3285274ed431a276",
+        "status": "in-review"
+      },
+      "viewer_open": {
+        "history": "2026-11-21T21:14:42.961447+00:00　确认验收　in-review → in-review　usr_705a217f81fe42aba456531756ad2320　icmt_877bde28840b44079cc8794ee4e92009\n2026-11-21T21:14:43.037107+00:00　关闭　in-review → done　usr_705a217f81fe42aba456531756ad2320　icmt_877bde28840b44079cc8794ee4e92009\n2026-11-21T21:14:50.820664+00:00　重开　done → in-review　usr_d82375be85bb4075a47560203205047f",
+        "id": "iss_dd589784c9084dbdbe4baa87a4cbb046",
+        "number": 1,
+        "revision": "8b22adbae5d8ebb494b0238c5b967f401ac82ac340ee177c3285274ed431a276",
+        "status": "in-review"
+      }
+    },
+    "writes_server_client": [
+      [
+        "close",
+        409,
+        409
+      ],
+      [
+        "accept",
+        200,
+        200
+      ],
+      [
+        "close",
+        200,
+        503
+      ],
+      [
+        "reopen",
+        null,
+        503
+      ],
+      [
+        "reopen",
+        200,
+        200
+      ],
+      [
+        "close",
+        409,
+        409
+      ]
+    ],
+    "same_retry_key": true,
+    "verified_history_after_restart": [
+      {
+        "version": 2,
+        "kind": "accepted",
+        "actor": "usr_705a217f81fe42aba456531756ad2320",
+        "previous": "in-review",
+        "target": "in-review",
+        "revision": "8b22adbae5d8ebb494b0238c5b967f401ac82ac340ee177c3285274ed431a276",
+        "evidence": "icmt_877bde28840b44079cc8794ee4e92009",
+        "asset_version": 0,
+        "created_at": "2026-11-21T21:14:42.961447+00:00"
+      },
+      {
+        "version": 3,
+        "kind": "closed",
+        "actor": "usr_705a217f81fe42aba456531756ad2320",
+        "previous": "in-review",
+        "target": "done",
+        "revision": "8b22adbae5d8ebb494b0238c5b967f401ac82ac340ee177c3285274ed431a276",
+        "evidence": "icmt_877bde28840b44079cc8794ee4e92009",
+        "asset_version": 0,
+        "created_at": "2026-11-21T21:14:43.037107+00:00"
+      },
+      {
+        "version": 4,
+        "kind": "reopened",
+        "actor": "usr_d82375be85bb4075a47560203205047f",
+        "previous": "done",
+        "target": "in-review",
+        "revision": "8b22adbae5d8ebb494b0238c5b967f401ac82ac340ee177c3285274ed431a276",
+        "evidence": null,
+        "asset_version": 0,
+        "created_at": "2026-11-21T21:14:50.820664+00:00"
+      }
+    ],
+    "evidence_comment": {
+      "id": "icmt_877bde28840b44079cc8794ee4e92009",
+      "tenant_id": "ten_f95a0a66bcce491dabd67408d52862eb",
+      "issue_id": "iss_dd589784c9084dbdbe4baa87a4cbb046",
+      "author": "usr_d82375be85bb4075a47560203205047f",
+      "body": "已逐字节回读 asset.txt，SHA-256 cf274106606ceb7813f11eca062a54bab5004b6680ca110b8afc03337b81b07f",
+      "created_at": "2026-11-21T21:14:38.685147+00:00",
+      "author_name": "白辰",
+      "parent_id": null
+    },
+    "passed": true
+  },
+  "same_editor_regressions": {
+    "I04": {
+      "command": "python tests/editor/run_workbench_issue_dependencies.py --godot <same editor> --report <report>",
+      "exit_code": 0,
+      "result": {
+        "engine_sha256": "b0d792f4d97a0c397a5cbe0b6aa58704ce72ce276477fe745b84a0f9f59d0e83",
+        "upstream_terminal": "produced",
+        "release": {
+          "release": "5c5551cdf258e03be1cc7fe7c4d1449417cb34410305df99070bd2d8b213292c",
+          "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8"
+        },
+        "ui": {
+          "accepted_row": "a　done　已验收",
+          "after": 200,
+          "before": 409,
+          "blocked_row": "a　in-review　未验收，阻塞推进"
+        },
+        "edit_http_statuses": [
+          200,
+          409,
+          200,
+          200
+        ],
+        "persisted_downstream": {
+          "status": "in-progress",
+          "version": 4,
+          "content_revision": "0e3edfaa7745eb8b12ff2e9c96573136205924ddbc09f41b1ad041d577480fce"
+        }
+      }
+    },
+    "I05": {
+      "command": "python tests/editor/run_workbench_issue_comments.py --godot <same editor> --report <report>",
+      "exit_code": 0,
+      "result": {
+        "engine_sha256": "b0d792f4d97a0c397a5cbe0b6aa58704ce72ce276477fe745b84a0f9f59d0e83",
+        "comment_post_status": [
+          503,
+          200,
+          200,
+          200
+        ],
+        "verified_thread": [
+          {
+            "id": "icmt_dea5bf04376f4909acb2b2542f335ca9",
+            "tenant_id": "ten_fdf254c1b5a3489d9bb22857625307fc",
+            "issue_id": "iss_37964602e1634b01ac2c355a2d7448b8",
+            "author": "usr_9f15bf8edd554750875de9ac14d86cd1",
+            "body": "入口截图已更新",
+            "created_at": "2026-11-21T21:07:36.673458+00:00",
+            "author_name": "林川",
+            "parent_id": null
+          },
+          {
+            "id": "icmt_49eda5bd857043f3a89bb7c4812714cf",
+            "tenant_id": "ten_fdf254c1b5a3489d9bb22857625307fc",
+            "issue_id": "iss_37964602e1634b01ac2c355a2d7448b8",
+            "author": "usr_2363d5830cf044c98cd82189936a3080",
+            "body": "请补上验收步骤\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径\n复核入口和返回路径",
+            "created_at": "2026-11-21T21:07:40.451431+00:00",
+            "author_name": "唐敏",
+            "parent_id": "icmt_dea5bf04376f4909acb2b2542f335ca9"
+          },
+          {
+            "id": "icmt_2f146e38976d4c778e274dc62b030dea",
+            "tenant_id": "ten_fdf254c1b5a3489d9bb22857625307fc",
+            "issue_id": "iss_37964602e1634b01ac2c355a2d7448b8",
+            "author": "usr_9f15bf8edd554750875de9ac14d86cd1",
+            "body": "已补充第二步",
+            "created_at": "2026-11-21T21:07:44.157110+00:00",
+            "author_name": "林川",
+            "parent_id": "icmt_49eda5bd857043f3a89bb7c4812714cf"
+          }
+        ],
+        "editor_launches": [
+          {
+            "phase": 0,
+            "restored": -1,
+            "selected": 0
+          },
+          {
+            "phase": 1,
+            "restored": -1,
+            "selected": 1
+          },
+          {
+            "phase": 2,
+            "restored": 0,
+            "selected": 1
+          },
+          {
+            "phase": 3,
+            "restored": 1,
+            "selected": 0
+          }
+        ],
+        "pass": true
+      }
+    },
+    "I06": {
+      "command": "python tests/editor/run_workbench_issue_assignment.py --godot <same editor> --report <report>",
+      "exit_code": 0,
+      "result": {
+        "engine_sha256": "b0d792f4d97a0c397a5cbe0b6aa58704ce72ce276477fe745b84a0f9f59d0e83",
+        "edits": [
+          [
+            "PUT",
+            "/api/v1/issues/{id}/assignee",
+            200
+          ],
+          [
+            "POST",
+            "/api/v1/issues/{id}/work/flow/advance",
+            200
+          ],
+          [
+            "PUT",
+            "/api/v1/issues/{id}/assignee",
+            403
+          ],
+          [
+            "POST",
+            "/api/v1/issues/{id}/work/flow/advance",
+            403
+          ]
+        ],
+        "native_views": {
+          "write": [
+            {
+              "owner": null,
+              "revision": "84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e",
+              "status": "backlog",
+              "visible": "标题　场景检查\n负责人　未分配\n状态　backlog\n内容版本　84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e"
+            },
+            {
+              "owner": "陈墨",
+              "revision": "84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e",
+              "status": "backlog",
+              "visible": "标题　场景检查\n负责人　陈墨\n状态　backlog\n内容版本　84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e"
+            },
+            {
+              "owner": "陈墨",
+              "revision": "84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e",
+              "status": "planned",
+              "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e"
+            }
+          ],
+          "acl": [
+            {
+              "owner": "陈墨",
+              "revision": "84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e",
+              "status": "planned",
+              "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e"
+            },
+            {
+              "owner": "陈墨",
+              "revision": "84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e",
+              "status": "planned",
+              "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e"
+            }
+          ],
+          "viewer": [
+            {
+              "owner": "陈墨",
+              "revision": "84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e",
+              "status": "planned",
+              "visible": "标题　场景检查\n负责人　陈墨\n状态　planned\n内容版本　84dedc2b03cf8a8d789aa104aaa76d2feceb11601294309b9e064c3a69c07e3e"
+            }
+          ]
+        },
+        "reopened_database_matches": true
+      }
+    }
+  },
+  "receipt_scope": "Target consumed in local Windows native editor backed by authenticated Tianxuan, reviewed by an independent read-only account and reopened database. GitHub signing/main reception belongs to the parent publisher."
+}
