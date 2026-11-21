@@ -43,7 +43,7 @@ def write_verified(store, tenant, actor, edits):
     return {"module": module, "revision": revision}
 
 
-def import_inventory(manifest_path, database, tenant, actor, *, artifacts=None):
+def import_inventory(manifest_path, database, tenant, actor, *, artifacts=None, binary_base=None):
     """Return a verified catalog pointer. Incomplete runs leave reusable private blocks."""
     database = Path(database).resolve()
     manifest_path = Path(manifest_path)
@@ -84,6 +84,12 @@ def import_inventory(manifest_path, database, tenant, actor, *, artifacts=None):
     if edits:
         batches.append(dict(write_verified(store, tenant, actor, edits), order=list(edits)))
     binaries = {}
+    if binary_base is not None:
+        module, revision = binary_base
+        previous = json.loads(store.read(tenant, module, revision, "catalog.json"))
+        if previous["version"] != 1 or previous["report"]["source"] != report["source"]:
+            raise ValueError("Incompatible archive binary base")
+        binaries.update(previous["binaries"])
     for source_id, (path, expected) in sorted((artifacts or {}).items()):
         checksum = hashlib.sha256()
         blocks = []
@@ -110,8 +116,8 @@ def import_inventory(manifest_path, database, tenant, actor, *, artifacts=None):
     )
 
 
-def restore_inventory(database, tenant, module, revision, output):
-    """Rebuild the archived report, exact input stream and binaries in a new directory."""
+def restore_inventory(database, tenant, module, revision, output, *, binary_ids=None):
+    """Rebuild the report and exact record stream. By default restore all binaries."""
     import tempfile
 
     output = Path(output).resolve()
@@ -153,6 +159,8 @@ def restore_inventory(database, tenant, module, revision, output):
         (target / "report.json").write_bytes(canonical(report) + b"\n")
         files = {}
         for source_id, binary in catalog["binaries"].items():
+            if binary_ids is not None and source_id not in binary_ids:
+                continue
             name = "binary-" + digest(source_id.encode())
             checksum = hashlib.sha256()
             with (target / name).open("xb") as stream:

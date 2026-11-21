@@ -217,8 +217,22 @@ def archive_history(args: argparse.Namespace) -> dict[str, Any]:
 def historical_issue(args: argparse.Namespace) -> dict[str, Any]:
     source_id = args.source_id
     link = re.fullmatch(r"https://github\.com/([\w.-]+/[\w.-]+)/issues/([1-9]\d*)/?", source_id)
+    pull = re.fullmatch(
+        r"https://github\.com/([\w.-]+/[\w.-]+)/pull/([1-9]\d*)"
+        r"(?:/(?:files)?)?(?:#(issuecomment-|pullrequestreview-|discussion_r)([1-9]\d*))?",
+        source_id,
+    )
+    expected_kind = "issue"
     if link:
         source_id = f"github:{link[1]}/issue/{link[2]}"
+    elif pull:
+        expected_kind = {
+            None: "pull",
+            "issuecomment-": "issue_comment",
+            "pullrequestreview-": "review",
+            "discussion_r": "review_comment",
+        }[pull[3]]
+        source_id = f"github:{pull[1]}/{expected_kind}/{pull[4] or pull[2]}"
     params = {"project": args.project, "source_id": source_id}
 
     def read(action: str, **query: str) -> dict[str, Any]:
@@ -231,11 +245,16 @@ def historical_issue(args: argparse.Namespace) -> dict[str, Any]:
             params={**params, **query},
         )
 
-    detail = read("detail", limit="1")
+    detail = read("detail", limit="50" if expected_kind == "pull" else "1")
     row = detail["record"]
-    if row["kind"] != "issue" or row["source_id"] != source_id:
+    if row["kind"] != expected_kind or row["source_id"] != source_id:
         raise BridgeError("该标识未指向历史工单")
     content = row["content"]
+    if pull and pull[3]:
+        original = content.get("html_url") or content.get("url", "")
+        canonical = f"https://github.com/{pull[1]}/pull/{pull[2]}#{pull[3]}{pull[4]}"
+        if original.replace("/files#", "#") != canonical:
+            raise BridgeError("评审不属于指定的 PR")
     body = content.get("body") or ""
     if row.get("truncated"):
         chunks = []
@@ -249,9 +268,24 @@ def historical_issue(args: argparse.Namespace) -> dict[str, Any]:
                 raise BridgeError("历史工单正文分页无效")
             offset = page["next_offset"]
         body = "".join(chunks)
+    if pull and expected_kind == "pull":
+        links = []
+        page = detail["comments"]
+        while True:
+            for entry in page["items"]:
+                item = entry["content"]
+                original = item.get("html_url") or item.get("url", "")
+                if original.replace("/files#", "#").startswith(f"https://github.com/{pull[1]}/pull/{pull[2]}#"):
+                    links.append(original)
+            offset = page["offset"] + len(page["items"])
+            if offset >= page["total"] or not page["items"]:
+                break
+            page = read("detail", revision=detail["revision"], offset=str(offset), limit="50")["comments"]
+        if links:
+            body += "\n\n将原始链接复制到上方输入框可读取归档评审：\n" + "\n".join(links)
     return {
         "source_id": source_id,
-        "title": content.get("title", ""),
+        "title": content.get("title") or ("PR 归档评审" if pull and pull[3] else ""),
         "state": content.get("state", ""),
         "body": body,
         "revision": detail["revision"],

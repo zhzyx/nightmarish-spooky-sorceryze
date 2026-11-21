@@ -80,7 +80,7 @@ def stamp_import(database, tenant, module, revision):
             )
 
 
-def publish_import(database, tenant, project, actor, module, revision):
+def publish_import(database, tenant, project, actor, module, revision, *, expected_current=None):
     """A trusted operator grants this project visibility of a verified catalog."""
     if not all(isinstance(i, str) and re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", i) for i in (tenant, actor)):
         raise ValueError("Invalid publication identity")
@@ -88,17 +88,24 @@ def publish_import(database, tenant, project, actor, module, revision):
     if not isinstance(project, str) or not re.fullmatch(segment + "(?:/" + segment + ")?", project):
         raise ValueError("Invalid publication project")
     with closing(_connect(database, "rw")) as db, db:
+        db.execute("BEGIN IMMEDIATE")
         _catalog(db, tenant, module, revision)
         db.execute(
             "CREATE TABLE IF NOT EXISTS migration_publications (id INTEGER PRIMARY KEY, tenant TEXT,"
             " project TEXT, module TEXT, revision TEXT, actor TEXT, published_at TEXT,"
             " UNIQUE(tenant,project,module,revision))"
         )
+        if expected_current is not None:
+            current = _status(db, tenant, project)
+            if not current or current["revision"] not in (revision, expected_current):
+                raise ValueError("Project publication changed during synchronization; retry on the current revision")
         db.execute(
             "INSERT OR IGNORE INTO migration_publications(tenant,project,module,revision,actor,published_at)"
             " VALUES(?,?,?,?,?,?)",
             (tenant, project, module, revision, actor, _now()),
         )
+        if expected_current is not None and _status(db, tenant, project)["revision"] != revision:
+            raise ValueError("Candidate is historical and did not become the current publication")
         return _status(db, tenant, project, module, revision)
 
 

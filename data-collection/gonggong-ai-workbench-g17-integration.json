@@ -1,0 +1,163 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g17",
+  "issue_number": 1741,
+  "integration_base": "4c56b3fe48a2d1689259291d02580d2317a9ef12",
+  "source_sha256": {
+    "customizations/components/tianxuan/migration/importer.py": "da3f94295958531fcf5e9d4fc41974d281da4d5a6eb474332d5871aafadb3c3b",
+    "customizations/components/tianxuan/migration/history_records.py": "f28bc0a4b2e9f00c97907106d482575d2df49bc0e4d96194cc12ee5c456b6b0e",
+    "customizations/components/tianxuan/migration/migration_status.py": "ec309cb21aa597071f80fc7e87a9e2a56cb0ae6c50cddb07c9713e4e1759e81f",
+    "customizations/components/tianxuan/migration/sync_merged_pull.py": "d6376e4d681fa3ab5e8ba333fa203f0aff235e2418cc0296b195b18275c52809",
+    "customizations/components/tianxuan/migration/test_sync_merged_pull.py": "ba5f4965a1af945ffd77c0273e5cdbadea4b980c2797a466b905736ede7562d9",
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "d9043f48bc6d0d8e8dc917b8bd515bf408fcc10e2ebc4506b5852f752a86d1a1",
+    "tests/editor/daqian_merged_pull_review.gd": "5e15c76f58e7013b6db2047d365cbbb0f2fdbaac8cbfdab8a0873f3a5f8d24ba",
+    "design-docs/gonggong-ai-workbench-g17.md": "bef1a422318eac1efcc792d4d239da8468f5e651cf95d79afd396f677202da2e"
+  },
+  "verification": {
+    "first_sync": {
+      "source_id": "github:zhzyx/nightmarish-spooky-sorceryze/pull/1663",
+      "pull_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1663",
+      "merge_oid": "422c07ad5eaa7585494ae063382ea147074dcf09",
+      "state": "synced",
+      "publication": {
+        "source": "zhzyx/nightmarish-spooky-sorceryze",
+        "source_revision": "422c07ad5eaa7585494ae063382ea147074dcf09",
+        "records_sha256": "0ed41b1ed99ac2251f1a189a5e75e9ed55ffc2c958cf31e9efc7999b35f56ab0",
+        "counts": {
+          "commit": 1909,
+          "issue_comment": 2,
+          "pull": 1
+        },
+        "binary_count": 2,
+        "catalog_sha256": "5c915f44c6dbfe20c32177507f5583117337a4984b8fcf4400844f9212409ee7",
+        "module": "migration-76b072cf652210c64b7e0208b164ce9999a5585c780fc372b98766f530d3f229",
+        "revision": "2553a30ba669a47a6cfe6b2dfc356e9218eef6ff90c71e70678624a068e18d9d",
+        "historical_policy": "record_only",
+        "tenant": "ten_6f8c1ec646114bad9d8e363c4f8c2385",
+        "project": "g17/replay",
+        "published_by": "migration",
+        "published_at": "2026-11-21T16:04:15.549414+00:00",
+        "imported_at": "2026-11-21T16:04:15.474310+00:00"
+      },
+      "previous_revision": "95816b7ab338aadb7215d61a551f8dd5060c432020dd3bc9ed4dd3369bc03d19",
+      "branch_before": "5a827aa07df8b25679522bf8bd87f29ab8fb2a98",
+      "branch_after": "422c07ad5eaa7585494ae063382ea147074dcf09",
+      "new_commits": 3
+    },
+    "replay": {
+      "source_id": "github:zhzyx/nightmarish-spooky-sorceryze/pull/1663",
+      "pull_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1663",
+      "merge_oid": "422c07ad5eaa7585494ae063382ea147074dcf09",
+      "state": "already_synced",
+      "publication": {
+        "source": "zhzyx/nightmarish-spooky-sorceryze",
+        "source_revision": "422c07ad5eaa7585494ae063382ea147074dcf09",
+        "records_sha256": "0ed41b1ed99ac2251f1a189a5e75e9ed55ffc2c958cf31e9efc7999b35f56ab0",
+        "counts": {
+          "commit": 1909,
+          "issue_comment": 2,
+          "pull": 1
+        },
+        "binary_count": 2,
+        "catalog_sha256": "5c915f44c6dbfe20c32177507f5583117337a4984b8fcf4400844f9212409ee7",
+        "module": "migration-76b072cf652210c64b7e0208b164ce9999a5585c780fc372b98766f530d3f229",
+        "revision": "2553a30ba669a47a6cfe6b2dfc356e9218eef6ff90c71e70678624a068e18d9d",
+        "historical_policy": "record_only",
+        "tenant": "ten_6f8c1ec646114bad9d8e363c4f8c2385",
+        "project": "g17/replay",
+        "published_by": "migration",
+        "published_at": "2026-11-21T16:04:15.549414+00:00",
+        "imported_at": "2026-11-21T16:04:15.474310+00:00"
+      }
+    },
+    "before_replay_rows": {
+      "native_blobs": 1988,
+      "native_heads": 81,
+      "native_revisions": 81,
+      "native_receipts": 81,
+      "migration_publications": 2
+    },
+    "after_replay_rows": {
+      "native_blobs": 1988,
+      "native_heads": 81,
+      "native_revisions": 81,
+      "native_receipts": 81,
+      "migration_publications": 2
+    },
+    "pull_count": 1,
+    "old_comments": 2,
+    "target_commit": {
+      "source_id": "github:zhzyx/nightmarish-spooky-sorceryze/commit/422c07ad5eaa7585494ae063382ea147074dcf09",
+      "tenant": "ten_6f8c1ec646114bad9d8e363c4f8c2385",
+      "project": "g17/replay",
+      "module": "migration-76b072cf652210c64b7e0208b164ce9999a5585c780fc372b98766f530d3f229",
+      "revision": "2553a30ba669a47a6cfe6b2dfc356e9218eef6ff90c71e70678624a068e18d9d",
+      "oid": "422c07ad5eaa7585494ae063382ea147074dcf09",
+      "tree": "6b82b2ef78f3f2bccb92260c98dc78b87062570c",
+      "parents": [
+        "5a827aa07df8b25679522bf8bd87f29ab8fb2a98",
+        "f4c4f402079f9867e128e3c7d8587253d4cb4672"
+      ],
+      "author": {
+        "name": "Kaiyun Xue",
+        "email": "30625345+kaiyunxue@users.noreply.github.com",
+        "time": "2026-11-20T11:02:44+08:00"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "time": "2026-11-20T11:02:44+08:00"
+      }
+    },
+    "review": {
+      "github_id": 7029024766,
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1663#issuecomment-7029024766",
+      "created_at": "2026-11-20T03:02:41Z",
+      "body_sha256": "a783681c8972dbcecdb848e1b3cc28b856f0c2eee6ea98e48f4b361235226286",
+      "body": "独立验收批准：仓库所有者 Kevin 在会话中明确确认“我审查也可以。通过了，合入 main 吧”。批准范围为当前候选的动态 Review、生成结果恢复及对应测试／证据。main 新增 5 个提交与本候选写入路径零重叠，按 zero_overlap_main_drift_policy 使用已通过 CI 的精确 head 合入。"
+    },
+    "native": {
+      "editor_sha256": "7e96fda6a5dfdc977a741e47fed54282b643e3af64cf400778285455242379d2",
+      "reads": [
+        {
+          "display_sha256": "0ed715326592f5120788d2f31115f7f831e949580d3823030d26a63109ac0af8",
+          "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1663"
+        },
+        {
+          "display_sha256": "f5099338269357c446fc1a45edddbe8b4725ac38e5cf07f5bee443a4dd04f7ea",
+          "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1663#issuecomment-7029024766"
+        },
+        {
+          "display_sha256": "8f08d044ca51b15bac8bae7f9a8c18d8607f149082c5a2615fbfc4b142852931",
+          "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1664#issuecomment-7029024766"
+        }
+      ],
+      "http": [
+        [
+          "GET",
+          "/api/v1/auth/me",
+          null,
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/migration/history/detail",
+          "github:zhzyx/nightmarish-spooky-sorceryze/pull/1663",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/migration/history/detail",
+          "github:zhzyx/nightmarish-spooky-sorceryze/issue_comment/7029024766",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/migration/history/detail",
+          "github:zhzyx/nightmarish-spooky-sorceryze/issue_comment/7029024766",
+          200
+        ]
+      ]
+    }
+  },
+  "observed_at": "2026-11-21T16:31:54.406128+00:00"
+}
