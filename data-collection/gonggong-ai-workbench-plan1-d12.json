@@ -1,0 +1,520 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-d12",
+  "issue_number": 1748,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1748",
+  "observed_at": "2026-11-21T17:29:36.714146+00:00",
+  "source_baseline": "3034a7ef9ee4b4b550b714905321d0998c14bd24",
+  "source_sha256": {
+    "design-docs/gonggong-ai-workbench-d12.md": "fbebd5fc28b8f01b5a90d7df06ba25ec214aa9e4791b23204a0ebf527ace70fa",
+    "editor/docks/ai_chat_dock.h": "6a9d1be18a654e2c5ab3721ac800d56fb02542f955782453fc19d3c701441531",
+    "editor/docks/workbench/AIWorkbenchDraft.cpp": "fd46a5c30d1a2a7e65fa81ee36106441b8fff0b177fd0a62ba761ab037228b42",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "a58f7f8fd42f0d137982e6eb18485e134a4f8cc5097051b0933a15c7124afff8",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "777c6ffcac9afd51d53f08552a59c6a1cd1f27e134dbe585d3a862a9e6c778f5",
+    "editor/docks/workbench/business_session.gd": "ba8f1491ae98e5b1ee012e5d595bb3b60effa0f837629ff3c663a569d96a00a9",
+    "editor/docks/workbench/module_selector.gd": "79600fea0cef522cd28b452a676ba816c0f93aaee4804fbd6fcbb9be5136578d",
+    "tests/editor/run_workbench_business_modules.py": "cd903a246cfcba0982d06ced4bb9aec9da2713ce8f07ec22bf757e2997a4de4d",
+    "tests/editor/run_workbench_module_drafts.py": "b3ec15d0c48248ecb1ed50526197d2af25fbca9d0f885137d61c9b5fae921637",
+    "tests/editor/workbench_business_modules.gd": "bcb7f50d15b21924a99e35eca92384fc2061f98926d093ab1bcd7553d6e4e6b9",
+    "tests/editor/workbench_business_references.gd": "e6ed308891236e9f60d5a571330674e2cf475a0197b461373f51dba70db3a28f",
+    "tests/editor/workbench_module_drafts.gd": "ed1d3016b630063e1b2798db16f285b33c952d42ee7eb9fc279d188c18e111b8"
+  },
+  "intake": {
+    "state": "in-progress",
+    "direct_dependencies": {
+      "1784": "closed",
+      "1862": "closed",
+      "1810": "closed"
+    },
+    "original_issue_comments": 0,
+    "related_mac_observation": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709#issuecomment-7061519235",
+    "related_mac_scope": "Historical D01 and C08 results; D12 was then waiting for U15. No macOS D12 cold restart result."
+  },
+  "host": "Windows x86_64, private headless editor copy; Tianxuan FastAPI and SQLite on loopback; ModelGateway with a deterministic httpx test transport.",
+  "build": {
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<read-only-cache> cache_limit=0 --cache-readonly -j6",
+    "toolchain": "VS 14.5, Windows SDK 10.0.26100.0; pinned WebView2 SDK; read-only cache",
+    "exit_code": 0,
+    "editor_sha256": "9b9e8c8b71e721913bb2aeda3733ee576ba89104248951c4f0dfcae2d8e6817e"
+  },
+  "checks": {
+    "D12": {
+      "controls": [
+        {
+          "controls": [
+            {
+              "conversation": null,
+              "draft": "",
+              "issue": "iss_c648b87c6a84476c8ecf82a13f138474",
+              "module": "mod_f718280b5c954485bf4235e0a749fb82",
+              "references": [],
+              "reply_visible": false,
+              "turns": 0
+            },
+            {
+              "conversation": "c90aef40-b155-4659-b1fb-4ad4a71ae4d8",
+              "draft": "",
+              "issue": "iss_c648b87c6a84476c8ecf82a13f138474",
+              "module": "mod_f718280b5c954485bf4235e0a749fb82",
+              "references": [],
+              "reply_visible": true,
+              "turns": 1
+            },
+            {
+              "conversation": "c90aef40-b155-4659-b1fb-4ad4a71ae4d8",
+              "draft": "draft A [REDACTED]",
+              "issue": "iss_c648b87c6a84476c8ecf82a13f138474",
+              "module": "mod_f718280b5c954485bf4235e0a749fb82",
+              "references": [
+                "移除 · res://module0.tres\nda10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+              ],
+              "reply_visible": true,
+              "turns": 1
+            },
+            {
+              "conversation": null,
+              "draft": "draft B",
+              "issue": "iss_85cc33afbedd472086e438940d6034e3",
+              "module": "mod_5f7110f61f274b34ac8830f5e8c32ed4",
+              "references": [
+                "移除 · res://module1.tres\n1bfd728e964cda28c57718bd5ea3ce8c3a3f2e80bee318fd7a263dc9cf556eee"
+              ],
+              "reply_visible": false,
+              "turns": 0
+            }
+          ],
+          "phase": "write",
+          "pid": 92468
+        },
+        {
+          "controls": [
+            {
+              "conversation": "c90aef40-b155-4659-b1fb-4ad4a71ae4d8",
+              "draft": "draft A [REDACTED]",
+              "issue": "iss_c648b87c6a84476c8ecf82a13f138474",
+              "module": "mod_f718280b5c954485bf4235e0a749fb82",
+              "references": [
+                "移除 · res://module0.tres\nda10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+              ],
+              "reply_visible": true,
+              "turns": 1
+            },
+            {
+              "conversation": null,
+              "draft": "draft B",
+              "issue": "iss_85cc33afbedd472086e438940d6034e3",
+              "module": "mod_5f7110f61f274b34ac8830f5e8c32ed4",
+              "references": [
+                "移除 · res://module1.tres\n1bfd728e964cda28c57718bd5ea3ce8c3a3f2e80bee318fd7a263dc9cf556eee"
+              ],
+              "reply_visible": false,
+              "turns": 0
+            },
+            {
+              "conversation": null,
+              "draft": "",
+              "issue": "iss_85cc33afbedd472086e438940d6034e3",
+              "module": "mod_5f7110f61f274b34ac8830f5e8c32ed4",
+              "references": [],
+              "reply_visible": false,
+              "turns": 0
+            }
+          ],
+          "phase": "reopen",
+          "pid": 116784
+        },
+        {
+          "controls": [
+            {
+              "conversation": "c90aef40-b155-4659-b1fb-4ad4a71ae4d8",
+              "draft": "draft A [REDACTED]",
+              "issue": "iss_c648b87c6a84476c8ecf82a13f138474",
+              "module": "mod_f718280b5c954485bf4235e0a749fb82",
+              "references": [
+                "移除 · res://module0.tres\nda10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+              ],
+              "reply_visible": true,
+              "turns": 1
+            },
+            {
+              "conversation": null,
+              "draft": "",
+              "issue": "iss_85cc33afbedd472086e438940d6034e3",
+              "module": "mod_5f7110f61f274b34ac8830f5e8c32ed4",
+              "references": [],
+              "reply_visible": false,
+              "turns": 0
+            }
+          ],
+          "phase": "cleared",
+          "pid": 108700
+        },
+        {
+          "controls": [
+            {
+              "conversation": null,
+              "draft": "",
+              "issue": "iss_c648b87c6a84476c8ecf82a13f138474",
+              "module": "mod_f718280b5c954485bf4235e0a749fb82",
+              "references": [],
+              "reply_visible": false,
+              "turns": 0
+            }
+          ],
+          "phase": "other-account",
+          "pid": 122716
+        },
+        {
+          "empty_default": true,
+          "phase": "other-project",
+          "pid": 85200
+        }
+      ],
+      "service_calls": {
+        "write": [
+          [
+            "GET",
+            "/api/v1/auth/me",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/default/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_f718280b5c954485bf4235e0a749fb82/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations",
+            201
+          ],
+          [
+            "PUT",
+            "/api/v1/business-modules/mod_f718280b5c954485bf4235e0a749fb82/location",
+            200
+          ],
+          [
+            "POST",
+            "/api/v1/workspace/conversations/c90aef40-b155-4659-b1fb-4ad4a71ae4d8/turns",
+            200
+          ],
+          [
+            "PUT",
+            "/api/v1/business-modules/mod_f718280b5c954485bf4235e0a749fb82/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/workspace/conversations/c90aef40-b155-4659-b1fb-4ad4a71ae4d8",
+            200
+          ],
+          [
+            "PUT",
+            "/api/v1/business-modules/mod_f718280b5c954485bf4235e0a749fb82/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_5f7110f61f274b34ac8830f5e8c32ed4/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ]
+        ],
+        "reopen": [
+          [
+            "GET",
+            "/api/v1/auth/me",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_f718280b5c954485bf4235e0a749fb82/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/workspace/conversations/c90aef40-b155-4659-b1fb-4ad4a71ae4d8",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_5f7110f61f274b34ac8830f5e8c32ed4/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ]
+        ],
+        "cleared": [
+          [
+            "GET",
+            "/api/v1/auth/me",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_f718280b5c954485bf4235e0a749fb82/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/workspace/conversations/c90aef40-b155-4659-b1fb-4ad4a71ae4d8",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_5f7110f61f274b34ac8830f5e8c32ed4/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_f718280b5c954485bf4235e0a749fb82/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/workspace/conversations/c90aef40-b155-4659-b1fb-4ad4a71ae4d8",
+            200
+          ]
+        ],
+        "other-account": [
+          [
+            "GET",
+            "/api/v1/auth/me",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/mod_f718280b5c954485bf4235e0a749fb82/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ]
+        ],
+        "other-project": [
+          [
+            "GET",
+            "/api/v1/auth/me",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/business-modules/default/location",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues",
+            200
+          ]
+        ]
+      },
+      "editor_diagnostics": {
+        "write": [
+          "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+          "ERROR: 234 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 116 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 589 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ],
+        "reopen": [
+          "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+          "ERROR: 230 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 116 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 588 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ],
+        "cleared": [
+          "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+          "ERROR: 230 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 116 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 588 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ],
+        "other-account": [
+          "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+          "ERROR: 222 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 114 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 582 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ],
+        "other-project": [
+          "ERROR: 6 RID allocations of type 'struct RendererViewport::Viewport' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct RendererDummy::TextureStorage::DummyTexture * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RendererSceneCull::Scenario' were leaked at exit.",
+          "ERROR: 222 RID allocations of type 'struct TextServerAdvanced::ShapedTextDataAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'struct TextServerAdvanced::FontAdvanced * __ptr64' were leaked at exit.",
+          "ERROR: 2 RID allocations of type 'struct TextServerAdvanced::FontAdvancedLinkedVariation * __ptr64' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'struct RichTextLabel::Item * __ptr64' were leaked at exit.",
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 114 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 582 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ]
+      },
+      "stored_turn": {
+        "id": "ac4bc6bb-2865-41d7-847a-a13077b5dbd1",
+        "content": "D12 consult once\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：#1  Same issue title\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://module0.tres\",\"revision\":\"da10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83\"}]",
+        "state": "answered",
+        "answer": "D12 fixture answer",
+        "model": "fixture",
+        "error": null,
+        "context_snapshot": {
+          "project": "d12/studio",
+          "module_id": "mod_f718280b5c954485bf4235e0a749fb82",
+          "issue_id": "iss_c648b87c6a84476c8ecf82a13f138474",
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "res://module0.tres",
+              "revision": "da10e6d4214a18431d5b19a0bddb04d9e4578040a5eb13f1b6ce72d6ee0c5b83"
+            }
+          ]
+        }
+      },
+      "model_fixture_calls": 1,
+      "credential_scan_files": 26,
+      "request_id": "gonggong-ai-workbench-plan1-d12",
+      "issue_number": 1748,
+      "editor_sha256": "9b9e8c8b71e721913bb2aeda3733ee576ba89104248951c4f0dfcae2d8e6817e",
+      "state": "passed"
+    },
+    "C06": {
+      "result": "passed",
+      "real_account_switch": true,
+      "last_position_saved": {
+        "issue_id": null,
+        "conversation_id": null,
+        "position": "module/overview"
+      }
+    },
+    "U15": {
+      "result": "passed",
+      "assertions": {
+        "issue_switch_cleared": true,
+        "logout_cleared": true,
+        "module_switch_cleared": true
+      }
+    },
+    "D14": {
+      "result": "passed",
+      "checks": [
+        "native sidebar",
+        "open workbench command",
+        "business session mounted",
+        "account password verified and field cleared",
+        "verified admin and project",
+        "first account private position",
+        "previous identity cleared synchronously",
+        "personal key verified for second account",
+        "old account response discarded",
+        "second account private position with project query",
+        "viewer write denied by server, session retained",
+        "revocation prompts native reauthentication",
+        "write rejected while signed out",
+        "reauthenticated",
+        "different project isolated",
+        "returned to first project",
+        "original location restored",
+        "explicit logout clears identity"
+      ]
+    },
+    "server": {
+      "command": "pytest -q customizations/components/tianxuan/server/test_module_locations.py customizations/components/tianxuan/server/test_workspace_conversations.py",
+      "passed": 8
+    }
+  },
+  "method_learning": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "observation": "Resolved this worktree's generated selector and business session headers and linked the new workbench object into the tested native editor. Startup of the private candidate, not the incremental compile alone, caught and verified a GDScript type inference error."
+  },
+  "diagnostics": "Each private --editor --script process exited with status 0 and no script errors. The headless renderer printed RID/ObjectDB release diagnostics during teardown; raw lines are included per process. Process-local temporary projects and test accounts were discarded. Main/CI and Issue closure are tracked by the parent delivery task."
+}

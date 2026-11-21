@@ -86,13 +86,13 @@ static func exercise(tree, fixture: Array) -> void:
 		tree._fail("Missing pre-switch issue reference")
 		return
 	var prev := issue.selected
-	issue.select(0)
-	issue.item_selected.emit(0)
+	if not await tree._choose_work_order(issue, 0):
+		return
 	if rows.get_child_count() != 0:
 		tree._fail("Issue switch retained another issue's selection")
 		return
-	issue.select(prev)
-	issue.item_selected.emit(prev)
+	if not await tree._choose_work_order(issue, prev):
+		return
 	await attach(tree, "alpha")
 	if not await tree._choose(tree._index(fixture[1].module_id)):
 		return

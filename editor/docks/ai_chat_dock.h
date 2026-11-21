@@ -363,6 +363,9 @@ class AIChatDock : public EditorDock {
 	AIChatSessionData &WorkbenchReferenceDraft();
 	bool WorkbenchReferenceLocked() const;
 	void ChangeWorkbenchReferenceScope(const String &pModule, const String &pIssue);
+	Dictionary ReadBusinessDraft(const String &strKey) const;
+	bool WriteBusinessDraft(const String &strKey, const Dictionary &mapDraft);
+	void RestoreBusinessReferences(const Dictionary &mapDraft);
 	Dictionary FreezeBusinessReferences(const String &pBody);
 	String WorkbenchSelectionContent(const AIChatSessionData &pDraft, const String &pIssue) const;
 	void WorkbenchDraftChanged();
