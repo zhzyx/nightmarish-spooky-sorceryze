@@ -2,6 +2,7 @@
 import base64
 import copy
 import hashlib
+import math
 import tempfile
 import unittest
 from pathlib import Path
@@ -85,6 +86,54 @@ class HumanShapeLandmarkTests(unittest.TestCase):
         wrong["rendered_front_view"] = "back"
         with self.assertRaisesRegex(ValueError, "human_shape_auto_fit_front_required"):
             self.fit(wrong)
+
+    def test_left_front_recovers_once_and_restores_source_coordinates(self):
+        initial = copy.deepcopy(self.document)
+        initial["rendered_front_view"] = "left"
+        initial["confidence"] = "low"
+        final = copy.deepcopy(self.document)
+        document, binary = load_glb(self.source)
+        primitive = document["meshes"][0]["primitives"][0]
+        points = np.asarray(accessor_values(document, binary, primitive["attributes"]["POSITION"]), dtype=np.float64)
+        lower = points.min(axis=0)
+        upper = points.max(axis=0)
+        height = float(upper[1] - lower[1])
+        theta = math.radians(-90.0)
+        rotation = np.asarray([
+            [math.cos(theta), 0.0, math.sin(theta)],
+            [0.0, 1.0, 0.0],
+            [-math.sin(theta), 0.0, math.cos(theta)],
+        ])
+        rotated = points @ rotation.T
+        rotated_lower = rotated.min(axis=0)
+        rotated_upper = rotated.max(axis=0)
+        stage_center = np.asarray([
+            (rotated_lower[0] + rotated_upper[0]) / 2.0,
+            lower[1],
+            (rotated_lower[2] + rotated_upper[2]) / 2.0,
+        ])
+        final["landmarks"] = {
+            name: ((rotation @ np.asarray(LANDMARKS[name]) - stage_center) / height).tolist()
+            for name in HUMAN_LANDMARK_NAMES
+        }
+        with (
+            patch.object(human_shape_landmarks.rigging_review, "_render", return_value=self.entries) as rendered,
+            patch.object(
+                human_shape_landmarks, "_request_ai",
+                side_effect=[(initial, {"provider": "initial"}), (final, {"provider": "recovered"})],
+            ) as requested,
+        ):
+            result = human_shape_landmarks.fit_landmarks(
+                self.source, self.root / "recovery", "godot", "render.gd", {"endpoint": "unused"}
+            )
+        self.assertEqual(rendered.call_count, 2)
+        self.assertEqual(requested.call_count, 2)
+        self.assertEqual(result["orientation_recovery"]["correction_degrees"], -90.0)
+        self.assertFalse(result["orientation_recovery"]["geometry_changed"])
+        self.assertEqual(len(result["api_receipts"]), 2)
+        for name in HUMAN_LANDMARK_NAMES:
+            for component in range(3):
+                self.assertAlmostEqual(result["landmarks"][name][component], LANDMARKS[name][component], places=6)
 
     def test_faraway_landmarks_fail_local_geometry_check(self):
         document = copy.deepcopy(self.document)

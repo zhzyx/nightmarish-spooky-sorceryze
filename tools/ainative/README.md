@@ -305,17 +305,21 @@ By default `human_shape_landmarks.py` renders the immutable source and makes one
 Kimi vision request through the configured planner. This automatic landmark stage
 requires the same API/review configuration as humanoid review; it is not a remote
 mesh generation. The AI returns T/A pose, anatomical front, confidence and 15
-landmarks normalized by full model height. AINative writes the source SHA-256,
-converts estimates to source coordinates and checks anatomy plus nearest-source
-vertex distances. Low confidence, wrong front, missing coordinates or excessive
-geometry mismatch stops before deformation. The receipt states
+landmarks normalized by full model height. A recognized side/back front triggers
+one bounded render-and-AI recovery using the existing yaw map; corrected
+normalized coordinates are rotated back into the source frame using both source
+and rotated bounds. AINative writes the source SHA-256, converts estimates to
+source coordinates and checks anatomy plus nearest-source
+vertex distances. Low confidence after recovery, unresolved front, missing
+coordinates or excessive geometry mismatch stops before deformation. The receipt states
 `quality=ai_estimated_geometry_checked`, confidence and per-landmark distances;
 it never claims motion-capture accuracy or human confirmation.
 
 Developer JSON may explicitly supply `reference_pose` and a source-bound
 `landmarks` override with `head_top`, `chin`, `neck`, both
 `shoulder/elbow/wrist` chains and both `hip/knee/ankle` chains. Coordinates are
-Y-up with anatomical left at +X. Both automatic and overridden paths enforce the
+Y-up. Anatomical left is derived from the left/right landmarks, so a recovered
+source need not face a canonical X direction. Both automatic and overridden paths enforce the
 same source/anatomy contract. There is no extra confirmation checkbox. The source
 must have no Skin, no mesh-node transform and no shared POSITION accessors;
 existing rigged assets are rejected instead of invalidating inverse binds.

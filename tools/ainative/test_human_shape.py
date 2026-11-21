@@ -2,6 +2,7 @@
 import base64
 import hashlib
 import json
+import math
 import struct
 import tempfile
 import unittest
@@ -172,6 +173,41 @@ class HumanShapeTests(unittest.TestCase):
                 repair(shape_spec(source, root / "too-many-heads.glb", target_head_ratio=12.1))
             with self.assertRaisesRegex(ValueError, "geometry_repair_parameters_invalid"):
                 repair(shape_spec(source, root / "bad-arm.glb", arm_length_scale=1.4))
+
+    def test_rotated_anatomical_left_axis_preserves_arm_and_leg_controls(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            source = root / "source.glb"
+            humanoid_fixture(source)
+            document, binary = load_glb(source)
+            binary = bytearray(binary)
+            theta = math.radians(-90.0)
+            rotation = np.asarray([
+                [math.cos(theta), 0.0, math.sin(theta)],
+                [0.0, 1.0, 0.0],
+                [-math.sin(theta), 0.0, math.cos(theta)],
+            ])
+            for mesh in document["meshes"]:
+                for primitive in mesh["primitives"]:
+                    index = primitive["attributes"]["POSITION"]
+                    points = accessor_values(document, binary, index, "VEC3")
+                    points[:] = np.asarray(points, dtype=np.float64) @ rotation.T
+                    document["accessors"][index]["min"] = points.min(axis=0).tolist()
+                    document["accessors"][index]["max"] = points.max(axis=0).tolist()
+            write_glb(document, binary, source)
+            rotated = {
+                name: (rotation @ np.asarray(point)).tolist()
+                for name, point in LANDMARKS.items()
+            }
+            spec = shape_spec(
+                source, root / "rotated-output.glb",
+                landmarks=dict(source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(), **rotated),
+            )
+            result = repair(spec)
+            normalize = result["uniform_height_scale"]
+            for side in ("l", "r"):
+                self.assertAlmostEqual(result["measured"]["arm_lengths_m"][side] / normalize, 0.6, places=5)
+                self.assertAlmostEqual(result["measured"]["leg_lengths_m"][side] / normalize, 0.935, places=5)
 
     def test_node_contract_plans_and_executes_without_remote_generation(self):
         with tempfile.TemporaryDirectory() as temporary:

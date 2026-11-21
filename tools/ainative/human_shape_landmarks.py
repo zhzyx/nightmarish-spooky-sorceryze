@@ -138,6 +138,33 @@ def _validate_document(document):
     return normalized
 
 
+def _restore_source_normalized(normalized, points, yaw_degrees):
+    """Convert render-stage normalized coordinates back to the source frame."""
+    if not yaw_degrees:
+        return normalized
+    lower = points.min(axis=0)
+    upper = points.max(axis=0)
+    height = float(upper[1] - lower[1])
+    source_center = np.asarray([(lower[0] + upper[0]) / 2.0, lower[1], (lower[2] + upper[2]) / 2.0])
+    theta = math.radians(yaw_degrees)
+    cosine, sine = math.cos(theta), math.sin(theta)
+    rotation = np.asarray([[cosine, 0.0, sine], [0.0, 1.0, 0.0], [-sine, 0.0, cosine]])
+    inverse = rotation.T
+    rotated = points @ rotation.T
+    rotated_lower = rotated.min(axis=0)
+    rotated_upper = rotated.max(axis=0)
+    stage_center = np.asarray([
+        (rotated_lower[0] + rotated_upper[0]) / 2.0,
+        lower[1],
+        (rotated_lower[2] + rotated_upper[2]) / 2.0,
+    ])
+    center_correction = inverse @ (stage_center - source_center) / height
+    return {
+        name: (inverse @ np.asarray(point, dtype=np.float64) + center_correction).tolist()
+        for name, point in normalized.items()
+    }
+
+
 def fit_landmarks(source, directory, godot_path, render_script, planner):
     source = Path(source).expanduser().resolve()
     directory = Path(directory).expanduser().resolve()
@@ -153,7 +180,33 @@ def fit_landmarks(source, directory, godot_path, render_script, planner):
     center = np.asarray([(lower[0] + upper[0]) / 2.0, lower[1], (lower[2] + upper[2]) / 2.0])
     entries = rigging_review._render(source, directory, godot_path, render_script)
     document, api_receipt = _request_ai(entries, directory / "request", planner)
+    api_receipts = [api_receipt]
+    orientation = None
+    initial_front = document.get("rendered_front_view")
+    if initial_front != "front" and initial_front in rigging_review.REVIEW_FRONT_YAW:
+        correction = float(rigging_review.REVIEW_FRONT_YAW[initial_front])
+        orientation_directory = directory / "orientation"
+        orientation_directory.mkdir()
+        entries = rigging_review._render(
+            source,
+            orientation_directory,
+            godot_path,
+            render_script,
+            yaw_degrees=correction,
+        )
+        document, corrected_receipt = _request_ai(entries, directory / "request-front-recovery", planner)
+        api_receipts.append(corrected_receipt)
+        orientation = dict(
+            model_sha256=source_sha,
+            previous_yaw_degrees=0.0,
+            correction_degrees=correction,
+            yaw_degrees=correction,
+            previous_rendered_front_view=initial_front,
+            geometry_changed=False,
+        )
     normalized = _validate_document(document)
+    if orientation is not None:
+        normalized = _restore_source_normalized(normalized, points, orientation["correction_degrees"])
     landmarks = {}
     for name, point in normalized.items():
         world = center + np.asarray(point, dtype=np.float64) * height
@@ -176,6 +229,7 @@ def fit_landmarks(source, directory, godot_path, render_script, planner):
         confidence=document["confidence"],
         observations=document["observations"],
         rendered_front_view="front",
+        orientation_recovery=orientation,
         geometry_checks=dict(
             maximum_landmark_distance_over_height=max(distances.values()),
             landmark_distances_over_height=distances,
@@ -185,7 +239,8 @@ def fit_landmarks(source, directory, godot_path, render_script, planner):
         source_not_overwritten=hashlib.sha256(source.read_bytes()).hexdigest() == source_sha,
         requires_visual_review=True,
         manual_confirmation=False,
-        api_receipt=api_receipt,
+        api_receipt=api_receipts[-1],
+        api_receipts=api_receipts,
     )
     (directory / "landmarks-receipt.json").write_text(canonical(result), encoding="utf-8")
     return result

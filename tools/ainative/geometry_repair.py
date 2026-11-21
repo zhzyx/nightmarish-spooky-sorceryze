@@ -400,7 +400,10 @@ def _human_landmarks(spec, source_sha256):
         ):
             raise ValueError("geometry_repair_landmarks_invalid")
         result[name] = np.asarray(point, dtype=np.float64)
-    if result["shoulder_l"][0] <= result["shoulder_r"][0] or result["hip_l"][0] <= result["hip_r"][0]:
+    hip_left = result["hip_l"] - result["hip_r"]
+    hip_left[1] = 0.0
+    shoulder_left = result["shoulder_l"] - result["shoulder_r"]
+    if np.linalg.norm(hip_left) <= 1e-8 or np.dot(hip_left, shoulder_left) <= 0.0:
         raise ValueError("geometry_repair_landmark_mismatch")
     if not result["head_top"][1] > result["chin"][1] > result["neck"][1]:
         raise ValueError("geometry_repair_landmark_mismatch")
@@ -431,7 +434,8 @@ def _human_parameters(spec, source_sha256):
 def reshape_humanoid(document, binary, spec):
     """Deform a source-validated static humanoid before skeleton/skin generation.
 
-    Coordinates are Y-up world/local coordinates with anatomical left at +X.
+    Coordinates are Y-up world/local coordinates. Anatomical left is derived from
+    the confirmed left/right hip and shoulder landmarks; source yaw may differ.
     Node transforms and existing skins are deliberately outside this V1 contract.
     """
     source_sha256 = hashlib.sha256(Path(spec["source"]).read_bytes()).hexdigest()
@@ -472,6 +476,11 @@ def reshape_humanoid(document, binary, spec):
     if source_height <= 1e-6 or abs(float(joined[:, 1].max()) - landmarks["head_top"][1]) > source_height * 0.002:
         raise ValueError("geometry_repair_landmark_mismatch")
     hips = (landmarks["hip_l"] + landmarks["hip_r"]) / 2.0
+    # Use the confirmed anatomical axis rather than assuming that a recovered
+    # source model has already been rotated so its left side faces +X.
+    left_axis = landmarks["hip_l"] - landmarks["hip_r"]
+    left_axis[1] = 0.0
+    left_axis /= np.linalg.norm(left_axis)
     chains = [np.asarray([hips, landmarks["neck"]])]
     for side in ("l", "r"):
         chains.append(np.asarray([landmarks[name + "_" + side] for name in ("shoulder", "elbow", "wrist")]))
@@ -513,7 +522,7 @@ def reshape_humanoid(document, binary, spec):
             chain = np.asarray([landmarks[name + "_" + side] for name in ("shoulder", "elbow", "wrist")])
             distance, closest, delta = _scaled_chain_displacement(result, chain, parameters["arm_length_scale"])
             side_sign = 1.0 if side == "l" else -1.0
-            lateral = (result[:, 0] - hips[0]) * side_sign
+            lateral = np.sum((result - hips) * (left_axis * side_sign), axis=1)
             side_weight = _smoothstep_array(0.0, source_height * 0.04, lateral)
             region = 1.0 - _smoothstep_array(source_height * 0.06, source_height * 0.16, distance)
             root_blend = _smoothstep_array(0.0, np.linalg.norm(chain[1] - chain[0]) * 0.2,
@@ -523,7 +532,7 @@ def reshape_humanoid(document, binary, spec):
             chain = np.asarray([landmarks[name + "_" + side] for name in ("hip", "knee", "ankle")])
             distance, closest, delta = _scaled_chain_displacement(result, chain, parameters["leg_length_scale"])
             side_sign = 1.0 if side == "l" else -1.0
-            lateral = (result[:, 0] - hips[0]) * side_sign
+            lateral = np.sum((result - hips) * (left_axis * side_sign), axis=1)
             side_weight = _smoothstep_array(0.0, source_height * 0.04, lateral)
             region = 1.0 - _smoothstep_array(source_height * 0.07, source_height * 0.18, distance)
             root_blend = _smoothstep_array(0.0, np.linalg.norm(chain[1] - chain[0]) * 0.15,
