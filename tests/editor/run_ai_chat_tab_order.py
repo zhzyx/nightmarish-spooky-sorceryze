@@ -22,6 +22,9 @@ def main():
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--build-evidence", type=Path)
+    parser.add_argument(
+        "--workbench-command", action="store_true", help="Exercise the global workbench command in each layout"
+    )
     args = parser.parse_args()
     binary = args.godot.resolve()
     report = {
@@ -93,6 +96,7 @@ def main():
                         str(project),
                         "--script",
                         "res://order.gd",
+                        *(["--", "--workbench-command"] if args.workbench_command else []),
                     ],
                     env=env,
                     capture_output=True,
