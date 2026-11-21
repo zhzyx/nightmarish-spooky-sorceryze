@@ -35,10 +35,11 @@ from duobao_bridge import (
 )
 from fastapi import Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse, Response
-from gateway import ModelGateway, create_model_router
+from gateway import ModelGateway, create_model_router, workspace_actor
 from gitea_bridge import GiteaClient, GiteaError
 from identity import allow_identity_attempt, get_identity_adapter
 from markdown_render import render_markdown
+from paragraph_suggestion import ParagraphSuggestion, suggest_paragraph
 from schemas import (
     BusinessModuleCreate,
     BusinessModuleName,
@@ -1044,6 +1045,12 @@ def create_app(
         return {"columns": columns}
 
     # ---------- 文曲：AI 结构化补丁 ----------
+
+    @app.post("/api/v1/docs/{doc_id}/paragraph-suggestion")
+    def preview_paragraph(doc_id: str, payload: ParagraphSuggestion, request: Request) -> dict[str, Any]:
+        actor = workspace_actor(request, write=True)
+        preview: dict[str, Any] = suggest_paragraph(store, gateway, actor, doc_id, payload)
+        return preview
 
     @app.post("/api/v1/docs/{doc_id}/patch")
     def patch_doc(doc_id: str, payload: DocPatchRequest, actor: ActorDep) -> dict[str, Any]:

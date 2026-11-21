@@ -73,6 +73,12 @@ func _ready() -> void:
 		_authenticate("", supplied, _project.text)
 
 
+func install_paragraph_suggestion(script: Script) -> void:
+	if not is_node_ready():
+		await ready
+	get_node("WorkbenchDocuments").install_paragraph_suggestion(script)
+
+
 func redact_credentials(text: String) -> String:
 	return text if _token.is_empty() else text.replace(_token, "[REDACTED]")
 
@@ -164,7 +170,7 @@ func _authenticate(email: String, secret: String, project: String) -> void:
 
 
 # Routes belong to the configured deployment. Each request captures its verified session.
-func api_request(method: int, route: String, payload: Dictionary = {}) -> Dictionary:
+func api_request(method: int, route: String, payload: Dictionary = {}, timeout_seconds: float = 12.0) -> Dictionary:
 	if _identity.is_empty():
 		return {"status": 401, "data": {}}
 	if not route.begins_with("/api/v1/") or "#" in route or "\\" in route or "\n" in route or "\r" in route:
@@ -174,7 +180,7 @@ func api_request(method: int, route: String, payload: Dictionary = {}) -> Dictio
 			return {"status": 0, "data": {}}
 	var scoped_route := route + ("&" if "?" in route else "?") + "project=" + str(_identity.project).uri_encode()
 	var attempt := _generation
-	var reply := await _exchange(method, scoped_route, _token, payload)
+	var reply := await _exchange(method, scoped_route, _token, payload, timeout_seconds)
 	if attempt != _generation:
 		return {"status": 0, "data": {}}
 	if reply.status == 401:
@@ -183,10 +189,10 @@ func api_request(method: int, route: String, payload: Dictionary = {}) -> Dictio
 	return reply
 
 
-func _exchange(method: int, route: String, credential: String, payload: Dictionary) -> Dictionary:
+func _exchange(method: int, route: String, credential: String, payload: Dictionary, timeout_seconds: float = 12.0) -> Dictionary:
 	var http := HTTPRequest.new()
 	http.max_redirects = 0
-	http.timeout = 12.0
+	http.timeout = timeout_seconds
 	http.body_size_limit = 8 * 1024 * 1024
 	add_child(http)
 	var headers := PackedStringArray(["Accept: application/json"])
@@ -211,7 +217,12 @@ func _exchange(method: int, route: String, credential: String, payload: Dictiona
 
 
 class DocumentView extends AcceptDialog:
+	signal target_changed
+
 	var session: Node
+	var actions := HBoxContainer.new()
+	var raw_body := ""
+	var raw_spans: Array[Vector2i] = []
 	var documents := ItemList.new()
 	var paragraphs := OptionButton.new()
 	var body := TextEdit.new()
@@ -238,7 +249,6 @@ class DocumentView extends AcceptDialog:
 		documents.custom_minimum_size.y = 95 * EditorInterface.get_editor_scale()
 		documents.item_selected.connect(_select_document)
 		box.add_child(documents)
-		var actions := HBoxContainer.new()
 		box.add_child(actions)
 		create.text = "新建设计"
 		create.pressed.connect(_compose.bind(false))
@@ -256,6 +266,8 @@ class DocumentView extends AcceptDialog:
 		body.name = "DocumentBody"
 		body.editable = false
 		body.selecting_enabled = true
+		body.deselect_on_focus_loss_enabled = false
+		body.caret_changed.connect(sync_selected_paragraph)
 		body.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 		body.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		box.add_child(body)
@@ -266,6 +278,27 @@ class DocumentView extends AcceptDialog:
 		box.add_child(cite)
 		get_ok_button().text = "关闭"
 		session.identity_changed.connect(reset_view)
+
+	func install_paragraph_suggestion(script: Script) -> void:
+		var dialog = script.new()
+		dialog.view = self
+		add_child(dialog)
+
+	func selected_paragraph() -> int:
+		if body.get_caret_count() != 1 or not body.has_selection() or body.get_selection_from_column() != 0:
+			return 0
+		var lines := Vector2i(body.get_selection_from_line(), body.get_selection_to_line())
+		if body.get_selection_to_column() != body.get_line(lines.y).length():
+			return 0
+		return ranges.find(lines) + 1
+
+	func sync_selected_paragraph() -> int:
+		var selected := selected_paragraph()
+		if selected > 0 and not reference.is_empty() and reference.paragraph != selected:
+			paragraphs.select(selected - 1)
+			reference.paragraph = selected
+			target_changed.emit()
+		return selected
 
 	func _setup_composer() -> void:
 		composer.dialog_hide_on_ok = false
@@ -352,6 +385,9 @@ class DocumentView extends AcceptDialog:
 			draft_status.text = "保存回执不完整。再次点击保存可核对此次提交。"
 			return
 		_clear_draft()
+		await open_saved(saved, 1)
+
+	func open_saved(saved: Dictionary, paragraph: int) -> void:
 		var row := -1
 		for index in documents.item_count:
 			if documents.get_item_metadata(index).id == saved.id:
@@ -359,7 +395,7 @@ class DocumentView extends AcceptDialog:
 				break
 		row = _document_row(saved, row)
 		documents.select(row)
-		await open_document(saved.id, int(saved.version), 1)
+		await open_document(saved.id, int(saved.version), paragraph)
 
 	func _document_row(item: Dictionary, index: int = -1) -> int:
 		var label := "%s · v%d · %s" % [item.title, item.version, item.id]
@@ -376,6 +412,9 @@ class DocumentView extends AcceptDialog:
 		reference.clear()
 		body.clear()
 		ranges.clear()
+		raw_body = ""
+		raw_spans.clear()
+		target_changed.emit()
 		paragraphs.clear()
 		paragraphs.disabled = true
 
@@ -428,16 +467,26 @@ class DocumentView extends AcceptDialog:
 		if reply.status != 200 or int(reply.data.get("version",0)) != version or not reply.data.get("body_md") is String:
 			status.text = "无法读取指定文档修订。"
 			return
-		body.text = str(reply.data.body_md).replace("\r\n","\n")
+		raw_body = reply.data.body_md
+		var lines := raw_body.split("\n")
+		var offset := 0
+		var start_offset := 0
+		var end_offset := 0
+		body.text = raw_body.replace("\r\n","\n")
 		var start := -1
 		for line in range(body.get_line_count() + 1):
 			var blank := line == body.get_line_count() or body.get_line(line).strip_edges().is_empty()
 			if not blank and start < 0:
 				start = line
+				start_offset = offset
 			elif blank and start >= 0:
 				ranges.append(Vector2i(start, line - 1))
+				raw_spans.append(Vector2i(start_offset, end_offset))
 				paragraphs.add_item("%d · %s" % [ranges.size(),body.get_line(start).strip_edges().left(54)])
 				start = -1
+			if line < lines.size():
+				end_offset = offset + lines[line].trim_suffix("\r").length()
+				offset += lines[line].length() + 1
 		if paragraph > ranges.size() and not (ranges.is_empty() and paragraph == 1):
 			_clear_body()
 			status.text = "此修订没有指定段落。"
@@ -453,6 +502,7 @@ class DocumentView extends AcceptDialog:
 	func _jump(index: int) -> void:
 		if index < 0 or index >= ranges.size():
 			return
+		target_changed.emit()
 		var span := ranges[index]
 		body.set_caret_line(span.x)
 		body.select(span.x,0,span.y,body.get_line(span.y).length())
