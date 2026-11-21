@@ -129,12 +129,19 @@ def _number_or_null(value):
 
 
 def validate_document(document):
-    require(isinstance(document, dict) and set(document) == {"schema_version", "passed", "summary", "issues", "repair"}, "text_review_output_invalid")
+    require(
+        isinstance(document, dict) and set(document) == {"schema_version", "passed", "summary", "issues", "repair"},
+        "text_review_output_invalid",
+    )
     require(document["schema_version"] == 1 and isinstance(document["passed"], bool), "text_review_output_invalid")
     _text(document["summary"])
     require(isinstance(document["issues"], list) and len(document["issues"]) <= 100, "text_review_output_invalid")
     for issue in document["issues"]:
-        require(isinstance(issue, dict) and set(issue) == {"code", "stage", "check", "message", "actual", "threshold", "target"}, "text_review_output_invalid")
+        require(
+            isinstance(issue, dict)
+            and set(issue) == {"code", "stage", "check", "message", "actual", "threshold", "target"},
+            "text_review_output_invalid",
+        )
         for key in ("code", "check", "message"):
             _text(issue[key])
         require(issue["stage"] in STAGES and issue["target"] in TARGETS, "text_review_output_invalid")
@@ -213,7 +220,12 @@ def review_candidate(request):
     directory.mkdir(parents=True)
     document, api_receipt = _request_ai(evidence, directory / "request")
     document = validate_document(document)
-    local_passed = validation["passed"] and validation["scene_valid"] and not validation["issues"] and not validation["unsupported"]
+    local_passed = (
+        validation["passed"]
+        and validation["scene_valid"]
+        and not validation["issues"]
+        and not validation["unsupported"]
+    )
     passed = local_passed and document["passed"]
     issues = list(document["issues"])
     if not local_passed:
@@ -237,7 +249,9 @@ def review_candidate(request):
                 evidence="request/evidence.json",
                 recommended_command=document["repair"]["command"],
                 recommended_parameters=document["repair"]["parameters"],
-                auto_modify=document["repair"]["command"] != "none" and validation["scene_valid"] and retry_count < max_retries,
+                auto_modify=document["repair"]["command"] != "none"
+                and validation["scene_valid"]
+                and retry_count < max_retries,
                 requires_source_ai_review=False,
                 retry_count=retry_count,
                 max_retries=max_retries,

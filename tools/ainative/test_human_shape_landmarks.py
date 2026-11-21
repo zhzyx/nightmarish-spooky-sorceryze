@@ -1,4 +1,5 @@
 """Automatic landmark fitting tests with synthetic AI receipts; no inference."""
+
 import base64
 import copy
 import hashlib
@@ -8,10 +9,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-import numpy as np
-
 import human_shape_landmarks
-from geometry_repair import HUMAN_LANDMARK_NAMES, load_glb, accessor_values
+import numpy as np
+from geometry_repair import HUMAN_LANDMARK_NAMES, accessor_values, load_glb
 from kimi_provider import KimiNativeDirectProvider
 from test_human_shape import LANDMARKS, humanoid_fixture
 
@@ -25,14 +25,15 @@ class HumanShapeLandmarkTests(unittest.TestCase):
         self.original = self.source.read_bytes()
         document, binary = load_glb(self.source)
         primitive = document["meshes"][0]["primitives"][0]
-        points = np.asarray(accessor_values(document, binary, primitive["attributes"]["POSITION"], "VEC3"), dtype=np.float64)
+        points = np.asarray(
+            accessor_values(document, binary, primitive["attributes"]["POSITION"], "VEC3"), dtype=np.float64
+        )
         lower = points.min(axis=0)
         upper = points.max(axis=0)
         height = float(upper[1] - lower[1])
         center = np.asarray([(lower[0] + upper[0]) / 2.0, lower[1], (lower[2] + upper[2]) / 2.0])
         self.normalized = {
-            name: ((np.asarray(LANDMARKS[name]) - center) / height).tolist()
-            for name in HUMAN_LANDMARK_NAMES
+            name: ((np.asarray(LANDMARKS[name]) - center) / height).tolist() for name in HUMAN_LANDMARK_NAMES
         }
         self.document = dict(
             schema_version=1,
@@ -54,7 +55,8 @@ class HumanShapeLandmarkTests(unittest.TestCase):
         with (
             patch.object(human_shape_landmarks.rigging_review, "_render", return_value=self.entries),
             patch.object(
-                human_shape_landmarks, "_request_ai",
+                human_shape_landmarks,
+                "_request_ai",
                 return_value=(copy.deepcopy(document or self.document), {"provider": "synthetic"}),
             ),
         ):
@@ -119,7 +121,8 @@ class HumanShapeLandmarkTests(unittest.TestCase):
         with (
             patch.object(human_shape_landmarks.rigging_review, "_render", return_value=self.entries) as rendered,
             patch.object(
-                human_shape_landmarks, "_request_ai",
+                human_shape_landmarks,
+                "_request_ai",
                 side_effect=[(initial, {"provider": "initial"}), (final, {"provider": "recovered"})],
             ) as requested,
         ):
@@ -146,14 +149,18 @@ class HumanShapeLandmarkTests(unittest.TestCase):
     def test_default_five_parameter_node_runs_through_automatic_landmarks(self):
         sha = hashlib.sha256(self.original).hexdigest()
         artifact = dict(
-            id="source", revision=sha, type="mesh",
+            id="source",
+            revision=sha,
+            type="mesh",
             payload=dict(
                 content_base64=base64.b64encode(self.original).decode(),
-                content_sha256=sha, extension=".glb",
+                content_sha256=sha,
+                extension=".glb",
             ),
         )
         request = dict(
-            node="human_shape_adjust", version="1",
+            node="human_shape_adjust",
+            version="1",
             inputs={"source": {"id": "source", "revision": sha}},
             parameters=dict(height_m=1.9, head_ratio=9.0, arm_length_scale=1.2, leg_length_scale=1.1, build=0.4),
             context=[],
@@ -161,9 +168,9 @@ class HumanShapeLandmarkTests(unittest.TestCase):
         manifest = dict(schema_version=1, artifacts=[artifact])
         plan = KimiNativeDirectProvider._adjust_plan(None, request, manifest)
         self.assertIsNone(plan["repair"]["landmarks"])
-        legacy = dict(request, parameters=dict(
-            request["parameters"], reference_pose="T", landmarks={"source_sha256": ""}
-        ))
+        legacy = dict(
+            request, parameters=dict(request["parameters"], reference_pose="T", landmarks={"source_sha256": ""})
+        )
         legacy_plan = KimiNativeDirectProvider._adjust_plan(None, legacy, manifest)
         self.assertIsNone(legacy_plan["repair"]["landmarks"])
         automatic = dict(
@@ -195,7 +202,9 @@ class HumanShapeLandmarkTests(unittest.TestCase):
         self.assertEqual(provenance["landmark_estimation"], "ainative_ai_geometry_checked")
         self.assertEqual(provenance["automatic_landmarks"]["source_sha256"], sha)
         self.assertAlmostEqual(provenance["geometry_repair"]["measured"]["head_ratio"], 9.0, places=5)
-        self.assertEqual(host.receipt["geometry_repair"]["automatic_landmarks"]["quality"], "ai_estimated_geometry_checked")
+        self.assertEqual(
+            host.receipt["geometry_repair"]["automatic_landmarks"]["quality"], "ai_estimated_geometry_checked"
+        )
 
     def test_schema_declares_every_landmark_without_manual_confirmation(self):
         schema = human_shape_landmarks.landmark_schema()

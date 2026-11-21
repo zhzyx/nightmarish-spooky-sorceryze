@@ -1,20 +1,17 @@
 """Synthetic static-humanoid tests for pre-rig body shape adjustment."""
+
 import base64
 import hashlib
-import json
 import math
-import struct
 import tempfile
 import unittest
 from pathlib import Path
 
 import numpy as np
-
 from comfy_provider import register as register_comfy
 from extensions import NodeRegistry, validate_invocation, validate_parameters
 from geometry_repair import HUMAN_LANDMARK_NAMES, accessor_values, load_glb, repair, write_glb
 from kimi_provider import KimiNativeDirectProvider
-
 
 LANDMARKS = {
     "head_top": [0.0, 1.8, 0.0],
@@ -58,12 +55,16 @@ def humanoid_fixture(path, rigged=False):
             points = [c, c + [-size, -2 * size, size], c + [size, -2 * size, size], c + [0, -2 * size, -size]]
         else:
             points = [
-                c + [size, size, size], c + [size, -size, -size],
-                c + [-size, size, -size], c + [-size, -size, size],
+                c + [size, size, size],
+                c + [size, -size, -size],
+                c + [-size, size, -size],
+                c + [-size, -size, size],
             ]
         offset = len(vertices)
         vertices.extend(points)
-        indices.extend(offset + index for triangle in ((0, 1, 2), (0, 3, 1), (0, 2, 3), (1, 3, 2)) for index in triangle)
+        indices.extend(
+            offset + index for triangle in ((0, 1, 2), (0, 3, 1), (0, 2, 3), (1, 3, 2)) for index in triangle
+        )
 
     for name in HUMAN_LANDMARK_NAMES:
         tetra(LANDMARKS[name], top=name == "head_top")
@@ -73,8 +74,12 @@ def humanoid_fixture(path, rigged=False):
     binary = bytearray(points.tobytes())
     document["bufferViews"].append({"buffer": 0, "byteOffset": 0, "byteLength": points.nbytes})
     document["accessors"].append({
-        "bufferView": 0, "componentType": 5126, "count": len(points), "type": "VEC3",
-        "min": points.min(axis=0).tolist(), "max": points.max(axis=0).tolist(),
+        "bufferView": 0,
+        "componentType": 5126,
+        "count": len(points),
+        "type": "VEC3",
+        "min": points.min(axis=0).tolist(),
+        "max": points.max(axis=0).tolist(),
     })
     document["bufferViews"].append({"buffer": 0, "byteOffset": len(binary), "byteLength": faces.nbytes})
     binary.extend(faces.tobytes())
@@ -135,7 +140,9 @@ class HumanShapeTests(unittest.TestCase):
             document, binary = load_glb(output)
             extras = document["asset"]["extras"]
             self.assertNotIn("maliang_head_review", extras)
-            self.assertEqual(extras["maliang_humanoid_landmarks"]["validation_state"], "automatically_derived_review_required")
+            self.assertEqual(
+                extras["maliang_humanoid_landmarks"]["validation_state"], "automatically_derived_review_required"
+            )
             self.assertNotIn("confirmed", extras["maliang_humanoid_landmarks"])
             self.assertTrue(extras["maliang_humanoid_landmarks"]["review_required"])
             primitive = document["meshes"][0]["primitives"][0]
@@ -195,12 +202,10 @@ class HumanShapeTests(unittest.TestCase):
                     document["accessors"][index]["min"] = points.min(axis=0).tolist()
                     document["accessors"][index]["max"] = points.max(axis=0).tolist()
             write_glb(document, binary, source)
-            rotated = {
-                name: (rotation @ np.asarray(point)).tolist()
-                for name, point in LANDMARKS.items()
-            }
+            rotated = {name: (rotation @ np.asarray(point)).tolist() for name, point in LANDMARKS.items()}
             spec = shape_spec(
-                source, root / "rotated-output.glb",
+                source,
+                root / "rotated-output.glb",
                 landmarks=dict(source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(), **rotated),
             )
             result = repair(spec)
@@ -218,25 +223,39 @@ class HumanShapeTests(unittest.TestCase):
             data = source.read_bytes()
             sha = hashlib.sha256(data).hexdigest()
             parameters = dict(
-                height_m=spec["target_height_m"], head_ratio=spec["target_head_ratio"],
-                arm_length_scale=spec["arm_length_scale"], leg_length_scale=spec["leg_length_scale"],
-                build=spec["build"], reference_pose="T", landmarks=spec["landmarks"],
+                height_m=spec["target_height_m"],
+                head_ratio=spec["target_head_ratio"],
+                arm_length_scale=spec["arm_length_scale"],
+                leg_length_scale=spec["leg_length_scale"],
+                build=spec["build"],
+                reference_pose="T",
+                landmarks=spec["landmarks"],
             )
             artifact = dict(
-                id="source", revision=sha, type="mesh",
+                id="source",
+                revision=sha,
+                type="mesh",
                 payload=dict(content_base64=base64.b64encode(data).decode(), content_sha256=sha, extension=".glb"),
             )
             manifest = dict(schema_version=1, artifacts=[artifact])
             request = dict(
-                node="human_shape_adjust", version="1", inputs={"source": {"id": "source", "revision": sha}},
-                parameters=parameters, context=[],
+                node="human_shape_adjust",
+                version="1",
+                inputs={"source": {"id": "source", "revision": sha}},
+                parameters=parameters,
+                context=[],
             )
             registry = NodeRegistry()
             register_comfy(registry)
             validate_parameters(registry.get("human_shape_adjust", "1")["parameters"], parameters)
             provider = dict(
-                id="kimi_native", version="1", model="local-test", model_version="test",
-                capabilities=["human_shape_adjust"], context_types=["text", "image"], available=True,
+                id="kimi_native",
+                version="1",
+                model="local-test",
+                model_version="test",
+                capabilities=["human_shape_adjust"],
+                context_types=["text", "image"],
+                available=True,
             )
             validate_invocation(registry, request, manifest, provider)
             plan = KimiNativeDirectProvider._adjust_plan(None, request, manifest)

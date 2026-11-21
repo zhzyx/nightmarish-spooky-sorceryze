@@ -229,7 +229,7 @@ func run():
 	var limited_entry = panel._latest_character_entry("rig")
 	check(limited_entry.is_empty(),"unresolved local ROM issues cannot create a normal character artifact")
 	check(panel.failure_dialog.visible and panel.failure_text.text.contains("已阻断正常角色交付"),"local ROM rejection opens an explicit blocking failure")
-	check(panel.failure_text.text.contains("失败草稿"),"rejected candidate is retained only as a labelled manual draft")
+	check(panel.failure_text.text.contains("失败草稿"),"rejected candidate is retained only as a labeled manual draft")
 	check(not panel.capability_notice_dialog.visible,"rejected local candidate does not reuse the capability-limited success dialog")
 	panel.failure_dialog.hide()
 	# A language-model rejection is blocked even when every local numeric gate passed.

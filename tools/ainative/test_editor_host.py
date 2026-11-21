@@ -203,11 +203,13 @@ class BridgeTests(unittest.TestCase):
             }
             graph = model(root / "missing-source.png")
             graph["nodes"] = [dict(graph["nodes"][0], id="target", source="", source_paths=[], ignore_cache=True)]
-            graph["edges"] = [{
-                "from": "upstream",
-                "to": "target",
-                "cached_input": {"reference": reference, "artifacts": [asset]},
-            }]
+            graph["edges"] = [
+                {
+                    "from": "upstream",
+                    "to": "target",
+                    "cached_input": {"reference": reference, "artifacts": [asset]},
+                }
+            ]
             args = argparse.Namespace(db=str(root / "db"), factory="editor_demo:factory", command="create")
             run = dispatch(args, {"model": graph, "target": "target"})["run_id"]
             args.command = "step"
@@ -522,6 +524,7 @@ class BridgeTests(unittest.TestCase):
     def test_cached_mesh_snapshot_hydrates_original_immutable_record(self):
         import base64
         import sqlite3
+
         from extensions import canonical
 
         with tempfile.TemporaryDirectory() as tmp:
@@ -555,14 +558,16 @@ class BridgeTests(unittest.TestCase):
                     dict(id="generator", type="text_to_mesh", provider="unused", parameters={"prompt": "regenerate"}),
                     dict(id="consumer", type="copy", provider="local-copy", source="", parameters={"delay": 0}),
                 ],
-                "edges": [{
-                    "from": "generator",
-                    "to": "consumer",
-                    "input": "source",
-                    "output": "result",
-                    "artifact": reference,
-                    "artifact_snapshot": snapshot,
-                }],
+                "edges": [
+                    {
+                        "from": "generator",
+                        "to": "consumer",
+                        "input": "source",
+                        "output": "result",
+                        "artifact": reference,
+                        "artifact_snapshot": snapshot,
+                    }
+                ],
             }
             args = argparse.Namespace(db=str(database), factory="editor_demo:factory", command="create")
             run = dispatch(args, {"model": workflow, "target": "consumer"})["run_id"]

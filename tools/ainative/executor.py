@@ -447,7 +447,9 @@ class Executor:
                         try:
                             merged = merge_manifest(run["manifest"], result)
                             self._assets(result)
-                            operation = "INSERT OR REPLACE" if current.get("ignore_cache", False) else "INSERT OR IGNORE"
+                            operation = (
+                                "INSERT OR REPLACE" if current.get("ignore_cache", False) else "INSERT OR IGNORE"
+                            )
                             self.db.execute(
                                 operation + " INTO cache VALUES(?,?)",
                                 (current["key"], canonical({"job": snapshot, "manifest": result})),

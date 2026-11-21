@@ -34,7 +34,9 @@ def _render(source, directory, godot_path, render_script, yaw_degrees=0.0):
     require(Path(godot_path).is_file() and Path(render_script).is_file(), "review_render_failed")
     project = directory / "project"
     project.mkdir()
-    (project / "project.godot").write_text('[application]\nconfig/name="Private humanoid AI review"\n', encoding="utf-8")
+    (project / "project.godot").write_text(
+        '[application]\nconfig/name="Private humanoid AI review"\n', encoding="utf-8"
+    )
     output = directory / "renders"
     script = Path(render_script).resolve()
     request = directory / "render-request.json"
@@ -98,7 +100,9 @@ def _request_ai(entries, directory):
     body = dict(
         model=config["model"],
         messages=[dict(role="user", content=content)],
-        response_format=dict(type="json_schema", json_schema=dict(name="humanoid_rigging_review", strict=True, schema=review_schema())),
+        response_format=dict(
+            type="json_schema", json_schema=dict(name="humanoid_rigging_review", strict=True, schema=review_schema())
+        ),
         reasoning_effort="low",
         max_tokens=16384,
         stream=False,
@@ -181,7 +185,9 @@ def review_local_model(request):
         )
     if document.get("rendered_front_view") != "front":
         document["passed"] = False
-        document["issues"] = list(document.get("issues", [])) + ["The full-body front render does not show the anatomical front"]
+        document["issues"] = list(document.get("issues", [])) + [
+            "The full-body front render does not show the anatomical front"
+        ]
     if not document.get("head_gate", {}).get("applicable"):
         document["passed"] = False
         document["issues"] = list(document.get("issues", [])) + ["The required humanoid head gate was not applicable"]

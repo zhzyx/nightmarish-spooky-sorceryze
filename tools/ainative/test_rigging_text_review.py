@@ -13,7 +13,13 @@ import rigging_text_review
 
 
 def accepted_document():
-    return dict(schema_version=1, passed=True, summary="实测骨骼、蒙皮和 ROM 证据通过。", issues=[], repair=dict(command="none", parameters={}))
+    return dict(
+        schema_version=1,
+        passed=True,
+        summary="实测骨骼、蒙皮和 ROM 证据通过。",
+        issues=[],
+        repair=dict(command="none", parameters={}),
+    )
 
 
 def validation(passed=True):
@@ -47,12 +53,16 @@ class RiggingTextReviewTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             request = self.request(root, report)
-            with patch.object(rigging_text_review, "_request_ai", return_value=(copy.deepcopy(document), {"provider": "fixture"})) as call:
+            with patch.object(
+                rigging_text_review, "_request_ai", return_value=(copy.deepcopy(document), {"provider": "fixture"})
+            ) as call:
                 result = rigging_text_review.review_candidate(request)
             evidence = call.call_args.args[0]
             self.assertEqual(evidence["evidence_kind"], "godot_measured_text_only")
             self.assertEqual(result["source_sha256"], hashlib.sha256((root / "source.glb").read_bytes()).hexdigest())
-            self.assertEqual(result["candidate_sha256"], hashlib.sha256((root / "candidate.tscn").read_bytes()).hexdigest())
+            self.assertEqual(
+                result["candidate_sha256"], hashlib.sha256((root / "candidate.tscn").read_bytes()).hexdigest()
+            )
             self.assertTrue((root / "review/review-receipt.json").is_file())
             return result
 
@@ -81,7 +91,17 @@ class RiggingTextReviewTests(unittest.TestCase):
         document.update(
             passed=False,
             summary="胸口外扩超过阈值。",
-            issues=[dict(code="chest_outward", stage="rom", check="raise_chest_outward_m", message="胸口外扩超过身高 2.5%。", actual=0.06, threshold=0.045, target="skin_weights")],
+            issues=[
+                dict(
+                    code="chest_outward",
+                    stage="rom",
+                    check="raise_chest_outward_m",
+                    message="胸口外扩超过身高 2.5%。",
+                    actual=0.06,
+                    threshold=0.045,
+                    target="skin_weights",
+                )
+            ],
             repair=dict(command="refit_sagittal_leg_corrections", parameters={}),
         )
         result = self.run_review(document, validation(False))
@@ -115,7 +135,9 @@ class RiggingTextReviewTests(unittest.TestCase):
                     json.dumps(
                         dict(
                             request_sha256=hashlib.sha256(raw).hexdigest(),
-                            instructions_sha256=hashlib.sha256(rigging_text_review.canonical(document).encode()).hexdigest(),
+                            instructions_sha256=hashlib.sha256(
+                                rigging_text_review.canonical(document).encode()
+                            ).hexdigest(),
                         )
                     ),
                     encoding="utf-8",
@@ -139,7 +161,9 @@ class RiggingTextReviewTests(unittest.TestCase):
                 retry_count=4,
                 max_retries=12,
             )
-            with patch.object(rigging_text_review, "_request_ai", return_value=(accepted_document(), {"provider": "fixture"})) as call:
+            with patch.object(
+                rigging_text_review, "_request_ai", return_value=(accepted_document(), {"provider": "fixture"})
+            ) as call:
                 result = rigging_text_review.review_candidate(request)
             self.assertEqual(result["retry_count"], 4)
             self.assertEqual(result["max_retries"], 12)

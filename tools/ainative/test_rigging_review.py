@@ -29,9 +29,12 @@ def minimal_glb():
     document = json.dumps({"asset": {"version": "2.0"}, "buffers": [{"byteLength": 0}]}).encode()
     document += b" " * (-len(document) % 4)
     binary = struct.pack("<II", 0, 0x004E4942)
-    return struct.pack("<4sII", b"glTF", 2, 12 + 8 + len(document) + len(binary)) + struct.pack(
-        "<II", len(document), 0x4E4F534A
-    ) + document + binary
+    return (
+        struct.pack("<4sII", b"glTF", 2, 12 + 8 + len(document) + len(binary))
+        + struct.pack("<II", len(document), 0x4E4F534A)
+        + document
+        + binary
+    )
 
 
 def accepted_document():

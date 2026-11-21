@@ -140,7 +140,11 @@ def compile_graph(model):
                 image_field = kind not in ("model_adjust", "human_shape_adjust") or field != "source"
                 if kind != "copy" and image_field and ext not in (".png", ".jpg", ".jpeg"):
                     raise ValueError("image context required")
-                if kind in ("model_adjust", "human_shape_adjust") and field == "source" and ext not in (".glb", ".gltf"):
+                if (
+                    kind in ("model_adjust", "human_shape_adjust")
+                    and field == "source"
+                    and ext not in (".glb", ".gltf")
+                ):
                     raise ValueError("source model required")
                 if ext in (".gltf", ".glb"):
 
@@ -504,7 +508,19 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument(
         "command",
-        choices=["create", "step", "status", "cancel", "retry", "preview", "publish", "service-check", "managed-comfy", "rigging-review", "rigging-text-review"],
+        choices=[
+            "create",
+            "step",
+            "status",
+            "cancel",
+            "retry",
+            "preview",
+            "publish",
+            "service-check",
+            "managed-comfy",
+            "rigging-review",
+            "rigging-text-review",
+        ],
     )
     p.add_argument("--db", required=True)
     p.add_argument("--factory", default="editor_demo:factory")

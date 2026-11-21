@@ -20,7 +20,15 @@ from multi_image_provider import MESSAGES as MULTI_IMAGE_MESSAGES
 
 RETIRED_MODELING_MODES = frozenset(("codex_modeling", "codex_sculpt"))
 RETIRED_MODELING_PROVIDERS = frozenset(("codex-modeling", "codex-sculpt"))
-KINDS = ("generate_image", "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", "human_shape_adjust")
+KINDS = (
+    "generate_image",
+    "text_to_image",
+    "image_to_image",
+    "image_to_mesh",
+    "text_to_mesh",
+    "model_adjust",
+    "human_shape_adjust",
+)
 IMAGE_NODES = {"CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"}
 MESH_NODES = {
     "LoadImage",
@@ -674,7 +682,9 @@ def prepare_provider(config, model, database, run_id):
         config = settings(config)
         if any(node["type"].endswith("mesh") for node in generated):
             raise ServiceError("gpt_modeling_retired")
-    if any(node["type"] in ("model_adjust", "human_shape_adjust") and config["mode"] != "kimi_native" for node in generated):
+    if any(
+        node["type"] in ("model_adjust", "human_shape_adjust") and config["mode"] != "kimi_native" for node in generated
+    ):
         raise ServiceError("node_unsupported")
     if not generated:
         return registry, providers, {"mode": "local_copy"}

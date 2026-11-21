@@ -326,11 +326,21 @@ def reshape_crown(document, binary, spec):
 
 
 HUMAN_LANDMARK_NAMES = (
-    "head_top", "chin", "neck",
-    "shoulder_l", "elbow_l", "wrist_l",
-    "shoulder_r", "elbow_r", "wrist_r",
-    "hip_l", "knee_l", "ankle_l",
-    "hip_r", "knee_r", "ankle_r",
+    "head_top",
+    "chin",
+    "neck",
+    "shoulder_l",
+    "elbow_l",
+    "wrist_l",
+    "shoulder_r",
+    "elbow_r",
+    "wrist_r",
+    "hip_l",
+    "knee_l",
+    "ankle_l",
+    "hip_r",
+    "knee_r",
+    "ankle_r",
 )
 
 
@@ -343,7 +353,7 @@ def _chain_projection(points, chain):
     """Return nearest original/deformed chain points for an Nx3 array."""
     best_distance = np.full(len(points), np.inf)
     best_closest = np.zeros_like(points)
-    best_deformed = np.zeros_like(points)
+    np.zeros_like(points)
     best_segment = np.zeros(len(points), dtype=np.int64)
     best_t = np.zeros(len(points), dtype=np.float64)
     for index in range(len(chain) - 1):
@@ -395,7 +405,8 @@ def _human_landmarks(spec, source_sha256):
     for name in HUMAN_LANDMARK_NAMES:
         point = value[name]
         if (
-            not isinstance(point, list) or len(point) != 3
+            not isinstance(point, list)
+            or len(point) != 3
             or any(type(component) not in (int, float) or not math.isfinite(component) for component in point)
         ):
             raise ValueError("geometry_repair_landmarks_invalid")
@@ -417,8 +428,11 @@ def _human_parameters(spec, source_sha256):
     if spec.get("reference_pose") not in ("T", "A"):
         raise ValueError("geometry_repair_reference_pose_invalid")
     bounds = dict(
-        target_height_m=(0.2, 4.0), target_head_ratio=(3.0, 12.0),
-        arm_length_scale=(0.75, 1.35), leg_length_scale=(0.75, 1.35), build=(-1.0, 1.0),
+        target_height_m=(0.2, 4.0),
+        target_head_ratio=(3.0, 12.0),
+        arm_length_scale=(0.75, 1.35),
+        leg_length_scale=(0.75, 1.35),
+        build=(-1.0, 1.0),
     )
     values = {}
     for name, limit in bounds.items():
@@ -447,8 +461,11 @@ def reshape_humanoid(document, binary, spec):
     for node in document.get("nodes", []):
         if "mesh" not in node:
             continue
-        if "matrix" in node or "rotation" in node or "scale" in node or any(
-            abs(float(value)) > 1e-12 for value in node.get("translation", [0, 0, 0])
+        if (
+            "matrix" in node
+            or "rotation" in node
+            or "scale" in node
+            or any(abs(float(value)) > 1e-12 for value in node.get("translation", [0, 0, 0]))
         ):
             raise ValueError("geometry_repair_transform_unsupported")
     document = copy.deepcopy(document)
@@ -525,8 +542,9 @@ def reshape_humanoid(document, binary, spec):
             lateral = np.sum((result - hips) * (left_axis * side_sign), axis=1)
             side_weight = _smoothstep_array(0.0, source_height * 0.04, lateral)
             region = 1.0 - _smoothstep_array(source_height * 0.06, source_height * 0.16, distance)
-            root_blend = _smoothstep_array(0.0, np.linalg.norm(chain[1] - chain[0]) * 0.2,
-                                           np.linalg.norm(closest - chain[0], axis=1))
+            root_blend = _smoothstep_array(
+                0.0, np.linalg.norm(chain[1] - chain[0]) * 0.2, np.linalg.norm(closest - chain[0], axis=1)
+            )
             result += delta * (side_weight * region * root_blend)[:, None]
         for side in ("l", "r"):
             chain = np.asarray([landmarks[name + "_" + side] for name in ("hip", "knee", "ankle")])
@@ -535,8 +553,9 @@ def reshape_humanoid(document, binary, spec):
             lateral = np.sum((result - hips) * (left_axis * side_sign), axis=1)
             side_weight = _smoothstep_array(0.0, source_height * 0.04, lateral)
             region = 1.0 - _smoothstep_array(source_height * 0.07, source_height * 0.18, distance)
-            root_blend = _smoothstep_array(0.0, np.linalg.norm(chain[1] - chain[0]) * 0.15,
-                                           np.linalg.norm(closest - chain[0], axis=1))
+            root_blend = _smoothstep_array(
+                0.0, np.linalg.norm(chain[1] - chain[0]) * 0.15, np.linalg.norm(closest - chain[0], axis=1)
+            )
             result += delta * (side_weight * region * root_blend)[:, None]
         return result
 
@@ -615,13 +634,17 @@ def reshape_humanoid(document, binary, spec):
             height_m=measured_height,
             head_ratio=measured_ratio,
             arm_lengths_m={
-                side: float(np.linalg.norm(final_landmarks["elbow_" + side] - final_landmarks["shoulder_" + side])
-                            + np.linalg.norm(final_landmarks["wrist_" + side] - final_landmarks["elbow_" + side]))
+                side: float(
+                    np.linalg.norm(final_landmarks["elbow_" + side] - final_landmarks["shoulder_" + side])
+                    + np.linalg.norm(final_landmarks["wrist_" + side] - final_landmarks["elbow_" + side])
+                )
                 for side in ("l", "r")
             },
             leg_lengths_m={
-                side: float(np.linalg.norm(final_landmarks["knee_" + side] - final_landmarks["hip_" + side])
-                            + np.linalg.norm(final_landmarks["ankle_" + side] - final_landmarks["knee_" + side]))
+                side: float(
+                    np.linalg.norm(final_landmarks["knee_" + side] - final_landmarks["hip_" + side])
+                    + np.linalg.norm(final_landmarks["ankle_" + side] - final_landmarks["knee_" + side])
+                )
                 for side in ("l", "r")
             },
         ),
@@ -669,8 +692,13 @@ def repair(spec):
             "review_yaw_degrees",
         },
         "reshape_humanoid": {
-            "reference_pose", "landmarks", "target_height_m", "target_head_ratio",
-            "arm_length_scale", "leg_length_scale", "build",
+            "reference_pose",
+            "landmarks",
+            "target_height_m",
+            "target_head_ratio",
+            "arm_length_scale",
+            "leg_length_scale",
+            "build",
         },
     }
     if not isinstance(spec, dict) or spec.get("schema_version") != 1:

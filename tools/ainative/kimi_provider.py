@@ -849,8 +849,10 @@ class KimiNativeDirectProvider(ModelingProvider):
                     reference_pose=None,
                     landmarks=None,
                     target_height_m=values["height_m"],
-                    target_head_ratio=values["head_ratio"], arm_length_scale=values["arm_length_scale"],
-                    leg_length_scale=values["leg_length_scale"], build=values["build"],
+                    target_head_ratio=values["head_ratio"],
+                    arm_length_scale=values["arm_length_scale"],
+                    leg_length_scale=values["leg_length_scale"],
+                    build=values["build"],
                 )
                 # Default is AINative fitting. Explicit developer JSON remains a
                 # bounded override and follows the same source/anatomy checks.
@@ -1354,11 +1356,15 @@ class KimiNativeDirectProvider(ModelingProvider):
             geometry_repair=result,
             automatic_landmarks=automatic,
             landmark_estimation=(
-                "ainative_ai_geometry_checked" if automatic is not None
-                else "explicit_source_bound_override" if operation == "reshape_humanoid"
+                "ainative_ai_geometry_checked"
+                if automatic is not None
+                else "explicit_source_bound_override"
+                if operation == "reshape_humanoid"
                 else "not_applicable"
             ),
-            input_mode="previous_model_human_shape_ainative_auto" if automatic is not None else "previous_model_" + operation,
+            input_mode="previous_model_human_shape_ainative_auto"
+            if automatic is not None
+            else "previous_model_" + operation,
             view_sources=[],
             original_model_not_overwritten=True,
             tool_fingerprint=fingerprint,

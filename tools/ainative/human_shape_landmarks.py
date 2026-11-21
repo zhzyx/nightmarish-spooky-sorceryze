@@ -4,16 +4,16 @@ Rendered-view AI estimates normalized anatomical landmarks. Local geometry check
 bind them to the source and reject low-confidence or implausible output before any
 body-shape deformation. No manual-confirmation claim is manufactured.
 """
+
 import base64
 import hashlib
 import json
 import math
 from pathlib import Path
 
-import numpy as np
-
 import api_planner
 import geometry_repair
+import numpy as np
 import rigging_review
 from extensions import canonical, require
 
@@ -43,10 +43,14 @@ def landmark_schema():
 
 def _prompt():
     names = list(geometry_repair.HUMAN_LANDMARK_NAMES)
-    return """Estimate anatomical landmarks for ONE existing static humanoid GLB from its rendered views. This is source-bound AI estimation, not a claim of exact motion-capture measurement. Inspect front, right, back, left, top, upper/lower body and head views independently. Identify whether the actual reference pose is T or A; A means both arms slope downward but elbows/wrists remain observable. rendered_front_view is the full-body view that actually shows anatomical front. confidence=low for a non-humanoid, duplicate subject, missing limbs, unclear front, occluded joints or inconsistent views. Return schema_version=1 and every required landmark exactly once.
+    return (
+        """Estimate anatomical landmarks for ONE existing static humanoid GLB from its rendered views. This is source-bound AI estimation, not a claim of exact motion-capture measurement. Inspect front, right, back, left, top, upper/lower body and head views independently. Identify whether the actual reference pose is T or A; A means both arms slope downward but elbows/wrists remain observable. rendered_front_view is the full-body view that actually shows anatomical front. confidence=low for a non-humanoid, duplicate subject, missing limbs, unclear front, occluded joints or inconsistent views. Return schema_version=1 and every required landmark exactly once.
 Coordinate contract: Y-up; each point is [x,y,z] normalized by FULL VISIBLE MODEL HEIGHT. y=0 at the lowest geometry and y=1 at the highest head geometry. x=0 and z=0 at the full-model bounding-box X/Z center; x and z are offsets divided by the same full height. Anatomical left is +X in the front view and anatomical front is +Z. head_top is the highest head/skull/hair geometry, chin is the lower face/chin landmark, and neck is the neck root above the torso. shoulder/elbow/wrist and hip/knee/ankle are anatomical joint centers, not surface silhouettes. Left/right must never be swapped. Estimate z from right/left/head_side evidence, not by inventing a flat Z=0 body. Do not output pixel coordinates, meters, a skeleton, skin weights or an animation claim.
 Required landmark names:
-""" + canonical(names) + "\n"
+"""
+        + canonical(names)
+        + "\n"
+    )
 
 
 def _request_ai(entries, directory, planner):
@@ -57,16 +61,19 @@ def _request_ai(entries, directory, planner):
     for entry in entries:
         path = Path(entry["path"])
         content.append(dict(type="text", text="IMAGE " + entry["image_id"] + "; role/view: " + entry["label"]))
-        content.append(dict(type="image_url", image_url=dict(
-            url="data:image/png;base64," + base64.b64encode(path.read_bytes()).decode()
-        )))
+        content.append(
+            dict(
+                type="image_url",
+                image_url=dict(url="data:image/png;base64," + base64.b64encode(path.read_bytes()).decode()),
+            )
+        )
     schema = landmark_schema()
     body = dict(
         model=planner["model"],
         messages=[dict(role="user", content=content)],
-        response_format=dict(type="json_schema", json_schema=dict(
-            name="human_shape_landmarks", strict=True, schema=schema
-        )),
+        response_format=dict(
+            type="json_schema", json_schema=dict(name="human_shape_landmarks", strict=True, schema=schema)
+        ),
         reasoning_effort="low",
         max_tokens=16384,
         stream=False,
@@ -94,7 +101,9 @@ def _source_points(source):
         if "mesh" not in node:
             continue
         require(
-            "matrix" not in node and "rotation" not in node and "scale" not in node
+            "matrix" not in node
+            and "rotation" not in node
+            and "scale" not in node
             and all(abs(float(value)) <= 1e-12 for value in node.get("translation", [0, 0, 0])),
             "geometry_repair_transform_unsupported",
         )
@@ -111,7 +120,8 @@ def _source_points(source):
 def _validate_document(document):
     require(
         isinstance(document, dict)
-        and set(document) == {"schema_version", "reference_pose", "rendered_front_view", "confidence", "landmarks", "observations"}
+        and set(document)
+        == {"schema_version", "reference_pose", "rendered_front_view", "confidence", "landmarks", "observations"}
         and document.get("schema_version") == 1
         and document.get("reference_pose") in ("T", "A")
         and isinstance(document.get("observations"), str),
@@ -120,13 +130,16 @@ def _validate_document(document):
     require(document["rendered_front_view"] == "front", "human_shape_auto_fit_front_required")
     require(document["confidence"] in ("high", "medium"), "human_shape_auto_fit_low_confidence")
     landmarks = document["landmarks"]
-    require(isinstance(landmarks, dict) and set(landmarks) == set(geometry_repair.HUMAN_LANDMARK_NAMES),
-            "human_shape_auto_fit_output_invalid")
+    require(
+        isinstance(landmarks, dict) and set(landmarks) == set(geometry_repair.HUMAN_LANDMARK_NAMES),
+        "human_shape_auto_fit_output_invalid",
+    )
     normalized = {}
     for name in geometry_repair.HUMAN_LANDMARK_NAMES:
         point = landmarks[name]
         require(
-            isinstance(point, list) and len(point) == 3
+            isinstance(point, list)
+            and len(point) == 3
             and all(type(value) in (int, float) and math.isfinite(value) and -2.0 <= value <= 2.0 for value in point)
             and -1e-6 <= point[1] <= 1.0 + 1e-6,
             "human_shape_auto_fit_output_invalid",
