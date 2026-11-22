@@ -1,0 +1,128 @@
+{
+  "issue_number": 1801,
+  "request_id": "gonggong-ai-workbench-plan1-v07",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "base": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "command": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_validation.py",
+  "tests": [
+    "test_validation_after_edit[blue-passed]",
+    "test_validation_after_edit[red-failed]",
+    "test_only_changed_check_inputs_expire"
+  ],
+  "observations": {
+    "dependency_edit": {
+      "before": {
+        "duration": {
+          "task": "cd1c6554f6fb8fa44bcfa49a51eaaeed85753039ee4089aac3a099a2b4b6df1e",
+          "module": "a",
+          "path": "duration",
+          "current": {
+            "revision": "844538612ee904582b40cf9ad78e93f0c7759a3ac4dffdc639e9e8f40b522370",
+            "sha256": "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918",
+            "state": "passed",
+            "checks": {
+              "motion": "passed"
+            }
+          },
+          "receipts": [
+            {
+              "revision": "844538612ee904582b40cf9ad78e93f0c7759a3ac4dffdc639e9e8f40b522370",
+              "sha256": "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918",
+              "candidate": "20787e51c053cfceb3a1535d3391de7c2cf2fa1da2a95c528842c11d1a2a0944",
+              "tool": "motion",
+              "outcome": "passed",
+              "result_location": {
+                "evidence": "9af5846348c691d55b0278bbdd6a91a8409e66d6f6deb668cdb4d1f357e7ded3",
+                "log_sha256": "ba51699b10fd58b9dcd6285caff510f623469d5a86e027dc1d32c4b56a012c78"
+              },
+              "revoked": false
+            }
+          ]
+        },
+        "preview.svg": {
+          "task": "cd1c6554f6fb8fa44bcfa49a51eaaeed85753039ee4089aac3a099a2b4b6df1e",
+          "module": "a",
+          "path": "preview.svg",
+          "current": {
+            "revision": "844538612ee904582b40cf9ad78e93f0c7759a3ac4dffdc639e9e8f40b522370",
+            "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+            "state": "passed",
+            "checks": {
+              "check": "passed"
+            }
+          },
+          "receipts": [
+            {
+              "revision": "844538612ee904582b40cf9ad78e93f0c7759a3ac4dffdc639e9e8f40b522370",
+              "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+              "candidate": "20787e51c053cfceb3a1535d3391de7c2cf2fa1da2a95c528842c11d1a2a0944",
+              "tool": "check",
+              "outcome": "passed",
+              "result_location": {
+                "evidence": "899e575b08be39e98e4852d66b09dc1bda0fdacc46bc2784a0bb03db4a5d0fa8",
+                "log_sha256": "ba51699b10fd58b9dcd6285caff510f623469d5a86e027dc1d32c4b56a012c78"
+              },
+              "revoked": false
+            }
+          ]
+        }
+      },
+      "after": {
+        "duration": {
+          "task": "cd1c6554f6fb8fa44bcfa49a51eaaeed85753039ee4089aac3a099a2b4b6df1e",
+          "module": "a",
+          "path": "duration",
+          "current": {
+            "revision": "f1db13f9c2e6c2f1121dd5ae83f8acac4efd67152c16b22c1d3c6f3d35a56d07",
+            "sha256": "4523540f1504cd17100c4835e85b7eefd49911580f8efff0599a8f283be6b9e3",
+            "state": "pending",
+            "checks": {
+              "motion": "pending"
+            }
+          },
+          "receipts": [
+            {
+              "revision": "844538612ee904582b40cf9ad78e93f0c7759a3ac4dffdc639e9e8f40b522370",
+              "sha256": "6b51d431df5d7f141cbececcf79edf3dd861c3b4069f0b11661a3eefacbba918",
+              "candidate": "20787e51c053cfceb3a1535d3391de7c2cf2fa1da2a95c528842c11d1a2a0944",
+              "tool": "motion",
+              "outcome": "passed",
+              "result_location": {
+                "evidence": "9af5846348c691d55b0278bbdd6a91a8409e66d6f6deb668cdb4d1f357e7ded3",
+                "log_sha256": "ba51699b10fd58b9dcd6285caff510f623469d5a86e027dc1d32c4b56a012c78"
+              },
+              "revoked": false
+            }
+          ]
+        },
+        "preview.svg": {
+          "task": "cd1c6554f6fb8fa44bcfa49a51eaaeed85753039ee4089aac3a099a2b4b6df1e",
+          "module": "a",
+          "path": "preview.svg",
+          "current": {
+            "revision": "f1db13f9c2e6c2f1121dd5ae83f8acac4efd67152c16b22c1d3c6f3d35a56d07",
+            "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+            "state": "passed",
+            "checks": {
+              "check": "passed"
+            }
+          },
+          "receipts": [
+            {
+              "revision": "844538612ee904582b40cf9ad78e93f0c7759a3ac4dffdc639e9e8f40b522370",
+              "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+              "candidate": "20787e51c053cfceb3a1535d3391de7c2cf2fa1da2a95c528842c11d1a2a0944",
+              "tool": "check",
+              "outcome": "passed",
+              "result_location": {
+                "evidence": "899e575b08be39e98e4852d66b09dc1bda0fdacc46bc2784a0bb03db4a5d0fa8",
+                "log_sha256": "ba51699b10fd58b9dcd6285caff510f623469d5a86e027dc1d32c4b56a012c78"
+              },
+              "revoked": false
+            }
+          ]
+        }
+      }
+    }
+  }
+}
