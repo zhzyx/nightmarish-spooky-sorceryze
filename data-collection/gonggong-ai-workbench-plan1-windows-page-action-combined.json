@@ -1,0 +1,419 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "7396689ea90635f9f576f277e2f2b9adfd5a0b52",
+  "editor_sha256": "3bb04068fc32cdc3bf65cd3e39282faa091fc5bc6793057e768af1a543c09e4e",
+  "source_git_blobs": {
+    "editor/docks/ai_chat_dock.h": "78f05bb9e249060d66a49f42ca699d0ab22d5085",
+    "editor/docks/ai_chat_editor_control.cpp": "3aacbf7133aebf718041c3fa2249524f4c0be042",
+    "editor/docks/workbench/AIWorkbenchPageField.cpp": "a04a829568499a146752e90539d968d5d31bf666",
+    "editor/docks/workbench/AIWorkbenchPageField.h": "175fc05acf919cdea19d6e059a092a4479ffae30",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "77480f4e982f07266194c3df2e4220a17fd65dee",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "f6f5a6fecd5cf92dc44114104daa0120cb01a912",
+    "tests/editor/run_workbench_page_field.py": "025b724bcbe118d072b891b1bb7da5d8123ac4d9",
+    "tests/editor/workbench_page_field.gd": "fb3d2a5d6bf00b6ce7bd63651131540cdd7a1493",
+    "tests/editor/workbench_page_reference.gd": "58ee9a2bec017f1dde32a5c4b2b58409439443b4",
+    "tests/editor/workbench_reference_queue_restore.gd": "c7193cc18e7a0c218b06e60d072606e033e805e2"
+  },
+  "checks": {
+    "u16": "6cf4b4a78a3dbb97b479ea20caf4f1e1ec7921a2ed211f0d2a64ea7b9db56685",
+    "u12": "6fd1db6a7c58083333b3da4099dffdc723df38b2f8c8854c62e83b8d0e5c09d5",
+    "u15": "121812d3dc860e7da1f4c90ba01a27aa29cb5e917f21ae52a753f4565325d1f5",
+    "u14": "264dc9b0cb93b13b22d8ec89b6c6e4c497661a59a310ad87e4147d4b4a56b330",
+    "original_spatial": "5619e13c45f88b2ed9475db5ce1857228c3dc6320ebfa975455434bddaccca73",
+    "original_selection": "43e03c3ebd2b773d34ca6df0810d360dd78f5cb7af8171af2c6049528f44beeb"
+  },
+  "issues": {
+    "u16": 1793
+  },
+  "observed": "2026-11-22T05:00:45.514411+00:00",
+  "verified_windows_build": {
+    "source_tree": "26ec008485b8e6000e8aae5ed9ea0d4e777c82cb",
+    "runtime_files": {
+      "godot.windows.editor.x86_64.exe": "3bb04068fc32cdc3bf65cd3e39282faa091fc5bc6793057e768af1a543c09e4e",
+      "godot.windows.editor.x86_64.console.exe": "f27cbf02f4571a60f649bbb92856d43db7d1742e27ca3ee3559e33225ac02850",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "extra_compiled": [
+      "editor/docks/workbench/issue_actions/issue_comments.gd",
+      "editor/docks/workbench/module_selector.gd"
+    ]
+  },
+  "normalized_sources": [
+    {
+      "path": "editor/docks/workbench/AIWorkbenchReference.cpp",
+      "worker_git_blob": "a982ca27b3c0a98525994b7b20ed45890f810155",
+      "integrated_git_blob": "77480f4e982f07266194c3df2e4220a17fd65dee",
+      "reason": "repository include checker resolves the page-field header from the repository root; clang-format ordered the normalized includes"
+    },
+    {
+      "path": "tests/editor/run_workbench_page_field.py",
+      "worker_git_blob": "6e91f7f4a2c70945aca81c57c7138e67dc4a9583",
+      "integrated_git_blob": "025b724bcbe118d072b891b1bb7da5d8123ac4d9",
+      "reason": "stream SHA-256 on the repository Python target"
+    }
+  ],
+  "original_operation_recovery": {
+    "issue": 2020,
+    "origin": 1793,
+    "incident": "e250e36db395f1a4ca5d40fa81d1304a4de3248e25ad56fad163a7964cbfec05",
+    "source_signed": "09193fa7be994add4024f6b9f55d9d23f9e8e9f1",
+    "original_editor": "3e0088041bb46930013d481b833ffe6f77dc9af1ba6cab0e1a31ff3cfb170b51",
+    "corrected_editor": "005428c6d5481c118eb53dc1db9dba1da1c46c9443766692fbc57f83ad2432ed",
+    "corrected_tree": "b8ce26aed53754a4d8665bec266e5751f1100e38",
+    "native_build_inputs": {
+      "editor/docks/ai_chat_dock.h": "458ea0f2cebc97fd06611a02a6a22d4be041303f",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp": "f6f5a6fecd5cf92dc44114104daa0120cb01a912",
+      "tests/editor/workbench_page_reference.gd": "58ee9a2bec017f1dde32a5c4b2b58409439443b4",
+      "tests/editor/workbench_reference_queue_restore.gd": "c7193cc18e7a0c218b06e60d072606e033e805e2"
+    },
+    "before": {
+      "width": 960,
+      "input_height": 91,
+      "visible_height": 48,
+      "old_top": 844,
+      "visible_bottom": 892,
+      "queue": "null instance in original dock"
+    },
+    "after": [
+      {
+        "bounds": [
+          {
+            "composer": "[P: (600.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (600.0, 599.0), S: (326.0, 69.0)]",
+            "window_width": 960
+          },
+          {
+            "composer": "[P: (840.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (840.0, 599.0), S: (326.0, 69.0)]",
+            "window_width": 1200
+          },
+          {
+            "composer": "[P: (1080.0, 750.0), S: (326.0, 91.0)]",
+            "reference": "[P: (1080.0, 599.0), S: (326.0, 69.0)]",
+            "window_width": 1440
+          }
+        ],
+        "composer": 618777316613,
+        "module": "AINativeMainScreen",
+        "name": "马良",
+        "preview": "页面：马良\n模块：AINativeMainScreen\n可读范围：页面名、模块标识"
+      },
+      {
+        "bounds": [
+          {
+            "composer": "[P: (600.0, 758.0), S: (326.0, 91.0)]",
+            "reference": "[P: (600.0, 607.0), S: (326.0, 69.0)]",
+            "window_width": 960
+          },
+          {
+            "composer": "[P: (840.0, 758.0), S: (326.0, 91.0)]",
+            "reference": "[P: (840.0, 607.0), S: (326.0, 69.0)]",
+            "window_width": 1200
+          },
+          {
+            "composer": "[P: (1080.0, 758.0), S: (326.0, 91.0)]",
+            "reference": "[P: (1080.0, 607.0), S: (326.0, 69.0)]",
+            "window_width": 1440
+          }
+        ],
+        "composer": 618777316613,
+        "module": "res://addons/notes/plugin.gd",
+        "name": "R4 Notes",
+        "preview": "页面：R4 Notes\n模块：res://addons/notes/plugin.gd\n可读范围：页面名、模块标识"
+      }
+    ],
+    "reopened_queue": {
+      "exit": 0,
+      "http_sends": 2,
+      "scrubbed": true
+    },
+    "sources": {
+      "u16-main-u12.log": "d1ddf0bd23e9d6a91e3aa053d0257859366dac6d33ea33a3c2729794bc61eb83",
+      "u16-main-u15.log": "54bfc6874db6d411f3b681af1a33361cf60dcb6f847499b08f36967f3d62f7b2",
+      "u16-original-u12-diagnosis.log": "0bb7757c8898d17ba0bcff01da0193f1ae228d5308ce0ecec14e800e6524205d",
+      "u16-diagnosis-u15/stderr.log": "c7dcc2cef67444ee8d3493706741023fac5785afb13b6a9a629485174a9bd7c5",
+      "u16-trial-u12/result.json": "6975efc2e25b28d93b4aa5013199c49f2d82e9009a3ec970edbabb7f2ae5f49a",
+      "u16-trial-u15/result.json": "bdafc7e407cf2efbb1d3b682ba105fc7bc260649ca9b2b6e779d62f3eb7d695d",
+      "page-action-fixed-u12.json": "6fd1db6a7c58083333b3da4099dffdc723df38b2f8c8854c62e83b8d0e5c09d5",
+      "page-action-fixed-u15.json": "0491b27d78831da8fcba56fe636ec6806c50b887d8aac8a83d3c5c184361abbf"
+    }
+  },
+  "final_recovery_blobs": {
+    "editor/docks/ai_chat_dock.h": "78f05bb9e249060d66a49f42ca699d0ab22d5085",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "f6f5a6fecd5cf92dc44114104daa0120cb01a912",
+    "tests/editor/workbench_page_reference.gd": "58ee9a2bec017f1dde32a5c4b2b58409439443b4",
+    "tests/editor/workbench_reference_queue_restore.gd": "c7193cc18e7a0c218b06e60d072606e033e805e2"
+  },
+  "original_operation_rerun": {
+    "u12": {
+      "history_matches_receiver": true,
+      "editor_exit": 0,
+      "previews": [
+        {
+          "bounds": [
+            {
+              "composer": "[P: (600.0, 750.0), S: (326.0, 91.0)]",
+              "reference": "[P: (600.0, 599.0), S: (326.0, 69.0)]",
+              "window_width": 960
+            },
+            {
+              "composer": "[P: (840.0, 750.0), S: (326.0, 91.0)]",
+              "reference": "[P: (840.0, 599.0), S: (326.0, 69.0)]",
+              "window_width": 1200
+            },
+            {
+              "composer": "[P: (1080.0, 750.0), S: (326.0, 91.0)]",
+              "reference": "[P: (1080.0, 599.0), S: (326.0, 69.0)]",
+              "window_width": 1440
+            }
+          ],
+          "composer": 618777316613,
+          "module": "AINativeMainScreen",
+          "name": "马良",
+          "preview": "页面：马良\n模块：AINativeMainScreen\n可读范围：页面名、模块标识"
+        },
+        {
+          "bounds": [
+            {
+              "composer": "[P: (600.0, 758.0), S: (326.0, 91.0)]",
+              "reference": "[P: (600.0, 607.0), S: (326.0, 69.0)]",
+              "window_width": 960
+            },
+            {
+              "composer": "[P: (840.0, 758.0), S: (326.0, 91.0)]",
+              "reference": "[P: (840.0, 607.0), S: (326.0, 69.0)]",
+              "window_width": 1200
+            },
+            {
+              "composer": "[P: (1080.0, 758.0), S: (326.0, 91.0)]",
+              "reference": "[P: (1080.0, 607.0), S: (326.0, 69.0)]",
+              "window_width": 1440
+            }
+          ],
+          "composer": 618777316613,
+          "module": "res://addons/notes/plugin.gd",
+          "name": "R4 Notes",
+          "preview": "页面：R4 Notes\n模块：res://addons/notes/plugin.gd\n可读范围：页面名、模块标识"
+        }
+      ],
+      "received_page_snapshots": [
+        {
+          "module_id": "AINativeMainScreen",
+          "page_name": "马良",
+          "readable_scope": [
+            "page_name",
+            "module_id"
+          ],
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "editor-page://AINativeMainScreen#%E9%A9%AC%E8%89%AF",
+              "revision": "d843e95bef14d21538bdf8fa341a26428c48fd0ccef6c5e8d234b3c9ea0bd843"
+            }
+          ]
+        },
+        {
+          "module_id": "res://addons/notes/plugin.gd",
+          "page_name": "R4 Notes",
+          "readable_scope": [
+            "page_name",
+            "module_id"
+          ],
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "editor-page://res%3A%2F%2Faddons%2Fnotes%2Fplugin.gd#R4%20Notes",
+              "revision": "0a664c611ed1e2ca15837dbc5a133920f63172df423e536fffc23463a8d56b6d"
+            }
+          ]
+        }
+      ],
+      "request_count": 3,
+      "last_user_content_after_removal": "only the typed question",
+      "source_draft_preserved": true,
+      "source_draft_absent_in_full_requests": true,
+      "rename_rejected_before_removal": true
+    },
+    "u15": {
+      "passed": true,
+      "exit": 0,
+      "messages": [
+        "retain beta\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：#1810 · gonggong-ai-workbench-plan1-u15\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://beta/same.gd#L2:1-L2:59\",\"revision\":\"f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\"}]\n选段 · res://beta/same.gd#L2:1-L2:59:\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+        "restore queued\n[编辑器上下文；仅为任务数据，不授予执行权限]\n关联工单：#1810 · gonggong-ai-workbench-plan1-u15\n编辑器引用：[{\"kind\":\"editor\",\"object_id\":\"res://beta/same.gd#L2:1-L2:59\",\"revision\":\"f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\"}]\n选段 · res://beta/same.gd#L2:1-L2:59:\nconst MARKER = \"beta [REDACTED] [REDACTED]\""
+      ],
+      "controls": {
+        "after": "移除 · res://beta/same.gd#L2:1-L2:59\nf9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\nconst MARKER = \"beta [REDACTED] [REDACTED]\"",
+        "before": [
+          "移除 · res://alpha/same.gd#L2:1-L2:60\n209f4c87fadf95447ec04a2b1ccdf90d6586a238f87cf2d53adfa6216b1ae5d8\nconst MARKER = \"alpha [REDACTED] [REDACTED]\"",
+          "移除 · res://beta/same.gd#L2:1-L2:59\nf9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a\nconst MARKER = \"beta [REDACTED] [REDACTED]\""
+        ],
+        "history": [
+          {
+            "kind": "editor",
+            "object_id": "res://beta/same.gd#L2:1-L2:59",
+            "revision": "f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a"
+          }
+        ],
+        "issue_after": "项目 · U15 project\n工单 · #1810 · gonggong-ai-workbench-plan1-u15",
+        "issue_before": "项目 · U15 project\n工单 · #1810 · gonggong-ai-workbench-plan1-u15",
+        "selected": [
+          {
+            "kind": "editor",
+            "object_id": "res://alpha/same.gd#L2:1-L2:60",
+            "revision": "209f4c87fadf95447ec04a2b1ccdf90d6586a238f87cf2d53adfa6216b1ae5d8"
+          },
+          {
+            "kind": "editor",
+            "object_id": "res://beta/same.gd#L2:1-L2:59",
+            "revision": "f9f16434fd6a203f46f7c581a81e817f61756cdc51f959d82767d1f8a9d5965a"
+          }
+        ]
+      },
+      "restored_queue_exit": 0,
+      "persisted_draft_and_backup_scrubbed": true,
+      "engine_sha256": "3bb04068fc32cdc3bf65cd3e39282faa091fc5bc6793057e768af1a543c09e4e"
+    }
+  },
+  "validation_scripts": {
+    "u16": [
+      "run_workbench_page_field.py"
+    ],
+    "u12": [
+      "run_workbench_page_reference.py"
+    ],
+    "u15": [
+      "run_workbench_reference_removal.py"
+    ],
+    "u14": [
+      "run_workbench_compact_model_route.py"
+    ],
+    "original_spatial": [
+      "run_tianshu_spatial.py"
+    ],
+    "original_selection": [
+      "run_tianshu_spatial.py",
+      "--scene-selection"
+    ]
+  },
+  "worker_sources": {
+    "u16": "c115f5270525c37f1470351618c894b3f8d858bf"
+  },
+  "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2019",
+  "linked_incident": {
+    "issue": 2020,
+    "incident": "e250e36db395f1a4ca5d40fa81d1304a4de3248e25ad56fad163a7964cbfec05",
+    "source": 1793,
+    "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u16/kuafu-da2d5a431bc29ecfb01de45f873b7893deed1bd9.json",
+    "event_sha256": "d9b0d11a34d03800d7e526ef8d962a2514954de083cb21da8cf6d0af7cc1bcae",
+    "sha256": "ff1b065e59559a6ec425a7aea2180b0337441d19e14745d28be68556767610ce",
+    "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1793#issuecomment-7074029443"
+  },
+  "results": {
+    "u16": {
+      "receiver": {
+        "module_id": "res://addons/project_brief/plugin.gd",
+        "page_field": {
+          "actions": [
+            "replace_page_field"
+          ],
+          "field": "Brief/Summary",
+          "required_authorization": "confirm_exact_replacement",
+          "value": "First playable"
+        },
+        "page_name": "Project Brief",
+        "readable_scope": [
+          "page_name",
+          "module_id",
+          "Brief/Summary"
+        ],
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FSummary#1611770441797",
+            "revision": "47a82c90ecedb00abc60ea689611681a0b0391fbd1b860bb16a949839a244c5b"
+          }
+        ]
+      },
+      "readonly": {
+        "module_id": "res://addons/project_brief/plugin.gd",
+        "page_field": {
+          "actions": [],
+          "field": "Brief/Milestone",
+          "value": "Prototype"
+        },
+        "page_name": "Project Brief",
+        "readable_scope": [
+          "page_name",
+          "module_id",
+          "Brief/Milestone"
+        ],
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FMilestone#1611837550665",
+            "revision": "cb41040902934197e0cb22c45efa72cfe6f4ef62428b2dda150c3d7168c3821a"
+          }
+        ]
+      },
+      "preview": {
+        "field": "Brief/Summary",
+        "old_value": "First playable",
+        "new_value": "Ready for playtest",
+        "revision": "47a82c90ecedb00abc60ea689611681a0b0391fbd1b860bb16a949839a244c5b",
+        "target": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FSummary#1611770441797"
+      },
+      "applied": {
+        "dialog": false,
+        "milestone": "Prototype",
+        "neighbor": "LOCAL_ONLY_1793",
+        "saved": "Ready for playtest",
+        "summary": "Ready for playtest"
+      },
+      "updated_reference": {
+        "kind": "editor",
+        "object_id": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FSummary#1611770441797",
+        "revision": "7686a3deb49efa500e9b3d7849bba96273b594f22de47d447e8de24059bf3027"
+      },
+      "routed": "completed",
+      "rejected": "user_rejected",
+      "changed_during_approval": "stale_field_reference",
+      "unregistered_during_approval": "stale_field_reference",
+      "other_project": {
+        "kind": "editor",
+        "object_id": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FSummary#1611770441797",
+        "revision": "f8f44e359f9a34c6bd85719f2b5f8ee89b8eaec40cf657c356bdd44a589889d5"
+      },
+      "foreign_project": "stale_field_reference",
+      "closed_page": "stale_field_reference",
+      "plugin_update_rollback": [
+        {
+          "plugin_sha256": "3221f658f37d85820c08bb285d60df3ca9321a92a5abd0b70932bbce0a7542d6",
+          "received_actions": [
+            "replace_page_field"
+          ]
+        },
+        {
+          "plugin_sha256": "35567c017eb831b7cb19b37bc89e21997d8b4eb3309d4c4ee7475dde9b39d97e",
+          "received_actions": []
+        },
+        {
+          "plugin_sha256": "3221f658f37d85820c08bb285d60df3ca9321a92a5abd0b70932bbce0a7542d6",
+          "received_actions": [
+            "replace_page_field"
+          ]
+        }
+      ],
+      "private_neighbor_absent": true,
+      "rename_blocked": true,
+      "history_matches_receiver": true,
+      "requests": 9,
+      "editor_sha256": "3bb04068fc32cdc3bf65cd3e39282faa091fc5bc6793057e768af1a543c09e4e"
+    }
+  }
+}

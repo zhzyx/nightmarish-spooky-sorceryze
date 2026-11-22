@@ -44,7 +44,7 @@ func _run():
 		for width in [960, 1200, 1440]:
 			root.size = Vector2i(width, 900)
 			await _settle_layout()
-			if not _check(_visible_rect(label).size.is_equal_approx(label.size) and _visible_rect(input).size.is_equal_approx(input.size), "Reference or composer clipped at %d px: %s / %s" % [width, label.get_global_rect(), _visible_rect(label)]): return
+			if not _check(_visible_rect(label).size.is_equal_approx(label.size) and _visible_rect(input).size.is_equal_approx(input.size), "Clipped at %d px: reference %s visible %s; input %s visible %s" % [width, label.get_global_rect(), _visible_rect(label), input.get_global_rect(), _visible_rect(input)]): return
 			bounds.append({"window_width":width, "reference":str(label.get_global_rect()), "composer":str(input.get_global_rect())})
 		pages.append({"name":title, "module":module, "preview":label.text, "bounds":bounds, "composer":input.get_instance_id()})
 		input.text = "inspect " + title

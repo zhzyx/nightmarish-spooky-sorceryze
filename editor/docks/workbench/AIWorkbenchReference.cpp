@@ -33,6 +33,7 @@
 #include "core/io/json.h"
 #include "core/object/callable_mp.h"
 #include "editor/docks/ai_chat_dock.h"
+#include "editor/docks/workbench/AIWorkbenchPageField.h"
 #include "editor/editor_interface.h"
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
@@ -118,7 +119,7 @@ Dictionary PageReference(EditorDock *pPage)
 
 } // namespace
 
-Dictionary AIChatDock::WorkbenchPageSnapshot(const Array &arrReferences)
+Dictionary AIChatDock::WorkbenchPageSnapshot(const Array &arrReferences) const
 {
 	Dictionary mapContext;
 	if (arrReferences.size() != 1)
@@ -134,6 +135,16 @@ Dictionary AIChatDock::WorkbenchPageSnapshot(const Array &arrReferences)
 	mapContext["page_name"] = strLocator.get_slice("#", 1).uri_decode();
 	mapContext["module_id"] = strLocator.get_slice("#", 0).uri_decode();
 	mapContext["readable_scope"] = Array({ "page_name", "module_id" });
+	if (strLocator.get_slice_count("#") == 4)
+	{
+		Dictionary field = AIWorkbenchPageField::Snapshot(arrReferences[0]);
+		if (!field.is_empty())
+		{
+			field["value"] = _redact(field["value"]);
+			mapContext["readable_scope"] = Array({ "page_name", "module_id", field["field"] });
+			mapContext["page_field"] = field;
+		}
+	}
 	mapContext["references"] = arrReferences;
 	return mapContext;
 }
@@ -169,7 +180,16 @@ void AIChatDock::StageWorkbenchPageReference()
 	{
 		return;
 	}
-	stSession.arrDraftEditorReferences = Array({ PageReference(pPage) });
+	Dictionary mapField = AIWorkbenchPageField::Capture(pPage, pSource);
+	if (!mapField.is_empty())
+	{
+		const String strValue = AIWorkbenchPageField::Snapshot(mapField).get("value", "");
+		if (_redact(strValue) != strValue)
+		{
+			mapField.clear();
+		}
+	}
+	stSession.arrDraftEditorReferences = Array({ mapField.is_empty() ? PageReference(pPage) : mapField });
 	stSession.idDraftNode = pPage->get_instance_id();
 	WorkbenchDraftChanged();
 }
@@ -449,7 +469,7 @@ bool AIChatDock::WorkbenchReferenceAtValid(const AIChatSessionData &stSession, i
 	if (strTarget.begins_with("editor-page://"))
 	{
 		EditorDock *pPage = ObjectDB::get_instance<EditorDock>(stSession.idDraftNode);
-		return pPage && !pPage->is_queued_for_deletion() && pPage->is_dock_open() && pPage->is_inside_tree() && PageReference(pPage) == mapReference;
+		return pPage && !pPage->is_queued_for_deletion() && pPage->is_dock_open() && pPage->is_inside_tree() && (PageReference(pPage) == mapReference || !AIWorkbenchPageField::Snapshot(mapReference).is_empty());
 	}
 	if (!stSession.mapDraftScriptExcerpts.is_empty())
 	{
@@ -641,7 +661,16 @@ Dictionary AIChatDock::FreezeBusinessReferences(const String &pBody)
 	RedactWorkbenchDraft(stBusinessReferences);
 	const Array &refs = stBusinessReferences.arrDraftEditorReferences;
 	result["references"] = refs.duplicate(true);
-	result["content"] = _redact(pBody) + (refs.is_empty() ? String() : WorkbenchSelectionContent(stBusinessReferences, strBusinessIssue));
+	const Dictionary page = WorkbenchPageSnapshot(refs);
+	result["content"] = _redact(pBody);
+	if (page.has("page_field"))
+	{
+		result["content"] = String(result["content"]) + U"\n[编辑器页面引用]\ncontext_snapshot=" + JSON::stringify(page);
+	}
+	else if (!refs.is_empty())
+	{
+		result["content"] = String(result["content"]) + WorkbenchSelectionContent(stBusinessReferences, strBusinessIssue);
+	}
 	return result;
 }
 
@@ -726,8 +755,13 @@ void AIChatDock::RefreshWorkbenchReference()
 	}
 	else
 	{
-		const String details = (bValid ? String(U"页面：") : String(U"引用已失效 · 页面：")) + String(mapPage["page_name"]) +
+		String details = (bValid ? String(U"页面：") : String(U"引用已失效 · 页面：")) + String(mapPage["page_name"]) +
 				U"\n模块：" + String(mapPage["module_id"]) + U"\n可读范围：页面名、模块标识";
+		if (mapPage.has("page_field"))
+		{
+			const Dictionary field = mapPage["page_field"];
+			details += String(U"、") + String(field["field"]) + U"\n当前值：" + String(field["value"]);
+		}
 		pWorkbenchReference->set_text(details);
 	}
 	pWorkbenchReference->set_tooltip_text(String("\n").join(arrDetails));

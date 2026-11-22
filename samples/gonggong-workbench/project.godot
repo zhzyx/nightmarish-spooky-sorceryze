@@ -17,3 +17,7 @@ config/features=PackedStringArray("4.8")
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/project_brief/plugin.cfg")

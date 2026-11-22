@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-da2d5a431bc29ecfb01de45f873b7893deed1bd9",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-u16",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1793",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e250e36db395f1a4ca5d40fa81d1304a4de3248e25ad56fad163a7964cbfec05",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1793",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2020",
+    "action": "validation",
+    "detection_head": "09193fa7be994add4024f6b9f55d9d23f9e8e9f1",
+    "context_sha256": "b3a1ddd05a93061e03e9c09940626f5cd55dbe44646ba36647162f09d0fd5015",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1793",
+    "evidence": "On signed 09193fa7 Windows editor 3e008804, the second registered page at 960x900 had a 91px input at y844, visible for only 48px before y892. Scrolling the focused composer into view on the same executable passed both registered pages at 960/1200/1440. The independent original queue probe failed at reopen.gd:16 on missing controls; resolving the restored sidebar mount on the same binary passed the two real loopback sends with private excerpts redacted.",
+    "diagnosis": "The sidebar initially follows input focus, then reflows when reopened with conversation history or resized, clipping the composer below the viewport. Separately, the restored queue test looked only in the original dock after the editor had moved the live controls into the sidebar.",
+    "next_action": "Correct sidebar geometry in the normal entry point and locate the restored composer in the native regression test. Run both original acceptance operations again on the corrected editor, then verify their signed main revision.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T04:03:49.697583+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T04:11:16.085754+00:00",
+  "sha256": "d9b0d11a34d03800d7e526ef8d962a2514954de083cb21da8cf6d0af7cc1bcae"
+}

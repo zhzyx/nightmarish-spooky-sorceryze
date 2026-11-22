@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-u16",
+  "issue_number": 1793,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1793",
+  "observed_at": "2026-11-22T04:35:13.328940+00:00",
+  "source_baseline": "c38ec442392f230ec9e697730d21ab039026f9e0",
+  "source_sha256": {
+    "editor/docks/ai_chat_dock.h": "70f787806175b89a4cd5a08221b5f9439790a1efb4db2d7829cd8fd6dcece829",
+    "editor/docks/ai_chat_editor_control.cpp": "85f23c3d850a3af33179310a3040932db0844fc9bcd1f0489ba289bae23cf16b",
+    "editor/docks/workbench/AIWorkbenchPageField.cpp": "a61679442ef182d252206aa83a15a3b01bb3a9be4b4d89f157b466c89de007ca",
+    "editor/docks/workbench/AIWorkbenchPageField.h": "54cd7553f56abf4f13ea7ac4c81aad21822ba13441e377b4193c84d7ca2667c7",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "a25133a22b41a5ed9d4a07272a0aed805b9a6738ce9948a0d0de157d8e51df2a",
+    "samples/gonggong-workbench/project.godot": "5ad3702d23a1980b2203da36ac5d6832cad90581ea71b59a7ffc22bc32511191",
+    "samples/gonggong-workbench/addons/project_brief/plugin.cfg": "331feb78636257ade66232e0efce34463e999d98d7487f9a0162119ae685d2f9",
+    "samples/gonggong-workbench/addons/project_brief/plugin.gd": "3221f658f37d85820c08bb285d60df3ca9321a92a5abd0b70932bbce0a7542d6",
+    "tests/editor/run_workbench_page_field.py": "578ad9a09884be365489c2faa8f4a862cab70f7e3400cbabd65cf4c8d998e4d5",
+    "tests/editor/workbench_page_field.gd": "00cc46a259a74a1349ccfbc2a9a568434581e707741d40271b9645fdcf00476d",
+    "tests/editor/run_workbench_page_reference.py": "99e18ee0ac972717bbd780a737ce7546c940c42970d66a2f29abee820352d784",
+    "tests/editor/workbench_page_reference.gd": "6960d88a962ce64500aabfaeb2e902c0280a16b747766aa3ca7ed81a4d189b8a",
+    "tests/editor/ai_chat_tab_order.gd": "36f007117091073c1fe04e190254c378e83284663363b1572cb5cdbe0789c598",
+    "design-docs/gonggong-ai-workbench-u16.md": "95a200fa5149ad1fad1666f24e1b170c70560ce1040bf8f0727d30870898f48c"
+  },
+  "intake": {
+    "result": "status:in-progress",
+    "dependencies_closed": [
+      1855,
+      1809,
+      1810
+    ],
+    "worker_dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u16/dispatch-b713b6188b1e427b89c43415ba6b0320.json",
+    "prior_mac_observations": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1809#issuecomment-7060359271",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1809#issuecomment-7062655779",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1809#issuecomment-7065691807",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1810#issuecomment-7065682332"
+    ]
+  },
+  "build": {
+    "platform": "Windows x86_64; Visual Studio 14.5, Windows SDK 10.0.26100.0",
+    "sdk": "tools/install_webview2.py --arch x64 --output-dir bin; verified pinned SDK",
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<read-only-cache> cache_limit=0 --cache-readonly -j6",
+    "exit_code": 0,
+    "native_input": "editor/docks/SCsub collects workbench/*.cpp in the editor library. The last incremental build recompiled AIWorkbenchPageField.cpp and AIWorkbenchReference.cpp and relinked both editor executables.",
+    "composition": {
+      "base": "c38ec442392f230ec9e697730d21ab039026f9e0",
+      "changes": "source_sha256 above plus the exact companion #2020 sidebar patch",
+      "companion_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2020",
+      "companion_patch_sha256": "b5bb9f077d2b529abb1b696cf30d4331694efc562774c655fbc4f367af52a90d",
+      "combined_source_sha256": {
+        "editor/docks/ai_chat_dock.h": "04fc04d564caa23aa5435aa8af7c0364ac993888b192065b5e30f529cfd64475",
+        "editor/docks/workbench/AIWorkbenchSidebar.cpp": "562d2fd47b3d75dd68bb3607faee41a034ff2fe07e123835ecc881b2f879a0af"
+      }
+    },
+    "artifact_sha256": {
+      "godot.windows.editor.x86_64.exe": "ec00da6297de74886455449e609e9d011b491b87db29b07bd24346ed17a0a6ae",
+      "godot.windows.editor.x86_64.console.exe": "08ce9a422dc8af5a0239d526b6a182e63d4f20351a3fa740a2f6797eb6b3cbfe",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b"
+    }
+  },
+  "verification": {
+    "page_fields": {
+      "command": "python -X utf8 tests/editor/run_workbench_page_field.py --godot bin/godot.windows.editor.x86_64.exe --report bin/u16-fields.json",
+      "exit_code": 0,
+      "observed": {
+        "receiver": {
+          "module_id": "res://addons/project_brief/plugin.gd",
+          "page_field": {
+            "actions": [
+              "replace_page_field"
+            ],
+            "field": "Brief/Summary",
+            "required_authorization": "confirm_exact_replacement",
+            "value": "First playable"
+          },
+          "page_name": "Project Brief",
+          "readable_scope": [
+            "page_name",
+            "module_id",
+            "Brief/Summary"
+          ],
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FSummary#1611149684768",
+              "revision": "5aa7b9ac8d0201d618a88edbe4fc328928135821803c3b98ae7b1accdba67eec"
+            }
+          ]
+        },
+        "readonly": {
+          "module_id": "res://addons/project_brief/plugin.gd",
+          "page_field": {
+            "actions": [],
+            "field": "Brief/Milestone",
+            "value": "Prototype"
+          },
+          "page_name": "Project Brief",
+          "readable_scope": [
+            "page_name",
+            "module_id",
+            "Brief/Milestone"
+          ],
+          "references": [
+            {
+              "kind": "editor",
+              "object_id": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FMilestone#1611216793636",
+              "revision": "5d97e93e69c08791a656e4e7013adf68bdf47028dca2855d9184bc8a54c8338a"
+            }
+          ]
+        },
+        "preview": {
+          "field": "Brief/Summary",
+          "old_value": "First playable",
+          "new_value": "Ready for playtest",
+          "revision": "5aa7b9ac8d0201d618a88edbe4fc328928135821803c3b98ae7b1accdba67eec",
+          "target": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FSummary#1611149684768"
+        },
+        "applied": {
+          "dialog": false,
+          "milestone": "Prototype",
+          "neighbor": "LOCAL_ONLY_1793",
+          "saved": "Ready for playtest",
+          "summary": "Ready for playtest"
+        },
+        "updated_reference": {
+          "kind": "editor",
+          "object_id": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FSummary#1611149684768",
+          "revision": "481ea50b5136bde152dd5bef7529acb7e0337f65dca6440c899938e2a0e7b119"
+        },
+        "routed": "completed",
+        "rejected": "user_rejected",
+        "changed_during_approval": "stale_field_reference",
+        "unregistered_during_approval": "stale_field_reference",
+        "other_project": {
+          "kind": "editor",
+          "object_id": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FSummary#1611149684768",
+          "revision": "d4fd06a31bb9d88874be1c0c7b4c110c18467f5c08b22dd5a3c92c84d82d8609"
+        },
+        "foreign_project": "stale_field_reference",
+        "closed_page": "stale_field_reference",
+        "plugin_update_rollback": [
+          {
+            "plugin_sha256": "3221f658f37d85820c08bb285d60df3ca9321a92a5abd0b70932bbce0a7542d6",
+            "received_actions": [
+              "replace_page_field"
+            ]
+          },
+          {
+            "plugin_sha256": "35567c017eb831b7cb19b37bc89e21997d8b4eb3309d4c4ee7475dde9b39d97e",
+            "received_actions": []
+          },
+          {
+            "plugin_sha256": "3221f658f37d85820c08bb285d60df3ca9321a92a5abd0b70932bbce0a7542d6",
+            "received_actions": [
+              "replace_page_field"
+            ]
+          }
+        ],
+        "private_neighbor_absent": true,
+        "rename_blocked": true,
+        "history_matches_receiver": true,
+        "requests": 9,
+        "editor_sha256": "ec00da6297de74886455449e609e9d011b491b87db29b07bd24346ed17a0a6ae"
+      },
+      "additional_assertions": [
+        "Unregistered private note and known credential-bearing field both fall back to page metadata in the native sidebar.",
+        "Consultation returned permission_denied. Read-only milestone returned read_only_field.",
+        "Cancel returned user_rejected. Replay of the approved request returned the saved idempotent receipt.",
+        "Sample updated the project-specific metadata after text_changed; adjacent milestone and private note remained unchanged.",
+        "The package test relaunched the same editor path on the same project with original, read-only and restored plugin source."
+      ]
+    },
+    "u12": {
+      "command": "python -X utf8 tests/editor/run_workbench_page_reference.py --godot bin/godot.windows.editor.x86_64.exe --report bin/u16-u12.json",
+      "exit_code": 0,
+      "observed": {
+        "history_matches_receiver": true,
+        "editor_exit": 0,
+        "previews": [
+          {
+            "bounds": [
+              {
+                "composer": "[P: (600.0, 750.0), S: (326.0, 91.0)]",
+                "reference": "[P: (600.0, 599.0), S: (326.0, 69.0)]",
+                "window_width": 960
+              },
+              {
+                "composer": "[P: (840.0, 750.0), S: (326.0, 91.0)]",
+                "reference": "[P: (840.0, 599.0), S: (326.0, 69.0)]",
+                "window_width": 1200
+              },
+              {
+                "composer": "[P: (1080.0, 750.0), S: (326.0, 91.0)]",
+                "reference": "[P: (1080.0, 599.0), S: (326.0, 69.0)]",
+                "window_width": 1440
+              }
+            ],
+            "composer": 618777316613,
+            "module": "AINativeMainScreen",
+            "name": "马良",
+            "preview": "页面：马良\n模块：AINativeMainScreen\n可读范围：页面名、模块标识"
+          },
+          {
+            "bounds": [
+              {
+                "composer": "[P: (600.0, 758.0), S: (326.0, 91.0)]",
+                "reference": "[P: (600.0, 607.0), S: (326.0, 69.0)]",
+                "window_width": 960
+              },
+              {
+                "composer": "[P: (840.0, 758.0), S: (326.0, 91.0)]",
+                "reference": "[P: (840.0, 607.0), S: (326.0, 69.0)]",
+                "window_width": 1200
+              },
+              {
+                "composer": "[P: (1080.0, 758.0), S: (326.0, 91.0)]",
+                "reference": "[P: (1080.0, 607.0), S: (326.0, 69.0)]",
+                "window_width": 1440
+              }
+            ],
+            "composer": 618777316613,
+            "module": "res://addons/notes/plugin.gd",
+            "name": "R4 Notes",
+            "preview": "页面：R4 Notes\n模块：res://addons/notes/plugin.gd\n可读范围：页面名、模块标识"
+          }
+        ],
+        "received_page_snapshots": [
+          {
+            "module_id": "AINativeMainScreen",
+            "page_name": "马良",
+            "readable_scope": [
+              "page_name",
+              "module_id"
+            ],
+            "references": [
+              {
+                "kind": "editor",
+                "object_id": "editor-page://AINativeMainScreen#%E9%A9%AC%E8%89%AF",
+                "revision": "d843e95bef14d21538bdf8fa341a26428c48fd0ccef6c5e8d234b3c9ea0bd843"
+              }
+            ]
+          },
+          {
+            "module_id": "res://addons/notes/plugin.gd",
+            "page_name": "R4 Notes",
+            "readable_scope": [
+              "page_name",
+              "module_id"
+            ],
+            "references": [
+              {
+                "kind": "editor",
+                "object_id": "editor-page://res%3A%2F%2Faddons%2Fnotes%2Fplugin.gd#R4%20Notes",
+                "revision": "0a664c611ed1e2ca15837dbc5a133920f63172df423e536fffc23463a8d56b6d"
+              }
+            ]
+          }
+        ],
+        "request_count": 3,
+        "last_user_content_after_removal": "only the typed question",
+        "source_draft_preserved": true,
+        "source_draft_absent_in_full_requests": true,
+        "rename_rejected_before_removal": true
+      }
+    }
+  },
+  "method_reuse": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "origin_issue": 1793,
+    "observation": "The native authenticated router and the visible approval dialog both reported the exact old/new pair before changing the source value, withdrawing the declaration, or closing the page. The route status then rejected each stale operation and the live control retained its independent state. Consultation was checked separately before a preview could be created."
+  },
+  "coverage": "Windows headless native controls, actual editor HTTP action and loopback model receiver. macOS links refer to prior U12/U15 observations. No production LLM or macOS run on this executable.",
+  "cleanup": "Private project/editor copies and model servers were disposed by the probes. The #2020 patch was reversed from this worker tree after testing. The combined executable and local reports in ignored bin/ remain for the parent’s independent review and final cleanup."
+}

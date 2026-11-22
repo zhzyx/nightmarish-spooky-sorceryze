@@ -1,0 +1,7 @@
+{
+  "placement": "runtime_package",
+  "reason": "Godot opens plugin.cfg from the project and loads plugin.gd at editor startup. Replacing the project plugin changes the registered dock and its field declarations on the same editor executable.",
+  "host_contract": "The project enables res://addons/project_brief/plugin.cfg. Its tool script must extend EditorPlugin. It registers an EditorDock with add_dock and declares read or replace_text modes in workbench_fields.",
+  "rollback": "Restore the previously verified plugin.cfg and plugin.gd in the project and reopen the editor. The dock again publishes the previous field modes. The project summary remains in editor project metadata.",
+  "evidence": "data-collection/gonggong-ai-workbench-plan1-u16-addon.json"
+}
