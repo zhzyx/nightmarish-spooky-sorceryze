@@ -12,6 +12,10 @@ func wait_idle():
 	while (not panel.jobs.is_empty() or panel.auto_step) and Time.get_ticks_msec() < deadline:
 		await process_frame
 	check(panel.jobs.is_empty() and not panel.auto_step, "subprocess completed without blocking frame loop")
+func wait_preview():
+	var deadline = Time.get_ticks_msec() + 10000
+	while panel.is_preview_loading() and Time.get_ticks_msec() < deadline: await process_frame
+	check(not panel.is_preview_loading(), "selection preview completed without blocking frame loop")
 func _initialize():
 	call_deferred("run")
 func run():
@@ -143,6 +147,7 @@ func run():
 	panel.open_graph()
 	check(panel.run_id.is_empty() and panel.preview_history.get(first, []).size() == 1 and panel.preview_history.get(second, []).size() == 1, "whole-workflow outputs reopen without first running or previewing them in this session")
 	panel.select_node(second)
+	await wait_preview()
 	check(panel.texture.texture != null and panel.preview_source_path.begins_with(panel.path_edit.text + ".assets/"), "unpreviewed whole-workflow output becomes a durable preview directly after reopen")
 	print("AINATIVE_ACCEPTANCE failures=" + str(failures))
 	panel.queue_free()

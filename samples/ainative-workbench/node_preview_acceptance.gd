@@ -15,6 +15,11 @@ func wait_idle():
 		await process_frame
 	check(panel.jobs.is_empty() and not panel.auto_step and not panel.creating, "node operation finishes while the editor frame loop advances")
 
+func wait_selection_preview(target):
+	var deadline = Time.get_ticks_msec() + 10000
+	while target.is_preview_loading() and Time.get_ticks_msec() < deadline: await process_frame
+	check(not target.is_preview_loading(), "selection preview finishes while the editor frame loop advances")
+
 func double_click(control: Control):
 	var event = InputEventMouseButton.new()
 	event.button_index = MOUSE_BUTTON_LEFT
@@ -150,12 +155,14 @@ func run():
 	automatic.state_dir = panel.state_dir
 	root.add_child(automatic)
 	await process_frame
+	await wait_selection_preview(automatic)
 	check(automatic.nodes.size() == panel.nodes.size() and automatic.preview_history.get("target", []).size() == 3 and automatic.run_id.is_empty(), "a new workbench instance automatically reopens the last saved workflow instead of creating an empty graph")
 	check(automatic.workflow_path_display.text == panel.path_edit.text and is_instance_valid(automatic.preview_scene), "automatic reopen shows the persisted path and restores the first node's saved preview")
 	automatic.queue_free()
 	await process_frame
 	panel.workflow_path_display.text = panel.path_edit.text
 	panel.workflow_path_display.text_submitted.emit(panel.workflow_path_display.text)
+	await wait_selection_preview(panel)
 	check(panel.nodes.size() == 4 and panel.preview_history.get("target", []).size() == 3 and panel.run_id.is_empty(), "submitting a path in the visible toolbar really replaces the current graph with the saved workflow")
 	check(is_instance_valid(panel.preview_scene) and panel.workflow_path_display.text == panel.path_edit.text, "visible-path opening restores the saved preview and keeps the displayed path synchronized")
 	# Reopening a different workflow with the same node ID must not alias old results.

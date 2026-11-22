@@ -16,6 +16,9 @@ func _initialize():
 
 func settle():
 	for i in 6: await process_frame
+	var deadline = Time.get_ticks_msec() + 10000
+	while panel.is_preview_loading() and Time.get_ticks_msec() < deadline: await process_frame
+	check(not panel.is_preview_loading(), "asynchronous artifact preview completes")
 
 func double_click(control: Control):
 	var event = InputEventMouseButton.new()

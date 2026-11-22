@@ -51,6 +51,11 @@ func make_source(path: String, color: Color, size: Vector2i):
 	image.fill(color)
 	check(image.save_png(path) == OK, "test source is created without external assets: " + path.get_file())
 
+func wait_preview():
+	var deadline = Time.get_ticks_msec() + 10000
+	while panel.is_preview_loading() and Time.get_ticks_msec() < deadline: await process_frame
+	check(not panel.is_preview_loading(), "restored selection preview completes")
+
 func run():
 	root.size = Vector2i(1440, 1000)
 	state_path = OS.get_environment("AINATIVE_MULTI_IMAGE_STATE")
@@ -171,6 +176,7 @@ func run():
 	write_model(with_outputs)
 	panel.open_graph()
 	panel.select_node(downstream)
+	await wait_preview()
 	check(panel.preview_history[downstream][0].images.all(func(member): return member.description == ""), "image-set members saved without descriptions remain readable and restore a safe empty default")
 	check(panel.current_images.size() == 2 and panel.result_choice.item_count == 2 and panel.preview_history[downstream][0].images[0].path != front and panel.preview_history[downstream][0].images[1].path != side, "reopen restores the complete image set from durable copies without rerunning generation")
 	panel.show_result(1)

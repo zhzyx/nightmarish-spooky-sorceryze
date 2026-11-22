@@ -16,6 +16,9 @@ func _initialize():
 
 func settle():
 	for i in 6: await process_frame
+	var deadline = Time.get_ticks_msec() + 10000
+	while panel.is_preview_loading() and Time.get_ticks_msec() < deadline: await process_frame
+	check(not panel.is_preview_loading(), "asynchronous artifact preview completes")
 
 func double_click(control: Control):
 	var event = InputEventMouseButton.new()
@@ -86,6 +89,7 @@ func run():
 	check(style != null and style.corner_radius_top_left >= 12 and style.border_width_top >= 2, "rounded bordered artifact shape differs from formal process nodes")
 	check(connected("image", artifact_id) and connected(artifact_id, "mesh") and not connected("image", "mesh"), "referenced artifact is inserted between image generation and Mesh")
 	artifact.get_node("ArtifactGallery").get_child(2).get_node("ArtifactImage2").pressed.emit()
+	await settle()
 	check(panel.current_images.size() == 3 and panel.preview_artifact.get("id") == "artifact-2" and panel.preview_token == "token-2", "gallery selection previews the chosen image and artifact identity")
 	double_click(artifact.get_node("ArtifactGallery").get_child(2).get_node("ArtifactThumbnail2"))
 	check(panel.preview_maximized and panel.preview_window.visible and panel.texture.get_parent() == panel.preview_window_host and panel.preview_artifact.get("id") == "artifact-2", "double-clicking an image thumbnail maximizes that exact image")

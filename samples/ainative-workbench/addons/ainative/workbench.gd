@@ -132,6 +132,15 @@ var preview_source_path = ""
 var save_picker: FileDialog
 var preview_resource: Resource
 var preview_scene: Node
+# Selection preview decoding runs off the UI thread; only the latest request may present.
+var preview_request_serial := 0
+var preview_pending_request: Dictionary = {}
+var preview_active_request: Dictionary = {}
+var preview_request_delay := 0.0
+var preview_worker_task := -1
+var preview_worker_result: Dictionary = {}
+var preview_decode_count := 0
+var preview_continuous_render := false
 var staged = ""
 var confirmation: Dictionary = {}
 var state_dir = ""
@@ -670,12 +679,13 @@ func _ready():
 	container.stretch = true
 	container.tooltip_text = "左键拖动旋转 · 中键拖动平移 · 滚轮缩放 · 双击最大化 / 还原预览"
 	container.gui_input.connect(_mesh_preview_input)
+	container.resized.connect(_request_preview_redraw)
 	inspector.add_child(container)
 	container.hide()
 	viewport = SubViewport.new()
 	viewport.size = Vector2i(360, 160)
 	viewport.own_world_3d = true
-	viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	container.add_child(viewport)
 	preview_root = Node3D.new()
 	viewport.add_child(preview_root)
@@ -1334,7 +1344,8 @@ func _style_artifact_node(node: GraphNode):
 
 func _artifact_preview_input(event: InputEvent, key: String, index: int, control: Control):
 	if not event is InputEventMouseButton or not event.pressed or event.button_index != MOUSE_BUTTON_LEFT or not event.double_click: return
-	_show_artifact_result(key, index)
+	# Maximize, save and rigging actions require the target to be ready immediately.
+	_show_artifact_result(key, index, true)
 	if artifact_nodes.has(key) and artifact_nodes[key].get("kind","")=="character": _open_preview_rigging()
 	elif _displayed_preview() != null: toggle_preview_maximized()
 	control.accept_event()
@@ -1484,12 +1495,12 @@ func _create_character_artifact_node(data: Dictionary, entry: Dictionary):
 	artifact_nodes[key] = {"id":artifact_id,"entry":entry,"source":source_id,"kind":"character"}
 
 func _open_character_artifact(key: String):
-	_show_artifact_result(key)
+	_show_artifact_result(key, 0, true)
 	_open_preview_rigging()
 
 func _save_character_artifact(key: String):
 	if not artifact_nodes.has(key) or artifact_nodes[key].get("kind","")!="character": return
-	_show_artifact_result(key)
+	_show_artifact_result(key, 0, true)
 	open_save_dialog()
 
 func _mark_artifact_deleted(key: String):
@@ -1511,25 +1522,31 @@ func _reveal_mesh_preview():
 	if is_instance_valid(native_scroll) and native_scroll.is_ancestor_of(mesh_container) and mesh_container.is_visible_in_tree():
 		native_scroll.ensure_control_visible(mesh_container)
 
-func _show_artifact_result(key: String, index: int = 0):
+func _show_artifact_result(key: String, index: int = 0, immediate: bool = false):
 	if artifact_nodes.has(key) and artifact_nodes[key].get("kind", "image") in ["mesh","character"]:
 		var record: Dictionary = artifact_nodes[key]
 		var entry: Dictionary = record.entry
-		select_node(record.source)
-		load_preview(entry, record.source, str(entry.get("run", "")))
-		if is_instance_valid(preview_scene): call_deferred("_reveal_mesh_preview")
+		# Artifact selection must not restore the source's latest preview first.
+		select_node(record.source, false)
+		var suffix = ""
 		if record.get("kind","")=="mesh":
-			status.text += " · 衣服 " + str(entry.get("label", "")) if record.get("artifact_role", "") == "garment" else " · 第 %d 轮" % int(record.get("attempt", 1))
+			suffix = " · 衣服 " + str(entry.get("label", "")) if record.get("artifact_role", "") == "garment" else " · 第 %d 轮" % int(record.get("attempt", 1))
+		if immediate:
+			load_preview(entry, record.source, str(entry.get("run", "")))
+			if is_instance_valid(preview_scene): call_deferred("_reveal_mesh_preview")
+			status.text += suffix
+		else:
+			_queue_preview_load(entry, record.source, str(entry.get("run", "")), false, 0, suffix, true)
 		return
 	var entry = _latest_image_entry(key)
 	if entry.is_empty(): return
-	select_node(key)
-	load_preview(entry, key, str(entry.get("run", "")))
-	if index > 0: show_result(index)
+	select_node(key, false)
+	if immediate: load_preview(entry, key, str(entry.get("run", "")), false, index)
+	else: _queue_preview_load(entry, key, str(entry.get("run", "")), false, index)
 
 func _save_mesh_artifact(key: String):
 	if not artifact_nodes.has(key) or artifact_nodes[key].get("kind", "") != "mesh": return
-	_show_artifact_result(key)
+	_show_artifact_result(key, 0, true)
 	if preview_source_path.is_empty(): return
 	var attempt = int(artifact_nodes[key].get("attempt", 1))
 	var record: Dictionary = artifact_nodes[key]
@@ -1801,7 +1818,7 @@ func _sync_structural_inspector(kind: String):
 	context_row.visible = not structural and kind != GARMENT_SPLIT
 	template_edit_button.visible = kind == CUSTOM_TEMPLATE
 
-func select_node(id: String):
+func select_node(id: String, restore_preview: bool = true):
 	var changed = selected_id != id
 	selected_id = id
 	var selected_kind = "copy"
@@ -1842,9 +1859,13 @@ func select_node(id: String):
 	_sync_structural_inspector(selected_kind)
 	refresh_history()
 	if changed:
-		clear_preview()
-		if not preview_history.get(id, []).is_empty():
-			show_history(preview_history[id].size() - 1)
+		if not restore_preview:
+			_invalidate_preview_requests()
+		elif preview_history.get(id, []).is_empty():
+			clear_preview()
+		else:
+			var entry: Dictionary = preview_history[id].back()
+			_queue_preview_load(entry, id, str(entry.get("run", "")))
 
 func apply_fields() -> bool:
 	var selected = nodes.filter(func(node): return node.id == selected_id)
@@ -3242,8 +3263,9 @@ func _queue_completed_image_previews(data: Dictionary):
 		var already_loading = jobs.values().any(func(job): return job.command == "preview" and job.spec.get("node", "") == execution_id)
 		if not already_loading: artifact_preview_queue.append(execution_id)
 
-func _process(_delta):
+func _process(delta):
 	controller.tick()
+	_tick_preview_loading(delta)
 	# Full-workflow runs also refresh every image artifact, not only a preview target.
 	if not artifact_preview_queue.is_empty() and jobs.is_empty() and not creating and not auto_step and not run_id.is_empty():
 		var node_id = str(artifact_preview_queue.pop_front())
@@ -3485,6 +3507,7 @@ func maximize_preview():
 	preview_maximized = true
 	preview_window.popup()
 	preview_window.mode = Window.MODE_MAXIMIZED
+	_request_preview_redraw()
 	_update_preview_maximize_controls()
 
 func restore_preview():
@@ -3501,6 +3524,7 @@ func restore_preview():
 		displayed.size_flags_vertical = preview_inline_size_flags_vertical
 	preview_inline_parent = null
 	preview_inline_index = -1
+	_request_preview_redraw()
 	_update_preview_maximize_controls()
 
 func _image_preview_input(event: InputEvent):
@@ -3508,7 +3532,76 @@ func _image_preview_input(event: InputEvent):
 		toggle_preview_maximized()
 		texture.accept_event()
 
+func _invalidate_preview_requests():
+	preview_request_serial += 1
+	preview_pending_request = {}
+	preview_request_delay = 0.0
+
+func is_preview_loading() -> bool:
+	return not preview_pending_request.is_empty() or preview_worker_task >= 0
+
+func _preview_is_current(data: Dictionary, node_id: String) -> bool:
+	return preview_node == node_id and preview_token == str(data.get("token", "")) and preview_source_path == str(data.get("path", "")) and (preview_resource != null or is_instance_valid(preview_scene))
+
+func _queue_preview_load(data: Dictionary, node_id: String, result_run: String = "", preserve_set: bool = false, image_index: int = 0, status_suffix: String = "", reveal_mesh: bool = false):
+	_invalidate_preview_requests()
+	var target = data
+	var images: Array = data.get("images", [])
+	if not preserve_set and image_index >= 0 and image_index < images.size(): target = images[image_index]
+	if _preview_is_current(target, node_id):
+		if not current_images.is_empty(): result_choice.select(image_index)
+		if reveal_mesh and is_instance_valid(preview_scene): call_deferred("_reveal_mesh_preview")
+		return
+	preview_pending_request = {"serial": preview_request_serial, "data": data, "node_id": node_id, "result_run": result_run, "preserve_set": preserve_set, "image_index": image_index, "status_suffix": status_suffix, "reveal_mesh": reveal_mesh}
+	# Coalesce click/drag bursts instead of starting one expensive decode per click.
+	preview_request_delay = 0.04
+	status.text = "正在加载预览…"
+
+func _decode_preview(request: Dictionary) -> Dictionary:
+	var data: Dictionary = request.data
+	var kind = str(data.get("type", ""))
+	var path = str(data.get("path", ""))
+	if kind == "image":
+		var image = Image.load_from_file(path)
+		return {"image": image} if image != null else {"error": "图像预览失败"}
+	if kind == "character":
+		var packed = ResourceLoader.load(path, "PackedScene", ResourceLoader.CACHE_MODE_IGNORE)
+		return {"packed": packed} if packed is PackedScene else {"error": "角色预览失败"}
+	var document = GLTFDocument.new()
+	var state = GLTFState.new()
+	if document.append_from_file(path, state) != OK: return {"error": "网格预览失败"}
+	return {"document": document, "state": state}
+
+func _decode_preview_task(request: Dictionary):
+	preview_worker_result = _decode_preview(request)
+
+func _tick_preview_loading(delta: float):
+	if preview_worker_task >= 0 and WorkerThreadPool.is_task_completed(preview_worker_task):
+		WorkerThreadPool.wait_for_task_completion(preview_worker_task)
+		preview_worker_task = -1
+		var request = preview_active_request
+		var decoded = preview_worker_result
+		preview_active_request = {}
+		preview_worker_result = {}
+		if int(request.get("serial", -1)) == preview_request_serial:
+			if decoded.has("error"):
+				status.text = str(decoded.error)
+			else:
+				_present_preview(request.data, request.node_id, request.result_run, request.preserve_set, request.image_index, decoded, request.status_suffix)
+				if request.get("reveal_mesh", false) and is_instance_valid(preview_scene): call_deferred("_reveal_mesh_preview")
+	if not preview_pending_request.is_empty() and preview_worker_task < 0:
+		preview_request_delay -= delta
+		if preview_request_delay <= 0.0:
+			preview_active_request = preview_pending_request
+			preview_pending_request = {}
+			preview_decode_count += 1
+			preview_worker_task = WorkerThreadPool.add_task(_decode_preview_task.bind(preview_active_request), false, "Maliang preview decode")
+
 func clear_preview():
+	_invalidate_preview_requests()
+	_clear_preview_view()
+
+func _clear_preview_view():
 	restore_preview()
 	preview_token = ""
 	preview_run = ""
@@ -3521,9 +3614,11 @@ func clear_preview():
 	result_choice.hide()
 	if is_instance_valid(preview_scene): preview_scene.queue_free()
 	preview_scene = null
+	preview_continuous_render = false
 	texture.texture = null
 	texture.hide()
 	mesh_container.hide()
+	if is_instance_valid(viewport): viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 	_update_preview_maximize_controls()
 
 func show_result(index: int):
@@ -3532,9 +3627,20 @@ func show_result(index: int):
 	result_choice.select(index)
 	load_preview(entry, preview_node, preview_run, true)
 
-func load_preview(data: Dictionary, node_id: String, result_run: String = "", preserve_set: bool = false):
+func load_preview(data: Dictionary, node_id: String, result_run: String = "", preserve_set: bool = false, image_index: int = 0):
+	_invalidate_preview_requests()
+	var target = data
+	var images: Array = data.get("images", [])
+	if not preserve_set and image_index >= 0 and image_index < images.size(): target = images[image_index]
+	if _preview_is_current(target, node_id): return
+	_present_preview(data, node_id, result_run, preserve_set, image_index)
+
+func _present_preview(data: Dictionary, node_id: String, result_run: String = "", preserve_set: bool = false, image_index: int = 0, decoded: Dictionary = {}, status_suffix: String = ""):
+	if decoded.has("error"):
+		status.text = str(decoded.error)
+		return
 	if not preserve_set:
-		clear_preview()
+		_clear_preview_view()
 		current_images = data.get("images", []).duplicate(true)
 		preview_run = run_id if result_run.is_empty() else result_run
 		preview_node = node_id
@@ -3543,34 +3649,41 @@ func load_preview(data: Dictionary, node_id: String, result_run: String = "", pr
 			result_choice.add_item("%d. %s" % [index + 1, str(item.get("label", "独立图片"))])
 		result_choice.visible = current_images.size() > 1
 		if not current_images.is_empty():
-			show_result(0)
-			return
+			image_index = clampi(image_index, 0, current_images.size() - 1)
+			data = current_images[image_index]
+			result_choice.select(image_index)
+	if decoded.is_empty(): preview_decode_count += 1
 	if data.type == "image":
-		var image = Image.load_from_file(data.path)
+		var image: Image = decoded.get("image") if decoded.has("image") else Image.load_from_file(data.path)
 		if image == null: status.text = "图像预览失败"; return
 		preview_resource = ImageTexture.create_from_image(image)
 		texture.texture = preview_resource
 		texture.show()
 	elif data.type=="character":
-		var packed = ResourceLoader.load(str(data.path),"PackedScene",ResourceLoader.CACHE_MODE_IGNORE)
-		if not packed is PackedScene: status.text = "角色预览失败"; return
+		var packed: PackedScene = decoded.get("packed") if decoded.has("packed") else ResourceLoader.load(str(data.path),"PackedScene",ResourceLoader.CACHE_MODE_IGNORE)
+		if packed == null: status.text = "角色预览失败"; return
 		preview_scene = packed.instantiate() as Node3D
 		if preview_scene == null: return
 		preview_root.add_child(preview_scene)
 		rigging_panel.set_source(str(data.get("source_path","")))
 		mesh_container.tooltip_text = "左键拖动旋转 · 中键拖动平移 · 滚轮缩放 · 双击进入骨骼绑定页签"
 		mesh_container.show()
+		preview_continuous_render = true
 		frame_mesh()
 	else:
-		var document = GLTFDocument.new()
-		var state = GLTFState.new()
-		if document.append_from_file(data.path, state) != OK: status.text = "网格预览失败"; return
+		var document: GLTFDocument = decoded.get("document")
+		var state: GLTFState = decoded.get("state")
+		if document == null:
+			document = GLTFDocument.new()
+			state = GLTFState.new()
+			if document.append_from_file(data.path, state) != OK: status.text = "网格预览失败"; return
 		preview_scene = preload('res://addons/ainative/runtime_mesh.gd').generate(document,state)
 		if preview_scene == null: return
 		preview_root.add_child(preview_scene)
 		rigging_panel.set_source(data.path)
 		mesh_container.tooltip_text = "左键拖动旋转 · 中键拖动平移 · 滚轮缩放 · 双击最大化 / 还原预览"
 		mesh_container.show()
+		preview_continuous_render = false
 		frame_mesh()
 	preview_token = data.token
 	preview_source_path = str(data.path)
@@ -3578,7 +3691,7 @@ func load_preview(data: Dictionary, node_id: String, result_run: String = "", pr
 	preview_artifact = data.get("artifact", {}).duplicate(true)
 	preview_run = run_id if result_run.is_empty() else result_run
 	preview_node = node_id
-	status.text = "已加载" + {"image":"图像", "mesh":"网格", "character":"人形角色（双击进入骨骼绑定）"}.get(data.type,data.type) + "预览，请检查后再发布"
+	status.text = "已加载" + {"image":"图像", "mesh":"网格", "character":"人形角色（双击进入骨骼绑定）"}.get(data.type,data.type) + "预览，请检查后再发布" + status_suffix
 	if not current_images.is_empty(): status.text += "；当前为“" + str(data.get("label", "独立图片")) + "”，共 " + str(current_images.size()) + " 张"
 	_update_preview_maximize_controls()
 
@@ -3594,6 +3707,13 @@ func _open_preview_rigging():
 	var character_path = preview_source_path
 	show_native_section("rig")
 	rigging_panel.open_character(character_path,source_path)
+
+func _request_preview_redraw():
+	if not is_instance_valid(viewport) or not is_instance_valid(mesh_container): return
+	if not mesh_container.is_visible_in_tree():
+		viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+	else:
+		viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS if preview_continuous_render else SubViewport.UPDATE_ONCE
 
 func frame_mesh():
 	var bounds = AABB()
@@ -3615,6 +3735,7 @@ func frame_mesh():
 		camera.near = maxf(radius / 1000, 0.001)
 		camera.far = radius * 20
 		camera.look_at(center)
+	_request_preview_redraw()
 
 func _mesh_preview_input(event: InputEvent):
 	if not is_instance_valid(preview_scene) or preview_node.is_empty(): return
@@ -3646,6 +3767,7 @@ func _mesh_preview_input(event: InputEvent):
 		return
 	camera.position = mesh_focus + offset
 	camera.look_at(mesh_focus)
+	_request_preview_redraw()
 	mesh_container.accept_event()
 
 func set_owners(node: Node, root: Node):
@@ -3716,6 +3838,10 @@ func confirm_publish():
 	confirmation = {}
 
 func _exit_tree():
+	_invalidate_preview_requests()
+	if preview_worker_task >= 0:
+		WorkerThreadPool.wait_for_task_completion(preview_worker_task)
+		preview_worker_task = -1
 	if is_instance_valid(managed_comfy_panel): managed_comfy_panel.release_connection()
 	controller.shutdown()
 
