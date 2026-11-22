@@ -9632,10 +9632,11 @@ EditorNode::EditorNode() {
 	AIChatDock *pWorkbenchDock = memnew(AIChatDock);
 	editor_dock_manager->add_dock(pWorkbenchDock);
 	pWorkbenchDock->RegisterWorkbenchSidebar(command_palette, pWorkbenchButton);
-	editor_dock_manager->add_dock(create_daqian_dock());
+	EditorDock *daqian_dock = create_daqian_dock();
+	editor_dock_manager->add_dock(daqian_dock);
 	editor_dock_manager->add_dock(CreateWebPlatformDock());
 #ifdef MACOS_ENABLED
-	install_gonggong_startup_validation(this);
+	install_gonggong_startup_validation(this, daqian_dock);
 #endif
 
 	add_editor_plugin(memnew(CanvasItemEditorPlugin));
