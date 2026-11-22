@@ -47,10 +47,10 @@ static func head_contract_error(p: Dictionary) -> String:
 	return ''
 
 static func geometry_key(p: Dictionary) -> String:
-	return JSON.stringify([p.source_sha256,p.height_m,p.yaw_degrees,p.crop_below_y,p.clean_faces,p.get('shoulder_gate_strength',0.0),'anatomical-segments-v1-shoulder-gate-v2']).sha256_text()
+	return JSON.stringify([p.source_sha256,p.height_m,p.yaw_degrees,p.crop_below_y,p.clean_faces,p.get('shoulder_gate_strength',0.0),'anatomical-segments-v1-arm-chain-gate-v3']).sha256_text()
 
-static func upper_arm_weight_falloff(point: Vector3, shoulder: Vector3, height: float, strength: float = 0.0) -> float:
-	# Keep the inner chest out of the upper-arm chain; bounded retries can
+static func arm_chain_weight_falloff(point: Vector3, shoulder: Vector3, height: float, strength: float = 0.0) -> float:
+	# Keep the inner chest out of every arm-chain bone; bounded retries can
 	# tighten this gate without changing bone placement or repeating a fit.
 	var gate = clampf(strength,0.0,1.0)
 	var lateral = smoothstep(absf(shoulder.x)-height*(.01-.012*gate),absf(shoulder.x)+height*.04,absf(point.x))
@@ -233,7 +233,9 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 				var delta = end-positions[bi]
 				var near = positions[bi]+delta*clampf((vertices[vi]-positions[bi]).dot(delta)/maxf(delta.length_squared(),1e-10),0,1)
 				var score = 1.0/pow(maxf(vertices[vi].distance_to(near),.015*h),4)
-				if bi in [5,8]: score *= upper_arm_weight_falloff(vertices[vi],positions[bi],h,float(p.get('shoulder_gate_strength',0.0)))
+				if bi in [5,6,7,8,9,10]:
+					var shoulder_index = 5 if bi in [5,6,7] else 8
+					score *= arm_chain_weight_falloff(vertices[vi],positions[shoulder_index],h,float(p.get('shoulder_gate_strength',0.0)))
 				scores.append([score,bi])
 			scores.sort_custom(func(x,y): return x[0]>y[0])
 			var values = {}
@@ -315,7 +317,7 @@ static func build(path: String, p: Dictionary) -> Dictionary:
 	report['humanoid_front_passed'] = humanoid_errors.is_empty()
 	report['humanoid_errors'] = humanoid_errors
 	if not accepted: report.warnings.append('需要人工检查 T 形姿势；自由网格必须标记全部 17 个关节点。当前预览尚未通过角色绑定验收。')
-	root.set_meta('rigging',{'source_sha256':p.source_sha256,'parameters':p,'algorithm':'anatomical-segments-v1','skinning_algorithm':'segment-distance-shoulder-gate-v2','status':'reviewed_template' if accepted else 'needs_landmarks','diagnostics':report,'height_m':h,'vertex_count':vertex_id,'geometry_key':geometry_key(p),'compatibility':'unbound','axes':'Y up, +Z forward; identity rest axes; not SkeletonProfileHumanoid','reference_pose':p.reference_pose})
+	root.set_meta('rigging',{'source_sha256':p.source_sha256,'parameters':p,'algorithm':'anatomical-segments-v1','skinning_algorithm':'segment-distance-arm-chain-gate-v3','status':'reviewed_template' if accepted else 'needs_landmarks','diagnostics':report,'height_m':h,'vertex_count':vertex_id,'geometry_key':geometry_key(p),'compatibility':'unbound','axes':'Y up, +Z forward; identity rest axes; not SkeletonProfileHumanoid','reference_pose':p.reference_pose})
 	var revision = JSON.stringify(p).sha256_text()
 	var manifest = {'schema_version':1,'artifacts':[
 		{'id':'source','type':'mesh','revision':p.source_sha256,'payload':{'sha256':p.source_sha256}},

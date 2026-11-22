@@ -34,7 +34,7 @@
 
 面板 Save new character version 先编码到私有 staging，再经既有 `publish_new` 的同目录临时文件及原子独占 hard-link 发布，拒绝覆盖任何已有目标。发布副本重置为参考姿态，保留三段真实 AnimationPlayer 动画；当前预览不受影响。Reopen version + corrections 重载 `.tscn` 中的 Skeleton3D、Skin、动画及修正参数，核对本机已知源 SHA256 后继续修改；修改需另存新文件名。本机源路径仅保存在 user 数据目录的配置中，不进入便携角色元数据。派生预览会清除生成器原预览令牌，不能绕过角色审查走普通生成物发布按钮。
 
-角色携带 v1 `ainative_manifest`：source mesh、skeleton_profile、avatar_profile、character 均有版本引用，来源绑定原文件 SHA256，character 仅声明 semantic_mapped。骨骼局部 rest 轴为 identity，Y-up/+Z 朝前；尚非 SkeletonProfileHumanoid，也不宣称已兼容 UE/Mixamo，留待 #147 转换。Skin 使用真实逆 global rest，4 权重归一；肩带内侧至上臂采用 `segment-distance-shoulder-gate-v2` 平滑衰减，避免抬臂牵拉胸口，并记录肩带内侧最大外扩，超过身高 2.5% 时验收失败。足底使用 foot 刚性权重并向小腿平滑过渡，人工权重覆盖优先。深蹲使用双腿平面两段 IK、hips 下移和足踝角度补偿，当前约束要求髋膝踝近似处于各自 sagittal 平面，不支持任意怪物、额外肢体、手指或脸部骨。
+角色携带 v1 `ainative_manifest`：source mesh、skeleton_profile、avatar_profile、character 均有版本引用，来源绑定原文件 SHA256，character 仅声明 semantic_mapped。骨骼局部 rest 轴为 identity，Y-up/+Z 朝前；尚非 SkeletonProfileHumanoid，也不宣称已兼容 UE/Mixamo，留待 #147 转换。Skin 使用真实逆 global rest，4 权重归一；肩带内侧至上臂、前臂和手部采用 `segment-distance-arm-chain-gate-v3` 平滑衰减，避免整条手臂骨链在抬臂时牵拉胸口，并记录肩带内侧最大外扩，超过身高 2.5% 时验收失败。足底使用 foot 刚性权重并向小腿平滑过渡，人工权重覆盖优先。深蹲使用双腿平面两段 IK、hips 下移和足踝角度补偿，当前约束要求髋膝踝近似处于各自 sagittal 平面，不支持任意怪物、额外肢体、手指或脸部骨。
 
 ## 开发验证记录
 
