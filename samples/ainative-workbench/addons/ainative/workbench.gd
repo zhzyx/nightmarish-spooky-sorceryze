@@ -67,6 +67,18 @@ var failure_notices: Dictionary = {}
 var nodes: Array = []
 var edges: Array = []
 var selected_id = ""
+var custom_templates: Dictionary = {}
+var main_graph: Dictionary = {"nodes": [], "edges": []}
+var active_template_id = ""
+var workflow_tabs: TabBar
+var template_name_edit: LineEdit
+var template_rename_button: Button
+var template_edit_button: Button
+var boundary_hint: Label
+var node_editor_controls: Array = []
+var document_histories: Dictionary = {}
+var template_target_aliases: Dictionary = {}
+const WorkflowTemplate = preload("res://addons/ainative/workflow_template.gd")
 const WorkbenchController = preload("res://addons/ainative/workbench_controller.gd")
 const HumanoidRigNode = preload("res://addons/ainative/humanoid_rig_node.gd")
 const Rig = preload("res://addons/ainative/rigging.gd")
@@ -213,7 +225,10 @@ const GENERATE_IMAGE = "generate_image"
 const HUMANOID_RIG = "humanoid_rig"
 const HUMAN_SHAPE = "human_shape_adjust"
 const IMAGE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image"]
-const NODE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", HUMAN_SHAPE, HUMANOID_RIG, "copy"]
+const CUSTOM_TEMPLATE = WorkflowTemplate.CUSTOM_TEMPLATE
+const TEMPLATE_INPUT = WorkflowTemplate.TEMPLATE_INPUT
+const TEMPLATE_OUTPUT = WorkflowTemplate.TEMPLATE_OUTPUT
+const NODE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", HUMAN_SHAPE, HUMANOID_RIG, "copy", CUSTOM_TEMPLATE, TEMPLATE_INPUT, TEMPLATE_OUTPUT]
 const CREATION_NODE_KINDS = [GENERATE_IMAGE, "image_to_mesh", "text_to_mesh", "model_adjust", HUMAN_SHAPE, HUMANOID_RIG, "copy"]
 const PORT_DYNAMIC = 0
 const PORT_IMAGE = 1
@@ -231,7 +246,14 @@ const PORT_COLORS = {
 }
 
 func node_label(kind: String) -> String:
-	return {"copy":"离线复制", GENERATE_IMAGE:"生成图片", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格", "model_adjust":"模型调整", HUMAN_SHAPE:"人形体态调整", HUMANOID_RIG:"创建人形17根骨骼"}.get(kind,kind)
+	return {"copy":"离线复制", GENERATE_IMAGE:"生成图片", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格", "model_adjust":"模型调整", HUMAN_SHAPE:"人形体态调整", HUMANOID_RIG:"创建人形17根骨骼", CUSTOM_TEMPLATE:"自定义流程模板", TEMPLATE_INPUT:"流程输入（固定）", TEMPLATE_OUTPUT:"流程输出（固定）"}.get(kind,kind)
+
+func template_name(template_id: String) -> String:
+	return str(custom_templates.get(template_id, {}).get("name", template_id))
+
+func _template_display_name(data: Dictionary) -> String:
+	if str(data.get("type", "")) != CUSTOM_TEMPLATE: return node_label(str(data.get("type", "copy")))
+	return template_name(str(data.get("template_id", "")))
 
 func _is_mesh_kind(kind: String) -> bool:
 	return kind in ["text_to_mesh", "image_to_mesh", "model_adjust", HUMAN_SHAPE]
@@ -247,7 +269,7 @@ func _new_node_version(kind: String) -> String:
 
 func human_shape_default_parameters() -> Dictionary:
 	return {
-		"height_m":1.8, "head_ratio":7.5, "arm_length_scale":1.0,
+		"height_cm":180, "head_ratio":7.5, "arm_length_scale":1.0,
 		"leg_length_scale":1.0, "build":0.0
 	}
 
@@ -494,6 +516,24 @@ func _ready():
 	bar.add_child(workflow_path_display)
 	bar.move_child(workflow_path_display, 1)
 	_update_workflow_path_display()
+	var template_bar = HBoxContainer.new()
+	template_bar.name = "WorkflowTemplateTabs"
+	content.add_child(template_bar)
+	workflow_tabs = TabBar.new()
+	workflow_tabs.name = "WorkflowTabs"
+	workflow_tabs.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	workflow_tabs.tab_selected.connect(_workflow_tab_selected)
+	template_bar.add_child(workflow_tabs)
+	button(template_bar, "+ 自定义流程模板", create_custom_template)
+	template_name_edit = LineEdit.new()
+	template_name_edit.name = "TemplateName"
+	template_name_edit.placeholder_text = "模板名称"
+	template_name_edit.custom_minimum_size.x = 180
+	template_name_edit.max_length = 80
+	template_name_edit.text_submitted.connect(rename_active_template)
+	template_bar.add_child(template_name_edit)
+	template_rename_button = button(template_bar, "改名", func(): rename_active_template(template_name_edit.text))
+	_refresh_workflow_tabs()
 	# Retained for saved automation and callers; node creation is now in the canvas menu.
 	generator_choice = OptionButton.new()
 	for kind in CREATION_NODE_KINDS:
@@ -531,6 +571,15 @@ func _ready():
 	inspector_fields = inspector
 	inspector.custom_minimum_size.x = 360
 	split.add_child(inspector)
+	boundary_hint = Label.new()
+	boundary_hint.name = "TemplateBoundaryHint"
+	boundary_hint.text = "固定边界节点：用于模板对外输入或输出，不能删除或复制。"
+	boundary_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	inspector.add_child(boundary_hint)
+	template_edit_button = button(inspector, "打开并编辑此模板", func():
+		var selected = nodes.filter(func(node): return node.id == selected_id)
+		if not selected.is_empty(): open_custom_template(str(selected[0].get("template_id", "")))
+	)
 	var source_row = HBoxContainer.new()
 	source_row.name = "SourceFileField"
 	inspector.add_child(source_row)
@@ -582,8 +631,8 @@ func _ready():
 	inspector.add_child(parameter_form)
 	params_edit = parameter_form.raw_edit
 	parameter_form.set_developer_mode(developer_mode.button_pressed)
-	button(inspector, "应用到选中节点", apply_fields)
-	button(inspector, "清除内嵌源文件和参考图像", clear_embedded)
+	var apply_button = button(inspector, "应用到选中节点", apply_fields)
+	var clear_button = button(inspector, "清除内嵌源文件和参考图像", clear_embedded)
 	button(inspector, "运行并预览选中节点", func(): run_node_preview(selected_id))
 	button(inspector, "预览选中结果", request_preview)
 	history_choice = OptionButton.new()
@@ -599,6 +648,7 @@ func _ready():
 	preview_maximize_button.name = "PreviewMaximizeButton"
 	preview_maximize_button.tooltip_text = "打开最大化预览；也可以双击图片或网格"
 	preview_maximize_button.disabled = true
+	node_editor_controls = [source_row, context_row, node_model_label, node_model_choice, node_model_edit, node_image_model_label, node_image_model_choice, node_image_model_edit, text_edit, parameter_form, apply_button, clear_button]
 	native_inspector_fields = inspector.get_children()
 	texture = TextureRect.new()
 	texture.custom_minimum_size = Vector2(240, 120)
@@ -1007,6 +1057,114 @@ func open_diagnostics():
 	if FileAccess.file_exists(path): OS.shell_open(path)
 	else: status.text = '暂无本机诊断日志。'
 
+func _refresh_workflow_tabs():
+	if workflow_tabs == null: return
+	workflow_tabs.clear_tabs()
+	workflow_tabs.add_tab("制作 Mesh")
+	workflow_tabs.set_tab_metadata(0, "")
+	for template_id in custom_templates:
+		var index = workflow_tabs.tab_count
+		workflow_tabs.add_tab(template_name(template_id))
+		workflow_tabs.set_tab_metadata(index, template_id)
+	for index in workflow_tabs.tab_count:
+		if str(workflow_tabs.get_tab_metadata(index)) == active_template_id:
+			workflow_tabs.current_tab = index
+			break
+	_sync_template_chrome()
+
+func _sync_template_chrome():
+	if template_name_edit == null: return
+	var editing = not active_template_id.is_empty() and custom_templates.has(active_template_id)
+	template_name_edit.visible = editing
+	template_rename_button.visible = editing
+	template_name_edit.text = template_name(active_template_id) if editing else ""
+
+func _capture_active_document():
+	document_histories[active_template_id] = preview_history
+	if active_template_id.is_empty():
+		main_graph = {"nodes": nodes, "edges": edges}
+	elif custom_templates.has(active_template_id):
+		custom_templates[active_template_id].nodes = nodes
+		custom_templates[active_template_id].edges = edges
+
+func _workflow_tab_selected(index: int):
+	if workflow_tabs == null or index < 0 or index >= workflow_tabs.tab_count: return
+	switch_workflow_document(str(workflow_tabs.get_tab_metadata(index)))
+
+func switch_workflow_document(template_id: String) -> bool:
+	if template_id != active_template_id and is_graph_busy():
+		status.text = "请等待当前运行结束或先取消，再切换流程页签"
+		_refresh_workflow_tabs()
+		return false
+	if not template_id.is_empty() and not custom_templates.has(template_id): return false
+	if template_id == active_template_id:
+		_sync_template_chrome()
+		return true
+	if not selected_id.is_empty() and not apply_fields(): return false
+	_capture_active_document()
+	active_template_id = template_id
+	var document = main_graph if template_id.is_empty() else custom_templates[template_id]
+	nodes = document.get("nodes", [])
+	edges = document.get("edges", [])
+	preview_history = document_histories.get(template_id, {})
+	selected_id = ""
+	clear_preview()
+	source_edit.text = ""
+	context_edit.text = ""
+	text_edit.text = ""
+	parameter_form.configure("copy", {})
+	_refresh_workflow_tabs()
+	rebuild()
+	refresh_history()
+	if not nodes.is_empty(): select_node(nodes[0].id)
+	status.text = "正在编辑主流程" if template_id.is_empty() else "正在编辑自定义流程模板：“%s”" % template_name(template_id)
+	return true
+
+func create_custom_template():
+	if is_graph_busy():
+		status.text = "请等待当前运行结束或先取消，再创建模板"
+		return
+	var id = "template_" + str(Time.get_ticks_usec())
+	while custom_templates.has(id): id += "x"
+	var number = custom_templates.size() + 1
+	var name = "自定义流程模板 " + str(number)
+	while custom_templates.values().any(func(item): return str(item.get("name", "")) == name):
+		number += 1
+		name = "自定义流程模板 " + str(number)
+	custom_templates[id] = WorkflowTemplate.create_definition(id, name)
+	_refresh_workflow_tabs()
+	switch_workflow_document(id)
+
+func rename_active_template(new_name: String):
+	if active_template_id.is_empty() or not custom_templates.has(active_template_id): return
+	var normalized = new_name.strip_edges()
+	if normalized.is_empty():
+		template_name_edit.text = template_name(active_template_id)
+		status.text = "模板名称不能为空"
+		return
+	if custom_templates.values().any(func(item): return item.id != active_template_id and str(item.get("name", "")).strip_edges().to_lower() == normalized.to_lower()):
+		template_name_edit.text = template_name(active_template_id)
+		status.text = "已存在同名模板，请使用其他名称"
+		return
+	custom_templates[active_template_id].name = normalized
+	_refresh_workflow_tabs()
+	rebuild(false)
+	status.text = "模板已改名为“%s”；已有引用保持不变" % normalized
+
+func open_custom_template(template_id: String):
+	if custom_templates.has(template_id): switch_workflow_document(template_id)
+
+func _template_depends_on(candidate: String, target: String, visited: Array = []) -> bool:
+	if candidate == target: return true
+	if candidate in visited or not custom_templates.has(candidate): return false
+	var branch = visited + [candidate]
+	for node in custom_templates[candidate].get("nodes", []):
+		if node.get("type", "") == CUSTOM_TEMPLATE and _template_depends_on(str(node.get("template_id", "")), target, branch): return true
+	return false
+
+func _template_can_insert(template_id: String) -> bool:
+	return custom_templates.has(template_id) and not _template_depends_on(template_id, active_template_id)
+
 func add_node():
 	var id = "n" + str(Time.get_ticks_usec())
 	nodes.append({"id": id, "type": "copy", "version": "1", "provider": "local-copy", "source": "", "image_context": "", "text": "", "parameters": {"delay": 2, "fail": false}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45})
@@ -1027,7 +1185,7 @@ func _migrate_node_models(data: Dictionary, legacy: Dictionary):
 	var kind = str(data.get('type', 'copy'))
 	var mode = _service_mode()
 	# Nodes created before the first saved service inherit once on that first save.
-	if kind in ['copy',HUMANOID_RIG] or _retired_mesh_node(data) or _using_legacy_service() or (service_saved.is_empty() and not data.has('model')): return
+	if kind in ['copy',HUMANOID_RIG,CUSTOM_TEMPLATE,TEMPLATE_INPUT,TEMPLATE_OUTPUT] or _retired_mesh_node(data) or _using_legacy_service() or (service_saved.is_empty() and not data.has('model')): return
 	var cli_mode = mode == 'codex'
 	var mesh_kind = _is_mesh_kind(kind)
 	var legacy_image = str(legacy.get('image_model', ''))
@@ -1044,7 +1202,7 @@ func _migrate_node_models(data: Dictionary, legacy: Dictionary):
 
 func _sync_node_model_controls(data: Dictionary):
 	var kind = str(data.get('type', 'copy'))
-	var generating = kind not in ['copy',HUMANOID_RIG] and not _retired_mesh_node(data) and not _using_legacy_service()
+	var generating = kind not in ['copy',HUMANOID_RIG,CUSTOM_TEMPLATE,TEMPLATE_INPUT,TEMPLATE_OUTPUT] and not _retired_mesh_node(data) and not _using_legacy_service()
 	node_model_label.visible = generating
 	node_model_choice.visible = generating and _service_mode() not in ['api_modeling', 'api_sculpt']
 	node_model_edit.visible = generating
@@ -1503,8 +1661,9 @@ func rebuild(layout_artifacts: bool = true):
 	for data in nodes:
 		var node = GraphNode.new()
 		node.name = data.id
-		node.title = data.id + " / " + node_label(data.get("type", "copy"))
+		node.title = data.id + " / " + _template_display_name(data)
 		node.position_offset = Vector2(data.x, data.y)
+		node.set_meta("maliang_template_boundary", WorkflowTemplate.is_fixed_node(data))
 		var label = Label.new()
 		label.name = 'GeneratorDescription'
 		label.text = _generator_description(data)
@@ -1525,10 +1684,12 @@ func rebuild(layout_artifacts: bool = true):
 		output_label.text = "输出：" + port_type_name(output_kind(data))
 		output_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		type_row.add_child(output_label)
-		node.set_slot(1, input_kind(data) != PORT_TEXT, input_kind(data), PORT_COLORS[input_kind(data)], true, output_kind(data), PORT_COLORS[output_kind(data)])
+		var kind = str(data.get("type", "copy"))
+		node.set_slot(1, kind != TEMPLATE_INPUT and input_kind(data) != PORT_TEXT, input_kind(data), PORT_COLORS[input_kind(data)], kind != TEMPLATE_OUTPUT, output_kind(data), PORT_COLORS[output_kind(data)])
 		graph.add_child(node)
-		var run_button = button(node, "运行并预览", run_node_preview.bind(data.id))
-		run_button.mouse_filter = Control.MOUSE_FILTER_PASS
+		if not WorkflowTemplate.is_boundary_kind(kind):
+			var run_button = button(node, "运行并预览", run_node_preview.bind(data.id))
+			run_button.mouse_filter = Control.MOUSE_FILTER_PASS
 		if _image_queue_node(data) and not _queue_only_node(data):
 			var set_label = Label.new()
 			set_label.name = 'ImageSetOutputType'
@@ -1606,6 +1767,17 @@ func _clear_image_mesh_text(data: Dictionary):
 	parameters["prompt"] = ""
 	data.parameters = parameters
 
+func _sync_structural_inspector(kind: String):
+	var boundary = WorkflowTemplate.is_boundary_kind(kind)
+	var structural = boundary or kind == CUSTOM_TEMPLATE
+	for control in node_editor_controls:
+		if structural:
+			control.hide()
+		elif control not in [node_model_label, node_model_choice, node_model_edit, node_image_model_label, node_image_model_choice, node_image_model_edit, text_edit]:
+			control.show()
+	boundary_hint.visible = boundary
+	template_edit_button.visible = kind == CUSTOM_TEMPLATE
+
 func select_node(id: String):
 	var changed = selected_id != id
 	selected_id = id
@@ -1644,6 +1816,7 @@ func select_node(id: String):
 	_configure_source_picker(selected_kind, nodes.filter(func(n): return n.id == selected_id)[0])
 	source_edit.tooltip_text = source_edit.text if not source_edit.text.is_empty() else "通过系统资源管理器选择源文件，可多选"
 	context_edit.tooltip_text = context_edit.text if not context_edit.text.is_empty() else "通过系统资源管理器选择参考图像，可多选"
+	_sync_structural_inspector(selected_kind)
 	refresh_history()
 	if changed:
 		clear_preview()
@@ -1651,6 +1824,10 @@ func select_node(id: String):
 			show_history(preview_history[id].size() - 1)
 
 func apply_fields() -> bool:
+	var selected = nodes.filter(func(node): return node.id == selected_id)
+	if not selected.is_empty():
+		var kind = str(selected[0].get("type", "copy"))
+		if kind == CUSTOM_TEMPLATE or WorkflowTemplate.is_boundary_kind(kind): return true
 	var params = parameter_form.parameters()
 	if not params is Dictionary or not safe(params):
 		_show_run_problem(parameter_form.error_label.text if not params is Dictionary else "参数含有禁止填写的凭据字段")
@@ -1706,7 +1883,7 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 		if record.get("kind", "image") != "mesh":
 			status.text = "图片生成物请从正式图片节点连接下游"
 			return
-		if target_kind not in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG]:
+		if target_kind not in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG,CUSTOM_TEMPLATE,TEMPLATE_INPUT]:
 			status.text = "Mesh 轮次生成物只能连接到 Mesh 输入"
 			return
 		for edge in edges:
@@ -1731,7 +1908,7 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 		if not _accepts_image_set(target_node[0]):
 			status.text = "目标节点不支持图片列表输入；请连接单张图片或选择支持图片列表的节点"
 			return
-	elif target_kind != "copy" and ((_accepts_image_set(target_node[0]) and not _accepts_single_image(source_node[0], target_node[0])) or (not _accepts_image_set(target_node[0]) and output_kind(source_node[0]) != input_kind(target_node[0]))):
+	elif target_kind not in ["copy", CUSTOM_TEMPLATE, TEMPLATE_INPUT] and str(source_node[0].get("type", "")) not in [CUSTOM_TEMPLATE, TEMPLATE_OUTPUT] and ((_accepts_image_set(target_node[0]) and not _accepts_single_image(source_node[0], target_node[0])) or (not _accepts_image_set(target_node[0]) and output_kind(source_node[0]) != input_kind(target_node[0]))):
 		status.text = "模型调整需要连接已生成模型" if target_kind == "model_adjust" else "生成节点的输入与输出类型不匹配"
 		return
 	for edge in edges:
@@ -1754,6 +1931,9 @@ func delete_node():
 	if creating or auto_step or not jobs.is_empty():
 		status.text = "请等待当前运行结束或先取消，再删除节点"
 		return
+	if nodes.any(func(node): return node.id == selected_id and WorkflowTemplate.is_fixed_node(node)):
+		status.text = "模板的固定输入输出节点不能删除"
+		return
 	preview_history.erase(selected_id)
 	clear_preview()
 	nodes = nodes.filter(func(n): return n.id != selected_id)
@@ -1769,6 +1949,18 @@ func model() -> Dictionary:
 		_sync_node_files(data)
 		if data.get("type", "copy") in ["text_to_image", "image_to_image"] and not data.has("version"): data.version = "4"
 	return {"format": 1, "nodes": nodes, "edges": edges}
+
+func serialized_workflow() -> Dictionary:
+	var document = model().duplicate(true) if active_template_id.is_empty() else {"format": 1, "nodes": main_graph.get("nodes", []).duplicate(true), "edges": main_graph.get("edges", []).duplicate(true)}
+	var templates: Array = []
+	for template_id in custom_templates:
+		var definition = custom_templates[template_id].duplicate(true)
+		for data in definition.nodes:
+			_clear_image_mesh_text(data)
+			_sync_node_files(data)
+		templates.append(definition)
+	if not templates.is_empty(): document["custom_templates"] = templates
+	return document
 
 func _matching_output_entry(entry: Dictionary, reference: Dictionary) -> Dictionary:
 	if entry.get("artifact", {}) == reference: return entry
@@ -1786,6 +1978,19 @@ func _find_output_entry(source_id: String, reference: Dictionary) -> Dictionary:
 		if not found.is_empty(): return found
 	return {}
 
+func _template_cache_definition(template_id: String, visited: Array = []) -> Dictionary:
+	if template_id in visited or not custom_templates.has(template_id): return {}
+	var definition = custom_templates[template_id]
+	var cached_nodes: Array = []
+	for node in definition.get("nodes", []):
+		var copy: Dictionary = node.duplicate(true)
+		copy.erase("x")
+		copy.erase("y")
+		if copy.get("type", "") == CUSTOM_TEMPLATE:
+			copy["template_definition"] = _template_cache_definition(str(copy.get("template_id", "")), visited + [template_id])
+		cached_nodes.append(copy)
+	return {"nodes": cached_nodes, "edges": definition.get("edges", []).duplicate(true)}
+
 func _cache_fingerprint(node_id: String, graph_model: Dictionary = {}, visiting: Array = []) -> String:
 	if graph_model.is_empty(): graph_model = model().duplicate(true)
 	if node_id in visiting: return ""
@@ -1794,6 +1999,7 @@ func _cache_fingerprint(node_id: String, graph_model: Dictionary = {}, visiting:
 	var definition: Dictionary = matching[0].duplicate(true)
 	definition.erase("x")
 	definition.erase("y")
+	if definition.get("type", "") == CUSTOM_TEMPLATE: definition["template_definition"] = _template_cache_definition(str(definition.get("template_id", "")))
 	for field in ["source", "image_context"]:
 		var snapshots: Array = definition.get(field + "_snapshots", []).duplicate(true)
 		if snapshots.is_empty() and definition.get(field + "_snapshot", {}) is Dictionary and not definition.get(field + "_snapshot", {}).is_empty(): snapshots = [definition.get(field + "_snapshot")]
@@ -1875,6 +2081,16 @@ func _has_reusable_cache(data: Dictionary) -> bool:
 
 func execution_model(reuse_cache: bool = true, rerun_node: String = "") -> Dictionary:
 	var executable = model().duplicate(true)
+	var expanded = WorkflowTemplate.expand(executable, custom_templates)
+	if not expanded.error.is_empty():
+		status.text = expanded.error
+		return {}
+	executable.nodes = expanded.nodes
+	executable.edges = expanded.edges
+	template_target_aliases = expanded.target_aliases.duplicate(true)
+	var boundary_ids = executable.nodes.filter(func(node): return WorkflowTemplate.is_boundary_kind(str(node.get("type", "")))).map(func(node): return str(node.id))
+	executable.nodes = executable.nodes.filter(func(node): return not WorkflowTemplate.is_boundary_kind(str(node.get("type", ""))))
+	executable.edges = executable.edges.filter(func(edge): return not (edge.from in boundary_ids or edge.to in boundary_ids))
 	for edge in executable.edges:
 		if not edge.has("artifact"): continue
 		var entry = _find_output_entry(str(edge.from), edge.artifact)
@@ -2084,18 +2300,20 @@ func _snapshot_current_result(node_id: String, state: Dictionary) -> Dictionary:
 		if not iterations.is_empty(): primary["iterations"] = iterations
 	return primary
 
-func _snapshot_outputs():
+func _snapshot_outputs(history_source = null, graph_nodes: Array = [], include_current: bool = true):
+	var source: Dictionary = preview_history if history_source == null else history_source
+	var graph = nodes if graph_nodes.is_empty() else graph_nodes
 	var saved: Dictionary = {}
-	for node_id in preview_history:
-		if not nodes.any(func(node): return node.id == node_id): continue
+	for node_id in source:
+		if not graph.any(func(node): return node.id == node_id): continue
 		var history: Array = []
-		for entry in preview_history[node_id]:
+		for entry in source[node_id]:
 			if not entry is Dictionary: return null
 			var snapshot = _snapshot_output_entry(entry, str(node_id))
 			if snapshot.is_empty(): return null
 			history.append(snapshot)
 		saved[node_id] = history
-	for node_id in current.get("nodes", {}):
+	for node_id in current.get("nodes", {}) if include_current else []:
 		var state = current.nodes[node_id]
 		if not state is Dictionary or state.get("state") != "succeeded": continue
 		var snapshot = _snapshot_current_result(str(node_id), state)
@@ -2125,22 +2343,25 @@ func _remember_workflow_path() -> bool:
 
 func save_graph():
 	if not apply_fields(): return
+	_capture_active_document()
 	if path_edit.text.get_extension().to_lower() != "json":
 		status.text = "工作流文件必须以 .json 结尾"
 		return
-	for n in nodes:
+	var portable = serialized_workflow()
+	var snapshot_nodes: Array = portable.nodes.duplicate()
+	for definition in portable.get("custom_templates", []): snapshot_nodes.append_array(definition.nodes)
+	for n in snapshot_nodes:
 		for field in ["source", "image_context"]:
 			for path in _node_paths(n, field):
 				if not path.is_empty() and path.simplify_path() == path_edit.text.simplify_path():
 					status.text = "不能覆盖输入资源"
 					return
-	var portable = model().duplicate(true)
-	for n in portable.nodes:
+	for n in snapshot_nodes:
 		for field in ["source", "image_context"]:
 			if not _snapshot_inputs(n, field):
 				status.text = "无法读取输入并建立有序快照，已保留原工作流"
 				return
-	var output_history = _snapshot_outputs()
+	var output_history = _snapshot_outputs(preview_history, portable.nodes) if active_template_id.is_empty() else _snapshot_outputs(document_histories.get("", {}), portable.nodes, false)
 	if output_history == null:
 		status.text = "无法读取全部生成物，已保留原工作流"
 		return
@@ -2327,13 +2548,14 @@ func _valid_workflow_edge(edge: Dictionary, by_id: Dictionary) -> bool:
 	if not edge.get("input", "source") is String or not edge.get("output", "result") is String: return false
 	if edge.get("input", "source") != "source": return false
 	var target_kind = by_id[edge.to].get("type", "copy")
-	if target_kind.begins_with("text_"): return false
+	var source_kind = by_id[edge.from].get("type", "copy")
+	if target_kind.begins_with("text_") or target_kind == TEMPLATE_INPUT or source_kind == TEMPLATE_OUTPUT: return false
 	var output = edge.get("output", "result")
 	if output_kind(by_id[edge.from])==PORT_CHARACTER: return false
 	if edge.has("artifact"):
 		return (
 			output == "result"
-			and target_kind in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG]
+			and target_kind in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG,CUSTOM_TEMPLATE,TEMPLATE_INPUT]
 			and output_kind(by_id[edge.from]) == PORT_MESH
 			and _valid_artifact_reference(edge.artifact)
 			and edge.artifact.size() == 2
@@ -2344,7 +2566,67 @@ func _valid_workflow_edge(edge: Dictionary, by_id: Dictionary) -> bool:
 	if output == "image_set":
 		return _image_queue_node(by_id[edge.from]) and _accepts_image_set(by_id[edge.to])
 	if _queue_only_node(by_id[edge.from]): return false
-	return output == "result" and (target_kind == "copy" or (_accepts_image_set(by_id[edge.to]) and _accepts_single_image(by_id[edge.from], by_id[edge.to])) or (not _accepts_image_set(by_id[edge.to]) and output_kind(by_id[edge.from]) == input_kind(by_id[edge.to])))
+	var flexible = target_kind in ["copy", CUSTOM_TEMPLATE, TEMPLATE_INPUT] or source_kind in [CUSTOM_TEMPLATE, TEMPLATE_OUTPUT]
+	return output == "result" and (flexible or (_accepts_image_set(by_id[edge.to]) and _accepts_single_image(by_id[edge.from], by_id[edge.to])) or (not _accepts_image_set(by_id[edge.to]) and output_kind(by_id[edge.from]) == input_kind(by_id[edge.to])))
+
+func _validated_node_ids(graph: Dictionary, allow_boundaries: bool):
+	var by_id: Dictionary = {}
+	for n in graph.get("nodes", []):
+		if not n is Dictionary or not n.has_all(["id", "source", "image_context", "text", "parameters", "x", "y"]):
+			status.text = "节点无效"
+			return null
+		for key in ["id", "source", "image_context", "text"]:
+			if not n[key] is String:
+				status.text = "节点字段类型无效"
+				return null
+		if n.id.is_empty() or not n.id.is_valid_identifier() or by_id.has(n.id) or not n.parameters is Dictionary or not (n.x is float or n.x is int) or not (n.y is float or n.y is int):
+			status.text = "节点标识、参数或位置无效"
+			return null
+		for key in ["type", "version", "provider", "model", "image_model", "template_id"]:
+			if n.has(key) and not n[key] is String:
+				status.text = "节点定义字段无效"
+				return null
+		if n.get("type", "copy") not in NODE_KINDS:
+			status.text = "节点类型无效"
+			return null
+		if n.get("type", "") == HUMAN_SHAPE:
+			var height_cm = n.parameters.get("height_cm", null)
+			if (height_cm is float or height_cm is int) and not height_cm is bool and is_finite(height_cm) and height_cm == floor(height_cm):
+				n.parameters.height_cm = int(height_cm)
+		if WorkflowTemplate.is_boundary_kind(str(n.get("type", ""))) and not allow_boundaries:
+			status.text = "固定输入输出节点只能存在于自定义流程模板中"
+			return null
+		if n.get("type", "") == CUSTOM_TEMPLATE and str(n.get("template_id", "")).is_empty():
+			status.text = "模板实例缺少模板标识"
+			return null
+		if n.get("type", "copy") in ["text_to_image", "image_to_image"] and not n.has("version"): n.version = "2"
+		var reviewed_mesh = n.get("type", "") == "image_to_mesh" and n.get("version", "1") == "2"
+		for field in ["source", "image_context"]:
+			var paths = n.get(field + "_paths", [])
+			if not paths is Array or (not reviewed_mesh and paths.size() > 8) or paths.any(func(path): return not path is String):
+				status.text = "输入路径列表无效"
+				return null
+			if n.has(field + "_snapshots") and not _valid_input_snapshots(n[field + "_snapshots"], reviewed_mesh):
+				status.text = "输入快照列表无效"
+				return null
+			if not paths.is_empty() and not n.get(field + "_snapshots", []).is_empty() and paths.size() != n[field + "_snapshots"].size():
+				status.text = "输入路径与快照的数量不一致"
+				return null
+			if n.has(field + "_snapshot") and not _valid_input_snapshots([n[field + "_snapshot"]]):
+				status.text = "输入快照无效"
+				return null
+		by_id[n.id] = n
+	return by_id
+
+func _template_reference_error(graph: Dictionary, definitions: Dictionary, stack: Array = []) -> String:
+	for node in graph.get("nodes", []):
+		if node.get("type", "") != CUSTOM_TEMPLATE: continue
+		var template_id = str(node.get("template_id", ""))
+		if not definitions.has(template_id): return "模板实例引用了不存在的模板：" + template_id
+		if template_id in stack: return "自定义流程模板存在循环引用"
+		var nested = _template_reference_error(definitions[template_id], definitions, stack + [template_id])
+		if not nested.is_empty(): return nested
+	return ""
 
 func open_graph():
 	_invalidate_context()
@@ -2355,50 +2637,38 @@ func open_graph():
 	if not value is Dictionary or not safe(value) or value.get("format") != 1 or not value.get("nodes") is Array or not value.get("edges") is Array:
 		status.text = "工作流无效"
 		return
-	var by_id: Dictionary = {}
-	for n in value.nodes:
-		if not n is Dictionary or not n.has_all(["id", "source", "image_context", "text", "parameters", "x", "y"]):
-			status.text = "节点无效"
+	var loaded_templates: Dictionary = {}
+	var template_values = value.get("custom_templates", [])
+	if not template_values is Array:
+		status.text = "自定义流程模板列表无效"
+		return
+	for definition in template_values:
+		if not definition is Dictionary or not definition.get("id") is String or not definition.get("name") is String or definition.id.is_empty() or not definition.id.is_valid_identifier() or definition.name.strip_edges().is_empty() or loaded_templates.has(definition.id) or not definition.get("nodes") is Array or not definition.get("edges") is Array:
+			status.text = "自定义流程模板定义无效"
 			return
-		for key in ["id", "source", "image_context", "text"]:
-			if not n[key] is String:
-				status.text = "节点字段类型无效"
+		if not WorkflowTemplate.has_valid_boundaries(definition) or _validated_node_ids(definition, true) == null: return
+		var template_by_id: Dictionary = _validated_node_ids(definition, true)
+		var template_destinations: Array = []
+		for edge in definition.edges:
+			if not edge is Dictionary or edge.has("artifact") or not _valid_workflow_edge(edge, template_by_id) or edge.to in template_destinations:
+				status.text = "模板“%s”的连接端点或端口无效" % definition.name
 				return
-		if n.id.is_empty() or not n.id.is_valid_identifier() or by_id.has(n.id) or not n.parameters is Dictionary or not (n.x is float or n.x is int) or not (n.y is float or n.y is int):
-			status.text = "节点标识、参数或位置无效"
-			return
-		for key in ["type", "version", "provider", "model", "image_model"]:
-			if n.has(key) and not n[key] is String:
-				status.text = "节点定义字段无效"
-				return
-		if n.get("type", "copy") not in NODE_KINDS:
-			status.text = "节点类型无效"
-			return
-		# Workflows saved before explicit node versions used the original batch
-		# contract on their first multi-image save, never the queue-only contract.
-		if n.get("type", "copy") in ["text_to_image", "image_to_image"] and not n.has("version"): n.version = "2"
-		var reviewed_mesh = n.get("type", "") == "image_to_mesh" and n.get("version", "1") == "2"
-		for field in ["source", "image_context"]:
-			var paths = n.get(field + "_paths", [])
-			if not paths is Array or (not reviewed_mesh and paths.size() > 8) or paths.any(func(path): return not path is String):
-				status.text = "输入路径列表无效"
-				return
-			if n.has(field + "_snapshots") and not _valid_input_snapshots(n[field + "_snapshots"], reviewed_mesh):
-				status.text = "输入快照列表无效"
-				return
-			if not paths.is_empty() and not n.get(field + "_snapshots", []).is_empty() and paths.size() != n[field + "_snapshots"].size():
-				status.text = "输入路径与快照的数量不一致"
-				return
-			if n.has(field + "_snapshot") and not _valid_input_snapshots([n[field + "_snapshot"]]):
-				status.text = "输入快照无效"
-				return
-		by_id[n.id] = n
+			template_destinations.append(edge.to)
+		loaded_templates[definition.id] = definition
+	var by_id = _validated_node_ids(value, false)
+	if by_id == null: return
 	var destinations = []
 	for e in value.edges:
 		if not e is Dictionary or not _valid_workflow_edge(e, by_id) or e.to in destinations:
 			status.text = "连接端点或端口无效"
 			return
 		destinations.append(e.to)
+	var reference_error = _template_reference_error(value, loaded_templates)
+	for template_id in loaded_templates:
+		if reference_error.is_empty(): reference_error = _template_reference_error(loaded_templates[template_id], loaded_templates, [template_id])
+	if not reference_error.is_empty():
+		status.text = reference_error
+		return
 	var saved_outputs = value.get("output_history", {})
 	if not _valid_output_history(saved_outputs, by_id):
 		status.text = "生成物快照无效"
@@ -2411,6 +2681,12 @@ func open_graph():
 	if recovered_inputs < 0:
 		status.text = "无法从快照恢复输入文件，已保留当前工作流"
 		return
+	for definition in loaded_templates.values():
+		var restored_template_inputs = _restore_missing_input_paths(definition.nodes, path_edit.text)
+		if restored_template_inputs < 0:
+			status.text = "无法恢复模板输入文件，已保留当前工作流"
+			return
+		recovered_inputs += restored_template_inputs
 	var restored_history = _restore_output_history(saved_outputs, path_edit.text)
 	if restored_history == null:
 		status.text = "无法恢复生成物，已保留当前工作流"
@@ -2421,10 +2697,19 @@ func open_graph():
 	dismissed_artifacts.clear()
 	controller.reset()
 	clear_preview()
+	active_template_id = ""
+	custom_templates = loaded_templates
+	main_graph = {"nodes": value.nodes, "edges": value.edges}
+	document_histories = {"": restored_history}
 	nodes = value.nodes
 	var legacy = service_draft()
-	for data in nodes: _migrate_node_models(data, legacy)
+	for data in nodes:
+		if data.get("type", "") != CUSTOM_TEMPLATE: _migrate_node_models(data, legacy)
+	for definition in custom_templates.values():
+		for data in definition.nodes:
+			if data.get("type", "") != CUSTOM_TEMPLATE and not WorkflowTemplate.is_boundary_kind(str(data.get("type", ""))): _migrate_node_models(data, legacy)
 	edges = value.edges
+	_refresh_workflow_tabs()
 	# Older workflows did not store a definition fingerprint. Bind their restored
 	# results to the definition at open time so later edits still invalidate them.
 	for node_id in preview_history:
@@ -2515,7 +2800,7 @@ func _run_humanoid_target(id: String):
 		_queue_humanoid_target(id,upstream)
 		status.text = "正在运行上游 Mesh，完成后将在本机创建 17 根骨骼并检查变形…"
 		_configure_controller()
-		controller.start(executable,upstream)
+		controller.start(executable,_execution_target(upstream))
 		return
 	var input_entry = _direct_humanoid_input(id)
 	if input_entry.is_empty():
@@ -2767,6 +3052,14 @@ func _finish_humanoid(id: String, input_entry: Dictionary, result: Dictionary):
 		result.scene.free()
 	status.text = "已生成 17 根解剖骨＋独立 root，并通过本地实测、保存重载与纯文本审核；双击角色进入绑定调整。"
 
+func _execution_target(id: String) -> String:
+	return str(template_target_aliases.get(id, id))
+
+func _display_node_id(execution_id: String) -> String:
+	for instance_id in template_target_aliases:
+		if str(template_target_aliases[instance_id]) == execution_id: return str(instance_id)
+	return execution_id
+
 func run_node_preview(id: String):
 	cache_full_run = false
 	if is_graph_busy():
@@ -2791,11 +3084,12 @@ func run_node_preview(id: String):
 	var executable = execution_model(true, id)
 	if executable.is_empty(): return
 	var reused = executable.get("reused_nodes", []).size()
+	var execution_target = _execution_target(id)
 	for data in executable.nodes:
-		if str(data.id) == id: data["ignore_cache"] = true
+		if str(data.id) == execution_target: data["ignore_cache"] = true
 	status.text = "正在运行选中节点，已复用 %d 个上游缓存结果…" % reused if reused > 0 else "正在运行选中节点及必要的上游节点…"
 	_configure_controller()
-	controller.start(executable, id)
+	controller.start(executable, execution_target)
 
 func request_run_all():
 	if is_graph_busy():
@@ -2826,6 +3120,7 @@ func start_run(force_rerun: bool = false):
 		return
 	if _reject_missing_run_resources("", not force_rerun): return
 	for data in nodes:
+		if WorkflowTemplate.is_boundary_kind(str(data.get("type", ""))): continue
 		var local_cache = _reusable_character_entry(str(data.id)) if data.get("type", "") == HUMANOID_RIG else {}
 		if not force_rerun and (_has_reusable_cache(data) or (not local_cache.is_empty() and FileAccess.file_exists(str(local_cache.get("path", ""))))): continue
 		var blocker = node_run_blocker(data.id)
@@ -2856,8 +3151,9 @@ func start_run(force_rerun: bool = false):
 			var input_entry = _direct_humanoid_input(str(data.id))
 			if not input_entry.is_empty(): local_inputs.append([str(data.id),input_entry])
 	var reused = reused_nodes.size()
+	var local_node_ids = executable.nodes.filter(func(node): return node.get("type","")==HUMANOID_RIG).map(func(node): return str(node.id))
 	executable.nodes = executable.nodes.filter(func(node): return node.get("type","")!=HUMANOID_RIG)
-	executable.edges = executable.edges.filter(func(edge): return not nodes.any(func(node): return node.get("type","")==HUMANOID_RIG and (node.id==edge.from or node.id==edge.to)))
+	executable.edges = executable.edges.filter(func(edge): return edge.from not in local_node_ids and edge.to not in local_node_ids)
 	if force_rerun:
 		for data in executable.nodes: data["ignore_cache"] = true
 	_configure_controller()
@@ -2889,7 +3185,7 @@ func retry_node():
 	preview_token = ""
 	artifact_preview_queue.clear()
 	_configure_controller()
-	controller.retry(selected_id)
+	controller.retry(_execution_target(selected_id))
 
 func _configure_controller():
 	var configuration = {"python": python_edit.text.strip_edges(), "script": host_edit.text.strip_edges(), "database": db, "factory": factory_edit.text, "state_dir": state_dir, "use_service": _uses_gui_service(), "service_config": service_config_path}
@@ -2906,19 +3202,21 @@ func launch(command: String, spec: Dictionary):
 func _queue_completed_image_previews(data: Dictionary):
 	if data.get("state", "") not in ["succeeded", "failed"]: return
 	for upstream in humanoid_waiting:
-		var upstream_state = data.get("nodes",{}).get(upstream,{})
-		var already_loading = jobs.values().any(func(job): return job.command=="preview" and job.spec.get("node","")==upstream)
-		if upstream_state.get("state","")=="succeeded" and not artifact_preview_queue.has(upstream) and not already_loading: artifact_preview_queue.append(upstream)
+		var execution_id = _execution_target(str(upstream))
+		var upstream_state = data.get("nodes",{}).get(execution_id,{})
+		var already_loading = jobs.values().any(func(job): return job.command=="preview" and job.spec.get("node","")==execution_id)
+		if upstream_state.get("state","")=="succeeded" and not artifact_preview_queue.has(execution_id) and not already_loading: artifact_preview_queue.append(execution_id)
 	for data_node in nodes:
 		var kind = str(data_node.get("type", ""))
-		if (kind != "copy" or not cache_full_run) and not _is_image_kind(kind) and not _is_mesh_kind(kind): continue
+		if (kind != "copy" or not cache_full_run) and not _is_image_kind(kind) and not _is_mesh_kind(kind) and kind != CUSTOM_TEMPLATE: continue
 		var node_id = str(data_node.id)
-		var state = data.get("nodes", {}).get(node_id, {})
-		if state.get("state", "") != "succeeded" or artifact_preview_queue.has(node_id): continue
+		var execution_id = _execution_target(node_id)
+		var state = data.get("nodes", {}).get(execution_id, {})
+		if state.get("state", "") != "succeeded" or artifact_preview_queue.has(execution_id): continue
 		var outputs = state.get("job", {}).get("outputs", {})
 		if not outputs is Dictionary or (not outputs.has("image_set") and not outputs.has("result")): continue
-		var already_loading = jobs.values().any(func(job): return job.command == "preview" and job.spec.get("node", "") == node_id)
-		if not already_loading: artifact_preview_queue.append(node_id)
+		var already_loading = jobs.values().any(func(job): return job.command == "preview" and job.spec.get("node", "") == execution_id)
+		if not already_loading: artifact_preview_queue.append(execution_id)
 
 func _process(_delta):
 	controller.tick()
@@ -3043,10 +3341,11 @@ func _controller_completed(command: String, data: Dictionary, request: Dictionar
 		_complete_humanoid_text_review(data,request)
 	elif command == "preview":
 		if request.run == run_id:
-			remember_preview(data, request.node, request.run)
-			if request.node == selected_id: load_preview(data, request.node, request.run)
-			var targets: Array = humanoid_waiting.get(str(request.node),[]).duplicate()
-			humanoid_waiting.erase(str(request.node))
+			var display_node = _display_node_id(str(request.node))
+			remember_preview(data, display_node, request.run)
+			if display_node == selected_id: load_preview(data, display_node, request.run)
+			var targets: Array = humanoid_waiting.get(display_node,[]).duplicate()
+			humanoid_waiting.erase(display_node)
 			for target in targets: _execute_humanoid(str(target),data)
 	elif command == "publish":
 		status.text = "已发布新文件：" + data.path
@@ -3090,10 +3389,11 @@ func request_preview():
 		status.text = "请先点击节点的“运行并预览”"
 		return
 	if controller.has_command("preview"): return
-	if not current.get("nodes", {}).has(selected_id) or current.nodes[selected_id].state != "succeeded":
+	var execution_target = _execution_target(selected_id)
+	if not current.get("nodes", {}).has(execution_target) or current.nodes[execution_target].state != "succeeded":
 		status.text = "选中节点尚未生成成功，请点击“运行并预览”"
 		return
-	launch("preview", {"run": run_id, "node": selected_id})
+	launch("preview", {"run": run_id, "node": execution_target})
 
 func refresh_history():
 	if history_choice == null: return
@@ -3487,10 +3787,18 @@ func node_run_blocker(id: String) -> String:
 		if next_id != id and (_has_reusable_cache(data) or (not local_cache.is_empty() and FileAccess.file_exists(str(local_cache.get("path", ""))))): continue
 		_clear_image_mesh_text(data)
 		var kind: String = data.get("type", "copy")
+		if WorkflowTemplate.is_boundary_kind(kind):
+			if not active_template_id.is_empty() and next_id == WorkflowTemplate.INPUT_ID: continue
+			return "固定输入输出节点只负责模板连接，不能单独运行"
+		if kind == CUSTOM_TEMPLATE:
+			if not custom_templates.has(str(data.get("template_id", ""))): return "引用的自定义流程模板不存在"
+			var expanded = WorkflowTemplate.expand(model(), custom_templates)
+			if not expanded.error.is_empty(): return expanded.error
 		if _retired_mesh_node(data): return RETIRED_GPT_MESH_NOTICE
 		var incoming = edges.filter(func(edge): return edge.to == next_id)
 		for edge in incoming:
 			if not edge.has("artifact"): pending.append(edge.from)
+		if kind == CUSTOM_TEMPLATE: continue
 		var has_images = not incoming.is_empty() or not _node_paths(data, "source").is_empty() or not _node_paths(data, "image_context").is_empty()
 		if kind != GENERATE_IMAGE and not kind.begins_with("text_") and incoming.is_empty() and _node_paths(data, "source").is_empty():
 			return "请先设置源文件或连接上游节点（" + str(next_id) + "）"
@@ -3519,7 +3827,7 @@ func node_run_blocker(id: String) -> String:
 func _retry_blocker(id: String) -> String:
 	if is_graph_busy(): return "正在运行，请等待结束或先取消"
 	if nodes.any(func(node): return node.id == id and _retired_mesh_node(node)): return RETIRED_GPT_MESH_NOTICE
-	var state: Dictionary = current.get("nodes", {}).get(id, {})
+	var state: Dictionary = current.get("nodes", {}).get(_execution_target(id), {})
 	var job = state.get("job")
 	if run_id.is_empty() or state.get("state") != "failed" or not job is Dictionary or job.get("state") != "failed":
 		return "仅可重试原运行中已确认失败的节点"
@@ -3594,7 +3902,7 @@ func show_context_menu(local_position: Vector2):
 	if context_node_ids.size() == 1:
 		var id: String = context_node_ids[0]
 		_context_item("运行并预览", CONTEXT_RUN, node_run_blocker(id))
-		var has_result = not preview_history.get(id, []).is_empty() or current.get("nodes", {}).get(id, {}).get("state") == "succeeded"
+		var has_result = not preview_history.get(id, []).is_empty() or current.get("nodes", {}).get(_execution_target(id), {}).get("state") == "succeeded"
 		_context_item("查看已有结果", CONTEXT_PREVIEW, "该节点尚无成功结果" if not has_result else "")
 		var history: Array = preview_history.get(id, [])
 		for i in history.size():
@@ -3603,19 +3911,22 @@ func show_context_menu(local_position: Vector2):
 		context_menu.add_submenu_item("预览历史", "ContextHistory", CONTEXT_HISTORY)
 		context_menu.set_item_disabled(context_menu.item_count - 1, history.is_empty())
 		if history.is_empty(): context_menu.set_item_tooltip(context_menu.item_count - 1, "本次会话暂无该节点的预览版本")
-		var context_kind = str(nodes.filter(func(n): return n.id == id)[0].get("type", "copy"))
-		_context_item("编辑参数" if context_kind == "image_to_mesh" else "编辑提示词与参数", CONTEXT_EDIT)
-		_context_item("重试节点", CONTEXT_RETRY, _retry_blocker(id))
+		var context_data: Dictionary = nodes.filter(func(n): return n.id == id)[0]
+		var context_kind = str(context_data.get("type", "copy"))
+		var fixed_reason = "模板的固定输入输出节点不能编辑参数、复制或删除" if WorkflowTemplate.is_fixed_node(context_data) else ""
+		_context_item("编辑自定义模板" if context_kind == CUSTOM_TEMPLATE else "编辑参数" if context_kind == "image_to_mesh" else "编辑提示词与参数", CONTEXT_EDIT, fixed_reason)
+		_context_item("重试节点", CONTEXT_RETRY, fixed_reason if not fixed_reason.is_empty() else _retry_blocker(id))
 		context_menu.add_separator()
-		_context_item("复制节点", CONTEXT_DUPLICATE, busy_reason)
+		_context_item("复制节点", CONTEXT_DUPLICATE, busy_reason if fixed_reason.is_empty() else fixed_reason)
 		context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_MASK_CMD_OR_CTRL | KEY_D)
-		_context_item("删除节点", CONTEXT_DELETE, busy_reason)
+		_context_item("删除节点", CONTEXT_DELETE, busy_reason if fixed_reason.is_empty() else fixed_reason)
 		context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_DELETE)
 	elif context_node_ids.size() > 1:
 		context_menu.add_separator("已选择 " + str(context_node_ids.size()) + " 个节点")
-		_context_item("复制选中节点", CONTEXT_DUPLICATE, busy_reason)
+		var fixed_reason = "选择中包含固定的模板输入输出节点，不能批量复制或删除" if nodes.any(func(node): return node.id in context_node_ids and WorkflowTemplate.is_fixed_node(node)) else ""
+		_context_item("复制选中节点", CONTEXT_DUPLICATE, busy_reason if fixed_reason.is_empty() else fixed_reason)
 		context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_MASK_CMD_OR_CTRL | KEY_D)
-		_context_item("删除选中节点", CONTEXT_DELETE, busy_reason)
+		_context_item("删除选中节点", CONTEXT_DELETE, busy_reason if fixed_reason.is_empty() else fixed_reason)
 		context_menu.set_item_accelerator(context_menu.item_count - 1, KEY_DELETE)
 	elif not context_connection.is_empty():
 		_context_item("断开连接", CONTEXT_DISCONNECT, busy_reason)
@@ -3645,7 +3956,7 @@ func _context_action(action: int):
 		CONTEXT_PREVIEW:
 			if context_node_ids.size() == 1:
 				var id: String = context_node_ids[0]
-				if not creating and current.get("nodes", {}).get(id, {}).get("state") == "succeeded": request_preview()
+				if not creating and current.get("nodes", {}).get(_execution_target(id), {}).get("state") == "succeeded": request_preview()
 				elif not preview_history.get(id, []).is_empty(): show_history(preview_history[id].size() - 1)
 		CONTEXT_HISTORY:
 			if context_node_ids.size() == 1 and not preview_history.get(context_node_ids[0], []).is_empty():
@@ -3653,6 +3964,11 @@ func _context_action(action: int):
 				status.text = "在预览历史子菜单或右侧版本列表选择结果"
 		CONTEXT_EDIT:
 			if context_node_ids.size() == 1:
+				var selected = nodes.filter(func(node): return node.id == context_node_ids[0])[0]
+				if selected.get("type", "") == CUSTOM_TEMPLATE:
+					open_custom_template(str(selected.get("template_id", "")))
+					return
+				if WorkflowTemplate.is_fixed_node(selected): return
 				if parameter_form.prompt_edit.is_visible_in_tree(): parameter_form.prompt_edit.grab_focus()
 				elif text_edit.is_visible_in_tree(): text_edit.grab_focus()
 				else: parameter_form.advanced_toggle.grab_focus()
@@ -3693,6 +4009,15 @@ func filter_node_picker(text: String):
 		for kind in matches:
 			node_picker_list.add_item("  " + node_label(kind))
 			node_picker_list.set_item_metadata(node_picker_list.item_count - 1, kind)
+	var template_matches: Array = []
+	for template_id in custom_templates:
+		if _template_can_insert(template_id) and (search.is_empty() or search in (template_name(template_id) + " 自定义流程模板 " + template_id).to_lower()): template_matches.append(template_id)
+	if not template_matches.is_empty():
+		node_picker_list.add_item("自定义流程模板")
+		node_picker_list.set_item_selectable(node_picker_list.item_count - 1, false)
+		for template_id in template_matches:
+			node_picker_list.add_item("  " + template_name(template_id))
+			node_picker_list.set_item_metadata(node_picker_list.item_count - 1, CUSTOM_TEMPLATE + ":" + template_id)
 	for i in node_picker_list.item_count:
 		if node_picker_list.is_item_selectable(i):
 			node_picker_list.select(i)
@@ -3705,14 +4030,23 @@ func _node_picker_confirmed():
 	create_context_node(str(node_picker_list.get_item_metadata(selected[0])))
 
 func create_context_node(kind: String):
-	if not kind in NODE_KINDS or is_graph_busy() or not _context_is_current(): return
+	var template_id = ""
+	if kind.begins_with(CUSTOM_TEMPLATE + ":"):
+		template_id = kind.trim_prefix(CUSTOM_TEMPLATE + ":")
+		kind = CUSTOM_TEMPLATE
+		if not _template_can_insert(template_id):
+			status.text = "不能把模板添加到自身或形成循环引用"
+			return
+	if not kind in NODE_KINDS or WorkflowTemplate.is_boundary_kind(kind) or is_graph_busy() or not _context_is_current(): return
+	if kind == CUSTOM_TEMPLATE and template_id.is_empty(): return
 	if not selected_id.is_empty() and not apply_fields(): return
 	var position = (context_position + graph.scroll_offset) / graph.zoom
 	var id = "n" + str(Time.get_ticks_usec())
 	while not nodes.filter(func(n): return n.id == id).is_empty(): id += "x"
-	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": human_shape_default_parameters() if kind==HUMAN_SHAPE else HumanoidRigNode.default_parameters() if kind==HUMANOID_RIG else {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
-	if kind not in ['copy',HUMANOID_RIG] and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
-	_migrate_node_models(data, service_draft())
+	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": "workflow-template" if kind == CUSTOM_TEMPLATE else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {} if kind == CUSTOM_TEMPLATE else human_shape_default_parameters() if kind==HUMAN_SHAPE else HumanoidRigNode.default_parameters() if kind==HUMANOID_RIG else {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
+	if kind == CUSTOM_TEMPLATE: data.template_id = template_id
+	if kind not in ['copy',HUMANOID_RIG,CUSTOM_TEMPLATE] and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
+	if kind != CUSTOM_TEMPLATE: _migrate_node_models(data, service_draft())
 	nodes.append(data)
 	node_picker.hide()
 	context_menu.hide()
@@ -3721,10 +4055,13 @@ func create_context_node(kind: String):
 	for child in graph.get_children():
 		if child is GraphNode: child.selected = str(child.name) == id
 	select_node(id)
-	status.text = "已在右键位置添加“" + node_label(kind) + "”节点"
+	status.text = "已在右键位置添加“" + _template_display_name(data) + "”节点"
 
 func duplicate_context_nodes() -> Array:
 	if is_graph_busy() or not _context_is_current() or context_node_ids.is_empty(): return []
+	if nodes.any(func(node): return node.id in context_node_ids and WorkflowTemplate.is_fixed_node(node)):
+		status.text = "模板的固定输入输出节点不能复制"
+		return []
 	if not apply_fields(): return []
 	var mapping: Dictionary = {}
 	var copies: Array = []
@@ -3757,6 +4094,9 @@ func duplicate_context_nodes() -> Array:
 
 func delete_context_nodes():
 	if is_graph_busy() or not _context_is_current() or context_node_ids.is_empty(): return
+	if nodes.any(func(node): return node.id in context_node_ids and WorkflowTemplate.is_fixed_node(node)):
+		status.text = "模板的固定输入输出节点不能删除"
+		return
 	var removed = context_node_ids.duplicate()
 	for id in removed: preview_history.erase(id)
 	if preview_node in removed: clear_preview()
@@ -4148,6 +4488,9 @@ func _retired_mesh_node(data: Dictionary) -> bool:
 
 func _generator_description(data: Dictionary) -> String:
 	var kind = str(data.get('type', 'copy'))
+	if kind == CUSTOM_TEMPLATE: return '可复用流程 · 点击右侧按钮独立编辑'
+	if kind == TEMPLATE_INPUT: return '连接模板外部输入 · 固定节点'
+	if kind == TEMPLATE_OUTPUT: return '连接模板最终输出 · 固定节点'
 	if _retired_mesh_node(data): return node_label(kind) + ' · GPT CLI 网格已下线'
 	if kind == HUMANOID_RIG: return '本机解剖模板 · 17 根解剖骨＋root · 实际 ROM 检查'
 	if kind == 'copy': return '本机离线复制'
