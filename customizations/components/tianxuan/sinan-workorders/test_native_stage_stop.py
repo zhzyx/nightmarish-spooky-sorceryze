@@ -275,3 +275,31 @@ def test_simultaneous_settlement_reuses_exact_check(host, monkeypatch):
     assert receipts[0] == receipts[1] == h.api("status", key=key).json()["stage_result"]
     events = [e for e in w.domain.events(h.actor) if e["type"] == "native.stage-reached"]
     assert len(events) == len(h.observations()) == 1
+
+
+@pytest.mark.parametrize("edit", [True, False])
+def test_stage_receipt_binds_current_editable_revision(host, edit, record_property):
+    from test_native_validation import save
+
+    h = host
+    issue = install_preview(h)
+    initial = save(h, "stage-base", h.plan["selected"]["a"], PREVIEW)
+    h.plan["selected"]["a"] = initial
+    key = signed(h, issue)
+    h.reserve(key).raise_for_status()
+    terminal = h.api("execute", key=key).raise_for_status().json()
+    assert terminal["state"] == "produced"
+    green = h.api("check", key=key).raise_for_status().json()["check"]
+    assert green["outcome"] == "passed"
+    if edit:
+        save(h, "retime", initial, PREVIEW.replace("12", "17"))
+        reply = h.api("verify-stage", key=key)
+        assert reply.status_code == 409 and "target revision has changed" in reply.json()["detail"]
+        assert h.api("status", key=key).json()["stage_result"]["state"] == "pending"
+        return
+    reached = h.api("verify-stage", key=key).raise_for_status().json()
+    active = h.detail(issue)["execution_progress"]
+    opened = h.api("status", key=active["id"]).raise_for_status().json()["stage_result"]
+    assert active["issue"] == issue["id"] and opened == reached
+    assert opened["modules"]["a"] == initial and opened["checks"]["check"]["evidence"] == green["evidence"]
+    record_property("stage_binding", json.dumps(dict(issue=issue["id"], revision=initial, result=opened)))

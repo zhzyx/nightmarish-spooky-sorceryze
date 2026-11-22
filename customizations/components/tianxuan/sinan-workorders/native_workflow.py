@@ -1349,7 +1349,7 @@ class NativeWorkflow:
         candidate = terminal["candidate"]
         # Use the same native-writer then domain-writer order as release readback.
         # A revoked check or changed signature cannot race the recorded decision.
-        with self.runner.store._connection(write=True), self._transaction() as db:
+        with self.runner.store._connection(write=True) as native_db, self._transaction() as db:
             current = self._row(db, key)
             self._valid(actor, current)
             self._allow(actor, row["issue"], "check")
@@ -1358,6 +1358,22 @@ class NativeWorkflow:
                 return json.loads(saved["receipt"])
             if current["state"] != "produced" or current["terminal"] != row["terminal"]:
                 raise NativeStoreError("Stage candidate changed")
+            # A produced candidate lives on its private branch until publication.
+            # The writable source may still be at the admitted base across successive stages.
+            origin = task
+            while origin.get("stage_renewal"):
+                previous = self._row(db, origin["stage_renewal"]["from"]["task"])
+                origin = json.loads(previous["task"])
+            for module in task["writes"]:
+                head = native_db.execute(
+                    "SELECT revision FROM native_heads WHERE tenant=? AND module=?", (row["tenant"], module)
+                ).fetchone()
+                if head is None or head["revision"] not in {
+                    origin["selected"].get(module),
+                    task["selected"][module],
+                    terminal["modules"][module],
+                }:
+                    raise NativeStoreError("Stage check target revision has changed")
             checks = {}
             for name, fact in facts.items():
                 if (

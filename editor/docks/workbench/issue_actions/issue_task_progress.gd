@@ -118,6 +118,12 @@ func _format_receipt(progress: Dictionary, status: Dictionary) -> String:
 		lines.append("产物候选　" + str(progress.candidate))
 	if status.get("stage_result") is Dictionary and status.stage_result.has("reason"):
 		lines.append("阶段核验　" + str(status.stage_result.reason))
+		var result: Dictionary = status.stage_result
+		for module in result.get("modules", {}):
+			lines.append("对象修订　%s @ %s" % [module, result.modules[module]])
+		for check in result.get("checks", {}):
+			var evidence: Dictionary = result.checks[check]
+			lines.append("验证回执　%s · %s · %s" % [check, evidence.outcome, evidence.evidence])
 	if progress.state == "failed" and status.get("terminal") is String:
 		var terminal: Variant = JSON.parse_string(status.terminal)
 		if terminal is Dictionary:
