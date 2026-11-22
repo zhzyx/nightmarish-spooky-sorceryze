@@ -131,7 +131,11 @@ class ProductionAccess:
         if path.startswith("/api/v1/models") and role != "admin":
             return await reject(403, "model gateway administration requires admin")
         scope = dict(scope)
-        scope["state"] = {**scope.get("state", {}), "verified_actor": actor}
+        scope["state"] = {
+            **scope.get("state", {}),
+            "verified_actor": actor,
+            "refresh_verified_actor": lambda: self.resolve(token),
+        }
         scope["headers"] = [(k, v) for k, v in scope["headers"] if k.lower() != b"x-actor"] + [
             (b"x-actor", actor.encode())
         ]

@@ -37,7 +37,7 @@ CHATS = "/api/v1/workspace/conversations"
 PROJECT = "u11/studio"
 
 
-def exercise(root, binary, verify_routes=None, *, prepare_issues=None, http_trace=None):
+def exercise(root, binary, verify_routes=None, *, prepare_issues=None, http_trace=None, prepare_native_issues=None):
     engine = copy_editor(binary, root / "editor")
     project = root / "project"
     project.mkdir()
@@ -49,14 +49,6 @@ def exercise(root, binary, verify_routes=None, *, prepare_issues=None, http_trac
     owner = store.register("Studio", "owner@example.invalid", password)
     actor = owner["user_id"]
     other = store.add_member(actor, "peer@example.invalid", password)["user_id"]
-    issues = (
-        prepare_issues(store, actor, PROJECT)
-        if prepare_issues
-        else [
-            store.create_issue(actor, "核对入口", body_md=body, project=PROJECT)
-            for body in ("桥梁方案 <tianxuan-doc://example/1/1>", "隧道方案")
-        ]
-    )
     token = store.issue_session(actor)
     other_token = store.issue_session(other)
     model_inputs = []
@@ -103,6 +95,18 @@ def exercise(root, binary, verify_routes=None, *, prepare_issues=None, http_trac
                 if not thread.is_alive() or time.monotonic() > deadline:
                     raise RuntimeError("Tianxuan startup failed")
                 time.sleep(0.05)
+            if prepare_native_issues:
+                issues = prepare_native_issues(store, actor, PROJECT, origin, token)
+            else:
+                issues = (
+                    prepare_issues(store, actor, PROJECT)
+                    if prepare_issues
+                    else [
+                        store.create_issue(actor, "核对入口", body_md=body, project=PROJECT)
+                        for body in ("桥梁方案 <tianxuan-doc://example/1/1>", "隧道方案")
+                    ]
+                )
+            consultation_start = len(calls)
             env = sanitized_environment(root) | dict(
                 TIANXUAN_API=origin,
                 TIANXUAN_TOKEN=token,
@@ -127,7 +131,8 @@ def exercise(root, binary, verify_routes=None, *, prepare_issues=None, http_trac
             assert not run.returncode and len(markers) == 1 and "SCRIPT ERROR" not in output, output[-4500:]
             native = json.loads(markers[0])
             assert native["identity"]["id"] == actor and native["identity"]["project"] == PROJECT
-            native_calls = calls.copy()
+            consultation_end = len(calls)
+            native_calls = calls[consultation_start:consultation_end]
             assert len(model_inputs) == 2
             assert not any(method != "GET" and not path.startswith(CHATS + "/") for method, path, _ in native_calls)
             assert not any("/execution" in path for _, path, _ in native_calls)
@@ -136,8 +141,8 @@ def exercise(root, binary, verify_routes=None, *, prepare_issues=None, http_trac
                 try:
                     route_results = verify_routes(engine, project, env, store, actor, issues, native)
                 except AssertionError as exc:
-                    raise AssertionError(f"{exc}\nHTTP route diagnostics: {calls[len(native_calls) :]}") from exc
-                route_results["http"] = sorted(set(calls[len(native_calls) :]))
+                    raise AssertionError(f"{exc}\nHTTP route diagnostics: {calls[consultation_end:]}") from exc
+                route_results["http"] = sorted(set(calls[consultation_end:]))
             records = []
             with httpx.Client(base_url=origin, headers={"Authorization": "Bearer " + token}, trust_env=False) as client:
                 for issue, record, prompt in zip(issues, native["records"], model_inputs, strict=True):
