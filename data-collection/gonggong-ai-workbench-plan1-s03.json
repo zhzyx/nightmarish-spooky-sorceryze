@@ -1,0 +1,287 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-s03",
+  "issue_number": 1845,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1845",
+  "producer": "wave22_s03",
+  "baseline": "e3135fc4b95141430c1fa6aa9f225ce899d01ff4",
+  "source_revision": "60ca02901c2e9e584a6ac1635bf92e619f5c260c7f5b3e0538a2216548e64507",
+  "verified_at": "2026-11-22T06:17:36.963784+00:00",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s03/dispatch-a03aa773569b4499bbe02e60a95822f5.json",
+  "intake": {
+    "state": "in-progress",
+    "gate": "intake-only passed",
+    "owner_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1845#issuecomment-7075035925",
+    "predecessors": [
+      {
+        "issue": 1847,
+        "state": "CLOSED",
+        "reason": "COMPLETED",
+        "closed_at": "2026-11-22T03:53:48Z"
+      },
+      {
+        "issue": 1848,
+        "state": "CLOSED",
+        "reason": "COMPLETED",
+        "closed_at": "2026-11-22T05:54:08Z"
+      }
+    ],
+    "receipt_blobs": {
+      "data-collection/gonggong-ai-workbench-plan1-a02.json": "eb2643ecbaff43a7e70f023bab1c982a62490cb7",
+      "data-collection/gonggong-ai-workbench-plan1-s02.json": "24d2c7d093c3e73d28b3c9dd47eed7e1d792aeb9"
+    }
+  },
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/access_control.py": "b4d4819457fe1208d7b6975fdf723fdb5aa7b3f5",
+    "customizations/components/tianxuan/server/native_api.py": "0b1f3b4d0362f76df36c3d8b3cc3f104ed2d462b",
+    "customizations/components/tianxuan/server/native_execution_host.py": "8d3f09db0ac9f4d9f448b1c208e697c50a955060",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "afde7bb81abf976c08d4da953d9b3050a4bc142d",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "9651b285c85c4a88dfb623799b4e34b649358f54",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py": "883aaffa0ab07c9f3e986ae26068614af37c2667",
+    "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py": "002563e6523e75d55c3cdbef40b8c8006d160eb2",
+    "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py": "a8a628d87251a9c40a5e50c538f23c38996103a9",
+    "tests/editor/run_workbench_confirmed_native_stage.py": "07445ceadfcb413bcc481c61506446f9ea0bc84d",
+    "design-docs/gonggong-ai-workbench-s03.md": "6573507405be85a42f609be0fe3f42c6abfda994"
+  },
+  "receiver_git_blobs": {
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "dff7e53a12e767a4ff52c70003f21370d162c0a9",
+    "tools/ainative/owned_process.py": "e568a98a41e96bf334b2e251383054e3b1812d16",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py": "fc2bb061db4cc226e20167dfc4e017e4c07c2490",
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": "c31da667a84b3dfe579bca4da0b7233b3f2d2495",
+    "tests/editor/workbench_task_confirmations.gd": "bbca97af94a60ee91e3bd614aa21744b81b1434b"
+  },
+  "receiver": {
+    "platform": "Windows AMD64",
+    "python": "3.12.14",
+    "node": "v24.22.1",
+    "entry": "Headless native workbench signed task -> authenticated Tianxuan issue confirmation -> authorize/reserve/execute -> running replay -> original TCP disconnect -> new HTTP client reauthorize/reserve/execute -> await-terminal -> replay after exit.",
+    "workload": "One signed test stage, a real local Python child with a bounded timeout and per-process PID journal, one domain SQLite database and one native SQLite database shared throughout. The OS PID is an observation only.",
+    "editor_package_provenance": "Windows signed #2024 package, isolated copy_editor. No native binary change in S03."
+  },
+  "result": {
+    "passed": true,
+    "editor_sha256": "a51169f18ef5f8a34e63720cbaa3ecabea0e3bc3e3a082860859313b840cebe5",
+    "selected": [
+      "#1 程序",
+      "#2 动画"
+    ],
+    "confirmed": {
+      "issue_id": "iss_77a048ccdef94611b6419c0d65146cde",
+      "document_id": "doc_6bc92bdafc2540e8ad431770ad686ced",
+      "version": 1,
+      "stage": "可运行原型",
+      "target_revision": 1,
+      "issue_revision": "b1bc5aed25345d4275432c2ca87040c9678fc52f9e9f81a21870aa88d10e005d",
+      "revision": 1,
+      "status": "confirmed",
+      "responsible_user": "usr_5d91f385ce444ac9b8ca8539ec76bbba",
+      "confirmed_by": "usr_5d91f385ce444ac9b8ca8539ec76bbba"
+    },
+    "sibling": {
+      "issue_id": "iss_856666fdf65340c699df45a6463124af",
+      "document_id": "doc_6bc92bdafc2540e8ad431770ad686ced",
+      "version": 1,
+      "stage": "动画预览",
+      "target_revision": 1,
+      "issue_revision": "c3bb540edea373b024c8f7fbdf0d64d3420704cd17624617857b56048a996038",
+      "revision": 0,
+      "status": "pending",
+      "responsible_user": "usr_5d91f385ce444ac9b8ca8539ec76bbba",
+      "confirmed_by": null
+    },
+    "revoked": {
+      "issue_id": "iss_77a048ccdef94611b6419c0d65146cde",
+      "document_id": "doc_6bc92bdafc2540e8ad431770ad686ced",
+      "version": 1,
+      "stage": "可运行原型",
+      "target_revision": 1,
+      "issue_revision": "b1bc5aed25345d4275432c2ca87040c9678fc52f9e9f81a21870aa88d10e005d",
+      "revision": 2,
+      "status": "revoked",
+      "responsible_user": "usr_5d91f385ce444ac9b8ca8539ec76bbba",
+      "confirmed_by": null
+    },
+    "execution": "62ab15836b6ee085439612abe59a620ddc2eeeee53be2b9bb411ec694197d905",
+    "grant": {
+      "confirmation_revision": 1,
+      "confirmed_by": "usr_5d91f385ce444ac9b8ca8539ec76bbba",
+      "criteria": "拉杆切换一次",
+      "document_id": "doc_6bc92bdafc2540e8ad431770ad686ced",
+      "issue_id": "iss_77a048ccdef94611b6419c0d65146cde",
+      "issue_revision": "b1bc5aed25345d4275432c2ca87040c9678fc52f9e9f81a21870aa88d10e005d",
+      "responsible_user": "usr_5d91f385ce444ac9b8ca8539ec76bbba",
+      "stage": "可运行原型",
+      "target_revision": 1,
+      "version": 1
+    },
+    "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+    "profile": "local",
+    "process_exit": 0,
+    "process_count": 1,
+    "replay": {
+      "duplicate": {
+        "execution": "62ab15836b6ee085439612abe59a620ddc2eeeee53be2b9bb411ec694197d905",
+        "worker_ref": "native-worker:62ab15836b6ee085439612abe59a620ddc2eeeee53be2b9bb411ec694197d905",
+        "state": "running",
+        "starts": [
+          {
+            "execution": "62ab15836b6ee085439612abe59a620ddc2eeeee53be2b9bb411ec694197d905",
+            "pid": 106048
+          }
+        ]
+      },
+      "reconnected": {
+        "execution": "62ab15836b6ee085439612abe59a620ddc2eeeee53be2b9bb411ec694197d905",
+        "worker_ref": "native-worker:62ab15836b6ee085439612abe59a620ddc2eeeee53be2b9bb411ec694197d905",
+        "state": "running",
+        "starts": [
+          {
+            "execution": "62ab15836b6ee085439612abe59a620ddc2eeeee53be2b9bb411ec694197d905",
+            "pid": 106048
+          }
+        ]
+      },
+      "after_exit": {
+        "execution": "62ab15836b6ee085439612abe59a620ddc2eeeee53be2b9bb411ec694197d905",
+        "worker_ref": "native-worker:62ab15836b6ee085439612abe59a620ddc2eeeee53be2b9bb411ec694197d905",
+        "state": "produced",
+        "starts": [
+          {
+            "execution": "62ab15836b6ee085439612abe59a620ddc2eeeee53be2b9bb411ec694197d905",
+            "pid": 106048
+          }
+        ]
+      }
+    },
+    "process_closure": {
+      "exit_code": 0,
+      "reasons": [],
+      "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sibling_tasks": 0
+  },
+  "credential_refresh": [
+    {
+      "credential": "session",
+      "revoked_during_wait": false,
+      "http_status": 200
+    },
+    {
+      "credential": "account-bearer",
+      "revoked_during_wait": false,
+      "http_status": 200
+    },
+    {
+      "credential": "account-cookie",
+      "revoked_during_wait": false,
+      "http_status": 200
+    },
+    {
+      "credential": "key-bearer",
+      "revoked_during_wait": false,
+      "http_status": 200
+    },
+    {
+      "credential": "key-cookie",
+      "revoked_during_wait": false,
+      "http_status": 200
+    },
+    {
+      "credential": "session",
+      "revoked_during_wait": true,
+      "http_status": 401
+    },
+    {
+      "credential": "account-bearer",
+      "revoked_during_wait": true,
+      "http_status": 401
+    },
+    {
+      "credential": "account-cookie",
+      "revoked_during_wait": true,
+      "http_status": 401
+    },
+    {
+      "credential": "key-bearer",
+      "revoked_during_wait": true,
+      "http_status": 401
+    },
+    {
+      "credential": "key-cookie",
+      "revoked_during_wait": true,
+      "http_status": 401
+    }
+  ],
+  "incident": {
+    "issue_number": 2026,
+    "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2026",
+    "action": "Same editor command and authenticated account mode while original execute socket was closed in flight.",
+    "failed_candidate": {
+      "base": "e3135fc4b95141430c1fa6aa9f225ce899d01ff4",
+      "native_api_blob": "28a430834d8d612d0e89b52b7bc061a412723398",
+      "access_control_blob": "e8e50ebc8f72d5947be0b21e6909760d67f8ce47",
+      "workflow_blob": "690d29b6398966afa28372fdb9811170611e182f",
+      "runner_blob": "84aac9c7eefdf1d53538987a2d8eeb108069190f",
+      "editor_sha256": "a51169f18ef5f8a34e63720cbaa3ecabea0e3bc3e3a082860859313b840cebe5"
+    },
+    "observed": {
+      "running_duplicate_and_reconnect": "same execution and one physical start",
+      "execution": "f1f2e6330dd8fd15b664a2639f1b3abab6d8f93243a0f13f9728783561a77077",
+      "pid": 113832,
+      "request": "POST /api/v1/native/workflow/await-terminal",
+      "http_status": 401,
+      "credential": "valid account bearer session"
+    },
+    "repair": "Middleware revalidates the credential originally resolved on that request. Native and HTTP+cookie/bearer regression receipts are included here."
+  },
+  "validation": {
+    "editor_command": "python tests/editor/run_workbench_confirmed_native_stage.py --godot <verified-editor> --report <report.json>",
+    "editor_exit_code": 0,
+    "pytest_replay": "python -m pytest -q <files in pytest_suites>",
+    "pytest_suites": {
+      "final": {
+        "tests": 80,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "files": [
+          "customizations\\components\\tianxuan\\sinan-workorders\\test_native_local_profiles.py",
+          "customizations\\components\\tianxuan\\sinan-workorders\\test_native_stage_admission.py",
+          "customizations\\components\\tianxuan\\sinan-workorders\\test_native_stage_stop.py",
+          "customizations\\components\\tianxuan\\sinan-workorders\\test_native_terminal_events.py",
+          "customizations\\components\\tianxuan\\sinan-workorders\\test_native_worker_coordination.py",
+          "customizations\\components\\tianxuan\\sinan-workorders\\test_native_workflow.py",
+          "customizations\\components\\tianxuan\\sinan-workorders\\test_native_workflow_revisions.py"
+        ]
+      },
+      "service": {
+        "tests": 38,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "files": [
+          "customizations\\components\\tianxuan\\server\\test_access_control.py",
+          "customizations\\components\\tianxuan\\server\\test_api_auth_mode.py",
+          "customizations\\components\\tianxuan\\server\\test_native_api.py",
+          "customizations\\components\\tianxuan\\server\\test_native_shared_dispatch.py"
+        ]
+      }
+    },
+    "static": [
+      "ruff check",
+      "ruff format --check",
+      "mypy",
+      "repository file_format",
+      "git diff --check"
+    ]
+  },
+  "handoff": {
+    "receiver": "Windows parent delivery session",
+    "downstream": [
+      1836,
+      1842,
+      1792
+    ],
+    "closure": "Parent verifies protected main, #1845 and #2026 before closing applicable issues; downstream work depends on all its own accepted prerequisites.",
+    "macos_run": null
+  }
+}

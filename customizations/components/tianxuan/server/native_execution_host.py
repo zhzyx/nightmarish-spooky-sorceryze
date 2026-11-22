@@ -607,7 +607,9 @@ class WorkflowService:
             return board
         if operation == "advance":
             return w.advance(actor, isolate=True, exclude=payload.get("exclude", []))
-        if operation in {"status", "execute", "check", "review", "reconcile", "finish"}:
+        if operation == "execute":
+            return w.execute_receipt(actor, payload["key"])
+        if operation in {"status", "check", "review", "reconcile", "finish"}:
             return getattr(w, operation)(actor, payload["key"])
         if operation == "verify-stage":
             return w.verify_stage(actor, payload["key"])

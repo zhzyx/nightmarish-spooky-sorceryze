@@ -32,7 +32,7 @@ from tianxuan_core import Tianxuan  # noqa: E402
 PROJECT = "d10/bridge"
 
 
-def run_editor(root, binary, origin, token, items):
+def run_editor(root, binary, origin, token, items, *, project_scope=PROJECT, **options):
     editor = copy_editor(binary, root / "engine")
     project = root / "project"
     project.mkdir()
@@ -40,7 +40,10 @@ def run_editor(root, binary, origin, token, items):
     shutil.copyfile(Path(__file__).with_name("workbench_design_tasks.gd"), project / "probe.gd")
     env = {k: v for k, v in sanitized_environment(root).items() if not k.startswith("TIANXUAN_")}
     env.update(
-        TIANXUAN_API=origin, TIANXUAN_TOKEN=token, TIANXUAN_PROJECT=PROJECT, D10_FIXTURE=json.dumps({"items": items})
+        TIANXUAN_API=origin,
+        TIANXUAN_TOKEN=token,
+        TIANXUAN_PROJECT=project_scope,
+        D10_FIXTURE=json.dumps({"items": items, **options}),
     )
     run = subprocess.run(
         [

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-69c009981e5287b0e633339fc914034d0a3e9acb",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-s03",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1845",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "644075ba77896b554dfa44c94c639a6ef76eb0303a97a4fca93871f85edb2480",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1845",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2026",
+    "action": "validation",
+    "detection_head": "6a5b8bb8ebacf45dd92d62ac24e991d3a35c01bc",
+    "context_sha256": "a6d75904e4723ec0650c07bb715ad57e51a3f327f191fa83d6ff70d5a0f61e0a",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1845",
+    "evidence": "Bound Windows worker reproduced 401 when awaiting the same native task after a legitimate account session reconnect. Main native_api.py blob 28a430834d8d612d0e89b52b7bc061a412723398 looks up the verified session as an access key during refresh; two in-flight replays still produced one physical child.",
+    "diagnosis": "The terminal observer revalidates all middleware-authenticated tokens against the access-key store. Accounts authenticate their session through the session store. This misclassification denies a still-authorized observer.",
+    "next_action": "The existing S03 worker owns the fix. Exercise the same real Windows editor/session/worker operation and verify valid replay, revoked-session refusal, and the unchanged access-key boundary. The parent publisher will check the signed main and close the linked incident only after its original test passes.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T06:09:22.604011+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T06:11:14.504815+00:00",
+  "sha256": "02161e429577989bc67671a55837664caf6d9767218059c4d470dd9ebda24ffc"
+}

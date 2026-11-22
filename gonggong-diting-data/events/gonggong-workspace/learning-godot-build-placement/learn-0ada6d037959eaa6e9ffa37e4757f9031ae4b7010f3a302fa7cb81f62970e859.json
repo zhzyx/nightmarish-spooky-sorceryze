@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-0ada6d037959eaa6e9ffa37e4757f9031ae4b7010f3a302fa7cb81f62970e859",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1716",
+  "occurred_at": "2026-11-22T07:11:33.050847+00:00",
+  "evidence_refs": [
+    "wave22-windows-milestone-trace-1716",
+    "learn-e8b3936e9336832b6adfbee2a3e14f0396ce00c0fd04e7ab14dd9c28f557be81"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 54,
+    "previous": "4fca20af7eefbc13614e1e95bf4c97a0b2fe0b9d1f6568b4a2233b18b1e17f4a",
+    "action": "applied",
+    "details": {
+      "task": "K02 #1716",
+      "observed": "已在 Windows 组合候选上运行 K02 的原生控件探针。候选源码树、实测编辑器哈希及构建来源见 data-collection/gonggong-ai-workbench-plan1-windows-milestone-trace-combined.json。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-k02.json",
+        "sha256": "6252f6b43e3ad8a11d69036fcda045c14fd3222d8cb40cdb292460e8e1212776"
+      },
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-milestone-trace-combined.json",
+        "sha256": "8ba21dadff8e5c7fec7e4b0a46b5c2e3fac60c9f613f2d2da78eb96d68032c64"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-k02/wave22-windows-milestone-trace-1716.json",
+      "sha256": "9ffdff3f7f88b7221a88152c538952f02ee039ee83595b134b4a85409b7d4f66"
+    }
+  },
+  "sha256": "a6bc6ed0bf7cfc206fccf6cdf7bd7b77c83fca42cb1b5fd4fc071d0bb2ee6d9c"
+}

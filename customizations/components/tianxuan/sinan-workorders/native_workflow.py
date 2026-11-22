@@ -21,6 +21,12 @@ class StageAuthorizationChanged(NativeStoreError):
     """A design task no longer has the stage authority used for dispatch."""
 
 
+def execution_identity(key):
+    # The pinned execution names its worker even across coordinator restarts.
+    # This is the same address used by candidate intake, not a liveness claim.
+    return {"id": key, "worker_ref": "native-worker:" + key}
+
+
 def check_passed(runner, tenant, candidate, check, fact):
     """A cached result has no process outcome; validate its actual evidence."""
     if fact.get("outcome") == "passed":
@@ -145,7 +151,7 @@ class NativeWorkflow:
         row = db.execute("SELECT * FROM native_tasks WHERE id=?", (key,)).fetchone()
         if row is None:
             raise NativeStoreError("Native task unavailable")
-        return dict(row)
+        return {**row, **execution_identity(row["id"])}
 
     def status(self, actor, key):
         with self._transaction() as db:
@@ -368,28 +374,30 @@ class NativeWorkflow:
         return key
 
     def _valid(self, actor, row):
-        active = self.domain.db.execute(
-            "SELECT task FROM native_active_tasks WHERE issue=?", (row["issue"],)
-        ).fetchone()
-        if not active or active[0] != row["id"]:
-            raise NativeStoreError("Task definition superseded")
-        task = json.loads(row["task"])
-        self._inputs_allowed(actor, task["selected"])
-        source = self._allow(actor, row["issue"], "execute")
-        if source != task["source"]:
-            if source["definition"].get("stage_authorization") != task["source"]["definition"].get(
-                "stage_authorization"
-            ):
-                raise StageAuthorizationChanged("Task stage confirmation changed")
-            raise NativeStoreError("Task definition changed")
-        if self.domain.get_issue(row["issue"])["status"] in {"cancelled", "blocked"}:
-            raise NativeStoreError("Issue execution is stopped")
-        for dependency, acceptance in task["dependencies"].items():
-            other = self._row(self.domain.db, dependency)
-            self._read_allowed(actor, other)
-            if other["acceptance"] != acceptance or other["state"] != "accepted":
-                raise NativeStoreError("Dependency acceptance changed")
-        return task
+        # Delivery and transport callbacks can validate on different threads.
+        with self.domain._connection_lock:
+            active = self.domain.db.execute(
+                "SELECT task FROM native_active_tasks WHERE issue=?", (row["issue"],)
+            ).fetchone()
+            if not active or active[0] != row["id"]:
+                raise NativeStoreError("Task definition superseded")
+            task = json.loads(row["task"])
+            self._inputs_allowed(actor, task["selected"])
+            source = self._allow(actor, row["issue"], "execute")
+            if source != task["source"]:
+                if source["definition"].get("stage_authorization") != task["source"]["definition"].get(
+                    "stage_authorization"
+                ):
+                    raise StageAuthorizationChanged("Task stage confirmation changed")
+                raise NativeStoreError("Task definition changed")
+            if self.domain.get_issue(row["issue"])["status"] in {"cancelled", "blocked"}:
+                raise NativeStoreError("Issue execution is stopped")
+            for dependency, acceptance in task["dependencies"].items():
+                other = self._row(self.domain.db, dependency)
+                self._read_allowed(actor, other)
+                if other["acceptance"] != acceptance or other["state"] != "accepted":
+                    raise NativeStoreError("Dependency acceptance changed")
+            return task
 
     def _inputs_allowed(self, actor, revisions):
         # authorize_task stores the complete exact closure, not just caller roots.
@@ -589,6 +597,10 @@ class NativeWorkflow:
             row = self._row(db, key)
             self._valid(actor, row)
         return row
+
+    def execute_receipt(self, actor, key):
+        result = self.execute(actor, key)
+        return {**result, **execution_identity(key)}
 
     def execute(self, actor, key):
         with self.domain._connection_lock:
