@@ -106,7 +106,7 @@ def run_probe(
             service.should_exit = True
             thread.join(timeout=10)
     output = result.stdout + result.stderr
-    if token in output or password in output:
+    if (token and token in output) or password in output:
         raise AssertionError("Credential in fixture diagnostics")
     markers = [
         line.removeprefix("WORKBENCH_REPORT=")
