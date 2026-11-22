@@ -1,0 +1,181 @@
+{
+  "issue_number": 2098,
+  "request_id": "kuafu-local-1775-1bc917d87b1d0948d970057ebf471fa5d2c0295159e99a09ed5a15a9ab310cc4",
+  "original_issue": 1775,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2098",
+  "base_commit": "18bb27529ab612cf680a6612ba304b1a7ac0913e",
+  "reported_head": "db5012ded3f34ec7c3f85d8aeba484b57da1dd88",
+  "test_path": "tools/ainative/test_owned_process.py",
+  "baseline_test_blob": "d87704fd9747c55c39e122a95b7ae83c10744abe",
+  "tested_test_blob": "f77cd1f0399856e5b67fe876c9762e7b82491b05",
+  "host": "Windows 11 build 26200, AMD64, CPython 3.12.14 (incident tx-venv interpreter)",
+  "finding": "The fixture assigned a 150 ms deadline to every fresh watch process. With a controlled 250 ms delay the two real adapters timed out before either exit could be observed. With a 3 s deadline both returned the requested exit codes. The historical failing invocation did not capture its finish reason; the undelayed baseline intermittency did not recur in this isolated run.",
+  "repair": "Only the timeout subcase retains the 150 ms deadline. Ordinary watches use the same 3 s allowance as the launch fixture. Each case checks the exact provider finish event as well as the direct result and child/grandchild cleanup.",
+  "baseline_recheck": {
+    "baseline": "Executed the original test method from the reported commit with a wrapper forwarding finish calls and recording the watch results.",
+    "result": "OK (1 method, 4.517 s). For each provider the undelayed success/error returned 0/7 with no finish call. The 30 s sleep returned None with image_timeout, cancellation returned None without a finish call, and the flood returned None with the expected output-invalid reason."
+  },
+  "paired_comparison": {
+    "requested_exits": [
+      0,
+      7
+    ],
+    "results": [
+      {
+        "provider": "KimiWorkImageProvider",
+        "delay_s": 0,
+        "deadline_s": 0.15,
+        "observed_exits": [
+          0,
+          7
+        ],
+        "finish_reasons": [
+          [],
+          []
+        ]
+      },
+      {
+        "provider": "KimiWorkImageProvider",
+        "delay_s": 0,
+        "deadline_s": 3,
+        "observed_exits": [
+          0,
+          7
+        ],
+        "finish_reasons": [
+          [],
+          []
+        ]
+      },
+      {
+        "provider": "KimiWorkImageProvider",
+        "delay_s": 0.25,
+        "deadline_s": 0.15,
+        "observed_exits": [
+          null,
+          null
+        ],
+        "finish_reasons": [
+          [
+            "image_timeout"
+          ],
+          [
+            "image_timeout"
+          ]
+        ]
+      },
+      {
+        "provider": "KimiWorkImageProvider",
+        "delay_s": 0.25,
+        "deadline_s": 3,
+        "observed_exits": [
+          0,
+          7
+        ],
+        "finish_reasons": [
+          [],
+          []
+        ]
+      },
+      {
+        "provider": "KimiNativeDirectProvider",
+        "delay_s": 0,
+        "deadline_s": 0.15,
+        "observed_exits": [
+          0,
+          7
+        ],
+        "finish_reasons": [
+          [],
+          []
+        ]
+      },
+      {
+        "provider": "KimiNativeDirectProvider",
+        "delay_s": 0,
+        "deadline_s": 3,
+        "observed_exits": [
+          0,
+          7
+        ],
+        "finish_reasons": [
+          [],
+          []
+        ]
+      },
+      {
+        "provider": "KimiNativeDirectProvider",
+        "delay_s": 0.25,
+        "deadline_s": 0.15,
+        "observed_exits": [
+          null,
+          null
+        ],
+        "finish_reasons": [
+          [
+            "image_timeout"
+          ],
+          [
+            "image_timeout"
+          ]
+        ]
+      },
+      {
+        "provider": "KimiNativeDirectProvider",
+        "delay_s": 0.25,
+        "deadline_s": 3,
+        "observed_exits": [
+          0,
+          7
+        ],
+        "finish_reasons": [
+          [],
+          []
+        ]
+      }
+    ],
+    "command": "From the repository root, run the python_source below on stdin with the incident interpreter: python -X utf8 -",
+    "python_source": [
+      "import json, sys, tempfile",
+      "from pathlib import Path",
+      "sys.path.insert(0, str(Path(\"tools/ainative\").resolve()))",
+      "from kimi_work_image_provider import KimiWorkImageProvider",
+      "from kimi_provider import KimiNativeDirectProvider",
+      "for cls in (KimiWorkImageProvider, KimiNativeDirectProvider):",
+      "    for delay in (0, 0.25):",
+      "        for deadline in (0.15, 3):",
+      "            for expected in (0, 7):",
+      "                with tempfile.TemporaryDirectory() as folder:",
+      "                    root = Path(folder)",
+      "                    (root / \"runtime\").mkdir()",
+      "                    adapter = cls.__new__(cls)",
+      "                    reasons = []",
+      "                    adapter._active = lambda *_: True",
+      "                    adapter.finish = lambda key, state, reason: reasons.append(reason)",
+      "                    code = \"pass\" if expected == 0 else \"raise SystemExit(7)\"",
+      "                    if delay:",
+      "                        code = f\"import time; time.sleep({delay}); \" + code",
+      "                    observed = adapter._run_owned(\"fixture\", [sys.executable, \"-c\", code], \"watch.log\", \"image_generation\", deadline, root)",
+      "                    print(json.dumps(dict(provider=cls.__name__, delay_s=delay, deadline_s=deadline, requested_exit=expected, adapter_result=observed, failure_reasons=reasons)))"
+    ]
+  },
+  "verification": [
+    {
+      "cwd": "tools/ainative",
+      "command": "python -m unittest test_owned_process.AdapterProcessTests.test_async_launch_tree_is_cleaned_after_watch_or_parse_terminal",
+      "exit_code": 0,
+      "observed": "1 test passed in 5.063 s. Both adapters exercised success, error, timeout, cancellation, flood and parse failure; the retained child and grandchild were gone after each."
+    },
+    {
+      "cwd": ".",
+      "command": "python -X utf8 -m unittest discover -s tools/ainative -p test_owned_process.py",
+      "exit_code": 0,
+      "observed": "15 tests in 21.551 s; 10 passed, 4 Darwin-specific tests and 1 POSIX leader-pinning test skipped on Windows. The real adapter tree test checked three fixture PIDs disappeared and the unrelated process remained alive."
+    },
+    {
+      "cwd": ".",
+      "command": "git diff --check",
+      "exit_code": 0
+    }
+  ]
+}

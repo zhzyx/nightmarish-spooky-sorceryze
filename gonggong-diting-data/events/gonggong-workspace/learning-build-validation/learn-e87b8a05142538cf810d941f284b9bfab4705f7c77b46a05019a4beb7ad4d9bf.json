@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-build-validation",
+  "event_id": "learn-e87b8a05142538cf810d941f284b9bfab4705f7c77b46a05019a4beb7ad4d9bf",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2098",
+  "occurred_at": "2026-11-22T14:29:22.3586118+00:00",
+  "evidence_refs": [
+    "dispatch-472ed78d8e7d403591ffd896fae69887"
+  ],
+  "payload": {
+    "scope": "build-validation",
+    "lesson": "separate-watch-exit-and-timeout-fixtures",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "When a real watch subprocess returns None where an exit code was expected, compare the same adapter and child command at the short and ordinary fixture deadlines. Record the exact finish reason as well as the result. Keep a deliberate timeout and the descendant cleanup checks.",
+      "when": "The test starts a new interpreter and tests the exit code independently from deadline handling.",
+      "counterexample": "A None result with an output-limit error, cancellation, or a missing exit even at the ordinary deadline needs separate diagnosis. A product latency requirement must use its specified deadline.",
+      "trial_plan": "Use an independent watch fixture with explicit 0 and nonzero exits and a controlled delay between the two test deadlines. Check the timeout reason at the short deadline, the exact exits at the ordinary deadline, and unrelated-process survival after cleanup."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/windows-owned-watch-2098.json",
+        "sha256": "ad6646d340b01d8a3e60330cdae4918eee5f85dfaa6ddb21964784107eb0f516"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/kuafu-local-1775-1bc917d87b1d0948d970057ebf471fa5d2c0295159e99a09ed5a15a9ab310cc4/dispatch-472ed78d8e7d403591ffd896fae69887.json",
+      "sha256": "4412aeb288227950f9f45a68a9a4600a050175ccefbc76b377bdb6aed93bbf51"
+    }
+  },
+  "sha256": "56da44ced825e4b6bd8ffab9c6d89bf3f2f9e52b40550c1fe1bc642e9297b76d"
+}
