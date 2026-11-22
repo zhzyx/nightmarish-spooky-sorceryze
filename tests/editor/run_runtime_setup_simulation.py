@@ -20,7 +20,9 @@ BASELINE = "d237ef78cc394a98db85b6eb1b39f0184217297d"
 ENTRIES = {"python": "python/python.exe", "node": "node/node.exe", "git": "git/cmd/git.exe"}
 LAUNCHER = r"""
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -38,6 +40,24 @@ class FixtureLauncher {
         result.Append('\\', slashes * 2); result.Append('"');
         return result.ToString();
     }
+    // Pipes can already be closed by the time the editor observes an exit.
+    // Keep only failure metadata, never arguments, stdin, paths or exception messages.
+    static void RecordFailure(string[] args, string phase, Exception error, int exitCode) {
+        string directory = Environment.GetEnvironmentVariable("GONGGONG_SIMULATION_DIAGNOSTICS");
+        if (String.IsNullOrEmpty(directory)) return;
+        var native = error as Win32Exception;
+        string action = args.Length > 1 && args[1] == "issue-agent" ? "issue-agent" : "other";
+        string json = "{\"runtime\":\"" + NAME + "\",\"action\":\"" + action
+            + "\",\"phase\":\"" + phase + "\",\"exception_type\":"
+            + (error == null ? "null" : "\"" + error.GetType().FullName + "\"")
+            + ",\"win32_error\":" + (native == null ? "null" : native.NativeErrorCode.ToString(CultureInfo.InvariantCulture))
+            + ",\"child_exit\":" + (error == null ? exitCode.ToString(CultureInfo.InvariantCulture) : "null") + "}";
+        try {
+            string path = Path.Combine(directory, Guid.NewGuid().ToString("N"));
+            File.WriteAllText(path + ".tmp", json);
+            File.Move(path + ".tmp", path + ".json");
+        } catch (IOException) {} catch (UnauthorizedAccessException) {}
+    }
     static int Main(string[] args) {
         string marker = Environment.GetEnvironmentVariable("GONGGONG_SIMULATION_PAUSE");
         string here = AppDomain.CurrentDomain.BaseDirectory.TrimEnd('\\', '/');
@@ -49,7 +69,20 @@ class FixtureLauncher {
         foreach (string arg in args) { if (quoted.Length > 0) quoted.Append(' '); quoted.Append(Quote(arg)); }
         var info = new ProcessStartInfo(TARGET, quoted.ToString());
         info.UseShellExecute = false;
-        using (var child = Process.Start(info)) { child.WaitForExit(); return child.ExitCode; }
+        string phase = "start";
+        try {
+            using (var child = Process.Start(info)) {
+                phase = "wait";
+                child.WaitForExit();
+                phase = "exit_code";
+                int code = child.ExitCode;
+                if (code != 0) RecordFailure(args, "child_exit", null, code);
+                return code;
+            }
+        } catch (Exception error) {
+            RecordFailure(args, phase, error, 0);
+            throw;
+        }
     }
 }
 """
@@ -321,6 +354,8 @@ def main():
     }
     with tempfile.TemporaryDirectory(prefix="gonggong-windows-simulation-") as temporary:
         folder = Path(temporary).resolve()
+        diagnostics_dir = folder / "launcher-diagnostics"
+        diagnostics_dir.mkdir()
         paths = [folder, ROOT, args.godot.resolve(), *tools.values(), Path.home(), Path(tempfile.gettempdir())]
         try:
             baseline_result = run(
@@ -366,9 +401,10 @@ def main():
                 ),
             ]:
                 output = args.out / f"{name}.json"
-                result = run(
-                    [sys.executable, *arguments, "--out", str(output.resolve())], env=clean_env(), timeout=timeout
-                )
+                env = clean_env()
+                if name == "requirements-intake":
+                    env["GONGGONG_SIMULATION_DIAGNOSTICS"] = str(diagnostics_dir)
+                result = run([sys.executable, *arguments, "--out", str(output.resolve())], env=env, timeout=timeout)
                 (args.out / f"{name}.process.log").write_text(
                     redact((result.stdout + result.stderr).decode(errors="replace"), paths), encoding="utf-8"
                 )
@@ -390,6 +426,7 @@ def main():
             report["error"] = f"{type(error).__name__}: {error}"
             raise
         finally:
+            report["intake_launcher_failures"] = [read_json(path) for path in sorted(diagnostics_dir.glob("*.json"))]
             # Preserve actual case output even if an assertion interrupts the run.
             diagnostics = {
                 str(path.relative_to(folder)): path.read_text(encoding="utf-8-sig", errors="replace")
