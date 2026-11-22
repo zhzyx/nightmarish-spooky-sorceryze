@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-bf05e02e34df80318f40c84b3433f0f4eabbdeea29722318e2000548aae199c0",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1739",
+  "occurred_at": "2026-11-22T17:53:21.3145255Z",
+  "evidence_refs": [
+    "dispatch-6bb9d27c0cd441a0a9e146c16172d8ef",
+    "learn-d154a892610d4d137c49d8e6e77987bf84d5687371d3d7ee05302ef88c6f6d51"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 59,
+    "previous": "f049d3e75afe833d5f98fc3a43cbcdd34928ea437daf412b1620eaed42244ecd",
+    "action": "applied",
+    "details": {
+      "observed": "On Windows x86_64 the frozen executable read the graph UI and embedded board bundle from its two pinned sidecars. Full reinstall from archive and restoration of the older installation both reopened Script and the saved sidebar.",
+      "task": "Windows Q06: verify the F01 input tree and inventory, build a separate clean checkout, then pin the two desktop packages and compare on the installed executable."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-q06.json",
+        "sha256": "19179a62c0cd41c1df96c8aa6d93271d43367ac118332fd8e4256ad579ee5c58"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q06/dispatch-6bb9d27c0cd441a0a9e146c16172d8ef.json",
+      "sha256": "56c13bd752114a1f7a37d9bff8461d957f079ea1802f1ba5e62d78bb26bd52ca"
+    }
+  },
+  "sha256": "bf67de96968aaab7ed84bd2c944fb2a909ad2169d6556e385f51e92ba910dcab"
+}
