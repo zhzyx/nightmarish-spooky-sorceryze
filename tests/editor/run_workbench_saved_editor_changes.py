@@ -26,7 +26,7 @@ from run_workbench_document_reference import (
 )
 
 
-def exercise(root, binary):
+def exercise(root, binary, continuation=False):
     editor = copy_editor(binary, root / "engine")
     project = root / "project"
     project.mkdir()
@@ -49,11 +49,22 @@ def exercise(root, binary):
     )
     for src, dst in [("workbench_document_reference.gd", "base.gd"), ("workbench_saved_editor_changes.gd", "probe.gd")]:
         shutil.copyfile(Path(__file__).with_name(src), project / dst)
+    if continuation:
+        shutil.copyfile(project / "probe.gd", project / "changes.gd")
+        shutil.copyfile(Path(__file__).with_name("workbench_saved_continuation.gd"), project / "probe.gd")
     material_hash = hashlib.sha256(material.read_bytes()).hexdigest()
     store = Tianxuan(str(root / "store.db"))
     user = store.register("studio", "editor@example.invalid", secrets.token_urlsafe(24))
     actor = user["user_id"]
+    unchanged = "需要保留的背景。" * 5000
+    doc = store.create_doc(actor, "接续文档", unchanged + "\n\n原来第 2 段") if continuation else {}
+    second_actor = (
+        store.add_member(actor, "reviewer@example.invalid", secrets.token_urlsafe(24))["user_id"]
+        if continuation
+        else ""
+    )
     inputs = []
+    track_revisions = {}
 
     def receive(request):
         inputs.append(json.loads(json.loads(request.content)["messages"][-1]["content"]))
@@ -93,7 +104,27 @@ def exercise(root, binary):
                 TIANXUAN_TOKEN=store.issue_session(actor),
                 TIANXUAN_PROJECT="studio/game",
             )
+            if continuation:
+                env["EDIT_DOCUMENT"] = doc["id"]
             for phase in ["save", "reopen"]:
+                if continuation and phase == "reopen":
+                    # Another editor commits after the first user's draft already cites v2.
+                    with httpx.Client(
+                        base_url=env["TIANXUAN_API"],
+                        trust_env=False,
+                        headers={"Authorization": "Bearer " + store.issue_session(second_actor)},
+                    ) as client:
+                        update = client.patch(
+                            "/api/v1/docs/" + doc["id"],
+                            params={"project": "studio/game"},
+                            json={
+                                "expected_version": 2,
+                                "body_md": unchanged + "\n\n协作者保存的第 2 段",
+                                "call_id": "later-human-edit",
+                            },
+                        )
+                        update.raise_for_status()
+                        assert update.json()["version"] == 3
                 result = subprocess.run(
                     [str(editor), "--headless", "--editor", "--path", str(project), "--script", "res://probe.gd"],
                     cwd=root,
@@ -106,6 +137,9 @@ def exercise(root, binary):
                     .decode(errors="replace")
                     .replace(env["TIANXUAN_TOKEN"], "[redacted]")
                 )
+                for line in output.splitlines():
+                    if line.startswith("TRACK_REVISIONS="):
+                        track_revisions = json.loads(line.partition("=")[2])
                 if result.returncode or "SCRIPT ERROR" in output or f"SAVE_RESULT={phase}" not in output:
                     raise AssertionError(f"{phase}: received {[v['content'][:80] for v in inputs]}\n{output[-5500:]}")
         finally:
@@ -113,6 +147,47 @@ def exercise(root, binary):
             worker.join(timeout=10)
             gateway.close()
             store.db.close()
+    if continuation:
+        assert len(inputs) == 3
+        final = inputs[-1]
+        changes = json.loads(final["content"].split("[已引用对象的保存修订]\n", 1)[1])
+        by_id = {obj["object_id"]: obj for obj in changes}
+        script, node, animation = [
+            by_id[k] for k in ["res://actor.gd#L3:1-L3:11", "res://motion.tscn#Actor", "res://motion.tscn#Player"]
+        ]
+        assert script["starting_state"]["text"] == "\treturn 11" and script["latest_state"]["text"] == "\treturn 29"
+        assert (
+            node["starting_state"]["position"] == "(5.0, 0.0)" and node["latest_state"]["position"] == "(37.5, 0.0)"
+        ), node
+        assert all(item["actor"] == actor and item["start_revision"] != item["revision"] for item in changes)
+        assert final["context_snapshot"]["continuation"]["preserve"] == "保留三个现场的人工修改"
+        document = final["document_edits"][0]
+        assert (document["start_revision"], document["revision"], document["author"]) == (1, 3, second_actor)
+        assert document["changes"] == [
+            {
+                "before": [{"paragraph": 2, "text": "原来第 2 段"}],
+                "after": [{"paragraph": 2, "text": "协作者保存的第 2 段"}],
+            }
+        ]
+        assert len(json.dumps(document, ensure_ascii=False)) < 1000
+        assert any(
+            ref["kind"] == "document_edit" and ref["revision"] == 2 for ref in final["context_snapshot"]["references"]
+        )
+        assert any(
+            ref["kind"] == "document" and ref["revision"] == 1 for ref in inputs[0]["context_snapshot"]["references"]
+        )
+        (delta,) = animation["animation_changes"]
+        (key,) = delta["keys"]
+        assert delta["animation"] == "Walk" and delta["path"] == "Actor:position:x" and key["time"] == 0.5
+        assert key["before"]["value"] == 12 and key["after"]["value"] == 18
+        y = next(k for k, track in track_revisions["before"].items() if track["path"] == "Actor:position:y")
+        assert track_revisions["before"][y] == track_revisions["after"][y]
+        return {
+            "state": "passed",
+            "editor_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
+            "received": final,
+            "track_revisions": track_revisions,
+        }
     assert len(inputs) == 6
     assert inputs[1]["context_snapshot"]["references"] == []
 
@@ -146,8 +221,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--continuation", action="store_true")
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="workbench-saved-editor-") as directory:
-        report = exercise(Path(directory), args.godot.resolve())
+        report = exercise(Path(directory), args.godot.resolve(), args.continuation)
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
     print("Passed native saved editor changes and reopened task input")

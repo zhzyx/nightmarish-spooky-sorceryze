@@ -13,6 +13,8 @@ var content: VBoxContainer
 var issues: OptionButton
 var page: Label
 var history: TextEdit
+var continue_work := CheckBox.new()
+var preserve_note := LineEdit.new()
 var composer: TextEdit
 var document_links := MenuButton.new()
 var comment_action := Button.new()
@@ -94,6 +96,14 @@ func _ready() -> void:
 	document_links.hide()
 	document_links.get_popup().id_pressed.connect(_open_sent_reference)
 	content.add_child(document_links)
+	continue_work.text = "继续当前工作"
+	continue_work.toggled.connect(func(active: bool): preserve_note.visible = active; _save_draft())
+	content.add_child(continue_work)
+	preserve_note.placeholder_text = "本轮须保留的修改或意见"
+	preserve_note.max_length = 1000
+	preserve_note.text_changed.connect(func(_text): _save_draft())
+	preserve_note.hide()
+	content.add_child(preserve_note)
 	composer.name = "ModuleChatInput"
 	composer.custom_minimum_size.y = 70 * EditorInterface.get_editor_scale()
 	composer.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
@@ -243,6 +253,8 @@ func _lock(value: bool) -> void:
 	picker.disabled = value
 	issues.disabled = value
 	composer.editable = not value
+	continue_work.disabled = value
+	preserve_note.editable = not value
 	send.disabled = value
 	comment_action.disabled = value
 	design_action.disabled = value
@@ -373,6 +385,8 @@ func _save_draft() -> bool:
 		if str(record.text).contains(locator) and redact_reference(locator) == locator:
 			assets[locator] = staged_assets[key][locator]
 	record["assets"] = assets
+	record["continue_work"] = continue_work.button_pressed
+	record["preserve_note"] = redact_reference(preserve_note.text)
 	if saved_changes:
 		record["saved_editor_targets"] = saved_changes.targets
 	if not managed_identity:
@@ -396,6 +410,9 @@ func _restore_draft() -> void:
 	staged_assets[key] = record.get("assets", {})
 	if saved_changes:
 		saved_changes.restore(record, str(location.get("conversation_id", "")))
+	continue_work.set_pressed_no_signal(bool(record.get("continue_work", false)))
+	preserve_note.visible = continue_work.button_pressed
+	preserve_note.text = str(record.get("preserve_note", ""))
 	var pending: Dictionary = record.get("pending", {})
 	composer.text = record.get("text", "")
 	composer.clear_undo_history()
@@ -405,7 +422,7 @@ func _restore_draft() -> void:
 		# A committed reply may arrive after the editor closed. Preserve any later
 		# edits to either the text or the reference list.
 		if saved_changes and pending.has("selected_targets"):
-			saved_changes.accept(str(conversation.id), pending.selected_targets, pending.get("delivered_targets", []))
+			saved_changes.accept(str(conversation.id), pending.selected_targets, pending.get("delivered_targets", []), pending.get("target_starts", {}))
 		if pending.get("draft_hash") == _saved_draft_hash(record):
 			composer.clear()
 			composer.clear_undo_history()
@@ -576,6 +593,8 @@ func _reset_reference_scope() -> void:
 
 
 func redact_reference(text: String) -> String:
+	if has_meta("redact_workbench_text"):
+		text = get_meta("redact_workbench_text").call(text)
 	if managed_identity and is_instance_valid(session) and session.has_method("redact_credentials"):
 		return session.redact_credentials(text)
 	var token := OS.get_environment("TIANXUAN_TOKEN")
@@ -809,6 +828,7 @@ func _send() -> void:
 	if frozen.is_empty():
 		_notice("引用已失效，请移除或重新选择后发送。")
 		return
+	var target_starts: Dictionary = saved_changes.capture_starts(frozen.references) if saved_changes else {}
 	var body: String = frozen.content
 	if body.length() > 8000:
 		_notice("正文与引用合计超过 8000 字符，请缩短后发送。")
@@ -828,6 +848,8 @@ func _send() -> void:
 		_notice("每条消息最多可引用 16 个对象。")
 		return
 	var snapshot := {"project": project, "module_id": module_id, "issue_id": location.issue_id, "references": references}
+	if continue_work.button_pressed:
+		snapshot.continuation = {"preserve":redact_reference(preserve_note.text)}
 	var generation := identity_generation
 	_lock(true)
 	_notice("")
@@ -858,7 +880,7 @@ func _send() -> void:
 				_lock(false)
 				return
 			pending = {"id": _uuid(), "fingerprint": fingerprint, "expected_version": conversation.version,
-				"draft_hash": _saved_draft_hash(_read_draft(key)), "selected_targets": frozen.references, "delivered_targets":[]}
+				"draft_hash": _saved_draft_hash(_read_draft(key)), "selected_targets": frozen.references, "delivered_targets":[], "target_starts":target_starts}
 			for change: Dictionary in changes:
 				pending.delivered_targets.append({"object_id":change.object_id,"revision":change.revision})
 		pending_turn[key] = pending
@@ -873,7 +895,7 @@ func _send() -> void:
 		if result.get("id") == location.conversation_id:
 			conversation = result
 			if saved_changes:
-				saved_changes.accept(str(conversation.id), frozen.references, changes)
+				saved_changes.accept(str(conversation.id), frozen.references, changes, pending.get("target_starts", {}))
 			staged_assets.erase(key)
 			pending_turn.erase(key)
 			_reset_reference_scope()
