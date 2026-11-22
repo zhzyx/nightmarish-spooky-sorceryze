@@ -107,7 +107,15 @@ func _run():
 			if not _check(approval.visible, "Missing rejection dialog"): return
 			approval.hide()
 			approval.canceled.emit()
-		if action == "change": summary.text = "User correction"
+		if action == "change":
+			summary.text = "User correction"
+			summary.text_changed.emit(summary.text)
+		if action == "validate":
+			page.open()
+			var tabs := page.get_parent() as TabContainer
+			tabs.current_tab = tabs.get_tab_idx_from_control(page)
+			await process_frame
+			page.find_child("ValidateSummary", true, false).pressed.emit()
 		if action == "unregister": page.remove_meta("workbench_fields")
 		if action == "remove": page.close()
 		if action == "restage":
@@ -115,6 +123,9 @@ func _run():
 			if not await send_field(summary, "Brief/Summary"): return
 			consultation.button_pressed = false
 		var result := {"summary": summary.text, "milestone": milestone.text, "neighbor": private_note.text, "dialog": approval.visible, "saved": EditorInterface.get_editor_settings().get_project_metadata("project_brief", "summary", "First playable")}
+		if action == "validate":
+			result["validation"] = summary.get_meta("workbench_validation", {})
+			result["visible_result"] = page.find_child("SummaryValidation", true, false).text
 		if approval.visible:
 			result["preview"] = JSON.parse_string((approval.find_children("*", "TextEdit", true, false)[0] as TextEdit).text)
 		FileAccess.open("res://.godot/u16-reply-%d" % sequence, FileAccess.WRITE).store_string(JSON.stringify(result))

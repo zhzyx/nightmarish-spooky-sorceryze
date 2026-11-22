@@ -35,6 +35,7 @@
 #include "core/object/class_db.h"
 #include "editor/docks/dock_tab_container.h"
 #include "editor/docks/editor_dock_manager.h"
+#include "editor/docks/workbench/AIWorkbenchPageField.h"
 
 void EditorDock::_set_default_slot_bind(DockSlot p_slot) {
 	ERR_FAIL_COND(p_slot < DOCK_SLOT_NONE || p_slot >= DOCK_SLOT_MAX);
@@ -68,6 +69,7 @@ void EditorDock::_notification(int p_what) {
 }
 
 void EditorDock::_bind_methods() {
+	ClassDB::bind_static_method("EditorDock", D_METHOD("validate_workbench_field", "field"), &AIWorkbenchPageField::Validate);
 	ClassDB::bind_method(D_METHOD("open"), &EditorDock::open);
 	ClassDB::bind_method(D_METHOD("make_visible"), &EditorDock::make_visible);
 	ClassDB::bind_method(D_METHOD("close"), &EditorDock::close);
