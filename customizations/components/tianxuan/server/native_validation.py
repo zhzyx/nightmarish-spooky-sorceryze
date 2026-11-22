@@ -7,6 +7,28 @@ from native_api import PREFIX, _call, _identity
 from native_store import NativeStoreError
 
 
+def current_inputs(store, db, tenant, inputs):
+    """Compare the registered read set with a single snapshot of the saved heads."""
+    for module, bound in inputs.items():
+        head = db.execute("SELECT revision FROM native_heads WHERE tenant=? AND module=?", (tenant, module)).fetchone()
+        if head is None or ("revision" in bound and bound["revision"] != head["revision"]):
+            return False
+        state = store._revision(db, tenant, module, head["revision"])
+        if any(state["objects"].get(path) != digest for path, digest in bound["objects"].items()):
+            return False
+        if state["dependencies"] != bound["dependencies"]:
+            return False
+        for dependency, pin in bound["dependencies"].items():
+            if (
+                db.execute(
+                    "SELECT 1 FROM native_heads WHERE tenant=? AND module=? AND revision=?", (tenant, dependency, pin)
+                ).fetchone()
+                is None
+            ):
+                return False
+    return True
+
+
 def validation_for_object(workflow, actor, key, module, path):
     # edit_baseline enforces historical task visibility and writable object scope.
     latest = workflow.edit_baseline(actor, key, module, path)["latest"]
@@ -23,6 +45,7 @@ def validation_for_object(workflow, actor, key, module, path):
         if not candidate or not revision:
             continue
         with runner.store._connection() as db:
+            db.execute("BEGIN")
             saved = db.execute(
                 "SELECT payload FROM native_check_runs WHERE tenant=? AND run_key=?",
                 (row["tenant"], key + "-" + tool),
@@ -42,6 +65,7 @@ def validation_for_object(workflow, actor, key, module, path):
                 # A completed check on another input is not a required object check.
                 del outcomes[tool]
                 continue
+            inputs_match = current_inputs(runner.store, db, row["tenant"], evidence["binding"]["inputs"])
             revoked = (
                 db.execute(
                     "SELECT 1 FROM native_check_revocations WHERE tenant=? AND evidence_id=?",
@@ -59,7 +83,7 @@ def validation_for_object(workflow, actor, key, module, path):
             "revoked": revoked,
         }
         receipts.append(receipt)
-        if latest == {"revision": revision, "sha256": objects[path]} and not revoked:
+        if inputs_match and latest["sha256"] == objects[path] and not revoked:
             if evidence["outcome"] == "passed":
                 hit = runner.cache.lookup(row["tenant"], candidate, tool, **run["context"])
                 if hit is None or hit["evidence"]["id"] != evidence["id"]:
