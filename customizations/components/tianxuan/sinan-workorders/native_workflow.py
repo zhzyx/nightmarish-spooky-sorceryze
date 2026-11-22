@@ -16,6 +16,10 @@ from native_store import NativeStoreError, _digest, _json
 from tianxuan_core import PermissionDenied
 
 
+class StageAuthorizationChanged(NativeStoreError):
+    """A design task no longer has the stage authority used for dispatch."""
+
+
 def check_passed(runner, tenant, candidate, check, fact):
     """A cached result has no process outcome; validate its actual evidence."""
     if fact.get("outcome") == "passed":
@@ -120,7 +124,51 @@ class NativeWorkflow:
         source = self.domain.issue_snapshot(actor, issue, write=action != "read")
         if self.authorize(actor, issue, action) is not True:
             raise PermissionDenied("Native workflow authority denied")
+        if action in {"authorize", "execute", "check"}:
+            authority = self._stage_authority(actor, issue, source["revision"])
+            if authority is not None:
+                definition = {**source["definition"], "stage_authorization": authority}
+                return {"definition": definition, "revision": _digest(_json(definition).encode())}
         return source
+
+    def _stage_authority(self, actor, issue, issue_revision):
+        # Membership is independent of source visibility. A private design or a
+        # missing confirmation must never take the ordinary issue path.
+        with self.domain._connection_lock:
+            record = self.domain.db.execute(
+                "SELECT i.project,i.number FROM design_task_sources s JOIN issues i ON i.id=s.issue_id "
+                "WHERE s.issue_id=?",
+                (issue,),
+            ).fetchone()
+            if record is None:
+                return None
+            detail = self.domain.read_issue_detail(actor, record["project"], record["number"])
+        source = detail["design_source"]
+        if not source:
+            raise PermissionDenied("Signed task source unavailable")
+        target = detail["task_target"]
+        confirmation = detail.get("task_confirmation")
+        if not target or target["status"] != "defined" or not confirmation or confirmation["status"] != "confirmed":
+            raise StageAuthorizationChanged("Current task stage confirmation required")
+        responsible = detail["assignee"]["id"] if detail["assignee"] else detail["created_by"]
+        binding = {
+            "issue_id": issue,
+            "issue_revision": issue_revision,
+            "document_id": source["document_id"],
+            "version": source["version"],
+            "target_revision": target["revision"],
+            "stage": target["stage"],
+            "responsible_user": responsible,
+            "confirmed_by": responsible,
+        }
+        if (
+            any(confirmation.get(name) != value for name, value in binding.items())
+            or any(target[name] != binding[name] for name in ("issue_id", "document_id", "version"))
+            or not target["criteria"]
+            or not confirmation["revision"]
+        ):
+            raise StageAuthorizationChanged("Task stage confirmation changed")
+        return {**binding, "confirmation_revision": confirmation["revision"], "criteria": target["criteria"]}
 
     def _row(self, db, key):
         row = db.execute("SELECT * FROM native_tasks WHERE id=?", (key,)).fetchone()
@@ -141,6 +189,9 @@ class NativeWorkflow:
         # reassociated. Current issue visibility cannot authorize that history.
         for requirement in task["source"]["definition"]["requirements"]:
             self.domain.get_doc_shared(actor, requirement["id"])
+        authority = task["source"]["definition"].get("stage_authorization")
+        if authority:
+            self.domain.get_doc_shared(actor, authority["document_id"])
         self._inputs_allowed(actor, task["selected"])
 
     def authorize_task(
@@ -158,8 +209,11 @@ class NativeWorkflow:
         capabilities=None,
         expected=None,
         delivery_mode="standalone",
+        stage=None,
     ):
         source = self._allow(actor, issue, "authorize")
+        if stage != source["definition"].get("stage_authorization", {}).get("stage"):
+            raise NativeStoreError("Installed plan stage must match the confirmed target")
         if delivery_mode not in {"standalone", "contribution"}:
             raise NativeStoreError("Unsupported delivery mode")
         if not mandate or not checks or profile not in self.worker.profiles:
@@ -221,6 +275,15 @@ class NativeWorkflow:
                 return key  # Stable replay never reactivates an older definition.
             if (old["task"] if old else None) != expected:
                 raise NativeStoreError("Managed definition already bound; explicit revision required (active changed)")
+            stage_authority = source["definition"].get("stage_authorization")
+            if expected and stage_authority:
+                previous_task = json.loads(self._row(db, expected)["task"])
+                if previous_task["source"]["definition"].get("stage_authorization") == stage_authority:
+                    if {k: v for k, v in previous_task.items() if k != "previous"} == {
+                        k: v for k, v in task.items() if k != "previous"
+                    }:
+                        return expected
+                    raise NativeStoreError("A different installed contract requires a new stage confirmation")
             if expected is not None and not old:
                 raise NativeStoreError("No active definition to replace")
             if expected is None and self.domain.get_issue(issue)["status"] in {"done", "cancelled"}:
@@ -234,6 +297,12 @@ class NativeWorkflow:
                 (issue, key),
             )
             if expected is not None:
+                if stage_authority and not callable(getattr(self.worker, "reserve", None)):
+                    # A local ticket that never entered running has no physical
+                    # owner. Its superseding revision must be able to reserve.
+                    db.execute(
+                        "UPDATE native_tasks SET state='superseded' WHERE id=? AND state='reserved'", (expected,)
+                    )
                 # Legacy publishers do not know the active map and can publish
                 # without writing native_tasks. Retire settled unaccepted work
                 # so their existing produced-state guard also fails closed.
@@ -262,7 +331,12 @@ class NativeWorkflow:
             raise NativeStoreError("Task definition superseded")
         task = json.loads(row["task"])
         self._inputs_allowed(actor, task["selected"])
-        if self._allow(actor, row["issue"], "execute") != task["source"]:
+        source = self._allow(actor, row["issue"], "execute")
+        if source != task["source"]:
+            if source["definition"].get("stage_authorization") != task["source"]["definition"].get(
+                "stage_authorization"
+            ):
+                raise StageAuthorizationChanged("Task stage confirmation changed")
             raise NativeStoreError("Task definition changed")
         if self.domain.get_issue(row["issue"])["status"] in {"cancelled", "blocked"}:
             raise NativeStoreError("Issue execution is stopped")
@@ -444,14 +518,27 @@ class NativeWorkflow:
 
     def _execute_owned(self, actor, key):
         self._dependencies_current(actor, key)
+        stale = None
         with self._transaction() as db:
             row = self._row(db, key)
-            task = self._valid(actor, row)
+            try:
+                task = self._valid(actor, row)
+            except StageAuthorizationChanged as error:
+                # A local reservation precedes all process intent. Remote adapters
+                # can own a physical reservation and retain their own settlement.
+                if row["state"] != "reserved" or callable(getattr(self.worker, "reserve", None)):
+                    raise
+                db.execute("UPDATE native_tasks SET state='stopped' WHERE id=?", (key,))
+                self.domain._event(row["tenant"], "native.stage-denied", actor, row["issue"], {"task": key})
+                stale = error
             if row["state"] != "reserved":
                 return row  # Unknown/running never retried.
-            db.execute("UPDATE native_tasks SET state='running' WHERE id=?", (key,))
-            db.execute("UPDATE issues SET status='in-progress' WHERE id=?", (row["issue"],))
-            self.domain._event(task["tenant"], "native.started", actor, row["issue"], {"task": key})
+            if stale is None:
+                db.execute("UPDATE native_tasks SET state='running' WHERE id=?", (key,))
+                db.execute("UPDATE issues SET status='in-progress' WHERE id=?", (row["issue"],))
+                self.domain._event(task["tenant"], "native.started", actor, row["issue"], {"task": key})
+        if stale is not None:
+            raise stale
         try:
             terminal = self.worker.run(task, key)
             if terminal is None:

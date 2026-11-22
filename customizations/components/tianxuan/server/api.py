@@ -92,6 +92,7 @@ from schemas import (
     RequirementCreateRequest,
     RoleUpdateRequest,
     SelectedGitCommitRequest,
+    TaskConfirmationRequest,
     TaskTargetRequest,
     TicketsRequest,
     ToolCallRequest,
@@ -804,6 +805,12 @@ def create_app(
         issue_id: str, payload: TaskTargetRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
     ) -> dict[str, Any]:
         return cast(dict[str, Any], store.set_task_target(actor, issue_id, project, **payload.model_dump()))
+
+    @app.put("/api/v1/issues/{issue_id}/task-confirmation")
+    def set_task_confirmation(
+        issue_id: str, payload: TaskConfirmationRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(dict[str, Any], store.set_task_confirmation(actor, issue_id, project, **payload.model_dump()))
 
     @app.put("/api/v1/issues/{issue_id}/classification")
     def set_issue_classification(
