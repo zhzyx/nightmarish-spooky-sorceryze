@@ -66,7 +66,15 @@ func run(p_host):
 			check(run_bars[0].get_global_rect().end.x <= root.size.x + 1, 'run controls fit viewport at ' + str(width))
 		chooser.about_to_popup.emit()
 		var popup: PopupMenu = chooser.get_popup()
-		check(popup.item_count == tabs.get_tab_count(), 'all workspaces listed at ' + str(width))
+		var listed: Array[int] = []
+		var expected: Array[int] = []
+		for index in tabs.get_tab_count():
+			var workspace: EditorDock = tabs.get_tab_control(index)
+			if not tabs.is_tab_hidden(index) or workspace.layout_key == "DaqianMainScreen":
+				expected.append(index)
+		for index in popup.item_count:
+			listed.append(popup.get_item_id(index))
+		check(listed == expected, 'workspace menu preserves navigable tabs and order at ' + str(width))
 		for item in range(popup.item_count):
 			var target = popup.get_item_id(item)
 			popup.id_pressed.emit(target)
