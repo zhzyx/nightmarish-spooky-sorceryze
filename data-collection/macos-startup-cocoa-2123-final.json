@@ -1,0 +1,460 @@
+{
+  "request_id": "macos-startup-validation-sidecars",
+  "issue_number": 2123,
+  "related_issue": 2144,
+  "scope": "Automatic startup validation in a normally launched Cocoa editor, its isolated native resource consumers, receipt cache and rejection behavior.",
+  "diagnosis": "The old harness exits after 600 frames even when the asynchronous child has not reached its terminal receipt. The first macOS job observed two banners and exit zero without either receipt or marker. The precise reason the child was slow in that job was not captured. Delaying only the real cold child reproduces exactly that outcome. Waiting for the outcome and its cache write before requesting native closure passes under the same delay.",
+  "product_impact": "The repair changes only the acceptance harness. The retained signed executable, two installed resources, production coordinator and project acceptance assertions are unchanged.",
+  "cases": {
+    "platform": "macOS-26.7.2-arm64-arm-64bit-Mach-O",
+    "display": "macos",
+    "state": "passed",
+    "cases": {
+      "cold": {
+        "exit_code": 0,
+        "seconds": 70.334,
+        "new_receipts": [
+          "godot-silent-df9eac690c470d55852e96612b2e9f4f5d198f2258c25832efb7ebc7a7bbd3d3.ok"
+        ],
+        "observations": [
+          "TIANSHU_UI_LOADED 3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+          "TIANSHU_BOARD_LOADED 22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+          "ERROR: 6 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.",
+          "ERROR: 222 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.",
+          "ERROR: 3 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'PN13RichTextLabel4ItemE' were leaked at exit.",
+          "GongGong macOS startup validation passed"
+        ]
+      },
+      "warm": {
+        "exit_code": 0,
+        "seconds": 9.765,
+        "new_receipts": [],
+        "observations": [
+          "GongGong macOS startup validation reused"
+        ]
+      },
+      "missing_ui": {
+        "exit_code": 0,
+        "seconds": 8.723,
+        "new_receipts": [],
+        "observations": [
+          "ERROR: Tianshu UI package missing: /private/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/startup-validation-2_2aye0q/Candidate.app/Contents/Resources/tianshu-ui.json",
+          "WARNING: GongGong macOS startup validation: Tianshu ui package was not loaded"
+        ]
+      },
+      "corrupt_ui": {
+        "exit_code": 0,
+        "seconds": 9.063,
+        "new_receipts": [],
+        "observations": [
+          "ERROR: Tianshu UI payload checksum mismatch.",
+          "WARNING: GongGong macOS startup validation: Tianshu ui package was not loaded"
+        ]
+      },
+      "changed_ui": {
+        "exit_code": 0,
+        "seconds": 18.86,
+        "new_receipts": [
+          "godot-silent-62cf865966fae7cadc6626c679bfbb6e564746bf4a0d34237382f7ea40f72ab8.ok"
+        ],
+        "observations": [
+          "TIANSHU_UI_LOADED bfc32a28c36b16dfe6331b36fb296484edd930fb550848b937656b014cc3cc10",
+          "TIANSHU_BOARD_LOADED 22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+          "ERROR: 6 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.",
+          "ERROR: 222 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.",
+          "ERROR: 3 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'PN13RichTextLabel4ItemE' were leaked at exit.",
+          "GongGong macOS startup validation passed"
+        ]
+      },
+      "restored_ui": {
+        "exit_code": 0,
+        "seconds": 6.965,
+        "new_receipts": [],
+        "observations": [
+          "GongGong macOS startup validation reused"
+        ]
+      },
+      "missing_board": {
+        "exit_code": 0,
+        "seconds": 8.025,
+        "new_receipts": [],
+        "observations": [
+          "ERROR: Tianshu board package missing: /private/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/startup-validation-2_2aye0q/Candidate.app/Contents/Resources/tianshu-board.json",
+          "WARNING: GongGong macOS startup validation: Tianshu board package was not loaded"
+        ]
+      },
+      "corrupt_board": {
+        "exit_code": 0,
+        "seconds": 7.42,
+        "new_receipts": [],
+        "observations": [
+          "ERROR: Tianshu board payload checksum mismatch.",
+          "WARNING: GongGong macOS startup validation: Tianshu board package was not loaded"
+        ]
+      },
+      "changed_board": {
+        "exit_code": 0,
+        "seconds": 16.689,
+        "new_receipts": [
+          "godot-silent-50d8566368741230e7794f6780dfa35bf6611f96347397eb2bd7bd72ba995731.ok"
+        ],
+        "observations": [
+          "TIANSHU_UI_LOADED 3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+          "TIANSHU_BOARD_LOADED de424c14aa409ad80ab87d35eeb469d683e9594c442b3ba4e90098155111e8a9",
+          "ERROR: 6 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.",
+          "ERROR: 222 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.",
+          "ERROR: 31 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.",
+          "ERROR: 3 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.",
+          "ERROR: 1 RID allocations of type 'PN13RichTextLabel4ItemE' were leaked at exit.",
+          "GongGong macOS startup validation passed"
+        ]
+      },
+      "restored_board": {
+        "exit_code": 0,
+        "seconds": 6.619,
+        "new_receipts": [],
+        "observations": [
+          "GongGong macOS startup validation reused"
+        ]
+      },
+      "partial_child_receipts": {
+        "exit_code": 0,
+        "observations": [
+          "isolated Tianshu ui package did not match the parent editor",
+          "isolated Tianshu board package did not match the parent editor"
+        ]
+      }
+    },
+    "editor_sha256": "556482d839e8c268734d408a4b9d0639f7147adfede0049e76b6bdbb814bb524",
+    "manifest_sha256": "78e468619070021669f0d9c700be800ee0215d0fcd1e11d69ceb7bf69ff3043e",
+    "installed_packages": {
+      "ui": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "board": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b"
+    }
+  },
+  "run_input_mapping": {
+    "original_product_commit": "6ebc11ab0271e993646860f05e39d19a2ec1c9b6",
+    "original_binary_artifact_id": 14771815768,
+    "original_binary_zip_sha256": "ed0b171ac8b46a607621ebff3eab1ee4ba33214d5fae976d99106015731ffd17",
+    "frozen_manifest_blob_sha256": "78e468619070021669f0d9c700be800ee0215d0fcd1e11d69ceb7bf69ff3043e",
+    "original_probe_sha256": "c6d44558f56612fb528f3888744d3b74e0414ca867ab96e6e4a5600611ebb104",
+    "fixed_probe_commit": "a13e754181a516bac58206654f1bf08a6ab521cd",
+    "fixed_probe_sha256": "b218fb6287509c0689831a1ea163e1898ea2fe038fbff94e74cf2414434b8649",
+    "stress_driver_sha256": "898f33c42c834fafda53e3637603ae28d7b9fb6d90ee7ff3ac1ac27801f9e7f5",
+    "production_and_child_test_sources": {
+      "editor/docks/daqian_dock.cpp": "c2350e18364b4d127403e2982b26ad8ce102a6332efc8637bb1fd9429db3595f",
+      "customizations/components/godot-host/macos_validation.gd": "f5ae4734612d63ce17d09e5680580629c4cfba41fab1309e0c8480d59d9c2068",
+      "customizations/components/godot-host/silent_validation.gd": "4628e8c0ff07d4b611ba6f4ada1c09aa130356898495d53ab294b83aa2c81167",
+      "tests/editor/daqian_ai_entry.gd": "9ad4014eaefcb5000a66c74db5a13257cd2be37e78c2ef531d4b5ca26bfcfcc7",
+      "tests/editor/macos_startup_validation.gd": "479a9528ec9e0ca6c39c17094ee33475f947bd85b50d00c5f0bea3cac5d22ec5"
+    }
+  },
+  "runs": {
+    "45062919388": {
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45062919388",
+      "conclusion": "failure",
+      "head": "6ebc11ab0271e993646860f05e39d19a2ec1c9b6",
+      "jobs": [
+        {
+          "id": 137332622037,
+          "name": "Editor (target=editor)",
+          "conclusion": "failure"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "registered-worker-editor",
+          "id": 14771815768,
+          "digest": "sha256:ed0b171ac8b46a607621ebff3eab1ee4ba33214d5fae976d99106015731ffd17"
+        },
+        {
+          "name": "q05-native-cocoa",
+          "id": 14771601625,
+          "digest": "sha256:6bbe873c6bd2c54668f36a1461ba070afbf0646b3c63152d98bdb999b4a9e4d9"
+        }
+      ]
+    },
+    "45067974625": {
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45067974625",
+      "conclusion": "success",
+      "head": "55364be7120e5c85e96a6ec1966136fa450aecf3",
+      "jobs": [
+        {
+          "id": 137348306907,
+          "name": "validate",
+          "conclusion": "success"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "cocoa-startup-2123",
+          "id": 14772526248,
+          "digest": "sha256:fd66c6965a2e793b13da523ddef2198654654c0cc5b637dd871025c80d8a2888"
+        }
+      ]
+    },
+    "45068736505": {
+      "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45068736505",
+      "conclusion": "success",
+      "head": "a13e754181a516bac58206654f1bf08a6ab521cd",
+      "jobs": [
+        {
+          "id": 137350678192,
+          "name": "validate",
+          "conclusion": "success"
+        }
+      ],
+      "artifacts": [
+        {
+          "name": "cocoa-startup-2123",
+          "id": 14772134338,
+          "digest": "sha256:32d4d21abea559d6c856d8435a7bb531d6993a28d4a68b5c8cc78f0155f1b0c4"
+        }
+      ]
+    }
+  },
+  "old_results": {
+    "first": {
+      "cold": {
+        "exit_code": 0,
+        "new_receipts": [],
+        "observations": []
+      }
+    },
+    "idle_control": "All ten Cocoa cases passed in the timing-dependent old harness on the second, idle runner. The first comparison workflow omitted the independent partial-child GDScript in its sparse checkout, so the full old suite then failed with FileNotFoundError. The fixed suite included the fixture and passed. The scheduled comparison checks out both scripts.",
+    "scheduled": {
+      "platform": "macOS-26.7.2-arm64-arm-64bit-Mach-O",
+      "display": "macos",
+      "state": "failed",
+      "cases": {
+        "cold": {
+          "exit_code": 0,
+          "new_receipts": [],
+          "observations": []
+        }
+      },
+      "editor_sha256": "556482d839e8c268734d408a4b9d0639f7147adfede0049e76b6bdbb814bb524",
+      "manifest_sha256": "78e468619070021669f0d9c700be800ee0215d0fcd1e11d69ceb7bf69ff3043e",
+      "installed_packages": {
+        "ui": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "board": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b"
+      }
+    },
+    "observed_schedule": {
+      "editor_pid": 1798,
+      "child_pid": 2122,
+      "command": "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/gonggong-validation-2026112220515121863944/Godot --headless --editor --path /var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/gonggong-validation-2026112220515121863944/project --log-file /var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/gonggong-validation-2026112220515121863944/probe.log --script res://entry.gd",
+      "requested_delay_seconds": 38,
+      "elapsed_seconds": 10.413,
+      "alive_before_resume": false,
+      "harness_exit_code": 1
+    }
+  },
+  "repaired_results": {
+    "unforced": {
+      "platform": "macOS-26.7.2-arm64-arm-64bit-Mach-O",
+      "display": "macos",
+      "state": "passed",
+      "cases": {
+        "cold": {
+          "exit_code": 0,
+          "seconds": 12.375,
+          "new_receipts": [
+            "godot-silent-ef2db079c54743f80b544020d861a4eb752653edc38be1bc3c539e2c16705935.ok"
+          ],
+          "observations": [
+            "TIANSHU_UI_LOADED 3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+            "TIANSHU_BOARD_LOADED 22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+            "ERROR: 6 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.",
+            "ERROR: 31 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.",
+            "ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.",
+            "ERROR: 222 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.",
+            "ERROR: 31 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.",
+            "ERROR: 3 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.",
+            "ERROR: 1 RID allocations of type 'PN13RichTextLabel4ItemE' were leaked at exit.",
+            "GongGong macOS startup validation passed"
+          ]
+        },
+        "warm": {
+          "exit_code": 0,
+          "seconds": 5.382,
+          "new_receipts": [],
+          "observations": [
+            "GongGong macOS startup validation reused"
+          ]
+        },
+        "missing_ui": {
+          "exit_code": 0,
+          "seconds": 5.457,
+          "new_receipts": [],
+          "observations": [
+            "ERROR: Tianshu UI package missing: /private/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/startup-validation-q2zfdi37/Candidate.app/Contents/Resources/tianshu-ui.json",
+            "WARNING: GongGong macOS startup validation: Tianshu ui package was not loaded"
+          ]
+        },
+        "corrupt_ui": {
+          "exit_code": 0,
+          "seconds": 4.952,
+          "new_receipts": [],
+          "observations": [
+            "ERROR: Tianshu UI payload checksum mismatch.",
+            "WARNING: GongGong macOS startup validation: Tianshu ui package was not loaded"
+          ]
+        },
+        "changed_ui": {
+          "exit_code": 0,
+          "seconds": 10.875,
+          "new_receipts": [
+            "godot-silent-6b62f8496f490646c56520e5cc2ea889867542d6448e364051a48919d13cc09f.ok"
+          ],
+          "observations": [
+            "TIANSHU_UI_LOADED bfc32a28c36b16dfe6331b36fb296484edd930fb550848b937656b014cc3cc10",
+            "TIANSHU_BOARD_LOADED 22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+            "ERROR: 6 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.",
+            "ERROR: 31 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.",
+            "ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.",
+            "ERROR: 222 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.",
+            "ERROR: 31 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.",
+            "ERROR: 3 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.",
+            "ERROR: 1 RID allocations of type 'PN13RichTextLabel4ItemE' were leaked at exit.",
+            "GongGong macOS startup validation passed"
+          ]
+        },
+        "restored_ui": {
+          "exit_code": 0,
+          "seconds": 5.197,
+          "new_receipts": [],
+          "observations": [
+            "GongGong macOS startup validation reused"
+          ]
+        },
+        "missing_board": {
+          "exit_code": 0,
+          "seconds": 4.318,
+          "new_receipts": [],
+          "observations": [
+            "ERROR: Tianshu board package missing: /private/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/startup-validation-q2zfdi37/Candidate.app/Contents/Resources/tianshu-board.json",
+            "WARNING: GongGong macOS startup validation: Tianshu board package was not loaded"
+          ]
+        },
+        "corrupt_board": {
+          "exit_code": 0,
+          "seconds": 4.856,
+          "new_receipts": [],
+          "observations": [
+            "ERROR: Tianshu board payload checksum mismatch.",
+            "WARNING: GongGong macOS startup validation: Tianshu board package was not loaded"
+          ]
+        },
+        "changed_board": {
+          "exit_code": 0,
+          "seconds": 10.572,
+          "new_receipts": [
+            "godot-silent-69f712ed60c86a16dbb3f7a59d389f6c9c92ac626c64fbdfd6b2453557b2428c.ok"
+          ],
+          "observations": [
+            "TIANSHU_UI_LOADED 3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+            "TIANSHU_BOARD_LOADED de424c14aa409ad80ab87d35eeb469d683e9594c442b3ba4e90098155111e8a9",
+            "ERROR: 6 RID allocations of type 'N16RendererViewport8ViewportE' were leaked at exit.",
+            "ERROR: 31 RID allocations of type 'PN13RendererDummy14TextureStorage12DummyTextureE' were leaked at exit.",
+            "ERROR: 1 RID allocations of type 'N17RendererSceneCull8ScenarioE' were leaked at exit.",
+            "ERROR: 222 RID allocations of type 'PN18TextServerAdvanced22ShapedTextDataAdvancedE' were leaked at exit.",
+            "ERROR: 31 RID allocations of type 'PN18TextServerAdvanced12FontAdvancedE' were leaked at exit.",
+            "ERROR: 3 RID allocations of type 'PN18TextServerAdvanced27FontAdvancedLinkedVariationE' were leaked at exit.",
+            "ERROR: 1 RID allocations of type 'PN13RichTextLabel4ItemE' were leaked at exit.",
+            "GongGong macOS startup validation passed"
+          ]
+        },
+        "restored_board": {
+          "exit_code": 0,
+          "seconds": 4.437,
+          "new_receipts": [],
+          "observations": [
+            "GongGong macOS startup validation reused"
+          ]
+        },
+        "partial_child_receipts": {
+          "exit_code": 0,
+          "observations": [
+            "isolated Tianshu ui package did not match the parent editor",
+            "isolated Tianshu board package did not match the parent editor"
+          ]
+        }
+      },
+      "editor_sha256": "556482d839e8c268734d408a4b9d0639f7147adfede0049e76b6bdbb814bb524",
+      "manifest_sha256": "78e468619070021669f0d9c700be800ee0215d0fcd1e11d69ceb7bf69ff3043e",
+      "installed_packages": {
+        "ui": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "board": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b"
+      }
+    },
+    "scheduled": {
+      "editor_pid": 2357,
+      "child_pid": 2547,
+      "command": "/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/gonggong-validation-202611222052169560174/Godot --headless --editor --path /var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/gonggong-validation-202611222052169560174/project --log-file /var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/gonggong-validation-202611222052169560174/probe.log --script res://entry.gd",
+      "requested_delay_seconds": 38,
+      "elapsed_seconds": 38.152,
+      "alive_before_resume": true,
+      "harness_exit_code": 0
+    }
+  },
+  "known_diagnostics": {
+    "observed": "When the headless editor exits after printing the two native package digests and entry marker, it logs RID/ObjectDB cleanup diagnostics before the parent prints passed. The unscheduled old harness contains them too. The warm cached parent never launches that child. These diagnostics did not prevent the observed content-addressed receipts or change either negative case.",
+    "prior_candidate": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1740#issuecomment-7082357043"
+  },
+  "logs": {
+    "archive": "macos-startup-cocoa-2123-native-logs.zip",
+    "sha256": "d2d598beb5f9a73b9c8d2905338fe609dffaa2e4f6202bc925209e66836362c9",
+    "file_hashes": {
+      "45062919388/step-17.log": "03e0ae1812791013b0eae1bedc1395a71473b73164e2725198fe944ae614032d",
+      "45062919388/startup-sidecars.json": "959fb42400abf696701906ca5ec93c306f2fc2e11d638bb710fc7b8c1186c77c",
+      "45062919388/digests.txt": "02d737eaf047e971932e21589dab7b32d1119199744c1b1de3beb45696014ef4",
+      "45062919388/source.txt": "a078893104e4c9d50c4e1bc5dd22cca478f378e5364c85efa8511806f06bc4f1",
+      "45067974625/digests.txt": "07f9624ed4a8e97827cbccf4891569c39ac619c4ca1de86c7a724f1c1e45198e",
+      "45067974625/original.json": "7a46a517936cd9bf625505b6ce5dc09899e419c78b376f1c204990162e45a4ca",
+      "45067974625/original.log": "74a81bb9523acc9d993327e96e817c2e11722844b1860b3623dc6cb0369d62bb",
+      "45067974625/startup.json": "d1cca3ed4fb3ce1b7bf04afc14bb3a4491960c0761413b5af8963e2760dc5f52",
+      "45067974625/startup.logs/changed_board/editor.log": "61a9a4648464cc694727afd63e6fe3b82983181da935be018843baac07ad7994",
+      "45067974625/startup.logs/changed_ui/editor.log": "09b2f33f9f6e7f692725b798047a3046c1c7c5bdfe4daa53c27578424938f024",
+      "45067974625/startup.logs/cold/editor.log": "30db0f1531feb97043532bdac81a9ee912acbaedc9109ac3f92c0b5c8a15c80b",
+      "45067974625/startup.logs/corrupt_board/editor.log": "6431f6d68317fe67ede2325b34fa89a71c841f71e110276b2b4f1bb0e29f2200",
+      "45067974625/startup.logs/corrupt_ui/editor.log": "60cd2ffe3831c89876a8758541aa5825150411eaab2c8c6ea20efc4013784e60",
+      "45067974625/startup.logs/missing_board/editor.log": "b1dc231187554d339afe36829d82f50e5192f8fd9ee30913ee43e49b85c722e4",
+      "45067974625/startup.logs/missing_ui/editor.log": "6528adb33215d7acc0a43f5ea4d2f6ea6251df762d1c585ebcd6920dd9666c2d",
+      "45067974625/startup.logs/partial-child.log": "4ce081bfd77597d81670b022263ba3768a3006f336d1bf3daa7e24a40a755d65",
+      "45067974625/startup.logs/restored_board/editor.log": "641df6dff49c3cd3c2d6c2d9ca39de3d5144ec2813e153606b51f75ae5668d7c",
+      "45067974625/startup.logs/restored_ui/editor.log": "641df6dff49c3cd3c2d6c2d9ca39de3d5144ec2813e153606b51f75ae5668d7c",
+      "45067974625/startup.logs/warm/editor.log": "641df6dff49c3cd3c2d6c2d9ca39de3d5144ec2813e153606b51f75ae5668d7c",
+      "45068736505/digests.txt": "07f9624ed4a8e97827cbccf4891569c39ac619c4ca1de86c7a724f1c1e45198e",
+      "45068736505/original.json": "959fb42400abf696701906ca5ec93c306f2fc2e11d638bb710fc7b8c1186c77c",
+      "45068736505/original.log": "1eb209022729f3e389ff7f94b1cefe2afe87b7b674e216848354694fc9373c55",
+      "45068736505/original.schedule.json": "37c414ee373ce8c2d32cf1d04ebbf8c830d1104e9cbdf7ab7a2cc8df2c71d94d",
+      "45068736505/startup.json": "1434ab92cef938125e4e0506adb05e24933789d512a84031ab33461fcabbb86f",
+      "45068736505/startup.log": "e889965bc2db79b71243d1281f0c86524d09f9bfe005f5f69c490b6a71659ada",
+      "45068736505/startup.logs/changed_board/editor.log": "61a9a4648464cc694727afd63e6fe3b82983181da935be018843baac07ad7994",
+      "45068736505/startup.logs/changed_ui/editor.log": "09b2f33f9f6e7f692725b798047a3046c1c7c5bdfe4daa53c27578424938f024",
+      "45068736505/startup.logs/cold/editor.log": "30db0f1531feb97043532bdac81a9ee912acbaedc9109ac3f92c0b5c8a15c80b",
+      "45068736505/startup.logs/corrupt_board/editor.log": "8a45508cb50755a499f653116abacde07e4e6c6781869a34d3389fd9409e79c0",
+      "45068736505/startup.logs/corrupt_ui/editor.log": "60cd2ffe3831c89876a8758541aa5825150411eaab2c8c6ea20efc4013784e60",
+      "45068736505/startup.logs/missing_board/editor.log": "27a9eadb9465e78b8f55dbc8f2f903a5cc720881be0b7be5d48b2d933dc4e8bb",
+      "45068736505/startup.logs/missing_ui/editor.log": "e06f7c660ebf45ed28c29da08ebe2fb87524853d67597f3b8a19888feb03e86f",
+      "45068736505/startup.logs/partial-child.log": "4ce081bfd77597d81670b022263ba3768a3006f336d1bf3daa7e24a40a755d65",
+      "45068736505/startup.logs/restored_board/editor.log": "641df6dff49c3cd3c2d6c2d9ca39de3d5144ec2813e153606b51f75ae5668d7c",
+      "45068736505/startup.logs/restored_ui/editor.log": "641df6dff49c3cd3c2d6c2d9ca39de3d5144ec2813e153606b51f75ae5668d7c",
+      "45068736505/startup.logs/warm/editor.log": "583c8d7f55767cdf12eb7b4864b510079dfdf0eacaae8ae165e2ff5ef89c4547",
+      "45068736505/startup.schedule.json": "93526533e70a08fff2f0d0556423a105ec78b7d06e8daf903fd170b8eb6b0ea8",
+      "45068736505/experiment/tests/editor/reproduce_2123_schedule.py": "898f33c42c834fafda53e3637603ae28d7b9fb6d90ee7ff3ac1ac27801f9e7f5",
+      "45068736505/experiment/.github/workflows/macos_builds.yml": "d247648094a4b3bc65f126ab514e79c7b2ba4438780af9ba560edbffc79a0f51"
+    }
+  }
+}
