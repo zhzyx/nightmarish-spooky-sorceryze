@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-e3dffd8b15d4a0e44741e339f6c4d6061b205ba0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4989fc3efc26fa126ce11254bb9c95ca5b950295001d0a8a96d73440517e8c65",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2034",
+    "action": "validation",
+    "detection_head": "9c70b51b362a843288623d7c19490f32c87b38fa",
+    "context_sha256": "a2860f9f75b986d4e9867040c1516d6bbb82e684511ab6e86b20badc2985a1c2",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44997868911/job/137132768425",
+    "diagnosis": "The Windows job stopped when the requested controlled CLI catalog entry was unavailable at the first lookup. The uploaded report and original log do not distinguish a startup timing issue from a transient CLI discovery failure. No real inference was involved.",
+    "next_action": "Validate the exact failed job and the controlled catalog, retain the original binary digest, and inspect the GitHub recovery attempt at the same signed revision.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T07:32:25.486393+00:00",
+    "attempted": "Downloaded and inspected the failed reasoning artifact. The previous PR passed the identical fixture. The latest local Windows build passed the full, reopen and legacy phases with the same fixtures and Python 3.15.2. The remote run is already on its second attempt.",
+    "repair_owner": "Windows release owner for PR 2039",
+    "continuable": "The same-head CI attempt is running. Any repeatable product failure will be repaired on its actual source."
+  },
+  "occurred_at": "2026-11-22T07:40:51.281904+00:00",
+  "sha256": "e3f8b8e86df5eebac969ff06b4be4fd3f6bfd9e3b356ab3d391c88764572c58c"
+}

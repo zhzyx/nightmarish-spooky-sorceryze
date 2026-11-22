@@ -1163,12 +1163,15 @@ class OrdinaryEntry:
                 held = self.domain.db.execute(
                     "SELECT count(*) FROM native_tasks WHERE state IN ('reserved','running','held')"
                 ).fetchone()[0]
-                waiting_capacity = any(t["state"] == "ready" for t in own) and held >= self.workflow.capacity
+                waiting_assets = any(item.get("reason") == "resource_conflict" for item in result.get("deferred", []))
+                waiting_for_slot = any(t["state"] == "ready" for t in own) and (
+                    held >= self.workflow.capacity or waiting_assets
+                )
                 peers = {e["id"] for e in self.entries() if e["tenant"] == row["tenant"]} & self.active_drivers
                 lane = _digest(_json([row["tenant"], self.product(row), "stable"]).encode())
                 live = bool(
                     any(t["id"] in self.workflow._executions for t in own)
-                    or (waiting_capacity and self.workflow._executions)
+                    or (waiting_for_slot and self.workflow._executions)
                     or lane in self.workflow.integration.continuous._lane_drivers
                     or peers - {row["id"]}
                 )

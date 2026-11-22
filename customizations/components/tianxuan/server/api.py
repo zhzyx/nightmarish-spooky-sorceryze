@@ -800,6 +800,8 @@ def create_app(
 
     @app.get("/api/v1/issues/by-number/{number}/detail")
     def read_issue_detail(number: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
+        if native_workflow is not None:
+            return cast(dict[str, Any], native_workflow.issue_detail(actor, project, number))
         return cast(dict[str, Any], store.read_issue_detail(actor, project, number))
 
     @app.put("/api/v1/issues/{issue_id}/task-target")

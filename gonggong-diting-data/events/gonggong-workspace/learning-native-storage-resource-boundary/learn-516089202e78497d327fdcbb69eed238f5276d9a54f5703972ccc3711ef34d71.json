@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-storage-resource-boundary",
+  "event_id": "learn-516089202e78497d327fdcbb69eed238f5276d9a54f5703972ccc3711ef34d71",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "occurred_at": "2026-11-22T08:05:14.042701+00:00",
+  "evidence_refs": [
+    "kuafu-a4d7fb2f70552beef8ba18b41e6e3c47e1902a36"
+  ],
+  "payload": {
+    "scope": "native-storage-resource-boundary",
+    "lesson": "verify-shared-connection-ownership",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "用第二条线程探测天璇共享 SQLite 连接锁的所有权，再从真实 HTTP 调度入口核对已存在票据的回执。",
+      "when": "同一 SQLite 连接同时服务调度回执和依赖验收，单次读取报告任务不存在，而同一数据库可列出该任务号。",
+      "counterexample": "分离数据库连接、确实缺失的票据、过期授权或被替代的任务定义需要分别读取其原始状态。",
+      "trial_plan": "独立运行锁所有权回归和真实 HTTP 调度回归。前者应在活动定义 SELECT 时观察到连接锁，后者应读取三张已执行工单的正常回执。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-milestone-trace-combined.json",
+        "sha256": "8ba21dadff8e5c7fec7e4b0a46b5c2e3fac60c9f613f2d2da78eb96d68032c64"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-a4d7fb2f70552beef8ba18b41e6e3c47e1902a36.json",
+      "sha256": "f9996401d0ef89ef13aff318947282471665923fcf0e65e6297d5831ce324916"
+    }
+  },
+  "sha256": "bae1e52e22ae2e27c5a327400cbb51a07981535546d761b0418576a090a674bb"
+}

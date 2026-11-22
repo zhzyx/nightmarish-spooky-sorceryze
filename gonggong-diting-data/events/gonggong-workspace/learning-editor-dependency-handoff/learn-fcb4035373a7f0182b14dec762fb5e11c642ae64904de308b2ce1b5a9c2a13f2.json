@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-fcb4035373a7f0182b14dec762fb5e11c642ae64904de308b2ce1b5a9c2a13f2",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1792",
+  "occurred_at": "2026-11-22T08:15:48.936391+00:00",
+  "evidence_refs": [
+    "dispatch-6ee22e41689845a3942b98c132ff7032",
+    "learn-9e23614ecb32b477c66f66278276f3b096febd5c1a5d63e1f69b97ff7ecb7fc7"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "await-terminal-observers",
+    "revision": 11,
+    "previous": "fc1687215276feb14799a2b42d7e8adae2869ccefa414400fb56f1a8de9e2cb3",
+    "action": "applied",
+    "details": {
+      "task": "S08 #1792 signed asset waiter and scoped entry event-driven refill",
+      "observed": "Three physical worker intervals and the authenticated wait snapshot show that the later writer launches after its holder settles. A scoped driver waits for the other entry's actual terminal with a spare slot and starts only its own signed ticket. Editor replay after a disconnect saw one process."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-s08.json",
+        "sha256": "0836eb6b53c6b389c16894b55f5eff9e8c03b03ba77fffe7c2a1e3081161eb5e"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s08/dispatch-6ee22e41689845a3942b98c132ff7032.json",
+      "sha256": "4098eb17bd24d30ecefc829d28a78f0c33e4a489d171de7474475651c1c877a3"
+    }
+  },
+  "sha256": "40d97da9203067299f873f6e03943cbe1ddc0c1021fc6d7c5b6d63ac704fcdf7"
+}
