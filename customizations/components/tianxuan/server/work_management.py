@@ -119,8 +119,11 @@ def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any
         logs=[],
         logged_minutes=0,
         assets={},
+        creative_judgments=[],
         history=[],
     )
+    latest_judgments = {}
+    issue_creator = None
     checked_modules = set()
     for row in store.db.execute(
         "SELECT * FROM issue_work_events WHERE issue_id=? AND version<=? ORDER BY version", (issue_id, through_version)
@@ -140,6 +143,20 @@ def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any
             state["logs"].append(event)
             state["logged_minutes"] += data["minutes"]
         else:
+            if data["kind"] in {"concept", "model"}:
+                if event["action"] == "work.submit_asset":
+                    if "initiator" not in event and issue_creator is None:
+                        issue_creator = store.get_issue(issue_id)["created_by"]
+                    judgment = dict(
+                        event,
+                        submission_version=event["version"],
+                        initiator=event.get("initiator", issue_creator),
+                        responsible=event.get("responsible", issue_creator),
+                    )
+                    latest_judgments[data["kind"]] = judgment
+                    state["creative_judgments"].append(judgment)
+                elif event["action"] == "work.decide":
+                    latest_judgments[data["kind"]].update(event)
             state["assets"][data["kind"]] = event
     return state
 
@@ -403,13 +420,16 @@ def record_work_mutation(store, actor, name, payload, *, call_id, human=False):
                 content = native.read(store._tenant_of(actor), data["module"], data["revision"], data["path"])
             except ValueError as exc:
                 raise TianxuanError("native asset unavailable") from exc
+            if data["kind"] in {"concept", "model"}:
+                initiator = store._require_tenant_issue(actor, issue_id)["created_by"]
+                data.update(initiator=initiator, responsible=initiator)
             data.update(
                 digest=hashlib.sha256(content).hexdigest(),
                 decision="attached" if data["kind"] == "attachment" else "pending",
             )
         elif name == "work.decide":
             row = store.db.execute(
-                "SELECT data FROM issue_work_events WHERE issue_id=? AND action IN ('work.submit_asset','work.decide') "
+                "SELECT version,data FROM issue_work_events WHERE issue_id=? AND action IN ('work.submit_asset','work.decide') "
                 "AND json_extract(data, '$.kind')=? ORDER BY version DESC LIMIT 1",
                 (issue_id, data["kind"]),
             ).fetchone()
@@ -420,6 +440,14 @@ def record_work_mutation(store, actor, name, payload, *, call_id, human=False):
                 or any(data[k] != asset[k] for k in ("module", "revision", "path"))
             ):
                 raise VersionConflict("pending asset binding changed")
+            responsible = asset.get("responsible") or store.get_issue(issue_id)["created_by"]
+            if actor != responsible:
+                raise PermissionDenied("only the responsible person may decide this creative judgment")
+            data.update(
+                initiator=asset.get("initiator", responsible),
+                responsible=responsible,
+                submission_version=row["version"],
+            )
             data["digest"] = asset["digest"]
         store.db.execute(
             "INSERT INTO issue_work_events VALUES(?,?,?,?,?,?)",
