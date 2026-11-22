@@ -397,10 +397,12 @@ class AdapterProcessTests(unittest.TestCase):
                             "error": "raise SystemExit(7)",
                             "flood": 'import os; os.write(1, b"x" * 65536)',
                         }.get(outcome, "import time; time.sleep(30)")
+                        # Allow interpreter startup for the exit-code and output checks.
+                        timeout = 0.15 if outcome == "timeout" else 3
                         result = owner._run_owned(
-                            "fixture", [sys.executable, "-c", code], "watch.log", "image_generation", 0.15, root
+                            "fixture", [sys.executable, "-c", code], "watch.log", "image_generation", timeout, root
                         )
-                        self.assertEqual(result, {"success": 0, "error": 7}.get(outcome))
+                        self.assertEqual(result, {"success": 0, "error": 7}.get(outcome), failures)
 
                     with (
                         patch("kimi_work_image_provider.MAX_LOG_BYTES", 4096),
@@ -415,7 +417,11 @@ class AdapterProcessTests(unittest.TestCase):
                     while any(alive(identity) for identity in identities) and time.monotonic() < deadline:
                         time.sleep(0.02)
                     self.assertFalse(any(alive(identity) for identity in identities))
-                    self.assertEqual(bool(failures), outcome in ("timeout", "flood"))
+                    flood_reason = (
+                        "image_output_invalid" if provider_type == KimiWorkImageProvider else "model3d_output_invalid"
+                    )
+                    reason = {"timeout": "image_timeout", "flood": flood_reason}.get(outcome)
+                    self.assertEqual(failures, [("fixture", "failed", reason)] if reason else [])
 
     @unittest.skipIf(os.name == "nt", "POSIX leader pinning; Windows uses a Job handle")
     def test_async_launch_retains_pinned_leader_until_scope_finishes(self):

@@ -1,0 +1,40 @@
+{
+  "issue_number": 2098,
+  "request_id": "kuafu-local-1775-1bc917d87b1d0948d970057ebf471fa5d2c0295159e99a09ed5a15a9ab310cc4",
+  "status": "passed",
+  "summary": "Windows 进程回归已按原解释器和工作目录复验。正常及非零退出与真正超时分开验证，两个适配器的失败回调和退出码均符合预期。原独立用例通过，整套 15 项中 10 项通过、5 项按平台跳过。",
+  "source_tree": "00d768dd3fd209cabd3ca10dbfacdbaece79b55d",
+  "verified": "2026-11-22T14:34:53.066185+00:00",
+  "tests": [
+    {
+      "tag": "original",
+      "command": [
+        "-m",
+        "unittest",
+        "test_owned_process.AdapterProcessTests.test_async_launch_tree_is_cleaned_after_watch_or_parse_terminal"
+      ],
+      "summary": [
+        "Ran 1 test in 6.959s",
+        "",
+        "OK"
+      ]
+    },
+    {
+      "tag": "suite",
+      "command": [
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/ainative",
+        "-p",
+        "test_owned_process.py"
+      ],
+      "summary": [
+        "Ran 15 tests in 25.908s",
+        "",
+        "OK (skipped=5)"
+      ]
+    }
+  ]
+}

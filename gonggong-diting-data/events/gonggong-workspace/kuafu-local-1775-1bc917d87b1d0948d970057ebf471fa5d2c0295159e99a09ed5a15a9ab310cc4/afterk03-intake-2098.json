@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "kuafu-local-1775-1bc917d87b1d0948d970057ebf471fa5d2c0295159e99a09ed5a15a9ab310cc4",
+  "event_id": "afterk03-intake-2098",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2098",
+  "occurred_at": "2026-11-22T14:16:54.472483+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 2098,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T14:16:48Z",
+    "accepted_dependencies": {},
+    "source_main": "18bb27529ab612cf680a6612ba304b1a7ac0913e",
+    "title": "夸父阻塞跟踪：原工单 #1775"
+  },
+  "evidence_refs": [],
+  "sha256": "172e5d62ae6ce6260198270dab56a71c877e9f487c0ef148f23ccf3112316093"
+}
