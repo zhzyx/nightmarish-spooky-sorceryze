@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-767737d91fa2b1d34186f1388b3f5f6ae8e0d6013c276797afd7899b2fe0c724",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1717",
+  "occurred_at": "2026-11-21T21:41:09+00:00",
+  "evidence_refs": [
+    "dispatch-eb4c71dde6d64ebb97e01f6778897df9",
+    "learn-6a783439426e59314f94fc607901daf5a1b4978a88b5fc64139e9381a69d4e4c"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 28,
+    "previous": "e9becd4edafdb8e7f69e15ce80a657995c2061aa9c65f9370eb01ef16c34e531",
+    "action": "applied",
+    "details": {
+      "task": "在 K01 里程碑启动前，对十二张直接前置逐卡校验 closed/completed、接收方评论、实际合入的 PR 与当前 HEAD 的祖先关系。",
+      "observed": "D12 末条 Windows 交接评论指向已关闭但未合入的 #1979。同一工单的 Mac 接收评论已更新为 #1989。该 PR 的合入修订与 K01 基线完全一致。十二卡完成回执及祖先核对均通过后，在 Windows 候选的一个原生进程内完成双模块共享资产往返。 原始工作树回执 SHA-256 为 caceaf099d53b7604becabc6e3e197037a1adc9cd701740aa2f4732b3d7e31dd；Git 规范化换行后的相同数据绑定本次证据摘要。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-k01.json",
+        "sha256": "f3db70da0b8dc9cd6948c40b2f1f6d69168eafb5a44f0a10269aef67655cd45f"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-k01/dispatch-eb4c71dde6d64ebb97e01f6778897df9.json",
+      "sha256": "c4adad10946df9d20acf1375dfadc0ef2a5ef56f71462a421b68b8154a9441e7"
+    }
+  },
+  "sha256": "8c072d8b351ee7b0e9f83621e7c3d5a315277b2c87b02f49c0006554d19d7fe0"
+}

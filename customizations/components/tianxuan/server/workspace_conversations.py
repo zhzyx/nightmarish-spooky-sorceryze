@@ -88,6 +88,10 @@ class Confirmation(Version):
     revision: int = Field(ge=1)
 
 
+class StageReturn(Confirmation):
+    reason: Text
+
+
 class Suggestion(Version):
     lang: Literal["zh", "en"]
     draft_body: str | None = Field(default=None, max_length=8000)
@@ -473,6 +477,7 @@ class Conversations:
             record["revisions"].append({
                 "revision": revision,
                 "stage": stage,
+                "created_by": actor,
                 "body": payload.body,
                 "title": payload.title,
                 "acceptance": payload.acceptance,
@@ -495,8 +500,45 @@ class Conversations:
                 raise conflict("confirm the current draft revision")
             if revision["confirmed_at"] is not None:
                 return record
+            if revision.get("returned_at"):
+                raise conflict("save a new revision after the review return")
             revision.update(confirmed_at=now(), confirmed_by=actor)
             return self.save(db, owner, record)
+
+    def return_stage(self, actor: str, key: str, stage: Stage, payload: StageReturn) -> dict[str, Any]:
+        owner = self.owner(actor)
+        with self.transaction() as db:
+            record = self.get(db, owner, key)
+            self.design_open(record, stage, payload.expected_version)
+            revision = self.active(record, stage)
+            if revision is None or revision["revision"] != payload.revision:
+                raise conflict("return the current draft revision")
+            if revision["confirmed_at"] or revision.get("returned_at"):
+                raise conflict("this revision already has a review decision")
+            revision.update(returned_at=now(), returned_by=actor, return_reason=payload.reason)
+            return self.save(db, owner, record)
+
+    def document_stages(self, actor: str, document: str, version: int) -> dict[str, Any]:
+        owner = self.owner(actor)
+        with self.transaction(write=False) as db:
+            self.domain.get_doc_shared(actor, document)
+            self.domain.version(document, version)
+            if table_exists(db, "workspace_requirement_approvals"):
+                row = db.execute(
+                    "SELECT conversation,revisions FROM workspace_requirement_approvals "
+                    "WHERE tenant=? AND actor=? AND requirement=? AND version=?",
+                    (*owner, document, version),
+                ).fetchone()
+                if row:
+                    record = self.get(db, owner, row["conversation"])
+                    return {
+                        "document_id": document,
+                        "version": version,
+                        "conversation": record["id"],
+                        "current": json.loads(row["revisions"]),
+                        "revisions": record["revisions"],
+                    }
+            return {"document_id": document, "version": version, "conversation": None}
 
     def suggest(
         self, actor: str, key: str, stage: Stage, payload: Suggestion, gateway: ModelGateway | None
@@ -745,6 +787,14 @@ def create_workspace_conversation_router(
     @router.post("/{key}/design/{stage}/confirm")
     def confirm(request: Request, key: UUID, stage: Stage, payload: Confirmation):
         return service.confirm(workspace_actor(request, write=True), str(key), stage, payload)
+
+    @router.post("/{key}/design/{stage}/return")
+    def return_stage(request: Request, key: UUID, stage: Stage, payload: StageReturn):
+        return service.return_stage(workspace_actor(request, write=True), str(key), stage, payload)
+
+    @router.get("/for-document/{document}/versions/{version}")
+    def document_stages(request: Request, document: str, version: Annotated[int, Field(ge=1, le=2**63 - 1)]):
+        return service.document_stages(workspace_actor(request), document, version)
 
     @router.post("/{key}/design/{stage}/suggest")
     def suggest(request: Request, key: UUID, stage: Stage, payload: Suggestion):

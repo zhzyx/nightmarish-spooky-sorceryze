@@ -5,6 +5,7 @@ var view: AcceptDialog
 var dialog := ConfirmationDialog.new()
 var criteria := TextEdit.new()
 var status := Label.new()
+var split := Button.new()
 var document_id := ""
 var version := 0
 var generation := 0
@@ -34,6 +35,9 @@ func _ready() -> void:
 	criteria.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	criteria.text_changed.connect(_criteria_changed)
 	box.add_child(criteria)
+	split.text = "拆为模块任务"
+	split.hide()
+	box.add_child(split)
 
 
 func _view_visibility_changed() -> void:
@@ -65,6 +69,7 @@ func _open() -> void:
 	dialog.get_ok_button().text = "确认 v%d" % version
 	dialog.get_ok_button().disabled = true
 	status.text = "正在读取此修订的签认回执…"
+	split.hide()
 	dialog.popup_centered()
 	var reply: Dictionary = await view.session.api_request(HTTPClient.METHOD_GET, _route())
 	if attempt != generation:
@@ -89,6 +94,7 @@ func _show_receipt(receipt: Variant) -> bool:
 	dialog.get_ok_button().disabled = true
 	status.text = "v%d 已签认 · 确认人 %s · %s" % [version, receipt.confirmed_by, receipt.confirmed_at]
 	criteria.text = receipt.acceptance
+	split.visible = view.session.get_identity().get("role") != "viewer"
 	return true
 
 

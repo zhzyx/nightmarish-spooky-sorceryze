@@ -74,6 +74,12 @@ CREATE TABLE IF NOT EXISTS design_signoffs (
   document_id TEXT NOT NULL, version INTEGER NOT NULL, confirmed_by TEXT NOT NULL,
   confirmed_at TEXT NOT NULL, acceptance TEXT NOT NULL, PRIMARY KEY(document_id, version)
 );
+CREATE TABLE IF NOT EXISTS design_task_sources (
+  issue_id TEXT PRIMARY KEY REFERENCES issues(id), document_id TEXT NOT NULL, version INTEGER NOT NULL,
+  paragraph INTEGER NOT NULL, project TEXT NOT NULL, module_id TEXT NOT NULL, acceptance TEXT NOT NULL,
+  FOREIGN KEY(document_id,version) REFERENCES design_signoffs(document_id,version)
+);
+CREATE INDEX IF NOT EXISTS idx_design_tasks_revision ON design_task_sources(document_id,version,project);
 CREATE TABLE IF NOT EXISTS issues (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, parent_id TEXT, number INTEGER NOT NULL,
   type TEXT NOT NULL, status TEXT NOT NULL, priority TEXT NOT NULL DEFAULT 'normal',
@@ -1348,6 +1354,87 @@ class Tianxuan:
             raise VersionConflict("this revision already has a signoff; reopen to read its receipt")
         return dict(row)
 
+    @_connection_call
+    def split_design(
+        self, actor: str, doc_id: str, version: int, project: str, items: list[dict[str, Any]], call_id: str
+    ) -> list[dict[str, Any]]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        self.get_doc_shared(actor, doc_id, write=True)
+        if not self.design_signoff(actor, doc_id, version):
+            raise VersionConflict("sign off this design revision before splitting it")
+        self._validate_project(project)
+        if not call_id or not 1 <= len(items) <= 50:
+            raise TianxuanError("a split requires a request ID and 1 to 50 items")
+        body = self.version(doc_id, version)["body_md"]
+        # The document viewer numbers consecutive nonblank Markdown lines as one paragraph.
+        paragraph_count = 0
+        previous_blank = True
+        for line in body.split("\n"):
+            # String.strip_edges() in the Godot picker removes exactly code points 0 through 32.
+            blank = re.search(r"[^\x00-\x20]", line) is None
+            if previous_blank and not blank:
+                paragraph_count += 1
+            previous_blank = blank
+
+        def create() -> list[dict[str, Any]]:
+            created = []
+            for item in items:
+                index, module = item["paragraph"], item["module_id"]
+                title, acceptance = item["title"].strip(), item["acceptance"].strip()
+                if type(index) is not int or not 1 <= index <= paragraph_count:
+                    raise TianxuanError("source paragraph does not exist in the signed revision")
+                if not title or not acceptance:
+                    raise TianxuanError("each task requires a title and acceptance conditions")
+                issue = self.create_issue(actor, title, acceptance=acceptance, project=project, module_id=module)
+                self.link_doc_issue(actor, doc_id, issue["id"])
+                source = dict(
+                    document_id=doc_id,
+                    version=version,
+                    paragraph=index,
+                    project=project,
+                    module_id=module,
+                    acceptance=acceptance,
+                )
+                self.db.execute(
+                    "INSERT INTO design_task_sources(issue_id,document_id,version,paragraph,project,module_id,acceptance) "
+                    "VALUES(?,?,?,?,?,?,?)",
+                    (issue["id"], doc_id, version, index, project, module, acceptance),
+                )
+                created.append(dict(id=issue["id"], number=issue["number"], title=title, design_source=source))
+            return created
+
+        payload = dict(doc_id=doc_id, version=version, project=project, items=items)
+        return cast(list[dict[str, Any]], self._run_tool_once(actor, "design.split", payload, call_id, create))
+
+    @_connection_call
+    def design_tasks(self, actor: str, doc_id: str, version: int, project: str) -> list[dict[str, Any]]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN")
+        self._validate_project(project)
+        self.design_signoff(actor, doc_id, version)
+        rows = self.db.execute(
+            "SELECT s.issue_id AS id,i.number,i.title,s.document_id,s.version,s.paragraph,s.project,s.module_id,"
+            "s.acceptance FROM design_task_sources s JOIN issues i ON i.id=s.issue_id "
+            "WHERE s.document_id=? AND s.version=? AND s.project=? ORDER BY i.number",
+            (doc_id, version, project),
+        )
+        return self._visible_issues(actor, list(rows))
+
+    def _design_task_source(self, actor: str, issue_id: str) -> dict[str, Any] | None:
+        row = self.db.execute(
+            "SELECT document_id,version,paragraph,project,module_id,acceptance FROM design_task_sources WHERE issue_id=?",
+            (issue_id,),
+        ).fetchone()
+        if row:
+            try:
+                self.get_doc_shared(actor, row["document_id"])
+            except (PermissionDenied, NotFound):
+                return None
+            return dict(row)
+        return None
+
     # ---------- 文曲：评论 ----------
 
     @_connection_call
@@ -1678,6 +1765,7 @@ class Tianxuan:
             can_classify = False
         return issue | {
             "can_classify": can_classify,
+            "design_source": self._design_task_source(actor, issue["id"]),
             "assignee": dict(assignee) if assignee else None,
             "revision": snapshot["revision"],
             "labels": self._issue_labels(issue["id"]),
@@ -2805,6 +2893,8 @@ class Tianxuan:
             if result is not None:
                 self._business_module(self._tenant_of(actor), payload["project"], result["id"])
             return
+        if name == "design.split":
+            self.get_doc_shared(actor, payload["doc_id"], write=True)
         if name.startswith("lifecycle."):
             self._project_issue(actor, payload["issue_id"], payload["project"], write=True)
             return

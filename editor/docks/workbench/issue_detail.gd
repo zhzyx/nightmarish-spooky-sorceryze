@@ -14,6 +14,7 @@ var _status := Label.new()
 var _fields := Label.new()
 var _consult := Button.new()
 var _original := LinkButton.new()
+var _design_source := Button.new()
 
 
 func _ready() -> void:
@@ -43,6 +44,9 @@ func _ready() -> void:
 	_fields.name = "IssueDetailFields"
 	_fields.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	_form.add_child(_fields)
+	_design_source.name = "OpenIssueDesignSource"
+	_design_source.pressed.connect(_open_design_source)
+	_form.add_child(_design_source)
 	_consult.name = "ConsultIssueDetail"
 	_consult.text = "就此工单咨询"
 	_consult.pressed.connect(func(): consultation_requested.emit())
@@ -61,9 +65,16 @@ func _clear() -> void:
 	_consult.hide()
 	_original.hide()
 	_original.uri = ""
+	_design_source.hide()
 	_fields.text = ""
 	_status.text = ""
 	detail_changed.emit()
+
+
+func _open_design_source() -> void:
+	var source: Variant = _detail.get("design_source")
+	if source is Dictionary:
+		_session.get_node("WorkbenchDocuments").open_document(source.document_id, int(source.version), int(source.paragraph))
 
 
 func _reset() -> void:
@@ -194,6 +205,11 @@ func open_issue(number: int, linked_id := "") -> void:
 			_detail = data.duplicate(true)
 			_consult.show()
 			_fields.text = "标题　%s\n负责人　%s\n状态　%s\n内容版本　%s" % [data.title, owner, data.status, data.revision]
+			var source: Variant = data.get("design_source")
+			if source is Dictionary:
+				_design_source.text = "阅读来源设计 · v%d · 第 %d 段" % [int(source.version), int(source.paragraph)]
+				_design_source.show()
+				_fields.text += "\n拆单验收　%s" % source.acceptance
 			_status.text = "#%d" % number
 			detail_changed.emit()
 			if not linked_id.is_empty():

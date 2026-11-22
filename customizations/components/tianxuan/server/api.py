@@ -48,6 +48,7 @@ from schemas import (
     CommentResolveRequest,
     CommitStatusRequest,
     DesignSignoffRequest,
+    DesignSplitRequest,
     DocCreateRequest,
     DocIssueLinkRequest,
     DocMergeRequest,
@@ -1174,6 +1175,17 @@ def create_app(
     @app.post("/api/v1/docs/{doc_id}/versions/{version}/signoff")
     def confirm_design(doc_id: str, version: int, payload: DesignSignoffRequest, actor: ActorDep) -> dict[str, Any]:
         return {"signoff": store.design_signoff(actor, doc_id, version, payload.acceptance)}
+
+    @app.get("/api/v1/docs/{doc_id}/versions/{version}/tasks")
+    def design_tasks(doc_id: str, version: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
+        return {"tasks": store.design_tasks(actor, doc_id, version, project)}
+
+    @app.post("/api/v1/docs/{doc_id}/versions/{version}/tasks")
+    def split_design(
+        doc_id: str, version: int, payload: DesignSplitRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        items = [item.model_dump() for item in payload.items]
+        return {"tasks": store.split_design(actor, doc_id, version, project, items, payload.call_id)}
 
     @app.post("/api/v1/docs/{doc_id}/versions/{version}/restore")
     def restore_version(doc_id: str, version: int, payload: DocRestoreRequest, actor: ActorDep) -> dict[str, Any]:

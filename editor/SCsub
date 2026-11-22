@@ -31,6 +31,8 @@ if env.editor_build:
             "docks/workbench/paragraph_suggestion.gd",
             "docks/workbench/document_history.gd",
             "docks/workbench/design_signoff.gd",
+            "docks/workbench/design_tasks.gd",
+            "docks/workbench/design_progress.gd",
             "docks/workbench/document_collaboration.gd",
         ],
         env.Run(editor_builders.daqian_scripts_builder),

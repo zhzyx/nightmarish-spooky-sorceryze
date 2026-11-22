@@ -1,0 +1,530 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "8573f02be4f73206e2ade4337f120d33b6344682",
+  "editor_sha256": "0db54ae102d444dedd17cab2c0c5f967e12647311a4af204b8395e1125747990",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "6bf8d000818b10f9930155dd9056ab9a37539cc0",
+    "customizations/components/tianxuan/server/schemas.py": "ddc061c74218a394e0f49a29d22067fd6f1323cb",
+    "customizations/components/tianxuan/server/test_design_tasks.py": "7087b09ffce1da70e22a5d2da9d4d5901ea48e7e",
+    "customizations/components/tianxuan/server/test_workspace_conversations.py": "8a64384bac5eada936ea8852700640568d68d991",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "0dd2716de7e5dbc9958e60e6eb312291a8f88cb6",
+    "customizations/components/tianxuan/server/workspace_conversations.py": "e998b6e29cd6e3265b09223ee82b4e5d81a60dc2",
+    "editor/SCsub": "7543e3901cf425cb867a8bf492d862ac9c89e6eb",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "5b9904a7c2154d86a7968a563b3cd7a1e14fa94a",
+    "editor/docks/workbench/business_session.gd": "b90e96833bf94b5782f61749acd7d28f471f4db3",
+    "editor/docks/workbench/design_progress.gd": "f6d91d1fd7d9d660340747d45faa8086ab55749c",
+    "editor/docks/workbench/design_signoff.gd": "3ca9ffbd94574c24b0a3e1812b346b2512f5be64",
+    "editor/docks/workbench/design_tasks.gd": "d77e92a7bc73f019907813f3c592ffd06edf74f0",
+    "editor/docks/workbench/issue_detail.gd": "0cc7ef8cf6f4b4760c2a539d2080288e2bd507f1",
+    "editor/docks/workbench/module_selector.gd": "62f78495fc86968c2b25f9f066a84a748e7e48bd",
+    "tests/editor/run_workbench_design_progress.py": "92559acc0969c59ff6249c38b30e37eeca4092ae",
+    "tests/editor/run_workbench_design_tasks.py": "240965032e11d0242d35a576be40b250b682bf78",
+    "tests/editor/workbench_design_progress.gd": "d7e806fba681c9ef9df598912dd76817286fb4a3",
+    "tests/editor/workbench_design_tasks.gd": "4de89bd4fd9f81a2c72c3b839f70de77668d59c4"
+  },
+  "checks": {
+    "d10": "fa2297351e4eeaff4d4d59a9e8cb893c30597440ba4db5732244d7d7242ee8ad",
+    "d13": "9a08e2a613f529f35a1c9d7e9310dbf14fa7f9c9b735edd4ab2e99316444507f",
+    "d09": "b73abd3c50bfab241614d2b27ee9b4df47cd912d8fe2d155206caa40b857f1bc",
+    "i02": "c2fccd244dd8fb5167e05c3bdb6189588de11b9912072c600e12d865177f77f4",
+    "k01": "9ce39a5c5a2a15f78ba88bd867050e8e3e17b3ff5c01e34691ef84a6a157bcfd",
+    "u13": "a821e8a633ed4a71b0c1cd00868387e4f7d77c9c5811f0af1feb90a70470c5c2"
+  },
+  "issues": {
+    "d10": 1857,
+    "d13": 1749
+  },
+  "observed": "2026-11-22T01:40:38.769139+00:00",
+  "verified_windows_build": {
+    "builder_tree": "1058fabbaec722bb361af2bb7ccec509b57fc13b",
+    "runtime_files": {
+      "godot.windows.editor.x86_64.exe": "0db54ae102d444dedd17cab2c0c5f967e12647311a4af204b8395e1125747990",
+      "godot.windows.editor.x86_64.console.exe": "4381bf85f306e666114e5579a7f9b6d98ca7544ba23558b61a2c7aabf86069d1",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "additional_inputs_rebuilt": []
+  },
+  "archive_readback_incident": {
+    "issue": 2013,
+    "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-4ef4e0299cf50a6073a2ceee10faabed3d955864.json"
+  },
+  "design_stage_to_module_tasks": {
+    "services": "24 passed, 1 warning in 10.97s",
+    "service_command": [
+      "customizations/components/tianxuan/server/test_design_tasks.py",
+      "customizations/components/tianxuan/server/test_design_signoff.py",
+      "customizations/components/tianxuan/server/test_issue_number.py",
+      "customizations/components/tianxuan/server/test_module_issues.py",
+      "customizations/components/tianxuan/server/test_api_versions.py",
+      "customizations/components/tianxuan/server/test_api_sharing.py",
+      "customizations/components/tianxuan/server/test_workspace_conversations.py",
+      "customizations/components/tianxuan/server/test_business_modules.py"
+    ],
+    "shared": {
+      "passed": true,
+      "tree": "42d2bebf7ffd2f61dec7efbc3b85df18b1466e30",
+      "editor_sha256": "0db54ae102d444dedd17cab2c0c5f967e12647311a4af204b8395e1125747990",
+      "confirmed_stages": {
+        "direction": 3,
+        "plan": 4,
+        "design": 5
+      },
+      "scenario": "D13 actual stage controls and D09 signature, server restart, D10 task split and original details, second database reopen",
+      "document": "doc_c5a7bfacaf1c4c1fab316e7119bb8846",
+      "version": 1,
+      "repeat_request_same_ids": true,
+      "unsigned_v2_status": 409,
+      "issues": [
+        {
+          "id": "iss_47a37dac10c744448fc0952961e8a2aa",
+          "number": 1,
+          "title": "拉杆控制",
+          "design_source": {
+            "document_id": "doc_c5a7bfacaf1c4c1fab316e7119bb8846",
+            "version": 1,
+            "paragraph": 1,
+            "project": "d13/studio",
+            "module_id": "mod_8cb4fdf05e1a402ba8446a4252a5a08c",
+            "acceptance": "一次操作只触发一次开桥"
+          }
+        },
+        {
+          "id": "iss_afc4fa3f81ff4eb6809b1184a31c9c05",
+          "number": 2,
+          "title": "桥面动画",
+          "design_source": {
+            "document_id": "doc_c5a7bfacaf1c4c1fab316e7119bb8846",
+            "version": 1,
+            "paragraph": 1,
+            "project": "d13/studio",
+            "module_id": "mod_19566fbf29824452b9530b55b84b8284",
+            "acceptance": "动画在一秒内完成"
+          }
+        }
+      ],
+      "after_reopen": [
+        {
+          "id": "iss_47a37dac10c744448fc0952961e8a2aa",
+          "number": 1,
+          "title": "拉杆控制",
+          "document_id": "doc_c5a7bfacaf1c4c1fab316e7119bb8846",
+          "version": 1,
+          "paragraph": 1,
+          "project": "d13/studio",
+          "module_id": "mod_8cb4fdf05e1a402ba8446a4252a5a08c",
+          "acceptance": "一次操作只触发一次开桥"
+        },
+        {
+          "id": "iss_afc4fa3f81ff4eb6809b1184a31c9c05",
+          "number": 2,
+          "title": "桥面动画",
+          "document_id": "doc_c5a7bfacaf1c4c1fab316e7119bb8846",
+          "version": 1,
+          "paragraph": 1,
+          "project": "d13/studio",
+          "module_id": "mod_19566fbf29824452b9530b55b84b8284",
+          "acceptance": "动画在一秒内完成"
+        }
+      ],
+      "observed": "2026-11-22T01:39:43.822058+00:00"
+    },
+    "previous": "d9f983bbbe6152e76946f0fbdc92d460fac5f1dc",
+    "stage": "42d2bebf7ffd2f61dec7efbc3b85df18b1466e30",
+    "observed": "2026-11-22T01:40:38.770139+00:00"
+  },
+  "worker_sources": {
+    "d10": "b6f97ef12d5738b9bfe82a590d2a40609c6c4469",
+    "d13": "42336d3c7a7fb015faa16da7fe29bcd4184118ef"
+  },
+  "independent_terminal": {
+    "d10": "1172513e146f97464bd23945828f46f63b635b2361d2a4decd416f0a5ac61148",
+    "d13": "16b145e2e4d9999400ddadc4a7dc6d6f9ed37ae1bece3f6339ab82710aa1c89f"
+  },
+  "archived_source_events": [
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-i15/kuafu-6b0843370f90e52d0ec6f343ea6b603fda44fb2a.json",
+      "sha256": "70255c6ae5d55661b412207a06538d6b25e92fe2d34dfc3f300cf505949a9d59",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756",
+      "original_commit": "3a7bcd3d40c727512b12c5dc00dba575e84f8f9d"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-33134e375719cb0d33fc06624bff67ba3725aeb7fd682f911b4daf6c69f065c3.json",
+      "sha256": "37e15af96352da65ae28d45d328b67597f50082a48fc858842a850d3130624cf",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1791",
+      "original_commit": "3a7bcd3d40c727512b12c5dc00dba575e84f8f9d"
+    },
+    {
+      "path": "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-767737d91fa2b1d34186f1388b3f5f6ae8e0d6013c276797afd7899b2fe0c724.json",
+      "sha256": "8c072d8b351ee7b0e9f83621e7c3d5a315277b2c87b02f49c0006554d19d7fe0",
+      "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1717",
+      "original_commit": "3a7bcd3d40c727512b12c5dc00dba575e84f8f9d"
+    }
+  ],
+  "reconciled_learning": {
+    "path": "gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-9c0b46a6ea72135de9de29fa63cac8d1878723506fe282f9c59ad95f2f1fe260.json",
+    "source_sha256": "1b4dc9bf353ae94d3f6c5adfb200ff09e5851932605f3ebc3daf7bd341cd0c10",
+    "prior_revision": 8,
+    "accepted_revision": 9,
+    "origin": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d10/dispatch-f3ea8865561e404d82d668c9ddd128a9.json",
+    "observed": "2026-11-22T01:36:04.361512+00:00",
+    "worker_source_collection": "0f47f2d3fbfcdd1f25b524ed160371debb34509962b27160ace6ad69ce0f56d0",
+    "normalized_collection": "048247f2dba516e93ba4cbac84a29bf526cfb618ef9098454b5ed4aa84260a6f",
+    "change": "One English spelling in a prose assertion description was normalized by the repository hook. All measured result fields and original worker source are retained."
+  },
+  "results": {
+    "d10": {
+      "state": "passed",
+      "editor_sha256": "0db54ae102d444dedd17cab2c0c5f967e12647311a4af204b8395e1125747990",
+      "native": {
+        "items": [
+          {
+            "acceptance": "拉杆触发一次开桥事件",
+            "module_id": "mod_ce1342ac4c954c7d81e7687b5996086f",
+            "paragraph": 1,
+            "title": "操作拉杆"
+          },
+          {
+            "acceptance": "桥面动画播放至展开状态",
+            "module_id": "mod_d298629f57794ac6bcef54d685ac5797",
+            "paragraph": 2,
+            "title": "桥面展开"
+          }
+        ],
+        "opened": [
+          {
+            "body": "Program the lever.\r\nHandle repeated pulls.\r\n\r\nAnimate the bridge opening.",
+            "number": 1,
+            "reference": {
+              "document_id": "doc_d52996031135413d811ebc978c5dd618",
+              "paragraph": 1,
+              "version": 1
+            }
+          },
+          {
+            "body": "Program the lever.\r\nHandle repeated pulls.\r\n\r\nAnimate the bridge opening.",
+            "number": 2,
+            "reference": {
+              "document_id": "doc_d52996031135413d811ebc978c5dd618",
+              "paragraph": 2,
+              "version": 1
+            }
+          }
+        ],
+        "revision": 1,
+        "status": "已生成：#1 操作拉杆、#2 桥面展开"
+      },
+      "writes": [
+        {
+          "payload": {
+            "call_id": "8e472ec21ce1af998a8999d2c1bb771a20da632d3b84062164dbd9c2a12c2147",
+            "items": [
+              {
+                "acceptance": "拉杆触发一次开桥事件",
+                "module_id": "mod_ce1342ac4c954c7d81e7687b5996086f",
+                "paragraph": 1,
+                "title": "操作拉杆"
+              },
+              {
+                "acceptance": "桥面动画播放至展开状态",
+                "module_id": "mod_d298629f57794ac6bcef54d685ac5797",
+                "paragraph": 2,
+                "title": "桥面展开"
+              }
+            ]
+          },
+          "server": 200,
+          "client": 503
+        },
+        {
+          "payload": {
+            "call_id": "8e472ec21ce1af998a8999d2c1bb771a20da632d3b84062164dbd9c2a12c2147",
+            "items": [
+              {
+                "acceptance": "拉杆触发一次开桥事件",
+                "module_id": "mod_ce1342ac4c954c7d81e7687b5996086f",
+                "paragraph": 1,
+                "title": "操作拉杆"
+              },
+              {
+                "acceptance": "桥面动画播放至展开状态",
+                "module_id": "mod_d298629f57794ac6bcef54d685ac5797",
+                "paragraph": 2,
+                "title": "桥面展开"
+              }
+            ]
+          },
+          "server": 200,
+          "client": 200
+        }
+      ],
+      "durable_sources": [
+        {
+          "id": "iss_96f03d21b7ef4e0894ac54f38f17e637",
+          "number": 1,
+          "title": "操作拉杆",
+          "document_id": "doc_d52996031135413d811ebc978c5dd618",
+          "version": 1,
+          "paragraph": 1,
+          "project": "d10/bridge",
+          "module_id": "mod_ce1342ac4c954c7d81e7687b5996086f",
+          "acceptance": "拉杆触发一次开桥事件"
+        },
+        {
+          "id": "iss_dd457adaafa642179d8ac83a17f9b551",
+          "number": 2,
+          "title": "桥面展开",
+          "document_id": "doc_d52996031135413d811ebc978c5dd618",
+          "version": 1,
+          "paragraph": 2,
+          "project": "d10/bridge",
+          "module_id": "mod_d298629f57794ac6bcef54d685ac5797",
+          "acceptance": "桥面动画播放至展开状态"
+        }
+      ],
+      "original_signoff": {
+        "document_id": "doc_d52996031135413d811ebc978c5dd618",
+        "version": 1,
+        "confirmed_by": "usr_137876a23c1f44ef87552e9b943e8c31",
+        "confirmed_at": "2026-11-22T01:39:29.335393+00:00",
+        "acceptance": "拉杆触发开桥，桥面完成展开"
+      },
+      "database_counts": {
+        "issues": 2,
+        "doc_issue_links": 2,
+        "design_task_sources": 2
+      },
+      "unsigned_status": 409,
+      "viewer_write_status": 403,
+      "missing_module_rollback": 404,
+      "bad_paragraph_rollback": 400,
+      "conflicting_replay": 409,
+      "unrelated_project_count": 0,
+      "unsigned_next_revision_count": 0,
+      "concurrent_replays": 2
+    },
+    "d13": {
+      "state": "passed",
+      "editor_sha256": "0db54ae102d444dedd17cab2c0c5f967e12647311a4af204b8395e1125747990",
+      "native": {
+        "stale": [
+          {
+            "body": "Original direction",
+            "confirm_enabled": true,
+            "event": "草稿保存 · usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:36.348998+00:00",
+            "notice": "",
+            "revision": "r1 · 待确认（当前）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：待确认 · r1\n策划：未开始\n详设：未开始"
+          },
+          {
+            "body": "Replacement direction",
+            "confirm_enabled": true,
+            "event": "草稿保存 · usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:39.712890+00:00",
+            "notice": "决策请求返回 409，请核对已读回的阶段修订。",
+            "revision": "r2 · 待确认（当前）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：待确认 · r2\n策划：未开始\n详设：未开始"
+          },
+          {
+            "body": "Replacement direction",
+            "confirm_enabled": false,
+            "event": "退回人 usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:39.786059+00:00\n退回意见：Include the lever location.",
+            "notice": "",
+            "revision": "r2 · 已退回（当前）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：已退回 · r2\n策划：未开始\n详设：未开始"
+          }
+        ],
+        "direction": [
+          {
+            "body": "Lever on path",
+            "confirm_enabled": true,
+            "event": "草稿保存 · usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:40.485816+00:00",
+            "notice": "",
+            "revision": "r3 · 待确认（当前）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：待确认 · r3\n策划：未开始\n详设：未开始"
+          },
+          {
+            "body": "Replacement direction",
+            "confirm_enabled": false,
+            "event": "退回人 usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:39.786059+00:00\n退回意见：Include the lever location.",
+            "notice": "",
+            "revision": "r2 · 已退回（历史）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：待确认 · r3\n策划：未开始\n详设：未开始"
+          },
+          {
+            "body": "Lever on path",
+            "confirm_enabled": false,
+            "event": "确认人 usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:43.115177+00:00",
+            "notice": "",
+            "revision": "r3 · 已确认（当前）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：已确认 · r3\n策划：未开始\n详设：未开始"
+          }
+        ],
+        "plan": [
+          {
+            "body": "Pull the lever",
+            "confirm_enabled": true,
+            "event": "草稿保存 · usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:43.682041+00:00",
+            "notice": "",
+            "revision": "r4 · 待确认（当前）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：已确认 · r3\n策划：待确认 · r4\n详设：未开始"
+          },
+          {
+            "body": "Pull the lever",
+            "confirm_enabled": false,
+            "event": "确认人 usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:46.217851+00:00",
+            "notice": "",
+            "revision": "r4 · 已确认（当前）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：已确认 · r3\n策划：已确认 · r4\n详设：未开始"
+          }
+        ],
+        "document": [
+          {
+            "body": "",
+            "confirm_enabled": false,
+            "event": "",
+            "notice": "这版文档没有此账号可读取的偃师阶段关联。",
+            "revision": null,
+            "summary": "文档 v2 尚未签认"
+          },
+          {
+            "body": "Lever on path",
+            "confirm_enabled": false,
+            "event": "确认人 usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:43.115177+00:00",
+            "notice": "",
+            "revision": "r3 · 已确认（当前）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：已确认 · r3\n策划：已确认 · r4\n详设：已确认 · r5\n文档 v1 签认 · usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:46.806053+00:00\n验收条件：One pull."
+          },
+          {
+            "body": "Pull the lever",
+            "confirm_enabled": false,
+            "event": "确认人 usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:46.217851+00:00",
+            "notice": "",
+            "revision": "r4 · 已确认（当前）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：已确认 · r3\n策划：已确认 · r4\n详设：已确认 · r5\n文档 v1 签认 · usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:46.806053+00:00\n验收条件：One pull."
+          },
+          {
+            "body": "Bridge\n\nOpen within a second\n\n验收条件：One pull.",
+            "confirm_enabled": false,
+            "event": "确认人 usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:46.789054+00:00",
+            "notice": "",
+            "revision": "r5 · 已确认（当前）",
+            "summary": "来源会话 ebde5bf9-306d-4e86-8208-3ecbe439fbc0\n方向：已确认 · r3\n策划：已确认 · r4\n详设：已确认 · r5\n文档 v1 签认 · usr_6f6138ca345b4253ae91a4cbdbaa22b2 · 2026-11-22T01:39:46.806053+00:00\n验收条件：One pull."
+          }
+        ]
+      },
+      "native_decisions": [
+        {
+          "path": "/api/v1/workspace/conversations/ebde5bf9-306d-4e86-8208-3ecbe439fbc0/design/direction/confirm",
+          "payload": {
+            "expected_version": 3,
+            "revision": 1
+          },
+          "status": 409
+        },
+        {
+          "path": "/api/v1/workspace/conversations/ebde5bf9-306d-4e86-8208-3ecbe439fbc0/design/direction/return",
+          "payload": {
+            "expected_version": 4,
+            "reason": "Include the lever location.",
+            "revision": 2
+          },
+          "status": 200
+        },
+        {
+          "path": "/api/v1/workspace/conversations/ebde5bf9-306d-4e86-8208-3ecbe439fbc0/design/direction/confirm",
+          "payload": {
+            "expected_version": 6,
+            "revision": 3
+          },
+          "status": 200
+        },
+        {
+          "path": "/api/v1/workspace/conversations/ebde5bf9-306d-4e86-8208-3ecbe439fbc0/design/plan/confirm",
+          "payload": {
+            "expected_version": 8,
+            "revision": 4
+          },
+          "status": 200
+        }
+      ],
+      "signed_document": {
+        "document_id": "doc_003140198b73431e8a14e093f8497dc9",
+        "version": 1,
+        "confirmed_by": "usr_6f6138ca345b4253ae91a4cbdbaa22b2",
+        "confirmed_at": "2026-11-22T01:39:46.806053+00:00",
+        "acceptance": "One pull."
+      },
+      "stage_revisions": [
+        {
+          "revision": 1,
+          "stage": "direction",
+          "created_by": "usr_6f6138ca345b4253ae91a4cbdbaa22b2",
+          "body": "Original direction",
+          "title": "",
+          "acceptance": "",
+          "created_at": "2026-11-22T01:39:36.348998+00:00",
+          "confirmed_at": null,
+          "confirmed_by": null
+        },
+        {
+          "revision": 2,
+          "stage": "direction",
+          "created_by": "usr_6f6138ca345b4253ae91a4cbdbaa22b2",
+          "body": "Replacement direction",
+          "title": "",
+          "acceptance": "",
+          "created_at": "2026-11-22T01:39:39.712890+00:00",
+          "confirmed_at": null,
+          "confirmed_by": null,
+          "returned_at": "2026-11-22T01:39:39.786059+00:00",
+          "returned_by": "usr_6f6138ca345b4253ae91a4cbdbaa22b2",
+          "return_reason": "Include the lever location."
+        },
+        {
+          "revision": 3,
+          "stage": "direction",
+          "created_by": "usr_6f6138ca345b4253ae91a4cbdbaa22b2",
+          "body": "Lever on path",
+          "title": "",
+          "acceptance": "",
+          "created_at": "2026-11-22T01:39:40.485816+00:00",
+          "confirmed_at": "2026-11-22T01:39:43.115177+00:00",
+          "confirmed_by": "usr_6f6138ca345b4253ae91a4cbdbaa22b2"
+        },
+        {
+          "revision": 4,
+          "stage": "plan",
+          "created_by": "usr_6f6138ca345b4253ae91a4cbdbaa22b2",
+          "body": "Pull the lever",
+          "title": "",
+          "acceptance": "",
+          "created_at": "2026-11-22T01:39:43.682041+00:00",
+          "confirmed_at": "2026-11-22T01:39:46.217851+00:00",
+          "confirmed_by": "usr_6f6138ca345b4253ae91a4cbdbaa22b2"
+        },
+        {
+          "revision": 5,
+          "stage": "design",
+          "created_by": "usr_6f6138ca345b4253ae91a4cbdbaa22b2",
+          "body": "Open within a second",
+          "title": "Bridge",
+          "acceptance": "One pull.",
+          "created_at": "2026-11-22T01:39:46.782054+00:00",
+          "confirmed_at": "2026-11-22T01:39:46.789054+00:00",
+          "confirmed_by": "usr_6f6138ca345b4253ae91a4cbdbaa22b2"
+        }
+      ],
+      "separate_approvals": {
+        "direction": 3,
+        "plan": 4,
+        "design": 5
+      },
+      "created_issues": 0
+    }
+  }
+}
