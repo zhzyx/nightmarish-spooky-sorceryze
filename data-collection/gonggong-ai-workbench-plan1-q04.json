@@ -1,0 +1,464 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-q04",
+  "issue_number": 1731,
+  "parent_issue": 1709,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731",
+  "observed_utc": "2026-11-22T19:02:53.741519+00:00",
+  "frozen_control": {
+    "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731#issuecomment-7083710413",
+    "raw_result_sha256": "ad9ea809d69b2bb36697851300f3b696fbc548ba6045c125c848aa82914074fd",
+    "issue": 1731,
+    "platform": "Windows",
+    "mode": "isolated compiled headless editor, normal WM_CLOSE_REQUEST",
+    "installed_gui_sha256": "2147dfb85d4b03a1d088c7e738301f1b81c7f74fa2509d19e15dcbbff494891f",
+    "editor": 34232,
+    "exit": 0,
+    "worker": 52824,
+    "task": "b476fe1b04d2816350995f5fa7f5c52ad8e17a2a511b76e22c74c87c92372e1c",
+    "source_revision": {
+      "actor": "usr_4c8dafff629849beae3e69efe6deeca5",
+      "mandate": "installed-test-plan",
+      "source_revision": "f85c246b319058cf47ceb5257c7bbc3b2248a4166e94f30de34f182722c2012c",
+      "stage": {
+        "confirmation_revision": 1,
+        "confirmed_by": "usr_4c8dafff629849beae3e69efe6deeca5",
+        "criteria": "preview.svg shows one blue circle of radius 12",
+        "document_id": "doc_69e1176629f447ceacad7ef6d1be887a",
+        "issue_id": "iss_9ff4dbf780184b74829e2312e88fb38c",
+        "issue_revision": "026293f558d9903e9596e5a4d4619f34f00ccf850fccad47afbbe76243d51bab",
+        "responsible_user": "usr_4c8dafff629849beae3e69efe6deeca5",
+        "stage": "preview",
+        "target_revision": 1,
+        "version": 1
+      }
+    },
+    "answered_challenge_after_editor_exit": true,
+    "state_after_close": "running",
+    "state_after_cleanup": "produced",
+    "passed": false
+  },
+  "frozen_editor_with_fixed_service": {
+    "editor_sha256": "2147dfb85d4b03a1d088c7e738301f1b81c7f74fa2509d19e15dcbbff494891f",
+    "service_source_tree": "620367530e069037fd003d1b0de82c2c311906c3",
+    "exit": 1,
+    "command": "Same Q04 harness and candidate source, --godot set to the Q06 installed GUI executable.",
+    "outcome": "TimeoutError: physical exit of the registered worker tree",
+    "timeout_seconds": 8,
+    "log_sha256": "639a15a4bed52127a471b47c47107db442382cf09bffcdc52f1a17850e4023cb"
+  },
+  "integrated_candidate": {
+    "frozen_source": "35a233f2a6910ad0ec19931bd1db12e3d4b28fa6",
+    "close_issue": 2126,
+    "close_revision": "48c3a7b0eaed3fa806f194feaee34c727473382a",
+    "sidebar_issue": 2125,
+    "sidebar_base": "91a78e9b17738cf187538e012f75f5e8302f085d",
+    "sidebar_git_blobs": {
+      "editor/docks/workbench/issue_actions/creative_judgments.gd": "fc5576f3db34d047e8e8db8da502157b105c3dd8",
+      "tests/editor/workbench_startup_judgments.gd": "3cebb50b66c897531fba0c3ce57c64e6a618c1e2",
+      "tests/editor/run_workbench_startup_judgments.py": "8c99e05b8f3862885b1c9e91e91e59684278c3d8",
+      "tests/editor/run_workbench_project_reopen.py": "bbc2497c1eb0d659675f741cdb60e9d7f206ccb2"
+    },
+    "integration_tree": "620367530e069037fd003d1b0de82c2c311906c3",
+    "overlays": {
+      "customizations/components/tianxuan/server/native_api.py": "89eebb5fcfbac324ae64774efa81fd65064536f391899a80faba113419836f1e",
+      "customizations/components/tianxuan/server/native_checkpoint.py": "77a301f45200b0aa22df326e3db01a4cc3478fae640bee6fe461f4f7dff2e6c7",
+      "customizations/components/tianxuan/server/native_installation.py": "346727d2a56be52ec318bc091948242227935c28dd254a045829d0822eff1420",
+      "customizations/components/tianxuan/server/test_native_installation_integrity.py": "22888f20d134a94ea833bcaf4dbccfedb9365c708006701cd2a9e262d3f95b4b",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "649ce20f2f306b359ea60fdb27178dabc4d26c91063c0caa402743d11edb273a",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "816deaa2d670abafe56cdaf807dec46e8b00c5621a4ec4ac9ff98f7238f9991a",
+      "customizations/components/tianxuan/sinan-workorders/test_native_editor_worker_close.py": "cb09836259e7b9d27c86d9ac36f89a2a134e4ae9b39945a589eb45e6245c607a",
+      "editor/docks/workbench/business_session.gd": "90087913261e44cf1adb17ff1c37f8288263952406b64a828c36e611217ef818",
+      "editor/docks/workbench/issue_actions/creative_judgments.gd": "33ae54ee11d40a89e2b3d3d85fe946fbfcfb3ad18b5ac12498a0c2ee80368774",
+      "tests/editor/run_macos_registered_worker_close.py": "93cd7f61f7f0d6afc40710c947a9def1089d6797b35995ed57ed1110edbd39f7",
+      "tests/editor/run_workbench_project_reopen.py": "3f6b40c9c6e469bb4d4bea4e2510acfff0429622dd07a6d13ec791a8d3912eb5",
+      "tests/editor/run_workbench_startup_judgments.py": "8f0d175237d08e22d19939e441ec2be250e6c19a840fc2f9bb55b12c90772649",
+      "tests/editor/workbench_startup_judgments.gd": "239c2b8c7d1ceea6088ea8fe54458d331b0b9fbfed73258ea9a0de1933866185"
+    },
+    "executable": {
+      "godot.windows.editor.x86_64.exe": "d2a082640d1ffb181096ea47f0512484b8232b7be255f791042c5e7708aa7d28",
+      "godot.windows.editor.x86_64.console.exe": "780b56c299ae9cff16e5263ba38a6e95ebb6fa40d74ff8dd77506665be4ce093",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+    },
+    "toolchain": "Windows x86_64, MSVC 14.5 / Windows SDK 10.0.26100.0, Python 3.14.3, SCons 4.11.1",
+    "build_log_sha256": "185d85a6d61266f9382a772bcad8f30ec3cbe450e7dc77551177a414bc19089f",
+    "cache": "Existing object cache, --cache-readonly",
+    "replay": [
+      "git clone --no-checkout . $src",
+      "git -C $src checkout --detach 35a233f2a6910ad0ec19931bd1db12e3d4b28fa6",
+      "git -C $src restore --source=48c3a7b0eaed3fa806f194feaee34c727473382a --staged --worktree -- customizations/components/tianxuan/server/native_api.py customizations/components/tianxuan/server/native_checkpoint.py customizations/components/tianxuan/server/native_installation.py customizations/components/tianxuan/server/test_native_installation_integrity.py customizations/components/tianxuan/sinan-workorders/native_worker.py customizations/components/tianxuan/sinan-workorders/native_workflow.py customizations/components/tianxuan/sinan-workorders/test_native_editor_worker_close.py editor/docks/workbench/business_session.gd tests/editor/run_macos_registered_worker_close.py",
+      "git -C $src update-index --add --cacheinfo 100644,fc5576f3db34d047e8e8db8da502157b105c3dd8,editor/docks/workbench/issue_actions/creative_judgments.gd",
+      "git -C $src update-index --add --cacheinfo 100644,3cebb50b66c897531fba0c3ce57c64e6a618c1e2,tests/editor/workbench_startup_judgments.gd",
+      "git -C $src update-index --add --cacheinfo 100644,8c99e05b8f3862885b1c9e91e91e59684278c3d8,tests/editor/run_workbench_startup_judgments.py",
+      "git -C $src update-index --add --cacheinfo 100644,bbc2497c1eb0d659675f741cdb60e9d7f206ccb2,tests/editor/run_workbench_project_reopen.py",
+      "git -C $src restore --worktree -- editor/docks/workbench/issue_actions/creative_judgments.gd tests/editor/workbench_startup_judgments.gd tests/editor/run_workbench_startup_judgments.py tests/editor/run_workbench_project_reopen.py",
+      "git -C $src write-tree",
+      "Push-Location $src",
+      "& $buildPython tools/install_webview2.py --arch x64 --output-dir bin",
+      "& $buildPython -m SCons -j8 platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no",
+      "Pop-Location",
+      "& $testPython -X utf8 tests/editor/run_windows_close_reopen.py --source $src --godot (Join-Path $src 'bin/godot.windows.editor.x86_64.exe') --report q04-replay.json"
+    ],
+    "replay_notes": "Run from a checkout containing the frozen source, #2126 and the exact #2125 sidebar Git blobs. If #2125 is still a working copy, use git -C $src hash-object -w -- <matching upstream file> for each of the four files and verify the resulting ID against sidebar_git_blobs. Set $src to an unused directory, $buildPython and $testPython to their respective interpreters. Compare the write-tree result to integration_tree before building. An optional cache_path=... --cache-readonly was used for the recorded build. MSVC output hashes identify the tested binary; rebuild time/path may change them."
+  },
+  "checks": {
+    "script_sha256": "cc3afd8d822bb954b076f0e7f3ad327e599c0f4b23a55a4db868fdd5dae8a553",
+    "original_report_sha256": "3cf6647b180da286d57c9498fd014d5a99c6cd2ec89262a9313bd1cb5526e1fe",
+    "close_service_pytest": "4 passed",
+    "combined": {
+      "platform": "Windows-11-10.0.26200-SP0",
+      "python": "3.12.14",
+      "editor_sha256": "d2a082640d1ffb181096ea47f0512484b8232b7be255f791042c5e7708aa7d28",
+      "actor": "usr_01890e5a34b14bee9ac80d01433e608b",
+      "project": "studio",
+      "scope": "Windows GUI executable with headless display and normal window close",
+      "before": {
+        "task": "a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3",
+        "issue": "iss_f98a8359585d41eea2eb842571ffc0a4",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_01890e5a34b14bee9ac80d01433e608b",
+          "mandate": "installed-test-plan",
+          "source_revision": "e4afd2554d93688b284c4d47095e1448b564d4a3f151cdf81789c2938de7f33d",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_01890e5a34b14bee9ac80d01433e608b",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_65119bdfd3da48ae9a166abf904a331d",
+            "issue_id": "iss_f98a8359585d41eea2eb842571ffc0a4",
+            "issue_revision": "002608b11c21044902e4c79cfa6fdefa7083436da20760499cb866fa87ded566",
+            "responsible_user": "usr_01890e5a34b14bee9ac80d01433e608b",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "ready",
+        "completed_steps": [
+          "authorized"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {},
+        "candidate": null,
+        "calls": {
+          "worker": "native-worker:a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3",
+          "model_calls": null
+        },
+        "stage_receipt": null,
+        "pending_decision": null
+      },
+      "running": {
+        "task": "a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3",
+        "issue": "iss_f98a8359585d41eea2eb842571ffc0a4",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_01890e5a34b14bee9ac80d01433e608b",
+          "mandate": "installed-test-plan",
+          "source_revision": "e4afd2554d93688b284c4d47095e1448b564d4a3f151cdf81789c2938de7f33d",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_01890e5a34b14bee9ac80d01433e608b",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_65119bdfd3da48ae9a166abf904a331d",
+            "issue_id": "iss_f98a8359585d41eea2eb842571ffc0a4",
+            "issue_revision": "002608b11c21044902e4c79cfa6fdefa7083436da20760499cb866fa87ded566",
+            "responsible_user": "usr_01890e5a34b14bee9ac80d01433e608b",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "running",
+        "completed_steps": [
+          "authorized",
+          "reserved"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {},
+        "candidate": null,
+        "calls": {
+          "worker": "native-worker:a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3",
+          "model_calls": null
+        },
+        "stage_receipt": null,
+        "pending_decision": {
+          "kind": "worker-terminal",
+          "task": "a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3"
+        }
+      },
+      "interrupted": {
+        "task": "a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3",
+        "issue": "iss_f98a8359585d41eea2eb842571ffc0a4",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_01890e5a34b14bee9ac80d01433e608b",
+          "mandate": "installed-test-plan",
+          "source_revision": "e4afd2554d93688b284c4d47095e1448b564d4a3f151cdf81789c2938de7f33d",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_01890e5a34b14bee9ac80d01433e608b",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_65119bdfd3da48ae9a166abf904a331d",
+            "issue_id": "iss_f98a8359585d41eea2eb842571ffc0a4",
+            "issue_revision": "002608b11c21044902e4c79cfa6fdefa7083436da20760499cb866fa87ded566",
+            "responsible_user": "usr_01890e5a34b14bee9ac80d01433e608b",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "editor-interrupted",
+        "completed_steps": [
+          "authorized"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {},
+        "candidate": null,
+        "calls": {
+          "worker": "native-worker:a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3",
+          "model_calls": null
+        },
+        "stage_receipt": null,
+        "pending_decision": null
+      },
+      "interruption": {
+        "archive": "a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3.interrupted-767af05080f74dc9a89a5428f6461e82",
+        "checkpoint": "immutable-inputs",
+        "state": "editor-interrupted",
+        "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "finished": {
+        "task": "a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3",
+        "issue": "iss_f98a8359585d41eea2eb842571ffc0a4",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_01890e5a34b14bee9ac80d01433e608b",
+          "mandate": "installed-test-plan",
+          "source_revision": "e4afd2554d93688b284c4d47095e1448b564d4a3f151cdf81789c2938de7f33d",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_01890e5a34b14bee9ac80d01433e608b",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_65119bdfd3da48ae9a166abf904a331d",
+            "issue_id": "iss_f98a8359585d41eea2eb842571ffc0a4",
+            "issue_revision": "002608b11c21044902e4c79cfa6fdefa7083436da20760499cb866fa87ded566",
+            "responsible_user": "usr_01890e5a34b14bee9ac80d01433e608b",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "stage-reached",
+        "completed_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal",
+          "stage-checked"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "calls": {
+          "worker": "native-worker:a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3",
+          "model_calls": null
+        },
+        "stage_receipt": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_01890e5a34b14bee9ac80d01433e608b",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_65119bdfd3da48ae9a166abf904a331d",
+            "issue_id": "iss_f98a8359585d41eea2eb842571ffc0a4",
+            "issue_revision": "002608b11c21044902e4c79cfa6fdefa7083436da20760499cb866fa87ded566",
+            "responsible_user": "usr_01890e5a34b14bee9ac80d01433e608b",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "4fc47a6982d2539918670b5ed0a6d79db1f06ce42710ceb71446d36691111ac2",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3"
+        },
+        "pending_decision": {
+          "kind": "stage-confirmation",
+          "task": "a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3"
+        }
+      },
+      "service_pid": 10976,
+      "closed_editor": {
+        "pid": 114812,
+        "exit": 0,
+        "result": {
+          "display_driver": "headless",
+          "elapsed_ms": 4289,
+          "pid": 114812,
+          "selected": "AI Chat",
+          "sidebar_visible": false
+        }
+      },
+      "closed_worker_pids": [
+        36512,
+        33696
+      ],
+      "answered_before_exit": true,
+      "answered_after_exit": false,
+      "layout_sha256": "e53f49caf1c225c49abfedf9a71a8d69ed5713009553f2e40d120110061a82ea",
+      "pending": {
+        "issue_id": "iss_e5c468edf3fb49228184fe2e428cd4ab",
+        "number": 2,
+        "title": "Animate",
+        "question": "visible",
+        "submission_version": 1,
+        "module": "b",
+        "revision": "48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+        "path": "sketch.svg",
+        "kind": "concept"
+      },
+      "reopened_editor": {
+        "pid": 84824,
+        "exit": 0,
+        "result": {
+          "bound_before_layout": true,
+          "display_driver": "headless",
+          "editor_bounds": "[P: (0.0, 0.0), S: (1440.0, 960.0)]",
+          "elapsed_ms": 4273,
+          "focus": "/root/@EditorNode@21765/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/DockVSplitRightL/DockSlotRightUL/AIWorkbenchSidebar/WorkbenchSidebarScroll/@VBoxContainer@10351/WorkbenchBusinessSession/WorkbenchIssueDetail/creative_judgments/PendingJudgmentRows/@Button@23228",
+          "pid": 84824,
+          "revision": "b @ 48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+          "row": "#2 Animate · sketch.svg\nvisible",
+          "row_bounds": "[P: (1068.0, 160.0), S: (350.0, 44.0)]",
+          "row_visible": true,
+          "scroll_bounds": "[P: (1068.0, 122.0), S: (364.0, 830.0)]",
+          "selected": "3D",
+          "sidebar_visible": true,
+          "still_focused_after_recovery": true,
+          "visible_focused_with_worker_ms": 3857,
+          "worker_started_while_focused": true
+        }
+      },
+      "repeated_editor_pid": 89028,
+      "repeated_editor_exit": 0,
+      "first_reopen_http": [
+        {
+          "method": "GET",
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/native/workflow/recover-occupancy",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/work/my-judgments",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/native/workflow/recover-project",
+          "status": 200
+        }
+      ],
+      "repeat_reopen_http": [
+        {
+          "method": "GET",
+          "path": "/api/v1/auth/me",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/native/workflow/recover-occupancy",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/work/my-judgments",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/api/v1/native/workflow/recover-project",
+          "status": 200
+        }
+      ],
+      "processes": {
+        "workers": [
+          36512,
+          81060
+        ],
+        "checkers": [
+          119640
+        ]
+      },
+      "candidate_receipts": [
+        "worker-a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3"
+      ],
+      "candidate_intake_calls": 1,
+      "duplicate_submissions": 0,
+      "preview_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+      "passed": true
+    }
+  }
+}

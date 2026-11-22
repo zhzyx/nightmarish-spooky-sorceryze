@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-90a1ee3510e9f285decb1bf4168a90182ba430675d1561748eea717f809602ce",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731",
+  "occurred_at": "2026-11-23T03:03:47.0335951+08:00",
+  "evidence_refs": [
+    "dispatch-22cc1977bbf541b5a324dbcf3c28acc1",
+    "learn-2988ccb934947848e629b25e5811c2f1a9176f9d54de0c8d40d3ef5dd331d17a"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "reconstruct-worker-outcomes",
+    "revision": 8,
+    "previous": "129dd1aafb7e1bd57b390e34989098228f6a7fecf943b746c0926886677aab03",
+    "action": "applied",
+    "details": {
+      "task": "Q04 #1731 正常关闭 Windows 编辑器并重开同一签发任务",
+      "observed": "冻结版退出后工作者仍应答。集成候选的工作者和子进程由 Windows 回读为已退出，废弃输出留在归档。同一授权及输入恢复到可审核的预览检查点，再开后的接收调用和持久候选均为一条。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-q04.json",
+        "sha256": "b473fd58f4e3dd283e6d97288605fc1ae750c6439b1525423d8cc8c71f8d18d0"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q04/dispatch-22cc1977bbf541b5a324dbcf3c28acc1.json",
+      "sha256": "b6e9b8168f668882af0181521762ea58e86c9ff376523cdfc19ab7634b5d824f"
+    }
+  },
+  "sha256": "5897b127adcdf3231c6f8683cd8cd98e209e89fbc25f62ec517a5e5d3be42fd3"
+}
