@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import base64
 import binascii
 import hashlib
@@ -39,6 +40,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
         fields = {
             "inspect": set(),
             "advance": set(),
+            "await-judgment": {"issue", "binding"},
+            "admit-judgment": {"issue", "binding"},
             "status": {"key"},
             "checkpoint": {"key"},
             "recovery": {"project"},
@@ -90,6 +93,10 @@ def create_native_workflow_router(workflow) -> APIRouter:
             and (not isinstance(payload["after"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["after"]))
         ):
             raise HTTPException(422, "invalid recovery cursor")
+        if "binding" in payload and (
+            not isinstance(payload["binding"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["binding"])
+        ):
+            raise HTTPException(422, "exact creative dependency binding required")
         if operation == "advance" and (
             not isinstance(payload.get("exclude", []), list)
             or len(payload.get("exclude", [])) > 1024
@@ -187,6 +194,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 return workflow.renew_stage(actor, **payload)
             if operation == "revise":
                 return workflow.authorize_installed(actor, payload["issue"], expected=payload["expected"])
+            if operation == "admit-judgment":
+                return workflow.authorize_installed(actor, payload["issue"], _judgment_binding=payload["binding"])
             if operation == "authorize":
                 return workflow.authorize_installed(actor, payload["issue"])
             if operation == "publish":
@@ -222,6 +231,22 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 if _identity(request, refresh=True)[1] != actor:
                     raise HTTPException(401, "publisher observer identity changed")
                 return result
+            if operation == "await-judgment":
+                # A CLI may disconnect while a person considers the artwork. Release that subscription.
+                waiting = asyncio.create_task(workflow.await_judgment(actor, payload["issue"], payload["binding"]))
+                disconnected = asyncio.create_task(request.receive())
+                try:
+                    await asyncio.wait((waiting, disconnected), return_when=asyncio.FIRST_COMPLETED)
+                    if not waiting.done():
+                        raise HTTPException(499, "creative observer disconnected")
+                    await waiting
+                finally:
+                    for task in (waiting, disconnected):
+                        task.cancel()
+                    await asyncio.gather(waiting, disconnected, return_exceptions=True)
+                if _identity(request, refresh=True)[1] != actor:
+                    raise HTTPException(401, "creative observer identity changed")
+                return {"observed": True}
             if operation == "await-terminal":
                 result = await workflow.await_terminal(actor, payload["key"])
                 # Sessions may have been revoked while the observer was asleep.

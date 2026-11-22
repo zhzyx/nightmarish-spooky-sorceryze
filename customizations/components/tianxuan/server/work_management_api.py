@@ -31,7 +31,7 @@ class LifecycleRequest(BaseModel):
     comment: str | None = None
 
 
-def create_work_router(store, actor_dependency):
+def create_work_router(store, actor_dependency, native_workflow=None):
     router = APIRouter(prefix="/api/v1")
     actor_dep = Depends(actor_dependency)
 
@@ -140,9 +140,12 @@ def create_work_router(store, actor_dependency):
     ):
         if "issue_id" in body:
             raise HTTPException(422, "issue_id belongs in the request path")
-        return execute_flow(
+        result = execute_flow(
             store, actor, f"flow.{operation}", {**body, "issue_id": issue_id}, human=operation == "judge"
         )
+        if native_workflow is not None:
+            native_workflow.judgment_changed(issue_id)
+        return result
 
     @router.post("/issues/{issue_id}/work/{operation}")
     def mutate(
@@ -158,7 +161,11 @@ def create_work_router(store, actor_dependency):
         if not isinstance(call_id, str) or not call_id.strip():
             raise HTTPException(422, "a stable call_id is required")
         if operation in ("decide", "transfer"):
-            return execute(store, actor, f"work.{operation}", payload, call_id=call_id, human=True)
+            result = execute(store, actor, f"work.{operation}", payload, call_id=call_id, human=True)
+            if operation == "decide" and native_workflow is not None:
+                event = result["history"][-1]
+                native_workflow.judgment_changed(issue_id, event["submission_version"])
+            return result
         return store.dispatch_tool(actor, f"work.{operation}", payload, call_id=call_id)
 
     return router
