@@ -25,6 +25,71 @@ def get_state(response, status=200):
     return response.json()
 
 
+def test_issue_chat_comment_binds_editor_scope_and_stage_signer(tmp_path, monkeypatch):
+    store = Tianxuan(str(tmp_path / "comments.sqlite"))
+    owner = store.register("Studio", "o@example.invalid", "fixture-pass")["user_id"]
+    editor = store.add_member(owner, "e@example.invalid", "fixture-pass")["user_id"]
+    monkeypatch.setattr(
+        "workspace_conversations.workspace_reply", lambda *args: {"content": "Reviewed", "model": "test"}
+    )
+    project = "studio"
+    ordinary = store.create_issue(owner, "Review", project=project)
+    doc = store.create_doc(owner, "Bridge", "A")["id"]
+    store.design_signoff(owner, doc, 1, "Check A")
+    task = store.split_design(
+        owner, doc, 1, project, [dict(title="Review", paragraph=1, module_id="default", acceptance="A")], "split"
+    )[0]["id"]
+    revision = store.issue_snapshot(owner, task)["revision"]
+    store.set_task_target(owner, task, project, doc, 1, 0, "工单评论", "Publish A")
+    store.set_task_confirmation(owner, task, project, doc, 1, 1, revision, 0, "confirmed")
+    try:
+        with TestClient(create_app(store), headers=headers(store, owner, editor)) as client:
+            client.params = {"project": project}
+
+            def prepare(issue_id):
+                chat = get_state(client.post(f"{ROOT}/for-issue/{issue_id}", json={}))
+                path = f"{ROOT}/{chat['id']}"
+                ref = {
+                    "kind": "issue",
+                    "object_id": issue_id,
+                    "revision": store.issue_snapshot(editor, issue_id)["revision"],
+                }
+                snapshot = {"project": project, "module_id": "default", "issue_id": issue_id, "references": [ref]}
+                turn = {
+                    "id": str(uuid4()),
+                    "content": "Draft a comment",
+                    "expected_version": 0,
+                    "context_snapshot": snapshot,
+                }
+                answer = get_state(client.post(path + "/turns", json=turn))
+                return path + "/issue-comment", dict(
+                    expected_version=answer["version"],
+                    turn_id=turn["id"],
+                    issue=ref,
+                    body=answer["turns"][-1]["answer"],
+                )
+
+            path, payload = prepare(task)
+            assert (
+                client.post(path, json=payload | {"target_revision": 1, "confirmation_revision": 1}).status_code == 403
+            )
+            assert not store.list_issue_comments(owner, task)
+            issue = ordinary["id"]
+            path, payload = prepare(issue)
+            module = store.create_business_module(owner, project, "Lighting", call_id="module")
+            store.set_issue_module(owner, issue, project, module["id"])
+            assert store.issue_snapshot(editor, issue)["revision"] == payload["issue"]["revision"]
+            assert client.post(path, json=payload).status_code == 409
+            assert not store.list_issue_comments(owner, issue)
+            store.set_issue_module(owner, issue, project, "default")
+            comment = get_state(client.post(path, json=payload))["comment"]
+            assert comment["author"] == editor and comment["body"] == "Reviewed"
+            assert get_state(client.post(path, json=payload))["comment"] == comment
+            assert store.list_issue_comments(editor, issue) == [comment]
+    finally:
+        store.db.close()
+
+
 def test_extend_draft_preserves_markdown_and_discards_only_echoed_blocks():
     body = "  Handwritten paragraph.\r\n\r\nAnother one."
     response = "Another one.\n\n```text\nexample\n\nAnother one.\n```"

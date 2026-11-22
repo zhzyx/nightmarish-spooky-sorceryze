@@ -15,6 +15,11 @@ var page: Label
 var history: TextEdit
 var composer: TextEdit
 var document_links := MenuButton.new()
+var comment_action := Button.new()
+var comment_dialog := ConfirmationDialog.new()
+var comment_preview := TextEdit.new()
+var reviewed_comment := {}
+var issue_view: Node
 var design_action := Button.new()
 var progress_action := Button.new()
 var design := DirectionDraft.new()
@@ -99,6 +104,20 @@ func _ready() -> void:
 	send.name = "ModuleSend"
 	send.pressed.connect(_send)
 	content.add_child(send)
+	comment_action.name = "ReviewIssueChatComment"
+	comment_action.text = "将本轮回复拟为工单评论…"
+	comment_action.pressed.connect(_review_issue_comment)
+	comment_action.hide()
+	content.add_child(comment_action)
+	comment_dialog.name = "AuthorizeIssueChatComment"
+	comment_dialog.get_ok_button().text = "授权发表"
+	comment_dialog.confirmed.connect(_publish_issue_comment)
+	comment_dialog.canceled.connect(func(): reviewed_comment.clear())
+	comment_preview.editable = false
+	comment_preview.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	comment_preview.custom_minimum_size = Vector2(380, 170)
+	comment_dialog.add_child(comment_preview)
+	add_child(comment_dialog)
 	design_action.name = "ModuleDesignAction"
 	design_action.pressed.connect(_open_design)
 	content.add_child(design_action)
@@ -129,6 +148,8 @@ func _bind_session() -> void:
 		managed_identity = true
 		var detail := session.find_child("WorkbenchIssueDetail", true, false)
 		if detail:
+			issue_view = detail
+			detail.detail_changed.connect(_comment_context_changed)
 			detail.consultation_requested.connect(_open_issue_consultation.bind(detail))
 		session.connect("identity_changed", _identity_changed)
 		if session.has_signal("identity_resetting"):
@@ -137,6 +158,7 @@ func _bind_session() -> void:
 
 
 func _identity_changed() -> void:
+	_comment_context_changed()
 	identity_generation += 1
 	design.reset()
 	module_id = ""
@@ -221,6 +243,7 @@ func _lock(value: bool) -> void:
 	issues.disabled = value
 	composer.editable = not value
 	send.disabled = value
+	comment_action.disabled = value
 	design_action.disabled = value
 	progress_action.disabled = value
 	if not busy:
@@ -553,6 +576,7 @@ func redact_reference(text: String) -> String:
 
 
 func _render() -> void:
+	_comment_context_changed()
 	if asset_picker:
 		asset_picker.update_issue_button()
 	page.text = location.get("position", "")
@@ -591,6 +615,66 @@ func _render() -> void:
 	design_action.text = "打开本次咨询的需求文档" if published else "从咨询形成方向草稿"
 	design_action.visible = consultation_detail.is_empty() and ((published and is_instance_valid(session)) or (
 		not published and not conversation.get("turns", []).is_empty() and revision.get("confirmed_at") == null))
+
+
+func _comment_payload() -> Dictionary:
+	if consultation_detail.is_empty() or not is_instance_valid(issue_view) or issue_view.get_detail() != consultation_detail:
+		return {}
+	if not consultation_detail.get("can_classify", false) or conversation.get("turns", []).is_empty() or location.get("issue_id") != consultation_detail.id:
+		return {}
+	var turn: Dictionary = conversation.turns.back()
+	var ref := {"kind": "issue", "object_id": consultation_detail.id, "revision": consultation_detail.revision}
+	if turn.state != "answered" or turn.has("issue_comment") or not turn.get("context_snapshot", {}).get("references", []).has(ref):
+		return {}
+	var payload := {"expected_version": int(conversation.version), "issue": ref, "turn_id": turn.id, "body": turn.answer}
+	if consultation_detail.get("design_source") != null:
+		var grant: Variant = consultation_detail.task_confirmation
+		if not grant is Dictionary or grant.status != "confirmed" or grant.stage != "工单评论" or grant.confirmed_by != session.get_identity().get("id"):
+			return {}
+		payload.target_revision = int(grant.target_revision)
+		payload.confirmation_revision = int(grant.revision)
+	return payload
+
+
+func _comment_context_changed() -> void:
+	reviewed_comment.clear()
+	comment_dialog.hide()
+	comment_action.visible = not _comment_payload().is_empty()
+
+
+func _review_issue_comment() -> void:
+	if busy:
+		return
+	reviewed_comment = _comment_payload()
+	if reviewed_comment.is_empty():
+		return
+	comment_dialog.title = "发表到 #%d %s" % [int(consultation_detail.number), consultation_detail.title]
+	comment_preview.text = reviewed_comment.body
+	comment_dialog.popup_centered()
+
+
+func _publish_issue_comment() -> void:
+	if busy or reviewed_comment.is_empty() or reviewed_comment != _comment_payload():
+		return
+	var payload := reviewed_comment.duplicate(true)
+	reviewed_comment.clear()
+	var generation := identity_generation
+	var key: String = conversation.id
+	_lock(true)
+	var result := await _request(CONVERSATIONS + "/" + key + "/issue-comment", HTTPClient.METHOD_POST, payload)
+	if generation != identity_generation:
+		return
+	if not result.is_empty() and _comment_payload() == payload and key == conversation.get("id"):
+		var receipt: Dictionary = result.comment
+		conversation = result.conversation
+		_render()
+		var widget := issue_view.get_node("issue_comments")
+		var shown: bool = await widget.reveal_comment(receipt)
+		if generation != identity_generation:
+			return
+		if issue_view.get_detail().get("id") == payload.issue.object_id:
+			_notice("工单评论已发表并回读。" if shown else "已发表，请在工单详情重读评论。")
+	_lock(false)
 
 
 func stage_document_reference(ref: Dictionary) -> bool:

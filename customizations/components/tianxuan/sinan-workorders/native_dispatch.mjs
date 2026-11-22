@@ -3,10 +3,15 @@ import {dispatchEvent} from '../../../platforms/process-management/yuanheng-loca
 import {pathToFileURL} from 'node:url';
 
 export async function dispatchNative(event, requests, service, launch) {
+  let catalog;
   const host = {
     // Server reserve performs atomic capacity/source comparison; no network lock.
     withLock: fn => fn(),
-    inspect: () => service('inspect', {}),
+    inspect: async () => {
+      const board = await service('inspect', {});
+      catalog = board.environment.catalog;
+      return board;
+    },
     revalidate: a => service('revalidate', {assignment: a}),
     reserve: (a, e) => service('reserve', {assignment: a, event: e}),
     startSource: a => service('start', {assignment: a}),
@@ -14,7 +19,19 @@ export async function dispatchNative(event, requests, service, launch) {
     ack: (a, receipt) => service('ack', {assignment: a, receipt}),
     record: value => service('record', value),
   };
-  return dispatchEvent(event, requests, host);
+  const batch = await dispatchEvent(event, requests, host);
+  const byTicket = new Map(requests.map(request => [request.ticket, request]));
+  for (const item of batch.deferred) {
+    if (item.reason !== 'required_model_or_capabilities_unavailable') continue;
+    const request = byTicket.get(item.ticket);
+    // Native contracts pin the installed profile before dispatch.
+    const model = catalog.find(entry => entry.id === request.model);
+    item.model = request.model;
+    item.modelAvailable = model?.available === true && model.targets.includes(request.target ?? 'agent');
+    item.requiredCapabilities = request.capabilities;
+    item.missingCapabilities = request.capabilities.filter(capability => !model?.capabilities.includes(capability));
+  }
+  return batch;
 }
 
 export function httpService(base, token, {executeTimeoutMs = 120000} = {}) {
@@ -40,6 +57,7 @@ export function httpService(base, token, {executeTimeoutMs = 120000} = {}) {
 export async function driveNative(service, initial = {type: 'user.requested', reference: 'native-cli'}) {
   const watched = new Set(), continuousEvents = new Set();
   const checked = new Set(), integrated = new Set(), groupErrors = new Set();
+  const verifiedStages = new Set();
   const attempted = new Set(), finished = new Set(), pending = new Set(), rejectedEvents = new Set();
   const result = {results: [], deliveries: [], deferred: [], errors: []};
   let coordinator = Promise.resolve();
@@ -124,6 +142,20 @@ export async function driveNative(service, initial = {type: 'user.requested', re
         })());
       }
       for (const group of board.integrations?.ready ?? []) if (!integrated.has(group.key)) track(integrate(group.key));
+      for (const key of board.stage_checks ?? []) {
+        if (delivering >= deliveryCapacity) break;
+        if (verifiedStages.has(key)) continue;
+        verifiedStages.add(key);
+        delivering++;
+        track((async () => {
+          try {
+            const receipt = await service('verify-stage', {key});
+            (result.stages ??= []).push(receipt);
+          } catch (error) {result.errors.push({key, stage: 'verify-stage', reason: String(error.message ?? error)});}
+          finally {delivering--;}
+          await signal({type: 'execution.finished', reference: key});
+        })());
+      }
       for (const key of [...(board.produced ?? []), ...(board.contributions ?? [])]) if (!finished.has(key)) track(delivery(key, (board.contributions ?? []).includes(key)));
       const requests = board.requests.filter(request => !attempted.has(request.ticket));
       if (!requests.length) return;
@@ -138,7 +170,7 @@ export async function driveNative(service, initial = {type: 'user.requested', re
           if (['reserved', 'running', 'held'].includes(terminal.state)) terminal = await observe(assignment.ticket);
           // The terminal frees production capacity before potentially slow review.
           await signal({type: 'execution.finished', reference: assignment.ticket});
-          if (!['produced', 'accepted'].includes(terminal.state)) throw Error('Worker not successfully terminal');
+          if (!['produced', 'accepted', 'stage-reached', 'stage-unmet'].includes(terminal.state)) throw Error('Worker not successfully terminal');
           return {workerId: assignment.ticket, reference: assignment.ticket, model: assignment.model.id, target: assignment.target};
         } catch (error) {
           await signal({type: 'execution.failed', reference: assignment.ticket});

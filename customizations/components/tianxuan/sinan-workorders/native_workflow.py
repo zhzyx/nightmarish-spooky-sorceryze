@@ -13,7 +13,7 @@ from concurrent.futures import Future
 from contextlib import contextmanager
 
 from native_store import NativeStoreError, _digest, _json
-from tianxuan_core import PermissionDenied
+from tianxuan_core import PermissionDenied, VersionConflict
 
 
 class StageAuthorizationChanged(NativeStoreError):
@@ -104,6 +104,7 @@ class NativeWorkflow:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS native_workflow_targets (task TEXT PRIMARY KEY, target TEXT NOT NULL)"
             )
+            db.execute("CREATE TABLE IF NOT EXISTS native_stage_results (task TEXT PRIMARY KEY, receipt TEXT NOT NULL)")
             db.execute("CREATE INDEX IF NOT EXISTS native_tasks_ready ON native_tasks(tenant,state,ready_at,id)")
 
     @contextmanager
@@ -125,50 +126,14 @@ class NativeWorkflow:
         if self.authorize(actor, issue, action) is not True:
             raise PermissionDenied("Native workflow authority denied")
         if action in {"authorize", "execute", "check"}:
-            authority = self._stage_authority(actor, issue, source["revision"])
+            try:
+                authority = self.domain.task_stage_authority(actor, issue, source["revision"])
+            except VersionConflict as exc:
+                raise StageAuthorizationChanged(str(exc)) from exc
             if authority is not None:
                 definition = {**source["definition"], "stage_authorization": authority}
                 return {"definition": definition, "revision": _digest(_json(definition).encode())}
         return source
-
-    def _stage_authority(self, actor, issue, issue_revision):
-        # Membership is independent of source visibility. A private design or a
-        # missing confirmation must never take the ordinary issue path.
-        with self.domain._connection_lock:
-            record = self.domain.db.execute(
-                "SELECT i.project,i.number FROM design_task_sources s JOIN issues i ON i.id=s.issue_id "
-                "WHERE s.issue_id=?",
-                (issue,),
-            ).fetchone()
-            if record is None:
-                return None
-            detail = self.domain.read_issue_detail(actor, record["project"], record["number"])
-        source = detail["design_source"]
-        if not source:
-            raise PermissionDenied("Signed task source unavailable")
-        target = detail["task_target"]
-        confirmation = detail.get("task_confirmation")
-        if not target or target["status"] != "defined" or not confirmation or confirmation["status"] != "confirmed":
-            raise StageAuthorizationChanged("Current task stage confirmation required")
-        responsible = detail["assignee"]["id"] if detail["assignee"] else detail["created_by"]
-        binding = {
-            "issue_id": issue,
-            "issue_revision": issue_revision,
-            "document_id": source["document_id"],
-            "version": source["version"],
-            "target_revision": target["revision"],
-            "stage": target["stage"],
-            "responsible_user": responsible,
-            "confirmed_by": responsible,
-        }
-        if (
-            any(confirmation.get(name) != value for name, value in binding.items())
-            or any(target[name] != binding[name] for name in ("issue_id", "document_id", "version"))
-            or not target["criteria"]
-            or not confirmation["revision"]
-        ):
-            raise StageAuthorizationChanged("Task stage confirmation changed")
-        return {**binding, "confirmation_revision": confirmation["revision"], "criteria": target["criteria"]}
 
     def _row(self, db, key):
         row = db.execute("SELECT * FROM native_tasks WHERE id=?", (key,)).fetchone()
@@ -180,6 +145,16 @@ class NativeWorkflow:
         with self._transaction() as db:
             row = self._row(db, key)
             self._read_allowed(actor, row)
+            task = json.loads(row["task"])
+            if task["source"]["definition"].get("stage_authorization"):
+                saved = db.execute("SELECT receipt FROM native_stage_results WHERE task=?", (key,)).fetchone()
+                if saved:
+                    row["stage_result"] = json.loads(saved["receipt"])
+                elif row["state"] == "produced":
+                    row["stage_result"] = dict(
+                        state="pending",
+                        reason="awaiting_stage_check" if "stage_criteria" in task else "stage_criteria_check_unbound",
+                    )
             return row
 
     def _read_allowed(self, actor, row):
@@ -210,10 +185,14 @@ class NativeWorkflow:
         expected=None,
         delivery_mode="standalone",
         stage=None,
+        stage_criteria=None,
     ):
         source = self._allow(actor, issue, "authorize")
-        if stage != source["definition"].get("stage_authorization", {}).get("stage"):
+        authority = source["definition"].get("stage_authorization", {})
+        if stage != authority.get("stage"):
             raise NativeStoreError("Installed plan stage must match the confirmed target")
+        if stage_criteria is not None and stage_criteria != authority.get("criteria"):
+            raise NativeStoreError("Installed stage checks must cover the confirmed criteria")
         if delivery_mode not in {"standalone", "contribution"}:
             raise NativeStoreError("Unsupported delivery mode")
         if not mandate or not checks or profile not in self.worker.profiles:
@@ -238,6 +217,11 @@ class NativeWorkflow:
             or not all(isinstance(c, str) and c for c in capabilities)
         ):
             raise NativeStoreError("Invalid required capabilities")
+        issue_capabilities = source["definition"].get("required_capabilities", [])
+        if issue_capabilities:
+            capabilities = capabilities + [c for c in issue_capabilities if c not in capabilities]
+            if len(capabilities) > 32 or not all(c.strip() for c in issue_capabilities):
+                raise NativeStoreError("Invalid required capabilities on issue")
         producer = self.principals(actor, issue, "producer") if self.principals else actor
         task = dict(
             actor=actor,
@@ -256,6 +240,7 @@ class NativeWorkflow:
             checks=checks,
             mandate=mandate,
             delivery_mode=delivery_mode,
+            **({"stage_criteria": stage_criteria} if stage_criteria is not None else {}),
             **({"previous": expected} if expected is not None else {}),
         )
         key = _digest(_json(task).encode())
@@ -415,13 +400,20 @@ class NativeWorkflow:
                 snapshot=dict(items=items, ready=ready, sourceSnapshots=sources),
                 environment=dict(catalog=self.catalog, active=active, capacity=self.capacity),
                 requests=requests,
-                produced=self._produced_visible(actor, tenant),
+                produced=self._produced_visible(actor, tenant, stage=False),
+                stage_checks=self._produced_visible(actor, tenant, stage=True),
             )
 
-    def _produced_visible(self, actor, tenant):
+    def _produced_visible(self, actor, tenant, *, stage):
         keys = []
+        binding = (
+            "json_extract(task,'$.stage_criteria') IS NOT NULL"
+            if stage
+            else "json_extract(task,'$.source.definition.stage_authorization') IS NULL"
+        )
         for row in self.domain.db.execute(
-            "SELECT * FROM native_tasks WHERE tenant=? AND state='produced' ORDER BY ready_at,id LIMIT 1024", (tenant,)
+            f"SELECT * FROM native_tasks WHERE tenant=? AND state='produced' AND {binding} ORDER BY ready_at,id LIMIT 1024",
+            (tenant,),
         ).fetchall():
             try:
                 self._valid(actor, row)
@@ -686,6 +678,9 @@ class NativeWorkflow:
         self._dependencies_current(actor, key)
         row = self.status(actor, key)
         task = self._valid(actor, row)
+        return self._run_checks(actor, key, row, task)
+
+    def _run_checks(self, actor, key, row, task):
         if self._allow(actor, row["issue"], "check") != task["source"]:
             raise NativeStoreError("Task definition changed")
         if row["state"] != "produced":
@@ -699,6 +694,67 @@ class NativeWorkflow:
             for check in task["checks"]
         }
 
+    def verify_stage(self, actor, key):
+        """Settle only the signed stage, using its installed checks on the physical candidate."""
+        row = self.status(actor, key)
+        task = self._valid(actor, row)
+        grant = task["source"]["definition"].get("stage_authorization")
+        if not grant or task.get("stage_criteria") != grant["criteria"]:
+            raise NativeStoreError("Installed checks for the exact authorized criteria required")
+        if row["state"] in {"stage-reached", "stage-unmet"}:
+            return row["stage_result"]
+        self._dependencies_current(actor, key)
+        facts = self._run_checks(actor, key, row, task)
+        terminal = json.loads(row["terminal"])
+        candidate = terminal["candidate"]
+        # Use the same native-writer then domain-writer order as release readback.
+        # A revoked check or changed signature cannot race the recorded decision.
+        with self.runner.store._connection(write=True), self._transaction() as db:
+            current = self._row(db, key)
+            self._valid(actor, current)
+            self._allow(actor, row["issue"], "check")
+            if current["state"] in {"stage-reached", "stage-unmet"}:
+                saved = db.execute("SELECT receipt FROM native_stage_results WHERE task=?", (key,)).fetchone()
+                return json.loads(saved["receipt"])
+            if current["state"] != "produced" or current["terminal"] != row["terminal"]:
+                raise NativeStoreError("Stage candidate changed")
+            checks = {}
+            for name, fact in facts.items():
+                if (
+                    fact["state"] not in {"complete", "cached"}
+                    or not fact.get("evidence")
+                    or fact["candidate"] != candidate
+                    or fact["context"] != task["check_contexts"][name]
+                ):
+                    raise NativeStoreError("Stage check outcome unresolved")
+                passed = fact.get("outcome") != "failed"
+                if passed:
+                    current_evidence = self.runner.cache.lookup(
+                        task["tenant"], candidate, name, **task["check_contexts"][name]
+                    )
+                    if current_evidence is None or current_evidence["evidence"]["id"] != fact["evidence"]:
+                        raise NativeStoreError("Stage check evidence unavailable")
+                checks[name] = dict(evidence=fact["evidence"], outcome="passed" if passed else "failed")
+            reached = all(check["outcome"] == "passed" for check in checks.values())
+            receipt = dict(
+                task=key,
+                authorization=grant,
+                candidate=candidate,
+                modules=terminal["modules"],
+                checks=checks,
+                state="stage-reached" if reached else "stage-unmet",
+                reason="authorized_stage_criteria_met" if reached else "authorized_stage_check_failed",
+            )
+            db.execute("INSERT INTO native_stage_results VALUES (?,?)", (key, _json(receipt)))
+            db.execute("UPDATE native_tasks SET state=? WHERE id=?", (receipt["state"], key))
+            self.domain._event(task["tenant"], "native." + receipt["state"], actor, task["issue"], {"task": key})
+        return receipt
+
+    @staticmethod
+    def require_delivery(task, row):
+        if task["source"]["definition"].get("stage_authorization") and row["state"] != "accepted":
+            raise NativeStoreError("Signed task is limited to its authorized stage")
+
     def authorize_installed(self, actor, issue, *, expected=None):
         self._allow(actor, issue, "authorize")
         if not callable(self.installed_plan):
@@ -710,6 +766,7 @@ class NativeWorkflow:
         self._dependencies_current(actor, key)
         row = self.status(actor, key)
         task = self._valid(actor, row)
+        self.require_delivery(task, row)
         if task.get("delivery_mode") == "contribution":
             raise NativeStoreError("Contribution requires joint integration review")
         self._allow(actor, row["issue"], "review")
@@ -761,7 +818,9 @@ class NativeWorkflow:
     def finish(self, actor, key):
         """Installed delivery target only; a replay never silently rebases publication."""
         row = self.status(actor, key)
-        if json.loads(row["task"]).get("delivery_mode") == "contribution":
+        task = json.loads(row["task"])
+        self.require_delivery(task, row)
+        if task.get("delivery_mode") == "contribution":
             if not hasattr(self, "integration"):
                 raise NativeStoreError("Integration installation unavailable")
             return self.integration.check_contribution(actor, key)
@@ -799,6 +858,7 @@ class NativeWorkflow:
         self._dependencies_current(actor, key)
         row = self.status(actor, key)
         task = self._valid(actor, row)
+        self.require_delivery(task, row)
         self._allow(actor, row["issue"], "publish")
         if not callable(self.principals):
             raise NativeStoreError("Publisher installation unavailable")
@@ -822,6 +882,7 @@ class NativeWorkflow:
         with self._transaction() as db:
             row = self._row(db, key)
             task = self._valid(actor, row)
+            self.require_delivery(task, row)
             self._allow(actor, row["issue"], "publish")
             if row["state"] != "produced":
                 raise NativeStoreError("Confirmed producer terminal required")
@@ -852,6 +913,7 @@ class NativeWorkflow:
         self._dependencies_current(actor, key)
         row = self.status(actor, key)
         task = json.loads(row["task"])
+        self.require_delivery(task, row)
         if task.get("delivery_mode") == "contribution":
             raise NativeStoreError("Contribution requires atomic integration acceptance")
         if row["state"] == "accepted":

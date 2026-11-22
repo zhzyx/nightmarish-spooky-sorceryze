@@ -109,6 +109,14 @@ func _load_thread(restore_id: String) -> void:
 	_update_buttons()
 
 
+# Preserve the user's unsent draft when the current consultation posts a comment.
+func reveal_comment(receipt: Dictionary) -> bool:
+	if _busy or get_parent().get_detail().get("id") != receipt.get("issue_id"):
+		return false
+	await _load_thread(str(receipt.id))
+	return _selected() == receipt
+
+
 func _focus_id(comment_id: String) -> void:
 	for index in _thread.item_count:
 		if _thread.get_item_metadata(index).id == comment_id:

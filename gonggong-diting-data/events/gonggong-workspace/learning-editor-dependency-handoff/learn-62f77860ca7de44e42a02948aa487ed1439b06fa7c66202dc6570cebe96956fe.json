@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-62f77860ca7de44e42a02948aa487ed1439b06fa7c66202dc6570cebe96956fe",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1841",
+  "occurred_at": "2026-11-22T04:30:18.367982+00:00",
+  "evidence_refs": [
+    "wave22-windows-issueops-1841",
+    "learn-79d66ec87d6bbb1b724183ddacdd181c902a9c9d63eb88ddc932df18c047f3f6"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 32,
+    "previous": "43f310d3b7d5c082c5892d730eb6f679bd4780c6db606776074f668095aaa0ca",
+    "action": "applied",
+    "details": {
+      "task": "A04 #1841",
+      "observed": "同一动画预览缺失已安装能力时保留预约前状态，补齐后经司南与认证本机接收者启动一次进程，读取产物并在确认的阶段停止。复验没有后续交付调用。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-a04.json",
+        "sha256": "1107b7c5a8ff208ba32ebd920e19a71409e091c996c26751da201a93a364fea3"
+      },
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-issueops-combined.json",
+        "sha256": "18c75d612a27ee52878caf6c5320a94c399fe65f045d054778ae7a8daa4ca7cc"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a04/wave22-windows-issueops-1841.json",
+      "sha256": "c352647e3ecea2d87803d135b01f64f3ae854cdfd90df8d0d773fd97e48258b6"
+    }
+  },
+  "sha256": "54960edc87ae26fa1db27bdef2f6d9449f0f0d746a6e75f8091acd9f1fb34e2e"
+}
