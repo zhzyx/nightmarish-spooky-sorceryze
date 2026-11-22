@@ -6,7 +6,7 @@ export type MessageContext = {
   module_id: string;
   issue_id: string | null;
   references: (
-    | { kind: "document"; object_id: string; revision: number }
+    | { kind: "document" | "document_edit"; object_id: string; revision: number }
     | { kind: "editor" | "issue"; object_id: string; revision: string }
   )[];
 };

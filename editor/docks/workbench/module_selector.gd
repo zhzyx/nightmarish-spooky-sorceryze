@@ -677,6 +677,33 @@ func _publish_issue_comment() -> void:
 	_lock(false)
 
 
+func document_edit_scope() -> Array:
+	return [] if module_id.is_empty() else [identity_generation, _draft_key(location.get("issue_id"))]
+
+
+func stage_document_edit(id: String, version: int, scope: Array) -> void:
+	while busy and scope == document_edit_scope():
+		await operation_finished
+	if scope != document_edit_scope():
+		return
+	var prefix := "<tianxuan-doc-edit://%s/" % id.uri_encode()
+	var locator := prefix + str(version) + ">"
+	var pattern := RegEx.new()
+	pattern.compile("<tianxuan-doc-edit://([^/<>\\s]+)/([1-9][0-9]{0,17})>")
+	var text := composer.text
+	var replaced := false
+	for match_ in pattern.search_all(text):
+		if match_.get_string(1).uri_decode() == id:
+			if int(match_.get_string(2)) > version:
+				return
+			text = text.replace(match_.get_string(), "" if replaced else locator)
+			replaced = true
+	if not replaced:
+		text += ("" if text.is_empty() or text.ends_with("\n") else "\n") + locator
+	composer.text = text
+	_save_draft()
+
+
 func stage_document_reference(ref: Dictionary) -> bool:
 	var input: TextEdit = composer if not module_id.is_empty() else get_parent().find_child("ChatInput", true, false)
 	if busy or not is_instance_valid(input):
@@ -697,6 +724,11 @@ func _document_references(text: String) -> Array:
 	var references := []
 	for match_ in pattern.search_all(text):
 		var ref := {"kind":"document","object_id":match_.get_string(1).uri_decode(),"revision":int(match_.get_string(2)),"paragraph":int(match_.get_string(3))}
+		if not references.has(ref):
+			references.append(ref)
+	pattern.compile("<tianxuan-doc-edit://([^/<>\\s]+)/([1-9][0-9]{0,17})>")
+	for match_ in pattern.search_all(text):
+		var ref := {"kind":"document_edit","object_id":match_.get_string(1).uri_decode(),"revision":int(match_.get_string(2))}
 		if not references.has(ref):
 			references.append(ref)
 	return references
