@@ -1,0 +1,21 @@
+{
+  "issue_number": 2067,
+  "request_id": "kuafu-local-1819-dda5fbef45ebdc01fa25c3b4c94d1ec905f6ae0b7b4a6baf803c719bf48f3b7d",
+  "source_issue": 1819,
+  "main": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "diagnosis": "The Windows coordinator called intake-only on a planned ticket. The required active status was missing. The original operator retained the implementation.",
+  "rechecked_operation": {
+    "incident": "dda5fbef45ebdc01fa25c3b4c94d1ec905f6ae0b7b4a6baf803c719bf48f3b7d",
+    "state": "operation_reverified",
+    "head": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+    "index_delta_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "operation": "intake",
+    "validation_base": null,
+    "observed_at": "2026-11-22T13:05:07.765412+00:00",
+    "result_sha256": "2728f21020059cd25cb37b0802f77d57f05d9a5248269df7464b139a7400eb0e"
+  },
+  "earlier_report": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1819#issuecomment-7079217710",
+  "owner_release": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2075",
+  "windows_workers_started_for_h04": 0,
+  "comparison": "The Windows coordinator claimed #2069 before its intake-only gate, which returned active."
+}

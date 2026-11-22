@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-c96e5caf0b2854594845c51ce2ae9f224eebc8e57e4e590abc830f7bf5d321ff",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "occurred_at": "2026-11-22T13:13:38.793625+00:00",
+  "evidence_refs": [
+    "dispatch-513327e10f2845358d70d86f1f50d86a",
+    "learn-5d1258ccdc47e2d0cceee865caa96f97f21c5a21b0f30d5835c3c22d44bf166c"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 15,
+    "previous": "2c125f20d05a58b5d9de8db1517e625950f29718f97602034ec3aaf025b78d63",
+    "action": "applied",
+    "details": {
+      "task": "Windows #1709 R03 prerequisites",
+      "observed": "Waited for both target and independent control processes to signal ready before cancellation or runner interruption. Captured the original Win32 handles before the action and required a fresh post-action challenge from the control. Both target handles signaled exit in both cases; reservations remained present."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/plan1-windows-runner-baseline-1709.json",
+        "sha256": "69c99935698673d85719125e625049e5c60aa605b034865ca7b50c090da9e65f"
+      },
+      {
+        "path": "tests/editor/probe_windows_runner_cleanup.py",
+        "sha256": "2c7aa384c757ce014956f8849ccdf53b536e1598a7c0de7129f86a280fa33a36"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/dispatch-513327e10f2845358d70d86f1f50d86a.json",
+      "sha256": "ab55433c93a8164625069db6d2c8c40b5da8e34b30ad32a4c2d46e095e888108"
+    }
+  },
+  "sha256": "d6eead6a073c5feb2c4a5a3f43ef24e51ac004d3f6d2100e1abef5c658657062"
+}
