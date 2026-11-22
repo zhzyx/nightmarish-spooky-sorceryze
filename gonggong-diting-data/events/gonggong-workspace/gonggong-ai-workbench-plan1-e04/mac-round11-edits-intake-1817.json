@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-e04",
+  "event_id": "mac-round11-edits-intake-1817",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1817",
+  "occurred_at": "2026-11-22T09:17:17.359949+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1817,
+    "title": "[方案一 E04] 识别场景或资源的人工保存",
+    "source_updated_at": "2026-11-22T09:01:20Z",
+    "authority": "mac-round11-edits",
+    "worker": "/root/sinan_b7c512a54000a52c"
+  },
+  "evidence_refs": [
+    "dispatch-fc65af75aa764ba08eeac80fc2a3937c"
+  ],
+  "sha256": "f8cb93d6716a8ba9bdb2e0d3f039257957980fd5d0f1e471c1e62480589e06a9"
+}

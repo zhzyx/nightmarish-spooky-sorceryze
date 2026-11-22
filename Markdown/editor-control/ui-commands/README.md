@@ -52,3 +52,5 @@ python tools/editor_control_client.py --project D:/MyProject status open-project
 - 密码输入、授权控件、确认弹窗及被排除子树不进入普通 UI 目录。
 - 发现文件含私有随机会话令牌，不得交给模型、上传或提交 Git。
 - 桥接仅使用当前项目的回环地址；以结构化响应中的实际状态判断结果。
+
+工作台在模块对话中发送原生脚本选区、场景节点或资源后，按账号、工程、模块、事项及会话保留目标。后续回合以磁盘内容判断修订，并把原生保存回执中的操作者绑定到同一摘要。工程内的依赖独立计算版本；外部写入只登记可核实的内容。[脚本选区](../../../design-docs/gonggong-ai-workbench-e03.md) · [场景和资源](../../../design-docs/gonggong-ai-workbench-e04.md)
