@@ -369,7 +369,7 @@ def create_app(
     from work_management_api import create_work_router
 
     store.work_native_store = native_store
-    app.include_router(create_work_router(store, _require_actor))
+    app.include_router(create_work_router(store, _require_actor, native_workflow))
     from migration_api import migration_routes
     from migration_history_api import HISTORY_TOOLS, history_routes
 
@@ -423,6 +423,11 @@ def create_app(
     app.state.required_approvals = required_approvals
     app.state.required_checks = tuple(required_checks)
     rooms = DocRooms(store)
+
+    def notify_task_change(issue_id: str, result: dict[str, Any]) -> dict[str, Any]:
+        if native_workflow is not None:
+            native_workflow.judgment_changed(issue_id)
+        return result
 
     def notify_document_change(document: dict[str, Any]) -> dict[str, Any]:
         from_thread.run(rooms.broadcast, document["id"], {"type": "changed"})
@@ -810,13 +815,15 @@ def create_app(
     def set_task_target(
         issue_id: str, payload: TaskTargetRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
     ) -> dict[str, Any]:
-        return cast(dict[str, Any], store.set_task_target(actor, issue_id, project, **payload.model_dump()))
+        return notify_task_change(issue_id, store.set_task_target(actor, issue_id, project, **payload.model_dump()))
 
     @app.put("/api/v1/issues/{issue_id}/task-confirmation")
     def set_task_confirmation(
         issue_id: str, payload: TaskConfirmationRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
     ) -> dict[str, Any]:
-        return cast(dict[str, Any], store.set_task_confirmation(actor, issue_id, project, **payload.model_dump()))
+        return notify_task_change(
+            issue_id, store.set_task_confirmation(actor, issue_id, project, **payload.model_dump())
+        )
 
     @app.put("/api/v1/issues/{issue_id}/classification")
     def set_issue_classification(

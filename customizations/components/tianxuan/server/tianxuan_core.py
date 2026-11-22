@@ -163,6 +163,13 @@ CREATE TABLE IF NOT EXISTS issue_dependencies (
     issue_id TEXT NOT NULL REFERENCES issues(id), dependency TEXT NOT NULL REFERENCES issues(id),
     PRIMARY KEY(issue_id,dependency)
 );
+CREATE TABLE IF NOT EXISTS issue_judgment_dependencies (
+    issue_id TEXT NOT NULL, dependency TEXT NOT NULL, submission_version INTEGER NOT NULL,
+    PRIMARY KEY(issue_id,dependency),
+    FOREIGN KEY(issue_id,dependency) REFERENCES issue_dependencies(issue_id,dependency) ON DELETE CASCADE,
+    FOREIGN KEY(dependency,submission_version) REFERENCES issue_work_events(issue_id,version)
+);
+CREATE INDEX IF NOT EXISTS idx_judgment_source ON issue_judgment_dependencies(dependency,submission_version);
 CREATE TRIGGER IF NOT EXISTS native_excludes_ordinary_flow BEFORE INSERT ON native_managed_issues
 WHEN EXISTS (SELECT 1 FROM issue_flows WHERE issue_id=NEW.issue_id AND definition IS NOT NULL)
   OR EXISTS (SELECT 1 FROM issue_dependencies WHERE issue_id=NEW.issue_id)

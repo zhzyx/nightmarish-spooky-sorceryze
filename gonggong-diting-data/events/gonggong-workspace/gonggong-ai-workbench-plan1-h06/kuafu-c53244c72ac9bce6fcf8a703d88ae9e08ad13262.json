@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c53244c72ac9bce6fcf8a703d88ae9e08ad13262",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-h06",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1768",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f5b4b031b73591d21e6656e579f8053577d292a0caeb58b72838837ad615fbb9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1768",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2115",
+    "action": "delivery",
+    "detection_head": "b55995119bc3a32617c353718220254fd8dbc7ee",
+    "context_sha256": "b82edb738fde12859bf48ceecf6cf39d591741fe7da204be2652d589dfcddb4e",
+    "operator": "Sail-Li",
+    "worker": "after-k03-windows",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1768",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2117",
+    "diagnosis": "H06 adds the SQLite judgment-dependency relation. Accepted PR 2113 changes the privileged access-key transaction in the same Python file. Only that source path overlaps; preserve both code blocks.",
+    "next_action": "Verify the resulting source equals the accepted target plus the exact original schema block, rerun administrative access/registration and branch judgment tests on the combined service, and sign a replacement.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T15:48:25.260304+00:00",
+    "attempted": null,
+    "repair_owner": "Windows service integration",
+    "continuable": "Q02 and V05 can continue"
+  },
+  "occurred_at": "2026-11-22T15:50:48.214496+00:00",
+  "sha256": "58c35eb8ffd363fff2d4234ab20eef034515ef5c2f040aa547d6292c6ab005f1"
+}

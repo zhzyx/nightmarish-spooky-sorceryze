@@ -42,19 +42,50 @@ def dependency(store, actor, dep):
         raise PermissionDenied("dependency unavailable") from exc
 
 
+def judgment_receipt(store, actor, issue_id, version):
+    from work_management import snapshot
+
+    dependency(store, actor, issue_id)
+    source = store.db.execute("SELECT document_id FROM design_task_sources WHERE issue_id=?", (issue_id,)).fetchone()
+    if source:
+        store.get_doc_shared(actor, source[0])
+    state = snapshot(store, actor, issue_id)
+    for item in state["creative_judgments"]:
+        if item["submission_version"] == version:
+            return {
+                key: item[key]
+                for key in (
+                    "submission_version",
+                    "decision",
+                    "version",
+                    "actor",
+                    "kind",
+                    "module",
+                    "path",
+                    "revision",
+                    "digest",
+                )
+            }
+    raise TianxuanError("creative submission version unavailable")
+
+
 def dependencies(store, actor, issue_id):
     result = []
     for row in store.db.execute(
-        "SELECT d.dependency, n.issue_id IS NULL OR coalesce(n.acceptance,'') != '' AS admitted "
+        "SELECT d.dependency, n.issue_id IS NULL OR coalesce(n.acceptance,'') != '' AS admitted, j.submission_version "
         "FROM issue_dependencies d LEFT JOIN native_managed_issues n ON n.issue_id=d.dependency "
+        "LEFT JOIN issue_judgment_dependencies j ON j.issue_id=d.issue_id AND j.dependency=d.dependency "
         "WHERE d.issue_id=? ORDER BY d.dependency",
         (issue_id,),
     ):
         issue = dependency(store, actor, row[0])
-        result.append(
-            {k: issue[k] for k in ("id", "title", "status")}
-            | {"accepted": issue["status"] == "done" and bool(row["admitted"])}
-        )
+        item = {k: issue[k] for k in ("id", "title", "status")}
+        if row["submission_version"] is None:
+            item["accepted"] = issue["status"] == "done" and bool(row["admitted"])
+        else:
+            item["judgment"] = judgment_receipt(store, actor, issue["id"], row["submission_version"])
+            item["accepted"] = item["judgment"]["decision"] == "approved"
+        result.append(item)
     return result
 
 
@@ -81,6 +112,8 @@ def authorize(store, actor, payload, result):
     if result:
         for dep in result["dependencies"]:
             dependency(store, actor, dep["id"])
+            if "judgment" in dep:
+                judgment_receipt(store, actor, dep["id"], dep["judgment"]["submission_version"])
 
 
 def bump(store, issue_id):
@@ -213,6 +246,8 @@ def execute_flow(store, actor, name, payload, *, call_id=None, human=False):
         "flow.advance": {"to_status"},
         "flow.judge": {"to_status"},
     }
+    if name == "flow.dependencies" and "submission_versions" in payload:
+        keys[name].add("submission_versions")
     if name not in keys or call_id is None or payload.keys() != keys[name] | {"issue_id", "expected_version"}:
         raise TianxuanError("invalid flow arguments")
     if name == "flow.judge" and not human:
@@ -228,6 +263,13 @@ def execute_flow(store, actor, name, payload, *, call_id=None, human=False):
             or len(set(deps)) != len(deps)
         ):
             raise TianxuanError("invalid dependencies")
+        versions = payload.get("submission_versions", {})
+        if (
+            not isinstance(versions, dict)
+            or versions.keys() - set(deps)
+            or any(type(v) is not int or not 1 <= v <= 2**63 - 1 for v in versions.values())
+        ):
+            raise TianxuanError("invalid creative submission versions")
     if "to_status" in payload and not isinstance(payload["to_status"], str):
         raise TianxuanError("invalid target stage")
 
@@ -250,7 +292,20 @@ def execute_flow(store, actor, name, payload, *, call_id=None, human=False):
         elif name == "flow.dependencies":
             if issue["status"] in ("done", "cancelled"):
                 raise TransitionRejected("terminal issue cannot change prerequisites")
+            versions = payload.get("submission_versions")
+            if versions is None:
+                # I04 clients round-trip issue IDs only. Keep the binding of every retained edge.
+                versions = {
+                    d["id"]: d["judgment"]["submission_version"]
+                    for d in state["dependencies"]
+                    if "judgment" in d and d["id"] in payload["dependencies"]
+                }
             set_dependencies(store, issue_id, payload["dependencies"])
+            store.db.execute("DELETE FROM issue_judgment_dependencies WHERE issue_id=?", (issue_id,))
+            store.db.executemany(
+                "INSERT INTO issue_judgment_dependencies VALUES (?,?,?)",
+                [(issue_id, dep, version) for dep, version in versions.items()],
+            )
             bump(store, issue_id)
         else:
             transition(store, actor, issue, payload["to_status"], human=human)
