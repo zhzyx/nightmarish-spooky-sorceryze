@@ -398,6 +398,8 @@ class DocumentView extends AcceptDialog:
 			draft_status.text = "请填写文档标题。"
 			return
 		var attempt := call_id
+		var panel = get_tree().root.find_child("WorkbenchBusinessModules", true, false)
+		var scope: Array = panel.document_edit_scope() if is_instance_valid(panel) else []
 		var payload := {"body_md": draft_body.text, "call_id": call_id}
 		var method := HTTPClient.METHOD_POST
 		var route := "/api/v1/docs"
@@ -436,6 +438,9 @@ class DocumentView extends AcceptDialog:
 		if str(saved.get("id", "")).is_empty() or int(saved.get("version", 0)) < 1:
 			draft_status.text = "保存回执不完整。再次点击保存可核对此次提交。"
 			return
+		if not editing.is_empty() and saved.id == editing.document_id and int(saved.version) > int(editing.version):
+			if is_instance_valid(panel) and not scope.is_empty():
+				panel.stage_document_edit(saved.id, int(saved.version), scope)
 		if collaboration:
 			collaboration.remove_draft()
 		_clear_draft()

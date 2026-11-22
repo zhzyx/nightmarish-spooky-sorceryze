@@ -26,11 +26,12 @@ sys.path.insert(0, str(ROOT / "customizations/components/tianxuan/server"))
 
 # isort: split
 from api import create_app  # noqa: E402
+from gateway import ModelGateway  # noqa: E402
 from native_store import NativeStore  # noqa: E402
 from tianxuan_core import Tianxuan  # noqa: E402
 
 
-def exercise(root, binary):
+def exercise(root, binary, saved_edit=False):
     with patch.dict(os.environ, {"GONGGONG_WORKSPACE": ""}):
         editor = copy_editor(binary, root / "engine")
     project = root / "project"
@@ -49,16 +50,42 @@ def exercise(root, binary):
         "TIANXUAN_PUBLIC_ORIGIN": "https://fixture.invalid",
         "TIANXUAN_TENANT_ID": user["tenant_id"],
     }
+    model_inputs = []
+
+    def receive(request):
+        model_inputs.append(json.loads(request.content)["messages"][-1]["content"])
+        return httpx.Response(
+            200,
+            json={
+                "choices": [{"message": {"content": "received"}}],
+                "model": "fixture",
+                "usage": {"prompt_tokens": 10, "completion_tokens": 1},
+            },
+        )
+
+    gateway = None
+    if saved_edit:
+        modes.update(
+            TIANXUAN_CHAT_MODEL="fixture",
+            TIANXUAN_CHAT_BASE_URL="https://fixture.invalid/v1",
+            TIANXUAN_CHAT_MODEL_KEY="local-only",
+        )
+        gateway = ModelGateway(":memory:", transport=httpx.MockTransport(receive))
     reads = []
     with patch.dict(os.environ, modes), socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
-        api = create_app(store, native_store=NativeStore(root / "native.db"), native_only=True)
+        api = create_app(store, gateway=gateway, native_store=NativeStore(root / "native.db"), native_only=True)
 
         @api.middleware("http")
         async def observe(request, call_next):
             response = await call_next(request)
             reads.append((request.url.path, response.status_code))
-            if request.method == "POST" and request.url.path.endswith("/turns") and response.status_code == 200:
+            if (
+                not saved_edit
+                and request.method == "POST"
+                and request.url.path.endswith("/turns")
+                and response.status_code == 200
+            ):
                 store.update_doc(actor, doc["id"], moved, 1)
             return response
 
@@ -78,6 +105,9 @@ def exercise(root, binary):
                 TIANXUAN_PROJECT="studio/game",
                 U10_DOC=doc["id"],
             )
+            env.pop("E02_EDIT", None)
+            if saved_edit:
+                env["E02_EDIT"] = "1"
             result = subprocess.run(
                 [str(editor), "--headless", "--editor", "--path", str(project), "--script", "res://probe.gd"],
                 env=env,
@@ -88,6 +118,39 @@ def exercise(root, binary):
             output = (result.stdout + result.stderr).decode("utf-8", errors="replace")
             if token in output:
                 raise AssertionError("Fixture token appeared in diagnostics")
+            if saved_edit:
+                checks = [
+                    json.loads(line.removeprefix("E02_RESULT="))
+                    for line in output.splitlines()
+                    if line.startswith("E02_RESULT=")
+                ]
+                if result.returncode or "SCRIPT ERROR" in output or len(checks) != 1:
+                    raise RuntimeError(f"Observed HTTP {reads!r}\n" + output[-5500:])
+                turn = checks[0]["turn"]
+                expected_edits = [
+                    {
+                        "kind": "document_edit",
+                        "object_id": doc["id"],
+                        "revision": 3,
+                        "author": actor,
+                        "changes": [
+                            {
+                                "before": [{"paragraph": 2, "text": "临时交付条件"}],
+                                "after": [{"paragraph": 2, "text": "人改后的交付条件"}],
+                            }
+                        ],
+                    }
+                ]
+                assert store.version(doc["id"], 3)["body_md"] == old.replace("原始目标段落", "人改后的交付条件")
+                assert turn["document_edits"] == expected_edits and turn["state"] == "answered"
+                assert len(model_inputs) == 1 and json.loads(model_inputs[0])["document_edits"] == expected_edits
+                return {
+                    "state": "passed",
+                    "editor_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
+                    "turn": turn["id"],
+                    "received": json.loads(model_inputs[0]),
+                    "http": reads,
+                }
             checks = [
                 line.removeprefix("U10_RESULT=") for line in output.splitlines() if line.startswith("U10_RESULT=")
             ]
@@ -123,6 +186,8 @@ def exercise(root, binary):
         finally:
             service.should_exit = True
             thread.join(timeout=10)
+            if gateway:
+                gateway.close()
             store.db.close()
     return {
         "state": "passed",
@@ -137,8 +202,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--report", type=Path, required=True)
+    parser.add_argument("--saved-edit", action="store_true")
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="workbench-doc-reference-") as directory:
-        result = exercise(Path(directory), args.godot.resolve())
+        result = exercise(Path(directory), args.godot.resolve(), args.saved_edit)
     args.report.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print("Passed sent reference after paragraph moved")
+    print("Passed saved document change" if args.saved_edit else "Passed sent reference after paragraph moved")

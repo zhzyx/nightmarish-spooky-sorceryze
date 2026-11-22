@@ -65,6 +65,44 @@ func run() -> void:
 		push_error("Incorrect source paragraph")
 		quit(1)
 		return
+	if OS.has_environment("E02_EDIT"):
+		view.cite.pressed.emit()
+		await view.open_document(id, 1, 2, true)
+		view.edit.pressed.emit()
+		view.draft_body.text = view.draft_body.text.replace("原始目标段落", "临时交付条件")
+		view.composer.get_ok_button().pressed.emit()
+		until = Time.get_ticks_msec() + 15000
+		while view.reference.get("version") != 2 and Time.get_ticks_msec() < until:
+			await process_frame
+		if not panel.composer.text.contains("<tianxuan-doc-edit://%s/2>" % id):
+			push_error("First saved revision missing")
+			quit(1)
+			return
+		panel._lock(true)
+		view.edit.pressed.emit()
+		view.draft_body.text = view.draft_body.text.replace("临时交付条件", "人改后的交付条件")
+		view.composer.get_ok_button().pressed.emit()
+		until = Time.get_ticks_msec() + 15000
+		while view.reference.get("version") != 3 and Time.get_ticks_msec() < until:
+			await process_frame
+		panel._lock(false)
+		view.get_ok_button().pressed.emit()
+		if panel.composer.text.contains("<tianxuan-doc-edit://%s/2>" % id) or not panel.composer.text.contains("<tianxuan-doc-edit://%s/3>" % id) or not panel.composer.text.contains("<tianxuan-doc://%s/1/2>" % id):
+			push_error("Saved change missing from the next draft: " + panel.composer.text)
+			quit(1)
+			return
+		panel.composer.text += "\n继续核对"
+		panel.send.pressed.emit()
+		until = Time.get_ticks_msec() + 15000
+		while panel.picker.disabled and Time.get_ticks_msec() < until:
+			await process_frame
+		if panel.conversation.get("turns", []).size() != 1:
+			push_error("Next turn missing: " + panel.feedback.text)
+			quit(1)
+			return
+		print("E02_RESULT=", JSON.stringify({"conversation":panel.conversation.id,"turn":panel.conversation.turns[0]}))
+		quit()
+		return
 	view.find_child("CiteDocumentParagraph",true,false).pressed.emit()
 	var locator := "<tianxuan-doc://%s/1/2>" % id
 	if view.visible or not panel.composer.text.contains(locator):

@@ -10,6 +10,8 @@ import sqlite3
 from collections.abc import Generator
 from contextlib import contextmanager
 from datetime import datetime, timezone
+from difflib import SequenceMatcher
+from itertools import groupby
 from typing import Annotated, Any, Literal, cast
 from uuid import NAMESPACE_URL, UUID, uuid5
 
@@ -53,6 +55,12 @@ class DocumentReference(Payload):
     revision: int = Field(strict=True, ge=1, le=2**63 - 1)
 
 
+class SavedDocumentReference(Payload):
+    kind: Literal["document_edit"]
+    object_id: ObjectId
+    revision: int = Field(strict=True, ge=2, le=2**63 - 1)
+
+
 class EditorReference(Payload):
     kind: Literal["editor"]
     object_id: ObjectId
@@ -69,7 +77,9 @@ class MessageContext(Payload):
     project: str = Field(pattern=PROJECT_PATTERN)
     module_id: ObjectId
     issue_id: ObjectId | None = None
-    references: list[DocumentReference | EditorReference | IssueReference] = Field(max_length=16)
+    references: list[DocumentReference | SavedDocumentReference | EditorReference | IssueReference] = Field(
+        max_length=16
+    )
 
 
 class Turn(Version):
@@ -153,6 +163,12 @@ def markdown_blocks(markdown: str) -> Generator[str, None, None]:
         lines.append(line)
     if lines:
         yield "".join(lines).rstrip("\r\n")
+
+
+def document_view_paragraphs(markdown: str) -> list[str]:
+    """Number contiguous nonblank lines exactly as the Godot document view does."""
+    lines = markdown.replace("\r\n", "\n").split("\n")
+    return ["\n".join(group) for nonblank, group in groupby(lines, key=lambda line: bool(line.strip())) if nonblank]
 
 
 def paragraph_key(block: str) -> str:
@@ -371,9 +387,10 @@ class Conversations:
     def user_content(turn: dict[str, Any]) -> str:
         if turn.get("context_snapshot") is None:
             return str(turn["content"])
-        return json.dumps(
-            {"content": turn["content"], "context_snapshot": turn["context_snapshot"]}, ensure_ascii=False
-        )
+        message = {"content": turn["content"], "context_snapshot": turn["context_snapshot"]}
+        if turn.get("document_edits"):
+            message["document_edits"] = turn["document_edits"]
+        return json.dumps(message, ensure_ascii=False)
 
     @classmethod
     def context(cls, record: dict[str, Any]) -> list[dict[str, Any]]:
@@ -386,7 +403,8 @@ class Conversations:
                 ))
         return context
 
-    def check_selection(self, actor: str, tenant: str, snapshot: MessageContext) -> None:
+    def check_selection(self, actor: str, tenant: str, snapshot: MessageContext) -> list[dict[str, Any]]:
+        edits: list[dict[str, Any]] = []
         if snapshot.issue_id is None:
             self.domain._business_module(tenant, snapshot.project, snapshot.module_id)
         else:
@@ -399,6 +417,21 @@ class Conversations:
                     raise conflict("reference does not match the selected issue")
                 if self.domain.issue_snapshot(actor, reference.object_id)["revision"] != reference.revision:
                     raise conflict("issue definition changed; reopen its detail")
+            elif isinstance(reference, SavedDocumentReference):
+                self.domain.get_doc_shared(actor, reference.object_id)
+                current = self.domain.version(reference.object_id, reference.revision)
+                before = self.domain.version(reference.object_id, reference.revision - 1)
+
+                old = document_view_paragraphs(before["body_md"])
+                new = document_view_paragraphs(current["body_md"])
+                changes = []
+                for tag, a, b, c, d in SequenceMatcher(None, old, new).get_opcodes():
+                    if tag != "equal":
+                        changes.append({
+                            "before": [{"paragraph": i + 1, "text": old[i]} for i in range(a, b)],
+                            "after": [{"paragraph": i + 1, "text": new[i]} for i in range(c, d)],
+                        })
+                edits.append({**reference.model_dump(), "author": current["author"], "changes": changes})
             elif isinstance(reference, DocumentReference):
                 self.domain.get_doc_shared(actor, reference.object_id)
                 version = self.domain.version(reference.object_id, reference.revision)
@@ -412,6 +445,8 @@ class Conversations:
                         inside = nonblank
                     if reference.paragraph > count:
                         raise conflict("paragraph does not exist in the specified document revision")
+
+        return edits
 
     def turn(self, actor: str, key: str, payload: Turn, gateway: ModelGateway | None) -> dict[str, Any]:
         owner = self.owner(actor)
@@ -433,8 +468,9 @@ class Conversations:
                 raise conflict("conversation turn limit reached")
             if any(turn["state"] == "pending" for turn in record["turns"]):
                 raise conflict("resolve the pending turn first")
-            if payload.context_snapshot is not None:
-                self.check_selection(actor, owner[0], payload.context_snapshot)
+            edits = self.check_selection(actor, owner[0], payload.context_snapshot) if payload.context_snapshot else []
+            if len(json.dumps(edits, ensure_ascii=False)) > 32000:
+                raise HTTPException(422, "saved changes exceed turn limit; cite individual paragraphs")
             context = self.context(record)
             message: dict[str, Any] = {
                 "id": turn_id,
@@ -444,6 +480,8 @@ class Conversations:
                 "model": None,
                 "error": None,
             }
+            if edits:
+                message["document_edits"] = edits
             if snapshot is not None:
                 message["context_snapshot"] = snapshot
             record["turns"].append(message)
