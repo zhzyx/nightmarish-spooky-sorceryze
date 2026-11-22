@@ -1,0 +1,363 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-v10",
+  "issue_number": 1774,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1774",
+  "base": "0d6778f6858118ffe79dd4b04cb8ea7e8576922d",
+  "recorded_utc": "2026-11-22T14:05:36.010956+00:00",
+  "scope": "保存后由认证客户端在原对象回执地址提交旧输入所涉及的定向复验，目标由任务的原安装检查与对象写入范围确定。",
+  "upstream": {
+    "issue_states": {
+      "1799": "CLOSED",
+      "1800": "CLOSED",
+      "1801": "CLOSED"
+    },
+    "mac_v07": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1801#issuecomment-7079180921",
+    "mac_receipt": "data-collection/gonggong-ai-workbench-plan1-v07.json",
+    "observation": "12→17 只使 motion 待验证，preview.svg 保持原判断。"
+  },
+  "candidate_sha256": {
+    "customizations/components/tianxuan/server/native_validation.py": "f039f16bbd21e25beaf5a2ca6d62e48eee855a852c39259ffd29aaaffc792dfd",
+    "customizations/components/tianxuan/sinan-workorders/test_native_recheck.py": "e8632cf0fe360d55aeafbd4adcdc10ccd084577376bb5ad3325a72ec8f7ab3d6",
+    "design-docs/gonggong-ai-workbench-v10.md": "09976aa2ae64c377a2bca9130bdabe5084ac6f366f497fd6abf9cd5d1a82546d"
+  },
+  "host": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.14",
+    "pytest": "9.2.0",
+    "transport": "本机回环 TCP，生产 FastAPI 路由及 SQLite 原生存储，独立测试项目和安装检查；V07 / V08 相邻用例沿用各自既有测试入口。",
+    "godot": {
+      "filename": "godot.windows.editor.x86_64.exe",
+      "sha256": "748650bf3c4e91bfb4aab2a98b2322a40eb3a4715ef9088d31c946af283f11fc",
+      "accepted_build_input": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9",
+      "mode": "已验收的编辑器作为 headless 场景检查进程；本卡变更为 Python HTTP 适配器，未编译新编辑器。"
+    }
+  },
+  "tests": {
+    "windows_headless": {
+      "exit_code": 0,
+      "passed": 17,
+      "elapsed_seconds": 59.94,
+      "cases": [
+        "test_validation_after_edit[blue-passed]",
+        "test_validation_after_edit[red-failed]",
+        "test_only_changed_check_inputs_expire",
+        "test_targeted_scene_recheck[17-passed]",
+        "test_targeted_scene_recheck[25-failed]",
+        "test_recheck_overlap[save]",
+        "test_recheck_overlap[revocation]",
+        "test_recheck_overlap[duplicate]",
+        "test_original_check_authority_and_policy_required",
+        "test_dispatch_stops_at_checked_preview[blue-stage-reached]",
+        "test_dispatch_stops_at_checked_preview[red-stage-unmet]",
+        "test_unbound_and_mismatched_criteria",
+        "test_revocation_during_stage_check",
+        "test_revoked_evidence_and_contribution_never_release",
+        "test_simultaneous_settlement_reuses_exact_check",
+        "test_stage_receipt_binds_current_editable_revision[True]",
+        "test_stage_receipt_binds_current_editable_revision[False]"
+      ],
+      "powershell": [
+        "$v10Temp = Join-Path ([IO.Path]::GetTempPath()) ('gg-v10-' + [guid]::NewGuid().ToString('N'))",
+        "New-Item -ItemType Directory -Path $v10Temp | Out-Null",
+        "$env:GONGGONG_V10_GODOT = 'D:/GongGong/data-collection/receipts/1709-independent-20261122/accepted-2066-editor/godot.windows.editor.x86_64.exe'",
+        "& D:/GongGong-work/tx-venv/Scripts/python.exe -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_validation.py customizations/components/tianxuan/sinan-workorders/test_native_recheck.py customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py --basetemp \"$v10Temp/fixtures\" --junitxml \"$v10Temp/results.xml\" -o junit_family=legacy --tb=short"
+      ]
+    },
+    "portable_check": {
+      "exit_code": 0,
+      "passed": 6,
+      "elapsed_seconds": 41.299,
+      "cases": [
+        "test_targeted_scene_recheck[17-passed]",
+        "test_targeted_scene_recheck[25-failed]",
+        "test_recheck_overlap[save]",
+        "test_recheck_overlap[revocation]",
+        "test_recheck_overlap[duplicate]",
+        "test_original_check_authority_and_policy_required"
+      ],
+      "powershell": [
+        "$v10Temp = Join-Path ([IO.Path]::GetTempPath()) ('gg-v10-' + [guid]::NewGuid().ToString('N'))",
+        "New-Item -ItemType Directory -Path $v10Temp | Out-Null",
+        "Remove-Item -ErrorAction SilentlyContinue Env:GONGGONG_V10_GODOT",
+        "& D:/GongGong-work/tx-venv/Scripts/python.exe -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_recheck.py --basetemp \"$v10Temp/fixtures\" --junitxml \"$v10Temp/results.xml\" -o junit_family=legacy --tb=short"
+      ]
+    }
+  },
+  "observations": {
+    "passed": {
+      "original_task": "c7d06ab57941c0da7323beda50d1b00ce7e4c888cad6fd2e6fd7962367415ecd",
+      "source_authorization": {
+        "confirmation_revision": 1,
+        "confirmed_by": "usr_b466840cc2884e15ac83377bf3e8a736",
+        "criteria": "preview.svg shows one blue circle of radius 12",
+        "document_id": "doc_4fca9d6f3aab471fbf28028f2dc9d495",
+        "issue_id": "iss_45f9ecddc5ec446c899b293f4bad4b99",
+        "issue_revision": "fd3afe8475587257d49abb1a11e0e6aec4238bd418b9d0d229195b85b8c5018e",
+        "responsible_user": "usr_b466840cc2884e15ac83377bf3e8a736",
+        "stage": "preview",
+        "target_revision": 1,
+        "version": 1
+      },
+      "original": {
+        "revision": "075b001d2126faca7d586f8c12950ec17a433e92f2ffd00a9c81c48e4f7de30b",
+        "candidate": "5bc8c715074c4c10a5d943ed8817f30b372d9e3aa2dfd378cabeb35a35eebf5d",
+        "sha256": "c6b995e00d3c827bf8cfaf529e64d8b7bc4cc9abc816054d0a6d05290ed897d7",
+        "tool": "motion",
+        "outcome": "passed",
+        "evidence": "bc330db7adc00686b5a4fa3169980dc683bdb4f7a506345b2fd188b229a6e1d6",
+        "log_sha256": "982c61cfa57225332e758c4034effbb32791238114d19f5c4eb43842d9f92066",
+        "revoked": false
+      },
+      "edited": {
+        "revision": "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f",
+        "sha256": "a907cb45fa4f7e6f4556935a60658921d5381f2f8e0200484b3c346c810f80a0",
+        "state": "pending",
+        "checks": {
+          "motion": "pending"
+        }
+      },
+      "registered_action": {
+        "revision": "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f",
+        "checks": [
+          "motion"
+        ]
+      },
+      "result": {
+        "revision": "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f",
+        "candidate": "0286b9acdb7ab44f86c7c6fd628007ba8b36a78b4f1d86828ef542af898a91ea",
+        "sha256": "a907cb45fa4f7e6f4556935a60658921d5381f2f8e0200484b3c346c810f80a0",
+        "tool": "motion",
+        "outcome": "passed",
+        "evidence": "7f57d74c5045ae71f98c95505478887759499818bea0baf8ac13349f0151194d",
+        "log_sha256": "655dc42c15cef75af79761b2ae1353f4b386cdedbb28adf327ced49f248d3be1",
+        "revoked": false
+      },
+      "retained_asset": {
+        "revision": "075b001d2126faca7d586f8c12950ec17a433e92f2ffd00a9c81c48e4f7de30b",
+        "candidate": "5bc8c715074c4c10a5d943ed8817f30b372d9e3aa2dfd378cabeb35a35eebf5d",
+        "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+        "tool": "check",
+        "outcome": "passed",
+        "evidence": "b79471b7a5d6e4f4aaab3cee5c7a025765bd17e6687586450a6cc18c9808d9e9",
+        "log_sha256": "ba51699b10fd58b9dcd6285caff510f623469d5a86e027dc1d32c4b56a012c78",
+        "revoked": false
+      },
+      "asset_current": {
+        "revision": "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f",
+        "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+        "state": "passed",
+        "checks": {
+          "check": "passed"
+        }
+      },
+      "physical_producer": {
+        "starts": 1,
+        "exit_code": 0,
+        "task": "c7d06ab57941c0da7323beda50d1b00ce7e4c888cad6fd2e6fd7962367415ecd"
+      },
+      "physical_checker": [
+        {
+          "tool": "check",
+          "candidate": "5bc8c715074c4c10a5d943ed8817f30b372d9e3aa2dfd378cabeb35a35eebf5d",
+          "state": "complete",
+          "code": 0,
+          "evidence": "b79471b7a5d6e4f4aaab3cee5c7a025765bd17e6687586450a6cc18c9808d9e9",
+          "stdout": ""
+        },
+        {
+          "tool": "motion",
+          "candidate": "5bc8c715074c4c10a5d943ed8817f30b372d9e3aa2dfd378cabeb35a35eebf5d",
+          "state": "complete",
+          "code": 0,
+          "evidence": "bc330db7adc00686b5a4fa3169980dc683bdb4f7a506345b2fd188b229a6e1d6",
+          "stdout": "Godot Engine v4.8.beta.custom_build.ed8935915 (2026-11-22 10:18:41 UTC) - https://godotengine.org\r\n\r\nduration=12.0\r\n"
+        },
+        {
+          "tool": "motion",
+          "candidate": "0286b9acdb7ab44f86c7c6fd628007ba8b36a78b4f1d86828ef542af898a91ea",
+          "state": "complete",
+          "code": 0,
+          "evidence": "7f57d74c5045ae71f98c95505478887759499818bea0baf8ac13349f0151194d",
+          "stdout": "Godot Engine v4.8.beta.custom_build.ed8935915 (2026-11-22 10:18:41 UTC) - https://godotengine.org\r\n\r\nduration=17.0\r\n"
+        }
+      ],
+      "duplicate_post_and_get_equal": true,
+      "stage_receipt_unchanged": true
+    },
+    "failed": {
+      "original_task": "52ee1a95388b773f7be260f8ebf8722c3714330162716c04f9f86c70f42331e8",
+      "source_authorization": {
+        "confirmation_revision": 1,
+        "confirmed_by": "usr_b677e394fa7e4d4b90422ca68f5e7356",
+        "criteria": "preview.svg shows one blue circle of radius 12",
+        "document_id": "doc_da2ba018cc024b90bc740e2d230c7244",
+        "issue_id": "iss_35f4018f4cc64c138fbe1f1567232f20",
+        "issue_revision": "697feba396fc750cc2779158ac101e5c1367900071f0e9f15d41c7a240c9a3cb",
+        "responsible_user": "usr_b677e394fa7e4d4b90422ca68f5e7356",
+        "stage": "preview",
+        "target_revision": 1,
+        "version": 1
+      },
+      "original": {
+        "revision": "075b001d2126faca7d586f8c12950ec17a433e92f2ffd00a9c81c48e4f7de30b",
+        "candidate": "5bc8c715074c4c10a5d943ed8817f30b372d9e3aa2dfd378cabeb35a35eebf5d",
+        "sha256": "c6b995e00d3c827bf8cfaf529e64d8b7bc4cc9abc816054d0a6d05290ed897d7",
+        "tool": "motion",
+        "outcome": "passed",
+        "evidence": "d1d7003d2371c05c01ab973d3a534d80bee0110fb921c004fdc2f07c1cda41ce",
+        "log_sha256": "982c61cfa57225332e758c4034effbb32791238114d19f5c4eb43842d9f92066",
+        "revoked": false
+      },
+      "edited": {
+        "revision": "a0b59e997fd29fd0e0d65492134127eda23f86b0b04b7a30f9e3c4a7391e29aa",
+        "sha256": "c58a04d19de5cc255c879eeb7017036fe5fc01325c09374a1f3b616c8bd85555",
+        "state": "pending",
+        "checks": {
+          "motion": "pending"
+        }
+      },
+      "registered_action": {
+        "revision": "a0b59e997fd29fd0e0d65492134127eda23f86b0b04b7a30f9e3c4a7391e29aa",
+        "checks": [
+          "motion"
+        ]
+      },
+      "result": {
+        "revision": "a0b59e997fd29fd0e0d65492134127eda23f86b0b04b7a30f9e3c4a7391e29aa",
+        "candidate": "f49caf449c760839ba1f7b35443b287c10f510a100870469fb55970b5009866e",
+        "sha256": "c58a04d19de5cc255c879eeb7017036fe5fc01325c09374a1f3b616c8bd85555",
+        "tool": "motion",
+        "outcome": "failed",
+        "evidence": "55e92d536ef21a7bb68328263124e08faab38c2e299901ce79664cf669321dbb",
+        "log_sha256": "7b874627922531dd2622895b320ffc9389ec1b14ca94c548f61959b9eebec520",
+        "revoked": false
+      },
+      "retained_asset": {
+        "revision": "075b001d2126faca7d586f8c12950ec17a433e92f2ffd00a9c81c48e4f7de30b",
+        "candidate": "5bc8c715074c4c10a5d943ed8817f30b372d9e3aa2dfd378cabeb35a35eebf5d",
+        "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+        "tool": "check",
+        "outcome": "passed",
+        "evidence": "2d385909ecfe8865a69b4f8f8724c58c4a6875c3512543eff6700d64c9916953",
+        "log_sha256": "ba51699b10fd58b9dcd6285caff510f623469d5a86e027dc1d32c4b56a012c78",
+        "revoked": false
+      },
+      "asset_current": {
+        "revision": "a0b59e997fd29fd0e0d65492134127eda23f86b0b04b7a30f9e3c4a7391e29aa",
+        "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+        "state": "passed",
+        "checks": {
+          "check": "passed"
+        }
+      },
+      "physical_producer": {
+        "starts": 1,
+        "exit_code": 0,
+        "task": "52ee1a95388b773f7be260f8ebf8722c3714330162716c04f9f86c70f42331e8"
+      },
+      "physical_checker": [
+        {
+          "tool": "check",
+          "candidate": "5bc8c715074c4c10a5d943ed8817f30b372d9e3aa2dfd378cabeb35a35eebf5d",
+          "state": "complete",
+          "code": 0,
+          "evidence": "2d385909ecfe8865a69b4f8f8724c58c4a6875c3512543eff6700d64c9916953",
+          "stdout": ""
+        },
+        {
+          "tool": "motion",
+          "candidate": "5bc8c715074c4c10a5d943ed8817f30b372d9e3aa2dfd378cabeb35a35eebf5d",
+          "state": "complete",
+          "code": 0,
+          "evidence": "d1d7003d2371c05c01ab973d3a534d80bee0110fb921c004fdc2f07c1cda41ce",
+          "stdout": "Godot Engine v4.8.beta.custom_build.ed8935915 (2026-11-22 10:18:41 UTC) - https://godotengine.org\r\n\r\nduration=12.0\r\n"
+        },
+        {
+          "tool": "motion",
+          "candidate": "f49caf449c760839ba1f7b35443b287c10f510a100870469fb55970b5009866e",
+          "state": "complete",
+          "code": 1,
+          "evidence": "55e92d536ef21a7bb68328263124e08faab38c2e299901ce79664cf669321dbb",
+          "stdout": "Godot Engine v4.8.beta.custom_build.ed8935915 (2026-11-22 10:18:41 UTC) - https://godotengine.org\r\n\r\nduration=25.0\r\n"
+        }
+      ],
+      "duplicate_post_and_get_equal": true,
+      "stage_receipt_unchanged": true
+    }
+  },
+  "concurrent": [
+    {
+      "interruption": "save",
+      "status": 409,
+      "current": {
+        "revision": "54fdf7a68a86bb2195852eb3673783c546b5cc41e7a6c4372d71fd1fb75450f7",
+        "sha256": "79471db67ccfe83b698e3db2d1f7d021f41104e735ab28b829ca1632e69f62e2",
+        "state": "pending",
+        "checks": {
+          "motion": "pending"
+        }
+      },
+      "attached_revisions": [
+        "075b001d2126faca7d586f8c12950ec17a433e92f2ffd00a9c81c48e4f7de30b"
+      ],
+      "physical_checks": [
+        "check",
+        "motion",
+        "motion"
+      ]
+    },
+    {
+      "interruption": "revocation",
+      "status": 422,
+      "current": {
+        "revision": "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f",
+        "sha256": "a907cb45fa4f7e6f4556935a60658921d5381f2f8e0200484b3c346c810f80a0",
+        "state": "pending",
+        "checks": {
+          "motion": "pending"
+        }
+      },
+      "attached_revisions": [
+        "075b001d2126faca7d586f8c12950ec17a433e92f2ffd00a9c81c48e4f7de30b"
+      ],
+      "physical_checks": [
+        "check",
+        "motion",
+        "motion"
+      ]
+    },
+    {
+      "interruption": "duplicate",
+      "status": 200,
+      "current": {
+        "revision": "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f",
+        "sha256": "a907cb45fa4f7e6f4556935a60658921d5381f2f8e0200484b3c346c810f80a0",
+        "state": "passed",
+        "checks": {
+          "motion": "passed"
+        }
+      },
+      "attached_revisions": [
+        "075b001d2126faca7d586f8c12950ec17a433e92f2ffd00a9c81c48e4f7de30b",
+        "20c3fc95ef749000c789a7ce9ebe6d11ea4deeb6c72efd6f422544f1614b519f"
+      ],
+      "physical_checks": [
+        "check",
+        "motion",
+        "motion"
+      ]
+    }
+  ],
+  "diagnostics": {
+    "warning": "fastapi.testclient 发出 StarletteDeprecationWarning（建议使用 httpx2）；两个最终运行都仅有该警告。",
+    "fixture_corrections": [
+      "首次 headless 日志读取到缺失设置目录的错误。为 Godot 注入系统 TEMP 夹具独有的设置目录，将日志中的 ERROR 纳入断言。",
+      "回环 HTTP 加固时两次测试因环境代理断连而失败；HTTP 客户端设置 trust_env=False，复测直连本地监听端口。"
+    ]
+  },
+  "execution_handoff": {
+    "worker": "/root/sinan_0755e95c43e6edbd",
+    "reservation": "753daf7df9b6b3da2b61a810e3d14755d2d92e6ab5ea62b350a3288baaeb9754",
+    "role": "实现与本地验证；独立验收与签发归父会话。"
+  }
+}

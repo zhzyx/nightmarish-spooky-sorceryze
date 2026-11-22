@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-v10",
+  "event_id": "afterk03-intake-1774",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1774",
+  "occurred_at": "2026-11-22T13:32:46.044428+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1774,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T13:32:41Z",
+    "accepted_dependencies": {
+      "1799": "0b6c09e13dcb9ac9f32db81eac2cdaf5405f74bb",
+      "1800": "0b6c09e13dcb9ac9f32db81eac2cdaf5405f74bb",
+      "1801": "5edaf8f435eaa9141938158d740ff9f12e37e384"
+    },
+    "source_main": "0d6778f6858118ffe79dd4b04cb8ea7e8576922d",
+    "title": "[方案一 V10] 登记依赖变更后的定向复验动作"
+  },
+  "evidence_refs": [],
+  "sha256": "d7d9fbf1e8c11fceccb7e7cc3e7f776a3085386ae9e5f827d24f27497dfb9e99"
+}
