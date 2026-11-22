@@ -163,8 +163,10 @@ if __name__ == "__main__":
         with patch.dict(os.environ, {"GONGGONG_WORKSPACE": ""}):
             editor = copy_editor(binary, base / "engine")
         observations = {case: exercise(base / case, editor, case) for case in ("unchanged", "advanced", "http_only")}
+        digest = hashlib.sha256()
         with editor.open("rb") as stream:
-            digest = hashlib.file_digest(stream, "sha256").hexdigest()
-    result = {"state": "passed", "editor_sha256": digest, "scenarios": observations}
+            for block in iter(lambda: stream.read(1024 * 1024), b""):
+                digest.update(block)
+    result = {"state": "passed", "editor_sha256": digest.hexdigest(), "scenarios": observations}
     args.report.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("Passed native offline edits, reconnect comparison, restart recovery and scope isolation")
