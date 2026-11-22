@@ -41,6 +41,32 @@ func run() -> void:
 			return
 		report.rejection = widget.status.text
 	elif mode == "transfer":
+		var assets := detail.get_node("WorkbenchIssueArtifacts")
+		if not require(await wait_for(func(): return not assets.compare.disabled), "comparison entry"):
+			return
+		assets.compare.pressed.emit()
+		if not require(assets.comparison.visible and "不同" in assets.difference.text and assets.design.visible, "design or difference missing"):
+			return
+		report.comparison = []
+		for index in 2:
+			var column: Node = assets.sides.get_child(index)
+			var open: Button = column.get_child(2)
+			open.pressed.emit()
+			if not require(await wait_for(func(): return assets.previews[index].texture != null), "original preview "+str(index)):
+				return
+			if not require(index == 1 or assets.previews[1].texture == null, "opening A targeted B"):
+				return
+			var original: String = assets.content[index].text
+			var output := OS.get_environment("JUDGMENT_EXPORT").path_join("original%d.png" % index)
+			column.get_child(3).pressed.emit()
+			assets.destinations[index].file_selected.emit(output)
+			assets.destinations[index].hide()
+			if not require(await wait_for(func(): return FileAccess.file_exists(output)), "full original not saved"):
+				return
+			if not require(FileAccess.get_sha256(output) == fixture.digests[index], "saved other original"):
+				return
+			report.comparison.append({"field": assets.fields[index].text, "original": original, "saved_sha256": FileAccess.get_sha256(output), "design": assets.design.text, "color": assets.previews[index].texture.get_image().get_pixel(0, 0).to_html(false)})
+		assets.comparison.hide()
 		for i in widget.recipients.item_count:
 			if widget.recipients.get_item_metadata(i) == fixture.target:
 				widget.recipients.select(i)

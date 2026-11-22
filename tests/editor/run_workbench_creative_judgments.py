@@ -2,6 +2,7 @@
 
 import argparse
 import hashlib
+import io
 import json
 import os
 import secrets
@@ -13,6 +14,7 @@ from contextlib import closing
 from pathlib import Path
 from unittest.mock import patch
 
+from PIL import Image
 from run_workbench_issue_detail import NativeStore, Tianxuan, copy_editor, create_app, sanitized_environment
 from run_workbench_offline_document import serve, wait_for_marker
 
@@ -42,12 +44,17 @@ def exercise(base, binary):
         domain.add_issue_comment(owner, issue["id"], "保留剪影轮廓")
         other = domain.create_issue(artist, "B's separate item", project=project)
         revs = []
+        digests = []
         for i, (creator, ticket) in enumerate([(owner, issue), (owner, issue), (artist, other)]):
+            buffer = io.BytesIO()
+            Image.new("RGB", (8, 8), [(255, 0, 0), (0, 0, 255), (0, 255, 0)][i]).save(buffer, format="PNG")
+            content = buffer.getvalue()
+            digests.append(hashlib.sha256(content).hexdigest())
             rev = native.submit(
                 tenant,
                 creator,
                 f"publish-{i}",
-                [dict(module="art", base=revs[-1] if revs else None, reads=None, edits={"hero.png": bytes([i])})],
+                [dict(module="art", base=revs[-1] if revs else None, reads=None, edits={"hero.png": content})],
             )["revisions"]["art"]
             revs.append(rev)
             domain.dispatch_tool(
@@ -96,9 +103,12 @@ def exercise(base, binary):
                         TIANXUAN_PROJECT=project,
                         TIANXUAN_TOKEN=token,
                         JUDGMENT_MODE=mode,
+                        JUDGMENT_EXPORT=str(directory),
                         JUDGMENT_FIXTURE=json.dumps(
                             dict(
                                 target=artist,
+                                revisions=revs[:2],
+                                digests=digests[:2],
                                 count=2,
                                 index=0,
                                 revision=revs[0],
@@ -143,6 +153,10 @@ def exercise(base, binary):
                     transferred.touch()
                     stale = old.result()
                 recipient = window("recipient", artist, domain.issue_session(artist))
+        assert [card["color"] for card in sender["comparison"]] == ["ff0000", "0000ff"]
+        for index, card in enumerate(sender["comparison"]):
+            assert revs[index] in card["field"] and digests[index] in card["field"]
+            assert "hero.png" in card["original"] and doc in card["design"]
         assert sender["list"] == stale["list"] == ["art @ " + rev for rev in revs[:2]]
         assert recipient["list"] == ["art @ " + revs[0], "art @ " + revs[2]]
         assert sender["after"] == sender["list"][1] and recipient["after"] == recipient["list"][1]
