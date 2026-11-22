@@ -10,7 +10,7 @@ var status := Label.new()
 var paragraph := 0
 var ticket := 0
 var candidate := ""
-var call_id := ""
+var prepared := {}
 
 
 func _ready() -> void:
@@ -55,7 +55,7 @@ func _reset() -> void:
 	ticket += 1
 	paragraph = 0
 	candidate = ""
-	call_id = ""
+	prepared.clear()
 	hide()
 	instruction.clear()
 	preview.clear()
@@ -79,6 +79,7 @@ func _open() -> void:
 func _instruction_changed(value: String) -> void:
 	ticket += 1
 	candidate = ""
+	prepared.clear()
 	preview.clear()
 	status.text = ""
 	get_ok_button().disabled = true
@@ -144,18 +145,36 @@ func _generate() -> void:
 func _accept() -> void:
 	if get_ok_button().disabled or candidate.is_empty() or not _current(ticket):
 		return
-	if call_id.is_empty():
-		call_id = Crypto.new().generate_random_bytes(16).hex_encode()
 	var attempt := ticket
-	var version: int = view.reference.version
-	var payload := {"expected_version": version, "body_md": candidate, "call_id": call_id}
+	if prepared.is_empty():
+		prepared = {"expected_version": view.reference.version, "body_md": candidate, "call_id": Crypto.new().generate_random_bytes(16).hex_encode()}
 	get_ok_button().disabled = true
 	generate.disabled = true
 	instruction.editable = false
 	status.text = "正在保存…"
-	var reply: Dictionary = await view.session.api_request(HTTPClient.METHOD_PATCH, _route(), payload)
+	var reply: Dictionary = await view.session.api_request(HTTPClient.METHOD_PATCH, _route(), prepared)
 	if not _current(attempt):
 		return
+	if reply.status == 409 and candidate != view.raw_body:
+		var merge: Dictionary = await view.session.api_request(HTTPClient.METHOD_POST, _route() + "/merge/preview", {
+			"expected_version": view.reference.version, "base_md": view.raw_body, "local_md": candidate,
+		})
+		if not _current(attempt):
+			return
+		if merge.status == 200 and merge.data.get("status") == "ready" and merge.data.get("body_md") is String and int(merge.data.get("remote_version", 0)) > int(view.reference.version):
+			# Replay this exact compare-and-swap if the separate commit acknowledgement is lost.
+			prepared = {"expected_version": int(merge.data.remote_version), "body_md": merge.data.body_md, "call_id": Crypto.new().generate_random_bytes(16).hex_encode()}
+			reply = await view.session.api_request(HTTPClient.METHOD_PATCH, _route(), prepared)
+			if not _current(attempt):
+				return
+			if reply.status == 409:
+				prepared.clear()
+				status.text = "合并期间有新修订。再次点击接受可保留建议并重新核对。"
+				get_ok_button().disabled = false
+				return
+		elif merge.status != 200:
+			reply = merge
+	var version: int = prepared.expected_version
 	var saved: Dictionary = reply.data
 	if reply.status == 0 or reply.status >= 500 or (reply.status == 200 and (saved.get("id") != view.reference.document_id or saved.get("version") != version + 1 or not saved.get("title") is String)):
 		status.text = "尚未收到保存回执。再次点击接受可核对此次提交。"
@@ -165,5 +184,7 @@ func _accept() -> void:
 		status.text = "修订已冲突。请重开最新修订，再生成建议。" if reply.status == 409 else "保存失败（%d）。请重开文档。" % reply.status
 		return
 	var selected := paragraph
+	if view.collaboration and view.collaboration.document_id == saved.id:
+		view.collaboration.notified_version = maxi(view.collaboration.notified_version, int(saved.version))
 	_reset()
 	await view.open_saved(saved, selected)

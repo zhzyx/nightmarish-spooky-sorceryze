@@ -145,6 +145,22 @@ func run() -> void:
 		return
 	dialog.get_cancel_button().pressed.emit()
 	await process_frame
+	await view.open_document(fixture.other, 1, 3, true)
+	start_preview("独立修改")
+	if not await wait_for(func(): return dialog.visible and not dialog.get_ok_button().disabled, "Independent candidate preview missing"):
+		return
+	await create_timer(0.5).timeout
+	if not require(dialog.visible and view.reference.version == 1, "Live updates discarded the candidate base"):
+		return
+	dialog.get_ok_button().pressed.emit()
+	if not await wait_for(func(): return dialog.status.text.contains("合并期间有新修订") and not dialog.get_ok_button().disabled, "Second independent change discarded the candidate"):
+		return
+	dialog.get_ok_button().pressed.emit()
+	if not await wait_for(func(): return dialog.status.text.contains("尚未收到保存回执"), "Missing rebased write acknowledgement"):
+		return
+	dialog.get_ok_button().pressed.emit()
+	if not await wait_for(func(): return view.reference.get("version") == 4 and view.reference.get("paragraph") == 3 and view.raw_body == fixture.merged, "Merged revision or surrounding Markdown changed"):
+		return
 	await view.open_document(fixture.id, 3, 3)
 	start_preview("切换段落")
 	view.paragraphs.select(1)
@@ -153,7 +169,7 @@ func run() -> void:
 	if not require(not dialog.visible and dialog.preview.text.is_empty(), "Old selection restored a delayed preview"):
 		return
 	start_preview("切换文档")
-	await view.open_document(fixture.other, 1, 1)
+	await view.open_document(fixture.other, 4, 1)
 	await create_timer(0.5).timeout
 	if not require(not dialog.visible and dialog.preview.text.is_empty() and view.reference.document_id == fixture.other, "Old document restored a delayed preview"):
 		return

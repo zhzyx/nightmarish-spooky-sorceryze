@@ -318,6 +318,12 @@ func _new_revision(doc: Dictionary, reconnected: bool = false) -> void:
 			return
 	elif latest <= maxi(notified_version, int(view.reference.get("version", 0))):
 		return
+	# Keep the reviewed candidate and its exact base while a collaborator advances the document.
+	var suggestion := view.get_node_or_null("WorkbenchParagraphSuggestion") as Window
+	if suggestion and suggestion.visible:
+		if not suggestion.visibility_changed.is_connected(_suggestion_closed):
+			suggestion.visibility_changed.connect(_suggestion_closed, CONNECT_ONE_SHOT)
+		return
 	notified_version = latest
 	for index in view.documents.item_count:
 		if view.documents.get_item_metadata(index).id == document_id:
@@ -326,6 +332,12 @@ func _new_revision(doc: Dictionary, reconnected: bool = false) -> void:
 	if view.composer.visible and view.draft_body.editable and conflict.is_empty():
 		view.draft_status.text = "对方已保存 v%d。保存时将核对双方修改。" % latest
 	view.open_document(document_id, latest, 1, true)
+
+
+func _suggestion_closed() -> void:
+	# Re-read the current head after cancel, accept, document change or account change.
+	if room and not document_id.is_empty() and view.visible:
+		_refresh.call_deferred()
 
 
 func save(route: String, payload: Dictionary, editing: Dictionary, attempt: String) -> Dictionary:
