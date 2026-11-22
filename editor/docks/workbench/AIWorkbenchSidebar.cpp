@@ -188,6 +188,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 		selector->set_meta("read_draft", callable_mp(this, &AIChatDock::ReadBusinessDraft));
 		selector->set_meta("write_draft", callable_mp(this, &AIChatDock::WriteBusinessDraft));
 		selector->set_meta("restore_references", callable_mp(this, &AIChatDock::RestoreBusinessReferences));
+		selector->set_meta("redact_workbench_text", callable_mp(this, &AIChatDock::_redact));
 		selector->set_meta("freeze_references", callable_mp(this, &AIChatDock::FreezeBusinessReferences));
 		selector->set_meta("workbench_sidebar", pWorkbenchSidebar);
 		Ref<Script> asset_script = LoadWorkbenchControlScript(daqian_asset_picker);

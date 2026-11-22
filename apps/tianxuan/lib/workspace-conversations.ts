@@ -3,6 +3,7 @@ export type Stage = (typeof stages)[number];
 
 export type MessageContext = {
   project: string;
+  continuation?: { preserve: string };
   module_id: string;
   issue_id: string | null;
   references: (

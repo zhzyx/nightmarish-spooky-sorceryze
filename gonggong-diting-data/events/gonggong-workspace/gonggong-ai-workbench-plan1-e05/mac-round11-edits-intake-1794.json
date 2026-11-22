@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-e05",
+  "event_id": "mac-round11-edits-intake-1794",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1794",
+  "occurred_at": "2026-11-22T10:02:10.521445+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 1794,
+    "title": "[方案一 E05] 识别动画轨道的人工编辑",
+    "source_updated_at": "2026-11-22T09:50:55Z",
+    "authority": "mac-round11-edits",
+    "worker": "/root/sinan_b7c512a54000a52c",
+    "accepted_dependencies": [
+      1817
+    ]
+  },
+  "evidence_refs": [
+    "dispatch-fc65af75aa764ba08eeac80fc2a3937c"
+  ],
+  "sha256": "023d0f674dc968f4cda1f28cbeb101b3175f9c8384c2ca0c771dc8d89a589a4c"
+}

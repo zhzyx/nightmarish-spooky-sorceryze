@@ -1,0 +1,80 @@
+{
+  "issue_number": 1795,
+  "request_id": "gonggong-ai-workbench-plan1-e06",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1795",
+  "baseline": "ca4bf54964d2b0e71882ef6bc53d40d4e6969d03",
+  "platform": "macOS arm64",
+  "build": "python -m SCons -j8 platform=macos target=editor arch=arm64 vulkan=no accesskit=no debug_symbols=no",
+  "command": "retest_native.py tests/editor/run_workbench_saved_editor_changes.py --godot bin/godot.macos.editor.arm64 --continuation --report e05-e06-final-native.json",
+  "fixture": "Two real Mac editor processes, native AnimationTrackKeyEdit via timeline selection, real loopback Tianxuan accounts and SQLite, HTTP model transport substitute.",
+  "editor_sha256": "b6f46a024397bd6b343a7814876a0a7c2216c3ee0cfe77b828edfd5d0472abab",
+  "source_sha256": {
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "7feed874d05ededc6526e268c4951e0e00ec44c18f367047aac59062b736ac2d",
+    "editor/docks/workbench/module_selector.gd": "6f9a9f349726b8f5ac0beb0c104872343ab9dff58f663ab78f1c05432a8db84e",
+    "editor/docks/workbench/saved_editor_changes.gd": "7bdecf1c9fc6246de2e37937aa810b514a357ee1f3d8fe887313803e4174f24f",
+    "customizations/components/tianxuan/server/workspace_conversations.py": "19010d260c29161e2bcb581f1c7791ca67c71a1bf8a79fbca123595a627fcecf",
+    "tests/editor/run_workbench_saved_editor_changes.py": "f320b2f73723d571e7da9a6e093c3041ecfd2ec0e055c5aab2229857411ea4c7",
+    "tests/editor/workbench_saved_continuation.gd": "8ef256e13cbcb96129e85daf922f624e632adaed2054f16de6f39fd00595ba12"
+  },
+  "server_tests": "python -m pytest -q customizations/components/tianxuan/server/test_workspace_conversations.py customizations/components/tianxuan/server/test_api_versions.py: 12 passed",
+  "independent_review": "Parent operator independently ran the frozen candidate and verified both authors, heads and timeline tracks. Latest main V02 separator rules integrated and retested.",
+  "next_input": {
+    "content": "<tianxuan-doc-edit://doc_78691e9b3e9f4b868879351161d40468/2>\n继续当前工作\n\n[已引用对象的保存修订]\n[{\"actor\":\"usr_fe6ff35c63154d338d1faebe7ccbd315\",\"first_line\":3,\"last_line\":3,\"latest_state\":{\"first_line\":3,\"last_line\":3,\"text\":\"\\treturn 29\"},\"object_id\":\"res://actor.gd#L3:1-L3:11\",\"previous_revision\":\"ca5d25ff772ee01f585b0bba37fb0ea61c2882bf807f1bd21b587253fc7c0d4b\",\"revision\":\"aee6259b7c8e6514696887047820131cb1c6fc712f98dba0fd72888ab7659916\",\"source\":\"editor_save\",\"start_revision\":\"ca5d25ff772ee01f585b0bba37fb0ea61c2882bf807f1bd21b587253fc7c0d4b\",\"starting_state\":{\"first_line\":3.0,\"last_line\":3.0,\"text\":\"\\treturn 11\"},\"text\":\"\\treturn 29\"},{\"actor\":\"usr_fe6ff35c63154d338d1faebe7ccbd315\",\"dependencies\":{},\"latest_state\":{\"position\":\"(37.5, 0.0)\"},\"object_id\":\"res://motion.tscn#Actor\",\"previous_revision\":\"37c53256df4fa6b4a5f88cbbed5efbb0adb56c35cb3d3c50d1ec0938e9e7d1df\",\"revision\":\"6ff751d3ee010a9645e4901624ec2dace4598e5a5da6b860fbcf014f6f5b8a35\",\"source\":\"editor_save\",\"start_revision\":\"37c53256df4fa6b4a5f88cbbed5efbb0adb56c35cb3d3c50d1ec0938e9e7d1df\",\"starting_state\":{\"position\":\"(5.0, 0.0)\"}},{\"actor\":\"usr_fe6ff35c63154d338d1faebe7ccbd315\",\"animation_changes\":[{\"animation\":\"Walk\",\"before_revision\":\"5880e3fb933f72352ea9c3db52f3e301fe366898dbb0e750204b2dce01842c6a\",\"keys\":[{\"after\":{\"sha256\":\"dd03e71587ef166e4b1867bdb0061156edb688ac78db9d4f3e451e8d1577fdc3\",\"time\":0.5,\"value\":18.0},\"before\":{\"sha256\":\"4bb20af627e4a635ad6b92103a99993a6ffcec066bd28f22f58e16fa32303cb1\",\"time\":0.5,\"value\":12.0},\"time\":0.5}],\"ordinal\":0,\"path\":\"Actor:position:x\",\"revision\":\"70e73a5464647492765bc20095b6596922c922a2a473230e2e45d18458915bcd\",\"type\":0}],\"dependencies\":{},\"latest_state\":{},\"object_id\":\"res://motion.tscn#Player\",\"previous_revision\":\"37c53256df4fa6b4a5f88cbbed5efbb0adb56c35cb3d3c50d1ec0938e9e7d1df\",\"revision\":\"6ff751d3ee010a9645e4901624ec2dace4598e5a5da6b860fbcf014f6f5b8a35\",\"source\":\"editor_save\",\"start_revision\":\"37c53256df4fa6b4a5f88cbbed5efbb0adb56c35cb3d3c50d1ec0938e9e7d1df\",\"starting_state\":{}}]",
+    "context_snapshot": {
+      "continuation": {
+        "preserve": "保留三个现场的人工修改"
+      },
+      "project": "studio/game",
+      "module_id": "default",
+      "issue_id": null,
+      "references": [
+        {
+          "kind": "editor",
+          "object_id": "res://actor.gd#L3:1-L3:11",
+          "revision": "aee6259b7c8e6514696887047820131cb1c6fc712f98dba0fd72888ab7659916"
+        },
+        {
+          "kind": "editor",
+          "object_id": "res://motion.tscn#Actor",
+          "revision": "6ff751d3ee010a9645e4901624ec2dace4598e5a5da6b860fbcf014f6f5b8a35"
+        },
+        {
+          "kind": "editor",
+          "object_id": "res://motion.tscn#Player",
+          "revision": "6ff751d3ee010a9645e4901624ec2dace4598e5a5da6b860fbcf014f6f5b8a35"
+        },
+        {
+          "kind": "document_edit",
+          "object_id": "doc_78691e9b3e9f4b868879351161d40468",
+          "revision": 2
+        }
+      ]
+    },
+    "document_edits": [
+      {
+        "kind": "document_edit",
+        "object_id": "doc_78691e9b3e9f4b868879351161d40468",
+        "revision": 3,
+        "author": "usr_fa9a9bfb0b1e47b0a5a4ed28b9e96337",
+        "changes": [
+          {
+            "before": [
+              {
+                "paragraph": 2,
+                "text": "原来第 2 段"
+              }
+            ],
+            "after": [
+              {
+                "paragraph": 2,
+                "text": "协作者保存的第 2 段"
+              }
+            ]
+          }
+        ],
+        "start_revision": 1
+      }
+    ]
+  },
+  "unchanged_document_characters": 40000
+}

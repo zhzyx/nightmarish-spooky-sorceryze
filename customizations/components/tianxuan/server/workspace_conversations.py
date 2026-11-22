@@ -73,7 +73,12 @@ class IssueReference(Payload):
     revision: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
+class Continuation(Payload):
+    preserve: str = Field(default="", max_length=1000)
+
+
 class MessageContext(Payload):
+    continuation: Continuation | None = None
     project: str = Field(pattern=PROJECT_PATTERN)
     module_id: ObjectId
     issue_id: ObjectId | None = None
@@ -173,6 +178,18 @@ def document_view_paragraphs(markdown: str) -> list[str]:
         "\n".join(group)
         for nonblank, group in groupby(lines, key=lambda line: bool(re.search(r"[^\x00-\x20]", line)))
         if nonblank
+    ]
+
+
+def document_changes(before: str, after: str) -> list[dict[str, Any]]:
+    old, new = document_view_paragraphs(before), document_view_paragraphs(after)
+    return [
+        {
+            "before": [{"paragraph": i + 1, "text": old[i]} for i in range(a, b)],
+            "after": [{"paragraph": i + 1, "text": new[i]} for i in range(c, d)],
+        }
+        for tag, a, b, c, d in SequenceMatcher(None, old, new).get_opcodes()
+        if tag != "equal"
     ]
 
 
@@ -427,16 +444,11 @@ class Conversations:
                 current = self.domain.version(reference.object_id, reference.revision)
                 before = self.domain.version(reference.object_id, reference.revision - 1)
 
-                old = document_view_paragraphs(before["body_md"])
-                new = document_view_paragraphs(current["body_md"])
-                changes = []
-                for tag, a, b, c, d in SequenceMatcher(None, old, new).get_opcodes():
-                    if tag != "equal":
-                        changes.append({
-                            "before": [{"paragraph": i + 1, "text": old[i]} for i in range(a, b)],
-                            "after": [{"paragraph": i + 1, "text": new[i]} for i in range(c, d)],
-                        })
-                edits.append({**reference.model_dump(), "author": current["author"], "changes": changes})
+                edits.append({
+                    **reference.model_dump(),
+                    "author": current["author"],
+                    "changes": document_changes(before["body_md"], current["body_md"]),
+                })
             elif isinstance(reference, DocumentReference):
                 self.domain.get_doc_shared(actor, reference.object_id)
                 version = self.domain.version(reference.object_id, reference.revision)
@@ -458,6 +470,8 @@ class Conversations:
         turn_id = str(payload.id)
         snapshot = payload.context_snapshot.model_dump() if payload.context_snapshot is not None else None
         if snapshot is not None:
+            if snapshot.get("continuation") is None:
+                snapshot.pop("continuation", None)
             for ref in snapshot["references"]:
                 if ref.get("paragraph") is None:
                     ref.pop("paragraph", None)
@@ -474,6 +488,32 @@ class Conversations:
             if any(turn["state"] == "pending" for turn in record["turns"]):
                 raise conflict("resolve the pending turn first")
             edits = self.check_selection(actor, owner[0], payload.context_snapshot) if payload.context_snapshot else []
+            if snapshot and snapshot.get("continuation"):
+                # Historical paragraph citations stay pinned. A saved-edit target explicitly
+                # selected for continuation follows its access-checked head.
+                starts = {item["object_id"]: item["revision"] - 1 for item in edits}
+                for previous in reversed(record["turns"]):
+                    scope = previous.get("context_snapshot") or {}
+                    if any(scope.get(k) != snapshot.get(k) for k in ("project", "module_id", "issue_id")):
+                        continue
+                    for ref in scope.get("references", []):
+                        if ref["kind"] in ("document", "document_edit") and ref["object_id"] in starts:
+                            start_version = ref["revision"] - int(ref["kind"] == "document_edit")
+                            starts[ref["object_id"]] = min(starts[ref["object_id"]], start_version)
+                    if not scope.get("continuation"):
+                        break
+                for edit in edits:
+                    key_id = edit["object_id"]
+                    head = self.domain.get_doc_shared(actor, key_id)
+                    start = starts[key_id]
+                    old = self.domain.version(key_id, start)
+                    latest = self.domain.version(key_id, head["version"])
+                    edit.update(
+                        start_revision=start,
+                        revision=latest["version"],
+                        author=latest["author"],
+                        changes=document_changes(old["body_md"], latest["body_md"]),
+                    )
             if len(json.dumps(edits, ensure_ascii=False)) > 32000:
                 raise HTTPException(422, "saved changes exceed turn limit; cite individual paragraphs")
             context = self.context(record)
