@@ -1,0 +1,202 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d08",
+  "issue_number": 1746,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1746",
+  "verified_at": "2026-11-21T21:36:47.006494+00:00",
+  "baseline": "962f325d4fb5f38d42c5195b47c5b70b5729f3b8",
+  "producer": "wave22_d08",
+  "dispatch_event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d08/dispatch-021404d460cc4c538776cc90c591609b.json",
+  "upstream_d07": {
+    "issue": 1787,
+    "state": "CLOSED",
+    "closed_at": "2026-11-21T21:12:16Z"
+  },
+  "source_sha256": {
+    "editor/docks/workbench/business_session.gd": "8a4e385373eb3023ba9abcd03dc08d0cc4878df5a6fc2d60c06fd2073906bd45",
+    "editor/docks/workbench/document_collaboration.gd": "04e44f59fb2dfdd2a4eff792cbc39db506bcd90fbc7731e146f5d2018353e83f",
+    "tests/editor/run_workbench_offline_document.py": "9cf65ba829d6132885d7debaa6d24e007ecfa2ecd4e95817317f01bb7d6d4509",
+    "tests/editor/workbench_offline_document.gd": "30ab9bd7eea5bcc455e1b92e5de471b58b925e3995dfc9bf09c1cfd77eee2e0a",
+    "design-docs/gonggong-ai-workbench-d08.md": "10ee24c404b5e4ba13b35fba23a9891dc2f8a6560ee0773e42112ed2e0996703"
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5 / Windows SDK 10.0.26100.0",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared read-only SCons cache> cache_limit=0 --cache-readonly -j6",
+    "exit_code": 0,
+    "generated_header_sha256": "f4a98cc6e2278eb7909c5a04d2a9a23ee1b23d52cdc79d66a047ab5bb358bf3a",
+    "observed_invalidation": [
+      "Generating editor\\docks\\workbench\\BusinessSession.gen.h ...",
+      "Compiling editor\\docks\\workbench\\AIWorkbenchSidebar.cpp ...",
+      "Linking Static Library bin\\obj\\editor\\editor.windows.editor.x86_64.lib ...",
+      "Linking Program bin\\godot.windows.editor.x86_64.exe ...",
+      "Linking Program bin\\godot.windows.editor.x86_64.console.exe ...",
+      "scons: done building targets."
+    ],
+    "editor_sha256": "7e7ff0024253e4a53f829cd84a960c48561ac7c55a133861139dfab1d7f8eda1"
+  },
+  "native_test": {
+    "command": "python tests/editor/run_workbench_offline_document.py --godot <candidate-editor> --report <report>",
+    "fixture": "Isolated headless editor, temporary accounts-mode Tianxuan SQLite service, checked disconnect with stopped listener, same-port restart. Uvicorn 0.54.0 and websockets 17.4. HTTP-only case explicitly restarts with ws=none.",
+    "exit_code": 0,
+    "raw_report_sha256": "cb09e48cc1aa084956d122a89902a7d8d2679ef004fa2e6c07ff254d9e8adc09",
+    "state": "passed",
+    "editor_sha256": "7e7ff0024253e4a53f829cd84a960c48561ac7c55a133861139dfab1d7f8eda1",
+    "scenarios": {
+      "unchanged": {
+        "windows": {
+          "disconnect": {
+            "comparison": {
+              "local": "离线时人的文字\n\n第二段草稿",
+              "requires_review": false,
+              "server": "第一段\n\n设计原文",
+              "version": 1.0
+            },
+            "offline": {
+              "draft": {
+                "base_md": "第一段\n\n设计原文",
+                "body_md": "离线时人的文字\n\n第二段草稿",
+                "version": 1.0
+              },
+              "http_status": 0
+            },
+            "saved": {
+              "body_md": "离线时人的文字\n\n第二段草稿",
+              "version": 2
+            },
+            "websocket_reconnected": true
+          }
+        },
+        "service_patches": [
+          {
+            "path": "/api/v1/docs/doc_6ada2390fbd8470089098b0642a7905c",
+            "project": "studio/game",
+            "expected_version": 1,
+            "body_md": "离线时人的文字\n\n第二段草稿",
+            "status": 200
+          }
+        ]
+      },
+      "advanced": {
+        "windows": {
+          "disconnect": {
+            "comparison": {
+              "local": "离线时人的文字\n\n第二段草稿",
+              "requires_review": true,
+              "server": "在线协作者的修订\n\n设计原文",
+              "version": 2.0
+            },
+            "offline": {
+              "draft": {
+                "base_md": "第一段\n\n设计原文",
+                "body_md": "离线时人的文字\n\n第二段草稿",
+                "version": 1.0
+              },
+              "http_status": 0
+            },
+            "other_account": {
+              "account": "usr_589df892424049e2bbd900c8893c6191",
+              "body_md": "在线协作者的修订\n\n设计原文",
+              "document": "doc_7d14d1aaabf24365b3d7e4634e6225c9",
+              "project": "studio/game"
+            },
+            "other_document": {
+              "account": "usr_863e7dffce7147a1a72fea97296d1971",
+              "body_md": "独立正文",
+              "document": "doc_4fb469650fc845bbae47a5fa3d4df6a6",
+              "project": "studio/game"
+            },
+            "other_project": {
+              "account": "usr_863e7dffce7147a1a72fea97296d1971",
+              "body_md": "在线协作者的修订\n\n设计原文",
+              "document": "doc_7d14d1aaabf24365b3d7e4634e6225c9",
+              "project": "studio/other"
+            },
+            "websocket_reconnected": true
+          },
+          "resume": {
+            "comparison": {
+              "local": "离线时人的文字\n\n第二段草稿",
+              "requires_review": true,
+              "server": "在线协作者的修订\n\n设计原文",
+              "version": 2.0
+            },
+            "saved": {
+              "body_md": "在线协作者的修订\n\n离线时人的文字",
+              "version": 3
+            }
+          }
+        },
+        "service_patches": [
+          {
+            "path": "/api/v1/docs/doc_7d14d1aaabf24365b3d7e4634e6225c9",
+            "project": "studio/game",
+            "expected_version": 2.0,
+            "body_md": "在线协作者的修订\n\n离线时人的文字",
+            "status": 200
+          }
+        ]
+      },
+      "http_only": {
+        "windows": {
+          "disconnect": {
+            "comparison": {
+              "local": "离线时人的文字\n\n第二段草稿",
+              "requires_review": false,
+              "server": "第一段\n\n设计原文",
+              "version": 1.0
+            },
+            "offline": {
+              "draft": {
+                "base_md": "第一段\n\n设计原文",
+                "body_md": "离线时人的文字\n\n第二段草稿",
+                "version": 1.0
+              },
+              "http_status": 0
+            },
+            "saved": {
+              "body_md": "离线时人的文字\n\n第二段草稿",
+              "version": 2
+            },
+            "websocket_reconnected": false
+          }
+        },
+        "service_patches": [
+          {
+            "path": "/api/v1/docs/doc_7c7af0e6250444d7ae2188d6b21ce55d",
+            "project": "studio/game",
+            "expected_version": 1,
+            "body_md": "离线时人的文字\n\n第二段草稿",
+            "status": 200
+          }
+        ]
+      }
+    }
+  },
+  "regressions": {
+    "D04": {
+      "exit_code": 0,
+      "runner": "run_workbench_documents.py --manual",
+      "report_sha256": "334d97a339a60e663955f53129d61c947f4485d2355aa8bb952d3b3a831dd8cb"
+    },
+    "D07": {
+      "exit_code": 0,
+      "runner": "run_workbench_document_collaboration.py",
+      "report_sha256": "3ed24abe7df25ca0fe17d1fc931c1f05e64fdd9d79dc36f3112aeeef421c238a"
+    },
+    "D04_HTTP_only": {
+      "exit_code": 0,
+      "runner": "run_workbench_documents.py --manual (without WebSocket backend)",
+      "report_sha256": "c9c1e8764556bdb833ca54f1b8c14f0cb6b490a78257ae4878013f0a7b5c8bed"
+    }
+  },
+  "method_learning": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "recalled_revision": 29,
+    "observed": "Changes to embedded GDScript regenerated BusinessSession.gen.h, compiled AIWorkbenchSidebar.cpp and relinked the editor. Exact rebuilt binary completed the D08 probe and upstream D04/D07 probes."
+  },
+  "diagnostics": [
+    "Native script loading exposed ambiguous inference for the WebSocket JSON snapshot marker. The candidate uses an explicit bool and passed the same native entry points.",
+    "Without a Uvicorn WebSocket backend the handshake returned HTTP 404. With the declared websockets dependency the live collaboration probe passed. A separate HTTP-only restart and D04 run verified authenticated HTTP fallback."
+  ]
+}

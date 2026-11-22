@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i08",
+  "issue_number": 1751,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1751",
+  "prerequisite": {
+    "issue": 1789,
+    "state": "CLOSED/COMPLETED",
+    "closed_at": "2026-11-21T22:19:51Z"
+  },
+  "intake_exit_code": 0,
+  "candidate": {
+    "base": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+    "source_git_blobs": {
+      "editor/SCsub": "8f7a4d6ac132e2743ff85b0f4653ff308d0a0cb8",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp": "9a5d290d9fbf339b494ae7d589a5a2b1cbf13265",
+      "editor/docks/workbench/issue_roadmap.gd": "f23b84356e125c19ed49fde6e7c5153c9e0283ea",
+      "customizations/components/tianxuan/server/work_management.py": "673ae47700b137efc2745a50068d001cfa8b9d6d",
+      "customizations/components/tianxuan/server/work_management_api.py": "abd7fdc16cea971cbe0ae6f9cc9d9d31e3409f75",
+      "customizations/components/tianxuan/server/test_work_management.py": "e6c64ab41d00fadf302b41441897d11198dd4b83",
+      "tests/editor/run_workbench_issue_roadmap.py": "66c5d0e3380293bbde5f64f1f0c7c6ef7c420422",
+      "tests/editor/workbench_issue_roadmap.gd": "01374bc5efcb5783f37055f81a7556d3d50c8f82"
+    }
+  },
+  "build": {
+    "profile": "Windows MSVC x86_64 editor, tests=yes, d3d12=no, angle=no, accesskit=no, read-only SCons cache, -j6",
+    "baseline_generated_header_sha256": "bc1d430751da2f6f20a35b1ee8df8011078545f205d84686beb6fb94097c3216",
+    "generated_header_sha256": "7795c40684d79acc5863a9c01adb6068efca9decc654a17bd201ee7745f1be4a",
+    "final_log_sha256": "f12d6992c282f7bb0676f58e24f7ccffca1e803aa7d6f6f4e62b80a1c00cc182",
+    "observed": [
+      "Generating editor\\docks\\workbench\\IssueCreation.gen.h ...",
+      "Compiling editor\\docks\\workbench\\AIWorkbenchSidebar.cpp ...",
+      "Linking Program bin\\godot.windows.editor.x86_64.exe ...",
+      "scons: done building targets."
+    ],
+    "exit_code": 0
+  },
+  "service_tests": {
+    "suite": [
+      "test_work_management.py",
+      "test_issue_flow.py",
+      "test_module_issues.py"
+    ],
+    "summary": "20 passed, 1 warning in 12.77s"
+  },
+  "target_receiver": {
+    "entry": "editor/open_ai_workbench → OpenIssueRoadmap → IssueRoadmapTree → WorkbenchIssueDetail",
+    "test": "tests/editor/run_workbench_issue_roadmap.py",
+    "result": {
+      "engine_sha256": "951b5cf7ad4ea61c734f3cb6645f64f6b26ea8fcd1a8f377eb7287d749988f6f",
+      "role": "viewer",
+      "first": {
+        "details": [
+          {
+            "id": "iss_78605e6d9db2470e8b0de0d2275cc361",
+            "milestone": "预览",
+            "number": 1.0,
+            "path": [
+              "场景",
+              "预览（项目共 4 单）",
+              "#1 · 设计"
+            ],
+            "title": "设计"
+          },
+          {
+            "id": "iss_f666bfef8a474fc1af341ff430d7558a",
+            "milestone": "预览",
+            "number": 2.0,
+            "path": [
+              "场景",
+              "预览（项目共 4 单）",
+              "#1 · 设计",
+              "#2 · 审阅"
+            ],
+            "title": "审阅"
+          },
+          {
+            "id": "iss_7eeb68e121bc4315a9ecc2d4ffaefcaf",
+            "milestone": "预览",
+            "number": 3.0,
+            "path": [
+              "场景",
+              "预览（项目共 4 单）",
+              "#1 · 设计",
+              "#2 · 审阅",
+              "#3 · 审阅"
+            ],
+            "title": "审阅"
+          },
+          {
+            "id": "iss_39ae7653bec14a7882543e09e4055dea",
+            "milestone": "发布",
+            "number": 4.0,
+            "path": [
+              "音效",
+              "发布（项目共 1 单）",
+              "上级 · #1 · 设计",
+              "#4 · 审阅"
+            ],
+            "title": "审阅"
+          },
+          {
+            "id": "iss_42b803ef128f499494706fa893a04995",
+            "milestone": "预览",
+            "number": 6.0,
+            "path": [
+              "音效",
+              "预览（项目共 4 单）",
+              "#6 · 审阅"
+            ],
+            "title": "审阅"
+          },
+          {
+            "id": "iss_d6a40e5488f041d7a17c2c3bd337f74b",
+            "milestone": "",
+            "number": 5.0,
+            "path": [
+              "音效",
+              "未设置里程碑（项目共 1 单）",
+              "#5 · 待排期"
+            ],
+            "title": "待排期"
+          }
+        ],
+        "requests": [
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/1/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/2/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/3/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/4/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/6/detail",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/work/roadmap",
+            "studio/game",
+            200
+          ],
+          [
+            "GET",
+            "/api/v1/issues/by-number/5/detail",
+            "studio/game",
+            200
+          ]
+        ]
+      },
+      "first_receipt_sha256": "a9016d35b29cb102d968472cdf5c6523d134cfc8be84c5a9bb6d3298c9ba6f03",
+      "reopened_receipt_sha256": "a9016d35b29cb102d968472cdf5c6523d134cfc8be84c5a9bb6d3298c9ba6f03",
+      "reopened_detail_numbers": [
+        1.0,
+        2.0,
+        3.0,
+        4.0,
+        6.0,
+        5.0
+      ],
+      "reopened_editor_and_database_matches": true,
+      "launches": 2
+    }
+  }
+}

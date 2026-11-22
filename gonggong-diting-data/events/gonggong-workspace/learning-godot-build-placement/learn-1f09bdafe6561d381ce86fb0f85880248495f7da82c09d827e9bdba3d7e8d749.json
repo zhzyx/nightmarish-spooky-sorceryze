@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-1f09bdafe6561d381ce86fb0f85880248495f7da82c09d827e9bdba3d7e8d749",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1858",
+  "occurred_at": "2026-11-22T00:14:17.036989+00:00",
+  "evidence_refs": [
+    "wave22-windows-k03a-1858",
+    "learn-0d29d30213e288d6f5fb57c8e0af9dfdddd26faee0200db05efbf8e54eca8699"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 37,
+    "previous": "8af6bf6b6777d1eadccaad8f80110f017614a0490c8cbd7273414a1c225a9091",
+    "action": "applied",
+    "details": {
+      "task": "D09 #1858",
+      "observed": "在同一 Windows 候选上重新编译并运行 D09 的原生控件探针，组合回读见 data-collection/gonggong-ai-workbench-plan1-windows-four-combined.json。独立候选与组合候选的编辑器哈希分别留证。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-d09.json",
+        "sha256": "3049a553311b26334e238c77b4efa54e7b946aa6518a278cbd29f1f741a4e8b5"
+      },
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-four-combined.json",
+        "sha256": "2bdc545522c95b8b86c364fb1485ccad7ed896e861a666a79f3bc888657748eb"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d09/wave22-windows-k03a-1858.json",
+      "sha256": "1b7363c530d0ef443a862b45a9b9aba73c35a92672e089611801356a837f1b70"
+    }
+  },
+  "sha256": "a6b7cdd2e8ca0b1a43665db65c51751e0650b9ecaeb34df9ee18851f4494998c"
+}

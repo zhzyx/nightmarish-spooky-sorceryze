@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-f4c2032c4fa628fc1aa5b76fd98d540d8ce1b09c4264e832632cc7684913351b",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1759",
+  "occurred_at": "2026-11-22T06:39:42.750512+08:00",
+  "evidence_refs": [
+    "dispatch-68ff40a2054849e4949b3943841adee5",
+    "learn-511c151c46034e3505441dc992c3c5b4a9b8ec1d5db6beffc7a7d04489202469"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 7,
+    "previous": "e22a15eb9ab41a00afe3ba10bb923b72ab3f309cc830e3a4ac31d73d7f7a04fa",
+    "action": "applied",
+    "details": {
+      "task": "I18 #1759 原生附件上传回执丢失后的重试。",
+      "observed": "在屏蔽首次成功回执之前，独立天璇连接已读到版本 1。原生选取同一文件重试以及再次点击后独立存储都只有同一版本。同名新内容另得版本 2，两个保存文件与原字节完全一致。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-i18.json",
+        "sha256": "779ba7fd79ae4f2afafeb5b679b8d20c12f28054cd16322c539ea08177ab9e6a"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-i18/dispatch-68ff40a2054849e4949b3943841adee5.json",
+      "sha256": "b8ecc261aed382cb1d7892c2dc2984e3f387f3c5c863b8d119089b5d1e3d4bb0"
+    }
+  },
+  "sha256": "411674139292c8b5a73cf891447efed31bff71012c8e40cac737918530910545"
+}

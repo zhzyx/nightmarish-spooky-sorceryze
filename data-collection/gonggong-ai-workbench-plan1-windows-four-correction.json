@@ -1,0 +1,156 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "previous_signed": "fc213cacf2966374d111498c502d322a583d308c",
+  "previous_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2010",
+  "combined_evidence": "data-collection/gonggong-ai-workbench-plan1-windows-four-combined.json",
+  "issues": {
+    "d09": 1858,
+    "d08": 1746,
+    "i08": 1751,
+    "i18": 1759
+  },
+  "editor_sha256": "12edc7aa0107e1e9ba49d6480a2c3d1db792c3d9bc50a33bcfff332619b8a351",
+  "original_native_cases": 32,
+  "native_source_changed": false,
+  "corrected_harness": "tests/editor/run_workbench_offline_document.py",
+  "corrected_git_blob": "f78e0379e79f67b0237334755f5e0a27045d499a",
+  "type_checker": "passed",
+  "source_style": "224e44160c01e256326e0690cf41eea102c27fb7ecb58a6c9b932fe941defa3e",
+  "d08": {
+    "state": "passed",
+    "scenarios": {
+      "unchanged": {
+        "windows": {
+          "disconnect": {
+            "comparison": {
+              "local": "离线时人的文字\n\n第二段草稿",
+              "requires_review": false,
+              "server": "第一段\n\n设计原文",
+              "version": 1.0
+            },
+            "offline": {
+              "draft": {
+                "base_md": "第一段\n\n设计原文",
+                "body_md": "离线时人的文字\n\n第二段草稿",
+                "version": 1.0
+              },
+              "http_status": 0
+            },
+            "saved": {
+              "body_md": "离线时人的文字\n\n第二段草稿",
+              "version": 2
+            },
+            "websocket_reconnected": true
+          }
+        },
+        "service_patches": [
+          {
+            "path": "/api/v1/docs/doc_7cd92e71000d47bebfc64a603f1ebe02",
+            "project": "studio/game",
+            "expected_version": 1,
+            "body_md": "离线时人的文字\n\n第二段草稿",
+            "status": 200
+          }
+        ]
+      },
+      "advanced": {
+        "windows": {
+          "disconnect": {
+            "comparison": {
+              "local": "离线时人的文字\n\n第二段草稿",
+              "requires_review": true,
+              "server": "在线协作者的修订\n\n设计原文",
+              "version": 2.0
+            },
+            "offline": {
+              "draft": {
+                "base_md": "第一段\n\n设计原文",
+                "body_md": "离线时人的文字\n\n第二段草稿",
+                "version": 1.0
+              },
+              "http_status": 0
+            },
+            "other_account": {
+              "account": "usr_9204e02c16aa45a3a5c99288d541019f",
+              "body_md": "在线协作者的修订\n\n设计原文",
+              "document": "doc_0f3cf90b8f594784bf29b580e8cc6e8e",
+              "project": "studio/game"
+            },
+            "other_document": {
+              "account": "usr_08bc4f1611694ff7800250b3d224edf3",
+              "body_md": "独立正文",
+              "document": "doc_2a888979672e44ea85594825282aaf3c",
+              "project": "studio/game"
+            },
+            "other_project": {
+              "account": "usr_08bc4f1611694ff7800250b3d224edf3",
+              "body_md": "在线协作者的修订\n\n设计原文",
+              "document": "doc_0f3cf90b8f594784bf29b580e8cc6e8e",
+              "project": "studio/other"
+            },
+            "websocket_reconnected": true
+          },
+          "resume": {
+            "comparison": {
+              "local": "离线时人的文字\n\n第二段草稿",
+              "requires_review": true,
+              "server": "在线协作者的修订\n\n设计原文",
+              "version": 2.0
+            },
+            "saved": {
+              "body_md": "在线协作者的修订\n\n离线时人的文字",
+              "version": 3
+            }
+          }
+        },
+        "service_patches": [
+          {
+            "path": "/api/v1/docs/doc_0f3cf90b8f594784bf29b580e8cc6e8e",
+            "project": "studio/game",
+            "expected_version": 2.0,
+            "body_md": "在线协作者的修订\n\n离线时人的文字",
+            "status": 200
+          }
+        ]
+      },
+      "http_only": {
+        "windows": {
+          "disconnect": {
+            "comparison": {
+              "local": "离线时人的文字\n\n第二段草稿",
+              "requires_review": false,
+              "server": "第一段\n\n设计原文",
+              "version": 1.0
+            },
+            "offline": {
+              "draft": {
+                "base_md": "第一段\n\n设计原文",
+                "body_md": "离线时人的文字\n\n第二段草稿",
+                "version": 1.0
+              },
+              "http_status": 0
+            },
+            "saved": {
+              "body_md": "离线时人的文字\n\n第二段草稿",
+              "version": 2
+            },
+            "websocket_reconnected": false
+          }
+        },
+        "service_patches": [
+          {
+            "path": "/api/v1/docs/doc_df183800692243e48f0a18ec298106dc",
+            "project": "studio/game",
+            "expected_version": 1,
+            "body_md": "离线时人的文字\n\n第二段草稿",
+            "status": 200
+          }
+        ]
+      }
+    },
+    "report_sha256": "d366c6d983b530c008443cbb52d46faeb46daf7383233e4b7e0d78c0dced46e4"
+  },
+  "kuafu_event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-b731b3d7eb67905661afbd519d066595f2010fcc.json",
+  "checked": "2026-11-22T00:22:52.224440+00:00"
+}

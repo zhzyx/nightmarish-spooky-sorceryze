@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b731b3d7eb67905661afbd519d066595f2010fcc",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ee7e331ce866a67e0bfb0df6ae485c3acecb32d72e0d12a43e2828f4962ed536",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2009",
+    "action": "validation",
+    "detection_head": "2f806c80a4e9cd1fa5552f9b2ace0309d2614ea6",
+    "context_sha256": "c1150d812b542bbfe53ce6b7d21d798c890a6dd318457aeae2a61a93aaaf4189",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "codex-user:20261122-plan1-wave22",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44965829899/job/137034511776",
+    "diagnosis": "拆分独立候选时带回 D08 工作者旧版 hashlib.file_digest，仓库 mypy 目标缺少该接口。确认原联合签发中已有读取分块的 sha256 实现，四个候选产品文件集中只有该脚本偏离预期，另外三个均为已隔离 U13 的共享路径。",
+    "next_action": "恢复已验证的兼容脚本，逐项回读完整类型检查与真实 D08 场景，保留旧签发后重新绑定候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T00:21:08.162831+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T00:21:53.019103+00:00",
+  "sha256": "e0f72f664668df28e13a8d57199abd22cb0753d95c6e7986c3049dd5fa218b26"
+}

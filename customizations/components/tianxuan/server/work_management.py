@@ -58,7 +58,9 @@ def roadmap(store, actor, *, project=None) -> dict[str, Any]:
     if not store.db.in_transaction:
         store.db.execute("BEGIN")
     items = []
-    for issue in store.list_issues(actor, project=project):
+    issues = store.list_issues(actor, project=project)
+    visible_ids = {issue["id"] for issue in issues}
+    for issue in issues:
         plan = empty_plan()
         logged = 0
         for row in store.db.execute(
@@ -73,17 +75,24 @@ def roadmap(store, actor, *, project=None) -> dict[str, Any]:
                 logged += data["minutes"]
         _, _, stages, _ = definition(store, issue["id"])
         progress = next((s["progress"] for s in stages if s["id"] == issue["status"]), 0)
-        items.append(
-            dict(
-                id=issue["id"],
-                title=issue["title"],
-                status=issue["status"],
-                progress=progress,
-                plan=plan,
-                logged_minutes=logged,
-            )
+        item = dict(
+            id=issue["id"],
+            title=issue["title"],
+            status=issue["status"],
+            progress=progress,
+            plan=plan,
+            logged_minutes=logged,
         )
+        if project is not None:
+            item.update(
+                number=issue["number"],
+                module_id=issue["module_id"],
+                parent_id=issue["parent_id"] if issue["parent_id"] in visible_ids else None,
+            )
+        items.append(item)
     items.sort(key=lambda item: tuple(item["plan"][k] for k in ("roadmap", "milestone", "iteration")))
+    if project is not None:
+        return {"project": project, "modules": store.list_business_modules(actor, project), "items": items}
     return {"items": items}
 
 
@@ -320,6 +329,15 @@ def execute(store, actor: str, name: str, payload: dict[str, Any], *, call_id=No
             store.db.execute("BEGIN")
         store._require_tenant_issue(actor, issue_id)
         return snapshot(store, actor, issue_id)
+    receipt = record_work_mutation(store, actor, name, payload, call_id=call_id, human=human)
+    # Reconstruct the acknowledged projection, checking current source access.
+    return snapshot(store, actor, issue_id, receipt["version"])
+
+
+@_connection_call
+def record_work_mutation(store, actor, name, payload, *, call_id, human=False):
+    """Record a validated work event and return its compact id/version receipt."""
+    issue_id = payload["issue_id"]
     if name == "work.decide" and not human:
         raise PermissionDenied("asset decision requires human confirmation")
     if name not in _KEYS or call_id is None:
@@ -409,7 +427,4 @@ def execute(store, actor: str, name: str, payload: dict[str, Any], *, call_id=No
         )
         return {"id": issue_id, "version": expected + 1}
 
-    # Reconstruct the exact acknowledged projection without copying its entire
-    # history into every receipt. Reads always check current module access.
-    receipt = store._run_tool_once(actor, name, payload, call_id, apply)
-    return snapshot(store, actor, issue_id, receipt["version"])
+    return store._run_tool_once(actor, name, payload, call_id, apply)
