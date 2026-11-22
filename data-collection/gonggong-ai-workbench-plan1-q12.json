@@ -1,0 +1,73 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-q12",
+  "issue_number": 1735,
+  "source_commit": "2ee48917eb54b82a14c381ffc8cb3c290b49bd14",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "editor_sha256": "748650bf3c4e91bfb4aab2a98b2322a40eb3a4715ef9088d31c946af283f11fc",
+  "scenario_blobs": {
+    "tests/editor/run_workbench_duobao_receipt_loss.py": "d9726f1f1f47dc475cbf0efa28cd5d4e2ce2e60e",
+    "tests/editor/workbench_duobao_receipt_loss.gd": "9e334c44358d0db82ae6147d78b181536ec634b1"
+  },
+  "mode": "headless editor, authenticated loopback TCP",
+  "status": "passed",
+  "receiver_pids": [
+    136056,
+    131676
+  ],
+  "editor_sessions": [
+    {
+      "issue": "iss_2c3691f9479f4607b1e7f81152465005",
+      "phase": "drop",
+      "pid": 94956,
+      "request": "mr_c16e86059c818126a506fc50efb8c9fe0324132ab6790087274f7059358a7d56",
+      "status": "Remote end closed connection without response",
+      "target": "",
+      "exit_code": 0
+    },
+    {
+      "issue": "iss_2c3691f9479f4607b1e7f81152465005",
+      "phase": "recover",
+      "pid": 133924,
+      "request": "mr_c16e86059c818126a506fc50efb8c9fe0324132ab6790087274f7059358a7d56",
+      "status": "已合入目标分支\nfeature @ 73dda555525a8bcc56c1118c5222d6a7e1e6589e → main @ c2929bde608a8deb573064a6a637480be33a8e4b\nusr_ebf34f0f8310419ca1d3687aa0e2afa2 · 已批准\n73dda555525a8bcc56c1118c5222d6a7e1e6589e · iss_2c3691f9479f4607b1e7f81152465005",
+      "target": "当前目标 main @ 73dda555525a8bcc56c1118c5222d6a7e1e6589e",
+      "exit_code": 0
+    }
+  ],
+  "lost_confirmations": 1,
+  "accepted_delivery": {
+    "id": "mr_c16e86059c818126a506fc50efb8c9fe0324132ab6790087274f7059358a7d56",
+    "source": "feature",
+    "target": "main",
+    "candidate": "73dda555525a8bcc56c1118c5222d6a7e1e6589e",
+    "target_base": "c2929bde608a8deb573064a6a637480be33a8e4b",
+    "check_state": "merged",
+    "issue_id": "iss_2c3691f9479f4607b1e7f81152465005",
+    "reviews": {
+      "usr_ebf34f0f8310419ca1d3687aa0e2afa2": "APPROVED"
+    },
+    "merge_sha": "73dda555525a8bcc56c1118c5222d6a7e1e6589e",
+    "resolved_from": "",
+    "checks": [],
+    "target_tip": "73dda555525a8bcc56c1118c5222d6a7e1e6589e",
+    "comment_id": "icmt_494d890888714cb7984ffd8cadf52cd4"
+  },
+  "issue_comment": {
+    "id": "icmt_494d890888714cb7984ffd8cadf52cd4",
+    "tenant_id": "ten_f34f29e7f7974a43b90186df91370875",
+    "issue_id": "iss_2c3691f9479f4607b1e7f81152465005",
+    "author": "usr_6bcfd2f1fc7f4dcda244987c3625eb4b",
+    "body": "多宝交付 sample.git · main @ 73dda555525a8bcc56c1118c5222d6a7e1e6589e · 候选 73dda555525a8bcc56c1118c5222d6a7e1e6589e · mr_c16e86059c818126a506fc50efb8c9fe0324132ab6790087274f7059358a7d56",
+    "created_at": "2026-11-22T13:18:07.670811+00:00",
+    "author_name": "owner",
+    "parent_id": null
+  },
+  "target_baseline": "c2929bde608a8deb573064a6a637480be33a8e4b",
+  "target_new_commits": [
+    "73dda555525a8bcc56c1118c5222d6a7e1e6589e"
+  ],
+  "target_marker": "refs/duobao/delivered/mr_c16e86059c818126a506fc50efb8c9fe0324132ab6790087274f7059358a7d56",
+  "persistent_receipt_count": 1,
+  "persistent_call_id": "duobao:mr_c16e86059c818126a506fc50efb8c9fe0324132ab6790087274f7059358a7d56",
+  "work_order_link_count": 1
+}

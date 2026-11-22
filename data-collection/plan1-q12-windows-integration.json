@@ -1,0 +1,102 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-q12",
+  "issue_number": 1735,
+  "status": "passed",
+  "summary": "接收端完成 Git 合入和工单回写后，测试断开 TCP 连接。编辑器和天璇服务重开后从原工单取回目标 SHA，裸仓新增 1 个提交、SQLite 留存 1 条调用回执、天璇留下 1 条交付评论。独立重编的 Windows 编辑器通过同一场景和 11 项相邻回归。",
+  "observed": "2026-11-22T13:45:55.190208+00:00",
+  "source_tree": "b3dabc7c2469ad47ef78e5f71e5c57e3d22babca",
+  "base": "0d6778f6858118ffe79dd4b04cb8ea7e8576922d",
+  "editor_package": {
+    "godot.windows.editor.x86_64.exe": "2f9fd49fce1f23928e9f4368d104b1fa388e1b0f85dbf08270e60ff409a2c59a",
+    "godot.windows.editor.x86_64.console.exe": "7123f557c28564f17a9066f2a765b5b504b6bedddba03fd13762276d8defc65b",
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+  },
+  "regressions": [
+    "customizations.components.tianxuan.server.test_native_workcopy_commit::test_binary_add_delete_and_leftover",
+    "customizations.components.tianxuan.server.test_native_workcopy_commit::test_content_drift_tenant_and_scope",
+    "customizations.components.tianxuan.server.test_native_workcopy_commit::test_reopen_reconciles_unknown_write[reply-lost]",
+    "customizations.components.tianxuan.server.test_native_workcopy_commit::test_reopen_reconciles_unknown_write[never-received]",
+    "customizations.components.tianxuan.server.test_native_workcopy_commit::test_rebound_receipt_retains_checkpoint",
+    "customizations.components.tianxuan.server.test_selected_commit::test_lost_receipt_and_concurrent_replay",
+    "customizations.components.tianxuan.server.test_selected_commit::test_binary_delete_and_literal_names",
+    "customizations.components.tianxuan.server.test_selected_commit::test_stale_bytes_and_moved_ref",
+    "customizations.components.tianxuan.server.test_selected_commit::test_partial_index_and_authenticated_branch_policy",
+    "customizations.components.tianxuan.server.test_selected_commit::test_staged_descendant_survives_file_replacement",
+    "customizations.components.tianxuan.server.test_merge_queue_api::test_delivery_recovers_lost_work_order_write_and_refuses_retracted_target"
+  ],
+  "test": {
+    "request_id": "gonggong-ai-workbench-plan1-q12",
+    "issue_number": 1735,
+    "source_commit": "0d6778f6858118ffe79dd4b04cb8ea7e8576922d",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "editor_sha256": "2f9fd49fce1f23928e9f4368d104b1fa388e1b0f85dbf08270e60ff409a2c59a",
+    "scenario_blobs": {
+      "tests/editor/run_workbench_duobao_receipt_loss.py": "d9726f1f1f47dc475cbf0efa28cd5d4e2ce2e60e",
+      "tests/editor/workbench_duobao_receipt_loss.gd": "9e334c44358d0db82ae6147d78b181536ec634b1"
+    },
+    "mode": "headless editor, authenticated loopback TCP",
+    "status": "passed",
+    "receiver_pids": [
+      137180,
+      31520
+    ],
+    "editor_sessions": [
+      {
+        "issue": "iss_c00176de87b242a29965d3eb27777ad2",
+        "phase": "drop",
+        "pid": 132652,
+        "request": "mr_abe210d3b8c958982a8bfbf6761981ebf642dbc75c7133847ad7301c9b9019e5",
+        "status": "Remote end closed connection without response",
+        "target": "",
+        "exit_code": 0
+      },
+      {
+        "issue": "iss_c00176de87b242a29965d3eb27777ad2",
+        "phase": "recover",
+        "pid": 126264,
+        "request": "mr_abe210d3b8c958982a8bfbf6761981ebf642dbc75c7133847ad7301c9b9019e5",
+        "status": "已合入目标分支\nfeature @ 3c5a92ae7dbb8bbb469d6056e8b4e962a3990888 → main @ 1e2e5571f929673b0018ff27504dbd8adc4e9d8a\nusr_8c4b94f47c4643f4a2572b4d26addc1b · 已批准\n3c5a92ae7dbb8bbb469d6056e8b4e962a3990888 · iss_c00176de87b242a29965d3eb27777ad2",
+        "target": "当前目标 main @ 3c5a92ae7dbb8bbb469d6056e8b4e962a3990888",
+        "exit_code": 0
+      }
+    ],
+    "lost_confirmations": 1,
+    "accepted_delivery": {
+      "id": "mr_abe210d3b8c958982a8bfbf6761981ebf642dbc75c7133847ad7301c9b9019e5",
+      "source": "feature",
+      "target": "main",
+      "candidate": "3c5a92ae7dbb8bbb469d6056e8b4e962a3990888",
+      "target_base": "1e2e5571f929673b0018ff27504dbd8adc4e9d8a",
+      "check_state": "merged",
+      "issue_id": "iss_c00176de87b242a29965d3eb27777ad2",
+      "reviews": {
+        "usr_8c4b94f47c4643f4a2572b4d26addc1b": "APPROVED"
+      },
+      "merge_sha": "3c5a92ae7dbb8bbb469d6056e8b4e962a3990888",
+      "resolved_from": "",
+      "checks": [],
+      "target_tip": "3c5a92ae7dbb8bbb469d6056e8b4e962a3990888",
+      "comment_id": "icmt_625fd613fc3f48c585f438386415adf1"
+    },
+    "issue_comment": {
+      "id": "icmt_625fd613fc3f48c585f438386415adf1",
+      "tenant_id": "ten_9942d530f60a4c0296c149209c0aeccd",
+      "issue_id": "iss_c00176de87b242a29965d3eb27777ad2",
+      "author": "usr_5e64ef2a91c244f88dc187b6a08fe574",
+      "body": "多宝交付 sample.git · main @ 3c5a92ae7dbb8bbb469d6056e8b4e962a3990888 · 候选 3c5a92ae7dbb8bbb469d6056e8b4e962a3990888 · mr_abe210d3b8c958982a8bfbf6761981ebf642dbc75c7133847ad7301c9b9019e5",
+      "created_at": "2026-11-22T13:44:12.814180+00:00",
+      "author_name": "owner",
+      "parent_id": null
+    },
+    "target_baseline": "1e2e5571f929673b0018ff27504dbd8adc4e9d8a",
+    "target_new_commits": [
+      "3c5a92ae7dbb8bbb469d6056e8b4e962a3990888"
+    ],
+    "target_marker": "refs/duobao/delivered/mr_abe210d3b8c958982a8bfbf6761981ebf642dbc75c7133847ad7301c9b9019e5",
+    "persistent_receipt_count": 1,
+    "persistent_call_id": "duobao:mr_abe210d3b8c958982a8bfbf6761981ebf642dbc75c7133847ad7301c9b9019e5",
+    "work_order_link_count": 1
+  }
+}

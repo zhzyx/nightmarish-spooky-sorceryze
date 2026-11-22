@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-q12",
+  "event_id": "afterk03-intake-1735",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735",
+  "occurred_at": "2026-11-22T13:04:31.616091+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1735,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T13:04:28Z",
+    "accepted_dependencies": {
+      "1805": "f76285803721013bc8ba236705b07f5a630f91ab",
+      "1822": "2ee48917eb54b82a14c381ffc8cb3c290b49bd14"
+    },
+    "source_main": "2ee48917eb54b82a14c381ffc8cb3c290b49bd14",
+    "title": "[方案一 Q12] 核对真实断回执后的多宝提交"
+  },
+  "evidence_refs": [],
+  "sha256": "841dc18465b20d9f8d9bd7610b35c1051f907f74115fea841bc9644eea601e27"
+}
