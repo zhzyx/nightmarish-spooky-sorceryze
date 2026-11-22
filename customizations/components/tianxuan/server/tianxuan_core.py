@@ -79,6 +79,11 @@ CREATE TABLE IF NOT EXISTS design_task_sources (
   paragraph INTEGER NOT NULL, project TEXT NOT NULL, module_id TEXT NOT NULL, acceptance TEXT NOT NULL,
   FOREIGN KEY(document_id,version) REFERENCES design_signoffs(document_id,version)
 );
+CREATE TABLE IF NOT EXISTS design_task_targets (
+  issue_id TEXT PRIMARY KEY REFERENCES design_task_sources(issue_id), revision INTEGER NOT NULL,
+  responsible_user TEXT NOT NULL REFERENCES users(id), stage TEXT NOT NULL, criteria TEXT NOT NULL,
+  return_comment_id TEXT REFERENCES issue_comments(id)
+);
 CREATE INDEX IF NOT EXISTS idx_design_tasks_revision ON design_task_sources(document_id,version,project);
 CREATE TABLE IF NOT EXISTS issues (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, parent_id TEXT, number INTEGER NOT NULL,
@@ -1435,6 +1440,70 @@ class Tianxuan:
             return dict(row)
         return None
 
+    def _task_target(self, issue_id: str) -> dict[str, Any] | None:
+        row = self.db.execute(
+            "SELECT t.issue_id,s.document_id,s.version,t.revision,t.responsible_user,t.stage,t.criteria,"
+            "t.return_comment_id,coalesce(c.body,'') AS return_reason,"
+            "CASE WHEN t.return_comment_id IS NULL THEN 'defined' ELSE 'returned' END AS status "
+            "FROM design_task_targets t JOIN design_task_sources s USING(issue_id) "
+            "LEFT JOIN issue_comments c ON c.id=t.return_comment_id WHERE t.issue_id=?",
+            (issue_id,),
+        ).fetchone()
+        return dict(row) if row else None
+
+    @_connection_call
+    def set_task_target(
+        self,
+        actor: str,
+        issue_id: str,
+        project: str,
+        document_id: str,
+        version: int,
+        expected_revision: int,
+        stage: str,
+        criteria: str | None = None,
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._project_issue(actor, issue_id, project, write=True)
+        detail = self.read_issue_detail(actor, project, issue["number"])
+        source = detail["design_source"]
+        if source is None:
+            raise NotFound("signed design source unavailable")
+        if (document_id, version) != (source["document_id"], source["version"]):
+            raise VersionConflict("target must reference the task's signed design revision")
+        responsible = detail["assignee"]["id"] if detail["assignee"] else issue["created_by"]
+        if actor != responsible:
+            raise PermissionDenied("only the responsible user may define this target")
+        stage, criteria = stage.strip(), (criteria or "").strip()
+        if not 1 <= len(stage) <= 128 or len(criteria) > 8000:
+            raise TianxuanError("a stage (1 to 128 characters) and criteria of at most 8000 characters are required")
+        current: dict[str, Any] | None = detail["task_target"]
+        revision = current["revision"] if current else 0
+        if (
+            current
+            and (current["responsible_user"], current["stage"], current["criteria"]) == (actor, stage, criteria)
+            and expected_revision in (revision, revision - 1)
+        ):
+            return current
+        if expected_revision != revision:
+            raise VersionConflict("task target changed; reopen the issue")
+        comment_id = None
+        if not criteria:
+            comment = self.add_issue_comment(actor, issue_id, "阶段目标已退回：请填写可验证的到达条件。")
+            comment_id = comment["id"]
+        self.db.execute(
+            "INSERT INTO design_task_targets(issue_id,revision,responsible_user,stage,criteria,return_comment_id) "
+            "VALUES(?,?,?,?,?,?) ON CONFLICT(issue_id) DO UPDATE SET revision=excluded.revision,"
+            "responsible_user=excluded.responsible_user,stage=excluded.stage,criteria=excluded.criteria,"
+            "return_comment_id=excluded.return_comment_id",
+            (issue_id, revision + 1, actor, stage, criteria, comment_id),
+        )
+        target = self._task_target(issue_id)
+        assert target is not None
+        return target
+
     # ---------- 文曲：评论 ----------
 
     @_connection_call
@@ -1763,9 +1832,11 @@ class Tianxuan:
             can_classify = True
         except PermissionDenied:
             can_classify = False
+        source = self._design_task_source(actor, issue["id"])
         return issue | {
             "can_classify": can_classify,
-            "design_source": self._design_task_source(actor, issue["id"]),
+            "design_source": source,
+            "task_target": self._task_target(issue["id"]) if source else None,
             "assignee": dict(assignee) if assignee else None,
             "revision": snapshot["revision"],
             "labels": self._issue_labels(issue["id"]),

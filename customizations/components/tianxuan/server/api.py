@@ -92,6 +92,7 @@ from schemas import (
     RequirementCreateRequest,
     RoleUpdateRequest,
     SelectedGitCommitRequest,
+    TaskTargetRequest,
     TicketsRequest,
     ToolCallRequest,
 )
@@ -797,6 +798,12 @@ def create_app(
     @app.get("/api/v1/issues/by-number/{number}/detail")
     def read_issue_detail(number: int, actor: ActorDep, project: str = DEFAULT_PROJECT) -> dict[str, Any]:
         return cast(dict[str, Any], store.read_issue_detail(actor, project, number))
+
+    @app.put("/api/v1/issues/{issue_id}/task-target")
+    def set_task_target(
+        issue_id: str, payload: TaskTargetRequest, actor: ActorDep, project: str = DEFAULT_PROJECT
+    ) -> dict[str, Any]:
+        return cast(dict[str, Any], store.set_task_target(actor, issue_id, project, **payload.model_dump()))
 
     @app.put("/api/v1/issues/{issue_id}/classification")
     def set_issue_classification(
