@@ -35,6 +35,24 @@
 
 // Transport validation never executes or replays the completed bridge action.
 namespace AIChatReceipt {
+inline Dictionary Diagnostic(const Dictionary &p_result, const String &p_path, int p_exit_code, uint32_t p_attempts) {
+	Dictionary diagnostic;
+	diagnostic["status"] = p_result["receipt_status"];
+	diagnostic["exit_code"] = p_exit_code;
+	diagnostic["read_attempts"] = p_attempts;
+	diagnostic["io_error"] = p_result["receipt_io_error"];
+	diagnostic["parse_line"] = p_result.get("receipt_parse_line", -1);
+	diagnostic["temporary_present"] = FileAccess::exists(p_path.get_basename() + ".tmp");
+	return diagnostic;
+}
+
+inline void WriteDiagnostic(const String &p_path, const Dictionary &p_diagnostic) {
+	Ref<FileAccess> file = FileAccess::open(p_path + ".diagnostic.json", FileAccess::WRITE);
+	if (file.is_valid()) {
+		file->store_string(JSON::stringify(p_diagnostic));
+	}
+}
+
 static bool CanRetry(Error eError, uint32_t uAttempts, uint64_t uNow, uint64_t uDeadline) {
 	return eError == ERR_BUSY && uAttempts < 6 && uNow < uDeadline;
 }

@@ -31,6 +31,7 @@
 #include "editor_dock_manager.h"
 
 #include "core/object/callable_mp.h"
+#include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/dock_tab_container.h"
 #include "editor/docks/editor_dock.h"
 #include "editor/editor_main_screen.h"
@@ -355,8 +356,15 @@ void EditorDockManager::_move_dock(EditorDock *p_dock, Control *p_target, int p_
 			if (parent_tabs) {
 				p_dock->previous_tab_index = parent_tabs->get_tab_idx_from_control(p_dock);
 
-				if (parent_tabs->get_current_tab() == p_dock->previous_tab_index && parent_tabs->get_previous_tab() != -1) {
+				const int current = parent_tabs->get_current_tab();
+				if (current == p_dock->previous_tab_index && parent_tabs->get_previous_tab() != -1) {
 					previous_dock = parent_tabs->get_dock(parent_tabs->get_previous_tab());
+				} else if (parent_tabs->dock_slot == EditorDock::DOCK_SLOT_MAIN_SCREEN && current >= 0 && current != p_dock->previous_tab_index) {
+					// TabBar drops a selected hidden tab when removing a neighbor.
+					EditorDock *selected = parent_tabs->get_dock(current);
+					if (selected->get_layout_key() == "AIChatMainScreen" || selected->get_layout_key() == "DaqianMainScreen") {
+						previous_dock = selected;
+					}
 				}
 			}
 			parent->set_block_signals(true);
@@ -554,6 +562,7 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 	}
 
 	int main_screen_selected_tab_idx = -1;
+	bool restore_full_workbench = false;
 	// Load docks by slot. Index -1 is for docks that have no slot.
 	for (int i = -1; i < EditorDock::DOCK_SLOT_MAX; i++) {
 		const String key = DockTabContainer::get_config_key(i);
@@ -576,6 +585,7 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 				names.erase("AINativeMainScreen");
 				names.insert(names.find("AIChatMainScreen") + 1, "AINativeMainScreen");
 			}
+			restore_full_workbench = selected_name == "AIChatMainScreen" || selected_name == "DaqianMainScreen";
 			main_screen_selected_tab_idx = names.find(selected_name);
 		}
 		for (int j = names.size() - 1; j >= 0; j--) {
@@ -652,6 +662,14 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 	if (bottom_hsplit->get_child_as_control(1)->is_visible()) {
 		offsets = { p_layout->get_value(p_section, "dock_bottom_split", 0) };
 		bottom_hsplit->set_split_offsets(offsets);
+	}
+
+	const String chat_section = p_section + "/AIChatMainScreen";
+	if (dock_map.has("AIChatMainScreen") && (restore_full_workbench || bool(p_layout->get_value(chat_section, "sidebar_visible", false)))) {
+		AIChatDock *chat = Object::cast_to<AIChatDock>(dock_map["AIChatMainScreen"]);
+		if (chat) {
+			chat->RestoreWorkbenchLayout(restore_full_workbench, p_layout->get_value(chat_section, "consultation", Dictionary()));
+		}
 	}
 
 	// The selected tabs were restored with signals blocked.

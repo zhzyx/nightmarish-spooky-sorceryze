@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-bc4cdff66084b6ea108fba00088a8621bbe01a34",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c37e8f600fa90acc3b947f0552bd16855a959a691a2b317421784a61eb7ab1cd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2009",
+    "action": "validation",
+    "detection_head": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+    "context_sha256": "7ba2bf65f8ed69fa99ac2a73a2e954bd9acb65ac37ec31c792fbfd9451ffaa52",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "I17 trace used httpcore http_proxy for a fixture-owned loopback socket, failed with WinError 10054. The same Windows binary and original native scenario with environment proxies set to an unreachable local port passed after the API readback client explicitly used the fixture socket.",
+    "diagnosis": "The authenticated I17 test-client default honored system proxy discovery for its own ephemeral localhost service. The source fix binds this client directly to its fixture, avoiding unrelated host proxy state while preserving all original API and native controls.",
+    "next_action": "Include the verified regression-harness fix and recorded native, roles, persistence and legacy-schema checks in the K01/U13 candidate; finish the remote CI and main readback.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T00:58:43.821362+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T01:00:08.146119+00:00",
+  "sha256": "764866c3f9f7428a75ed0403958cc9429b3d10e23a687edbd1e11e4bc3427f34"
+}

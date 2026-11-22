@@ -63,6 +63,7 @@ private:
 	bool restore_expanded_bottom_panel = false;
 	void _update_workspace_menu();
 	void _select_workspace(int p_tab);
+	void _select_neighbor(int p_step);
 	void _on_tab_changed(int p_tab);
 	void _set_window_fill(bool p_fill);
 

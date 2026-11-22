@@ -29,6 +29,17 @@ func _restore_design_confirmation_951() -> bool:
 		return false
 	var key: String = keys[0]
 	var original: Dictionary = disk.get_value("design_confirmations", key)
+	# Exercise the shared workbench composer, including installations without a saved full layout.
+	var full = dock.find_child("RestoreWorkbenchSidebar", true, false)
+	if not full.is_visible_in_tree():
+		var expand = root.find_child("ExpandWorkbench", true, false)
+		if not expand.is_visible_in_tree():
+			if not _recovery_press_951(root.find_child("OpenAIWorkbench", true, false)):
+				return false
+		if not _recovery_press_951(expand):
+			return false
+	if not _check(full.is_visible_in_tree(), "Cold parent did not open in the full workbench"):
+		return false
 	# A normal tab round-trip persists the host's startup state normalization.
 	var tabs = dock.find_child("SubAgentTabs", true, false)
 	tabs.current_tab = 1
@@ -49,6 +60,21 @@ func _restore_design_confirmation_951() -> bool:
 	disk.save(path)
 	var spawn = dock.find_child("SpawnWorkOrderAgents", true, false)
 	var confirmation = dock.find_child("WorkOrderConfirmation", true, false)
+	var consultation = dock.find_child("ConsultationOnly", true, false)
+	var agent_tabs = dock.find_child("AgentTabs", true, false)
+	var parent_tab: int = agent_tabs.current_tab
+	var parent_id: int = agent_tabs.get_tab_metadata(parent_tab)
+	for child in before.values():
+		if not _check(int(child.parent) == parent_id, "Cold work order belongs to another parent"):
+			return false
+	if not _check(consultation.button_pressed, "Manual workbench tab change retained execution mode"):
+		return false
+	if not _recovery_press_951(spawn):
+		return false
+	if not _check(not confirmation.visible and disk.load(path) == OK and not disk.has_section_key("design_confirmations", key), "Consultation-only parent offered production"):
+		return false
+	# Open the same public control once the original operator selects execution.
+	consultation.button_pressed = false
 	if not _recovery_press_951(spawn):
 		return false
 	if not confirmation.visible:
@@ -82,6 +108,24 @@ func _restore_design_confirmation_951() -> bool:
 	tabs.current_tab = 0
 	tabs.tab_selected.emit(0)
 	await process_frame
+	# An unrelated parent cannot inherit the execution mode or confirm the original design.
+	consultation.button_pressed = false
+	if not _recovery_press_951(spawn) or not _check(confirmation.visible, "Original parent lost its confirmation dialog"):
+		return false
+	if not _recovery_press_951(dock.find_child("AddAgent", true, false)):
+		return false
+	if not _check(agent_tabs.get_tab_metadata(agent_tabs.current_tab) != parent_id and consultation.button_pressed, "Another parent inherited the execution mode"):
+		return false
+	consultation.button_pressed = false
+	if not _recovery_press_951(confirmation.get_ok_button()):
+		return false
+	if not _check(settings.get_project_metadata("design_confirmations", key, "missing-fixture-record") == "missing-fixture-record", "Unrelated parent granted the original confirmation"):
+		return false
+	agent_tabs.current_tab = parent_tab
+	await process_frame
+	if not _check(agent_tabs.get_tab_metadata(agent_tabs.current_tab) == parent_id and consultation.button_pressed, "Manual return to original parent retained execution mode"):
+		return false
+	consultation.button_pressed = false
 	# Identity and version are checked again at the confirmation boundary.
 	if not _recovery_press_951(spawn):
 		return false
@@ -162,6 +206,6 @@ func _restore_design_confirmation_951() -> bool:
 	_check(disk.load(path) == OK and disk.has_section_key("design_confirmations", key) and disk.get_value("design_confirmations", key) == original, "Explicit recovery did not durably preserve the exact approval")
 	await create_timer(0.4).timeout
 	_check(_fixture_children_951() == before, "Confirmation itself changed worker, terminal, review or acceptance history")
-	var result := {"ok": failure.is_empty(), "cancel": true, "disk_conflict": true, "cache_conflict": true, "parent_switch": true, "actor_drift": true, "design_drift": true, "tools_off": true, "live_request_started": live_started, "failed_save_no_grant": no_cached_grant and no_disk_grant, "storage_obstruction": true, "same_approval_persisted": true, "children_unchanged": true, "never_started_c_preserved": inert}
+	var result := {"ok": failure.is_empty(), "consultation_refused": true, "unrelated_parent_refused": true, "original_parent": parent_id, "cancel": true, "disk_conflict": true, "cache_conflict": true, "parent_switch": true, "actor_drift": true, "design_drift": true, "tools_off": true, "live_request_started": live_started, "failed_save_no_grant": no_cached_grant and no_disk_grant, "storage_obstruction": true, "same_approval_persisted": true, "children_unchanged": true, "never_started_c_preserved": inert}
 	FileAccess.open("res://confirmation-recovery.json", FileAccess.WRITE).store_string(JSON.stringify(result))
 	return failure.is_empty()

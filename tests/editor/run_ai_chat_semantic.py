@@ -235,7 +235,10 @@ def main():
     worker = threading.Thread(target=server.serve_forever, daemon=True)
     worker.start()
     try:
-        with tempfile.TemporaryDirectory(prefix="godot-semantic-") as temp:
+        with (
+            tempfile.TemporaryDirectory(prefix="godot-semantic-") as temp,
+            tempfile.TemporaryDirectory(prefix="godot-semantic-private-") as private,
+        ):
             workspace = Path(temp)
             source = Path(__file__).resolve().parents[2]
             for folder in ["framework", "customizations", ".github"]:
@@ -243,6 +246,9 @@ def main():
             (workspace / "tools").mkdir()
             for relative in (
                 "tools/check_gonggong_distribution.py",
+                "tools/editor_provenance_guard.py",
+                "tools/editor_engine_candidate.py",
+                "tools/editor_provenance_process.py",
                 "tools/gonggong_runtime_config.py",
                 "integrations/gonggong/frozen-distribution.json",
             ):
@@ -275,6 +281,7 @@ def main():
                 json.dumps([
                     {
                         "number": 6,
+                        "title": "Isolated editor task",
                         "state": "open",
                         "html_url": "https://github.com/test/repo/issues/6",
                         "body": "<!-- gonggong-request:isolated-gate -->",
@@ -379,7 +386,7 @@ def main():
             env = {
                 **os.environ,
                 "APPDATA": str(project / "appdata"),
-                "LOCALAPPDATA": str(project / "localappdata"),
+                "LOCALAPPDATA": str(Path(private).resolve()),
                 "GODOT_AI_API_KEY": "",
                 "AI_CHAT_TEST_URL": f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
             }

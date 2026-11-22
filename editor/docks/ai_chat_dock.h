@@ -136,6 +136,9 @@ class AIChatDock : public EditorDock {
 	uint64_t issue_guide_generation = 0;
 	uint64_t issue_guide_run_generation = 0;
 	int64_t issue_guide_pid = -1;
+	uint32_t issue_guide_read_attempts = 0;
+	uint64_t issue_guide_read_deadline = 0;
+	int issue_guide_exit_code = -1;
 	String issue_guide_action;
 	String issue_guide_input_path;
 	String issue_guide_output_path;
@@ -303,6 +306,7 @@ class AIChatDock : public EditorDock {
 	void CaptureWorkbenchSource();
 	void PrepareWorkbenchConsultation();
 	void OpenWorkbenchSidebar();
+	void ShowWorkbenchSidebar(bool p_capture_source);
 	void ExpandWorkbenchSidebar();
 	void CloseWorkbenchSidebar();
 	void DismissWorkbenchSidebar();
@@ -819,8 +823,9 @@ class AIChatDock : public EditorDock {
 	String _parent_context_result() const;
 
 	AgentSession _capture_agent() const;
-	void _restore_agent(const AgentSession &p_session);
+	void _restore_agent(const AgentSession &p_session, bool p_keep_consultation_mode = false);
 	void _agent_selected(int p_index);
+	void _select_agent(int p_index, int p_dispatch_parent);
 	void _agent_close_requested(int p_index);
 	void _agent_right_clicked(int p_index);
 	void _agent_menu_selected(int p_id);
@@ -919,6 +924,8 @@ protected:
 	void shortcut_input(const Ref<InputEvent> &p_event) override;
 
 public:
+	void save_layout_to_config(Ref<ConfigFile> &p_layout, const String &p_section) const override;
+	void RestoreWorkbenchLayout(bool p_full, const Dictionary &p_location);
 	void RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button *pTitleButton);
 	// Main-thread APIs. Snapshots are detached, contain no credentials, and never select a model.
 	Dictionary GetModelCatalogSnapshot() const;

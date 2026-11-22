@@ -4581,7 +4581,7 @@ AIChatDock::AgentSession AIChatDock::_capture_agent() const {
 	return state;
 }
 
-void AIChatDock::_restore_agent(const AgentSession &p_session) {
+void AIChatDock::_restore_agent(const AgentSession &p_session, bool p_keep_consultation_mode) {
 	bRestoringAiSession = true;
 	GetAiSession() = p_session.stData;
 	_revoke_native_task();
@@ -4594,7 +4594,7 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 	snapshot_changes_before->set_text(String());
 	snapshot_changes_after->set_text(String());
 	GetAiSession().strConversation = p_session.stData.strConversation.is_empty() ? new_conversation_id() : p_session.stData.strConversation;
-	if (nConversationIndex >= 0 || idWorkbenchReturnScreen.is_valid()) {
+	if (!p_keep_consultation_mode && (nConversationIndex >= 0 || idWorkbenchReturnScreen.is_valid())) {
 		// The shared composer now belongs to a different workbench session.
 		consultation_only->set_pressed(true);
 	}
@@ -4646,6 +4646,10 @@ void AIChatDock::_restore_agent(const AgentSession &p_session) {
 }
 
 void AIChatDock::_agent_selected(int p_index) {
+	_select_agent(p_index, -1);
+}
+
+void AIChatDock::_select_agent(int p_index, int p_dispatch_parent) {
 	SyncAiSessionInputs();
 	ERR_FAIL_INDEX(p_index, agent_tabs->get_tab_count());
 	if (daqian_chat_host.is_valid() || IsAiBusy() || !pending_external_editor_message.is_empty() || engine_build_pid >= 0 || snapshot_restoring || !gonggong_recovered_result.is_empty()) {
@@ -4661,6 +4665,10 @@ void AIChatDock::_agent_selected(int p_index) {
 	if (id == active_agent) {
 		return;
 	}
+	// An automatic switch inside the same live batch keeps the operator's mode.
+	// Native editing grants are still revoked by session restore, and reviewers remain read-only.
+	const bool keep_consultation_mode = p_dispatch_parent >= 0 && p_dispatch_parent == _sub_agent_root(active_agent) &&
+			p_dispatch_parent == _sub_agent_root(id) && design_batches.has(p_dispatch_parent) && _design_parent_matches(p_dispatch_parent, design_batches[p_dispatch_parent]);
 	agent_tabs->set_block_signals(true);
 	agent_tabs->set_current_tab(p_index);
 	agent_tabs->set_block_signals(false);
@@ -4695,7 +4703,7 @@ void AIChatDock::_agent_selected(int p_index) {
 	_cancel_igniter(String());
 	state.stView.pMessageList->set_name("Messages");
 	state.stView.pMessageList->reparent(chat_scroll);
-	_restore_agent(state);
+	_restore_agent(state, keep_consultation_mode);
 	_refresh_schedule_agents();
 	_refresh_sub_agents();
 	if (GetAiSession().arrMessages.is_empty()) {

@@ -1,0 +1,401 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-u13",
+  "issue_number": 1791,
+  "platform": "Windows-11-10.0.26200-SP0",
+  "mode": "headless",
+  "prior_layout_evidence": "data-collection/gonggong-ai-workbench-plan1-u02.json",
+  "workbench_identity": {
+    "id": "usr_a902cca8a04c41ec87f92345d40f89ba",
+    "name": "owner",
+    "project": "u11/studio",
+    "role": "admin"
+  },
+  "stored_executions": 0,
+  "editor_sha256": "270e72baa0864a9583b4fcdc0f9156e52aa62bf9bbe85eafdee5ad1c7708278e",
+  "result": "passed",
+  "source_head": "3aab83aa966f017f6013116e641759e847e9c747",
+  "legacy_saved_order": [
+    "AIChatMainScreen",
+    "AINativeMainScreen",
+    "DaqianMainScreen",
+    "WebPlatformMainScreen",
+    "2D",
+    "3D",
+    "Script",
+    "Game",
+    "Asset Store",
+    "UnifiedSettingsMainScreen"
+  ],
+  "fixtures": [
+    {
+      "chat": "56dea59d-9cf2-564c-91e2-f5623562ac7c",
+      "issue": "iss_5568a1da4db341319e80929ffa793970",
+      "mode_label": "仅咨询 · #1 · b3795803ec1ff2c1420ac29aa9d2ff10bb846fa3e0bbadf32a3137694f50a543",
+      "revision": "b3795803ec1ff2c1420ac29aa9d2ff10bb846fa3e0bbadf32a3137694f50a543",
+      "turn": "efc9b2f9-448d-4ff1-9e9f-337b1140c8b4",
+      "old_number": 791,
+      "url": "https://github.com/old/studio/issues/791",
+      "title": "核对入口"
+    },
+    {
+      "chat": "4828138e-d9b8-50a5-a0ff-5ffebd61536a",
+      "issue": "iss_7d090acc9a1447ba93594279193bf0da",
+      "mode_label": "仅咨询 · #2 · 5eb7004e502f02adcae553e3c0ea17e314a7244aa551f1c427c467dfed4188ae",
+      "revision": "5eb7004e502f02adcae553e3c0ea17e314a7244aa551f1c427c467dfed4188ae",
+      "turn": "ef9a5051-9fc6-4277-b69e-06049ee004be",
+      "old_number": 803,
+      "url": "https://github.com/old/studio/issues/803",
+      "title": "核对入口"
+    }
+  ],
+  "phases": [
+    {
+      "phase": "legacy_chat",
+      "loaded_layout_sha256": "a65cf2d014b3a556cf316436aac6318cc0c8224491c5ac89327e8a86ffb2d8bc",
+      "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+      "saved_selection": 0,
+      "saved_sidebar": false,
+      "observed": {
+        "expanded": true,
+        "selected": "AI Chat",
+        "sidebar": false,
+        "top_button": "OpenAIWorkbench",
+        "visible_tabs": [
+          "AINative",
+          "WebPlatform",
+          "2D",
+          "3D",
+          "Script",
+          "Game",
+          "Asset Store",
+          "UnifiedSettings"
+        ]
+      }
+    },
+    {
+      "phase": "legacy_tianshu",
+      "loaded_layout_sha256": "674f8b1717b8193f19d0cb971f1b78167a7be2d7c1323a10d0deb7c4da21e8cc",
+      "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+      "saved_selection": 6,
+      "saved_sidebar": true,
+      "observed": {
+        "expanded": true,
+        "rejected": [
+          {
+            "feedback": "当前项目没有唯一关联的天璇工单",
+            "link": "https://github.com/old/studio/issues/9998"
+          },
+          {
+            "feedback": "当前项目没有唯一关联的天璇工单",
+            "link": "https://github.com/old/studio/issues/9999"
+          },
+          {
+            "feedback": "工单链接无效",
+            "link": "https://unrelated.invalid/issues/iss_5568a1da4db341319e80929ffa793970"
+          }
+        ],
+        "selected": "AI Chat",
+        "sidebar": false,
+        "top_button": "OpenAIWorkbench",
+        "trace": [
+          {
+            "chat": "4828138e-d9b8-50a5-a0ff-5ffebd61536a",
+            "link": "https://github.com/old/studio/issues/803",
+            "turn": "ef9a5051-9fc6-4277-b69e-06049ee004be"
+          },
+          {
+            "chat": "56dea59d-9cf2-564c-91e2-f5623562ac7c",
+            "link": "/issues/iss_5568a1da4db341319e80929ffa793970",
+            "turn": "efc9b2f9-448d-4ff1-9e9f-337b1140c8b4"
+          },
+          {
+            "chat": "4828138e-d9b8-50a5-a0ff-5ffebd61536a",
+            "link": "https://github.com/old/studio/issues/803",
+            "turn": "ef9a5051-9fc6-4277-b69e-06049ee004be"
+          },
+          {
+            "chat": "56dea59d-9cf2-564c-91e2-f5623562ac7c",
+            "link": "/issues/iss_5568a1da4db341319e80929ffa793970",
+            "turn": "efc9b2f9-448d-4ff1-9e9f-337b1140c8b4"
+          }
+        ],
+        "visible_tabs": [
+          "AINative",
+          "WebPlatform",
+          "2D",
+          "3D",
+          "Script",
+          "Game",
+          "Asset Store",
+          "UnifiedSettings"
+        ]
+      }
+    },
+    {
+      "phase": "restart",
+      "loaded_layout_sha256": "d2ca8c5db8e82a93d11734eab0d2f79d588eb82b942c612c2fb03db4be17f5fb",
+      "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+      "saved_selection": 6,
+      "saved_sidebar": true,
+      "observed": {
+        "expanded": false,
+        "rejected": [
+          {
+            "feedback": "当前项目没有唯一关联的天璇工单",
+            "link": "https://github.com/old/studio/issues/9998"
+          },
+          {
+            "feedback": "当前项目没有唯一关联的天璇工单",
+            "link": "https://github.com/old/studio/issues/9999"
+          },
+          {
+            "feedback": "工单链接无效",
+            "link": "https://unrelated.invalid/issues/iss_5568a1da4db341319e80929ffa793970"
+          }
+        ],
+        "restored_turn": "efc9b2f9-448d-4ff1-9e9f-337b1140c8b4",
+        "selected": "Script",
+        "sidebar": true,
+        "top_button": "OpenAIWorkbench",
+        "trace": [
+          {
+            "chat": "4828138e-d9b8-50a5-a0ff-5ffebd61536a",
+            "link": "https://github.com/old/studio/issues/803",
+            "turn": "ef9a5051-9fc6-4277-b69e-06049ee004be"
+          },
+          {
+            "chat": "56dea59d-9cf2-564c-91e2-f5623562ac7c",
+            "link": "/issues/iss_5568a1da4db341319e80929ffa793970",
+            "turn": "efc9b2f9-448d-4ff1-9e9f-337b1140c8b4"
+          },
+          {
+            "chat": "4828138e-d9b8-50a5-a0ff-5ffebd61536a",
+            "link": "https://github.com/old/studio/issues/803",
+            "turn": "ef9a5051-9fc6-4277-b69e-06049ee004be"
+          },
+          {
+            "chat": "56dea59d-9cf2-564c-91e2-f5623562ac7c",
+            "link": "/issues/iss_5568a1da4db341319e80929ffa793970",
+            "turn": "efc9b2f9-448d-4ff1-9e9f-337b1140c8b4"
+          }
+        ],
+        "visible_tabs": [
+          "AINative",
+          "WebPlatform",
+          "2D",
+          "3D",
+          "Script",
+          "Game",
+          "Asset Store",
+          "UnifiedSettings"
+        ]
+      }
+    },
+    {
+      "phase": "other_project",
+      "loaded_layout_sha256": "d2ca8c5db8e82a93d11734eab0d2f79d588eb82b942c612c2fb03db4be17f5fb",
+      "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+      "saved_selection": 6,
+      "saved_sidebar": true,
+      "observed": {
+        "expanded": false,
+        "foreign_project_cleared": true,
+        "selected": "Script",
+        "sidebar": true,
+        "top_button": "OpenAIWorkbench",
+        "visible_tabs": [
+          "AINative",
+          "WebPlatform",
+          "2D",
+          "3D",
+          "Script",
+          "Game",
+          "Asset Store",
+          "UnifiedSettings"
+        ]
+      }
+    },
+    {
+      "phase": "unchanged",
+      "loaded_layout_sha256": "021aeec43a8f5ac984702753b1dc1902854e90340952a1c8f0de6790b1287027",
+      "saved_order": "AIChatMainScreen,AINativeMainScreen,DaqianMainScreen,WebPlatformMainScreen,2D,3D,Script,Game,Asset Store,UnifiedSettingsMainScreen",
+      "saved_selection": 6,
+      "saved_sidebar": false,
+      "observed": {
+        "expanded": false,
+        "selected": "Script",
+        "sidebar": false,
+        "top_button": "OpenAIWorkbench",
+        "visible_tabs": [
+          "AINative",
+          "WebPlatform",
+          "2D",
+          "3D",
+          "Script",
+          "Game",
+          "Asset Store",
+          "UnifiedSettings"
+        ]
+      }
+    }
+  ],
+  "http": [
+    [
+      "GET",
+      "/api/v1/auth/me",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/external-context",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/by-number/1/detail",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/by-number/2/detail",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_5568a1da4db341319e80929ffa793970",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_5568a1da4db341319e80929ffa793970/comments",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_5568a1da4db341319e80929ffa793970/hierarchy",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_5568a1da4db341319e80929ffa793970/work/flow",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_7d090acc9a1447ba93594279193bf0da",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_7d090acc9a1447ba93594279193bf0da/comments",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_7d090acc9a1447ba93594279193bf0da/hierarchy",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/issues/iss_7d090acc9a1447ba93594279193bf0da/work/flow",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/native/issues/iss_5568a1da4db341319e80929ffa793970/revisions",
+      200
+    ],
+    [
+      "GET",
+      "/api/v1/native/issues/iss_7d090acc9a1447ba93594279193bf0da/revisions",
+      200
+    ],
+    [
+      "POST",
+      "/api/v1/workspace/conversations/for-issue/iss_5568a1da4db341319e80929ffa793970",
+      200
+    ],
+    [
+      "POST",
+      "/api/v1/workspace/conversations/for-issue/iss_7d090acc9a1447ba93594279193bf0da",
+      200
+    ]
+  ],
+  "candidate_source_sha256": {
+    "customizations/components/tianxuan/server/tianxuan_core.py": "6859e5232a8a2e47c985feca88a2ae5408ef022151e1a36e76e587d3e1ae4a32",
+    "editor/docks/ai_chat_dock.h": "bb530b1be092f9832175fd984159dfd1a3d27d948a00ee0b4ddc460c4b1ebcbb",
+    "editor/docks/daqian/workspace.gd": "e6fc1177fc48927b5f52b8f33dd7f67b53750b134b88a513afea3c141150eac1",
+    "editor/docks/editor_dock.cpp": "20eb37825a48ed43ec983071c4b05077902e408289a41cf651cb23cc8153b89b",
+    "editor/docks/editor_dock_manager.cpp": "a629b1569acf11f0ae252337d3cde03a7cd5b6fcbba9eb96a275b43863c69905",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "b590971da44f90e1ff6ea397fc3c90d864b003daf43daeb31f97c0e0ffbacc3b",
+    "editor/docks/workbench/business_session.gd": "2fc3efc7e6af860c670a3f8d6b3728d7ec85de75a80f18bdec058a9e8663d49a",
+    "editor/docks/workbench/issue_detail.gd": "9f31244c6c8c1326f7e3b1b611138655612a19da44e9991ec02ca75d03be07dc",
+    "editor/docks/workbench/module_selector.gd": "fee223817e71f40fa90d4cdc29b8a94cd85b028ffeeced26640bbcfbf7e93428",
+    "editor/editor_main_screen.cpp": "bb00dbd9747076bb56f86977b2d1fd98fc65b721029cc51277696646ab39e4d3",
+    "editor/editor_main_screen.h": "91b65143d9860c8d6836334dc4e8e1f1c3b91f8b01293a3902fe9cc930f4b79a",
+    "tests/editor/ai_chat_tab_order.gd": "36f007117091073c1fe04e190254c378e83284663363b1572cb5cdbe0789c598",
+    "tests/editor/daqian_ai_entry.gd": "e251dcea14162a6b067e66915353c2f95a3c5b83e0e4e77e8107a82e73522a9b",
+    "tests/editor/daqian_graph.gd": "9bd1467b0ce36dc8e70da4bf1ff4ab3fcf70e7ae4fc694e1b7686fd8087d5db5",
+    "tests/editor/daqian_issue_details.gd": "d6ef7566941dea0884cc81d799de9b0d67ef0832074190a300e37327c8d76021",
+    "tests/editor/run_workbench_issue_consultation.py": "1e08af48298e2d1f747d39b528e38b796cb7fcfd30d5651b8825b7901fd577a1",
+    "tests/editor/run_workbench_legacy_routes.py": "9786f553e32f719e6f0556626b4e40f69130e7dbb8b5da1f424db440b9a33f10",
+    "tests/editor/workbench_legacy_routes.gd": "29f43e85183220ac6cb264b46e1ad296ec89d08b316fac5f59d20cb92a584613"
+  },
+  "completed_at": "2026-11-21T22:07:55.390249+00:00",
+  "additional_regressions": {
+    "graph": {
+      "scenario": "graph",
+      "state": "passed",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "entry": {
+      "scenario": "entry",
+      "state": "passed",
+      "scope": "native editor; fixture graph source, execution state, model catalog and 55-issue board"
+    },
+    "details": {
+      "scenario": "details",
+      "state": "passed",
+      "scope": "native issue inspector, workflow selection, linked issue, draft isolation, revert and save/reopen"
+    },
+    "tab-order": {
+      "state": "passed",
+      "phases": [
+        "initial",
+        "legacy_maliang_last",
+        "legacy_maliang_selected",
+        "pre_daqian_layout",
+        "pre_maliang_layout",
+        "restart"
+      ],
+      "controls": [
+        "title button",
+        "palette command",
+        "shortcut",
+        "expand",
+        "return focus",
+        "remove source dock"
+      ]
+    }
+  },
+  "service_regression": {
+    "path": "customizations/components/tianxuan/server/test_external_links.py",
+    "passed": 3
+  },
+  "build": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-readonly-cache> cache_limit=0 --cache-readonly -j6",
+  "macos": {
+    "candidate_run": "not_run_on_this_host",
+    "startup_probe": "editor/SCsub embeds tests/editor/daqian_ai_entry.gd for customizations/components/godot-host/macos_validation.gd. Same probe passed in the Windows entry scenario.",
+    "external_issue_readback": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1791#issuecomment-7069575947"
+  },
+  "observed_corrections": [
+    "On restored layouts the pending authentication exchange stopped when the sidebar moved. Repeating both old selections with transport mounted on the stable editor control authenticated and reopened original turns.",
+    "A tianshu external link was visible to its writing connection while the for-issue endpoint returned HTTP 500. The domain transaction now commits linked IDs before an independent connection and the editor read them.",
+    "Removing the source plugin dock while the workbench was expanded changed the active hidden tab. The same title-button/shortcut and return-focus regression passed after preserving the selected business dock."
+  ]
+}

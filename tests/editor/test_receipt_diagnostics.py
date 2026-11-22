@@ -8,6 +8,22 @@ from receipt_diagnostics import MAX_FILES, collect_receipt_diagnostics, file_met
 
 
 class ReceiptDiagnosticsTests(unittest.TestCase):
+    def test_issue_guide_collector_only_opens_diagnostic_sidecars(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            cache = root / "editor_data/cache"
+            cache.mkdir(parents=True)
+            for suffix in ("request.json", "result.json", "result.tmp"):
+                (cache / f"gonggong-issue-guide-1-2.{suffix}").write_text("PRIVATE")
+            diagnostic = cache / "gonggong-issue-guide-1-2.result.json.diagnostic.json"
+            diagnostic.write_text('{"status":"missing","exit_code":7,"error":"PRIVATE"}')
+            with patch("receipt_diagnostics.file_metadata", wraps=file_metadata) as metadata:
+                result = collect_receipt_diagnostics(root, root)
+            metadata.assert_called_once_with(diagnostic)
+            self.assertEqual(len(result["issue_guide"]), 1)
+            self.assertEqual(result["issue_guide"][0]["native_status"], "missing")
+            self.assertNotIn("PRIVATE", json.dumps(result))
+
     def test_failure_metadata_survives_cleanup_without_private_bytes(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)

@@ -1,0 +1,49 @@
+{
+  "issue_number": 2009,
+  "request_id": "kuafu-local-1709-3be7eb0c0347f7c0523dc23cbc41278d69777ddfe69428256dfe4c5cec42ce45",
+  "incident": "82c359e3380a13d04f1e748c10cd311a0348072bfbfd5cc4aad5464f4852910e",
+  "source_event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-2d8322b6a554ecaffcea8174f20bbf91e500c0c1.json",
+  "candidate_base": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+  "editor_sha256": "40265e09814521c55debd586ed4bb07ec3a5d44705a30543b31dbe8a1e3debbd",
+  "initial_result": "timeout after 160s with both external TianShu packages missing",
+  "recovery": "Both packages reproduced byte-for-byte from the target source and matched the existing builder. The official package verifier accepted the pair alongside the unchanged editor.",
+  "runtime_files": {
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+    "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+    "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+    "godot.windows.editor.x86_64.console.exe": "68ca33660fcca7cea81e62cfeab59fcc722beac58ce893354e7e24437076c605"
+  },
+  "original_test": "tests/editor/run_workbench_duobao_commit.py",
+  "readback": {
+    "editor_sha256": "40265e09814521c55debd586ed4bb07ec3a5d44705a30543b31dbe8a1e3debbd",
+    "baseline": "aa85ac34f989d7804e3c618a8ca258df1872ab6d",
+    "branch": "work/g11",
+    "authoritative_receipts": [
+      "98da6e196c3ec09c10a228bd930b4f4611a7cec5"
+    ],
+    "lookup_branch_tips": [
+      "aa85ac34f989d7804e3c618a8ca258df1872ab6d",
+      "98da6e196c3ec09c10a228bd930b4f4611a7cec5"
+    ],
+    "additional_commits": 1,
+    "changed_paths": [
+      "A.txt"
+    ],
+    "B": {
+      "remote": "original",
+      "index": "staged B",
+      "working_tree": "working B"
+    },
+    "checks": {
+      "entry": true,
+      "initial_diff": true,
+      "preview": true,
+      "received": true,
+      "remaining": true,
+      "unknown_response": true
+    }
+  },
+  "observed": "2026-11-22T00:51:32.891146+00:00"
+}

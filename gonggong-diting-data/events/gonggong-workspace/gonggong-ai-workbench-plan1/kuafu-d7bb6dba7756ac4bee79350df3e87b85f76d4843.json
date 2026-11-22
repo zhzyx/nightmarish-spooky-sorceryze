@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d7bb6dba7756ac4bee79350df3e87b85f76d4843",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b45f8d7a89b2e6918487a940597974cf0fcab28228d26a606925d41c3d679600",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2009",
+    "action": "validation",
+    "detection_head": "91222c3f51a1b3970fb84616b73434689ffac346",
+    "context_sha256": "c1150d812b542bbfe53ce6b7d21d798c890a6dd318457aeae2a61a93aaaf4189",
+    "operator": "Sail-Li",
+    "worker": "codex-current-operator-host",
+    "authority_ref": "codex-user:20261122-plan1-wave22",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44959229481/artifacts/14730875869",
+    "diagnosis": "需求恢复以及父绑定保存失败场景已通过，随后原设计重新确认窗口没有显示。冷启动子项 C 为 interrupted / waiting，pc-8 已确认 supplement 请求 pending。具体拒绝分支和与旧启动入口的关系待实测。",
+    "next_action": "用本次 Windows CI 原编辑器和原脚本复现，追踪弹窗入口和原操作者信息。仅修复已证实的缺陷，复验后核对整个作业和六张业务工单。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T23:52:13.630020+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T23:54:32.860778+00:00",
+  "sha256": "3f3508aec0daaac104e46652b4b1741266fb9bd34d2ff382be6510ec7e23a0de"
+}
