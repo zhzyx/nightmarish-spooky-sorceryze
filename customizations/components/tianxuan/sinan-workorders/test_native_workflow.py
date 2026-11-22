@@ -82,8 +82,10 @@ def fixture(tmp_path):
         lambda *a: True,
         catalog=[dict(id="local", available=True, targets=["agent"], capabilities=[])],
     )
-    yield workflow, actor, tenant, req, initial, tmp_path
-    domain.db.close()
+    try:
+        yield workflow, actor, tenant, req, initial, tmp_path
+    finally:
+        domain.db.close()
 
 
 def task(f, module, selected=None, dependencies=None):
@@ -294,7 +296,8 @@ def test_actual_node_authenticated_http_dispatch(fixture):
         assert process.returncode == 0, process.stderr
         dispatch = json.loads(process.stdout)
         assert len(dispatch["results"]) == 3, dispatch
-        assert all(r["state"] == "running" for r in dispatch["results"]), dispatch
+        for item in dispatch["results"]:
+            assert item["state"] == "running", (item.get("stage"), item.get("reason"))
         assert dispatch["errors"] == [], dispatch
         assert len(dispatch["deliveries"]) == 3
         assert all(w.status(actor, k)["state"] == "accepted" for k in [a, b])
@@ -818,7 +821,7 @@ const service=async(op,value)=>{
  if(op==='start')return {reference:key};
  if(op==='execute'){
   trace.push('start '+key);if(key==='A')await gate;if(key==='C')startedC();
-  states[key]='produced';trace.push('terminal '+key);return {state:'produced'};
+  states[key]='produced';trace.push('terminal '+key);return {state:'produced',id:key,worker_ref:'native-worker:'+key};
  }
  if(op==='finish'){states[key]='accepted';trace.push('accepted '+key);return {state:'accepted'};}
  return {};

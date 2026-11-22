@@ -21,6 +21,12 @@ class StageAuthorizationChanged(NativeStoreError):
     """A design task no longer has the stage authority used for dispatch."""
 
 
+def execution_identity(key):
+    # The pinned execution names its worker even across coordinator restarts.
+    # This is the same address used by candidate intake, not a liveness claim.
+    return {"id": key, "worker_ref": "native-worker:" + key}
+
+
 def check_passed(runner, tenant, candidate, check, fact):
     """A cached result has no process outcome; validate its actual evidence."""
     if fact.get("outcome") == "passed":
@@ -142,7 +148,7 @@ class NativeWorkflow:
         row = db.execute("SELECT * FROM native_tasks WHERE id=?", (key,)).fetchone()
         if row is None:
             raise NativeStoreError("Native task unavailable")
-        return dict(row)
+        return {**row, **execution_identity(row["id"])}
 
     def status(self, actor, key):
         with self._transaction() as db:
@@ -553,6 +559,10 @@ class NativeWorkflow:
             row = self._row(db, key)
             self._valid(actor, row)
         return row
+
+    def execute_receipt(self, actor, key):
+        result = self.execute(actor, key)
+        return {**result, **execution_identity(key)}
 
     def execute(self, actor, key):
         with self.domain._connection_lock:

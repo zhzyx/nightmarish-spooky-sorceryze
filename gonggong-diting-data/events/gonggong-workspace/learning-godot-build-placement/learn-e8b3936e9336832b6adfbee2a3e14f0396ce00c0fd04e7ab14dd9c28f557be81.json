@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-e8b3936e9336832b6adfbee2a3e14f0396ce00c0fd04e7ab14dd9c28f557be81",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1845",
+  "occurred_at": "2026-11-22T06:29:21.102743+00:00",
+  "evidence_refs": [
+    "wave22-windows-milestone-trace-1845",
+    "learn-6e9a466c5fef9db78d4b0b39a657b92220151cd4178437dd00d7039872a4ed24"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 53,
+    "previous": "1bd92d42b83e6087e985b4f33ec76d65bc64d55bee219ee15e30438fd8d141bf",
+    "action": "applied",
+    "details": {
+      "task": "S03 #1845",
+      "observed": "在同一 Windows 候选上重新编译并运行 S03 的原生控件探针，组合回读见 data-collection/gonggong-ai-workbench-plan1-windows-milestone-trace-combined.json。独立候选与组合候选的编辑器哈希分别留证。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-s03.json",
+        "sha256": "07f21295c8b2216aae46a7848c197c1f7bd5865358b2c432dd2c3e0c8a57a6c7"
+      },
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-milestone-trace-combined.json",
+        "sha256": "b4b81b833e8831add8f8d569c3eaf32d954f1cbbc28985fc5614a4b65f7c74a5"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s03/wave22-windows-milestone-trace-1845.json",
+      "sha256": "68c8632d8da561d7b45c55b57241981904ef7e51716ca36ade1349d0e5c94f64"
+    }
+  },
+  "sha256": "aa30883fc68603535ffe1e9347b195f96402a5c0dbd2926797830e9293b94949"
+}
