@@ -77,8 +77,10 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "record": {"sourceReceipt", "receipt", "ticket", "key", "stage", "reason"},
         }
         _fields(payload, fields[operation], optional.get(operation))
-        if operation == "recovery" and "after" in payload and (
-            not isinstance(payload["after"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["after"])
+        if (
+            operation == "recovery"
+            and "after" in payload
+            and (not isinstance(payload["after"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["after"]))
         ):
             raise HTTPException(422, "invalid recovery cursor")
         if operation == "advance" and (
