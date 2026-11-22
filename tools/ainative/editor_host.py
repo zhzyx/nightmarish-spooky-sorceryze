@@ -114,7 +114,7 @@ def compile_graph(model):
                 raise ValueError("input paths/snapshots length mismatch")
             if require_count > 8:
                 raise ValueError("too many input images")
-            if kind in ("model_adjust", "human_shape_adjust") and field == "source" and len(paths) > 1:
+            if kind in ("model_adjust", "human_shape_adjust", "garment_split") and field == "source" and len(paths) > 1:
                 raise ValueError("one source model required")
             for index in range(require_count):
                 selected_path = paths[index] if index < len(paths) else ""
@@ -137,11 +137,11 @@ def compile_graph(model):
                     elif signature.startswith(b"\xff\xd8\xff") and ext == ".png":
                         ext = ".jpg"
                 payload["extension"] = ext
-                image_field = kind not in ("model_adjust", "human_shape_adjust") or field != "source"
+                image_field = kind not in ("model_adjust", "human_shape_adjust", "garment_split") or field != "source"
                 if kind != "copy" and image_field and ext not in (".png", ".jpg", ".jpeg"):
                     raise ValueError("image context required")
                 if (
-                    kind in ("model_adjust", "human_shape_adjust")
+                    kind in ("model_adjust", "human_shape_adjust", "garment_split")
                     and field == "source"
                     and ext not in (".glb", ".gltf")
                 ):
@@ -220,7 +220,7 @@ def compile_graph(model):
             reference = edge["artifact"]
             snapshot = edge.get("artifact_snapshot")
             if (
-                kind not in ("model_adjust", "human_shape_adjust", "copy")
+                kind not in ("model_adjust", "human_shape_adjust", "garment_split", "copy")
                 or port != "source"
                 or edge.get("output", "result") != "result"
                 or not isinstance(reference, dict)
@@ -282,6 +282,18 @@ def normalize_editor_integers(graph, registry):
         if not isinstance(params, dict):
             raise ValueError("parameters must be object")
         params = dict(params)
+        if request["node"] == "human_shape_adjust" and "height_m" in params:
+            # Migrate legacy workflows without rounding a non-integral centimetre
+            # value. New requests persist only the user-facing height_cm field.
+            if "height_cm" in params:
+                raise ValueError("human shape height specified in both cm and m")
+            legacy_height = params.pop("height_m")
+            if type(legacy_height) in (int, float) and math.isfinite(legacy_height):
+                height_cm = legacy_height * 100.0
+                nearest = round(height_cm)
+                params["height_cm"] = int(nearest) if math.isclose(height_cm, nearest, rel_tol=0.0, abs_tol=1e-9) else height_cm
+            else:
+                params["height_cm"] = legacy_height
         for name, spec in schema.get("properties", {}).items():
             if spec["type"] != "integer" or name not in params:
                 continue
@@ -372,7 +384,7 @@ def dispatch(args, request):
         safe(model)
         reject_retired_modeling_nodes(model["nodes"])
         check_inputs(model)
-        if service_path:
+        if service_path or any(node.get("type", "copy") == "garment_split" for node in model["nodes"]):
             run_id = uuid.uuid4().hex
             config = load_settings(service_path)
             registry, providers, runtime_service = prepare_provider(config, model, args.db, run_id)
@@ -387,7 +399,9 @@ def dispatch(args, request):
                 for n in model["nodes"]
             )
             providers = adapt_image_providers(providers, args.db, runtime_service["image_batch"])
-        elif args.factory == "editor_demo:factory" and any(n.get("type", "copy") != "copy" for n in model["nodes"]):
+        elif args.factory == "editor_demo:factory" and any(
+            n.get("type", "copy") not in ("copy", "garment_split") for n in model["nodes"]
+        ):
             raise ServiceError("service_not_configured")
     elif args.command == "step":
         runtime_service = run_service(args.db, request["run"])
@@ -465,7 +479,9 @@ def dispatch(args, request):
                     entry = materialize(member, member_token)
                     provenance = iteration["payload"]["provenance"]
                     entry.update(
-                        label=f"第 {provenance['generation_iteration']} 轮",
+                        label=str(provenance.get("garment_label", "衣服"))
+                        if provenance.get("artifact_role") == "garment"
+                        else f"第 {provenance['generation_iteration']} 轮",
                         attempt=provenance["generation_iteration"],
                         review_passed=provenance.get("visual_review_passed"),
                         artifact=reference,

@@ -29,6 +29,7 @@ KINDS = (
     "model_adjust",
     "human_shape_adjust",
 )
+LOCAL_KINDS = ("garment_split",)
 IMAGE_NODES = {"CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler", "VAEDecode", "SaveImage"}
 MESH_NODES = {
     "LoadImage",
@@ -566,7 +567,7 @@ def adapt_image_providers(providers, database, batch):
 def check_inputs(model):
     for node in model["nodes"]:
         kind = node.get("type", "copy")
-        if kind not in (*KINDS, "copy"):
+        if kind not in (*KINDS, *LOCAL_KINDS, "copy"):
             raise ServiceError("node_unsupported")
         incoming = [edge for edge in model["edges"] if edge["to"] == node["id"]]
         source = node.get("source", "")
@@ -575,7 +576,7 @@ def check_inputs(model):
         if not isinstance(source_paths, list) or not isinstance(context_paths, list):
             raise ServiceError("source_invalid")
         if (
-            (kind.startswith("image_") or kind in ("model_adjust", "human_shape_adjust"))
+            (kind.startswith("image_") or kind in ("model_adjust", "human_shape_adjust", *LOCAL_KINDS))
             and not incoming
             and not source
             and not any(source_paths)
@@ -585,14 +586,24 @@ def check_inputs(model):
             raise ServiceError("source_missing")
         if kind == "copy" and len(source_paths) + len(context_paths) > 1:
             raise ServiceError("source_invalid")
-        if kind in ("model_adjust", "human_shape_adjust") and len([path for path in source_paths if path]) > 1:
+        if kind in (*LOCAL_KINDS,) and context_paths:
+            raise ServiceError("source_invalid")
+        if kind in ("model_adjust", "human_shape_adjust", *LOCAL_KINDS) and len(
+            [path for path in source_paths if path]
+        ) > 1:
             raise ServiceError("source_invalid")
         for field, paths in (("source", source_paths), ("image_context", context_paths)):
             for path in paths:
                 if not isinstance(path, str) or path and not Path(path).is_file():
                     raise ServiceError("source_missing")
-                model_source = kind in ("model_adjust", "human_shape_adjust") and field == "source"
-                allowed = (".glb", ".gltf") if model_source else (".png", ".jpg", ".jpeg")
+                model_source = kind in ("model_adjust", "human_shape_adjust", *LOCAL_KINDS) and field == "source"
+                allowed = (
+                    (".glb",)
+                    if kind in LOCAL_KINDS and model_source
+                    else (".glb", ".gltf")
+                    if model_source
+                    else (".png", ".jpg", ".jpeg")
+                )
                 if kind != "copy" and path and Path(path).suffix.lower() not in allowed:
                     raise ServiceError("source_invalid")
         if kind in KINDS and kind not in ("image_to_mesh", "model_adjust", "human_shape_adjust"):
@@ -676,7 +687,20 @@ def prepare_provider(config, model, database, run_id):
     from editor_demo import factory
 
     registry, providers = factory()
-    generated = [node for node in model["nodes"] if node.get("type", "copy") in KINDS]
+    generated = [node for node in model["nodes"] if node.get("type", "copy") in (*KINDS, *LOCAL_KINDS)]
+    local_generated = [node for node in generated if node["type"] in LOCAL_KINDS]
+    generated = [node for node in generated if node["type"] not in LOCAL_KINDS]
+    snapshots, provider_types = {}, {}
+    storage = Path(database).resolve().parent
+    if local_generated:
+        from garment_split_provider import GarmentSplitProvider, PROVIDER_ID
+
+        provider_config = dict(storage=str(storage / "garment-split-state"))
+        providers[PROVIDER_ID] = GarmentSplitProvider(provider_config)
+        snapshots[PROVIDER_ID] = provider_config
+        provider_types[PROVIDER_ID] = "garment_split"
+        for node in local_generated:
+            node["provider"] = PROVIDER_ID
     reject_retired_modeling_nodes(generated)
     if config["mode"] in RETIRED_MODELING_MODES:
         config = settings(config)
@@ -687,11 +711,11 @@ def prepare_provider(config, model, database, run_id):
     ):
         raise ServiceError("node_unsupported")
     if not generated:
+        if snapshots:
+            return registry, providers, _provider_snapshot("local_tools", snapshots, provider_types)
         return registry, providers, {"mode": "local_copy"}
     for node in generated:
         _migrate_node_models(node, config)
-    snapshots, provider_types = {}, {}
-    storage = Path(database).resolve().parent
     if config["mode"] in ("api_modeling", "api_sculpt"):
         from api_planner import validate_config
         from modeling_provider import ModelingProvider
@@ -934,7 +958,11 @@ def restore_provider(snapshot):
         register_workflow(registry)
         for key, config in snapshot["providers"].items():
             kind = snapshot["provider_types"][key]
-            if kind in ("comfy", "local_mesh"):
+            if kind == "garment_split":
+                from garment_split_provider import GarmentSplitProvider
+
+                providers[key] = GarmentSplitProvider(config)
+            elif kind in ("comfy", "local_mesh"):
                 provider_class = LocalMeshProvider if kind == "local_mesh" else ComfyProvider
                 providers[key] = provider_class(config)
             elif kind == "kimi_native":

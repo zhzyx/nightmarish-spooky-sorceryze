@@ -79,6 +79,8 @@ def prepare(source, kind, box, columns=24, rows=16, cloth_top=None):
     faces = remap[faces[np.all(keep[faces], axis=1)]]
     selected = vertices[keep]
     lo, extent = selected.min(axis=0), np.ptp(selected, axis=0)
+    if not np.isfinite(extent).all() or np.any(extent <= 1e-12):
+        raise ValueError("Cloth source component needs non-zero X/Y/Z extent before cage fitting")
     fitted = np.array(box[:3]) + (selected - lo) / extent * np.array(box[3:])
     selected_count = len(fitted)
     if cloth_top is not None:

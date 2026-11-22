@@ -35,6 +35,7 @@ func run():
 		"model_adjust":[panel.PORT_MESH, panel.PORT_MESH, "输入：Mesh", "输出：Mesh"],
 		"human_shape_adjust":[panel.PORT_MESH, panel.PORT_MESH, "输入：Mesh", "输出：Mesh"],
 		"humanoid_rig":[panel.PORT_MESH, panel.PORT_CHARACTER, "输入：Mesh", "输出：人形角色（17骨＋root）"],
+		"garment_split":[panel.PORT_MESH, panel.PORT_MESH, "输入：Mesh", "输出：Mesh"],
 		"copy":[panel.PORT_DYNAMIC, panel.PORT_DYNAMIC, "输入：图片 / Mesh", "输出：图片 / Mesh"],
 	}
 	for kind in expected:

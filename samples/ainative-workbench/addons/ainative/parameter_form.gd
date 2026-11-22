@@ -3,10 +3,12 @@ extends VBoxContainer
 # The existing JSON contract stays authoritative; widgets update individual keys.
 const HUMANOID_RIG = "humanoid_rig"
 const HUMAN_SHAPE = "human_shape_adjust"
+const GARMENT_SPLIT = "garment_split"
+const HEIGHT_CM_ERROR = "身高需为 20–400 cm 之间、10 cm 的整数倍，例如 170、180、190。"
 const DECIMALS = ["denoise", "mesh_threshold", "height_m", "head_ratio", "arm_length_scale", "leg_length_scale", "build"]
-const DEFAULTS = {"prompt":"", "seed":0, "width":512, "height":512, "height_m":1.8, "max_repair_attempts":3, "head_ratio":7.5, "arm_length_scale":1.0, "leg_length_scale":1.0, "build":0.0, "steps":1, "denoise":0.65, "mesh_steps":20, "mesh_resolution":512, "octree_resolution":128, "mesh_algorithm":"surface net", "mesh_threshold":0.6}
+const DEFAULTS = {"prompt":"", "seed":0, "width":512, "height":512, "height_cm":180, "height_m":1.8, "max_repair_attempts":3, "head_ratio":7.5, "arm_length_scale":1.0, "leg_length_scale":1.0, "build":0.0, "steps":1, "denoise":0.65, "mesh_steps":20, "mesh_resolution":512, "octree_resolution":128, "mesh_algorithm":"surface net", "mesh_threshold":0.6}
 const NUMBERS = {
-	"width":["图像宽度",64,1024,8], "height":["图像高度",64,1024,8], "height_m":["目标身高（米）",0.2,4.0,0.01],
+	"width":["图像宽度",64,1024,8], "height":["图像高度",64,1024,8], "height_cm":["身高（cm）",20,400,10], "height_m":["目标身高（米）",0.2,4.0,0.01],
 	"max_repair_attempts":["最大拟合／纠错轮次（含首次）",1,12,1],
 	"head_ratio":["目标头身比",3.0,12.0,0.1], "arm_length_scale":["臂长倍率",0.75,1.35,0.01],
 	"leg_length_scale":["腿长倍率",0.75,1.35,0.01], "build":["胖瘦（-1 至 1）",-1.0,1.0,0.05],
@@ -18,6 +20,8 @@ const NUMBERS = {
 var raw_edit: TextEdit
 var prompt_edit: TextEdit
 var outputs_edit: TextEdit
+var garment_items_edit: TextEdit
+var garment_items_label: Label
 var landmarks_edit: TextEdit
 var landmarks_label: Label
 var pose_row: HBoxContainer
@@ -67,6 +71,18 @@ func _init():
 	outputs_edit.custom_minimum_size.y = 65
 	add_child(outputs_edit)
 	outputs_edit.text_changed.connect(_update_output_specs)
+	garment_items_label = Label.new()
+	garment_items_label.text = "衣服清单 JSON（每件衣服一个对象；component_id 来自 garment_split.py inspect）"
+	garment_items_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	add_child(garment_items_label)
+	garment_items_edit = TextEdit.new()
+	garment_items_edit.name = "GarmentSplitItems"
+	garment_items_edit.placeholder_text = '[{"id":"cape","label":"披风","category":"garment","slot":"back","behavior":"cloth","confidence":0.9,"review_state":"needs_review","selection":{"mode":"components","component_ids":["cmp_…"]}}]'
+	garment_items_edit.tooltip_text = "分离组件使用 mode=components；融合表面使用 mode=reviewed_triangles、明确源三角面并将 review_state 设为 confirmed。已绑骨模型保留原骨架、Inverse Bind 和蒙皮权重。"
+	garment_items_edit.custom_minimum_size.y = 210
+	garment_items_edit.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	add_child(garment_items_edit)
+	garment_items_edit.text_changed.connect(_garment_items_changed)
 	copy_hint = Label.new()
 	copy_hint.text = "直接预览输入图像或模型，无需生成参数。"
 	copy_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -76,7 +92,7 @@ func _init():
 	cli_hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	cli_hint.hide()
 	add_child(cli_hint)
-	for key in ["width", "height", "height_m", "max_repair_attempts", "head_ratio", "arm_length_scale", "leg_length_scale", "build"]: _number_field(self, key)
+	for key in ["width", "height", "height_cm", "height_m", "max_repair_attempts", "head_ratio", "arm_length_scale", "leg_length_scale", "build"]: _number_field(self, key)
 	pose_row = HBoxContainer.new()
 	var pose_label = Label.new()
 	pose_label.text = "参考姿态（AINative 自动校验）"
@@ -219,6 +235,21 @@ func _update_output_specs():
 	_set_parameter("output_count", count)
 	_set_parameter("output_labels", labels)
 
+func _garment_items_changed():
+	if _loading or kind != GARMENT_SPLIT: return
+	var json = JSON.new()
+	if json.parse(garment_items_edit.text) != OK or not json.data is Array:
+		_set_error("衣服清单必须是有效 JSON 数组")
+		return
+	if json.data.is_empty():
+		_set_error("请至少配置一件衣服")
+		return
+	for entry in json.data:
+		if not entry is Dictionary:
+			_set_error("衣服清单中的每一项都必须是 JSON 对象")
+			return
+	_set_parameter("items", json.data)
+
 func _landmarks_changed():
 	if _loading or kind != HUMAN_SHAPE: return
 	var json = JSON.new()
@@ -227,10 +258,23 @@ func _landmarks_changed():
 		return
 	_set_parameter("landmarks", json.data)
 
+func _human_shape_parameters(parameters: Dictionary) -> Dictionary:
+	var migrated = parameters.duplicate(true)
+	if not migrated.has("height_cm") and migrated.has("height_m"):
+		var legacy_height = migrated.height_m
+		if (legacy_height is float or legacy_height is int) and not legacy_height is bool and is_finite(legacy_height):
+			var height_cm = legacy_height * 100.0
+			migrated.height_cm = int(round(height_cm)) if is_equal_approx(height_cm, round(height_cm)) else height_cm
+		else:
+			migrated.height_cm = legacy_height
+	migrated.erase("height_m")
+	return migrated
+
 func configure(node_kind: String, parameters: Dictionary, node_version: String = ""):
 	kind = node_kind
 	# Migrate the short-lived manual checkbox without asking users to edit JSON.
 	if kind == HUMAN_SHAPE and parameters.has("confirmed"): parameters.erase("confirmed")
+	if kind == HUMAN_SHAPE: parameters = _human_shape_parameters(parameters)
 	_automatic_outputs = node_version == "4" or (kind == "generate_image" and node_version == "2")
 	_loading = true
 	raw_edit.text = JSON.stringify(parameters, "", true, true)
@@ -241,29 +285,33 @@ func configure(node_kind: String, parameters: Dictionary, node_version: String =
 	raw_edit.hide()
 	var generator = kind != "copy" and kind != HUMANOID_RIG
 	var shape = kind == HUMAN_SHAPE
+	var garment = kind == GARMENT_SPLIT
 	# Image-to-Mesh is deliberately image-only. Do not expose a hidden text
 	# requirement which the direct 3D service cannot consume with an image.
-	var image_stage = generator and not shape
-	var prompt_stage = generator and kind != "image_to_mesh" and not shape
+	var image_stage = generator and not shape and not garment
+	var prompt_stage = generator and kind != "image_to_mesh" and not shape and not garment
 	rows.prompt.text = "提示词（无图片时必填）" if kind == "generate_image" else "提示词"
 	rows.prompt.visible = prompt_stage
 	prompt_edit.visible = prompt_stage
 	rows.outputs.text = "图片数量、视角与局部细节由描述自动理解；多图从同一主图衍生" if _automatic_outputs else "输出数量，或每行一个视角／变体标签"
 	rows.outputs.visible = kind in ["generate_image", "text_to_image", "image_to_image"]
 	outputs_edit.visible = rows.outputs.visible and not _automatic_outputs
+	garment_items_label.visible = garment
+	garment_items_edit.visible = garment
 	copy_hint.visible = not generator
 	copy_hint.text = "使用解剖模板生成 17 根骨骼＋独立 root，按失败项迭代修正肩胸权重、腿部骨点或拓扑；只有完整验收通过才交付角色。轮次包含首次拟合，更多轮次不保证质量。" if kind == HUMANOID_RIG else "直接预览输入图像或模型，无需生成参数。"
-	advanced_toggle.visible = generator and not shape
+	advanced_toggle.visible = generator and not shape and not garment
 	rows.width.visible = image_stage
 	rows.height.visible = image_stage
-	rows.height_m.visible = kind == HUMANOID_RIG or shape
+	rows.height_cm.visible = shape
+	rows.height_m.visible = kind == HUMANOID_RIG
 	rows.max_repair_attempts.visible = kind == HUMANOID_RIG
 	for key in ["head_ratio", "arm_length_scale", "leg_length_scale", "build"]:
 		rows[key].visible = shape
 	pose_row.visible = false
 	landmarks_label.visible = false
 	landmarks_edit.visible = false
-	rows.seed.visible = generator and not shape
+	rows.seed.visible = generator and not shape and not garment
 	rows.steps.visible = image_stage
 	rows.denoise.visible = kind in ["generate_image", "image_to_image", "image_to_mesh"]
 	for key in ["mesh_steps", "mesh_resolution", "octree_resolution", "mesh_threshold", "mesh_algorithm"]:
@@ -291,7 +339,7 @@ func _kimi_image_mode() -> bool:
 	return _kimi_mode and kind in ['generate_image', 'text_to_image', 'image_to_image']
 
 func _is_mesh_kind(value: String) -> bool:
-	return value in ['text_to_mesh', 'image_to_mesh', 'model_adjust', HUMAN_SHAPE]
+	return value in ['text_to_mesh', 'image_to_mesh', 'model_adjust', HUMAN_SHAPE, GARMENT_SPLIT]
 
 func _apply_cli_controls():
 	if kind == HUMANOID_RIG:
@@ -301,6 +349,19 @@ func _apply_cli_controls():
 		rows.height_m.show()
 		rows.max_repair_attempts.show()
 		return
+	if kind == GARMENT_SPLIT:
+		cli_hint.text = '本节点只在本地复制选中几何，不调用生成服务。先用 garment_split.py inspect 获取组件 ID；分离组件可直接提取，融合表面必须明确审核源三角面。已绑骨输入会保留原骨架和蒙皮，但实际动画与布料动态仍需另行验收。'
+		cli_hint.show()
+		advanced_toggle.hide()
+		advanced_box.hide()
+		for key in ['width', 'height', 'height_cm', 'height_m', 'max_repair_attempts', 'head_ratio', 'arm_length_scale', 'leg_length_scale', 'build', 'seed', 'steps', 'denoise', 'mesh_steps', 'mesh_resolution', 'octree_resolution', 'mesh_threshold', 'mesh_algorithm']:
+			rows[key].hide()
+		garment_items_label.show()
+		garment_items_edit.show()
+		pose_row.hide()
+		landmarks_label.hide()
+		landmarks_edit.hide()
+		return
 	if kind == HUMAN_SHAPE:
 		cli_hint.text = '常规流程只需五项体态参数。AINative 默认渲染源 GLB，使用 Kimi 视觉估计 T／A 姿态和 15 个人体关键点，自动写入源 SHA-256 并做网格几何校验；不调用 Tripo 生成。此步骤需要可用的 KIMI_API_KEY，输出后仍需重新审核和绑骨。开发者 JSON 可显式覆盖 landmarks。'
 		cli_hint.show()
@@ -308,7 +369,8 @@ func _apply_cli_controls():
 		advanced_box.hide()
 		for key in ['width', 'height', 'seed', 'steps', 'denoise', 'mesh_steps', 'mesh_resolution', 'octree_resolution', 'mesh_threshold', 'mesh_algorithm']:
 			rows[key].hide()
-		rows.height_m.show()
+		rows.height_cm.show()
+		rows.height_m.hide()
 		for key in ['head_ratio', 'arm_length_scale', 'leg_length_scale', 'build']:
 			rows[key].show()
 		pose_row.hide()
@@ -398,7 +460,7 @@ func _raw_changed():
 		else:
 			if value is float or value is int:
 				controls[key].value = value
-				controls[key].get_line_edit().text = JSON.stringify(value, "", true, true) if key in DECIMALS else str(int(value))
+				controls[key].get_line_edit().text = str(int(value)) if key == "height_cm" and value == floor(value) else JSON.stringify(value, "", true, true) if key in DECIMALS or key == "height_cm" else str(int(value))
 			else:
 				controls[key].get_line_edit().text = str(value)
 			_display_text[key] = controls[key].get_line_edit().text
@@ -408,6 +470,9 @@ func _raw_changed():
 		var landmark_text = JSON.stringify(parameters.get("landmarks", {}), "  ", true, true)
 		if landmarks_edit.text != landmark_text: landmarks_edit.text = landmark_text
 		pose_edit.select(1 if parameters.get("reference_pose", "T") == "A" else 0)
+	if kind == GARMENT_SPLIT:
+		var items_text = JSON.stringify(parameters.get("items", []), "  ", true, true)
+		if garment_items_edit.text != items_text: garment_items_edit.text = items_text
 	var specifications = _output_specifications(parameters)
 	if not _automatic_outputs and specifications != null and kind in ["generate_image", "text_to_image", "image_to_image"]:
 		outputs_edit.text = "\n".join(specifications.labels) if not specifications.labels.is_empty() else str(specifications.count)
@@ -429,14 +494,36 @@ func parameters():
 		var draft = input.get_line_edit().text.strip_edges()
 		if _dirty_numbers.has(key):
 			if not draft.is_valid_float() or not is_finite(draft.to_float()):
-				_set_error(NUMBERS[key][0] + "必须是有效数字")
+				_set_error(HEIGHT_CM_ERROR if key == "height_cm" else NUMBERS[key][0] + "必须是有效数字")
 				return null
-			_set_parameter(key, int(draft.to_float()) if key == "max_repair_attempts" else draft.to_float())
+			var numeric_draft = draft.to_float()
+			var integer_draft = key == "max_repair_attempts" or (key == "height_cm" and draft.is_valid_int())
+			_set_parameter(key, int(numeric_draft) if integer_draft else numeric_draft)
 	var result = _parse_raw()
 	if not result is Dictionary:
 		_set_error("参数格式无效，请修正开发者选项中的参数对象")
 		return null
 	if kind == "copy": return result
+	if kind == GARMENT_SPLIT:
+		var json = JSON.new()
+		if json.parse(garment_items_edit.text) != OK or not json.data is Array or json.data.is_empty():
+			_set_error("衣服清单必须是非空的有效 JSON 数组")
+			return null
+		for entry in json.data:
+			if not entry is Dictionary:
+				_set_error("衣服清单中的每一项都必须是 JSON 对象")
+				return null
+		result.items = json.data
+	if kind == HUMAN_SHAPE:
+		var height_cm = result.get("height_cm", null)
+		var valid_height = (height_cm is float or height_cm is int) and not height_cm is bool
+		if valid_height:
+			valid_height = is_finite(height_cm) and height_cm == floor(height_cm) and height_cm >= 20 and height_cm <= 400 and int(height_cm) % 10 == 0
+		if not valid_height:
+			_set_error(HEIGHT_CM_ERROR)
+			return null
+		result.height_cm = int(height_cm)
+		result.erase("height_m")
 	if kind == "image_to_mesh": result["prompt"] = ""
 	if not _automatic_outputs and kind in ["generate_image", "text_to_image", "image_to_image"]:
 		if _dirty_outputs or _output_specifications(result) == null:

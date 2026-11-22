@@ -18,6 +18,9 @@ class Demo:
     def cancel(self, job_id): return None
 
 def factory():
+    from garment_split_provider import register as register_garment_split
+
     registry=NodeRegistry()
     registry.register(dict(id='copy',version='1',inputs={'source':{'types':['image','mesh'],'required':True}},outputs={'result':{'types':['image','mesh'],'required':True}},context_types=['text','image'],parameters={'properties':{'delay':{'type':'number'},'fail':{'type':'boolean'}}},capabilities=['copy']))
+    register_garment_split(registry)
     return registry, {'local-copy':Demo()}

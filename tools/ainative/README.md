@@ -295,11 +295,15 @@ Tripo API generation, texture, segmentation or completion operation.
 ### Pre-rig human body shape adjustment V1
 
 The separate `human_shape_adjust` node adjusts a static humanoid GLB before final
-skeleton and skin generation. Its ordinary form exposes only `height_m`,
+skeleton and skin generation. Its ordinary form exposes only `height_cm`,
 `head_ratio`, `arm_length_scale`, `leg_length_scale` and `build`; the operation
-recorded in the artifact is `reshape_humanoid`. The deformation is deterministic
-and local, with no Tripo API generation, Blender, image generation or texture
-adjustment.
+recorded in the artifact is `reshape_humanoid`. Height is an integer from 20–400 cm
+in 10 cm increments. The provider converts it to `height_m = height_cm / 100` only
+at the existing local deformation boundary, and records the effective `height_cm`
+in its receipt and provenance. Legacy `height_m` workflows are migrated by exact
+unit conversion without rounding fractional centimetres. The deformation is
+deterministic and local, with no Tripo API generation, Blender, image generation
+or texture adjustment.
 
 By default `human_shape_landmarks.py` renders the immutable source and makes one
 Kimi vision request through the configured planner. This automatic landmark stage
@@ -336,6 +340,88 @@ normals refreshed; material references, indices and source bytes are preserved.
 Derived landmarks use `validation_state=automatically_derived_review_required`;
 no manufactured human-confirmation flag is emitted. All required views must be
 reviewed again before fitting the final skeleton and skin.
+
+### Garment inventory and visible-surface extraction
+
+`garment_split.py` and `garment_inventory.py` provide local, source-bound
+extraction from an already generated character. The source must be a
+self-contained, triangle-based GLB. Static meshes require identity mesh-node
+transforms; rigged meshes preserve their original hierarchy and transforms.
+Valid skins, sparse accessors, external dependencies and primitive extensions
+are checked explicitly. The original GLB is never overwritten. Hidden body
+geometry, occluded layers and complete wearable garments are not reconstructed.
+
+```powershell
+python tools/ainative/garment_split.py inspect character.glb inspection.json
+python tools/ainative/garment_inventory.py planner.json inspection.json private/inventory --image front=front.png --component CMP_ID=component.png
+python tools/ainative/garment_split.py inventory-spec character.glb inspection.json private/inventory/inventory.json derived split-spec.json
+python tools/ainative/garment_split.py split split-spec.json
+```
+
+Inspection emits stable, source-SHA-bound vertex-connected `component_id`
+values, bounds and triangle counts. Connectivity alone is not a semantic
+boundary. The vision request accepts whole-model views and separately labelled
+component previews; an AI response may select only component IDs represented by
+an attached component image. Whole-model evidence without a component preview
+can produce an open-vocabulary inventory, but its geometry remains unresolved.
+AI `automatic` state is neither human confirmation nor visual acceptance.
+
+`inventory-spec` converts only evidence-bound component candidates. Add
+`--confirmed` only after the caller has actually reviewed the complete inventory
+and selection. For a fused surface, edit the specification with confirmed
+source triangle IDs instead:
+
+```json
+{
+  "review_state": "confirmed",
+  "selection": {
+    "mode": "reviewed_triangles",
+    "primitives": [{"node": 0, "primitive": 0, "triangles": [12, 13, 18]}]
+  }
+}
+```
+
+Each selected source triangle may belong to only one output item. Extraction
+repacks the selected vertex attributes and indices, preserves material/texture
+references and embedded images, and records exact source-triangle mapping and
+output hashes in `split_manifest.json`. Existing output paths are rejected.
+
+For a rigged source, extraction replaces only the index buffers. The complete
+skeleton, `skins`, `inverseBindMatrices`, `JOINTS_0`, `WEIGHTS_0`, original
+vertex attributes and animations are preserved. Unreferenced source vertices
+remain in the GLB so skin attributes can never be remapped accidentally; only
+the selected triangles render. The cloth-preparation path currently rejects
+rigged inputs rather than silently treating them as static geometry.
+
+A confirmed `cloth` or `mixed` item may additionally declare a `cloth` object
+with `kind` (`cape` or `skirt`), six-number metre `box`, optional `columns`,
+`rows` and `cloth_top`. This invokes the existing author-sampled proxy pipeline.
+The resulting item state is `cloth_prepared`, never `cloth_ready`: actual target
+rig, animation, collision, reopen and visual acceptance remain downstream.
+Preparation failure preserves the extracted GLB and makes the manifest
+`capability_limited`. See `design-docs/maliang-garment-split-20261122.md` for
+the current scope and evidence boundary. Synthetic tests do not establish real
+AI segmentation quality or production cloth behavior.
+
+The Workbench **衣服拆分 / `garment_split`** node exposes a rigged-first
+contract without requiring a saved generation service. Rigged GLBs retain the
+original skeleton and weights; static GLBs are also accepted. Choose or link one
+Mesh, then provide the `items` array in the structured inspector. The node never
+manufactures a prompt or selects a remote model. Its main result is
+`_garments.glb`, a collection containing all selected surfaces; each item also
+appears as a named dynamic garment node with its own thumbnail, GLB save action
+and immutable fixed-artifact downstream input. Garment cards are not generation
+rounds and continue to require visual review. Workflow output snapshots preserve
+all garments and fixed connections across save/reopen.
+
+`garment_split_provider.py` persists local Executor intents and results under
+the run-scoped `garment-split-state` directory. Provider identity fingerprints
+the provider, geometry core, GLB repair and cloth-preparation sources. An
+interrupted synchronous local job is not blindly replayed. Rigged cloth
+preparation is rejected explicitly, and `cloth_prepared` does not become
+`cloth_ready` merely because a graph run succeeded. `garment_split_node_acceptance.gd` is the native
+Workbench acceptance entry; it requires a Godot executable and the explicit
+fixture environment documented in that script.
 
 ### Local configuration and credentials
 

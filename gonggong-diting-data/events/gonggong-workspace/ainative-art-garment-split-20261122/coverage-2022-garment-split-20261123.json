@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "event_id": "coverage-2022-garment-split-20261123",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ainative-art-garment-split-20261122",
+  "kind": "coverage",
+  "occurred_at": "2026-11-22T17:31:26Z",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2022",
+  "agent": {
+    "id": "kimi-work-kaiyunxue",
+    "version": "20261123",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "current-authorized-host"
+  },
+  "payload": {
+    "state": "local_candidate_validated",
+    "authorization_ref": "kimi-work:user:20261123:commit-relevant-changes-only-no-push",
+    "validation": "data-collection/maliang-garment-split-20261122-validation.json",
+    "implementation": "Rigged-first garment surface extraction replaces index buffers only and preserves the complete skin, skeleton, rest poses, inverse bind matrices, vertex weights, attributes and animations. Static GLB remains supported; rigged cloth_prepare is explicitly rejected.",
+    "tests": {
+      "garment_core_and_executor": {
+        "passed": 18,
+        "failures": 0
+      },
+      "full_ainative_regression": {
+        "passed": 539,
+        "skipped_environment": 62,
+        "duration_seconds": 186.726,
+        "result": "OK"
+      }
+    },
+    "native_acceptance": {
+      "state": "passed",
+      "installed_bundle_matches_source": true,
+      "bundle": "98d0f05c8db6f6ab7c4a9d07462113be4bb0160c7873dac3b66aed2f6ec18d40",
+      "editor_sha256": "0d7cc04eb8bedc8af3e2899217fd59c0e401e77c4327f55129663f778bffa723"
+    },
+    "remaining": [
+      "real_ai_recognition_quality",
+      "real_character_multiview_visual_review",
+      "target_rig_animation_and_collision"
+    ],
+    "delivery_scope": "local_commit_only_no_push"
+  },
+  "evidence_refs": [
+    "request-2022-garment-split-20261122"
+  ],
+  "sha256": "997befd317d12747248814861d569b5bd36de874fb61380d47fd8332393e20cd"
+}

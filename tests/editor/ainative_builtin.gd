@@ -90,7 +90,7 @@ func run():
 	check(panel.native_buttons.mesh.button_pressed and panel.graph.is_visible_in_tree(),'Mesh generation is the default native page')
 	var kinds = []
 	for i in panel.generator_choice.item_count: kinds.append(panel.generator_choice.get_item_metadata(i))
-	check(kinds==['generate_image','image_to_mesh','text_to_mesh','model_adjust','human_shape_adjust','humanoid_rig'],'unified image generation, Mesh processing, pre-rig human shape adjustment and the local humanoid rig node are available')
+	check(kinds==['generate_image','image_to_mesh','text_to_mesh','model_adjust','human_shape_adjust','humanoid_rig','garment_split'],'unified image generation, Mesh processing, pre-rig human shape adjustment, local humanoid rig and garment surface split nodes are available')
 	for i in panel.generator_choice.item_count:
 		panel.generator_choice.select(i)
 		panel.add_generator()
@@ -141,6 +141,7 @@ func run():
 		finish(); return
 	verify_importer_conversion()
 	await verify_mesh()
+	await verify_garment_node()
 	await verify_rigging()
 	await prepare_portable_runtime()
 	var capture = OS.get_environment('AINATIVE_TEST_CAPTURE')
@@ -635,6 +636,38 @@ func make_humanoid(path: String, include_review: bool = true) -> bool:
 	output.store_buffer(binary)
 	output.close()
 	return check(output.get_error()==OK,'synthetic T-pose GLB fixture is encoded without AI inference')
+
+func verify_garment_node():
+	var source = ProjectSettings.globalize_path('res://rigged.glb')
+	var before = FileAccess.get_sha256(source)
+	panel.generator_choice.select(6)
+	panel.add_generator()
+	var data: Dictionary = panel.nodes.back()
+	data.parameters = {"items":[{"id":"cloth","label":"测试衣服","category":"garment","slot":"other","behavior":"skinned","confidence":1.0,"review_state":"confirmed","selection":{"mode":"reviewed_triangles","primitives":[{"node":0,"primitive":0,"triangles":[0]}]}}]}
+	panel.select_node(str(data.id))
+	panel.source_picker.file_selected.emit(source)
+	check(panel.parameter_form.garment_items_edit.visible and panel.apply_fields(),'bundled garment node applies its structured item selection')
+	panel.run_node_preview(str(data.id))
+	if not await wait_idle(): return
+	details.garment_execution = {'current':panel.current.duplicate(true),'failure':panel.failure_text.text,'status':panel.status.text,'host':panel.host_edit.text,'selected':str(data.id)}
+	check(panel.current.get('state')=='succeeded','bundled garment node executes through its installed local Provider')
+	var entry: Dictionary = panel._latest_mesh_entry(str(data.id))
+	check(not entry.is_empty() and entry.get('iterations',[]).size()==1,'bundled garment node publishes collection and independent garment GLB')
+	check(entry.get('provenance',{}).get('rigged',false) and entry.get('provenance',{}).get('skeleton_preserved',false) and entry.get('provenance',{}).get('skin_weights_preserved',false),'bundled garment node preserves the original skeleton and skin weights')
+	check(panel.host_edit.text.contains('/ainative/bundles/'),'garment node host is the actual installed bundle')
+	await settle()
+	var cards = panel.artifact_nodes.values().filter(func(record): return record.get('artifact_role','')=='garment')
+	check(cards.size()==1 and cards[0].entry.get('provenance',{}).get('garment_id','')=='cloth','bundled garment node creates its semantic independent artifact card')
+	if not entry.is_empty():
+		panel.load_preview(entry,str(data.id),str(entry.get('run','')))
+		await settle()
+		var garment_meshes: Array = []
+		if is_instance_valid(panel.preview_scene):
+			garment_meshes = panel.preview_scene.find_children('*','MeshInstance3D',true,false)
+			if panel.preview_scene is MeshInstance3D: garment_meshes.append(panel.preview_scene)
+		check(not garment_meshes.is_empty(),'bundled garment collection preview decodes into actual Mesh geometry')
+		details.garment_execution = {'host':panel.host_edit.text,'collection':entry.get('artifact',{}).duplicate(true),'status':panel.current.get('state',''),'source_sha256':before}
+	check(FileAccess.get_sha256(source)==before,'bundled garment extraction preserves source GLB bytes')
 
 func verify_rigging():
 	var rig = panel.rigging_panel

@@ -15,6 +15,7 @@ var process_entries: Array = []
 var process_expanded := false
 var path_edit: LineEdit
 var source_edit: LineEdit
+var context_row: HBoxContainer
 var context_edit: LineEdit
 var source_picker: FileDialog
 var context_picker: FileDialog
@@ -224,12 +225,13 @@ const RETIRED_GPT_MESH_NOTICE = "GPT CLI 单独网格生成已下线。请使用
 const GENERATE_IMAGE = "generate_image"
 const HUMANOID_RIG = "humanoid_rig"
 const HUMAN_SHAPE = "human_shape_adjust"
+const GARMENT_SPLIT = "garment_split"
 const IMAGE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image"]
 const CUSTOM_TEMPLATE = WorkflowTemplate.CUSTOM_TEMPLATE
 const TEMPLATE_INPUT = WorkflowTemplate.TEMPLATE_INPUT
 const TEMPLATE_OUTPUT = WorkflowTemplate.TEMPLATE_OUTPUT
-const NODE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", HUMAN_SHAPE, HUMANOID_RIG, "copy", CUSTOM_TEMPLATE, TEMPLATE_INPUT, TEMPLATE_OUTPUT]
-const CREATION_NODE_KINDS = [GENERATE_IMAGE, "image_to_mesh", "text_to_mesh", "model_adjust", HUMAN_SHAPE, HUMANOID_RIG, "copy"]
+const NODE_KINDS = [GENERATE_IMAGE, "text_to_image", "image_to_image", "image_to_mesh", "text_to_mesh", "model_adjust", HUMAN_SHAPE, HUMANOID_RIG, GARMENT_SPLIT, "copy", CUSTOM_TEMPLATE, TEMPLATE_INPUT, TEMPLATE_OUTPUT]
+const CREATION_NODE_KINDS = [GENERATE_IMAGE, "image_to_mesh", "text_to_mesh", "model_adjust", HUMAN_SHAPE, HUMANOID_RIG, GARMENT_SPLIT, "copy"]
 const PORT_DYNAMIC = 0
 const PORT_IMAGE = 1
 const PORT_MESH = 2
@@ -246,7 +248,7 @@ const PORT_COLORS = {
 }
 
 func node_label(kind: String) -> String:
-	return {"copy":"离线复制", GENERATE_IMAGE:"生成图片", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格", "model_adjust":"模型调整", HUMAN_SHAPE:"人形体态调整", HUMANOID_RIG:"创建人形17根骨骼", CUSTOM_TEMPLATE:"自定义流程模板", TEMPLATE_INPUT:"流程输入（固定）", TEMPLATE_OUTPUT:"流程输出（固定）"}.get(kind,kind)
+	return {"copy":"离线复制", GENERATE_IMAGE:"生成图片", "text_to_image":"文字生成图像", "image_to_image":"图像生成图像", "image_to_mesh":"图像生成网格", "text_to_mesh":"文字生成网格", "model_adjust":"模型调整", HUMAN_SHAPE:"人形体态调整", HUMANOID_RIG:"创建人形17根骨骼", GARMENT_SPLIT:"衣服拆分", CUSTOM_TEMPLATE:"自定义流程模板", TEMPLATE_INPUT:"流程输入（固定）", TEMPLATE_OUTPUT:"流程输出（固定）"}.get(kind,kind)
 
 func template_name(template_id: String) -> String:
 	return str(custom_templates.get(template_id, {}).get("name", template_id))
@@ -256,7 +258,7 @@ func _template_display_name(data: Dictionary) -> String:
 	return template_name(str(data.get("template_id", "")))
 
 func _is_mesh_kind(kind: String) -> bool:
-	return kind in ["text_to_mesh", "image_to_mesh", "model_adjust", HUMAN_SHAPE]
+	return kind in ["text_to_mesh", "image_to_mesh", "model_adjust", HUMAN_SHAPE, GARMENT_SPLIT]
 
 func _is_image_kind(kind: String) -> bool:
 	return kind in IMAGE_KINDS
@@ -272,6 +274,9 @@ func human_shape_default_parameters() -> Dictionary:
 		"height_cm":180, "head_ratio":7.5, "arm_length_scale":1.0,
 		"leg_length_scale":1.0, "build":0.0
 	}
+
+func garment_split_default_parameters() -> Dictionary:
+	return {"items":[]}
 
 func state_label(value: String) -> String:
 	return {"pending":"等待中", "queued":"排队中", "ready":"就绪", "running":"运行中", "succeeded":"已成功", "failed":"已失败", "cancelled":"已取消", "blocked":"受阻", "reconcile":"待查询提交结果", "skipped":"已跳过"}.get(value,value)
@@ -312,14 +317,15 @@ func _configure_source_picker(kind: String, data: Dictionary = {}):
 	var copy = kind == "copy"
 	var adjust = kind == "model_adjust"
 	var shape = kind == HUMAN_SHAPE
-	var mesh_input = kind in ["model_adjust",HUMAN_SHAPE,HUMANOID_RIG]
+	var garment = kind == GARMENT_SPLIT
+	var mesh_input = kind in ["model_adjust",HUMAN_SHAPE,HUMANOID_RIG,GARMENT_SPLIT]
 	var multiple = _is_image_kind(kind) or _accepts_image_set(data)
-	source_picker.title = "选择项目中的 GLB 人形模型" if kind == HUMANOID_RIG else "选择绑骨前的静态 GLB 人形模型" if shape else "选择已生成模型（GLB / 内嵌 glTF）" if adjust else "选择源图像或模型" if copy else "选择源图像（可多选）"
-	source_picker.filters = PackedStringArray(["*.glb,*.gltf ; GLB / 内嵌 glTF 模型" if mesh_input else "*.png,*.jpg,*.jpeg,*.glb,*.gltf ; 图像 / 网格" if copy else "*.png,*.jpg,*.jpeg ; PNG / JPEG 图像"])
+	source_picker.title = "选择项目中的 GLB 人形模型" if kind == HUMANOID_RIG else "选择绑骨前的静态 GLB 人形模型" if shape else "选择已绑骨 GLB，也支持未绑骨静态模型" if garment else "选择已生成模型（GLB / 内嵌 glTF）" if adjust else "选择源图像或模型" if copy else "选择源图像（可多选）"
+	source_picker.filters = PackedStringArray(["*.glb ; 已绑骨或静态 GLB 模型" if garment else "*.glb,*.gltf ; GLB / 内嵌 glTF 模型" if mesh_input else "*.png,*.jpg,*.jpeg,*.glb,*.gltf ; 图像 / 网格" if copy else "*.png,*.jpg,*.jpeg ; PNG / JPEG 图像"])
 	source_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple else FileDialog.FILE_MODE_OPEN_FILE
 	context_picker.file_mode = FileDialog.FILE_MODE_OPEN_FILES if multiple or adjust else FileDialog.FILE_MODE_OPEN_FILE
 	source_browse.text = "选择模型…" if mesh_input else "选择文件…" if copy else "选择图片…"
-	source_edit.placeholder_text = "选择项目路径下的 GLB，或连接上游 Mesh" if kind == HUMANOID_RIG else "选择绑骨前 GLB；关键点须绑定此文件 SHA" if shape else "必须选择已生成模型" if adjust else "未选择源图像或模型" if copy else "未选择源图像，可多选；也可仅填写文本" if kind == GENERATE_IMAGE else "未选择源图像，可多选"
+	source_edit.placeholder_text = "选择项目路径下的 GLB，或连接上游 Mesh" if kind == HUMANOID_RIG else "选择绑骨前 GLB；关键点须绑定此文件 SHA" if shape else "选择已绑骨 GLB，或连接上游 Mesh" if garment else "必须选择已生成模型" if adjust else "未选择源图像或模型" if copy else "未选择源图像，可多选；也可仅填写文本" if kind == GENERATE_IMAGE else "未选择源图像，可多选"
 	context_edit.placeholder_text = "微调参考图（可选，单图或四视角）" if adjust else "未选择参考图像（可选）"
 
 func _node_paths(data: Dictionary, field: String) -> Array:
@@ -590,7 +596,7 @@ func _ready():
 	source_browse.name = "SourceFileBrowse"
 	source_clear = button(source_row, "清除", func(): _set_node_file("source", ""))
 	source_clear.tooltip_text = "清除选中节点的源文件"
-	var context_row = HBoxContainer.new()
+	context_row = HBoxContainer.new()
 	context_row.name = "ReferenceImageField"
 	inspector.add_child(context_row)
 	context_edit = line(context_row, "未选择参考图像（可选）")
@@ -1174,8 +1180,8 @@ func add_node():
 func add_generator():
 	var kind = generator_choice.get_item_metadata(generator_choice.selected)
 	var id = "n" + str(Time.get_ticks_usec())
-	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": human_shape_default_parameters() if kind == HUMAN_SHAPE else HumanoidRigNode.default_parameters() if kind == HUMANOID_RIG else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
-	if kind not in ['copy',HUMANOID_RIG] and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
+	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": human_shape_default_parameters() if kind == HUMAN_SHAPE else HumanoidRigNode.default_parameters() if kind == HUMANOID_RIG else garment_split_default_parameters() if kind == GARMENT_SPLIT else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": 40 + nodes.size() * 70, "y": 60 + nodes.size() * 45}
+	if kind not in ['copy',HUMANOID_RIG,GARMENT_SPLIT] and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	_migrate_node_models(data, service_draft())
 	nodes.append(data)
 	rebuild()
@@ -1185,7 +1191,7 @@ func _migrate_node_models(data: Dictionary, legacy: Dictionary):
 	var kind = str(data.get('type', 'copy'))
 	var mode = _service_mode()
 	# Nodes created before the first saved service inherit once on that first save.
-	if kind in ['copy',HUMANOID_RIG,CUSTOM_TEMPLATE,TEMPLATE_INPUT,TEMPLATE_OUTPUT] or _retired_mesh_node(data) or _using_legacy_service() or (service_saved.is_empty() and not data.has('model')): return
+	if kind in ['copy',HUMANOID_RIG,GARMENT_SPLIT,CUSTOM_TEMPLATE,TEMPLATE_INPUT,TEMPLATE_OUTPUT] or _retired_mesh_node(data) or _using_legacy_service() or (service_saved.is_empty() and not data.has('model')): return
 	var cli_mode = mode == 'codex'
 	var mesh_kind = _is_mesh_kind(kind)
 	var legacy_image = str(legacy.get('image_model', ''))
@@ -1202,7 +1208,7 @@ func _migrate_node_models(data: Dictionary, legacy: Dictionary):
 
 func _sync_node_model_controls(data: Dictionary):
 	var kind = str(data.get('type', 'copy'))
-	var generating = kind not in ['copy',HUMANOID_RIG,CUSTOM_TEMPLATE,TEMPLATE_INPUT,TEMPLATE_OUTPUT] and not _retired_mesh_node(data) and not _using_legacy_service()
+	var generating = kind not in ['copy',HUMANOID_RIG,GARMENT_SPLIT,CUSTOM_TEMPLATE,TEMPLATE_INPUT,TEMPLATE_OUTPUT] and not _retired_mesh_node(data) and not _using_legacy_service()
 	node_model_label.visible = generating
 	node_model_choice.visible = generating and _service_mode() not in ['api_modeling', 'api_sculpt']
 	node_model_edit.visible = generating
@@ -1248,7 +1254,7 @@ func input_kind(data: Dictionary) -> int:
 	# The GraphEdit compatibility rule registered in _ready also permits image_set here.
 	if _accepts_image_set(data): return PORT_IMAGE
 	if kind in ["image_to_image", "image_to_mesh"]: return PORT_IMAGE
-	if kind in ["model_adjust",HUMAN_SHAPE,HUMANOID_RIG]: return PORT_MESH
+	if kind in ["model_adjust",HUMAN_SHAPE,HUMANOID_RIG,GARMENT_SPLIT]: return PORT_MESH
 	return PORT_DYNAMIC
 
 func output_kind(data: Dictionary) -> int:
@@ -1392,13 +1398,15 @@ func _create_artifact_node(data: Dictionary, entry: Dictionary):
 func _create_mesh_artifact_node(data: Dictionary, entry: Dictionary, attempt: int):
 	var source_id = str(data.id)
 	var key = _mesh_artifact_key(source_id, entry)
-	var artifact_id = "artifact_%s_round_%03d" % [source_id, attempt]
+	var is_garment = str(entry.get("provenance", {}).get("artifact_role", "")) == "garment"
+	var garment_label = str(entry.get("label", entry.get("provenance", {}).get("garment_label", "衣服")))
+	var artifact_id = "artifact_%s_garment_%03d" % [source_id, attempt] if is_garment else "artifact_%s_round_%03d" % [source_id, attempt]
 	while nodes.any(func(item): return item.id == artifact_id): artifact_id += "_dynamic"
 	var node = GraphNode.new()
 	node.name = artifact_id
-	node.title = "◇ Mesh 生成物 · 第 %d 轮" % attempt
+	node.title = "◇ 衣服生成物 · " + garment_label if is_garment else "◇ Mesh 生成物 · 第 %d 轮" % attempt
 	node.position_offset = Vector2(data.x + 340, data.y + (attempt - 1) * 180)
-	node.tooltip_text = "双击放大本轮 Mesh；可独立保存并作为固定轮次输入连接到下游节点"
+	node.tooltip_text = "双击放大这件衣服；可独立保存并作为固定衣服输入连接到下游节点" if is_garment else "双击放大本轮 Mesh；可独立保存并作为固定轮次输入连接到下游节点"
 	node.set_meta("maliang_artifact", true)
 	node.set_meta("artifact_source", source_id)
 	node.set_meta("artifact_key", key)
@@ -1409,28 +1417,35 @@ func _create_mesh_artifact_node(data: Dictionary, entry: Dictionary, attempt: in
 	var review_text = "已生成 GLB"
 	if entry.get("review_passed", null) == true: review_text = "视觉审核通过"
 	elif entry.get("review_passed", null) == false: review_text = "视觉审核未通过"
-	summary.text = "动态节点 · 来自 %s · %s" % [source_id, review_text]
+	if is_garment:
+		var review_state = str(entry.get("provenance", {}).get("review_state", "needs_review"))
+		review_text = {"automatic":"自动识别 · 待视觉审核", "confirmed":"选择已确认 · 待视觉审核", "needs_review":"需要审核选择"}.get(review_state, "待视觉审核")
+		summary.text = garment_label + " · " + review_text
+	else:
+		summary.text = "动态节点 · 来自 %s · %s" % [source_id, review_text]
 	summary.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	node.add_child(summary)
 	node.set_slot(0, true, PORT_DYNAMIC, PORT_COLORS[PORT_MESH], true, PORT_DYNAMIC, PORT_COLORS[PORT_MESH])
 	var thumbnail = preload("res://addons/ainative/mesh_artifact_preview.gd").new()
 	thumbnail.name = "ArtifactMeshPreview"
 	thumbnail.mouse_filter = Control.MOUSE_FILTER_STOP
-	thumbnail.tooltip_text = "双击放大本轮 Mesh"
+	thumbnail.tooltip_text = "双击放大这件衣服" if is_garment else "双击放大本轮 Mesh"
 	node.add_child(thumbnail)
 	thumbnail.gui_input.connect(_artifact_preview_input.bind(key, 0, thumbnail))
-	var preview_button = button(node, "旋转 / 缩放第 %d 轮 Mesh" % attempt, _show_artifact_result.bind(key))
+	var preview_text = "旋转 / 缩放衣服" if is_garment else "旋转 / 缩放第 %d 轮 Mesh" % attempt
+	var preview_button = button(node, preview_text, _show_artifact_result.bind(key))
 	preview_button.name = "PreviewMeshArtifact"
 	preview_button.tooltip_text = "在右侧旋转和缩放；双击直接放大"
 	preview_button.gui_input.connect(_artifact_preview_input.bind(key, 0, preview_button))
-	var save_button = button(node, "保存本轮 GLB…", _save_mesh_artifact.bind(key))
+	var save_text = "保存衣服 GLB…" if is_garment else "保存本轮 GLB…"
+	var save_button = button(node, save_text, _save_mesh_artifact.bind(key))
 	save_button.name = "SaveMeshArtifact"
-	save_button.tooltip_text = "另存本轮原始 GLB，不覆盖其他轮次"
+	save_button.tooltip_text = "另存这件衣服的原始 GLB，不覆盖其他产物" if is_garment else "另存本轮原始 GLB，不覆盖其他轮次"
 	graph.add_child(node)
 	thumbnail.show_mesh(str(entry.get("path", "")))
 	node.gui_input.connect(_artifact_preview_input.bind(key, 0, node))
 	node.node_selected.connect(_show_artifact_result.bind(key))
-	artifact_nodes[key] = {"id": artifact_id, "entry": entry, "source": source_id, "kind": "mesh", "attempt": attempt}
+	artifact_nodes[key] = {"id": artifact_id, "entry": entry, "source": source_id, "kind": "mesh", "attempt": attempt, "artifact_role": "garment" if is_garment else "iteration"}
 
 func _create_character_artifact_node(data: Dictionary, entry: Dictionary):
 	var source_id = str(data.id)
@@ -1503,7 +1518,8 @@ func _show_artifact_result(key: String, index: int = 0):
 		select_node(record.source)
 		load_preview(entry, record.source, str(entry.get("run", "")))
 		if is_instance_valid(preview_scene): call_deferred("_reveal_mesh_preview")
-		if record.get("kind","")=="mesh": status.text += " · 第 %d 轮" % int(record.get("attempt", 1))
+		if record.get("kind","")=="mesh":
+			status.text += " · 衣服 " + str(entry.get("label", "")) if record.get("artifact_role", "") == "garment" else " · 第 %d 轮" % int(record.get("attempt", 1))
 		return
 	var entry = _latest_image_entry(key)
 	if entry.is_empty(): return
@@ -1516,7 +1532,9 @@ func _save_mesh_artifact(key: String):
 	_show_artifact_result(key)
 	if preview_source_path.is_empty(): return
 	var attempt = int(artifact_nodes[key].get("attempt", 1))
-	open_save_dialog(("mesh-round-%03d-%s.glb" % [attempt, str(artifact_nodes[key].entry.get("artifact", {}).get("revision", "")).left(12)]).validate_filename())
+	var record: Dictionary = artifact_nodes[key]
+	var name = "garment-%s-%s.glb" % [str(record.entry.get("provenance", {}).get("garment_id", "item")), str(record.entry.get("artifact", {}).get("revision", "")).left(12)] if record.get("artifact_role", "") == "garment" else "mesh-round-%03d-%s.glb" % [attempt, str(record.entry.get("artifact", {}).get("revision", "")).left(12)]
+	open_save_dialog(name.validate_filename())
 
 func _open_artifact_download(key: String):
 	if artifact_nodes.has(key) and artifact_nodes[key].get("kind", "image") == "character":
@@ -1732,7 +1750,11 @@ func rebuild(layout_artifacts: bool = true):
 			continue
 		var chain: Array = mesh_chains.get(source_id, [])
 		var chain_index = chain.find(key)
-		if chain_index > 0:
+		if record.get("artifact_role", "") == "garment":
+			# Every garment is an independent member of the collection, not a
+			# sequential generation round. The formal result remains the collection.
+			graph.connect_node(source_id, 0, str(record.id), 0)
+		elif chain_index > 0:
 			graph.connect_node(str(artifact_nodes[chain[chain_index - 1]].id), 0, str(record.id), 0)
 		else:
 			graph.connect_node(source_id, 0, str(record.id), 0)
@@ -1746,7 +1768,7 @@ func rebuild(layout_artifacts: bool = true):
 				continue
 		if artifact_nodes.has(edge.from):
 			graph.connect_node(str(artifact_nodes[edge.from].id), 0, edge.to, 0)
-		elif not mesh_chains.get(edge.from, []).is_empty():
+		elif not mesh_chains.get(edge.from, []).is_empty() and str(source.get("type", "")) != GARMENT_SPLIT:
 			var chain: Array = mesh_chains[edge.from]
 			graph.connect_node(str(artifact_nodes[chain.back()].id), 0, edge.to, 0)
 		else:
@@ -1776,6 +1798,7 @@ func _sync_structural_inspector(kind: String):
 		elif control not in [node_model_label, node_model_choice, node_model_edit, node_image_model_label, node_image_model_choice, node_image_model_edit, text_edit]:
 			control.show()
 	boundary_hint.visible = boundary
+	context_row.visible = not structural and kind != GARMENT_SPLIT
 	template_edit_button.visible = kind == CUSTOM_TEMPLATE
 
 func select_node(id: String):
@@ -1802,7 +1825,7 @@ func select_node(id: String):
 			if selected_kind == "copy":
 				text_edit.text = str(data.get("text", ""))
 				parameter_form.configure(selected_kind, data.parameters)
-			elif selected_kind in [HUMAN_SHAPE, HUMANOID_RIG]:
+			elif selected_kind in [HUMAN_SHAPE, HUMANOID_RIG, GARMENT_SPLIT]:
 				# These structured nodes have no prompt/text parameter. Do not
 				# manufacture an empty prompt which their invocation schema rejects.
 				parameter_form.configure(selected_kind, data.parameters, str(data.get("version", "1")))
@@ -1834,7 +1857,7 @@ func apply_fields() -> bool:
 		return false
 	for data in nodes:
 		if data.id == selected_id:
-			if data.get('type', 'copy') not in ['copy',HUMANOID_RIG] and not _retired_mesh_node(data) and not _using_legacy_service():
+			if data.get('type', 'copy') not in ['copy',HUMANOID_RIG,GARMENT_SPLIT] and not _retired_mesh_node(data) and not _using_legacy_service():
 				var primary_name = node_model_edit.text.strip_edges()
 				if _service_mode() in ['api_modeling', 'api_sculpt']: primary_name = node_model_edit.text
 				if data.has('model') or not primary_name.is_empty(): data.model = primary_name
@@ -1844,7 +1867,7 @@ func apply_fields() -> bool:
 			_sync_node_files(data)
 			if data.get("type", "copy") == "copy":
 				data.text = text_edit.text
-			elif data.get("type","") not in [HUMANOID_RIG,HUMAN_SHAPE]:
+			elif data.get("type","") not in [HUMANOID_RIG,HUMAN_SHAPE,GARMENT_SPLIT]:
 				# Keep the hidden control compatible with existing automation while
 				# storing prompt-based requirements in the canonical prompt field.
 				params["prompt"] = _merged_requirements(str(params.get("prompt", "")), text_edit.text)
@@ -1883,8 +1906,8 @@ func connect_nodes(from: StringName, from_port: int, to: StringName, _tp: int):
 		if record.get("kind", "image") != "mesh":
 			status.text = "图片生成物请从正式图片节点连接下游"
 			return
-		if target_kind not in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG,CUSTOM_TEMPLATE,TEMPLATE_INPUT]:
-			status.text = "Mesh 轮次生成物只能连接到 Mesh 输入"
+		if target_kind not in ["copy", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG,GARMENT_SPLIT,CUSTOM_TEMPLATE,TEMPLATE_INPUT]:
+			status.text = "Mesh 生成物只能连接到 Mesh 输入"
 			return
 		for edge in edges:
 			if edge.to == to: return
@@ -2293,7 +2316,8 @@ func _snapshot_current_result(node_id: String, state: Dictionary) -> Dictionary:
 			var saved = _snapshot_result_artifact(run_id, node_id, reference, artifact)
 			if saved.is_empty(): return {}
 			var provenance: Dictionary = artifact.payload.provenance
-			saved["label"] = "第 %d 轮" % int(provenance.get("generation_iteration", iterations.size() + 1))
+			var is_garment = str(provenance.get("artifact_role", "")) == "garment"
+			saved["label"] = str(provenance.get("garment_label", "衣服")) if is_garment else "第 %d 轮" % int(provenance.get("generation_iteration", iterations.size() + 1))
 			saved["attempt"] = int(provenance.get("generation_iteration", iterations.size() + 1))
 			saved["review_passed"] = provenance.get("visual_review_passed", null)
 			iterations.append(saved)
@@ -3812,13 +3836,18 @@ func node_run_blocker(id: String) -> String:
 		if kind==HUMAN_SHAPE:
 			for path in _node_paths(data,"source"):
 				if not path.is_empty() and path.get_extension().to_lower()!="glb": return "人形体态调整 V1 只接受绑骨前的静态 GLB（"+str(next_id)+"）"
+		if kind==GARMENT_SPLIT:
+			for path in _node_paths(data,"source"):
+				if not path.is_empty() and path.get_extension().to_lower()!="glb": return "衣服拆分需要自包含 GLB；已绑骨和静态模型均可（"+str(next_id)+"）"
+			var split_items = data.get("parameters", {}).get("items", [])
+			if not split_items is Array or split_items.is_empty(): return "请在衣服拆分节点中配置至少一件衣服及其 component_id 或审核三角面"
 		var reviewed_mesh = kind == "image_to_mesh" and data.get("version", "1") == "2"
 		if not reviewed_mesh and (_is_image_kind(kind) or _accepts_image_set(data)) and _node_paths(data, "source").size() + _node_paths(data, "image_context").size() > 8:
 			return "源图与参考图合计每次最多 8 张（" + str(next_id) + "）"
 		var prompt = str(data.get("parameters", {}).get("prompt", "")) + "\n" + str(data.get("text", ""))
 		if kind == GENERATE_IMAGE and not has_images and prompt.strip_edges().is_empty():
 			return "请至少选择图片或填写生成提示词（" + str(next_id) + "）"
-		if kind != GENERATE_IMAGE and not kind in ["copy", "image_to_mesh", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG] and prompt.strip_edges().is_empty():
+		if kind != GENERATE_IMAGE and not kind in ["copy", "image_to_mesh", "model_adjust",HUMAN_SHAPE,HUMANOID_RIG,GARMENT_SPLIT] and prompt.strip_edges().is_empty():
 			return "请先填写生成提示词（" + str(next_id) + "）"
 		var service_reason = _service_blocker(kind, data)
 		if not service_reason.is_empty(): return service_reason
@@ -3999,7 +4028,7 @@ func _history_context_action(index: int):
 func filter_node_picker(text: String):
 	node_picker_list.clear()
 	var search = text.strip_edges().to_lower()
-	for group in [["图像生成", [GENERATE_IMAGE]], ["网格生成", ["image_to_mesh", "text_to_mesh"]], ["模型处理", ["model_adjust", HUMAN_SHAPE]], ["骨骼工具", [HUMANOID_RIG]], ["离线工具", ["copy"]]]:
+	for group in [["图像生成", [GENERATE_IMAGE]], ["网格生成", ["image_to_mesh", "text_to_mesh"]], ["模型处理", ["model_adjust", HUMAN_SHAPE, GARMENT_SPLIT]], ["骨骼工具", [HUMANOID_RIG]], ["离线工具", ["copy"]]]:
 		var matches: Array = []
 		for kind in group[1]:
 			if search.is_empty() or search in (node_label(kind) + " " + kind + " " + group[0]).to_lower(): matches.append(kind)
@@ -4043,9 +4072,9 @@ func create_context_node(kind: String):
 	var position = (context_position + graph.scroll_offset) / graph.zoom
 	var id = "n" + str(Time.get_ticks_usec())
 	while not nodes.filter(func(n): return n.id == id).is_empty(): id += "x"
-	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": "workflow-template" if kind == CUSTOM_TEMPLATE else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {} if kind == CUSTOM_TEMPLATE else human_shape_default_parameters() if kind==HUMAN_SHAPE else HumanoidRigNode.default_parameters() if kind==HUMANOID_RIG else {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
+	var data = {"id": id, "type": kind, "version": _new_node_version(kind), "provider": "workflow-template" if kind == CUSTOM_TEMPLATE else _generator_provider(kind), "source": "", "image_context": "", "text": "", "parameters": {} if kind == CUSTOM_TEMPLATE else human_shape_default_parameters() if kind==HUMAN_SHAPE else HumanoidRigNode.default_parameters() if kind==HUMANOID_RIG else garment_split_default_parameters() if kind==GARMENT_SPLIT else {"delay": 2, "fail": false} if kind == "copy" else {"prompt": "" if kind in ["image_to_mesh", "model_adjust"] else "白色背景上的小型石雕", "seed": 1}, "x": position.x, "y": position.y}
 	if kind == CUSTOM_TEMPLATE: data.template_id = template_id
-	if kind not in ['copy',HUMANOID_RIG,CUSTOM_TEMPLATE] and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
+	if kind not in ['copy',HUMANOID_RIG,GARMENT_SPLIT,CUSTOM_TEMPLATE] and _service_mode() in ['api_modeling', 'api_sculpt']: data.model = ''
 	if kind != CUSTOM_TEMPLATE: _migrate_node_models(data, service_draft())
 	nodes.append(data)
 	node_picker.hide()
@@ -4337,10 +4366,10 @@ func _setup_service_controls(machine: VBoxContainer, settings: ConfigFile):
 	button(actions, "保存生成服务设置", save_service_settings)
 	service_status = Label.new()
 	service_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	service_status.text = "请选择生成服务；本机复制和人形骨骼节点始终可用，配置草稿会自动保存。"
+	service_status.text = "请选择生成服务；本机复制、人形骨骼和衣服拆分节点始终可用，配置草稿会自动保存。"
 	service_fields.add_child(service_status)
 	for kind in NODE_KINDS:
-		if kind==HUMANOID_RIG: continue
+		if kind in [HUMANOID_RIG,GARMENT_SPLIT]: continue
 		var label = Label.new()
 		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		service_capability_labels[kind] = label
@@ -4493,6 +4522,7 @@ func _generator_description(data: Dictionary) -> String:
 	if kind == TEMPLATE_OUTPUT: return '连接模板最终输出 · 固定节点'
 	if _retired_mesh_node(data): return node_label(kind) + ' · GPT CLI 网格已下线'
 	if kind == HUMANOID_RIG: return '本机解剖模板 · 17 根解剖骨＋root · 实际 ROM 检查'
+	if kind == GARMENT_SPLIT: return '本机几何提取 · 已绑骨优先 · 保留原骨架和蒙皮'
 	if kind == 'copy': return '本机离线复制'
 	var selected_model = str(data.get('model', '')) if not _using_legacy_service() else '高级自定义服务'
 	var description = node_label(kind) + ' · ' + (selected_model if not selected_model.is_empty() else 'CLI 默认／待选择模型')
@@ -4504,6 +4534,7 @@ func _generator_description(data: Dictionary) -> String:
 func _generator_provider(kind: String) -> String:
 	if kind == 'copy': return 'local-copy'
 	if kind == HUMANOID_RIG: return 'local-humanoid-rig'
+	if kind == GARMENT_SPLIT: return 'garment-split'
 	if _service_mode() == 'api_modeling': return 'api-modeling'
 	if _service_mode() == 'api_sculpt': return 'api-sculpt'
 	if _service_mode() == 'local_mesh': return 'comfy'
@@ -4793,7 +4824,7 @@ func _apply_service_check(data: Dictionary, checked_draft: Dictionary):
 		_show_run_problem(service_status.text)
 
 func _service_blocker(kind: String, data: Dictionary = {}) -> String:
-	if kind in ["copy",HUMANOID_RIG] or _using_legacy_service(): return ""
+	if kind in ["copy",HUMANOID_RIG,GARMENT_SPLIT] or _using_legacy_service(): return ""
 	if _is_mesh_kind(kind) and managed_comfy_panel != null and _service_mode() in ['codex', 'local_mesh']:
 		var bundle_problem: String = managed_comfy_panel.bundled_mesh_blocker()
 		if not bundle_problem.is_empty(): return bundle_problem

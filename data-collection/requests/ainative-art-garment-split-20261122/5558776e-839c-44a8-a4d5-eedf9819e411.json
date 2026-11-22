@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "ainative-art-garment-split-20261122",
+  "collected_at": "2026-11-22T17:33:17.712706+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ainative-art-garment-split-20261122/coverage-2022-garment-split-20261123.json",
+      "sha256": "e73c39a70ff2e2719e5a08ad92c57dee11687cb9d1431a7c7b28f67dbbe1be39",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "coverage-2022-garment-split-20261123",
+      "origin": "current-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/ainative-art-garment-split-20261122/request-2022-garment-split-20261122.json",
+      "sha256": "526391837d3d3b6ceff3ca8a714859191cf1bbaef00a66c6fd8b24997c4d4a6b",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "request-2022-garment-split-20261122",
+      "origin": "current-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 2022,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2022"
+}

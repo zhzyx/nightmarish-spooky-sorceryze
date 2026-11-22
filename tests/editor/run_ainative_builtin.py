@@ -91,6 +91,10 @@ def main():
                     repository / "samples/ainative-workbench/fixtures" / ("sample." + extension),
                     project / ("fixture." + extension),
                 )
+            shutil.copy2(
+                repository / "samples/ainative-workbench/fixtures" / "rigged.glb",
+                project / "rigged.glb",
+            )
         transfer = base / "portable-transfer"
         environment = {
             key: value
