@@ -8280,6 +8280,20 @@ void AIChatDock::_notification(int p_what) {
 			if (close_marker.is_valid()) {
 				close_marker->store_line(itos(OS::get_singleton()->get_process_id()));
 				close_marker->flush();
+#ifdef WINDOWS_ENABLED
+				// Allow the runner to checkpoint the original Jobs and return their claims.
+				if (close_marker->get_error() == OK && !production_preparing) {
+					close_marker.unref();
+					const uint64_t deadline = OS::get_singleton()->get_ticks_msec() + 15000;
+					while (OS::get_singleton()->get_ticks_msec() < deadline) {
+						if (!OS::get_singleton()->is_process_running(sub_agent_parallel_pid)) {
+							sub_agent_parallel_pid = -1;
+							break;
+						}
+						OS::get_singleton()->delay_usec(20000);
+					}
+				}
+#endif
 			}
 		}
 		if (sub_agent_parallel_pid >= 0) {
