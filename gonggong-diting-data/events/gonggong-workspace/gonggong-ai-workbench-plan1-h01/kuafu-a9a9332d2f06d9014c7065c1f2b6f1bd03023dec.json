@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a9a9332d2f06d9014c7065c1f2b6f1bd03023dec",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-h01",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1843",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f1ff522b46a036677fbbc4bd56de34c6aac17e1f0c34c203413e35b5acafb965",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1843",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2027",
+    "action": "intake",
+    "detection_head": "e3135fc4b95141430c1fa6aa9f225ce899d01ff4",
+    "context_sha256": "cf83220428366dad276c2978ad7e99d642c31e26f5c134179f263de68b89d875",
+    "operator": "Sail-Li",
+    "worker": "mac-round10-h01",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1843",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1843",
+    "diagnosis": "H01 初次 intake 时工单仍带 status:planned，未满足入口所需的活跃状态。在同一工单设置单一 status:in-progress 后，原工作树、租户、请求和命令已重跑通过，取得 issue 1843 的认证接单回执。",
+    "next_action": "继续实际 Mac 服务验收并归档签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T06:12:02.358572+00:00",
+    "attempted": "原命令退出 1，核实 GitHub 实时标签，认领后同一命令成功。",
+    "repair_owner": "Sail-Li",
+    "continuable": "H01 开发与验收。"
+  },
+  "occurred_at": "2026-11-22T06:20:09.699478+00:00",
+  "sha256": "3c65b758cd0346398fce0417d6324427d3284bab9b0ddad514133a0002d257c1"
+}

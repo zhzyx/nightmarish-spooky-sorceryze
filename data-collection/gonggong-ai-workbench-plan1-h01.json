@@ -1,0 +1,190 @@
+{
+  "issue_number": 1843,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1843",
+  "request_id": "gonggong-ai-workbench-plan1-h01",
+  "baseline": "e3135fc4b95141430c1fa6aa9f225ce899d01ff4",
+  "tested_sha256": {
+    "customizations/components/tianxuan/server/test_work_management.py": "de94a88d067910c6c02c95f654c9253fd3de06f9735cdab9953d6b3ca35edd08",
+    "customizations/components/tianxuan/server/work_management.py": "9bce8284af3cba45d25daa895dc24ac2e8bca20d8e0a4dceea113053932e5e1e"
+  },
+  "dependency": 1856,
+  "verified_at": "2026-11-22T06:23:01.294314+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "contract": "创建创意判断项时服务将工单发起人保存为默认责任人。读回每一提交的独立修订、责任人和决定，工作执行人员可提交产物，判断操作检查已绑定的责任人。旧提交使用工单的原始创建者读回责任，原始历史事件保持可审计。",
+  "regression": {
+    "command": "python -m pytest -q customizations/components/tianxuan/server/test_work_management.py customizations/components/tianxuan/server/test_issue_lifecycle.py customizations/components/tianxuan/server/test_issue_artifacts.py customizations/components/tianxuan/server/test_issue_upload.py",
+    "passed": 24
+  },
+  "macos_http": {
+    "transport": "Uvicorn on loopback, authenticated HTTP, independent SQLite service and native object store",
+    "events": [
+      {
+        "path": "/api/v1/native/batches",
+        "method": "POST",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/issues/iss_72d6c131754d488a9cdae3b47ff75b08/work/submit_asset",
+        "method": "POST",
+        "status": 200,
+        "judgments": [
+          {
+            "kind": "concept",
+            "path": "character.png",
+            "module": "art",
+            "revision": "70cac8e14272bb8118899c69d92d6a1dd6adfc302be0d172625141cf3239d2af",
+            "submission_version": 1,
+            "initiator": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "responsible": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "actor": "usr_a998e588bc694460b67ffc86936b3c31",
+            "decision": "pending"
+          }
+        ]
+      },
+      {
+        "path": "/api/v1/issues/iss_72d6c131754d488a9cdae3b47ff75b08/work/submit_asset",
+        "method": "POST",
+        "status": 200,
+        "judgments": [
+          {
+            "kind": "concept",
+            "path": "character.png",
+            "module": "art",
+            "revision": "70cac8e14272bb8118899c69d92d6a1dd6adfc302be0d172625141cf3239d2af",
+            "submission_version": 1,
+            "initiator": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "responsible": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "actor": "usr_a998e588bc694460b67ffc86936b3c31",
+            "decision": "pending"
+          }
+        ]
+      },
+      {
+        "path": "/api/v1/native/batches",
+        "method": "POST",
+        "status": 200
+      },
+      {
+        "path": "/api/v1/issues/iss_72d6c131754d488a9cdae3b47ff75b08/work/submit_asset",
+        "method": "POST",
+        "status": 200,
+        "judgments": [
+          {
+            "kind": "concept",
+            "path": "character.png",
+            "module": "art",
+            "revision": "70cac8e14272bb8118899c69d92d6a1dd6adfc302be0d172625141cf3239d2af",
+            "submission_version": 1,
+            "initiator": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "responsible": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "actor": "usr_a998e588bc694460b67ffc86936b3c31",
+            "decision": "pending"
+          },
+          {
+            "kind": "concept",
+            "path": "character.png",
+            "module": "art",
+            "revision": "5a78d02cd1ab7945e0430cf9a308d4449706b08c63f0f5e05d50c513a2456eb8",
+            "submission_version": 2,
+            "initiator": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "responsible": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "actor": "usr_a998e588bc694460b67ffc86936b3c31",
+            "decision": "pending"
+          }
+        ]
+      },
+      {
+        "path": "/api/v1/issues/iss_72d6c131754d488a9cdae3b47ff75b08/work/submit_asset",
+        "method": "POST",
+        "status": 200,
+        "judgments": [
+          {
+            "kind": "concept",
+            "path": "character.png",
+            "module": "art",
+            "revision": "70cac8e14272bb8118899c69d92d6a1dd6adfc302be0d172625141cf3239d2af",
+            "submission_version": 1,
+            "initiator": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "responsible": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "actor": "usr_a998e588bc694460b67ffc86936b3c31",
+            "decision": "pending"
+          },
+          {
+            "kind": "concept",
+            "path": "character.png",
+            "module": "art",
+            "revision": "5a78d02cd1ab7945e0430cf9a308d4449706b08c63f0f5e05d50c513a2456eb8",
+            "submission_version": 2,
+            "initiator": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "responsible": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "actor": "usr_a998e588bc694460b67ffc86936b3c31",
+            "decision": "pending"
+          }
+        ]
+      },
+      {
+        "path": "/api/v1/issues/iss_72d6c131754d488a9cdae3b47ff75b08/work",
+        "method": "GET",
+        "status": 200,
+        "judgments": [
+          {
+            "kind": "concept",
+            "path": "character.png",
+            "module": "art",
+            "revision": "70cac8e14272bb8118899c69d92d6a1dd6adfc302be0d172625141cf3239d2af",
+            "submission_version": 1,
+            "initiator": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "responsible": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "actor": "usr_a998e588bc694460b67ffc86936b3c31",
+            "decision": "pending"
+          },
+          {
+            "kind": "concept",
+            "path": "character.png",
+            "module": "art",
+            "revision": "5a78d02cd1ab7945e0430cf9a308d4449706b08c63f0f5e05d50c513a2456eb8",
+            "submission_version": 2,
+            "initiator": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "responsible": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "actor": "usr_a998e588bc694460b67ffc86936b3c31",
+            "decision": "pending"
+          }
+        ]
+      },
+      {
+        "path": "/api/v1/issues/iss_72d6c131754d488a9cdae3b47ff75b08/work/decide",
+        "method": "POST",
+        "status": 403
+      },
+      {
+        "path": "/api/v1/issues/iss_72d6c131754d488a9cdae3b47ff75b08/work/decide",
+        "method": "POST",
+        "status": 200,
+        "judgments": [
+          {
+            "kind": "concept",
+            "path": "character.png",
+            "module": "art",
+            "revision": "70cac8e14272bb8118899c69d92d6a1dd6adfc302be0d172625141cf3239d2af",
+            "submission_version": 1,
+            "initiator": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "responsible": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "actor": "usr_a998e588bc694460b67ffc86936b3c31",
+            "decision": "pending"
+          },
+          {
+            "kind": "concept",
+            "path": "character.png",
+            "module": "art",
+            "revision": "5a78d02cd1ab7945e0430cf9a308d4449706b08c63f0f5e05d50c513a2456eb8",
+            "submission_version": 2,
+            "initiator": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "responsible": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "actor": "usr_789894265ead4bd1ae4ad56e90db8328",
+            "decision": "approved"
+          }
+        ]
+      }
+    ]
+  }
+}

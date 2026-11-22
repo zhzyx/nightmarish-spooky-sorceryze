@@ -291,3 +291,70 @@ def test_project_roadmap_returns_only_visible_issue_and_parent_identifiers(work)
     for issue in [parent, child]:
         row = rows[issue["id"]]
         assert (row["number"], row["module_id"]) == (issue["number"], module["id"])
+
+
+def test_creative_judgments_bind_initiator_across_delegated_revisions(work):
+    _, store, _, client, owner, issue = work
+    delegate = store.add_member(owner, "delegate@example.invalid", "password", role="editor")["user_id"]
+    headers = {actor: {"Authorization": "Bearer " + store.issue_session(actor)} for actor in (owner, delegate)}
+    path = f"/api/v1/issues/{issue}/work"
+    ref = dict(kind="concept", module="art", path="character.png")
+    revision = None
+    for number in range(2):
+        change = dict(
+            module="art", base=revision, reads=None, edits={"character.png": base64.b64encode(bytes([number])).decode()}
+        )
+        revision = (
+            client
+            .post(
+                "/api/v1/native/batches",
+                headers=headers[delegate],
+                json=dict(request_key=f"art-{number}", changes=[change]),
+            )
+            .raise_for_status()
+            .json()["revisions"]["art"]
+        )
+        payload = {**ref, "expected_version": number, "revision": revision, "call_id": f"submit-{number}"}
+        result = client.post(path + "/submit_asset", headers=headers[delegate], json=payload).raise_for_status().json()
+        assert client.post(path + "/submit_asset", headers=headers[delegate], json=payload).json() == result
+    judgments = client.get(path, headers=headers[owner]).raise_for_status().json()["creative_judgments"]
+    assert len(judgments) == 2 and judgments[0]["revision"] != judgments[1]["revision"]
+    assert [item["submission_version"] for item in judgments] == [1, 2]
+    for item in judgments:
+        assert (item["initiator"], item["responsible"], item["actor"], item["decision"]) == (
+            owner,
+            owner,
+            delegate,
+            "pending",
+        )
+    approval = dict(**ref, revision=revision, decision="approved", expected_version=2, call_id="approve")
+    assert client.post(path + "/decide", headers=headers[delegate], json=approval).status_code == 403
+    result = client.post(path + "/decide", headers=headers[owner], json=approval).raise_for_status().json()
+    assert [item["decision"] for item in result["creative_judgments"]] == ["pending", "approved"]
+
+
+def test_legacy_pending_judgment_reads_original_issue_creator(work):
+    _, store, _, client, owner, issue = work
+    delegate = store.add_member(owner, "old-editor@example.invalid", "password", role="editor")["user_id"]
+    # A pre-H01 submission did not write the judgment owner into its event.
+    store.db.execute(
+        "INSERT INTO issue_work_events VALUES(?,?,?,?,?,?)",
+        (
+            issue,
+            1,
+            "work.submit_asset",
+            '{"kind":"concept","path":"old.png","module":"art","revision":"old","decision":"pending","digest":"original"}',
+            delegate,
+            1,
+        ),
+    )
+    store.db.commit()
+    state = (
+        client
+        .get(f"/api/v1/issues/{issue}/work", headers={"Authorization": "Bearer " + store.issue_session(owner)})
+        .raise_for_status()
+        .json()
+    )
+    assert "initiator" not in state["history"][0]
+    (judgment,) = state["creative_judgments"]
+    assert (judgment["submission_version"], judgment["initiator"], judgment["responsible"]) == (1, owner, owner)

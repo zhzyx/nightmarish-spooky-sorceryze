@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-intake-round10-1843",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-h01",
+  "kind": "request",
+  "occurred_at": "2026-11-22T06:24:51.233381+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1843",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1843,
+    "tenant": "gonggong-workspace",
+    "request_id": "gonggong-ai-workbench-plan1-h01",
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1843#issuecomment-7075141349",
+    "verified_intake_sha256": "3ed43db414c91b416a1f39be18c76795a1dddf6a7e32d70ca3a69c13e9c04314",
+    "request": "本轮已授权依据原工单验收范围执行至交付。"
+  },
+  "evidence_refs": [],
+  "sha256": "519cbf6e1e28533b0976ce991222f1c4d36913c889f83d225ec22af66bd50eb1"
+}
