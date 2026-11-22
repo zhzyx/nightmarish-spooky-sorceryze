@@ -2057,6 +2057,9 @@ bool AIChatDock::_persist_serial_dependency_preflight(int p_child) {
 }
 
 bool AIChatDock::_dispatch_parallel_sub_agents() {
+	if (bParallelDispatchClosing) {
+		return true;
+	}
 	const int review_parent = _sub_agent_root(active_agent);
 	if (_is_review_child() || bool(GetAiSession().mapSnapshot.get("read_only_review_return", false)) || (design_batches.has(review_parent) && bool(design_batches[review_parent].get("read_only_review", false)))) {
 		return false; // A live read-only review never dispatches production CLI workers.

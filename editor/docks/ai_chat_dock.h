@@ -790,6 +790,7 @@ class AIChatDock : public EditorDock {
 	bool _design_child_finished(int p_agent, bool p_completed, uint64_t p_generation);
 	bool _queue_design_parent_result(int p_parent);
 	bool _design_return_allowed(int p_parent, const Dictionary &p_message) const;
+	bool bParallelDispatchClosing = false;
 	int64_t sub_agent_parallel_pid = -1;
 	String sub_agent_parallel_output;
 	CheckBox *production_setup = nullptr;

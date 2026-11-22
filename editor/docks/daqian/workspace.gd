@@ -2273,7 +2273,16 @@ func _save() -> void:
 	notice.text = "个人草稿保存失败"
 
 
+func _enter_tree() -> void:
+	if is_instance_valid(workflow_controller):
+		workflow_controller.closing = false
+
+
 func _exit_tree() -> void:
+	if is_instance_valid(workflow_controller):
+		workflow_controller.quiesce()
+		if is_instance_valid(editor) and is_instance_valid(overview):
+			_save()
 	cancel_startup_model_refresh()
 	_stop_progress_watch()
 	if not picker_scope.is_empty():
@@ -2286,8 +2295,6 @@ func _exit_tree() -> void:
 				args.append_array(["--repo",picker_scope,"--end-session","--editor-session",editor_session])
 				OS.execute(python,args)
 	_stop_debug(false,true)
-	if is_instance_valid(editor) and is_instance_valid(overview):
-		_save()
 
 
 func _capture_before_navigation() -> void:
