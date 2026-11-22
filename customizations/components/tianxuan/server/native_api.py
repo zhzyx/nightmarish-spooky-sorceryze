@@ -38,6 +38,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "inspect": set(),
             "advance": set(),
             "status": {"key"},
+            "edit-baseline": {"key", "module", "path"},
             "reconcile": {"key"},
             "execute": {"key"},
             "await-terminal": {"key"},
@@ -136,6 +137,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 return workflow.advance(actor, isolate=True, exclude=payload.get("exclude", []))
             if operation in {"status", "execute", "check", "review", "reconcile", "finish"}:
                 return getattr(workflow, operation)(actor, payload["key"])
+            if operation == "edit-baseline":
+                return workflow.edit_baseline(actor, **payload)
             if operation == "verify-stage":
                 return workflow.verify_stage(actor, payload["key"])
             if operation == "renew-stage":
