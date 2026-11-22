@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round10-q01-coverage",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-q01",
+  "kind": "coverage",
+  "occurred_at": "2026-11-22T06:55:26.750628+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1737",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1737,
+    "collection": "data-collection/gonggong-ai-workbench-plan1-q01.json",
+    "sha256": "6b503ae3ac678ab320363c14e287b0d44e4862cc5eea86655928f5aa49e6c178",
+    "surface_rows": 31,
+    "layout_phases": 6,
+    "worker": "mac-round10-q01"
+  },
+  "evidence_refs": [],
+  "sha256": "850d93769598f135ec772a3471f3a2740d0e7db3ca6235db81f531a1ad41cfce"
+}

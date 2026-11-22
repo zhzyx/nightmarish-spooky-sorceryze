@@ -327,6 +327,9 @@ func _check_title_button(tabs: TabContainer, dock: EditorDock, samples: Array) -
 			if composer.has_focus():
 				composer.release_focus()
 			var center := button.get_global_transform_with_canvas() * (button.size / 2)
+			if DisplayServer.get_name() == "macOS":
+				root.warp_mouse(center)
+				await _settle_layout()
 			root.notify_mouse_entered()
 			var motion := InputEventMouseMotion.new()
 			motion.position = center

@@ -1,0 +1,2061 @@
+{
+  "issue_number": 1737,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1737",
+  "request_id": "gonggong-ai-workbench-plan1-q01",
+  "baseline": "6433432b146394033d7c3206b92450698ed27e55",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "surface_editor_sha256": "12053c78c6edd294e2242d23fd90b2623ea2f77d25073546c0241c3d977983a7",
+  "layout_editor_sha256": "9ddda1387a69df39c19f37642ff31ae8d6cc523bf12277fc520b51a72137b8db",
+  "tested_sha256": {
+    "tests/editor/ai_chat_tab_order.gd": "a7fcfc208ad32d2974c55511e8d274008405d22cbb567fe32480d6990651ae32",
+    "tests/editor/editor_shell_layout.gd": "bd0d219a307704b855eaea564e5098035c49f3f5128d234544ad293a76d700b5"
+  },
+  "surface_inventory": "design-docs/gonggong-ai-workbench-b01.md",
+  "surface_baseline": "e3135fc4b95141430c1fa6aa9f225ce899d01ff4",
+  "fixture": "Private editor and project, windowed macOS, disposable settings. Business surfaces used local fixtures. Documented settings widths are 850 and 1440.",
+  "matrix": [
+    {
+      "surface": "AI Chat",
+      "result": "旧会话经迁移入口进入原工作台，保留原会话及草稿。"
+    },
+    {
+      "surface": "马良",
+      "result": "主屏返回原控件，引用显示「页面：马良」，另用回环服务读回页面引用。"
+    },
+    {
+      "surface": "天枢",
+      "result": "总览与原焦点往返，引用显示「页面：天枢」。"
+    },
+    {
+      "surface": "天璇",
+      "result": "原生宿主页面焦点往返，引用为天璇页面；部署登录另见 #1540。"
+    },
+    {
+      "surface": "2D",
+      "result": "打开测试场景后往返成功，引用含 res://scene.tscn 和所选节点。"
+    },
+    {
+      "surface": "3D",
+      "result": "3D 主屏与选区往返；另跑空间模型选区与引用恢复。"
+    },
+    {
+      "surface": "Script",
+      "result": "六种布局阶段均完成工作台命令验收，另核对脚本选段、折叠后草稿与光标。"
+    },
+    {
+      "surface": "Game",
+      "result": "正常主屏往返及 Game 页面引用通过。"
+    },
+    {
+      "surface": "Asset Store",
+      "result": "正常主屏往返及 Asset Store 页面引用通过。"
+    },
+    {
+      "surface": "设置",
+      "result": "设置主屏往返，当前页面引用可读；1440 和 850 宽度均逐项核对可导航的菜单项及顺序。"
+    },
+    {
+      "surface": "会话导航",
+      "result": "重命名弹窗恢复原光标，将真实选段经回环请求读回。"
+    },
+    {
+      "surface": "定时器",
+      "result": "定时任务窗口往返原控件，未选择可引用文本时无文本引用按钮。"
+    },
+    {
+      "surface": "共工与本地环境",
+      "result": "运行环境窗口往返原控件，连接页引用设置页面。"
+    },
+    {
+      "surface": "工具详情与批准",
+      "result": "工具详情窗口往返原控件；会话批准路径另见本轮 #63。"
+    },
+    {
+      "surface": "图片",
+      "result": "图像预览窗口往返原控件，空控件未提供文本引用。"
+    },
+    {
+      "surface": "历史与快照",
+      "result": "本地快照历史窗口往返原控件。"
+    },
+    {
+      "surface": "配置、编译与日志",
+      "result": "编译日志窗口往返原控件；本轮 #63 从批准一直走到新编辑器重启。"
+    },
+    {
+      "surface": "天枢画布对话",
+      "result": "已连接并识别操作者的工作区内，画布输入可唤起同一会话并返回原控件；已稳定的未连接工作区不显示此输入。"
+    },
+    {
+      "surface": "天枢需求、模型与工单对话",
+      "result": "已连接并识别操作者的工作区内，内联需求表单可唤起同一会话并恢复原文本框；未连接时表单不作为可操作入口。"
+    },
+    {
+      "surface": "天枢工单详情与天璇弹窗",
+      "result": "工单详情、关联单、草稿隔离正常，天璇详情弹窗可往返原控件。"
+    },
+    {
+      "surface": "天枢流程工具",
+      "result": "绑定工作区的实际调试记录窗往返成功；图像选择、等待答复、取消与重试用例通过。"
+    },
+    {
+      "surface": "天枢模型库/工作区连接",
+      "result": "分别打开工作区连接和模型设置，引用定位到设置，均返回原控件。"
+    },
+    {
+      "surface": "3D 天枢右栏",
+      "result": "右栏往返原控件并显示节点引用，另实跑模型选择、草稿与重新打开。"
+    },
+    {
+      "surface": "3D 内联详情与对话",
+      "result": "紧凑模型入口与场景选区回归通过；覆盖原生路由与同一会话。"
+    },
+    {
+      "surface": "马良的工具窗口",
+      "result": "马良原生文件选择窗往返原控件，并实测插入窗口引用。"
+    },
+    {
+      "surface": "Scene / Inspector / FileSystem",
+      "result": "三个 Dock 各自往返；节点、资源选择另由专用入口验证。"
+    },
+    {
+      "surface": "Import / Signals / Groups / History",
+      "result": "四个 Dock 逐一往返、读取页名。Import 先导入实际 PNG，再从文件系统选中后验证。"
+    },
+    {
+      "surface": "Output / Debugger / Animation",
+      "result": "三个 Dock 分别往返原控件，并读回相应页名。"
+    },
+    {
+      "surface": "项目设置、编辑器设置、命令面板",
+      "result": "项目及编辑器设置窗分别往返原控件，编辑器设置选段引用通过；命令面板经六次布局阶段验证。"
+    },
+    {
+      "surface": "项目工具弹窗",
+      "result": "从实际菜单依次打开孤立资源、引擎编译配置、项目升级、清除缓存四窗，均唤起同一输入框并返回原控件。升级和清除缓存停在确认前。"
+    },
+    {
+      "surface": "辅助窗口与扩展页面",
+      "result": "辅助窗验证选段、来源销毁后的安全返回；扩展页引用及受控请求通过。"
+    }
+  ],
+  "controls": [
+    {
+      "origin": "AINative",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：马良\n模块：AINativeMainScreen\n可读范围：页面名、模块标识",
+      "focus_control": "CurrentWorkflowPath"
+    },
+    {
+      "origin": "WebPlatform",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：天璇\n模块：WebPlatformMainScreen\n可读范围：页面名、模块标识",
+      "focus_control": "WebPlatformAddress"
+    },
+    {
+      "origin": "2D",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "清空引用 · res://scene.tscn#.",
+      "focus_control": "@Button@11105"
+    },
+    {
+      "origin": "3D",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "清空引用 · res://scene.tscn#.",
+      "focus_control": "@Button@11390"
+    },
+    {
+      "origin": "Script",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "",
+      "focus_control": "@LineEdit@12408"
+    },
+    {
+      "origin": "Game",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：Game\n模块：Game\n可读范围：页面名、模块标识",
+      "focus_control": "@Button@13297"
+    },
+    {
+      "origin": "Asset Store",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：Asset Store\n模块：Asset Store\n可读范围：页面名、模块标识",
+      "focus_control": "@LineEdit@13550"
+    },
+    {
+      "origin": "UnifiedSettings",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：设置\n模块：UnifiedSettingsMainScreen\n可读范围：页面名、模块标识",
+      "focus_control": "APIEndpoint"
+    },
+    {
+      "origin": "Scene",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "清空引用 · res://scene.tscn#.",
+      "focus_control": "@LineEdit@5297"
+    },
+    {
+      "origin": "Inspector",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "清空引用 · res://scene.tscn#.",
+      "focus_control": "@LineEdit@7669"
+    },
+    {
+      "origin": "FileSystem",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "清空引用 · res://scene.tscn#.",
+      "focus_control": "@LineEdit@6405"
+    },
+    {
+      "origin": "Import",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633893588206,
+      "reference": "页面：Import\n模块：Import\n可读范围：页面名、模块标识",
+      "focus_control": "@LineEdit@23196"
+    },
+    {
+      "origin": "Signals",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：Signals\n模块：Signals\n可读范围：页面名、模块标识",
+      "focus_control": "@LineEdit@7876"
+    },
+    {
+      "origin": "Groups",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：Groups\n模块：Groups\n可读范围：页面名、模块标识",
+      "focus_control": "@LineEdit@8073"
+    },
+    {
+      "origin": "History",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：History\n模块：History\n可读范围：页面名、模块标识",
+      "focus_control": "@CheckBox@8103"
+    },
+    {
+      "origin": "Output",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：Output\n模块：Output\n可读范围：页面名、模块标识",
+      "focus_control": "@LineEdit@8136"
+    },
+    {
+      "origin": "Debugger",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：Debugger\n模块：Debugger\n可读范围：页面名、模块标识",
+      "focus_control": "@LineEdit@9240"
+    },
+    {
+      "origin": "Animation",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference": "页面：Animation\n模块：Animation\n可读范围：页面名、模块标识",
+      "focus_control": "@SpinBoxLineEdit@13782"
+    },
+    {
+      "origin": "AgentRenameDialog",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference_offered": false,
+      "focus_control": "AgentName"
+    },
+    {
+      "origin": "ScheduledTaskDialog",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference_offered": false,
+      "focus_control": "ScheduledTaskTitle"
+    },
+    {
+      "origin": "GongGongRuntimeSetup",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference_offered": false,
+      "focus_control": "GongGongSetupProgress"
+    },
+    {
+      "origin": "AIToolDetails",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference_offered": false,
+      "focus_control": "@TextEdit@10301"
+    },
+    {
+      "origin": "AIImagePreview",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference_offered": false,
+      "focus_control": "@Button@10264"
+    },
+    {
+      "origin": "LocalSnapshotHistoryDialog",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference_offered": false,
+      "focus_control": "@Button@10049"
+    },
+    {
+      "origin": "EngineBuildLogDialog",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633742593262,
+      "reference_offered": false,
+      "focus_control": "@TextEdit@10102"
+    },
+    {
+      "origin": "Daqian overview",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633876810992,
+      "reference": "页面：天枢\n模块：DaqianMainScreen\n可读范围：页面名、模块标识",
+      "after_visible": true,
+      "focus_control": "@Button@22819"
+    },
+    {
+      "origin": "Daqian issue detail",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633876810992,
+      "reference_offered": false,
+      "after_visible": true,
+      "focus_control": "@Button@23621"
+    },
+    {
+      "origin": "Daqian connection settings",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633876810992,
+      "reference": "页面：设置\n模块：UnifiedSettingsMainScreen\n可读范围：页面名、模块标识",
+      "after_visible": true,
+      "focus_control": "CLINode"
+    },
+    {
+      "origin": "Daqian model settings",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633876810992,
+      "reference": "页面：设置\n模块：UnifiedSettingsMainScreen\n可读范围：页面名、模块标识",
+      "after_visible": true,
+      "focus_control": "@LineEdit@23038"
+    },
+    {
+      "origin": "3D TianShu sidebar",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633876810992,
+      "reference": "清空引用 · res://scene.tscn#.",
+      "after_visible": true,
+      "focus_control": "@Button@23495"
+    },
+    {
+      "origin": "Maliang file picker",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633876810992,
+      "reference_offered": true,
+      "quoted_current_window": true,
+      "after_visible": true,
+      "focus_control": "@LineEdit@24804"
+    },
+    {
+      "origin": "ProjectExportDialog",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633876810992,
+      "reference_offered": false,
+      "after_visible": true,
+      "focus_control": "@Button@190"
+    },
+    {
+      "origin": "EditorSettingsDialog",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633876810992,
+      "reference_offered": false,
+      "after_visible": true,
+      "focus_control": "@LineEdit@922"
+    },
+    {
+      "origin": "ProjectSettingsEditor",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633876810992,
+      "reference_offered": false,
+      "after_visible": true,
+      "focus_control": "@LineEdit@1067"
+    },
+    {
+      "origin": "OrphanResourcesDialog",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633876810992,
+      "reference_offered": false,
+      "after_visible": true,
+      "focus_control": "Tree"
+    },
+    {
+      "origin": "orphan_resource_explorer",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633910365422,
+      "reference_offered": false,
+      "after_visible": true,
+      "focus_control": "Tree"
+    },
+    {
+      "origin": "engine_compilation_configuration_editor",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633910365422,
+      "reference_offered": false,
+      "after_visible": true,
+      "focus_control": "LineEdit"
+    },
+    {
+      "origin": "upgrade_project",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633910365422,
+      "reference_offered": true,
+      "quoted_current_window": true,
+      "after_visible": true,
+      "focus_control": "@Button@23628"
+    },
+    {
+      "origin": "clear_project_cache",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 633910365422,
+      "reference_offered": true,
+      "quoted_current_window": true,
+      "after_visible": true,
+      "focus_control": "@Button@4508"
+    },
+    {
+      "origin": "connected canvas",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 618274000107,
+      "after_visible": true,
+      "focus_control": "@TextEdit@22938"
+    },
+    {
+      "origin": "connected requirement",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 618274000107,
+      "after_visible": true,
+      "focus_control": "@TextEdit@22889"
+    },
+    {
+      "origin": "debug history",
+      "focused": true,
+      "shared_composer": true,
+      "returned_focus": true,
+      "composer_id": 618274000107,
+      "after_visible": true,
+      "focus_control": "@TextEdit@23000"
+    }
+  ],
+  "layouts": [
+    {
+      "phase": "initial",
+      "title_button_round_trips": 6,
+      "command": {
+        "invocations": [
+          {
+            "composer": 617921678570,
+            "dock_ids": [
+              597067597883
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 623139393034,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (600.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (600.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (588.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (588.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 194.0), S: (385.0, 656.0)]",
+                  "visible": "[P: (196.0, 194.0), S: (385.0, 656.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1080.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1080.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1068.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (1068.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 158.0), S: (865.0, 692.0)]",
+                  "visible": "[P: (196.0, 158.0), S: (865.0, 692.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617921678570,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              597067597883
+            ],
+            "draft_length": 1,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 664428124046,
+            "sidebar": 623139393034,
+            "tab_count": 10
+          },
+          {
+            "composer": 617921678570,
+            "dock_ids": [
+              597067597883
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 623139393034,
+            "tab_count": 10
+          },
+          {
+            "composer": 617921678570,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              597067597883
+            ],
+            "draft_length": 2,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1871649527209,
+            "sidebar": 623139393034,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617921678570,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488602890014
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 597067597883
+      },
+      "script_return": [
+        {
+          "composer_id": 617921678570,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 203,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 203,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617921678570,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 330,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 330,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ]
+    },
+    {
+      "phase": "legacy_maliang_last",
+      "title_button_round_trips": 6,
+      "command": {
+        "invocations": [
+          {
+            "composer": 617904901354,
+            "dock_ids": [
+              597050820667
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (600.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (600.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (588.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (588.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (192.0, 194.0), S: (389.0, 656.0)]",
+                  "visible": "[P: (192.0, 194.0), S: (389.0, 656.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1080.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1080.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1068.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (1068.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (192.0, 158.0), S: (869.0, 692.0)]",
+                  "visible": "[P: (192.0, 158.0), S: (869.0, 692.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617904901354,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              597050820667
+            ],
+            "draft_length": 30,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 664411346830,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "composer": 617904901354,
+            "dock_ids": [
+              597050820667
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "composer": 617904901354,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              597050820667
+            ],
+            "draft_length": 31,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1559576522592,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617904901354,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488586112798
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 597050820667
+      },
+      "script_return": [
+        {
+          "composer_id": 617904901354,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 203,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 203,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617904901354,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 330,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 330,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ]
+    },
+    {
+      "phase": "legacy_maliang_selected",
+      "title_button_round_trips": 6,
+      "command": {
+        "invocations": [
+          {
+            "composer": 617904901354,
+            "dock_ids": [
+              597050820667
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (600.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (600.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (588.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (588.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 194.0), S: (385.0, 656.0)]",
+                  "visible": "[P: (196.0, 194.0), S: (385.0, 656.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1080.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1080.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1068.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (1068.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 158.0), S: (865.0, 692.0)]",
+                  "visible": "[P: (196.0, 158.0), S: (865.0, 692.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617904901354,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              597050820667
+            ],
+            "draft_length": 30,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 664411346830,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "composer": 617904901354,
+            "dock_ids": [
+              597050820667
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "composer": 617904901354,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              597050820667
+            ],
+            "draft_length": 31,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1727751344431,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617904901354,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488586112798
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 597050820667
+      },
+      "script_return": [
+        {
+          "composer_id": 617904901354,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 203,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 203,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617904901354,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 330,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 330,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ]
+    },
+    {
+      "phase": "pre_daqian_layout",
+      "title_button_round_trips": 6,
+      "command": {
+        "invocations": [
+          {
+            "composer": 617904901354,
+            "dock_ids": [
+              597050820667
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (600.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (600.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (588.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (588.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 194.0), S: (385.0, 656.0)]",
+                  "visible": "[P: (196.0, 194.0), S: (385.0, 656.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1080.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1080.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1068.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (1068.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 158.0), S: (865.0, 692.0)]",
+                  "visible": "[P: (196.0, 158.0), S: (865.0, 692.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617904901354,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              597050820667
+            ],
+            "draft_length": 30,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 664411346830,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "composer": 617904901354,
+            "dock_ids": [
+              597050820667
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "composer": 617904901354,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              597050820667
+            ],
+            "draft_length": 31,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1560180502402,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617904901354,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488586112798
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 597050820667
+      },
+      "script_return": [
+        {
+          "composer_id": 617904901354,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 203,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 203,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617904901354,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 330,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 330,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ]
+    },
+    {
+      "phase": "pre_maliang_layout",
+      "title_button_round_trips": 6,
+      "command": {
+        "invocations": [
+          {
+            "composer": 617904901354,
+            "dock_ids": [
+              597050820667
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (600.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (600.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (588.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (588.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 194.0), S: (385.0, 656.0)]",
+                  "visible": "[P: (196.0, 194.0), S: (385.0, 656.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1080.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1080.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1068.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (1068.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 158.0), S: (865.0, 692.0)]",
+                  "visible": "[P: (196.0, 158.0), S: (865.0, 692.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617904901354,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              597050820667
+            ],
+            "draft_length": 30,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 664411346830,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "composer": 617904901354,
+            "dock_ids": [
+              597050820667
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "composer": 617904901354,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              597050820667
+            ],
+            "draft_length": 31,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1560549601171,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617904901354,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488586112798
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 597050820667
+      },
+      "script_return": [
+        {
+          "composer_id": 617904901354,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 203,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 203,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617904901354,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 330,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 330,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ]
+    },
+    {
+      "phase": "restart",
+      "title_button_round_trips": 6,
+      "command": {
+        "invocations": [
+          {
+            "composer": 617904901354,
+            "dock_ids": [
+              597050820667
+            ],
+            "from": "2D",
+            "repeat": false,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "bounds": [
+              {
+                "composer": {
+                  "rect": "[P: (600.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (600.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (588.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (588.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 194.0), S: (385.0, 656.0)]",
+                  "visible": "[P: (196.0, 194.0), S: (385.0, 656.0)]"
+                },
+                "width": 960,
+                "window": "(960, 900)"
+              },
+              {
+                "composer": {
+                  "rect": "[P: (1080.0, 793.0), S: (326.0, 91.0)]",
+                  "visible": "[P: (1080.0, 793.0), S: (326.0, 91.0)]"
+                },
+                "sidebar": {
+                  "rect": "[P: (1068.0, 123.0), S: (364.0, 769.0)]",
+                  "visible": "[P: (1068.0, 123.0), S: (364.0, 769.0)]"
+                },
+                "viewport": {
+                  "rect": "[P: (196.0, 158.0), S: (865.0, 692.0)]",
+                  "visible": "[P: (196.0, 158.0), S: (865.0, 692.0)]"
+                },
+                "width": 1440,
+                "window": "(1440, 900)"
+              }
+            ],
+            "composer": 617904901354,
+            "continued_edit": "reset node position",
+            "dock_ids": [
+              597050820667
+            ],
+            "draft_length": 30,
+            "from": "2D",
+            "repeat": true,
+            "restored_focus": 664411346830,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "composer": 617904901354,
+            "dock_ids": [
+              597050820667
+            ],
+            "from": "Script",
+            "repeat": false,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "composer": 617904901354,
+            "continued_edit": "inserted y",
+            "dock_ids": [
+              597050820667
+            ],
+            "draft_length": 31,
+            "from": "Script",
+            "repeat": true,
+            "restored_focus": 1569508634520,
+            "sidebar": 623122615818,
+            "tab_count": 10
+          },
+          {
+            "from": "2D",
+            "returned_to_main_tab": true
+          },
+          {
+            "from": "AI Chat",
+            "restored_focus": 617904901354,
+            "restored_hidden_slot": true
+          },
+          {
+            "from": "Inspector",
+            "restored_focus": 488586112798
+          },
+          {
+            "from": "2D",
+            "restored_distraction_free_mode": true
+          },
+          {
+            "from": "temporary LineEdit",
+            "preserved_draft": true,
+            "released_source": true
+          }
+        ],
+        "key": "editor/open_ai_workbench",
+        "original_instance_id": 597050820667
+      },
+      "script_return": [
+        {
+          "composer_id": 617904901354,
+          "cycle": 1,
+          "draft": "草稿 · round trip\nsecond linez",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "expanded_scroll": 193,
+          "full_view_user_scroll": 203,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "return": "button",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              1
+            ],
+            "origin": [
+              1,
+              5
+            ],
+            "text": "稿 · round trip\nsecon"
+          },
+          "returned_scroll": 203,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "source": "Script"
+        },
+        {
+          "composer_id": 617904901354,
+          "cycle": 2,
+          "draft": "草稿 · round trip\nsecond linezz",
+          "entry": "expand button",
+          "expanded_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "expanded_scroll": 320,
+          "full_view_user_scroll": 330,
+          "full_view_user_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "return": "editor/open_ai_workbench",
+          "returned_draft_selection": {
+            "caret": [
+              0,
+              2
+            ],
+            "origin": [
+              1,
+              6
+            ],
+            "text": " · round trip\nsecond"
+          },
+          "returned_scroll": 330,
+          "script_selection": {
+            "caret": [
+              1,
+              2
+            ],
+            "origin": [
+              1,
+              10
+            ],
+            "text": "Editable"
+          },
+          "sidebar_draft_selection": {
+            "caret": [
+              0,
+              3
+            ],
+            "origin": [
+              1,
+              7
+            ],
+            "text": "· round trip\nsecond "
+          },
+          "source": "Script"
+        },
+        {
+          "released_source_screen_while_expanded": true,
+          "script_edit_after_close": "# x draft"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "passed": true,
+    "project_sources_unchanged": true
+  },
+  "conditions": {
+    "unbound_observations": 9,
+    "unbound_visible_fields": 0,
+    "forced_unbound_invocation": "Forcibly opening a form during missing-workspace setup briefly exposed controls that disappeared on refresh; tested separately from authenticated workflow.",
+    "real_provider": "Selected references were sent to a local test receiver; external account use was outside Q01."
+  },
+  "evidence_commands": [
+    "tests/editor/run_ai_chat_tab_order.py --workbench-button --workbench-command",
+    "tests/editor/run_unified_settings_native.py",
+    "tests/editor/run_workbench_window.py",
+    "tests/editor/run_workbench_resource_selection.py",
+    "tests/editor/run_workbench_page_reference.py",
+    "tests/editor/run_workbench_compact_model_route.py",
+    "tests/editor/run_workbench_legacy_routes.py",
+    "tests/editor/run_tianshu_spatial.py --scene-selection"
+  ]
+}
