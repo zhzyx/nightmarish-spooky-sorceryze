@@ -82,7 +82,9 @@ def _recovery_class(workflow, actor, row, checkpoint):
         return "completed", "accepted"
     if state == "stage-reached":
         return "awaiting-confirmation", "authorized-stage-reached"
-    if state not in {"ready", "reserved", "produced"}:
+    if state == "running" and workflow.editor_is_closing(row["id"]):
+        return "resumable", "editor-closing"
+    if state not in {"ready", "editor-interrupted", "reserved", "produced"}:
         return "needs-attention", state
     pending = checkpoint["pending_decision"]
     if pending and pending["kind"] == "review-outcome":
@@ -146,9 +148,16 @@ async def _continue_task(workflow, actor, project, key, session):
     for boundary in ("ready", "reserved", "produced"):
         session()
         category, checkpoint, profile = await asyncio.to_thread(_current, workflow, actor, project, key)
+        if boundary == "ready" and category == "resumable" and checkpoint["state"] == "running":
+            # A fast reopen can arrive while the old launch owner drains its
+            # group. Only wait for that closing request, never adopt a live peer.
+            await workflow.await_terminal(actor, key)
+            session()
+            category, checkpoint, profile = await asyncio.to_thread(_current, workflow, actor, project, key)
         if category != "resumable":
             return "parked"
-        if checkpoint["state"] != boundary:
+        restarting = checkpoint["state"] == "editor-interrupted" and boundary == "ready"
+        if checkpoint["state"] != boundary and not restarting:
             continue
         context = getattr(workflow, "recovery_context", None)
         with context(actor, checkpoint) if context else nullcontext():
@@ -159,7 +168,7 @@ async def _continue_task(workflow, actor, project, key, session):
                     model={"id": profile},
                     target="agent",
                 )
-                if not await asyncio.to_thread(workflow.reserve, actor, assignment):
+                if not await asyncio.to_thread(workflow.reserve, actor, assignment, editor_checkpoint=restarting):
                     return "deferred"
             elif boundary == "reserved":
                 row = await asyncio.to_thread(workflow.execute_receipt, actor, key)

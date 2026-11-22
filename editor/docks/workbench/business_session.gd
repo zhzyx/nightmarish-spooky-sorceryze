@@ -242,6 +242,9 @@ func _exchange(method: int, route: String, credential: String, payload: Dictiona
 	var headers := PackedStringArray(["Accept: application/json" if download_path.is_empty() else "Accept: application/octet-stream"])
 	if not credential.is_empty():
 		headers.append("Authorization: Bearer " + credential)
+	# A loopback recovery owns only the local producer launched by this request.
+	if route.get_slice("?", 0) == "/api/v1/native/workflow/recover-project" and _matches(_origin, "^https?://(127\\.0\\.0\\.1|localhost|\\[::1\\])(:[0-9]{1,5})?$"):
+		headers.append("X-Native-Worker-Lifetime: editor-connection")
 	var body := ""
 	if method not in [HTTPClient.METHOD_GET, HTTPClient.METHOD_HEAD]:
 		headers.append("Content-Type: application/json")

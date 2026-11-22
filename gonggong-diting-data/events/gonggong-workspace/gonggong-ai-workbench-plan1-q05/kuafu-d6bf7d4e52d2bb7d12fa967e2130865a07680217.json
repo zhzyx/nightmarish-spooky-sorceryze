@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-d6bf7d4e52d2bb7d12fa967e2130865a07680217",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-q05",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1732",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2dd536506fdb7594caf64bbdffda37c8a7fbb62f0863f1ab43427883f810aeff",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1732",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2127",
+    "action": "validation",
+    "detection_head": "f1d145aeff4289292ff75aee3b50b2423c2c7bbf",
+    "context_sha256": "aaf1f1129c3a64c8095f9a8db160140defc10686d1d0f4dccb37d0677f5211dc",
+    "operator": "Sail-Li",
+    "worker": "resume1709_q05",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:complete1709:q05",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1732",
+    "diagnosis": "The dispatch has an authenticated handoff but this checkout lacks a request event derived from the same issue.",
+    "next_action": "Record the read-back issue and repeat the formal gate before committing the integration candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T19:04:33.826332+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T19:05:43.125890+00:00",
+  "sha256": "ecfc7bfc53bcdf0febc4a3453a82cbe8a22c03ef0e9e9167788fc851d464b726"
+}

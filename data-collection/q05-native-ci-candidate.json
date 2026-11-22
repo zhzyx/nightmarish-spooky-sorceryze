@@ -1,0 +1,19 @@
+{
+  "issue_number": 1732,
+  "request_id": "gonggong-ai-workbench-plan1-q05",
+  "state": "prepared_for_native_ci",
+  "candidate_base": "f1d145aeff4289292ff75aee3b50b2423c2c7bbf",
+  "upstream_heads": {
+    "PR 2135": "47c30ced8121f997f0c14fb797fb53360690946b",
+    "PR 2134": "fef6ecb8c0825ad73da19fc9de6f7d1d305d1be1"
+  },
+  "sidebar_2125": {
+    "editor/docks/workbench/issue_actions/creative_judgments.gd": "fc5576f3db34d047e8e8db8da502157b105c3dd8",
+    "tests/editor/run_workbench_project_reopen.py": "bbc2497c1eb0d659675f741cdb60e9d7f206ccb2",
+    "tests/editor/run_workbench_startup_judgments.py": "8c99e05b8f3862885b1c9e91e91e59684278c3d8",
+    "tests/editor/workbench_startup_judgments.gd": "3cebb50b66c897531fba0c3ce57c64e6a618c1e2"
+  },
+  "f01_manifest_sha256": "78e468619070021669f0d9c700be800ee0215d0fcd1e11d69ceb7bf69ff3043e",
+  "layout_source": "Normally closed AI Chat fixture on a clean Cocoa runner. The original Mac project layout file was unavailable.",
+  "scope": "Isolated arm64 candidate integration and test inputs. A completed native run and its reports establish the observed result."
+}

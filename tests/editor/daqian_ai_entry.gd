@@ -23,6 +23,14 @@ func run() -> void:
 		push_error("Unique workbench entry unavailable")
 		quit(1)
 		return
+	if OS.get_environment("GONGGONG_VALIDATE_TIANSHU") == "1":
+		for name: String in ["ui", "board"]:
+			var source: Dictionary = daqian.get_meta("tianshu_" + name + "_source", {})
+			if source.is_empty():
+				push_error("Isolated editor did not load Tianshu " + name)
+				quit(1)
+				return
+			print("TIANSHU_%s_LOADED %s" % [name.to_upper(), source.sha256])
 	var accent: Color = chat.get_title_color()
 	if accent not in [Color("#7dd3fc"), Color("#0369a1")]:
 		push_error("Theme accent missing")

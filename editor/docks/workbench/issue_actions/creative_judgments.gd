@@ -1,6 +1,9 @@
 @tool
 extends VBoxContainer
 
+signal initial_layout_restored
+
+var layout_ready := false
 var detail: Node
 var session: Node
 var generation := 0
@@ -63,10 +66,18 @@ func _ready() -> void:
 	revise.pressed.connect(_send.bind("changes_requested"))
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(status)
+	# This control is mounted during editor construction, before the first file scan.
+	# EditorNode restores the saved docks and main screen on that scan's sources_changed.
+	EditorInterface.get_resource_filesystem().sources_changed.connect(_layout_restored, CONNECT_ONE_SHOT | CONNECT_DEFERRED)
 	session.identity_changed.connect(_reset)
 	session.authenticated.connect(_browse.bind(true))
 	detail.detail_changed.connect(_clear_selection)
 	_reset()
+
+
+func _layout_restored(_sources_exist: bool) -> void:
+	layout_ready = true
+	initial_layout_restored.emit()
 
 
 func _clear_selection() -> void:
@@ -115,6 +126,10 @@ func _browse(on_startup := false) -> void:
 		if not on_startup:
 			status.text = "暂无待本人判断的事项"
 	elif on_startup:
+		if not layout_ready:
+			await initial_layout_restored
+			if generation != attempt:
+				return
 		detail.get_meta("open_linked_sidebar").call()
 		# Wait for the dock and newly added rows to receive their actual geometry.
 		await get_tree().process_frame
