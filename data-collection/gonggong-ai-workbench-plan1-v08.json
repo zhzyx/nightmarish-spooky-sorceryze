@@ -1,0 +1,98 @@
+{
+  "issue_number": 1772,
+  "request_id": "gonggong-ai-workbench-plan1-v08",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "base": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "command": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py customizations/components/tianxuan/sinan-workorders/test_native_stage_renewal.py\n实机编辑器另运行 tests/editor/run_workbench_task_progress.py --godot bin/godot.macos.editor.arm64 --report v08-native.json（有窗口）",
+  "tests": [
+    "test_dispatch_stops_at_checked_preview[blue-stage-reached]",
+    "test_dispatch_stops_at_checked_preview[red-stage-unmet]",
+    "test_unbound_and_mismatched_criteria",
+    "test_revocation_during_stage_check",
+    "test_revoked_evidence_and_contribution_never_release",
+    "test_simultaneous_settlement_reuses_exact_check",
+    "test_stage_receipt_binds_current_editable_revision[True]",
+    "test_stage_receipt_binds_current_editable_revision[False]",
+    "test_explicit_renewal_pins_preview_and_executes_only_next_stage",
+    "test_invalid_renewal_preserves_preview[unmet]",
+    "test_invalid_renewal_preserves_preview[criteria]",
+    "test_invalid_renewal_preserves_preview[actor]",
+    "test_invalid_renewal_preserves_preview[definition]",
+    "test_invalid_renewal_preserves_preview[withdrawn]",
+    "test_revised_issue_can_rework_the_same_stage"
+  ],
+  "observations": {
+    "stage_binding": {
+      "issue": "iss_dc0a521a7ae3449abbea2c5a9f7cc6f0",
+      "revision": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c",
+      "result": {
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_7b20722872d94186ac2f0980993920f2",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_79bfdbb2b42342d790a2d8862ffa4f81",
+          "issue_id": "iss_dc0a521a7ae3449abbea2c5a9f7cc6f0",
+          "issue_revision": "987f58e0b964e8915fc0458046cbebb44ff74fe8b1b4d74772e8cd72f10659c2",
+          "responsible_user": "usr_7b20722872d94186ac2f0980993920f2",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "checks": {
+          "check": {
+            "evidence": "772ef66f0741f710fb930eae0b44549ec6db1f60cae7497fef641e8ddeed7fda",
+            "outcome": "passed"
+          }
+        },
+        "modules": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "reason": "authorized_stage_criteria_met",
+        "state": "stage-reached",
+        "task": "3b46de47c3ac058ee5bf4c119a98509752829d368ae7798d47a8d1a98f7de0c3"
+      }
+    },
+    "editor_sha256": "3815fc803a273e37b93e823b0584a6f0381b8c3dd1b87372ea6bbd84e619b0d6",
+    "native_issue_view": {
+      "issue": "iss_c9caba1d3ea944989e88dda02d7a125f",
+      "reader_role": "admin",
+      "status_with_project": 422,
+      "number": 1,
+      "run": "1a4991dfaea37efbb8e8c343d5eed5937f873d4dc4fd2169d30390963b1eaa37",
+      "running": {
+        "sequence": 4,
+        "recorded_at": "2026-11-22T13:03:18.924Z",
+        "state": "running",
+        "step": "workspace.materialize",
+        "details": {
+          "modules": {
+            "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+          }
+        }
+      },
+      "final": {
+        "sequence": 9,
+        "recorded_at": "2026-11-22T13:03:23.004Z",
+        "state": "stage-reached",
+        "step": "state",
+        "details": {
+          "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+          "modules": {
+            "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+          }
+        }
+      },
+      "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+      "persisted_events": 9,
+      "physical_starts": 1,
+      "views": {
+        "final_issue": "运行号　1a4991dfaea37efbb8e8c343d5eed5937f873d4dc4fd2169d30390963b1eaa37\n目标阶段　原型\n运行状态　已到达目标阶段\n产物候选　10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\n阶段核验　authorized_stage_criteria_met\n对象修订　a @ 85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\n验证回执　check · passed · c4238b0769126d9b5cb4f7aabe426243c67b06bd4a3b711df4d750c3c1609904\n\n运行回执（从新到旧）\n#9　2026-11-22T13:03:23.004Z　state　stage-reached\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#8　2026-11-22T13:03:22.958Z　state　produced\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#7　2026-11-22T13:03:22.957Z　candidate.compose　running\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#6　2026-11-22T13:03:22.953Z　workspace.collect　running\n{\"changed_modules\":[\"a\"]}\n#5　2026-11-22T13:03:22.949Z　process.closed　running\n{\"exit_code\":0.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T13:03:18.924Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T13:03:18.921Z　state　running\n#2　2026-11-22T13:03:18.920Z　state　reserved\n#1　2026-11-22T13:03:18.917Z　state　ready",
+        "final_module": "运行号　1a4991dfaea37efbb8e8c343d5eed5937f873d4dc4fd2169d30390963b1eaa37\n目标阶段　原型\n运行状态　已到达目标阶段\n产物候选　10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\n阶段核验　authorized_stage_criteria_met\n对象修订　a @ 85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\n验证回执　check · passed · c4238b0769126d9b5cb4f7aabe426243c67b06bd4a3b711df4d750c3c1609904\n\n运行回执（从新到旧）\n#9　2026-11-22T13:03:23.004Z　state　stage-reached\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#8　2026-11-22T13:03:22.958Z　state　produced\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#7　2026-11-22T13:03:22.957Z　candidate.compose　running\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#6　2026-11-22T13:03:22.953Z　workspace.collect　running\n{\"changed_modules\":[\"a\"]}\n#5　2026-11-22T13:03:22.949Z　process.closed　running\n{\"exit_code\":0.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T13:03:18.924Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T13:03:18.921Z　state　running\n#2　2026-11-22T13:03:18.920Z　state　reserved\n#1　2026-11-22T13:03:18.917Z　state　ready",
+        "running_issue": "运行号　1a4991dfaea37efbb8e8c343d5eed5937f873d4dc4fd2169d30390963b1eaa37\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T13:03:18.924Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T13:03:18.921Z　state　running\n#2　2026-11-22T13:03:18.920Z　state　reserved\n#1　2026-11-22T13:03:18.917Z　state　ready",
+        "running_module": "运行号　1a4991dfaea37efbb8e8c343d5eed5937f873d4dc4fd2169d30390963b1eaa37\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T13:03:18.924Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T13:03:18.921Z　state　running\n#2　2026-11-22T13:03:18.920Z　state　reserved\n#1　2026-11-22T13:03:18.917Z　state　ready",
+        "sibling": "当前没有可读取的运行记录"
+      }
+    }
+  }
+}

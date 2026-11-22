@@ -81,7 +81,13 @@ def exercise(root, engine, scenario):
             ],
             "s07-split",
         )
-        host.calls, _ = install_stage_probe(workflow, initial, folder, stage="原型")
+        host.calls, plan = install_stage_probe(workflow, initial, folder, stage="原型")
+        if scenario == "checked":
+            plan["stage_criteria"] = "原型"
+            spec = workflow.runner._registry["check"]
+            spec["argv"][2] = (
+                "import pathlib,os; assert (pathlib.Path(os.environ['DUOBAO_INPUT'])/'a/output').read_text()=='fixture output'"
+            )
         journal, release = observe_launches(workflow, folder)
         profile = workflow.worker.profiles["local"]
         profile["timeout"] = 90
@@ -129,6 +135,8 @@ def exercise(root, engine, scenario):
 
                 def execute():
                     result = host.api("execute", key=key).raise_for_status().json()
+                    if scenario == "checked":
+                        result = host.api("verify-stage", key=key).raise_for_status().json()
                     settled.touch()
                     return result
 
@@ -161,7 +169,15 @@ def exercise(root, engine, scenario):
                     release.touch(exist_ok=True)
                 final = host.detail(issue)["execution_progress"]
                 assert final == host.api("status", key=key).raise_for_status().json()["progress"]
-                assert worker.result()["state"] == final["state"] == ("failed" if fail else "produced")
+                assert worker.result()["state"] == final["state"]
+                if scenario == "checked":
+                    result = worker.result()
+                    assert result["state"] == "stage-reached"
+                    for revision in result["modules"].values():
+                        assert revision in views["final_issue"]
+                    assert result["checks"]["check"]["evidence"] in views["final_issue"]
+                else:
+                    assert final["state"] == ("failed" if fail else "produced")
                 assert final["events"][: len(running["events"])] == running["events"]
                 assert final["id"] == running["id"] == key and len(host.observations()) == 1
                 if fail:
@@ -213,7 +229,7 @@ if __name__ == "__main__":
         root = Path(temp)
         engine = copy_editor(binary, root / "engine")
         results = {}
-        for scenario in ("produced", "failed", "viewer"):
+        for scenario in ("produced", "failed", "viewer", "checked"):
             folder = root / scenario
             folder.mkdir()
             results[scenario] = exercise(folder, engine, scenario)
