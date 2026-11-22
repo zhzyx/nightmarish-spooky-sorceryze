@@ -181,7 +181,10 @@ func api_request(method: int, route: String, payload: Dictionary = {}, timeout_s
 	for parameter in route.get_slice("?", 1).split("&", false):
 		if parameter.get_slice("=", 0).uri_decode() == "project":
 			return {"status": 0, "data": {}}
-	var scoped_route := route + ("&" if "?" in route else "?") + "project=" + str(_identity.project).uri_encode()
+	# A workflow status read is scoped by its exact run key; that endpoint rejects query parameters.
+	var scoped_route := route
+	if method != HTTPClient.METHOD_POST or route != "/api/v1/native/workflow/status":
+		scoped_route += ("&" if "?" in route else "?") + "project=" + str(_identity.project).uri_encode()
 	var attempt := _generation
 	var reply := await _exchange(method, scoped_route, _token, payload, timeout_seconds, download_path)
 	if attempt != _generation:

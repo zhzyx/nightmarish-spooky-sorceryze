@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-1337e7a382eaf24f3786e6d2b3c1e2fa278f6dc5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ed4b4a7fcbaf4f355178838fb1181e6fbfd8a40fd04e6af3b20127cf07be49df",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2063",
+    "action": "permission",
+    "detection_head": "ed8935915ee9f6fa403b10e6cadbc6837090acc6",
+    "context_sha256": "df7f2f3b9762f5c3dcb2df63fc9780370790bf4a87f469dc14e3a30a3860a714",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "The accepted upstream saved-editor fixture failed before starting Godot with Windows error 1314. Its exact source and native save handlers match main ed8935915ee9f6fa403b10e6cadbc6837090acc6. Original acceptance records are on issues 1817 and 1794.",
+    "diagnosis": "This Windows token lacks the permission required by an upstream platform-specific test setup. The existing accepted functionality has authoritative Mac receipts. The new run-control and progress acceptance executes on Windows.",
+    "next_action": "Run the original upstream fixture on a host with its required capability for an additional same-candidate check. Record the local limitation and use the real Windows page reference, document edit, task progress and run-control scenarios for the affected editor integration.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T10:37:44.722486+00:00",
+    "attempted": null,
+    "repair_owner": "Host operator for the optional upstream fixture",
+    "continuable": "Original K03 scope and the real Windows workbench scenarios"
+  },
+  "occurred_at": "2026-11-22T10:40:15.917192+00:00",
+  "sha256": "97c0b581425198f5da6a2a59a2fdf124b96a7033757cf08de30942605c0f7d01"
+}

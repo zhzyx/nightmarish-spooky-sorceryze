@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-0bb693315b0d7f669d20dcf325533346ef613a2e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-s06",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1833",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a44bc67e38e3668a744a58af3e6fec84d664816246e6dc1ecb180f362d335b75",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1833",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2059",
+    "action": "validation",
+    "detection_head": "2c36fac9004881889da355670c80b0531e0dec07",
+    "context_sha256": "c39e83bc0bc4e8bb5ceec3927fe0907477cccdae6cf07a4190faf6aa07a36aa9",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "Workflow blob dba37bb97c9c8e45cfecc543efc69aa6c82006a2. The independent test read an existing produced receipt (exit 0 and one physical process) with SQL SELECT, while authorized execution-readback got SQLite error 5 SQLITE_BUSY.",
+    "diagnosis": "The HTTP execution readback bound its query to an immediate write transaction used for the optional recovery event. A separate active writer blocked the read even though the original durable worker receipt was visible.",
+    "next_action": "Separate receipt readback from recording the diagnostic. Repeat the original locked-storage test, verify the single physical execution and bind the exact readback on the merged source.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T09:50:06.140155+00:00",
+    "attempted": null,
+    "repair_owner": "wave22_s06",
+    "continuable": "S05, S07, S09 and S10"
+  },
+  "occurred_at": "2026-11-22T09:51:30.746504+00:00",
+  "sha256": "0421d6e3522f4845bfdc3f5b64d0d2c28257ace46e17a032b7f1c195d6b89ea2"
+}

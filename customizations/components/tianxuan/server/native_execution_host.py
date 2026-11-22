@@ -609,9 +609,19 @@ class WorkflowService:
 
             return board
         if operation == "advance":
-            return w.advance(actor, isolate=True, exclude=payload.get("exclude", []))
+            return w.advance(
+                actor,
+                isolate=True,
+                exclude=payload.get("exclude", []),
+                completion=payload.get("completion"),
+                owned_issues=self.issues,
+            )
         if operation == "execute":
             return w.execute_receipt(actor, payload["key"])
+        if operation == "execution-readback":
+            return w.execution_readback(actor, payload["key"], issues=self.issues)
+        if operation == "record-execution-fault":
+            return w.record_execution_fault(actor, payload["key"], issues=self.issues)
         if operation in {"status", "check", "review", "reconcile", "finish"}:
             return getattr(w, operation)(actor, payload["key"])
         if operation == "verify-stage":

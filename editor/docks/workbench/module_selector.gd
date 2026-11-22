@@ -24,6 +24,7 @@ var reviewed_comment := {}
 var issue_view: Node
 var design_action := Button.new()
 var progress_action := Button.new()
+var task_progress := Button.new()
 var design := DirectionDraft.new()
 var send: Button
 var http: HTTPRequest
@@ -80,6 +81,10 @@ func _ready() -> void:
 	issues.fit_to_longest_item = false
 	issues.item_selected.connect(_choose_issue)
 	content.add_child(issues)
+	task_progress.name = "OpenModuleTaskProgress"
+	task_progress.text = "运行进度"
+	task_progress.pressed.connect(_open_task_progress)
+	content.add_child(task_progress)
 	page.name = "ModulePagePosition"
 	page.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	content.add_child(page)
@@ -259,6 +264,7 @@ func _lock(value: bool) -> void:
 	comment_action.disabled = value
 	design_action.disabled = value
 	progress_action.disabled = value
+	task_progress.disabled = value
 	if not busy:
 		operation_finished.emit()
 
@@ -635,6 +641,7 @@ func _render() -> void:
 					menu.add_item("%s · v%d · 第 %d 段" % [ref.object_id,ref.revision,ref.paragraph])
 					menu.set_item_metadata(menu.item_count - 1, ref)
 	document_links.visible = menu.item_count > 0
+	task_progress.visible = is_instance_valid(issue_view) and not issue.is_empty()
 	progress_action.visible = managed_identity and consultation_detail.is_empty() and not conversation.is_empty()
 	var published := conversation.get("requirement_id") != null
 	var revision := _direction()
@@ -771,6 +778,12 @@ func _open_sent_reference(id: int) -> void:
 	var view = session.find_child("WorkbenchDocuments",true,false)
 	if is_instance_valid(view):
 		view.open_document(ref.object_id, int(ref.revision), int(ref.paragraph))
+
+
+func _open_task_progress() -> void:
+	var issue: Dictionary = issue_details.get(location.get("issue_id"), {})
+	if not busy and not issue.is_empty() and is_instance_valid(issue_view):
+		issue_view.get_node("issue_task_progress").open_task(int(issue.number), issue.id)
 
 
 func _open_progress() -> void:

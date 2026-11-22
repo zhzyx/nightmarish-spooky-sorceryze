@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5098a18e064f753294b43a7727170cbc58d11b1c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-s10",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1814",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fa9ffbb447dbe7164773987abc30a5b11b57d876a115a4182f4a833dedf4ccba",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1814",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2064",
+    "action": "validation",
+    "detection_head": "fcbcd42d73ba43fea28a34c8d13e470f50ad9444",
+    "context_sha256": "a99f94ec0c5cda988c7e7dedcda1489fcea37416466c5b4e620b2b48fb36ae42",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "Candidate tree 4f45dc1a7f00dd77b494777e7ab75ee8e1045a45: historical source ACL tests failed on original, ancestor and selected source cases. The exact original test independently reproduced on Windows.",
+    "diagnosis": "An actor-specific list of permitted controls was returned inside the durable execution status. Two authorized readers retrieved different receipts for the same reserved run, although the underlying event history was unchanged.",
+    "next_action": "Keep run status stable and project only the current user’s control buttons in the live issue detail. Re-run the original ACL cases and owner/editor/viewer checks, then use the real editor and inspect the signed main receipt.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T10:21:04.700331+00:00",
+    "attempted": null,
+    "repair_owner": "Windows integration owner for S10",
+    "continuable": "Other product checks and the retained-resource inventory"
+  },
+  "occurred_at": "2026-11-22T10:24:00.380846+00:00",
+  "sha256": "589f8cc4bb6def2df7dd7db272015b492e456bccb1d88ea92cc6a031f7807020"
+}

@@ -1,0 +1,388 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-s05",
+  "issue_number": 1812,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1812",
+  "producer": "wave22_s05",
+  "baseline": "2c36fac9004881889da355670c80b0531e0dec07",
+  "source_revision": "65308a6dd4aa52e1a1b61432c9966314c7ee68af282b014852ccabbc0c3f3306",
+  "verified_at": "2026-11-22T09:40:35.474330+00:00",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s05/dispatch-726b64de3f944438b7dd9305897fd7e4.json",
+  "intake": {
+    "intake_only": "passed",
+    "owner_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1812#issuecomment-7077038599",
+    "coordination": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1715#issuecomment-7068903756",
+    "prerequisites": [
+      {
+        "issue": 1841,
+        "state": "CLOSED",
+        "reason": "COMPLETED",
+        "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1841#issuecomment-7074386759",
+        "accepted_file": "data-collection/gonggong-ai-workbench-plan1-a04.json",
+        "git_blob": "bbb29320382a623435d3bd71f0dae8753ddd480c",
+        "sha256": "1107b7c5a8ff208ba32ebd920e19a71409e091c996c26751da201a93a364fea3"
+      },
+      {
+        "issue": 1831,
+        "state": "CLOSED",
+        "reason": "COMPLETED",
+        "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1831#issuecomment-7068715757",
+        "accepted_file": "data-collection/gonggong-ai-workbench-plan1-i04.json",
+        "git_blob": "cd36d5b3e4f7ddb4ef4ac042c2635f543fdbab41",
+        "sha256": "7e37635ab4e5e848f64156e979580ad767866a2e768e3f03335fc0289ce945c3"
+      },
+      {
+        "issue": 1842,
+        "state": "CLOSED",
+        "reason": "COMPLETED",
+        "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1842#issuecomment-7077025073",
+        "accepted_file": "data-collection/gonggong-ai-workbench-plan1-s04.json",
+        "git_blob": "a49b24426c50b6c42f2fe19a1eab5d3795889909",
+        "sha256": "621277762f7e3b7727c94e2ba9215fb4b9972520fb8dece5ac74fe79a3896fcc"
+      }
+    ]
+  },
+  "candidate": {
+    "customizations/components/tianxuan/server/native_api.py": {
+      "git_blob": "9eb48f07c90660717eb1786b6a89000f80b9a3c6",
+      "sha256": "96e1fda1ce7b95b3969fb13fff6c03d210f2da98ccaced24a22e32120a5dc691"
+    },
+    "customizations/components/tianxuan/server/native_entry_factory.py": {
+      "git_blob": "7abffebdc1a803faec7e57a72ff21d3f581abb10",
+      "sha256": "16c4c3d20657320fd86e6f7e87a2c1cb8176d0736bc7a3662bd0e384d0a90be2"
+    },
+    "customizations/components/tianxuan/server/native_execution_host.py": {
+      "git_blob": "1f211bc429f7036aeb9cbee4b2205b6b01d524e6",
+      "sha256": "e1ea2fbe995a724edad30edf0c25128611d60e1bc49883c34f9ad5e1527eafc8"
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": {
+      "git_blob": "e1646a5a96c0af1e188285aa653308f33f8a1035",
+      "sha256": "82b66e579401fcc21291d8f82b8776e33fcd239d3ecf7c23bef6049b25b22d33"
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": {
+      "git_blob": "8b0c21704ccb57b8065100637eab328a2c9f977e",
+      "sha256": "0e8ff08e85c6362dd9b889f268bf8ebc71311ef1278f13b771e98790630c576f"
+    },
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py": {
+      "git_blob": "b4ad2414340ccbcc6290b39845a32fe595f18974",
+      "sha256": "2f8c2e52d26813b11e6e99590aee69b2bdef3834f83bd7d4c3ecc524de86b775"
+    },
+    "customizations/components/tianxuan/sinan-workorders/test_native_successor_events.py": {
+      "git_blob": "bc3f1dbd44dfc079be97b8f9b61d5609a3d68f0c",
+      "sha256": "b1ee4504f2ae914194130e6bc9ce61279219879e60e345575507d604e1db4f84"
+    },
+    "design-docs/gonggong-ai-workbench-s05.md": {
+      "git_blob": "8a50de8be2c673b1e66c8a7bd4e6c431dc33e889",
+      "sha256": "37e239ec14ea9375b1723417cc10bfbe9532bf38d509a9b86daf95015d205c73"
+    }
+  },
+  "environment": {
+    "platform": "Windows x86_64",
+    "python": "3.12.14",
+    "node": "v24.22.1"
+  },
+  "receiver": {
+    "entry": "Shipped driveNative -> authenticated /api/v1/native/workflow/advance, inspect, reserve, execute and verify-stage",
+    "replay": "Existing execution.finished reference, delivered by three fresh Node processes to the same SQLite store; worker process appends its identity at physical start.",
+    "results": [
+      {
+        "event": {
+          "type": "execution.finished",
+          "reference": "9f2e4fc926218ddc899dd0a32a7216b961d605741861a3b11e27e1ca5ed6a3ff"
+        },
+        "upstream_candidate": "463ce9a42dd67e4f058ead4d2097cd3a88eb6a222b0c84d1545960af248752c4",
+        "release": null,
+        "cumulative_starts": [
+          0,
+          0,
+          0
+        ],
+        "consumed": 0,
+        "physical_exits": {
+          "9f2e4fc926218ddc899dd0a32a7216b961d605741861a3b11e27e1ca5ed6a3ff": 0
+        },
+        "successor": null,
+        "unsigned_sibling_starts": 0,
+        "stage_result": null
+      },
+      {
+        "event": {
+          "type": "execution.finished",
+          "reference": "3cb118306d1801c654bba66422a131c198dae6f1454872ee2f25ef28bf258c98"
+        },
+        "upstream_candidate": "463ce9a42dd67e4f058ead4d2097cd3a88eb6a222b0c84d1545960af248752c4",
+        "release": "77274797fd2866b8c61e9fc3eaf67076147cee06ff9d724d355b35df824b13df",
+        "cumulative_starts": [
+          1,
+          1,
+          1
+        ],
+        "consumed": 1,
+        "physical_exits": {
+          "3cb118306d1801c654bba66422a131c198dae6f1454872ee2f25ef28bf258c98": 0,
+          "0661993cd293871d6007406325e3d5a8eaa620f7810a639c944297d809f20ade": 0
+        },
+        "successor": {
+          "id": "0661993cd293871d6007406325e3d5a8eaa620f7810a639c944297d809f20ade",
+          "worker_ref": "native-worker:0661993cd293871d6007406325e3d5a8eaa620f7810a639c944297d809f20ade",
+          "issue": "iss_8ebf9b30fe6b47ee8a5b61887afe4273",
+          "source_revision": "b9bb8f8007446a0a1fe32231b1d895880edfe930a18afa98a4025d529b1b52c9",
+          "stage": "preview",
+          "state": "stage-reached",
+          "candidate": "31b7ab0f5223402cbac6c49f25a8fde02b942c3676208ba50a609d8bab9840d2",
+          "provider_model": null,
+          "usage": null,
+          "events": [
+            {
+              "sequence": 1,
+              "recorded_at": "2026-11-22T09:38:29.518Z",
+              "state": "ready",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 2,
+              "recorded_at": "2026-11-22T09:38:29.551Z",
+              "state": "reserved",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 3,
+              "recorded_at": "2026-11-22T09:38:29.569Z",
+              "state": "running",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 4,
+              "recorded_at": "2026-11-22T09:38:29.599Z",
+              "state": "running",
+              "step": "workspace.materialize",
+              "details": {
+                "modules": {
+                  "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e",
+                  "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+                }
+              }
+            },
+            {
+              "sequence": 5,
+              "recorded_at": "2026-11-22T09:38:29.794Z",
+              "state": "running",
+              "step": "process.closed",
+              "details": {
+                "exit_code": 0,
+                "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            {
+              "sequence": 6,
+              "recorded_at": "2026-11-22T09:38:29.811Z",
+              "state": "running",
+              "step": "workspace.collect",
+              "details": {
+                "changed_modules": [
+                  "a"
+                ]
+              }
+            },
+            {
+              "sequence": 7,
+              "recorded_at": "2026-11-22T09:38:29.857Z",
+              "state": "running",
+              "step": "candidate.compose",
+              "details": {
+                "candidate": "31b7ab0f5223402cbac6c49f25a8fde02b942c3676208ba50a609d8bab9840d2",
+                "modules": {
+                  "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab",
+                  "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+                }
+              }
+            },
+            {
+              "sequence": 8,
+              "recorded_at": "2026-11-22T09:38:29.857Z",
+              "state": "produced",
+              "step": "state",
+              "details": {
+                "candidate": "31b7ab0f5223402cbac6c49f25a8fde02b942c3676208ba50a609d8bab9840d2",
+                "modules": {
+                  "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab",
+                  "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+                }
+              }
+            },
+            {
+              "sequence": 9,
+              "recorded_at": "2026-11-22T09:38:30.112Z",
+              "state": "stage-reached",
+              "step": "state",
+              "details": {
+                "candidate": "31b7ab0f5223402cbac6c49f25a8fde02b942c3676208ba50a609d8bab9840d2",
+                "modules": {
+                  "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab",
+                  "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+                }
+              }
+            }
+          ]
+        },
+        "unsigned_sibling_starts": 0,
+        "stage_result": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_0f00787df43741cba5fba59f4ce16e24",
+            "criteria": "a/output contains a produced and b/output contains b produced",
+            "document_id": "doc_955bfda3ac4944688c009d06d2a41b52",
+            "issue_id": "iss_8ebf9b30fe6b47ee8a5b61887afe4273",
+            "issue_revision": "3cd3fefe940f85187807609e444fa1115e507508b1e1f1b47773a6f2cfda5d64",
+            "responsible_user": "usr_0f00787df43741cba5fba59f4ce16e24",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "31b7ab0f5223402cbac6c49f25a8fde02b942c3676208ba50a609d8bab9840d2",
+          "checks": {
+            "check": {
+              "evidence": "75b3edf4b10272ffe5dd24178f1fda31a3577f166a8c47a65c86eef8ceb63ab2",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab",
+            "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "0661993cd293871d6007406325e3d5a8eaa620f7810a639c944297d809f20ade"
+        }
+      }
+    ],
+    "additional_checks": [
+      "signed I04 manual admission blocked before upstream acceptance",
+      "foreign completion and foreign owned entry leave the exact event pending",
+      "operator without successor write authority cannot consume the private branch",
+      "another unaccepted prerequisite blocks admission",
+      "replaced upstream ticket cannot release a new successor",
+      "configured ordinary flow retains its owner"
+    ]
+  },
+  "checks": {
+    "target": {
+      "files": [
+        "test_native_successor_events.py"
+      ],
+      "tests": 4,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    "final_receiver_regression": {
+      "files": [
+        "test_native_entry_normal.py",
+        "test_native_joint_workflow.py",
+        "test_native_workflow.py"
+      ],
+      "tests": 5,
+      "errors": 0,
+      "failures": 0,
+      "skipped": 0
+    },
+    "additional_regression": {
+      "workflow": {
+        "files": [
+          "test_native_terminal_events.py",
+          "test_native_workflow.py",
+          "test_native_workflow_revisions.py"
+        ],
+        "tests": 59,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      "integration": {
+        "files": [
+          "test_native_continuous.py",
+          "test_native_joint_workflow.py"
+        ],
+        "tests": 62,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      "stage": {
+        "files": [
+          "test_issue_flow.py",
+          "test_native_asset_reservations.py",
+          "test_native_stage_stop.py"
+        ],
+        "tests": 21,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      }
+    },
+    "regression_scope": "The 142 additional tests exercised the event-bound implementation before the final private-successor pending handling. The four target tests and five receiver regressions exercised the final byte-bound candidate.",
+    "replay": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_successor_events.py",
+    "ruff": "check and format passed"
+  },
+  "editor": {
+    "build_commit": "1f78766f2e3bf591bde7691d29f3721ceb2d876b",
+    "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2042",
+    "native_or_embedded_input_diff": [],
+    "comparison": "All tracked changes from the build input to the candidate lie in Tianxuan service/tests, editor test harness and project evidence. Both installation data packages rebuilt byte-identically using candidate packers and their installed versions.",
+    "input_changes": [
+      "customizations/components/tianxuan/server/api.py",
+      "customizations/components/tianxuan/server/native_api.py",
+      "customizations/components/tianxuan/server/native_entry_context.py",
+      "customizations/components/tianxuan/server/native_entry_factory.py",
+      "customizations/components/tianxuan/server/native_execution_host.py",
+      "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py",
+      "tests/editor/run_workbench_confirmed_native_stage.py"
+    ],
+    "packages": {
+      "tianshu-ui.json": {
+        "version": "1",
+        "sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "candidate_pack_bytes_equal": true
+      },
+      "tianshu-board.json": {
+        "version": "1",
+        "sha256": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+        "candidate_pack_bytes_equal": true
+      }
+    },
+    "receiver_sha256": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+    "scenario": "copy_editor; headless confirmation, running reconnect, physical exit, terminal replay and revocation",
+    "test": "tests/editor/run_workbench_confirmed_native_stage.py",
+    "process_count": 1,
+    "exit": 0,
+    "closure": {
+      "exit_code": 0,
+      "reasons": [],
+      "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+    "execution": "9679cc21a687e23609b4c962cf670c9560ff9dc59ffdf24bd43616986a2ade5d",
+    "unsigned_sibling_tasks": 0,
+    "probe_passed": true
+  },
+  "method": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 36,
+    "head": "d3a00ca1f2e727f965fe73afe305d09c001f5dd296af9dc9e4f1ac24d632ca00"
+  },
+  "acceptance": {
+    "same_completion_advances_once": true,
+    "unaccepted_stays_blocked": true,
+    "authorized_stage_stop": true,
+    "local_receiver": "observed",
+    "remote_delivery_owner": "parent Yanluo"
+  }
+}

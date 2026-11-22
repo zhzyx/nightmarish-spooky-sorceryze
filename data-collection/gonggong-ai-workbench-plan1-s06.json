@@ -1,0 +1,743 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-s06",
+  "issue_number": 1833,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1833",
+  "source_revision": "2c36fac9004881889da355670c80b0531e0dec07",
+  "receiver": "Authenticated Tianxuan HTTP and installed actor-scoped Node pipe, SQLite event storage, local producer process",
+  "reproduce": "python -m pytest -q -o junit_family=legacy customizations/components/tianxuan/sinan-workorders/test_native_fault_recovery.py --junitxml=s06.xml",
+  "references": [
+    "2c36fac9004881889da355670c80b0531e0dec07"
+  ],
+  "initial_handoff": {
+    "checked": "2026-11-22T09:34:24.279893+00:00",
+    "executed_by": "Windows coordinator of issue 1709",
+    "source_git_blobs": {
+      "customizations/components/tianxuan/server/native_api.py": "720ae50b921c7965d0dd3786d96a4db8b6005224",
+      "customizations/components/tianxuan/server/native_execution_host.py": "e52030e178167ec2a5123ac5c19ec83411fdf1cc",
+      "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "6d86d189eb6bb490f3a91b446834996bb06824cb",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "dba37bb97c9c8e45cfecc543efc69aa6c82006a2",
+      "customizations/components/tianxuan/sinan-workorders/test_native_fault_recovery.py": "2e520b991e2200d5ba9756b39daa2ccc9c14dd91"
+    },
+    "acceptance": {
+      "directed": 4,
+      "neighbor": "43 passed, 1 warning in 67.40s (0:01:07)",
+      "observations": {
+        "test_busy_storage_retries_only_the_original_reservation": {
+          "calls": [
+            "7ca95728a6009be27418419091c99fa50d76889cfed89a616534eb6d17d06cef",
+            "7ca95728a6009be27418419091c99fa50d76889cfed89a616534eb6d17d06cef"
+          ],
+          "starts": [
+            {
+              "execution": "7ca95728a6009be27418419091c99fa50d76889cfed89a616534eb6d17d06cef",
+              "grant": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_43d7eec06eb546da9da979f83de23c1d",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_133c6c895ed6482ca812fd1d82794bd9",
+                "issue_id": "iss_e2b7be372b4e4f359214bcbc9704d224",
+                "issue_revision": "9665be5ae0b6bbaae72a493f04172d40278296e67516c974ab60a1598650cd6f",
+                "responsible_user": "usr_43d7eec06eb546da9da979f83de23c1d",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              }
+            }
+          ],
+          "recovery": {
+            "id": "7ca95728a6009be27418419091c99fa50d76889cfed89a616534eb6d17d06cef",
+            "worker_ref": "native-worker:7ca95728a6009be27418419091c99fa50d76889cfed89a616534eb6d17d06cef",
+            "operation": "execute",
+            "reason": "storage-busy",
+            "state": "reserved",
+            "known_effects": {
+              "reservation_recorded": true,
+              "exit_code": null,
+              "candidate": null
+            },
+            "next_action": "retry-same-execution",
+            "recovery_condition": "The original reservation is current and the execution intent has not started."
+          }
+        },
+        "test_lost_execute_response_reads_original_before_any_further_effect": {
+          "operations": [
+            "advance",
+            "inspect",
+            "inspect",
+            "revalidate",
+            "reserve",
+            "start",
+            "execute",
+            "execution-readback",
+            "await-terminal",
+            "advance",
+            "inspect",
+            "verify-stage",
+            "ack",
+            "record",
+            "advance",
+            "inspect"
+          ],
+          "starts": [
+            {
+              "execution": "acbcc848d9dce4837a1576acd1016ce749e5e8cab0c153928fb03baf52209d8e",
+              "grant": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_75504f92bffd492ab20e118d0642c635",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_9d8bda0519b94ac4aeda5b01f6921111",
+                "issue_id": "iss_1227997122dc4f78977f395cad3ceec3",
+                "issue_revision": "98b70897fa4001d106c6c754cc2d37d8ab8dafa499900f87777e548a2e490bc0",
+                "responsible_user": "usr_75504f92bffd492ab20e118d0642c635",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              }
+            }
+          ],
+          "recovery": {
+            "id": "acbcc848d9dce4837a1576acd1016ce749e5e8cab0c153928fb03baf52209d8e",
+            "worker_ref": "native-worker:acbcc848d9dce4837a1576acd1016ce749e5e8cab0c153928fb03baf52209d8e",
+            "operation": "execute",
+            "reason": "response-unknown",
+            "state": "produced",
+            "known_effects": {
+              "reservation_recorded": true,
+              "exit_code": 0,
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943"
+            },
+            "next_action": "read-original-receipt",
+            "recovery_condition": "The original execution has a recorded terminal receipt."
+          }
+        },
+        "test_installed_pipe_recovers_only_its_own_execution": {
+          "calls": [
+            "advance",
+            "inspect",
+            "inspect",
+            "revalidate",
+            "reserve",
+            "start",
+            "execute",
+            "execution-readback",
+            "await-terminal",
+            "advance",
+            "inspect",
+            "verify-stage",
+            "ack",
+            "record",
+            "advance",
+            "inspect"
+          ],
+          "recovery": {
+            "id": "83e0a43d26c5acd235c667d1e011e8f9412eaca7e156ec37d242b303d27ffa46",
+            "known_effects": {
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+              "exit_code": 0,
+              "reservation_recorded": true
+            },
+            "next_action": "read-original-receipt",
+            "operation": "execute",
+            "reason": "response-unknown",
+            "recovery_condition": "The original execution has a recorded terminal receipt.",
+            "state": "produced",
+            "worker_ref": "native-worker:83e0a43d26c5acd235c667d1e011e8f9412eaca7e156ec37d242b303d27ffa46"
+          }
+        }
+      },
+      "exhaustion": "Two failed attempts on the original key, no physical process, second disposition read-original-receipt."
+    }
+  },
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "7058e8fe89f08efdab4afbd12e3f1f55de32065d",
+    "customizations/components/tianxuan/server/native_execution_host.py": "59fb8a8bc92fc2c4ffcc929abb2dec80929ee68b",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "0fc89018968fc43e8dda81fb2d532a22aa2e4598",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "b993500123704928813e1c7c146636a7ade65270",
+    "customizations/components/tianxuan/sinan-workorders/test_native_fault_recovery.py": "ba4d48a90a55579d9409cc3c38f411004ac28e54"
+  },
+  "source_sha256": {
+    "customizations/components/tianxuan/server/native_api.py": "afae656347e0593eeae8ba4da5690b81bc181c9ef812b8773dc8aae674b39f69",
+    "customizations/components/tianxuan/server/native_execution_host.py": "fe5d48cc2d8ae1f618736c42ee6542f4181d9d63d3f85c188bfbe66417e07a9a",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "309188cf360f3d8d48b0d120591c1268a5b1d70d75003de39e5cc258c8e2cd13",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "3d1f3120a24e0fb7b99f6ec57f6108909433ba44c9b5a1a0dccfdeb5afb96310",
+    "customizations/components/tianxuan/sinan-workorders/test_native_fault_recovery.py": "80b49190b4e0f54d8fc901acec80fc4eced3db71cb3cd5d9e41ba7a508efea12"
+  },
+  "design_sha256": "6461c82ec4f1b2a296058883880a93f11bb83aa09272c14862b845ea8fcd7489",
+  "checked": "2026-11-22T10:02:09.862532+00:00",
+  "executed_by": "wave22_s06, independent Windows worker",
+  "binding": {
+    "base_commit": "2c36fac9004881889da355670c80b0531e0dec07",
+    "request_source_sha256": "fb46ca85ca38fe1ba61428847fcb797a6b05f1c281a645fe2673d1cadbfaa7d5",
+    "intake": "intake-only passed",
+    "origin": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s06/dispatch-b00286d5cab943f7a247d541e3e65984.json",
+    "owner_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1833#issuecomment-7077093484",
+    "s04_completed_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1842#issuecomment-7077025073"
+  },
+  "repaired_blocker": {
+    "issue": 2059,
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2059",
+    "original_file_blob": "dba37bb97c9c8e45cfecc543efc69aa6c82006a2",
+    "execution": "7b32ac184b89efb8af02844e878ddf94362d36d6c1b5d8360ee55e37ec7f82e7",
+    "state_read_by_select": "produced",
+    "physical_starts": 1,
+    "exit_code": 0,
+    "failed_assertion": "test_readback_while_storage_is_busy: authenticated POST execution-readback must return 200 with the original candidate and exit code while another connection holds BEGIN IMMEDIATE. Failed at native_workflow.py:785/193, sqlite3.OperationalError: database is locked.",
+    "sqlite_primary_code": 5,
+    "sqlite_name": "SQLITE_BUSY",
+    "failed_cases": 1,
+    "repair": "Readback and settled terminal validation take read transactions. A separate authenticated operation records server-constructed audit facts and classifies a busy journal as HTTP 503. Driver retains the original readback when the audit write fails."
+  },
+  "acceptance": {
+    "directed": {
+      "counts": {
+        "tests": 8,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      "seconds": 16.965,
+      "suites": [
+        "customizations.components.tianxuan.sinan-workorders.test_native_fault_recovery"
+      ],
+      "observations": {
+        "test_busy_storage_retries_only_the_original_reservation": {
+          "calls": [
+            "b5fa6629587cf3cc20c0e56d9ec37bb186cf2d4ba1ea3ea5510e38f1528a12ca",
+            "b5fa6629587cf3cc20c0e56d9ec37bb186cf2d4ba1ea3ea5510e38f1528a12ca"
+          ],
+          "starts": [
+            {
+              "execution": "b5fa6629587cf3cc20c0e56d9ec37bb186cf2d4ba1ea3ea5510e38f1528a12ca",
+              "grant": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_b444f3adad94470ab15cc819c0fb5095",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_d62cf3f3a93247a28c517a0e6e2dd6b9",
+                "issue_id": "iss_725db1cd32ae49d78ee64be2bcf5277c",
+                "issue_revision": "8b1cb0ce5f31ab5e761bcbb4b8ed4bfdbb39e29a4d4f51e6681f92ef7c7dd147",
+                "responsible_user": "usr_b444f3adad94470ab15cc819c0fb5095",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              }
+            }
+          ],
+          "recovery": {
+            "id": "b5fa6629587cf3cc20c0e56d9ec37bb186cf2d4ba1ea3ea5510e38f1528a12ca",
+            "worker_ref": "native-worker:b5fa6629587cf3cc20c0e56d9ec37bb186cf2d4ba1ea3ea5510e38f1528a12ca",
+            "operation": "execute",
+            "reason": "storage-busy",
+            "state": "reserved",
+            "known_effects": {
+              "reservation_recorded": true,
+              "exit_code": null,
+              "candidate": null
+            },
+            "next_action": "retry-same-execution",
+            "recovery_condition": "The original reservation is current and the execution intent has not started."
+          }
+        },
+        "test_lost_execute_response_reads_original_before_any_further_effect": {
+          "operations": [
+            "advance",
+            "inspect",
+            "inspect",
+            "revalidate",
+            "reserve",
+            "start",
+            "execute",
+            "execution-readback",
+            "record-execution-fault",
+            "await-terminal",
+            "advance",
+            "inspect",
+            "verify-stage",
+            "ack",
+            "record",
+            "advance",
+            "inspect"
+          ],
+          "starts": [
+            {
+              "execution": "9c161b7d8eff7a06d3ecc8e4b379decb54a237acfbdf91682f996b413a3d9569",
+              "grant": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_04758b9e8c2541f997e7c2bd50558c42",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_74170e6668d24f8aa2f5d3f69125a24c",
+                "issue_id": "iss_678bef9eb3b846a6afc8214b6714d924",
+                "issue_revision": "61bcec276a02ba398fea8c798efcde5ede5178645f14d0f3b4edd6b13f497435",
+                "responsible_user": "usr_04758b9e8c2541f997e7c2bd50558c42",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              }
+            }
+          ],
+          "recovery": {
+            "id": "9c161b7d8eff7a06d3ecc8e4b379decb54a237acfbdf91682f996b413a3d9569",
+            "worker_ref": "native-worker:9c161b7d8eff7a06d3ecc8e4b379decb54a237acfbdf91682f996b413a3d9569",
+            "operation": "execute",
+            "reason": "response-unknown",
+            "state": "produced",
+            "known_effects": {
+              "reservation_recorded": true,
+              "exit_code": 0,
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943"
+            },
+            "next_action": "read-original-receipt",
+            "recovery_condition": "The original execution has a recorded terminal receipt."
+          }
+        },
+        "test_busy_before_launch_stops_after_one_retry[False]": {
+          "calls": [
+            "e1fc09de8afdcba6943215500f6694f7432bccbf29ca1397c54f5eb9e3335fa3",
+            "e1fc09de8afdcba6943215500f6694f7432bccbf29ca1397c54f5eb9e3335fa3"
+          ],
+          "offers": [],
+          "starts": [],
+          "actions": [
+            "retry-same-execution",
+            "read-original-receipt"
+          ]
+        },
+        "test_busy_before_launch_stops_after_one_retry[True]": {
+          "calls": [
+            "6b5e2de97d7d41e09e0caf4b316c16117a05286ae8abce7a54c6bd3b976a9641"
+          ],
+          "offers": [
+            "6b5e2de97d7d41e09e0caf4b316c16117a05286ae8abce7a54c6bd3b976a9641"
+          ],
+          "starts": [],
+          "actions": [
+            "read-original-receipt"
+          ]
+        },
+        "test_installed_pipe_recovers_only_its_own_execution": {
+          "calls": [
+            "advance",
+            "inspect",
+            "inspect",
+            "revalidate",
+            "reserve",
+            "start",
+            "execute",
+            "execution-readback",
+            "record-execution-fault",
+            "await-terminal",
+            "advance",
+            "inspect",
+            "verify-stage",
+            "ack",
+            "record",
+            "advance",
+            "inspect"
+          ],
+          "recovery": {
+            "id": "156ac77351b195d7ef909527c7abbdf55e7e76fbcba6867ceb1a7447125067a1",
+            "known_effects": {
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+              "exit_code": 0,
+              "reservation_recorded": true
+            },
+            "next_action": "read-original-receipt",
+            "operation": "execute",
+            "reason": "response-unknown",
+            "recovery_condition": "The original execution has a recorded terminal receipt.",
+            "state": "produced",
+            "worker_ref": "native-worker:156ac77351b195d7ef909527c7abbdf55e7e76fbcba6867ceb1a7447125067a1"
+          },
+          "starts": [
+            {
+              "execution": "156ac77351b195d7ef909527c7abbdf55e7e76fbcba6867ceb1a7447125067a1",
+              "grant": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_8832696ba1234cde8a25e012b0835fd5",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_0b23722ba8ea4b99a74c7d30e601d9f0",
+                "issue_id": "iss_c731d2f33922466bb1691ffede38d44f",
+                "issue_revision": "57b4042195fd5a9545f547fef0f2507fd9e4da144ed38efdf0edd68bdd2e0c8d",
+                "responsible_user": "usr_8832696ba1234cde8a25e012b0835fd5",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              }
+            }
+          ],
+          "closure": {
+            "started": true,
+            "pid": 114352,
+            "exit_code": 0,
+            "physical_terminal": true,
+            "failure": null
+          }
+        },
+        "test_readback_while_storage_is_busy": {
+          "readback": {
+            "id": "d7d56ba76c3163e079e965201eca0288f1cfecb4f2756b0f9a20869225e74405",
+            "worker_ref": "native-worker:d7d56ba76c3163e079e965201eca0288f1cfecb4f2756b0f9a20869225e74405",
+            "operation": "execute",
+            "reason": "response-unknown",
+            "state": "produced",
+            "known_effects": {
+              "reservation_recorded": true,
+              "exit_code": 0,
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943"
+            },
+            "next_action": "read-original-receipt",
+            "recovery_condition": "The original execution has a recorded terminal receipt."
+          },
+          "starts": [
+            {
+              "execution": "d7d56ba76c3163e079e965201eca0288f1cfecb4f2756b0f9a20869225e74405",
+              "grant": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_5770be514f2441a3823a4d9fea84e613",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_89bf382ba23a498d8d420704af80ceca",
+                "issue_id": "iss_2eab25bafb7e4031a65bc3935c02d267",
+                "issue_revision": "564a5ec234d5a076fd6469b380cad7bba7883dc19684671a334ac21e7f70b00f",
+                "responsible_user": "usr_5770be514f2441a3823a4d9fea84e613",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              }
+            }
+          ],
+          "audit_status": 503,
+          "retry_after": "1",
+          "terminal": "produced"
+        },
+        "test_busy_after_durable_launch_observes_original_worker": {
+          "starts": [
+            {
+              "execution": "55eaf1429ddc1b8de8e9b93bf5a4dc29750dbbdb0584d2bd25d2a930a35e9e8f",
+              "grant": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_866d3d9f751a4cffad73ac5fa90480ed",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_53c842fad9174212a7c20d91f9848a2b",
+                "issue_id": "iss_f34fee9ae5c54ff2b7a18312bd7f7f99",
+                "issue_revision": "e4aa64a474aa08d5d8e56f1a26628a03703aee0a01dfaaf936189793818489ae",
+                "responsible_user": "usr_866d3d9f751a4cffad73ac5fa90480ed",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              }
+            }
+          ],
+          "busy": {
+            "id": "55eaf1429ddc1b8de8e9b93bf5a4dc29750dbbdb0584d2bd25d2a930a35e9e8f",
+            "worker_ref": "native-worker:55eaf1429ddc1b8de8e9b93bf5a4dc29750dbbdb0584d2bd25d2a930a35e9e8f",
+            "operation": "execute",
+            "reason": "storage-busy",
+            "state": "produced",
+            "known_effects": {
+              "reservation_recorded": true,
+              "exit_code": 0,
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943"
+            },
+            "next_action": "read-original-receipt",
+            "recovery_condition": "The original execution has a recorded terminal receipt."
+          },
+          "stage": "stage-reached"
+        }
+      }
+    },
+    "neighbor": {
+      "counts": {
+        "tests": 138,
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0
+      },
+      "seconds": 147.11,
+      "suites": [
+        "customizations.components.tianxuan.server.test_native_api",
+        "customizations.components.tianxuan.server.test_native_shared_dispatch.SharedDispatchTests",
+        "customizations.components.tianxuan.server.test_tool_receipts",
+        "customizations.components.tianxuan.sinan-workorders.test_native_issue_progress",
+        "customizations.components.tianxuan.sinan-workorders.test_native_remote",
+        "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop",
+        "customizations.components.tianxuan.sinan-workorders.test_native_terminal_events",
+        "customizations.components.tianxuan.sinan-workorders.test_native_workflow"
+      ]
+    },
+    "permanent_failure": "Original call raised no such table once; no native.execution-recovery or physical process created.",
+    "denied": "Both recovery operations returned HTTP 401 with an invalid bearer credential. Scoped WorkflowService rejected both operations outside its mapped issues.",
+    "terminal": "Shared Node dispatcher closed with physical_terminal=true and exit_code=0 after its logical result; process log and audit observation are in the shared-pipe test.",
+    "warning": "StarletteDeprecationWarning for the installed FastAPI TestClient/httpx dependency."
+  },
+  "windows_editor": {
+    "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2042",
+    "build_input_tree": "1f78766f2e3bf591bde7691d29f3721ceb2d876b",
+    "runtime_sha256": {
+      "godot.windows.editor.x86_64.exe": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+      "godot.windows.editor.x86_64.console.exe": "ad5c45c692f11274d132bdb14c73bf6d3270e54621f1d97bdd9d88d52b7a374a",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "input_comparison": "Checked every changed tracked path and the new S06 test versus the editor build input tree. Runtime changes are Tianxuan Python services and the separately loaded Node dispatcher. No native, embedded editor or packaged runtime input changed.",
+    "command": "python tests/editor/run_workbench_confirmed_native_stage.py --godot <accepted-2042-editor>/godot.windows.editor.x86_64.exe --report <temporary report>",
+    "runner_blob": "45ac0195f20b243771227e4cd0d874fd2e591a73",
+    "copy_editor": true,
+    "headless": true,
+    "result": {
+      "passed": true,
+      "editor_sha256": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+      "selected": [
+        "#1 程序",
+        "#2 动画"
+      ],
+      "confirmed": {
+        "issue_id": "iss_91530bc48607492f9b9a97e276867bba",
+        "document_id": "doc_d0417bdebb244cefa156a7f271924451",
+        "version": 1,
+        "stage": "可运行原型",
+        "target_revision": 1,
+        "issue_revision": "4ec0e2e78587019516990640762a4ad87c7a2a587c2208578fffc3d07c29af39",
+        "revision": 1,
+        "status": "confirmed",
+        "responsible_user": "usr_b016df1c5bb243eaaed31303f70915f2",
+        "confirmed_by": "usr_b016df1c5bb243eaaed31303f70915f2"
+      },
+      "sibling": {
+        "issue_id": "iss_265d1ed539e44870b61b527f5dc1410a",
+        "document_id": "doc_d0417bdebb244cefa156a7f271924451",
+        "version": 1,
+        "stage": "动画预览",
+        "target_revision": 1,
+        "issue_revision": "ba856ba9c06972c77f4e86c3cf92ab0883748e07dbd8b420e3c7d8630a73f170",
+        "revision": 0,
+        "status": "pending",
+        "responsible_user": "usr_b016df1c5bb243eaaed31303f70915f2",
+        "confirmed_by": null
+      },
+      "revoked": {
+        "issue_id": "iss_91530bc48607492f9b9a97e276867bba",
+        "document_id": "doc_d0417bdebb244cefa156a7f271924451",
+        "version": 1,
+        "stage": "可运行原型",
+        "target_revision": 1,
+        "issue_revision": "4ec0e2e78587019516990640762a4ad87c7a2a587c2208578fffc3d07c29af39",
+        "revision": 2,
+        "status": "revoked",
+        "responsible_user": "usr_b016df1c5bb243eaaed31303f70915f2",
+        "confirmed_by": null
+      },
+      "execution": "eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+      "grant": {
+        "confirmation_revision": 1,
+        "confirmed_by": "usr_b016df1c5bb243eaaed31303f70915f2",
+        "criteria": "拉杆切换一次",
+        "document_id": "doc_d0417bdebb244cefa156a7f271924451",
+        "issue_id": "iss_91530bc48607492f9b9a97e276867bba",
+        "issue_revision": "4ec0e2e78587019516990640762a4ad87c7a2a587c2208578fffc3d07c29af39",
+        "responsible_user": "usr_b016df1c5bb243eaaed31303f70915f2",
+        "stage": "可运行原型",
+        "target_revision": 1,
+        "version": 1
+      },
+      "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+      "profile": "local",
+      "process_exit": 0,
+      "process_count": 1,
+      "replay": {
+        "duplicate": {
+          "execution": "eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+          "worker_ref": "native-worker:eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+          "state": "running",
+          "starts": [
+            {
+              "execution": "eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+              "pid": 117244
+            }
+          ]
+        },
+        "reconnected": {
+          "execution": "eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+          "worker_ref": "native-worker:eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+          "state": "running",
+          "starts": [
+            {
+              "execution": "eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+              "pid": 117244
+            }
+          ]
+        },
+        "after_exit": {
+          "execution": "eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+          "worker_ref": "native-worker:eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+          "state": "produced",
+          "starts": [
+            {
+              "execution": "eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+              "pid": 117244
+            }
+          ]
+        },
+        "progress": {
+          "id": "eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+          "worker_ref": "native-worker:eeee067a0433e449386984b126b7bfd44a7cfcc18db3f793c8df95052b5b0623",
+          "issue": "iss_91530bc48607492f9b9a97e276867bba",
+          "source_revision": "ca9e4093e1dd3a9e9c9a7a0953e9b2b50079f2fcdd47215275952e680edcf778",
+          "stage": "可运行原型",
+          "state": "produced",
+          "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+          "provider_model": null,
+          "usage": null,
+          "events": [
+            {
+              "sequence": 1,
+              "recorded_at": "2026-11-22T09:58:56.224Z",
+              "state": "ready",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 2,
+              "recorded_at": "2026-11-22T09:58:56.256Z",
+              "state": "reserved",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 3,
+              "recorded_at": "2026-11-22T09:58:56.271Z",
+              "state": "running",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 4,
+              "recorded_at": "2026-11-22T09:58:56.303Z",
+              "state": "running",
+              "step": "workspace.materialize",
+              "details": {
+                "modules": {
+                  "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+                }
+              }
+            },
+            {
+              "sequence": 5,
+              "recorded_at": "2026-11-22T09:58:56.681Z",
+              "state": "running",
+              "step": "process.closed",
+              "details": {
+                "exit_code": 0,
+                "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            {
+              "sequence": 6,
+              "recorded_at": "2026-11-22T09:58:56.701Z",
+              "state": "running",
+              "step": "workspace.collect",
+              "details": {
+                "changed_modules": [
+                  "a"
+                ]
+              }
+            },
+            {
+              "sequence": 7,
+              "recorded_at": "2026-11-22T09:58:56.769Z",
+              "state": "running",
+              "step": "candidate.compose",
+              "details": {
+                "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+                "modules": {
+                  "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+                }
+              }
+            },
+            {
+              "sequence": 8,
+              "recorded_at": "2026-11-22T09:58:56.770Z",
+              "state": "produced",
+              "step": "state",
+              "details": {
+                "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+                "modules": {
+                  "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+                }
+              }
+            }
+          ]
+        },
+        "replayed_step": {
+          "sequence": 4,
+          "recorded_at": "2026-11-22T09:58:56.303Z",
+          "state": "running",
+          "step": "workspace.materialize",
+          "details": {
+            "modules": {
+              "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+            }
+          }
+        },
+        "replay_result": {
+          "state": "produced"
+        }
+      },
+      "process_closure": {
+        "exit_code": 0,
+        "reasons": [],
+        "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "sibling_tasks": 0
+    }
+  },
+  "static_checks": [
+    "ruff 0.17.1 check --no-cache --no-fix: passed, four Python files",
+    "ruff 0.17.1 format --no-cache --check: four already formatted",
+    "mypy: no issues in four files",
+    "node --check native_dispatch.mjs: exit 0",
+    "misc/scripts/file_format.py; git diff --check"
+  ],
+  "handoff": {
+    "receiver": "Parent Windows session for #1709",
+    "status": "Local acceptance on the exact service and dispatcher blobs. Parent holds integration, signing, main readback and issue closure.",
+    "downstream": [
+      1715,
+      1822
+    ]
+  },
+  "learning": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "observed": "Each deliberately lost post-launch reply was armed only after a successful execute response from the server; verified the producer log, same run ID, exit code and candidate. Before-launch exhaustion asserted zero starts."
+  },
+  "cleanup": {
+    "owner": "S06 Windows worktree, parent session holds signing and integration",
+    "verified_terminated": [
+      "Directed and neighbor pytest processes returned 0",
+      "Both headless editor harnesses returned 0 and removed their private editor/package/project copies",
+      "Shared Node process physical_terminal=true, exit_code=0",
+      "No live node/python/editor using the uniquely named review or editor directory at cleanup",
+      "Supplementary pip process terminated after existing pinned repository hook was located; no runtime install retained"
+    ],
+    "retained_worktree_relative": [
+      "s06-review-3f1d915b/ (JUnit, temporary SQLite databases, test output, mypy cache and local method input)",
+      ".pytest_cache/ and .ruff_cache/ (original S06 validation caches)",
+      "customizations/components/issue-workorders/__pycache__/ (S06 gate and incident source reads)"
+    ],
+    "system_temp_base": "C:/Users/ROG/AppData/Local/Temp",
+    "retained_system_temp": [
+      "s06-editor-3f1d915b (empty harness parent)",
+      "pip-build-tracker-rq36j08a",
+      "pip-ephem-wheel-cache-wzec0gon",
+      "pip-install-jo8x668o",
+      "pip-metadata-m4scayi7",
+      "pip-target-fy65tonb",
+      "pip-unpack-4zjkvwzq",
+      "pip-unpack-fal6kjsx"
+    ],
+    "system_temp_origin": "Unique editor isolation parent and temporary paths from the interrupted optional ruff install; package metadata names matched ruff 0.17.1. The existing repository hook was used for validation.",
+    "disposition": "Retained after automatic host review rejected Remove-Item on confirmed paths and also rejected removal of the single verified empty editor directory. Parent instructed retention and cessation of deletion attempts. Cleanup is pending; exclude these from the source candidate. Existing SDK, accepted editor, parent outbox, uncommitted delivery and branch remain available for integration."
+  }
+}
