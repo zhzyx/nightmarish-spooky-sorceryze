@@ -64,6 +64,7 @@ func _ready() -> void:
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(status)
 	session.identity_changed.connect(_reset)
+	session.authenticated.connect(_browse.bind(true))
 	detail.detail_changed.connect(_clear_selection)
 	_reset()
 
@@ -92,14 +93,15 @@ func _reset() -> void:
 	browse.disabled = session.get_identity().is_empty()
 
 
-func _browse() -> void:
+func _browse(on_startup := false) -> void:
 	_reset()
 	var attempt := generation
 	var reply: Dictionary = await session.api_request(HTTPClient.METHOD_GET, "/api/v1/work/my-judgments")
 	if generation != attempt:
 		return
 	if reply.status != 200 or reply.data.get("project") != session.get_identity().project or not reply.data.get("items") is Array:
-		status.text = "无法读取本人的待判断事项"
+		if not on_startup:
+			status.text = "无法读取本人的待判断事项"
 		return
 	pending_rows = reply.data.items
 	for item: Dictionary in pending_rows:
@@ -110,7 +112,14 @@ func _browse() -> void:
 		row.pressed.connect(_open.bind(item))
 		rows.add_child(row)
 	if rows.get_child_count() == 0:
-		status.text = "暂无待本人判断的事项"
+		if not on_startup:
+			status.text = "暂无待本人判断的事项"
+	elif on_startup:
+		detail.get_meta("open_linked_sidebar").call()
+		# Wait for the dock and newly added rows to receive their actual geometry.
+		await get_tree().process_frame
+		if generation == attempt:
+			rows.get_child(0).grab_focus()
 
 
 func _open(item: Dictionary, show_revision := true) -> void:

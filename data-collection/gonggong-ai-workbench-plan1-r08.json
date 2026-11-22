@@ -1,0 +1,377 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-r08",
+  "issue_number": 1777,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1777",
+  "producer": "afterk03_r08",
+  "authority": "codex-user:20261122-plan1-afterk03-r08",
+  "baseline": "8fed4d9371a678c335c73809d5901d6b616984ae",
+  "checked_at": "2026-11-22T15:09:27.998745+00:00",
+  "source_revision": "f69b14e0966a694bd78d630d98baaa19f2bd33b11d7454255082990954fcb451",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-r08/dispatch-0a2e7eb8cd5c4d7eae001d13d67b7622.json",
+  "intake_gate": "intake-only passed; status:in-progress",
+  "predecessors": [
+    {
+      "issue": 1835,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "pr": 2047,
+      "merge": "f1baa8f7b7e5e139cd4be289ce3f83a48747d40e"
+    },
+    {
+      "issue": 1803,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "pr": 2102,
+      "merge": "8fed4d9371a678c335c73809d5901d6b616984ae"
+    }
+  ],
+  "candidate_files": {
+    "editor/docks/workbench/business_session.gd": {
+      "sha256": "6bbc938841cd57edfd85bf972003cd7ab65ad86f390974731dce0003fdbe0167",
+      "git_blob": "de9aa98f554e068a005efeb65c60bbc59cdd5f69"
+    },
+    "editor/docks/workbench/issue_actions/creative_judgments.gd": {
+      "sha256": "1563739208b692715c7b3314eedbee97f19811e0880ee20e3678ce4c15b04082",
+      "git_blob": "b97bda5601dbdff98bd57517c12bc7e4395f2654"
+    },
+    "tests/editor/run_workbench_project_reopen.py": {
+      "sha256": "a7808c35c877870d97a4581aa7bf16e02d4be136b2e9d48543b34a27a7060eea",
+      "git_blob": "e8d77ca4eebc9ffcda6c047d1bda3bb1f97420aa"
+    },
+    "tests/editor/run_workbench_startup_judgments.py": {
+      "sha256": "fdcbdf8fe2292f32c19866387f47d5eab858702b0bf47e9fb6a2a979714d38c3",
+      "git_blob": "fc3657171d5026b146df99eae397f5baa02004ab"
+    },
+    "tests/editor/workbench_startup_judgments.gd": {
+      "sha256": "01183dc2b3e277edac2bbc3cbce5ae7eacec95bf61d45adcdc267f6f29dd34ad",
+      "git_blob": "9b8834fad8563c14d157fba977f1d4a532b7b462"
+    },
+    "design-docs/gonggong-ai-workbench-r08.md": {
+      "sha256": "88420426d26e7922b7038287756194aa2618f76b8ef0c508095f99f751874d6c",
+      "git_blob": "0c41257a48e9f048ad6e7e79ec8a6cd39628b818"
+    }
+  },
+  "build": {
+    "platform": "Windows x86_64 / MSVC 14.5 / Windows SDK 10.0.26100.0",
+    "scons": "4.11.1",
+    "exit": 0,
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=D:/GongGong/data-collection/receipts/duobao-1382/scons-cache cache_limit=0 --cache-readonly -j6",
+    "generated_headers": {
+      "BusinessSession.gen.h": "e06bec04c4e17ba98728acd16f2d5d66175189f8b025f043bb051d412a22a477",
+      "IssueActions.gen.h": "106baf3ef8bc3593e58902dbb6e8f877b22605d1635a99dc009ae555399ac689"
+    },
+    "native_consumer": "AIWorkbenchSidebar.cpp compiled and editor linked",
+    "package_sha256": {
+      "godot.windows.editor.x86_64.console.exe": "8be9477e3e2824afe55eab8e0c5dd4a017e295a72c10870dcef73253f2e54778",
+      "godot.windows.editor.x86_64.exe": "93f20c4eb1f3b2d38e91a471bd285002ab2d92ff97d393dcb02f4caa82e10443",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+    }
+  },
+  "service": {
+    "host": "Authenticated Tianxuan create_app with NativeWorkflow and NativeStore, Uvicorn HTTP loopback, private SQLite databases, installed deterministic local Python producer and independent checker.",
+    "baseline": "8fed4d9371a678c335c73809d5901d6b616984ae",
+    "source_sha256": {
+      "customizations/components/tianxuan/server/api.py": "0b02ba1fe4b2a3b45aaebe821ea515b2cf2fe21c0e44d82b422ea6251ba71e3b",
+      "customizations/components/tianxuan/server/work_management.py": "a17a1aa4a5c258dc35490d6eb5c44b02c7cd126abde0bb4a2177aba312b9e967",
+      "customizations/components/tianxuan/server/work_management_api.py": "32bfe4d6b0eb058f1cf765a1a599fb71a8b8bfeafe1b4d877fa9b98b54c09887",
+      "customizations/components/tianxuan/server/native_api.py": "7599cde491dd54b47c0e4346d3c81d30b57a4aa2b4dd2e1a470f588d78121ac5",
+      "customizations/components/tianxuan/server/native_checkpoint.py": "d261e537034118fcd52d60c3774c2476f00c1041111bdf2f8fb239537feeea6d"
+    },
+    "command": "python -X utf8 -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_project_reopen.py customizations/components/tianxuan/server/test_work_management.py",
+    "exit": 0,
+    "passed": 21
+  },
+  "native_command": "python -X utf8 tests/editor/run_workbench_startup_judgments.py --godot bin/godot.windows.editor.x86_64.exe --report <unique-system-temp-report.json>",
+  "negative_control": {
+    "editor_sha256": "1aa24c9a2d542ec7678eb825f482693f0681985be2218958cfff18fdc0975ae3",
+    "source": "accepted Windows editor from PR #2102",
+    "exit": 1,
+    "observed": "Same owner, ready task and pending revision fixture. The worker started while the sidebar stayed hidden with zero rows at 1440 x 960."
+  },
+  "editor": {
+    "passed": true,
+    "editor_sha256": "93f20c4eb1f3b2d38e91a471bd285002ab2d92ff97d393dcb02f4caa82e10443",
+    "editors": {
+      "owner": {
+        "pid": 131260,
+        "exit": 0,
+        "result": {
+          "editor_bounds": "[P: (0.0, 0.0), S: (1440.0, 960.0)]",
+          "pid": 131260,
+          "revision": "b @ 48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+          "row": "#2 Animate · sketch.svg\nvisible",
+          "row_bounds": "[P: (1068.0, 160.0), S: (350.0, 44.0)]",
+          "scroll_bounds": "[P: (1068.0, 122.0), S: (364.0, 830.0)]",
+          "still_focused_after_recovery": true,
+          "worker_started_while_focused": true
+        },
+        "http": [
+          {
+            "method": "GET",
+            "path": "/api/v1/auth/me",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-occupancy",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/work/my-judgments",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-project",
+            "status": 200
+          }
+        ]
+      },
+      "peer": {
+        "pid": 136160,
+        "exit": 0,
+        "result": {
+          "pid": 136160,
+          "rows": 0,
+          "sidebar_visible": false
+        },
+        "http": [
+          {
+            "method": "GET",
+            "path": "/api/v1/auth/me",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-occupancy",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/work/my-judgments",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-project",
+            "status": 200
+          }
+        ]
+      }
+    },
+    "still_pending": {
+      "issue_id": "iss_5fb5a2f09440442c99316a38e425278d",
+      "number": 2,
+      "title": "Animate",
+      "question": "visible",
+      "submission_version": 1,
+      "module": "b",
+      "revision": "48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+      "path": "sketch.svg",
+      "kind": "concept"
+    },
+    "before": {
+      "task": "3c6942795812130e3316100914e0b6d0b500415b5deddc62360ed413e9df3e8d",
+      "issue": "iss_7653d0a55509499296480236ae675def",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_a91eac0ab80d4dac9e750c22c617d2d5",
+        "mandate": "installed-test-plan",
+        "source_revision": "08e39ed6fc4e09923954c48e840c6a931d827bc02cae3377feb0f03339fe6f81",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_a91eac0ab80d4dac9e750c22c617d2d5",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_095805c258bf474294572d8a186a7d2c",
+          "issue_id": "iss_7653d0a55509499296480236ae675def",
+          "issue_revision": "f673f09a2095b5e7cbe1f001933cb8c6e72323e6f748b415dda49828cfdc5d3a",
+          "responsible_user": "usr_a91eac0ab80d4dac9e750c22c617d2d5",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "ready",
+      "completed_steps": [
+        "authorized"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {},
+      "candidate": null,
+      "calls": {
+        "worker": "native-worker:3c6942795812130e3316100914e0b6d0b500415b5deddc62360ed413e9df3e8d",
+        "model_calls": null
+      },
+      "stage_receipt": null,
+      "pending_decision": null
+    },
+    "after": {
+      "task": "3c6942795812130e3316100914e0b6d0b500415b5deddc62360ed413e9df3e8d",
+      "issue": "iss_7653d0a55509499296480236ae675def",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_a91eac0ab80d4dac9e750c22c617d2d5",
+        "mandate": "installed-test-plan",
+        "source_revision": "08e39ed6fc4e09923954c48e840c6a931d827bc02cae3377feb0f03339fe6f81",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_a91eac0ab80d4dac9e750c22c617d2d5",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_095805c258bf474294572d8a186a7d2c",
+          "issue_id": "iss_7653d0a55509499296480236ae675def",
+          "issue_revision": "f673f09a2095b5e7cbe1f001933cb8c6e72323e6f748b415dda49828cfdc5d3a",
+          "responsible_user": "usr_a91eac0ab80d4dac9e750c22c617d2d5",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "stage-reached",
+      "completed_steps": [
+        "authorized",
+        "reserved",
+        "worker-terminal",
+        "stage-checked"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {
+        "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+      },
+      "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+      "calls": {
+        "worker": "native-worker:3c6942795812130e3316100914e0b6d0b500415b5deddc62360ed413e9df3e8d",
+        "model_calls": null
+      },
+      "stage_receipt": {
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_a91eac0ab80d4dac9e750c22c617d2d5",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_095805c258bf474294572d8a186a7d2c",
+          "issue_id": "iss_7653d0a55509499296480236ae675def",
+          "issue_revision": "f673f09a2095b5e7cbe1f001933cb8c6e72323e6f748b415dda49828cfdc5d3a",
+          "responsible_user": "usr_a91eac0ab80d4dac9e750c22c617d2d5",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "checks": {
+          "check": {
+            "evidence": "b2b8e6d44f35c6c6c074173146dd55572a8eb6c29c4816440e3e9158d9a208d2",
+            "outcome": "passed"
+          }
+        },
+        "modules": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "reason": "authorized_stage_criteria_met",
+        "state": "stage-reached",
+        "task": "3c6942795812130e3316100914e0b6d0b500415b5deddc62360ed413e9df3e8d"
+      },
+      "pending_decision": {
+        "kind": "stage-confirmation",
+        "task": "3c6942795812130e3316100914e0b6d0b500415b5deddc62360ed413e9df3e8d"
+      }
+    },
+    "processes": {
+      "workers": [
+        138460
+      ],
+      "checkers": [
+        117880
+      ]
+    },
+    "physical_closure": {
+      "exit_code": 0,
+      "reasons": [],
+      "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "checker_exit": 0,
+    "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+  },
+  "regressions": {
+    "h03": {
+      "command": "python -X utf8 tests/editor/run_workbench_creative_judgments.py --godot bin/godot.windows.editor.x86_64.exe --report <unique-system-temp-report.json>",
+      "exit": 0,
+      "editor_sha256": "93f20c4eb1f3b2d38e91a471bd285002ab2d92ff97d393dcb02f4caa82e10443",
+      "sender": [
+        "art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+        "art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81"
+      ],
+      "recipient": [
+        "art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+        "art @ f507131cd1c9749e9dcfda86df2b0b4df90889b0048b87507febc48b69bc40f1"
+      ],
+      "checks": {
+        "replay_version": 4,
+        "judgments_after_first_signature": [
+          "approved",
+          "pending"
+        ],
+        "repeat_same_call_status": 200,
+        "repeat_changed_target_status": 409,
+        "wrong_responsible_status": 403,
+        "ai_tool_status": 400,
+        "ai_tool_result": {
+          "detail": "unknown tool"
+        },
+        "new_unsigned_status": 409
+      }
+    },
+    "r07": {
+      "command": "python -X utf8 tests/editor/run_workbench_project_reopen.py --godot bin/godot.windows.editor.x86_64.exe --report <unique-system-temp-report.json>",
+      "exit": 0,
+      "editor_sha256": "93f20c4eb1f3b2d38e91a471bd285002ab2d92ff97d393dcb02f4caa82e10443",
+      "initial_confirmation_requests": 1,
+      "reopen_pids": [
+        137448,
+        132388
+      ],
+      "processes": {
+        "workers": [
+          53224
+        ],
+        "checkers": [
+          135268
+        ]
+      },
+      "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+      "state": "stage-reached"
+    }
+  },
+  "test_corrections": [
+    "Pin the fully installed test producer before authorizing the workflow. Changing its configuration after signing parks the task at its existing checkpoint.",
+    "Explicitly size the headless test window at 1440 x 960. The default headless virtual display initially reported 64 x 64."
+  ],
+  "retained": "Compiled candidate in task worktree for independent receiving session; source and test result bound above."
+}
