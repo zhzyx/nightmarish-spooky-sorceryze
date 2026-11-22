@@ -380,7 +380,19 @@ def owned_scope(method):
 
 
 def run_owned(
-    arguments, *, stdout, stderr=None, env=None, limit, timeout, active, fail, stdin=None, scope=None, cwd=None
+    arguments,
+    *,
+    stdout,
+    stderr=None,
+    env=None,
+    limit,
+    timeout,
+    active,
+    fail,
+    stdin=None,
+    scope=None,
+    cwd=None,
+    on_start=None,
 ):
     """Return a direct exit code or None after durable cancellation/failure.
 
@@ -394,6 +406,8 @@ def run_owned(
     retained = False
     deadline = time.monotonic() + timeout
     try:
+        if on_start is not None:
+            on_start(command.process.pid)
         while True:
             if not active():
                 return None

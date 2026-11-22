@@ -170,6 +170,8 @@ func _authenticate(email: String, secret: String, project: String) -> void:
 	_email.clear()
 	_form.hide()
 	identity_changed.emit()
+	if not _identity.is_empty() and _identity.get("role") != "viewer":
+		api_request(HTTPClient.METHOD_POST, "/api/v1/native/workflow/recover-occupancy", {"project": _identity.project})
 
 
 # Routes belong to the configured deployment. Each request captures its verified session.
@@ -183,7 +185,7 @@ func api_request(method: int, route: String, payload: Dictionary = {}, timeout_s
 			return {"status": 0, "data": {}}
 	# A workflow status read is scoped by its exact run key; that endpoint rejects query parameters.
 	var scoped_route := route
-	if method != HTTPClient.METHOD_POST or route != "/api/v1/native/workflow/status":
+	if method != HTTPClient.METHOD_POST or route not in ["/api/v1/native/workflow/status", "/api/v1/native/workflow/recover-occupancy"]:
 		scoped_route += ("&" if "?" in route else "?") + "project=" + str(_identity.project).uri_encode()
 	var attempt := _generation
 	var reply := await _exchange(method, scoped_route, _token, payload, timeout_seconds, download_path)

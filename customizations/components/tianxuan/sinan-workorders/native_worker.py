@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import inspect
 import json
 import math
 from collections.abc import Callable
@@ -63,6 +64,7 @@ class NativeWorker:
         self.profiles = json.loads(_json(profiles))
         self.verify = verify_installation
         self.helper = _process_helper(process_helper_path)
+        self.records_local_process_group = "on_start" in inspect.signature(self.helper.run_owned).parameters
         self.workspace = NativeWorkspace(store, limits)
         with store._connection(write=True) as db:
             db.execute(
@@ -155,6 +157,9 @@ class NativeWorker:
         env = {**spec["env"], "NATIVE_WORKSPACE": str(work), "NATIVE_CONTEXT": str(context)}
         reasons = []
         requested = worker_cancel_requested.get()
+        observer = {}
+        if self.records_local_process_group:
+            observer["on_start"] = lambda pid: _report_step(execution, "process.started", {"pid": pid})
         with (folder / "process.log").open("w+b") as log:
             code = self.helper.run_owned(
                 spec["argv"],
@@ -165,6 +170,7 @@ class NativeWorker:
                 active=lambda: (cancel is None or not cancel.is_set()) and not (requested and requested()),
                 fail=reasons.append,
                 cwd=work,
+                **observer,
             )
             log.flush()
             log.seek(0)
