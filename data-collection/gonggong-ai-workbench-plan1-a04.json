@@ -1,0 +1,430 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-a04",
+  "issue_number": 1841,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1841",
+  "producer": "wave22_a04",
+  "verified_at": "2026-11-22T04:15:14.227577+00:00",
+  "baseline": "c38ec442392f230ec9e697730d21ab039026f9e0",
+  "source_revision": "130b28c188bb1a07fe8500605a7b1700e49d60b5dd364caf3c66942fbe7f2a8e",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "18c5a8ae34d7ac32fce8404c35bf00f5fdabf296",
+    "customizations/components/tianxuan/server/native_execution_host.py": "c6f5c333e175788dd8e880444c6d3d409d2ebbc4",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "977b3847f82eb89197ac710f7c70d712672cb97b",
+    "customizations/components/tianxuan/sinan-workorders/native_integration.py": "9c46da868a83a38f3a51af72e82e80338720c7c9",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "e9bf568f235228f5d70f8cd09b1cc67120c786c6",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py": "3705cad95826f40ec9797f68eee30bd1b77e9197",
+    "design-docs/gonggong-ai-workbench-a04.md": "9b62974ef73261e18dc0ccc2ed1a182e800dc619"
+  },
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a04/dispatch-fd177fa5d56d4af2a0ba23ce8755b5f3.json",
+  "inputs": {
+    "a03": 1855,
+    "state": "CLOSED",
+    "accepted_revision": "c38ec442392f230ec9e697730d21ab039026f9e0",
+    "acceptance_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2019",
+    "owner_readback": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1841#issuecomment-7073869044",
+    "upstream_macos_observations": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860#issuecomment-7067023618",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1861#issuecomment-7068555775"
+    ],
+    "macos_a04_run": null
+  },
+  "environment": {
+    "platform": "Windows x86_64",
+    "python": "3.12.14",
+    "pytest": "9.2.0",
+    "node": "v24.22.1",
+    "host": "Authenticated Tianxuan ASGI + persisted NativeWorkflow + installed Node driver/NativeWorker/NativeCheckRunner/NativeStore",
+    "producer": "Isolated host-installed deterministic preview profile, local SVG producer and separate XML/content check.",
+    "compile_inputs": "Service, workflow and dispatch host adaptation only."
+  },
+  "acceptance": {
+    "criterion": "When authorized for preview, generate the preview only and make zero subsequent delivery calls.",
+    "consumer": "An authenticated two-pass Node drive reads two independent installed preview cases over loopback HTTP. The status projector reads the stored signed stage receipt and the test reopens the domain database. Preview bytes below were read by immutable module revision from NativeStore.",
+    "actual": "Each signed run produced one preview.svg and one physical producer closure. Blue met the installed criterion, red retained a failed independent content check. Both received zero downstream delivery calls and zero accepted dependency outbox events.",
+    "scope": "Separate product release and explicit continuation belong to subsequent issue stages. Mac observations above apply to the upstream design version only."
+  },
+  "method_learning": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 30,
+    "application": "Read the exact produced SVG by immutable module revision and compare signed criteria, independent check evidence, Node transport calls and restarted status. A red SVG with exit 0 demonstrably fails the target."
+  },
+  "tests": [
+    {
+      "command": "python -B -m pytest -q -p no:cacheprovider customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py",
+      "timestamp": "2026-11-22T12:11:08.835353+08:00",
+      "seconds": 17.744,
+      "passed": 14,
+      "exit_code": 0,
+      "junit_xml_sha256": "277cf6fe9e40e7786c998c856a0c008d51f657a343aedbff7963bfa92f78c5b2",
+      "cases": [
+        {
+          "test": "test_dispatch_stops_at_checked_preview[blue-stage-reached]",
+          "observed": {
+            "physical_closure": {
+              "exit_code": 0,
+              "reasons": [],
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "receiver": {
+              "authorization": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_c975ff2001ab49a19a5c255eeec4df0a",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_60556e736cdf444787c1a1af4ddac95b",
+                "issue_id": "iss_885ba77c3ff041d7aca2f12620104f82",
+                "issue_revision": "efd04d7f617f78da76d81679fda86d9adb4b828c12d917f0d44c5083d562533e",
+                "responsible_user": "usr_c975ff2001ab49a19a5c255eeec4df0a",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              },
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+              "checks": {
+                "check": {
+                  "evidence": "e1702d4a2c55d611778b834ff192026f2cb9ebbfbfd1f950f75162748d138f4c",
+                  "outcome": "passed"
+                }
+              },
+              "modules": {
+                "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+              },
+              "reason": "authorized_stage_criteria_met",
+              "state": "stage-reached",
+              "task": "cddb8d297a29c3e4fdd248348ece6d2de3894af9755beebeb17ba29ace7f303c"
+            },
+            "artifact": {
+              "path": "a/preview.svg",
+              "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"16\" cy=\"16\" r=\"12\" fill=\"blue\"/></svg>",
+              "sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+            },
+            "dispatch_calls": [
+              "advance",
+              "inspect",
+              "inspect",
+              "revalidate",
+              "reserve",
+              "start",
+              "execute",
+              "advance",
+              "inspect",
+              "verify-stage",
+              "ack",
+              "record",
+              "advance",
+              "inspect",
+              "advance",
+              "inspect"
+            ],
+            "delivery_calls": {
+              "finish": 0,
+              "review": 0,
+              "publish": 0,
+              "complete": 0,
+              "integration-contribution": 0,
+              "integration-finish": 0
+            },
+            "physical_producer_calls": 1,
+            "check_exit": 0,
+            "restarted_receipt_equal": true,
+            "outbox_events": 0
+          }
+        },
+        {
+          "test": "test_dispatch_stops_at_checked_preview[red-stage-unmet]",
+          "observed": {
+            "physical_closure": {
+              "exit_code": 0,
+              "reasons": [],
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "receiver": {
+              "authorization": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_ce1a5f4d64fd4d10a79c4d1a2cd461d3",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_d84bbe05e3c140a795c2da28c9f2d377",
+                "issue_id": "iss_f39d760b7e0749289bad52e18eb5a350",
+                "issue_revision": "6aacf9b7aba464caa27a3f5c203a4a9594351b367d1f8f74cfadf34b433c1019",
+                "responsible_user": "usr_ce1a5f4d64fd4d10a79c4d1a2cd461d3",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              },
+              "candidate": "610f563d09abd0874ca513ea84ff9631d87b3091f3a13bb4459cac9d4cc6bcfa",
+              "checks": {
+                "check": {
+                  "evidence": "d5175083440f6788907b05e327b41500096269a371be171c94ad75e9c89f2f8b",
+                  "outcome": "failed"
+                }
+              },
+              "modules": {
+                "a": "d16889996d11398aece17571c33e42b72f3ef7eaa458263a857de5e965f077b4"
+              },
+              "reason": "authorized_stage_check_failed",
+              "state": "stage-unmet",
+              "task": "e80aade96657e85b63db3ce28d77bc38648ae3c21600f7e508baf0291491708b"
+            },
+            "artifact": {
+              "path": "a/preview.svg",
+              "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle cx=\"16\" cy=\"16\" r=\"12\" fill=\"red\"/></svg>",
+              "sha256": "c593f3bb028b1d32a6fe004a4a0c6a6e1b3944858b83f4abb2b53d08d27a6d38"
+            },
+            "dispatch_calls": [
+              "advance",
+              "inspect",
+              "inspect",
+              "revalidate",
+              "reserve",
+              "start",
+              "execute",
+              "advance",
+              "inspect",
+              "verify-stage",
+              "ack",
+              "record",
+              "advance",
+              "inspect",
+              "advance",
+              "inspect"
+            ],
+            "delivery_calls": {
+              "finish": 0,
+              "review": 0,
+              "publish": 0,
+              "complete": 0,
+              "integration-contribution": 0,
+              "integration-finish": 0
+            },
+            "physical_producer_calls": 1,
+            "check_exit": 1,
+            "restarted_receipt_equal": true,
+            "outbox_events": 0
+          }
+        },
+        {
+          "test": "test_unbound_and_mismatched_criteria"
+        },
+        {
+          "test": "test_revocation_during_stage_check"
+        },
+        {
+          "test": "test_revoked_evidence_and_contribution_never_release"
+        },
+        {
+          "test": "test_simultaneous_settlement_reuses_exact_check"
+        },
+        {
+          "test": "test_signed_item_reaches_one_local_process"
+        },
+        {
+          "test": "test_stale_reserved_ticket_never_launches[revoked]"
+        },
+        {
+          "test": "test_stale_reserved_ticket_never_launches[reconfirmed]"
+        },
+        {
+          "test": "test_stale_reserved_ticket_never_launches[target]"
+        },
+        {
+          "test": "test_stale_reserved_ticket_never_launches[definition]"
+        },
+        {
+          "test": "test_stale_reserved_ticket_never_launches[reassigned]"
+        },
+        {
+          "test": "test_private_origin_cannot_fall_back_to_ordinary_issue"
+        },
+        {
+          "test": "test_reassigned_confirmation_replaces_old_reservation_after_restart"
+        }
+      ]
+    },
+    {
+      "command": "python -B -m pytest -q -p no:cacheprovider customizations/components/tianxuan/sinan-workorders/test_native_workflow.py customizations/components/tianxuan/sinan-workorders/test_native_integration.py customizations/components/tianxuan/sinan-workorders/test_native_joint_workflow.py",
+      "timestamp": "2026-11-22T12:11:08.826352+08:00",
+      "seconds": 85.159,
+      "passed": 54,
+      "exit_code": 0,
+      "junit_xml_sha256": "e8781236149b0534ecd63a0d8a7a675d7bb5e53c7de923fc968dff05f030947b",
+      "cases": [
+        {
+          "test": "test_actual_parallel_producers_completion_and_replay"
+        },
+        {
+          "test": "test_acl_and_stable_definition"
+        },
+        {
+          "test": "test_unknown_reservation_survives_restart"
+        },
+        {
+          "test": "test_actual_node_authenticated_http_dispatch"
+        },
+        {
+          "test": "test_bad_content_cannot_release"
+        },
+        {
+          "test": "test_installation_change_holds_without_launch"
+        },
+        {
+          "test": "test_release_before_domain_failure_replays_without_worker"
+        },
+        {
+          "test": "test_private_link_and_ancestor_hidden_from_all_lists"
+        },
+        {
+          "test": "test_single_operator_independent_execution_review_replay"
+        },
+        {
+          "test": "test_failed_check_does_not_consume_independent_review"
+        },
+        {
+          "test": "test_finish_pins_target_and_recovers_after_progress_failure"
+        },
+        {
+          "test": "test_authenticated_reconcile_durable_terminal_only"
+        },
+        {
+          "test": "test_fifo_and_managed_done_tool_guard"
+        },
+        {
+          "test": "test_release_revoke_serializes_after_domain_acceptance"
+        },
+        {
+          "test": "test_definition_change_and_replayed_manual_done_fail_closed"
+        },
+        {
+          "test": "test_unavailable_head_and_server_capability_admission"
+        },
+        {
+          "test": "test_foreign_and_private_occupancy_is_anonymous"
+        },
+        {
+          "test": "test_cancel_during_real_production_preserves_business_stop"
+        },
+        {
+          "test": "test_revoked_transitive_source_acl_prevents_materialization"
+        },
+        {
+          "test": "test_outbox_isolates_failed_branch"
+        },
+        {
+          "test": "test_review_cancellation_cannot_publish"
+        },
+        {
+          "test": "test_publication_guard_covers_native_commit"
+        },
+        {
+          "test": "test_publication_guard_rechecks_after_review_before_sql"
+        },
+        {
+          "test": "test_actual_node_refills_before_unrelated_terminal"
+        },
+        {
+          "test": "test_joint_release_preserves_originals_and_heads"
+        },
+        {
+          "test": "test_conflicting_edits_do_not_choose_last_writer"
+        },
+        {
+          "test": "test_source_change_blocks_entire_group"
+        },
+        {
+          "test": "test_fanin_fault_rolls_back_all_and_recovers_historical"
+        },
+        {
+          "test": "test_receipt_reader_uses_own_authority"
+        },
+        {
+          "test": "test_all_original_checks_required"
+        },
+        {
+          "test": "test_installed_resolver_creates_successor_without_changing_originals"
+        },
+        {
+          "test": "test_semantic_failure_only_in_joint_candidate_blocks_release"
+        },
+        {
+          "test": "test_revoked_producer_authority_blocks_finalization"
+        },
+        {
+          "test": "test_cas_loser_successor_reuses_contributions"
+        },
+        {
+          "test": "test_authenticated_http_installed_plan_only"
+        },
+        {
+          "test": "test_original_workflow_review_accepts_verified_cache_hit"
+        },
+        {
+          "test": "test_noop_contribution_has_no_fabricated_intake"
+        },
+        {
+          "test": "test_explicit_dependency_repin_and_cycle_rejection"
+        },
+        {
+          "test": "test_explicit_dependency_cycle_rejected"
+        },
+        {
+          "test": "test_resolver_lost_reply_recovers_real_receipt_without_relaunch"
+        },
+        {
+          "test": "test_review_unknown_requires_installed_exact_receipt"
+        },
+        {
+          "test": "test_cross_contribution_portable_tree_collisions[edits0]"
+        },
+        {
+          "test": "test_cross_contribution_portable_tree_collisions[edits1]"
+        },
+        {
+          "test": "test_cached_result_with_wrong_evidence_id_is_not_success"
+        },
+        {
+          "test": "test_distinct_installed_producer_is_not_a_domain_user"
+        },
+        {
+          "test": "test_changed_installed_producer_cannot_reuse_contribution"
+        },
+        {
+          "test": "test_accepted_history_survives_task_replacement_without_new_work"
+        },
+        {
+          "test": "test_real_joint_http_node_and_restart[False]"
+        },
+        {
+          "test": "test_real_joint_http_node_and_restart[True]"
+        },
+        {
+          "test": "test_real_joint_http_node_and_restart[lost-response]"
+        },
+        {
+          "test": "test_fixed_group_discovery_detects_drift_and_no_early_acceptance"
+        },
+        {
+          "test": "test_real_original_merge_shapes[identical]"
+        },
+        {
+          "test": "test_real_original_merge_shapes[different]"
+        },
+        {
+          "test": "test_real_original_merge_shapes[no-op]"
+        }
+      ]
+    },
+    {
+      "command": "python -B -m pytest -q -p no:cacheprovider customizations/components/tianxuan/server/test_native_entry_normal.py",
+      "timestamp": "2026-11-22T12:13:34.142172+08:00",
+      "seconds": 11.237,
+      "passed": 1,
+      "exit_code": 0,
+      "junit_xml_sha256": "dc2ad771daf1ac5f9211cb8e48226bc1d33c8f4934439ba275390b7d9edb948b",
+      "cases": [
+        {
+          "test": "test_main_two_users"
+        }
+      ]
+    }
+  ]
+}

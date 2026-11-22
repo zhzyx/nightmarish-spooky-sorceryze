@@ -575,6 +575,7 @@ class WorkflowService:
                     }
                 board["requests"] = [r for r in board["requests"] if r["ticket"] in owned]
                 board["produced"] = [k for k in board["produced"] if k in owned]
+                board["stage_checks"] = [k for k in board["stage_checks"] if k in owned]
                 board["snapshot"]["items"] = [r for r in board["snapshot"]["items"] if r["key"] in owned]
                 board["snapshot"]["ready"] = [k for k in board["snapshot"]["ready"] if k in owned]
                 for active in board["environment"]["active"]:
@@ -608,6 +609,8 @@ class WorkflowService:
             return w.advance(actor, isolate=True, exclude=payload.get("exclude", []))
         if operation in {"status", "execute", "check", "review", "reconcile", "finish"}:
             return getattr(w, operation)(actor, payload["key"])
+        if operation == "verify-stage":
+            return w.verify_stage(actor, payload["key"])
         if operation == "reserve":
             return w.reserve(actor, payload["assignment"])
         if operation not in {"revalidate", "start", "ack", "record"}:

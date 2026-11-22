@@ -140,6 +140,7 @@ class NativeIntegration:
     def _original(self, actor, key, *, accepted=False, historical=False):
         row = self.w._row(self.w.domain.db, key)
         task = json.loads(row["task"]) if historical else self.w._valid(actor, row)
+        self.w.require_delivery(task, row)
         if digest(task) != key:
             raise NativeStoreError("Original task contract integrity failure")
         self.w._read_allowed(actor, row)

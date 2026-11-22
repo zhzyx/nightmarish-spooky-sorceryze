@@ -42,6 +42,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "execute": {"key"},
             "await-terminal": {"key"},
             "check": {"key"},
+            "verify-stage": {"key"},
             "integration-authorize": {"group"},
             "integration-continue": {"key"},
             "integration-await": {"key", "event"},
@@ -129,6 +130,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 return workflow.advance(actor, isolate=True, exclude=payload.get("exclude", []))
             if operation in {"status", "execute", "check", "review", "reconcile", "finish"}:
                 return getattr(workflow, operation)(actor, payload["key"])
+            if operation == "verify-stage":
+                return workflow.verify_stage(actor, payload["key"])
             if operation == "revise":
                 return workflow.authorize_installed(actor, payload["issue"], expected=payload["expected"])
             if operation == "authorize":

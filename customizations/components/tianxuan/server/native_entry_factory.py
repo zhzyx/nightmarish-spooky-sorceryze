@@ -32,6 +32,24 @@ def domain_locked(method):
     return call
 
 
+def installed_profile(catalog, plan_capabilities, issue_capabilities, requested_model):
+    models = [
+        model
+        for model in catalog
+        if model.get("available") is True
+        and set(plan_capabilities) <= set(model.get("capabilities", []))
+        and (requested_model is None or model["id"] == requested_model)
+    ]
+    require(models, "No admitted model capability")
+    # Preserve the installed plan's fallback profile for a deferred Sinan ticket.
+    # A missing issue capability cannot expand the catalog or change a pinned model.
+    if issue_capabilities:
+        for model in models:
+            if "agent" in model.get("targets", []) and set(issue_capabilities) <= set(model.get("capabilities", [])):
+                return model["id"]
+    return models[0]["id"]
+
+
 class CoordinatorOwnership:
     """OS-released single-process ownership; a stale PID never authorizes takeover."""
 
@@ -573,19 +591,15 @@ class OrdinaryEntry:
             module, path = output.split("/", 1)
             module = receipt["modules"][module]
             writes.setdefault(module, []).append(path)
-        models = [
-            m
-            for m in self.installation.spec["catalog"]
-            if m.get("available") is True and set(task["capabilities"]) <= set(m.get("capabilities", []))
-        ]
-        if "model" in choices:
-            models = [model for model in models if model["id"] == choices["model"]]
-        require(models, "No admitted model capability")
+        required = self.domain.issue_snapshot(actor, issue)["definition"].get("required_capabilities", [])
+        profile = installed_profile(
+            self.installation.spec["catalog"], task["capabilities"], required, choices.get("model")
+        )
         return dict(
             selected=selected,
             writes=writes,
             dependencies=dependencies,
-            profile=models[0]["id"],
+            profile=profile,
             product=self.product(row),
             checks=["content"],
             mandate=row["id"],

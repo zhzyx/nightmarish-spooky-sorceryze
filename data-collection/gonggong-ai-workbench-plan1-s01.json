@@ -1,0 +1,276 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-s01",
+  "issue_number": 1851,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1851",
+  "producer": "wave22_s01",
+  "baseline": "c38ec442392f230ec9e697730d21ab039026f9e0",
+  "source_revision": "f9cee18929c7fab47e8f34f15f36d407b126f7853b7d1bf29e440c9243a59229",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s01/dispatch-c4e4c490bdb042d2b76d9572dea52137.json",
+  "verified_at": "2026-11-22T04:08:58.275431+00:00",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/tianxuan_core.py": "22a5750a0af22737af8765638dd52d0cdb6ceb9e",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "6e045004e59db38e451a06756c38a0123c6495a8",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "4d4f38a9001e3ec701be845f1ed449865285fff8",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "e9813de464dff2da4f454c2ecc8a1378079708ab",
+    "customizations/components/tianxuan/sinan-workorders/test_native_issue_capabilities.py": "1202c3730b328224e27c456aabf73e2936a284b4",
+    "design-docs/gonggong-ai-workbench-s01.md": "1a38d9e59d76794be7e12a59641af99025b7d926"
+  },
+  "receiver_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "d04ee7fb26ec5fafbcbb4d5b13c9917f914be34b",
+    "customizations/components/tianxuan/server/native_api.py": "ac0b749b5f24f63a22602f2f0ab84d339bff04e2",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "dff7e53a12e767a4ff52c70003f21370d162c0a9",
+    "customizations/components/tianxuan/sinan-workorders/native_requirement_plan.py": "33fa7ffaf383d515e95d104643263b127b83cc83",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py": "fc2bb061db4cc226e20167dfc4e017e4c07c2490",
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": "c31da667a84b3dfe579bca4da0b7233b3f2d2495"
+  },
+  "inputs": {
+    "upstream_A03": 1855,
+    "upstream_A03_candidate": "c38ec442392f230ec9e697730d21ab039026f9e0",
+    "upstream_A03_evidence": "data-collection/gonggong-ai-workbench-plan1-a03.json",
+    "current_issue_owner_readback": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1851#issuecomment-7073860113",
+    "upstream_macos": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860#issuecomment-7067023618",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1861#issuecomment-7068555775"
+    ],
+    "macos_candidate_run": null
+  },
+  "receiver": {
+    "platform": "Windows AMD64",
+    "python": "3.12.14",
+    "node": "v24.22.1",
+    "entry": "PUT /api/v1/issues/{id}/classification -> target -> confirmation -> POST /api/v1/native/workflow/authorize -> inspect -> dispatchNative / Sinan dispatchEvent -> reserve -> execute -> status",
+    "catalog": [
+      {
+        "id": "coding",
+        "available": true,
+        "targets": [
+          "agent"
+        ],
+        "capabilities": [
+          "review",
+          "coding"
+        ]
+      },
+      {
+        "id": "animation",
+        "available": true,
+        "targets": [
+          "agent"
+        ],
+        "capabilities": [
+          "review",
+          "animation"
+        ]
+      }
+    ],
+    "runtime": "Installed deterministic local profiles with distinct finite output paths. Each real process recorded the exact NATIVE_CONTEXT definition from its own ticket. The worker database supplied physical exit records and output candidates.",
+    "stage": "preview",
+    "target": "agent",
+    "provider_model_observation": null
+  },
+  "tests": [
+    {
+      "command": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_issue_capabilities.py -o junit_family=legacy --junitxml=<temporary-report>",
+      "passed": 2,
+      "started": "2026-11-22T12:08:09.556642+08:00",
+      "seconds": 3.322,
+      "cases": [
+        {
+          "name": "test_module_requests_match_or_report_missing_capability",
+          "result": "passed",
+          "seconds": 1.978,
+          "observation": {
+            "tickets": [
+              {
+                "issue": "iss_6551787b15ee4c429e97a2ac106ddafc",
+                "module": "mod_752477a8814344d0b7922bc514aac8df",
+                "ticket": "e562beb6aafa4395a1fedad8b49c325d4c3d386fca29072e5da57a6ca3b55299",
+                "stage": {
+                  "confirmation_revision": 1,
+                  "confirmed_by": "usr_7477a0da6ef94113b9c9162361c14351",
+                  "criteria": "preview visible",
+                  "document_id": "doc_570bfda4d39840f8b03c664cc2b47a5a",
+                  "issue_id": "iss_6551787b15ee4c429e97a2ac106ddafc",
+                  "issue_revision": "34764ac4c1a4ca9f066a39edb4ae07d7670c5083886cc012c4edca6d76b0ec68",
+                  "responsible_user": "usr_7477a0da6ef94113b9c9162361c14351",
+                  "stage": "preview",
+                  "target_revision": 1,
+                  "version": 1
+                },
+                "source_revision": "cae8022f7ef2a28dc0949922f798d0720f392addcee21ee8aace2aee824fd2eb",
+                "issue_capabilities": [
+                  "coding"
+                ],
+                "required": [
+                  "review",
+                  "coding"
+                ],
+                "profile": "coding",
+                "installation": "91a3f40c008b41536e03b4fa2ff31fe2b8a5b75c9be41b9e1fad1d7824f9f924",
+                "writes": {
+                  "a": [
+                    "output"
+                  ]
+                },
+                "matched": {
+                  "capabilities": [
+                    "review",
+                    "coding"
+                  ],
+                  "id": "coding",
+                  "reason": "explicit_model_and_required_capabilities"
+                },
+                "physical_closure": {
+                  "exit_code": 0,
+                  "reasons": [],
+                  "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "state": "produced",
+                "candidate": "8dce943d5c4bf6656003bbc7f19ac33bc2be314334e6d285949fb647ed490809"
+              },
+              {
+                "issue": "iss_b8c59de6ef5642fc8f9cd651fe434c24",
+                "module": "mod_d9333d00507049c68398b86eff491e46",
+                "ticket": "947cfa74f599c74e648ed16c0b0d9587c241dc192860b2bf0deb8466e7a380bd",
+                "stage": {
+                  "confirmation_revision": 1,
+                  "confirmed_by": "usr_7477a0da6ef94113b9c9162361c14351",
+                  "criteria": "preview visible",
+                  "document_id": "doc_570bfda4d39840f8b03c664cc2b47a5a",
+                  "issue_id": "iss_b8c59de6ef5642fc8f9cd651fe434c24",
+                  "issue_revision": "c1ecd62b3f4c7d26bc8fa5f85225a209f98595843bd1c6fed1041d3d9b4478fc",
+                  "responsible_user": "usr_7477a0da6ef94113b9c9162361c14351",
+                  "stage": "preview",
+                  "target_revision": 1,
+                  "version": 1
+                },
+                "source_revision": "c1ea7046b9e603f862f167f998e412587dee3323e6ebbb56c2fefc1787c945d3",
+                "issue_capabilities": [
+                  "animation"
+                ],
+                "required": [
+                  "review",
+                  "animation"
+                ],
+                "profile": "animation",
+                "installation": "b13aa90783833ff98549b18f89d8e2327fd198566bc047edf6571465c9943511",
+                "writes": {
+                  "b": [
+                    "output"
+                  ]
+                },
+                "matched": {
+                  "capabilities": [
+                    "review",
+                    "animation"
+                  ],
+                  "id": "animation",
+                  "reason": "explicit_model_and_required_capabilities"
+                },
+                "physical_closure": {
+                  "exit_code": 0,
+                  "reasons": [],
+                  "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                },
+                "state": "produced",
+                "candidate": "5da38d8020d14c6155eab28fc12e0830ba80bd41bb396059563a37b5e5b4e0b1"
+              },
+              {
+                "issue": "iss_5f61c8715c9e4d6cae09a8e7a4d15da5",
+                "module": "mod_d9333d00507049c68398b86eff491e46",
+                "ticket": "5559c9b9449a830ba0118cfb798edb9aa285bc253af199803ffdde2209cf345a",
+                "stage": {
+                  "confirmation_revision": 1,
+                  "confirmed_by": "usr_7477a0da6ef94113b9c9162361c14351",
+                  "criteria": "preview visible",
+                  "document_id": "doc_570bfda4d39840f8b03c664cc2b47a5a",
+                  "issue_id": "iss_5f61c8715c9e4d6cae09a8e7a4d15da5",
+                  "issue_revision": "7f94cd917e34d6b2e7ce12b4f40a93b3102345027fb216c48ba0f473ff2f5cd7",
+                  "responsible_user": "usr_7477a0da6ef94113b9c9162361c14351",
+                  "stage": "preview",
+                  "target_revision": 1,
+                  "version": 1
+                },
+                "source_revision": "f9d750fe15a016bbeb2290b08b037c3082717ae8031c67a4462844ebd4b61109",
+                "issue_capabilities": [
+                  "animation",
+                  "mesh-rigging"
+                ],
+                "required": [
+                  "review",
+                  "animation",
+                  "mesh-rigging"
+                ],
+                "profile": "animation",
+                "installation": "b13aa90783833ff98549b18f89d8e2327fd198566bc047edf6571465c9943511",
+                "writes": {
+                  "b": [
+                    "output"
+                  ]
+                },
+                "matched": null,
+                "physical_closure": null,
+                "state": "ready",
+                "candidate": null
+              }
+            ],
+            "gap": [
+              {
+                "ticket": "5559c9b9449a830ba0118cfb798edb9aa285bc253af199803ffdde2209cf345a",
+                "reason": "required_model_or_capabilities_unavailable",
+                "model": "animation",
+                "modelAvailable": true,
+                "requiredCapabilities": [
+                  "review",
+                  "animation",
+                  "mesh-rigging"
+                ],
+                "missingCapabilities": [
+                  "mesh-rigging"
+                ]
+              }
+            ],
+            "physical_calls": 2
+          }
+        },
+        {
+          "name": "test_only_authorized_capability_edits_invalidate_signoff_and_reservation",
+          "result": "passed",
+          "seconds": 0.851,
+          "observation": {
+            "original": "363abbe2f6321ca9fb7b488da3a4377d2a3652f2c596cb6bc14bc0863e2e301f",
+            "revised": "ca0e45ced47e8c6ab343263750b158ca3f57a9c09a930555c1d24f4b7d712b53",
+            "old_ticket": "5470428c9d4a19422aa274fc0a391613d671ee12eb575c9486c904c38c57b775",
+            "new_ticket": "5fd25445d2f1c418da518710a8af8846308e934183a546e67621c2d972b4ed40",
+            "denied_edit": 403,
+            "old_state": "stopped",
+            "missing_capability_reserved": false,
+            "reverted_definition": "363abbe2f6321ca9fb7b488da3a4377d2a3652f2c596cb6bc14bc0863e2e301f",
+            "reverted_confirmation": "pending",
+            "physical_calls": 0
+          }
+        }
+      ]
+    },
+    {
+      "command": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_workflow.py customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py customizations/components/tianxuan/server/test_task_confirmations.py customizations/components/tianxuan/server/test_issue_classification.py",
+      "passed": 54,
+      "seconds": 67.01
+    },
+    {
+      "command": "python -m pytest -q customizations/components/tianxuan/server/test_native_entry_normal.py customizations/components/tianxuan/server/test_native_entry.py::PlanValidationTests",
+      "passed": 2,
+      "seconds": 16.0
+    },
+    {
+      "command": "node --test customizations/platforms/process-management/yuanheng-local/sinan/test/dispatch.test.mjs",
+      "passed": 16
+    }
+  ],
+  "learning": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 30,
+    "application": "The authenticated native receiver read back each ticket, exact confirmed issue revision, route assignment and worker closure. The missing capability produced a ready ticket with no assignment or process. Candidate source blobs are recorded for integration readback."
+  }
+}

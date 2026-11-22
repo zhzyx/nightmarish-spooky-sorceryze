@@ -1533,6 +1533,44 @@ class Tianxuan:
         }
 
     @_connection_call
+    def task_stage_authority(self, actor: str, issue: str, issue_revision: str) -> dict[str, Any] | None:
+        # Membership is independent of source visibility. A private design or a
+        # missing confirmation must never take the ordinary issue path.
+        record = self.db.execute(
+            "SELECT i.project,i.number FROM design_task_sources s JOIN issues i ON i.id=s.issue_id WHERE s.issue_id=?",
+            (issue,),
+        ).fetchone()
+        if record is None:
+            return None
+        detail = self.read_issue_detail(actor, record["project"], record["number"])
+        source = detail["design_source"]
+        if not source:
+            raise PermissionDenied("Signed task source unavailable")
+        target = detail["task_target"]
+        confirmation = detail.get("task_confirmation")
+        if not target or target["status"] != "defined" or not confirmation or confirmation["status"] != "confirmed":
+            raise VersionConflict("Current task stage confirmation required")
+        responsible = detail["assignee"]["id"] if detail["assignee"] else detail["created_by"]
+        binding = {
+            "issue_id": issue,
+            "issue_revision": issue_revision,
+            "document_id": source["document_id"],
+            "version": source["version"],
+            "target_revision": target["revision"],
+            "stage": target["stage"],
+            "responsible_user": responsible,
+            "confirmed_by": responsible,
+        }
+        if (
+            any(confirmation.get(name) != value for name, value in binding.items())
+            or any(target[name] != binding[name] for name in ("issue_id", "document_id", "version"))
+            or not target["criteria"]
+            or not confirmation["revision"]
+        ):
+            raise VersionConflict("Task stage confirmation changed")
+        return {**binding, "confirmation_revision": confirmation["revision"], "criteria": target["criteria"]}
+
+    @_connection_call
     def set_task_confirmation(
         self,
         actor: str,
@@ -1926,6 +1964,10 @@ class Tianxuan:
         rows = self.db.execute("SELECT name FROM issue_labels WHERE issue_id=? ORDER BY name", (issue_id,))
         return [row["name"] for row in rows]
 
+    @staticmethod
+    def _issue_capabilities(labels: list[str]) -> list[str]:
+        return [name.removeprefix("capability:") for name in labels if name.startswith("capability:")]
+
     @_connection_call
     def set_issue_classification(
         self,
@@ -1947,6 +1989,9 @@ class Tianxuan:
         names = sorted({name.strip() for name in labels})
         if len(names) > 100 or any(not name or len(name) > 128 or not name.isprintable() for name in names):
             raise TianxuanError("issue labels must contain up to 100 names of 1 to 128 characters")
+        required = self._issue_capabilities(names)
+        if len(required) > 32 or any(not name or name != name.strip() for name in required):
+            raise TianxuanError("Capability labels require up to 32 nonblank capability IDs")
         previous = self._issue_labels(issue_id)
         if (issue_type, names) != (issue["type"], previous):
             if (expected_type, sorted(set(expected_labels))) != (issue["type"], previous):
@@ -1954,6 +1999,13 @@ class Tianxuan:
             self.db.execute("UPDATE issues SET type=?,updated_at=? WHERE id=?", (issue_type, _now(), issue_id))
             self.db.execute("DELETE FROM issue_labels WHERE issue_id=?", (issue_id,))
             self.db.executemany("INSERT INTO issue_labels(issue_id,name) VALUES (?,?)", ((issue_id, n) for n in names))
+            if required != self._issue_capabilities(previous):
+                # Reverting capability labels must not revive a prior stage grant.
+                self.db.execute(
+                    "UPDATE design_task_confirmations SET status='pending',revision=revision+1,actor=NULL,"
+                    "issue_revision=NULL WHERE issue_id=?",
+                    (issue_id,),
+                )
         return {"type": issue_type, "labels": names}
 
     def _project_issue(self, actor: str, issue_id: str, project: str, *, write: bool = False) -> dict[str, Any]:
@@ -2130,6 +2182,10 @@ class Tianxuan:
         issue = self._require_tenant_issue(actor, issue_id, write=write)
         fields = ("id", "tenant_id", "parent_id", "type", "title", "body_md", "acceptance", "requirement_id")
         definition = {key: issue[key] for key in fields}
+        # Only explicit routing requirements participate in the signed issue revision.
+        required = self._issue_capabilities(self._issue_labels(issue_id))
+        if required:
+            definition["required_capabilities"] = required
         ancestors = []
         current: dict[str, Any] | None = issue
         while current:

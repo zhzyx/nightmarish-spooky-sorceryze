@@ -78,6 +78,23 @@ class Turn(Version):
     context_snapshot: MessageContext | None = None
 
 
+# This installed adapter exposes one tool for design tasks in this signed stage.
+ISSUE_COMMENT_STAGE = "工单评论"
+
+
+class PublishIssueComment(Version):
+    turn_id: UUID
+    issue: IssueReference
+    body: str = Field(min_length=1, max_length=16000)
+    target_revision: int | None = Field(default=None, ge=1)
+    confirmation_revision: int | None = Field(default=None, ge=1)
+
+
+def issue_chat_key(tenant: str, actor: str, issue: str) -> str:
+    identity = json.dumps(["tianxuan/issue-consultation", tenant, actor, issue])
+    return str(uuid5(NAMESPACE_URL, identity))
+
+
 class Draft(Version):
     body: str = Field(min_length=1, max_length=8000, pattern=r"\S")
     title: Annotated[str, StringConstraints(strip_whitespace=True, max_length=150)] = ""
@@ -453,6 +470,45 @@ class Conversations:
                 self.save(db, owner, record)
             return record
 
+    def publish_issue_comment(self, actor: str, key: str, project: str, payload: PublishIssueComment) -> dict[str, Any]:
+        owner = self.owner(actor)
+        issue = payload.issue.object_id
+        with self.transaction() as db:
+            record = self.get(db, owner, key)
+            turn = record["turns"][-1] if record["turns"] else {}
+            context = turn.get("context_snapshot") or {}
+            if (
+                key != issue_chat_key(*owner, issue)
+                or context.get("project") != project
+                or context.get("issue_id") != issue
+                or payload.issue.model_dump() not in context.get("references", [])
+                or turn.get("id") != str(payload.turn_id)
+                or turn.get("state") != "answered"
+                or turn.get("answer") != payload.body
+            ):
+                raise conflict("reopen the selected issue and review its latest answer")
+            self.check_selection(actor, owner[0], MessageContext.model_validate(context))
+            grant = self.domain.task_stage_authority(actor, issue, payload.issue.revision)
+            if grant and (grant["stage"] != ISSUE_COMMENT_STAGE or grant["confirmed_by"] != actor):
+                raise HTTPException(403, "the confirmed stage and its owner must authorize this comment")
+            approved = (grant["target_revision"], grant["confirmation_revision"]) if grant else (None, None)
+            if (payload.target_revision, payload.confirmation_revision) != approved:
+                raise conflict("task confirmation changed")
+            previous = turn.get("issue_comment")
+            if previous is None:
+                self.check(record, payload.expected_version)
+            elif previous["authorization"] != payload.model_dump(mode="json", exclude={"body"}):
+                raise conflict("this turn already has a different authorization")
+            comment = self.domain.add_issue_comment(actor, issue, payload.body, call_id=f"chat:{key}:{turn['id']}")
+            if previous is None:
+                turn["issue_comment"] = {
+                    "id": comment["id"],
+                    "actor": actor,
+                    "authorization": payload.model_dump(mode="json", exclude={"body"}),
+                }
+                self.save(db, owner, record)
+            return {"conversation": record, "comment": comment}
+
     def stop_waiting(self, actor: str, key: str, turn_id: str, version: int) -> dict[str, Any]:
         owner = self.owner(actor)
         with self.transaction() as db:
@@ -761,8 +817,11 @@ def create_workspace_conversation_router(
         issue = domain.read_issue(actor, issue_id)
         if issue["project"] != project:
             raise HTTPException(404, "issue unavailable in this project")
-        identity = json.dumps(["tianxuan/issue-consultation", issue["tenant_id"], actor, issue_id])
-        return service.create(actor, str(uuid5(NAMESPACE_URL, identity)))
+        return service.create(actor, issue_chat_key(issue["tenant_id"], actor, issue_id))
+
+    @router.post("/{key}/issue-comment")
+    def publish_issue_comment(request: Request, key: UUID, project: str, payload: PublishIssueComment):
+        return service.publish_issue_comment(workspace_actor(request, write=True), str(key), project, payload)
 
     @router.get("/{key}")
     def get(request: Request, key: UUID):

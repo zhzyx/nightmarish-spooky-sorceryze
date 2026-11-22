@@ -37,7 +37,7 @@ CHATS = "/api/v1/workspace/conversations"
 PROJECT = "u11/studio"
 
 
-def exercise(root, binary, verify_routes=None):
+def exercise(root, binary, verify_routes=None, *, prepare_issues=None, http_trace=None):
     engine = copy_editor(binary, root / "editor")
     project = root / "project"
     project.mkdir()
@@ -49,10 +49,14 @@ def exercise(root, binary, verify_routes=None):
     owner = store.register("Studio", "owner@example.invalid", password)
     actor = owner["user_id"]
     other = store.add_member(actor, "peer@example.invalid", password)["user_id"]
-    issues = [
-        store.create_issue(actor, "核对入口", body_md=body, project=PROJECT)
-        for body in ("桥梁方案 <tianxuan-doc://example/1/1>", "隧道方案")
-    ]
+    issues = (
+        prepare_issues(store, actor, PROJECT)
+        if prepare_issues
+        else [
+            store.create_issue(actor, "核对入口", body_md=body, project=PROJECT)
+            for body in ("桥梁方案 <tianxuan-doc://example/1/1>", "隧道方案")
+        ]
+    )
     token = store.issue_session(actor)
     other_token = store.issue_session(other)
     model_inputs = []
@@ -65,7 +69,7 @@ def exercise(root, binary, verify_routes=None):
             json={
                 "model": "fixture",
                 "usage": {"prompt_tokens": 3, "completion_tokens": 2},
-                "choices": [{"message": {"content": "已核对该工单。"}}],
+                "choices": [{"message": {"content": f"建议复核第 {len(model_inputs)} 项的验收记录。"}}],
             },
         )
 
@@ -78,7 +82,7 @@ def exercise(root, binary, verify_routes=None):
         "TIANXUAN_CHAT_MODEL": "fixture",
         "TIANXUAN_CHAT_MODEL_KEY": "fixture",
     }
-    calls = []
+    calls = [] if http_trace is None else http_trace
     with patch.dict(os.environ, modes), socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
         origin = f"http://127.0.0.1:{sock.getsockname()[1]}"
