@@ -15,6 +15,7 @@ from contextlib import contextmanager, nullcontext
 from pathlib import Path, PurePosixPath
 
 from issue_flow import dependencies as issue_dependencies
+from native_local_occupancy import remember
 from native_observations import model_observation
 from native_store import NativeStoreError, _digest, _json, _object_name
 from native_worker import worker_cancel_requested, worker_step_reporter
@@ -114,6 +115,10 @@ class NativeWorkflow:
         self.catalog = json.loads(_json(catalog or []))
         self.domain.db.create_function("native_workflow_version", 0, lambda: 2)
         with self._transaction() as db:
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS native_local_occupancy ("
+                "task TEXT PRIMARY KEY, actor TEXT NOT NULL, owner TEXT NOT NULL, pgid INTEGER)"
+            )
             db.execute(
                 "CREATE TABLE IF NOT EXISTS native_tasks (id TEXT PRIMARY KEY, tenant TEXT NOT NULL, "
                 "issue TEXT UNIQUE NOT NULL, task TEXT NOT NULL, state TEXT NOT NULL, "
@@ -443,6 +448,9 @@ class NativeWorkflow:
     def _record_step(self, key, step, details, receipt=None):
         """Installed tool receiver. An already observed receipt cannot advance a run."""
         with self._transaction() as db:
+            if step == "process.started":
+                db.execute("UPDATE native_local_occupancy SET pgid=? WHERE task=?", (details["pid"], key))
+                return
             self._append_step(db, key, step, details, receipt or step)
 
     @staticmethod
@@ -949,6 +957,7 @@ class NativeWorkflow:
             db.execute(
                 "UPDATE native_tasks SET state='reserved',assignment=? WHERE id=?", (_json(assignment), row["id"])
             )
+            remember(db, self, task["actor"], row["id"])
             callback = getattr(self, "on_state_change", None)
             if callback is not None:
                 callback()
@@ -1087,6 +1096,7 @@ class NativeWorkflow:
                 db.execute("UPDATE native_tasks SET state='ready',assignment=NULL WHERE id=?", (key,))
                 return self._row(db, key)
             if stale is None:
+                remember(db, self, task["actor"], key)
                 db.execute("UPDATE native_tasks SET state='running' WHERE id=?", (key,))
                 db.execute("UPDATE issues SET status='in-progress' WHERE id=?", (row["issue"],))
                 self.domain._event(task["tenant"], "native.started", actor, row["issue"], {"task": key})

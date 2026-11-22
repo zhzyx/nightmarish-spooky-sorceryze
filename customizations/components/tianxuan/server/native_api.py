@@ -41,6 +41,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "status": {"key"},
             "checkpoint": {"key"},
             "recovery": {"project"},
+            "recover-occupancy": {"project"},
             "execution-readback": {"key"},
             "record-execution-fault": {"key"},
             **{op: {"issue", "key", "expected"} for op in ("pause", "resume", "cancel")},
@@ -168,6 +169,10 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 return workflow.execute_receipt(actor, payload["key"])
             if operation in {"status", "check", "review", "reconcile", "finish"}:
                 return getattr(workflow, operation)(actor, payload["key"])
+            if operation == "recover-occupancy":
+                from native_local_occupancy import recover_local_occupancy
+
+                return recover_local_occupancy(workflow, actor, payload["project"])
             if operation == "recovery":
                 return recovery_list(workflow, actor, **payload)
             if operation == "checkpoint":
