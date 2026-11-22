@@ -1,66 +1,228 @@
-name: macOS startup validation for 2123
-on: workflow_dispatch
-permissions:
-  contents: read
-  actions: read
+name: 🍎 macOS Builds
+on:
+  workflow_call:
+  workflow_dispatch:
+    inputs:
+      tianshu_only:
+        description: Run the Tianshu arm64 editor acceptance suite
+        type: boolean
+        default: false
+      maliang_save_ui:
+        description: Run only the Maliang native Save panel acceptance on the arm64 editor
+        type: boolean
+        default: false
+      registered_worker_close:
+        description: Verify a registered local worker stops and resumes across Cocoa editor sessions
+        type: boolean
+        default: false
+
+# Global Settings
+env:
+  SCONS_FLAGS: >-
+    dev_mode=yes
+    module_text_server_fb_enabled=yes
+
 jobs:
-  validate:
+  build-macos:
+    # From https://docs.github.com/en/actions/how-tos/write-workflows/choose-where-workflows-run/choose-the-runner-for-a-job#choosing-github-hosted-runners
     runs-on: macos-26
-    timeout-minutes: 27
+    name: ${{ matrix.target == 'editor' && 'Editor (target=editor)' || 'Template (target=template_release)' }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON((inputs.tianshu_only || inputs.maliang_save_ui || inputs.registered_worker_close) && '["editor"]' || '["editor", "template_release"]') }}
+    env:
+      CACHE_NAME: ${{ matrix.target == 'editor' && 'macos-editor' || 'macos-template' }}
+      EXTRA_FLAGS: ${{ matrix.target == 'template_release' && 'debug_symbols=no' || '' }}
+      UNIVERSAL_BIN: ./bin/godot.macos.${{ matrix.target }}.universal
+
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout
+        uses: actions/checkout@v7
         with:
-          persist-credentials: false
-      - uses: actions/checkout@v7
+          submodules: recursive
+
+      - name: Restore Godot build cache
+        uses: ./.github/actions/godot-cache-restore
         with:
-          ref: 6ebc11ab0271e993646860f05e39d19a2ec1c9b6
-          path: frozen
-          sparse-checkout: |
-            data-collection/q05-f01-common.json
-            misc/dist/macos_tools.app
-            tests/editor/macos_startup_validation.gd
-            tests/editor/run_macos_startup_validation.py
-          sparse-checkout-cone-mode: false
-          persist-credentials: false
-      - uses: actions/download-artifact@v8
-        with:
-          github-token: ${{ github.token }}
-          run-id: 45062919388
-          artifact-ids: 14771815768
-          path: ${{ runner.temp }}/download
-          merge-multiple: true
-      - name: Reconstruct and verify original signed application
-        id: reconstruct
+          cache-name: ${{ env.CACHE_NAME }}
+        continue-on-error: true
+
+      - name: Setup Python and SCons
+        uses: ./.github/actions/godot-deps
+
+      - name: Preflight real signed external host and launchd
+        if: matrix.target == 'editor' && !inputs.maliang_save_ui && !inputs.registered_worker_close
         run: |
-          app="$RUNNER_TEMP/Q05.app"
-          mkdir -p "$RUNNER_TEMP/binary" "$RUNNER_TEMP/evidence"
-          tar -C "$RUNNER_TEMP/binary" -xzf "$RUNNER_TEMP/download/registered-worker-editor.tar.gz"
-          cd "$RUNNER_TEMP/binary"
-          shasum -a 256 -c <<'HASHES'
-          556482d839e8c268734d408a4b9d0639f7147adfede0049e76b6bdbb814bb524  godot.macos.editor.arm64
-          3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462  tianshu-ui.json
-          22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b  tianshu-board.json
-          HASHES
-          ditto "$GITHUB_WORKSPACE/frozen/misc/dist/macos_tools.app" "$app"
-          mkdir -p "$app/Contents/MacOS"
-          cp godot.macos.editor.arm64 "$app/Contents/MacOS/Godot"
-          cp tianshu-{ui,board}.json "$app/Contents/Resources/"
-          codesign --force --deep --sign - "$app"
-          cp godot.macos.editor.arm64 "$app/Contents/MacOS/Godot"
-          codesign --verify --deep --strict --verbose=2 "$app"
-          cd "$GITHUB_WORKSPACE"
-          shasum -a 256 "$app/Contents/MacOS/Godot" "$app"/Contents/Resources/tianshu-*.json frozen/data-collection/q05-f01-common.json > "$RUNNER_TEMP/evidence/digests.txt"
-      - name: Reproduce early close with a delayed real child
+          python3 -m unittest discover -s tools -p test_editor_trusted_hosts.py -v
+          python3 -m unittest discover -s tools -p test_macos_external_host_acceptance.py -v
+          python3 tools/run_macos_external_host_acceptance.py --preflight --report "$RUNNER_TEMP/external-host-preflight.json" --download-fixtures
+
+      - name: Download pre-built ANGLE
+        shell: sh
+        id: angle-sdk
         run: |
-          python3 tests/editor/reproduce_2123_schedule.py --expect-old-race --script frozen/tests/editor/run_macos_startup_validation.py --app "$RUNNER_TEMP/Q05.app" --manifest frozen/data-collection/q05-f01-common.json --report "$RUNNER_TEMP/evidence/original.json"
-      - name: Exercise the repaired Cocoa harness under the same delay
-        if: ${{ !cancelled() && steps.reconstruct.outcome == 'success' }}
+          if python ./misc/scripts/install_angle.py; then
+            echo "ANGLE_ENABLED=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::ANGLE SDK installation failed, building without ANGLE support."
+            echo "ANGLE_ENABLED=no" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download pre-built AccessKit
+        shell: sh
+        id: accesskit-sdk
         run: |
-          python3 tests/editor/reproduce_2123_schedule.py --script tests/editor/run_macos_startup_validation.py --app "$RUNNER_TEMP/Q05.app" --manifest frozen/data-collection/q05-f01-common.json --report "$RUNNER_TEMP/evidence/startup.json"
-      - uses: actions/upload-artifact@v7
-        if: always()
+          if python3 ./misc/scripts/install_accesskit.py; then
+            echo "ACCESSKIT_ENABLED=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::AccessKit SDK installation failed, building without AccessKit support."
+            echo "ACCESSKIT_ENABLED=no" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup Vulkan SDK
+        id: vulkan-sdk
+        run: |
+          if sh misc/scripts/install_vulkan_sdk_macos.sh; then
+            echo "VULKAN_ENABLED=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::macOS: Vulkan SDK installation failed, building without Vulkan support."
+            echo "VULKAN_ENABLED=no" >> "$GITHUB_OUTPUT"
+          fi
+        continue-on-error: true
+
+      - name: Compilation (x86_64)
+        if: ${{ !inputs.tianshu_only && !inputs.maliang_save_ui && !inputs.registered_worker_close }}
+        uses: ./.github/actions/godot-build
         with:
-          name: cocoa-startup-2123
-          path: ${{ runner.temp }}/evidence
+          # Silence warning about Metal not being supported in x86_64 builds using `metal=no`.
+          scons-flags: ${{ env.SCONS_FLAGS }} ${{ env.EXTRA_FLAGS }} arch=x86_64 vulkan=${{ steps.vulkan-sdk.outputs.VULKAN_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }} metal=no
+          platform: macos
+          target: ${{ matrix.target }}
+
+      - name: Compilation (arm64)
+        uses: ./.github/actions/godot-build
+        with:
+          scons-flags: ${{ env.SCONS_FLAGS }} ${{ env.EXTRA_FLAGS }} arch=arm64 vulkan=${{ steps.vulkan-sdk.outputs.VULKAN_ENABLED }} accesskit=${{ steps.accesskit-sdk.outputs.ACCESSKIT_ENABLED }} angle=${{ steps.angle-sdk.outputs.ANGLE_ENABLED }}
+          platform: macos
+          target: ${{ matrix.target }}
+
+      - name: Package the exact arm64 editor for native acceptance
+        if: inputs.registered_worker_close
+        run: |
+          python3 tools/package_tianshu_ui.py --output bin/tianshu-ui.json
+          python3 tools/package_tianshu_board.py --output bin/tianshu-board.json
+          tar -C bin -czf "$RUNNER_TEMP/registered-worker-editor.tar.gz" godot.macos.editor.arm64 tianshu-ui.json tianshu-board.json
+
+      - name: Retain the editor and its runtime packages
+        if: inputs.registered_worker_close
+        uses: actions/upload-artifact@v7
+        with:
+          name: registered-worker-editor
+          path: ${{ runner.temp }}/registered-worker-editor.tar.gz
+          retention-days: 7
           if-no-files-found: error
-          retention-days: 14
+
+      - name: Close and reopen the original signed business task in Cocoa
+        if: inputs.registered_worker_close
+        timeout-minutes: 6
+        run: |
+          python3 -m pip install -r customizations/components/tianxuan/server/requirements.txt
+          python3 tests/editor/run_macos_registered_worker_close.py --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/registered-worker-close.json"
+
+      - name: Upload registered worker close evidence
+        if: inputs.registered_worker_close
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: registered-worker-close
+          path: ${{ runner.temp }}/registered-worker-close.json
+
+      - name: Verify Maliang saves through the macOS system panel
+        if: inputs.maliang_save_ui
+        run: |
+          command -v xcodegen || brew install xcodegen
+          python3 tests/editor/run_macos_save_panel.py --godot ./bin/godot.macos.editor.arm64 --output "$RUNNER_TEMP/maliang-save-ui"
+
+      - name: Upload Maliang native Save panel evidence
+        if: always() && inputs.maliang_save_ui
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: maliang-save-ui
+          path: ${{ runner.temp }}/maliang-save-ui
+
+      - name: Verify Tianshu package switching on arm64
+        if: matrix.target == 'editor' && !inputs.maliang_save_ui && !inputs.registered_worker_close
+        run: python3 tests/editor/run_tianshu_ui_package.py --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-package.json"
+
+      - name: Verify external host trust on macOS
+        if: matrix.target == 'editor' && !inputs.maliang_save_ui && !inputs.registered_worker_close
+        run: |
+          ./bin/godot.macos.editor.arm64 --headless --test --test-case='[Editor][AIChat][ExternalPeer]*'
+
+      - name: Verify real signed external hosts without GUI or model calls
+        if: matrix.target == 'editor' && !inputs.maliang_save_ui && !inputs.registered_worker_close
+        run: >-
+          python3 tools/run_macos_external_host_acceptance.py
+          --godot ./bin/godot.macos.editor.arm64
+          --report "$RUNNER_TEMP/external-host-acceptance.json"
+          --download-fixtures --download-codex
+
+      - name: Upload real signed host acceptance evidence
+        if: always() && matrix.target == 'editor' && !inputs.maliang_save_ui && !inputs.registered_worker_close
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: macos-signed-host-acceptance
+          path: |
+            ${{ runner.temp }}/external-host-preflight.json
+            ${{ runner.temp }}/external-host-preflight-logs/*
+            ${{ runner.temp }}/external-host-acceptance.json
+            ${{ runner.temp }}/external-host-acceptance-logs/*
+
+      - name: Verify Tianshu creator navigation on arm64
+        if: matrix.target == 'editor' && !inputs.maliang_save_ui && !inputs.registered_worker_close
+        run: |
+          for attempt in 1 2 3; do
+            python3 tests/editor/run_daqian_graph.py --scenario graph --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-graph-$attempt.json"
+          done
+
+      - name: Verify Tianshu work-order interactions on arm64
+        if: inputs.tianshu_only && !inputs.maliang_save_ui && !inputs.registered_worker_close
+        run: |
+          for scenario in direct publish parallel entry; do
+            python3 tests/editor/run_daqian_graph.py --scenario "$scenario" --godot ./bin/godot.macos.editor.arm64 --report "$RUNNER_TEMP/tianshu-$scenario.json"
+          done
+
+      - name: Verify automatic model discovery and cancellation
+        if: inputs.tianshu_only && !inputs.maliang_save_ui && !inputs.registered_worker_close
+        run: |
+          python3 tests/editor/run_model_autofetch.py --godot ./bin/godot.macos.editor.arm64 --source . --node "$(command -v node)" --out "$RUNNER_TEMP/model-autofetch.json"
+
+      - name: Save Godot build cache
+        if: ${{ !inputs.tianshu_only && !inputs.maliang_save_ui && !inputs.registered_worker_close }}
+        uses: ./.github/actions/godot-cache-save
+        with:
+          cache-name: ${{ env.CACHE_NAME }}
+        continue-on-error: true
+
+      - name: Prepare artifact
+        if: ${{ !inputs.tianshu_only && !inputs.maliang_save_ui && !inputs.registered_worker_close }}
+        run: |
+          lipo -create ./bin/godot.macos.${{ matrix.target }}.x86_64 ./bin/godot.macos.${{ matrix.target }}.arm64 -output ./bin/godot.macos.${{ matrix.target }}.universal
+          rm ./bin/godot.macos.${{ matrix.target }}.x86_64 ./bin/godot.macos.${{ matrix.target }}.arm64
+          rm -rf ./bin/build_deps
+          strip bin/godot.*
+          chmod +x bin/godot.*
+
+      - name: Upload artifact
+        if: ${{ !inputs.tianshu_only && !inputs.maliang_save_ui && !inputs.registered_worker_close }}
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: ${{ env.CACHE_NAME }}
+
+      - name: Unit tests
+        if: ${{ !inputs.tianshu_only && !inputs.maliang_save_ui && !inputs.registered_worker_close }}
+        run: |
+          ${{ env.UNIVERSAL_BIN }} --version
+          ${{ env.UNIVERSAL_BIN }} --help
+          ${{ env.UNIVERSAL_BIN }} --test --force-colors
