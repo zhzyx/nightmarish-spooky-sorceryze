@@ -672,9 +672,15 @@ class Tianxuan:
         return cursor.rowcount > 0
 
     @_connection_call
-    def issue_access_key(self, actor: str, user_id: str, name: str, days: int = 90) -> dict[str, Any]:
+    def issue_access_key(
+        self, actor: str, user_id: str, name: str, days: int = 90, *, admin_only: bool = False
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
         if self.role_of(actor) != "admin" or self._tenant_of(actor) != self._tenant_of(user_id):
             raise PermissionDenied("only a tenant administrator can issue access keys")
+        if admin_only and self.role_of(user_id) != "admin":
+            raise VersionConflict("recipient is not an administrator")
         if not name.strip() or len(name) > 100 or not 1 <= days <= 365:
             raise TianxuanError("key name and lifetime (1–365 days) are required")
         token = self.issue_session(user_id, days * 86400)

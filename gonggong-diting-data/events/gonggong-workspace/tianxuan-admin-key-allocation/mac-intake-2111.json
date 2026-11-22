@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "tianxuan-admin-key-allocation",
+  "event_id": "mac-intake-2111",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2111",
+  "occurred_at": "2026-11-22T15:11:49.233403+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "issue_number": 2111,
+    "operator": "Sail-Li",
+    "scope": "管理员密钥分配界面、权限核验与密钥交付验收",
+    "source_updated_at": "2026-11-22T15:10:45Z"
+  },
+  "evidence_refs": [],
+  "sha256": "44d40584c042aa962873a8fd2f06f08ea7418286aca2a39a7a38cb1db3f3e3ca"
+}

@@ -230,7 +230,9 @@ def configure_access(app: FastAPI, store: Tianxuan) -> None:
     @app.get("/api/v1/auth/me")
     def me(request: Request) -> dict[str, Any]:
         actor = actor_for(request)
-        return next(user for user in store.list_members(actor) if user["id"] == actor)
+        user = next(user for user in store.list_members(actor) if user["id"] == actor)
+        admitted = mode != "accounts" or store.actor_context(actor)["tenant"] == os.environ.get("TIANXUAN_TENANT_ID")
+        return {**user, "can_issue_admin_keys": user["role"] == "admin" and admitted}
 
     @app.get("/api/v1/auth/keys")
     def list_keys(request: Request) -> dict[str, Any]:
@@ -239,6 +241,13 @@ def configure_access(app: FastAPI, store: Tianxuan) -> None:
     @app.post("/api/v1/auth/keys")
     def create_key(payload: KeyCreate, request: Request) -> JSONResponse:
         result = store.issue_access_key(actor_for(request), payload.user_id, payload.name, payload.days)
+        return JSONResponse(result, headers={"Cache-Control": "no-store"})
+
+    @app.post("/api/v1/auth/keys/admin")
+    def create_admin_key(payload: KeyCreate, request: Request) -> JSONResponse:
+        result = store.issue_access_key(
+            actor_for(request), payload.user_id, payload.name, payload.days, admin_only=True
+        )
         return JSONResponse(result, headers={"Cache-Control": "no-store"})
 
     @app.delete("/api/v1/auth/keys/{key_id}")
