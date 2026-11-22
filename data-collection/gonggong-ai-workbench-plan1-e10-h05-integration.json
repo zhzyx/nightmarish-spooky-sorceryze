@@ -1,0 +1,59 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-e10",
+  "issue_number": 1765,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765",
+  "integrates_pr": 2094,
+  "base_sha": "3de079544b2cd0f3782a05cb68576b91e44dc92a",
+  "checked_at": "2026-11-22T14:31:04.309862+00:00",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/issue_upload_api.py": "5b1918aac97fd1cecfdf87f2aadb3d579d297dd7810191a115a6783c4a4c421d",
+    "customizations/components/tianxuan/server/test_work_management.py": "1c337200e906d37826480dc569b83fa7b0edb919e622b0751e3231ad81f52a4b",
+    "customizations/components/tianxuan/server/work_management.py": "3f8869654c8ac3c9e18cbba2459adb0df674a557c6391cf164a13895242f24df",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "1c38970a631feec1272cd986edf8c8d96120efc63bba4b9a784ea37dbd604f76",
+    "editor/docks/workbench/issue_actions/creative_judgments.gd": "cddcba668c8a803cb086d6022a5b7aadf9fcffe4318acb0c3a551e5455b80bc6",
+    "tests/editor/run_workbench_edit_original.py": "9bbbe135d21f098d937bffbd3ed524f63238d6798ce70fab1ceb2dd95ee06b20",
+    "tests/editor/run_workbench_issue_detail.py": "45661e737bd5bb47d8351836ff0918c7e8f2115dc6c7aba522a2af51be881b75",
+    "tests/editor/workbench_edit_original.gd": "40834d4801c706c1a82736b86620fe88b48abecf0b23b86323aa3f92936c88bf"
+  },
+  "observation": {
+    "after": {
+      "issue_id": "iss_696a32d6c65c4c01b8408d32a463121f",
+      "kind": "concept",
+      "module": "studio-art",
+      "number": 1.0,
+      "path": "badge.svg",
+      "question": "确认徽章颜色",
+      "revision": "8d865c8c7301829456c0d2b034af12d31f50ae3744ab2480b2cd9661306246d8",
+      "submission_version": 2.0,
+      "title": "确认徽章颜色"
+    },
+    "before": {
+      "issue_id": "iss_696a32d6c65c4c01b8408d32a463121f",
+      "kind": "concept",
+      "module": "studio-art",
+      "number": 1.0,
+      "path": "badge.svg",
+      "question": "确认徽章颜色",
+      "revision": "301c05c1aaed07b830c29bd59c0015f9cae34c0f7b1823aa156e70eb460d9729",
+      "submission_version": 1.0,
+      "title": "确认徽章颜色"
+    },
+    "description": "确认徽章颜色\n#1 · 提交 v2 · badge.svg\nstudio-art @ 8d865c8c7301829456c0d2b034af12d31f50ae3744ab2480b2cd9661306246d8\n判断人　usr_ccc8a3f96fac43028086bd845c8d554a",
+    "display_server": "macOS",
+    "editor": "CodeEdit",
+    "saved_source": "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle r=\"4\" fill=\"#0000ff\"/></svg>\n",
+    "original_sha256": "d25a5ffd658d948f2ab287c13330ce0dcb88a71a31f5ec1c6d9f60484b0f3751",
+    "edited_sha256": "4467418831d396623435d55a93deb2c45a1b9415477397c0d96f3026cdb874d0",
+    "engine_sha256": "5be8575f1d030065514a48d7c98070161a2b9e6c7d9705a69aff67ae760403ee"
+  },
+  "h05_native_verification": "Passed native H02–H05 handoff, comparison and version-bound signatures",
+  "server_verification": "16 passed, 1 warning in 2.21s",
+  "mypy": "Success: no issues found in 5 source files",
+  "commands": [
+    "scons platform=macos target=editor arch=arm64 vulkan=no accesskit=no -j8",
+    "python tests/editor/run_workbench_edit_original.py --godot bin/godot.macos.editor.arm64 --report <result>",
+    "python tests/editor/run_workbench_creative_judgments.py --godot bin/godot.macos.editor.arm64 --report <result>",
+    "pytest -q customizations/components/tianxuan/server/test_work_management.py customizations/components/tianxuan/server/test_issue_upload.py"
+  ],
+  "scope": "SVG 原件在 macOS 图形窗口通过 Godot 原生控件自动驱动。合并时保留 H05 在比较页核对签认身份与提交版本，E10 返回已验证的新判断项时保留焦点。"
+}

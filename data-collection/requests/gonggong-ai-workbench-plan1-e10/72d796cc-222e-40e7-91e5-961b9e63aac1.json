@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "gonggong-ai-workbench-plan1-e10",
+  "collected_at": "2026-11-22T14:07:40.077656+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-e10/dispatch-d5a0f2715fc84caaa4767e561fbd9fb9.json",
+      "sha256": "4aaa75b19e75b0e20aaa53b7a75240a0c469754579cdda6695cf51c1e1f133ff",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-d5a0f2715fc84caaa4767e561fbd9fb9",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-e10/mac-round13-edit-coverage.json",
+      "sha256": "e1cf6c3fc1cf4346760acfdb7e485a2dfcb1b453c71142d82e772a60823032ea",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "mac-round13-edit-coverage",
+      "origin": "external-authorized-host"
+    },
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-e10/mac-round13-edit-request.json",
+      "sha256": "0f52959db1f331e4babace0195cba2c7fe51ab8cfce54ef19115288565df5ca0",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "mac-round13-edit-request",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot",
+  "issue_number": 1765,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765"
+}

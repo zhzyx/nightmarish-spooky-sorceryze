@@ -16,6 +16,12 @@ var revise := Button.new()
 var status := Label.new()
 var selected := {}
 var work_version := 0
+var edit_original := Button.new()
+var save_original := Button.new()
+var local_original := ""
+var original_editor: ScriptEditorBase
+var original_digest := ""
+var pending_rows: Array = []
 
 
 func _ready() -> void:
@@ -34,6 +40,12 @@ func _ready() -> void:
 	compare.text = "比较此工单的候选…"
 	compare.pressed.connect(func(): detail.get_node("WorkbenchIssueArtifacts").open_comparison())
 	panel.add_child(compare)
+	edit_original.text = "在原生文本编辑器打开原件"
+	edit_original.pressed.connect(_edit_original)
+	panel.add_child(edit_original)
+	save_original.text = "保存原件并返回判断项"
+	save_original.pressed.connect(_save_original)
+	panel.add_child(save_original)
 	recipients.name = "JudgmentRecipient"
 	panel.add_child(recipients)
 	note.name = "JudgmentNote"
@@ -58,6 +70,7 @@ func _ready() -> void:
 
 func _clear_selection() -> void:
 	generation += 1
+	_close_original()
 	selected.clear()
 	panel.hide()
 	description.text = ""
@@ -67,6 +80,7 @@ func _clear_selection() -> void:
 
 
 func _clear_rows() -> void:
+	pending_rows.clear()
 	for child in rows.get_children():
 		rows.remove_child(child)
 		child.queue_free()
@@ -87,7 +101,8 @@ func _browse() -> void:
 	if reply.status != 200 or reply.data.get("project") != session.get_identity().project or not reply.data.get("items") is Array:
 		status.text = "无法读取本人的待判断事项"
 		return
-	for item: Dictionary in reply.data.items:
+	pending_rows = reply.data.items
+	for item: Dictionary in pending_rows:
 		var row := Button.new()
 		row.text = "#%d %s · %s\n%s" % [int(item.number), item.title, item.path, item.question]
 		row.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -98,12 +113,12 @@ func _browse() -> void:
 		status.text = "暂无待本人判断的事项"
 
 
-func _open(item: Dictionary) -> void:
+func _open(item: Dictionary, show_revision := true) -> void:
 	# Resolving the numbered issue also opens its original design and comment controls.
 	await detail.open_issue(int(item.number))
 	if detail.get_detail().get("id") != item.issue_id:
 		return
-	await _inspect(item, true)
+	await _inspect(item, show_revision)
 
 
 func open_compared(ref: Dictionary) -> void:
@@ -126,7 +141,7 @@ func _matches_reference(event: Dictionary, item: Dictionary) -> bool:
 	return int(event.get("submission_version", 0)) == int(item.submission_version)
 
 
-func _inspect(item: Dictionary, open_original: bool) -> void:
+func _inspect(item: Dictionary, show_revision: bool) -> void:
 	_clear_selection()
 	var attempt := generation
 	var route := "/api/v1/issues/%s/work" % str(item.issue_id).uri_encode()
@@ -152,6 +167,10 @@ func _inspect(item: Dictionary, open_original: bool) -> void:
 		status.text = "%s\n待 %s 判断" % [binding, judgment.responsible]
 		return
 	selected = item.duplicate(true)
+	original_digest = judgment.digest
+	edit_original.visible = str(item.path).get_extension().to_lower() in ["svg", "obj", "gltf"]
+	edit_original.disabled = false
+	save_original.hide()
 	work_version = int(work.data.version)
 	description.text = "%s\n%s\n判断人　%s" % [item.question, binding, judgment.responsible]
 	for event: Dictionary in work.data.history:
@@ -161,7 +180,7 @@ func _inspect(item: Dictionary, open_original: bool) -> void:
 	approve.disabled = false
 	revise.disabled = false
 	transfer.disabled = true
-	if open_original:
+	if show_revision:
 		detail.get_node("issue_revisions").open_revision(str(item.module), str(item.revision))
 	var users: Dictionary = await session.api_request(HTTPClient.METHOD_GET, "/api/v1/users")
 	if attempt != generation:
@@ -172,6 +191,113 @@ func _inspect(item: Dictionary, open_original: bool) -> void:
 				recipients.add_item("%s (%s)" % [member.name, member.email])
 				recipients.set_item_metadata(recipients.item_count - 1, member.id)
 	transfer.disabled = recipients.item_count == 0
+
+
+func _close_original() -> void:
+	if not local_original.is_empty():
+		detail.get_meta("close_original_text").call(local_original)
+		DirAccess.remove_absolute(local_original)
+	local_original = ""
+	original_editor = null
+	save_original.hide()
+
+
+func _exit_tree() -> void:
+	if not local_original.is_empty():
+		DirAccess.remove_absolute(local_original)
+
+
+func _edit_original() -> void:
+	if selected.is_empty() or edit_original.disabled or not edit_original.visible:
+		return
+	var attempt := generation
+	edit_original.disabled = true
+	var temporary := EditorInterface.get_editor_paths().get_cache_dir().path_join("judgment-%s-%s.txt" % [
+		Crypto.new().generate_random_bytes(16).hex_encode(), str(selected.path).get_file().validate_filename().left(80)])
+	var route := "/api/v1/issues/by-number/%d/artifacts/%d" % [int(selected.number), int(selected.submission_version)]
+	var reply: Dictionary = await session.api_request(HTTPClient.METHOD_GET, route, {}, 15.0, temporary)
+	if attempt != generation:
+		DirAccess.remove_absolute(temporary)
+		return
+	if reply.status != 200 or FileAccess.get_sha256(temporary) != original_digest:
+		DirAccess.remove_absolute(temporary)
+		edit_original.disabled = false
+		status.text = "原件读取失败或摘要已变化，请重新读取判断项"
+		return
+	var file := FileAccess.open(temporary, FileAccess.READ)
+	if not file or file.get_length() > 1024 * 1024:
+		DirAccess.remove_absolute(temporary)
+		edit_original.disabled = false
+		status.text = "可编辑的原件最大为 1 MiB"
+		return
+	file.close()
+	if not detail.get_meta("open_original_text").call(temporary):
+		DirAccess.remove_absolute(temporary)
+		edit_original.disabled = false
+		status.text = "原生文本编辑器无法打开此原件"
+		return
+	local_original = temporary
+	original_editor = EditorInterface.get_script_editor().get_current_editor()
+	EditorInterface.set_main_screen_editor("Script")
+	save_original.disabled = false
+	save_original.show()
+	status.text = "在文本编辑器中修改 %s，然后保存并返回。" % selected.path
+
+
+func _save_original() -> void:
+	if local_original.is_empty() or save_original.disabled:
+		return
+	var editor := EditorInterface.get_script_editor()
+	if not is_instance_valid(original_editor) or editor.get_current_editor() != original_editor:
+		status.text = "请先选择此判断项的原件编辑标签"
+		return
+	editor.save_current_script()
+	var file := FileAccess.open(local_original, FileAccess.READ)
+	if not file or file.get_length() > 1024 * 1024:
+		status.text = "无法读取已保存的原件，或原件超过 1 MiB"
+		return
+	var size := file.get_length()
+	var bytes := file.get_buffer(size)
+	if bytes.size() != size or file.get_length() != size:
+		status.text = "原件读取不完整，请重新保存"
+		return
+	file.close()
+	var code := original_editor.get_base_editor() as CodeEdit
+	if not code or bytes != code.text.to_utf8_buffer():
+		status.text = "编辑器内容和已保存文件不同，请先完成原生保存"
+		return
+	var hash := HashingContext.new()
+	hash.start(HashingContext.HASH_SHA256)
+	if not bytes.is_empty():
+		hash.update(bytes)
+	var digest := hash.finish().hex_encode()
+	if digest == original_digest:
+		status.text = "原件尚未修改"
+		return
+	var attempt := generation
+	var item := selected.duplicate(true)
+	var route := "/api/v1/issues/by-number/%d/artifacts/%d/edit" % [int(item.number), int(item.submission_version)]
+	var payload := {"expected_version": work_version, "revision": item.revision, "content": Marshalls.raw_to_base64(bytes),
+		"call_id": ("%s/%s/%s/%s" % [item.issue_id, int(item.submission_version), work_version, digest]).sha256_text()}
+	save_original.disabled = true
+	code.editable = false
+	var reply: Dictionary = await session.api_request(HTTPClient.METHOD_POST, route, payload)
+	if attempt != generation:
+		return
+	if is_instance_valid(code):
+		code.editable = true
+	save_original.disabled = false
+	if reply.status != 200 or reply.data.get("digest") != digest:
+		status.text = "原件未绑定，判断项或来源修订可能已变化（%d）" % reply.status
+		return
+	await _browse()
+	for updated: Dictionary in pending_rows:
+		if updated.issue_id == item.issue_id and int(updated.submission_version) == int(reply.data.submission_version) and updated.revision == reply.data.revision:
+			await _open(updated, false)
+			if selected == updated:
+				edit_original.grab_focus()
+				status.text = "已保存并返回判断项 · %s" % updated.revision
+			return
 
 
 func _send(operation: String) -> void:

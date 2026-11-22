@@ -1,0 +1,60 @@
+{
+  "issue": 1765,
+  "request_id": "gonggong-ai-workbench-plan1-e10",
+  "tested_at": "2026-11-22T14:04:47.979090+00:00",
+  "platform": "macOS 26.6.2 arm64",
+  "source_base": "e8b40ea7d472868629b62af109acc03e42be7fae",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/issue_upload_api.py": "5b1918aac97fd1cecfdf87f2aadb3d579d297dd7810191a115a6783c4a4c421d",
+    "customizations/components/tianxuan/server/test_work_management.py": "911a284443a066428507a53b7c26348327a987e00917ff6295114fba66337ad3",
+    "customizations/components/tianxuan/server/work_management.py": "df11a4507659d874221d95abaef2ab84cf08df2669ff8ff1b280d2a027861de6",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "1c38970a631feec1272cd986edf8c8d96120efc63bba4b9a784ea37dbd604f76",
+    "editor/docks/workbench/issue_actions/creative_judgments.gd": "f5428c2e41898a6c9a1bda5bcd7d98c40f67bfd6335770de45a10fdeff960a5a",
+    "tests/editor/run_workbench_edit_original.py": "9bbbe135d21f098d937bffbd3ed524f63238d6798ce70fab1ceb2dd95ee06b20",
+    "tests/editor/run_workbench_issue_detail.py": "45661e737bd5bb47d8351836ff0918c7e8f2115dc6c7aba522a2af51be881b75",
+    "tests/editor/workbench_edit_original.gd": "40834d4801c706c1a82736b86620fe88b48abecf0b23b86323aa3f92936c88bf"
+  },
+  "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765#issuecomment-7080104034",
+  "commands": [
+    "scons platform=macos target=editor arch=arm64 vulkan=no accesskit=no -j8",
+    "python tests/editor/run_workbench_edit_original.py --godot bin/godot.macos.editor.arm64 --report <result>",
+    "python tests/editor/run_workbench_creative_judgments.py --godot bin/godot.macos.editor.arm64 --report <result>",
+    "pytest -q customizations/components/tianxuan/server/test_work_management.py customizations/components/tianxuan/server/test_issue_upload.py"
+  ],
+  "observation": {
+    "after": {
+      "issue_id": "iss_9855539ab54f4ce286689f8bed71b934",
+      "kind": "concept",
+      "module": "studio-art",
+      "number": 1.0,
+      "path": "badge.svg",
+      "question": "确认徽章颜色",
+      "revision": "8d865c8c7301829456c0d2b034af12d31f50ae3744ab2480b2cd9661306246d8",
+      "submission_version": 2.0,
+      "title": "确认徽章颜色"
+    },
+    "before": {
+      "issue_id": "iss_9855539ab54f4ce286689f8bed71b934",
+      "kind": "concept",
+      "module": "studio-art",
+      "number": 1.0,
+      "path": "badge.svg",
+      "question": "确认徽章颜色",
+      "revision": "301c05c1aaed07b830c29bd59c0015f9cae34c0f7b1823aa156e70eb460d9729",
+      "submission_version": 1.0,
+      "title": "确认徽章颜色"
+    },
+    "description": "确认徽章颜色\nbadge.svg\nstudio-art @ 8d865c8c7301829456c0d2b034af12d31f50ae3744ab2480b2cd9661306246d8",
+    "display_server": "macOS",
+    "editor": "CodeEdit",
+    "saved_source": "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle r=\"4\" fill=\"#0000ff\"/></svg>\n",
+    "original_sha256": "d25a5ffd658d948f2ab287c13330ce0dcb88a71a31f5ec1c6d9f60484b0f3751",
+    "edited_sha256": "4467418831d396623435d55a93deb2c45a1b9415477397c0d96f3026cdb874d0",
+    "engine_sha256": "1d00ecff331c8f08a18db53b0e7c65cca1ff954cc627505ee175ecb9500772c6"
+  },
+  "related_regressions": {
+    "native_h02_h03_h04": "passed",
+    "domain": "16 passed, 1 FastAPI TestClient deprecation warning"
+  },
+  "scope": "SVG、OBJ 和 glTF 文本原件可进入原生文本编辑器；图形窗口样例为 SVG，PNG 和 GLB 未纳入文本编辑入口。真实编辑控件由测试驱动，未进行人工视觉评判。"
+}
