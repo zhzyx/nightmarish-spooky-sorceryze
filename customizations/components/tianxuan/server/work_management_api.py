@@ -13,6 +13,7 @@ from work_management import (
     execute,
     godot_inputs,
     list_issue_artifacts,
+    my_judgments,
     plan_membership,
     project_fields,
     read_approved_asset,
@@ -50,6 +51,10 @@ def create_work_router(store, actor_dependency):
         if body.keys() != {"label"}:
             raise HTTPException(422, "text field label required")
         return define_text_field(store, actor, project, key, body["label"])
+
+    @router.get("/work/my-judgments")
+    def pending(project: str = DEFAULT_PROJECT, actor: str = actor_dep):
+        return my_judgments(store, actor, project)
 
     @router.get("/work/roadmap")
     def read_roadmap(project: str | None = None, actor: str = actor_dep):
@@ -142,7 +147,7 @@ def create_work_router(store, actor_dependency):
     @router.post("/issues/{issue_id}/work/{operation}")
     def mutate(
         issue_id: str,
-        operation: Literal["plan", "log", "submit_asset", "decide"],
+        operation: Literal["plan", "log", "submit_asset", "decide", "transfer"],
         body: dict,
         actor: str = scoped_actor,
     ):
@@ -152,8 +157,8 @@ def create_work_router(store, actor_dependency):
         call_id = payload.pop("call_id", None)
         if not isinstance(call_id, str) or not call_id.strip():
             raise HTTPException(422, "a stable call_id is required")
-        if operation == "decide":
-            return execute(store, actor, "work.decide", payload, call_id=call_id, human=True)
+        if operation in ("decide", "transfer"):
+            return execute(store, actor, f"work.{operation}", payload, call_id=call_id, human=True)
         return store.dispatch_tool(actor, f"work.{operation}", payload, call_id=call_id)
 
     return router

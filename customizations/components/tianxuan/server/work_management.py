@@ -123,6 +123,7 @@ def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any
         history=[],
     )
     latest_judgments = {}
+    judgments_by_version = {}
     issue_creator = None
     checked_modules = set()
     for row in store.db.execute(
@@ -154,11 +155,45 @@ def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any
                         responsible=event.get("responsible", issue_creator),
                     )
                     latest_judgments[data["kind"]] = judgment
+                    judgments_by_version[event["version"]] = judgment
                     state["creative_judgments"].append(judgment)
-                elif event["action"] == "work.decide":
-                    latest_judgments[data["kind"]].update(event)
-            state["assets"][data["kind"]] = event
+                else:
+                    # Older decisions apply to the most recent submission of that kind.
+                    judgment = (
+                        judgments_by_version[data["submission_version"]]
+                        if "submission_version" in data
+                        else latest_judgments[data["kind"]]
+                    )
+                    judgment.update(event)
+                state["assets"][data["kind"]] = latest_judgments[data["kind"]].copy()
+            else:
+                state["assets"][data["kind"]] = event
     return state
+
+
+@_connection_call
+def my_judgments(store, actor, project):
+    if not store.db.in_transaction:
+        store.db.execute("BEGIN")
+    items = []
+    for issue in store.list_issues(actor, project=project):
+        try:
+            state = snapshot(store, actor, issue["id"])
+        except (NotFound, PermissionDenied):
+            # Opening this issue's work projection would fail its source ACL.
+            continue
+        for judgment in state["creative_judgments"]:
+            if judgment["decision"] == "pending" and judgment["responsible"] == actor:
+                items.append(
+                    dict(
+                        issue_id=issue["id"],
+                        number=issue["number"],
+                        title=issue["title"],
+                        question=issue["acceptance"] or issue["body_md"] or issue["title"],
+                        **{k: judgment[k] for k in ("submission_version", "module", "revision", "path", "kind")},
+                    )
+                )
+    return {"project": project, "items": items}
 
 
 @_connection_call
@@ -217,14 +252,23 @@ def read_approved_asset(store, actor, issue_id, kind, module, revision, path) ->
         store.db.execute("BEGIN")
     store._require_tenant_issue(actor, issue_id)
     require_native_source_read(store, actor, module)
-    rows = store.db.execute(
-        "SELECT action, data FROM issue_work_events WHERE issue_id=? AND action IN ('work.submit_asset','work.decide') "
-        "AND json_extract(data, '$.kind')=? ORDER BY version DESC LIMIT 2",
+    row = store.db.execute(
+        "SELECT version,data FROM issue_work_events WHERE issue_id=? AND action='work.submit_asset' "
+        "AND json_extract(data,'$.kind')=? ORDER BY version DESC LIMIT 1",
         (issue_id, kind),
-    ).fetchall()
-    if [row["action"] for row in rows] != ["work.decide", "work.submit_asset"]:
+    ).fetchone()
+    if row is None:
         raise VersionConflict("asset has no current approval")
-    decision, submission = (json.loads(row["data"]) for row in rows)
+    submission = json.loads(row["data"])
+    decision_row = store.db.execute(
+        "SELECT data FROM issue_work_events WHERE issue_id=? AND version>? AND action='work.decide' "
+        "AND json_extract(data,'$.kind')=? AND COALESCE(json_extract(data,'$.submission_version'),?)=? "
+        "ORDER BY version DESC LIMIT 1",
+        (issue_id, row["version"], kind, row["version"], row["version"]),
+    ).fetchone()
+    if decision_row is None:
+        raise VersionConflict("asset has no current approval")
+    decision = json.loads(decision_row["data"])
     binding = dict(kind=kind, module=module, revision=revision, path=path)
     if (
         decision.get("decision") != "approved"
@@ -325,6 +369,7 @@ _KEYS = {
     "work.log": {"minutes", "note"},
     "work.submit_asset": {"kind", "module", "revision", "path"},
     "work.decide": {"kind", "module", "revision", "path", "decision", "note"},
+    "work.transfer": {"kind", "module", "revision", "path", "submission_version", "target", "note"},
 }
 
 
@@ -355,14 +400,16 @@ def execute(store, actor: str, name: str, payload: dict[str, Any], *, call_id=No
 def record_work_mutation(store, actor, name, payload, *, call_id, human=False):
     """Record a validated work event and return its compact id/version receipt."""
     issue_id = payload["issue_id"]
-    if name == "work.decide" and not human:
+    if name in ("work.decide", "work.transfer") and not human:
         raise PermissionDenied("asset decision requires human confirmation")
     if name not in _KEYS or call_id is None:
         raise TianxuanError("unknown action or missing call_id")
-    if name in ("work.log", "work.decide"):
+    if name in ("work.log", "work.decide", "work.transfer"):
         payload.setdefault("note", "")
     field_edit = name == "work.plan" and "field_update" in payload
     keys = {"field_update"} if field_edit else _KEYS[name]
+    if name == "work.decide" and "submission_version" in payload:
+        keys = keys | {"submission_version"}
     if payload.keys() != keys | {"issue_id", "expected_version"}:
         raise TianxuanError("invalid work arguments")
     payload = store._tool_payload(name, payload)
@@ -390,6 +437,10 @@ def record_work_mutation(store, actor, name, payload, *, call_id, human=False):
         data["kind"] not in kinds or not all(bounded_text(data[k]) for k in ("module", "revision", "path"))
     ):
         raise TianxuanError("invalid asset binding")
+    if "submission_version" in data and (type(data["submission_version"]) is not int or data["submission_version"] < 1):
+        raise TianxuanError("invalid submission version")
+    if name == "work.transfer" and (not bounded_text(data["target"]) or data["target"] == actor):
+        raise TianxuanError("a different recipient is required")
     if name == "work.decide" and data["decision"] not in ("approved", "changes_requested"):
         raise TianxuanError("invalid asset decision")
 
@@ -427,28 +478,39 @@ def record_work_mutation(store, actor, name, payload, *, call_id, human=False):
                 digest=hashlib.sha256(content).hexdigest(),
                 decision="attached" if data["kind"] == "attachment" else "pending",
             )
-        elif name == "work.decide":
-            row = store.db.execute(
-                "SELECT version,data FROM issue_work_events WHERE issue_id=? AND action IN ('work.submit_asset','work.decide') "
-                "AND json_extract(data, '$.kind')=? ORDER BY version DESC LIMIT 1",
-                (issue_id, data["kind"]),
-            ).fetchone()
-            asset = json.loads(row["data"]) if row else None
+        elif name in ("work.decide", "work.transfer"):
+            state = snapshot(store, actor, issue_id)
+            version = data.get("submission_version")
+            asset = (
+                state["assets"].get(data["kind"])
+                if version is None
+                else next((item for item in state["creative_judgments"] if item["submission_version"] == version), None)
+            )
             if (
                 not asset
                 or asset["decision"] != "pending"
-                or any(data[k] != asset[k] for k in ("module", "revision", "path"))
+                or any(data[k] != asset[k] for k in ("kind", "module", "revision", "path"))
             ):
                 raise VersionConflict("pending asset binding changed")
-            responsible = asset.get("responsible") or store.get_issue(issue_id)["created_by"]
-            if actor != responsible:
-                raise PermissionDenied("only the responsible person may decide this creative judgment")
+            if actor != asset["responsible"]:
+                raise PermissionDenied("only the responsible person may change this creative judgment")
             data.update(
-                initiator=asset.get("initiator", responsible),
-                responsible=responsible,
-                submission_version=row["version"],
+                initiator=asset["initiator"],
+                responsible=actor,
+                submission_version=asset["submission_version"],
+                digest=asset["digest"],
             )
-            data["digest"] = asset["digest"]
+            if name == "work.transfer":
+                target = data.pop("target")
+                store._require_tenant_issue(target, issue_id, write=True)
+                store._require_editor(target)
+                design = store.db.execute(
+                    "SELECT document_id FROM design_task_sources WHERE issue_id=?", (issue_id,)
+                ).fetchone()
+                if design:
+                    store.get_doc_shared(target, design["document_id"])
+                snapshot(store, target, issue_id)
+                data.update(previous_responsible=actor, responsible=target, decision="pending")
         store.db.execute(
             "INSERT INTO issue_work_events VALUES(?,?,?,?,?,?)",
             (issue_id, expected + 1, name, json.dumps(data, ensure_ascii=False), actor, _now()),
