@@ -106,6 +106,8 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	pSidebarLayout->set_h_size_flags(Control::SIZE_EXPAND_FILL);
 	pSidebarLayout->set_v_size_flags(Control::SIZE_EXPAND_FILL);
 	pScroll->add_child(pSidebarLayout);
+	pSidebarLayout->connect(SNAME("sort_children"), callable_mp(this, &AIChatDock::EnsureSidebarComposerVisible), CONNECT_DEFERRED);
+	pScroll->connect(SceneStringName(resized), callable_mp(this, &AIChatDock::EnsureSidebarComposerVisible), CONNECT_DEFERRED);
 	Button *pExpand = memnew(Button);
 	pExpand->set_name("ExpandWorkbench");
 	pExpand->set_text(TTR("Expand AI Workbench"));
@@ -230,6 +232,15 @@ void AIChatDock::OpenWorkbenchSidebar()
 	ShowWorkbenchSidebar(true);
 }
 
+void AIChatDock::EnsureSidebarComposerVisible()
+{
+	if (input->has_focus() && input->is_visible_in_tree() && pSidebarLayout->is_ancestor_of(input))
+	{
+		ScrollContainer *pScroll = Object::cast_to<ScrollContainer>(pSidebarLayout->get_parent());
+		pScroll->ensure_control_visible(input);
+	}
+}
+
 void AIChatDock::ShowWorkbenchSidebar(bool p_capture_source)
 {
 	if (p_capture_source && idWorkbenchReturnScreen.is_null() && !WorkbenchReferenceLocked())
@@ -282,6 +293,7 @@ void AIChatDock::ShowWorkbenchSidebar(bool p_capture_source)
 	if (input->is_visible_in_tree())
 	{
 		input->grab_focus();
+		callable_mp(this, &AIChatDock::EnsureSidebarComposerVisible).call_deferred();
 	}
 	else if (Control *composer = Object::cast_to<Control>(pConversationView->find_child("ModuleChatInput", true, false)))
 	{

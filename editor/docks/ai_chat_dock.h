@@ -307,6 +307,7 @@ class AIChatDock : public EditorDock {
 	void PrepareWorkbenchConsultation();
 	void OpenWorkbenchSidebar();
 	void ShowWorkbenchSidebar(bool p_capture_source);
+	void EnsureSidebarComposerVisible();
 	void ExpandWorkbenchSidebar();
 	void CloseWorkbenchSidebar();
 	void DismissWorkbenchSidebar();
@@ -388,7 +389,7 @@ class AIChatDock : public EditorDock {
 	static void RestoreLegacyWorkbenchReference(AIChatSessionData &stSession);
 	void StageWorkbenchSelection();
 	void StageWorkbenchPageReference();
-	static Dictionary WorkbenchPageSnapshot(const Array &arrReferences);
+	Dictionary WorkbenchPageSnapshot(const Array &arrReferences) const;
 	String StageWorkbenchReference(Control *pHost, Node *pNode);
 	String GetWorkbenchModelAsset(Node *pNode, Node *pRoot) const;
 	bool WorkbenchReferenceValid(AIChatSessionData &stSession, bool bCheckBytes);
