@@ -241,8 +241,14 @@ class InstallationManifest:
             and set(commands) == {"planner", "producer", "checker", "reviewer", "dispatcher"},
             "Complete installed command set required",
         )
-        for command in commands.values():
-            require(isinstance(command, dict) and set(command) == {"argv", "env"}, "Fixed command required")
+        for role, command in commands.items():
+            expected = {"argv", "env"}
+            # A replay guarantee is part of the signed local producer installation.
+            # Network role clients cannot vouch for effects on the remote service.
+            if role == "producer" and spec.get("mode") == "deterministic-test" and isinstance(command, dict):
+                if command.get("restart_checkpoint") == "immutable-inputs":
+                    expected.add("restart_checkpoint")
+            require(isinstance(command, dict) and set(command) == expected, "Fixed command required")
             argv = command["argv"]
             require(
                 isinstance(argv, list) and argv and all(isinstance(v, str) and v for v in argv), "Fixed argv required"

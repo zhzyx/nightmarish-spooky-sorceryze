@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-ae1ff4ccbcbd4553cbfe98e8900d8f9e07bda25d0937a2e815477700e3c03ede",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2126",
+  "occurred_at": "2026-11-22T18:03:02.387189+00:00",
+  "evidence_refs": [
+    "dispatch-c1ae42047e804247ac0d443308165e40",
+    "learn-412d133bd7458bcb27a307def72dc5d666c8b011dec6acedc4ae8b4f1ec87087"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 19,
+    "previous": "168f26d371fe44687946e764ace81d5085c1030d935bd1f6476653a3eac6dbd6",
+    "action": "applied",
+    "details": {
+      "task": "GitHub #2126: establish owned worker and child startup, live nonce, and a concurrent sibling business task before inducing a local editor-connection disconnect.",
+      "observed": "Windows loopback service: both original worker PIDs exited; independently signed concurrent task survived. Clean original revisions produced once after restart and one check reached the signed preview boundary. macOS Cocoa requires separate candidate evidence."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/q05-macos-registered-business-worker-close.json",
+        "sha256": "75a7e758357284e8742374358dfd249a520ffebad529a53ee856d340ebdc27fa"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/q05-macos-registered-business-worker-close/dispatch-c1ae42047e804247ac0d443308165e40.json",
+      "sha256": "ec2223889d1e3d85e0543d1a47b759d7d32a226581c1836caa57dce98742d834"
+    }
+  },
+  "sha256": "8cd3e5aa0312f9c5631f8483fbcde2348c3b539b19288708036099fad4bd627f"
+}

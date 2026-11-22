@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "q05-macos-registered-business-worker-close",
+  "event_id": "resume-1709-receive-2126",
+  "kind": "request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2126",
+  "occurred_at": "2026-11-22T18:36:27.835853+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "issue_number": 2126,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T18:14:52Z",
+    "parent_issue": 1709,
+    "source_baseline": "91a78e9b17738cf187538e012f75f5e8302f085d",
+    "authority": "current user requested completion of the outstanding plan items"
+  },
+  "evidence_refs": [],
+  "sha256": "1c887d7ee1993296869375c70e0d48e5d7f27e9ec2580bde22b297d001291cb3"
+}

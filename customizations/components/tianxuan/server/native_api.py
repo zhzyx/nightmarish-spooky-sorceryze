@@ -10,6 +10,7 @@ import json
 import re
 import sqlite3
 from collections.abc import Callable
+from threading import Event
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
@@ -215,12 +216,42 @@ def create_native_workflow_router(workflow) -> APIRouter:
 
         try:
             if operation == "recover-project":
+                closed = Event()
 
                 def current_session():
+                    if closed.is_set():
+                        raise HTTPException(499, "editor recovery connection closed")
                     if _identity(request, refresh=True, allow_project=True)[1] != actor:
                         raise HTTPException(401, "recovery identity changed")
 
-                return await recover_project(workflow, actor, request.query_params.get("project"), current_session)
+                project = request.query_params.get("project")
+                if (
+                    request.headers.get("x-native-worker-lifetime") != "editor-connection"
+                    or not request.client
+                    or request.client.host not in {"127.0.0.1", "::1"}
+                    or not getattr(workflow.worker, "records_local_process_group", False)
+                    or callable(getattr(workflow.worker, "reserve", None))
+                ):
+                    return await recover_project(workflow, actor, project, current_session)
+
+                # The body is consumed. Observe this socket's EOF throughout recovery,
+                # including while the producer is supervised on a different thread.
+                async def observe_editor():
+                    while (await request.receive())["type"] != "http.disconnect":
+                        pass
+                    closed.set()
+
+                from native_worker import editor_connection_closed
+
+                observer = asyncio.create_task(observe_editor())
+                binding = editor_connection_closed.set(closed)
+                try:
+                    return await recover_project(workflow, actor, project, current_session)
+                finally:
+                    closed.set()
+                    editor_connection_closed.reset(binding)
+                    observer.cancel()
+                    await asyncio.gather(observer, return_exceptions=True)
             if operation == "integration-await":
                 if not isinstance(payload["event"], str) or len(payload["event"]) > 512:
                     raise HTTPException(422, "invalid publisher event")
