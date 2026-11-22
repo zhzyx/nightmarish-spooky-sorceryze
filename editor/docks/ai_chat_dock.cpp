@@ -8283,8 +8283,18 @@ void AIChatDock::_notification(int p_what) {
 			}
 		}
 		if (sub_agent_parallel_pid >= 0) {
+#ifdef MACOS_ENABLED
+			const Error eFinish = FinishMacWorkerGroup(sub_agent_parallel_pid, true);
+			if (eFinish != OK) {
+				RecordMacWorkerGroupFailure(sub_agent_parallel_pid, eFinish);
+			}
+			if (eFinish == OK || eFinish == ERR_DOES_NOT_EXIST) {
+				sub_agent_parallel_pid = -1;
+			}
+#else
 			OS::get_singleton()->kill(sub_agent_parallel_pid);
 			sub_agent_parallel_pid = -1;
+#endif
 		}
 		_cancel_ai_connection_probe();
 		if (ai_connection_state == "checking") {
@@ -8293,7 +8303,11 @@ void AIChatDock::_notification(int p_what) {
 		_cancel_production_integration();
 		for (const KeyValue<int, Dictionary> &entry : acceptance_bridge_jobs) {
 			DirAccess::remove_absolute(String(entry.value["stem"]) + ".request.live");
+#ifdef MACOS_ENABLED
+			stop_gonggong_process(int64_t(entry.value["pid"]));
+#else
 			OS::get_singleton()->kill(int64_t(entry.value["pid"]));
+#endif
 		}
 		acceptance_bridge_jobs.clear();
 		_end_daqian_approval(daqian_approval_running ? "unknown" : "cancelled");
@@ -8304,11 +8318,19 @@ void AIChatDock::_notification(int p_what) {
 		codex_login_timer->stop();
 		model_config_timer->stop();
 		if (codex_status_pid >= 0) {
+#ifdef MACOS_ENABLED
+			stop_gonggong_process(codex_status_pid);
+#else
 			OS::get_singleton()->kill(codex_status_pid);
+#endif
 			codex_status_pid = -1;
 		}
 		if (codex_login_pid >= 0) {
+#ifdef MACOS_ENABLED
+			stop_gonggong_process(codex_login_pid);
+#else
 			OS::get_singleton()->kill(codex_login_pid);
+#endif
 			codex_login_pid = -1;
 		}
 		pending_model_sources = 0;

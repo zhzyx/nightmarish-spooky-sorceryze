@@ -45,6 +45,7 @@
 #include "editor/docks/ai_chat_issue_guide.h"
 #include "editor/docks/ai_chat_sub_agent_receipts.h"
 #include "editor/docks/ai_chat_tools.h"
+#include "editor/docks/gonggong_process.h"
 #include "editor/docks/gonggong_runtime_config.h"
 #include "editor/docks/production/ParentGate.h"
 #include "editor/file_system/editor_file_system.h"
@@ -2461,7 +2462,19 @@ bool AIChatDock::_bind_parallel_review(int id, const Dictionary &receipt, const 
 }
 
 void AIChatDock::_poll_parallel_sub_agents() {
-	if (OS::get_singleton()->is_process_running(sub_agent_parallel_pid)) {
+#ifdef MACOS_ENABLED
+	const Error eFinish = FinishMacWorkerGroup(sub_agent_parallel_pid, false);
+	if (eFinish == ERR_DOES_NOT_EXIST) {
+		RecordMacWorkerGroupFailure(sub_agent_parallel_pid, eFinish);
+		sub_agent_parallel_pid = -1;
+		return;
+	}
+	// The still-waitable leader pins the group for the next poll.
+	const bool bRunning = eFinish != OK;
+#else
+	const bool bRunning = OS::get_singleton()->is_process_running(sub_agent_parallel_pid);
+#endif
+	if (bRunning) {
 		return; // Observe an existing process only; no new scheduling or model call.
 	}
 	sub_agent_parallel_pid = -1;

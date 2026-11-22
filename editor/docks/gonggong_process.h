@@ -37,8 +37,68 @@
 #include <unistd.h>
 #endif
 
+#ifdef MACOS_ENABLED
+#include "core/io/file_access.h"
+#include "core/io/json.h"
+#include "editor/docks/production/MacWorkerGroup.h"
+
+// Only use for a direct child returned by create_process/execute_with_pipe.
+// A completed call reaps that child and consumes its process identity.
+static inline Error FinishMacWorkerGroup(pid_t nLeader, bool bClosing, int32_t *pExitCode = nullptr) {
+	const int32_t nResult = AwaitMacWorkerGroup(nLeader, bClosing);
+	if (nResult == ECHILD) {
+		return ERR_DOES_NOT_EXIST;
+	}
+	if (nResult == EAGAIN) {
+		return ERR_BUSY;
+	}
+	if (nResult != 0) {
+		return nResult == ETIMEDOUT ? ERR_TIMEOUT : FAILED;
+	}
+	OS *pOs = OS::get_singleton();
+	const int32_t nCode = pOs->get_process_exit_code(nLeader);
+	if (pExitCode) {
+		*pExitCode = nCode;
+	}
+	return OK;
+}
+
+static inline void RecordMacWorkerGroupFailure(pid_t nLeader, Error eFailure) {
+	// This is evidence for manual reconciliation, never an instruction to
+	// signal a persisted PID after the owning editor has gone away.
+	OS *pOs = OS::get_singleton();
+	const String strPath = vformat("user://worker-group-%d-%d-%d.json", pOs->get_process_id(), nLeader, pOs->get_ticks_usec());
+	const Ref<FileAccess> refFile = FileAccess::open(strPath, FileAccess::WRITE);
+	if (!refFile.is_valid()) {
+		ERR_PRINT(vformat("Worker group %d shutdown is unverified (%s). Could not open %s.", nLeader, error_names[eFailure], strPath));
+		return;
+	}
+
+	Dictionary mapRecord;
+	mapRecord["state"] = "reconcile_required";
+	mapRecord["editor_pid"] = pOs->get_process_id();
+	mapRecord["group_id"] = nLeader;
+	mapRecord["error"] = error_names[eFailure];
+	const bool bStored = refFile->store_string(JSON::stringify(mapRecord));
+	refFile->flush();
+	if (!bStored || refFile->get_error() != OK) {
+		ERR_PRINT(vformat("Worker group %d shutdown is unverified (%s). Could not write %s.", nLeader, error_names[eFailure], strPath));
+		return;
+	}
+	ERR_PRINT(vformat("Worker group %d shutdown is unverified (%s). Reconciliation record: %s.", nLeader, error_names[eFailure], strPath));
+}
+#endif
+
 // Only pass a PID created and still owned by this editor operation.
 static inline void stop_gonggong_process(int64_t p_pid) {
+#ifdef MACOS_ENABLED
+	if (p_pid > 1) {
+		const Error eFinish = FinishMacWorkerGroup(p_pid, true);
+		if (eFinish != OK && eFinish != ERR_DOES_NOT_EXIST) {
+			RecordMacWorkerGroupFailure(p_pid, eFinish);
+		}
+	}
+#else
 	if (p_pid <= 0 || !OS::get_singleton()->is_process_running(p_pid)) {
 		return;
 	}
@@ -60,4 +120,5 @@ static inline void stop_gonggong_process(int64_t p_pid) {
 	}
 #endif
 	OS::get_singleton()->kill(p_pid);
+#endif
 }

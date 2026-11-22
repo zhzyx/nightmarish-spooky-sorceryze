@@ -43,6 +43,8 @@ CASES = [
     "parallel-blocked-cold",
     "parallel-blocked-prefix",
     "parallel-normal",
+    "parallel-mac-shutdown",
+    "parallel-mac-leader-exit",
     "parallel-failure",
     "parallel-unknown",
     "parallel-stop",
@@ -165,6 +167,30 @@ const log = project + '/parallel-batches.jsonl';
 const attempt = fs.existsSync(log) ? fs.readFileSync(log,'utf8').trim().split('\n').length + 1 : 1;
 fs.appendFileSync(log, JSON.stringify({...request,output,attempt})+'\n');
 fs.writeFileSync(project + '/parallel-started', JSON.stringify(request));
+if (process.env.DESIGN_BATCH_CASE.startsWith('parallel-mac-')) {
+  const { execFileSync } = await import('node:child_process');
+  const path = await import('node:path');
+  const { run } = await import(process.env.MAC_TREE_RUNNER);
+  const config = JSON.parse(fs.readFileSync(request.config));
+  for (const job of config.jobs) {
+    execFileSync('git', ['worktree', 'add', '-b', 'r04-' + job.order, job.worktree], {cwd:request.workspace});
+    const design = path.join('design-docs', request.requestId + '.md');
+    fs.mkdirSync(path.dirname(path.join(job.worktree, design)), {recursive:true});
+    fs.copyFileSync(path.join(request.workspace, design), path.join(job.worktree, design));
+    job.capabilities = ['coding'];
+    job.dependsOn = [];
+  }
+  process.env.MAC_TREE_OUTPUT = output;
+  if (process.env.DESIGN_BATCH_CASE === 'parallel-mac-leader-exit') {
+    fs.watchFile(project + '/process-tree-ready', {interval:10}, stat => { if (stat.size) process.exit(0); });
+  }
+  await run(request, {...config, nativeWorkspaceWrite:true, authorityRef:'isolated shutdown test', capacity:1,
+    python:process.env.MAC_TREE_PYTHON,
+    models:[{id:'r04-fixture', targets:['agent'], available:true, capabilities:['coding']}],
+    workerCommand:{executable:process.env.MAC_TREE_PYTHON, args:[process.env.MAC_TREE_HELPER, '{model}']},
+  }, output, {verify:()=>{}, report:async()=>({ok:true, state:'recorded_file', fixture:true})});
+  process.exit(0);
+}
 while (!fs.existsSync(project + '/parallel-release') || (attempt > 1 && !fs.existsSync(project + '/parallel-retry-release'))) await new Promise(r=>setTimeout(r,25));
 const mode = process.env.DESIGN_BATCH_CASE;
 if (mode.startsWith('parallel-blocked')) {
@@ -272,6 +298,9 @@ def main():
         parser.error(
             "--expect-stalled is retired: this fixture verifies independent directory operations, not the old blocking contract"
         )
+    mac_tree_case = args.case.startswith("parallel-mac-")
+    if mac_tree_case and sys.platform != "darwin":
+        parser.error("Process-group shutdown scenarios require macOS")
     models_case = args.case.startswith("models-")
     full_batch = args.case in {"normal", "stale-retry"} or args.case in MODELS_CONTINUE_CASES
     args.out.parent.mkdir(parents=True, exist_ok=True)
@@ -1332,6 +1361,7 @@ def main():
             ),
             DESIGN_BATCH_BRIDGE_AUDIT=str(folder / "bridge-audit.txt"),
             DESIGN_BATCH_CASE=args.case,
+            MAC_TREE_RUNNER=(ROOT / "tools/godot_parallel/runner.mjs").as_uri(),
             DESIGN_BATCH_PROJECT=str(project),
             DESIGN_BATCH_PHASE="initial",
             DESIGN_BATCH_GAME_WORKSPACE="1" if GAME_WORKSPACE else "0",
@@ -1342,7 +1372,12 @@ def main():
         )
         command = [str(binary), "--headless", "--editor", "--path", str(project), "--script", "res://gate.gd"]
         try:
-            result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=240)
+            if mac_tree_case:
+                import parallel_shutdown_tree
+
+                result, tree_readback = parallel_shutdown_tree.run_editor(command, env, project)
+            else:
+                result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=240)
             report_path = project / "design-batch-report.json"
             report = json.loads(report_path.read_text()) if report_path.exists() else {}
             if args.case == "parallel-blocked-cold" and result.returncode == 0 and report.get("ok"):
@@ -1518,6 +1553,9 @@ def main():
         )
         if args.case.startswith("parallel-"):
             ok = ok and stages["child1"] == stages["child2"] == 0
+            if mac_tree_case:
+                report["process_tree"] = tree_readback
+                ok = ok and not tree_readback["survivors"] and tree_readback["control_alive"]
             if args.case.startswith("parallel-blocked"):
                 batches_path = project / "parallel-batches.jsonl"
                 batches = (
