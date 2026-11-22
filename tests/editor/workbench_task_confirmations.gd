@@ -73,16 +73,23 @@ func run() -> void:
 		return
 	await process_frame
 	await process_frame
-	if action.rows.get_child_count() != 2:
-		printerr("Expected two independently selectable tasks")
+	if action.rows.get_child_count() != int(fixture.get("task_count", 2)):
+		printerr("Unexpected number of independently selectable tasks: ", action.rows.get_child_count())
 		quit(1)
 		return
 	var before := labels()
 	var selected := []
 	var rects := []
 	var viewport: Rect2 = action.rows.get_parent().get_global_rect()
+	var target_row: Node = action.rows.get_child(0)
 	for row: Node in action.rows.get_children():
 		var toggle := row.get_node("SelectTask") as Button
+		if fixture.get("focus_only", false):
+			if not toggle.text.begins_with("#%d " % int(fixture.number)):
+				continue
+			target_row = row
+			action.rows.get_parent().ensure_control_visible(row)
+			await process_frame
 		var act := row.get_node("ConfirmTask") as Button
 		var select_rect := toggle.get_global_rect()
 		var act_rect := act.get_global_rect()
@@ -99,7 +106,7 @@ func run() -> void:
 				return
 			selected.append(toggle.text)
 	if fixture.action != "read":
-		var button: Button = action.rows.get_child(0).get_node("ConfirmTask")
+		var button: Button = target_row.get_node("ConfirmTask")
 		var expected := "确认启动本项" if fixture.action == "confirm" else "撤销本项确认"
 		if button.text != expected or button.disabled:
 			printerr("Action unavailable: ", button.text)
