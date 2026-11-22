@@ -247,6 +247,15 @@ class DesignSplitRequest(BaseModel):
     items: list[DesignTaskItem] = Field(min_length=1, max_length=50)
 
 
+class TaskTargetRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    document_id: str = Field(min_length=1, max_length=256)
+    version: int = Field(ge=1, le=2**63 - 1, strict=True)
+    expected_revision: int = Field(ge=0, le=2**63 - 1, strict=True)
+    stage: str = Field(min_length=1, max_length=128)
+    criteria: str | None = Field(default=None, max_length=8000)
+
+
 class DocRestoreRequest(BaseModel):
     expected_version: int = Field(ge=1, strict=True)
     call_id: str | None = Field(default=None, min_length=1, max_length=256)

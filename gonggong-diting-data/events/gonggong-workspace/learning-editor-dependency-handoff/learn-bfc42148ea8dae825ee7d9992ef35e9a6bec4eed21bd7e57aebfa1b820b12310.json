@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-bfc42148ea8dae825ee7d9992ef35e9a6bec4eed21bd7e57aebfa1b820b12310",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1856",
+  "occurred_at": "2026-11-22T02:22:16.350110+00:00",
+  "evidence_refs": [
+    "dispatch-f7f724c73c944c5184809b49ebd2bf29",
+    "learn-767737d91fa2b1d34186f1388b3f5f6ae8e0d6013c276797afd7899b2fe0c724"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 29,
+    "previous": "8c072d8b351ee7b0e9f83621e7c3d5a315277b2c87b02f49c0006554d19d7fe0",
+    "action": "applied",
+    "details": {
+      "task": "A01 #1856 consumed D10's completed signed-revision split on the accepted main commit and reran D10 on A01's final editor, alongside A01's two-user test.",
+      "observed": "The same editor recognized the original signed design source, kept two stable D10 tasks after concurrent replay, and saved distinct A01 targets. The animation task retained its return comment after correction and service restart."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-a01.json",
+        "sha256": "80c58bf06128751e38fdb484de06a100e47e1c934b70846c970a6ec2b7d8d398"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a01/dispatch-f7f724c73c944c5184809b49ebd2bf29.json",
+      "sha256": "bdb72b4946fbd0cc5c8a2c65e2561e61585360b30b1ff0d9556af25ffd1ed2ce"
+    }
+  },
+  "sha256": "b5a990e91bee6848d816aeb5aa0963f6881ebada3e7516b99eba3ab3353e9c9a"
+}
