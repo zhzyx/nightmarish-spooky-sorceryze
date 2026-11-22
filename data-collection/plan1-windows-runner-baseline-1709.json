@@ -1,0 +1,405 @@
+{
+  "source_issue": 1709,
+  "source_head": "2ee48917eb54b82a14c381ffc8cb3c290b49bd14",
+  "entry_point": "tools/godot_parallel/runner.mjs",
+  "probe_sha256": "2c7aa384c757ce014956f8849ccdf53b536e1598a7c0de7129f86a280fa33a36",
+  "observations": "WaitForSingleObject on original handles: WAIT_TIMEOUT=alive, WAIT_OBJECT_0=exited",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "node": "v24.22.1",
+  "python": "3.12.14",
+  "runner_sha256": "a74197acc2693deec27f7ded7d8c80cee3dbf2eb8eeeab266a2d631f7a68116f",
+  "job_object_sha256": "0f7411dbaed36fb0b353193ab92e39fd225490196dce82543631e13b16d1a586",
+  "trials": [
+    {
+      "action": "cancel",
+      "probe_id": "d61de301-3e1c-4736-9509-520c70f8ec19",
+      "runner_pid": 116116,
+      "runner_exit": 0,
+      "ready": {
+        "worker": {
+          "role": "worker",
+          "pid": 128816,
+          "ppid": 116116,
+          "probe_id": "d61de301-3e1c-4736-9509-520c70f8ec19",
+          "execution_id": "d9a95c14-c2c1-4426-bf25-c096c414a080",
+          "worker_id": "afterk03-win-probe-d61de301-3e1c-4736-9509-520c70f8ec19",
+          "child_pid": 117568
+        },
+        "descendant": {
+          "role": "descendant",
+          "pid": 117568,
+          "ppid": 128816,
+          "probe_id": "d61de301-3e1c-4736-9509-520c70f8ec19",
+          "execution_id": "d9a95c14-c2c1-4426-bf25-c096c414a080"
+        },
+        "control": {
+          "role": "control",
+          "pid": 123484,
+          "ppid": 127684,
+          "probe_id": "d61de301-3e1c-4736-9509-520c70f8ec19",
+          "child_pid": 57964
+        },
+        "control-child": {
+          "role": "control-child",
+          "pid": 57964,
+          "ppid": 123484,
+          "probe_id": "d61de301-3e1c-4736-9509-520c70f8ec19",
+          "execution_id": "control-d61de301-3e1c-4736-9509-520c70f8ec19"
+        }
+      },
+      "registration_sha256": "605b41781dbb48fcf3a09c5729b790704283da98b7857718cf278a4a87c4c975",
+      "actions_started_utc": "2026-11-22T13:07:57.700461+00:00",
+      "process_handles": {
+        "worker": {
+          "pid": 128816,
+          "probe_process_pid": 127684,
+          "handle_value": "0x37c",
+          "creation_filetime": "134398264774377453"
+        },
+        "descendant": {
+          "pid": 117568,
+          "probe_process_pid": 127684,
+          "handle_value": "0x380",
+          "creation_filetime": "134398264776219666"
+        },
+        "control": {
+          "pid": 123484,
+          "probe_process_pid": 127684,
+          "handle_value": "0x384",
+          "creation_filetime": "134398264737386384"
+        },
+        "control-child": {
+          "pid": 57964,
+          "probe_process_pid": 127684,
+          "handle_value": "0x388",
+          "creation_filetime": "134398264737866407"
+        }
+      },
+      "before": {
+        "worker": "alive",
+        "descendant": "alive",
+        "control": "alive",
+        "control-child": "alive"
+      },
+      "after_runner_exit": {
+        "worker": "exited",
+        "descendant": "exited",
+        "control": "alive",
+        "control-child": "alive"
+      },
+      "result_record": "reconcile_required",
+      "terminal": {
+        "execution_id": "d9a95c14-c2c1-4426-bf25-c096c414a080",
+        "worker_id": "afterk03-win-probe-d61de301-3e1c-4736-9509-520c70f8ec19",
+        "pid": 128816,
+        "exit_code": 1,
+        "cancel_requested": true,
+        "transport_completed": false,
+        "business_accepted": null,
+        "state": "reconcile_required",
+        "raw_sha256": "ac842bf91221621c8a7a18e9802d459c46245fdb2455547950de4bd87bb221e3"
+      },
+      "reservations_before": {
+        "output_running": true,
+        "claims": {
+          "capacity": {
+            "count": 1,
+            "sha256": "e6b50e31dc5896ff68eb535303414a0b46b201d6e2ae9e174104bb35af644973",
+            "requestId": "gonggong-ai-workbench-plan1",
+            "order": 1
+          },
+          "resource": {
+            "count": 1,
+            "sha256": "de67649321ef9c3fbc4c45df32ceae5c9eda4f7199ec63e423a74690870f28f8",
+            "requestId": "gonggong-ai-workbench-plan1",
+            "order": 1,
+            "references_this_output": true
+          },
+          "ticket": {
+            "count": 1,
+            "sha256": "70d220d0570415ceb3ca21e305e16e3eec2d83373f6a9e0c9e6885599c0b441f",
+            "order": 1,
+            "state": "reserved",
+            "execution_id": "d9a95c14-c2c1-4426-bf25-c096c414a080",
+            "worker_id": "afterk03-win-probe-d61de301-3e1c-4736-9509-520c70f8ec19"
+          }
+        }
+      },
+      "reservations_after": {
+        "output_running": false,
+        "claims": {
+          "capacity": {
+            "count": 1,
+            "sha256": "e6b50e31dc5896ff68eb535303414a0b46b201d6e2ae9e174104bb35af644973",
+            "requestId": "gonggong-ai-workbench-plan1",
+            "order": 1
+          },
+          "resource": {
+            "count": 1,
+            "sha256": "de67649321ef9c3fbc4c45df32ceae5c9eda4f7199ec63e423a74690870f28f8",
+            "requestId": "gonggong-ai-workbench-plan1",
+            "order": 1,
+            "references_this_output": true
+          },
+          "ticket": {
+            "count": 1,
+            "sha256": "e49c24bc2ce5b3b97210fab4febd9e06a98d2ec2e58581c6ce2ab25a67ad3840",
+            "order": 1,
+            "state": "reconcile_required",
+            "execution_id": "d9a95c14-c2c1-4426-bf25-c096c414a080",
+            "worker_id": "afterk03-win-probe-d61de301-3e1c-4736-9509-520c70f8ec19"
+          }
+        }
+      },
+      "control_kind": "independent local process, no runner reservations",
+      "control_challenge_file_sha256": "8d3ef5bf0a62797126a091de3fbb4c6d5a60f02751b985e113763e9ca7839412",
+      "control_answer": {
+        "role": "control-child",
+        "pid": 57964,
+        "ppid": 123484,
+        "probe_id": "d61de301-3e1c-4736-9509-520c70f8ec19",
+        "execution_id": "control-d61de301-3e1c-4736-9509-520c70f8ec19",
+        "challenge": "86baa6f2-9591-444d-8a36-35f73dff5443",
+        "at": "2026-11-22T13:07:58.429289+00:00"
+      },
+      "control_answer_file_sha256": "88a26fb265db197a3af9701edc87194573a7948772a6de82de7cdd32917c5385",
+      "observed_at": "2026-11-22T13:07:58.477781+00:00"
+    },
+    {
+      "action": "terminate-runner",
+      "probe_id": "ff1da3f5-8995-47ad-bacd-34ebe33b579c",
+      "runner_pid": 133680,
+      "runner_exit": 1,
+      "ready": {
+        "worker": {
+          "role": "worker",
+          "pid": 119884,
+          "ppid": 133680,
+          "probe_id": "ff1da3f5-8995-47ad-bacd-34ebe33b579c",
+          "execution_id": "93b8f2c6-9643-4db8-a38c-6770bf297bb0",
+          "worker_id": "afterk03-win-probe-ff1da3f5-8995-47ad-bacd-34ebe33b579c",
+          "child_pid": 130744
+        },
+        "descendant": {
+          "role": "descendant",
+          "pid": 130744,
+          "ppid": 119884,
+          "probe_id": "ff1da3f5-8995-47ad-bacd-34ebe33b579c",
+          "execution_id": "93b8f2c6-9643-4db8-a38c-6770bf297bb0"
+        },
+        "control": {
+          "role": "control",
+          "pid": 133996,
+          "ppid": 127684,
+          "probe_id": "ff1da3f5-8995-47ad-bacd-34ebe33b579c",
+          "child_pid": 78728
+        },
+        "control-child": {
+          "role": "control-child",
+          "pid": 78728,
+          "ppid": 133996,
+          "probe_id": "ff1da3f5-8995-47ad-bacd-34ebe33b579c",
+          "execution_id": "control-ff1da3f5-8995-47ad-bacd-34ebe33b579c"
+        }
+      },
+      "registration_sha256": "25cfff210b369605b720320ae424e24fe93a2fc0b6895dc3983e261c2a45fd57",
+      "actions_started_utc": "2026-11-22T13:08:01.335448+00:00",
+      "process_handles": {
+        "worker": {
+          "pid": 119884,
+          "probe_process_pid": 127684,
+          "handle_value": "0x338",
+          "creation_filetime": "134398264810497446"
+        },
+        "descendant": {
+          "pid": 130744,
+          "probe_process_pid": 127684,
+          "handle_value": "0x184",
+          "creation_filetime": "134398264812331870"
+        },
+        "control": {
+          "pid": 133996,
+          "probe_process_pid": 127684,
+          "handle_value": "0x374",
+          "creation_filetime": "134398264788367899"
+        },
+        "control-child": {
+          "pid": 78728,
+          "probe_process_pid": 127684,
+          "handle_value": "0x394",
+          "creation_filetime": "134398264788861662"
+        }
+      },
+      "before": {
+        "worker": "alive",
+        "descendant": "alive",
+        "control": "alive",
+        "control-child": "alive"
+      },
+      "after_runner_exit": {
+        "worker": "exited",
+        "descendant": "exited",
+        "control": "alive",
+        "control-child": "alive"
+      },
+      "result_record": "running",
+      "terminal": null,
+      "reservations_before": {
+        "output_running": true,
+        "claims": {
+          "capacity": {
+            "count": 1,
+            "sha256": "e6b50e31dc5896ff68eb535303414a0b46b201d6e2ae9e174104bb35af644973",
+            "requestId": "gonggong-ai-workbench-plan1",
+            "order": 1
+          },
+          "resource": {
+            "count": 1,
+            "sha256": "eae776551ad74f751b373b47f3f27d660a2d81be6ac973261109522e45acd41b",
+            "requestId": "gonggong-ai-workbench-plan1",
+            "order": 1,
+            "references_this_output": true
+          },
+          "ticket": {
+            "count": 1,
+            "sha256": "9b86ebbc13c5adf2e926c330154483444758159da49c6f2b2ae3a7c38059ea05",
+            "order": 1,
+            "state": "reserved",
+            "execution_id": "93b8f2c6-9643-4db8-a38c-6770bf297bb0",
+            "worker_id": "afterk03-win-probe-ff1da3f5-8995-47ad-bacd-34ebe33b579c"
+          }
+        }
+      },
+      "reservations_after": {
+        "output_running": true,
+        "claims": {
+          "capacity": {
+            "count": 1,
+            "sha256": "e6b50e31dc5896ff68eb535303414a0b46b201d6e2ae9e174104bb35af644973",
+            "requestId": "gonggong-ai-workbench-plan1",
+            "order": 1
+          },
+          "resource": {
+            "count": 1,
+            "sha256": "eae776551ad74f751b373b47f3f27d660a2d81be6ac973261109522e45acd41b",
+            "requestId": "gonggong-ai-workbench-plan1",
+            "order": 1,
+            "references_this_output": true
+          },
+          "ticket": {
+            "count": 1,
+            "sha256": "9b86ebbc13c5adf2e926c330154483444758159da49c6f2b2ae3a7c38059ea05",
+            "order": 1,
+            "state": "reserved",
+            "execution_id": "93b8f2c6-9643-4db8-a38c-6770bf297bb0",
+            "worker_id": "afterk03-win-probe-ff1da3f5-8995-47ad-bacd-34ebe33b579c"
+          }
+        }
+      },
+      "control_kind": "independent local process, no runner reservations",
+      "control_challenge_file_sha256": "83961434cb201325ea59db89af51d4d11cc42594c040205115aa56bbba4f1f23",
+      "control_answer": {
+        "role": "control-child",
+        "pid": 78728,
+        "ppid": 133996,
+        "probe_id": "ff1da3f5-8995-47ad-bacd-34ebe33b579c",
+        "execution_id": "control-ff1da3f5-8995-47ad-bacd-34ebe33b579c",
+        "challenge": "792ee20d-03fa-4bad-8c7c-d3cde462b03d",
+        "at": "2026-11-22T13:08:01.358749+00:00"
+      },
+      "control_answer_file_sha256": "a27058f1562b6a33f09eceda4a5e4b2b363c12bda657b77cd400862a88d57617",
+      "observed_at": "2026-11-22T13:08:01.395826+00:00"
+    }
+  ],
+  "issue_number": 1709,
+  "request_id": "gonggong-ai-workbench-plan1",
+  "editor_baseline": {
+    "main": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+    "target_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2066",
+    "editor_sha256": "748650bf3c4e91bfb4aab2a98b2322a40eb3a4715ef9088d31c946af283f11fc",
+    "restart": {
+      "restart": {
+        "termination": "kill real editor before graceful shutdown; cold reopen same isolated project",
+        "model_and_github": "isolated loopback/CLI fixtures only",
+        "ordinary_requirements_calls": 1,
+        "cold_exit_code": 0,
+        "warm": {
+          "binding": {
+            "issue_number": "8001",
+            "request_id": "requirement-f2d609fe6ea848a483673c325eb3e009"
+          },
+          "checkpoint_failure_verified": false,
+          "conversation": "ca02269ec5753541aa5d2ad106c5a995",
+          "durable_before_crash": true
+        },
+        "cold": {
+          "binding": {
+            "issue_number": "8001",
+            "request_id": "requirement-f2d609fe6ea848a483673c325eb3e009"
+          },
+          "ok": true,
+          "original_input_restored": true,
+          "parent_history_restored": true
+        }
+      },
+      "checkpoint": {
+        "termination": "kill real editor before graceful shutdown; cold reopen same isolated project",
+        "model_and_github": "isolated loopback/CLI fixtures only",
+        "ordinary_requirements_calls": 1,
+        "cold_exit_code": 0,
+        "warm": {
+          "binding": {
+            "issue_number": "8001",
+            "request_id": "requirement-a2e0dc753b9a0cebfb6ca3d733f35b8f"
+          },
+          "checkpoint_failure_verified": true,
+          "conversation": "76211369c7769e2a275d1b86d35ce532",
+          "durable_before_crash": true
+        },
+        "cold": {
+          "binding": {
+            "issue_number": "8001",
+            "request_id": "requirement-a2e0dc753b9a0cebfb6ca3d733f35b8f"
+          },
+          "ok": true,
+          "original_input_restored": true,
+          "parent_history_restored": true
+        }
+      }
+    },
+    "window": {
+      "controls": {
+        "auxiliary_text_preserved": true,
+        "composer_id": 618575990020,
+        "continued_typing": true,
+        "destroyed_source_detached": true,
+        "line_edits": [
+          {
+            "caret": 9,
+            "loopback_reply": true,
+            "quoted": "saved-s",
+            "returned_focus_id": 603057064300,
+            "source": "重命名会话",
+            "source_id": 603057064300,
+            "source_text": "unsaved-session-name"
+          },
+          {
+            "caret": 9,
+            "loopback_reply": false,
+            "quoted": "und4-ed",
+            "returned_focus_id": 96066344332,
+            "source": "Editor Settings",
+            "source_id": 96066344332,
+            "source_text": "round4-editor-filter"
+          }
+        ],
+        "messages_id": 610472594214,
+        "secret_excluded": true,
+        "whole_field_quoted": true
+      },
+      "native_exit": 0,
+      "passed": true
+    },
+    "mode": "Headless Windows editor; offline GitHub and loopback model fixtures. Full installed-window acceptance awaits the frozen candidate."
+  }
+}
