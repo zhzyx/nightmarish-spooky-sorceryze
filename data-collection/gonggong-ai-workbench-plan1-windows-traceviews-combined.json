@@ -1,0 +1,415 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "37d5781c53e33d3a1a79e5ff4c879048d87bcb75",
+  "editor_sha256": "a51169f18ef5f8a34e63720cbaa3ecabea0e3bc3e3a082860859313b840cebe5",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "28a430834d8d612d0e89b52b7bc061a412723398",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "60eaff8ad49f10ea2a7e1a4c53ad5e53264b5e9a",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "eb80dc65ece5b68a482ae3d5d11f28d95ff622e8",
+    "customizations/components/tianxuan/sinan-workorders/native_local_profiles.py": "fea921b66d57939a632d0f089c861b668821f538",
+    "customizations/components/tianxuan/sinan-workorders/native_role_service.py": "88760256ee9e913d1cbb70eee4c11c9828696e66",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "86c80bde48ee7be833baaef68072a0ebd1102c8d",
+    "customizations/components/tianxuan/sinan-workorders/test_native_local_profiles.py": "45a2991e75fd93ef75550a9eda86dc24d40ecd97",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_renewal.py": "b153f452983b45630722454e4b4af43b8f37f9a7",
+    "tests/editor/run_workbench_issue_design_trace.py": "ab4f87a16173157aa515dd9769c812f2f6b8a4d7",
+    "tests/editor/workbench_issue_design_trace.gd": "5197ae3d0cb5586d941a7e57b08a455b71dfde48"
+  },
+  "checks": {
+    "a05": "5a6222163d08a842d860dacf551b6a5f7b3894a46bc39782fa2a5e19740c8f6d",
+    "s02": "8f35f8eba35b9fff9683eb7ad7199ae09dc97a44032a1b4d8b4c3d4dab1efd74",
+    "q13": "58aabd2dd0641ae0afdff8e1a743bb4fe6a0731aac04bb5f09b85db53c575e47",
+    "i16": "01a0ea7c1a6f0c57fab5712716198550cf1c57cd67c4e50aaf6a07525d001da7",
+    "a02": "b257bac37c21c26e7a001071b5778bc01d6efd29afde03fa3ee2b09ca6829ba8"
+  },
+  "issues": {
+    "s02": 1848,
+    "a05": 1762,
+    "q13": 1723
+  },
+  "observed": "2026-11-22T05:36:41.681420+00:00",
+  "verified_windows_build": {
+    "source_tree": "5f9f995b6b03ff9cf0d7bfb9adfdbe14dab62942",
+    "runtime_files": {
+      "godot.windows.editor.x86_64.exe": "a51169f18ef5f8a34e63720cbaa3ecabea0e3bc3e3a082860859313b840cebe5",
+      "godot.windows.editor.x86_64.console.exe": "63d79bc44613510d77a81259d621e1ec91495fdbee7fa52512b1308e89a28345",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "extra_compiled": [
+      "editor/docks/ai_chat_dock.h",
+      "editor/docks/ai_chat_editor_control.cpp",
+      "editor/docks/workbench/AIWorkbenchPageField.cpp",
+      "editor/docks/workbench/AIWorkbenchPageField.h",
+      "editor/docks/workbench/AIWorkbenchReference.cpp",
+      "editor/docks/workbench/AIWorkbenchSidebar.cpp"
+    ]
+  },
+  "service_regressions": {
+    "files": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_issue_capabilities.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_capability_stage.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py",
+      "customizations/components/tianxuan/server/test_task_confirmations.py"
+    ],
+    "passed": 42,
+    "summary": "42 passed, 1 warning in 40.19s",
+    "source_tree": "5f9f995b6b03ff9cf0d7bfb9adfdbe14dab62942"
+  },
+  "historical_method_evidence": [
+    {
+      "card": "q13",
+      "original_record": {
+        "schema_version": 1,
+        "tenant_id": "gonggong-workspace",
+        "request_id": "learning-editor-dependency-handoff",
+        "event_id": "learn-b8a69586fac7e70802c792f669108bd89d6e054d7d8899c9fe27240361003927",
+        "kind": "analysis",
+        "agent": {
+          "id": "codex-current-operator-host",
+          "version": "0.1.0",
+          "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+          "origin": "external-authorized-host"
+        },
+        "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1723",
+        "occurred_at": "2026-11-22T05:07:18.7997275Z",
+        "evidence_refs": [
+          "dispatch-b079c9c884ab4539925d26f21e418244",
+          "learn-62f77860ca7de44e42a02948aa487ed1439b06fa7c66202dc6570cebe96956fe"
+        ],
+        "payload": {
+          "scope": "editor-dependency-handoff",
+          "lesson": "bind-consumer-release",
+          "revision": 33,
+          "previous": "54960edc87ae26fa1db27bdef2f6d9449f0f0d746a6e75f8091acd9f1fb34e2e",
+          "action": "applied",
+          "details": {
+            "task": "Q13 #1723 接收 Windows 已签发编辑器与 I19 的历史能力清单。按 I01–I18 精确验收评论、主线修订和该修订下的回执 blob 核对，并在同一编辑器重跑组合验收与 I16。",
+            "observed": "Mac 原盘点 15 项关闭、3 项仍开放。I08/I18 在 #2011、I16 在 #2021 补全。重新打开天璇数据库后，子单详情、父子关系、依赖、评论及固定 v1 第 2 段与原生控件一致，历史显示同一文档 v1 到 v2。"
+          },
+          "evidence": [
+            {
+              "path": "data-collection/gonggong-ai-workbench-plan1-q13.json",
+              "sha256": "3e5f0fcf2b6dd1103c5b8c827cc367640ba64d867beba1fd572961e3429ec6be"
+            }
+          ],
+          "origin": {
+            "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q13/dispatch-b079c9c884ab4539925d26f21e418244.json",
+            "sha256": "1529aa3ef5534a953da59f7e504ee4cd980a5450cf0470d23365c6e5384c517d"
+          }
+        },
+        "sha256": "f086c937709ece0b1a2ca0619ed61313d51aa1c2ac8c985f65cae208cb61403b"
+      },
+      "admitted_event": "bde5385fbd4f11a9c403c06bb2d990670908f3bbae4b978182fc88aeb5c0e205",
+      "admitted_revision": 33,
+      "source_tree": "0da923a138e358c73f2557e47f7e18145711450e",
+      "normalizations": [
+        {
+          "path": "data-collection/gonggong-ai-workbench-plan1-q13.json",
+          "original_sha256": "3e5f0fcf2b6dd1103c5b8c827cc367640ba64d867beba1fd572961e3429ec6be",
+          "candidate_sha256": "a8fbff7c5a0adebe8bdffcf7c0fdb2894f09ab05acb053bafd454a33485402cd",
+          "original_trailing_bytes": "0a0a",
+          "candidate_trailing_bytes": "0a"
+        }
+      ]
+    },
+    {
+      "card": "a05",
+      "original_record": {
+        "schema_version": 1,
+        "tenant_id": "gonggong-workspace",
+        "request_id": "learning-editor-dependency-handoff",
+        "event_id": "learn-b8a69586fac7e70802c792f669108bd89d6e054d7d8899c9fe27240361003927",
+        "kind": "analysis",
+        "agent": {
+          "id": "codex-current-operator-host",
+          "version": "0.1.0",
+          "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+          "origin": "external-authorized-host"
+        },
+        "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1762",
+        "occurred_at": "2026-11-22T05:09:05.469693+00:00",
+        "evidence_refs": [
+          "dispatch-66fe149398bd4451bbcb4afc29e84ab7",
+          "learn-62f77860ca7de44e42a02948aa487ed1439b06fa7c66202dc6570cebe96956fe"
+        ],
+        "payload": {
+          "scope": "editor-dependency-handoff",
+          "lesson": "bind-consumer-release",
+          "revision": 33,
+          "previous": "54960edc87ae26fa1db27bdef2f6d9449f0f0d746a6e75f8091acd9f1fb34e2e",
+          "action": "applied",
+          "details": {
+            "task": "#1762 Explicit stage renewal from the exact checked preview",
+            "observed": "Each signed stage produced one physical closure. The successor materialized the checked preview module, read its exact SVG bytes and produced the confirmed digest. Parallel renewal and cold replay returned the same decision; idle inspection and replay executed no prior step. Withdrawn evidence prevented new admission."
+          },
+          "evidence": [
+            {
+              "path": "data-collection/gonggong-ai-workbench-plan1-a05.json",
+              "sha256": "82b024079141cda65bf38cc4f8cc9b5dfaf96edaa5ff49350072a7b2c13ad467"
+            }
+          ],
+          "origin": {
+            "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a05/dispatch-66fe149398bd4451bbcb4afc29e84ab7.json",
+            "sha256": "bce5a24a3a56e55a8c00fcb0d7e948b9c84a0cbd8ba705975c18515a8ef67c9a"
+          }
+        },
+        "sha256": "463c5fae67e5ad6af1e9477ecb9338de90576f3b4ec54f2a77d2a9ce7c7036d1"
+      },
+      "admitted_event": "3f49254fac155f889b70670eaa40961e686c361c16c55a40eb6ba6fec767d9e1",
+      "admitted_revision": 34,
+      "source_tree": "37abdad54c9ff45674487eccc0685559a702a66e",
+      "normalizations": []
+    },
+    {
+      "card": "s02",
+      "original_record": {
+        "schema_version": 1,
+        "tenant_id": "gonggong-workspace",
+        "request_id": "learning-editor-dependency-handoff",
+        "event_id": "learn-b8a69586fac7e70802c792f669108bd89d6e054d7d8899c9fe27240361003927",
+        "kind": "analysis",
+        "agent": {
+          "id": "codex-current-operator-host",
+          "version": "0.1.0",
+          "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+          "origin": "external-authorized-host"
+        },
+        "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1848",
+        "occurred_at": "2026-11-22T05:20:02.401866+00:00",
+        "evidence_refs": [
+          "dispatch-93199f146daa46d1a861d7aad50d49cc",
+          "learn-62f77860ca7de44e42a02948aa487ed1439b06fa7c66202dc6570cebe96956fe"
+        ],
+        "payload": {
+          "scope": "editor-dependency-handoff",
+          "lesson": "bind-consumer-release",
+          "revision": 33,
+          "previous": "54960edc87ae26fa1db27bdef2f6d9449f0f0d746a6e75f8091acd9f1fb34e2e",
+          "action": "applied",
+          "details": {
+            "task": "S02 #1848 consumed S01's signed issue capability binding on the accepted baseline.",
+            "observed": "The authenticated native board matched two exact installed models, preserved the original ticket over credential withdrawal and recovery, and the worker receipt identified two produced candidates. A separate real CLI catalog read observed login and model visibility with zero inference calls."
+          },
+          "evidence": [
+            {
+              "path": "data-collection/gonggong-ai-workbench-plan1-s02.json",
+              "sha256": "612047888ca576a97fbe070331979ddfe5d79d099c671dfc6c8957ed0f4a865c"
+            }
+          ],
+          "origin": {
+            "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s02/dispatch-93199f146daa46d1a861d7aad50d49cc.json",
+            "sha256": "b0dd1ce6b95f01139a62e14caafbd92bbc9f11a6b74fb5a2df7c91ae295da92f"
+          }
+        },
+        "sha256": "a622ad81710ad830d6b15aaa77bc9cb96d8242ce7e527e6f24feb1e4487458b5"
+      },
+      "admitted_event": "2b485d2744ab4c9963a576149791370e454e746462f7df16d3424005db076170",
+      "admitted_revision": 35,
+      "source_tree": "28166195b76f35be26ed1911f168c9f445a371c1",
+      "normalizations": []
+    }
+  ],
+  "validation_scripts": {
+    "q13": [
+      "run_workbench_issue_design_trace.py"
+    ],
+    "i16": [
+      "run_workbench_issue_chat_comment.py"
+    ],
+    "a02": [
+      "run_workbench_confirmed_native_stage.py"
+    ]
+  },
+  "card_service_tests": {
+    "a05": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_renewal.py"
+    ],
+    "s02": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_local_profiles.py"
+    ]
+  },
+  "worker_sources": {
+    "s02": "28166195b76f35be26ed1911f168c9f445a371c1",
+    "a05": "37abdad54c9ff45674487eccc0685559a702a66e",
+    "q13": "0da923a138e358c73f2557e47f7e18145711450e"
+  },
+  "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2021",
+  "results": {
+    "s02": {
+      "state": "passed",
+      "issue": 1848,
+      "request_id": "gonggong-ai-workbench-plan1-s02",
+      "service_tests": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_local_profiles.py"
+        ],
+        "passed": 3,
+        "summary": "3 passed, 1 warning in 13.45s",
+        "source_tree": "5f9f995b6b03ff9cf0d7bfb9adfdbe14dab62942"
+      }
+    },
+    "a05": {
+      "state": "passed",
+      "issue": 1762,
+      "request_id": "gonggong-ai-workbench-plan1-a05",
+      "service_tests": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_stage_renewal.py"
+        ],
+        "passed": 7,
+        "summary": "7 passed, 1 warning in 10.21s",
+        "source_tree": "5f9f995b6b03ff9cf0d7bfb9adfdbe14dab62942"
+      }
+    },
+    "q13": {
+      "state": "passed",
+      "editor_sha256": "a51169f18ef5f8a34e63720cbaa3ecabea0e3bc3e3a082860859313b840cebe5",
+      "module_path": [
+        "桥梁",
+        "未设置里程碑（项目共 3 单）",
+        "#1 · 桥梁交付",
+        "#3 · 桥面展开"
+      ],
+      "signed_version": {
+        "document_id": "doc_a644164ec3d341fe90180b0ddd791285",
+        "version": 1,
+        "confirmed_by": "usr_b58bf95c42af4fc99f1f2032bb8edc1d",
+        "confirmed_at": "2026-11-22T05:36:15.736550+00:00",
+        "acceptance": "拉杆触发开桥，桥面完成展开"
+      },
+      "native": {
+        "body": "Program the lever.\nHandle repeated pulls.\n\nAnimate the bridge opening.",
+        "child_hierarchy": "父工单　#1 桥梁交付\n子工单　无",
+        "comment": {
+          "author": "usr_b58bf95c42af4fc99f1f2032bb8edc1d",
+          "author_name": "designer",
+          "body": "按已签认的第 2 段验收桥面展开。",
+          "created_at": "2026-11-22T05:36:15.772645+00:00",
+          "id": "icmt_cc7c36eaeabb463286851d41fbc2c270",
+          "issue_id": "iss_3a2654e0e47f4a59afefefec761d4238",
+          "parent_id": null,
+          "tenant_id": "ten_034bd34b465f4656831848f9deb8fc4a"
+        },
+        "comment_body": "按已签认的第 2 段验收桥面展开。",
+        "dependency": {
+          "id": "iss_e777baee926640748be44fe126f3cc7b",
+          "label": "操作拉杆　backlog　未验收，阻塞推进"
+        },
+        "detail": {
+          "acceptance": "桥面动画播放至展开状态",
+          "assignee": {
+            "id": "usr_b58bf95c42af4fc99f1f2032bb8edc1d",
+            "name": "designer"
+          },
+          "body_md": "",
+          "can_classify": true,
+          "created_at": "2026-11-22T05:36:15.746754+00:00",
+          "created_by": "usr_b58bf95c42af4fc99f1f2032bb8edc1d",
+          "design_source": {
+            "acceptance": "桥面动画播放至展开状态",
+            "document_id": "doc_a644164ec3d341fe90180b0ddd791285",
+            "module_id": "mod_752cb410bcf84806bcb761d40da34dd8",
+            "paragraph": 2.0,
+            "project": "studio/bridge",
+            "version": 1.0
+          },
+          "id": "iss_3a2654e0e47f4a59afefefec761d4238",
+          "labels": [],
+          "module_id": "mod_752cb410bcf84806bcb761d40da34dd8",
+          "number": 3.0,
+          "parent_id": "iss_64445afa0d174d6db44a6fc3727f9b9b",
+          "priority": "normal",
+          "project": "studio/bridge",
+          "requirement_id": null,
+          "revision": "ea8ea8dc83ce2ee1c06801f835974fe71da294e64cb5a36614d3e8ea258222cc",
+          "status": "backlog",
+          "task_confirmation": null,
+          "task_target": null,
+          "tenant_id": "ten_034bd34b465f4656831848f9deb8fc4a",
+          "title": "桥面展开",
+          "type": "task",
+          "updated_at": "2026-11-22T05:36:15.760636+00:00"
+        },
+        "fields": "标题　桥面展开\n负责人　designer\n状态　backlog\n内容版本　ea8ea8dc83ce2ee1c06801f835974fe71da294e64cb5a36614d3e8ea258222cc\n拆单验收　桥面动画播放至展开状态",
+        "history": {
+          "diff": "--- v1\n+++ v2\n@@ -1,4 +1,4 @@\n Program the lever.\n Handle repeated pulls.\n \n-Animate the bridge opening.\n+Animate the bridge closing.",
+          "document_id": "doc_a644164ec3d341fe90180b0ddd791285",
+          "from": 1,
+          "to": 2
+        },
+        "parent_hierarchy": "父工单　无\n子工单　#2 操作拉杆、#3 桥面展开",
+        "parent_id": "iss_64445afa0d174d6db44a6fc3727f9b9b",
+        "reference": {
+          "document_id": "doc_a644164ec3d341fe90180b0ddd791285",
+          "paragraph": 2,
+          "version": 1
+        }
+      },
+      "relevant_http": [
+        [
+          "GET",
+          "/api/v1/work/roadmap",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/1/detail",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_64445afa0d174d6db44a6fc3727f9b9b/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/roadmap",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/by-number/3/detail",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_3a2654e0e47f4a59afefefec761d4238/hierarchy",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_3a2654e0e47f4a59afefefec761d4238/comments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_3a2654e0e47f4a59afefefec761d4238/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/docs/doc_a644164ec3d341fe90180b0ddd791285/versions/1",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/docs/doc_a644164ec3d341fe90180b0ddd791285/versions",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/docs/doc_a644164ec3d341fe90180b0ddd791285/diff",
+          200
+        ]
+      ]
+    }
+  }
+}

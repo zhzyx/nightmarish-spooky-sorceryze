@@ -1,0 +1,540 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-q13",
+  "issue_number": 1723,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1723",
+  "verified_at": "2026-11-22T05:07:18.7997275Z",
+  "producer": "wave22_q13",
+  "source_base": "7396689ea90635f9f576f277e2f2b9adfd5a0b52",
+  "source_git_blob": {
+    "tests/editor/run_workbench_issue_design_trace.py": "ab4f87a16173157aa515dd9769c812f2f6b8a4d7",
+    "tests/editor/workbench_issue_design_trace.gd": "c9f27baaf3fbd11567f9a2e6fb9f3c52db8e5e25",
+    "design-docs/gonggong-ai-workbench-q13.md": "df2315eb798be170313c281bcde464ca00267396"
+  },
+  "source_sha256": {
+    "tests/editor/run_workbench_issue_design_trace.py": "2acb45a73eef84c55cf1d9f898286e1f0fc4aeb48fc2c109564036589fb928f5",
+    "tests/editor/workbench_issue_design_trace.gd": "d21dd24805aa8ab1fe1c9eaa0a3f2e860ef2b61b780f766a151b37191ee100e4",
+    "design-docs/gonggong-ai-workbench-q13.md": "5806dc44379c075cf699874ece4af086270671316ea8af915b712e245ca74799"
+  },
+  "intake": {
+    "exit": 0,
+    "claim": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1723#issuecomment-7074429572",
+    "coordination": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1715#issuecomment-7068903756",
+    "source_revision": "7a5993725a04b977ef1ca44f305576c864dc5d07cddf94e7b2940b8f3592f336",
+    "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q13/dispatch-b079c9c884ab4539925d26f21e418244.json"
+  },
+  "validation": {
+    "result": "passed",
+    "host": "Windows x86_64; isolated headless Godot editor, authenticated Tianxuan loopback HTTP, reopened SQLite",
+    "release_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/7396689ea90635f9f576f277e2f2b9adfd5a0b52/data-collection/gonggong-ai-workbench-plan1-windows-issueops-combined.json",
+    "commands": [
+      "python tests/editor/run_workbench_issue_design_trace.py --godot <editor> --report q13-trace.json",
+      "python tests/editor/run_workbench_issue_chat_comment.py --godot <editor> --report i16-recheck.json"
+    ],
+    "receiver": "WorkbenchIssueDetail, WorkbenchDocuments and WorkbenchDocumentHistory; API and independent SQLite readback",
+    "ruff_check": "passed"
+  },
+  "native_sample": {
+    "state": "passed",
+    "editor_sha256": "959b9558c58ae549a72516832ac350d6539bcea31445b8a3004b982665364d78",
+    "module_path": [
+      "桥梁",
+      "未设置里程碑（项目共 3 单）",
+      "#1 · 桥梁交付",
+      "#3 · 桥面展开"
+    ],
+    "signed_version": {
+      "document_id": "doc_22c4125e1214428b94006fe8b2452fc4",
+      "version": 1,
+      "confirmed_by": "usr_760591b47b134612970fb02e48a6b639",
+      "confirmed_at": "2026-11-22T05:06:14.294869+00:00",
+      "acceptance": "拉杆触发开桥，桥面完成展开"
+    },
+    "native": {
+      "body": "Program the lever.\nHandle repeated pulls.\n\nAnimate the bridge opening.",
+      "child_hierarchy": "父工单　#1 桥梁交付\n子工单　无",
+      "comment": {
+        "author": "usr_760591b47b134612970fb02e48a6b639",
+        "author_name": "designer",
+        "body": "按已签认的第 2 段验收桥面展开。",
+        "created_at": "2026-11-22T05:06:14.331750+00:00",
+        "id": "icmt_45967e04b4ef4cac89bad8b2990bb15e",
+        "issue_id": "iss_2d8b60bf2f5042589514a7b75382d5ec",
+        "parent_id": null,
+        "tenant_id": "ten_85e7cd000aa243b69b7830e24c197fa9"
+      },
+      "comment_body": "按已签认的第 2 段验收桥面展开。",
+      "dependency": {
+        "id": "iss_30f94b09ab644b29bc34c67933670ca3",
+        "label": "操作拉杆　backlog　未验收，阻塞推进"
+      },
+      "detail": {
+        "acceptance": "桥面动画播放至展开状态",
+        "assignee": {
+          "id": "usr_760591b47b134612970fb02e48a6b639",
+          "name": "designer"
+        },
+        "body_md": "",
+        "can_classify": true,
+        "created_at": "2026-11-22T05:06:14.306713+00:00",
+        "created_by": "usr_760591b47b134612970fb02e48a6b639",
+        "design_source": {
+          "acceptance": "桥面动画播放至展开状态",
+          "document_id": "doc_22c4125e1214428b94006fe8b2452fc4",
+          "module_id": "mod_f8d4b059a85e457488f3b520f3c6911d",
+          "paragraph": 2,
+          "project": "studio/bridge",
+          "version": 1
+        },
+        "id": "iss_2d8b60bf2f5042589514a7b75382d5ec",
+        "labels": [],
+        "module_id": "mod_f8d4b059a85e457488f3b520f3c6911d",
+        "number": 3,
+        "parent_id": "iss_22081a29c5a340b99f6b7cda7a7ad7b9",
+        "priority": "normal",
+        "project": "studio/bridge",
+        "requirement_id": null,
+        "revision": "b95e3928b8a1e4b8292574826c389c84488ce159b0dede1c12607acb0045892a",
+        "status": "backlog",
+        "task_confirmation": null,
+        "task_target": null,
+        "tenant_id": "ten_85e7cd000aa243b69b7830e24c197fa9",
+        "title": "桥面展开",
+        "type": "task",
+        "updated_at": "2026-11-22T05:06:14.320733+00:00"
+      },
+      "fields": "标题　桥面展开\n负责人　designer\n状态　backlog\n内容版本　b95e3928b8a1e4b8292574826c389c84488ce159b0dede1c12607acb0045892a\n拆单验收　桥面动画播放至展开状态",
+      "history": {
+        "diff": "--- v1\n+++ v2\n@@ -1,4 +1,4 @@\n Program the lever.\n Handle repeated pulls.\n \n-Animate the bridge opening.\n+Animate the bridge closing.",
+        "document_id": "doc_22c4125e1214428b94006fe8b2452fc4",
+        "from": 1,
+        "to": 2
+      },
+      "parent_hierarchy": "父工单　无\n子工单　#2 操作拉杆、#3 桥面展开",
+      "parent_id": "iss_22081a29c5a340b99f6b7cda7a7ad7b9",
+      "reference": {
+        "document_id": "doc_22c4125e1214428b94006fe8b2452fc4",
+        "paragraph": 2,
+        "version": 1
+      }
+    },
+    "relevant_http": [
+      [
+        "GET",
+        "/api/v1/work/roadmap",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues/by-number/1/detail",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues/iss_22081a29c5a340b99f6b7cda7a7ad7b9/hierarchy",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/work/roadmap",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues/by-number/3/detail",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues/iss_2d8b60bf2f5042589514a7b75382d5ec/hierarchy",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues/iss_2d8b60bf2f5042589514a7b75382d5ec/comments",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/issues/iss_2d8b60bf2f5042589514a7b75382d5ec/work/flow",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/docs/doc_22c4125e1214428b94006fe8b2452fc4/versions/1",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/docs/doc_22c4125e1214428b94006fe8b2452fc4/versions",
+        200
+      ],
+      [
+        "GET",
+        "/api/v1/docs/doc_22c4125e1214428b94006fe8b2452fc4/diff",
+        200
+      ]
+    ]
+  },
+  "i16_recheck": {
+    "state": "passed",
+    "script": "tests/editor/run_workbench_issue_chat_comment.py",
+    "source_base": "7396689ea90635f9f576f277e2f2b9adfd5a0b52",
+    "editor_sha256": "959b9558c58ae549a72516832ac350d6539bcea31445b8a3004b982665364d78",
+    "same_title": "审核桥梁",
+    "consultation_counts": [
+      0,
+      0
+    ],
+    "native_publications": [
+      [
+        "POST",
+        "/api/v1/workspace/conversations/4e5ee367-beb9-5098-9a6a-86aa35f752b7/issue-comment",
+        200
+      ]
+    ],
+    "native": {
+      "manual_draft_preserved": true,
+      "preview": "建议复核第 1 项的验收记录。",
+      "reopened": true,
+      "selected_comment": {
+        "author": "usr_9ab4fce9140a450cb9c744ffc408882d",
+        "author_name": "owner",
+        "body": "建议复核第 1 项的验收记录。",
+        "created_at": "2026-11-22T05:04:10.776997+00:00",
+        "id": "icmt_106ba58183c646388e11bc2fcc0cfaef",
+        "issue_id": "iss_ad779bed336d4d3784e73ed2d08aece7",
+        "parent_id": null,
+        "tenant_id": "ten_31be6a73622c4756a7f29ef5ae2d05a6"
+      },
+      "sibling_rows": 0
+    },
+    "independent_sqlite": [
+      [
+        [
+          "icmt_106ba58183c646388e11bc2fcc0cfaef",
+          "usr_9ab4fce9140a450cb9c744ffc408882d",
+          "建议复核第 1 项的验收记录。"
+        ]
+      ],
+      []
+    ],
+    "http_threads": [
+      [
+        {
+          "id": "icmt_106ba58183c646388e11bc2fcc0cfaef",
+          "tenant_id": "ten_31be6a73622c4756a7f29ef5ae2d05a6",
+          "issue_id": "iss_ad779bed336d4d3784e73ed2d08aece7",
+          "author": "usr_9ab4fce9140a450cb9c744ffc408882d",
+          "body": "建议复核第 1 项的验收记录。",
+          "created_at": "2026-11-22T05:04:10.776997+00:00",
+          "author_name": "owner",
+          "parent_id": null
+        }
+      ],
+      []
+    ]
+  },
+  "inventory": {
+    "path": "data-collection/gonggong-ai-workbench-plan1-i19-mac-round9.json",
+    "received_at": "42eb64e29556f7405d037935612e90edfa4ccd48",
+    "blob": "b284a0d8b364ba5757ebf32854a4bd322087d8d8",
+    "sha256": "210bfd363794e22b2c686e3041c2ee33ddc3426f4cb3a4e73ab322f5199db566",
+    "snapshot_main": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+    "mac_closed": 15,
+    "mac_open": [
+      "I08",
+      "I16",
+      "I18"
+    ],
+    "remote_main_at_check": "7396689ea90635f9f576f277e2f2b9adfd5a0b52",
+    "closed_completed": 18,
+    "verified": "Each candidate receipt blob was resolved at its accepted main commit and that commit was checked as an ancestor of the remote main revision. The completion comment and the issue stateReason were read from GitHub."
+  },
+  "issue_capabilities": [
+    {
+      "capability": "I01",
+      "issue": 1859,
+      "title": "[方案一 I01] 通过天璇创建工单",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1859#issuecomment-7065373317",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1859#issuecomment-7065373317",
+      "accepted_main": "4c56b3fe48a2d1689259291d02580d2317a9ef12",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i01.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "25d8cb0ae693ec84361d7d57625f3b9f3f68abea"
+    },
+    {
+      "capability": "I02",
+      "issue": 1854,
+      "title": "[方案一 I02] 读取工单原生详情",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854#issuecomment-7066884069",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1854#issuecomment-7066884069",
+      "accepted_main": "c8d07b74fc4d5b615aca671e57e5e60b8271ca08",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i02.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "888522b6953b147cf4b95844f6206c3cfb99d78e"
+    },
+    {
+      "capability": "I03",
+      "issue": 1750,
+      "title": "[方案一 I03] 维护父子工单",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1750#issuecomment-7068497120",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1750#issuecomment-7068497120",
+      "accepted_main": "ab75b08a9fe400968f47f7084ec27dba1d26ebd9",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i03.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "e7113f0d19ffb61d7740a9c2166229cf06ca260e"
+    },
+    {
+      "capability": "I04",
+      "issue": 1831,
+      "title": "[方案一 I04] 维护工单依赖",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1831#issuecomment-7068715757",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1831#issuecomment-7068715757",
+      "accepted_main": "265df5191c0e56d75ab959a83dfd254e6889a113",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i04.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "cd36d5b3e4f7ddb4ef4ac042c2635f543fdbab41"
+    },
+    {
+      "capability": "I05",
+      "issue": 1788,
+      "title": "[方案一 I05] 记录工单评论与引用",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1788#issuecomment-7068756315",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1788#issuecomment-7068756315",
+      "accepted_main": "174e9ee8262a47bfc8577a80d9eed80ca010d985",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i05.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "051e7465ef49de55aebd3da013f8433a2a145577"
+    },
+    {
+      "capability": "I06",
+      "issue": 1850,
+      "title": "[方案一 I06] 维护负责人和状态",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850#issuecomment-7069088567",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1850#issuecomment-7069088567",
+      "accepted_main": "c0bb1dc8caff184f5c198ea57ccf6c83eae4bbc8",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i06.json",
+      "integration_receipt": "data-collection/gonggong-ai-workbench-i06-integration.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "1e21f16db9025b9d1d2d9c3a0a40433742e41a6e"
+    },
+    {
+      "capability": "I07",
+      "issue": 1789,
+      "title": "[方案一 I07] 维护迭代与里程碑",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1789#issuecomment-7069844889",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1789#issuecomment-7069844889",
+      "accepted_main": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i07.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "7e26ed347075aa1824c2fcd1fe9fe3f12e9df4dc"
+    },
+    {
+      "capability": "I08",
+      "issue": 1751,
+      "title": "[方案一 I08] 展示模块路线图",
+      "mac_state": "OPEN",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1751",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1751#issuecomment-7071715018",
+      "accepted_main": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i08.json",
+      "integration_receipt": "data-collection/gonggong-ai-workbench-plan1-windows-four-correction.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "3ccd6dedd2e966c7c8e39d88a5b20f082a40abd9"
+    },
+    {
+      "capability": "I09",
+      "issue": 1752,
+      "title": "[方案一 I09] 维护自定义字段与阶段",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1752#issuecomment-7069845106",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1752#issuecomment-7069845106",
+      "accepted_main": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i09.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "929c87dbc3ff60bc919c002638c1ed71fb935150"
+    },
+    {
+      "capability": "I10",
+      "issue": 1753,
+      "title": "[方案一 I10] 登记预计和实际工时",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1753#issuecomment-7069844687",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1753#issuecomment-7069844687",
+      "accepted_main": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i10.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "eb4b73ab476a1a194f8b0d887e0cd2e3417b6de7"
+    },
+    {
+      "capability": "I11",
+      "issue": 1754,
+      "title": "[方案一 I11] 原生检索并筛选工单",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1754#issuecomment-7069846734",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1754#issuecomment-7069846734",
+      "accepted_main": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i11.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "6a8a4b7d2648af4ecb59570b90808d3141ec77aa"
+    },
+    {
+      "capability": "I12",
+      "issue": 1790,
+      "title": "[方案一 I12] 打开历史工单原件",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1790#issuecomment-7060678033",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1790#issuecomment-7060678033",
+      "accepted_main": "1cca7579fd007e8625ce8d275abd874fe4be0d33",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i12.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "844f95a6e8da835393254b7639beb9221a7dcba3"
+    },
+    {
+      "capability": "I13",
+      "issue": 1755,
+      "title": "[方案一 I13] 接回天枢在途工单入口",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755#issuecomment-7063912867",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1755#issuecomment-7063912867",
+      "accepted_main": "02266a9fa7594d91ec3e8f635d8e28ba9f620057",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i13.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "5fdd2da131fde45d90f60aee0225fa33c98331b5"
+    },
+    {
+      "capability": "I14",
+      "issue": 1832,
+      "title": "[方案一 I14] 呈现附件和产物引用",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1832#issuecomment-7069846861",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1832#issuecomment-7069846861",
+      "accepted_main": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i14.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "6b2a6e4acf23bd68469fbbf34f762969c6f32879"
+    },
+    {
+      "capability": "I15",
+      "issue": 1756,
+      "title": "[方案一 I15] 关闭和重开天璇工单",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756#issuecomment-7069953950",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756#issuecomment-7069953950",
+      "accepted_main": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i15.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "957f773040f4d0cd7b275b804e78c404ef8efc22"
+    },
+    {
+      "capability": "I16",
+      "issue": 1757,
+      "title": "[方案一 I16] 让聊天办理当前工单操作",
+      "mac_state": "OPEN",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1757",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1757#issuecomment-7074402569",
+      "accepted_main": "7396689ea90635f9f576f277e2f2b9adfd5a0b52",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i16.json",
+      "integration_receipt": "data-collection/gonggong-ai-workbench-plan1-windows-issueops-combined.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "7adef1ab76141aaaabc3db1369557997c53314ed"
+    },
+    {
+      "capability": "I17",
+      "issue": 1758,
+      "title": "[方案一 I17] 接入标签和工单分类",
+      "mac_state": "CLOSED",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1758#issuecomment-7069846615",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1758#issuecomment-7069846615",
+      "accepted_main": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i17.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "5fc2d4e0df7648b2e980f92c15e4d7097d1e0887"
+    },
+    {
+      "capability": "I18",
+      "issue": 1759,
+      "title": "[方案一 I18] 为工单附加和打开文件",
+      "mac_state": "OPEN",
+      "mac_evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1759",
+      "completion_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1759#issuecomment-7071728041",
+      "accepted_main": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i18.json",
+      "integration_receipt": "data-collection/gonggong-ai-workbench-plan1-windows-four-correction.json",
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "candidate_blob": "5a49c09ee090e93fc296009e28b9c5f452b28116"
+    }
+  ],
+  "other_prerequisites": [
+    {
+      "card": "D08",
+      "issue": 1746,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "main_revision": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1746#issuecomment-7071702398",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-d08.json"
+    },
+    {
+      "card": "D11",
+      "issue": 1747,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "main_revision": "a0697dd93dc3381b98d5f921196ff5cd2b2fe50c",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1747#issuecomment-7067764495"
+    },
+    {
+      "card": "D12",
+      "issue": 1748,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "main_revision": "962f325d4fb5f38d42c5195b47c5b70b5729f3b8",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/1989",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-d12.json"
+    },
+    {
+      "card": "D13",
+      "issue": 1749,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "main_revision": "8ac06922b009d24a3af8feefad7ad95f3cd78988",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1749#issuecomment-7072658596",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-d13.json"
+    },
+    {
+      "card": "I19",
+      "issue": 1724,
+      "state": "CLOSED",
+      "state_reason": "COMPLETED",
+      "main_revision": "42eb64e29556f7405d037935612e90edfa4ccd48",
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2003",
+      "candidate_receipt": "data-collection/gonggong-ai-workbench-plan1-i19-mac-round9.json"
+    }
+  ]
+}

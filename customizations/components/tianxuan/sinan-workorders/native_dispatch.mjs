@@ -27,6 +27,7 @@ export async function dispatchNative(event, requests, service, launch) {
     // Native contracts pin the installed profile before dispatch.
     const model = catalog.find(entry => entry.id === request.model);
     item.model = request.model;
+    if (model?.localStatus) item.localStatus = model.localStatus;
     item.modelAvailable = model?.available === true && model.targets.includes(request.target ?? 'agent');
     item.requiredCapabilities = request.capabilities;
     item.missingCapabilities = request.capabilities.filter(capability => !model?.capabilities.includes(capability));

@@ -1,0 +1,233 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-a05",
+  "issue_number": 1762,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1762",
+  "actor": "wave22_a05",
+  "verified_at": "2026-11-22T05:09:05.469693+00:00",
+  "baseline": "7396689ea90635f9f576f277e2f2b9adfd5a0b52",
+  "source_revision": "3e5b491ef7f3371e3996bc805c6160fdd3ba8ddfa96525936253e71e9a32b3c3",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "28a430834d8d612d0e89b52b7bc061a412723398",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "b0c44d7a7358c6fe859a3c121884d0383df97ac2",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_renewal.py": "b153f452983b45630722454e4b4af43b8f37f9a7",
+    "design-docs/gonggong-ai-workbench-a05.md": "f8d32940da7672590ba54209c77e634d2e57ced7"
+  },
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a05/dispatch-66fe149398bd4451bbcb4afc29e84ab7.json",
+  "inputs": {
+    "a02": {
+      "issue": 1847,
+      "state": "CLOSED",
+      "revision": "c38ec442392f230ec9e697730d21ab039026f9e0",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1847#issuecomment-7073851176"
+    },
+    "a04": {
+      "issue": 1841,
+      "state": "CLOSED",
+      "revision": "7396689ea90635f9f576f277e2f2b9adfd5a0b52",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1841#issuecomment-7074386759"
+    },
+    "owner_readback": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1762#issuecomment-7074414946"
+  },
+  "environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "python": "3.12.14",
+    "node": "v24.22.1",
+    "host": "Authenticated Tianxuan ASGI, durable SQLite, installed Node Sinan driver, isolated host-installed NativeWorker profiles and NativeCheckRunner",
+    "build_inputs": "Tianxuan service and local workflow adapter"
+  },
+  "method_learning": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 32,
+    "application": "Read immutable stage output by module revision; verify the next real process consumed those exact bytes, including across repeated and parallel admission. A producer exit or a new target alone cannot release the next worker."
+  },
+  "acceptance": {
+    "receiver": "Authenticated POST /api/v1/native/workflow/renew-stage and /status, then installed Node dispatcher, package producer and independent package check.",
+    "result": "Target and confirmation alone left the old preview visible and the board idle. Concurrent renewals returned the same successor. The package producer read the reached preview from the pinned module, wrote its digest and reached its separately signed target. Original preview and package each had one physical closure. Reloaded coordinator read both stages and the original renewal receipt without execution.",
+    "scope": "Windows service-to-process adaptation; no editor executable changes or separate macOS A05 run.",
+    "physical_preview_count": 1,
+    "physical_next_stage_count": 1,
+    "junit_xml_sha256": "431f8a424b883f9ddc26c8a8826490b751cd51931ad7ac60c88f8f58f9b9e5dd",
+    "tests": {
+      "command": "python -B -X utf8 -m pytest -q -p no:cacheprovider -o junit_family=legacy --basetemp=.a05-final --junitxml=.a05-final.xml customizations/components/tianxuan/sinan-workorders/test_native_stage_renewal.py customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py customizations/components/tianxuan/sinan-workorders/test_native_capability_stage.py customizations/components/tianxuan/sinan-workorders/test_native_issue_capabilities.py customizations/components/tianxuan/sinan-workorders/test_native_workflow.py customizations/components/tianxuan/server/test_task_confirmations.py",
+      "timestamp": "2026-11-22T13:07:20.622063+08:00",
+      "seconds": 53.105,
+      "passed": 50,
+      "exit_code": 0,
+      "groups": {
+        "customizations.components.tianxuan.sinan-workorders.test_native_stage_renewal": 7,
+        "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop": 6,
+        "customizations.components.tianxuan.sinan-workorders.test_native_stage_admission": 8,
+        "customizations.components.tianxuan.sinan-workorders.test_native_capability_stage": 1,
+        "customizations.components.tianxuan.sinan-workorders.test_native_issue_capabilities": 2,
+        "customizations.components.tianxuan.sinan-workorders.test_native_workflow": 24,
+        "customizations.components.tianxuan.server.test_task_confirmations": 2
+      }
+    },
+    "observations": {
+      "receiver": {
+        "task": "55552d0e09a818d5c51024d96c9c5bbb2e19e1ae73f8706149016e68f5a872df",
+        "from": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_aca6ceec5ea244d0b584f128875ab676",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_1968c4d021aa4187a9a1ff0d93625eab",
+            "issue_id": "iss_a777b736cb424e439ce190126b988a41",
+            "issue_revision": "198ea6489cf1c0954af7696db8830501114b19867e34a4e03821c3108e621d64",
+            "responsible_user": "usr_aca6ceec5ea244d0b584f128875ab676",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "5826d0c93b8f3a2da284ee86387b2901e4091dd4a659401746a8955233518758",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "beb4d5adaf89ab80a55809d10f488f29186055684fb18788adef8fb65fffceb0"
+        },
+        "authorization": {
+          "issue_id": "iss_a777b736cb424e439ce190126b988a41",
+          "issue_revision": "198ea6489cf1c0954af7696db8830501114b19867e34a4e03821c3108e621d64",
+          "document_id": "doc_1968c4d021aa4187a9a1ff0d93625eab",
+          "version": 1,
+          "target_revision": 2,
+          "stage": "package",
+          "responsible_user": "usr_aca6ceec5ea244d0b584f128875ab676",
+          "confirmed_by": "usr_aca6ceec5ea244d0b584f128875ab676",
+          "confirmation_revision": 2,
+          "criteria": "package contains the SHA-256 of the verified preview.svg"
+        }
+      },
+      "next_result": {
+        "authorization": {
+          "confirmation_revision": 2,
+          "confirmed_by": "usr_aca6ceec5ea244d0b584f128875ab676",
+          "criteria": "package contains the SHA-256 of the verified preview.svg",
+          "document_id": "doc_1968c4d021aa4187a9a1ff0d93625eab",
+          "issue_id": "iss_a777b736cb424e439ce190126b988a41",
+          "issue_revision": "198ea6489cf1c0954af7696db8830501114b19867e34a4e03821c3108e621d64",
+          "responsible_user": "usr_aca6ceec5ea244d0b584f128875ab676",
+          "stage": "package",
+          "target_revision": 2,
+          "version": 1
+        },
+        "candidate": "d06caed28ead5e261d77927ca721c1050004b6ffa059ad94985fd1c0c78f789d",
+        "checks": {
+          "check": {
+            "evidence": "234636eeb80a59b3a9c43e4477e6380397fe6e82039f8087891df077246b3492",
+            "outcome": "passed"
+          }
+        },
+        "modules": {
+          "a": "24e0b8ecebca6201b2cf4eeaf29ac33776d0874ecff87d67da1e5ee9ab6db9b8"
+        },
+        "reason": "authorized_stage_criteria_met",
+        "state": "stage-reached",
+        "task": "55552d0e09a818d5c51024d96c9c5bbb2e19e1ae73f8706149016e68f5a872df"
+      },
+      "physical_calls": [
+        {
+          "execution": "beb4d5adaf89ab80a55809d10f488f29186055684fb18788adef8fb65fffceb0",
+          "grant": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_aca6ceec5ea244d0b584f128875ab676",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_1968c4d021aa4187a9a1ff0d93625eab",
+            "issue_id": "iss_a777b736cb424e439ce190126b988a41",
+            "issue_revision": "198ea6489cf1c0954af7696db8830501114b19867e34a4e03821c3108e621d64",
+            "responsible_user": "usr_aca6ceec5ea244d0b584f128875ab676",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        {
+          "execution": "55552d0e09a818d5c51024d96c9c5bbb2e19e1ae73f8706149016e68f5a872df",
+          "grant": {
+            "confirmation_revision": 2,
+            "confirmed_by": "usr_aca6ceec5ea244d0b584f128875ab676",
+            "criteria": "package contains the SHA-256 of the verified preview.svg",
+            "document_id": "doc_1968c4d021aa4187a9a1ff0d93625eab",
+            "issue_id": "iss_a777b736cb424e439ce190126b988a41",
+            "issue_revision": "198ea6489cf1c0954af7696db8830501114b19867e34a4e03821c3108e621d64",
+            "responsible_user": "usr_aca6ceec5ea244d0b584f128875ab676",
+            "stage": "package",
+            "target_revision": 2,
+            "version": 1
+          },
+          "input_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+        }
+      ],
+      "physical_closures": {
+        "beb4d5adaf89ab80a55809d10f488f29186055684fb18788adef8fb65fffceb0": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "55552d0e09a818d5c51024d96c9c5bbb2e19e1ae73f8706149016e68f5a872df": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "preview_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+      "package_contents": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+      "dispatch": [
+        [
+          "advance",
+          "inspect",
+          "inspect",
+          "revalidate",
+          "reserve",
+          "start",
+          "execute",
+          "advance",
+          "inspect",
+          "verify-stage",
+          "ack",
+          "record",
+          "advance",
+          "inspect"
+        ],
+        [
+          "advance",
+          "inspect"
+        ],
+        [
+          "advance",
+          "inspect",
+          "inspect",
+          "revalidate",
+          "reserve",
+          "start",
+          "execute",
+          "advance",
+          "inspect",
+          "verify-stage",
+          "ack",
+          "record",
+          "advance",
+          "inspect"
+        ],
+        [
+          "advance",
+          "inspect"
+        ]
+      ],
+      "restarted_receipt_equal": true,
+      "capabilities": [
+        "art"
+      ]
+    }
+  }
+}
