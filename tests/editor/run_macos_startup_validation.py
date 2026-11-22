@@ -7,6 +7,7 @@ import platform
 import subprocess
 import sys
 import tempfile
+import time
 from pathlib import Path
 
 PREFIX = "GongGong macOS startup validation"
@@ -17,7 +18,54 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def exercise(app, manifest, root, report):
+def cocoa_run(exe, project, env, case_dir, success_ready):
+    """Leave the normal editor running until its automatic validation has finished."""
+    case_dir.mkdir(parents=True, exist_ok=True)
+    log_path = case_dir / "editor.log"
+    started = time.monotonic()
+    deadline = started + 150
+    close_sent = False
+    with (
+        log_path.open("wb") as stream,
+        subprocess.Popen(
+            [exe, "--editor", "--display-driver", "macos", "--path", project, "--max-fps", "30"],
+            cwd=project,
+            env=env,
+            stdout=stream,
+            stderr=subprocess.STDOUT,
+        ) as editor,
+    ):
+        try:
+            while editor.poll() is None:
+                output = log_path.read_text(errors="replace")
+                if not close_sent and success_ready(output):
+                    subprocess.run(
+                        [
+                            "/usr/bin/osascript",
+                            "-l",
+                            "JavaScript",
+                            "-e",
+                            "ObjC.import('AppKit'); $.NSRunningApplication"
+                            f".runningApplicationWithProcessIdentifier({editor.pid}).terminate",
+                        ],
+                        timeout=10,
+                        check=True,
+                    )
+                    close_sent = True
+                    deadline = time.monotonic() + 30
+                if time.monotonic() > deadline:
+                    raise RuntimeError(f"Cocoa editor timed out (close_requested={close_sent})\n{output}")
+                time.sleep(0.1)
+        finally:
+            if editor.poll() is None:
+                editor.kill()
+            editor.wait(timeout=10)
+    if not close_sent:
+        raise RuntimeError(f"Cocoa editor exited before its validation completed. See {log_path}")
+    return editor.returncode, log_path.read_text(errors="replace"), round(time.monotonic() - started, 3)
+
+
+def exercise(app, manifest, root, report, logs):
     frozen = json.loads(manifest.read_bytes())["desktop_packages"]
     expected = {name: frozen[f"tianshu-{name}.json"]["sha256"] for name in PACKAGES}
     private = root / "Candidate.app"
@@ -61,22 +109,21 @@ def exercise(app, manifest, root, report):
 
     def launch(case, result, rejected="", diagnostic=""):
         before = receipts()
-        run = subprocess.run(
-            [exe, "--editor", "--display-driver", "macos", "--path", project, "--max-fps", "30", "--quit-after", "600"],
-            cwd=project,
-            env=env,
-            capture_output=True,
-            text=True,
-            errors="replace",
-            timeout=120,
-        )
-        log = run.stdout + run.stderr
+
+        def ready(log):
+            if PREFIX + " passed" in log:
+                return bool(receipts().keys() - before.keys())
+            return PREFIX + " reused" in log or PREFIX + ": " in log
+
+        exit_code, log, seconds = cocoa_run(exe, project, env, logs / case, ready)
         lines = log.splitlines()
         after = receipts()
         changed = sorted(after.keys() - before.keys())
         observations = [line.strip() for line in lines if PREFIX in line or "TIANSHU_" in line or "ERROR:" in line]
-        report["cases"][case] = dict(exit_code=run.returncode, new_receipts=changed, observations=observations)
-        if run.returncode or "SCRIPT ERROR" in log:
+        report["cases"][case] = dict(
+            exit_code=exit_code, seconds=seconds, new_receipts=changed, observations=observations
+        )
+        if exit_code or "SCRIPT ERROR" in log:
             raise RuntimeError(f"{case}: editor failed\n{log}")
         if any(after.get(key) != value for key, value in before.items()):
             raise RuntimeError(f"{case}: existing cache changed")
@@ -89,7 +136,12 @@ def exercise(app, manifest, root, report):
                 if f"TIANSHU_{name.upper()}_LOADED {digest(path.read_bytes())}" not in lines:
                     raise RuntimeError(f"{case}: child did not confirm {name}\n{log}")
         elif result == "reused":
-            if changed or PREFIX + " reused" not in lines or PREFIX + " passed" in log or "TIANSHU_UI_LOADED" in log:
+            if (
+                changed
+                or PREFIX + " reused" not in lines
+                or PREFIX + " passed" in log
+                or any(f"TIANSHU_{n.upper()}_LOADED" in log for n in PACKAGES)
+            ):
                 raise RuntimeError(f"{case}: expected cached success without a child probe\n{log}")
         else:
             reason = PREFIX + f": Tianshu {rejected} package was not loaded"
@@ -131,6 +183,7 @@ def exercise(app, manifest, root, report):
         timeout=180,
     )
     log = partial.stdout + partial.stderr
+    (logs / "partial-child.log").write_text(log, encoding="utf-8")
     diagnostics = [f"isolated Tianshu {name} package did not match the parent editor" for name in PACKAGES]
     if partial.returncode or "GONGGONG_VALIDATION_CLEANUP_OK" not in log or not all(msg in log for msg in diagnostics):
         raise RuntimeError("Partial child receipts or cleanup regression\n" + log)
@@ -149,7 +202,13 @@ def main():
     report = dict(platform=platform.platform(), display="macos", state="failed", cases={})
     try:
         with tempfile.TemporaryDirectory(prefix="startup-validation-") as directory:
-            exercise(args.app.resolve(strict=True), args.manifest, Path(directory).resolve(), report)
+            exercise(
+                args.app.resolve(strict=True),
+                args.manifest,
+                Path(directory).resolve(),
+                report,
+                args.report.with_suffix(".logs"),
+            )
         report["state"] = "passed"
     finally:
         args.report.parent.mkdir(parents=True, exist_ok=True)

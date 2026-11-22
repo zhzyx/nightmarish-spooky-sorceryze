@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4c6ff273d36ec2f321dd1b8cc6a4fb1ef9d63850",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "macos-startup-validation-sidecars",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2123",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "49b7bef5f29f052b3ec19d422bdc99d442c5b05f10b8c5eaf767ba7dabb99c4c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2123",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2123",
+    "action": "validation",
+    "detection_head": "e037da042b9858ebf1401440a282c1063d54d749",
+    "context_sha256": "324cfe2d5d7503bf838f24f5f20360acb0e126182c58a189a07ccdb9a4d85632",
+    "operator": "Sail-Li",
+    "worker": "resume1709_macprobe",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:complete1709:macprobe",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2144 records run 45062919388 step 17; cold exit 0, two engine banners, no validation terminal line or cache",
+    "diagnosis": "The original Cocoa harness closes after 600 frames without first observing the background validation outcome. Whether the child finishes within the product timeout remains under native investigation.",
+    "next_action": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45067974625 repeats the original and waits for terminal observations with the same signed executable.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T20:38:48.463671+00:00",
+    "attempted": "Pinned the retained signed executable and both resource digests and verified reconstructed bundle signature on macOS.",
+    "repair_owner": "resume1709_macprobe",
+    "continuable": "The independent installation and layout receipts retain their scope."
+  },
+  "occurred_at": "2026-11-22T20:44:38.133599+00:00",
+  "sha256": "57cde9b930ded634c73b9f5783ae76401d087cb5a8925468b82ea4e55a106bf7"
+}
