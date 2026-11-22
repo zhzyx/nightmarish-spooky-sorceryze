@@ -1,0 +1,82 @@
+{
+  "issue_number": 1778,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1778",
+  "request_id": "gonggong-ai-workbench-plan1-r09",
+  "baseline": "2ee48917eb54b82a14c381ffc8cb3c290b49bd14",
+  "environment": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "candidate_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "094fa18aad5cde20a8c77e25773110231a14ba64",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "f98e57d53c94837bd727a12485a1de10225a1f9e",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "00d99d3bc8de2b5ba3ce610d05e954119bc3fd77",
+    "editor/docks/workbench/business_session.gd": "3fea91bf04890bc358f067f090f0068eaa529de3",
+    "tools/ainative/owned_process.py": "da80404bc7638b17267638cd9a9e632ca2017e51",
+    "customizations/components/tianxuan/sinan-workorders/native_local_occupancy.py": "1d8644c90364574887183e8228cc383ef5003c7e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_local_occupancy.py": "de1fa4bcabfc728fde1344d184386e830061255b",
+    "tests/editor/workbench_reclaim.gd": "e5c875e811b342e529363fb31cb776acd3f9a6a3"
+  },
+  "editor_sha256": "9fa1e756876dcbd0ad305a8f9dcd02f012993327b6ee65fbe4968b7f1430d75b",
+  "build_command": "python -m SCons -j6 platform=macos target=editor arch=arm64 vulkan=no accesskit=no debug_symbols=no",
+  "test_command": "R09_GODOT=\"$PWD/bin/godot.macos.editor.arm64\" python -m pytest -q -o junit_family=legacy customizations/components/tianxuan/sinan-workorders/test_native_local_occupancy.py tools/ainative/test_owned_process.py customizations/components/tianxuan/sinan-workorders/test_native_checkpoint.py customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py customizations/components/tianxuan/sinan-workorders/test_native_recovery_list.py",
+  "tests": {
+    "name": "pytest",
+    "errors": "0",
+    "failures": "0",
+    "skipped": "0",
+    "tests": "73",
+    "time": "28.181",
+    "timestamp": "2026-11-22T21:08:14.526700+08:00",
+    "hostname": "OracledeMacBook-Air.local"
+  },
+  "observation": {
+    "supervisor": 74624,
+    "worker": 74627,
+    "editors": [
+      {
+        "pid": 74638,
+        "items": [
+          {
+            "task": "3148e828b1f5a25dc0861d74496457fd559a85977ad309b665da5087223575e6",
+            "worker_ref": "native-worker:3148e828b1f5a25dc0861d74496457fd559a85977ad309b665da5087223575e6",
+            "reclaimed": true,
+            "state": "reserved"
+          },
+          {
+            "task": "214dc465febbc3edfed19dbcec96731f0dff8d4320067f2dfdafc69e1238a6a4",
+            "worker_ref": "native-worker:214dc465febbc3edfed19dbcec96731f0dff8d4320067f2dfdafc69e1238a6a4",
+            "reclaimed": false,
+            "state": "running"
+          }
+        ]
+      },
+      {
+        "pid": 74637,
+        "items": [
+          {
+            "task": "3148e828b1f5a25dc0861d74496457fd559a85977ad309b665da5087223575e6",
+            "worker_ref": "native-worker:3148e828b1f5a25dc0861d74496457fd559a85977ad309b665da5087223575e6",
+            "reclaimed": false,
+            "state": "reserved"
+          },
+          {
+            "task": "214dc465febbc3edfed19dbcec96731f0dff8d4320067f2dfdafc69e1238a6a4",
+            "worker_ref": "native-worker:214dc465febbc3edfed19dbcec96731f0dff8d4320067f2dfdafc69e1238a6a4",
+            "reclaimed": false,
+            "state": "running"
+          }
+        ]
+      }
+    ],
+    "original_reserved": "3148e828b1f5a25dc0861d74496457fd559a85977ad309b665da5087223575e6",
+    "original_active": "214dc465febbc3edfed19dbcec96731f0dff8d4320067f2dfdafc69e1238a6a4",
+    "claims_while_worker_alive": 1,
+    "claimed_after_physical_exit": [
+      {
+        "task": "214dc465febbc3edfed19dbcec96731f0dff8d4320067f2dfdafc69e1238a6a4",
+        "worker_ref": "native-worker:214dc465febbc3edfed19dbcec96731f0dff8d4320067f2dfdafc69e1238a6a4",
+        "reclaimed": true,
+        "state": "closed-unresolved"
+      }
+    ],
+    "terminal": null
+  }
+}
