@@ -13,7 +13,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
-from native_checkpoint import read_checkpoint, recovery_list
+from native_checkpoint import read_checkpoint, recover_project, recovery_list
 from native_store import Conflict, NativeStore, NativeStoreError
 from starlette.concurrency import run_in_threadpool
 from tianxuan_core import require_native_source_read as _module_read
@@ -33,7 +33,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
     @router.post("/{operation}")
     async def invoke(operation: str, request: Request):
         control = operation in {"pause", "resume", "cancel"}
-        _, actor = _identity(request, allow_project=control)
+        project_scoped = control or operation == "recover-project"
+        _, actor = _identity(request, allow_project=project_scoped)
         payload = await _body(request)
         fields = {
             "inspect": set(),
@@ -42,6 +43,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "checkpoint": {"key"},
             "recovery": {"project"},
             "recover-occupancy": {"project"},
+            "recover-project": set(),
             "execution-readback": {"key"},
             "record-execution-fault": {"key"},
             **{op: {"issue", "key", "expected"} for op in ("pause", "resume", "cancel")},
@@ -203,6 +205,13 @@ def create_native_workflow_router(workflow) -> APIRouter:
             return {"state": row["state"]}
 
         try:
+            if operation == "recover-project":
+
+                def current_session():
+                    if _identity(request, refresh=True, allow_project=True)[1] != actor:
+                        raise HTTPException(401, "recovery identity changed")
+
+                return await recover_project(workflow, actor, request.query_params.get("project"), current_session)
             if operation == "integration-await":
                 if not isinstance(payload["event"], str) or len(payload["event"]) > 512:
                     raise HTTPException(422, "invalid publisher event")
