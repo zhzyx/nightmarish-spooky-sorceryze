@@ -13,7 +13,7 @@ from concurrent.futures import Future
 from contextlib import contextmanager, nullcontext
 from pathlib import Path
 
-from native_store import NativeStoreError, _digest, _json
+from native_store import NativeStoreError, _digest, _json, _object_name
 from tianxuan_core import PermissionDenied, VersionConflict
 
 
@@ -69,6 +69,9 @@ class NativeWorkflow:
             db.execute("CREATE TABLE IF NOT EXISTS native_active_tasks (issue TEXT PRIMARY KEY, task TEXT NOT NULL)")
             db.execute(
                 "CREATE TABLE IF NOT EXISTS native_task_revisions (task TEXT PRIMARY KEY, previous TEXT, actor TEXT NOT NULL)"
+            )
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS native_edit_origins (task TEXT PRIMARY KEY, project TEXT NOT NULL, module_id TEXT NOT NULL)"
             )
             indexes = db.execute("PRAGMA index_list(native_tasks)").fetchall()
             if any(
@@ -161,6 +164,35 @@ class NativeWorkflow:
                         reason="awaiting_stage_check" if "stage_criteria" in task else "stage_criteria_check_unbound",
                     )
             return row
+
+    def edit_baseline(self, actor, key, module, path):
+        """Compare one writable object with the immutable revision selected at task admission."""
+        _object_name(path)
+        if not isinstance(module, str):
+            raise NativeStoreError("Invalid edit module")
+        with self._transaction() as db:
+            row = self._row(db, key)
+            self._read_allowed(actor, row)
+            task = json.loads(row["task"])
+            scope = task["writes"].get(module)
+            if scope is None or (scope != "*" and path not in scope):
+                raise PermissionDenied("Object outside this task's writable scope")
+            origin = db.execute("SELECT project,module_id FROM native_edit_origins WHERE task=?", (key,)).fetchone()
+            initial = task["selected"][module]
+            tenant = row["tenant"]
+        store = self.worker.store
+        latest = store.head(tenant, module)
+        initial_objects = store.revision(tenant, module, initial)["objects"]
+        latest_objects = initial_objects if latest == initial else store.revision(tenant, module, latest)["objects"]
+        return {
+            "task": key,
+            "project": origin["project"] if origin else None,
+            "business_module": origin["module_id"] if origin else None,
+            "module": module,
+            "path": path,
+            "initial": {"revision": initial, "sha256": initial_objects.get(path)},
+            "latest": {"revision": latest, "sha256": latest_objects.get(path)},
+        }
 
     def _read_allowed(self, actor, row):
         self._allow(actor, row["issue"], "read")
@@ -320,6 +352,10 @@ class NativeWorkflow:
                     (expected,),
                 )
             db.execute("INSERT INTO native_task_revisions VALUES (?,?,?)", (key, expected, actor))
+            db.execute(
+                "INSERT INTO native_edit_origins(task,project,module_id) SELECT ?,project,module_id FROM issues WHERE id=?",
+                (key, issue),
+            )
             db.execute(
                 "INSERT INTO native_managed_issues VALUES (?,?,NULL) ON CONFLICT(issue_id) DO UPDATE SET definition=excluded.definition,acceptance=NULL",
                 (issue, source["revision"]),

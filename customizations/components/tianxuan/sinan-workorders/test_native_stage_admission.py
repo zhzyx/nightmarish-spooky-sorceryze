@@ -282,3 +282,53 @@ def test_reassigned_confirmation_replaces_old_reservation_after_restart(host):
             assert observation["execution"] == key and observation["grant"]["confirmed_by"] == new
     finally:
         domain.db.close()
+
+
+def test_edit_baseline_keeps_admitted_revision_after_human_writes(host, tmp_path):
+    import base64
+    import hashlib
+
+    issue = host.issues[0]
+    host.target(issue)
+    host.confirm(issue).raise_for_status()
+    key = host.api("authorize", issue=issue["id"]).raise_for_status().json()
+    query = dict(key=key, module="a", path="output")
+    before = host.api("edit-baseline", **query).raise_for_status().json()
+    assert (before["project"], before["business_module"], before["module"], before["path"]) == (
+        "studio",
+        "default",
+        "a",
+        "output",
+    )
+    assert (
+        before["initial"]
+        == before["latest"]
+        == dict(revision=host.plan["selected"]["a"], sha256=hashlib.sha256(b"initial").hexdigest())
+    )
+
+    def human_edit(value, base, request):
+        edits = {"output": base64.b64encode(value).decode() if value is not None else None}
+        change = dict(module="a", base=base, reads=None, edits=edits)
+        return (
+            host.client
+            .post("/api/v1/native/batches", json=dict(request_key=request, changes=[change]))
+            .raise_for_status()
+            .json()["revisions"]["a"]
+        )
+
+    source = tmp_path / "output"
+    source.write_bytes(b"initial")
+    assert hashlib.sha256(source.read_bytes()).hexdigest() == before["initial"]["sha256"]
+    source.write_bytes(b"human save")
+    revision = human_edit(source.read_bytes(), before["initial"]["revision"], "human-save")
+    after = host.api("edit-baseline", **query).raise_for_status().json()
+    assert after["initial"] == before["initial"]
+    assert after["latest"] == dict(revision=revision, sha256=hashlib.sha256(b"human save").hexdigest())
+    assert host.api("authorize", issue=issue["id"]).raise_for_status().json() == key
+    source.unlink()
+    removed = human_edit(None, revision, "human-delete")
+    receipt = host.api("edit-baseline", **query).raise_for_status().json()
+    assert receipt["initial"] == before["initial"] and receipt["latest"] == dict(revision=removed, sha256=None)
+    assert host.api("edit-baseline", **(query | {"path": "elsewhere"})).status_code == 403
+    assert host.api("edit-baseline", **(query | {"path": "../output"})).status_code >= 400
+    assert host.observations() == []
