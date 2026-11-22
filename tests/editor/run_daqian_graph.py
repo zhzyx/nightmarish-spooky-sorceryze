@@ -27,11 +27,23 @@ parser.add_argument("--godot", type=Path, required=True)
 parser.add_argument("--report", type=Path, required=True)
 parser.add_argument(
     "--scenario",
-    choices=["graph", "parallel", "entry", "inputs", "multi_issue", "publish", "direct", "details", "inflight"],
+    choices=[
+        "graph",
+        "parallel",
+        "entry",
+        "inputs",
+        "multi_issue",
+        "publish",
+        "direct",
+        "details",
+        "inflight",
+        "shutdown",
+    ],
     default="graph",
 )
 args = parser.parse_args()
 scenarios = {
+    "shutdown": ("daqian_shutdown.gd", "DAQIAN_SHUTDOWN_OK"),
     "inflight": ("daqian_inflight_issue.gd", "DAQIAN_INFLIGHT_OK"),
     "details": ("daqian_issue_details.gd", "DAQIAN_DETAILS_OK"),
     "direct": ("daqian_direct.gd", "DAQIAN_DIRECT_OK"),
@@ -322,6 +334,12 @@ Path(sys.argv[sys.argv.index('--out') + 1]).write_text(json.dumps(reply))
         report["mutation_attempts"] = mutation_log.read_text().splitlines() if mutation_log.exists() else []
         passed = len(report["reads"]) == 6 and not report["mutation_attempts"]
         report["state"] = "passed" if passed else "failed"
+    if args.scenario == "shutdown" and passed:
+        checkpoints = [
+            json.loads(line.split(marker + " ", 1)[1]) for line in log.splitlines() if line.startswith(marker + " ")
+        ]
+        assert len(checkpoints) == 1
+        report.update(scope="native editor exit and durable controller checkpoint", observation=checkpoints[0])
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n")
     if not passed:

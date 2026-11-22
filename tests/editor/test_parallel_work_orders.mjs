@@ -667,3 +667,23 @@ for (const state of ['running','reconcile_required']) test(`missing evidence rep
   assert.notEqual(restored.state,'review');assert.equal(JSON.parse(fs.readFileSync(f.launches)),2);
   assert.equal(fs.readFileSync(ticket,'utf8'),bytes);assert.deepEqual(fs.readFileSync(f.sourceTicket),f.originalBytes);
 });
+
+
+test('closing the editor during worker completion prevents the next dispatch', async t => {
+  const f = fixture(t, 2);
+  f.config.capacity = 1;
+  fs.writeFileSync(f.config.codex, `import fs from 'node:fs'; import path from 'node:path';
+    for await (const chunk of process.stdin) {}
+    fs.writeFileSync(path.join(process.cwd(), '..', path.basename(process.cwd()) + '.started'), 'yes');`);
+  const report = async row => {
+    if (row.state === 'review') fs.writeFileSync(f.output + '.quiesce', 'editor closing');
+    return {ok:true, state:'recorded_file'};
+  };
+  const result = await runHost(f.request, f.config, f.output, {verify, report});
+  assert.equal(result.workers[0].state, 'review');
+  assert.equal(result.workers[1].state, 'blocked');
+  assert.match(result.workers[1].reason, /Editor closing/);
+  assert.equal(result.workers[1].registration, undefined);
+  assert.equal(fs.existsSync(path.join(path.dirname(f.output), 'b.started')), false);
+  assert.deepEqual(JSON.parse(fs.readFileSync(f.output)).workers, JSON.parse(JSON.stringify(result.workers)));
+});

@@ -206,11 +206,13 @@ export async function run(request, config, output, runtime = {}) {
   const save = () => {durable(output+'.tmp',result);fs.renameSync(output+'.tmp',output);};
   save();
   const pending = jobs.filter(j=>j.ready&&!j.existing);
+  const quiescing = () => fs.existsSync(output + '.quiesce');
   async function consume() {
     while (pending.length) {
       const job = pending.shift(), record = result.workers.find(r=>r.id===job.id);
       let resourceFile, ticketFile, slotFile, priorResource, resourceOwned=false, ticketOwned=false, launchAttempted=false;
       try {
+        if (quiescing()) throw Error('Editor closing');
         if (!job.dependsOn.every(d=>acceptedDependencies(config).includes(d))) {record.state='blocked_dependency';save();continue;}
         const locks = job.stateRoot;
         fs.mkdirSync(locks,{recursive:true});
@@ -244,6 +246,7 @@ export async function run(request, config, output, runtime = {}) {
         verify(config.python,[path.join(installation,'framework/tools/verify_framework.py')],installation);
         verify(config.python,[path.join(installation,'customizations/components/issue-workorders/issue_gate.py'),'--repo',job.cwd,'--candidate-framework-only'],job.cwd);
         record.reportingPrepared=await report(job,{state:'prepared',kind:'handoff'});
+        if (quiescing()) throw Error('Editor closing');
         verifyDesign(request, job);
         const boundEditor = editorRuntime(request);
         if (job.repairOf) verifyRepair(request,job);
