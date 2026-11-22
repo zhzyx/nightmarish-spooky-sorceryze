@@ -1,0 +1,287 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-i18",
+  "issue_number": 1759,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1759",
+  "observed_at": "2026-11-22T06:39:42.750512+08:00",
+  "baseline": "06ef33adbb16e10cfff81d76cf213eb7a4960728",
+  "source_revision": "b228f56a64e986d70f0ba1caef93de7c6f4f209bd80bf1f4bb097b1faf56fc8c",
+  "prerequisite": {
+    "issue": 1832,
+    "state": "CLOSED",
+    "closed_at": "2026-11-21T22:20:06Z"
+  },
+  "intake_exit_code": 0,
+  "source_git_blob": {
+    "customizations/components/tianxuan/server/api.py": "1a8719bc252b7c96b90d1cc425998c191250d1b3",
+    "customizations/components/tianxuan/server/issue_upload_api.py": "adfb45fb582a0a6a0b9784e610e85e6dbda8b01a",
+    "customizations/components/tianxuan/server/native_api.py": "ac0b749b5f24f63a22602f2f0ab84d339bff04e2",
+    "customizations/components/tianxuan/server/test_issue_upload.py": "1529862dca6d6ab0e4700499584fcd89db938ad6",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "e6084f7c68c020d95ca7a6a8a86088c314cfd7db",
+    "customizations/components/tianxuan/server/work_management.py": "0fa23ba56fe9dfab62eb0d93679cbd5a7a18cbfd",
+    "editor/docks/workbench/issue_artifacts.gd": "c6be6de93007d108b247f7c9d7c6da018654b85f",
+    "tests/editor/run_workbench_issue_detail.py": "066818ca18dd6e5be14be905af64ccc17c51ff35",
+    "tests/editor/run_workbench_issue_upload.py": "23d04efa3acffff56ec9483ca9962eafe57d7bd8",
+    "tests/editor/workbench_issue_upload.gd": "9c4d54fcb2c3a152459db961121fff4e8f3a4531",
+    "design-docs/gonggong-ai-workbench-i18.md": "3515376e0b2f3ae669ae5e2358d5e2fa2dbb2796"
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "MSVC 14.5; SDK 10.0.26100.0",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_limit=0 --cache-readonly -j6",
+    "initial_exit_code": 0,
+    "initial_log_sha256": "a6dbb2edbb1ec255288da471b5de3d567688cb5fd84507be483e35c5895ccf06",
+    "final_exit_code": 0,
+    "final_log_sha256": "464268f77e80617261a2f2e07e2bcb8a20c711e9817df572e96356ea8b55990d",
+    "invalidation": [
+      "Generated IssueCreation.gen.h",
+      "Compiled AIWorkbenchSidebar.cpp",
+      "Relinked editor"
+    ],
+    "header_sha256": "793de172a2e06a87613d01f5eb1dd9dc5c1179060025b840862fa9b87b15c3c2",
+    "engine_sha256": "7e220994585ae3683a4e349f2bb2253716f12babe0bc349c72510c67e0e4c5dc"
+  },
+  "service_tests": {
+    "passed": 29,
+    "warnings": [
+      "Existing Starlette TestClient deprecation"
+    ],
+    "exit_code": 0,
+    "files": [
+      "test_issue_upload.py",
+      "test_issue_artifacts.py",
+      "test_native_api.py",
+      "test_work_management.py"
+    ],
+    "log_sha256": "693d987dfad91a8fb12912eecae5ea02c6cefa0203940b3dafc3cedba1819b81",
+    "coverage": [
+      "interruption after native commit, before issue event",
+      "concurrent writes by two editors on independent connections",
+      "identical filename and content on a different project issue",
+      "empty file",
+      "viewer, revoked ancestor ACL and tenant boundaries",
+      "invalid filenames and object size limit"
+    ]
+  },
+  "native_consumer": {
+    "engine_sha256": "7e220994585ae3683a4e349f2bb2253716f12babe0bc349c72510c67e0e4c5dc",
+    "native_controls": {
+      "downloads": [
+        {
+          "message": "已保存所选版本　saved-2.bin",
+          "version": 2.0
+        },
+        {
+          "message": "已保存所选版本　saved-1.bin",
+          "version": 1.0
+        }
+      ],
+      "retry_feedback": "尚未收到上传回执，请重新选择同一文件核对",
+      "selections": [
+        {
+          "digest": "2b595e48c1b5963bff9b05ea34bd185f58e66ee7560394c6423dac349c9a8d73",
+          "kind": "attachment",
+          "module": "requirement-attachment-iss_8faf2b46957c4968883c10815d86c170-4c8d695b7c6db74cd0d56053cb437a65ef2dd4edc7c729fda102db5195068379",
+          "path": "角色.bin",
+          "revision": "8066ce2029fbfac429b6606dd46822178077f98a67228783b0f7ac27d420d129",
+          "version": 1.0
+        },
+        {
+          "digest": "2b595e48c1b5963bff9b05ea34bd185f58e66ee7560394c6423dac349c9a8d73",
+          "kind": "attachment",
+          "module": "requirement-attachment-iss_8faf2b46957c4968883c10815d86c170-4c8d695b7c6db74cd0d56053cb437a65ef2dd4edc7c729fda102db5195068379",
+          "path": "角色.bin",
+          "revision": "8066ce2029fbfac429b6606dd46822178077f98a67228783b0f7ac27d420d129",
+          "version": 1.0
+        },
+        {
+          "digest": "babf5d00b1013cd674c603b5d344edb5308a922718f5ee072f0fbd0fbcd37345",
+          "kind": "attachment",
+          "module": "requirement-attachment-iss_8faf2b46957c4968883c10815d86c170-e1a313aa45978a05dc63005c40eabacb18a34de60479058f71015426068cbd5d",
+          "path": "角色.bin",
+          "revision": "feb276947048a4d3878dcc57028a281e34c712bcef1cab122141da26e62aeeeb",
+          "version": 2.0
+        },
+        {
+          "digest": "2b595e48c1b5963bff9b05ea34bd185f58e66ee7560394c6423dac349c9a8d73",
+          "kind": "attachment",
+          "module": "requirement-attachment-iss_8faf2b46957c4968883c10815d86c170-4c8d695b7c6db74cd0d56053cb437a65ef2dd4edc7c729fda102db5195068379",
+          "path": "角色.bin",
+          "revision": "8066ce2029fbfac429b6606dd46822178077f98a67228783b0f7ac27d420d129",
+          "version": 1.0
+        }
+      ]
+    },
+    "http": [
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        503
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/2",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/1",
+        "studio/game",
+        200
+      ]
+    ],
+    "storage_versions_after_each_post": [
+      [
+        1
+      ],
+      [
+        1
+      ],
+      [
+        1
+      ],
+      [
+        2,
+        1
+      ],
+      [
+        2,
+        1
+      ]
+    ],
+    "native_revision_count": 2,
+    "saved_sha256": [
+      "2b595e48c1b5963bff9b05ea34bd185f58e66ee7560394c6423dac349c9a8d73",
+      "babf5d00b1013cd674c603b5d344edb5308a922718f5ee072f0fbd0fbcd37345"
+    ],
+    "wrong_project_http": {
+      "list": 404,
+      "download": 404,
+      "upload": 404
+    }
+  },
+  "i14_regression": {
+    "engine_sha256": "7e220994585ae3683a4e349f2bb2253716f12babe0bc349c72510c67e0e4c5dc",
+    "http_readback": [
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/1",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/2",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/3",
+        "studio/game",
+        409
+      ]
+    ],
+    "native_selection": [
+      {
+        "label": "附件 · characters/hero.bin · #1 (de6a6c8ddf73)",
+        "message": "已保存所选版本　selected-2.bin",
+        "reference": {
+          "digest": "8467c8c12cf6e00ce0a636eb6a9ee831d0e639e7b03cf3e047fefaad8abc3bfc",
+          "kind": "attachment",
+          "module": "art",
+          "path": "characters/hero.bin",
+          "revision": "de6a6c8ddf736edf6e3bcb3d58b282d0ce013ba558c8d771e0fce1f888d583e7",
+          "version": 1.0
+        }
+      },
+      {
+        "label": "附件 · characters/hero.bin · #2 (fae4311a22fb)",
+        "message": "已保存所选版本　selected-1.bin",
+        "reference": {
+          "digest": "141092a075d222ad0b4a078be37ce25e2376ba3136fdb72ea728d3b88639eea7",
+          "kind": "attachment",
+          "module": "art",
+          "path": "characters/hero.bin",
+          "revision": "fae4311a22fb6f358a50c3bc4bcfe96c79b4494c9bcddb5ec3c8a5fb0df4d397",
+          "version": 2.0
+        }
+      },
+      {
+        "label": "模型 · characters/hero.bin · #3 (637b8b8ab4ab)",
+        "message": "引用已失效，找不到所选版本的文件",
+        "reference": {
+          "digest": "5b720147b6918dfc19baa0d7767cab75b76e17998837d04af43f2f3463c5350f",
+          "kind": "model",
+          "module": "art",
+          "path": "characters/hero.bin",
+          "revision": "637b8b8ab4ab6eb488e7ab8301e52a277c5971407a3f1f7a41a6f37569b812bb",
+          "version": 3.0
+        }
+      }
+    ],
+    "saved_sha256": [
+      "8467c8c12cf6e00ce0a636eb6a9ee831d0e639e7b03cf3e047fefaad8abc3bfc",
+      "141092a075d222ad0b4a078be37ce25e2376ba3136fdb72ea728d3b88639eea7"
+    ],
+    "stale_destination_created": false,
+    "logout_cleared_references": true
+  },
+  "open_delivery": "Windows candidate and local consumer verification passed. Parent publisher owns GitHub delivery and the target acceptance receipt."
+}

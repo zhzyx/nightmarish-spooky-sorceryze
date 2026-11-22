@@ -47,6 +47,7 @@ from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
     CommitStatusRequest,
+    DesignSignoffRequest,
     DocCreateRequest,
     DocIssueLinkRequest,
     DocMergeRequest,
@@ -401,12 +402,14 @@ def create_app(
     if native_store is not None:
         from business_asset_api import create_business_asset_router
         from issue_revision_api import create_issue_revision_router
+        from issue_upload_api import create_issue_upload_router
         from native_api import create_native_router
 
         app.state.native_store = native_store
         app.include_router(create_native_router(native_store))
         app.include_router(create_business_asset_router(store, native_store))
         app.include_router(create_issue_revision_router(store, native_store))
+        app.include_router(create_issue_upload_router(store, native_store))
     app.state.gateway = gateway
     app.state.merge_queue = merge_queue
     app.state.protected_branches = parse_protected_branches(protected_branches)
@@ -1163,6 +1166,14 @@ def create_app(
     def get_version(doc_id: str, version: int, actor: ActorDep) -> dict[str, Any]:
         store.get_doc_shared(actor, doc_id)
         return store.version(doc_id, version)  # type: ignore[no-any-return]
+
+    @app.get("/api/v1/docs/{doc_id}/versions/{version}/signoff")
+    def get_design_signoff(doc_id: str, version: int, actor: ActorDep) -> dict[str, Any]:
+        return {"signoff": store.design_signoff(actor, doc_id, version)}
+
+    @app.post("/api/v1/docs/{doc_id}/versions/{version}/signoff")
+    def confirm_design(doc_id: str, version: int, payload: DesignSignoffRequest, actor: ActorDep) -> dict[str, Any]:
+        return {"signoff": store.design_signoff(actor, doc_id, version, payload.acceptance)}
 
     @app.post("/api/v1/docs/{doc_id}/versions/{version}/restore")
     def restore_version(doc_id: str, version: int, payload: DocRestoreRequest, actor: ActorDep) -> dict[str, Any]:

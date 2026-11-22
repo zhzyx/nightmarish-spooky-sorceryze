@@ -252,6 +252,7 @@ class DocumentView extends AcceptDialog:
 	var create := Button.new()
 	var edit := Button.new()
 	var history := Button.new()
+	var signoff := Button.new()
 	var composer := ConfirmationDialog.new()
 	var draft_title := LineEdit.new()
 	var draft_body := TextEdit.new()
@@ -282,6 +283,9 @@ class DocumentView extends AcceptDialog:
 		history.name = "OpenDocumentHistory"
 		history.disabled = true
 		actions.add_child(history)
+		signoff.text = "设计签认"
+		signoff.disabled = true
+		actions.add_child(signoff)
 		_setup_composer()
 		status.name = "DocumentStatus"
 		box.add_child(status)
@@ -345,6 +349,8 @@ class DocumentView extends AcceptDialog:
 		fields.add_child(draft_status)
 
 	func _clear_draft() -> void:
+		if collaboration:
+			collaboration.end_draft()
 		composer.hide()
 		draft_title.clear()
 		draft_body.clear()
@@ -367,6 +373,8 @@ class DocumentView extends AcceptDialog:
 		draft_body.editable = true
 		draft_body.text = body.text if existing else ""
 		composer.popup_centered()
+		if existing and live_document:
+			collaboration.begin_draft()
 		if existing:
 			draft_body.grab_focus()
 		else:
@@ -417,6 +425,8 @@ class DocumentView extends AcceptDialog:
 		if str(saved.get("id", "")).is_empty() or int(saved.get("version", 0)) < 1:
 			draft_status.text = "保存回执不完整。再次点击保存可核对此次提交。"
 			return
+		if collaboration:
+			collaboration.remove_draft()
 		_clear_draft()
 		await open_saved(saved, 1)
 
@@ -443,6 +453,7 @@ class DocumentView extends AcceptDialog:
 
 	func _clear_body() -> void:
 		revision_cleared.emit()
+		signoff.disabled = true
 		history.disabled = true
 		edit.disabled = true
 		cite.disabled = true
@@ -492,6 +503,8 @@ class DocumentView extends AcceptDialog:
 	func open_document(id: String, version: int, paragraph: int, follow: bool = false) -> void:
 		live_document = false
 		if collaboration and (not follow or id != collaboration.document_id):
+			if composer.visible and editing.has("base_md"):
+				_clear_draft()
 			collaboration.leave()
 		generation += 1
 		var request := generation
@@ -539,6 +552,7 @@ class DocumentView extends AcceptDialog:
 		reference = {"document_id": id, "version": version, "paragraph": 0}
 		edit.disabled = false
 		history.disabled = false
+		signoff.disabled = false
 		status.text = "%s · v%d · 作者 %s" % [id, version, reply.data.get("author", "未知")]
 		paragraphs.disabled = ranges.is_empty()
 		if not ranges.is_empty():

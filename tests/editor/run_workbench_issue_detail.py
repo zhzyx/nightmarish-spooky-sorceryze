@@ -26,7 +26,7 @@ from native_store import NativeStore  # noqa: E402
 from tianxuan_core import Tianxuan  # noqa: E402
 
 
-def run_probe(base, binary, script, store, native, tenant, token, scope, variables, password):
+def run_probe(base, binary, script, store, native, tenant, token, scope, variables, password, *, after_response=None):
     with patch.dict(os.environ, {"GONGGONG_WORKSPACE": ""}):
         engine = copy_editor(binary, base / "engine")
     project = base / "project"
@@ -49,6 +49,8 @@ def run_probe(base, binary, script, store, native, tenant, token, scope, variabl
         @api.middleware("http")
         async def observe(request, call_next):
             response = await call_next(request)
+            if after_response is not None:
+                response = after_response(request, response)
             if request.url.path.startswith("/api/v1/issues/by-number/"):
                 reads.append([request.url.path, request.query_params.get("project"), response.status_code])
             return response

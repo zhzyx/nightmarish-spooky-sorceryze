@@ -265,3 +265,29 @@ def test_roadmap_orders_plans_matches_detail_and_revokes_access(work):
         assert (row["plan"], row["logged_minutes"]) == (details["plan"], details["logged_minutes"])
     store.unshare_doc(owner, req, viewer)
     assert [row["id"] for row in read()] == [third, issue]
+
+
+def test_project_roadmap_returns_only_visible_issue_and_parent_identifiers(work):
+    _, store, _, client, owner, _ = work
+    project = "studio/game"
+    reader = store.add_member(owner, "reader@example.invalid", "password", role="viewer")["user_id"]
+    headers = {"Authorization": "Bearer " + store.issue_session(reader)}
+    module = store.create_business_module(owner, project, "场景", call_id="scene")
+    outside = store.create_issue(owner, "同标题", project="studio/other")
+    parent = store.create_issue(owner, "同标题", project=project, parent_id=outside["id"], module_id=module["id"])
+    child = store.create_issue(owner, "同标题", parent_id=parent["id"])
+    private = store.create_requirement(owner, "private", "Private", "Goal", "Scope", "Acceptance")["id"]
+    store.set_visibility(owner, private, "private")
+    store.create_issue(owner, "不可见", project=project, requirement_id=private)
+    response = client.get("/api/v1/work/roadmap", params={"project": project}, headers=headers)
+    assert response.status_code == 200
+    projection = response.json()
+    assert projection["project"] == project
+    assert module["id"] in {m["id"] for m in projection["modules"] if m["name"] == "场景"}
+    rows = {row["id"]: row for row in projection["items"]}
+    assert rows.keys() == {parent["id"], child["id"]}
+    assert rows[parent["id"]]["parent_id"] is None
+    assert rows[child["id"]]["parent_id"] == parent["id"]
+    for issue in [parent, child]:
+        row = rows[issue["id"]]
+        assert (row["number"], row["module_id"]) == (issue["number"], module["id"])

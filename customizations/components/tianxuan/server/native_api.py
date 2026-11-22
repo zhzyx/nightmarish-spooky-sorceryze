@@ -226,6 +226,20 @@ async def _body(request: Request, max_bytes: int | None = None) -> Any:
         raise HTTPException(422, "invalid JSON") from None
 
 
+def decode_object(content: Any) -> bytes:
+    if not isinstance(content, str):
+        raise HTTPException(422, "object content must be base64 or null")
+    if len(content) > 4 * ((MAX_OBJECT + 2) // 3):
+        raise HTTPException(413, "object too large")
+    try:
+        value = base64.b64decode(content, validate=True)
+    except (ValueError, binascii.Error):
+        raise HTTPException(422, "invalid base64") from None
+    if len(value) > MAX_OBJECT:
+        raise HTTPException(413, "decoded object too large")
+    return value
+
+
 def _changes(payload: Any) -> tuple[str, list[dict[str, Any]]]:
     payload = _fields(payload, {"request_key", "changes"})
     if isinstance(payload["request_key"], str) and payload["request_key"].startswith("snapshot-"):
@@ -256,16 +270,9 @@ def _changes(payload: Any) -> tuple[str, list[dict[str, Any]]]:
                 raise HTTPException(422, "object name must be valid Unicode") from None
             if content is None:
                 continue
-            if not isinstance(content, str):
-                raise HTTPException(422, "object content must be base64 or null")
-            if len(content) > 4 * ((MAX_OBJECT + 2) // 3):
-                raise HTTPException(413, "object too large")
-            try:
-                value = base64.b64decode(content, validate=True)
-            except (ValueError, binascii.Error):
-                raise HTTPException(422, "invalid base64") from None
+            value = decode_object(content)
             decoded += len(value)
-            if len(value) > MAX_OBJECT or decoded > MAX_DECODED:
+            if decoded > MAX_DECODED:
                 raise HTTPException(413, "decoded content too large")
             edits[name] = value
     return payload["request_key"], changes
