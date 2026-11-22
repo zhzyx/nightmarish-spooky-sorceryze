@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round12-g19-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-g19",
+  "kind": "request",
+  "occurred_at": "2026-11-22T13:03:00.334305+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1742",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1742,
+    "request": "冻结完整 Git 仓库副本，走既有迁移入口，记录对象数、字节、耗时与逐引用比对，检查恢复副本。",
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1742#issuecomment-7079185032",
+    "verified_intake_sha256": "51a3670af2731b37d2d28d241c8c22ed0080fe514f57f1a05f0e74210229d3d5"
+  },
+  "evidence_refs": [],
+  "sha256": "d584d456156d1caa24bdc1b19d81254d5e46439827129a326b6981a372ab1e16"
+}
