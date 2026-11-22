@@ -63,6 +63,13 @@ func run():
 	if not check(panel!=null and panel.get_meta('ainative_builtin',false),'native tab opens the bundled workbench without addons'):
 		finish(); return
 	await process_frame
+	check(panel.process_button != null and panel.get_child(panel.get_child_count() - 1) == panel.process_button, 'native MaLiang keeps the view-process button at the bottom')
+	panel.process_button.pressed.emit()
+	await process_frame
+	check(panel.process_panel.visible and panel.process_steps != null and panel.process_logs != null, 'native process panel exposes reasoning steps and full logs')
+	panel.find_child('MinimizeProcessButton', true, false).pressed.emit()
+	await process_frame
+	check(not panel.process_panel.visible and panel.process_button.text == '查看具体过程', 'native process panel minimizes without leaving MaLiang')
 	await verify_workspace(dock,tabs)
 	if OS.get_environment('AINATIVE_TEST_MODE')=='sample':
 		await create_timer(.3).timeout
@@ -89,7 +96,7 @@ func run():
 		panel.add_generator()
 		check(panel.nodes.back().type==kinds[i],'Chinese generator option preserves protocol: '+kinds[i])
 		if kinds[i]=='human_shape_adjust':
-			check(panel.parameter_form.rows.head_ratio.visible and not panel.parameter_form.landmarks_edit.visible and not panel.parameter_form.pose_row.visible and not panel.parameter_form.prompt_edit.visible,'bundled human shape node exposes five controls with automatic AINative pose and landmark fitting')
+			check(panel.parameter_form.rows.height_cm.visible and not panel.parameter_form.rows.height_m.visible and panel.parameter_form.rows.head_ratio.visible and not panel.parameter_form.landmarks_edit.visible and not panel.parameter_form.pose_row.visible and not panel.parameter_form.prompt_edit.visible,'bundled human shape node exposes five controls with centimetre height and automatic AINative pose and landmark fitting')
 			check(panel.apply_fields() and not panel.nodes.back().parameters.has('prompt') and not panel.nodes.back().parameters.has('landmarks') and not panel.nodes.back().parameters.has('confirmed'),'bundled human shape apply adds neither prompt, manual landmarks nor human confirmation')
 		panel.delete_node()
 	panel.generator_choice.select(2)
@@ -139,6 +146,7 @@ func run():
 	var capture = OS.get_environment('AINATIVE_TEST_CAPTURE')
 	if not capture.is_empty():
 		panel.native_buttons.rig.pressed.emit()
+		panel.process_button.pressed.emit()
 		await process_frame
 		await RenderingServer.frame_post_draw
 		check(root.get_texture().get_image().save_png(capture)==OK,'native workbench screenshot saved')

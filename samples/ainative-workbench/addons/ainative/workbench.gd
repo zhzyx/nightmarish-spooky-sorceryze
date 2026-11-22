@@ -6,6 +6,13 @@ var rigging_panel: VBoxContainer
 var generator_choice: OptionButton
 var graph: GraphEdit
 var status: Label
+var process_button: Button
+var process_panel: PanelContainer
+var process_summary: Label
+var process_steps: TextEdit
+var process_logs: TextEdit
+var process_entries: Array = []
+var process_expanded := false
 var path_edit: LineEdit
 var source_edit: LineEdit
 var context_edit: LineEdit
@@ -335,6 +342,10 @@ func _set_node_file(field: String, selection):
 func _ready():
 	controller.command_completed.connect(_controller_completed)
 	controller.command_failed.connect(_controller_failed)
+	controller.command_started.connect(_record_command_started)
+	controller.command_completed.connect(_record_command_completed)
+	controller.command_failed.connect(_record_command_failed)
+	controller.runtime_event.connect(_record_runtime_event)
 	var builtin = get_meta('ainative_builtin',false)
 	# The embedded editor shares horizontal space with the workbench sidebar.
 	# Wide tools remain reachable in WorkbenchScroll.
@@ -753,6 +764,174 @@ func _ready():
 		_configure_controller()
 		controller.restore_run(FileAccess.get_file_as_string(state_dir.path_join("last_run.txt")))
 	if nodes.is_empty(): add_node()
+	_setup_process_panel()
+
+func _setup_process_panel():
+	process_panel = PanelContainer.new()
+	process_panel.name = "ExecutionProcessPanel"
+	process_panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	process_panel.size_flags_vertical = Control.SIZE_SHRINK_END
+	add_child(process_panel)
+	var layout = VBoxContainer.new()
+	process_panel.add_child(layout)
+	var header = HBoxContainer.new()
+	layout.add_child(header)
+	var title = Label.new()
+	title.text = "具体过程"
+	header.add_child(title)
+	process_summary = Label.new()
+	process_summary.name = "ExecutionProcessSummary"
+	process_summary.text = "尚无运行记录"
+	process_summary.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	process_summary.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(process_summary)
+	var minimize = button(header, "最小化", toggle_process_panel)
+	minimize.name = "MinimizeProcessButton"
+	minimize.tooltip_text = "收起过程面板；正在运行的任务不会中断"
+	var tabs = TabContainer.new()
+	tabs.name = "ExecutionProcessTabs"
+	tabs.custom_minimum_size = Vector2(0, 250)
+	tabs.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	layout.add_child(tabs)
+	process_steps = _make_process_text(tabs, "思考与执行过程")
+	process_logs = _make_process_text(tabs, "完整日志")
+	process_logs.wrap_mode = TextEdit.LINE_WRAPPING_NONE
+	var actions = HBoxContainer.new()
+	layout.add_child(actions)
+	button(actions, "复制全部日志", _copy_process_logs)
+	button(actions, "刷新日志", _refresh_process_views)
+	button(actions, "打开本机诊断日志", open_diagnostics)
+	process_panel.hide()
+	process_button = button(self, "查看具体过程", toggle_process_panel)
+	process_button.name = "ViewProcessButton"
+	process_button.tooltip_text = "查看本次会话的思考、执行步骤、运行事件与完整诊断日志"
+	_refresh_process_views()
+
+func _make_process_text(parent: TabContainer, tab_title: String) -> TextEdit:
+	var output = TextEdit.new()
+	output.name = tab_title
+	output.editable = false
+	output.selecting_enabled = true
+	output.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	output.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	output.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	parent.add_child(output)
+	return output
+
+func toggle_process_panel():
+	if process_panel == null: return
+	process_expanded = not process_expanded
+	process_panel.visible = process_expanded
+	process_button.text = "收起具体过程" if process_expanded else "查看具体过程"
+	process_button.tooltip_text = "最小化过程面板；正在运行的任务不会中断" if process_expanded else "查看本次会话的思考、执行步骤、运行事件与完整诊断日志"
+	if process_expanded:
+		_refresh_process_views()
+	else:
+		process_button.grab_focus()
+
+func _append_process_entry(category: String, summary: String, details: Dictionary = {}):
+	process_entries.append({
+		"timestamp": Time.get_datetime_string_from_system(),
+		"time": Time.get_time_string_from_system(),
+		"category": category,
+		"summary": summary,
+		"details": details.duplicate(true)
+	})
+	if process_summary != null: process_summary.text = summary
+	if process_expanded: _refresh_process_views()
+
+func _command_process_label(command: String) -> String:
+	return {
+		"create": "创建任务",
+		"step": "推进任务",
+		"status": "查询状态",
+		"cancel": "取消任务",
+		"retry": "重试节点",
+		"preview": "读取预览",
+		"publish": "发布生成物",
+		"service-check": "检测生成服务",
+		"managed-comfy": "管理本机服务",
+		"rigging-review": "AI 视觉审核",
+		"rigging-text-review": "绑骨文本审核"
+	}.get(command, command)
+
+func _record_command_started(command: String, request: Dictionary):
+	_append_process_entry("执行命令", "已开始：" + _command_process_label(command), {"command": command, "request": request})
+
+func _record_command_completed(command: String, data: Dictionary, request: Dictionary):
+	_append_process_entry("命令返回", "已完成：" + _command_process_label(command), {"command": command, "request": request, "result": data})
+
+func _record_command_failed(command: String, failure: Dictionary):
+	var code = str(failure.get("code", "unknown"))
+	_append_process_entry("命令失败", "失败：" + _command_process_label(command) + "（" + code + "）", {"command": command, "failure": failure})
+
+func _runtime_event_summary(event: Dictionary) -> String:
+	var kind = str(event.get("kind", "progress"))
+	var payload: Dictionary = event.get("payload", {})
+	match kind:
+		"run_started":
+			return "已接收任务，冻结节点、模型和运行配置，开始执行"
+		"text_delta":
+			return "模型正在输出分析与执行说明"
+		"tool_requested":
+			return "模型请求调用工具，等待工具结果"
+		"artifact_ready":
+			return "节点 " + str(payload.get("node", "")) + " 已生成结果，准备校验与预览"
+		"completed":
+			return "全部执行步骤已完成，生成结果已就绪"
+		"failed":
+			return "任务执行失败，完整错误与诊断信息已保留"
+		"cancelled":
+			return "任务已取消，已生成的结果和日志仍然保留"
+		"progress":
+			var states: Dictionary = payload.get("nodes", {})
+			if states.is_empty(): return "任务已创建，正在等待执行器返回节点进度"
+			var parts = PackedStringArray()
+			for node_id in states:
+				var node_state: Dictionary = states[node_id]
+				parts.append(str(node_id) + "：" + state_label(str(node_state.get("state", ""))) + "（第 " + str(node_state.get("attempt", 0)) + " 次尝试）")
+			return "节点进度｜" + "；".join(parts)
+	return "收到运行事件：" + kind
+
+func _record_runtime_event(event: Dictionary):
+	_append_process_entry("运行事件", _runtime_event_summary(event), event)
+
+func _refresh_process_views():
+	if process_steps == null or process_logs == null: return
+	var step_lines = PackedStringArray()
+	var log_lines = PackedStringArray()
+	for entry in process_entries:
+		var details: Dictionary = entry.get("details", {})
+		step_lines.append("[" + str(entry.time) + "] " + str(entry.summary))
+		if entry.category == "运行事件":
+			var text = str(details.get("text", ""))
+			if not text.is_empty(): step_lines.append("  模型输出：\n" + text)
+			var tools: Array = details.get("tool_requests", [])
+			if not tools.is_empty(): step_lines.append("  工具请求：\n" + JSON.stringify(tools, "  ", true, true))
+		log_lines.append("[" + str(entry.timestamp) + "] [" + str(entry.category) + "] " + str(entry.summary))
+		if not details.is_empty(): log_lines.append(JSON.stringify(details, "  ", true, true))
+	if step_lines.is_empty():
+		process_steps.text = "尚无运行记录。运行节点后，这里会按时间显示任务计划、模型输出、工具调用、节点状态、结果和错误。"
+	else:
+		process_steps.text = "\n\n".join(step_lines)
+	var diagnostic_path = state_dir.path_join("diagnostics.log")
+	if FileAccess.file_exists(diagnostic_path):
+		log_lines.append("===== 本机诊断日志（包含本次及此前记录）=====\n" + FileAccess.get_file_as_string(diagnostic_path))
+	if log_lines.is_empty():
+		process_logs.text = "暂无日志。运行记录和本机诊断日志会完整显示在这里。"
+	else:
+		process_logs.text = "\n\n".join(log_lines)
+	process_steps.scroll_vertical = max(0, process_steps.get_line_count() - 1)
+	process_logs.scroll_vertical = max(0, process_logs.get_line_count() - 1)
+
+func _copy_process_logs():
+	if process_logs == null: return
+	_refresh_process_views()
+	if DisplayServer.has_feature(DisplayServer.FEATURE_CLIPBOARD):
+		DisplayServer.clipboard_set(process_logs.text)
+		process_summary.text = "已复制全部会话日志和本机诊断日志"
+	else:
+		process_summary.text = "当前环境不支持系统剪贴板，请在“完整日志”中选择文本复制"
 
 func show_native_section(section: String):
 	if native_sections.is_empty(): return
@@ -812,11 +991,15 @@ func save_settings():
 
 func diagnostic_error(summary: String, raw_details) -> String:
 	var path = state_dir.path_join('diagnostics.log')
+	var details = {"summary": summary, "raw_details": str(raw_details), "path": path}
 	var output = FileAccess.open(path,FileAccess.READ_WRITE if FileAccess.file_exists(path) else FileAccess.WRITE)
-	if output==null: return summary.trim_suffix('。')+'。本机诊断日志无法写入。'
+	if output==null:
+		_append_process_entry("诊断", "本机诊断日志无法写入", details)
+		return summary.trim_suffix('。')+'。本机诊断日志无法写入。'
 	output.seek_end()
 	output.store_line(Time.get_datetime_string_from_system(true)+' '+summary+'\n'+str(raw_details))
 	output.close()
+	_append_process_entry("诊断", "已记录本机诊断详情", details)
 	return summary.trim_suffix('。')+'。可在“本机设置”中打开诊断日志。'
 
 func open_diagnostics():

@@ -2,6 +2,7 @@
 extends RefCounted
 ## Owns workflow execution and its process transport without any UI nodes.
 
+signal command_started(command: String, request: Dictionary)
 signal command_completed(command: String, result: Dictionary, request: Dictionary)
 signal command_failed(command: String, failure: Dictionary)
 signal runtime_event(event: Dictionary)
@@ -242,6 +243,7 @@ func _launch(command: String, request: Dictionary, settings: Dictionary) -> bool
 		"generation": _generation,
 		"result_epoch": _result_epoch
 	}
+	command_started.emit(command, request.duplicate(true))
 	return true
 
 func _job_is_current(job: Dictionary, allow_cancelled_create := false) -> bool:
