@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round11-1769-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-v02",
+  "kind": "request",
+  "occurred_at": "2026-11-22T09:43:05.308904+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1769",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "verified_intake_sha256": "cef9690d3ac37cd9dcab23f829370f6003cb294e095b96070b9957d470fe8e23",
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1769#issuecomment-7076870826",
+    "authority": "mac-round11-v02",
+    "scope": "在 Mac 原生文档历史验证段落高亮、定位并编辑。"
+  },
+  "evidence_refs": [],
+  "sha256": "97dfb342d8ff0a09f8272954ff83b62c39585461fd8260bf826a7db262d9ab45"
+}

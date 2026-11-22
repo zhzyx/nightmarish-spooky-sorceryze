@@ -391,6 +391,16 @@ class DocumentView extends AcceptDialog:
 		else:
 			draft_title.grab_focus()
 
+	func edit_selected_paragraph() -> void:
+		var paragraph := selected_paragraph()
+		if paragraph <= 0:
+			return
+		var span := ranges[paragraph - 1]
+		_compose(true)
+		draft_body.set_caret_line(span.x)
+		draft_body.select(span.x, 0, span.y, draft_body.get_line(span.y).length())
+		draft_body.center_viewport_to_caret()
+
 	func _save_draft() -> void:
 		if call_id.is_empty() or composer.get_ok_button().disabled:
 			return

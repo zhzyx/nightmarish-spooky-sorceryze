@@ -378,7 +378,7 @@ def create_app(
     history_router, history_tool = history_routes(store, _require_actor, native_store)
     app.include_router(history_router)
     configure_access(app, store)
-    from workspace_conversations import create_workspace_conversation_router
+    from workspace_conversations import create_workspace_conversation_router, document_view_paragraphs
     from workspace_inventory import create_workspace_inventory_router
 
     app.include_router(create_workspace_conversation_router(store, gateway, native_entry))
@@ -1218,7 +1218,8 @@ def create_app(
         actor: ActorDep,
         from_version: int = Query(ge=1),
         to_version: int = Query(ge=1),
-    ) -> dict[str, str]:
+        paragraphs: bool = False,
+    ) -> dict[str, Any]:
         store.get_doc_shared(actor, doc_id)
         before = store.version(doc_id, from_version)["body_md"]
         after = store.version(doc_id, to_version)["body_md"]
@@ -1231,7 +1232,30 @@ def create_app(
                 lineterm="",
             )
         )
-        return {"diff": diff}
+        if not paragraphs:
+            return {"diff": diff}
+        old, new = document_view_paragraphs(before), document_view_paragraphs(after)
+        changes = []
+        for tag, i, end_i, j, end_j in difflib.SequenceMatcher(None, old, new, autojunk=False).get_opcodes():
+            if tag == "equal":
+                continue
+            for offset in range(max(end_i - i, end_j - j)):
+                left = i + offset + 1 if i + offset < end_i else None
+                right = j + offset + 1 if j + offset < end_j else None
+                text = new[right - 1] if right is not None else old[i + offset]
+                changes.append({"before": left, "after": right, "preview": text.split("\n", 1)[0][:96]})
+        try:
+            store.editable_doc_body(actor, doc_id, to_version)
+            editable = True
+        except (PermissionDenied, VersionConflict):
+            editable = False
+        return {
+            "diff": diff,
+            "from_version": from_version,
+            "to_version": to_version,
+            "changes": changes,
+            "editable": editable,
+        }
 
     # ---------- 多宝：Gitea 仓库接入 ----------
 

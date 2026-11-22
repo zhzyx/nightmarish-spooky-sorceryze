@@ -15,3 +15,9 @@
 工作台侧栏将历史脚本与业务会话生成到 `BusinessSession.gen.h`，并随编辑器编译链接。回退使用先前已验证的编辑器。文档及修订继续保存在原天璇服务中。[构建入口](../editor/SCsub)
 
 在仓库根使用已安装天璇依赖的 Python 运行 `python tests/editor/run_workbench_documents.py --history --godot <候选编辑器> --report <验证报告>`。探针从原生工作台入口驱动 D04 的新建、编辑与 D06 的比较、恢复和历史阅读。临时天璇数据库与回环服务记录每次写入和返回状态，包括已写入后丢失回执、同一请求重试、外部修订插入后的冲突。[验证记录](../data-collection/gonggong-ai-workbench-plan1-d06.json)
+
+## 从变化段落回到编辑
+
+「版本历史」高亮逐行差异中的增加与删除，并列出变化段落。列表使用原修订和对比修订各自的段号，连续非空行属于同一段。点击当前可写修订的变化段会直接打开正文编辑器并选中整段；删除的段落在来源修订中阅读。保存沿用所选修订的版本检查。[V02 工单](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1769)
+
+文档比较由天璇文档 ID 及两个不可变版本定位。V01 的工具验证回执以工作流任务、原生模块、文件路径和内容摘要定位，普通文档历史没有这些原生对象标识。高亮与编辑均沿用文档服务的修订和访问权限。[V01 验证对象](gonggong-ai-workbench-v01.md)

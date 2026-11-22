@@ -168,7 +168,12 @@ def markdown_blocks(markdown: str) -> Generator[str, None, None]:
 def document_view_paragraphs(markdown: str) -> list[str]:
     """Number contiguous nonblank lines exactly as the Godot document view does."""
     lines = markdown.replace("\r\n", "\n").split("\n")
-    return ["\n".join(group) for nonblank, group in groupby(lines, key=lambda line: bool(line.strip())) if nonblank]
+    # Godot String.strip_edges removes code points through ASCII space.
+    return [
+        "\n".join(group)
+        for nonblank, group in groupby(lines, key=lambda line: bool(re.search(r"[^\x00-\x20]", line)))
+        if nonblank
+    ]
 
 
 def paragraph_key(block: str) -> str:

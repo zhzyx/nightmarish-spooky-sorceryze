@@ -7,6 +7,7 @@ var dialog := AcceptDialog.new()
 var source := OptionButton.new()
 var comparison := OptionButton.new()
 var diff := TextEdit.new()
+var changes := VBoxContainer.new()
 var status := Label.new()
 var read := Button.new()
 var restore := Button.new()
@@ -44,6 +45,13 @@ func _ready() -> void:
 	diff.editable = false
 	diff.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	fields.add_child(diff)
+	var scroll := ScrollContainer.new()
+	scroll.custom_minimum_size.y = 68 * EditorInterface.get_editor_scale()
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	changes.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	changes.name = "ChangedParagraphs"
+	scroll.add_child(changes)
+	fields.add_child(scroll)
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	fields.add_child(status)
 	var actions := HBoxContainer.new()
@@ -70,6 +78,7 @@ func _visibility_changed() -> void:
 	source.clear()
 	comparison.clear()
 	diff.clear()
+	_clear_changes()
 	status.text = ""
 
 
@@ -123,18 +132,39 @@ func _compare(_index: int) -> void:
 	generation += 1
 	var attempt := generation
 	diff.clear()
+	_clear_changes()
 	restore.disabled = true
 	var before := source.get_selected_id()
 	var after := comparison.get_selected_id()
 	status.text = "正在比较 v%d 与 v%d…" % [before, after]
-	var route := _route() + "/diff?from_version=%d&to_version=%d" % [before, after]
+	var route := _route() + "/diff?from_version=%d&to_version=%d&paragraphs=true" % [before, after]
 	var reply: Dictionary = await session.api_request(HTTPClient.METHOD_GET, route)
 	if attempt != generation:
 		return
-	if reply.status != 200 or not reply.data.get("diff") is String:
+	if reply.status != 200 or not reply.data.get("diff") is String or not reply.data.get("changes") is Array or int(reply.data.get("from_version", 0)) != before or int(reply.data.get("to_version", 0)) != after:
 		status.text = "无法读取所选修订的差异。"
 		return
 	diff.text = reply.data.diff
+	# Skip the two file headers; content lines in unified hunks carry one prefix.
+	for line in range(2, diff.get_line_count()):
+		var prefix := diff.get_line(line).left(1)
+		if prefix == "+" or prefix == "-":
+			var tint := get_theme_color("success_color" if prefix == "+" else "error_color", "Editor")
+			diff.set_line_background_color(line, Color(tint, 0.22))
+	for change: Dictionary in reply.data.changes:
+		var removed: bool = change.after == null
+		var paragraph := int(change.before if removed else change.after)
+		var version := before if removed else after
+		var editable: bool = not removed and reply.data.editable
+		var label := "已删除" if removed else ("新增" if change.before == null else "修改")
+		var row := Button.new()
+		row.text = "%s · v%d 第 %d 段　%s" % [label, version, paragraph, change.preview]
+		row.tooltip_text = "编辑此段" if editable else "阅读此段"
+		row.alignment = HORIZONTAL_ALIGNMENT_LEFT
+		row.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+		row.add_theme_color_override("font_color", get_theme_color("accent_color", "Editor"))
+		row.pressed.connect(_open_change.bind(document_id, version, paragraph, editable))
+		changes.add_child(row)
 	status.text = "v%d → v%d · 当前最新 v%d" % [before, after, head]
 	if diff.text.is_empty():
 		status.text += " · 正文相同"
@@ -144,6 +174,21 @@ func _compare(_index: int) -> void:
 		restore.text = "将 v%d 恢复为新修订 v%d" % [before, head + 1]
 	else:
 		restore.text = "恢复原修订为新版本"
+
+
+func _clear_changes() -> void:
+	for row in changes.get_children():
+		changes.remove_child(row)
+		row.queue_free()
+
+
+func _open_change(id: String, version: int, paragraph: int, editable: bool) -> void:
+	if not dialog.visible or document_id != id:
+		return
+	dialog.hide()
+	await view.open_document(id, version, paragraph)
+	if editable and view.reference == {"document_id": id, "version": version, "paragraph": paragraph}:
+		view.edit_selected_paragraph()
 
 
 func _read_revision() -> void:
@@ -168,6 +213,7 @@ func _restore() -> void:
 	comparison.disabled = true
 	restore.disabled = true
 	read.disabled = true
+	_clear_changes()
 	status.text = "正在恢复 v%d…" % before
 	var route := _route() + "/versions/%d/restore" % before
 	var reply: Dictionary = await session.api_request(HTTPClient.METHOD_POST, route, payload)
