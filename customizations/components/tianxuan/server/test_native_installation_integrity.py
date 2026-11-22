@@ -49,6 +49,27 @@ class InstallationIntegrityTests(unittest.TestCase):
         self.addCleanup(result.close)
         return result
 
+    def test_only_installed_deterministic_producer_can_declare_restart_checkpoint(self):
+        commands = self.spec["commands"]
+        self.spec.update(version=2, mode="deterministic-test")
+        commands["producer"] = {**commands["producer"], "restart_checkpoint": "immutable-inputs"}
+        self.write_manifest()
+        with ni.InstallationManifest(self.manifest, self.digest) as install:
+            self.assertEqual(install.command("producer")["restart_checkpoint"], "immutable-inputs")
+        for mode, role, checkpoint in (
+            ("production", "producer", "immutable-inputs"),
+            ("local-signed-validation", "producer", "immutable-inputs"),
+            ("deterministic-test", "checker", "immutable-inputs"),
+            ("deterministic-test", "producer", "unverified"),
+        ):
+            with self.subTest(mode=mode, role=role, checkpoint=checkpoint):
+                self.spec["mode"] = mode
+                commands[role] = {**commands[role], "restart_checkpoint": checkpoint}
+                self.write_manifest()
+                with self.assertRaisesRegex(NativeStoreError, "Fixed command required"):
+                    ni.InstallationManifest(self.manifest, self.digest)
+                del commands[role]["restart_checkpoint"]
+
     def test_repeated_and_concurrent_verification_streams_source_once(self):
         with patch.object(ni, "_digest_stream", wraps=ni._digest_stream) as hashed:
             install = self.install()

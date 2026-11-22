@@ -8,6 +8,8 @@ import math
 from collections.abc import Callable
 from contextvars import ContextVar
 from pathlib import Path
+from threading import Event
+from uuid import uuid4
 
 from native_candidates import NativeCandidates
 from native_check_runner import _process_helper
@@ -24,6 +26,10 @@ worker_step_reporter: ContextVar[Callable[[str, str, dict[str, object]], None] |
 
 # Only a coordinator running the local producer installs this per-execution probe.
 worker_cancel_requested: ContextVar[Callable[[], bool] | None] = ContextVar("worker_cancel_requested", default=None)
+
+
+# Copied by asyncio.to_thread only into work started on this editor request.
+editor_connection_closed: ContextVar[Event | None] = ContextVar("editor_connection_closed", default=None)
 
 
 def _report_step(execution, step, details):
@@ -77,9 +83,14 @@ class NativeWorker:
                 "CREATE TABLE IF NOT EXISTS native_worker_process_closures (execution TEXT PRIMARY KEY, task TEXT NOT NULL, payload TEXT NOT NULL, digest TEXT NOT NULL)"
             )
         for spec in self.profiles.values():
-            if set(spec) - {"observation_protocol"} != {"argv", "env", "timeout", "log_bytes"} or (
-                "observation_protocol" in spec and spec["observation_protocol"] != OBSERVATION_PROTOCOL
-            ):
+            if "restart_checkpoint" in spec and spec["restart_checkpoint"] != "immutable-inputs":
+                raise NativeStoreError("Invalid installed worker restart checkpoint")
+            if set(spec) - {"observation_protocol", "restart_checkpoint"} != {
+                "argv",
+                "env",
+                "timeout",
+                "log_bytes",
+            } or ("observation_protocol" in spec and spec["observation_protocol"] != OBSERVATION_PROTOCOL):
                 raise NativeStoreError("Invalid trusted producer profile")
             if (
                 not isinstance(spec["argv"], list)
@@ -157,9 +168,24 @@ class NativeWorker:
         env = {**spec["env"], "NATIVE_WORKSPACE": str(work), "NATIVE_CONTEXT": str(context)}
         reasons = []
         requested = worker_cancel_requested.get()
-        observer = {}
-        if self.records_local_process_group:
-            observer["on_start"] = lambda pid: _report_step(execution, "process.started", {"pid": pid})
+        editor_closed = editor_connection_closed.get()
+        interrupted = False
+
+        def active():
+            nonlocal interrupted
+            if (cancel is not None and cancel.is_set()) or (requested and requested()):
+                return False
+            interrupted = editor_closed is not None and editor_closed.is_set()
+            return not interrupted
+
+        started = False
+
+        def on_start(pid):
+            nonlocal started
+            started = True
+            _report_step(execution, "process.started", {"pid": pid})
+
+        observer = {"on_start": on_start} if self.records_local_process_group else {}
         with (folder / "process.log").open("w+b") as log:
             code = self.helper.run_owned(
                 spec["argv"],
@@ -167,7 +193,7 @@ class NativeWorker:
                 env=env,
                 limit=spec["log_bytes"],
                 timeout=spec["timeout"],
-                active=lambda: (cancel is None or not cancel.is_set()) and not (requested and requested()),
+                active=active,
                 fail=reasons.append,
                 cwd=work,
                 **observer,
@@ -176,6 +202,19 @@ class NativeWorker:
             log.seek(0)
             transcript = log.read()
             digest = _digest(transcript)
+        if interrupted and not reasons:
+            if not started or spec.get("restart_checkpoint") == "immutable-inputs":
+                # Before launch the pinned inputs are always a safe boundary.
+                # After launch, replay requires an explicit installed guarantee.
+                archive = self.root / (execution + ".interrupted-" + uuid4().hex)
+                folder.rename(archive)
+                return {
+                    "state": "editor-interrupted",
+                    "checkpoint": "immutable-inputs" if started else "before-launch",
+                    "archive": archive.name,
+                    "transcript": digest,
+                }
+            reasons.append("editor-closed-without-restart-checkpoint")
         record = {"exit_code": code, "reasons": reasons, "transcript": digest}
         if spec.get("observation_protocol") == OBSERVATION_PROTOCOL and code == 0 and not reasons:
             # This channel belongs to the fixed installed broker, not candidate files.

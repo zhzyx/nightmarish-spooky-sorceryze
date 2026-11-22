@@ -1,0 +1,387 @@
+{
+  "issue": 2126,
+  "acceptance_issue": 1732,
+  "recorded_at": "2026-11-22T18:01:40+00:00",
+  "original_failure": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2126",
+    "source_commit": "35a233f2a6910ad0ec19931bd1db12e3d4b28fa6",
+    "macos_editor_sha256": "b487206b1ba15fa4f54121a136dd66121484514a78845a2b7cc2e23e6469a686",
+    "producer_pid": 44851,
+    "child_pid": 44853,
+    "observed": "Both members of the registered PGID were live and the producer answered a fresh challenge after the first editor exited."
+  },
+  "candidate": {
+    "base_commit": "91a78e9b17738cf187538e012f75f5e8302f085d",
+    "git_blob_ids": {
+      "customizations/components/tianxuan/server/native_api.py": "ee67c8aa0c623288f3cf4007e1694bb2d5f2d671",
+      "customizations/components/tianxuan/server/native_checkpoint.py": "86810aa1cd3ba52cc5f6f07d360e887ff7e5d50a",
+      "customizations/components/tianxuan/server/native_installation.py": "b46e6308c4b2c089a3eef8b4587772c22e854012",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "04afe2654b22a6289f73838364a2a4f2d7fe0dee",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "2df907531eb58daf6cc59a7685ab1b1e1e8da35b",
+      "editor/docks/workbench/business_session.gd": "4ac73049952423118279932b344c8b43017c8e34",
+      "customizations/components/tianxuan/sinan-workorders/test_native_editor_worker_close.py": "02384949dc6a830787230f3851bf94246855f6e5",
+      "tests/editor/run_macos_registered_worker_close.py": "24b235938814d841aadb683cea90c167419b99fe"
+    }
+  },
+  "reproduced_with": [
+    "python tests/editor/run_macos_registered_worker_close.py --report service.json",
+    "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_editor_worker_close.py"
+  ],
+  "macos_native": {
+    "status": "pending-external-candidate-run",
+    "command": "python tests/editor/run_macos_registered_worker_close.py --godot <candidate-arm64-bare-editor> --report cocoa.json",
+    "build_input": "editor/SCsub embeds editor/docks/workbench/business_session.gd. Build the candidate editor for macOS arm64.",
+    "expected": "Two different Cocoa editor PIDs exit 0 after normal WM_CLOSE_REQUEST. Registered PGID, leader and child are verified. Same signed task and stage, sibling producer still live, original interrupted group gone, new producer and one checker stop at stage-confirmation."
+  },
+  "checkpoint_policy": "Before physical launch, pinned inputs can be replayed. After launch, only a local installed producer declaring immutable-inputs may replay from clean pinned inputs. Unproven effects are retained as a failed physical receipt. A revoked grant cannot restart.",
+  "windows_service": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "mode": "service socket",
+    "task": "3b34b4293358fbc82c6c01df2ba7a77be875c606db760bd92cfed794f30ec32c",
+    "issue": "iss_be8245f536d547ef8c860b0b865f9133",
+    "before": {
+      "task": "3b34b4293358fbc82c6c01df2ba7a77be875c606db760bd92cfed794f30ec32c",
+      "issue": "iss_be8245f536d547ef8c860b0b865f9133",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+        "mandate": "installed-test-plan",
+        "source_revision": "f75f7e7bf8526255124a603a6f3d04dd6a94a4e0f4c87155c7ad9ff50383cc20",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_527efbe6372a4dcfbab50f97dc945fbf",
+          "issue_id": "iss_be8245f536d547ef8c860b0b865f9133",
+          "issue_revision": "30c398b3c1a25630bf374ebc0da93e9c430955d899f11537304371bdf3eb6da3",
+          "responsible_user": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "ready",
+      "completed_steps": [
+        "authorized"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {},
+      "candidate": null,
+      "calls": {
+        "worker": "native-worker:3b34b4293358fbc82c6c01df2ba7a77be875c606db760bd92cfed794f30ec32c",
+        "model_calls": null
+      },
+      "stage_receipt": null,
+      "pending_decision": null
+    },
+    "stopped": {
+      "task": "3b34b4293358fbc82c6c01df2ba7a77be875c606db760bd92cfed794f30ec32c",
+      "issue": "iss_be8245f536d547ef8c860b0b865f9133",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+        "mandate": "installed-test-plan",
+        "source_revision": "f75f7e7bf8526255124a603a6f3d04dd6a94a4e0f4c87155c7ad9ff50383cc20",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_527efbe6372a4dcfbab50f97dc945fbf",
+          "issue_id": "iss_be8245f536d547ef8c860b0b865f9133",
+          "issue_revision": "30c398b3c1a25630bf374ebc0da93e9c430955d899f11537304371bdf3eb6da3",
+          "responsible_user": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "editor-interrupted",
+      "completed_steps": [
+        "authorized"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {},
+      "candidate": null,
+      "calls": {
+        "worker": "native-worker:3b34b4293358fbc82c6c01df2ba7a77be875c606db760bd92cfed794f30ec32c",
+        "model_calls": null
+      },
+      "stage_receipt": null,
+      "pending_decision": null
+    },
+    "service_pid": 50704,
+    "producer_pid": 71252,
+    "child_pid": 84840,
+    "pgids": null,
+    "closed_pids": [
+      71252,
+      84840
+    ],
+    "physical_exit_readback_ms": 31,
+    "control_pid": 10176,
+    "control_task": "3e463b224c6c1a2c77a8d43e49caa486e0437017f00a180d1af1d8f8be8b7d9c",
+    "control_alive": true,
+    "answered_before_close": true,
+    "answered_after_close": false,
+    "editors": [],
+    "after": {
+      "task": "3b34b4293358fbc82c6c01df2ba7a77be875c606db760bd92cfed794f30ec32c",
+      "issue": "iss_be8245f536d547ef8c860b0b865f9133",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+        "mandate": "installed-test-plan",
+        "source_revision": "f75f7e7bf8526255124a603a6f3d04dd6a94a4e0f4c87155c7ad9ff50383cc20",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_527efbe6372a4dcfbab50f97dc945fbf",
+          "issue_id": "iss_be8245f536d547ef8c860b0b865f9133",
+          "issue_revision": "30c398b3c1a25630bf374ebc0da93e9c430955d899f11537304371bdf3eb6da3",
+          "responsible_user": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "stage-reached",
+      "completed_steps": [
+        "authorized",
+        "reserved",
+        "worker-terminal",
+        "stage-checked"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {
+        "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+      },
+      "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+      "calls": {
+        "worker": "native-worker:3b34b4293358fbc82c6c01df2ba7a77be875c606db760bd92cfed794f30ec32c",
+        "model_calls": null
+      },
+      "stage_receipt": {
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_527efbe6372a4dcfbab50f97dc945fbf",
+          "issue_id": "iss_be8245f536d547ef8c860b0b865f9133",
+          "issue_revision": "30c398b3c1a25630bf374ebc0da93e9c430955d899f11537304371bdf3eb6da3",
+          "responsible_user": "usr_c6f80cdde4454b29bc7be04ffe60ad69",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "checks": {
+          "check": {
+            "evidence": "9621321e894aad0872f4a256e0855a5001d617ee610774b6a46d30f7fd33c742",
+            "outcome": "passed"
+          }
+        },
+        "modules": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "reason": "authorized_stage_criteria_met",
+        "state": "stage-reached",
+        "task": "3b34b4293358fbc82c6c01df2ba7a77be875c606db760bd92cfed794f30ec32c"
+      },
+      "pending_decision": {
+        "kind": "stage-confirmation",
+        "task": "3b34b4293358fbc82c6c01df2ba7a77be875c606db760bd92cfed794f30ec32c"
+      }
+    },
+    "processes": {
+      "workers": [
+        71252,
+        73948
+      ],
+      "checkers": [
+        71840
+      ]
+    },
+    "interrupted": {
+      "archive": "3b34b4293358fbc82c6c01df2ba7a77be875c606db760bd92cfed794f30ec32c.interrupted-045725d310654363987a1738552cda08",
+      "checkpoint": "immutable-inputs",
+      "state": "editor-interrupted",
+      "transcript": "5083ae5b4b0f69845c0215789d6d4082e4304dc7be1396c08add95ac454080dc"
+    },
+    "http": [
+      {
+        "method": "PUT",
+        "path": "/api/v1/issues/iss_be8245f536d547ef8c860b0b865f9133/task-target",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/issues/by-number/1/detail",
+        "status": 200
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/issues/iss_be8245f536d547ef8c860b0b865f9133/task-confirmation",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/authorize",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-project",
+        "status": 200
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/issues/iss_7a06e3d7a00048e79374d80776af0866/task-target",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/issues/by-number/2/detail",
+        "status": 200
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/issues/iss_7a06e3d7a00048e79374d80776af0866/task-confirmation",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/authorize",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-project",
+        "status": 499
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/status",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-project",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/status",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-project",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-project",
+        "status": 499
+      }
+    ],
+    "preview_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+  },
+  "windows_service_report_sha256": "0264b0117acbd5fa7e5581ebe7e78113f7e18c9b11526720aa3054a842638273",
+  "windows_regressions": {
+    "passed": 43,
+    "skipped": 3,
+    "seconds": 41.21,
+    "files": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_editor_worker_close.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_local_occupancy.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_recovery_list.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_project_reopen.py",
+      "customizations/components/tianxuan/server/test_native_installation_integrity.py"
+    ],
+    "new_checks": [
+      "same actor/project separate signed business task survives a connection close",
+      "reopen with unchanged authorization replays from clean pinned inputs",
+      "revoked confirmation parks the original ticket",
+      "uncertified interrupted process does not replay",
+      "fast reopen waits for actual launch owner before resuming its prelaunch checkpoint"
+    ]
+  }
+}

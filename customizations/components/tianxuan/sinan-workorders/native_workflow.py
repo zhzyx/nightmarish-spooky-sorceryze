@@ -18,7 +18,7 @@ from issue_flow import dependencies as issue_dependencies
 from native_local_occupancy import remember
 from native_observations import model_observation
 from native_store import NativeStoreError, _digest, _json, _object_name
-from native_worker import worker_cancel_requested, worker_step_reporter
+from native_worker import editor_connection_closed, worker_cancel_requested, worker_step_reporter
 from native_workspace import portable
 from tianxuan_core import NotFound, PermissionDenied, StorageBusy, VersionConflict, _storage_error
 
@@ -109,6 +109,7 @@ class NativeWorkflow:
         self.authorize, self.capacity = authorize, capacity
         self.principals, self.review_candidate, self.installed_plan = principals, review_candidate, installed_plan
         self._executions = {}  # Exact local coordinator ownership; never inferred from a PID.
+        self._editor_connections = {}  # Only currently owned local recovery executions.
         self._judgment_observers = {}
         self._judgment_stopping = False
         self.next_issues = next_issues
@@ -313,6 +314,7 @@ class NativeWorkflow:
             state = {"pause": "pausing", "cancel": "canceling"}[intent]
         available = {
             "ready": ["pause", "cancel"],
+            "editor-interrupted": ["pause", "cancel"],
             "reserved": ["pause", "cancel"],
             "running": ["pause", "cancel"],
             "pausing": ["cancel"],
@@ -320,6 +322,7 @@ class NativeWorkflow:
         }
         summaries = {
             "ready": "等待派发",
+            "editor-interrupted": "等待从原输入恢复",
             "reserved": "已预约",
             "running": "工作者运行中",
             "pausing": "暂停已接收，等待当前工具完成",
@@ -997,13 +1000,15 @@ class NativeWorkflow:
             keys.append(row["id"])
         return keys
 
-    def reserve(self, actor, assignment):
+    def reserve(self, actor, assignment, *, editor_checkpoint=False):
         self._dependencies_current(actor, assignment["ticket"])
         catalog = self.installed_catalog()
         with self._transaction() as db:
             row = self._row(db, assignment["ticket"])
             task = self._valid(actor, row)
-            if row["state"] != "ready":
+            if row["state"] != ("editor-interrupted" if editor_checkpoint else "ready"):
+                return False
+            if editor_checkpoint and self.worker.installation(task["profile"]) != task["installation"]:
                 return False
             if not self._schedulable(task, catalog, assignment.get("target", "agent")):
                 return False
@@ -1154,6 +1159,11 @@ class NativeWorkflow:
                 self.domain._event(row["tenant"], "native.execution-recovery", actor, row["issue"], observation)
             return observation
 
+    def editor_is_closing(self, key):
+        with self.domain._connection_lock:
+            closed = self._editor_connections.get(key)
+            return closed is not None and closed.is_set()
+
     def execute(self, actor, key):
         with self.domain._connection_lock:
             row = self.status(actor, key)
@@ -1163,10 +1173,14 @@ class NativeWorkflow:
             event = Future()
             deadline = time.monotonic() + self.worker.profiles[task["profile"]]["timeout"] + 60
             self._executions[key] = (event, deadline)
+            closed = editor_connection_closed.get()
+            if closed is not None:
+                self._editor_connections[key] = closed
         try:
             return self._execute_owned(actor, key)
         finally:
             with self.domain._connection_lock:
+                self._editor_connections.pop(key, None)
                 self._executions.pop(key, None)
                 event.set_result(None)
             callback = getattr(self, "on_state_change", None)
@@ -1234,6 +1248,16 @@ class NativeWorkflow:
                 state = terminal["state"]
             except (PermissionDenied, NativeStoreError):
                 state = "stopped"
+            if terminal["state"] == "editor-interrupted":
+                # The launch owner returned only after closing its pinned process
+                # tree and archiving the partial draft. There is no admitted output.
+                self._append_step(db, key, "process.interrupted", terminal, terminal["archive"])
+                intent = self._control_intent(db, key)
+                if state == "editor-interrupted" and intent:
+                    state = "cancelled" if intent == "cancel" else "paused"
+                db.execute("UPDATE native_tasks SET state=?,assignment=NULL WHERE id=?", (state, key))
+                db.execute("DELETE FROM native_local_occupancy WHERE task=?", (key,))
+                return {"state": state}
             self._terminal_progress(db, key, state, terminal)
             state = self._control_settlement(db, key, state)
             db.execute("UPDATE native_tasks SET state=?,terminal=? WHERE id=?", (state, _json(terminal), key))

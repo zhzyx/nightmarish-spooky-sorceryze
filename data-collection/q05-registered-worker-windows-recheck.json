@@ -1,0 +1,70 @@
+{
+  "issue": 2126,
+  "mode": "service socket",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "command": "python tests/editor/run_macos_registered_worker_close.py --report service.json",
+  "task": "ef9c5e15d5a66673c7960336367039bc23784e1f7334261d41d59b49a3c1ac84",
+  "source_revision": "8131990a81f2b3aa84c70ab7cc45a8ecb7fdd215ef642c3fa7b72168b071be36",
+  "observed_states": [
+    "ready",
+    "editor-interrupted",
+    "stage-reached"
+  ],
+  "checkpoint": {
+    "archive": "ef9c5e15d5a66673c7960336367039bc23784e1f7334261d41d59b49a3c1ac84.interrupted-0ca470d3727d495daf59262c3356a1d7",
+    "checkpoint": "immutable-inputs",
+    "state": "editor-interrupted",
+    "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "closed_pids": [
+    49632,
+    84204
+  ],
+  "physical_exit_readback_ms": 31,
+  "control_task": "1dc80d3e9552d01c8480ef9051514d80f2a5aa030bcf1940128c90e90f0082b7",
+  "control_pid": 134236,
+  "control_alive": true,
+  "processes": {
+    "workers": [
+      49632,
+      65744
+    ],
+    "checkers": [
+      93000
+    ]
+  },
+  "same_authorization": true,
+  "same_input_revisions": true,
+  "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+  "stage_receipt": {
+    "authorization": {
+      "confirmation_revision": 1,
+      "confirmed_by": "usr_1071f79927d944449b6de2c423919f30",
+      "criteria": "preview.svg shows one blue circle of radius 12",
+      "document_id": "doc_8dbab26fc48042e088423190f6494057",
+      "issue_id": "iss_e18129007816495d947573df5ade3ad0",
+      "issue_revision": "8538a84c152cc0723788eba18cd07a626b7fb2a64feef10d035f0db90190215c",
+      "responsible_user": "usr_1071f79927d944449b6de2c423919f30",
+      "stage": "preview",
+      "target_revision": 1,
+      "version": 1
+    },
+    "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+    "checks": {
+      "check": {
+        "evidence": "e2b5e73d0a5f1932af1a92d63cf9ea2bd06ba04c7d5733ce1d1e354724f2ffff",
+        "outcome": "passed"
+      }
+    },
+    "modules": {
+      "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+    },
+    "reason": "authorized_stage_criteria_met",
+    "state": "stage-reached",
+    "task": "ef9c5e15d5a66673c7960336367039bc23784e1f7334261d41d59b49a3c1ac84"
+  },
+  "pending_decision": {
+    "kind": "stage-confirmation",
+    "task": "ef9c5e15d5a66673c7960336367039bc23784e1f7334261d41d59b49a3c1ac84"
+  }
+}
