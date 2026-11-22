@@ -13,7 +13,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
-from native_checkpoint import read_checkpoint
+from native_checkpoint import read_checkpoint, recovery_list
 from native_store import Conflict, NativeStore, NativeStoreError
 from starlette.concurrency import run_in_threadpool
 from tianxuan_core import require_native_source_read as _module_read
@@ -39,6 +39,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "advance": set(),
             "status": {"key"},
             "checkpoint": {"key"},
+            "recovery": {"project"},
             "edit-baseline": {"key", "module", "path"},
             "reconcile": {"key"},
             "execute": {"key"},
@@ -71,10 +72,15 @@ def create_native_workflow_router(workflow) -> APIRouter:
             raise HTTPException(404, "workflow operation unavailable")
         optional = {
             "advance": {"exclude"},
+            "recovery": {"after"},
             "integration-continue": {"event"},
             "record": {"sourceReceipt", "receipt", "ticket", "key", "stage", "reason"},
         }
         _fields(payload, fields[operation], optional.get(operation))
+        if operation == "recovery" and "after" in payload and (
+            not isinstance(payload["after"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["after"])
+        ):
+            raise HTTPException(422, "invalid recovery cursor")
         if operation == "advance" and (
             not isinstance(payload.get("exclude", []), list)
             or len(payload.get("exclude", [])) > 1024
@@ -140,6 +146,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 return workflow.execute_receipt(actor, payload["key"])
             if operation in {"status", "check", "review", "reconcile", "finish"}:
                 return getattr(workflow, operation)(actor, payload["key"])
+            if operation == "recovery":
+                return recovery_list(workflow, actor, **payload)
             if operation == "checkpoint":
                 return read_checkpoint(workflow, actor, payload["key"])
             if operation == "edit-baseline":

@@ -1,0 +1,297 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-r05",
+  "issue_number": 1821,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1821",
+  "baseline": "0198ae5c9b9360d62e8749f436ba98ef36eae90e",
+  "candidate_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "1b87dbf7bd900a0e26a730ac9c9d1b81aa9bc63f",
+    "customizations/components/tianxuan/server/native_checkpoint.py": "58073b41df6d70812672ff90930d3ec51f766d9e",
+    "customizations/components/tianxuan/sinan-workorders/test_native_recovery_list.py": "0a5f1f8e49fbec38609e4ad3e8269dfc9b765865"
+  },
+  "environment": {
+    "system": "Darwin",
+    "release": "25.6.0",
+    "python": "3.14.3",
+    "sqlite": "3.50.4"
+  },
+  "command": "python -m pytest -q -o junit_family=legacy customizations/components/tianxuan/sinan-workorders/test_native_recovery_list.py customizations/components/tianxuan/sinan-workorders/test_native_checkpoint.py customizations/components/tianxuan/sinan-workorders/test_native_validation.py customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py",
+  "tests": 20,
+  "failures": 0,
+  "errors": 0,
+  "independent_review": "Parent operator inspected scope, ACL, active contracts, pagination and classifications and independently reran the fresh-process four-state test (passed).",
+  "observation": {
+    "original_pid": 91197,
+    "pid": 91225,
+    "owner": {
+      "items": [
+        {
+          "category": "resumable",
+          "reason": "ready",
+          "checkpoint": {
+            "task": "0b4e508679545e58751a27daa81d175033c0cf09cc86730499ef27058e6bcd80",
+            "issue": "iss_b78ee77c634f4c0fb3012e8e68675ba3",
+            "project": "studio",
+            "business_module": "default",
+            "target": {
+              "title": "Animate",
+              "acceptance": "visible",
+              "writes": {
+                "a": [
+                  "preview.svg"
+                ]
+              }
+            },
+            "authorization": {
+              "actor": "usr_b61eb04fabd84184b58eccbf0c56b307",
+              "mandate": "installed-test-plan",
+              "source_revision": "52b1c1c2d7e388926ba2118c1a6227fa70802670e26083007f79cd3c22df74ea",
+              "stage": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_b61eb04fabd84184b58eccbf0c56b307",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_2b5ef142fdff4fe1a8d9f2aa9bc6f4e4",
+                "issue_id": "iss_b78ee77c634f4c0fb3012e8e68675ba3",
+                "issue_revision": "cde05cd9dd484646f2cb9dac0355cbdd22e9eb677bdae9aa30b700301ea92907",
+                "responsible_user": "usr_b61eb04fabd84184b58eccbf0c56b307",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              }
+            },
+            "state": "ready",
+            "completed_steps": [
+              "authorized"
+            ],
+            "input_revisions": {
+              "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+            },
+            "artifact_revisions": {},
+            "candidate": null,
+            "calls": {
+              "worker": "native-worker:0b4e508679545e58751a27daa81d175033c0cf09cc86730499ef27058e6bcd80",
+              "model_calls": null
+            },
+            "stage_receipt": null,
+            "pending_decision": null
+          }
+        },
+        {
+          "category": "awaiting-confirmation",
+          "reason": "authorized-stage-reached",
+          "checkpoint": {
+            "task": "1e8267e8d1b4978c27903345b0a148b3d1153e80bf3bac8ab3dbd44248c2c3d6",
+            "issue": "iss_1af60dbf05df4691a51d009e40492f22",
+            "project": "studio",
+            "business_module": "default",
+            "target": {
+              "title": "Program",
+              "acceptance": "visible",
+              "writes": {
+                "a": [
+                  "preview.svg"
+                ]
+              }
+            },
+            "authorization": {
+              "actor": "usr_b61eb04fabd84184b58eccbf0c56b307",
+              "mandate": "installed-test-plan",
+              "source_revision": "f4a8f807cf82c981e772468fbebbfc7f72ca82cca427bdeb0b5420b57873ce2a",
+              "stage": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_b61eb04fabd84184b58eccbf0c56b307",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_2b5ef142fdff4fe1a8d9f2aa9bc6f4e4",
+                "issue_id": "iss_1af60dbf05df4691a51d009e40492f22",
+                "issue_revision": "3611ce85369ba0aac636bcb7d284091a681198e06c369939bc2b0e86412c6a42",
+                "responsible_user": "usr_b61eb04fabd84184b58eccbf0c56b307",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              }
+            },
+            "state": "stage-reached",
+            "completed_steps": [
+              "authorized",
+              "reserved",
+              "worker-terminal",
+              "stage-checked"
+            ],
+            "input_revisions": {
+              "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+            },
+            "artifact_revisions": {
+              "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+            },
+            "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+            "calls": {
+              "worker": "native-worker:1e8267e8d1b4978c27903345b0a148b3d1153e80bf3bac8ab3dbd44248c2c3d6",
+              "model_calls": null
+            },
+            "stage_receipt": {
+              "authorization": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_b61eb04fabd84184b58eccbf0c56b307",
+                "criteria": "preview.svg shows one blue circle of radius 12",
+                "document_id": "doc_2b5ef142fdff4fe1a8d9f2aa9bc6f4e4",
+                "issue_id": "iss_1af60dbf05df4691a51d009e40492f22",
+                "issue_revision": "3611ce85369ba0aac636bcb7d284091a681198e06c369939bc2b0e86412c6a42",
+                "responsible_user": "usr_b61eb04fabd84184b58eccbf0c56b307",
+                "stage": "preview",
+                "target_revision": 1,
+                "version": 1
+              },
+              "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+              "checks": {
+                "check": {
+                  "evidence": "b9c2f68eecd0619d697d4a053d123295ca796f3b792bd41547258749e7f5414c",
+                  "outcome": "passed"
+                }
+              },
+              "modules": {
+                "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+              },
+              "reason": "authorized_stage_criteria_met",
+              "state": "stage-reached",
+              "task": "1e8267e8d1b4978c27903345b0a148b3d1153e80bf3bac8ab3dbd44248c2c3d6"
+            },
+            "pending_decision": {
+              "kind": "stage-confirmation",
+              "task": "1e8267e8d1b4978c27903345b0a148b3d1153e80bf3bac8ab3dbd44248c2c3d6"
+            }
+          }
+        },
+        {
+          "category": "needs-attention",
+          "reason": "failed",
+          "checkpoint": {
+            "task": "4135f8eda6f47704169973b9c6f7a344c36b600326faeb2db16b5c048598cde8",
+            "issue": "iss_1d12bfc3e6fd4944ab5a897987c5664a",
+            "project": "studio",
+            "business_module": "default",
+            "target": {
+              "title": "c",
+              "acceptance": "exact",
+              "writes": {
+                "c": "*"
+              }
+            },
+            "authorization": {
+              "actor": "usr_b61eb04fabd84184b58eccbf0c56b307",
+              "mandate": "installed-test-plan",
+              "source_revision": "fd7b861d8476f45c671e2e651a35264660f582f29fceec7a69b3a64d3a634092",
+              "stage": null
+            },
+            "state": "failed",
+            "completed_steps": [
+              "authorized",
+              "reserved",
+              "worker-terminal"
+            ],
+            "input_revisions": {
+              "c": "95f8e1393a57c7f1ecde6da19da297ee4380d6f1b5c0369efb135a6e2f474f73"
+            },
+            "artifact_revisions": {},
+            "candidate": null,
+            "calls": {
+              "worker": "native-worker:4135f8eda6f47704169973b9c6f7a344c36b600326faeb2db16b5c048598cde8",
+              "model_calls": null
+            },
+            "stage_receipt": null,
+            "pending_decision": null
+          }
+        },
+        {
+          "category": "completed",
+          "reason": "accepted",
+          "checkpoint": {
+            "task": "b69f633e6a51b827c87132d7bbf2ac107aa0ada8094412b9262d4f029fee955f",
+            "issue": "iss_1f8e3a06cf864011a5cb69680d3e09c6",
+            "project": "studio",
+            "business_module": "default",
+            "target": {
+              "title": "b",
+              "acceptance": "exact",
+              "writes": {
+                "b": "*"
+              }
+            },
+            "authorization": {
+              "actor": "usr_b61eb04fabd84184b58eccbf0c56b307",
+              "mandate": "installed-test-plan",
+              "source_revision": "dde666fa66a159a74a92c7d43b810d51a286d8256574fdf825d7ba1143f09460",
+              "stage": null
+            },
+            "state": "accepted",
+            "completed_steps": [
+              "authorized",
+              "reserved",
+              "worker-terminal",
+              "accepted"
+            ],
+            "input_revisions": {
+              "b": "bc55d90cba618da64f1a05c86a6d2c3585dbca3ab800d155a30f4728a2bd67ba"
+            },
+            "artifact_revisions": {
+              "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+            },
+            "candidate": "463ce9a42dd67e4f058ead4d2097cd3a88eb6a222b0c84d1545960af248752c4",
+            "calls": {
+              "worker": "native-worker:b69f633e6a51b827c87132d7bbf2ac107aa0ada8094412b9262d4f029fee955f",
+              "model_calls": null
+            },
+            "stage_receipt": null,
+            "pending_decision": null
+          }
+        }
+      ],
+      "next_cursor": null
+    },
+    "peer": {
+      "items": [],
+      "next_cursor": null
+    },
+    "other_project": {
+      "items": [
+        {
+          "category": "resumable",
+          "reason": "ready",
+          "checkpoint": {
+            "task": "c71b7f04160fb9303b889e26872be201e773e8f95b48a66b6477f4a4f902f55f",
+            "issue": "iss_b52eb0779df9448f9fbc0bba71069c25",
+            "project": "elsewhere",
+            "business_module": "default",
+            "target": {
+              "title": "a",
+              "acceptance": "exact",
+              "writes": {
+                "a": "*"
+              }
+            },
+            "authorization": {
+              "actor": "usr_b61eb04fabd84184b58eccbf0c56b307",
+              "mandate": "installed-test-plan",
+              "source_revision": "c8029f96bdb16a9a8f3eb2a0e9483a6fefee089403d96ba7e1df0ecab125e07c",
+              "stage": null
+            },
+            "state": "ready",
+            "completed_steps": [
+              "authorized"
+            ],
+            "input_revisions": {
+              "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+            },
+            "artifact_revisions": {},
+            "candidate": null,
+            "calls": {
+              "worker": "native-worker:c71b7f04160fb9303b889e26872be201e773e8f95b48a66b6477f4a4f902f55f",
+              "model_calls": null
+            },
+            "stage_receipt": null,
+            "pending_decision": null
+          }
+        }
+      ],
+      "next_cursor": null
+    }
+  }
+}
