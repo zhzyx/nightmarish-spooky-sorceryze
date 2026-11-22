@@ -60,7 +60,10 @@ export default function AccountsPage() {
         <h1>{label("账号与访问密钥", "Accounts and access keys")}</h1>
         {identity && <p className="page-lede">{identity.name || identity.email} · {roles.find(([role]) => role === identity.role)?.[1] ?? identity.role}</p>}
       </div>
-      {identity && <button className="btn btn-ghost" disabled={busy} onClick={signOut}>{label("退出登录", "Sign out")}</button>}
+      <div className="page-actions">
+        {identity?.can_issue_admin_keys && <Link className="btn btn-primary" href="/accounts/admin-keys">{label("分配管理员密钥", "Assign administrator keys")}</Link>}
+        {identity && <button className="btn btn-ghost" disabled={busy} onClick={signOut}>{label("退出登录", "Sign out")}</button>}
+      </div>
     </header>
     {!identity && <section className="panel route-state">
       <p>{label("登录后可查看账号。", "Sign in to view your account.")}</p>
@@ -101,7 +104,7 @@ export default function AccountsPage() {
         </tr>)}</tbody></table></div>
       </section>
       <section className="panel account-card">
-        <h2>{label("已签发密钥", "Issued keys")}</h2>
+        <h2 id="issued-keys">{label("已签发密钥", "Issued keys")}</h2>
         <div className="account-table"><table><thead><tr>
           <th>{label("账号", "Account")}</th><th>{label("名称", "Name")}</th>
           <th>{label("有效期", "Expires")}</th><th>{label("状态", "Status")}</th>

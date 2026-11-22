@@ -94,6 +94,13 @@ def test_new_workspace_cannot_manage_shared_merge_queue(monkeypatch):
     token = store.issue_session(owner["user_id"])
     with TestClient(create_app(store), base_url="https://testserver") as client:
         headers = {"Authorization": f"Bearer {token}"}
+        assert client.get("/api/v1/auth/me", headers=headers).json()["can_issue_admin_keys"] is False
+        assert (
+            client.post(
+                "/api/v1/auth/keys/admin", headers=headers, json={"user_id": owner["user_id"], "name": "personal"}
+            ).status_code
+            == 403
+        )
         for path in ["/api/v1/merge-queue", "/api/v1/merge-queue/workers", "/api/v1/metrics", "/api/v1/ready"]:
             assert client.get(path, headers=headers).status_code == 403
         assert client.post("/api/v1/merge-queue/process", headers=headers).status_code == 403

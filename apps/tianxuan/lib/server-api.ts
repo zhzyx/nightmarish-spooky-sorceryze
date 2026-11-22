@@ -6,7 +6,7 @@ import type { ApiRequirement } from "./requirements-api";
 import type { ApiSearchResult } from "./search-api";
 export type { ApiDoc, ApiDocDetail, ApiRepo, ApiIssue, ApiHealth, ApiGiteaStatus, ApiRequirement, ApiSearchResult };
 export type { ApiRequirementProgress } from "./requirements-api";
-export interface Identity { id: string; name: string; email: string; role: string }
+export interface Identity { id: string; name: string; email: string; role: string; can_issue_admin_keys?: boolean }
 
 async function read<T>(path: string): Promise<T> {
   const base = process.env.TIANXUAN_INTERNAL_API_BASE ?? process.env.NEXT_PUBLIC_TIANXUAN_API_BASE ?? "http://127.0.0.1:8000";
@@ -29,6 +29,9 @@ export const currentIdentity = cache(async (): Promise<Identity | null> => {
     return null;
   }
 });
+export async function fetchMembers(): Promise<Identity[]> {
+  return (await read<{ users: Identity[] }>("/api/v1/users")).users;
+}
 export async function currentActor(): Promise<string> {
   return (await currentIdentity())?.id ?? (process.env.TIANXUAN_REQUIRE_KEYS === "1" ? "" : process.env.TIANXUAN_ACTOR ?? "");
 }

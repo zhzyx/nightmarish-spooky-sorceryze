@@ -163,3 +163,36 @@ def test_repository_read_write_and_stale_file(setup, tmp_path, monkeypatch):
     assert (
         client.post(base + "/file", headers={"Authorization": f"Bearer {editor_key}"}, json=payload).status_code == 403
     )
+
+
+def test_assign_admin_key_to_current_tenant_administrator(setup):
+    store, client, owner, viewer, admin_key, view_key = setup
+    recipient = store.add_member(owner["user_id"], "receiver@example.invalid", "password", role="admin")
+    editor = store.add_member(owner["user_id"], "editor@example.invalid", "password", role="editor")
+    other = store.register("Other", "outside@example.invalid", "password")
+    editor_key = store.issue_access_key(owner["user_id"], editor["user_id"], "editor")["key"]
+    route = "/api/v1/auth/keys/admin"
+    payload = {"user_id": recipient["user_id"], "name": "release duty", "days": 7}
+    headers = {"Authorization": f"Bearer {admin_key}"}
+
+    assert client.post(route, json=payload).status_code == 401
+    for key in (view_key, editor_key):
+        assert client.post(route, headers={"Authorization": f"Bearer {key}"}, json=payload).status_code == 403
+    assert client.get("/api/v1/auth/me", headers=headers).json()["can_issue_admin_keys"] is True
+    original = store.list_access_keys(owner["user_id"])
+    for user, status in [(viewer, 409), (editor, 409), (other, 403)]:
+        assert client.post(route, headers=headers, json={**payload, "user_id": user["user_id"]}).status_code == status
+    assert store.list_access_keys(owner["user_id"]) == original
+
+    issued = client.post(route, headers=headers, json=payload)
+    assert issued.status_code == 200 and issued.headers["cache-control"] == "no-store"
+    key = issued.json()["key"]
+    receiver = {"Authorization": f"Bearer {key}"}
+    assert client.get("/api/v1/auth/me", headers=receiver).json()["id"] == recipient["user_id"]
+    listing = client.get("/api/v1/auth/keys", headers=receiver)
+    assert listing.status_code == 200 and key not in listing.text
+    store.set_role(owner["user_id"], recipient["user_id"], "editor")
+    assert client.post(route, headers=headers, json=payload).status_code == 409
+    assert client.get("/api/v1/auth/keys", headers=receiver).status_code == 403
+    assert client.delete(f"/api/v1/auth/keys/{issued.json()['id']}", headers=headers).status_code == 200
+    assert client.get("/api/v1/auth/me", headers=receiver).status_code == 401
