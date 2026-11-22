@@ -1,0 +1,252 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-r01",
+  "issue_number": 1836,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1836",
+  "baseline": "21885f8c13ebac2169527fd767806604c877674f",
+  "candidate_blobs": {
+    "customizations/components/tianxuan/server/native_api.py": "6292a038005c6fbc0a47aef65ea4d5ddd05a4563",
+    "customizations/components/tianxuan/server/native_checkpoint.py": "8123f7517259a4bf1dfe884a8e157b41294d8b78",
+    "customizations/components/tianxuan/sinan-workorders/test_native_checkpoint.py": "2c7cbaee9015471206a55a35cce855fca9772e30"
+  },
+  "environment": "macOS / Python 3.14 / SQLite WAL on isolated task database",
+  "command": "python -m pytest -q -o junit_family=legacy customizations/components/tianxuan/sinan-workorders/test_native_checkpoint.py customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py",
+  "tests": 16,
+  "failures": 0,
+  "checkpoint_observation": {
+    "writer_pid": 81968,
+    "page_size": 4096,
+    "readers": [
+      {
+        "image": "intact",
+        "wal_bytes": 37112,
+        "pid": 81983,
+        "checkpoint": {
+          "task": "7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b",
+          "issue": "iss_ca451fafef614bc0a2685341d659a26a",
+          "project": "studio",
+          "business_module": "default",
+          "target": {
+            "title": "Program",
+            "acceptance": "visible",
+            "writes": {
+              "a": [
+                "preview.svg"
+              ]
+            }
+          },
+          "authorization": {
+            "actor": "usr_c64412a583d24b558937f9f93e4dfa94",
+            "mandate": "installed-test-plan",
+            "source_revision": "bdb833c8f4437e740484ac126b8ecb4b3bbf04296b1f9297ef4af60a137f92fa",
+            "stage": {
+              "confirmation_revision": 1,
+              "confirmed_by": "usr_c64412a583d24b558937f9f93e4dfa94",
+              "criteria": "preview.svg shows one blue circle of radius 12",
+              "document_id": "doc_1f7f5147a0744461b5655dc994c31c84",
+              "issue_id": "iss_ca451fafef614bc0a2685341d659a26a",
+              "issue_revision": "c53cbb14d37dce8949097493434432e813b14f86e6ec494610999087c2fbb159",
+              "responsible_user": "usr_c64412a583d24b558937f9f93e4dfa94",
+              "stage": "preview",
+              "target_revision": 1,
+              "version": 1
+            }
+          },
+          "state": "stage-reached",
+          "completed_steps": [
+            "authorized",
+            "reserved",
+            "worker-terminal",
+            "stage-checked"
+          ],
+          "input_revisions": {
+            "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+          },
+          "artifact_revisions": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "calls": {
+            "worker": "native-worker:7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b",
+            "model_calls": null
+          },
+          "stage_receipt": {
+            "authorization": {
+              "confirmation_revision": 1,
+              "confirmed_by": "usr_c64412a583d24b558937f9f93e4dfa94",
+              "criteria": "preview.svg shows one blue circle of radius 12",
+              "document_id": "doc_1f7f5147a0744461b5655dc994c31c84",
+              "issue_id": "iss_ca451fafef614bc0a2685341d659a26a",
+              "issue_revision": "c53cbb14d37dce8949097493434432e813b14f86e6ec494610999087c2fbb159",
+              "responsible_user": "usr_c64412a583d24b558937f9f93e4dfa94",
+              "stage": "preview",
+              "target_revision": 1,
+              "version": 1
+            },
+            "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+            "checks": {
+              "check": {
+                "evidence": "52870da13a98076ff1cf83cec41995ea24fd18c73a6a33071933a4e659cde604",
+                "outcome": "passed"
+              }
+            },
+            "modules": {
+              "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+            },
+            "reason": "authorized_stage_criteria_met",
+            "state": "stage-reached",
+            "task": "7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b"
+          },
+          "pending_decision": {
+            "kind": "stage-confirmation",
+            "task": "7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b"
+          }
+        }
+      },
+      {
+        "image": "torn",
+        "wal_bytes": 37111,
+        "pid": 81984,
+        "checkpoint": {
+          "task": "7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b",
+          "issue": "iss_ca451fafef614bc0a2685341d659a26a",
+          "project": "studio",
+          "business_module": "default",
+          "target": {
+            "title": "Program",
+            "acceptance": "visible",
+            "writes": {
+              "a": [
+                "preview.svg"
+              ]
+            }
+          },
+          "authorization": {
+            "actor": "usr_c64412a583d24b558937f9f93e4dfa94",
+            "mandate": "installed-test-plan",
+            "source_revision": "bdb833c8f4437e740484ac126b8ecb4b3bbf04296b1f9297ef4af60a137f92fa",
+            "stage": {
+              "confirmation_revision": 1,
+              "confirmed_by": "usr_c64412a583d24b558937f9f93e4dfa94",
+              "criteria": "preview.svg shows one blue circle of radius 12",
+              "document_id": "doc_1f7f5147a0744461b5655dc994c31c84",
+              "issue_id": "iss_ca451fafef614bc0a2685341d659a26a",
+              "issue_revision": "c53cbb14d37dce8949097493434432e813b14f86e6ec494610999087c2fbb159",
+              "responsible_user": "usr_c64412a583d24b558937f9f93e4dfa94",
+              "stage": "preview",
+              "target_revision": 1,
+              "version": 1
+            }
+          },
+          "state": "produced",
+          "completed_steps": [
+            "authorized",
+            "reserved",
+            "worker-terminal"
+          ],
+          "input_revisions": {
+            "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+          },
+          "artifact_revisions": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "calls": {
+            "worker": "native-worker:7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b",
+            "model_calls": null
+          },
+          "stage_receipt": null,
+          "pending_decision": {
+            "kind": "stage-check",
+            "task": "7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b"
+          }
+        }
+      },
+      {
+        "image": "original-after-close",
+        "pid": 81985,
+        "checkpoint": {
+          "task": "7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b",
+          "issue": "iss_ca451fafef614bc0a2685341d659a26a",
+          "project": "studio",
+          "business_module": "default",
+          "target": {
+            "title": "Program",
+            "acceptance": "visible",
+            "writes": {
+              "a": [
+                "preview.svg"
+              ]
+            }
+          },
+          "authorization": {
+            "actor": "usr_c64412a583d24b558937f9f93e4dfa94",
+            "mandate": "installed-test-plan",
+            "source_revision": "bdb833c8f4437e740484ac126b8ecb4b3bbf04296b1f9297ef4af60a137f92fa",
+            "stage": {
+              "confirmation_revision": 1,
+              "confirmed_by": "usr_c64412a583d24b558937f9f93e4dfa94",
+              "criteria": "preview.svg shows one blue circle of radius 12",
+              "document_id": "doc_1f7f5147a0744461b5655dc994c31c84",
+              "issue_id": "iss_ca451fafef614bc0a2685341d659a26a",
+              "issue_revision": "c53cbb14d37dce8949097493434432e813b14f86e6ec494610999087c2fbb159",
+              "responsible_user": "usr_c64412a583d24b558937f9f93e4dfa94",
+              "stage": "preview",
+              "target_revision": 1,
+              "version": 1
+            }
+          },
+          "state": "stage-reached",
+          "completed_steps": [
+            "authorized",
+            "reserved",
+            "worker-terminal",
+            "stage-checked"
+          ],
+          "input_revisions": {
+            "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+          },
+          "artifact_revisions": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "calls": {
+            "worker": "native-worker:7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b",
+            "model_calls": null
+          },
+          "stage_receipt": {
+            "authorization": {
+              "confirmation_revision": 1,
+              "confirmed_by": "usr_c64412a583d24b558937f9f93e4dfa94",
+              "criteria": "preview.svg shows one blue circle of radius 12",
+              "document_id": "doc_1f7f5147a0744461b5655dc994c31c84",
+              "issue_id": "iss_ca451fafef614bc0a2685341d659a26a",
+              "issue_revision": "c53cbb14d37dce8949097493434432e813b14f86e6ec494610999087c2fbb159",
+              "responsible_user": "usr_c64412a583d24b558937f9f93e4dfa94",
+              "stage": "preview",
+              "target_revision": 1,
+              "version": 1
+            },
+            "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+            "checks": {
+              "check": {
+                "evidence": "52870da13a98076ff1cf83cec41995ea24fd18c73a6a33071933a4e659cde604",
+                "outcome": "passed"
+              }
+            },
+            "modules": {
+              "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+            },
+            "reason": "authorized_stage_criteria_met",
+            "state": "stage-reached",
+            "task": "7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b"
+          },
+          "pending_decision": {
+            "kind": "stage-confirmation",
+            "task": "7b199a7311e314e8b161327ed1bb220ad0b70aac397a5f6834c4ab4f445c0f7b"
+          }
+        }
+      }
+    ]
+  },
+  "independent_review": "Parent Codex operator reviewed transaction boundaries, historical task visibility and truncated WAL recovery and independently ran test_native_checkpoint.py; 1 passed."
+}
