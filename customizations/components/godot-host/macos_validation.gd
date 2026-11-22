@@ -3,6 +3,7 @@ extends Node
 
 const TIMEOUT_MS := 60_000
 const PREFIX := "GongGong macOS startup validation"
+var daqian: Node
 var probe_source: String
 var temporary: DirAccess
 var pid := -1
@@ -13,7 +14,18 @@ func _write(path: String, content: String) -> bool:
 	return file != null and file.store_string(content)
 
 
-func verify_entry() -> bool:
+func package_sources() -> Dictionary:
+	var sources := {}
+	for name: String in ["ui", "board"]:
+		var source: Dictionary = daqian.get_meta("tianshu_" + name + "_source", {})
+		if source.is_empty():
+			_finish("Tianshu %s package was not loaded" % name)
+			return {}
+		sources[name] = source
+	return sources
+
+
+func verify_entry(sources: Dictionary) -> bool:
 	if not is_inside_tree():
 		return false
 	temporary = DirAccess.create_temp("gonggong-validation")
@@ -41,17 +53,27 @@ func verify_entry() -> bool:
 		return false
 	var log_path := root.path_join("probe.log")
 	code = await _run("/usr/bin/env", ["-i", "PATH=/usr/bin:/bin", "TMPDIR=" + root, "HOME=" + root,
-			"__GODOT_SHELL_ENV_SET=1", editor, "--headless", "--editor", "--path", project,
+			"__GODOT_SHELL_ENV_SET=1", "GONGGONG_VALIDATE_TIANSHU=1",
+			"GONGGONG_TIANSHU_UI_PACKAGE=" + str(sources.ui.path),
+			"GONGGONG_TIANSHU_UI_SHA256=" + str(sources.ui.sha256),
+			"GONGGONG_TIANSHU_BOARD_PACKAGE=" + str(sources.board.path),
+			"GONGGONG_TIANSHU_BOARD_SHA256=" + str(sources.board.sha256),
+			editor, "--headless", "--editor", "--path", project,
 			"--log-file", log_path, "--script", "res://entry.gd"])
 	if not temporary:
 		return false
 	var log_text := FileAccess.get_file_as_string(log_path) if FileAccess.file_exists(log_path) else ""
 	if code != 0 or not log_text.contains("DAQIAN_AI_ENTRY_OK") or log_text.contains("SCRIPT ERROR"):
 		_finish("AI Chat entry probe failed (exit %d)" % code)
-	else:
-		_finish("")
-		return true
-	return false
+		return false
+	var lines := log_text.split("\n")
+	for name: String in ["ui", "board"]:
+		var marker := "TIANSHU_%s_LOADED %s" % [name.to_upper(), sources[name].sha256]
+		if not lines.has(marker):
+			_finish("isolated Tianshu %s package did not match the parent editor" % name)
+			return false
+	_finish("")
+	return true
 
 
 func _run(executable: String, args: PackedStringArray) -> int:

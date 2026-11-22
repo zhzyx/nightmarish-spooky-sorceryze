@@ -1,0 +1,22 @@
+{
+  "issue_number": 2123,
+  "request_id": "macos-startup-validation-sidecars",
+  "failed_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45056466925/job/137312756432",
+  "failure": "Trusted host policy changed; revalidate this host release: customizations/components/godot-host/README.md",
+  "policy_blob": "070cbd58b75942408ed5d663b22c433614d7404d",
+  "resolution": "Restored approved host policy bytes and kept the reproduction instructions in the issue design document.",
+  "test": "tests/editor/run_runtime_setup.py",
+  "cases": [
+    "deploy all three components with no destination Python",
+    "existing runtimes reused without replacement; configuration-only rollback retains runtimes",
+    "rollback retains recovery files",
+    "repeated rollback rejected",
+    "failed framework self-check restores pre-deployment files",
+    "tampered source rejected before execution",
+    "governed deterministic host selects and validates a complete runtime package",
+    "changed host policy blocks configuration before deployment",
+    "missing host policy blocks configuration before deployment",
+    "launcher permits editor ignition without Python or Node"
+  ],
+  "passed": true
+}

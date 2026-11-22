@@ -38,6 +38,5 @@ Node *create_gonggong_startup_checks();
 EditorDock *create_daqian_dock();
 
 #ifdef MACOS_ENABLED
-class Node;
-void install_gonggong_startup_validation(Node *p_editor);
+void install_gonggong_startup_validation(Node *p_editor, EditorDock *p_dock);
 #endif

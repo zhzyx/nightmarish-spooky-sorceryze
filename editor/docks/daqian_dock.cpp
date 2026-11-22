@@ -78,6 +78,16 @@ static Ref<Script> load_editor_script(const char *const *p_source) {
 }
 
 #if defined(WINDOWS_ENABLED) || defined(MACOS_ENABLED) || defined(LINUXBSD_ENABLED)
+// The startup probe must select exactly the bytes the desktop dock accepted.
+static Dictionary tianshu_package_source(const String &p_path, const Vector<uint8_t> &p_bytes) {
+	uint8_t digest[32];
+	ERR_FAIL_COND_V(CryptoCore::sha256(p_bytes.ptr(), p_bytes.size(), digest) != OK, Dictionary());
+	Dictionary source;
+	source["path"] = p_path;
+	source["sha256"] = String::hex_encode_buffer(digest, 32);
+	return source;
+}
+
 static Dictionary load_tianshu_package() {
 	OS *os = OS::get_singleton();
 	String executable = os->get_executable_path();
@@ -108,11 +118,9 @@ static Dictionary load_tianshu_package() {
 	ERR_FAIL_COND_V_MSG(size == 0 || size > 4 * 1024 * 1024, Dictionary(), "Invalid Tianshu UI package size.");
 	Vector<uint8_t> bytes = file->get_buffer(size);
 	ERR_FAIL_COND_V((uint64_t)bytes.size() != size, Dictionary());
-	if (!pin.is_empty()) {
-		uint8_t digest[32];
-		ERR_FAIL_COND_V(CryptoCore::sha256(bytes.ptr(), bytes.size(), digest) != OK, Dictionary());
-		ERR_FAIL_COND_V_MSG(String::hex_encode_buffer(digest, 32) != pin, Dictionary(), "Tianshu UI package pin mismatch.");
-	}
+	Dictionary source = tianshu_package_source(path, bytes);
+	ERR_FAIL_COND_V(source.is_empty(), Dictionary());
+	ERR_FAIL_COND_V_MSG(!pin.is_empty() && String(source["sha256"]) != pin, Dictionary(), "Tianshu UI package pin mismatch.");
 	Variant envelope = JSON::parse_string(String::utf8((const char *)bytes.ptr(), bytes.size()));
 	ERR_FAIL_COND_V_MSG(envelope.get_type() != Variant::DICTIONARY, Dictionary(), "Invalid Tianshu UI package.");
 	Dictionary manifest = envelope;
@@ -126,6 +134,7 @@ static Dictionary load_tianshu_package() {
 		Variant value = data.get(field, Variant());
 		ERR_FAIL_COND_V_MSG(value.get_type() != Variant::STRING || String(value).strip_edges().is_empty(), Dictionary(), "Incomplete Tianshu UI package.");
 	}
+	data["source"] = source;
 	return data;
 }
 
@@ -229,11 +238,9 @@ static Dictionary load_tianshu_board_package() {
 	ERR_FAIL_COND_V_MSG(size == 0 || size > 4 * 1024 * 1024, Dictionary(), "Invalid Tianshu board package size.");
 	Vector<uint8_t> bytes = file->get_buffer(size);
 	ERR_FAIL_COND_V((uint64_t)bytes.size() != size, Dictionary());
-	if (!pin.is_empty()) {
-		uint8_t digest[32];
-		ERR_FAIL_COND_V(CryptoCore::sha256(bytes.ptr(), bytes.size(), digest) != OK, Dictionary());
-		ERR_FAIL_COND_V_MSG(String::hex_encode_buffer(digest, 32) != pin, Dictionary(), "Tianshu board package pin mismatch.");
-	}
+	Dictionary source = tianshu_package_source(path, bytes);
+	ERR_FAIL_COND_V(source.is_empty(), Dictionary());
+	ERR_FAIL_COND_V_MSG(!pin.is_empty() && String(source["sha256"]) != pin, Dictionary(), "Tianshu board package pin mismatch.");
 	Variant envelope = JSON::parse_string(String::utf8((const char *)bytes.ptr(), bytes.size()));
 	ERR_FAIL_COND_V_MSG(envelope.get_type() != Variant::DICTIONARY, Dictionary(), "Invalid Tianshu board package.");
 	Dictionary manifest = envelope;
@@ -249,12 +256,13 @@ static Dictionary load_tianshu_board_package() {
 		ERR_FAIL_COND_V_MSG(value.get_type() != Variant::STRING || String(value).strip_edges().is_empty(), Dictionary(), "Incomplete Tianshu board package.");
 	}
 	ERR_FAIL_COND_V_MSG(!validate_tianshu_board_zip(data), Dictionary(), "Invalid Tianshu board ZIP or entry digest.");
+	data["source"] = source;
 	return data;
 }
 #endif
 
 #ifdef MACOS_ENABLED
-void install_gonggong_startup_validation(Node *p_editor) {
+void install_gonggong_startup_validation(Node *p_editor, EditorDock *p_dock) {
 	if (Engine::get_singleton()->is_recovery_mode_hint() || Main::is_cmdline_tool()) {
 		return;
 	}
@@ -267,6 +275,7 @@ void install_gonggong_startup_validation(Node *p_editor) {
 	Node *preset = memnew(Node);
 	preset->set_name("GongGongStartupValidation");
 	preset->set_script(validation);
+	preset->set("daqian", p_dock);
 	preset->set("probe_source", editor_script_source(daqian_daqian_ai_entry));
 	coordinator->add_child(preset);
 	coordinator->set("entry_validation", preset);
@@ -315,6 +324,9 @@ EditorDock *create_daqian_dock() {
 	if (!package.is_empty()) {
 		layout = load_editor_script(String(package["graph_layout"]));
 		graph = load_editor_script(String(package["issue_graph"]));
+		if (layout.is_valid() && graph.is_valid()) {
+			dock->set_meta("tianshu_ui_source", package["source"]);
+		}
 	}
 #else
 	Ref<Script> layout = load_editor_script(daqian_graph_layout);
@@ -347,6 +359,7 @@ EditorDock *create_daqian_dock() {
 	if (!board_package.is_empty()) {
 		content->set("board_bundle_base64", board_package["bundle_base64"]);
 		content->set("board_bundle_sha256", board_package["bundle_sha256"]);
+		dock->set_meta("tianshu_board_source", board_package["source"]);
 	} else {
 		WARN_PRINT("Tianshu board compatibility package rejected; using workspace helper fallback.");
 	}

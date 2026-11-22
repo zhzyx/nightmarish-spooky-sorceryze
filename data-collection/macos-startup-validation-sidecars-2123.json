@@ -1,0 +1,67 @@
+{
+  "issue": 2123,
+  "request_id": "macos-startup-validation-sidecars",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2123",
+  "base_commit": "91a78e9b17738cf187538e012f75f5e8302f085d",
+  "observed_at": "2026-11-22T18:33:38.747776+00:00",
+  "input_sha256": {
+    "editor/docks/daqian_dock.cpp": "c2350e18364b4d127403e2982b26ad8ce102a6332efc8637bb1fd9429db3595f",
+    "editor/docks/daqian_dock.h": "0a1f4719fea3c0f3ad0b64cbdd7cc543466d25c5d2b4ece8af47f514670167a2",
+    "editor/editor_node.cpp": "e70c9aaf68142bcfb6b67caae53e8cee3a2720ef2aea5035da3393eed66ab391",
+    "customizations/components/godot-host/macos_validation.gd": "f5ae4734612d63ce17d09e5680580629c4cfba41fab1309e0c8480d59d9c2068",
+    "customizations/components/godot-host/silent_validation.gd": "4628e8c0ff07d4b611ba6f4ada1c09aa130356898495d53ab294b83aa2c81167",
+    "tests/editor/daqian_ai_entry.gd": "9ad4014eaefcb5000a66c74db5a13257cd2be37e78c2ef531d4b5ca26bfcfcc7",
+    "tests/editor/macos_startup_validation.gd": "479a9528ec9e0ca6c39c17094ee33475f947bd85b50d00c5f0bea3cac5d22ec5",
+    "tests/editor/run_macos_startup_validation.py": "c6d44558f56612fb528f3888744d3b74e0414ca867ab96e6e4a5600611ebb104"
+  },
+  "frozen_manifest": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1743#issuecomment-7082263715",
+  "package_sha256": {
+    "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462"
+  },
+  "windows_validation": {
+    "compiler": "Visual Studio 14.5, Windows SDK 10.0.26100.0, SCons 4.11.1",
+    "command": "python -m SCons -Q platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no warnings=extra werror=yes redirect_build_objects=no -j4 editor/docks/daqian_dock.windows.editor.x86_64.obj editor/editor_node.windows.editor.x86_64.obj",
+    "objects_sha256": {
+      "editor/docks/daqian_dock.windows.editor.x86_64.obj": "638497fcea5e681966ce90c8bd56309c18258cf0f35e12f0724e22ccf76f4cdc",
+      "editor/editor_node.windows.editor.x86_64.obj": "a2155ca948e190067e4746b6a942055d424260db12163dcf6f28552c574e1b95"
+    },
+    "compiler_exit": 0,
+    "script_engine": {
+      "version": "4.8.beta.custom_build.35a233f2a",
+      "executable_sha256": "2147dfb85d4b03a1d088c7e738301f1b81c7f74fa2509d19e15dcbbff494891f",
+      "mode": "private, self-contained, headless"
+    },
+    "check_only": {
+      "scripts": [
+        "customizations/components/godot-host/macos_validation.gd",
+        "customizations/components/godot-host/silent_validation.gd",
+        "tests/editor/daqian_ai_entry.gd",
+        "tests/editor/macos_startup_validation.gd"
+      ],
+      "exit": 0,
+      "parse_errors": 0
+    },
+    "coordinator_test": {
+      "scope": "Updated GDScript with synthetic native source metadata and substituted process transport. Real temporary files, editor cache, cleanup and success/failure branches.",
+      "calls": [
+        "UI marker only: rejected",
+        "board marker only: rejected",
+        "both valid: passed",
+        "unchanged: reused",
+        "board source missing on warm start: rejected",
+        "changed board digest: passed",
+        "restored board digest: reused"
+      ],
+      "result": "WINDOWS_SCRIPT_CACHE_OK launches=4 probes=7",
+      "notes": "The Windows baseline emitted RID/ObjectDB shutdown diagnostics and RichTextLabel diagnostics while printing intentionally rejected cases."
+    },
+    "package_generation": "Both current packagers, default version 1; generated outer digests match F01 and the two installed Q06 resources.",
+    "python_runner": "Ruff check and format passed."
+  },
+  "macos_validation": {
+    "status": "awaiting_real_cocoa_run",
+    "command": "python3 tests/editor/run_macos_startup_validation.py --app <signed-candidate.app> --manifest <F01-common.json> --report <report.json>",
+    "method": "Copy candidate bundle into a private directory, check signature and frozen UI/board digests, then start with --editor --display-driver macos. Ten normal runs cover cold/warm and each package missing, corrupt, independently changed and restored. Headless partial-child tests require both matching child receipts and cleanup."
+  }
+}
