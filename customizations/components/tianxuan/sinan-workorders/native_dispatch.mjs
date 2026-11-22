@@ -3,13 +3,14 @@ import {dispatchEvent} from '../../../platforms/process-management/yuanheng-loca
 import {pathToFileURL} from 'node:url';
 
 export async function dispatchNative(event, requests, service, launch) {
-  let catalog;
+  let catalog, waiting;
   const host = {
     // Server reserve performs atomic capacity/source comparison; no network lock.
     withLock: fn => fn(),
     inspect: async () => {
       const board = await service('inspect', {});
       catalog = board.environment.catalog;
+      waiting = new Set(board.snapshot.items.filter(item => item.waitReason === 'resource_conflict').map(item => item.key));
       return board;
     },
     revalidate: a => service('revalidate', {assignment: a}),
@@ -22,6 +23,7 @@ export async function dispatchNative(event, requests, service, launch) {
   const batch = await dispatchEvent(event, requests, host);
   const byTicket = new Map(requests.map(request => [request.ticket, request]));
   for (const item of batch.deferred) {
+    if (item.reason === 'not_ready' && waiting.has(item.ticket)) item.reason = 'resource_conflict';
     if (item.reason !== 'required_model_or_capabilities_unavailable') continue;
     const request = byTicket.get(item.ticket);
     // Native contracts pin the installed profile before dispatch.
@@ -192,6 +194,7 @@ export async function driveNative(service, initial = {type: 'user.requested', re
     await Promise.race(pending);
     await coordinator;
   }
+  result.deferred = result.deferred.filter(item => !attempted.has(item.ticket));
   return result;
 }
 

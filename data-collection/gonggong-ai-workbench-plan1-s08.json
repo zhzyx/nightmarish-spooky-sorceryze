@@ -1,0 +1,310 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-s08",
+  "issue_number": 1792,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1792",
+  "producer": "wave22_s08",
+  "baseline": "21885f8c13ebac2169527fd767806604c877674f",
+  "source_revision": "db3b3a4525f9c997e18eb32b2c31aadc2e4bdb83f84b3cc91ee919cf2ef8331c",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s08/dispatch-6ee22e41689845a3942b98c132ff7032.json",
+  "verified_at": "2026-11-22T08:15:25.029475+00:00",
+  "intake": {
+    "gate": "intake-only passed",
+    "status": "in-progress",
+    "owner_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1792#issuecomment-7076180709",
+    "prerequisites": [
+      {
+        "issue": 1831,
+        "state": "CLOSED",
+        "reason": "COMPLETED",
+        "closed_at": "2026-11-21T20:23:22Z",
+        "receipt": {
+          "git_blob": "cd36d5b3e4f7ddb4ef4ac042c2635f543fdbab41",
+          "sha256": "7e37635ab4e5e848f64156e979580ad767866a2e768e3f03335fc0289ce945c3"
+        },
+        "path": "data-collection/gonggong-ai-workbench-plan1-i04.json"
+      },
+      {
+        "issue": 1845,
+        "state": "CLOSED",
+        "reason": "COMPLETED",
+        "closed_at": "2026-11-22T07:51:05Z",
+        "receipt": {
+          "git_blob": "14bd6b41f8e52eca533619b1cc4bbdafd03613df",
+          "sha256": "07f21295c8b2216aae46a7848c197c1f7bd5865358b2c432dd2c3e0c8a57a6c7"
+        },
+        "path": "data-collection/gonggong-ai-workbench-plan1-s03.json"
+      }
+    ]
+  },
+  "candidate": {
+    "customizations/components/tianxuan/server/native_entry_factory.py": {
+      "git_blob": "6c6bdcfe2e56cd19b234b78c15a0ba6d507b0830",
+      "sha256": "2bcd30a38b2ae35fab3450d566a39511b33baf0720e1c0d4468d9a387f5d741c"
+    },
+    "customizations/components/tianxuan/server/native_execution_host.py": {
+      "git_blob": "9939b7ccf6e4a7cdc31307af96b4088d0b018563",
+      "sha256": "9992392fc6139c04ccefe10819ac9f31a106018d2299bc7b4ca832f7341ec075"
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": {
+      "git_blob": "a016005ced47e2acf468aeefd8eab3ea0fcb73ea",
+      "sha256": "7c8ec4a6636579559bdc3867d3abc0668d921ae9f30972c671f27bd6b6c428d0"
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": {
+      "git_blob": "80c4b11d3f10d9996231a694e1e82eb95d8a60e5",
+      "sha256": "ff759e7e658f265f7f99d0addfc9760ac74a1206b465ac539a16ab60e1f55a01"
+    },
+    "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py": {
+      "git_blob": "2ccfb32e5dea9850d8dc00ffc5407f10e54c72fe",
+      "sha256": "1bb8a216d85fdbe17268ae9b89a2a570925b83d00a0958c0c628198763f7126e"
+    },
+    "design-docs/gonggong-ai-workbench-s08.md": {
+      "git_blob": "53af79d6f6334d6a21d05e9d89c1d44e1f4ac82b",
+      "sha256": "9acc786da29815ad44b48e7de9642dee631d16017a59342687facdcd1f87c14a"
+    }
+  },
+  "receiver_sources": {
+    "customizations/components/tianxuan/server/native_api.py": {
+      "git_blob": "72e6eba763fd3efc2a8434593a2b5dd2ab3a3aa5",
+      "sha256": "1b4f30cf36b5f30c221e5bea2f737d81433811b572940cfe401e20c91f420569"
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": {
+      "git_blob": "dff7e53a12e767a4ff52c70003f21370d162c0a9",
+      "sha256": "764c3a084d111a663399acffef6cdcf7d3e4318ce20fd1f981d815be9c8ba8b8"
+    },
+    "customizations/components/tianxuan/sinan-workorders/native_entry_driver.mjs": {
+      "git_blob": "11bf76a8eac333eda63cefd8c446213d87d527cb",
+      "sha256": "f26421dccf41581de4d4dfbae933c9917a304f0368f3a02c6d4588642f54f11e"
+    },
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py": {
+      "git_blob": "883aaffa0ab07c9f3e986ae26068614af37c2667",
+      "sha256": "69e71704f2c4fd4cff3501562b0726461cc60f36151e2bc5cee8bad3038b2c97"
+    },
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py": {
+      "git_blob": "1ba66a33598e2995efd48cd7583772b33d2b3c35",
+      "sha256": "fca3dcec613f625877cf7d8514e6ea5ae2489a04b60df4f9b53ebefe4fcd939c"
+    },
+    "customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs": {
+      "git_blob": "c31da667a84b3dfe579bca4da0b7233b3f2d2495",
+      "sha256": "676f3d4c8797aab5878a7eb66f3c476f09b7d903e25606a55fbdfded819e8654"
+    },
+    "tests/editor/run_workbench_confirmed_native_stage.py": {
+      "git_blob": "07445ceadfcb413bcc481c61506446f9ea0bc84d",
+      "sha256": "fa0a0aabf9bb92e8aaa614323151d9741ef9ec96d5369ba48028d697dff6ab94"
+    }
+  },
+  "receiver": {
+    "platform": "Windows AMD64",
+    "python": "3.12.14",
+    "node": "v24.22.1",
+    "workload": "Signed design tasks, authenticated loopback HTTP and scoped entry pipe, shipped Node dispatcher, local SQLite stores and isolated ordinary-file Python workers; signed preview checks open actual candidate bytes.",
+    "editor": {
+      "sha256": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+      "source_commit": "e77162e307058dd346e9830febcaf69c2fa70300",
+      "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2039",
+      "baseline_changes": [
+        "data-collection/gonggong-ai-workbench-plan1-q01.json",
+        "data-collection/gonggong-ai-workbench-plan1-windows-milestone-trace-combined.json",
+        "design-docs/gonggong-ai-workbench-q01.md",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-k02/wave22-windows-milestone-trace-1716.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q01/mac-round10-q01-request.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q01/mac-round10-q01-verified-coverage.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s03/wave22-windows-milestone-trace-1845.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-f835c2d9772ac98dfc7b97b8f6c5c563d1e7209a.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/wave22-windows-milestone-trace-1709.json",
+        "gonggong-diting-data/events/gonggong-workspace/learning-godot-build-placement/learn-0ada6d037959eaa6e9ffa37e4757f9031ae4b7010f3a302fa7cb81f62970e859.json",
+        "gonggong-diting-data/events/gonggong-workspace/learning-godot-build-placement/learn-e8b3936e9336832b6adfbee2a3e14f0396ce00c0fd04e7ab14dd9c28f557be81.json",
+        "tests/editor/ai_chat_tab_order.gd",
+        "tests/editor/editor_shell_layout.gd"
+      ],
+      "input_check": "Compared complete base diff with editor source commit. Thirteen paths are existing evidence, design, or test probes. S08 changes the installed host service and dispatcher. Native/embedded/Windows editor bundle inputs are identical.",
+      "command": "python tests/editor/run_workbench_confirmed_native_stage.py --godot <accepted-editor> --report <output>"
+    }
+  },
+  "result": {
+    "passed": true,
+    "observations": {
+      "test_signed_waiter_refills_released_asset_while_peer_runs": {
+        "workers": {
+          "first": {
+            "pid": 114340,
+            "execution": "2882f813c0841e3909e070cee8715bc9fbca592e72bf0b9ecf44e119beed99d9",
+            "started_ns": 498730665103200,
+            "ended_ns": 498730697098600,
+            "issue": "iss_015b66e9a3ed49df82e47de8411ec25f",
+            "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+            "state": "stage-reached",
+            "exit_code": 0
+          },
+          "waiter": {
+            "pid": 127896,
+            "execution": "d23dbc8ac366c5c4b8b902a522a2a842367ff7624c51828ca1479373f759a79a",
+            "started_ns": 498730988216100,
+            "ended_ns": 498730999296600,
+            "issue": "iss_57a00228086c4c1b9cbe6bee87648eea",
+            "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+            "state": "stage-reached",
+            "exit_code": 0
+          },
+          "peer": {
+            "pid": 117952,
+            "execution": "2f694b76b7a46c00a635fdb3ffeecb7fceb1c64a3c695fecaf3f4645a0f6dcf2",
+            "started_ns": 498730677992200,
+            "ended_ns": 498731001923300,
+            "issue": "iss_af6b25c8c7ab403ba21846f68196cdcb",
+            "candidate": "b8d418f22b509e8217e9c07bdeb8d014c8c13ec68636f8c7bd1ccdc4dcbca0cd",
+            "state": "stage-reached",
+            "exit_code": 0
+          }
+        },
+        "waiting": {
+          "key": "d23dbc8ac366c5c4b8b902a522a2a842367ff7624c51828ca1479373f759a79a",
+          "source": "d23dbc8ac366c5c4b8b902a522a2a842367ff7624c51828ca1479373f759a79a",
+          "dispatchCandidate": false,
+          "waitReason": "resource_conflict"
+        },
+        "active": [
+          {
+            "ticket": "2882f813c0841e3909e070cee8715bc9fbca592e72bf0b9ecf44e119beed99d9",
+            "terminalObservable": true,
+            "reads": [],
+            "writes": [
+              "/native-assets/ten_95a35b6596674d8aab7d95abef901b53/a/preview.svg"
+            ]
+          },
+          {
+            "ticket": "2f694b76b7a46c00a635fdb3ffeecb7fceb1c64a3c695fecaf3f4645a0f6dcf2",
+            "terminalObservable": true,
+            "reads": [],
+            "writes": [
+              "/native-assets/ten_95a35b6596674d8aab7d95abef901b53/a/peer.svg"
+            ]
+          }
+        ],
+        "after_release": [
+          {
+            "ticket": "2f694b76b7a46c00a635fdb3ffeecb7fceb1c64a3c695fecaf3f4645a0f6dcf2",
+            "terminalObservable": true,
+            "reads": [],
+            "writes": [
+              "/native-assets/ten_95a35b6596674d8aab7d95abef901b53/a/peer.svg"
+            ]
+          },
+          {
+            "ticket": "d23dbc8ac366c5c4b8b902a522a2a842367ff7624c51828ca1479373f759a79a",
+            "terminalObservable": true,
+            "reads": [],
+            "writes": [
+              "/native-assets/ten_95a35b6596674d8aab7d95abef901b53/a/preview.svg"
+            ]
+          }
+        ],
+        "final_active": [],
+        "dispatcher_errors": [],
+        "deferred_at_exit": []
+      },
+      "test_scoped_entry_observes_external_holder_with_spare_capacity": {
+        "holder": "917b2cdbcd53f9b87117ee9eaa1cd2db1690f32bad825f67315febc6ea7826cf",
+        "waiter": "95f850037b749afef82a5d66040ef956f3157e0efd22aa9818b7c4164bfee004",
+        "observed": [
+          {
+            "key": "95f850037b749afef82a5d66040ef956f3157e0efd22aa9818b7c4164bfee004",
+            "source": "95f850037b749afef82a5d66040ef956f3157e0efd22aa9818b7c4164bfee004",
+            "dispatchCandidate": false,
+            "waitReason": "resource_conflict"
+          }
+        ],
+        "result": "stage-reached",
+        "dispatcher_exit": 0
+      }
+    },
+    "physical_clock": "Worker processes use time.perf_counter_ns (Windows QueryPerformanceCounter); child-written gates and authenticated occupancy confirm overlap and release ordering.",
+    "editor_replay": {
+      "execution": "876af165deac67635f2a7e6f672a2c3c5a9b1065ab8e446fff536b18603442a9",
+      "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+      "replay": {
+        "duplicate": {
+          "execution": "876af165deac67635f2a7e6f672a2c3c5a9b1065ab8e446fff536b18603442a9",
+          "worker_ref": "native-worker:876af165deac67635f2a7e6f672a2c3c5a9b1065ab8e446fff536b18603442a9",
+          "state": "running",
+          "starts": [
+            {
+              "execution": "876af165deac67635f2a7e6f672a2c3c5a9b1065ab8e446fff536b18603442a9",
+              "pid": 99640
+            }
+          ]
+        },
+        "reconnected": {
+          "execution": "876af165deac67635f2a7e6f672a2c3c5a9b1065ab8e446fff536b18603442a9",
+          "worker_ref": "native-worker:876af165deac67635f2a7e6f672a2c3c5a9b1065ab8e446fff536b18603442a9",
+          "state": "running",
+          "starts": [
+            {
+              "execution": "876af165deac67635f2a7e6f672a2c3c5a9b1065ab8e446fff536b18603442a9",
+              "pid": 99640
+            }
+          ]
+        },
+        "after_exit": {
+          "execution": "876af165deac67635f2a7e6f672a2c3c5a9b1065ab8e446fff536b18603442a9",
+          "worker_ref": "native-worker:876af165deac67635f2a7e6f672a2c3c5a9b1065ab8e446fff536b18603442a9",
+          "state": "produced",
+          "starts": [
+            {
+              "execution": "876af165deac67635f2a7e6f672a2c3c5a9b1065ab8e446fff536b18603442a9",
+              "pid": 99640
+            }
+          ]
+        }
+      },
+      "process_closure": {
+        "exit_code": 0,
+        "reasons": [],
+        "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "process_count": 1,
+      "sibling_tasks": 0,
+      "passed": true
+    }
+  },
+  "validation": {
+    "directed": "python -m pytest -q -o junit_family=legacy -o tmp_path_retention_policy=none customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py --junitxml=<results>",
+    "final": {
+      "tests": 111,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "seconds": 136.81
+    },
+    "final_suites": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py",
+      "customizations/components/tianxuan/server/test_native_shared_dispatch.py",
+      "customizations/components/tianxuan/server/test_native_entry_normal.py",
+      "customizations/components/tianxuan/server/test_native_api.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_remote.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_remote_repair.py"
+    ],
+    "static": [
+      "ruff check",
+      "ruff format --check",
+      "mypy",
+      "node --check",
+      "repository file_format.py",
+      "git diff --check"
+    ],
+    "probe_correction": "First trial reached all three stage results. The Windows 15.625 ms GetTickCount64 clock returned equal times for overlapping workers. The final trial uses QueryPerformanceCounter plus release gates and process receipts."
+  },
+  "handoff": {
+    "receiver": "Windows parent delivery session",
+    "downstream": [
+      1768,
+      1715,
+      1778
+    ],
+    "state": "local receiver verified; pending integration and remote main/issue readback"
+  }
+}

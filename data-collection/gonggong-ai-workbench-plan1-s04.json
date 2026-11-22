@@ -1,0 +1,371 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-s04",
+  "issue_number": 1842,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1842",
+  "producer": "wave22_s04",
+  "source_revision": "398b6fe3da926f81969392a4e11f26efb4c7932c11142685e2a80e613d4fd605",
+  "baseline": "21885f8c13ebac2169527fd767806604c877674f",
+  "verified_at": "2026-11-22T08:15:01.526242+00:00",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s04/dispatch-2cae6b3b3f294376a11dcbd0cdbc71a4.json",
+  "intake": {
+    "gate": "intake-only passed",
+    "owner_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1842#issuecomment-7076174986",
+    "predecessor": {
+      "issue": 1845,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-22T07:51:05Z",
+      "receipt": "data-collection/gonggong-ai-workbench-plan1-s03.json",
+      "receipt_blob": "14bd6b41f8e52eca533619b1cc4bbdafd03613df"
+    }
+  },
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "7a267f4f55d510a9ba7b977d418da6a86b619e0f",
+    "customizations/components/tianxuan/server/native_entry_context.py": "b87653c1c2f9b0628143a0a20184f9643793d376",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "5b8e4f4c60505663fab6308e8ba8866c68e04f82",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "7d8168c1a43089c8388d40159aeb726b915f787b",
+    "customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py": "1df60e1f5bc25e8434696cf974fb994563050e54",
+    "tests/editor/run_workbench_confirmed_native_stage.py": "45ac0195f20b243771227e4cd0d874fd2e591a73",
+    "design-docs/gonggong-ai-workbench-s04.md": "69879f21605419c231c8876963f793a0f96640bb"
+  },
+  "tested_service_sha256": {
+    "customizations/components/tianxuan/server/api.py": "2f2f1a72c3c3b52eb8217139c553b50b7bdd6542f8e5f7e54ae7d6a74eb5c1b1",
+    "customizations/components/tianxuan/server/native_entry_context.py": "a0fdc5d4a70d001e1d437a904cd4f1963c084bf53f13cdda8aa0893e1a292053",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "3a7b47780017de21fbf8397cd0768366d632e652d8e0362053352ffe969ff74b",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "3664af3187376be95b9e74d3f597b8729f27a744a17c232c16a119721305cdfa"
+  },
+  "receiver_git_blobs": {
+    "tests/editor/run_workbench_task_confirmations.py": "9bb180bfeaf34e375011326b4ba4d910951a7a6f",
+    "tests/editor/workbench_task_confirmations.gd": "bbca97af94a60ee91e3bd614aa21744b81b1434b",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "afde7bb81abf976c08d4da953d9b3050a4bc142d",
+    "customizations/components/tianxuan/sinan-workorders/native_observations.py": "04025acfa192bc6d98bf8e5212d1bcb313653c55",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py": "1ba66a33598e2995efd48cd7583772b33d2b3c35"
+  },
+  "receiver": {
+    "platform": "Windows AMD64",
+    "python": "3.12.14",
+    "entry": "Headless native editor confirms a signed task. Authenticated Tianxuan HTTP authorizes, reserves and executes one installed local worker. On a new TCP connection the issue detail and status agree before/after its physical exit and after replay of the old running receipt.",
+    "recovery": "A second coordinator opens the same SQLite database and replays the already acknowledged workspace receipt after the SVG candidate passed the exact stage check.",
+    "editor_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2039",
+    "editor_build_source": "e77162e307058dd346e9830febcaf69c2fa70300",
+    "editor_input_comparison": {
+      "baseline_changed_paths": [
+        "data-collection/gonggong-ai-workbench-plan1-q01.json",
+        "data-collection/gonggong-ai-workbench-plan1-windows-milestone-trace-combined.json",
+        "design-docs/gonggong-ai-workbench-q01.md",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-k02/wave22-windows-milestone-trace-1716.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q01/mac-round10-q01-request.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q01/mac-round10-q01-verified-coverage.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s03/wave22-windows-milestone-trace-1845.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-f835c2d9772ac98dfc7b97b8f6c5c563d1e7209a.json",
+        "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/wave22-windows-milestone-trace-1709.json",
+        "gonggong-diting-data/events/gonggong-workspace/learning-godot-build-placement/learn-0ada6d037959eaa6e9ffa37e4757f9031ae4b7010f3a302fa7cb81f62970e859.json",
+        "gonggong-diting-data/events/gonggong-workspace/learning-godot-build-placement/learn-e8b3936e9336832b6adfbee2a3e14f0396ce00c0fd04e7ab14dd9c28f557be81.json",
+        "tests/editor/ai_chat_tab_order.gd",
+        "tests/editor/editor_shell_layout.gd"
+      ],
+      "task_changes": "Tianxuan separately loaded Python adapters plus tests, design and receipts. Native code, embedded resources and editor installation inputs match the accepted build.",
+      "editor_package_sha256": {
+        "godot.windows.editor.x86_64.console.exe": "ad5c45c692f11274d132bdb14c73bf6d3270e54621f1d97bdd9d88d52b7a374a",
+        "godot.windows.editor.x86_64.exe": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+        "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+        "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+        "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+        "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90",
+        "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+      }
+    }
+  },
+  "result": {
+    "passed": true,
+    "editor_sha256": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+    "selected": [
+      "#1 程序",
+      "#2 动画"
+    ],
+    "confirmed": {
+      "issue_id": "iss_152f4c24e3354a03a0de6b853a5c7095",
+      "document_id": "doc_98b80fe9d9d84dc094e20aad268e3be4",
+      "version": 1,
+      "stage": "可运行原型",
+      "target_revision": 1,
+      "issue_revision": "d84f93818868950cfd9ec8a2abe049cbfcb2d5ef4119b0ca924a99ff89b0906c",
+      "revision": 1,
+      "status": "confirmed",
+      "responsible_user": "usr_973b1c3294744d4f80fb507429526b69",
+      "confirmed_by": "usr_973b1c3294744d4f80fb507429526b69"
+    },
+    "sibling": {
+      "issue_id": "iss_6a6724b1a78f4d30bee156e1faf88d20",
+      "document_id": "doc_98b80fe9d9d84dc094e20aad268e3be4",
+      "version": 1,
+      "stage": "动画预览",
+      "target_revision": 1,
+      "issue_revision": "7b70a551e3d83ca4e7da9d0fdab2daf6ccc76583341b71335c573a6c744a3372",
+      "revision": 0,
+      "status": "pending",
+      "responsible_user": "usr_973b1c3294744d4f80fb507429526b69",
+      "confirmed_by": null
+    },
+    "revoked": {
+      "issue_id": "iss_152f4c24e3354a03a0de6b853a5c7095",
+      "document_id": "doc_98b80fe9d9d84dc094e20aad268e3be4",
+      "version": 1,
+      "stage": "可运行原型",
+      "target_revision": 1,
+      "issue_revision": "d84f93818868950cfd9ec8a2abe049cbfcb2d5ef4119b0ca924a99ff89b0906c",
+      "revision": 2,
+      "status": "revoked",
+      "responsible_user": "usr_973b1c3294744d4f80fb507429526b69",
+      "confirmed_by": null
+    },
+    "execution": "93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+    "grant": {
+      "confirmation_revision": 1,
+      "confirmed_by": "usr_973b1c3294744d4f80fb507429526b69",
+      "criteria": "拉杆切换一次",
+      "document_id": "doc_98b80fe9d9d84dc094e20aad268e3be4",
+      "issue_id": "iss_152f4c24e3354a03a0de6b853a5c7095",
+      "issue_revision": "d84f93818868950cfd9ec8a2abe049cbfcb2d5ef4119b0ca924a99ff89b0906c",
+      "responsible_user": "usr_973b1c3294744d4f80fb507429526b69",
+      "stage": "可运行原型",
+      "target_revision": 1,
+      "version": 1
+    },
+    "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+    "profile": "local",
+    "process_exit": 0,
+    "process_count": 1,
+    "replay": {
+      "duplicate": {
+        "execution": "93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+        "worker_ref": "native-worker:93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+        "state": "running",
+        "starts": [
+          {
+            "execution": "93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+            "pid": 84844
+          }
+        ]
+      },
+      "reconnected": {
+        "execution": "93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+        "worker_ref": "native-worker:93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+        "state": "running",
+        "starts": [
+          {
+            "execution": "93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+            "pid": 84844
+          }
+        ]
+      },
+      "after_exit": {
+        "execution": "93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+        "worker_ref": "native-worker:93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+        "state": "produced",
+        "starts": [
+          {
+            "execution": "93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+            "pid": 84844
+          }
+        ]
+      },
+      "progress": {
+        "id": "93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+        "worker_ref": "native-worker:93f8d728e177fc2faaadaf849116b6ed8324ac292f314a8641f585bb7d067330",
+        "issue": "iss_152f4c24e3354a03a0de6b853a5c7095",
+        "source_revision": "7aad42834a22f297c266c181610d515504b94a5fc5b10a6da1419ca232c3890b",
+        "stage": "可运行原型",
+        "state": "produced",
+        "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+        "provider_model": null,
+        "usage": null,
+        "events": [
+          {
+            "sequence": 1,
+            "recorded_at": "2026-11-22T08:10:51.496Z",
+            "state": "ready",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 2,
+            "recorded_at": "2026-11-22T08:10:51.512Z",
+            "state": "reserved",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 3,
+            "recorded_at": "2026-11-22T08:10:51.546Z",
+            "state": "running",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 4,
+            "recorded_at": "2026-11-22T08:10:51.566Z",
+            "state": "running",
+            "step": "workspace.materialize",
+            "details": {
+              "modules": {
+                "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+              }
+            }
+          },
+          {
+            "sequence": 5,
+            "recorded_at": "2026-11-22T08:10:51.773Z",
+            "state": "running",
+            "step": "process.closed",
+            "details": {
+              "exit_code": 0,
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "sequence": 6,
+            "recorded_at": "2026-11-22T08:10:51.786Z",
+            "state": "running",
+            "step": "workspace.collect",
+            "details": {
+              "changed_modules": [
+                "a"
+              ]
+            }
+          },
+          {
+            "sequence": 7,
+            "recorded_at": "2026-11-22T08:10:51.831Z",
+            "state": "running",
+            "step": "candidate.compose",
+            "details": {
+              "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+              "modules": {
+                "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+              }
+            }
+          },
+          {
+            "sequence": 8,
+            "recorded_at": "2026-11-22T08:10:51.832Z",
+            "state": "produced",
+            "step": "state",
+            "details": {
+              "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+              "modules": {
+                "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+              }
+            }
+          }
+        ]
+      },
+      "replayed_step": {
+        "sequence": 4,
+        "recorded_at": "2026-11-22T08:10:51.566Z",
+        "state": "running",
+        "step": "workspace.materialize",
+        "details": {
+          "modules": {
+            "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+          }
+        }
+      },
+      "replay_result": {
+        "state": "produced"
+      }
+    },
+    "process_closure": {
+      "exit_code": 0,
+      "reasons": [],
+      "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sibling_tasks": 0
+  },
+  "reopened": {
+    "execution": "442162d4688f67da3e0aa860f1b0ec14e25aab7bfccbf897b4afdc94debeed7d",
+    "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+    "stage": "preview",
+    "events": 9,
+    "state": "stage-reached",
+    "replayed": {
+      "sequence": 4,
+      "recorded_at": "2026-11-22T08:11:29.737Z",
+      "state": "running",
+      "step": "workspace.materialize",
+      "details": {
+        "modules": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        }
+      }
+    },
+    "same_history_after_replay": true,
+    "private_progress": null,
+    "private_status": 403
+  },
+  "validation": {
+    "editor_command": "python tests/editor/run_workbench_confirmed_native_stage.py --godot <verified-editor> --report <output.json>",
+    "editor_exit_code": 0,
+    "pytest_suites": {
+      "issue-final": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py"
+        ],
+        "tests": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "regression-final": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_stage_stop.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_worker_coordination.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_local_profiles.py",
+          "customizations/components/tianxuan/sinan-workorders/test_native_worker_intake.py"
+        ],
+        "tests": 108,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "service-final": {
+        "files": [
+          "customizations/components/tianxuan/server/test_native_entry_context.py",
+          "customizations/components/tianxuan/server/test_native_entry_broker_context.py",
+          "customizations/components/tianxuan/server/test_native_api.py",
+          "customizations/components/tianxuan/server/test_native_shared_dispatch.py"
+        ],
+        "tests": 34,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    },
+    "pytest_replay": "python -m pytest -q <files from each suite>; for server suites set PYTHONPATH to the repository's customizations/components/tianxuan/server, sinan-workorders and duobao sibling directories.",
+    "static": [
+      "ruff 0.17.1 check --no-fix and format --check on six Python files",
+      "mypy on six Python files",
+      "misc/scripts/file_format.py and git diff --check"
+    ],
+    "fixture_corrections": [
+      "Added sibling module directories for the independently invoked server suite.",
+      "Legacy reopen probe uses its fixture project studio; design split task stubs contain the issue number."
+    ]
+  },
+  "handoff": {
+    "receiver": "Parent Windows delivery session",
+    "downstream": [
+      1812,
+      1833,
+      1763,
+      1813,
+      1814,
+      1772
+    ],
+    "scope": "Commit, protected-main admission, merged readback and original issue closure belong to the parent."
+  }
+}

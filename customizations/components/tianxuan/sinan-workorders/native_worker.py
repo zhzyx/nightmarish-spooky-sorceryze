@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import math
+from collections.abc import Callable
+from contextvars import ContextVar
 from pathlib import Path
 
 from native_candidates import NativeCandidates
@@ -11,6 +13,18 @@ from native_check_runner import _process_helper
 from native_observations import OBSERVATION_PROTOCOL, model_observation, valid_producer_calls
 from native_store import NativeStoreError, _digest, _json
 from native_workspace import Limits, NativeWorkspace, absolute
+
+# A workflow scopes its reporter to its own synchronous worker invocation.
+# Standalone workers (including enrolled nodes) keep the existing run contract.
+worker_step_reporter: ContextVar[Callable[[str, str, dict[str, object]], None] | None] = ContextVar(
+    "worker_step_reporter", default=None
+)
+
+
+def _report_step(execution, step, details):
+    report = worker_step_reporter.get()
+    if report is not None:
+        report(execution, step, details)
 
 
 class NativeWorker:
@@ -131,6 +145,7 @@ class NativeWorker:
         work = folder / "work"
         tenant = task["tenant"]
         self.workspace.materialize(tenant, task["selected"], work)
+        _report_step(execution, "workspace.materialize", {"modules": task["selected"]})
         context = folder / "context.json"
         context.write_text(_json(task["source"]["definition"]), encoding="utf-8")
         env = {**spec["env"], "NATIVE_WORKSPACE": str(work), "NATIVE_CONTEXT": str(context)}
@@ -171,6 +186,7 @@ class NativeWorker:
                 "INSERT INTO native_worker_process_closures VALUES (?,?,?,?)",
                 (execution, _json(task), physical, _digest(physical.encode())),
             )
+        _report_step(execution, "process.closed", {"exit_code": code, "transcript": digest})
         if code != 0 or reasons or (cancel is not None and cancel.is_set()):
             self._close_output(task, execution, [], code, digest, cancel)
             return self.reconcile(task, execution)
@@ -186,6 +202,7 @@ class NativeWorker:
         # Only owned process closure + flushed transcript + bounded collection can
         # create this host database record. Workspace files never confer recovery.
         encoded = [{**c, "edits": {n: None if b is None else b.hex() for n, b in c["edits"].items()}} for c in changes]
+        _report_step(execution, "workspace.collect", {"changed_modules": [c["module"] for c in changes]})
         self._close_output(task, execution, encoded, code, digest, cancel)
         return self.reconcile(task, execution)
 

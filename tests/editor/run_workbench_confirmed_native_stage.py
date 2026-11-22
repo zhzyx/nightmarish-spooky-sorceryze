@@ -74,16 +74,67 @@ def replay_launch(host, port, issue, key, journal, release):
         with httpx.Client(base_url=host.client.base_url, headers=headers, trust_env=False) as connected:
             reconnected = replay(connected)
             assert reconnected == duplicate and reconnected["state"] == "running"
+
+            def issue_progress():
+                detail = (
+                    connected
+                    .get(f"/api/v1/issues/by-number/{issue['number']}/detail", params={"project": "studio"})
+                    .raise_for_status()
+                    .json()
+                )
+                progress = (
+                    connected
+                    .post("/api/v1/native/workflow/status", json={"key": key})
+                    .raise_for_status()
+                    .json()["progress"]
+                )
+                assert detail["execution_progress"] == progress
+                return progress
+
+            running = issue_progress()
+            assert running["id"] == key and running["state"] == "running"
+            assert running["events"][-1]["step"] == "workspace.materialize"
             release.touch()
             settled = connected.post("/api/v1/native/workflow/await-terminal", json={"key": key})
             assert settled.raise_for_status().json()["state"] == "produced"
             terminal = replay(connected)
+            produced = issue_progress()
+            assert produced["events"][: len(running["events"])] == running["events"]
+            assert [event["step"] for event in produced["events"][len(running["events"]) :]] == [
+                "process.closed",
+                "workspace.collect",
+                "candidate.compose",
+                "state",
+            ]
+            assert (
+                produced["state"] == "produced"
+                and produced["candidate"] == produced["events"][-1]["details"]["candidate"]
+            )
+            late = (
+                connected
+                .post(
+                    "/api/v1/native/workflow/record",
+                    json=dict(
+                        assignment={"ticket": key}, event="progress", state="running", receipt=running["events"][-1]
+                    ),
+                )
+                .raise_for_status()
+                .json()
+            )
+            assert late["state"] == "produced" and issue_progress() == produced
     finally:
         release.touch(exist_ok=True)
     (physical,) = launches()
     assert physical["execution"] == key and physical["pid"] > 0
     assert duplicate["starts"] == terminal["starts"] == [physical] and terminal["state"] == "produced"
-    return dict(duplicate=duplicate, reconnected=reconnected, after_exit=terminal)
+    return dict(
+        duplicate=duplicate,
+        reconnected=reconnected,
+        after_exit=terminal,
+        progress=produced,
+        replayed_step=running["events"][-1],
+        replay_result=late,
+    )
 
 
 def exercise(root, executable):

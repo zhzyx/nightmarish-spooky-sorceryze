@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 
 from native_requirement_plan import requirement_digest
 from native_store import NativeStoreError, _digest, _json
+from native_workflow import OccupiedWrites
 from tianxuan_core import _token_hash
 
 
@@ -578,11 +579,13 @@ class WorkflowService:
                 board["stage_checks"] = [k for k in board["stage_checks"] if k in owned]
                 board["snapshot"]["items"] = [r for r in board["snapshot"]["items"] if r["key"] in owned]
                 board["snapshot"]["ready"] = [k for k in board["snapshot"]["ready"] if k in owned]
-                for active in board["environment"]["active"]:
-                    if active["ticket"] not in owned and not (
-                        board["requests"] and len(board["environment"]["active"]) >= board["environment"]["capacity"]
-                    ):
-                        active.pop("terminalObservable", None)
+                waiting = {r["key"] for r in board["snapshot"]["items"] if r.get("waitReason") == "resource_conflict"}
+                waiting_assets = OccupiedWrites(r["writes"] for r in board["requests"] if r["ticket"] in waiting)
+                active = board["environment"]["active"]
+                full = bool(board["requests"]) and len(active) >= board["environment"]["capacity"]
+                for holder in active:
+                    if holder["ticket"] not in owned and not full and not waiting_assets.overlaps(holder["writes"]):
+                        holder.pop("terminalObservable", None)
 
             integration = getattr(w, "integration", None)
             if integration is not None:
