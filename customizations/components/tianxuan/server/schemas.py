@@ -160,7 +160,21 @@ class CommitStatusRequest(BaseModel):
     target_url: str = ""
 
 
+class ConflictChoice(BaseModel):
+    choice: Literal["source", "target", "text"]
+    text: str = Field(default="", max_length=100_000)
+
+
+class ConflictResolution(BaseModel):
+    files: dict[str, ConflictChoice] = Field(min_length=1, max_length=100)
+
+
+class ExactReview(BaseModel):
+    decision: Literal["APPROVED", "REQUEST_CHANGES"]
+
+
 class ExactMergeRequest(BaseModel):
+    issue_id: str = Field(default="", max_length=200)
     source: str
     target: str
     candidate: str = Field(pattern=r"^(?:[0-9a-f]{40}|[0-9a-f]{64})$")

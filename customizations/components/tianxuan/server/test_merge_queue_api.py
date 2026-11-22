@@ -230,3 +230,38 @@ def test_exact_request_requires_session_and_is_readable_by_tenant_reviewer(monke
     outsider = {"Authorization": "Bearer " + store.issue_session(other["user_id"])}
     assert client.get(path + "/" + item["id"], headers=outsider).status_code == 404
     assert queue.count_items() == 1
+
+
+def test_delivery_recovers_lost_work_order_write_and_refuses_retracted_target(monkeypatch, tmp_path):
+    from exact_integration import git
+
+    client, legacy, queue = _setup(monkeypatch, tmp_path)
+    store = client.app.state.store
+    author = legacy["X-Actor"]
+    owner = {"Authorization": "Bearer " + store.issue_session(author)}
+    reviewer = _add_editor(client, legacy, "peer@example.invalid")["X-Actor"]
+    peer = {"Authorization": "Bearer " + store.issue_session(reviewer)}
+    issue = store.create_issue(author, "Read back the checked target")["id"]
+    repo = tmp_path / "docs.git"
+    service = queue.git
+    base, candidate = (service.branch_tip(repo, name) for name in ("main", "feature"))
+    root = "/api/v1/git/repos/docs.git/merge-requests"
+    create = client.post(
+        root, headers=owner, json={"source": "feature", "target": "main", "candidate": candidate, "issue_id": issue}
+    )
+    assert create.status_code == 200
+    ident = create.json()["id"]
+    route = root + "/" + ident
+    assert queue.process_next()["status"] == "checked"
+    assert client.post(route + "/review", headers=peer, json={"decision": "APPROVED"}).status_code == 200
+    # Exact Git apply completed, then the service stopped before writing to Tianxuan.
+    applied = queue.reviewed_delivery(ident, author)["evidence"]["merge_sha"]
+    assert applied == candidate and store.list_issue_comments(author, issue) == []
+    git(service.git_executable, repo, "update-ref", "refs/heads/main", base, applied)
+    assert client.post(route + "/deliver", headers=owner).status_code == 409
+    assert store.list_issue_comments(author, issue) == []
+    git(service.git_executable, repo, "update-ref", "refs/heads/main", applied, base)
+    accepted = client.post(route + "/deliver", headers=owner)
+    assert accepted.status_code == 200 and accepted.json()["target_tip"] == candidate
+    assert client.post(route + "/deliver", headers=owner).json()["comment_id"] == accepted.json()["comment_id"]
+    assert len(store.list_issue_comments(author, issue)) == 1

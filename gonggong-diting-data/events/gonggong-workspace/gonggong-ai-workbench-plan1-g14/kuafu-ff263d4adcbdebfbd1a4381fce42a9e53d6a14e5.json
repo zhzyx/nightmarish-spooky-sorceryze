@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ff263d4adcbdebfbd1a4381fce42a9e53d6a14e5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-g14",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1781",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "99fffbb9f96750375128fabc7a2655717ad0fdb1e6d718b635d460b5b4bbc8b1",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1781",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2025",
+    "action": "intake",
+    "detection_head": "e3135fc4b95141430c1fa6aa9f225ce899d01ff4",
+    "context_sha256": "305ef279eb94cd84a356c08644b8a5279e89e3ae73a1960ac80fd8c57d585adb",
+    "operator": "Sail-Li",
+    "worker": "codex-mac-round10-duobao",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1781",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44992415318",
+    "diagnosis": "The original intake ran while the work item still carried status:planned. The authorized worker claimed it as status:in-progress and reran the same intake on the same checkout and tenant successfully.",
+    "next_action": "Preserve exact intake recovery alongside the functional acceptance and signed delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T06:08:40.292769+00:00",
+    "attempted": "Changed the active work item label and replayed the original intake-only command successfully.",
+    "repair_owner": "Mac work item publisher",
+    "continuable": "Functional acceptance and signed delivery"
+  },
+  "occurred_at": "2026-11-22T06:23:28.074323+00:00",
+  "sha256": "26c567bdef424324fb28d7624b6bf541ec61d571b9ea420bf3b7ef987385a4e6"
+}
