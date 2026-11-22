@@ -1,0 +1,1475 @@
+{
+  "issue_number": 1732,
+  "request_id": "gonggong-ai-workbench-plan1-q05",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1732",
+  "q05_result": "passed",
+  "scope": "Normal Cocoa editor closure and reopening of the same signed task against an isolated local Tianxuan service and test accounts. The companion sidebar observations replay a normally saved fixture layout.",
+  "source": {
+    "candidate": "6ebc11ab0271e993646860f05e39d19a2ec1c9b6",
+    "main_compared": "e76a68139444777d17370124c98ce3b88b9d7858",
+    "merged_pull_requests": {
+      "2126": 2135,
+      "2125": 2140,
+      "2123": 2141
+    },
+    "runtime_and_probe_blobs": {
+      "customizations/components/godot-host/macos_validation.gd": "296c0f570fd5363748f34f390db17ae813b311ba",
+      "customizations/components/godot-host/silent_validation.gd": "08c86978308981f5c6aeb5402f872fd9204df4ba",
+      "customizations/components/tianxuan/server/native_api.py": "ee67c8aa0c623288f3cf4007e1694bb2d5f2d671",
+      "customizations/components/tianxuan/server/native_checkpoint.py": "86810aa1cd3ba52cc5f6f07d360e887ff7e5d50a",
+      "customizations/components/tianxuan/server/native_installation.py": "b46e6308c4b2c089a3eef8b4587772c22e854012",
+      "customizations/components/tianxuan/server/test_native_installation_integrity.py": "a8bd2b7999e7e88bec2bdf8d61dad2a4ab2a6616",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py": "04afe2654b22a6289f73838364a2a4f2d7fe0dee",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "2df907531eb58daf6cc59a7685ab1b1e1e8da35b",
+      "customizations/components/tianxuan/sinan-workorders/test_native_editor_worker_close.py": "02384949dc6a830787230f3851bf94246855f6e5",
+      "editor/docks/daqian_dock.cpp": "01a42b8efa90982cd1e9c166707b2a8fe2d12e45",
+      "editor/docks/daqian_dock.h": "66dd8dd64940d1727a7de4c7b3f8bfb1069124c8",
+      "editor/docks/workbench/business_session.gd": "4ac73049952423118279932b344c8b43017c8e34",
+      "editor/docks/workbench/issue_actions/creative_judgments.gd": "fc5576f3db34d047e8e8db8da502157b105c3dd8",
+      "editor/editor_node.cpp": "70498a02e221b9a1b4fe282762197e49b7135a86",
+      "tests/editor/daqian_ai_entry.gd": "1b87b7f864fa90408359b0e5307afd18a7492485",
+      "tests/editor/macos_startup_validation.gd": "9fc9ef554873ea4a8ddc10dc643b185ae5c7e50d",
+      "tests/editor/run_macos_registered_worker_close.py": "96e590a0c60c1dc532a4e2c73012c7a42c2ed9e7",
+      "tests/editor/run_macos_startup_validation.py": "54197d3e137e7747ef6e4fd781a486ab0ee7122c",
+      "tests/editor/run_workbench_project_reopen.py": "bbc2497c1eb0d659675f741cdb60e9d7f206ccb2",
+      "tests/editor/run_workbench_startup_judgments.py": "8c99e05b8f3862885b1c9e91e91e59684278c3d8",
+      "tests/editor/workbench_startup_judgments.gd": "3cebb50b66c897531fba0c3ce57c64e6a618c1e2"
+    }
+  },
+  "run": {
+    "url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45062919388",
+    "job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45062919388/job/137332622037",
+    "head_sha": "6ebc11ab0271e993646860f05e39d19a2ec1c9b6",
+    "event": "workflow_dispatch",
+    "conclusion": "failure",
+    "steps": [
+      {
+        "completedAt": "2026-11-22T20:23:27Z",
+        "conclusion": "success",
+        "name": "Compilation (arm64)",
+        "number": 10,
+        "startedAt": "2026-11-22T19:53:05Z",
+        "status": "completed"
+      },
+      {
+        "completedAt": "2026-11-22T20:23:36Z",
+        "conclusion": "success",
+        "name": "Package the exact arm64 editor for native acceptance",
+        "number": 11,
+        "startedAt": "2026-11-22T20:23:27Z",
+        "status": "completed"
+      },
+      {
+        "completedAt": "2026-11-22T20:24:44Z",
+        "conclusion": "success",
+        "name": "Close the registered group and recover to the authorized stage",
+        "number": 14,
+        "startedAt": "2026-11-22T20:23:49Z",
+        "status": "completed"
+      },
+      {
+        "completedAt": "2026-11-22T20:26:14Z",
+        "conclusion": "success",
+        "name": "Reopen the normally saved AI Chat layout in Cocoa",
+        "number": 15,
+        "startedAt": "2026-11-22T20:24:44Z",
+        "status": "completed"
+      },
+      {
+        "completedAt": "2026-11-22T20:27:24Z",
+        "conclusion": "success",
+        "name": "Deliver personal judgments before Cocoa restores the layout",
+        "number": 16,
+        "startedAt": "2026-11-22T20:26:14Z",
+        "status": "completed"
+      },
+      {
+        "completedAt": "2026-11-22T20:28:08Z",
+        "conclusion": "failure",
+        "name": "Validate signed application cold and warm and after each resource change",
+        "number": 17,
+        "startedAt": "2026-11-22T20:27:24Z",
+        "status": "completed"
+      },
+      {
+        "completedAt": "2026-11-22T20:28:11Z",
+        "conclusion": "success",
+        "name": "Upload native Cocoa evidence",
+        "number": 18,
+        "startedAt": "2026-11-22T20:28:08Z",
+        "status": "completed"
+      }
+    ],
+    "host": "Darwin arm64",
+    "artifacts": [
+      {
+        "digest": "sha256:ed0b171ac8b46a607621ebff3eab1ee4ba33214d5fae976d99106015731ffd17",
+        "id": 14771815768,
+        "name": "registered-worker-editor",
+        "size_in_bytes": 63623607
+      },
+      {
+        "digest": "sha256:6bbe873c6bd2c54668f36a1461ba070afbf0646b3c63152d98bdb999b4a9e4d9",
+        "id": 14771601625,
+        "name": "q05-native-cocoa",
+        "size_in_bytes": 7546
+      }
+    ]
+  },
+  "digests": {
+    "bin/godot.macos.editor.arm64": "556482d839e8c268734d408a4b9d0639f7147adfede0049e76b6bdbb814bb524",
+    "bin/tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "bin/tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "data-collection/q05-f01-common.json": "78e468619070021669f0d9c700be800ee0215d0fcd1e11d69ceb7bf69ff3043e"
+  },
+  "raw_file_sha256": {
+    "digests.txt": "02d737eaf047e971932e21589dab7b32d1119199744c1b1de3beb45696014ef4",
+    "registered-worker-close.json": "eb37664d25d8441849d222383d0a968dc5139c897a10d7ab3c195c1042817476",
+    "sidebar-judgments-first.json": "9607daba550c69affc348130d028bdba2bd8f152d5b88b7e0c9076d222c9d85d",
+    "sidebar.json": "ba718c359c8d3c643d62623d31ca9ab244ac2cdebc94725742619f363428d4aa",
+    "source.txt": "a078893104e4c9d50c4e1bc5dd22cca478f378e5364c85efa8511806f06bc4f1",
+    "startup-sidecars.json": "959fb42400abf696701906ca5ec93c306f2fc2e11d638bb710fc7b8c1186c77c"
+  },
+  "registered_worker_close": {
+    "platform": "macOS-26.7.2-arm64-arm-64bit-Mach-O",
+    "mode": "macOS Cocoa",
+    "task": "ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e",
+    "issue": "iss_03877210120e4f25a9e1dc40dd036f76",
+    "before": {
+      "task": "ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e",
+      "issue": "iss_03877210120e4f25a9e1dc40dd036f76",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+        "mandate": "installed-test-plan",
+        "source_revision": "dc11fbe65b85d9a6de25389d75179b43d6989c50f301cbd00d0059fd0edc9378",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_56411a1880274ee5ae5194e427fbb73f",
+          "issue_id": "iss_03877210120e4f25a9e1dc40dd036f76",
+          "issue_revision": "e7dca8faf9ce2cf6791169f9857d74831bb8bd7307da689b172171cb30ad1f77",
+          "responsible_user": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "ready",
+      "completed_steps": [
+        "authorized"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {},
+      "candidate": null,
+      "calls": {
+        "worker": "native-worker:ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e",
+        "model_calls": null
+      },
+      "stage_receipt": null,
+      "pending_decision": null
+    },
+    "stopped": {
+      "task": "ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e",
+      "issue": "iss_03877210120e4f25a9e1dc40dd036f76",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+        "mandate": "installed-test-plan",
+        "source_revision": "dc11fbe65b85d9a6de25389d75179b43d6989c50f301cbd00d0059fd0edc9378",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_56411a1880274ee5ae5194e427fbb73f",
+          "issue_id": "iss_03877210120e4f25a9e1dc40dd036f76",
+          "issue_revision": "e7dca8faf9ce2cf6791169f9857d74831bb8bd7307da689b172171cb30ad1f77",
+          "responsible_user": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "editor-interrupted",
+      "completed_steps": [
+        "authorized"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {},
+      "candidate": null,
+      "calls": {
+        "worker": "native-worker:ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e",
+        "model_calls": null
+      },
+      "stage_receipt": null,
+      "pending_decision": null
+    },
+    "service_pid": 64316,
+    "producer_pid": 65233,
+    "child_pid": 65244,
+    "pgids": [
+      65233,
+      65233
+    ],
+    "closed_pids": [
+      65233,
+      65244
+    ],
+    "physical_exit_readback_ms": 67,
+    "control_pid": 65280,
+    "control_task": "a35b7c91e40028e00da507a375ec4d484d337f6721e130ca6be20e3b633532e0",
+    "control_alive": true,
+    "answered_before_close": true,
+    "answered_after_close": false,
+    "editors": [
+      {
+        "display": "macOS",
+        "pid": 64332,
+        "exit": 0
+      },
+      {
+        "display": "macOS",
+        "pid": 65681,
+        "exit": 0
+      }
+    ],
+    "after": {
+      "task": "ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e",
+      "issue": "iss_03877210120e4f25a9e1dc40dd036f76",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+        "mandate": "installed-test-plan",
+        "source_revision": "dc11fbe65b85d9a6de25389d75179b43d6989c50f301cbd00d0059fd0edc9378",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_56411a1880274ee5ae5194e427fbb73f",
+          "issue_id": "iss_03877210120e4f25a9e1dc40dd036f76",
+          "issue_revision": "e7dca8faf9ce2cf6791169f9857d74831bb8bd7307da689b172171cb30ad1f77",
+          "responsible_user": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "stage-reached",
+      "completed_steps": [
+        "authorized",
+        "reserved",
+        "worker-terminal",
+        "stage-checked"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {
+        "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+      },
+      "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+      "calls": {
+        "worker": "native-worker:ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e",
+        "model_calls": null
+      },
+      "stage_receipt": {
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_56411a1880274ee5ae5194e427fbb73f",
+          "issue_id": "iss_03877210120e4f25a9e1dc40dd036f76",
+          "issue_revision": "e7dca8faf9ce2cf6791169f9857d74831bb8bd7307da689b172171cb30ad1f77",
+          "responsible_user": "usr_ac644450bc7f47ff8d6ffed35a00caff",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "checks": {
+          "check": {
+            "evidence": "4e464fd41f87d5f390d38aefcaae6597a4b64c75f5635079fd4e93fd97a6f9b7",
+            "outcome": "passed"
+          }
+        },
+        "modules": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "reason": "authorized_stage_criteria_met",
+        "state": "stage-reached",
+        "task": "ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e"
+      },
+      "pending_decision": {
+        "kind": "stage-confirmation",
+        "task": "ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e"
+      }
+    },
+    "processes": {
+      "workers": [
+        65233,
+        66065
+      ],
+      "checkers": [
+        66097
+      ]
+    },
+    "interrupted": {
+      "archive": "ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e.interrupted-471d686db0274bc5a2384f142ffb105a",
+      "checkpoint": "immutable-inputs",
+      "state": "editor-interrupted",
+      "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "http": [
+      {
+        "method": "PUT",
+        "path": "/api/v1/issues/iss_03877210120e4f25a9e1dc40dd036f76/task-target",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/issues/by-number/1/detail",
+        "status": 200
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/issues/iss_03877210120e4f25a9e1dc40dd036f76/task-confirmation",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/authorize",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/me",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/work/my-judgments",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-occupancy",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-project",
+        "status": 200
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/issues/iss_94cfb04530d445aba7cddd360299b2e3/task-target",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/issues/by-number/2/detail",
+        "status": 200
+      },
+      {
+        "method": "PUT",
+        "path": "/api/v1/issues/iss_94cfb04530d445aba7cddd360299b2e3/task-confirmation",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/authorize",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-project",
+        "status": 499
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/status",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/auth/me",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-occupancy",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/work/my-judgments",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-project",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/checkpoint",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/status",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-project",
+        "status": 200
+      },
+      {
+        "method": "POST",
+        "path": "/api/v1/native/workflow/recover-project",
+        "status": 499
+      }
+    ],
+    "preview_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053",
+    "editor_sha256": "556482d839e8c268734d408a4b9d0639f7147adfede0049e76b6bdbb814bb524"
+  },
+  "sidebar_layout_origin": "Both runs normally saved and reopened the fixture AI Chat layout; the layout from the original Mac was unavailable.",
+  "sidebar_default": {
+    "passed": true,
+    "editor_sha256": "556482d839e8c268734d408a4b9d0639f7147adfede0049e76b6bdbb814bb524",
+    "layout_source": "normal AI Chat window close",
+    "reopen_navigation": "none",
+    "editors": {
+      "owner": {
+        "pid": 67293,
+        "exit": 0,
+        "result": {
+          "bound_before_layout": false,
+          "display_driver": "macOS",
+          "editor_bounds": "[P: (0.0, 0.0), S: (1024.0, 677.0)]",
+          "elapsed_ms": 21379,
+          "focus": "/root/@EditorNode@21775/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/DockVSplitRightL/DockSlotRightUL/AIWorkbenchSidebar/WorkbenchSidebarScroll/@VBoxContainer@10362/WorkbenchBusinessSession/WorkbenchIssueDetail/creative_judgments/PendingJudgmentRows/@Button@23248",
+          "pid": 67293,
+          "revision": "b @ 48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+          "row": "#2 Animate · sketch.svg\nvisible",
+          "row_bounds": "[P: (652.0, 119.0), S: (350.0, 44.0)]",
+          "row_visible": true,
+          "scroll_bounds": "[P: (652.0, 119.0), S: (364.0, 550.0)]",
+          "selected": "3D",
+          "sidebar_visible": true,
+          "still_focused_after_recovery": true,
+          "visible_focused_with_worker_ms": 20729,
+          "worker_started_while_focused": true
+        },
+        "http": [
+          {
+            "method": "GET",
+            "path": "/api/v1/auth/me",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-occupancy",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/work/my-judgments",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-project",
+            "status": 200
+          }
+        ],
+        "initial_close": {
+          "pid": 66187,
+          "exit": 0,
+          "result": {
+            "display_driver": "macOS",
+            "elapsed_ms": 26970,
+            "pid": 66187,
+            "selected": "AI Chat",
+            "sidebar_visible": false
+          }
+        },
+        "closed_layout_sha256": "a200c4bccd6fe46806830c680eefafc60abecdebc3d213125dc824ee03359c7e",
+        "reopened_layout_sha256": "a200c4bccd6fe46806830c680eefafc60abecdebc3d213125dc824ee03359c7e"
+      },
+      "peer": {
+        "pid": 68067,
+        "exit": 0,
+        "result": {
+          "display_driver": "macOS",
+          "elapsed_ms": 13054,
+          "pid": 68067,
+          "rows": 0,
+          "selected": "AI Chat",
+          "sidebar_visible": false
+        },
+        "http": [
+          {
+            "method": "GET",
+            "path": "/api/v1/auth/me",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/work/my-judgments",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-occupancy",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-project",
+            "status": 200
+          }
+        ],
+        "initial_close": {
+          "pid": 66907,
+          "exit": 0,
+          "result": {
+            "display_driver": "macOS",
+            "elapsed_ms": 12526,
+            "pid": 66907,
+            "selected": "AI Chat",
+            "sidebar_visible": false
+          }
+        },
+        "closed_layout_sha256": "a200c4bccd6fe46806830c680eefafc60abecdebc3d213125dc824ee03359c7e",
+        "reopened_layout_sha256": "a200c4bccd6fe46806830c680eefafc60abecdebc3d213125dc824ee03359c7e"
+      }
+    },
+    "still_pending": {
+      "issue_id": "iss_2838dad1b90f4beb91de1cbd454e7fb7",
+      "number": 2,
+      "title": "Animate",
+      "question": "visible",
+      "submission_version": 1,
+      "module": "b",
+      "revision": "48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+      "path": "sketch.svg",
+      "kind": "concept"
+    },
+    "before": {
+      "task": "e9592447b11a243841b75c684d152e4f5fd13c48659e590f57a47734f8c196b9",
+      "issue": "iss_fc9989a93b09439caacdeba3dd17ac81",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_e9918b4dc7c4445f982016848bf1d344",
+        "mandate": "installed-test-plan",
+        "source_revision": "28f8bcef1f95df94cff27764bf12b912d8d9bf4fe10d785e6f82965b78661ee8",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_e9918b4dc7c4445f982016848bf1d344",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_abeeddc59d674227b94df26e8dcacf15",
+          "issue_id": "iss_fc9989a93b09439caacdeba3dd17ac81",
+          "issue_revision": "5e488804bdfbf714622d3944473988819eb0b302710b4d11b6192a319800b637",
+          "responsible_user": "usr_e9918b4dc7c4445f982016848bf1d344",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "ready",
+      "completed_steps": [
+        "authorized"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {},
+      "candidate": null,
+      "calls": {
+        "worker": "native-worker:e9592447b11a243841b75c684d152e4f5fd13c48659e590f57a47734f8c196b9",
+        "model_calls": null
+      },
+      "stage_receipt": null,
+      "pending_decision": null
+    },
+    "after": {
+      "task": "e9592447b11a243841b75c684d152e4f5fd13c48659e590f57a47734f8c196b9",
+      "issue": "iss_fc9989a93b09439caacdeba3dd17ac81",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_e9918b4dc7c4445f982016848bf1d344",
+        "mandate": "installed-test-plan",
+        "source_revision": "28f8bcef1f95df94cff27764bf12b912d8d9bf4fe10d785e6f82965b78661ee8",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_e9918b4dc7c4445f982016848bf1d344",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_abeeddc59d674227b94df26e8dcacf15",
+          "issue_id": "iss_fc9989a93b09439caacdeba3dd17ac81",
+          "issue_revision": "5e488804bdfbf714622d3944473988819eb0b302710b4d11b6192a319800b637",
+          "responsible_user": "usr_e9918b4dc7c4445f982016848bf1d344",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "stage-reached",
+      "completed_steps": [
+        "authorized",
+        "reserved",
+        "worker-terminal",
+        "stage-checked"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {
+        "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+      },
+      "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+      "calls": {
+        "worker": "native-worker:e9592447b11a243841b75c684d152e4f5fd13c48659e590f57a47734f8c196b9",
+        "model_calls": null
+      },
+      "stage_receipt": {
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_e9918b4dc7c4445f982016848bf1d344",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_abeeddc59d674227b94df26e8dcacf15",
+          "issue_id": "iss_fc9989a93b09439caacdeba3dd17ac81",
+          "issue_revision": "5e488804bdfbf714622d3944473988819eb0b302710b4d11b6192a319800b637",
+          "responsible_user": "usr_e9918b4dc7c4445f982016848bf1d344",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "checks": {
+          "check": {
+            "evidence": "0fda584cf6d1d19ee57da957836e2f3df67456aeaa5a9a5b5cc249377152c506",
+            "outcome": "passed"
+          }
+        },
+        "modules": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "reason": "authorized_stage_criteria_met",
+        "state": "stage-reached",
+        "task": "e9592447b11a243841b75c684d152e4f5fd13c48659e590f57a47734f8c196b9"
+      },
+      "pending_decision": {
+        "kind": "stage-confirmation",
+        "task": "e9592447b11a243841b75c684d152e4f5fd13c48659e590f57a47734f8c196b9"
+      }
+    },
+    "processes": {
+      "workers": [
+        68044
+      ],
+      "checkers": [
+        68048
+      ]
+    },
+    "physical_closure": {
+      "exit_code": 0,
+      "reasons": [],
+      "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "checker_exit": 0,
+    "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+  },
+  "sidebar_judgments_first": {
+    "passed": true,
+    "editor_sha256": "556482d839e8c268734d408a4b9d0639f7147adfede0049e76b6bdbb814bb524",
+    "layout_source": "normal AI Chat window close",
+    "reopen_navigation": "none",
+    "editors": {
+      "owner": {
+        "pid": 69234,
+        "exit": 0,
+        "result": {
+          "bound_before_layout": true,
+          "display_driver": "macOS",
+          "editor_bounds": "[P: (0.0, 0.0), S: (1440.0, 677.0)]",
+          "elapsed_ms": 15459,
+          "focus": "/root/@EditorNode@21775/@Panel@14/@VBoxContainer@16/DockVSplitMain/DockHSplitMain/DockVSplitRightL/DockSlotRightUL/AIWorkbenchSidebar/WorkbenchSidebarScroll/@VBoxContainer@10362/WorkbenchBusinessSession/WorkbenchIssueDetail/creative_judgments/PendingJudgmentRows/@Button@23243",
+          "pid": 69234,
+          "revision": "b @ 48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+          "row": "#2 Animate · sketch.svg\nvisible",
+          "row_bounds": "[P: (1068.0, 119.0), S: (350.0, 44.0)]",
+          "row_visible": true,
+          "scroll_bounds": "[P: (1068.0, 119.0), S: (364.0, 550.0)]",
+          "selected": "3D",
+          "sidebar_visible": true,
+          "still_focused_after_recovery": true,
+          "visible_focused_with_worker_ms": 14802,
+          "worker_started_while_focused": true
+        },
+        "http": [
+          {
+            "method": "GET",
+            "path": "/api/v1/auth/me",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/work/my-judgments",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-occupancy",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-project",
+            "status": 200
+          }
+        ],
+        "initial_close": {
+          "pid": 68728,
+          "exit": 0,
+          "result": {
+            "display_driver": "macOS",
+            "elapsed_ms": 14363,
+            "pid": 68728,
+            "selected": "AI Chat",
+            "sidebar_visible": false
+          }
+        },
+        "closed_layout_sha256": "a200c4bccd6fe46806830c680eefafc60abecdebc3d213125dc824ee03359c7e",
+        "reopened_layout_sha256": "a200c4bccd6fe46806830c680eefafc60abecdebc3d213125dc824ee03359c7e"
+      },
+      "peer": {
+        "pid": 70169,
+        "exit": 0,
+        "result": {
+          "display_driver": "macOS",
+          "elapsed_ms": 12852,
+          "pid": 70169,
+          "rows": 0,
+          "selected": "AI Chat",
+          "sidebar_visible": false
+        },
+        "http": [
+          {
+            "method": "GET",
+            "path": "/api/v1/auth/me",
+            "status": 200
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/work/my-judgments",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-occupancy",
+            "status": 200
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/native/workflow/recover-project",
+            "status": 200
+          }
+        ],
+        "initial_close": {
+          "pid": 69081,
+          "exit": 0,
+          "result": {
+            "display_driver": "macOS",
+            "elapsed_ms": 10431,
+            "pid": 69081,
+            "selected": "AI Chat",
+            "sidebar_visible": false
+          }
+        },
+        "closed_layout_sha256": "a200c4bccd6fe46806830c680eefafc60abecdebc3d213125dc824ee03359c7e",
+        "reopened_layout_sha256": "a200c4bccd6fe46806830c680eefafc60abecdebc3d213125dc824ee03359c7e"
+      }
+    },
+    "still_pending": {
+      "issue_id": "iss_ac67f0dc41f6461d81eefd361a052063",
+      "number": 2,
+      "title": "Animate",
+      "question": "visible",
+      "submission_version": 1,
+      "module": "b",
+      "revision": "48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+      "path": "sketch.svg",
+      "kind": "concept"
+    },
+    "before": {
+      "task": "493d57ed28c1c31424d56403ba1dcd9a2d4d7343b4fe2cc0419d3d4e0959c07b",
+      "issue": "iss_841d2ea36d494a0a9480e131bc88e8e2",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_4e1bcc2fecd84d9c803db19f469f198b",
+        "mandate": "installed-test-plan",
+        "source_revision": "356f760367bbc087e41e62a069aebb8a627739483f96d94d2cbda3692537c210",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_4e1bcc2fecd84d9c803db19f469f198b",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_73d81a67326a4fe78f3ed2508ced4667",
+          "issue_id": "iss_841d2ea36d494a0a9480e131bc88e8e2",
+          "issue_revision": "971e077442c870bd0aa8afdecadd1a3bae6cf9a2b0b01533d73b3b3f9e150ce7",
+          "responsible_user": "usr_4e1bcc2fecd84d9c803db19f469f198b",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "ready",
+      "completed_steps": [
+        "authorized"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {},
+      "candidate": null,
+      "calls": {
+        "worker": "native-worker:493d57ed28c1c31424d56403ba1dcd9a2d4d7343b4fe2cc0419d3d4e0959c07b",
+        "model_calls": null
+      },
+      "stage_receipt": null,
+      "pending_decision": null
+    },
+    "after": {
+      "task": "493d57ed28c1c31424d56403ba1dcd9a2d4d7343b4fe2cc0419d3d4e0959c07b",
+      "issue": "iss_841d2ea36d494a0a9480e131bc88e8e2",
+      "project": "studio",
+      "business_module": "default",
+      "target": {
+        "title": "Program",
+        "acceptance": "visible",
+        "writes": {
+          "a": [
+            "preview.svg"
+          ]
+        }
+      },
+      "authorization": {
+        "actor": "usr_4e1bcc2fecd84d9c803db19f469f198b",
+        "mandate": "installed-test-plan",
+        "source_revision": "356f760367bbc087e41e62a069aebb8a627739483f96d94d2cbda3692537c210",
+        "stage": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_4e1bcc2fecd84d9c803db19f469f198b",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_73d81a67326a4fe78f3ed2508ced4667",
+          "issue_id": "iss_841d2ea36d494a0a9480e131bc88e8e2",
+          "issue_revision": "971e077442c870bd0aa8afdecadd1a3bae6cf9a2b0b01533d73b3b3f9e150ce7",
+          "responsible_user": "usr_4e1bcc2fecd84d9c803db19f469f198b",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        }
+      },
+      "state": "stage-reached",
+      "completed_steps": [
+        "authorized",
+        "reserved",
+        "worker-terminal",
+        "stage-checked"
+      ],
+      "input_revisions": {
+        "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+      },
+      "artifact_revisions": {
+        "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+      },
+      "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+      "calls": {
+        "worker": "native-worker:493d57ed28c1c31424d56403ba1dcd9a2d4d7343b4fe2cc0419d3d4e0959c07b",
+        "model_calls": null
+      },
+      "stage_receipt": {
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_4e1bcc2fecd84d9c803db19f469f198b",
+          "criteria": "preview.svg shows one blue circle of radius 12",
+          "document_id": "doc_73d81a67326a4fe78f3ed2508ced4667",
+          "issue_id": "iss_841d2ea36d494a0a9480e131bc88e8e2",
+          "issue_revision": "971e077442c870bd0aa8afdecadd1a3bae6cf9a2b0b01533d73b3b3f9e150ce7",
+          "responsible_user": "usr_4e1bcc2fecd84d9c803db19f469f198b",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "checks": {
+          "check": {
+            "evidence": "2cb7a642da7ceadd0777d1a9fd7f835b0c2deee49b3ef1edb0e82e43e900f074",
+            "outcome": "passed"
+          }
+        },
+        "modules": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "reason": "authorized_stage_criteria_met",
+        "state": "stage-reached",
+        "task": "493d57ed28c1c31424d56403ba1dcd9a2d4d7343b4fe2cc0419d3d4e0959c07b"
+      },
+      "pending_decision": {
+        "kind": "stage-confirmation",
+        "task": "493d57ed28c1c31424d56403ba1dcd9a2d4d7343b4fe2cc0419d3d4e0959c07b"
+      }
+    },
+    "processes": {
+      "workers": [
+        69828
+      ],
+      "checkers": [
+        70124
+      ]
+    },
+    "physical_closure": {
+      "exit_code": 0,
+      "reasons": [],
+      "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "checker_exit": 0,
+    "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+  },
+  "related_issue_2123": {
+    "outcome": "cold_failed",
+    "cold": {
+      "exit_code": 0,
+      "new_receipts": [],
+      "observations": []
+    },
+    "remaining": "Warm, missing, corrupt, changed and restored package cases and partial child receipts were not exercised in this run.",
+    "handoff": "The parent operator owns further investigation."
+  }
+}
