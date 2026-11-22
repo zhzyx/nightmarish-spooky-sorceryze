@@ -171,7 +171,22 @@ func _authenticate(email: String, secret: String, project: String) -> void:
 	_form.hide()
 	identity_changed.emit()
 	if not _identity.is_empty() and _identity.get("role") != "viewer":
-		api_request(HTTPClient.METHOD_POST, "/api/v1/native/workflow/recover-occupancy", {"project": _identity.project})
+		_recover_project(attempt)
+
+
+func _recover_project(attempt: int) -> void:
+	# Release verifiably abandoned local reservations before scheduling eligible work.
+	await api_request(HTTPClient.METHOD_POST, "/api/v1/native/workflow/recover-occupancy", {"project": _identity.project})
+	if attempt != _generation:
+		return
+	var response := await api_request(HTTPClient.METHOD_POST, "/api/v1/native/workflow/recover-project", {}, 86400.0)
+	if attempt != _generation:
+		return
+	# A deployment without the native workflow router has no native tasks.
+	if response.status == 404:
+		return
+	if response.status != 200 or int(response.data.get("errors", 0)) > 0:
+		_status.text += " · 部分任务恢复回执待核对"
 
 
 # Routes belong to the configured deployment. Each request captures its verified session.

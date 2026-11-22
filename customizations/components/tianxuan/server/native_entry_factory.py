@@ -271,6 +271,7 @@ class OrdinaryEntry:
                 review, actor, plan, result, reviewer
             ),
         )
+        self.workflow.recovery_context = self.recovery_context
         self.planner = RequirementPlanner(
             domain,
             self.ledger,
@@ -281,6 +282,26 @@ class OrdinaryEntry:
             spec["complexity"],
             self.requirement_authority,
         )
+
+    @contextmanager
+    def recovery_context(self, actor, checkpoint):
+        with self.domain._connection_lock:
+            entry, _ = self.binding(checkpoint["issue"])
+            require(
+                entry["actor"] == actor and entry["id"] == checkpoint["authorization"]["mandate"],
+                "Original installed entry required for recovery",
+            )
+            self.entry_authority(entry["id"])
+        marker = self.current_entry.set(entry["id"])
+        try:
+            yield
+            # A checked contribution can now be integrated by its original entry.
+            # Signed stages stop at their own receipt.
+            if checkpoint["state"] == "produced" and not checkpoint["authorization"]["stage"] and self.event_loop:
+                self.notify_dependency_change()
+                self.event_loop.call_soon_threadsafe(self.consumer.notify, entry["id"])
+        finally:
+            self.current_entry.reset(marker)
 
     def validate_production(self, spec):
         from native_entry_runtime import load_config

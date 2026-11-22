@@ -122,10 +122,13 @@ def exercise(root, executable):
 
 def run_controls(root, engine, host, workflow, issues, folder):
     keys = []
-    for issue in issues:
+
+    def sign(issue):
         host.target(issue, "preview", "individual output")
         host.confirm(issue).raise_for_status()
-        keys.append(host.api("authorize", issue=issue["id"]).raise_for_status().json())
+        return host.api("authorize", issue=issue["id"]).raise_for_status().json()
+
+    keys.extend(sign(issue) for issue in issues[:2])
 
     def call(operation, i, **kwargs):
         return host.api(operation, key=keys[i], **kwargs).raise_for_status().json()
@@ -185,6 +188,9 @@ def run_controls(root, engine, host, workflow, issues, folder):
             assert peer["state"] == "produced" and peer["exit_code"] == 0
             peer_stage = call("verify-stage", 1)
             assert peer_stage["state"] == "stage-reached" and peer_stage["candidate"] == peer["candidate"]
+            # Open the cancellation case only after the pause/resume panels have
+            # closed. Reopening now automatically consumes every eligible ticket.
+            keys.append(sign(issues[2]))
             assert host.reserve(keys[2]).raise_for_status().json()
             c = pool.submit(call, "execute", 2)
             wait_start("c")

@@ -1,0 +1,1115 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-r07",
+  "issue_number": 1803,
+  "status": "passed",
+  "summary": "Windows 启动三个独立编辑器进程。两次重新打开后仍只有一次原始签认、一次生产和一次阶段检查，同级未签认事项保留待确认。S10、K03 编辑器回归及 30 项服务用例通过。",
+  "observed": "2026-11-22T14:12:37.339710+00:00",
+  "source_tree": "342cc189505d15193d6eaab21e988a596cb835e8",
+  "source_base": "e8b40ea7d472868629b62af109acc03e42be7fae",
+  "worker_source_tree": "bec10ca189ca51771cb390a619971e1cfa427d76",
+  "editor_package": {
+    "godot.windows.editor.x86_64.exe": "1aa24c9a2d542ec7678eb825f482693f0681985be2218958cfff18fdc0975ae3",
+    "godot.windows.editor.x86_64.console.exe": "dd0d57b206b4a8de05b708e98d7293f095a0174624e199c4f8d99ba43f08a158",
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+  },
+  "regressions": [
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_continue_from_each_confirmed_boundary[ready]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_continue_from_each_confirmed_boundary[reserved]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_continue_from_each_confirmed_boundary[produced]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_respects_current_scope_and_controls[pause]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_respects_current_scope_and_controls[cancel]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_respects_current_scope_and_controls[revoke]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_settles_ordinary_pinned_publication",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_unmet_stage_stops_and_is_not_retried",
+    "customizations.components.tianxuan.sinan-workorders.test_native_recovery_list::test_reopen_four_states_and_isolate_owner",
+    "customizations.components.tianxuan.sinan-workorders.test_native_recovery_list::test_visible_ready_task_with_withdrawn_execution_is_not_resumable",
+    "customizations.components.tianxuan.sinan-workorders.test_native_checkpoint::test_rebuild_and_partial_commit_frame",
+    "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop::test_dispatch_stops_at_checked_preview[blue-stage-reached]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop::test_dispatch_stops_at_checked_preview[red-stage-unmet]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop::test_unbound_and_mismatched_criteria",
+    "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop::test_revocation_during_stage_check",
+    "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop::test_revoked_evidence_and_contribution_never_release",
+    "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop::test_simultaneous_settlement_reuses_exact_check",
+    "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop::test_stage_receipt_binds_current_editable_revision[True]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_stage_stop::test_stage_receipt_binds_current_editable_revision[False]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_successor_events::test_signed_successor_replays_exact_completion[False]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_successor_events::test_signed_successor_replays_exact_completion[True]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_successor_events::test_other_prerequisite_and_old_source",
+    "customizations.components.tianxuan.sinan-workorders.test_native_successor_events::test_custom_flow_retains_ownership",
+    "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_pause_before_process_or_reservation_and_restart[False]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_pause_before_process_or_reservation_and_restart[True]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_signed_pause_rejects_revoked_confirmation_and_wrong_project",
+    "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_resume_rejects_changed_worker_terminal",
+    "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_sinan_observes_requested_stop_and_continues_review_without_relaunch[pause]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_sinan_observes_requested_stop_and_continues_review_without_relaunch[cancel]",
+    "customizations.components.tianxuan.server.test_native_entry_normal.NormalEntryTests::test_main_two_users"
+  ],
+  "native": {
+    "project_reopen": {
+      "passed": true,
+      "mode": "compiled headless editor / authenticated loopback / installed deterministic processes",
+      "editor_sha256": "1aa24c9a2d542ec7678eb825f482693f0681985be2218958cfff18fdc0975ae3",
+      "initial_editor": {
+        "pid": 127940,
+        "exit": 0,
+        "result": {
+          "after": [
+            {
+              "issue": "#1 Program",
+              "label": "preview · 已确认启动\npreview.svg shows one blue circle of radius 12\n确认人：usr_10ed068d6e004fa682140e2b6885000c",
+              "selected": true
+            },
+            {
+              "issue": "#2 Animate",
+              "label": "preview · 待确认\npreview.svg shows one blue circle of radius 12",
+              "selected": false
+            }
+          ],
+          "before": [
+            {
+              "issue": "#1 Program",
+              "label": "preview · 待确认\npreview.svg shows one blue circle of radius 12",
+              "selected": false
+            },
+            {
+              "issue": "#2 Animate",
+              "label": "preview · 待确认\npreview.svg shows one blue circle of radius 12",
+              "selected": false
+            }
+          ],
+          "feedback": "已从天璇回读 #1 的记录。",
+          "rects": [
+            [
+              "[P: (9.0, 9.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 97.0), S: (460.0, 33.0)]"
+            ]
+          ],
+          "selected": [
+            "#1 Program"
+          ],
+          "viewport": "[P: (9.0, 9.0), S: (460.0, 320.0)]"
+        }
+      },
+      "reopened_editors": [
+        {
+          "pid": 136920,
+          "exit": 0,
+          "result": {
+            "identity": {
+              "id": "usr_10ed068d6e004fa682140e2b6885000c",
+              "name": "native",
+              "project": "studio",
+              "role": "admin"
+            },
+            "pid": 136920
+          },
+          "startup_writes": [
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ]
+        },
+        {
+          "pid": 134068,
+          "exit": 0,
+          "result": {
+            "identity": {
+              "id": "usr_10ed068d6e004fa682140e2b6885000c",
+              "name": "native",
+              "project": "studio",
+              "role": "admin"
+            },
+            "pid": 134068
+          },
+          "startup_writes": [
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "original_confirmation": {
+        "issue_id": "iss_dc7703ea17d549c8b11912720d35db7b",
+        "document_id": "doc_fcc9289d2bfb466dbaadd3279ce269a4",
+        "version": 1,
+        "stage": "preview",
+        "target_revision": 1,
+        "issue_revision": "75467459a5918fe3a5f6c91e34d7ceb51dccc417b1a1f69857fce3e8f3c35c30",
+        "revision": 1,
+        "status": "confirmed",
+        "responsible_user": "usr_10ed068d6e004fa682140e2b6885000c",
+        "confirmed_by": "usr_10ed068d6e004fa682140e2b6885000c"
+      },
+      "initial_confirmation_requests": 1,
+      "before_processes": {
+        "workers": [
+          137268
+        ],
+        "checkers": []
+      },
+      "before": {
+        "task": "4404717f2bff1fb5eec74c39ff4b3906815518a7d5952eb7d4253dfd90fc50d6",
+        "issue": "iss_dc7703ea17d549c8b11912720d35db7b",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_10ed068d6e004fa682140e2b6885000c",
+          "mandate": "installed-test-plan",
+          "source_revision": "0ced34a2097643a614238ea800d6ad492817937e2a99f14e36605e94f7940d49",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_10ed068d6e004fa682140e2b6885000c",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_fcc9289d2bfb466dbaadd3279ce269a4",
+            "issue_id": "iss_dc7703ea17d549c8b11912720d35db7b",
+            "issue_revision": "75467459a5918fe3a5f6c91e34d7ceb51dccc417b1a1f69857fce3e8f3c35c30",
+            "responsible_user": "usr_10ed068d6e004fa682140e2b6885000c",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "produced",
+        "completed_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "calls": {
+          "worker": "native-worker:4404717f2bff1fb5eec74c39ff4b3906815518a7d5952eb7d4253dfd90fc50d6",
+          "model_calls": null
+        },
+        "stage_receipt": null,
+        "pending_decision": {
+          "kind": "stage-check",
+          "task": "4404717f2bff1fb5eec74c39ff4b3906815518a7d5952eb7d4253dfd90fc50d6"
+        }
+      },
+      "after": {
+        "task": "4404717f2bff1fb5eec74c39ff4b3906815518a7d5952eb7d4253dfd90fc50d6",
+        "issue": "iss_dc7703ea17d549c8b11912720d35db7b",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_10ed068d6e004fa682140e2b6885000c",
+          "mandate": "installed-test-plan",
+          "source_revision": "0ced34a2097643a614238ea800d6ad492817937e2a99f14e36605e94f7940d49",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_10ed068d6e004fa682140e2b6885000c",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_fcc9289d2bfb466dbaadd3279ce269a4",
+            "issue_id": "iss_dc7703ea17d549c8b11912720d35db7b",
+            "issue_revision": "75467459a5918fe3a5f6c91e34d7ceb51dccc417b1a1f69857fce3e8f3c35c30",
+            "responsible_user": "usr_10ed068d6e004fa682140e2b6885000c",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "stage-reached",
+        "completed_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal",
+          "stage-checked"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "calls": {
+          "worker": "native-worker:4404717f2bff1fb5eec74c39ff4b3906815518a7d5952eb7d4253dfd90fc50d6",
+          "model_calls": null
+        },
+        "stage_receipt": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_10ed068d6e004fa682140e2b6885000c",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_fcc9289d2bfb466dbaadd3279ce269a4",
+            "issue_id": "iss_dc7703ea17d549c8b11912720d35db7b",
+            "issue_revision": "75467459a5918fe3a5f6c91e34d7ceb51dccc417b1a1f69857fce3e8f3c35c30",
+            "responsible_user": "usr_10ed068d6e004fa682140e2b6885000c",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "b79fde60a7e22f8ea9f96813b5a9d7a2008dba94351db32d2fc9e9a64529e080",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "4404717f2bff1fb5eec74c39ff4b3906815518a7d5952eb7d4253dfd90fc50d6"
+        },
+        "pending_decision": {
+          "kind": "stage-confirmation",
+          "task": "4404717f2bff1fb5eec74c39ff4b3906815518a7d5952eb7d4253dfd90fc50d6"
+        }
+      },
+      "processes": {
+        "workers": [
+          137268
+        ],
+        "checkers": [
+          129540
+        ]
+      },
+      "physical_closure": {
+        "exit_code": 0,
+        "reasons": [],
+        "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "checker_exit": 0,
+      "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+    },
+    "task_controls": {
+      "passed": true,
+      "runs": [
+        "b0aa4c29f9277ee9764376e180c2b9cfa2626832b1cc396d8403eb8b099d0fcb",
+        "ff73196bf4b2fb3af2c39e98ab6354c919cb184108ff99be4600386c46446992",
+        "03615ed6c942b07a565788deb27d821ee5007d6d62b2a4f145740765d586c28b"
+      ],
+      "starts": [
+        {
+          "key": "b0aa4c29f9277ee9764376e180c2b9cfa2626832b1cc396d8403eb8b099d0fcb",
+          "pid": 118656
+        },
+        {
+          "key": "ff73196bf4b2fb3af2c39e98ab6354c919cb184108ff99be4600386c46446992",
+          "pid": 119884
+        },
+        {
+          "key": "03615ed6c942b07a565788deb27d821ee5007d6d62b2a4f145740765d586c28b",
+          "pid": 135712
+        }
+      ],
+      "closures": {
+        "b0aa4c29f9277ee9764376e180c2b9cfa2626832b1cc396d8403eb8b099d0fcb": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "ff73196bf4b2fb3af2c39e98ab6354c919cb184108ff99be4600386c46446992": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "03615ed6c942b07a565788deb27d821ee5007d6d62b2a4f145740765d586c28b": {
+          "exit_code": null,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "pause": {
+        "expected": 4,
+        "readback": {
+          "actions": [
+            "cancel"
+          ],
+          "revision": 5.0,
+          "state": "pausing",
+          "summary": "暂停已接收，等待当前工具完成"
+        },
+        "replayed_sequence": 5
+      },
+      "resume": {
+        "expected": 9,
+        "readback": {
+          "actions": [],
+          "revision": 11.0,
+          "state": "produced",
+          "summary": "produced"
+        },
+        "replayed_sequence": 11
+      },
+      "cancel": {
+        "expected": 4,
+        "readback": {
+          "actions": [],
+          "revision": 6.0,
+          "state": "canceling",
+          "summary": "取消已接收，等待进程关闭"
+        },
+        "replayed_sequence": 5
+      },
+      "pause_checkpoint": {
+        "control": {
+          "state": "paused",
+          "summary": "已暂停；原授权 installed-test-plan，来源修订 0d2e134dab900d5332ec6809d944deddd2ee19207fb1cda50e5ca22152f18fd8，确认人 usr_0b2fab2eed8d44d2bddebf1eeaf47c21，阶段 preview，验收条件 individual output；工作者退出码 0，输出记录 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855，已保存候选 40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+          "revision": 9,
+          "actions": [
+            "resume",
+            "cancel"
+          ]
+        },
+        "id": "b0aa4c29f9277ee9764376e180c2b9cfa2626832b1cc396d8403eb8b099d0fcb",
+        "worker_ref": "native-worker:b0aa4c29f9277ee9764376e180c2b9cfa2626832b1cc396d8403eb8b099d0fcb",
+        "issue": "iss_f373677088404c2c9f5706f3dfef5fb3",
+        "source_revision": "0d2e134dab900d5332ec6809d944deddd2ee19207fb1cda50e5ca22152f18fd8",
+        "stage": "preview",
+        "state": "paused",
+        "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+        "provider_model": null,
+        "usage": null,
+        "events": [
+          {
+            "sequence": 1,
+            "recorded_at": "2026-11-22T14:11:43.078Z",
+            "state": "ready",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 2,
+            "recorded_at": "2026-11-22T14:11:43.162Z",
+            "state": "reserved",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 3,
+            "recorded_at": "2026-11-22T14:11:43.236Z",
+            "state": "running",
+            "step": "state",
+            "details": {}
+          },
+          {
+            "sequence": 4,
+            "recorded_at": "2026-11-22T14:11:43.272Z",
+            "state": "running",
+            "step": "workspace.materialize",
+            "details": {
+              "modules": {
+                "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+              }
+            }
+          },
+          {
+            "sequence": 5,
+            "recorded_at": "2026-11-22T14:11:51.161Z",
+            "state": "running",
+            "step": "control.pause",
+            "details": {
+              "actor": "usr_0b2fab2eed8d44d2bddebf1eeaf47c21",
+              "reviewed_sequence": 4
+            }
+          },
+          {
+            "sequence": 6,
+            "recorded_at": "2026-11-22T14:11:52.269Z",
+            "state": "running",
+            "step": "process.closed",
+            "details": {
+              "exit_code": 0,
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            }
+          },
+          {
+            "sequence": 7,
+            "recorded_at": "2026-11-22T14:11:52.290Z",
+            "state": "running",
+            "step": "workspace.collect",
+            "details": {
+              "changed_modules": [
+                "a"
+              ]
+            }
+          },
+          {
+            "sequence": 8,
+            "recorded_at": "2026-11-22T14:11:52.346Z",
+            "state": "running",
+            "step": "candidate.compose",
+            "details": {
+              "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+              "modules": {
+                "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+              }
+            }
+          },
+          {
+            "sequence": 9,
+            "recorded_at": "2026-11-22T14:11:52.347Z",
+            "state": "paused",
+            "step": "state",
+            "details": {}
+          }
+        ]
+      },
+      "resumed": {
+        "task": "b0aa4c29f9277ee9764376e180c2b9cfa2626832b1cc396d8403eb8b099d0fcb",
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_0b2fab2eed8d44d2bddebf1eeaf47c21",
+          "criteria": "individual output",
+          "document_id": "doc_f33dd8db6c9a41d7a0109d8a77089ce1",
+          "issue_id": "iss_f373677088404c2c9f5706f3dfef5fb3",
+          "issue_revision": "02e897b9155eaacf6949e6fc4bcb447e150fce5b9110a0bc02da51dfe77ef419",
+          "responsible_user": "usr_0b2fab2eed8d44d2bddebf1eeaf47c21",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "40de286d82e25dde1db649274fb1ebd43a4c149256a084ebf7d9b67452daa4c8",
+        "modules": {
+          "a": "852ad11e92bd65e69abead5173dc5e306aece41ceab2e5400965543232f352ab"
+        },
+        "checks": {
+          "check": {
+            "evidence": "dafca0e543b52b6cf624892cca35fa86642819ceeebc8d53c417441f25806fec",
+            "outcome": "passed"
+          }
+        },
+        "state": "stage-reached",
+        "reason": "authorized_stage_criteria_met"
+      },
+      "peer": {
+        "task": "ff73196bf4b2fb3af2c39e98ab6354c919cb184108ff99be4600386c46446992",
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_0b2fab2eed8d44d2bddebf1eeaf47c21",
+          "criteria": "individual output",
+          "document_id": "doc_f33dd8db6c9a41d7a0109d8a77089ce1",
+          "issue_id": "iss_5f20790c43f14c7f82cf6ab5df148487",
+          "issue_revision": "7fa0355737c2a383056698ab6edf2b3dfec3681b62fe7ec521c1951f9f529a80",
+          "responsible_user": "usr_0b2fab2eed8d44d2bddebf1eeaf47c21",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "463ce9a42dd67e4f058ead4d2097cd3a88eb6a222b0c84d1545960af248752c4",
+        "modules": {
+          "b": "4d03fb30ade1f13e055bf4ddb5615b0e2c6b4c506b08e9fcf08f4ff12eae5b42"
+        },
+        "checks": {
+          "check": {
+            "evidence": "5397de3040cf0fc3756b0c1b6c65543fb69b37dd738d5c098cca02f9a0016eda",
+            "outcome": "passed"
+          }
+        },
+        "state": "stage-reached",
+        "reason": "authorized_stage_criteria_met"
+      },
+      "reopened": {
+        "candidate": null,
+        "control": {
+          "actions": [],
+          "revision": 7.0,
+          "state": "cancelled",
+          "summary": "已取消"
+        },
+        "events": [
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T14:12:00.581Z",
+            "sequence": 1.0,
+            "state": "ready",
+            "step": "state"
+          },
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T14:12:00.600Z",
+            "sequence": 2.0,
+            "state": "reserved",
+            "step": "state"
+          },
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T14:12:00.616Z",
+            "sequence": 3.0,
+            "state": "running",
+            "step": "state"
+          },
+          {
+            "details": {
+              "modules": {
+                "c": "95f8e1393a57c7f1ecde6da19da297ee4380d6f1b5c0369efb135a6e2f474f73"
+              }
+            },
+            "recorded_at": "2026-11-22T14:12:00.666Z",
+            "sequence": 4.0,
+            "state": "running",
+            "step": "workspace.materialize"
+          },
+          {
+            "details": {
+              "actor": "usr_0b2fab2eed8d44d2bddebf1eeaf47c21",
+              "reviewed_sequence": 4.0
+            },
+            "recorded_at": "2026-11-22T14:12:06.693Z",
+            "sequence": 5.0,
+            "state": "running",
+            "step": "control.cancel"
+          },
+          {
+            "details": {
+              "exit_code": null,
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "recorded_at": "2026-11-22T14:12:06.722Z",
+            "sequence": 6.0,
+            "state": "running",
+            "step": "process.closed"
+          },
+          {
+            "details": {},
+            "recorded_at": "2026-11-22T14:12:06.759Z",
+            "sequence": 7.0,
+            "state": "cancelled",
+            "step": "state"
+          }
+        ],
+        "id": "03615ed6c942b07a565788deb27d821ee5007d6d62b2a4f145740765d586c28b",
+        "issue": "iss_1f82840e41904bcf9c9d739ad29c57d3",
+        "provider_model": null,
+        "source_revision": "420474fbe06a4e3aa2881df9d63b04bfed348fa6b504e658dd938c7101290bd6",
+        "stage": "preview",
+        "state": "cancelled",
+        "usage": null,
+        "worker_ref": "native-worker:03615ed6c942b07a565788deb27d821ee5007d6d62b2a4f145740765d586c28b"
+      },
+      "authorization_denied": 403,
+      "cancelled_replay_starts": 0,
+      "http_control_requests": [
+        {
+          "operation": "cancel",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "pause",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 200,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 403,
+          "count": 2
+        },
+        {
+          "operation": "resume",
+          "status": 409,
+          "count": 1
+        }
+      ],
+      "editor_sha256": "1aa24c9a2d542ec7678eb825f482693f0681985be2218958cfff18fdc0975ae3"
+    },
+    "k03_stage_acceptance": {
+      "request_id": "gonggong-ai-workbench-plan1-k03",
+      "issue_number": 1715,
+      "passed": true,
+      "verified_at": "2026-11-22T14:12:36.876254+00:00",
+      "editor_sha256": "1aa24c9a2d542ec7678eb825f482693f0681985be2218958cfff18fdc0975ae3",
+      "source_commit": "e8b40ea7d472868629b62af109acc03e42be7fae",
+      "tested_files": {
+        "tests/editor/run_workbench_k03_stage_acceptance.py": "b456a9171040ecfc33f602db8a9ec4e15d243ef7c01f19957a1bb9fdc2894e5e",
+        "tests/editor/workbench_task_confirmations.gd": "08c5ac2266fbc1819812a030be6f1029a4f99d16629c5e2e79a7835550f94184",
+        "tests/editor/run_workbench_task_confirmations.py": "3ae4bb28e058b9b434f09edb23e46682eb7eb28649318352321311aa5858e02a",
+        "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "aa07549e685356bc68599d76069dbf1fd4521dc2bcaf6134e65753972381677a",
+        "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "ceed10b3d2ef618eba5e2772b22099db27579e9f177f2d53ef331e2d7e89c93b",
+        "customizations/components/tianxuan/sinan-workorders/native_worker.py": "36adfb16b3dc3911475fad5ad14009ed4678c9f57396b180333814d1224812ce"
+      },
+      "result": {
+        "receiver": {
+          "platform": "Windows",
+          "architecture": "AMD64",
+          "python": "3.12.14",
+          "editor_package": {
+            "godot.windows.editor.x86_64.exe": "1aa24c9a2d542ec7678eb825f482693f0681985be2218958cfff18fdc0975ae3",
+            "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+            "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462"
+          }
+        },
+        "design": {
+          "id": "doc_16bf9eaaed9d4de095dbaf13f2e4bf92",
+          "version": 1
+        },
+        "confirmations": [
+          {
+            "selected": [
+              "#1 程序"
+            ],
+            "feedback": "已从天璇回读 #1 的记录。",
+            "confirmation": {
+              "issue_id": "iss_fd4cfa5eed7646a2975f24a4de5a8cf2",
+              "document_id": "doc_16bf9eaaed9d4de095dbaf13f2e4bf92",
+              "version": 1,
+              "stage": "可运行原型",
+              "target_revision": 1,
+              "issue_revision": "f43c5e0446c1c8b7ccae10f87c7ec7cf6d2406537b0ecde724d88005523e2963",
+              "revision": 1,
+              "status": "confirmed",
+              "responsible_user": "usr_022ecfed04924e5a8fa841f58e1de5c4",
+              "confirmed_by": "usr_022ecfed04924e5a8fa841f58e1de5c4"
+            }
+          },
+          {
+            "selected": [
+              "#2 动画"
+            ],
+            "feedback": "已从天璇回读 #2 的记录。",
+            "confirmation": {
+              "issue_id": "iss_9f254221c0774d14a11c405db7bd1f12",
+              "document_id": "doc_16bf9eaaed9d4de095dbaf13f2e4bf92",
+              "version": 1,
+              "stage": "动画预览",
+              "target_revision": 1,
+              "issue_revision": "9cd2d323c08827ac71847e2101839e1840939e365a30c04851748778b7208215",
+              "revision": 1,
+              "status": "confirmed",
+              "responsible_user": "usr_022ecfed04924e5a8fa841f58e1de5c4",
+              "confirmed_by": "usr_022ecfed04924e5a8fa841f58e1de5c4"
+            }
+          }
+        ],
+        "runs": [
+          {
+            "issue_id": "iss_fd4cfa5eed7646a2975f24a4de5a8cf2",
+            "number": 1,
+            "execution": "9f49cdd32e3e792ce38d146631b55ea5e10dc2e34043964b0dae6a1ccc85fc63",
+            "dispatch": {
+              "workerId": "9f49cdd32e3e792ce38d146631b55ea5e10dc2e34043964b0dae6a1ccc85fc63",
+              "reference": "9f49cdd32e3e792ce38d146631b55ea5e10dc2e34043964b0dae6a1ccc85fc63",
+              "worker_ref": "native-worker:9f49cdd32e3e792ce38d146631b55ea5e10dc2e34043964b0dae6a1ccc85fc63",
+              "model": "local",
+              "target": "agent"
+            },
+            "physical_starts": 1,
+            "pid": 128844,
+            "closure": {
+              "exit_code": 0,
+              "reasons": [],
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "local": {
+              "state": "produced",
+              "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+              "modules": {
+                "a": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae"
+              },
+              "worker_ref": "native-worker:9f49cdd32e3e792ce38d146631b55ea5e10dc2e34043964b0dae6a1ccc85fc63"
+            },
+            "stage_stop": {
+              "task": "9f49cdd32e3e792ce38d146631b55ea5e10dc2e34043964b0dae6a1ccc85fc63",
+              "authorization": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_022ecfed04924e5a8fa841f58e1de5c4",
+                "criteria": "拉杆切换桥面一次，再拉一次复位",
+                "document_id": "doc_16bf9eaaed9d4de095dbaf13f2e4bf92",
+                "issue_id": "iss_fd4cfa5eed7646a2975f24a4de5a8cf2",
+                "issue_revision": "f43c5e0446c1c8b7ccae10f87c7ec7cf6d2406537b0ecde724d88005523e2963",
+                "responsible_user": "usr_022ecfed04924e5a8fa841f58e1de5c4",
+                "stage": "可运行原型",
+                "target_revision": 1,
+                "version": 1
+              },
+              "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+              "modules": {
+                "a": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae"
+              },
+              "checks": {
+                "check": {
+                  "evidence": "f9200819d1a737f0c1e943d100dc150f55b2e72ec5e2f6f443b0a59e06126060",
+                  "outcome": "passed"
+                }
+              },
+              "state": "stage-reached",
+              "reason": "authorized_stage_criteria_met"
+            },
+            "issue_progress": {
+              "control": {
+                "state": "stage-reached",
+                "summary": "stage-reached",
+                "revision": 9,
+                "actions": []
+              },
+              "id": "9f49cdd32e3e792ce38d146631b55ea5e10dc2e34043964b0dae6a1ccc85fc63",
+              "worker_ref": "native-worker:9f49cdd32e3e792ce38d146631b55ea5e10dc2e34043964b0dae6a1ccc85fc63",
+              "issue": "iss_fd4cfa5eed7646a2975f24a4de5a8cf2",
+              "source_revision": "6899210d4b140237dd3b5cc2b7755703d92174bed90b88174bb3e691cd2f0151",
+              "stage": "可运行原型",
+              "state": "stage-reached",
+              "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+              "provider_model": null,
+              "usage": null,
+              "events": [
+                {
+                  "sequence": 1,
+                  "recorded_at": "2026-11-22T14:12:35.054Z",
+                  "state": "ready",
+                  "step": "state",
+                  "details": {}
+                },
+                {
+                  "sequence": 2,
+                  "recorded_at": "2026-11-22T14:12:35.215Z",
+                  "state": "reserved",
+                  "step": "state",
+                  "details": {}
+                },
+                {
+                  "sequence": 3,
+                  "recorded_at": "2026-11-22T14:12:35.260Z",
+                  "state": "running",
+                  "step": "state",
+                  "details": {}
+                },
+                {
+                  "sequence": 4,
+                  "recorded_at": "2026-11-22T14:12:35.336Z",
+                  "state": "running",
+                  "step": "workspace.materialize",
+                  "details": {
+                    "modules": {
+                      "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+                    }
+                  }
+                },
+                {
+                  "sequence": 5,
+                  "recorded_at": "2026-11-22T14:12:35.646Z",
+                  "state": "running",
+                  "step": "process.closed",
+                  "details": {
+                    "exit_code": 0,
+                    "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  }
+                },
+                {
+                  "sequence": 6,
+                  "recorded_at": "2026-11-22T14:12:35.683Z",
+                  "state": "running",
+                  "step": "workspace.collect",
+                  "details": {
+                    "changed_modules": [
+                      "a"
+                    ]
+                  }
+                },
+                {
+                  "sequence": 7,
+                  "recorded_at": "2026-11-22T14:12:35.742Z",
+                  "state": "running",
+                  "step": "candidate.compose",
+                  "details": {
+                    "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+                    "modules": {
+                      "a": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae"
+                    }
+                  }
+                },
+                {
+                  "sequence": 8,
+                  "recorded_at": "2026-11-22T14:12:35.743Z",
+                  "state": "produced",
+                  "step": "state",
+                  "details": {
+                    "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+                    "modules": {
+                      "a": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae"
+                    }
+                  }
+                },
+                {
+                  "sequence": 9,
+                  "recorded_at": "2026-11-22T14:12:36.311Z",
+                  "state": "stage-reached",
+                  "step": "state",
+                  "details": {
+                    "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+                    "modules": {
+                      "a": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae"
+                    }
+                  }
+                }
+              ]
+            },
+            "check_exit": 0,
+            "artifact": {
+              "path": "a/bridge.py",
+              "revision": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae",
+              "bytes": 119,
+              "sha256": "5820e7d1e58d7bd6fcfb07de0bc381a2253c7a5494ea83c8f1ec71ca841e47ea",
+              "content": "def pull(raised):\n    return not raised\n\n\nif __name__ == \"__main__\":\n    print(\"raised\" if pull(False) else \"lowered\")\n"
+            }
+          },
+          {
+            "issue_id": "iss_9f254221c0774d14a11c405db7bd1f12",
+            "number": 2,
+            "execution": "af632a99519e1adee580e926143ead7afaaee85c2b7d36d9015bb2dd77180f98",
+            "dispatch": {
+              "workerId": "af632a99519e1adee580e926143ead7afaaee85c2b7d36d9015bb2dd77180f98",
+              "reference": "af632a99519e1adee580e926143ead7afaaee85c2b7d36d9015bb2dd77180f98",
+              "worker_ref": "native-worker:af632a99519e1adee580e926143ead7afaaee85c2b7d36d9015bb2dd77180f98",
+              "model": "local",
+              "target": "agent"
+            },
+            "physical_starts": 1,
+            "pid": 137740,
+            "closure": {
+              "exit_code": 0,
+              "reasons": [],
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "local": {
+              "state": "produced",
+              "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+              "modules": {
+                "b": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d"
+              },
+              "worker_ref": "native-worker:af632a99519e1adee580e926143ead7afaaee85c2b7d36d9015bb2dd77180f98"
+            },
+            "stage_stop": {
+              "task": "af632a99519e1adee580e926143ead7afaaee85c2b7d36d9015bb2dd77180f98",
+              "authorization": {
+                "confirmation_revision": 1,
+                "confirmed_by": "usr_022ecfed04924e5a8fa841f58e1de5c4",
+                "criteria": "24 帧/秒，第 24 帧桥面水平展开并保持",
+                "document_id": "doc_16bf9eaaed9d4de095dbaf13f2e4bf92",
+                "issue_id": "iss_9f254221c0774d14a11c405db7bd1f12",
+                "issue_revision": "9cd2d323c08827ac71847e2101839e1840939e365a30c04851748778b7208215",
+                "responsible_user": "usr_022ecfed04924e5a8fa841f58e1de5c4",
+                "stage": "动画预览",
+                "target_revision": 1,
+                "version": 1
+              },
+              "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+              "modules": {
+                "b": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d"
+              },
+              "checks": {
+                "check": {
+                  "evidence": "d695c3b7bd9f6c6e1458492daa2acc92fcd46e4ad041ee7d03d7512f0d8c8ac4",
+                  "outcome": "passed"
+                }
+              },
+              "state": "stage-reached",
+              "reason": "authorized_stage_criteria_met"
+            },
+            "issue_progress": {
+              "control": {
+                "state": "stage-reached",
+                "summary": "stage-reached",
+                "revision": 9,
+                "actions": []
+              },
+              "id": "af632a99519e1adee580e926143ead7afaaee85c2b7d36d9015bb2dd77180f98",
+              "worker_ref": "native-worker:af632a99519e1adee580e926143ead7afaaee85c2b7d36d9015bb2dd77180f98",
+              "issue": "iss_9f254221c0774d14a11c405db7bd1f12",
+              "source_revision": "cd9f6164a012fd0812d9ae1a93805b84b3bc01a8cb45cc7fddbf22e905e0cae4",
+              "stage": "动画预览",
+              "state": "stage-reached",
+              "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+              "provider_model": null,
+              "usage": null,
+              "events": [
+                {
+                  "sequence": 1,
+                  "recorded_at": "2026-11-22T14:12:35.077Z",
+                  "state": "ready",
+                  "step": "state",
+                  "details": {}
+                },
+                {
+                  "sequence": 2,
+                  "recorded_at": "2026-11-22T14:12:35.232Z",
+                  "state": "reserved",
+                  "step": "state",
+                  "details": {}
+                },
+                {
+                  "sequence": 3,
+                  "recorded_at": "2026-11-22T14:12:35.253Z",
+                  "state": "running",
+                  "step": "state",
+                  "details": {}
+                },
+                {
+                  "sequence": 4,
+                  "recorded_at": "2026-11-22T14:12:35.291Z",
+                  "state": "running",
+                  "step": "workspace.materialize",
+                  "details": {
+                    "modules": {
+                      "b": "bc55d90cba618da64f1a05c86a6d2c3585dbca3ab800d155a30f4728a2bd67ba"
+                    }
+                  }
+                },
+                {
+                  "sequence": 5,
+                  "recorded_at": "2026-11-22T14:12:35.587Z",
+                  "state": "running",
+                  "step": "process.closed",
+                  "details": {
+                    "exit_code": 0,
+                    "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  }
+                },
+                {
+                  "sequence": 6,
+                  "recorded_at": "2026-11-22T14:12:35.609Z",
+                  "state": "running",
+                  "step": "workspace.collect",
+                  "details": {
+                    "changed_modules": [
+                      "b"
+                    ]
+                  }
+                },
+                {
+                  "sequence": 7,
+                  "recorded_at": "2026-11-22T14:12:35.665Z",
+                  "state": "running",
+                  "step": "candidate.compose",
+                  "details": {
+                    "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+                    "modules": {
+                      "b": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d"
+                    }
+                  }
+                },
+                {
+                  "sequence": 8,
+                  "recorded_at": "2026-11-22T14:12:35.666Z",
+                  "state": "produced",
+                  "step": "state",
+                  "details": {
+                    "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+                    "modules": {
+                      "b": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d"
+                    }
+                  }
+                },
+                {
+                  "sequence": 9,
+                  "recorded_at": "2026-11-22T14:12:36.260Z",
+                  "state": "stage-reached",
+                  "step": "state",
+                  "details": {
+                    "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+                    "modules": {
+                      "b": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d"
+                    }
+                  }
+                }
+              ]
+            },
+            "check_exit": 0,
+            "artifact": {
+              "path": "b/bridge.svg",
+              "revision": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d",
+              "bytes": 251,
+              "sha256": "83c9abf526d91c4cc38105f106d6ea4d8b67106c7d390335e2522eabe5cad032",
+              "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\">\n  <rect x=\"8\" y=\"30\" width=\"48\" height=\"4\" fill=\"steelblue\">\n    <animateTransform attributeName=\"transform\" type=\"rotate\" values=\"-90 8 32;0 8 32\" dur=\"1s\" fill=\"freeze\"/>\n  </rect>\n</svg>\n"
+            }
+          }
+        ],
+        "unsigned": {
+          "issue_id": "iss_9ae015febb064f629643849ca25988a1",
+          "number": 3,
+          "target": {
+            "issue_id": "iss_9ae015febb064f629643849ca25988a1",
+            "document_id": "doc_16bf9eaaed9d4de095dbaf13f2e4bf92",
+            "version": 1,
+            "revision": 1,
+            "responsible_user": "usr_022ecfed04924e5a8fa841f58e1de5c4",
+            "stage": "音效草稿",
+            "criteria": "开桥时响铃",
+            "return_comment_id": null,
+            "return_reason": "",
+            "status": "defined"
+          },
+          "confirmation": {
+            "issue_id": "iss_9ae015febb064f629643849ca25988a1",
+            "document_id": "doc_16bf9eaaed9d4de095dbaf13f2e4bf92",
+            "version": 1,
+            "stage": "音效草稿",
+            "target_revision": 1,
+            "issue_revision": "090a684d67a994496e7d564436af439d65aad6a6364cbcaec872518131e5fd41",
+            "revision": 0,
+            "status": "pending",
+            "responsible_user": "usr_022ecfed04924e5a8fa841f58e1de5c4",
+            "confirmed_by": null
+          },
+          "authorization_status": 409,
+          "execution_progress": null,
+          "executions": 0,
+          "physical_starts": 0
+        },
+        "dispatch_calls": {
+          "advance": 5,
+          "inspect": 6,
+          "revalidate": 2,
+          "reserve": 2,
+          "start": 2,
+          "execute": 2,
+          "verify-stage": 2,
+          "ack": 2,
+          "record": 2
+        },
+        "replay_calls": {
+          "advance": 1,
+          "inspect": 1
+        },
+        "physical_starts": 2
+      }
+    }
+  }
+}
