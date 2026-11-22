@@ -18,6 +18,7 @@ jobs:
           sparse-checkout: |
             data-collection/q05-f01-common.json
             misc/dist/macos_tools.app
+            tests/editor/macos_startup_validation.gd
             tests/editor/run_macos_startup_validation.py
           sparse-checkout-cone-mode: false
           persist-credentials: false
@@ -29,6 +30,7 @@ jobs:
           path: ${{ runner.temp }}/download
           merge-multiple: true
       - name: Reconstruct and verify original signed application
+        id: reconstruct
         run: |
           app="$RUNNER_TEMP/Q05.app"
           mkdir -p "$RUNNER_TEMP/binary" "$RUNNER_TEMP/evidence"
@@ -48,14 +50,13 @@ jobs:
           codesign --verify --deep --strict --verbose=2 "$app"
           cd "$GITHUB_WORKSPACE"
           shasum -a 256 "$app/Contents/MacOS/Godot" "$app"/Contents/Resources/tianshu-*.json frozen/data-collection/q05-f01-common.json > "$RUNNER_TEMP/evidence/digests.txt"
-      - name: Repeat original cold probe before correction
+      - name: Reproduce early close with a delayed real child
         run: |
-          python3 frozen/tests/editor/run_macos_startup_validation.py --app "$RUNNER_TEMP/Q05.app" --manifest frozen/data-collection/q05-f01-common.json --report "$RUNNER_TEMP/evidence/original.json" > "$RUNNER_TEMP/evidence/original.log" 2>&1 && exit 0
-          test -s "$RUNNER_TEMP/evidence/original.json"
-          tail -18 "$RUNNER_TEMP/evidence/original.log"
-      - name: Exercise automatic Cocoa startup, both packages and cache
+          python3 tests/editor/reproduce_2123_schedule.py --expect-old-race --script frozen/tests/editor/run_macos_startup_validation.py --app "$RUNNER_TEMP/Q05.app" --manifest frozen/data-collection/q05-f01-common.json --report "$RUNNER_TEMP/evidence/original.json"
+      - name: Exercise the repaired Cocoa harness under the same delay
+        if: ${{ !cancelled() && steps.reconstruct.outcome == 'success' }}
         run: |
-          python3 tests/editor/run_macos_startup_validation.py --app "$RUNNER_TEMP/Q05.app" --manifest frozen/data-collection/q05-f01-common.json --report "$RUNNER_TEMP/evidence/startup.json"
+          python3 tests/editor/reproduce_2123_schedule.py --script tests/editor/run_macos_startup_validation.py --app "$RUNNER_TEMP/Q05.app" --manifest frozen/data-collection/q05-f01-common.json --report "$RUNNER_TEMP/evidence/startup.json"
       - uses: actions/upload-artifact@v7
         if: always()
         with:

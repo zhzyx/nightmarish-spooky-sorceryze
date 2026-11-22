@@ -20,32 +20,34 @@ def digest(data):
 
 def cocoa_run(exe, project, env, case_dir, success_ready):
     """Leave the normal editor running until its automatic validation has finished."""
-    case_dir.mkdir(parents=True)
+    case_dir.mkdir(parents=True, exist_ok=True)
     log_path = case_dir / "editor.log"
     started = time.monotonic()
     deadline = started + 150
     close_sent = False
-    with log_path.open("wb") as stream, subprocess.Popen(
-        [exe, "--editor", "--display-driver", "macos", "--path", project, "--max-fps", "30"],
-        cwd=project,
-        env=env,
-        stdout=stream,
-        stderr=subprocess.STDOUT,
-    ) as editor:
+    with (
+        log_path.open("wb") as stream,
+        subprocess.Popen(
+            [exe, "--editor", "--display-driver", "macos", "--path", project, "--max-fps", "30"],
+            cwd=project,
+            env=env,
+            stdout=stream,
+            stderr=subprocess.STDOUT,
+        ) as editor,
+    ):
         try:
             while editor.poll() is None:
-                # The production probe removes this directory when it finishes.
-                for probe in Path(env["TMPDIR"]).glob("gonggong-validation-*/probe.log"):
-                    try:
-                        (case_dir / "child.log").write_bytes(probe.read_bytes())
-                    except FileNotFoundError:
-                        pass
                 output = log_path.read_text(errors="replace")
-                if not close_sent and (PREFIX in output and success_ready(output)):
+                if not close_sent and success_ready(output):
                     subprocess.run(
-                        ["/usr/bin/osascript", "-l", "JavaScript", "-e",
-                         "ObjC.import('AppKit'); $.NSRunningApplication"
-                         f".runningApplicationWithProcessIdentifier({editor.pid}).terminate"],
+                        [
+                            "/usr/bin/osascript",
+                            "-l",
+                            "JavaScript",
+                            "-e",
+                            "ObjC.import('AppKit'); $.NSRunningApplication"
+                            f".runningApplicationWithProcessIdentifier({editor.pid}).terminate",
+                        ],
                         timeout=10,
                         check=True,
                     )
@@ -58,8 +60,9 @@ def cocoa_run(exe, project, env, case_dir, success_ready):
             if editor.poll() is None:
                 editor.kill()
             editor.wait(timeout=10)
+    if not close_sent:
+        raise RuntimeError(f"Cocoa editor exited before its validation completed. See {log_path}")
     return editor.returncode, log_path.read_text(errors="replace"), round(time.monotonic() - started, 3)
-
 
 
 def exercise(app, manifest, root, report, logs):
@@ -106,6 +109,7 @@ def exercise(app, manifest, root, report, logs):
 
     def launch(case, result, rejected="", diagnostic=""):
         before = receipts()
+
         def ready(log):
             if PREFIX + " passed" in log:
                 return bool(receipts().keys() - before.keys())
@@ -116,7 +120,9 @@ def exercise(app, manifest, root, report, logs):
         after = receipts()
         changed = sorted(after.keys() - before.keys())
         observations = [line.strip() for line in lines if PREFIX in line or "TIANSHU_" in line or "ERROR:" in line]
-        report["cases"][case] = dict(exit_code=exit_code, seconds=seconds, new_receipts=changed, observations=observations)
+        report["cases"][case] = dict(
+            exit_code=exit_code, seconds=seconds, new_receipts=changed, observations=observations
+        )
         if exit_code or "SCRIPT ERROR" in log:
             raise RuntimeError(f"{case}: editor failed\n{log}")
         if any(after.get(key) != value for key, value in before.items()):
@@ -130,7 +136,12 @@ def exercise(app, manifest, root, report, logs):
                 if f"TIANSHU_{name.upper()}_LOADED {digest(path.read_bytes())}" not in lines:
                     raise RuntimeError(f"{case}: child did not confirm {name}\n{log}")
         elif result == "reused":
-            if changed or PREFIX + " reused" not in lines or PREFIX + " passed" in log or any(f"TIANSHU_{n.upper()}_LOADED" in log for n in PACKAGES):
+            if (
+                changed
+                or PREFIX + " reused" not in lines
+                or PREFIX + " passed" in log
+                or any(f"TIANSHU_{n.upper()}_LOADED" in log for n in PACKAGES)
+            ):
                 raise RuntimeError(f"{case}: expected cached success without a child probe\n{log}")
         else:
             reason = PREFIX + f": Tianshu {rejected} package was not loaded"
@@ -191,7 +202,13 @@ def main():
     report = dict(platform=platform.platform(), display="macos", state="failed", cases={})
     try:
         with tempfile.TemporaryDirectory(prefix="startup-validation-") as directory:
-            exercise(args.app.resolve(strict=True), args.manifest, Path(directory).resolve(), report, args.report.with_suffix(".logs"))
+            exercise(
+                args.app.resolve(strict=True),
+                args.manifest,
+                Path(directory).resolve(),
+                report,
+                args.report.with_suffix(".logs"),
+            )
         report["state"] = "passed"
     finally:
         args.report.parent.mkdir(parents=True, exist_ok=True)
