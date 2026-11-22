@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-513959a4c1abf769994e80d55983b1dc08a3835d",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-q04",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "7252fbf48787da542d8cdeebce92e45c0e9fb340cd30fc172c4b797f27eb459d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2133",
+    "action": "delivery",
+    "detection_head": "f1d145aeff4289292ff75aee3b50b2423c2c7bbf",
+    "context_sha256": "2e536f2c884c292786e6701bd57480d74c07b355e45f577421c0a0a427f6c1c3",
+    "operator": "Sail-Li",
+    "worker": "codex-current-session",
+    "authority_ref": "codex:01a2046a-87a2-70d3-a147-ee889c245b93:complete1709",
+    "evidence": "本次正式门禁拒绝了只有派发事件的 index。正确的 Q04 独立验收 JSON、脚本与对应学习事件随后逐项 git add 成功。",
+    "diagnosis": "暂存时学习事件路径抄录错误导致整条 add 失败，签发入口随后正确拒绝。",
+    "next_action": "按实际索引核对请求和报告摘要后重跑完整门禁。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T19:07:02.034654+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T19:09:21.070535+00:00",
+  "sha256": "ceb05cd4f2e249f2afdfd9ba3018edad87f4f3543a62a9000bfd35cdbcb40289"
+}
