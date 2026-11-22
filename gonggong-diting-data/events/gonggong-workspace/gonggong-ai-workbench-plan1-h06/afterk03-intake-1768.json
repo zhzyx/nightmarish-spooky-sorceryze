@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-h06",
+  "event_id": "afterk03-intake-1768",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1768",
+  "occurred_at": "2026-11-22T14:29:31.987809+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1768,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T14:29:29Z",
+    "accepted_dependencies": {
+      "1792": "2c36fac9004881889da355670c80b0531e0dec07",
+      "1798": "3de079544b2cd0f3782a05cb68576b91e44dc92a",
+      "1812": "8e529a9a9c7a0fc54ba49f2b6da2e801800d5d6f"
+    },
+    "source_main": "3de079544b2cd0f3782a05cb68576b91e44dc92a",
+    "title": "[方案一 H06] 阻塞待判断支路并继续其他支路"
+  },
+  "evidence_refs": [],
+  "sha256": "19ab91ee44f2cf52dbe77718c7ca03e97e24453112a0873feb7d9449ab8c87e9"
+}

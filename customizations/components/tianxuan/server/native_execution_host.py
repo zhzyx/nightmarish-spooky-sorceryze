@@ -540,7 +540,16 @@ class WorkflowService:
     async def __call__(self, operation, payload):
         self.authorize()
         workflow, actor = self.workflow, self.actor
-        if operation == "await-terminal":
+        if (
+            operation in {"await-judgment", "admit-judgment"}
+            and self.issues is not None
+            and payload["issue"] not in self.issues
+        ):
+            raise NativeStoreError("Creative successor belongs to another entry")
+        if operation == "await-judgment":
+            await workflow.await_judgment(actor, payload["issue"], payload["binding"])
+            result = {"observed": True}
+        elif operation == "await-terminal":
             result = await workflow.await_terminal(actor, payload["key"])
         elif operation == "integration-await":
             result = await workflow.integration.continuous.await_lane(actor, payload["key"], payload["event"])
@@ -565,7 +574,7 @@ class WorkflowService:
                 raise NativeStoreError("Unsupported integration operation")
             return getattr(integration, method)(actor, payload["group" if method == "authorize" else "key"])
         if operation == "inspect":
-            board = w.inspect(actor)
+            board = w.inspect(actor, owned_issues=self.issues)
             owned = None
             if self.issues is not None:
                 with w.domain._connection_lock:
@@ -608,6 +617,10 @@ class WorkflowService:
                         board["integrations"] = dict(ready=[], errors=[], continuous=[])
 
             return board
+        if operation == "admit-judgment":
+            if self.issues is not None and payload["issue"] not in self.issues:
+                raise NativeStoreError("Creative successor belongs to another entry")
+            return w.authorize_installed(actor, payload["issue"], _judgment_binding=payload["binding"])
         if operation == "advance":
             return w.advance(
                 actor,

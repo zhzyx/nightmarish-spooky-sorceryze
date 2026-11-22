@@ -1,0 +1,272 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-h06",
+  "issue_number": 1768,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1768",
+  "source_revision": "3de079544b2cd0f3782a05cb68576b91e44dc92a",
+  "issue_source_sha256": "68c5a24307fe2c998198fb0d66e4c0cdb064e9bf3a962b302bac5a2a6e5c0506",
+  "verified_at": "2026-11-22T15:11:34.527108+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "responsible": "afterk03_h06",
+  "intake": {
+    "result": "passed",
+    "issue_state": "open",
+    "label": "status:in-progress",
+    "claim": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1768#issuecomment-7080583331"
+  },
+  "prerequisites": [
+    {
+      "issue": 1798,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "accepted_issue_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1798#issuecomment-7080572095",
+      "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2094",
+      "evidence": "data-collection/gonggong-ai-workbench-plan1-h05.json",
+      "sha256": "026e402d496db4e723fc3aac4eb0146f956854e6f78b29bedf6a9921965ee266"
+    },
+    {
+      "issue": 1812,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "accepted_issue_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1812#issuecomment-7078209502",
+      "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2065",
+      "evidence": "data-collection/gonggong-ai-workbench-plan1-s05.json",
+      "sha256": "b976407f27022732b8bd33876b4d1eb1367a2e857ebda01fea7e6f54411241a4"
+    },
+    {
+      "issue": 1792,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "accepted_issue_receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1792#issuecomment-7077029227",
+      "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2042",
+      "evidence": "data-collection/gonggong-ai-workbench-plan1-s08.json",
+      "sha256": "0836eb6b53c6b389c16894b55f5eff9e8c03b03ba77fffe7c2a1e3081161eb5e"
+    }
+  ],
+  "method": {
+    "tenant": "gonggong-workspace",
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 37,
+    "head": "dfb65e7b0c8bd4b518b75cd8b7acb380363e8b33b8d87ad68bb56ce6051d4f9c",
+    "application": "Pin the exact version that the physical successor reads. A signature for another submission does not release this branch even when bytes are identical."
+  },
+  "tested_sha256": {
+    "customizations/components/tianxuan/server/api.py": "7a96fafe9652ffeddba195d2fc5aa712d6e3b9e8d45cda6d3b0dccf8e140daef",
+    "customizations/components/tianxuan/server/issue_flow.py": "dbe2797fbe7b4fb5884291dc29fe37e9ce070ab74897e85a193a0ec7a7f51088",
+    "customizations/components/tianxuan/server/native_api.py": "b0af889f5c70cd58fc58f2fd35a220d5c5706ee46f9c48f9b322ddd2f513caa5",
+    "customizations/components/tianxuan/server/native_entry_factory.py": "7f9a2c065fdfbda3a629cbf29f562acb6d873f7ccc0e946ca0d83ff3f946a9de",
+    "customizations/components/tianxuan/server/native_execution_host.py": "b7b0943c8dc244eb52a357e6d915f447cc25208b51ef0d265e6d27d583e7f8ed",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "9bb652d4d6a3dd4274a7181873321037cb5ba16d829115a82a9b398596214109",
+    "customizations/components/tianxuan/server/work_management_api.py": "82aeeada1bc1bc33825d3462c741a3c50ff3efd7f75d3c823d2fabb960afcc13",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "a85113395a117d1505348d5f3ea5dc416fe7a96bf0e4124604f0b5411522425c",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "545481c326ac66a3271bea43a7b74ef5d9e9ff14ebc66c371f150892d3b80700",
+    "customizations/components/tianxuan/sinan-workorders/test_native_judgment_branches.py": "c57ba95f75c4a7232dae78813ed80e9cdc9d436d9db55710cc25782bb7a0f2c7",
+    "design-docs/gonggong-ai-workbench-h06.md": "db2e5a04da4222bd0a333e919ddfeed4aa5ca595b72e47df4489d88186b6f969",
+    "tests/editor/workbench_judgment_branches.gd": "3e9282c58b7dc85e49f998e7c0fbb9ee7bedf69b97593f492d8f09210651f153"
+  },
+  "engine": {
+    "package_pr": 2094,
+    "headless": true,
+    "embedded_inputs_changed": false,
+    "files": {
+      "godot.windows.editor.x86_64.console.exe": "0c1733a9759926273b13c7c3a2f724e7bb352d911b43c886c97d33f674ec43b9",
+      "godot.windows.editor.x86_64.exe": "631dd988f6437bc35aa5c5b38d9c7443f7e26382af50e688f0863afd4d7c254c",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+    }
+  },
+  "service_test": {
+    "command": "& 'D:/GongGong-work/tx-venv/Scripts/python.exe' -X utf8 -m pytest -q --tb=short -o junit_family=legacy -p no:cacheprovider --basetemp 'C:/Users/ROG/AppData/Local/Temp/h06-53e6964582324b5fbb40bd6086000c6d/service-frozen' --junitxml='C:/Users/ROG/AppData/Local/Temp/h06-53e6964582324b5fbb40bd6086000c6d/service.xml' customizations/components/tianxuan/sinan-workorders/test_native_judgment_branches.py",
+    "env": {
+      "H06_TEST_EDITOR": null
+    },
+    "junit_sha256": "79f17122ad916155eea1719498b9e4546fae438c7685bed94ce47f9f50513871",
+    "tests": 2,
+    "exit_code": 0,
+    "case_names": [
+      "test_program_runs_during_choice_and_only_selected_animation_starts",
+      "test_receiver_reopens_approved_branch_and_rejects_obsolete_binding"
+    ],
+    "receipt": {
+      "program": "b3399e0568bb2b33926b399c447230bfea54c101cfaa51b3f0e653cf1c0f2d40",
+      "successor": "af17764d9265166a293d562c8a63b6914413badb1a07978e19653949bfd12ccf",
+      "decision": {
+        "actor": "usr_af4d8380adb642afa41f1523a6b6356c",
+        "decision": "approved",
+        "digest": "37ea2423b953b4fb2bf0143503e89512664d4ee3c6f756e69d3cdd94b5d5b77a",
+        "kind": "concept",
+        "module": "b",
+        "path": "draft",
+        "revision": "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4",
+        "submission_version": 1,
+        "version": 3
+      },
+      "drafts": [
+        "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4",
+        "353d30ee68142667d1d768315ed82775617d33c048ab9abcbd05cdbfcc764436"
+      ],
+      "worker_starts": [
+        {
+          "execution": "b3399e0568bb2b33926b399c447230bfea54c101cfaa51b3f0e653cf1c0f2d40",
+          "pid": 133696,
+          "sha256": "1310ca2c8932dbd118668bd97442558a3e1f546b5e15c69699dfbd6024f548d8"
+        },
+        {
+          "execution": "af17764d9265166a293d562c8a63b6914413badb1a07978e19653949bfd12ccf",
+          "pid": 123880,
+          "sha256": "37ea2423b953b4fb2bf0143503e89512664d4ee3c6f756e69d3cdd94b5d5b77a"
+        }
+      ],
+      "physical_exits": {
+        "b3399e0568bb2b33926b399c447230bfea54c101cfaa51b3f0e653cf1c0f2d40": 0,
+        "af17764d9265166a293d562c8a63b6914413badb1a07978e19653949bfd12ccf": 0
+      },
+      "candidate": "3469673e776dc55d24d45af7b1d3c9f14c3754bb9e1eebb67548f3d3ce2c62e5",
+      "stage": {
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_af4d8380adb642afa41f1523a6b6356c",
+          "criteria": "use the selected draft if present",
+          "document_id": "doc_c0d041869f834260adaae380b5fa08a8",
+          "issue_id": "iss_f703336f4f8140b6a9d50c2816d1ccaf",
+          "issue_revision": "005e69a21374c90de7524cb20202ef58df57052cd4eb8650661da28e2e16542f",
+          "responsible_user": "usr_af4d8380adb642afa41f1523a6b6356c",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "3469673e776dc55d24d45af7b1d3c9f14c3754bb9e1eebb67548f3d3ce2c62e5",
+        "checks": {
+          "check": {
+            "evidence": "91a699348c99e85576abfd908fbf5c609f70694c0e29b9cfeb50d6c9af7255bd",
+            "outcome": "passed"
+          }
+        },
+        "modules": {
+          "a": "a73e6f2bd07b05e9942908260bbc3a169b1406df72a163e2664f81326b11b88a",
+          "b": "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4"
+        },
+        "reason": "authorized_stage_criteria_met",
+        "state": "stage-reached",
+        "task": "af17764d9265166a293d562c8a63b6914413badb1a07978e19653949bfd12ccf"
+      },
+      "native": null,
+      "replay_starts": 0,
+      "unselected_starts": 0
+    }
+  },
+  "native_test": {
+    "command": "& 'D:/GongGong-work/tx-venv/Scripts/python.exe' -X utf8 -m pytest -q --tb=short -o junit_family=legacy -p no:cacheprovider --basetemp 'C:/Users/ROG/AppData/Local/Temp/h06-53e6964582324b5fbb40bd6086000c6d/native-frozen' --junitxml='C:/Users/ROG/AppData/Local/Temp/h06-53e6964582324b5fbb40bd6086000c6d/native.xml' customizations/components/tianxuan/sinan-workorders/test_native_judgment_branches.py",
+    "env": {
+      "H06_TEST_EDITOR": "D:/GongGong/data-collection/receipts/1709-after-k03-20261122/accepted-2094-editor/godot.windows.editor.x86_64.console.exe"
+    },
+    "junit_sha256": "0bf1b7056944ac63647400047c7d1f9ee26afa10ebfa9fa24577f0d3d73c0d2f",
+    "tests": 2,
+    "exit_code": 0,
+    "case_names": [
+      "test_program_runs_during_choice_and_only_selected_animation_starts",
+      "test_receiver_reopens_approved_branch_and_rejects_obsolete_binding"
+    ],
+    "receipt": {
+      "program": "beb5124c67fd0de45e4bb804661bc92d01061d3430a1c935be6fa146878df6ad",
+      "successor": "95107d69ef1ee4c71a991abb73af333a498d524b4a9bc2e09579b059789a5aee",
+      "decision": {
+        "actor": "usr_921fe171f5c641eeb610d280227cae9a",
+        "decision": "approved",
+        "digest": "37ea2423b953b4fb2bf0143503e89512664d4ee3c6f756e69d3cdd94b5d5b77a",
+        "kind": "concept",
+        "module": "b",
+        "path": "draft",
+        "revision": "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4",
+        "submission_version": 1,
+        "version": 3
+      },
+      "drafts": [
+        "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4",
+        "353d30ee68142667d1d768315ed82775617d33c048ab9abcbd05cdbfcc764436"
+      ],
+      "worker_starts": [
+        {
+          "execution": "beb5124c67fd0de45e4bb804661bc92d01061d3430a1c935be6fa146878df6ad",
+          "pid": 133432,
+          "sha256": "1310ca2c8932dbd118668bd97442558a3e1f546b5e15c69699dfbd6024f548d8"
+        },
+        {
+          "execution": "95107d69ef1ee4c71a991abb73af333a498d524b4a9bc2e09579b059789a5aee",
+          "pid": 139168,
+          "sha256": "37ea2423b953b4fb2bf0143503e89512664d4ee3c6f756e69d3cdd94b5d5b77a"
+        }
+      ],
+      "physical_exits": {
+        "beb5124c67fd0de45e4bb804661bc92d01061d3430a1c935be6fa146878df6ad": 0,
+        "95107d69ef1ee4c71a991abb73af333a498d524b4a9bc2e09579b059789a5aee": 0
+      },
+      "candidate": "3469673e776dc55d24d45af7b1d3c9f14c3754bb9e1eebb67548f3d3ce2c62e5",
+      "stage": {
+        "authorization": {
+          "confirmation_revision": 1,
+          "confirmed_by": "usr_921fe171f5c641eeb610d280227cae9a",
+          "criteria": "use the selected draft if present",
+          "document_id": "doc_debed763be6a4c0588a146a9b6db6be4",
+          "issue_id": "iss_b70bb1a22e4a4130997299d3d5108c70",
+          "issue_revision": "c002b7dcec81f46013d2efba431a46aee37c28d1e9bac3f51a4aebefc6234f9d",
+          "responsible_user": "usr_921fe171f5c641eeb610d280227cae9a",
+          "stage": "preview",
+          "target_revision": 1,
+          "version": 1
+        },
+        "candidate": "3469673e776dc55d24d45af7b1d3c9f14c3754bb9e1eebb67548f3d3ce2c62e5",
+        "checks": {
+          "check": {
+            "evidence": "141a8729b75d4c8a318c796c94bca5ff1eb2f803680eab90a88d7f64207fc5fb",
+            "outcome": "passed"
+          }
+        },
+        "modules": {
+          "a": "a73e6f2bd07b05e9942908260bbc3a169b1406df72a163e2664f81326b11b88a",
+          "b": "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4"
+        },
+        "reason": "authorized_stage_criteria_met",
+        "state": "stage-reached",
+        "task": "95107d69ef1ee4c71a991abb73af333a498d524b4a9bc2e09579b059789a5aee"
+      },
+      "native": {
+        "editor_sha256": "631dd988f6437bc35aa5c5b38d9c7443f7e26382af50e688f0863afd4d7c254c",
+        "receipt": "提交 v1 已采纳 · b @ 35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4",
+        "exit": 0
+      },
+      "replay_starts": 0,
+      "unselected_starts": 0
+    }
+  },
+  "regression": {
+    "command": "& 'D:/GongGong-work/tx-venv/Scripts/python.exe' -X utf8 -m pytest -q --tb=short -o junit_family=legacy -p no:cacheprovider --basetemp 'C:/Users/ROG/AppData/Local/Temp/h06-53e6964582324b5fbb40bd6086000c6d/regression-frozen' --junitxml='C:/Users/ROG/AppData/Local/Temp/h06-53e6964582324b5fbb40bd6086000c6d/regression-frozen.xml' customizations/components/tianxuan/server/test_issue_flow.py customizations/components/tianxuan/server/test_work_management.py customizations/components/tianxuan/server/test_native_entry_normal.py customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py customizations/components/tianxuan/sinan-workorders/test_native_successor_events.py customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py",
+    "passed": 42,
+    "exit_code": 0,
+    "junit_sha256": "42fb5c19dcd9e49a8310f848f7e1e4b2c65f4f042438d1fffde6668640941dd2"
+  },
+  "prior_ui": {
+    "command": "& 'D:/GongGong-work/tx-venv/Scripts/python.exe' -X utf8 tests/editor/run_workbench_creative_judgments.py --godot 'D:/GongGong/data-collection/receipts/1709-after-k03-20261122/accepted-2094-editor/godot.windows.editor.x86_64.console.exe' --report 'C:/Users/ROG/AppData/Local/Temp/h06-53e6964582324b5fbb40bd6086000c6d/h05.json'",
+    "editor_sha256": "631dd988f6437bc35aa5c5b38d9c7443f7e26382af50e688f0863afd4d7c254c",
+    "report_sha256": "855a3867293e4ec605aa6d46cf8a284d99f55e12a6d250279e70348b03bec256",
+    "approved": "提交 v1 已采纳 · art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n签认人　usr_dcb7e2ca917d45109da5947e14214ba5\n采纳原始轮廓",
+    "returned": "提交 v2 已退回 · art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n签认人　usr_14d1df84bcc448eba5bfa018b582692e\n请调整对比度\n暂无待本人判断的事项",
+    "exit_code": 0
+  },
+  "lint": {
+    "tool": "Ruff 0.17.1",
+    "check": "passed",
+    "format_check": "passed",
+    "git_diff_check": "passed"
+  },
+  "handoff": {
+    "target": "parent independent verification and Yanluo delivery",
+    "source_modified_uncommitted": true,
+    "remaining_business_actions": [
+      "independent acceptance",
+      "PR/CI/main readback",
+      "close and reread #1768"
+    ]
+  }
+}
