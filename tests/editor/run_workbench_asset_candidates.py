@@ -20,8 +20,8 @@ def sha(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
-def produce(folder):
-    Image.new("RGB", (8, 8), (0, 0, 255)).save(folder / "hero.png")
+def produce(folder, same_view=False):
+    Image.new("RGB", (16, 4) if same_view else (8, 8), (0, 0, 255)).save(folder / "hero.png")
     data = (ROOT / "tests/data/models/suzanne.glb").read_bytes()
     size = struct.unpack_from("<I", data, 12)[0]
     model = json.loads(data[20 : 20 + size])
@@ -33,11 +33,14 @@ def produce(folder):
     print(json.dumps({"pid": os.getpid(), "parent_pid": os.getppid(), "outputs": ["hero.png", "hero.glb"]}))
 
 
-def exercise(base, binary):
+def exercise(base, binary, *, same_view=False):
     work = base / "producer"
     work.mkdir()
+    command = [sys.executable, str(Path(__file__).resolve()), "--produce", str(work)]
+    if same_view:
+        command.append("--same-view")
     worker = subprocess.Popen(
-        [sys.executable, str(Path(__file__).resolve()), "--produce", str(work)],
+        command,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
@@ -111,6 +114,7 @@ def exercise(base, binary):
                 changed_during_download.append(dict(before=prior, saved=sha(image)))
             return response
 
+        fixture = dict(number=issue["number"], cases=cases, malformed=str(malformed), reopen=same_view)
         observed, http = run_probe(
             base,
             binary,
@@ -120,13 +124,19 @@ def exercise(base, binary):
             tenant,
             domain.issue_session(actor),
             scope,
-            {"E09_FIXTURE": json.dumps(dict(number=issue["number"], cases=cases, malformed=str(malformed)))},
+            {"E09_FIXTURE": json.dumps(fixture)},
             password,
             after_response=save_during_download,
+            followup_scripts=("workbench_asset_viewport.gd",) * 2 if same_view else (),
         )
     finally:
         domain.db.close()
     assert changed_during_download == [dict(before=prior, saved=human_digest)]
+    reopen_reports = []
+    if same_view:
+        observed, *reopen_reports = observed
+        assert len(reopen_reports) == 2 and reopen_reports[0]["pid"] != reopen_reports[1]["pid"]
+        assert reopen_reports[0]["comparisons"] == reopen_reports[1]["comparisons"]
     assert len(observed) == 2
     for case, record in zip(cases, observed, strict=True):
         assert record["original_sha256"] == case["human_digest"] != record["candidate_sha256"]
@@ -138,7 +148,8 @@ def exercise(base, binary):
         ]
         if case["kind"] == "concept":
             assert [choice["pixel"] for choice in record["previews_and_choices"]] == ["ff0000", "0000ff"]
-            assert record["stale_rejection_exercised"] and image.read_bytes() == bytes([1, 2, 3])
+            assert record["stale_rejection_exercised"]
+            assert image.read_bytes() == (human_bytes if same_view else bytes([1, 2, 3]))
         else:
             assert [choice["mesh_scale"] for choice in record["previews_and_choices"]] == [1, 2]
             assert sha(model) == case["human_digest"]
@@ -162,6 +173,7 @@ def exercise(base, binary):
         changed_during_download=changed_during_download,
         http=http,
         comparisons=observed,
+        **({"project_reopens": reopen_reports} if same_view else {}),
         selection_persisted=True,
         occupied_candidate_preserved=True,
         malformed_model_preview_rejected=True,
@@ -173,14 +185,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path)
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--same-view", action="store_true", help="Verify A/B references across project reopens.")
     parser.add_argument("--produce", type=Path, help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.produce:
-        produce(args.produce)
+        produce(args.produce, args.same_view)
     else:
         if args.godot is None or args.report is None:
             parser.error("--godot and --report are required")
         with tempfile.TemporaryDirectory(prefix="workbench-e09-") as directory:
-            report = exercise(Path(directory), args.godot.resolve(strict=True))
+            report = exercise(Path(directory), args.godot.resolve(strict=True), same_view=args.same_view)
         args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print("Passed local texture and model candidate preservation, previews and choices")

@@ -40,6 +40,7 @@ def run_probe(
     *,
     after_response=None,
     graphical=False,
+    followup_scripts=(),
 ):
     with patch.dict(os.environ, {"GONGGONG_WORKSPACE": ""}):
         engine = copy_editor(binary, base / "engine")
@@ -49,7 +50,6 @@ def run_probe(
         'config_version=5\n[application]\nconfig/name="WorkbenchProbe"\n', encoding="utf-8"
     )
     shutil.copyfile(Path(__file__).with_name("workbench_issue_detail.gd"), project / "workbench_issue_detail.gd")
-    shutil.copyfile(Path(__file__).with_name(script), project / "probe.gd")
     modes = {
         "TIANXUAN_AUTH_MODE": "accounts",
         "TIANXUAN_TENANT_ID": tenant,
@@ -85,37 +85,41 @@ def run_probe(
                 TIANXUAN_TOKEN=token,
                 **variables,
             )
-            result = subprocess.run(
-                [
-                    str(engine),
-                    *(["--audio-driver", "Dummy"] if graphical else ["--headless"]),
-                    "--editor",
-                    "--path",
-                    str(project),
-                    "--script",
-                    "res://probe.gd",
-                ],
-                env=env,
-                cwd=base,
-                capture_output=True,
-                encoding="utf-8",
-                errors="replace",
-                timeout=90,
-            )
+            reports = []
+            for probe in (script, *followup_scripts):
+                shutil.copyfile(Path(__file__).with_name(probe), project / "probe.gd")
+                result = subprocess.run(
+                    [
+                        str(engine),
+                        *(["--audio-driver", "Dummy"] if graphical else ["--headless"]),
+                        "--editor",
+                        "--path",
+                        str(project),
+                        "--script",
+                        "res://probe.gd",
+                    ],
+                    env=env,
+                    cwd=base,
+                    capture_output=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    timeout=90,
+                )
+                output = result.stdout + result.stderr
+                if (token and token in output) or password in output:
+                    raise AssertionError("Credential in fixture diagnostics")
+                markers = [
+                    line.removeprefix("WORKBENCH_REPORT=")
+                    for line in result.stdout.splitlines()
+                    if line.startswith("WORKBENCH_REPORT=")
+                ]
+                if result.returncode or len(markers) != 1 or "SCRIPT ERROR" in output:
+                    raise AssertionError(output[-5000:])
+                reports.append(json.loads(markers[0]))
         finally:
             service.should_exit = True
             thread.join(timeout=10)
-    output = result.stdout + result.stderr
-    if (token and token in output) or password in output:
-        raise AssertionError("Credential in fixture diagnostics")
-    markers = [
-        line.removeprefix("WORKBENCH_REPORT=")
-        for line in result.stdout.splitlines()
-        if line.startswith("WORKBENCH_REPORT=")
-    ]
-    if result.returncode or len(markers) != 1 or "SCRIPT ERROR" in output:
-        raise AssertionError(output[-5000:])
-    return json.loads(markers[0]), reads
+    return (reports if followup_scripts else reports[0]), reads
 
 
 def exercise(base, binary):

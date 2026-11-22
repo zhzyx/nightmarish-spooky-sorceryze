@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-v05",
+  "event_id": "afterk03-intake-1770",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1770",
+  "occurred_at": "2026-11-22T15:21:16.088625+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1770,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T15:21:13Z",
+    "accepted_dependencies": {
+      "1797": "8ec96d9d99f05e598b91b2ff8fd6c0611c33b978",
+      "1820": "0198ae5c9b9360d62e8749f436ba98ef36eae90e"
+    },
+    "source_main": "1ee330636c4d6a7d73b82d34d7b609dd341cbe70",
+    "title": "[方案一 V05] 在原视口对照资产版本"
+  },
+  "evidence_refs": [],
+  "sha256": "51c5c742206fbe516e9d2a6607f4b80680570f25be156eba35aa1aa03bdb2448"
+}

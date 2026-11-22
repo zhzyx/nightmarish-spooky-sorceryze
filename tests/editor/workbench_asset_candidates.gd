@@ -84,6 +84,7 @@ func run() -> void:
 		var original_after_choices := FileAccess.get_sha256(test.original)
 		var stale_rejected := false
 		if test.kind == "concept":
+			var before := FileAccess.get_file_as_bytes(test.original)
 			var file := FileAccess.open(test.original, FileAccess.WRITE)
 			file.store_buffer([1, 2, 3])
 			file.close()
@@ -91,6 +92,10 @@ func run() -> void:
 			if not require("已变化" in local.status.text and local.pairs[id].selected.digest == test.candidate_digest, "stale choice accepted"):
 				return
 			stale_rejected = true
+			if fixture.get("reopen", false):
+				file = FileAccess.open(test.original, FileAccess.WRITE)
+				file.store_buffer(before)
+				file.close()
 		reports.append({"name": test.name, "revision": ref.revision, "original_sha256": original_after_choices,
 			"stale_rejection_exercised": stale_rejected,
 			"candidate_sha256": FileAccess.get_sha256(pair.candidate), "candidate_filename": str(pair.candidate).get_file(),

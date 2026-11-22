@@ -13,6 +13,14 @@ var dialog := AcceptDialog.new()
 var columns := HBoxContainer.new()
 var status := Label.new()
 var current := ""
+var compare_bar := HBoxContainer.new()
+var show_a := Button.new()
+var show_b := Button.new()
+var finish := Button.new()
+var original_preview: Control
+var candidate_preview: Control
+var original_texture: Texture2D
+var candidate_geometry: Node3D
 
 
 func _ready() -> void:
@@ -24,10 +32,23 @@ func _ready() -> void:
 	add_child(reopen)
 	dialog.title = "选择本机资产版本"
 	dialog.get_ok_button().text = "关闭"
+	dialog.visibility_changed.connect(func():
+		if not dialog.visible:
+			_exit_compare()
+	)
 	add_child(dialog)
 	var box := VBoxContainer.new()
 	dialog.add_child(box)
 	box.add_child(columns)
+	box.add_child(compare_bar)
+	for button: Button in [show_a, show_b, finish]:
+		compare_bar.add_child(button)
+	show_a.text = "A · 本机原件"
+	show_b.text = "B · 工单候选"
+	finish.text = "退出对照"
+	show_a.pressed.connect(_compare.bind(false))
+	show_b.pressed.connect(_compare.bind(true))
+	finish.pressed.connect(_exit_compare)
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(status)
 	_refresh()
@@ -93,18 +114,21 @@ func preserve(temporary: String, original: String, ref: Dictionary) -> String:
 func _open(id: String) -> void:
 	if not pairs.has(id):
 		return
+	_exit_compare()
 	current = id
 	var pair: Dictionary = pairs[id]
 	for child in columns.get_children():
 		columns.remove_child(child)
 		child.queue_free()
-	_card("本机原件", pair.original, pair.original_digest)
-	_card("工单候选", pair.candidate, pair.ref.digest)
+	original_preview = _card("本机原件", pair.original, pair.original_digest)
+	candidate_preview = _card("工单候选", pair.candidate, pair.ref.digest)
+	compare_bar.visible = original_preview != null and candidate_preview != null and original_preview.get_class() == candidate_preview.get_class()
+	finish.disabled = true
 	status.text = "请选择要使用的版本" if pair.selected.is_empty() else "上次选定　%s" % pair.selected.path
 	dialog.popup_centered()
 
 
-func _card(title: String, path: String, digest: String) -> void:
+func _card(title: String, path: String, digest: String) -> Control:
 	var card := VBoxContainer.new()
 	card.custom_minimum_size.x = 260 * EditorInterface.get_editor_scale()
 	columns.add_child(card)
@@ -115,6 +139,7 @@ func _card(title: String, path: String, digest: String) -> void:
 	var select := Button.new()
 	select.text = "选用%s" % title
 	select.pressed.connect(_choose.bind(path, digest))
+	var preview: Control
 	var file := FileAccess.open(path, FileAccess.READ)
 	if not file or FileAccess.get_sha256(path) != digest:
 		label.text += "\n原件已变化或不可读，请重新保存候选"
@@ -129,9 +154,76 @@ func _card(title: String, path: String, digest: String) -> void:
 			select.disabled = true
 		elif not _preview(card, bytes):
 			label.text += "\n%d 字节 · %s" % [bytes.size(), bytes.slice(0, 32).hex_encode()]
+		else:
+			preview = card.get_child(-1)
 	else:
 		label.text += "\n%d 字节（超过预览上限）" % file.get_length()
 	card.add_child(select)
+	return preview
+
+
+func _compare(candidate: bool) -> void:
+	if not dialog.visible or not compare_bar.visible or not pairs.has(current):
+		return
+	var pair: Dictionary = pairs[current]
+	if FileAccess.get_sha256(pair.original) != pair.original_digest or FileAccess.get_sha256(pair.candidate) != pair.ref.digest:
+		_exit_compare()
+		compare_bar.hide()
+		status.text = "资产已变化，请重新保存候选"
+		return
+	if original_preview is TextureRect:
+		if original_texture == null:
+			original_texture = original_preview.texture
+		original_preview.texture = _aligned_texture(candidate_preview.texture, original_texture.get_size()) if candidate else original_texture
+	else:
+		var viewport: SubViewport = original_preview.get_node("MeshViewport")
+		if not candidate_geometry:
+			candidate_geometry = candidate_preview.get_node("MeshViewport/Geometry").duplicate(0)
+			candidate_geometry.name = "ComparisonGeometry"
+			viewport.add_child(candidate_geometry)
+		viewport.get_node("Geometry").visible = not candidate
+		candidate_geometry.visible = candidate
+		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	for card in columns.get_children():
+		card.get_child(-1).disabled = true
+	show_a.disabled = not candidate
+	show_b.disabled = candidate
+	finish.disabled = false
+	status.text = "原视口对照 · B 工单候选" if candidate else "原视口对照 · A 本机原件"
+
+
+func _aligned_texture(texture: Texture2D, frame_size: Vector2) -> Texture2D:
+	if texture.get_size() == frame_size:
+		return texture
+	# Center the candidate on A's pixel grid without independently fitting it to the control.
+	var region_size := frame_size.min(texture.get_size())
+	var framed := AtlasTexture.new()
+	framed.atlas = texture
+	framed.region = Rect2(((texture.get_size() - region_size) * 0.5).floor(), region_size)
+	var margin := frame_size - region_size
+	framed.margin = Rect2((margin * 0.5).floor(), margin)
+	return framed
+
+
+func _exit_compare() -> void:
+	if finish.disabled or not is_instance_valid(original_preview):
+		return
+	if original_texture:
+		original_preview.texture = original_texture
+		original_texture = null
+	if candidate_geometry:
+		var viewport: SubViewport = original_preview.get_node("MeshViewport")
+		candidate_geometry.free()
+		candidate_geometry = null
+		viewport.get_node("Geometry").show()
+		viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+	for card in columns.get_children():
+		card.get_child(-1).disabled = false
+	show_a.disabled = false
+	show_b.disabled = false
+	finish.disabled = true
+	var pair: Dictionary = pairs[current]
+	status.text = "请选择要使用的版本" if pair.selected.is_empty() else "上次选定　%s" % pair.selected.path
 
 
 func _choose(path: String, digest: String) -> void:
@@ -215,9 +307,11 @@ func _model_preview(card: VBoxContainer, bytes: PackedByteArray) -> bool:
 		return false
 	# Display only meshes. Keep scripts, cameras, lights and animations out of the editor scene.
 	var viewport := SubViewport.new()
+	viewport.name = "MeshViewport"
 	viewport.size = Vector2i(260, 150)
 	viewport.own_world_3d = true
 	var model := Node3D.new()
+	model.name = "Geometry"
 	viewport.add_child(model)
 	var bounds := AABB()
 	var meshes := _collect_meshes(scene, Transform3D.IDENTITY, model)
