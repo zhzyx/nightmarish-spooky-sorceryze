@@ -205,14 +205,32 @@ def merge_request(args: argparse.Namespace) -> dict[str, Any]:
     identity = {"actor": args.actor, "token": args.token}
     if args.command == "merge-request":
         sent = {"source": args.source, "target": args.target, "candidate": args.candidate}
+        if args.issue_id:
+            sent["issue_id"] = args.issue_id
         item = _request(args.api, "POST", path, **identity, body=sent)
         if any(item.get(key) != value for key, value in sent.items()):
             raise BridgeError("合入请求回执与提交的候选不匹配")
     else:
         if not re.fullmatch(r"mr_[0-9a-f]{64}", args.request_id):
             raise BridgeError("请输入完整的合入请求编号")
-        item = _request(args.api, "GET", path + "/" + args.request_id, **identity)
-        if item.get("id") != args.request_id:
+        path += "/" + args.request_id
+        operation = {
+            "merge-conflicts": "conflicts",
+            "merge-resolve": "resolve",
+            "merge-review": "review",
+            "merge-deliver": "deliver",
+        }.get(args.command)
+        if operation:
+            path += "/" + operation
+        if operation == "resolve":
+            item = _request(args.api, "POST", path, **identity, body={"files": json.loads(args.files)})
+        elif operation == "review":
+            item = _request(args.api, "POST", path, **identity, body={"decision": args.decision})
+        elif operation == "deliver":
+            item = _request(args.api, "POST", path, **identity, body={})
+        else:
+            item = _request(args.api, "GET", path, **identity)
+        if operation != "resolve" and item.get("id") != args.request_id:
             raise BridgeError("合入请求回执编号不匹配")
     return item
 
@@ -540,15 +558,27 @@ def main(argv: list[str] | None = None) -> int:
             workcopy.add_argument("--request", required=True, type=Path)
         workcopy.set_defaults(func=workcopy_operation)
 
-    for command in ("merge-request", "merge-request-status"):
+    for command in (
+        "merge-request",
+        "merge-request-status",
+        "merge-conflicts",
+        "merge-resolve",
+        "merge-review",
+        "merge-deliver",
+    ):
         merge = sub.add_parser(command)
         merge.add_argument("--repo-name", required=True)
         if command == "merge-request":
             merge.add_argument("--source", required=True)
             merge.add_argument("--target", required=True)
             merge.add_argument("--candidate", required=True)
+            merge.add_argument("--issue-id", default="")
         else:
             merge.add_argument("--request-id", required=True)
+        if command == "merge-resolve":
+            merge.add_argument("--files", required=True)
+        if command == "merge-review":
+            merge.add_argument("--decision", choices=("APPROVED", "REQUEST_CHANGES"), required=True)
         merge.set_defaults(func=merge_request)
 
     for command in ("branch-create", "branch-tip"):

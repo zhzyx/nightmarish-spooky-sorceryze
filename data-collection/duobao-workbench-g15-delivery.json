@@ -1,0 +1,9 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-g15",
+  "issue_number": 1805,
+  "mac_evidence": "data-collection/duobao-workbench-g14-g15-macos.json",
+  "sha256": "061c290153a9bf7414843fed4a91165662f59df5d2978fb3cf0a2160e0021291",
+  "delivered_commit": "ff66082cbc0ff10628e6312713e80269d94102f7",
+  "issue": "iss_f8ad6b42111a4c828fed846418ae7f96",
+  "work_order_comment": "icmt_7d264d446eea4d7bad6e66f19c4a5b65"
+}

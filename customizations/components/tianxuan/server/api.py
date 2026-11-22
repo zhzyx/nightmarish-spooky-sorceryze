@@ -47,6 +47,7 @@ from schemas import (
     CommentCreateRequest,
     CommentResolveRequest,
     CommitStatusRequest,
+    ConflictResolution,
     DesignSignoffRequest,
     DesignSplitRequest,
     DocCreateRequest,
@@ -58,6 +59,7 @@ from schemas import (
     DocUpdateRequest,
     DocVisibilityRequest,
     ExactMergeRequest,
+    ExactReview,
     ExternalLinkRequest,
     ExternalRequirementRequest,
     FieldPermissionRequest,
@@ -1888,6 +1890,10 @@ def create_app(
                 "target": item["target"],
                 **evidence["exact_request"],
                 "check_state": item["check_state"],
+                "issue_id": evidence.get("binding", {}).get("issue_ref", ""),
+                "reviews": evidence.get("reviews", {}),
+                "merge_sha": evidence.get("merge_sha", ""),
+                "resolved_from": evidence.get("resolved_from", ""),
                 "checks": [
                     {"command": check["command"], "exit_code": check["exit_code"]}
                     for check in evidence.get("checks", [])
@@ -1900,8 +1906,15 @@ def create_app(
                 raise PermissionDenied("viewer cannot enqueue merge candidates")
             repo = _repo_under_root(name)
             try:
+                if payload.issue_id:
+                    store.issue_snapshot(actor, payload.issue_id, write=True)
                 item = merge_queue.enqueue(
-                    actor, str(repo), payload.source, payload.target, candidate=payload.candidate
+                    actor,
+                    str(repo),
+                    payload.source,
+                    payload.target,
+                    candidate=payload.candidate,
+                    issue_ref=payload.issue_id,
                 )
             except PolicyError as error:
                 raise HTTPException(status_code=403, detail=str(error)) from error
@@ -1909,8 +1922,7 @@ def create_app(
                 raise HTTPException(status_code=409, detail=str(error)) from error
             return exact_request_view(item)
 
-        @app.get("/api/v1/git/repos/{name}/merge-requests/{item_id}")
-        def read_exact_request(name: str, item_id: str, actor: PrivateActorDep) -> dict[str, Any]:
+        def exact_item(name, item_id, actor, *, write=False):
             repo = _repo_under_root(name)
             try:
                 item = merge_queue.get(item_id)
@@ -1922,7 +1934,106 @@ def create_app(
                 or store.actor_context(item["created_by"])["tenant"] != store.actor_context(actor)["tenant"]
             ):
                 raise HTTPException(status_code=404, detail="merge request not found")
-            return exact_request_view(item)
+            issue_id = item["evidence"].get("binding", {}).get("issue_ref")
+            if issue_id:
+                store.issue_snapshot(actor, issue_id, write=write)
+            if write and store.role_of(actor) == "viewer":
+                raise PermissionDenied("An editor account is required")
+            return item
+
+        @app.get("/api/v1/git/repos/{name}/merge-requests/{item_id}")
+        def read_exact_request(name: str, item_id: str, actor: PrivateActorDep) -> dict[str, Any]:
+            return exact_request_view(exact_item(name, item_id, actor))
+
+        @app.get("/api/v1/git/repos/{name}/merge-requests/{item_id}/conflicts")
+        def request_conflicts(name: str, item_id: str, actor: PrivateActorDep) -> dict[str, Any]:
+            from exact_integration import conflict_files
+
+            item = exact_item(name, item_id, actor)
+            if item["check_state"] != "conflict":
+                raise HTTPException(409, "A current conflicted request is required")
+            try:
+                return {"id": item_id, "files": conflict_files(merge_queue.git.git_executable, item)}
+            except (GitServiceError, ValueError) as error:
+                raise HTTPException(409, str(error)) from error
+
+        @app.post("/api/v1/git/repos/{name}/merge-requests/{item_id}/resolve")
+        def resolve_exact_request(
+            name: str, item_id: str, payload: ConflictResolution, actor: PrivateActorDep
+        ) -> dict[str, Any]:
+            from exact_integration import resolved_candidate
+
+            item = exact_item(name, item_id, actor, write=True)
+            if item["created_by"] != actor or item["check_state"] != "conflict":
+                raise HTTPException(409, "Resolve a current conflicted request owned by this account")
+            try:
+                # A resolution always creates its own branch, including under wildcard protection.
+                choices = {path: choice.model_dump(exclude_unset=True) for path, choice in payload.files.items()}
+                branch, oid = resolved_candidate(
+                    merge_queue.git.git_executable,
+                    item,
+                    choices,
+                    authorize=lambda branch: ensure_branch_mutation_allowed(
+                        branch, _policy_patterns(app), actor_role=store.role_of(actor), operation="create"
+                    ),
+                )
+                result = merge_queue.enqueue(
+                    actor,
+                    item["repo"],
+                    branch,
+                    item["target"],
+                    candidate=oid,
+                    issue_ref=item["evidence"].get("binding", {}).get("issue_ref", ""),
+                    resolved_from=item_id,
+                )
+                return exact_request_view(result)
+            except PolicyError as error:
+                raise HTTPException(403, str(error)) from error
+            except (GitServiceError, ValueError) as error:
+                raise HTTPException(409, str(error)) from error
+
+        @app.post("/api/v1/git/repos/{name}/merge-requests/{item_id}/review")
+        def review_exact_request(
+            name: str, item_id: str, payload: ExactReview, actor: PrivateActorDep
+        ) -> dict[str, Any]:
+            exact_item(name, item_id, actor, write=True)
+            try:
+                return exact_request_view(merge_queue.reviewed_delivery(item_id, actor, review=payload.decision))
+            except PolicyError as error:
+                raise HTTPException(403, str(error)) from error
+            except (GitServiceError, ValueError) as error:
+                raise HTTPException(409, str(error)) from error
+
+        @app.post("/api/v1/git/repos/{name}/merge-requests/{item_id}/deliver")
+        def deliver_exact_request(name: str, item_id: str, actor: PrivateActorDep) -> dict[str, Any]:
+            item = exact_item(name, item_id, actor, write=True)
+            try:
+                result = merge_queue.reviewed_delivery(
+                    item_id, actor, approvals=app.state.required_approvals, required_checks=app.state.required_checks
+                )
+                view = exact_request_view(result)
+                target_tip = merge_queue.git.branch_tip(item["repo"], item["target"])
+                from exact_integration import git
+
+                if git(
+                    merge_queue.git.git_executable,
+                    item["repo"],
+                    "merge-base",
+                    "--is-ancestor",
+                    view["merge_sha"],
+                    target_tip,
+                    check=False,
+                ).returncode:
+                    raise ValueError("Target no longer contains the delivered commit")
+                text = (
+                    f"多宝交付 {name} · {item['target']} @ {view['merge_sha']} · 候选 {view['candidate']} · {item_id}"
+                )
+                note = store.add_issue_comment(actor, view["issue_id"], text, call_id="duobao:" + item_id)
+                return {**view, "target_tip": target_tip, "comment_id": note["id"]}
+            except PolicyError as error:
+                raise HTTPException(403, str(error)) from error
+            except (GitServiceError, ValueError) as error:
+                raise HTTPException(409, str(error)) from error
 
         @app.post("/api/v1/merge-queue")
         def enqueue_merge(payload: MergeQueueCreateRequest, actor: ActorDep) -> dict[str, Any]:

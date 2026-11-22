@@ -378,3 +378,36 @@ def test_exact_request_drift_during_checks(tmp_path: Path, monkeypatch, moving_b
         replacement = queue.enqueue("worker", str(repo), "feature", "main", candidate=candidate)
         assert replacement["id"] != item["id"] and replacement["check_state"] == "queued"
     queue.close()
+
+
+def test_concurrent_resolution_replays_and_rechecks_branches(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+
+    from exact_integration import conflict_files, resolved_candidate
+    from git_service import GitServiceError
+
+    service, repo = _repo(tmp_path)
+    _branch(service, repo, "side", {"a.md": "source\n"})
+    service.commit(repo, "main", "target", {"a.md": "target\n"}, "Owner", "owner@example.invalid")
+    queue = MergeQueue(str(tmp_path / "queue.db"), service)
+    try:
+        item = queue.enqueue("author", str(repo), "side", "main", candidate=service.branch_tip(repo, "side"))
+        assert queue.process_next()["status"] == "conflict"
+        files = conflict_files(service.git_executable, item)
+        assert [f["path"] for f in files] == ["a.md"]
+        assert files[0]["source"]["text"] == "source\n" and files[0]["target"]["text"] == "target\n"
+        choices = {"a.md": {"choice": "text", "text": "result\n"}}
+
+        def resolve(_):
+            return resolved_candidate(service.git_executable, item, choices, authorize=lambda _: True)
+
+        with ThreadPoolExecutor(max_workers=3) as workers:
+            results = list(workers.map(resolve, range(3)))
+        assert results.count(results[0]) == len(results)
+        branch, sha = results[0]
+        assert service.branch_tip(repo, branch) == sha and service.read_file(repo, sha, "a.md") == "result\n"
+        service.commit(repo, "side", "advance", {"a.md": "next\n"}, "Owner", "owner@example.invalid")
+        with pytest.raises(GitServiceError):
+            resolve(None)
+    finally:
+        queue.close()

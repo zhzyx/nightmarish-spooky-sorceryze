@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-g14",
+  "event_id": "mac-round10-intake-1781",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1781",
+  "occurred_at": "2026-11-22T06:21:58.112926+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1781,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T06:09:10Z",
+    "scope": "在 Mac 创建同基线的两条多宝分支并修改同一行，检查冲突差异、解决后的候选、双亲历史和新的检查对象。"
+  },
+  "evidence_refs": [],
+  "sha256": "057ce31824c3f46fb1cf416be7db6b811686afeacd264f74095749f3395ff865"
+}
