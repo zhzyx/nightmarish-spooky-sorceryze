@@ -1,0 +1,230 @@
+{
+  "issue_number": 2009,
+  "request_id": "kuafu-local-1709-3be7eb0c0347f7c0523dc23cbc41278d69777ddfe69428256dfe4c5cec42ce45",
+  "original_issue": 1709,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2009",
+  "candidate_base": "3a7bcd3d40c727512b12c5dc00dba575e84f8f9d",
+  "incident": {
+    "pr": 2007,
+    "attempt": 2,
+    "job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44959229481/attempts/2",
+    "artifact_id": 14730875869,
+    "editor_artifact_id": 14730382654,
+    "artifact_files": {
+      "2007-attempt2-parent/confirmation.progress.json": "7e38d7b5bfd5c3e183c9daae2cf41e71c4336261c5ad7c14ba180b1e7cd31dac",
+      "2007-attempt2-parent/confirmation.diagnostics-report.json": "6205ddaee3447df0731bf8a509f8bafdc30e4621cbcfae90eb2089008f300cd4",
+      "2007-attempt2-editor/godot.windows.editor.x86_64.exe": "d1eaf96073f82d1630b0dc81f489e3463b0ddbc9615dcea0300c425c2ba046bb",
+      "ci-python-315/distribution/tools/python.exe": "d4e19e9a33268fb0ce575a24ab2d4b85972524f1933df008a6befc14dce19fbd"
+    },
+    "cold_children": [
+      {
+        "id": 1,
+        "source": "design",
+        "parent": 0.0,
+        "state": "review",
+        "state_before_restore": null
+      },
+      {
+        "id": 2,
+        "source": "design",
+        "parent": 0.0,
+        "state": "review",
+        "state_before_restore": null
+      },
+      {
+        "id": 3,
+        "source": "design",
+        "parent": 0.0,
+        "state": "interrupted",
+        "state_before_restore": "waiting"
+      },
+      {
+        "id": 4,
+        "source": "review",
+        "parent": 0.0,
+        "state": "completed",
+        "state_before_restore": null
+      }
+    ]
+  },
+  "original_editor": {
+    "scenario": "parallel-parent-restart --restore-confirmation",
+    "unmodified_fixture": {
+      "exit_code": 1,
+      "stage": "Public continuation did not offer exact original-design reconfirmation",
+      "log_sha256": "1bda53231a9442e1921604d2b97d0e13a49cea2ba8f57950d7dd83380395dab9"
+    },
+    "controlled_mode_probe": {
+      "observed_before_press": {
+        "active": 0,
+        "consultation": true,
+        "parent": 0.0,
+        "queue": 0,
+        "reporting": "",
+        "sidebar": false,
+        "spawn_disabled": false,
+        "spawn_text": "继续落地",
+        "tools": true
+      },
+      "parent_confirmation_reached": true,
+      "model_markers": [
+        "RECOVERY_LIVE_PROBE_FINISHED",
+        "PRODUCTION_COLD_VERIFIED_951"
+      ],
+      "cold_production": "Missing native reply: DESIGN_BATCH_PARENT_VERIFIED_OK",
+      "rejection": "并行工单未启动：需明确配置独立工作副本及原生执行授权，并开启工具、自动文件修改和自动命令。仅咨询模式不能执行。未降级为串行执行。",
+      "probe_report_sha256": "a001de6dcf21b0afb50b2bd62a8ce272de74ca5d8fc55bfaa12d76eaff5243b5",
+      "uncorrected_editor_passed": false
+    }
+  },
+  "recalled_method": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 27,
+    "application": "Verify original parent identity, live batch and independently accepted producer evidence before release."
+  },
+  "repair": {
+    "paths": [
+      "editor/docks/ai_chat_dock.cpp",
+      "editor/docks/ai_chat_dock.h",
+      "editor/docks/ai_chat_sub_agents.cpp",
+      "tests/editor/design_confirmation_recovery.gd"
+    ],
+    "automatic_mode_scope": [
+      "same parent on source and destination",
+      "live batch owned by parent",
+      "matching conversation and snapshot",
+      "matching Issue, request ID and workspace"
+    ],
+    "manual_and_cold": "consultation",
+    "reviewer_role": "read-only"
+  },
+  "verification": {
+    "runtime": {
+      "platform": "Windows x86_64, headless",
+      "builder": "MSVC 14.5, Windows SDK 10.0.26100.0",
+      "python": "3.15 (CI distribution)",
+      "node_job_object_sha256": "0f7411dbaed36fb0b353193ab92e39fd225490196dce82543631e13b16d1a586",
+      "editor_sha256": "a4b8b72ae07414c669b881b9cb7117292019b61fc950f09ab5b674822fd81868",
+      "inputs_sha256": {
+        "editor/docks/ai_chat_dock.cpp": "417493e20d61c2881fba8aee1c0a7d49a6ff93a065e7cc9420d8b1a5b2c6cf9e",
+        "editor/docks/ai_chat_dock.h": "12efd08dced8660eb0d042cfd5dde8e2a371f34352d712531d66006f22807da9",
+        "editor/docks/ai_chat_sub_agents.cpp": "3380ffb7947c4c074d38456ec286eb962c28651f0064e303c116117b0ce3f7c9",
+        "tests/editor/design_confirmation_recovery.gd": "dcc28d789604010d7fd5f62b36e2c2c64237a3a0ba37f629b6340f453530b5a3"
+      }
+    },
+    "run": "tests/editor/run_native_acceptance.py --scenario parallel-parent-restart --restore-confirmation",
+    "exit_code": 0,
+    "verification_status": "native_acceptance_passed",
+    "editor_stages": [
+      "RECOVERY_LIVE_PROBE_FINISHED",
+      "PRODUCTION_COLD_VERIFIED_951",
+      "DESIGN_BATCH_PARENT_VERIFIED_OK"
+    ],
+    "confirmation_recovery": {
+      "actor_drift": true,
+      "cache_conflict": true,
+      "cancel": true,
+      "children_unchanged": true,
+      "consultation_refused": true,
+      "design_drift": true,
+      "disk_conflict": true,
+      "failed_save_no_grant": true,
+      "live_request_started": true,
+      "never_started_c_preserved": true,
+      "ok": true,
+      "original_parent": 0,
+      "parent_switch": true,
+      "same_approval_persisted": true,
+      "storage_obstruction": true,
+      "tools_off": true,
+      "unrelated_parent_refused": true
+    },
+    "preserved_pending_operation": [
+      "pending",
+      "interrupted"
+    ],
+    "fresh_operation": "context_recorded",
+    "production_workers": {
+      "A": {
+        "start": 3,
+        "finish": 3
+      },
+      "B": {
+        "start": 1,
+        "finish": 1
+      },
+      "C": {
+        "start": 1,
+        "finish": 1
+      }
+    },
+    "independent_decisions": [
+      {
+        "producer": 1,
+        "decision_sha256": "383e622f5df1ab5e47ba51f04ae847ec721e23a23a28cdd5c59b66c88cbe6c08",
+        "criteria": [
+          "A"
+        ]
+      },
+      {
+        "producer": 2,
+        "decision_sha256": "5266c041be9803261a046e0d5143a28adb97df892098c35efba132731cf0adc2",
+        "criteria": [
+          "B"
+        ]
+      },
+      {
+        "producer": 3,
+        "decision_sha256": "cd57273a0ff7c89757f967cb943850bbb91857f630832630e60b0a73ea64e66e",
+        "criteria": [
+          "C"
+        ]
+      }
+    ],
+    "consultation_enabled_during_live_batch": {
+      "active_id": 6,
+      "consultation": true,
+      "native_authorization": false,
+      "ok": true,
+      "original_id": 0,
+      "parent": 0.0,
+      "source": "review",
+      "waiting_worker_dispatched": false
+    },
+    "reports_base": "data-collection/receipts/issue-2009-parent-reconfirmation (relative to task worktree)",
+    "report_digests": {
+      "candidate.json": "9b091ca8b5a296ccbaab9acd3b2f020cd89c8e252fbc0131f8d6f5d5b6fd76d4",
+      "candidate.diagnostics-report.json": "bcd88bad46ca1fe18635b63fd4bd47724c98654905fa4d0e7884d4326a46b644",
+      "candidate.progress.json": "2b3ca62006077ade13fe93111876fb21940717491b4cb7f30dcadff45ef97447",
+      "live-consultation.read-only.json": "13a647084091b7edc3076bd244e73e78d88c63b5fe057a210334b29ed0d9e423",
+      "original.log": "1bda53231a9442e1921604d2b97d0e13a49cea2ba8f57950d7dd83380395dab9",
+      "mode-probe.json": "a001de6dcf21b0afb50b2bd62a8ce272de74ca5d8fc55bfaa12d76eaff5243b5",
+      "controls.json": "f2c2f216bdc73cc4bf40db89d0aef72676313cedc1f9e0c29851b3d6dd02aeb0",
+      "probe-live-consultation.py": "83cb9a73015c55065316fd749a7704de39f03edf8087a554256af8ebfd65cfc5",
+      "native-revoke.read-only.json": "b56870007ce2718c1abb65374b7f0e798dd9efe59ca19c706114b0cf09a1b857",
+      "probe-native-revoke.py": "0605eeaa70c0481cfda97f4d05d0acfa9d702e32196ec0ced5f31bd059015dd8",
+      "native-grant.log": "11d4cb1f959609cc954cb790050571c3d969fda6c5f6753306566ff8a3cb0872",
+      "original-native-grant.log": "0fb421842fbdade438c52450cf88fb0d470e397e6eb9220582793e39b4aac086",
+      "observe-semantic.py": "75d61b1bf2458f633bec8299cb49073112c5c99443c0439922042f95c2ef41fb"
+    },
+    "native_grant_after_automatic_review_switch": {
+      "active_id": 6,
+      "consultation": false,
+      "native_authorization": false,
+      "ok": true,
+      "original_id": 0,
+      "parent": 0.0,
+      "parent_granted": true,
+      "reviewer_granted": false,
+      "source": "review",
+      "waiting_worker_dispatched": false
+    },
+    "supplemental_observation": {
+      "suite": "tests/editor/run_ai_chat_semantic.py --task-native",
+      "candidate": "360 s timeout before the grant assertions",
+      "original_ci_editor": "The independent headless run with captured child output reproduced a null AIBackend at res://test.gd:75 before it reached the assertions.",
+      "scope": "Existing general semantic fixture control lookup; separate from the verified parallel-parent-restart scenario."
+    }
+  }
+}

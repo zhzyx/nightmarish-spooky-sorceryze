@@ -1825,7 +1825,7 @@ void AIChatDock::_sub_agent_dispatch() {
 			}
 			Dictionary child = Dictionary(entry.value["children"])[entry.key];
 			if (String(child.get("state", "")) == "waiting") {
-				_agent_selected(_agent_index(entry.key));
+				_select_agent(_agent_index(entry.key), parent);
 				if (active_agent == entry.key) {
 					design_child_starting = entry.key;
 					_dispatch_queued_message(entry.key);
@@ -1852,7 +1852,7 @@ void AIChatDock::_sub_agent_dispatch() {
 		}
 	}
 	if (design_batches.has(acceptance_parent) && bool(design_batches[acceptance_parent].get("parallel_external", false)) && _is_review_child() && acceptance_reviews.has(active_agent) && (acceptance_reviews[active_agent].has("verified_decision") || bool(acceptance_reviews[active_agent].get("repair_queued", false)))) {
-		_agent_selected(_agent_index(acceptance_parent));
+		_select_agent(_agent_index(acceptance_parent), acceptance_parent);
 		callable_mp(this, &AIChatDock::_sub_agent_dispatch).call_deferred();
 		return;
 	}
@@ -1903,7 +1903,7 @@ void AIChatDock::_sub_agent_dispatch() {
 		if (paused || queue.size() != 1 || !Dictionary(queue[0]).has("design_batch_return")) {
 			return;
 		}
-		_agent_selected(_agent_index(parent));
+		_select_agent(_agent_index(parent), parent);
 		if (active_agent == parent) {
 			callable_mp(this, &AIChatDock::_dispatch_queued_message).call_deferred(parent);
 		}
@@ -1941,7 +1941,7 @@ void AIChatDock::_sub_agent_dispatch() {
 			_append(TTR("Error"), "Dependency provenance is unavailable, changed, or its batch storage is full. Preserve the original evidence, check storage, and resume with a fresh live review; dispatch remains suspended.");
 			return;
 		}
-		_agent_selected(_agent_index(id));
+		_select_agent(_agent_index(id), parent);
 		if (active_agent != id) {
 			return;
 		}

@@ -537,7 +537,7 @@ func _run():
 		labels.append(tabs.get_tab_title(index))
 	if not _check(tabs.get_tab_control(0) == dock, "AI Chat is not first"):
 		return
-	if not _check(tabs.get_tab_bar().get_tab_rect(0).position.x < tabs.get_tab_bar().get_tab_rect(1).position.x, "AI Chat is not left of Maliang"):
+	if not _check(tabs.is_tab_hidden(0) and not tabs.is_tab_hidden(1) and tabs.is_tab_hidden(2), "Legacy business tab visibility changed"):
 		return
 	if not _check(labels.slice(0, 5) == ["AI Chat", "马良", "天枢", "天璇", "2D"], "Unexpected main-screen order: " + str(labels)):
 		return

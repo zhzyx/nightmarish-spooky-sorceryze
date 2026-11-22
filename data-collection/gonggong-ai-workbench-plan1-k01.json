@@ -1,0 +1,381 @@
+{
+  "state": "passed",
+  "request_id": "gonggong-ai-workbench-plan1-k01",
+  "issue_number": 1717,
+  "editor_sha256": "f68789fd15f5cca73414ac924b59ccf6a3cfd42bfe75d4519bed9dcfc492f1fd",
+  "sample": {
+    "model_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+    "modules": [
+      "mod_0bbe9f9ba3ac480baa3e5d58a8d61867",
+      "mod_3d703f7255ef46bf99f8cb2d0d43d1fe"
+    ],
+    "asset": {
+      "source_module": "shared-character-model",
+      "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89",
+      "path": "models/suzanne.glb"
+    },
+    "entry": "shortcut",
+    "answer": "K01 movement consultation received"
+  },
+  "editor": {
+    "after_control": 1592006879672,
+    "after_selection": {
+      "caret": [
+        1,
+        21
+      ],
+      "origin": [
+        1,
+        3
+      ],
+      "text": "models/suzanne.glb"
+    },
+    "before_control": 1592006879672,
+    "before_selection": {
+      "caret": [
+        1,
+        21
+      ],
+      "origin": [
+        1,
+        3
+      ],
+      "text": "models/suzanne.glb"
+    },
+    "conversation": "4a22dd74-1a81-4bc7-8e04-30c6a358ff5d",
+    "ctrl_m_toggled_and_restored": true,
+    "drafts": [
+      {
+        "draft": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>",
+        "module": "mod_0bbe9f9ba3ac480baa3e5d58a8d61867",
+        "reply_visible": false,
+        "turns": 0
+      },
+      {
+        "draft": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>",
+        "module": "mod_3d703f7255ef46bf99f8cb2d0d43d1fe",
+        "reply_visible": false,
+        "turns": 0
+      },
+      {
+        "draft": "movement pending",
+        "module": "mod_0bbe9f9ba3ac480baa3e5d58a8d61867",
+        "reply_visible": true,
+        "turns": 1
+      },
+      {
+        "draft": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>\nanimation pending",
+        "module": "mod_3d703f7255ef46bf99f8cb2d0d43d1fe",
+        "reply_visible": false,
+        "turns": 0
+      }
+    ],
+    "editor_version": "4.8-beta (custom_build)",
+    "entry": "editor/open_ai_workbench",
+    "next_edit": "## x",
+    "ownership": [
+      {
+        "before": "",
+        "chosen": "mod_0bbe9f9ba3ac480baa3e5d58a8d61867",
+        "issue": null,
+        "offered": [
+          "mod_0bbe9f9ba3ac480baa3e5d58a8d61867",
+          "mod_3d703f7255ef46bf99f8cb2d0d43d1fe"
+        ]
+      },
+      {
+        "before": "mod_0bbe9f9ba3ac480baa3e5d58a8d61867",
+        "chosen": "mod_3d703f7255ef46bf99f8cb2d0d43d1fe",
+        "issue": null,
+        "offered": [
+          "mod_0bbe9f9ba3ac480baa3e5d58a8d61867",
+          "mod_3d703f7255ef46bf99f8cb2d0d43d1fe"
+        ]
+      }
+    ],
+    "pid": 101540,
+    "script": "res://character.gd",
+    "sent": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>\nK01 shared model consultation",
+    "shift_right_selected": "m",
+    "tab_mode_after_entry": true,
+    "viewport": 27850180108
+  },
+  "received_turn": {
+    "id": "b0f35156-74e6-413b-80f4-0a5546b2b712",
+    "content": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>\nK01 shared model consultation",
+    "state": "answered",
+    "answer": "K01 movement consultation received",
+    "model": "fixture",
+    "error": null,
+    "context_snapshot": {
+      "project": "k01/character",
+      "module_id": "mod_0bbe9f9ba3ac480baa3e5d58a8d61867",
+      "issue_id": null,
+      "references": [
+        {
+          "kind": "editor",
+          "object_id": "duobao:48b1d8c2f7039541c04da26dc0d089a56bb874f51de5767278d995d0f77be982",
+          "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+        }
+      ]
+    }
+  },
+  "conversation_writes": [
+    [
+      "/api/v1/workspace/conversations",
+      201
+    ],
+    [
+      "/api/v1/workspace/conversations/4a22dd74-1a81-4bc7-8e04-30c6a358ff5d/turns",
+      200
+    ]
+  ],
+  "model_call_count": 1,
+  "received_by_model": {
+    "content": "<duobao://shared-character-model/6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89/models%2Fsuzanne.glb>\nK01 shared model consultation",
+    "context_snapshot": {
+      "project": "k01/character",
+      "module_id": "mod_0bbe9f9ba3ac480baa3e5d58a8d61867",
+      "issue_id": null,
+      "references": [
+        {
+          "kind": "editor",
+          "object_id": "duobao:48b1d8c2f7039541c04da26dc0d089a56bb874f51de5767278d995d0f77be982",
+          "revision": "6af0a4e9e7b0128f356d57ed6ef5f836792348f2ff12c70afc6f08cd0645ee89"
+        }
+      ]
+    }
+  },
+  "base": "962f325d4fb5f38d42c5195b47c5b70b5729f3b8",
+  "tree": "29e4b87b69e7c321ef78f2b8f6bc07e5db1b27fa",
+  "platform": "Windows x86_64",
+  "prerequisites": [
+    {
+      "issue": 1744,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T14:47:34Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1744#issuecomment-7064373404",
+      "pr": 1936,
+      "revision": "8b48bd11844073a0d73499899991f7ee6f3b712f"
+    },
+    {
+      "issue": 1785,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T17:22:49Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1785#issuecomment-7066436848",
+      "pr": 1958,
+      "revision": "373430fb1c8e8345841365e0957f2ce54a9be57c"
+    },
+    {
+      "issue": 1748,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T21:12:20Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1748#issuecomment-7068555654",
+      "pr": 1989,
+      "revision": "962f325d4fb5f38d42c5195b47c5b70b5729f3b8"
+    },
+    {
+      "issue": 1718,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T05:59:38Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1718#issuecomment-7058306396",
+      "pr": 1893,
+      "revision": "8e6128c5301ef27eef1187490ce9049775dfc0f7"
+    },
+    {
+      "issue": 1807,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T13:11:02Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1807#issuecomment-7063083143",
+      "pr": 1921,
+      "revision": "1a991819eb349b157e933c4c4a32ee0769b75db3"
+    },
+    {
+      "issue": 1808,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T13:34:52Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1808#issuecomment-7063397355",
+      "pr": 1927,
+      "revision": "4be3035404d1c48cfe5dd8b7d52b41e5416bc045"
+    },
+    {
+      "issue": 1840,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T09:33:08Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1840#issuecomment-7060653093",
+      "pr": 1911,
+      "revision": "fe96faf068285a96f9c38225053f4b7726a9c512"
+    },
+    {
+      "issue": 1745,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T15:42:37Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1745#issuecomment-7065083548",
+      "pr": 1945,
+      "revision": "17938f86828ba4b3e1e7b27400c5b0b4f0e474e0"
+    },
+    {
+      "issue": 1828,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T16:32:42Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1828#issuecomment-7065724605",
+      "pr": 1951,
+      "revision": "9ab038d900ba277d0e58ad6171a7a0026c3e9a1c"
+    },
+    {
+      "issue": 1829,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T16:33:34Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1829#issuecomment-7065735209",
+      "pr": 1951,
+      "revision": "9ab038d900ba277d0e58ad6171a7a0026c3e9a1c"
+    },
+    {
+      "issue": 1830,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T16:34:43Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1830#issuecomment-7065749393",
+      "pr": 1951,
+      "revision": "9ab038d900ba277d0e58ad6171a7a0026c3e9a1c"
+    },
+    {
+      "issue": 1809,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "closed_at": "2026-11-21T16:35:35Z",
+      "receipt": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1809#issuecomment-7065760167",
+      "pr": 1951,
+      "revision": "9ab038d900ba277d0e58ad6171a7a0026c3e9a1c"
+    }
+  ],
+  "baseline": {
+    "builder_revision": "aba0320aea8df9a92ffdb789e1e4e70030f4b587",
+    "editor_sha256": "0fd467ea3a2bea511c5e1bcd32aef20a7f2e3ba3ecc7b67bff1550f250ec79ca",
+    "shortcut_exit": 1,
+    "observed": "Workbench from CodeEdit: entry=shortcut sidebar=false tab_mode_before=true tab_mode_after=false",
+    "incident": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1995",
+    "comparison_entry": "palette",
+    "comparison_result": {
+      "state": "passed",
+      "editor_sha256": "0fd467ea3a2bea511c5e1bcd32aef20a7f2e3ba3ecc7b67bff1550f250ec79ca",
+      "entry": "palette",
+      "pid": 102452,
+      "chosen_modules": [
+        "mod_127a427e87a6459082533d564c5198f5",
+        "mod_3ed81ea416d54a7791c3101853caadf4"
+      ],
+      "scope_return": {
+        "caret": [
+          1,
+          21
+        ],
+        "origin": [
+          1,
+          3
+        ],
+        "text": "models/suzanne.glb"
+      },
+      "next_edit": "## x",
+      "model_calls": 1,
+      "conversation": "0e06fc4c-8ecd-47b3-801d-844424a90aa3"
+    }
+  },
+  "palette_result": {
+    "state": "passed",
+    "editor_sha256": "f68789fd15f5cca73414ac924b59ccf6a3cfd42bfe75d4519bed9dcfc492f1fd",
+    "entry": "palette",
+    "pid": 103616,
+    "chosen_modules": [
+      "mod_a43847d06c7e4b138698ce5d8f511165",
+      "mod_fb2eee5022eb406599f8a6f21fe2a385"
+    ],
+    "scope_return": {
+      "caret": [
+        1,
+        21
+      ],
+      "origin": [
+        1,
+        3
+      ],
+      "text": "models/suzanne.glb"
+    },
+    "next_edit": "## x",
+    "model_calls": 1,
+    "conversation": "22fa205a-05c8-4008-9c7b-23026e01511b"
+  },
+  "observed_at": "2026-11-21T21:41:09.670180+00:00",
+  "build": {
+    "base": "962f325d4fb5f38d42c5195b47c5b70b5729f3b8",
+    "scons": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no --cache-readonly -j6",
+    "native_change": "scene/gui/text_edit.cpp",
+    "exit_code": 0,
+    "git_blobs": {
+      "scene/gui/text_edit.cpp": "d87d326008c488224e0349c84db00d95d4034833",
+      "tests/editor/run_workbench_context_milestone.py": "a5951ce67c4ae47c5cfaf2010731b7bd1750ed5e",
+      "tests/editor/workbench_context_milestone.gd": "1487ea1fc605dc2b4726b55534494a81e3a0d5cf",
+      "tests/editor/ai_chat_tab_order.gd": "b723c5e61405c9e2300477023fe9b20ad53609a5",
+      "samples/gonggong-workbench/fixtures/b05/sample.json": "c9aba384ebf6f8ffbcd99fc14e0983c53db71213",
+      "samples/gonggong-workbench/fixtures/b05/sample.py": "bdb6d9d8f1d34a29d7f7726df364221eeadc1b4e"
+    }
+  },
+  "native_regression": {
+    "test_filter": "*[TextEdit]*,*[CodeEdit]*",
+    "cases_passed": 22,
+    "assertions_passed": 6446,
+    "failed": 0
+  },
+  "layout_regression": {
+    "runner": "tests/editor/run_ai_chat_tab_order.py --workbench-command --workbench-button",
+    "state": "passed",
+    "phases": [
+      {
+        "phase": "initial",
+        "title_clicks": 6,
+        "rebound_key": "Alt+Shift+P"
+      },
+      {
+        "phase": "legacy_maliang_last",
+        "title_clicks": 6,
+        "rebound_key": "Alt+Shift+P"
+      },
+      {
+        "phase": "legacy_maliang_selected",
+        "title_clicks": 6,
+        "rebound_key": "Alt+Shift+P"
+      },
+      {
+        "phase": "pre_daqian_layout",
+        "title_clicks": 6,
+        "rebound_key": "Alt+Shift+P"
+      },
+      {
+        "phase": "pre_maliang_layout",
+        "title_clicks": 6,
+        "rebound_key": "Alt+Shift+P"
+      },
+      {
+        "phase": "restart",
+        "title_clicks": 6,
+        "rebound_key": "Alt+Shift+P"
+      }
+    ]
+  },
+  "method_recalled": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 26,
+    "application": "Checked the twelve completed GitHub issues, accepted main PRs and commit ancestry. For D12 the intermediate PR #1979 closed unmerged; used #1989 and the source's updated receipt."
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2685b9cd5fda530be346ec4ba9cdadc91c9405f2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-u13",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1791",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "44ff72bef638fff1e84a213da0bd05e80b689c1a380db9074f3c497637878930",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1791",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2002",
+    "action": "validation",
+    "detection_head": "b48e5eb88258aae9a11c8a436f4bb8f8ffe1a21b",
+    "context_sha256": "1063b5a28744041cea40cebe4259a19a1a70b86dee515def5649e6e2377483f1",
+    "operator": "Sail-Li",
+    "worker": "wave22_u13",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1791#issuecomment-7068903756",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44956752719/artifacts/14728382219",
+    "diagnosis": "安装探针拒绝 U13 对固定摘要宿主说明的变更。CI 归档的 runtime-setup.process.log 已明确指出该文件。执行授权是 #1791 及上级 #1715 的分工记录，评论 #7068903756 属于 #1715。",
+    "next_action": "恢复已批准宿主说明的精确内容。将新入口说明放回工作台发布设计，复验完整安装中断和原请求恢复场景，再签发并复核远端 CI。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T22:39:24.103854+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T22:41:38.768719+00:00",
+  "sha256": "305ad70711a597d856e6bff20b252349d87f165d194ce840a62c3362d08940d0"
+}

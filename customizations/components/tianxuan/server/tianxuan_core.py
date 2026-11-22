@@ -2312,6 +2312,7 @@ class Tianxuan:
 
     # ---------- 跨系统：天枢 ↔ 天璇 ----------
 
+    @_connection_call
     def link_external(
         self,
         actor: str,

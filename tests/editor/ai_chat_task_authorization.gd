@@ -71,11 +71,11 @@ func run():
 	settings.set_setting("gonggong/issue_number", "6")
 	settings.set_setting("gonggong/request_id", "isolated-gate")
 	var controls = dock.get_ai_settings_control()
-	var backend = controls.find_child("AIBackend", true, false)
+	var backend = dock.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)
 	controls.find_child("APIEndpoint", true, false).text = OS.get_environment("AI_CHAT_TEST_URL")
-	controls.find_child("APIModel", true, false).text = "mock-semantic"
+	dock.find_child("APIModel", true, false).text = "mock-semantic"
 	controls.find_child("APIKey", true, false).text = "mock-key"
 	controls.find_child("AllowTools", true, false).button_pressed = true
 	controls.find_child("AutoApplyFileChanges", true, false).button_pressed = true
@@ -83,7 +83,7 @@ func run():
 	var key = controls.find_child("APIKey", true, false)
 	key.text_changed.emit(key.text)
 	var ready_deadline := Time.get_ticks_msec() + 35000
-	var status = controls.find_child("ModelStatus", true, false)
+	var status = dock.find_child("ModelStatus", true, false)
 	while (backend.disabled or not _catalog_ready(dock)) and Time.get_ticks_msec() < ready_deadline:
 		await process_frame
 	if not check(not dock.find_child("Send", true, false).disabled and _catalog_ready(dock), "Model discovery did not finish: " + status.text):

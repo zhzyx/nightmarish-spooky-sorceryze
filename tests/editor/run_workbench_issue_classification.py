@@ -113,7 +113,9 @@ def exercise(base, binary):
             for user in (owner, reader):
                 for ticket in tagged:
                     native.append(native_probe(base / f"run-{len(native)}", engine, origin, tokens[user], ticket))
-            with httpx.Client(base_url=origin, headers={"Authorization": "Bearer " + tokens[reader]}) as client:
+            with httpx.Client(
+                base_url=origin, headers={"Authorization": "Bearer " + tokens[reader]}, trust_env=False
+            ) as client:
                 ticket = tagged[0]
                 route = f"/api/v1/issues/{ticket['id']}/classification"
                 params = {"project": ticket["project"]}

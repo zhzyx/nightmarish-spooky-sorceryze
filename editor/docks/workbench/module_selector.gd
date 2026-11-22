@@ -1,6 +1,8 @@
 @tool
 extends VBoxContainer
 
+signal operation_finished
+
 # Shared by the workbench sidebar and the expanded conversation view.
 const MODULES := "/api/v1/business-modules"
 const CONVERSATIONS := "/api/v1/workspace/conversations"
@@ -27,6 +29,7 @@ var location := {}
 var conversation := {}
 var issue_details := {}
 var consultation_detail := {}
+var pending_consultation_location := {}
 var comments: Array = []
 var drafts := {}
 var pending_turn := {}
@@ -161,6 +164,27 @@ func _identity_changed() -> void:
 	_notice("")
 	var identity: Dictionary = session.call("get_identity")
 	project = identity.get("project", "")
+	if not identity.is_empty() and not pending_consultation_location.is_empty():
+		restore_consultation_location(pending_consultation_location)
+
+
+func _consultation_scope() -> String:
+	return JSON.stringify([api, session.get_identity().id, project, ProjectSettings.globalize_path("res://")]).sha256_text()
+
+
+func get_consultation_location() -> Dictionary:
+	if consultation_detail.is_empty() or not managed_identity or not _authenticated():
+		return pending_consultation_location
+	return {"scope": _consultation_scope(), "number": consultation_detail.number, "id": consultation_detail.id}
+
+
+func restore_consultation_location(record: Dictionary) -> void:
+	if not managed_identity or not _authenticated():
+		pending_consultation_location = record
+		return
+	pending_consultation_location = {}
+	if record.get("scope") == _consultation_scope() and record.get("id") is String and not record.id.is_empty():
+		session.get_node("WorkbenchIssueDetail").open_issue(int(record.get("number", 0)), record.id)
 
 
 func _authenticated() -> bool:
@@ -193,6 +217,8 @@ func _lock(value: bool) -> void:
 	composer.editable = not value
 	send.disabled = value
 	design_action.disabled = value
+	if not busy:
+		operation_finished.emit()
 
 
 func _request(path: String, method := HTTPClient.METHOD_GET, data := {}) -> Dictionary:
@@ -387,12 +413,14 @@ func _switch_to(target: String) -> void:
 
 
 func _open_issue_consultation(view: Node) -> void:
-	if busy or not _authenticated():
-		return
 	var detail: Dictionary = view.get_detail()
-	if detail.is_empty() or detail.project != project:
+	if not _authenticated() or detail.is_empty() or detail.project != project:
 		return
 	var generation := identity_generation
+	if busy:
+		await operation_finished
+		if busy or identity_generation != generation or view.get_detail() != detail:
+			return
 	_lock(true)
 	_notice("")
 	await _read_issue_consultation(view, detail)

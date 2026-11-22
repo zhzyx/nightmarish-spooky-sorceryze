@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-2d8322b6a554ecaffcea8174f20bbf91e500c0c1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "82c359e3380a13d04f1e748c10cd311a0348072bfbfd5cc4aad5464f4852910e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2009",
+    "action": "validation",
+    "detection_head": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+    "context_sha256": "7ba2bf65f8ed69fa99ac2a73a2e954bd9acb65ac37ec31c792fbfd9451ffaa52",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "Same editor 40265e09814521c55debd586ed4bb07ec3a5d44705a30543b31dbe8a1e3debbd; original G11 160-second timeout, restored source-built native UI and board packages, original test then passed with one actual Git commit and unchanged adjacent staged/uncommitted content.",
+    "diagnosis": "Local candidate rebind copied only the executable. The isolated runtime helper also needs both external TianShu JSON packages to load the real panel. Recompiled each package independently from the target inputs, compared bytes with the builder, and verified the installed pair by the official package verifier.",
+    "next_action": "Ship the exact validated Windows runtime set and candidate through all original scenarios. Read back CI, main and K01/U13 before reporting release acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T00:48:27.290403+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T00:50:16.976371+00:00",
+  "sha256": "910d5419055ccec12dd76b538139d9e9414cfcb96de6c4fcf7847692b825b1e1"
+}

@@ -20,8 +20,7 @@ func _wait_reply(dock, number: int) -> bool:
 		if _contains(dock, "INTAKE_WORK_REPLY_" + str(number)) and dock.get_meta("gonggong_reporting", "") == "recorded_file":
 			return true
 		if attempt == 150 or (number == 1 and _contains(dock, "尚未完成")):
-			for label in dock.find_children("*", "RichTextLabel", true, false):
-				print("NATIVE_INTAKE_DIAGNOSTIC ", label.get_parsed_text())
+			print("NATIVE_INTAKE_DIAGNOSTIC ", JSON.stringify(dock.get_meta("issue_guide_receipt_diagnostic", {})))
 			if number == 1 and _contains(dock, "尚未完成"):
 				return false
 	push_error("Missing native intake completion " + str(number))
@@ -87,6 +86,18 @@ func _run():
 			quit(1)
 			return
 	_send(dock, "Create first feature button")
+	var fault := OS.get_environment("GONGGONG_TEST_BRIDGE_FAULT")
+	if not fault.is_empty():
+		var deadline := Time.get_ticks_msec() + 15000
+		while Time.get_ticks_msec() < deadline and not _contains(dock, "尚未完成") and not _contains(dock, "UNEXPECTED_REPLY"):
+			await process_frame
+		if not _contains(dock, "receipt_" + fault) or _contains(dock, "UNEXPECTED_REPLY") or not dock.find_child("Stop", true, false).disabled:
+			push_error("Transport failure did not pause intake with its reason")
+			quit(1)
+			return
+		print("INTAKE_TRANSPORT_REJECTED")
+		quit(0)
+		return
 	if test_runtime_setup:
 		var setup = dock.find_child("GongGongRuntimeSetup", true, false)
 		var setup_deadline := Time.get_ticks_msec() + 15000
@@ -117,10 +128,7 @@ func _run():
 			intake_waiting = true
 			break
 	if not intake_waiting:
-		for label in dock.find_children("*", "RichTextLabel", true, false):
-			print("NATIVE_INTAKE_START_DIAGNOSTIC ", label.get_parsed_text())
-		for label in dock.find_children("*", "TextEdit", true, false):
-			print("NATIVE_SETUP_DIAGNOSTIC ", label.name, " ", label.text)
+		print("NATIVE_INTAKE_START_DIAGNOSTIC ", JSON.stringify(dock.get_meta("issue_guide_receipt_diagnostic", {})))
 		push_error("First requirements request never reached the isolated model fixture")
 		quit(1)
 		return
@@ -136,6 +144,11 @@ func _run():
 	if not await _wait_reply(dock, 1):
 		quit(1)
 		return
+	var consumed: Dictionary = dock.get_meta("issue_guide_receipt_diagnostic", {})
+	if consumed.get("status") != "valid" or consumed.get("exit_code") != 0:
+		push_error("Successful intake did not consume a valid receipt from a successful child")
+		quit(1)
+		return
 	var prompts = ["Refine current feature", "Create second feature label", "Create second feature label"]
 	for i in range(prompts.size()):
 		_send(dock, prompts[i])
@@ -147,9 +160,21 @@ func _run():
 		await create_timer(0.02).timeout
 		if FileAccess.file_exists(folder.path_join("model_waiting")):
 			break
+	if not FileAccess.file_exists(folder.path_join("model_waiting")):
+		push_error("The isolated model never received the request before cancellation")
+		quit(1)
+		return
 	_send(dock, "取消")
-	await create_timer(2).timeout
 	if dock.get_meta("gonggong_status", "") != "issue_guide_cancelled":
+		push_error("The active intake did not acknowledge cancellation")
+		quit(1)
+		return
+	FileAccess.open(folder.path_join("intake_cancelled"), FileAccess.WRITE).close()
+	var cancel_deadline := Time.get_ticks_msec() + 15000
+	while not FileAccess.file_exists(folder.path_join("late_response_attempted")) and Time.get_ticks_msec() < cancel_deadline:
+		await process_frame
+	await create_timer(0.2).timeout
+	if not FileAccess.file_exists(folder.path_join("late_response_attempted")) or dock.get_meta("gonggong_status", "") != "issue_guide_cancelled" or dock.has_meta("issue_guide_receipt_diagnostic"):
 		push_error("Cancelled intake did not remain cancelled")
 		quit(1)
 		return
@@ -158,7 +183,9 @@ func _run():
 		await create_timer(0.02).timeout
 		if _contains(dock, "Requirements model API failed"):
 			break
-	if not _contains(dock, "Requirements model API failed"):
+	var refused: Dictionary = dock.get_meta("issue_guide_receipt_diagnostic", {})
+	if not _contains(dock, "Requirements model API failed") or refused.get("status") != "valid" or refused.get("exit_code") != 1:
+		push_error("Expected the model API refusal from the bridge's valid rejection receipt")
 		quit(1)
 		return
 	FileAccess.open(folder.path_join("api_fixed"), FileAccess.WRITE).store_string("fixed")

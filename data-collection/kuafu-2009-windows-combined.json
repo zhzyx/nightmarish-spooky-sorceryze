@@ -1,0 +1,116 @@
+{
+  "issue_number": 2009,
+  "request_id": "kuafu-local-1709-3be7eb0c0347f7c0523dc23cbc41278d69777ddfe69428256dfe4c5cec42ce45",
+  "source_base": "3a7bcd3d40c727512b12c5dc00dba575e84f8f9d",
+  "checked": "2026-11-21T23:44:33.300591+00:00",
+  "platform": "Windows x86_64",
+  "python": "3.15.2",
+  "editor_sha256": "a03f0df5a1a33984332acd880593be50052e39be48fd95d1cd1eb8334d1d9a9c",
+  "faults": {
+    "missing": {
+      "process_started": true,
+      "rejected": true,
+      "native_status": "missing",
+      "exit_code": 7,
+      "read_attempts": 1,
+      "report_sha256": "9c9e1b7a3cbfdb6eccb5b1659e860b4f02ab5b4f5868e7fe6bbc537f2baccdb4"
+    },
+    "parse_failed": {
+      "process_started": true,
+      "rejected": true,
+      "native_status": "parse_failed",
+      "exit_code": 0,
+      "read_attempts": 1,
+      "report_sha256": "a2f7344cf115946b58a70f9574d80a6274cc46f8180cf3f0d051ec343bfb82b6"
+    },
+    "process_failed": {
+      "process_started": true,
+      "rejected": true,
+      "native_status": "valid",
+      "exit_code": 7,
+      "read_attempts": 1,
+      "report_sha256": "fb05d7c113d08b6b0dddf8443209586924377cace7c5e216c7819ce3c9ebae1b"
+    }
+  },
+  "full_runtime": {
+    "passed": true,
+    "model_requests": 19,
+    "recovery_cases": 3,
+    "journal_cases": 5,
+    "report_sha256": "dd00cee8002212fa8591381cb904c6fa8822296a405a06b1a2d3379e44d018af"
+  },
+  "unit": "47 passed, 36 subtests passed in 6.98s",
+  "original_candidate": {
+    "issue": 2009,
+    "original": 1709,
+    "pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2007",
+    "signed": "3a7bcd3d40c727512b12c5dc00dba575e84f8f9d",
+    "first_run": 44959229481,
+    "first_job": 137014177514,
+    "first_artifact": 14729710966,
+    "known_prior": 1357,
+    "replays": [
+      {
+        "source": "2007-runtime-artifact",
+        "success": false,
+        "editor_sha256": "d8ac3bc7a2d2fd5f6592a6fcee0df609218620e9012ca839654d1de6554976c8",
+        "model_requests": 1,
+        "github_fixture_calls": 14,
+        "journals": 1,
+        "journal_boundary_cases": 5,
+        "interruption_cases": 3,
+        "summary_sha256": "29d94c0c40262351743684122a63a54048f38236fe211c156ff784b0bbd28333"
+      },
+      {
+        "source": "2007-ci-binary-local-runtime",
+        "success": true,
+        "editor_sha256": "d8ac3bc7a2d2fd5f6592a6fcee0df609218620e9012ca839654d1de6554976c8",
+        "model_requests": 19,
+        "github_fixture_calls": 104,
+        "journals": 11,
+        "journal_boundary_cases": 5,
+        "interruption_cases": 3,
+        "summary_sha256": "198f92613fbd67ec0ddd29b9344b16b7fd2ab6316eef2eb144227cc0fb4ffe5a"
+      },
+      {
+        "source": "2007-ci-binary-python315",
+        "success": true,
+        "editor_sha256": "d8ac3bc7a2d2fd5f6592a6fcee0df609218620e9012ca839654d1de6554976c8",
+        "model_requests": 19,
+        "github_fixture_calls": 104,
+        "journals": 11,
+        "journal_boundary_cases": 5,
+        "interruption_cases": 3,
+        "summary_sha256": "e78ef5a39423ed316ce77a75dc4a1c8d701ba19b423eb008625b89742b313cae"
+      }
+    ],
+    "verified": "2026-11-21T23:23:08.217531+00:00"
+  },
+  "first_failure_process_cause": null,
+  "workbench_regressions": {
+    "d08": {
+      "source": "offline_document",
+      "report_sha256": "01ce18a19f35d74d3689a64efce2f3c58fb33d7cadeb45a707d25f85343a5f12"
+    },
+    "d09": {
+      "source": "design_signoff",
+      "report_sha256": "fc8ed12d8805feb72d0f57187d17baaf7ca8c7fad74c86db2df4c89965ca7516"
+    },
+    "k01": {
+      "source": "context_milestone",
+      "report_sha256": "4fa377023b684237fd953c5069cab001a514094358474bd9e66d2aa745cb7e42"
+    },
+    "u13": {
+      "source": "legacy_routes",
+      "report_sha256": "8d653fb4db240e3727592e1fbea77076fa3d5d76a19e11eb29eca8b24dde4679"
+    },
+    "i08": {
+      "source": "issue_roadmap",
+      "report_sha256": "389cf9dc1473436c1349ce60fd4329b7b2d6c10a0372e1b5e7091a41e8950aa6"
+    },
+    "i18": {
+      "source": "issue_upload",
+      "report_sha256": "d6c039ecfd97142f9676f65e307f5872971056227fce45a94bc5df2c2f55068d"
+    }
+  }
+}

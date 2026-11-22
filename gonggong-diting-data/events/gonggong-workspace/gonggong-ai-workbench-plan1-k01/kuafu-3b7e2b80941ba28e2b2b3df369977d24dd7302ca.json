@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-3b7e2b80941ba28e2b2b3df369977d24dd7302ca",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-k01",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1717",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6a5b0865c035e3a19e8e713752420140c70b93e304f8ff29c99e31414c682458",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1717",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1995",
+    "action": "validation",
+    "detection_head": "962f325d4fb5f38d42c5195b47c5b70b5729f3b8",
+    "context_sha256": "80133d49e424e5156a002cc9f86bf8dad0b9ae9287d9ab1fc9a9cc5c0de7a36a",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-operator",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1717",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1717",
+    "diagnosis": "Windows 编辑器在真实 CodeEdit 中错误地把 Ctrl+Shift+M 匹配为 ui_focus_mode，Tab 模式从 true 变为 false，侧栏未打开。同一编辑器从命令面板进入则全程通过。",
+    "next_action": "由 K01 工作者修复 TextEdit 的精确按键匹配，重建 Windows 编辑器，核对原快捷键、Ctrl+M、Shift+Right 和完整共享资产场景，父会话核对交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T21:29:21.372591+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T21:32:07.313760+00:00",
+  "sha256": "0bf1d27d581145fb376ab7b9947af5c1afb46982745bc873de90732674d37860"
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "kuafu-local-1709-3be7eb0c0347f7c0523dc23cbc41278d69777ddfe69428256dfe4c5cec42ce45",
+  "event_id": "wave22-b2009-source",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2009",
+  "occurred_at": "2026-11-21T23:32:44.7236577+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue_number": 2009,
+    "original_issue": 1709,
+    "action": "validation",
+    "authorization_ref": "codex-user:20261122-plan1-wave22-b2009",
+    "source_revision": "048a875ecd5f87c27471ffb8846a7b8a2d919396cc1417a3650bc07c556c702a",
+    "intake_updated_at": "2026-11-21T23:21:10Z"
+  },
+  "evidence_refs": [
+    "dispatch-61024a08239147c0a4716ca91d648e9c"
+  ],
+  "sha256": "c29b8d770770b0dfe42e1e5df3157c601f05ffb1935403190fabce22444b71e2"
+}

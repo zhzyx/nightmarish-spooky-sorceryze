@@ -209,7 +209,14 @@ func _exchange(method: int, route: String, credential: String, payload: Dictiona
 	http.timeout = timeout_seconds
 	http.body_size_limit = 8 * 1024 * 1024 if download_path.is_empty() else -1
 	http.download_file = download_path
-	add_child(http)
+	# Moving the sidebar between dock slots takes its children out of the tree and cancels HTTPRequest.
+	# Keep the transport with the editor until its reply has been read.
+	var generation := _generation
+	EditorInterface.get_base_control().add_child.call_deferred(http)
+	await http.ready
+	if generation != _generation and route != "/api/v1/auth/logout":
+		http.queue_free()
+		return {"status": 0, "data": {}}
 	var headers := PackedStringArray(["Accept: application/json" if download_path.is_empty() else "Accept: application/octet-stream"])
 	if not credential.is_empty():
 		headers.append("Authorization: Bearer " + credential)

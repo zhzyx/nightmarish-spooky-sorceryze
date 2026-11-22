@@ -58,10 +58,17 @@ def file_metadata(path):
 
 def collect_receipt_diagnostics(root, installation):
     root, installation = Path(root), Path(installation)
-    result = {"receipts": [], "outbox": [], "limit_per_group": MAX_FILES, "raw_content_exported": False}
+    result = {
+        "receipts": [],
+        "issue_guide": [],
+        "outbox": [],
+        "limit_per_group": MAX_FILES,
+        "raw_content_exported": False,
+    }
     # Portable editor cache location varies by platform. Only inspect fixture-owned
     # directories; never scan the user's global editor cache.
-    candidates = installation.joinpath("editor_data").rglob("gonggong-receipt-*")
+    cache = installation.joinpath("editor_data")
+    candidates = cache.rglob("gonggong-receipt-*")
     for path in candidates:
         if path.is_dir():
             continue
@@ -83,6 +90,14 @@ def collect_receipt_diagnostics(root, installation):
                 identity_sha256=hashlib.sha256(identity.encode("utf-8", errors="surrogatepass")).hexdigest(),
             )
         )
+    # Issue-guide requests, result bodies and temporary files are private.
+    for path in cache.rglob("gonggong-issue-guide-*.result.json.diagnostic.json"):
+        if path.is_dir():
+            continue
+        if len(result["issue_guide"]) == MAX_FILES:
+            result["issue_guide_truncated"] = True
+            break
+        result["issue_guide"].append(file_metadata(path))
     for path in root.joinpath(".gonggong-outbox/chat").glob("*"):
         if path.suffix not in (".json", ".tmp") or path.is_dir():
             continue

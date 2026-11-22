@@ -302,6 +302,10 @@ void EditorDock::update_tab_style() {
 	int index = parent_dock_container->get_tab_idx_from_control(this);
 	ERR_FAIL_COND(index == -1);
 
+	// Keep the original controls addressable to plugins and full-screen workbench users.
+	if (layout_key == "AIChatMainScreen" || layout_key == "DaqianMainScreen") {
+		parent_dock_container->get_tab_bar()->set_tab_hidden(index, parent_dock_container->dock_slot == DOCK_SLOT_MAIN_SCREEN);
+	}
 	parent_dock_container->get_tab_bar()->set_font_color_override_all(index, title_color);
 
 	const Ref<Texture2D> icon = get_effective_icon(callable_mp((Control *)this, &Control::get_editor_theme_icon));

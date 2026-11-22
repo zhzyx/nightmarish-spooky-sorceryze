@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fd37b4f523689150346a6393689f237b67493f2c",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "3be7eb0c0347f7c0523dc23cbc41278d69777ddfe69428256dfe4c5cec42ce45",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2009",
+    "action": "validation",
+    "detection_head": "91222c3f51a1b3970fb84616b73434689ffac346",
+    "context_sha256": "a7922b1156c0a1a5357baeef55bd932d57fb2b60837eeac1a2b8af86a8bc619a",
+    "operator": "Sail-Li",
+    "worker": "wave22_windows",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709#issuecomment-7066453423",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44959229481/artifacts/14729710966",
+    "diagnosis": "U13 固定摘要已修复，远端 runtime-setup 成功。后续需求恢复中第二个桥接进程没有返回有效结果。历史主线跟踪 #1357 也记录了同类症状，本候选未改动该桥接、执行与测试路径。已下载首次运行的同一 CI 编辑器，核对 SHA-256 d8ac3bc7a2d2fd5f6592a6fcee0df609218620e9012ca839654d1de6554976c8，完整安装、需求恢复及后续 19 次模型请求在独立 Windows 主机通过。首次远端桥接无结果的具体原因仍未知。",
+    "next_action": "保留首次失败与精确二进制复验回执，仅对同一 SHA 的远端失败作业进行一次针对性复跑。相同失败再现则保留原候选并继续收集桥接进程终态。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T23:12:43.414552+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T23:16:07.921461+00:00",
+  "sha256": "f37cee6445b4bba8c49db9b692b31b800fdb9f9eebc72cbc1710870b3620b2fc"
+}
