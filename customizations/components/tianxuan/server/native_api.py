@@ -13,6 +13,7 @@ from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
+from native_checkpoint import read_checkpoint
 from native_store import Conflict, NativeStore, NativeStoreError
 from starlette.concurrency import run_in_threadpool
 from tianxuan_core import require_native_source_read as _module_read
@@ -37,6 +38,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "inspect": set(),
             "advance": set(),
             "status": {"key"},
+            "checkpoint": {"key"},
             "edit-baseline": {"key", "module", "path"},
             "reconcile": {"key"},
             "execute": {"key"},
@@ -138,6 +140,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 return workflow.execute_receipt(actor, payload["key"])
             if operation in {"status", "check", "review", "reconcile", "finish"}:
                 return getattr(workflow, operation)(actor, payload["key"])
+            if operation == "checkpoint":
+                return read_checkpoint(workflow, actor, payload["key"])
             if operation == "edit-baseline":
                 return workflow.edit_baseline(actor, **payload)
             if operation == "verify-stage":
