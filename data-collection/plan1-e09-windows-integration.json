@@ -1,0 +1,158 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-e09",
+  "issue_number": 1797,
+  "status": "passed",
+  "summary": "Windows 原生编辑器通过两个保存入口保留人工 PNG 与 GLB 原件，并另存冲突候选。界面能读出纹理像素和两个实际网格，显式选定后重开仍对应原摘要。工单原件、上传和创意判断相邻用例通过。 同一编辑器另通过 E10 原件打开、修改、保存与回读用例。",
+  "observed": "2026-11-22T14:55:30.657170+00:00",
+  "source_tree": "ecba4937d8579dae4224233ef45b1dec581622ea",
+  "native": {
+    "editor_sha256": "cd2b0aa1d09e5fe110c2e10f10d4998691fbe44ed13350028aa9b9c5567c9351",
+    "launcher_sha256": "c2203ae352bf2eb863e2bd674b2ea39a6120b96cfd1cef72fd840fdcf426bdfa",
+    "producer": {
+      "mode": "deterministic fixture subprocess",
+      "launcher_pid": 85868,
+      "pid": 135208,
+      "parent_pid": 85868,
+      "outputs": [
+        "hero.png",
+        "hero.glb"
+      ],
+      "exit_code": 0
+    },
+    "changed_during_download": [
+      {
+        "before": "1d94f5747c6df5f6b0ccb70ce912bf4b6ff917729cd13942084bc9c83ddad351",
+        "saved": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+      }
+    ],
+    "http": [
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/1",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/2",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ]
+    ],
+    "comparisons": [
+      {
+        "candidate_filename": "candidate-36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c.png",
+        "candidate_sha256": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c",
+        "name": "hero.png",
+        "original_sha256": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+        "previews_and_choices": [
+          {
+            "pixel": "ff0000",
+            "selection": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+          },
+          {
+            "pixel": "0000ff",
+            "selection": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c"
+          }
+        ],
+        "reopened_choice": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c",
+        "revision": "b7347a533a275ef3323199e0c94ef5547ad401d4d139498c1d5794e9a0af9a16",
+        "stale_rejection_exercised": true
+      },
+      {
+        "candidate_filename": "9deb8183e7ecf957-candidate-ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef.glb",
+        "candidate_sha256": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+        "name": "hero.glb",
+        "original_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+        "previews_and_choices": [
+          {
+            "mesh_scale": 1.0,
+            "selection": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+          },
+          {
+            "mesh_scale": 2.0,
+            "selection": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef"
+          }
+        ],
+        "reopened_choice": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+        "revision": "c27e45ee513ad51af36fcac42f14fcecd5aae9eae4bcb8922aa66903f62e3f72",
+        "stale_rejection_exercised": false
+      }
+    ],
+    "selection_persisted": true,
+    "occupied_candidate_preserved": true,
+    "malformed_model_preview_rejected": true,
+    "temporary_downloads_remaining": 0
+  },
+  "regressions": {
+    "issue_artifacts": "c8dc6bbab43bb4c50bc29d93b14aac51a5b19953617134834fa5187e7c8a1922",
+    "issue_upload": "26b9756a8327060b49411a2202382109fa5e4bcba08d58c29477343486f74f16",
+    "creative_judgments": "0a10b6d20f6baeaccaa35555a015ac0bc58f07c8dfd71e3b293a8216912bb115"
+  },
+  "editor_package": {
+    "godot.windows.editor.x86_64.exe": "cd2b0aa1d09e5fe110c2e10f10d4998691fbe44ed13350028aa9b9c5567c9351",
+    "godot.windows.editor.x86_64.console.exe": "c2203ae352bf2eb863e2bd674b2ea39a6120b96cfd1cef72fd840fdcf426bdfa",
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+  },
+  "edit_original_e10": {
+    "after": {
+      "issue_id": "iss_6876d6bd3f684424b91fbc0eeea04475",
+      "kind": "concept",
+      "module": "studio-art",
+      "number": 1.0,
+      "path": "badge.svg",
+      "question": "确认徽章颜色",
+      "revision": "8d865c8c7301829456c0d2b034af12d31f50ae3744ab2480b2cd9661306246d8",
+      "submission_version": 2.0,
+      "title": "确认徽章颜色"
+    },
+    "before": {
+      "issue_id": "iss_6876d6bd3f684424b91fbc0eeea04475",
+      "kind": "concept",
+      "module": "studio-art",
+      "number": 1.0,
+      "path": "badge.svg",
+      "question": "确认徽章颜色",
+      "revision": "301c05c1aaed07b830c29bd59c0015f9cae34c0f7b1823aa156e70eb460d9729",
+      "submission_version": 1.0,
+      "title": "确认徽章颜色"
+    },
+    "description": "确认徽章颜色\n#1 · 提交 v2 · badge.svg\nstudio-art @ 8d865c8c7301829456c0d2b034af12d31f50ae3744ab2480b2cd9661306246d8\n判断人　usr_340d6395f9074535813d927d5aa79d2a",
+    "display_server": "Windows",
+    "editor": "CodeEdit",
+    "saved_source": "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle r=\"4\" fill=\"#0000ff\"/></svg>\n",
+    "original_sha256": "d25a5ffd658d948f2ab287c13330ce0dcb88a71a31f5ec1c6d9f60484b0f3751",
+    "edited_sha256": "4467418831d396623435d55a93deb2c45a1b9415477397c0d96f3026cdb874d0",
+    "engine_sha256": "c2203ae352bf2eb863e2bd674b2ea39a6120b96cfd1cef72fd840fdcf426bdfa"
+  }
+}

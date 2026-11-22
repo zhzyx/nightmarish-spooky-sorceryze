@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-e09",
+  "event_id": "afterk03-intake-1797",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1797",
+  "occurred_at": "2026-11-22T13:45:27.893806+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1797,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T13:45:25Z",
+    "accepted_dependencies": {
+      "1817": "0b6c09e13dcb9ac9f32db81eac2cdaf5405f74bb",
+      "1819": "fa80aaa29a1f4a3b63e71c3e8373e62299ea4ccd"
+    },
+    "source_main": "0d6778f6858118ffe79dd4b04cb8ea7e8576922d",
+    "title": "[方案一 E09] 保存二进制或不可合并资产候选"
+  },
+  "evidence_refs": [],
+  "sha256": "df78776507a9b117d2a7a4173c6b12901f3889c4c2fd2bba38523dcef7cde99b"
+}

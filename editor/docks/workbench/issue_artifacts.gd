@@ -346,10 +346,18 @@ func _download_reference(destination: String, reference: Dictionary, side := -1)
 				_feedback(reply.status)
 		elif FileAccess.get_sha256(temporary) != reference.digest:
 			feedback.text = "引用已失效，文件摘要不匹配"
-		elif DirAccess.rename_absolute(temporary, destination) != OK:
-			feedback.text = "写入失败，请重新选择保存位置"
 		else:
-			feedback.text = "已保存所选版本　%s" % destination.get_file()
+			var absolute := ProjectSettings.globalize_path(destination)
+			var install: Callable = _detail.get_meta("install_asset_if_absent")
+			var result: int = install.call(ProjectSettings.globalize_path(temporary), absolute)
+			if result == OK or (result == ERR_ALREADY_EXISTS and FileAccess.get_sha256(absolute) == reference.digest):
+				feedback.text = "已保存所选版本　%s" % destination.get_file()
+			elif result == ERR_ALREADY_EXISTS:
+				if side >= 0:
+					comparison.hide()
+				_status.text = _detail.get_node("asset_candidates").preserve(ProjectSettings.globalize_path(temporary), absolute, reference)
+			else:
+				feedback.text = "写入失败，请重新选择保存位置"
 	if FileAccess.file_exists(temporary):
 		DirAccess.remove_absolute(temporary)
 

@@ -53,7 +53,36 @@
 #include "scene/gui/text_edit.h"
 #include "scene/main/viewport.h"
 
+#ifdef WINDOWS_ENABLED
+#include <windows.h>
+#elif defined(UNIX_ENABLED)
+#include <unistd.h>
+
+#include <cerrno>
+#endif
+
 static constexpr char WORKBENCH_SHORTCUT[] = "editor/open_ai_workbench";
+
+// Install the completed download without replacing a file created during the request.
+static Error InstallAssetIfAbsent(const String &strTemporary, const String &strDestination)
+{
+#ifdef WINDOWS_ENABLED
+	if (MoveFileW((LPCWSTR)strTemporary.utf16().get_data(), (LPCWSTR)strDestination.utf16().get_data()))
+	{
+		return OK;
+	}
+	DWORD nError = GetLastError();
+	return nError == ERROR_ALREADY_EXISTS || nError == ERROR_FILE_EXISTS ? ERR_ALREADY_EXISTS : ERR_CANT_CREATE;
+#elif defined(UNIX_ENABLED)
+	if (::link(strTemporary.utf8().get_data(), strDestination.utf8().get_data()) == 0)
+	{
+		return OK;
+	}
+	return errno == EEXIST ? ERR_ALREADY_EXISTS : ERR_CANT_CREATE;
+#else
+	return ERR_UNAVAILABLE;
+#endif
+}
 
 static Ref<Resource> OpenOriginalText(const String &strPath)
 {
@@ -141,6 +170,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 			pDetail->set_meta("open_original_text", callable_mp_static(&OpenOriginalText));
 			pDetail->set_meta("close_original_text", callable_mp_static(&CloseOriginalText));
 			pDetail->set_meta("open_workbench_sidebar", callable_mp(this, &AIChatDock::OpenWorkbenchSidebar));
+			pDetail->set_meta("install_asset_if_absent", callable_mp_static(&InstallAssetIfAbsent));
 			pDetail->set_meta("open_linked_sidebar", callable_mp(this, &AIChatDock::ShowWorkbenchSidebar).bind(false));
 			for (const auto &action : workbench_issue_actions)
 			{

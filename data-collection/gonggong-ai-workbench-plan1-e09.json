@@ -1,0 +1,214 @@
+{
+  "issue_number": 1797,
+  "request_id": "gonggong-ai-workbench-plan1-e09",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1797",
+  "source_commit": "0d6778f6858118ffe79dd4b04cb8ea7e8576922d",
+  "verified_at": "2026-11-22T14:22:25.636389+00:00",
+  "passed": true,
+  "dependency_receipts": {
+    "1817": "data-collection/gonggong-ai-workbench-plan1-e04.json",
+    "1819": "data-collection/gonggong-ai-workbench-plan1-h04.json"
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "test_python": "3.12.14",
+  "source_sha256": {
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "1c71290224432ede4122bf81a505ead18a71547a8378dcafb5bbaf39888d4054",
+    "editor/docks/workbench/issue_artifacts.gd": "7541938134890106396506722724f4043ca9c5783671c13dd2e00319fd0417f0",
+    "editor/docks/workbench/issue_actions/asset_candidates.gd": "06933b0bbf36411569ffb0aeb7021c7192b93f0ca44a9da232fa18bda6037b74",
+    "tests/editor/workbench_asset_candidates.gd": "b0ba3b15e6fd462c79fe7817adceab82d8ab722a71b95365c51a6fdc0f917d75",
+    "tests/editor/run_workbench_asset_candidates.py": "974a2a54d85151c3d58b5c82846ac2e7a2f2bb26bfd78d3fa72ce720d7eabafa"
+  },
+  "build": {
+    "placement": "existing native workbench with embedded GDScript controls",
+    "command": "python -m SCons --cache-readonly platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no cache_path=<readonly-cache> cache_limit=0 -j6",
+    "exit_code": 0,
+    "generated_input_invalidation": [
+      "Regenerated IssueActions.gen.h and IssueCreation.gen.h after adding the candidate control and changing download handling.",
+      "Recompiled AIWorkbenchSidebar.cpp and linked the editor and console launcher.",
+      "Final preview metadata guard changed the embedded script: SCons regenerated IssueActions.gen.h, recompiled AIWorkbenchSidebar.cpp and relinked the editor. All four runners then exited 0 on this executable."
+    ],
+    "runtime_files": {
+      "godot.windows.editor.x86_64.console.exe": "eb7f952efea2673c8cb55aeeb8688eb751ebe949c7a6e941700f5c2e0d50cc9d",
+      "godot.windows.editor.x86_64.exe": "790aa174d79e65b0484d133145c2e416e0e737d0f569f8e7077f0158c903c9e8",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462"
+    }
+  },
+  "test_mode": "Windows private --headless --editor processes; compiled Windows controls and PNG/GLB decoders, authenticated loopback Tianxuan, SQLite Duobao, synthetic local artist edits, deterministic child-process candidate generation. GLB verification reads decoded viewport mesh geometry and transforms.",
+  "replay_commands": [
+    "python tests/editor/run_workbench_asset_candidates.py --godot bin/godot.windows.editor.x86_64.console.exe --report <temporary-output>/asset_candidates.json",
+    "python tests/editor/run_workbench_issue_artifacts.py --godot bin/godot.windows.editor.x86_64.console.exe --report <temporary-output>/issue_artifacts.json",
+    "python tests/editor/run_workbench_issue_upload.py --godot bin/godot.windows.editor.x86_64.console.exe --report <temporary-output>/issue_upload.json",
+    "python tests/editor/run_workbench_creative_judgments.py --godot bin/godot.windows.editor.x86_64.console.exe --report <temporary-output>/creative_judgments.json"
+  ],
+  "replay_environment": "Use system TEMP outside the checkout; clear GONGGONG_WORKSPACE in the test process for creative_judgments. All fixture sessions use separate settings and projects.",
+  "candidate_acceptance": {
+    "editor_sha256": "790aa174d79e65b0484d133145c2e416e0e737d0f569f8e7077f0158c903c9e8",
+    "launcher_sha256": "eb7f952efea2673c8cb55aeeb8688eb751ebe949c7a6e941700f5c2e0d50cc9d",
+    "producer": {
+      "mode": "deterministic fixture subprocess",
+      "launcher_pid": 129028,
+      "pid": 115448,
+      "parent_pid": 129028,
+      "outputs": [
+        "hero.png",
+        "hero.glb"
+      ],
+      "exit_code": 0
+    },
+    "changed_during_download": [
+      {
+        "before": "1d94f5747c6df5f6b0ccb70ce912bf4b6ff917729cd13942084bc9c83ddad351",
+        "saved": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+      }
+    ],
+    "http": [
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/1",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/2",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ]
+    ],
+    "comparisons": [
+      {
+        "candidate_filename": "candidate-36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c.png",
+        "candidate_sha256": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c",
+        "name": "hero.png",
+        "original_sha256": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+        "previews_and_choices": [
+          {
+            "pixel": "ff0000",
+            "selection": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+          },
+          {
+            "pixel": "0000ff",
+            "selection": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c"
+          }
+        ],
+        "reopened_choice": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c",
+        "revision": "b7347a533a275ef3323199e0c94ef5547ad401d4d139498c1d5794e9a0af9a16",
+        "stale_rejection_exercised": true
+      },
+      {
+        "candidate_filename": "13f5e40641ee93f5-candidate-ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef.glb",
+        "candidate_sha256": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+        "name": "hero.glb",
+        "original_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+        "previews_and_choices": [
+          {
+            "mesh_scale": 1.0,
+            "selection": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+          },
+          {
+            "mesh_scale": 2.0,
+            "selection": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef"
+          }
+        ],
+        "reopened_choice": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+        "revision": "c27e45ee513ad51af36fcac42f14fcecd5aae9eae4bcb8922aa66903f62e3f72",
+        "stale_rejection_exercised": false
+      }
+    ],
+    "selection_persisted": true,
+    "occupied_candidate_preserved": true,
+    "malformed_model_preview_rejected": true,
+    "temporary_downloads_remaining": 0
+  },
+  "regressions": {
+    "I14": {
+      "saved_sha256": [
+        "8467c8c12cf6e00ce0a636eb6a9ee831d0e639e7b03cf3e047fefaad8abc3bfc",
+        "141092a075d222ad0b4a078be37ce25e2376ba3136fdb72ea728d3b88639eea7"
+      ],
+      "stale_destination_created": false,
+      "logout_cleared_references": true
+    },
+    "I18": {
+      "native_revision_count": 2,
+      "saved_sha256": [
+        "2b595e48c1b5963bff9b05ea34bd185f58e66ee7560394c6423dac349c9a8d73",
+        "babf5d00b1013cd674c603b5d344edb5308a922718f5ee072f0fbd0fbcd37345"
+      ],
+      "wrong_project_http": {
+        "list": 404,
+        "download": 404,
+        "upload": 404
+      }
+    },
+    "H04": {
+      "preview_colors": [
+        "ff0000",
+        "0000ff"
+      ],
+      "saved_sha256": [
+        "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+        "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c"
+      ],
+      "decision_history": [
+        [
+          "work.submit_asset",
+          "pending"
+        ],
+        [
+          "work.submit_asset",
+          "pending"
+        ],
+        [
+          "work.transfer",
+          "pending"
+        ],
+        [
+          "work.decide",
+          "approved"
+        ]
+      ]
+    }
+  },
+  "static_checks": [
+    "ruff check and format --check tests/editor/run_workbench_asset_candidates.py",
+    "mypy --follow-imports skip tests/editor/run_workbench_asset_candidates.py",
+    "clang-format --dry-run --Werror editor/docks/workbench/AIWorkbenchSidebar.cpp",
+    "git diff --check"
+  ],
+  "acceptance_boundary": "Windows source and local product validation. Repository target receipt and issue completion belong to the parent delivery owner. macOS E04/H04 observations are identified by their separate dependency receipts.",
+  "native_dispatch": {
+    "origin": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-e09/dispatch-c7be03f64d2b4e4d802c800cc1933ab7.json",
+    "worker": "/root/sinan_176b3484e7c6135c",
+    "terminal_verifier": "parent Codex dispatch host observes completion after handoff"
+  }
+}
