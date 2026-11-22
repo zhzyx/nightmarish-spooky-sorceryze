@@ -7,14 +7,17 @@ import os
 import shlex
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
 from editor_test_isolation import macos_editor
+from parallel_shutdown_tree import run_editor
 
 ROOT = Path(__file__).resolve().parents[2]
 MOCK = r"""
 const fs = require('fs');
+if (process.argv.includes('login')) { console.log('Fixture login'); process.exit(0); }
 let wire = '';
 process.stdin.on('data', data => wire += data);
 process.stdin.on('end', () => {
@@ -30,6 +33,10 @@ process.stdin.on('end', () => {
   const prompt = input.messages[latest].content;
   const results = input.messages.slice(latest).filter(m => m.role === 'tool');
   fs.appendFileSync(process.env.CONSULT_WIRE, JSON.stringify({prompt, results: results.length, names}) + '\n');
+  if (prompt === 'SHUTDOWN') {
+    require('node:child_process').spawn(process.env.MAC_TREE_PYTHON, [process.env.MAC_TREE_HELPER], {stdio:'ignore'});
+    return;
+  }
   if (prompt === 'CANCEL') { setInterval(() => {}, 1000); return; }
   let answer;
   if (prompt === 'ATTACK') answer = {content:'',actions:[{name:'write_file',arguments:JSON.stringify({path:process.env.CONSULT_TARGET,content:'BAD'})}]};
@@ -46,10 +53,21 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--godot", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--mac-shutdown", action="store_true")
     args = parser.parse_args()
+    if args.mac_shutdown and sys.platform != "darwin":
+        parser.error("The process-group shutdown fixture requires macOS")
     with tempfile.TemporaryDirectory(prefix="codex-consult-") as tmp:
         root = Path(tmp)
         isolated_editor = macos_editor(args.godot, root / "isolated-editor")
+        if sys.platform == "darwin":
+            (root / "SConstruct").touch()
+            for directory in ("codex_cli", "codebuddy_cli"):
+                shutil.copytree(
+                    ROOT / "tools" / directory,
+                    root / "tools" / directory,
+                    ignore=shutil.ignore_patterns("node_modules", "__pycache__"),
+                )
         project = root / "project"
         project.mkdir()
         (project / "project.godot").write_text('[application]\nconfig/name="Consultation"\n')
@@ -77,15 +95,27 @@ def main():
             CONSULT_WIRE=str(wire),
             CONSULT_ABSENT=str(root / "absent"),
         )
-        for key in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME"]:
+        for key in ["APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "XDG_DATA_HOME", "HOME"]:
             env[key] = str(root / key)
             (root / key).mkdir()
-        result = subprocess.run(
-            [str(isolated_editor), "--headless", "--editor", "--path", str(project), "--script", "res://gate.gd"],
-            env=env,
-            capture_output=True,
-            timeout=120,
-        )
+        command = [str(isolated_editor), "--headless", "--editor", "--path", str(project), "--script", "res://gate.gd"]
+        if args.mac_shutdown:
+            result, tree = run_editor(command, env, project, text=False)
+            assert result.returncode == 0 and not tree["survivors"] and tree["control_alive"], (result.stderr, tree)
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            args.out.write_text(
+                json.dumps(
+                    {
+                        "editor_sha256": hashlib.sha256(args.godot.read_bytes()).hexdigest(),
+                        "process_tree": tree,
+                        "ok": True,
+                    },
+                    indent=2,
+                )
+                + "\n"
+            )
+            return
+        result = subprocess.run(command, env=env, capture_output=True, timeout=120)
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.with_suffix(".stdout.log").write_bytes(result.stdout)
         args.out.with_suffix(".stderr.log").write_bytes(result.stderr)

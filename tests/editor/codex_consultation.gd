@@ -52,6 +52,16 @@ func _run():
 	assert(not check.button_pressed)
 	assert(check.get_index() + 1 == dock.find_child("Send", true, false).get_index())
 	check.button_pressed = true
+	if OS.has_environment("MAC_TREE_PROJECT"):
+		dock.find_child("ChatInput", true, false).text = "SHUTDOWN"
+		dock.find_child("Send", true, false).pressed.emit()
+		for i in range(200):
+			if FileAccess.file_exists("res://process-tree-ready"):
+				quit()
+				return
+			await create_timer(0.05).timeout
+		quit(1)
+		return
 	if not await send("ATTACK", "invalid action"):
 		quit(1)
 		return

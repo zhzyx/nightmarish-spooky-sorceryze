@@ -468,6 +468,13 @@ func _run():
 		if not await _wait_file("parallel-started"):
 			_finish()
 			return
+		if mode.begins_with("parallel-mac-"):
+			await _wait_file("process-tree-ready")
+			if mode == "parallel-mac-leader-exit":
+				# Let the editor poll the completed leader before shutdown.
+				await create_timer(0.5).timeout
+			_finish()
+			return
 		var tabs = dock.find_child("AgentTabs", true, false)
 		if mode == "parallel-stop":
 			_check(not dock.find_child("Stop", true, false).disabled, "Stop is unavailable during external execution")

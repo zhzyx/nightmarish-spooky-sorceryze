@@ -1,0 +1,203 @@
+{
+  "issue_number": 1776,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1776",
+  "request_id": "gonggong-ai-workbench-plan1-r04",
+  "source_base": "e8b40ea7d472868629b62af109acc03e42be7fae",
+  "candidate_blobs": {
+    "editor/docks/AIChatCliTransport.cpp": "065442eaa53fe2640dc27b0fa5af9b864e44882c",
+    "editor/docks/AIChatCliTransport.h": "5bbfa9606370436f08f47f78ef2c1a80247f6f6d",
+    "editor/docks/ai_chat_dock.cpp": "27c46d7ff9cf78f5bf14c1b5b75e808e742cc163",
+    "editor/docks/ai_chat_sub_agents.cpp": "9641203961afc39f45c37c28e7104b02fc802aa1",
+    "editor/docks/gonggong_process.h": "e8759093ab5a86dec592c05cd2c6bb5ada618591",
+    "editor/docks/production/MacWorkerGroup.h": "7f3cf19a89c88388a0a1bde0a8f2be0473aae5d1",
+    "tests/editor/codex_consultation.gd": "22c2f325a09e21c98cf85efaa3c8251dd358cab0",
+    "tests/editor/design_batch.gd": "b0a9f9e0375e9b29d3edf4a0e410cab2d135b4ba",
+    "tests/editor/parallel_shutdown_tree.py": "fb8f416e17dba6ba4c4adc2419eda1f0a6fe6273",
+    "tests/editor/run_codex_consultation.py": "fe8d4fa0a5f860e81941264bc7d6c11db407631c",
+    "tests/editor/run_design_batch.py": "c65041ff06bd3868c7a012c7f0be8004689bb002"
+  },
+  "environment": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "verified_at": "2026-11-22T14:23:21.022613+00:00",
+  "editor_sha256": "368b2a3a3bad485de124f09618cd839314e690b317ede4841a830a2baa62dd53",
+  "commands": [
+    "python -m SCons -j5 platform=macos target=editor arch=arm64 vulkan=no accesskit=no debug_symbols=no",
+    "python tests/editor/run_design_batch.py --godot <editor> --node <node> --case <parallel-mac-shutdown|parallel-mac-leader-exit> --out <report>",
+    "python tests/editor/run_codex_consultation.py --godot <editor> [--mac-shutdown] --out <report>",
+    "python tests/editor/run_native_acceptance.py --scenario parallel --godot <editor> --node <node> --out <report>",
+    "TMPDIR=/private/tmp node --test tests/editor/test_parallel_work_orders.mjs",
+    "python customizations/components/godot-host/test_parent_completion.py -v ParentCompletionTests.test_owned_process_cancellation_prevents_late_descendant_write"
+  ],
+  "scope": "Native macOS arm64 headless editor, real bridge and runner process lifetimes, real kernel observations. Provider replies, GitHub authority and reporting transports used isolated fixtures.",
+  "checks": {
+    "parallel-mac-shutdown": {
+      "pids": [
+        23630,
+        23663,
+        23664
+      ],
+      "groups": [
+        23630,
+        23630,
+        23630
+      ],
+      "registration": {
+        "id": "7c4e0434-20d8-49d5-9a07-3d32955429f0",
+        "pid": 23663,
+        "sha256": "3619357e6fa9b76565f69384fd49d01be49175110cc007abace2a7fcaa9b0039",
+        "issue": 441
+      },
+      "survivors": [],
+      "control_pid": 23249,
+      "control_alive": true
+    },
+    "parallel-mac-leader-exit": {
+      "pids": [
+        23569,
+        23627,
+        23628
+      ],
+      "groups": [
+        23569,
+        23569,
+        23569
+      ],
+      "registration": {
+        "id": "38dd4dba-51ab-4955-9d59-908d23e80cda",
+        "pid": 23627,
+        "sha256": "fb7b57b4b6f3c0017fd9d70a9ad2ae5c4c24f7cc9d882bdd895c38cd394840b3",
+        "issue": 441
+      },
+      "survivors": [],
+      "control_pid": 23248,
+      "control_alive": true
+    },
+    "cli_chat_shutdown": {
+      "pids": [
+        23252,
+        23254,
+        23255,
+        23256
+      ],
+      "groups": [
+        23252,
+        23252,
+        23252,
+        23252
+      ],
+      "survivors": [],
+      "control_pid": 23203,
+      "control_alive": true
+    },
+    "cli_transport_regression": {
+      "ok": true,
+      "requests": [
+        {
+          "prompt": "ATTACK",
+          "results": 0,
+          "names": [
+            "get_editor_state",
+            "list_directory",
+            "list_scripts",
+            "read_file",
+            "read_logs",
+            "read_script"
+          ]
+        },
+        {
+          "prompt": "CANCEL",
+          "results": 0,
+          "names": [
+            "get_editor_state",
+            "list_directory",
+            "list_scripts",
+            "read_file",
+            "read_logs",
+            "read_script"
+          ]
+        },
+        {
+          "prompt": "READ",
+          "results": 0,
+          "names": [
+            "get_editor_state",
+            "list_directory",
+            "list_scripts",
+            "read_file",
+            "read_logs",
+            "read_script"
+          ]
+        },
+        {
+          "prompt": "READ",
+          "results": 1,
+          "names": [
+            "get_editor_state",
+            "list_directory",
+            "list_scripts",
+            "read_file",
+            "read_logs",
+            "read_script"
+          ]
+        },
+        {
+          "prompt": "READ",
+          "results": 2,
+          "names": [
+            "get_editor_state",
+            "list_directory",
+            "list_scripts",
+            "read_file",
+            "read_logs",
+            "read_script"
+          ]
+        }
+      ]
+    },
+    "native_parallel_acceptance": {
+      "ok": true,
+      "scenario": "parallel",
+      "independent_decisions": 3
+    }
+  },
+  "runner_tests": {
+    "passed": 68,
+    "failed": 0,
+    "fixture_tmpdir": "canonical absolute path"
+  },
+  "parent_delivery_owned_command": "passed: cancelled descendant failed to perform its delayed write",
+  "darwin_group_retry": "own pid refusal ECHILD, live EAGAIN, deadline ETIMEDOUT, retained waitable child, retry verified and reaped, stale ECHILD: 20171",
+  "pre_fix_native_shutdown": {
+    "editor_sha256": "47b4e87f4ff077555ecbd94887f61c15a25ccad831f854b0638648c2e42c4ca5",
+    "observation": {
+      "pids": [
+        13550,
+        13551,
+        13552
+      ],
+      "groups": [
+        13550,
+        13550,
+        13550
+      ],
+      "survivors": [
+        13551,
+        13552
+      ],
+      "control_pid": 13187,
+      "control_alive": true
+    }
+  },
+  "additional_legacy_fixture_observations": {
+    "parallel-normal": {
+      "status": "preexisting_fixture_failure",
+      "diagnostic": "Missing native reply: DESIGN_BATCH_PARENT_VERIFIED_OK",
+      "before_editor_sha256": "47b4e87f4ff077555ecbd94887f61c15a25ccad831f854b0638648c2e42c4ca5"
+    },
+    "parallel-unknown": {
+      "status": "preexisting_fixture_failure",
+      "diagnostic": "Missing native reply: DESIGN_BATCH_PARENT_VERIFIED_OK",
+      "before_editor_sha256": "47b4e87f4ff077555ecbd94887f61c15a25ccad831f854b0638648c2e42c4ca5"
+    }
+  },
+  "host_typing": "mypy 2.4.0 checked the three affected Python files successfully"
+}

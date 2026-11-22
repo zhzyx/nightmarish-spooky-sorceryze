@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round13-r04-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-r04",
+  "kind": "request",
+  "occurred_at": "2026-11-22T14:19:22.188946+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1776",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "issue_number": 1776,
+    "scope": "<!-- mac-round13-batch-1776 -->\n\n**本轮推进目标**　在 macOS 退出已登记任务，观察该任务的子孙进程实际终止，并用无关进程作存活对照。",
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1776#issuecomment-7080104392",
+    "intake_sha256": "43b41910ccefa8bf0fbd7008f0b663ce9dec2ec78a1d01b8765508ab8161088c"
+  },
+  "evidence_refs": [],
+  "sha256": "08e6902fd350cfdcb6536394e63183eca24b43d34c15c371385790f5123d7b1e"
+}
