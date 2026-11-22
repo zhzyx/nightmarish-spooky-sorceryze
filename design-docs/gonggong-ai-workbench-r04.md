@@ -4,4 +4,4 @@ macOS 编辑器退出时清理已登记的并行 runner 与普通 CLI 对话的�
 
 父任务交付沿用已有的 OwnedCommand 撤销协议。组状态未知时留存本地核对记录，重开后按原工单核对。两个较早的模拟父任务回执用例在修复前后均未返回预期消息，回执列出了两次的对照结果。
 
-[方案一 R04](gonggong-ai-workbench-plan1.md#r04) · [候选与实机验收](../data-collection/gonggong-ai-workbench-plan1-r04.json)
+[方案一 R04](gonggong-ai-workbench-plan1.md#r04) · [候选与实机验收](../data-collection/gonggong-ai-workbench-plan1-r04-rechecked.json)

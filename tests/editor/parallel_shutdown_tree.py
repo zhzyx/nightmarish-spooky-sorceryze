@@ -39,7 +39,7 @@ if __name__ == "__main__":
         pids = list(dict.fromkeys([os.getpgrp(), os.getppid(), os.getpid(), grandchild.pid]))
         groups = [os.getpgid(pid) for pid in pids]
         assert groups == [pids[0]] * len(pids)
-        record = {"pids": pids, "groups": groups}
+        record: dict[str, object] = {"pids": pids, "groups": groups}
         if "MAC_TREE_OUTPUT" in os.environ:
             assert "Issue" in sys.stdin.read()
             report = json.loads(Path(os.environ["MAC_TREE_OUTPUT"]).read_text())

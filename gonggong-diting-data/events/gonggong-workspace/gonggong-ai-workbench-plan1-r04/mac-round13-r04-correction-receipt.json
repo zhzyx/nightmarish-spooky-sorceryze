@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round13-r04-correction-receipt",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-r04",
+  "kind": "coverage",
+  "occurred_at": "2026-11-22T14:24:54.568628+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1776",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "issue_number": 1776,
+    "collection": "data-collection/gonggong-ai-workbench-plan1-r04-rechecked.json",
+    "sha256": "9498853a7af0b16f9efde99dc22f2af6e6e35e47ee01a0b8be54636f75944f3e",
+    "editor_sha256": "368b2a3a3bad485de124f09618cd839314e690b317ede4841a830a2baa62dd53",
+    "verification": "macOS 编辑器退出时清理已登记的并行 runner 与普通 CLI 对话的专属进程组，直属子进程保持可等待，直至内核确认组内只剩已退出的组长。超时保留身份以便重试，丢失所有权后停止发信号。真实编辑器的活动 runner、先退组长及 Codex 桥三条路径分别核对三个、三个和四个 PID 全部消失，三个独立对照持续存活。真实 runner 登记与工作者 PID 和文件摘要匹配。",
+    "corrects": "mac-round13-r04-coverage-rechecked"
+  },
+  "evidence_refs": [],
+  "sha256": "e7a81d713e939302c0cbcb3883512f32f645795d7e4e0a3eed34d18bd201476f"
+}
