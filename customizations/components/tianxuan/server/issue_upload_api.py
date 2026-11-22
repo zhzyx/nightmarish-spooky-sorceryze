@@ -1,12 +1,13 @@
 """Receive a bounded local file and bind its immutable Duobao object to a numbered issue."""
 
 import hashlib
+import json
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from native_api import MAX_OBJECT, _body, _call, _fields, _identity, decode_object
 from native_store import Conflict, NativeStoreError, _object_name
-from tianxuan_core import _connection_call
-from work_management import record_work_mutation
+from tianxuan_core import PermissionDenied, VersionConflict, _connection_call, _now
+from work_management import record_work_mutation, snapshot
 
 
 @_connection_call
@@ -74,6 +75,65 @@ def _upload(domain, native, actor, project, number, name, content):
     return dict(**reference, version=version, digest=digest)
 
 
+@_connection_call
+def _save_judgment(domain, native, actor, project, number, version, expected, original, content, call_id):
+    if type(expected) is not int or type(original) is not str or not isinstance(call_id, str) or not call_id.strip():
+        raise HTTPException(422, "revision, expected version and call id are required")
+    if not domain.db.in_transaction:
+        domain.db.execute("BEGIN IMMEDIATE")
+    issue = _target(domain, actor, project, number)
+    state = snapshot(domain, actor, issue["id"])
+    selected = next((row for row in state["creative_judgments"] if row["submission_version"] == version), None)
+    if not selected:
+        raise VersionConflict("unknown judgment")
+    digest = hashlib.sha256(content).hexdigest()
+    payload = dict(
+        issue_id=issue["id"],
+        module=selected["module"],
+        submission_version=version,
+        expected_version=expected,
+        original=original,
+        digest=digest,
+    )
+
+    def save():
+        if selected["responsible"] != actor:
+            raise PermissionDenied("only the responsible person may edit this judgment")
+        if state["version"] != expected or selected["decision"] != "pending" or selected["revision"] != original:
+            raise VersionConflict("pending judgment changed")
+        module, path = selected["module"], selected["path"]
+        if module.startswith("requirement-"):
+            raise PermissionDenied("reserved source module")
+        if selected["digest"] == digest:
+            raise VersionConflict("no change to original")
+        request = hashlib.sha256(json.dumps([issue["id"], version, call_id]).encode()).hexdigest()
+        saved = native.submit(
+            issue["tenant_id"],
+            actor,
+            "snapshot-judgment-" + request,
+            [dict(module=module, base=original, reads=None, edits={path: content})],
+        )
+        revision = saved["revisions"][module]
+        event = dict(
+            kind=selected["kind"],
+            module=module,
+            path=path,
+            revision=revision,
+            digest=digest,
+            initiator=selected["initiator"],
+            responsible=actor,
+            decision="pending",
+            supersedes=version,
+        )
+        domain.db.execute(
+            "INSERT INTO issue_work_events VALUES(?,?,?,?,?,?)",
+            (issue["id"], expected + 1, "work.submit_asset", json.dumps(event), actor, _now()),
+        )
+        return dict(issue_id=issue["id"], submission_version=expected + 1, revision=revision, digest=digest)
+
+    return domain._run_tool_once(actor, "work.edit_original", payload, call_id, save)
+
+
 def _writer(request: Request):
     return _identity(request, allow_project=True)[1]
 
@@ -86,6 +146,26 @@ def create_issue_upload_router(domain, native):
         body = _fields(await _body(request, max_bytes=4 * ((MAX_OBJECT + 2) // 3) + 4096), {"name", "content"})
         return await _call(
             _upload, domain, native, actor, project, number, body["name"], decode_object(body["content"])
+        )
+
+    @router.post("/issues/by-number/{number}/artifacts/{version}/edit")
+    async def save_judgment(number: int, version: int, project: str, request: Request, actor: str = Depends(_writer)):
+        body = _fields(
+            await _body(request, max_bytes=4 * ((MAX_OBJECT + 2) // 3) + 4096),
+            {"expected_version", "revision", "content", "call_id"},
+        )
+        return await _call(
+            _save_judgment,
+            domain,
+            native,
+            actor,
+            project,
+            number,
+            version,
+            body["expected_version"],
+            body["revision"],
+            decode_object(body["content"]),
+            body["call_id"],
         )
 
     return router

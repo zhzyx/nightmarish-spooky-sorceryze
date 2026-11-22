@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round13-edit-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e10",
+  "kind": "request",
+  "occurred_at": "2026-11-22T14:04:47.979090+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue": 1765,
+    "request": "从 Mac 待判断项进入原生编辑器，手改创意原件、保存并返回，核对判断项引用的新修订及原件内容。",
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765#issuecomment-7080104034",
+    "verified_intake_sha256": "ac4da8ff856028b3217d58e2dbb6963eef96d9d333337d096c8f7ae3609a3217"
+  },
+  "evidence_refs": [],
+  "sha256": "182891488bf2db39a9964d61579fdfc0069456874a732147f57029fb36d5aadc"
+}

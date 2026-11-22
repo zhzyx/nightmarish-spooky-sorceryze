@@ -123,7 +123,7 @@ def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any
         history=[],
     )
     latest_judgments = {}
-    judgments_by_version = {}
+    judgments_by_version: dict[int, dict[str, Any]] = {}
     issue_creator = None
     checked_modules = set()
     for row in store.db.execute(
@@ -154,6 +154,8 @@ def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any
                         initiator=event.get("initiator", issue_creator),
                         responsible=event.get("responsible", issue_creator),
                     )
+                    if "supersedes" in event:
+                        judgments_by_version[event["supersedes"]]["decision"] = "superseded"
                     latest_judgments[data["kind"]] = judgment
                     judgments_by_version[event["version"]] = judgment
                     state["creative_judgments"].append(judgment)
