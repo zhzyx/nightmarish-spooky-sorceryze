@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-q03",
+  "event_id": "resume-1709-final-probe-1726",
+  "kind": "coverage",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1726",
+  "occurred_at": "2026-11-22T18:26:00.967144+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "issue_number": 1726,
+    "source_probe": "tests/editor/workbench_q03_animation.gd",
+    "handoff_probe_sha256": "e95d59d67ebc72c2c8d02a3b6d8433801c8f371e3580d86b46021bb83f6e59bc",
+    "submitted_probe_sha256": "fa6297f005bc6d00db2317b720facf6f723c0d89047ceb6ce01102387f54b3fb",
+    "normalization": "One trailing empty line removed from the probe after original receipt.",
+    "validation": "Both animation tests passed in 56.72s on the normalized probe, including archived comparison and all 25 paired poses."
+  },
+  "evidence_refs": [
+    "resume-1709-receive-1726"
+  ],
+  "sha256": "f4ca301826d1cfe2bfb748df6ccf07c99fae3a60b677eaaf83792a4103d7120d"
+}

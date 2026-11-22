@@ -1,0 +1,469 @@
+{
+  "issue": "iss_4017b3b1b39143cd93b8d6765b1cc693",
+  "project": "studio",
+  "number": 3,
+  "command_source": "active Codex operator on the signed revision",
+  "action": {
+    "issue": "iss_4017b3b1b39143cd93b8d6765b1cc693",
+    "execution": "50c62e6339670837bb460b74711a04d32e0855991a675bbca5d4225edc655ba1",
+    "source_revision": "844a0e0ac59c4cb0544e2271f96827403a77b4a0e6840a656f7e4e55c348e45e",
+    "source_sha256": "99146ce16008e0b73293a3ef603f6a3e497edae9861b20eb7eb6dd99191b7adf",
+    "criteria": "Preview only. At 24 fps retime the approach before frame 12, keep frames 12–24 including the manual landing (250,96).",
+    "stage": "preview",
+    "manual_edit": {
+      "after": [
+        250,
+        96
+      ],
+      "before": [
+        250,
+        79
+      ],
+      "frame": 24,
+      "sha256": "99146ce16008e0b73293a3ef603f6a3e497edae9861b20eb7eb6dd99191b7adf",
+      "source_frames": [
+        0,
+        6,
+        12,
+        24
+      ]
+    },
+    "action": "halve_approach",
+    "protected_frame": 12,
+    "candidate_clip": "Landing"
+  },
+  "original": {
+    "revision": "b7e90f4eb170e04faee4cb268ebce5c122918212858d4aceae4e776e9bc54cd1",
+    "sha256": "25c8291b86ab1e8d157c3aa73355ab16b00c8fe2065b621bdc0dd19fce42e2d5"
+  },
+  "manual": {
+    "revision": "844a0e0ac59c4cb0544e2271f96827403a77b4a0e6840a656f7e4e55c348e45e",
+    "after": [
+      250,
+      96
+    ],
+    "before": [
+      250,
+      79
+    ],
+    "frame": 24,
+    "sha256": "99146ce16008e0b73293a3ef603f6a3e497edae9861b20eb7eb6dd99191b7adf",
+    "source_frames": [
+      0,
+      6,
+      12,
+      24
+    ]
+  },
+  "candidate": {
+    "revision": "436992e0ddf93c3268daca654ca5149f1675c35b80a0e898887e3de72e84edcb",
+    "sha256": "20ea881df2fd4bb0f02ac5483448ff7b0b60636684f5a94c13b3644d8a8128ec"
+  },
+  "editor_sha256": "5b30bbfe50978e1aa7d54b72782f82ea8f76313ad1f335644d3a224517a844ec",
+  "editor_launcher_sha256": "d6a8f83c29d1f7df75f854be0cd278ab43848966d9be70e618142c75b36eb607",
+  "replay": {
+    "display_driver": "headless",
+    "fps": 24,
+    "frames": {
+      "Landing": [
+        [
+          35.0,
+          96.0
+        ],
+        [
+          54.3333320617676,
+          79.3333358764648
+        ],
+        [
+          73.6666641235352,
+          62.6666641235352
+        ],
+        [
+          93.0,
+          46.0
+        ],
+        [
+          99.8888854980469,
+          44.8888893127441
+        ],
+        [
+          106.777778625488,
+          43.7777786254883
+        ],
+        [
+          113.666664123535,
+          42.6666679382324
+        ],
+        [
+          120.555557250977,
+          41.5555572509766
+        ],
+        [
+          127.444442749023,
+          40.4444427490234
+        ],
+        [
+          134.33332824707,
+          39.3333320617676
+        ],
+        [
+          141.222229003906,
+          38.2222213745117
+        ],
+        [
+          148.111114501953,
+          37.1111106872559
+        ],
+        [
+          155.0,
+          36.0
+        ],
+        [
+          162.91667175293,
+          41.0
+        ],
+        [
+          170.83332824707,
+          46.0
+        ],
+        [
+          178.75,
+          51.0
+        ],
+        [
+          186.66667175293,
+          56.0
+        ],
+        [
+          194.58332824707,
+          61.0
+        ],
+        [
+          202.5,
+          66.0
+        ],
+        [
+          210.41667175293,
+          71.0
+        ],
+        [
+          218.33332824707,
+          76.0
+        ],
+        [
+          226.25,
+          81.0
+        ],
+        [
+          234.16667175293,
+          86.0
+        ],
+        [
+          242.08332824707,
+          91.0
+        ],
+        [
+          250.0,
+          96.0
+        ]
+      ],
+      "Walk": [
+        [
+          35.0,
+          96.0
+        ],
+        [
+          44.6666679382324,
+          87.6666641235352
+        ],
+        [
+          54.3333320617676,
+          79.3333358764648
+        ],
+        [
+          64.0,
+          71.0
+        ],
+        [
+          73.6666641235352,
+          62.6666641235352
+        ],
+        [
+          83.3333358764648,
+          54.3333358764648
+        ],
+        [
+          93.0,
+          46.0
+        ],
+        [
+          103.333335876465,
+          44.3333320617676
+        ],
+        [
+          113.666664123535,
+          42.6666679382324
+        ],
+        [
+          124.0,
+          41.0
+        ],
+        [
+          134.33332824707,
+          39.3333320617676
+        ],
+        [
+          144.66667175293,
+          37.6666679382324
+        ],
+        [
+          155.0,
+          36.0
+        ],
+        [
+          162.91667175293,
+          41.0
+        ],
+        [
+          170.83332824707,
+          46.0
+        ],
+        [
+          178.75,
+          51.0
+        ],
+        [
+          186.66667175293,
+          56.0
+        ],
+        [
+          194.58332824707,
+          61.0
+        ],
+        [
+          202.5,
+          66.0
+        ],
+        [
+          210.41667175293,
+          71.0
+        ],
+        [
+          218.33332824707,
+          76.0
+        ],
+        [
+          226.25,
+          81.0
+        ],
+        [
+          234.16667175293,
+          86.0
+        ],
+        [
+          242.08332824707,
+          91.0
+        ],
+        [
+          250.0,
+          96.0
+        ]
+      ]
+    },
+    "keys": {
+      "Landing": [
+        [
+          [
+            0.0,
+            35.0,
+            1.0
+          ],
+          [
+            3.0,
+            93.0,
+            1.0
+          ],
+          [
+            12.0,
+            155.0,
+            1.0
+          ],
+          [
+            24.0,
+            250.0,
+            1.0
+          ]
+        ],
+        [
+          [
+            0.0,
+            96.0,
+            1.0
+          ],
+          [
+            3.0,
+            46.0,
+            1.0
+          ],
+          [
+            12.0,
+            36.0,
+            1.0
+          ],
+          [
+            24.0,
+            96.0,
+            1.0
+          ]
+        ]
+      ],
+      "Walk": [
+        [
+          [
+            0.0,
+            35.0,
+            1.0
+          ],
+          [
+            6.0,
+            93.0,
+            1.0
+          ],
+          [
+            12.0,
+            155.0,
+            1.0
+          ],
+          [
+            24.0,
+            250.0,
+            1.0
+          ]
+        ],
+        [
+          [
+            0.0,
+            96.0,
+            1.0
+          ],
+          [
+            6.0,
+            46.0,
+            1.0
+          ],
+          [
+            12.0,
+            36.0,
+            1.0
+          ],
+          [
+            24.0,
+            96.0,
+            1.0
+          ]
+        ]
+      ]
+    },
+    "landing": {
+      "Landing": [
+        250.0,
+        96.0
+      ],
+      "Walk": [
+        250.0,
+        96.0
+      ]
+    },
+    "replay": {
+      "Landing": {
+        "label": "Landing | revision 098078c3277f | 0.0-1.0 s",
+        "time": 0.121960888888886,
+        "xy": [
+          91.5898513793945,
+          47.2156448364258
+        ]
+      },
+      "Walk": {
+        "label": "Walk | revision 7171aa44a2b9 | 0.0-1.0 s",
+        "time": 0.123511555555556,
+        "xy": [
+          63.6546783447266,
+          71.2976913452148
+        ]
+      }
+    },
+    "restored_cursor": 0.75,
+    "sha256": "20ea881df2fd4bb0f02ac5483448ff7b0b60636684f5a94c13b3644d8a8128ec",
+    "viewport": "SubViewport"
+  },
+  "artifact_readback": [
+    {
+      "version": 2,
+      "kind": "concept",
+      "module": "a",
+      "revision": "436992e0ddf93c3268daca654ca5149f1675c35b80a0e898887e3de72e84edcb",
+      "path": "motion.tscn",
+      "digest": "20ea881df2fd4bb0f02ac5483448ff7b0b60636684f5a94c13b3644d8a8128ec"
+    },
+    {
+      "version": 1,
+      "kind": "concept",
+      "module": "a",
+      "revision": "844a0e0ac59c4cb0544e2271f96827403a77b4a0e6840a656f7e4e55c348e45e",
+      "path": "motion.tscn",
+      "digest": "99146ce16008e0b73293a3ef603f6a3e497edae9861b20eb7eb6dd99191b7adf"
+    }
+  ],
+  "example_fixture_account_decision": {
+    "revision": "436992e0ddf93c3268daca654ca5149f1675c35b80a0e898887e3de72e84edcb",
+    "kind": "concept",
+    "path": "motion.tscn",
+    "module": "a",
+    "initiator": "usr_b890da179acb415a8a45ded76c334900",
+    "responsible": "usr_b890da179acb415a8a45ded76c334900",
+    "digest": "20ea881df2fd4bb0f02ac5483448ff7b0b60636684f5a94c13b3644d8a8128ec",
+    "decision": "approved",
+    "action": "work.decide",
+    "version": 3,
+    "actor": "usr_b890da179acb415a8a45ded76c334900",
+    "created_at": "2026-11-22T17:46:21.186602+00:00",
+    "submission_version": 2,
+    "note": "选定此版动作"
+  },
+  "editor_decision": {
+    "editor_sha256": "5b30bbfe50978e1aa7d54b72782f82ea8f76313ad1f335644d3a224517a844ec",
+    "receipt": "提交 v2 已采纳 · a @ 436992e0ddf93c3268daca654ca5149f1675c35b80a0e898887e3de72e84edcb",
+    "exit": 0
+  },
+  "stage": {
+    "authorization": {
+      "confirmation_revision": 1,
+      "confirmed_by": "usr_b890da179acb415a8a45ded76c334900",
+      "criteria": "Preview only. At 24 fps retime the approach before frame 12, keep frames 12–24 including the manual landing (250,96).",
+      "document_id": "doc_a05b992d7e7c4d07a6ab2d5b97aa2af6",
+      "issue_id": "iss_4017b3b1b39143cd93b8d6765b1cc693",
+      "issue_revision": "37cddbea28c407fa92dcff3cefc9d1cd69d8a32dff450da5833d41280ba8c505",
+      "responsible_user": "usr_b890da179acb415a8a45ded76c334900",
+      "stage": "preview",
+      "target_revision": 1,
+      "version": 1
+    },
+    "candidate": "c133022829c6a5bd7032075ef0d85597f2b92b75419e7926f7b0a99ae18e46e5",
+    "checks": {
+      "check": {
+        "evidence": "708e5f04e271f8a264d71bf71f8b060b20d66161c62c76786e7472435862c818",
+        "outcome": "passed"
+      }
+    },
+    "modules": {
+      "a": "436992e0ddf93c3268daca654ca5149f1675c35b80a0e898887e3de72e84edcb"
+    },
+    "reason": "authorized_stage_criteria_met",
+    "state": "stage-reached",
+    "task": "50c62e6339670837bb460b74711a04d32e0855991a675bbca5d4225edc655ba1"
+  },
+  "checked_candidate": "c133022829c6a5bd7032075ef0d85597f2b92b75419e7926f7b0a99ae18e46e5",
+  "exit_code": 0,
+  "publish_guard": "Signed task is limited to its authorized stage",
+  "comparison_gif_sha256": "910ca9e45b5844faab630f7a961495a782f2502f80402e0d731bd79849ba8a42"
+}
