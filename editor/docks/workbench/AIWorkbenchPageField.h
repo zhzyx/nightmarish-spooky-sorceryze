@@ -37,6 +37,7 @@ class EditorDock;
 
 namespace AIWorkbenchPageField
 {
+Dictionary Validate(Control *pFocus);
 Dictionary Capture(EditorDock *pPage, Control *pFocus);
 Dictionary Snapshot(const Dictionary &mapReference);
 Dictionary Replace(const Dictionary &mapArgs, bool bConfirmed);

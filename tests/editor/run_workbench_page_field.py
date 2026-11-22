@@ -195,8 +195,18 @@ def verify(editor):
                 command("change")
                 assert command("confirm")["summary"] == "User correction"
                 assert client.status("race", "page-test")["error"] == "stale_field_reference"
+                validation = command("validate")
+                assert validation["summary"] == validation["saved"] == "User correction"
+                assert (
+                    validation["validation"]["passed"]
+                    and validation["validation"]["revision"] in validation["visible_result"]
+                )
                 command("restage")
                 corrected = received(server, "Brief/Summary")
+                assert corrected["page_field"]["value"] == validation["saved"]
+                assert corrected["page_field"]["validation"] == validation["validation"]
+                assert corrected["references"][0]["revision"] == validation["validation"]["revision"]
+                report["page_validation"] = dict(page=validation, received=corrected)
                 assert route(client, "unregister", corrected, "Too late")["confirmation_required"]
                 command("unregister")
                 assert command("confirm")["summary"] == "User correction"

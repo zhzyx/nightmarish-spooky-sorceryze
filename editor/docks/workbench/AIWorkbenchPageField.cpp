@@ -117,7 +117,7 @@ Dictionary FieldError(const String &strError)
 Dictionary AIWorkbenchPageField::Capture(EditorDock *pPage, Control *pFocus)
 {
 	LineEdit *pField = Object::cast_to<LineEdit>(pFocus);
-	if (!pField || !pField->is_visible_in_tree() || GetFieldPage(pField) != pPage)
+	if (!pPage || !pField || !pField->is_visible_in_tree() || GetFieldPage(pField) != pPage)
 	{
 		return Dictionary();
 	}
@@ -132,8 +132,44 @@ Dictionary AIWorkbenchPageField::Snapshot(const Dictionary &mapReference)
 	{
 		return Dictionary();
 	}
+	const Dictionary mapReceipt = pField->get_meta("workbench_validation", Dictionary());
+	if (mapReceipt.get("revision", Variant()) == mapReference.get("revision", Variant()) && mapReceipt.get("passed", Variant()).get_type() == Variant::BOOL)
+	{
+		Dictionary mapValidation;
+		mapValidation["revision"] = mapReference["revision"];
+		mapValidation["passed"] = mapReceipt["passed"];
+		mapResult["validation"] = mapValidation;
+	}
 	mapResult.erase("reference");
 	return mapResult;
+}
+
+Dictionary AIWorkbenchPageField::Validate(Control *pFocus)
+{
+	LineEdit *pField = Object::cast_to<LineEdit>(pFocus);
+	EditorDock *pPage = GetFieldPage(pField);
+	const Dictionary mapRef = Capture(pPage, pFocus);
+	if (mapRef.is_empty())
+	{
+		return FieldError("field_unavailable");
+	}
+	const Dictionary mapDetails = Snapshot(mapRef);
+	const Dictionary mapChecks = pPage->get_meta("workbench_field_checks", Dictionary());
+	const Callable check = mapChecks.get(mapDetails["field"], Callable());
+	if (!check.is_valid())
+	{
+		return FieldError("check_unavailable");
+	}
+	const Variant varPassed = check.call(mapDetails["value"]);
+	if (varPassed.get_type() != Variant::BOOL || Snapshot(mapRef).is_empty())
+	{
+		return FieldError("check_incomplete");
+	}
+	Dictionary mapReceipt;
+	mapReceipt["revision"] = mapRef["revision"];
+	mapReceipt["passed"] = varPassed;
+	ResolveField(mapRef["object_id"])->set_meta("workbench_validation", mapReceipt);
+	return mapReceipt;
 }
 
 Dictionary AIWorkbenchPageField::Replace(const Dictionary &mapArgs, bool bConfirmed)

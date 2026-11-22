@@ -1,0 +1,53 @@
+{
+  "issue_number": 1773,
+  "request_id": "gonggong-ai-workbench-plan1-v09",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "base": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "command": "Mac 窗口运行 tests/editor/run_workbench_page_field.py --godot bin/godot.macos.editor.arm64 --report v09-native.json",
+  "tests": [],
+  "observations": {
+    "editor_sha256": "426ba07d06a74b83bacff642192c84bd5046f299824c8ee6b42a97f1dfe5f906",
+    "native_page": {
+      "page": {
+        "dialog": false,
+        "milestone": "Prototype",
+        "neighbor": "LOCAL_ONLY_1793",
+        "saved": "User correction",
+        "summary": "User correction",
+        "validation": {
+          "passed": true,
+          "revision": "08137d4612aeab7685cd5e45bc2a0d5d1ee9a6dcb0df344980e8035ca045c2c0"
+        },
+        "visible_result": "通过 · 08137d4612aeab7685cd5e45bc2a0d5d1ee9a6dcb0df344980e8035ca045c2c0"
+      },
+      "received": {
+        "module_id": "res://addons/project_brief/plugin.gd",
+        "page_field": {
+          "actions": [
+            "replace_page_field"
+          ],
+          "field": "Brief/Summary",
+          "required_authorization": "confirm_exact_replacement",
+          "validation": {
+            "passed": true,
+            "revision": "08137d4612aeab7685cd5e45bc2a0d5d1ee9a6dcb0df344980e8035ca045c2c0"
+          },
+          "value": "User correction"
+        },
+        "page_name": "Project Brief",
+        "readable_scope": [
+          "page_name",
+          "module_id",
+          "Brief/Summary"
+        ],
+        "references": [
+          {
+            "kind": "editor",
+            "object_id": "editor-page://res%3A%2F%2Faddons%2Fproject_brief%2Fplugin.gd#Project%20Brief#Brief%2FSummary#1607727132570",
+            "revision": "08137d4612aeab7685cd5e45bc2a0d5d1ee9a6dcb0df344980e8035ca045c2c0"
+          }
+        ]
+      }
+    }
+  }
+}

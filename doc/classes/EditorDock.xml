@@ -92,6 +92,13 @@
 				[b]Note:[/b] This does not focus the dock. If you want to open and focus the dock, use [method make_visible].
 			</description>
 		</method>
+		<method name="validate_workbench_field" qualifiers="static">
+			<return type="Dictionary" />
+			<param index="0" name="field" type="Control" />
+			<description>
+				Runs the page's registered check on the current value of a public workbench field. Returns its revision and boolean result, or an error if the field or check is unavailable. Register a Boolean-returning callable in the dock's [code]workbench_field_checks[/code] metadata using the same relative field path as [code]workbench_fields[/code].
+			</description>
+		</method>
 	</methods>
 	<members>
 		<member name="accessibility_region" type="bool" setter="set_accessibility_region" getter="is_accessibility_region" overrides="Container" default="true" />
