@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round11-e07-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e07",
+  "kind": "request",
+  "occurred_at": "2026-11-22T09:54:41.461820+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1796",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1796,
+    "request_id": "gonggong-ai-workbench-plan1-e07",
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1796#issuecomment-7076870792",
+    "verified_intake_sha256": "8229ed5c8ad1019460f6fd34645da4e2df2436158b48756cd0c561a7238e54d7",
+    "request": "用文档和脚本的独立副本制造互不重叠的双向编辑，验证合并内容、基线和冲突分支；核对 E02、E03 后验证集成。"
+  },
+  "evidence_refs": [],
+  "sha256": "d92315af91717a227ceb37bde35a0dc87535a33d32a05f78420038b5ca55ac39"
+}

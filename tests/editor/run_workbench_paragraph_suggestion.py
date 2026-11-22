@@ -44,6 +44,7 @@ def exercise(root, binary, source_controls, windowed, images):
     user = store.register("Studio", "writer@example.invalid", secrets.token_urlsafe(24))
     actor = user["user_id"]
     token = store.issue_session(actor)
+    peer = store.add_member(actor, "reviewer@example.invalid", secrets.token_urlsafe(22), role="editor")["user_id"]
     original = "照亮桥面\r\n持续两秒"
     replacement = "点亮整座桥\r\n持续三秒"
     prefix = "# 虹桥  \r\n \t\r\n" + original + "\n\n"
@@ -55,7 +56,11 @@ def exercise(root, binary, source_controls, windowed, images):
     fixture = dict(
         id=doc["id"], other=other["id"], body=body, original=original, replacement=replacement, candidate=candidate
     )
-    prompts, writes, previews = [], [], []
+    contested = candidate.replace(replacement, "另一位作者改为持续十秒")
+    merged_doc = candidate.replace("# 虹桥", "# 人工定稿的虹桥")
+    merged_doc = merged_doc.replace("照亮桥面", "再次确认的桥面", 1)
+    fixture["merged"] = merged_doc
+    prompts, writes, previews, other_writes = [], [], [], []
     identity_preview_started = root / "identity-preview-started"
 
     def model(request):
@@ -69,7 +74,15 @@ def exercise(root, binary, source_controls, windowed, images):
             200,
             json={
                 "model": "native-fixture",
-                "choices": [{"message": {"content": replacement.replace("\r\n", "\n")}}],
+                "choices": [
+                    {
+                        "message": {
+                            "content": "桥灯保持蓝色"
+                            if content["instruction"] == "并发修订"
+                            else replacement.replace("\r\n", "\n")
+                        }
+                    }
+                ],
                 "usage": {"prompt_tokens": 4, "completion_tokens": 2},
             },
         )
@@ -91,8 +104,29 @@ def exercise(root, binary, source_controls, windowed, images):
         async def observe(request, call_next):
             if request.method == "PATCH":
                 payload = await request.json()
+                if payload.get("call_id") in {"fixture-peer-first", "fixture-peer-second"}:
+                    return await call_next(request)
+                if request.url.path.endswith("/" + other["id"]):
+                    if payload["expected_version"] == 2 and len(other_writes) == 1:
+                        latest = store.get_doc(other["id"])["body_md"]
+                        async with httpx.AsyncClient(base_url=str(request.base_url)) as participant:
+                            raced = await participant.patch(
+                                request.url.path,
+                                headers={"Authorization": "Bearer " + store.issue_session(peer)},
+                                json={
+                                    "expected_version": 2,
+                                    "body_md": latest.replace("照亮桥面", "再次确认的桥面", 1),
+                                    "call_id": "fixture-peer-second",
+                                },
+                            )
+                            raced.raise_for_status()
+                    response = await call_next(request)
+                    # Lose the acknowledgement after the rebased submission was committed.
+                    client = 503 if response.status_code == 200 and len(other_writes) == 3 else response.status_code
+                    other_writes.append((payload, response.status_code, client))
+                    return Response(status_code=503) if client != response.status_code else response
                 if payload["expected_version"] == 2:
-                    store.update_doc(actor, doc["id"], candidate + "其他作者", 2)
+                    store.update_doc(actor, doc["id"], contested, 2)
                 response = await call_next(request)
                 client = 503 if not writes and response.status_code == 200 else response.status_code
                 writes.append((payload, response.status_code, client))
@@ -107,6 +141,20 @@ def exercise(root, binary, source_controls, windowed, images):
                         "revision_seen": store.get_doc(data["document_id"])["version"],
                         "writes_seen": len(writes),
                     })
+                    if prompts[-1]["instruction"] == "独立修改":
+                        # Publish a real version notification while the suggestion is being reviewed.
+                        token_peer = store.issue_session(peer)
+                        async with httpx.AsyncClient(base_url=str(request.base_url)) as participant:
+                            changed = await participant.patch(
+                                "/api/v1/docs/" + other["id"],
+                                headers={"Authorization": "Bearer " + token_peer},
+                                json={
+                                    "expected_version": 1,
+                                    "body_md": body.replace("# 虹桥", "# 人工定稿的虹桥"),
+                                    "call_id": "fixture-peer-first",
+                                },
+                            )
+                            changed.raise_for_status()
                     if prompts[-1]["instruction"] == "越界回执":
                         data["candidate_body"] += "不应发生的尾部改动"
                 return JSONResponse(data, status_code=response.status_code)
@@ -153,6 +201,7 @@ def exercise(root, binary, source_controls, windowed, images):
                 "越界回执",
                 "更明确",
                 "并发修订",
+                "独立修改",
                 "切换段落",
                 "切换文档",
                 "切换身份",
@@ -165,8 +214,18 @@ def exercise(root, binary, source_controls, windowed, images):
             assert writes[0][0] == writes[1][0] and writes[0][0]["body_md"] == candidate and writes[0][0]["call_id"]
             assert store.version(doc["id"], 1)["body_md"] == body
             assert store.version(doc["id"], 2)["body_md"] == candidate
-            assert store.get_doc(doc["id"])["body_md"] == candidate + "其他作者"
-            assert store.get_doc(other["id"])["version"] == 1
+            assert store.get_doc(doc["id"])["body_md"] == contested
+            assert store.get_doc(other["id"])["version"] == 4
+            assert store.get_doc(other["id"])["body_md"] == merged_doc
+            assert [(status, client) for _, status, client in other_writes] == [
+                (409, 409),
+                (409, 409),
+                (409, 409),
+                (200, 503),
+                (200, 200),
+            ]
+            assert other_writes[3][0] == other_writes[4][0]
+            assert other_writes[3][0]["call_id"] != other_writes[0][0]["call_id"]
             return {
                 "state": "passed",
                 "host": "source controls" if source_controls else "compiled native sidebar",
@@ -178,6 +237,9 @@ def exercise(root, binary, source_controls, windowed, images):
                 "saved_v2": candidate,
                 "patch_statuses": [w[1:] for w in writes],
                 "same_call_id_on_retry": True,
+                "merged_version": 4,
+                "merged_markdown": merged_doc,
+                "rebased_write_statuses": [write[1:] for write in other_writes],
                 "conflict_preserved_external_write": True,
                 "stale_selection_document_identity_cleared": True,
             }
