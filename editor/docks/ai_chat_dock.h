@@ -362,6 +362,13 @@ class AIChatDock : public EditorDock {
 	VBoxContainer *pLocalReferenceHost = nullptr;
 	VBoxContainer *pBusinessModules = nullptr;
 	AIChatSessionData stBusinessReferences;
+	struct LiveDraftSelection {
+		ObjectID scene;
+		ObjectID node;
+		Vector<ObjectID> selection;
+		Array references;
+	};
+	HashMap<String, LiveDraftSelection> live_business_selections;
 	String strBusinessModule;
 	String strBusinessIssue;
 	AIChatSessionData &WorkbenchReferenceDraft();
@@ -369,7 +376,7 @@ class AIChatDock : public EditorDock {
 	void ChangeWorkbenchReferenceScope(const String &pModule, const String &pIssue);
 	Dictionary ReadBusinessDraft(const String &strKey) const;
 	bool WriteBusinessDraft(const String &strKey, const Dictionary &mapDraft);
-	void RestoreBusinessReferences(const Dictionary &mapDraft);
+	void RestoreBusinessReferences(const String &strKey, const Dictionary &mapDraft);
 	Dictionary FreezeBusinessReferences(const String &pBody);
 	String WorkbenchSelectionContent(const AIChatSessionData &pDraft, const String &pIssue) const;
 	void WorkbenchDraftChanged();

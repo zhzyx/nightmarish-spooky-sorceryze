@@ -2,7 +2,7 @@
 extends VBoxContainer
 
 signal detail_changed
-signal consultation_requested
+signal consultation_requested(after_open: Callable)
 
 var _session: Node
 var _generation := 0
@@ -49,7 +49,7 @@ func _ready() -> void:
 	_form.add_child(_design_source)
 	_consult.name = "ConsultIssueDetail"
 	_consult.text = "就此工单咨询"
-	_consult.pressed.connect(func(): consultation_requested.emit())
+	_consult.pressed.connect(func(): consultation_requested.emit(Callable()))
 	_form.add_child(_consult)
 	_session.identity_changed.connect(_reset)
 	_reset()
@@ -109,8 +109,12 @@ func _lookup(text: String) -> void:
 	open_issue(number)
 
 
-func open_issue_link(link: String) -> void:
-	get_meta("open_workbench_sidebar").call()
+func open_issue_link(link: String, after_open := Callable()) -> void:
+	# A linked model belongs to the destination draft, which is restored after lookup.
+	if after_open.is_valid():
+		get_meta("open_linked_sidebar").call()
+	else:
+		get_meta("open_workbench_sidebar").call()
 	_clear()
 	_form.show()
 	_number.text = link
@@ -163,7 +167,7 @@ func open_issue_link(link: String) -> void:
 	if reply.status != 200 or reply.data.get("id") != target_id or reply.data.get("project") != _session.get_identity().project:
 		_status.text = "当前项目无法读取此工单"
 		return
-	await open_issue(int(reply.data.number), target_id)
+	await open_issue(int(reply.data.number), target_id, after_open)
 
 
 func _matches(value: String, pattern: String) -> bool:
@@ -171,7 +175,7 @@ func _matches(value: String, pattern: String) -> bool:
 	return expression.compile(pattern) == OK and expression.search(value) != null
 
 
-func open_issue(number: int, linked_id := "") -> void:
+func open_issue(number: int, linked_id := "", after_open := Callable()) -> void:
 	_clear()
 	_form.show()
 	_number.text = str(number)
@@ -213,6 +217,6 @@ func open_issue(number: int, linked_id := "") -> void:
 			_status.text = "#%d" % number
 			detail_changed.emit()
 			if not linked_id.is_empty():
-				consultation_requested.emit()
+				consultation_requested.emit(after_open)
 		_:
 			_status.text = "读取工单失败，请重试"

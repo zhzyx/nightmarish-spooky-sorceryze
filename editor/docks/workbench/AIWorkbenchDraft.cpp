@@ -83,10 +83,20 @@ bool AIChatDock::WriteBusinessDraft(const String &strKey, const Dictionary &mapD
 		DirAccess::remove_absolute(strTemporary);
 		return false;
 	}
+	// Instance IDs are process-local. Keep them only while this editor owns the draft.
+	if (stBusinessReferences.idDraftScene.is_valid() && !stBusinessReferences.arrDraftEditorReferences.is_empty())
+	{
+		live_business_selections[strKey] = { stBusinessReferences.idDraftScene, stBusinessReferences.idDraftNode,
+											 stBusinessReferences.arrDraftSelection, stBusinessReferences.arrDraftEditorReferences.duplicate(true) };
+	}
+	else
+	{
+		live_business_selections.erase(strKey);
+	}
 	return true;
 }
 
-void AIChatDock::RestoreBusinessReferences(const Dictionary &mapDraft)
+void AIChatDock::RestoreBusinessReferences(const String &strKey, const Dictionary &mapDraft)
 {
 	if (strBusinessModule.is_empty())
 	{
@@ -97,6 +107,13 @@ void AIChatDock::RestoreBusinessReferences(const Dictionary &mapDraft)
 	for (const Variant &varEntry : arrReferences)
 	{
 		ERR_FAIL_COND(varEntry.get_type() != Variant::DICTIONARY || Dictionary(varEntry).get("object_id", Variant()).get_type() != Variant::STRING);
+	}
+	const LiveDraftSelection *live = live_business_selections.getptr(strKey);
+	if (live && live->references == arrReferences)
+	{
+		stBusinessReferences.idDraftScene = live->scene;
+		stBusinessReferences.idDraftNode = live->node;
+		stBusinessReferences.arrDraftSelection = live->selection;
 	}
 	stBusinessReferences.arrDraftEditorReferences = arrReferences.duplicate(true);
 	stBusinessReferences.mapDraftScriptExcerpts = mapDraft.get("excerpts", Dictionary());

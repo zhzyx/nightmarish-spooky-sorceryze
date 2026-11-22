@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-5b0c1ce9d932cc7be0b782a8951b700fe66f44ed57ade9379ac86a13cca2ed55",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1761",
+  "occurred_at": "2026-11-22T02:05:26.632849+00:00",
+  "evidence_refs": [
+    "dispatch-13653eb9a51f46c2a3c78253e30a1393",
+    "learn-16b67086142ae60f1565c0b4a7aa43ea24329ca4ef25b737d163433e89fcd881"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 46,
+    "previous": "645e24afde9a3fb2d2686cc2c15bb614d662f91c70603c381c22ae3d55f65889",
+    "action": "applied",
+    "details": {
+      "task": "U14 #1761",
+      "observed": "沿 editor/SCsub 追踪紧凑面板与原生业务草稿、侧栏，再构建 Windows 编辑器；同一候选的 U14 往返、U13 五阶段、U07 引用和行内输入几何复验全部通过。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-u14.json",
+        "sha256": "08a96035e37b8f9e980cd2d1da5faed622887be16898b739c83806a5759eb6dc"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-u14/dispatch-13653eb9a51f46c2a3c78253e30a1393.json",
+      "sha256": "501b0a333c9db1bfb2f936e4c5efc5b0bbb0ecbe1d78269b4a74945b614fe519"
+    }
+  },
+  "sha256": "cae4131bcc1c72b0ceda0bc77e62dafab58898187cc22108e48b9181e372c63b"
+}

@@ -264,13 +264,15 @@ void AIChatDock::StageWorkbenchSelection()
 
 String AIChatDock::StageWorkbenchReference(Control *pHost, Node *pNode)
 {
-	AIChatDock *pWorker = selected_worker ? selected_worker : this;
-	if (!pHost || pHost->get_instance_id() != pWorker->daqian_chat_host || pWorker->daqian_mount_conversation != pWorker->GetAiSession().strConversation)
+	const bool bBusiness = pHost && pHost == pBusinessModules && !strBusinessModule.is_empty();
+	AIChatDock *pWorker = bBusiness || !selected_worker ? this : selected_worker;
+	if (!bBusiness && (!pHost || pHost->get_instance_id() != pWorker->daqian_chat_host || pWorker->daqian_mount_conversation != pWorker->GetAiSession().strConversation))
 	{
 		return U"聊天挂载已改变，请重新打开。";
 	}
-	AIChatSessionData &stSession = pWorker->GetAiSession();
-	if (!stSession.arrDraftEditorReferences.is_empty() || !pWorker->input->get_text().is_empty() || !stSession.arrDraftImages.is_empty() || !stSession.arrQueuedMessages.is_empty())
+	AIChatSessionData &stSession = bBusiness ? stBusinessReferences : pWorker->GetAiSession();
+	TextEdit *pInput = bBusiness ? Object::cast_to<TextEdit>(pHost->get("composer")) : pWorker->input;
+	if (!pInput || !stSession.arrDraftEditorReferences.is_empty() || !pInput->get_text().is_empty() || !stSession.arrDraftImages.is_empty() || !stSession.arrQueuedMessages.is_empty())
 	{
 		return U"已保留原草稿及引用。";
 	}
@@ -290,8 +292,15 @@ String AIChatDock::StageWorkbenchReference(Control *pHost, Node *pNode)
 	stSession.arrDraftEditorReferences = arrReferences;
 	stSession.idDraftScene = pRoot->get_instance_id();
 	stSession.idDraftNode = pNode->get_instance_id();
-	pWorker->RefreshWorkbenchReference();
-	pWorker->_queue_history_save();
+	if (bBusiness)
+	{
+		WorkbenchDraftChanged();
+	}
+	else
+	{
+		pWorker->RefreshWorkbenchReference();
+		pWorker->_queue_history_save();
+	}
 	return String();
 }
 

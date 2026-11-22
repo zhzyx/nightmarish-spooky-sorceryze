@@ -226,11 +226,12 @@ func run() -> void:
 	var fixture_root := ProjectSettings.globalize_path("res://").trim_suffix("/")
 	settings.set_setting("gonggong/workspace", fixture_root)
 	settings.set_project_metadata("daqian_access", fixture_root.sha256_text(), {"actor":workspace.actor})
+	await create_timer(0.3).timeout
 	var error: String = chat.open_daqian_chat("spatial_fixture", 0, "", "", false, {}, true)
 	check(error.is_empty(), "open native draft: " + error)
 	check(chat.mount_daqian_chat(spatial.chat_host), "mount native chat in 3D")
 	spatial.owns_chat = true
-	spatial.chat_host.show()
+	spatial.chat_scroll.show()
 	spatial.rows.hide()
 	spatial.details.hide()
 	spatial.actions.hide()
@@ -248,7 +249,10 @@ func run() -> void:
 		root.size = Vector2i(width, 900)
 		await settle()
 		check(spatial.panel.size.x < EditorInterface.get_base_control().size.x - 160, "mounted chat retains viewport at %d" % width)
-		check(input.get_global_rect().end.y <= root.size.y, "chat input within window at %d" % width)
+		var field := input.get_global_rect()
+		var viewport_rect: Rect2 = spatial.chat_scroll.get_global_rect()
+		check(input.is_visible_in_tree() and field.position.y >= viewport_rect.position.y and field.end.y <= minf(viewport_rect.end.y, root.size.y), "mounted input is visible within the preview at %d: %s / %s" % [width, field, viewport_rect])
+		print("TIANSHU_COMPOSER_GEOMETRY=", JSON.stringify({"window_width":width, "window_height":root.size.y, "input_top":field.position.y, "input_bottom":field.end.y, "visible":input.is_visible_in_tree(), "scroll_top":viewport_rect.position.y, "scroll_bottom":viewport_rect.end.y}))
 	spatial.close_chat()
 	check(chat.open_daqian_chat("spatial_fixture", 0, "", "", false, {}, true).is_empty(), "restore same draft session")
 	check(chat.mount_daqian_chat(spatial.chat_host), "remount same draft")
@@ -529,10 +533,11 @@ func check_editor_references(workspace, spatial) -> void:
 	spatial.picker.select(0)
 	spatial.bind_issue()
 	check(spatial.selected_issue().get("url") == issue.url, "explicit model association selects the exact issue")
-	for control in spatial.actions.get_children():
-		if control is Button and control.text == "工单聊天": control.pressed.emit()
+	# Inline workflow replies still use the original mounted composer and its send boundary.
+	# The migrated consultation buttons are exercised in workbench_compact_model_route.gd.
+	await spatial.open_chat(false)
 	await settle()
-	check(spatial.owns_chat, "real spatial issue chat button mounted the existing composer")
+	check(spatial.owns_chat, "inline spatial reply mounted the existing composer")
 	if not spatial.owns_chat: return
 	var host: Control = spatial.chat_host
 	var input: TextEdit = host.find_child("ChatInput", true, false)
