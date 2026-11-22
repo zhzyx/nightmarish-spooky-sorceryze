@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-storage-resource-boundary",
+  "event_id": "learn-e03c39329a02fd3bdadcdd4b749be6ca449e7a26f4519b6276800e9596b0827a",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "occurred_at": "2026-11-22T08:05:19.107078+00:00",
+  "evidence_refs": [
+    "kuafu-a4d7fb2f70552beef8ba18b41e6e3c47e1902a36",
+    "learn-516089202e78497d327fdcbb69eed238f5276d9a54f5703972ccc3711ef34d71"
+  ],
+  "payload": {
+    "scope": "native-storage-resource-boundary",
+    "lesson": "verify-shared-connection-ownership",
+    "revision": 2,
+    "previous": "bae1e52e22ae2e27c5a327400cbb51a07981535546d761b0418576a090a674bb",
+    "action": "verify",
+    "details": {
+      "test": "已在接收 #2039 的精确签发树运行提议的两项 pytest。",
+      "expected": "活动定义 SELECT 持有连接锁，三张工单均取得调度回执。两项定向检查通过。",
+      "observed": "活动定义 SELECT 持有连接锁，三张工单均取得调度回执。两项定向检查通过。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-milestone-trace-combined.json",
+        "sha256": "8ba21dadff8e5c7fec7e4b0a46b5c2e3fac60c9f613f2d2da78eb96d68032c64"
+      },
+      {
+        "path": "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+        "sha256": "aa47c27003adee4fd1f3fbe8095685c64a4518d2f3c2738496489764a8f6d863"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-a4d7fb2f70552beef8ba18b41e6e3c47e1902a36.json",
+      "sha256": "f9996401d0ef89ef13aff318947282471665923fcf0e65e6297d5831ce324916"
+    }
+  },
+  "sha256": "52f63d14e11cd5c7314b23f0560d290c4f712cc1aa2f15a064d0e19b648c4af4"
+}

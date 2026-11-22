@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5479737025b8e6234cb9d1b728c4c23bf0127228",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0b93db03a884262309adc0a115ed47e256d5dea67a923eeda4403a96bc7bda0a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2034",
+    "action": "delivery",
+    "detection_head": "9ada26e17823613f39f336f63b53e78bb63faf81",
+    "context_sha256": "a2860f9f75b986d4e9867040c1516d6bbb82e684511ab6e86b20badc2985a1c2",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2038",
+    "diagnosis": "The signed PR was already published on GitHub. During the final handoff main advanced by six independent Q01 documentation, trace and external macOS test files. Neither the production inputs nor the four milestone probes changed.",
+    "next_action": "Use the repository zero-overlap PR rebinding path, verify the signed tree and rerun the four native acceptance entries on that checkout.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T07:13:32.546065+00:00",
+    "attempted": "Read back the remote PR and exact signed tree before any recovery. Confirmed an empty write-path intersection and listed each of the six incoming paths.",
+    "repair_owner": "Windows publisher of S03 and K02",
+    "continuable": "The original source and its working-tree copy remain intact. Rebind on the updated main."
+  },
+  "occurred_at": "2026-11-22T07:18:40.613739+00:00",
+  "sha256": "1d3ffd25ffd083ead2049579f0bb262803a4eba74c0ef10c1458758a9686d73a"
+}

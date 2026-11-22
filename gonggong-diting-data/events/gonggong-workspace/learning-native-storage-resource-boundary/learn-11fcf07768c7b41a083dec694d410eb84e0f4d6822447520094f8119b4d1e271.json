@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-storage-resource-boundary",
+  "event_id": "learn-11fcf07768c7b41a083dec694d410eb84e0f4d6822447520094f8119b4d1e271",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "occurred_at": "2026-11-22T08:55:38.995600+00:00",
+  "evidence_refs": [
+    "kuafu-f16c263a550d8acd6e1681cbc3f794d88396de74",
+    "learn-bf555836210d4c2d80d84876d8532a91a216f9030a1bf7bfeedeaabafc2be792"
+  ],
+  "payload": {
+    "scope": "native-storage-resource-boundary",
+    "lesson": "verify-reservations-against-writable-destination",
+    "revision": 2,
+    "previous": "b0ffdd7462e8430f31c2957ea9af4f23b1c7637c0b60108dac0a7fbebf4d48e9",
+    "action": "verify",
+    "details": {
+      "test": "以同一服务候选运行方案中的三条定向 pytest。",
+      "expected": "共享资产的等待者在占用释放后启动，私有原件并行完成，第三方修订和各自候选均可回读。混合占用时仍能识别等待者。三项通过。",
+      "observed": "共享资产的等待者在占用释放后启动，私有原件并行完成，第三方修订和各自候选均可回读。混合占用时仍能识别等待者。三项通过。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-asset-recovery-combined.json",
+        "sha256": "756e7d61c4c50cd0887f77476deb2caa3b83b88053fd3717284beca5eeafb2dd"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-f16c263a550d8acd6e1681cbc3f794d88396de74.json",
+      "sha256": "16e8c22ce49d5d9f96e0874358e6174afd9354c899a1978391bb3788e75e76d8"
+    }
+  },
+  "sha256": "be8b3dfbebf06d42e110521addd9d9aa714d5219cbf09e36683de8a34dc0383b"
+}

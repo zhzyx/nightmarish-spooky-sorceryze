@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-native-storage-resource-boundary",
+  "event_id": "learn-bf555836210d4c2d80d84876d8532a91a216f9030a1bf7bfeedeaabafc2be792",
+  "kind": "analysis",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "occurred_at": "2026-11-22T08:55:33.699478+00:00",
+  "evidence_refs": [
+    "kuafu-f16c263a550d8acd6e1681cbc3f794d88396de74"
+  ],
+  "payload": {
+    "scope": "native-storage-resource-boundary",
+    "lesson": "verify-reservations-against-writable-destination",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "变更资产预约时，从同一个候选同时运行共享资产等待和私有贡献并行两条实际生产路径，读取进程区间、等待票据和原件接收回执。",
+      "when": "司南根据可写路径安排槽位，且同一租户同时存在资产写入与不可变贡献两类工单。",
+      "counterexample": "两个私有工作副本中的同名对象可以各自产出候选。共享资产则需要从同一原始契约确认写入范围。",
+      "trial_plan": "联合运行共享资产释放补位、私有原件在第三方推进后的并发产出、私有与共享占用同时存在三项检查。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-asset-recovery-combined.json",
+        "sha256": "756e7d61c4c50cd0887f77476deb2caa3b83b88053fd3717284beca5eeafb2dd"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-f16c263a550d8acd6e1681cbc3f794d88396de74.json",
+      "sha256": "16e8c22ce49d5d9f96e0874358e6174afd9354c899a1978391bb3788e75e76d8"
+    }
+  },
+  "sha256": "b0ffdd7462e8430f31c2957ea9af4f23b1c7637c0b60108dac0a7fbebf4d48e9"
+}

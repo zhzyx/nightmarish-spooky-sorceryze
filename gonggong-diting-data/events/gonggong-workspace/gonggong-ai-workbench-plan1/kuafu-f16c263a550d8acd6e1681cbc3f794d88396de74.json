@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f16c263a550d8acd6e1681cbc3f794d88396de74",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "63b528c46b32ff7f8be9bae57acf0251e730725533927e435b65098b36dad448",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2041",
+    "action": "validation",
+    "detection_head": "2e9f9ac118880f53c5dd0134accc6d8aa807e422",
+    "context_sha256": "470a513d93ca1c3670c6758d506e0ef4403db3fdc79809780d6cf38c85404c0a",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45002761479/job/137147732036",
+    "diagnosis": "Shared-asset reservations were applied to private immutable producer workspaces. The second independent producer could not reserve an original candidate. Ten legacy joint-production cases failed in CI. Seven also failed locally on the exact signed source.",
+    "next_action": "Use the task admission contract to distinguish a shared asset from an immutable producer workspace. Verify the original ten failures alongside shared-asset waiting, then qualify a new signed candidate on main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T08:45:20.194739+00:00",
+    "attempted": "Read both production requirements, exact failed Linux test cases and signed Windows candidate. Reproduced all seven deterministic reservation cases locally.",
+    "repair_owner": "Windows publisher for PR 2040 and issue 1792",
+    "continuable": "The publisher has the candidate, authority, and both real execution paths available."
+  },
+  "occurred_at": "2026-11-22T08:47:02.300781+00:00",
+  "sha256": "16e8c22ce49d5d9f96e0874358e6174afd9354c899a1978391bb3788e75e76d8"
+}

@@ -11,14 +11,51 @@ import json
 import time
 from concurrent.futures import Future
 from contextlib import contextmanager, nullcontext
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
+from native_observations import model_observation
 from native_store import NativeStoreError, _digest, _json, _object_name
+from native_worker import worker_step_reporter
+from native_workspace import portable
 from tianxuan_core import PermissionDenied, VersionConflict
 
 
 class StageAuthorizationChanged(NativeStoreError):
     """A design task no longer has the stage authority used for dispatch."""
+
+
+def write_resources(task, workspace):
+    """Reserve planned shared assets or the producer's private contribution directory."""
+    if not (task.get("shared_asset_writes") or task["source"]["definition"].get("stage_authorization")):
+        return [workspace.as_posix()]
+    resources = set()
+    for module, scope in task["writes"].items():
+        root = "/native-assets/" + task["tenant"] + "/" + module.casefold()
+        if scope == "*":
+            resources.add(root)
+            continue
+        try:
+            resources.update(root + "/" + portable(name).casefold() for name in scope)
+        except NativeStoreError:
+            # Older admissions accepted arbitrary strings. Keep a conservative
+            # claim for such a module until the original worker settles.
+            resources.add(root)
+    return sorted(resources)
+
+
+class OccupiedWrites:
+    """Index overlapping object paths and whole modules from one database snapshot."""
+
+    def __init__(self, groups):
+        self.paths = {PurePosixPath(path) for group in groups for path in group}
+        self.parents = {parent for path in self.paths for parent in path.parents}
+
+    def overlaps(self, resources):
+        for resource in resources:
+            path = PurePosixPath(resource)
+            if path in self.paths or path in self.parents or not self.paths.isdisjoint(path.parents):
+                return True
+        return False
 
 
 def execution_identity(key):
@@ -118,14 +155,41 @@ class NativeWorkflow:
             )
             db.execute("CREATE TABLE IF NOT EXISTS native_stage_results (task TEXT PRIMARY KEY, receipt TEXT NOT NULL)")
             db.execute("CREATE INDEX IF NOT EXISTS native_tasks_ready ON native_tasks(tenant,state,ready_at,id)")
+            db.execute(
+                "CREATE TABLE IF NOT EXISTS native_task_progress ("
+                "task TEXT NOT NULL, sequence INTEGER NOT NULL, state TEXT NOT NULL, step TEXT NOT NULL, "
+                "details TEXT NOT NULL, receipt TEXT, recorded_at TEXT NOT NULL DEFAULT "
+                "(strftime('%Y-%m-%dT%H:%M:%fZ','now')), PRIMARY KEY(task,sequence), UNIQUE(task,receipt))"
+            )
+            # State changes can also originate in the remote adapter, stage
+            # settlement or joint acceptance. Journal them in the same commit.
+            for name, transition in (
+                ("created", "AFTER INSERT ON native_tasks"),
+                ("changed", "AFTER UPDATE OF state ON native_tasks WHEN NEW.state<>OLD.state"),
+            ):
+                db.execute(
+                    f"CREATE TRIGGER IF NOT EXISTS native_progress_{name} {transition} BEGIN "
+                    "INSERT INTO native_task_progress(task,sequence,state,step,details) "
+                    "SELECT NEW.id,COALESCE(MAX(sequence),0)+1,NEW.state,'state',"
+                    "CASE WHEN NEW.state IN ('produced','stage-reached','stage-unmet','accepted') THEN "
+                    "json_object('candidate',json_extract(NEW.terminal,'$.candidate'),"
+                    "'modules',json_extract(NEW.terminal,'$.modules')) ELSE '{}' END "
+                    "FROM native_task_progress WHERE task=NEW.id; END"
+                )
+            # A pre-upgrade run has a known current state but no observed step history.
+            db.execute(
+                "INSERT INTO native_task_progress(task,sequence,state,step,details) "
+                "SELECT id,1,state,'snapshot','{}' FROM native_tasks "
+                "WHERE NOT EXISTS(SELECT 1 FROM native_task_progress WHERE task=native_tasks.id)"
+            )
 
     @contextmanager
-    def _transaction(self):
+    def _transaction(self, *, write=True):
         with self.domain._connection_lock:
             db = self.domain.db
             if db.in_transaction:
                 raise NativeStoreError("Workflow requires independent transaction")
-            db.execute("BEGIN IMMEDIATE")
+            db.execute("BEGIN IMMEDIATE" if write else "BEGIN")
             try:
                 yield db
                 db.commit()
@@ -158,6 +222,7 @@ class NativeWorkflow:
             row = self._row(db, key)
             self._read_allowed(actor, row)
             task = json.loads(row["task"])
+            row["progress"] = self._progress(db, row, task)
             if "stage_renewal" in task:
                 row["stage_renewal"] = {"task": key, **task["stage_renewal"]}
             if task["source"]["definition"].get("stage_authorization"):
@@ -170,6 +235,72 @@ class NativeWorkflow:
                         reason="awaiting_stage_check" if "stage_criteria" in task else "stage_criteria_check_unbound",
                     )
             return row
+
+    @staticmethod
+    def _progress(db, row, task):
+        events = [
+            {**event, "details": json.loads(event["details"])}
+            for event in db.execute(
+                "SELECT sequence,recorded_at,state,step,details FROM native_task_progress "
+                "WHERE task=? ORDER BY sequence",
+                (row["id"],),
+            )
+        ]
+        grant = task["source"]["definition"].get("stage_authorization", {})
+        terminal = json.loads(row["terminal"] or "{}")
+        produced = row["state"] in {"produced", "stage-reached", "stage-unmet", "accepted"}
+        observed = terminal if produced else {}
+        if row["state"] == "failed":
+            observed = terminal.get("observation", {})
+        return {
+            **execution_identity(row["id"]),
+            "issue": row["issue"],
+            "source_revision": task["source"]["revision"],
+            "stage": grant.get("stage"),
+            "state": row["state"],
+            "candidate": terminal.get("candidate") if produced else None,
+            **model_observation(observed.get("provider_model"), observed.get("usage")),
+            "events": events,
+        }
+
+    def issue_detail(self, actor, project, number):
+        # Resolve the issue revision, active execution and current visibility
+        # in one SQLite snapshot, including when other coordinators are writing.
+        with self._transaction(write=False) as db:
+            detail = self.domain.read_issue_detail(actor, project, number)
+            active = db.execute("SELECT task FROM native_active_tasks WHERE issue=?", (detail["id"],)).fetchone()
+            progress = None
+            if active:
+                row = self._row(db, active["task"])
+                try:
+                    self._read_allowed(actor, row)
+                except PermissionDenied:
+                    pass  # The issue can be visible while the pinned design is private.
+                else:
+                    progress = self._progress(db, row, json.loads(row["task"]))
+            return {**detail, "execution_progress": progress}
+
+    def _record_step(self, key, step, details, receipt=None):
+        """Installed tool receiver. An already observed receipt cannot advance a run."""
+        with self._transaction() as db:
+            self._append_step(db, key, step, details, receipt or step)
+
+    @staticmethod
+    def _append_step(db, key, step, details, receipt):
+        encoded = _json(details)
+        old = db.execute(
+            "SELECT step,details FROM native_task_progress WHERE task=? AND receipt=?", (key, receipt)
+        ).fetchone()
+        if old:
+            if (old["step"], old["details"]) != (step, encoded):
+                raise NativeStoreError("Progress receipt rebound")
+            return
+        db.execute(
+            "INSERT INTO native_task_progress(task,sequence,state,step,details,receipt) "
+            "SELECT id,(SELECT COALESCE(MAX(sequence),0)+1 FROM native_task_progress WHERE task=?),state,?,?,? "
+            "FROM native_tasks WHERE id=? AND state IN ('reserved','running','held','closed-unresolved')",
+            (key, step, encoded, receipt, key),
+        )
 
     def edit_baseline(self, actor, key, module, path):
         """Compare one writable object with the immutable revision selected at task admission."""
@@ -229,6 +360,7 @@ class NativeWorkflow:
         delivery_mode="standalone",
         stage=None,
         stage_criteria=None,
+        shared_asset_writes=False,
         _renewal=None,
     ):
         source = self._allow(actor, issue, "authorize")
@@ -243,6 +375,8 @@ class NativeWorkflow:
             selected = {**selected, **_renewal["from"]["modules"]}
         if delivery_mode not in {"standalone", "contribution"}:
             raise NativeStoreError("Unsupported delivery mode")
+        if not isinstance(shared_asset_writes, bool):
+            raise NativeStoreError("Shared asset scheduling requires a boolean")
         if not mandate or not checks or profile not in self.worker.profiles:
             raise NativeStoreError("Installed profile, checks and mandate required")
         tenant = source["definition"]["tenant_id"]
@@ -257,6 +391,10 @@ class NativeWorkflow:
             for value in writes.values()
         ):
             raise NativeStoreError("Invalid writable objects")
+        for scope in writes.values():
+            if scope != "*":
+                for name in scope:
+                    portable(name)
         installation = self.worker.installation(profile)
         capabilities = [] if capabilities is None else capabilities
         if (
@@ -288,6 +426,7 @@ class NativeWorkflow:
             checks=checks,
             mandate=mandate,
             delivery_mode=delivery_mode,
+            **({"shared_asset_writes": True} if shared_asset_writes and not authority else {}),
             **({"stage_criteria": stage_criteria} if stage_criteria is not None else {}),
             **({"stage_renewal": _renewal} if _renewal else {}),
             **({"previous": expected} if expected is not None else {}),
@@ -443,6 +582,12 @@ class NativeWorkflow:
             for model in catalog
         )
 
+    @staticmethod
+    def _held(db):
+        return db.execute(
+            "SELECT id,issue,task,tenant,state FROM native_tasks WHERE state IN ('reserved','running','held') ORDER BY id"
+        ).fetchall()
+
     def inspect(self, actor):
         catalog = self.installed_catalog()
         with self._transaction() as db:
@@ -451,10 +596,14 @@ class NativeWorkflow:
                 "SELECT * FROM native_tasks WHERE tenant=? AND state='ready' ORDER BY ready_at,id LIMIT 1024", (tenant,)
             ).fetchall()
             items, ready, sources, active, requests = [], [], [], [], []
-            held = db.execute(
-                "SELECT * FROM native_tasks WHERE state IN ('reserved','running','held') ORDER BY id LIMIT 1024"
-            ).fetchall()
-            for index, held_row in enumerate(held):
+            claims = []
+            for index, held_row in enumerate(self._held(db)):
+                writes = (
+                    write_resources(json.loads(held_row["task"]), self.worker.root / held_row["id"])
+                    if held_row["tenant"] == tenant
+                    else []
+                )
+                claims.append(writes)
                 visible = held_row["tenant"] == tenant
                 if visible:
                     try:
@@ -465,18 +614,25 @@ class NativeWorkflow:
                     "ticket": held_row["id"] if visible else "occupied-slot-" + str(index),
                     **({"terminalObservable": True} if visible and held_row["state"] != "reserved" else {}),
                     "reads": [],
-                    "writes": [str(self.worker.root / held_row["id"])] if visible else [],
+                    "writes": writes if visible else [],
                 })
+            occupied = OccupiedWrites(claims)
             for row in rows:
                 try:
                     task = self._valid(actor, row)
                 except (PermissionDenied, NativeStoreError):
                     continue
                 key = row["id"]
-                resource = str(self.worker.root / key)
+                writes = write_resources(task, self.worker.root / key)
+                waiting = occupied.overlaps(writes)
                 source = {"source": key, "revision": task["source"]["revision"]}
                 sources.append(source)
-                items.append({"key": key, "source": key, "dispatchCandidate": row["state"] == "ready"})
+                items.append({
+                    "key": key,
+                    "source": key,
+                    "dispatchCandidate": not waiting,
+                    **({"waitReason": "resource_conflict"} if waiting else {}),
+                })
                 if row["state"] == "ready":
                     ready.append(key)
                 requests.append(
@@ -489,7 +645,7 @@ class NativeWorkflow:
                         capabilities=task["capabilities"],
                         contextRefs=[],
                         reads=[],
-                        writes=[resource],
+                        writes=writes,
                         model=task["profile"],
                     )
                 )
@@ -529,10 +685,16 @@ class NativeWorkflow:
                 return False
             if not self._schedulable(task, catalog, assignment.get("target", "agent")):
                 return False
-            held = db.execute(
-                "SELECT count(*) FROM native_tasks WHERE state IN ('reserved','running','held')"
-            ).fetchone()[0]
-            if held >= self.capacity:
+            held = self._held(db)
+            if len(held) >= self.capacity:
+                return False
+            occupied = OccupiedWrites(
+                write_resources(json.loads(other["task"]), self.worker.root / other["id"])
+                for other in held
+                if other["tenant"] == row["tenant"]
+            )
+            writes = write_resources(task, self.worker.root / row["id"])
+            if occupied.overlaps(writes):
                 return False
             earlier = db.execute(
                 "SELECT * FROM native_tasks WHERE tenant=? AND state='ready' "
@@ -544,7 +706,9 @@ class NativeWorkflow:
                     waiting_task = self._valid(actor, waiting)
                 except (PermissionDenied, NativeStoreError):
                     continue
-                if not self._schedulable(waiting_task, catalog):
+                if not self._schedulable(waiting_task, catalog) or occupied.overlaps(
+                    write_resources(waiting_task, self.worker.root / waiting["id"])
+                ):
                     continue
                 available_node = getattr(self.worker, "available_node", None)
                 if available_node is not None and available_node(db, waiting_task) is None:
@@ -564,6 +728,7 @@ class NativeWorkflow:
                         "localStatus": model["localStatus"],
                     },
                 }
+            assignment = {**assignment, "reads": [], "writes": writes}
             reserve_worker = getattr(self.worker, "reserve", None)
             if reserve_worker is not None and not reserve_worker(db, task, row["id"]):
                 return False
@@ -650,20 +815,29 @@ class NativeWorkflow:
         if stale is not None:
             raise stale
         try:
-            terminal = self.worker.run(task, key)
+            reporter = worker_step_reporter.set(self._record_step)
+            try:
+                terminal = self.worker.run(task, key)
+            finally:
+                worker_step_reporter.reset(reporter)
             if terminal is None:
                 return self.status(actor, key)
         except BaseException:
             with self._transaction() as db:
-                db.execute("UPDATE native_tasks SET state='held' WHERE id=?", (key,))
+                db.execute("UPDATE native_tasks SET state='held' WHERE id=? AND state='running'", (key,))
             raise
         with self._transaction() as db:
             current = self._row(db, key)
+            if current["state"] not in {"running", "held", "closed-unresolved"}:
+                if current["state"] == terminal["state"] and current["terminal"] == _json(terminal):
+                    return terminal
+                return current  # Concurrent reconciliation may already have settled the stage.
             try:
                 self._valid(actor, current)
                 state = terminal["state"]
             except (PermissionDenied, NativeStoreError):
                 state = "stopped"
+            self._terminal_progress(db, key, state, terminal)
             db.execute("UPDATE native_tasks SET state=?,terminal=? WHERE id=?", (state, _json(terminal), key))
             if state != "stopped":
                 db.execute(
@@ -672,6 +846,18 @@ class NativeWorkflow:
                 )
             self.domain._event(task["tenant"], "native.terminal", actor, row["issue"], {"task": key, "state": state})
         return {**terminal, "state": state}
+
+    def _terminal_progress(self, db, key, state, terminal):
+        if state not in {"produced", "failed"} or terminal is None:
+            return
+        if "transcript" in terminal:
+            self._append_step(
+                db, key, "process.closed", {k: terminal[k] for k in ("exit_code", "transcript")}, "process.closed"
+            )
+        if state == "produced":
+            self._append_step(
+                db, key, "candidate.compose", {k: terminal[k] for k in ("candidate", "modules")}, "candidate.compose"
+            )
 
     def _dependencies_current(self, actor, key):
         row = self.status(actor, key)
@@ -734,6 +920,7 @@ class NativeWorkflow:
             except (PermissionDenied, NativeStoreError):
                 state = "stopped"
             if current["state"] in {"running", "held", "closed-unresolved"}:
+                self._terminal_progress(db, key, state, terminal)
                 db.execute(
                     "UPDATE native_tasks SET state=?,terminal=? WHERE id=?",
                     (state, _json(terminal) if terminal is not None else None, key),

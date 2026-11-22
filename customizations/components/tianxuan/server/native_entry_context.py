@@ -249,6 +249,13 @@ class EntryContexts:
             c.check("rpc_completed")
             self._open(execution)
             c.ledger_budget()
+            if method == "resolve":
+                self.entry.workflow._record_step(
+                    execution,
+                    "context." + args[0]["op"],
+                    {"result_id": value["result_id"], "response_sha256": value["response_sha256"]},
+                    "context:" + value["result_id"],
+                )
             return value
 
     def receipt(self, task, execution):
