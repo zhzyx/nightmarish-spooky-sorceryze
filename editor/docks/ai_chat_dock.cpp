@@ -8214,6 +8214,9 @@ void AIChatDock::_stop() {
 }
 
 void AIChatDock::_notification(int p_what) {
+	if (p_what == NOTIFICATION_ENTER_TREE) {
+		bParallelDispatchClosing = false;
+	}
 	if (p_what == NOTIFICATION_READY || p_what == NOTIFICATION_THEME_CHANGED) {
 		wave_material->set_shader_parameter("crest", get_editor_theme_icon(SNAME("AIChatWave")));
 		const bool light_text = get_theme_color(SNAME("font_color"), SNAME("Label")).get_luminance() > 0.5f;
@@ -8271,6 +8274,18 @@ void AIChatDock::_notification(int p_what) {
 			_poll_process();
 		}
 	} else if (p_what == NOTIFICATION_EXIT_TREE) {
+		bParallelDispatchClosing = true;
+		if (sub_agent_parallel_pid >= 0 && !sub_agent_parallel_output.is_empty()) {
+			Ref<FileAccess> close_marker = FileAccess::open(sub_agent_parallel_output + ".quiesce", FileAccess::WRITE);
+			if (close_marker.is_valid()) {
+				close_marker->store_line(itos(OS::get_singleton()->get_process_id()));
+				close_marker->flush();
+			}
+		}
+		if (sub_agent_parallel_pid >= 0) {
+			OS::get_singleton()->kill(sub_agent_parallel_pid);
+			sub_agent_parallel_pid = -1;
+		}
 		_cancel_ai_connection_probe();
 		if (ai_connection_state == "checking") {
 			_set_ai_connection_status("unconfigured", U"连接验证已取消，请重新验证。");
@@ -8284,10 +8299,6 @@ void AIChatDock::_notification(int p_what) {
 		_end_daqian_approval(daqian_approval_running ? "unknown" : "cancelled");
 		if (!pending_external_editor_message.is_empty()) {
 			_get_editor_control()->cancel_route(pending_external_editor_message, "editor_closed");
-		}
-		if (sub_agent_parallel_pid >= 0) {
-			OS::get_singleton()->kill(sub_agent_parallel_pid);
-			sub_agent_parallel_pid = -1;
 		}
 		schedule_timer->stop();
 		codex_login_timer->stop();

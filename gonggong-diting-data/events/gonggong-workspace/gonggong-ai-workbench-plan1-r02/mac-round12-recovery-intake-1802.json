@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-r02",
+  "event_id": "mac-round12-recovery-intake-1802",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1802",
+  "occurred_at": "2026-11-22T12:52:13.885885+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1802,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T12:33:55Z",
+    "scope": "让编辑器关闭和工作者完成同时发生，检查关闭边界之前的最终检查点及之后的新派发数。"
+  },
+  "evidence_refs": [],
+  "sha256": "bd24f5b6959e32d81616445cf266b74b752e4e465c70040fd5d0f681358c68cf"
+}
