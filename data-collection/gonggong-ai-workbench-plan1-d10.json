@@ -1,0 +1,220 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-d10",
+  "issue_number": 1857,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1857",
+  "producer": "wave22_d10",
+  "baseline": "f09eeb86f2b0cadaa867493030ee3157336bf3c5",
+  "verified_at": "2026-11-22T00:59:56.386951+00:00",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-d10/dispatch-f3ea8865561e404d82d668c9ddd128a9.json",
+  "source_revision": "73c426460da58891e2b2c8c0e5f8fe61a2c2341a8c416134c042bb9e0910dc94",
+  "source_sha256": {
+    "customizations/components/tianxuan/server/api.py": "085119014fc6ef81a1a3adb92dbe4fbdcb3b4de0319101c637666628b1f9a5c1",
+    "customizations/components/tianxuan/server/schemas.py": "12c1d267bc149b230bf1fb3431562b53bdab7ca89e8715851c6659278e16bbd2",
+    "customizations/components/tianxuan/server/test_design_tasks.py": "e759a698fbb41cbaa01b859aa42a3632278e7d6fda6b9afdf7cdf62f378621de",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "6337d016c1c2d5a6f0037040e322ebe50381a3ea91cbbe539e6bdadc3074ae03",
+    "design-docs/gonggong-ai-workbench-d10.md": "3b60657a84b6d245f07e2d75e4751e58afdab864fd38d156e2242035a7ab3804",
+    "editor/SCsub": "791961eb74bb29a60d3d3d6e95fa7794dc70ba76f5a092cfe476a90e343367da",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "e11067744d507f9e6e9ed6f7b5eb5e308e53330760dfa6074522b7eba1ba9475",
+    "editor/docks/workbench/design_signoff.gd": "b515fe6ac5a098d5960b085dc96d7249ef68bd656143a046efe32520f7277718",
+    "editor/docks/workbench/design_tasks.gd": "da763d79cafee015568f34d95fdbca39868a4416f2483979e8082ab4e32412e7",
+    "editor/docks/workbench/issue_detail.gd": "e07abb72578e135cab7796cfe3e6cf7e2a0cbecca7a8944d7d5abea7dc565222",
+    "tests/editor/run_workbench_design_tasks.py": "bd6e7d4fad8792f60f63c51fc55e02eea97ee9a253d63ea2aa0e1d1f5671b2c6",
+    "tests/editor/workbench_design_tasks.gd": "aa3e7f635a96aaaa073ca1cd13e4c9a4e45405e7d136619b9c963ccbb4ae6e31"
+  },
+  "intake": {
+    "state": "status:in-progress",
+    "D09": 1858,
+    "I01": 1859,
+    "dependencies": "both completed",
+    "comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1857#issuecomment-7071696308",
+    "upstream_macos": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860#issuecomment-7067023618",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1861#issuecomment-7068555775"
+    ],
+    "macos_candidate_run": null
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "toolchain": "Visual Studio 14.5 / Windows SDK 10.0.26100.0",
+    "options": "platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-cache> cache_limit=0 --cache-readonly -j6",
+    "first_preparation": "The build begun before the SCsub edit had read the old graph and failed with C2065 for daqian_design_tasks. A fresh invocation generated BusinessSession.gen.h with the new script.",
+    "final_invalidation": [
+      "BusinessSession.gen.h",
+      "IssueCreation.gen.h",
+      "AIWorkbenchSidebar.cpp",
+      "editor.windows.editor.x86_64.lib",
+      "godot.windows.editor.x86_64.exe"
+    ],
+    "generated_headers": {
+      "BusinessSession.gen.h": "bdc07bd7b4fefd6d7199f32fcc1ac619a3e0191780484a8862ecea172181765c",
+      "IssueCreation.gen.h": "dd31ce737e6e26f75531b838a7b759f5d9cb8b16834ceefb00a8631982096819"
+    },
+    "editor_sha256": "13fb2d0a3d6a46137a6c38413fb84e3fd83fdd1b967f35415d61385c42df45f6",
+    "exit_code": 0
+  },
+  "test_results": {
+    "native_command": "python tests/editor/run_workbench_design_tasks.py --godot <candidate> --report <report>",
+    "native_exit_code": 0,
+    "native_report_sha256": "f491fe0a56584984f92de6f55459657df9cfa51151d3c0c59142d087a0bf1d56",
+    "native": {
+      "state": "passed",
+      "editor_sha256": "13fb2d0a3d6a46137a6c38413fb84e3fd83fdd1b967f35415d61385c42df45f6",
+      "native": {
+        "items": [
+          {
+            "acceptance": "拉杆触发一次开桥事件",
+            "module_id": "mod_b695fe8dc30e4cbda15c8eeca1db133d",
+            "paragraph": 1,
+            "title": "操作拉杆"
+          },
+          {
+            "acceptance": "桥面动画播放至展开状态",
+            "module_id": "mod_2bd9d1308514454faddc990045ab0674",
+            "paragraph": 2,
+            "title": "桥面展开"
+          }
+        ],
+        "opened": [
+          {
+            "body": "Program the lever.\r\nHandle repeated pulls.\r\n\r\nAnimate the bridge opening.",
+            "number": 1,
+            "reference": {
+              "document_id": "doc_1c70744048cf4fb89dc6205510fc2746",
+              "paragraph": 1,
+              "version": 1
+            }
+          },
+          {
+            "body": "Program the lever.\r\nHandle repeated pulls.\r\n\r\nAnimate the bridge opening.",
+            "number": 2,
+            "reference": {
+              "document_id": "doc_1c70744048cf4fb89dc6205510fc2746",
+              "paragraph": 2,
+              "version": 1
+            }
+          }
+        ],
+        "revision": 1,
+        "status": "已生成：#1 操作拉杆、#2 桥面展开"
+      },
+      "writes": [
+        {
+          "payload": {
+            "call_id": "932f67c289336126e8bac5c6713f932d0eea4b8158fe3cc87135d0f804cdfa28",
+            "items": [
+              {
+                "acceptance": "拉杆触发一次开桥事件",
+                "module_id": "mod_b695fe8dc30e4cbda15c8eeca1db133d",
+                "paragraph": 1,
+                "title": "操作拉杆"
+              },
+              {
+                "acceptance": "桥面动画播放至展开状态",
+                "module_id": "mod_2bd9d1308514454faddc990045ab0674",
+                "paragraph": 2,
+                "title": "桥面展开"
+              }
+            ]
+          },
+          "server": 200,
+          "client": 503
+        },
+        {
+          "payload": {
+            "call_id": "932f67c289336126e8bac5c6713f932d0eea4b8158fe3cc87135d0f804cdfa28",
+            "items": [
+              {
+                "acceptance": "拉杆触发一次开桥事件",
+                "module_id": "mod_b695fe8dc30e4cbda15c8eeca1db133d",
+                "paragraph": 1,
+                "title": "操作拉杆"
+              },
+              {
+                "acceptance": "桥面动画播放至展开状态",
+                "module_id": "mod_2bd9d1308514454faddc990045ab0674",
+                "paragraph": 2,
+                "title": "桥面展开"
+              }
+            ]
+          },
+          "server": 200,
+          "client": 200
+        }
+      ],
+      "durable_sources": [
+        {
+          "id": "iss_04b487a6cea446039230630978afb0de",
+          "number": 1,
+          "title": "操作拉杆",
+          "document_id": "doc_1c70744048cf4fb89dc6205510fc2746",
+          "version": 1,
+          "paragraph": 1,
+          "project": "d10/bridge",
+          "module_id": "mod_b695fe8dc30e4cbda15c8eeca1db133d",
+          "acceptance": "拉杆触发一次开桥事件"
+        },
+        {
+          "id": "iss_930d976cb4af4c03bd94cd4cac6cccf6",
+          "number": 2,
+          "title": "桥面展开",
+          "document_id": "doc_1c70744048cf4fb89dc6205510fc2746",
+          "version": 1,
+          "paragraph": 2,
+          "project": "d10/bridge",
+          "module_id": "mod_2bd9d1308514454faddc990045ab0674",
+          "acceptance": "桥面动画播放至展开状态"
+        }
+      ],
+      "original_signoff": {
+        "document_id": "doc_1c70744048cf4fb89dc6205510fc2746",
+        "version": 1,
+        "confirmed_by": "usr_8465ff585e1b4df6bc7eca5547da0dcf",
+        "confirmed_at": "2026-11-22T00:58:35.501604+00:00",
+        "acceptance": "拉杆触发开桥，桥面完成展开"
+      },
+      "database_counts": {
+        "issues": 2,
+        "doc_issue_links": 2,
+        "design_task_sources": 2
+      },
+      "unsigned_status": 409,
+      "viewer_write_status": 403,
+      "missing_module_rollback": 404,
+      "bad_paragraph_rollback": 400,
+      "conflicting_replay": 409,
+      "unrelated_project_count": 0,
+      "unsigned_next_revision_count": 0,
+      "concurrent_replays": 2
+    },
+    "service_command": "python -m pytest -q customizations/components/tianxuan/server/test_design_tasks.py customizations/components/tianxuan/server/test_design_signoff.py customizations/components/tianxuan/server/test_issue_number.py customizations/components/tianxuan/server/test_module_issues.py customizations/components/tianxuan/server/test_api_versions.py customizations/components/tianxuan/server/test_api_sharing.py",
+    "service_exit_code": 0,
+    "service_result": "14 passed, one Starlette TestClient deprecation warning",
+    "concurrency": "Independent SQLite connections synchronized before initial submission. Both received identical IDs. Changed current issue module preserved original design_source; revoking document visibility removed source from numbered detail.",
+    "adjacent": [
+      {
+        "command": "python tests/editor/run_workbench_design_signoff.py --godot <candidate> --report <report>",
+        "exit_code": 0,
+        "report_sha256": "322e50321e264758aed097fe407876b6d0b0d99f89c17c648e7fbdb21a8bac61",
+        "database_receipts": 2,
+        "created_issues": 0
+      },
+      {
+        "command": "python tests/editor/run_workbench_issue_detail.py --godot <candidate> --report <report>",
+        "exit_code": 0,
+        "report_sha256": "acf1082dbd8ddc00eec10bf6afd4e76f2bfa6d0ae9479a978b5d78be49bb1ca7",
+        "checks": [
+          "command palette opened sidebar",
+          "assigned and unassigned compared to reopened database",
+          "private and absent results cleared prior detail",
+          "successful refresh after 404, logout cleared the visible record"
+        ]
+      }
+    ]
+  },
+  "handoff": {
+    "receiver": "Parent Codex session for independent acceptance, main delivery and authoritative issue readback",
+    "consumer": "A01 #1856",
+    "contract": "GET /api/v1/issues/by-number/{number}/detail returns design_source. GET /api/v1/docs/{document_id}/versions/{version}/tasks returns actual source rows in the authenticated session project.",
+    "state": "candidate locally verified"
+  }
+}

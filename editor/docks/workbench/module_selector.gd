@@ -16,6 +16,7 @@ var history: TextEdit
 var composer: TextEdit
 var document_links := MenuButton.new()
 var design_action := Button.new()
+var progress_action := Button.new()
 var design := DirectionDraft.new()
 var send: Button
 var http: HTTPRequest
@@ -101,6 +102,10 @@ func _ready() -> void:
 	design_action.name = "ModuleDesignAction"
 	design_action.pressed.connect(_open_design)
 	content.add_child(design_action)
+	progress_action.name = "OpenConversationDesignProgress"
+	progress_action.text = "偃师设计阶段"
+	progress_action.pressed.connect(_open_progress)
+	content.add_child(progress_action)
 	design.panel = self
 	add_child(design)
 	# Reparenting the conversation view must not cancel an in-flight request.
@@ -217,6 +222,7 @@ func _lock(value: bool) -> void:
 	composer.editable = not value
 	send.disabled = value
 	design_action.disabled = value
+	progress_action.disabled = value
 	if not busy:
 		operation_finished.emit()
 
@@ -577,6 +583,7 @@ func _render() -> void:
 					menu.add_item("%s · v%d · 第 %d 段" % [ref.object_id,ref.revision,ref.paragraph])
 					menu.set_item_metadata(menu.item_count - 1, ref)
 	document_links.visible = menu.item_count > 0
+	progress_action.visible = managed_identity and consultation_detail.is_empty() and not conversation.is_empty()
 	var published := conversation.get("requirement_id") != null
 	var revision := _direction()
 	design_action.text = "打开本次咨询的需求文档" if published else "从咨询形成方向草稿"
@@ -620,6 +627,12 @@ func _open_sent_reference(id: int) -> void:
 	var view = session.find_child("WorkbenchDocuments",true,false)
 	if is_instance_valid(view):
 		view.open_document(ref.object_id, int(ref.revision), int(ref.paragraph))
+
+
+func _open_progress() -> void:
+	if not busy and progress_action.is_visible_in_tree() and is_instance_valid(session):
+		var progress = session.get_node("WorkbenchDesignProgress")
+		progress.open_chat(conversation.id, self)
 
 
 func _direction() -> Dictionary:

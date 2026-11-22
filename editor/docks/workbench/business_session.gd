@@ -260,6 +260,7 @@ class DocumentView extends AcceptDialog:
 	var edit := Button.new()
 	var history := Button.new()
 	var signoff := Button.new()
+	var progress := Button.new()
 	var composer := ConfirmationDialog.new()
 	var draft_title := LineEdit.new()
 	var draft_body := TextEdit.new()
@@ -293,6 +294,9 @@ class DocumentView extends AcceptDialog:
 		signoff.text = "设计签认"
 		signoff.disabled = true
 		actions.add_child(signoff)
+		progress.text = "查看偃师设计阶段"
+		progress.disabled = true
+		box.add_child(progress)
 		_setup_composer()
 		status.name = "DocumentStatus"
 		box.add_child(status)
@@ -460,6 +464,7 @@ class DocumentView extends AcceptDialog:
 
 	func _clear_body() -> void:
 		revision_cleared.emit()
+		progress.disabled = true
 		signoff.disabled = true
 		history.disabled = true
 		edit.disabled = true
@@ -559,6 +564,7 @@ class DocumentView extends AcceptDialog:
 		reference = {"document_id": id, "version": version, "paragraph": 0}
 		edit.disabled = false
 		history.disabled = false
+		progress.disabled = false
 		signoff.disabled = false
 		status.text = "%s · v%d · 作者 %s" % [id, version, reply.data.get("author", "未知")]
 		paragraphs.disabled = ranges.is_empty()

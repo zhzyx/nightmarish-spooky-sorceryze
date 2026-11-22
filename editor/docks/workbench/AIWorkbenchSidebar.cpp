@@ -142,6 +142,8 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 		MountWorkbenchControl(pSession, "WorkbenchIssueRoadmap", daqian_issue_roadmap);
 		MountWorkbenchControl(pSession, "WorkbenchDocumentHistory", daqian_document_history);
 		MountWorkbenchControl(pSession, "WorkbenchDesignSignoff", daqian_design_signoff);
+		MountWorkbenchControl(pSession, "WorkbenchDesignTasks", daqian_design_tasks);
+		MountWorkbenchControl(pSession, "WorkbenchDesignProgress", daqian_design_progress);
 	}
 	MenuButton *pResourceMenu = memnew(MenuButton);
 	pResourceMenu->set_name("WorkbenchResourceSelection");

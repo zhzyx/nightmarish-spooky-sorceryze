@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-6b0843370f90e52d0ec6f343ea6b603fda44fb2a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-i15",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "608ee756a9da78af11199c70256fdcab2ee4c36374704efe21190d96989f3942",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1999",
+    "action": "validation",
+    "detection_head": "76eb1a264c41d4db0d9a4dd34ea5a1c66b851ed5",
+    "context_sha256": "f32aa4caebe41108357683ce905edb427b1f209da36e46d7efd8972df669e9ab",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-operator",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1756",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/44952938163/job/136994710771",
+    "diagnosis": "全量 CI 中 1,419 项通过，旧用例在建立历史手工关闭回执时缺少 I15 要求的本单验收证据。原用例本地同样失败。按新契约补录证据后，原有回放必须被托管保护拒绝的断言保持生效，该模块全 24 项已通过。",
+    "next_action": "将这份夹具修复与已完成整合的十张工单重新签发，复核相同远端 CI 与主线接收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-21T21:58:24.356687+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-21T22:01:22.368065+00:00",
+  "sha256": "70255c6ae5d55661b412207a06538d6b25e92fe2d34dfc3f300cf505949a9d59"
+}

@@ -233,6 +233,20 @@ class DesignSignoffRequest(BaseModel):
     acceptance: str = Field(min_length=1, max_length=8000)
 
 
+class DesignTaskItem(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    paragraph: int = Field(ge=1, strict=True)
+    module_id: str = Field(min_length=1, max_length=256)
+    title: str = Field(min_length=1, max_length=256)
+    acceptance: str = Field(min_length=1, max_length=8000)
+
+
+class DesignSplitRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    call_id: str = Field(min_length=1, max_length=256)
+    items: list[DesignTaskItem] = Field(min_length=1, max_length=50)
+
+
 class DocRestoreRequest(BaseModel):
     expected_version: int = Field(ge=1, strict=True)
     call_id: str | None = Field(default=None, min_length=1, max_length=256)

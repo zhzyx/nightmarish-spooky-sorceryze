@@ -605,3 +605,49 @@ def test_pending_turn_replay_and_stop_waiting_do_not_repeat_or_accept_late_reply
         assert len(called) == 1
     store.db.close()
     gateway.close()
+
+
+def test_stage_return_survives_reopen_and_cannot_approve_a_superseded_revision(tmp_path):
+    from workspace_conversations import Confirmation, Conversations, Draft, StageReturn, Turn
+
+    database = str(tmp_path / "review.sqlite")
+    store = Tianxuan(database)
+    actor = store.register("Studio", "author@example.invalid", "password123")["user_id"]
+    key = str(uuid4())
+    stages = Conversations(store)
+    stages.create(actor, key)
+    chat = stages.turn(actor, key, Turn(id=uuid4(), content="Bridge", expected_version=0), None)
+    chat = stages.draft(actor, key, "direction", Draft(body="Open the bridge", expected_version=chat["version"]))
+    chat = stages.confirm(actor, key, "direction", Confirmation(revision=1, expected_version=chat["version"]))
+    chat = stages.draft(actor, key, "plan", Draft(body="Pull a lever", expected_version=chat["version"]))
+    chat = stages.return_stage(
+        actor, key, "plan", StageReturn(revision=2, expected_version=chat["version"], reason="Specify which lever")
+    )
+    returned = chat["revisions"][1]
+    assert returned["returned_by"] == actor and returned["return_reason"] == "Specify which lever"
+    store.db.close()
+
+    reopened = Tianxuan(database)
+    try:
+        with TestClient(create_app(reopened), headers=headers(reopened, actor, actor)) as client:
+            url = ROOT + "/" + key
+            assert get_state(client.get(url))["revisions"][1] == returned
+            payload = {"revision": 2, "expected_version": chat["version"]}
+            assert client.post(url + "/design/plan/return", json=dict(payload, reason="Changed")).status_code == 409
+            assert client.post(url + "/design/plan/confirm", json=payload).status_code == 409
+            chat = get_state(
+                client.post(
+                    url + "/design/direction/drafts",
+                    json={"expected_version": chat["version"], "body": "Change direction"},
+                )
+            )
+            assert chat["current"] == {"direction": 3}
+            assert chat["revisions"][1] == returned
+            assert (
+                client.post(
+                    url + "/design/plan/confirm", json={"expected_version": chat["version"], "revision": 2}
+                ).status_code
+                == 409
+            )
+    finally:
+        reopened.db.close()
