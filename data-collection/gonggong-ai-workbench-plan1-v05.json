@@ -1,0 +1,402 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-v05",
+  "issue_number": 1770,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1770",
+  "source_revision": "fc988c7fc02598406380fd12510df64b0233c68780c35c2f81e260e6f2f71f1c",
+  "handoff_event": {
+    "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-v05/dispatch-21d74e7123224a2f8808b12fc4a5e944.json",
+    "sha256": "b30e630bb4fd6f513649170549748f09c94a4a809dff28d7a558935cd7dde0f2"
+  },
+  "verified_at": "2026-11-22T15:47:06.600063+00:00",
+  "candidate_base": "1ee330636c4d6a7d73b82d34d7b609dd341cbe70",
+  "source_sha256": {
+    "editor/docks/workbench/issue_actions/asset_candidates.gd": "66299a1514d1f1f1eba85e7e5cb5a966f9a1c62c491988d46b7511b85b0166f8",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "52ccbf43afaf41d86e4c3dc603ba5783afb780e2d1014746762446cb67bd1750",
+    "editor/SCsub": "3ba2dc053b0961d95fee2f67bcf1e2e6713031517afdc387010b5d53deea1f43",
+    "editor/editor_builders.py": "e1d716927d7515a5625414bdd5dbb362651585a138432643c897cfdcc7ff5fa7",
+    "tests/editor/workbench_asset_viewport.gd": "1c397e4b90b90a52b0a5f26de21a82496ec4635fcb20052ef6b6c7ebefdb04fe",
+    "tests/editor/workbench_asset_candidates.gd": "9f78a9ae05d6cea2e481842674ca8cbfa68d52fd2bfc9031ce33afb321856e04",
+    "tests/editor/run_workbench_asset_candidates.py": "f0c6104b191b01a90a9c7c4ddabd983e2162ffc44e0f5a12724ae3f36b947fac",
+    "tests/editor/run_workbench_issue_detail.py": "3bc1b0f5731dcd17562c03ebdd782560463de5cad7a25ad9ed917cae19afaec8",
+    "customizations/components/tianxuan/server/api.py": "0b02ba1fe4b2a3b45aaebe821ea515b2cf2fe21c0e44d82b422ea6251ba71e3b",
+    "customizations/components/tianxuan/duobao/native_store.py": "79c2b230c2cd81ea9492340d6b22f18cd23398c11d61fd37dc345654d04aea56",
+    "design-docs/gonggong-ai-workbench-v05.md": "d8fbd4a045dc9eff58198ffded636c0f54f629bf60c68dc0cfd10df402b4da0f"
+  },
+  "dependency_receipts": {
+    "E09": {
+      "issue_number": 1797,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "main_commit": "8ec96d9d99f05e598b91b2ff8fd6c0611c33b978",
+      "receipt": "data-collection/plan1-e09-windows-integration.json"
+    },
+    "V01": {
+      "issue_number": 1820,
+      "state": "CLOSED",
+      "reason": "COMPLETED",
+      "main_commit": "0198ae5c9b9360d62e8749f436ba98ef36eae90e",
+      "receipt": "data-collection/gonggong-ai-workbench-plan1-v01.json"
+    }
+  },
+  "build": {
+    "command": "& \"$env:LOCALAPPDATA/Python/pythoncore-3.14-64/python.exe\" -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=D:/GongGong/data-collection/receipts/duobao-1382/scons-cache cache_limit=0 --cache-readonly -j6",
+    "sdk": "Visual Studio 14.5 / Windows SDK 10.0.26100.0 / installed WebView2 SDK",
+    "exit_code": 0,
+    "generated_header_sha256": "a7d8a2d106953a0e1904b5da4743ffe62a894615e3a478f87b60978c2dbe748a",
+    "files": {
+      "godot.windows.editor.x86_64.exe": "4d0ca673961ba07604a2f86015016d2b98e5e7fa20e99941cd9b1d6d58e67a81",
+      "godot.windows.editor.x86_64.console.exe": "12c7f4322af4d0d4ab105cf42b8519972fae4b731357cfd278901e3b7f7920de",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+    }
+  },
+  "target_service": {
+    "host": "Tianxuan create_app(native_only=True) with account authentication on a unique loopback socket; Duobao NativeStore SQLite",
+    "project": "studio/game",
+    "submission": "work.submit_asset",
+    "consumer": "Compiled AIWorkbenchSidebar > WorkbenchIssueDetail > WorkbenchIssueArtifacts > asset_candidates",
+    "entry": "Command palette editor/open_ai_workbench; both E09 save dialogs, local comparison, A/B and exit controls. Fresh headless editor processes reopen the same project."
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python": "3.12.14",
+  "replay_commands": [
+    "D:/GongGong-work/tx-venv/Scripts/python.exe tests/editor/run_workbench_asset_candidates.py --same-view --godot bin/godot.windows.editor.x86_64.console.exe --report <unique-output-file>",
+    "D:/GongGong-work/tx-venv/Scripts/python.exe tests/editor/run_workbench_asset_candidates.py --godot bin/godot.windows.editor.x86_64.console.exe --report <unique-output-file>",
+    "D:/GongGong-work/tx-venv/Scripts/python.exe tests/editor/run_workbench_issue_detail.py --godot bin/godot.windows.editor.x86_64.console.exe --report <unique-output-file>"
+  ],
+  "replay_environment": "Run from this checkout. Unique private editor, service database and project are created in system TEMP. PYTHONUTF8=1; GONGGONG_WORKSPACE cleared.",
+  "native": {
+    "editor_sha256": "4d0ca673961ba07604a2f86015016d2b98e5e7fa20e99941cd9b1d6d58e67a81",
+    "launcher_sha256": "12c7f4322af4d0d4ab105cf42b8519972fae4b731357cfd278901e3b7f7920de",
+    "producer": {
+      "mode": "deterministic fixture subprocess",
+      "launcher_pid": 121096,
+      "pid": 135196,
+      "parent_pid": 121096,
+      "outputs": [
+        "hero.png",
+        "hero.glb"
+      ],
+      "exit_code": 0
+    },
+    "changed_during_download": [
+      {
+        "before": "1d94f5747c6df5f6b0ccb70ce912bf4b6ff917729cd13942084bc9c83ddad351",
+        "saved": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+      }
+    ],
+    "http": [
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/1",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts/2",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/detail",
+        "studio/game",
+        200
+      ],
+      [
+        "/api/v1/issues/by-number/1/artifacts",
+        "studio/game",
+        200
+      ]
+    ],
+    "comparisons": [
+      {
+        "candidate_filename": "candidate-14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d.png",
+        "candidate_sha256": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+        "name": "hero.png",
+        "original_sha256": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+        "previews_and_choices": [
+          {
+            "pixel": "ff0000",
+            "selection": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+          },
+          {
+            "pixel": "0000ff",
+            "selection": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d"
+          }
+        ],
+        "reopened_choice": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+        "revision": "04d69c32009b23e66f648c8cefd676ff5a4183524e68dd4c248f50d844e95bb6",
+        "stale_rejection_exercised": true
+      },
+      {
+        "candidate_filename": "a514bdd3e4393b12-candidate-ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef.glb",
+        "candidate_sha256": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+        "name": "hero.glb",
+        "original_sha256": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+        "previews_and_choices": [
+          {
+            "mesh_scale": 1.0,
+            "selection": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+          },
+          {
+            "mesh_scale": 2.0,
+            "selection": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef"
+          }
+        ],
+        "reopened_choice": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+        "revision": "274ed3d7fbda02f4d094085c4588a4c52a91136830d48bdffd237727b21382ee",
+        "stale_rejection_exercised": false
+      }
+    ],
+    "project_reopens": [
+      {
+        "comparisons": [
+          {
+            "candidate": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+            "name": "hero.png",
+            "original": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+            "restored_original_object": true,
+            "revision": "04d69c32009b23e66f648c8cefd676ff5a4183524e68dd4c248f50d844e95bb6",
+            "same_view_rect": "[P: (9.0, 186.0), S: (260.0, 150.0)]",
+            "selected": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+            "sequence": [
+              {
+                "pixel": "0000ff",
+                "side": "B"
+              },
+              {
+                "pixel": "ff0000",
+                "side": "A"
+              },
+              {
+                "pixel": "0000ff",
+                "side": "B"
+              }
+            ]
+          },
+          {
+            "candidate": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+            "name": "hero.glb",
+            "original": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+            "restored_original_object": true,
+            "revision": "274ed3d7fbda02f4d094085c4588a4c52a91136830d48bdffd237727b21382ee",
+            "same_view_rect": "[P: (9.0, 186.0), S: (260.0, 150.0)]",
+            "selected": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+            "sequence": [
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 2.0,
+                "side": "B"
+              },
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 1.0,
+                "side": "A"
+              },
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 2.0,
+                "side": "B"
+              }
+            ]
+          }
+        ],
+        "display_server": "headless",
+        "pid": 110780
+      },
+      {
+        "comparisons": [
+          {
+            "candidate": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+            "name": "hero.png",
+            "original": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+            "restored_original_object": true,
+            "revision": "04d69c32009b23e66f648c8cefd676ff5a4183524e68dd4c248f50d844e95bb6",
+            "same_view_rect": "[P: (9.0, 186.0), S: (260.0, 150.0)]",
+            "selected": "14d02297c319bfcd34fd80d0a0c9e16c207ee28e6c7bc9a33b84ee86101af70d",
+            "sequence": [
+              {
+                "pixel": "0000ff",
+                "side": "B"
+              },
+              {
+                "pixel": "ff0000",
+                "side": "A"
+              },
+              {
+                "pixel": "0000ff",
+                "side": "B"
+              }
+            ]
+          },
+          {
+            "candidate": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+            "name": "hero.glb",
+            "original": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2",
+            "restored_original_object": true,
+            "revision": "274ed3d7fbda02f4d094085c4588a4c52a91136830d48bdffd237727b21382ee",
+            "same_view_rect": "[P: (9.0, 186.0), S: (260.0, 150.0)]",
+            "selected": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef",
+            "sequence": [
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 2.0,
+                "side": "B"
+              },
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 1.0,
+                "side": "A"
+              },
+              {
+                "camera_transform": "[X: (0.857493, 0.0, -0.514496), Y: (-0.166924, 0.945905, -0.278207), Z: (0.486664, 0.324443, 0.811107), O: (3.006007, 1.937338, 4.443345)]",
+                "fov": 53.0,
+                "mesh_scale": 2.0,
+                "side": "B"
+              }
+            ]
+          }
+        ],
+        "display_server": "headless",
+        "pid": 108040
+      }
+    ],
+    "selection_persisted": true,
+    "occupied_candidate_preserved": true,
+    "malformed_model_preview_rejected": true,
+    "temporary_downloads_remaining": 0
+  },
+  "regressions": {
+    "E09 asset preservation": {
+      "exit_code": 0,
+      "report_sha256": "6e333f928523c109b3edc9ddc24e2e33c816601095d694241cfbc4cd5ccf2d0a",
+      "selection_persisted": true,
+      "previews_and_choices": {
+        "hero.png": [
+          {
+            "pixel": "ff0000",
+            "selection": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+          },
+          {
+            "pixel": "0000ff",
+            "selection": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c"
+          }
+        ],
+        "hero.glb": [
+          {
+            "mesh_scale": 1.0,
+            "selection": "732a267f0e06004a2e3780a58834e22ab6ab45b577a75c5d95744225559ea2d2"
+          },
+          {
+            "mesh_scale": 2.0,
+            "selection": "ba8686f4ada33b3c20d0795b95ece4d3c3437febe4a74ba1666d05826e4606ef"
+          }
+        ]
+      }
+    },
+    "I02 issue details": {
+      "exit_code": 0,
+      "report_sha256": "45d7e72ac7b0cd5eac756681f63fb589efe684bec37bdc0083bc611374b0166b",
+      "checks": [
+        "command palette opened sidebar",
+        "assigned and unassigned compared to reopened database",
+        "private and absent results cleared prior detail",
+        "successful refresh after 404, logout cleared the visible record"
+      ],
+      "http_readback": [
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/2/detail",
+          "studio/game",
+          200
+        ],
+        [
+          "/api/v1/issues/by-number/3/detail",
+          "studio/game",
+          403
+        ],
+        [
+          "/api/v1/issues/by-number/99999/detail",
+          "studio/game",
+          404
+        ],
+        [
+          "/api/v1/issues/by-number/1/detail",
+          "studio/game",
+          200
+        ]
+      ]
+    }
+  },
+  "recalled_methods": {
+    "editor-native-acceptance": [
+      {
+        "lesson": "assert-async-operation-started",
+        "revision": 17,
+        "head": "4f0d87dc9849d4015058675960c1537de2f41d9db187dadd8646eda5712fa949",
+        "counterexample": "A test intentionally covering rejection before start should instead assert no launch; start evidence does not by itself prove successful completion.",
+        "applied": "Verified actual authenticated artifact GET/200 before decoding; checked live viewport geometry, pixel/mesh and the terminal report for each editor restart."
+      }
+    ],
+    "godot-build-placement": [
+      {
+        "lesson": "trace-native-consumer",
+        "revision": 58,
+        "head": "f049d3e75afe833d5f98fc3a43cbcdd34928ea437daf412b1620eaed42244ecd",
+        "counterexample": "editor/SCsub 在本工单基线将天枢 GDScript 构建为头文件；马良 Python 当前为嵌入依赖。单按文件后缀或 fixture 名称排除会错误复用。",
+        "applied": "Read editor/SCsub and AIWorkbenchSidebar.cpp; built the generated IssueActions.gen.h into the new binary before exercising the product control."
+      }
+    ]
+  },
+  "outcome": "Each of two fresh editor processes opened the saved references and displayed B/A/B as blue/red/blue in the same PNG rectangle and original pixel scale. GLB mesh x scale was 2/1/2 through the same camera at FOV 53. Exit and window close restored the original live texture or mesh node and preserved the explicit asset selection. A subsequent switch detected a changed PNG candidate.",
+  "result": "passed"
+}
