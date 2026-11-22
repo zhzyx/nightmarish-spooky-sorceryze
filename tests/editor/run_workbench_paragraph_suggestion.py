@@ -29,7 +29,7 @@ from gateway import ModelGateway  # noqa: E402
 from tianxuan_core import Tianxuan  # noqa: E402
 
 
-def exercise(root, binary, source_controls, windowed, images):
+def exercise(root, binary, source_controls, windowed, images, resolution=None, race=False):
     with patch.dict(os.environ, {"GONGGONG_WORKSPACE": ""}):
         editor = copy_editor(binary, root / "engine")
     project = root / "project"
@@ -56,6 +56,9 @@ def exercise(root, binary, source_controls, windowed, images):
     fixture = dict(
         id=doc["id"], other=other["id"], body=body, original=original, replacement=replacement, candidate=candidate
     )
+    if resolution is not None:
+        fixture["resolution"] = resolution
+        fixture["race"] = race
     contested = candidate.replace(replacement, "另一位作者改为持续十秒")
     merged_doc = candidate.replace("# 虹桥", "# 人工定稿的虹桥")
     merged_doc = merged_doc.replace("照亮桥面", "再次确认的桥面", 1)
@@ -127,8 +130,11 @@ def exercise(root, binary, source_controls, windowed, images):
                     return Response(status_code=503) if client != response.status_code else response
                 if payload["expected_version"] == 2:
                     store.update_doc(actor, doc["id"], contested, 2)
+                if race and len(writes) == 3:
+                    store.update_doc(peer, doc["id"], candidate, 3)
                 response = await call_next(request)
-                client = 503 if not writes and response.status_code == 200 else response.status_code
+                lose_ack = not writes or (resolution is not None and len(writes) == (4 if race else 3))
+                client = 503 if lose_ack and response.status_code == 200 else response.status_code
                 writes.append((payload, response.status_code, client))
                 return Response(status_code=503) if client != response.status_code else response
             response = await call_next(request)
@@ -196,6 +202,25 @@ def exercise(root, binary, source_controls, windowed, images):
             if result.returncode or "SCRIPT ERROR" in output or len(lines) != 1:
                 raise RuntimeError(f"{output[-6500:]}\nFixture prompts={prompts} previews={previews} writes={writes}")
             trace = json.loads(lines[0])
+            if resolution is not None:
+                expected = prefix + ["另一位作者改为持续十秒", "桥灯保持蓝色", "人工折中为五秒"][resolution] + suffix
+                final_version = 5 if race else 4
+                if race:
+                    assert writes[3][1:] == (409, 409)
+                    assert store.version(doc["id"], 4)["body_md"] == candidate
+                    if resolution == 0:
+                        expected = candidate
+                assert store.get_doc(doc["id"])["version"] == final_version
+                assert store.version(doc["id"], 3)["body_md"] == contested
+                assert store.version(doc["id"], final_version)["body_md"] == expected
+                assert trace[-1] == {"choice": resolution, "version": final_version, "resolved": expected}
+                assert writes[-2][0] == writes[-1][0] and writes[-2][1:] == (200, 503) and writes[-1][1:] == (200, 200)
+                return dict(
+                    choice=resolution,
+                    trace=trace,
+                    writes=writes,
+                    editor_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
+                )
             assert [item["instruction"] for item in prompts] == [
                 "取消",
                 "越界回执",
@@ -259,10 +284,14 @@ if __name__ == "__main__":
     )
     parser.add_argument("--windowed", action="store_true")
     parser.add_argument("--images", type=Path, help="Write two windowed screenshots in this directory")
+    parser.add_argument("--resolution", type=int, choices=range(3))
+    parser.add_argument("--race", action="store_true")
     args = parser.parse_args()
     if args.images and not args.windowed:
         parser.error("--images needs --windowed")
     with tempfile.TemporaryDirectory(prefix="mac-1786-native-probe-") as tmp:
-        report = exercise(Path(tmp), args.godot.resolve(), args.source_controls, args.windowed, args.images)
+        report = exercise(
+            Path(tmp), args.godot.resolve(), args.source_controls, args.windowed, args.images, args.resolution
+        )
     args.report.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print("Passed native paragraph suggestion, explicit acceptance, retry and conflict")

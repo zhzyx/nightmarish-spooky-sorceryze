@@ -523,17 +523,24 @@ def merge_offline(base: str, local: str, remote: str) -> tuple[str, list[str]]:
     return _finish_lines(merged), conflicts
 
 
-def merge_paragraphs(base: str, local: str, remote: str) -> tuple[str, list[str]]:
+def merge_paragraphs(
+    base: str, local: str, remote: str, *, sections: list[dict[str, str]] | None = None
+) -> tuple[str, list[str]]:
     """Match D04's blank-line paragraphs while preserving Markdown whitespace and line endings."""
     separator = re.compile(r"(\r?\n(?:[^\S\r\n]*\r?\n)+)")
     merged, conflicts = _merge_units(
-        separator.split(base), separator.split(local), separator.split(remote), include_edges=False
+        separator.split(base), separator.split(local), separator.split(remote), include_edges=False, sections=sections
     )
     return "".join(merged), conflicts
 
 
 def _merge_units(
-    base_lines: list[str], local_lines: list[str], remote_lines: list[str], *, include_edges: bool = True
+    base_lines: list[str],
+    local_lines: list[str],
+    remote_lines: list[str],
+    *,
+    include_edges: bool = True,
+    sections: list[dict[str, str]] | None = None,
 ) -> tuple[list[str], list[str]]:
     if local_lines == base_lines:
         return remote_lines, []
@@ -563,8 +570,19 @@ def _merge_units(
         elif local_segment == remote_segment:
             merged.extend(local_segment)
         else:
-            merged.extend(["<<<<<<< local", *local_segment, "=======", *remote_segment, ">>>>>>> remote"])
+            if sections is not None:
+                sections.append({
+                    "before": "".join(merged),
+                    "base": "".join(base_lines[start:end]),
+                    "local": "".join(local_segment),
+                    "remote": "".join(remote_segment),
+                })
+                merged.clear()
+            else:
+                merged.extend(["<<<<<<< local", *local_segment, "=======", *remote_segment, ">>>>>>> remote"])
             conflicts.append(_conflict_label(start, end, len(local_segment), len(remote_segment)))
         position = end
     merged.extend(base_lines[position:])
+    if sections:
+        sections[-1]["after"] = "".join(merged)
     return merged, conflicts

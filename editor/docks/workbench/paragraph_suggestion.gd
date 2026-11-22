@@ -11,6 +11,14 @@ var paragraph := 0
 var ticket := 0
 var candidate := ""
 var prepared := {}
+var conflict := {}
+var resolving := false
+var decision_base := ""
+var choices := VBoxContainer.new()
+var baseline := Label.new()
+var human := Label.new()
+var decision := OptionButton.new()
+var custom_text := TextEdit.new()
 
 
 func _ready() -> void:
@@ -43,6 +51,18 @@ func _ready() -> void:
 	box.add_child(preview)
 	status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	box.add_child(status)
+	box.add_child(choices)
+	for label: Label in [baseline, human]:
+		label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
+		choices.add_child(label)
+	choices.add_child(decision)
+	decision.add_item("保留人的版本")
+	decision.add_item("选用上方 AI 片段")
+	decision.add_item("直接写第三版")
+	decision.item_selected.connect(_choose)
+	custom_text.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
+	custom_text.custom_minimum_size.y = 70
+	choices.add_child(custom_text)
 	_reset()
 
 
@@ -56,6 +76,14 @@ func _reset() -> void:
 	paragraph = 0
 	candidate = ""
 	prepared.clear()
+	conflict.clear()
+	resolving = false
+	decision_base = ""
+	choices.hide()
+	baseline.text = ""
+	human.text = ""
+	custom_text.clear()
+	get_ok_button().text = "接受并保存"
 	hide()
 	instruction.clear()
 	preview.clear()
@@ -142,18 +170,89 @@ func _generate() -> void:
 	get_ok_button().disabled = false
 
 
+func _choose(index: int) -> void:
+	custom_text.visible = index == 2
+	get_ok_button().disabled = false
+
+
+func _show_conflict(data: Dictionary, base_version: int) -> bool:
+	var sections: Variant = data.get("sections")
+	if data.get("status") != "conflict" or not sections is Array or sections.size() != 1 or not sections[0] is Dictionary:
+		return false
+	var part: Dictionary = sections[0]
+	for key in ["before", "base", "local", "remote", "after"]:
+		if not part.get(key) is String:
+			return false
+	if part.before + part.remote + part.after != data.get("remote_md") or int(data.get("remote_version", 0)) <= base_version:
+		return false
+	resolving = true
+	decision_base = data.remote_md
+	conflict = part.duplicate(true)
+	conflict.version = int(data.remote_version)
+	prepared.clear()
+	baseline.text = "基线 v%d\n%s" % [base_version, part.base]
+	human.text = "人的当前版 v%d\n%s" % [int(conflict.version), part.remote]
+	preview.text = part.local
+	custom_text.text = part.remote
+	choices.show()
+	decision.disabled = false
+	decision.select(-1)
+	custom_text.hide()
+	custom_text.editable = true
+	get_ok_button().text = "确认解决并保存"
+	get_ok_button().disabled = true
+	status.text = "同一段发生冲突。请核对基线、人的当前版和上方 AI 片段。"
+	return true
+
+
 func _accept() -> void:
 	if get_ok_button().disabled or candidate.is_empty() or not _current(ticket):
 		return
 	var attempt := ticket
 	if prepared.is_empty():
-		prepared = {"expected_version": view.reference.version, "body_md": candidate, "call_id": Crypto.new().generate_random_bytes(16).hex_encode()}
+		var version: int = view.reference.version
+		var body := candidate
+		if not conflict.is_empty():
+			if decision.selected < 0:
+				return
+			var replacement: String = conflict.remote
+			if decision.selected == 1:
+				replacement = conflict.local
+			elif decision.selected == 2:
+				replacement = custom_text.text
+				if "\r\n" in str(conflict.remote):
+					replacement = replacement.replace("\n", "\r\n")
+			body = conflict.before + replacement + conflict.after
+			version = conflict.version
+			decision.disabled = true
+			custom_text.editable = false
+		prepared = {"expected_version": version, "body_md": body, "call_id": Crypto.new().generate_random_bytes(16).hex_encode()}
 	get_ok_button().disabled = true
 	generate.disabled = true
 	instruction.editable = false
 	status.text = "正在保存…"
 	var reply: Dictionary = await view.session.api_request(HTTPClient.METHOD_PATCH, _route(), prepared)
 	if not _current(attempt):
+		return
+	if reply.status == 409 and resolving:
+		# Reconcile the human's confirmed decision against the revision they saw.
+		var reviewed_version := int(prepared.expected_version)
+		var check: Dictionary = await view.session.api_request(HTTPClient.METHOD_POST, _route() + "/merge/preview", {
+			"expected_version": reviewed_version, "base_md": decision_base, "local_md": prepared.body_md,
+		})
+		if not _current(attempt):
+			return
+		if check.status == 409 and _show_conflict(check.data, reviewed_version):
+			return
+		if check.status == 200 and check.data.get("status") == "ready" and check.data.get("remote_md") is String and check.data.get("body_md") is String and int(check.data.get("remote_version", 0)) > reviewed_version:
+			decision_base = check.data.remote_md
+			prepared = {"expected_version": int(check.data.remote_version), "body_md": check.data.body_md, "call_id": Crypto.new().generate_random_bytes(16).hex_encode()}
+			choices.hide()
+			preview.text = prepared.body_md
+			status.text = "确认期间有新修订。请审阅基于 v%d 的完整结果，再确认保存。" % int(prepared.expected_version)
+		else:
+			status.text = "无法核对最新修订。可再次点击确认重试。"
+		get_ok_button().disabled = false
 		return
 	if reply.status == 409 and candidate != view.raw_body:
 		var merge: Dictionary = await view.session.api_request(HTTPClient.METHOD_POST, _route() + "/merge/preview", {
@@ -172,6 +271,8 @@ func _accept() -> void:
 				status.text = "合并期间有新修订。再次点击接受可保留建议并重新核对。"
 				get_ok_button().disabled = false
 				return
+		elif merge.status == 409 and _show_conflict(merge.data, int(view.reference.version)):
+			return
 		elif merge.status != 200:
 			reply = merge
 	var version: int = prepared.expected_version

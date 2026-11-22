@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round12-e08-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e08",
+  "kind": "request",
+  "occurred_at": "2026-11-22T12:52:50.718017+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1764",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1764,
+    "request": "在 Mac 原生冲突窗口制造重叠文本修改，分别测试保留人工版、选择 AI 片段及写第三版，回读新修订。",
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1764#issuecomment-7079184642",
+    "verified_intake_sha256": "1ccbb65b80847d44779a894acd1a4c8ef14a3f56b506e72b0da144e2ebff7c1a"
+  },
+  "evidence_refs": [],
+  "sha256": "90b135acfb290ed51cef7b482196f64e0cd16e2712da108a84950ca9f6f17dde"
+}
