@@ -1,0 +1,163 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-k05",
+  "issue_number": 1713,
+  "verified_at": "2026-11-22T20:51:36.390842+00:00",
+  "passed": true,
+  "main_verified": "4684b7a25518b6b7f43bf49bb84383326a0023a6",
+  "prerequisites": {
+    "K03": {
+      "issue_number": 1715,
+      "state_reason": "completed",
+      "closed_at": "2026-11-22T11:48:26Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1715#issuecomment-7078681576",
+      "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2066",
+      "main_merge": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+      "receipt": "data-collection/gonggong-ai-workbench-plan1-k03.json"
+    },
+    "Q04": {
+      "issue_number": 1731,
+      "state_reason": "completed",
+      "closed_at": "2026-11-22T19:33:52Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731#issuecomment-7084499874",
+      "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2138",
+      "main_merge": "b6cfabbaedbdf46fb6297f047e9fa4c038f37033",
+      "receipt": "data-collection/gonggong-ai-workbench-plan1-q04.json"
+    },
+    "Q05": {
+      "issue_number": 1732,
+      "state_reason": "completed",
+      "closed_at": "2026-11-22T20:42:33Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1732#issuecomment-7085482842",
+      "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2145",
+      "main_merge": "4684b7a25518b6b7f43bf49bb84383326a0023a6",
+      "receipt": "data-collection/gonggong-ai-workbench-plan1-q05-macos.json"
+    },
+    "Q12": {
+      "issue_number": 1735,
+      "state_reason": "completed",
+      "closed_at": "2026-11-22T14:06:43Z",
+      "acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735#issuecomment-7080298001",
+      "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2089",
+      "main_merge": "db5012ded3f34ec7c3f85d8aeba484b57da1dd88",
+      "receipt": "data-collection/plan1-q12-windows-integration.json"
+    }
+  },
+  "stage_authorization": {
+    "platform": "Windows",
+    "display_driver": "headless",
+    "stages": [
+      "可运行原型",
+      "动画预览"
+    ],
+    "physical_starts": 2,
+    "unsigned_authorization_status": 409,
+    "unsigned_starts": 0,
+    "replay_starts": 0
+  },
+  "windows": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "display_driver": "headless",
+    "editor_sha256": "d2a082640d1ffb181096ea47f0512484b8232b7be255f791042c5e7708aa7d28",
+    "integration_tree": "620367530e069037fd003d1b0de82c2c311906c3",
+    "main_overlay_sha256_matches": 13,
+    "close_exit": 0,
+    "closed_worker_and_child_pids": [
+      36512,
+      33696
+    ],
+    "worker_answer_before_after_close": [
+      true,
+      false
+    ],
+    "judgment_read_before_recovery": true,
+    "focused_pending_revision": "48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+    "worker_started_with_first_row_focused": true,
+    "task": "a0844f79f2d042e07606ede3d0acf919f734b25988ce58dbdbe237bc32dce2a3",
+    "source_revision": "e4afd2554d93688b284c4d47095e1448b564d4a3f151cdf81789c2938de7f33d",
+    "authorization_and_input_revisions_preserved": true,
+    "resumed_stage": "preview",
+    "next_decision": "stage-confirmation",
+    "candidate_receipts_after_third_open": 1,
+    "duplicate_submissions": 0,
+    "independent_replay": {
+      "report_sha256": "1b58fda285cbed50bee3b312471fab366856e364dedc2d7a5bc17e86ca8a3727",
+      "task": "8c63421c4ca55bf0af7b3446fa761002c0f268c7648f6d52bfd5086a207f0543",
+      "closed_worker_and_child_pids": [
+        49324,
+        50628
+      ],
+      "same_checks_passed": true
+    }
+  },
+  "macos": {
+    "platform": "macOS-26.7.2-arm64-arm-64bit-Mach-O",
+    "display_driver": "macOS Cocoa",
+    "job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45062919388/job/137332622037",
+    "candidate": "6ebc11ab0271e993646860f05e39d19a2ec1c9b6",
+    "editor_sha256": "556482d839e8c268734d408a4b9d0639f7147adfede0049e76b6bdbb814bb524",
+    "editor_artifact_digest": "sha256:ed0b171ac8b46a607621ebff3eab1ee4ba33214d5fae976d99106015731ffd17",
+    "main_runtime_and_probe_blobs_matched": 21,
+    "recovery_steps_passed": [
+      14,
+      15,
+      16
+    ],
+    "raw_artifact": "https://api.github.com/repos/zhzyx/nightmarish-spooky-sorceryze/actions/artifacts/14771601625/zip",
+    "raw_artifact_digest": "sha256:6bbe873c6bd2c54668f36a1461ba070afbf0646b3c63152d98bdb999b4a9e4d9",
+    "closed_editor_exit": 0,
+    "closed_worker_and_child_pids": [
+      65233,
+      65244
+    ],
+    "physical_exit_readback_ms": 67,
+    "independent_control_alive": true,
+    "worker_answer_before_after_close": [
+      true,
+      false
+    ],
+    "task": "ee45bc7df232be5fe73d786ffe5e5686f5bd9ed9b19bcb9697d52d4d493f2f4e",
+    "source_revision": "dc11fbe65b85d9a6de25389d75179b43d6989c50f301cbd00d0059fd0edc9378",
+    "authorization_and_input_revisions_preserved": true,
+    "resumed_stage": "preview",
+    "next_decision": "stage-confirmation",
+    "saved_layout": "AI Chat layout saved by a normal close in the isolated fixture",
+    "focused_pending_revision": "48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+    "default_and_judgments_first": {
+      "worker_started_with_first_row_focused": true,
+      "independent_task_reached_original_stage": true,
+      "empty_account_rows": 0
+    }
+  },
+  "dropped_receipt": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "mode": "headless editor, authenticated loopback TCP",
+    "editor_sha256": "2f9fd49fce1f23928e9f4368d104b1fa388e1b0f85dbf08270e60ff409a2c59a",
+    "editor_pids": [
+      132652,
+      126264
+    ],
+    "receiver_pids": [
+      137180,
+      31520
+    ],
+    "request_before_and_after_restart": "mr_abe210d3b8c958982a8bfbf6761981ebf642dbc75c7133847ad7301c9b9019e5",
+    "target": "main",
+    "target_base": "1e2e5571f929673b0018ff27504dbd8adc4e9d8a",
+    "candidate_and_recovered_target_tip": "3c5a92ae7dbb8bbb469d6056e8b4e962a3990888",
+    "new_target_commits": 1,
+    "persistent_call_receipts": 1,
+    "issue_delivery_comments": 1,
+    "issue_comment_id": "icmt_625fd613fc3f48c585f438386415adf1"
+  },
+  "separate_resource_check": {
+    "issue_number": 2123,
+    "job_step": 17,
+    "job_conclusion": "failure",
+    "outcome": "cold_failed",
+    "cold": {
+      "exit_code": 0,
+      "new_receipts": [],
+      "observations": []
+    }
+  }
+}
