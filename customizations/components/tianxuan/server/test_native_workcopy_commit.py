@@ -102,3 +102,64 @@ def test_content_drift_tenant_and_scope(setup):
     marker.write_bytes(_json(manifest).encode())
     with pytest.raises(ValueError, match="登录租户"):
         open_project()
+
+
+@pytest.mark.parametrize("written", [True, False], ids=["reply-lost", "never-received"])
+def test_reopen_reconciles_unknown_write(setup, written, record_property):
+    project, _, open_project, store, _, owner, _ = setup
+    (project / "A").write_bytes(b"confirmed")
+    work = open_project()
+    state = work.diff()
+    selected = {e["path"]: e["digest"] for e in state["files"]}
+    body = {**state, "message": "R06", "paths": list(selected), "digests": selected}
+    calls = []
+    request = work.request
+
+    def transport(method, path, data=None):
+        if path.startswith("batches"):
+            calls.append((method, path.removeprefix("batches/") if method == "GET" else data["request_key"]))
+        if method == "POST" and len(calls) == 2:
+            if written:
+                request(method, path, data)
+            raise ConnectionError("lost response")
+        return request(method, path, data)
+
+    work.request = transport
+    with pytest.raises(ConnectionError):
+        work.submit(body)
+    reopened = open_project()
+    reopened.request = transport
+    received = reopened.submit(body)
+    key = received["request_key"]
+    assert calls == [("GET", key), ("POST", key), ("GET", key)] + ([] if written else [("POST", key)])
+    with store._connection() as db:
+        effects = db.execute(
+            "SELECT COUNT(*) FROM native_revisions WHERE tenant=? AND module=? AND id!=?",
+            (owner["tenant_id"], "game", state["base"]),
+        ).fetchone()[0]
+    assert effects == 1
+    assert store.read(owner["tenant_id"], "game", received["sha"], "sub/A") == b"confirmed"
+    assert open_project().base == received["sha"]
+    record_property("reconciliation", json.dumps({"written": written, "calls": calls, "effects": effects, **received}))
+
+
+def test_rebound_receipt_retains_checkpoint(setup):
+    project, _, open_project, _, _, _, _ = setup
+    (project / "A").write_bytes(b"confirmed")
+    work = open_project()
+    state = work.diff()
+    selected = {e["path"]: e["digest"] for e in state["files"]}
+    body = {**state, "message": "R06", "paths": list(selected), "digests": selected}
+    request = work.request
+
+    def changed_receipt(method, path, data=None):
+        result = request(method, path, data)
+        if method == "POST":
+            result["request_digest"] = "0" * 64
+        return result
+
+    work.request = changed_receipt
+    with pytest.raises(ValueError, match="回执不匹配"):
+        work.submit(body)
+    assert open_project().base == state["base"]
+    assert open_project().submit(body)["sha"] == open_project().base

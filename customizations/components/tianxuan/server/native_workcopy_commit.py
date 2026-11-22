@@ -218,7 +218,16 @@ class NativeProject:
                 "batches",
                 {"request_key": key, "changes": [{"module": self.module, "base": base, "reads": None, "edits": edits}]},
             )
-        if result.get("state") != "received" or set(result.get("revisions", {})) != {self.module}:
+        # Compare the receiver's canonical operation, including explicit deletions,
+        # before advancing the local project to a replayed or newly written revision.
+        edits_digest = {name: expected.get(name) for name in paths}
+        operation = {self.module: {"module": self.module, "base": base, "reads": None, "edits": edits_digest}}
+        if (
+            not isinstance(result, dict)
+            or result.get("state") != "received"
+            or result.get("request_digest") != _digest(_json(operation).encode())
+            or set(result.get("revisions", {})) != {self.module}
+        ):
             raise ValueError("原生批次回执不匹配")
         revision = result["revisions"][self.module]
         saved = self.revision(revision)
