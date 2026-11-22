@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round12-h04-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-h04",
+  "kind": "request",
+  "occurred_at": "2026-11-22T12:47:45.113790+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1819",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1819,
+    "request": "在 Mac 原生判断窗口并排比较同任务的两版候选，核对设计、差异和完整修订号，分别打开 A 和 B。",
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1819#issuecomment-7079181168",
+    "verified_intake_sha256": "e7eb49c4c0edda1ee38b86c8295e993fc21aee709dc7fd74dbd37c4411beacde"
+  },
+  "evidence_refs": [],
+  "sha256": "897920d3dca980a0005f50131f2f80181ed0d515251ce39a0d34851e8f3dc013"
+}

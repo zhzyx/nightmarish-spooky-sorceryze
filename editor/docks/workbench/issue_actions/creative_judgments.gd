@@ -30,6 +30,10 @@ func _ready() -> void:
 	add_child(panel)
 	description.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 	panel.add_child(description)
+	var compare := Button.new()
+	compare.text = "比较此工单的候选…"
+	compare.pressed.connect(func(): detail.get_node("WorkbenchIssueArtifacts").open_comparison())
+	panel.add_child(compare)
 	recipients.name = "JudgmentRecipient"
 	panel.add_child(recipients)
 	note.name = "JudgmentNote"
