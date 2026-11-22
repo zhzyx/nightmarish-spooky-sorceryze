@@ -400,10 +400,12 @@ def create_app(
 
     if native_workflow is not None:
         from native_api import create_native_workflow_router
+        from native_validation import create_validation_router
 
         if native_workflow.domain is not store:
             raise ValueError("Native workflow must use authenticated domain store")
         app.include_router(create_native_workflow_router(native_workflow))
+        app.include_router(create_validation_router(native_workflow))
     if native_store is not None:
         from business_asset_api import create_business_asset_router
         from issue_revision_api import create_issue_revision_router
