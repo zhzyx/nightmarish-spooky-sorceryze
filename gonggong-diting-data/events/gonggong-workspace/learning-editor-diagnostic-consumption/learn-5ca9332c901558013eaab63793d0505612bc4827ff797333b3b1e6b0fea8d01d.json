@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-diagnostic-consumption",
+  "event_id": "learn-5ca9332c901558013eaab63793d0505612bc4827ff797333b3b1e6b0fea8d01d",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2122",
+  "occurred_at": "2026-11-22T16:36:55.027432+00:00",
+  "evidence_refs": [
+    "dispatch-524ba7e2ba8f42e6b50edf7ec6a5c0ea"
+  ],
+  "payload": {
+    "scope": "editor-diagnostic-consumption",
+    "lesson": "separate-launcher-and-child-exit",
+    "revision": 1,
+    "previous": null,
+    "action": "propose",
+    "details": {
+      "method": "Record the fixture launch or wait exception type and native error at the launcher, and separately record an actual child exit. Keep the original signed process status and the editor's independent receipt.",
+      "when": "A Windows editor observes a managed PE that delegates to a real program; the parent closes the standard streams before it polls an issue-agent result.",
+      "counterexample": "Failure before managed Main or interruption before the sidecar is published can leave the launcher record absent. The same 32-bit exit can be returned intentionally by a child after publishing a valid receipt.",
+      "trial_plan": "At the next such failure compare the actual native result with typed fields in the same Windows artifact, and run distinct controlled cases for a forwarded child exit and a missing launch target. Check that both preserve their real status and that only the started child produces a result."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/windows-runtime-fixture-2122.json",
+        "sha256": "60687ec363972f7e911c7c02960906e93c4755090ac6be186c4c9f6c770d7587"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/kuafu-run-45041335303-attempt-1/dispatch-524ba7e2ba8f42e6b50edf7ec6a5c0ea.json",
+      "sha256": "4776cc1b7e74bdb467fc6194a25e93ec5321f23cea306a5944f8a85466228958"
+    }
+  },
+  "sha256": "ebe06b00f7faf4d99de0e1987de36fd8bae0182a17581574da9ae210a71d6934"
+}

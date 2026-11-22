@@ -1,0 +1,50 @@
+{
+  "issue_number": 2122,
+  "request_id": "kuafu-run-45041335303-attempt-1",
+  "status": "passed",
+  "summary": "Windows 运行时模拟已能在既有 CI 工件中区分启动器异常与子进程退出。独立夹具验证退出 0、7、子进程返回 CLR 状态，以及找不到目标程序时的 Win32 错误 2；真实退出值保留。原部署中断及需求接续通过。两次历史 CI 的底层成因仍未知。",
+  "source_tree": "dbe0444779c76b18d468d716f31eafc605686833",
+  "source_base": "35a233f2a6910ad0ec19931bd1db12e3d4b28fa6",
+  "runtime_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2121",
+  "editor": "5b30bbfe50978e1aa7d54b72782f82ea8f76313ad1f335644d3a224517a844ec",
+  "observation": "2026-11-22T16:47:33.842993+00:00",
+  "independent": {
+    "unit_log_sha256": "3eeaeb1cd9b5f918a97aec749f1f573c1b6813a8c7e9e83f6efa8e4b12df75cc",
+    "simulation_report_sha256": "2a812a263d145b74fef08fcc1ec2e1a98c5e1fe9715f4477adf156f131ade656",
+    "launcher_failures": [
+      {
+        "runtime": "python",
+        "action": "issue-agent",
+        "phase": "child_exit",
+        "exception_type": null,
+        "win32_error": null,
+        "child_exit": 1
+      },
+      {
+        "runtime": "python",
+        "action": "issue-agent",
+        "phase": "child_exit",
+        "exception_type": null,
+        "win32_error": null,
+        "child_exit": 1
+      }
+    ],
+    "normal_resume": true
+  },
+  "original_workflow_recovery": [
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45038336886/job/137261764262",
+    "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45041335303/job/137270987991"
+  ],
+  "formatted_source_bindings": {
+    "tests/editor/run_runtime_setup_simulation.py": {
+      "worker_verified": "4a23cd3b19ca1b0adeb240bbba9f85582d17af1558768bfd677a58c59d0187c4",
+      "signed_candidate": "e7fef924495e341bf1e96588a7a821f3491318194704a1a73e20bc5351f471b7",
+      "same_python_ast": true
+    },
+    "tests/editor/test_runtime_fixture_launcher.py": {
+      "worker_verified": "e449d9d79f7a587a3de4f0d3c5cd84de37ffbda5665d47072aa3779992f0f83a",
+      "signed_candidate": "6688da77d7454dfa099083ed468c41d394944f7f5572c34743190d89b135514b",
+      "same_python_ast": true
+    }
+  }
+}
