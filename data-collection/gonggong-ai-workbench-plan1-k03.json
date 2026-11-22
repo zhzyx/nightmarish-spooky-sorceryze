@@ -1,0 +1,460 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-k03",
+  "issue_number": 1715,
+  "passed": true,
+  "verified_at": "2026-11-22T11:23:03.453870+00:00",
+  "editor_sha256": "748650bf3c4e91bfb4aab2a98b2322a40eb3a4715ef9088d31c946af283f11fc",
+  "source_commit": "8e529a9a9c7a0fc54ba49f2b6da2e801800d5d6f",
+  "tested_files": {
+    "tests/editor/run_workbench_k03_stage_acceptance.py": "018e09a02a0f89ac98e3be1d9ac242f63226fa049f53cdb5df2ac72903461e2f",
+    "tests/editor/workbench_task_confirmations.gd": "08c5ac2266fbc1819812a030be6f1029a4f99d16629c5e2e79a7835550f94184",
+    "tests/editor/run_workbench_task_confirmations.py": "3ae4bb28e058b9b434f09edb23e46682eb7eb28649318352321311aa5858e02a",
+    "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs": "aa07549e685356bc68599d76069dbf1fd4521dc2bcaf6134e65753972381677a",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "3107f48d893f8c29fb532a788dd66dba4212e2c42fb07dc586bcfed91adf0e2d",
+    "customizations/components/tianxuan/sinan-workorders/native_worker.py": "8758a9629f7352ab3a5cd7190676d9ce7010cf29feb8e2ebbf4cebf961c16261"
+  },
+  "result": {
+    "receiver": {
+      "platform": "Windows",
+      "architecture": "AMD64",
+      "python": "3.12.14",
+      "editor_package": {
+        "godot.windows.editor.x86_64.exe": "748650bf3c4e91bfb4aab2a98b2322a40eb3a4715ef9088d31c946af283f11fc",
+        "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+        "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462"
+      }
+    },
+    "design": {
+      "id": "doc_11198bc6bc4e4c36bd19357b7dd8673e",
+      "version": 1
+    },
+    "confirmations": [
+      {
+        "selected": [
+          "#1 程序"
+        ],
+        "feedback": "已从天璇回读 #1 的记录。",
+        "confirmation": {
+          "issue_id": "iss_0bdb887a7ff14e32abd695b3284f7ae1",
+          "document_id": "doc_11198bc6bc4e4c36bd19357b7dd8673e",
+          "version": 1,
+          "stage": "可运行原型",
+          "target_revision": 1,
+          "issue_revision": "05cc5d71d4c5dc64bf25280d2fc2864c0eab49ea6f2b0d951ac3a2a9ccf34dc8",
+          "revision": 1,
+          "status": "confirmed",
+          "responsible_user": "usr_1da2b001696644378f75b78e675a0fdb",
+          "confirmed_by": "usr_1da2b001696644378f75b78e675a0fdb"
+        }
+      },
+      {
+        "selected": [
+          "#2 动画"
+        ],
+        "feedback": "已从天璇回读 #2 的记录。",
+        "confirmation": {
+          "issue_id": "iss_2a12f4ae4abb4a29bb60204d78c9f6a2",
+          "document_id": "doc_11198bc6bc4e4c36bd19357b7dd8673e",
+          "version": 1,
+          "stage": "动画预览",
+          "target_revision": 1,
+          "issue_revision": "bb2dd36b7b61545be598306decd2332518175cfcfb8013e49ac94a791120542d",
+          "revision": 1,
+          "status": "confirmed",
+          "responsible_user": "usr_1da2b001696644378f75b78e675a0fdb",
+          "confirmed_by": "usr_1da2b001696644378f75b78e675a0fdb"
+        }
+      }
+    ],
+    "runs": [
+      {
+        "issue_id": "iss_0bdb887a7ff14e32abd695b3284f7ae1",
+        "number": 1,
+        "execution": "31f7d8172e02bee04c4de0dd034273f0af5cc976d592046799c8d1ae5945afac",
+        "dispatch": {
+          "workerId": "31f7d8172e02bee04c4de0dd034273f0af5cc976d592046799c8d1ae5945afac",
+          "reference": "31f7d8172e02bee04c4de0dd034273f0af5cc976d592046799c8d1ae5945afac",
+          "worker_ref": "native-worker:31f7d8172e02bee04c4de0dd034273f0af5cc976d592046799c8d1ae5945afac",
+          "model": "local",
+          "target": "agent"
+        },
+        "physical_starts": 1,
+        "pid": 127100,
+        "closure": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "local": {
+          "state": "produced",
+          "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+          "modules": {
+            "a": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae"
+          },
+          "worker_ref": "native-worker:31f7d8172e02bee04c4de0dd034273f0af5cc976d592046799c8d1ae5945afac"
+        },
+        "stage_stop": {
+          "task": "31f7d8172e02bee04c4de0dd034273f0af5cc976d592046799c8d1ae5945afac",
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_1da2b001696644378f75b78e675a0fdb",
+            "criteria": "拉杆切换桥面一次，再拉一次复位",
+            "document_id": "doc_11198bc6bc4e4c36bd19357b7dd8673e",
+            "issue_id": "iss_0bdb887a7ff14e32abd695b3284f7ae1",
+            "issue_revision": "05cc5d71d4c5dc64bf25280d2fc2864c0eab49ea6f2b0d951ac3a2a9ccf34dc8",
+            "responsible_user": "usr_1da2b001696644378f75b78e675a0fdb",
+            "stage": "可运行原型",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+          "modules": {
+            "a": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae"
+          },
+          "checks": {
+            "check": {
+              "evidence": "857e5582b5696aed511e726f5a866f76a7224277caaf58ca8de20f690d159089",
+              "outcome": "passed"
+            }
+          },
+          "state": "stage-reached",
+          "reason": "authorized_stage_criteria_met"
+        },
+        "issue_progress": {
+          "control": {
+            "state": "stage-reached",
+            "summary": "stage-reached",
+            "revision": 9,
+            "actions": []
+          },
+          "id": "31f7d8172e02bee04c4de0dd034273f0af5cc976d592046799c8d1ae5945afac",
+          "worker_ref": "native-worker:31f7d8172e02bee04c4de0dd034273f0af5cc976d592046799c8d1ae5945afac",
+          "issue": "iss_0bdb887a7ff14e32abd695b3284f7ae1",
+          "source_revision": "db3550187fcc052df889ed8ba10f68a5959ca55a039513f567fb3183b7c2b0aa",
+          "stage": "可运行原型",
+          "state": "stage-reached",
+          "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+          "provider_model": null,
+          "usage": null,
+          "events": [
+            {
+              "sequence": 1,
+              "recorded_at": "2026-11-22T11:22:57.484Z",
+              "state": "ready",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 2,
+              "recorded_at": "2026-11-22T11:23:02.290Z",
+              "state": "reserved",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 3,
+              "recorded_at": "2026-11-22T11:23:02.318Z",
+              "state": "running",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 4,
+              "recorded_at": "2026-11-22T11:23:02.347Z",
+              "state": "running",
+              "step": "workspace.materialize",
+              "details": {
+                "modules": {
+                  "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+                }
+              }
+            },
+            {
+              "sequence": 5,
+              "recorded_at": "2026-11-22T11:23:02.602Z",
+              "state": "running",
+              "step": "process.closed",
+              "details": {
+                "exit_code": 0,
+                "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            {
+              "sequence": 6,
+              "recorded_at": "2026-11-22T11:23:02.623Z",
+              "state": "running",
+              "step": "workspace.collect",
+              "details": {
+                "changed_modules": [
+                  "a"
+                ]
+              }
+            },
+            {
+              "sequence": 7,
+              "recorded_at": "2026-11-22T11:23:02.712Z",
+              "state": "running",
+              "step": "candidate.compose",
+              "details": {
+                "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+                "modules": {
+                  "a": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae"
+                }
+              }
+            },
+            {
+              "sequence": 8,
+              "recorded_at": "2026-11-22T11:23:02.715Z",
+              "state": "produced",
+              "step": "state",
+              "details": {
+                "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+                "modules": {
+                  "a": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae"
+                }
+              }
+            },
+            {
+              "sequence": 9,
+              "recorded_at": "2026-11-22T11:23:03.025Z",
+              "state": "stage-reached",
+              "step": "state",
+              "details": {
+                "candidate": "7d092451f074a52d09e960307e62b352210328d30591dbb78719e97f9dd350db",
+                "modules": {
+                  "a": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae"
+                }
+              }
+            }
+          ]
+        },
+        "check_exit": 0,
+        "artifact": {
+          "path": "a/bridge.py",
+          "revision": "e3c7476359d02989b252684b68b411988010f36f748b1c04be03b46e40a74eae",
+          "bytes": 119,
+          "sha256": "5820e7d1e58d7bd6fcfb07de0bc381a2253c7a5494ea83c8f1ec71ca841e47ea",
+          "content": "def pull(raised):\n    return not raised\n\n\nif __name__ == \"__main__\":\n    print(\"raised\" if pull(False) else \"lowered\")\n"
+        }
+      },
+      {
+        "issue_id": "iss_2a12f4ae4abb4a29bb60204d78c9f6a2",
+        "number": 2,
+        "execution": "8d28c958bc91844f6f30599f3398008f5f852560495d6e6cee82bda4cfdef521",
+        "dispatch": {
+          "workerId": "8d28c958bc91844f6f30599f3398008f5f852560495d6e6cee82bda4cfdef521",
+          "reference": "8d28c958bc91844f6f30599f3398008f5f852560495d6e6cee82bda4cfdef521",
+          "worker_ref": "native-worker:8d28c958bc91844f6f30599f3398008f5f852560495d6e6cee82bda4cfdef521",
+          "model": "local",
+          "target": "agent"
+        },
+        "physical_starts": 1,
+        "pid": 134276,
+        "closure": {
+          "exit_code": 0,
+          "reasons": [],
+          "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "local": {
+          "state": "produced",
+          "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+          "modules": {
+            "b": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d"
+          },
+          "worker_ref": "native-worker:8d28c958bc91844f6f30599f3398008f5f852560495d6e6cee82bda4cfdef521"
+        },
+        "stage_stop": {
+          "task": "8d28c958bc91844f6f30599f3398008f5f852560495d6e6cee82bda4cfdef521",
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_1da2b001696644378f75b78e675a0fdb",
+            "criteria": "24 帧/秒，第 24 帧桥面水平展开并保持",
+            "document_id": "doc_11198bc6bc4e4c36bd19357b7dd8673e",
+            "issue_id": "iss_2a12f4ae4abb4a29bb60204d78c9f6a2",
+            "issue_revision": "bb2dd36b7b61545be598306decd2332518175cfcfb8013e49ac94a791120542d",
+            "responsible_user": "usr_1da2b001696644378f75b78e675a0fdb",
+            "stage": "动画预览",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+          "modules": {
+            "b": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d"
+          },
+          "checks": {
+            "check": {
+              "evidence": "8c3409bd03a15eb3a0cb3e98683f7faa411bf2f960709570504f7ba8b5cc39d1",
+              "outcome": "passed"
+            }
+          },
+          "state": "stage-reached",
+          "reason": "authorized_stage_criteria_met"
+        },
+        "issue_progress": {
+          "control": {
+            "state": "stage-reached",
+            "summary": "stage-reached",
+            "revision": 9,
+            "actions": []
+          },
+          "id": "8d28c958bc91844f6f30599f3398008f5f852560495d6e6cee82bda4cfdef521",
+          "worker_ref": "native-worker:8d28c958bc91844f6f30599f3398008f5f852560495d6e6cee82bda4cfdef521",
+          "issue": "iss_2a12f4ae4abb4a29bb60204d78c9f6a2",
+          "source_revision": "e93c7998e3524cdedb12761d9d76ae0798554d0ba6dae50f5e9dee17e1db787a",
+          "stage": "动画预览",
+          "state": "stage-reached",
+          "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+          "provider_model": null,
+          "usage": null,
+          "events": [
+            {
+              "sequence": 1,
+              "recorded_at": "2026-11-22T11:23:02.202Z",
+              "state": "ready",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 2,
+              "recorded_at": "2026-11-22T11:23:02.303Z",
+              "state": "reserved",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 3,
+              "recorded_at": "2026-11-22T11:23:02.325Z",
+              "state": "running",
+              "step": "state",
+              "details": {}
+            },
+            {
+              "sequence": 4,
+              "recorded_at": "2026-11-22T11:23:02.359Z",
+              "state": "running",
+              "step": "workspace.materialize",
+              "details": {
+                "modules": {
+                  "b": "bc55d90cba618da64f1a05c86a6d2c3585dbca3ab800d155a30f4728a2bd67ba"
+                }
+              }
+            },
+            {
+              "sequence": 5,
+              "recorded_at": "2026-11-22T11:23:02.589Z",
+              "state": "running",
+              "step": "process.closed",
+              "details": {
+                "exit_code": 0,
+                "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            },
+            {
+              "sequence": 6,
+              "recorded_at": "2026-11-22T11:23:02.615Z",
+              "state": "running",
+              "step": "workspace.collect",
+              "details": {
+                "changed_modules": [
+                  "b"
+                ]
+              }
+            },
+            {
+              "sequence": 7,
+              "recorded_at": "2026-11-22T11:23:02.659Z",
+              "state": "running",
+              "step": "candidate.compose",
+              "details": {
+                "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+                "modules": {
+                  "b": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d"
+                }
+              }
+            },
+            {
+              "sequence": 8,
+              "recorded_at": "2026-11-22T11:23:02.660Z",
+              "state": "produced",
+              "step": "state",
+              "details": {
+                "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+                "modules": {
+                  "b": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d"
+                }
+              }
+            },
+            {
+              "sequence": 9,
+              "recorded_at": "2026-11-22T11:23:02.979Z",
+              "state": "stage-reached",
+              "step": "state",
+              "details": {
+                "candidate": "e621892333a41f0baa992d8a66c06627a25bee21b4a7d875eca73fea72ed9382",
+                "modules": {
+                  "b": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d"
+                }
+              }
+            }
+          ]
+        },
+        "check_exit": 0,
+        "artifact": {
+          "path": "b/bridge.svg",
+          "revision": "b5aeb6212d3c3592d052076165f8c85e9e22c9fca5076f0ad6bcb68af63ecf9d",
+          "bytes": 251,
+          "sha256": "83c9abf526d91c4cc38105f106d6ea4d8b67106c7d390335e2522eabe5cad032",
+          "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\">\n  <rect x=\"8\" y=\"30\" width=\"48\" height=\"4\" fill=\"steelblue\">\n    <animateTransform attributeName=\"transform\" type=\"rotate\" values=\"-90 8 32;0 8 32\" dur=\"1s\" fill=\"freeze\"/>\n  </rect>\n</svg>\n"
+        }
+      }
+    ],
+    "unsigned": {
+      "issue_id": "iss_67872c62b2c24373b71f09df0b2c368b",
+      "number": 3,
+      "target": {
+        "issue_id": "iss_67872c62b2c24373b71f09df0b2c368b",
+        "document_id": "doc_11198bc6bc4e4c36bd19357b7dd8673e",
+        "version": 1,
+        "revision": 1,
+        "responsible_user": "usr_1da2b001696644378f75b78e675a0fdb",
+        "stage": "音效草稿",
+        "criteria": "开桥时响铃",
+        "return_comment_id": null,
+        "return_reason": "",
+        "status": "defined"
+      },
+      "confirmation": {
+        "issue_id": "iss_67872c62b2c24373b71f09df0b2c368b",
+        "document_id": "doc_11198bc6bc4e4c36bd19357b7dd8673e",
+        "version": 1,
+        "stage": "音效草稿",
+        "target_revision": 1,
+        "issue_revision": "d33e576c5393b9c6327b91869cf4af742e2a0ce2a9f0f5c3687563f567d0955d",
+        "revision": 0,
+        "status": "pending",
+        "responsible_user": "usr_1da2b001696644378f75b78e675a0fdb",
+        "confirmed_by": null
+      },
+      "authorization_status": 409,
+      "execution_progress": null,
+      "executions": 0,
+      "physical_starts": 0
+    },
+    "dispatch_calls": {
+      "advance": 5,
+      "inspect": 6,
+      "revalidate": 2,
+      "reserve": 2,
+      "start": 2,
+      "execute": 2,
+      "verify-stage": 2,
+      "ack": 2,
+      "record": 2
+    },
+    "replay_calls": {
+      "advance": 1,
+      "inspect": 1
+    },
+    "physical_starts": 2
+  }
+}

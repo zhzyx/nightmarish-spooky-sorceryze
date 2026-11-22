@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-d154a892610d4d137c49d8e6e77987bf84d5687371d3d7ee05302ef88c6f6d51",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1715",
+  "occurred_at": "2026-11-22T11:34:53.640288+00:00",
+  "evidence_refs": [
+    "wave22-windows-k03-milestone-1715",
+    "learn-9c71312bf2ec3ed930e8dcd8af62d9a0f665e7df048b004db66a70af45eb1c44"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 58,
+    "previous": "fe9ab08cea33d5694dc89578d4c7d8aa0fc66f55640a474cea0621e213807dfd",
+    "action": "applied",
+    "details": {
+      "task": "K03 #1715",
+      "observed": "已在 Windows 组合候选上运行 K03 的原生控件探针。候选源码树、实测编辑器哈希及构建来源见 data-collection/gonggong-ai-workbench-plan1-windows-k03-milestone-combined.json。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-k03.json",
+        "sha256": "57eeb3dd080380ce5bc56c5d729047eb13d03661f4fef3518c4d84113fcf35d2"
+      },
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-k03-milestone-combined.json",
+        "sha256": "7e813798819f9a1bb9e6a57f6572fb624ac09604bfbb37e26efe30056648cf9b"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-k03/wave22-windows-k03-milestone-1715.json",
+      "sha256": "6f8de01afad158826433a064e40ec6a87df25a025ec82d78615024d0e7554dce"
+    }
+  },
+  "sha256": "f049d3e75afe833d5f98fc3a43cbcdd34928ea437daf412b1620eaed42244ecd"
+}

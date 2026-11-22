@@ -16,8 +16,8 @@ from run_workbench_design_tasks import Tianxuan, copy_editor, create_app, saniti
 from run_workbench_offline_document import serve
 
 
-def run_editor(root, engine, url, token, project_name, number, action):
-    """Open an isolated editor session on two signed-design tasks. Return the native before/after rows."""
+def run_editor(root, engine, url, token, project_name, number, action, *, focus_only=False, task_count=2):
+    """Read the design's rows and click either the first selected task or the specified issue."""
     if action not in {"read", "confirm", "revoke"}:
         raise ValueError("unsupported native action")
     with tempfile.TemporaryDirectory(prefix="a02-project-", dir=root) as directory:
@@ -29,7 +29,7 @@ def run_editor(root, engine, url, token, project_name, number, action):
             TIANXUAN_API=url,
             TIANXUAN_PROJECT=project_name,
             TIANXUAN_TOKEN=token,
-            A02_TASK=json.dumps(dict(number=number, action=action)),
+            A02_TASK=json.dumps(dict(number=number, action=action, focus_only=focus_only, task_count=task_count)),
         )
         result = subprocess.run(
             [
