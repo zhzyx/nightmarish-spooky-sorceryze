@@ -1,0 +1,68 @@
+{
+  "issue_number": 1728,
+  "request_id": "gonggong-ai-workbench-plan1-q15",
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1728",
+  "source_revision": "e8b40ea7d472868629b62af109acc03e42be7fae",
+  "verified_at": "2026-11-22T14:00:32.390256+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "editor_sha256": "673018d41020612588b5e12f40456ad3aae1f8e9f08c633eca6ad0a08be3c378",
+  "test_source_sha256": {
+    "tests/editor/run_workbench_edit_candidates.py": "374cb8346fac31d8ee6e0cd9f11b2d51c7923666b108d8d195ec149ef562b413",
+    "tests/editor/workbench_script_candidate.gd": "8d4e29cc736302891ef6d21cb26ebf0fd4995da2af91fdfc1c95626721fced94"
+  },
+  "commands": [
+    "scons platform=macos target=editor arch=arm64 vulkan=no accesskit=no -j4",
+    "python tests/editor/run_workbench_edit_candidates.py --godot bin/godot.macos.editor.arm64 script",
+    "python tests/editor/run_workbench_edit_candidates.py --godot bin/godot.macos.editor.arm64 script-conflict"
+  ],
+  "model": "Authenticated local Tianxuan server, deterministic model HTTP transport",
+  "cases": {
+    "script": {
+      "candidate": "6516b39aa221b35835921f67fa8405068116f22386e9748892a6983343e4aadf",
+      "conflict_rejected": true,
+      "diff": "- return score(2)\n+ return score(2, 7)",
+      "display_driver": "macOS",
+      "manual": "5defd81dce18fa502a5f663808eca5be18d1361b0fdd4c1a2bfb980ada22d460",
+      "signature": "static func score(points: int, bonus: int = 3) -> int:",
+      "original": "7147d4d5160ebe5587a3d56740ef00f48c016629babbfd5799a4b29792260589",
+      "proposed": {
+        "revision": "6516b39aa221b35835921f67fa8405068116f22386e9748892a6983343e4aadf",
+        "reference": {
+          "kind": "editor",
+          "object_id": "res://actor.gd#L6:2-L6:17",
+          "revision": "5defd81dce18fa502a5f663808eca5be18d1361b0fdd4c1a2bfb980ada22d460"
+        }
+      },
+      "reopened": {
+        "line": "\treturn score(2, 7)",
+        "play": 2,
+        "saved": "6516b39aa221b35835921f67fa8405068116f22386e9748892a6983343e4aadf"
+      },
+      "gdscript_check_only": 0
+    },
+    "script-conflict": {
+      "candidate": "16244ef9ec1fcd7cb6ec0715e4fbcd931a55d1f131c29f8d9e85354d2910f4f6",
+      "conflict_rejected": true,
+      "diff": "- return score(2)\n+ return score(2, 7)",
+      "display_driver": "macOS",
+      "manual": "5defd81dce18fa502a5f663808eca5be18d1361b0fdd4c1a2bfb980ada22d460",
+      "signature": "static func score(points: int, bonus: int = 3) -> int:",
+      "original": "7147d4d5160ebe5587a3d56740ef00f48c016629babbfd5799a4b29792260589",
+      "proposed": {
+        "revision": "6516b39aa221b35835921f67fa8405068116f22386e9748892a6983343e4aadf",
+        "reference": {
+          "kind": "editor",
+          "object_id": "res://actor.gd#L6:2-L6:17",
+          "revision": "5defd81dce18fa502a5f663808eca5be18d1361b0fdd4c1a2bfb980ada22d460"
+        }
+      },
+      "reopened": {
+        "line": "\treturn score(99)",
+        "play": 99,
+        "saved": "16244ef9ec1fcd7cb6ec0715e4fbcd931a55d1f131c29f8d9e85354d2910f4f6"
+      },
+      "gdscript_check_only": 0
+    }
+  },
+  "diagnostics": "The editor processes exited 0. Renderer RID and ObjectDB leak warnings were emitted on shutdown."
+}
