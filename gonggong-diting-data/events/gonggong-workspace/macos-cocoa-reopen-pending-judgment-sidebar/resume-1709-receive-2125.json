@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "macos-cocoa-reopen-pending-judgment-sidebar",
+  "event_id": "resume-1709-receive-2125",
+  "kind": "request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2125",
+  "occurred_at": "2026-11-22T19:14:44.760533+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "issue_number": 2125,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T18:15:05Z",
+    "parent_issue": 1709,
+    "source_baseline": "f2d6c6b25adce93b714c6df86eb45a68e652c08b",
+    "authority": "current user requested completion of the outstanding plan items"
+  },
+  "evidence_refs": [],
+  "sha256": "1d82741cfb370d1e50955aa7a3ec0ab533b1cfd84b1395400ea2aa751082237c"
+}

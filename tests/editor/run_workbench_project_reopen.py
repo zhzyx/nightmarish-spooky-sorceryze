@@ -45,13 +45,15 @@ func observe() -> void:
 """
 
 
-def editor(engine, project, origin, token, extra, result_prefixes=("A02_NATIVE=", "R07_NATIVE=")):
+def editor(
+    engine, project, origin, token, extra, result_prefixes=("A02_NATIVE=", "R07_NATIVE="), *, display_driver="headless"
+):
     env = {k: v for k, v in sanitized_environment(project).items() if not k.startswith("TIANXUAN_")}
     env.update(TIANXUAN_TOKEN=token, TIANXUAN_API=origin, TIANXUAN_PROJECT="studio", **extra)
     with subprocess.Popen(
         [
             engine,
-            "--headless",
+            *(["--headless"] if display_driver == "headless" else ["--display-driver", display_driver]),
             "--single-window",
             "--resolution",
             "1440x960",
