@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ca0f5f5d309e742253264203f800e025011443dc",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e09",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1797",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "182f35f28637bf3d45dbc55921e25cce50c824f6da99b555ef02d1aa75ea070f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1797",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2108",
+    "action": "delivery",
+    "detection_head": "3de079544b2cd0f3782a05cb68576b91e44dc92a",
+    "context_sha256": "d88f68ec4efe0df677320c7e3b3eb2587e4a58fb82695d892d304a13ca2553ba",
+    "operator": "Sail-Li",
+    "worker": "after-k03-windows",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1797",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1797",
+    "diagnosis": "An independently delivered application of the same verified learning method took the next ledger revision. Both applications have different evidence. Preserve each in chronological source context on the current head.",
+    "next_action": "Append the asset application on the current verified predecessor, preserve original evidence and its timestamp, then repeat the four original editor scenarios on the combined main inputs.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T14:45:58.391179+00:00",
+    "attempted": null,
+    "repair_owner": "Windows integration owner",
+    "continuable": "Independent plan-one child work"
+  },
+  "occurred_at": "2026-11-22T14:49:01.281634+00:00",
+  "sha256": "b38a79dac2a549a95145dff6d5ab9fcd4484ae0705c804b2ae3c8e7ddf046130"
+}
