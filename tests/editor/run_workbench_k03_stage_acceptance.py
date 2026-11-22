@@ -231,7 +231,7 @@ def exercise(folder, binary):
                 host.target(issue, stage, criteria)
                 assert host.api("authorize", issue=issue["id"]).status_code == 409
             assert not journal.exists()
-            keys, confirmations = [], []
+            confirmations = []
             for index, issue in enumerate(issues[:2]):
                 ui = run_editor(
                     folder, editor, url, token, "studio", issue["number"], "confirm", focus_only=True, task_count=3
@@ -242,7 +242,9 @@ def exercise(folder, binary):
                 confirmation = siblings[index]
                 assert confirmation["confirmed_by"] == actor
                 confirmations.append(dict(selected=ui["selected"], feedback=ui["feedback"], confirmation=confirmation))
-                keys.append(host.api("authorize", issue=issue["id"]).raise_for_status().json())
+            # Keep both tickets ready for the Node dispatch measured below.
+            # An intervening native editor reopen would consume the first one.
+            keys = [host.api("authorize", issue=issue["id"]).raise_for_status().json() for issue in issues[:2]]
             assert len(set(keys)) == 2
             operations.clear()
             first = dispatch(url, token)

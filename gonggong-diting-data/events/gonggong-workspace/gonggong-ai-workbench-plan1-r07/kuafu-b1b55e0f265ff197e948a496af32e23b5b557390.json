@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b1b55e0f265ff197e948a496af32e23b5b557390",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-r07",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1803",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f74d49d47f7d8627a8c91db44aaea41dbb3b6a9ee84f4387e5f743474219dce9",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1803",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2090",
+    "action": "delivery",
+    "detection_head": "0d6778f6858118ffe79dd4b04cb8ea7e8576922d",
+    "context_sha256": "c11df250270df19e00255243c7b4b33a05c80d8a25f12b246c69babbe36e93b3",
+    "operator": "Sail-Li",
+    "worker": "after-k03-windows",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1803",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2085",
+    "diagnosis": "R09 added recovery of abandoned local occupancy on authenticated startup. R07 added recovery of the original approved task on the same startup and method routing. They share two files and require composition.",
+    "next_action": "Recover occupancy before checking original authorized tasks for the same authenticated session. Independently exercise both POSTs in one editor reopen, progress, sibling isolation and the scoped role checks.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T13:58:04.020638+00:00",
+    "attempted": null,
+    "repair_owner": "Current R07 integration owner",
+    "continuable": "Windows resource cleanup and creative judgments"
+  },
+  "occurred_at": "2026-11-22T14:01:18.980125+00:00",
+  "sha256": "01f4ac820b3e3322069cc702c923e87990aa9fb2bef900dae07d5db750b7b8d7"
+}
