@@ -1,0 +1,273 @@
+{
+  "issue_number": 1768,
+  "request_id": "gonggong-ai-workbench-plan1-h06",
+  "status": "passed",
+  "summary": "同一 Node 接收器在两稿待选时完成程序任务；Windows 工作台采纳第一稿后只运行对应后继一次。第二稿、重复签认与重启各增加零次启动。两种签认入口和 59 项关联服务回归通过。",
+  "source_tree": "95119ab44616f2679791208f58f8b614e9be056b",
+  "source_base": "41ce288119959399c66a163ea84d0c7f793312a0",
+  "runtime_source": {
+    "compiled_from": "349004c129544fc5cd1aaf94b6a180243297a3a4",
+    "compared_with": "95119ab44616f2679791208f58f8b614e9be056b",
+    "delta": [
+      "customizations/components/tianxuan/server/api.py",
+      "customizations/components/tianxuan/server/issue_flow.py",
+      "customizations/components/tianxuan/server/native_api.py",
+      "customizations/components/tianxuan/server/native_entry_factory.py",
+      "customizations/components/tianxuan/server/native_execution_host.py",
+      "customizations/components/tianxuan/server/tianxuan_core.py",
+      "customizations/components/tianxuan/server/work_management_api.py",
+      "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_judgment_branches.py",
+      "data-collection/gonggong-ai-workbench-plan1-h06.json",
+      "data-collection/gonggong-ai-workbench-plan1-q02.json",
+      "design-docs/gonggong-ai-workbench-h06.md",
+      "design-docs/gonggong-ai-workbench-q02.md",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-h06/afterk03-intake-1768.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-h06/dispatch-642d5b190ef14282b1fcbc01e943ea74.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-h06/dispatch-bd371fb2dd914d3eb8448bd082e240ce.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q02/afterk03-intake-1738.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q02/dispatch-7f319dc2647447c593560e661aeb7d16.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-q02/dispatch-e2b851a338fe4086bbbc0389fb28f3f0.json",
+      "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-41c5178f7bdd9b3b496eca707799541ee1b82b472556898283d1f8405c3b51df.json",
+      "gonggong-diting-data/events/gonggong-workspace/learning-editor-native-acceptance/learn-2b1828713f5ddd2ef64d389ce4fd608ebab38422406c045aec68dab6a0159894.json",
+      "tests/editor/run_workbench_cross_functional.py",
+      "tests/editor/run_workbench_issue_detail.py",
+      "tests/editor/workbench_cross_functional.gd",
+      "tests/editor/workbench_judgment_branches.gd"
+    ],
+    "editor_package": {
+      "godot.windows.editor.x86_64.exe": "c51a9569637ad0ac65ea21a0630e4453c8443c83b6c7accddcc27080fc538a5a",
+      "godot.windows.editor.x86_64.console.exe": "a2bf45e9214c9f1108bccc56f8a603e42a1f7af3349aaa327959b9684c41254b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+    }
+  },
+  "editor_package": {
+    "godot.windows.editor.x86_64.exe": "c51a9569637ad0ac65ea21a0630e4453c8443c83b6c7accddcc27080fc538a5a",
+    "godot.windows.editor.x86_64.console.exe": "a2bf45e9214c9f1108bccc56f8a603e42a1f7af3349aaa327959b9684c41254b",
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+  },
+  "observed": "2026-11-22T15:19:35.450771+00:00",
+  "native": {
+    "tests": [
+      "customizations.components.tianxuan.sinan-workorders.test_native_judgment_branches::test_program_runs_during_choice_and_only_selected_animation_starts",
+      "customizations.components.tianxuan.sinan-workorders.test_native_judgment_branches::test_receiver_reopens_approved_branch_and_rejects_obsolete_binding"
+    ],
+    "scenarios": [
+      {
+        "program": "890f013d58f34362144592a1370e504fbb94a9526ee76074d2d5e12952a65eca",
+        "successor": "d63a145fefa88b60b95d5c0185533bbf9be300bd8e69c4aa1d117ffc11123a82",
+        "decision": {
+          "actor": "usr_e3bcbe6135294cd785d4c4efe981541a",
+          "decision": "approved",
+          "digest": "37ea2423b953b4fb2bf0143503e89512664d4ee3c6f756e69d3cdd94b5d5b77a",
+          "kind": "concept",
+          "module": "b",
+          "path": "draft",
+          "revision": "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4",
+          "submission_version": 1,
+          "version": 3
+        },
+        "drafts": [
+          "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4",
+          "353d30ee68142667d1d768315ed82775617d33c048ab9abcbd05cdbfcc764436"
+        ],
+        "worker_starts": [
+          {
+            "execution": "890f013d58f34362144592a1370e504fbb94a9526ee76074d2d5e12952a65eca",
+            "pid": 86880,
+            "sha256": "1310ca2c8932dbd118668bd97442558a3e1f546b5e15c69699dfbd6024f548d8"
+          },
+          {
+            "execution": "d63a145fefa88b60b95d5c0185533bbf9be300bd8e69c4aa1d117ffc11123a82",
+            "pid": 134940,
+            "sha256": "37ea2423b953b4fb2bf0143503e89512664d4ee3c6f756e69d3cdd94b5d5b77a"
+          }
+        ],
+        "physical_exits": {
+          "890f013d58f34362144592a1370e504fbb94a9526ee76074d2d5e12952a65eca": 0,
+          "d63a145fefa88b60b95d5c0185533bbf9be300bd8e69c4aa1d117ffc11123a82": 0
+        },
+        "candidate": "3469673e776dc55d24d45af7b1d3c9f14c3754bb9e1eebb67548f3d3ce2c62e5",
+        "stage": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_e3bcbe6135294cd785d4c4efe981541a",
+            "criteria": "use the selected draft if present",
+            "document_id": "doc_802c8612225d4ba3862a4c0385af00ff",
+            "issue_id": "iss_5db9600bede34c369dfd33aa932451e2",
+            "issue_revision": "39b8120a9ef8b86992632ff9e70c94455b141e16b1a176f848725f00dfd32571",
+            "responsible_user": "usr_e3bcbe6135294cd785d4c4efe981541a",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "3469673e776dc55d24d45af7b1d3c9f14c3754bb9e1eebb67548f3d3ce2c62e5",
+          "checks": {
+            "check": {
+              "evidence": "f97c3604741158ea7311e6b585a6302135db22e2cfab74ae519d24c7c3cc67ea",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "a73e6f2bd07b05e9942908260bbc3a169b1406df72a163e2664f81326b11b88a",
+            "b": "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "d63a145fefa88b60b95d5c0185533bbf9be300bd8e69c4aa1d117ffc11123a82"
+        },
+        "native": {
+          "editor_sha256": "c51a9569637ad0ac65ea21a0630e4453c8443c83b6c7accddcc27080fc538a5a",
+          "receipt": "提交 v1 已采纳 · b @ 35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4",
+          "exit": 0
+        },
+        "replay_starts": 0,
+        "unselected_starts": 0
+      }
+    ]
+  },
+  "service": {
+    "tests": [
+      "customizations.components.tianxuan.sinan-workorders.test_native_judgment_branches::test_program_runs_during_choice_and_only_selected_animation_starts",
+      "customizations.components.tianxuan.sinan-workorders.test_native_judgment_branches::test_receiver_reopens_approved_branch_and_rejects_obsolete_binding"
+    ],
+    "scenarios": [
+      {
+        "program": "67eacfb884f4b1994da8c9ffd435fd9270ff495ef2c0f117f5498f8239f8578f",
+        "successor": "e3b4666bea0409836366eab3c8f984a07b879c6b3220899a3a560c1fff0b797c",
+        "decision": {
+          "actor": "usr_efcba8a67645497a8bf3a7ba936640cd",
+          "decision": "approved",
+          "digest": "37ea2423b953b4fb2bf0143503e89512664d4ee3c6f756e69d3cdd94b5d5b77a",
+          "kind": "concept",
+          "module": "b",
+          "path": "draft",
+          "revision": "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4",
+          "submission_version": 1,
+          "version": 3
+        },
+        "drafts": [
+          "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4",
+          "353d30ee68142667d1d768315ed82775617d33c048ab9abcbd05cdbfcc764436"
+        ],
+        "worker_starts": [
+          {
+            "execution": "67eacfb884f4b1994da8c9ffd435fd9270ff495ef2c0f117f5498f8239f8578f",
+            "pid": 123484,
+            "sha256": "1310ca2c8932dbd118668bd97442558a3e1f546b5e15c69699dfbd6024f548d8"
+          },
+          {
+            "execution": "e3b4666bea0409836366eab3c8f984a07b879c6b3220899a3a560c1fff0b797c",
+            "pid": 133224,
+            "sha256": "37ea2423b953b4fb2bf0143503e89512664d4ee3c6f756e69d3cdd94b5d5b77a"
+          }
+        ],
+        "physical_exits": {
+          "67eacfb884f4b1994da8c9ffd435fd9270ff495ef2c0f117f5498f8239f8578f": 0,
+          "e3b4666bea0409836366eab3c8f984a07b879c6b3220899a3a560c1fff0b797c": 0
+        },
+        "candidate": "3469673e776dc55d24d45af7b1d3c9f14c3754bb9e1eebb67548f3d3ce2c62e5",
+        "stage": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_efcba8a67645497a8bf3a7ba936640cd",
+            "criteria": "use the selected draft if present",
+            "document_id": "doc_fee2034d58d24f298c81b4d25c399d7d",
+            "issue_id": "iss_1972590dad664b9d86839656e13bd50f",
+            "issue_revision": "3c721ec43e334cafed432788b6dfbf7f274b4a138bbe8338b8016ae9f429a659",
+            "responsible_user": "usr_efcba8a67645497a8bf3a7ba936640cd",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "3469673e776dc55d24d45af7b1d3c9f14c3754bb9e1eebb67548f3d3ce2c62e5",
+          "checks": {
+            "check": {
+              "evidence": "fa9e0f41a4bb5cf306c4d18b331e8c542887d026914de1c528aade537bc3a1e8",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "a73e6f2bd07b05e9942908260bbc3a169b1406df72a163e2664f81326b11b88a",
+            "b": "35b8f461dbcabdb28ab3f9ea1c4bf9bb52ad9a715430a65508f9f779e37d84f4"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "e3b4666bea0409836366eab3c8f984a07b879c6b3220899a3a560c1fff0b797c"
+        },
+        "native": null,
+        "replay_starts": 0,
+        "unselected_starts": 0
+      }
+    ]
+  },
+  "related": {
+    "tests": [
+      "customizations.components.tianxuan.server.test_issue_flow::test_progress_release_backwards_and_human_gate_across_entries",
+      "customizations.components.tianxuan.server.test_issue_flow::test_concurrent_connections_serialize_dependency_cycle_and_retry[True]",
+      "customizations.components.tianxuan.server.test_issue_flow::test_concurrent_connections_serialize_dependency_cycle_and_retry[False]",
+      "customizations.components.tianxuan.server.test_issue_flow::test_dependency_acl_revocation_and_scope",
+      "customizations.components.tianxuan.server.test_issue_flow::test_native_managed_done_without_acceptance_does_not_release_and_rejects_ordinary_edits",
+      "customizations.components.tianxuan.server.test_issue_flow::test_default_legacy_progress_and_stale_operation",
+      "customizations.components.tianxuan.server.test_issue_flow::test_existing_stages_can_be_configured_from_public_ai_api_and_judged_only_by_human",
+      "customizations.components.tianxuan.server.test_work_management::test_historical_issue_plan_and_persistent_replay",
+      "customizations.components.tianxuan.server.test_work_management::test_project_field_update_preserves_plan_and_large_legacy_integer",
+      "customizations.components.tianxuan.server.test_work_management::test_plan_membership_empty_groups_partial_update_and_stale_move",
+      "customizations.components.tianxuan.server.test_work_management::test_concurrent_connections_never_double_log[False]",
+      "customizations.components.tianxuan.server.test_work_management::test_concurrent_connections_never_double_log[True]",
+      "customizations.components.tianxuan.server.test_work_management::test_revoked_ancestor_acl_covers_read_and_receipt_replay",
+      "customizations.components.tianxuan.server.test_work_management::test_human_decision_is_pinned_to_submitted_native_revision[concept-sketch.png]",
+      "customizations.components.tianxuan.server.test_work_management::test_human_decision_is_pinned_to_submitted_native_revision[model-hero.glb]",
+      "customizations.components.tianxuan.server.test_work_management::test_roadmap_orders_plans_matches_detail_and_revokes_access",
+      "customizations.components.tianxuan.server.test_work_management::test_project_roadmap_returns_only_visible_issue_and_parent_identifiers",
+      "customizations.components.tianxuan.server.test_work_management::test_creative_judgments_bind_initiator_across_delegated_revisions",
+      "customizations.components.tianxuan.server.test_work_management::test_legacy_pending_judgment_reads_original_issue_creator",
+      "customizations.components.tianxuan.server.test_work_management::test_transfer_preserves_independent_judgments_and_rechecks_owner",
+      "customizations.components.tianxuan.server.test_work_management::test_edit_original_preserves_responsibility_and_rejects_stale_saves",
+      "customizations.components.tianxuan.server.test_native_entry_normal.NormalEntryTests::test_main_two_users",
+      "customizations.components.tianxuan.sinan-workorders.test_native_stage_admission::test_signed_item_reaches_one_local_process",
+      "customizations.components.tianxuan.sinan-workorders.test_native_stage_admission::test_stale_reserved_ticket_never_launches[revoked]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_stage_admission::test_stale_reserved_ticket_never_launches[reconfirmed]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_stage_admission::test_stale_reserved_ticket_never_launches[target]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_stage_admission::test_stale_reserved_ticket_never_launches[definition]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_stage_admission::test_stale_reserved_ticket_never_launches[reassigned]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_stage_admission::test_private_origin_cannot_fall_back_to_ordinary_issue",
+      "customizations.components.tianxuan.sinan-workorders.test_native_stage_admission::test_reassigned_confirmation_replaces_old_reservation_after_restart",
+      "customizations.components.tianxuan.sinan-workorders.test_native_stage_admission::test_edit_baseline_keeps_admitted_revision_after_human_writes",
+      "customizations.components.tianxuan.sinan-workorders.test_native_successor_events::test_signed_successor_replays_exact_completion[False]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_successor_events::test_signed_successor_replays_exact_completion[True]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_successor_events::test_other_prerequisite_and_old_source",
+      "customizations.components.tianxuan.sinan-workorders.test_native_successor_events::test_custom_flow_retains_ownership",
+      "customizations.components.tianxuan.sinan-workorders.test_native_asset_reservations::test_private_original_and_shared_asset_can_hold_separate_reservations",
+      "customizations.components.tianxuan.sinan-workorders.test_native_asset_reservations::test_reserved_scope_survives_restart_and_stale_assignment[*-waiting0]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_asset_reservations::test_reserved_scope_survives_restart_and_stale_assignment[first1-*]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_asset_reservations::test_reserved_scope_survives_restart_and_stale_assignment[first2-waiting2]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_asset_reservations::test_reserved_scope_survives_restart_and_stale_assignment[first3-waiting3]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_asset_reservations::test_hidden_holder_keeps_asset_without_disclosing_ticket",
+      "customizations.components.tianxuan.sinan-workorders.test_native_asset_reservations::test_signed_waiter_refills_released_asset_while_peer_runs",
+      "customizations.components.tianxuan.sinan-workorders.test_native_asset_reservations::test_scoped_entry_observes_external_holder_with_spare_capacity",
+      "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_continue_from_each_confirmed_boundary[ready]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_continue_from_each_confirmed_boundary[reserved]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_continue_from_each_confirmed_boundary[produced]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_respects_current_scope_and_controls[pause]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_respects_current_scope_and_controls[cancel]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_respects_current_scope_and_controls[revoke]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_settles_ordinary_pinned_publication",
+      "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_unmet_stage_stops_and_is_not_retried",
+      "customizations.components.tianxuan.sinan-workorders.test_native_recovery_list::test_reopen_four_states_and_isolate_owner",
+      "customizations.components.tianxuan.sinan-workorders.test_native_recovery_list::test_visible_ready_task_with_withdrawn_execution_is_not_resumable",
+      "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_pause_before_process_or_reservation_and_restart[False]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_pause_before_process_or_reservation_and_restart[True]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_signed_pause_rejects_revoked_confirmation_and_wrong_project",
+      "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_resume_rejects_changed_worker_terminal",
+      "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_sinan_observes_requested_stop_and_continues_review_without_relaunch[pause]",
+      "customizations.components.tianxuan.sinan-workorders.test_native_run_controls::test_sinan_observes_requested_stop_and_continues_review_without_relaunch[cancel]"
+    ],
+    "scenarios": []
+  }
+}

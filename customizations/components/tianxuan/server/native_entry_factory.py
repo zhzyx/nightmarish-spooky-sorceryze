@@ -976,8 +976,11 @@ class OrdinaryEntry:
                 # the workflow validates them when continuing their own work.
                 with self.domain._connection_lock:
                     bound = self.domain.db.execute(
-                        "SELECT 1 FROM native_active_tasks WHERE issue=?", (issue,)
+                        "SELECT 1 FROM native_active_tasks WHERE issue=? UNION ALL "
+                        "SELECT 1 FROM issue_judgment_dependencies WHERE issue_id=?",
+                        (issue, issue),
                     ).fetchone()
+                # Only the scoped dispatcher admits a creative successor on the signed version.
                 if bound:
                     continue
                 try:
@@ -1293,6 +1296,7 @@ class OrdinaryEntry:
 
     async def stop(self):
         self.consumer.stop()
+        self.workflow.stop_judgment_observers()
         self.dependency_changed.set()
         if self.background:
             await self.background

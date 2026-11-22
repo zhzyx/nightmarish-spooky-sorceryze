@@ -20,7 +20,7 @@ from native_observations import model_observation
 from native_store import NativeStoreError, _digest, _json, _object_name
 from native_worker import worker_cancel_requested, worker_step_reporter
 from native_workspace import portable
-from tianxuan_core import PermissionDenied, StorageBusy, VersionConflict, _storage_error
+from tianxuan_core import NotFound, PermissionDenied, StorageBusy, VersionConflict, _storage_error
 
 
 class StageAuthorizationChanged(NativeStoreError):
@@ -109,6 +109,8 @@ class NativeWorkflow:
         self.authorize, self.capacity = authorize, capacity
         self.principals, self.review_candidate, self.installed_plan = principals, review_candidate, installed_plan
         self._executions = {}  # Exact local coordinator ownership; never inferred from a PID.
+        self._judgment_observers = {}
+        self._judgment_stopping = False
         self.next_issues = next_issues
         self.installed_target = installed_target
         self.observe_catalog = observe_catalog
@@ -509,15 +511,24 @@ class NativeWorkflow:
         authority = task["source"]["definition"].get("stage_authorization")
         if authority:
             self.domain.get_doc_shared(actor, authority["document_id"])
+        if task.get("judgment_inputs"):
+            from issue_flow import judgment_receipt
+
+            for upstream, receipt in task["judgment_inputs"].items():
+                judgment_receipt(self.domain, actor, upstream, receipt["submission_version"])
         self._inputs_allowed(actor, task["selected"])
 
     def _issue_inputs(self, actor, issue):
         """Read the I04 graph under the domain lock, including its native release bindings."""
         bindings = {}
+        judgments = {}
         prerequisites = issue_dependencies(self.domain, actor, issue)
         for prerequisite in prerequisites:
             if not prerequisite["accepted"]:
                 raise NativeStoreError("Issue prerequisite has not been accepted")
+            if "judgment" in prerequisite:
+                judgments[prerequisite["id"]] = prerequisite["judgment"]
+                continue
             row = self.domain.db.execute(
                 "SELECT t.* FROM native_active_tasks a JOIN native_tasks t ON t.id=a.task WHERE a.issue=?",
                 (prerequisite["id"],),
@@ -527,7 +538,7 @@ class NativeWorkflow:
                 if row["state"] != "accepted" or not row["acceptance"]:
                     raise NativeStoreError("Issue prerequisite lacks exact accepted output")
                 bindings[row["id"]] = row["acceptance"]
-        return [p["id"] for p in prerequisites], bindings
+        return [p["id"] for p in prerequisites], bindings, judgments
 
     def authorize_task(
         self,
@@ -549,6 +560,7 @@ class NativeWorkflow:
         shared_asset_writes=False,
         _renewal=None,
         _completion=None,
+        _judgment_binding=None,
     ):
         source = self._allow(actor, issue, "authorize")
         authority = source["definition"].get("stage_authorization", {})
@@ -568,7 +580,16 @@ class NativeWorkflow:
             raise NativeStoreError("Installed profile, checks and mandate required")
         tenant = source["definition"]["tenant_id"]
         with self.domain._connection_lock:
-            prerequisites, issue_inputs = self._issue_inputs(actor, issue)
+            prerequisites, issue_inputs, judgments = self._issue_inputs(actor, issue)
+        if _judgment_binding is not None and (
+            not authority or not judgments or self._judgment_binding(source, judgments) != _judgment_binding
+        ):
+            raise NativeStoreError("Creative dependency binding changed")
+        if judgments:
+            selected = dict(selected)
+            for receipt in judgments.values():
+                if selected.setdefault(receipt["module"], receipt["revision"]) != receipt["revision"]:
+                    raise NativeStoreError("Installed plan conflicts with approved creative revision")
         if issue_inputs:
             selected, dependencies = dict(selected), dict(dependencies)
             for ticket, acceptance in issue_inputs.items():
@@ -621,6 +642,7 @@ class NativeWorkflow:
             check_contexts={check: self.runner.context(check, "0" * 64) for check in checks},
             dependencies=dependencies,
             **({"issue_prerequisites": prerequisites} if prerequisites else {}),
+            **({"judgment_inputs": judgments} if judgments else {}),
             profile=profile,
             product=product,
             checks=checks,
@@ -639,6 +661,7 @@ class NativeWorkflow:
             if self._allow(actor, issue, "authorize") != source or self._issue_inputs(actor, issue) != (
                 prerequisites,
                 issue_inputs,
+                judgments,
             ):
                 raise NativeStoreError("Source changed")
             if db.execute(
@@ -748,7 +771,9 @@ class NativeWorkflow:
                 raise NativeStoreError("Task definition changed")
             if self.domain.get_issue(row["issue"])["status"] in {"cancelled", "blocked"}:
                 raise NativeStoreError("Issue execution is stopped")
-            prerequisites, issue_inputs = self._issue_inputs(actor, row["issue"])
+            prerequisites, issue_inputs, judgments = self._issue_inputs(actor, row["issue"])
+            if judgments != task.get("judgment_inputs", {}):
+                raise NativeStoreError("Creative dependency acceptance changed")
             if prerequisites != task.get("issue_prerequisites", []) or any(
                 task["dependencies"].get(k) != v for k, v in issue_inputs.items()
             ):
@@ -810,7 +835,81 @@ class NativeWorkflow:
             "SELECT id,issue,task,tenant,state FROM native_tasks WHERE state IN ('reserved','running','held') ORDER BY id"
         ).fetchall()
 
-    def inspect(self, actor):
+    @staticmethod
+    def _judgment_binding(source, judgments):
+        versions = {issue: item["submission_version"] for issue, item in judgments.items()}
+        return _digest(_json([source["revision"], versions]).encode())
+
+    def _judgment_branch(self, actor, issue):
+        source = self._allow(actor, issue, "authorize")
+        if not source["definition"].get("stage_authorization"):
+            return None
+        deps = issue_dependencies(self.domain, actor, issue)
+        judgments = {d["id"]: d["judgment"] for d in deps if "judgment" in d}
+        if not judgments or any(not d["accepted"] and "judgment" not in d for d in deps):
+            return None
+        if any(item["decision"] == "changes_requested" for item in judgments.values()):
+            return None
+        pending = [(key, j["submission_version"]) for key, j in judgments.items() if j["decision"] == "pending"]
+        return dict(issue=issue, binding=self._judgment_binding(source, judgments), pending=pending or None)
+
+    def _judgment_branches(self, actor, tenant, owned_issues):
+        if self._judgment_stopping or not callable(self.installed_plan):
+            return []
+        branches = []
+        for row in self.domain.db.execute(
+            "SELECT DISTINCT j.issue_id FROM issue_judgment_dependencies j JOIN issues i ON i.id=j.issue_id "
+            "JOIN design_task_confirmations c ON c.issue_id=i.id AND c.status='confirmed' "
+            "LEFT JOIN native_active_tasks a ON a.issue=i.id "
+            "LEFT JOIN issue_flows f ON f.issue_id=i.id WHERE i.tenant_id=? AND a.task IS NULL "
+            "AND f.definition IS NULL AND i.status NOT IN ('cancelled','done','blocked') ORDER BY j.issue_id",
+            (tenant,),
+        ):
+            issue = row[0]
+            if owned_issues is not None and issue not in owned_issues:
+                continue
+            try:
+                branch = self._judgment_branch(actor, issue)
+            except (NotFound, PermissionDenied, NativeStoreError):
+                continue
+            if branch:
+                branches.append(branch)
+        return branches
+
+    async def await_judgment(self, actor, issue, binding):
+        # Read and subscribe under the same lock as the committed decision notification.
+        with self.domain._connection_lock:
+            branch = self._judgment_branch(actor, issue)
+            if self._judgment_stopping or not branch or branch["binding"] != binding or not branch["pending"]:
+                return
+            sources = [(issue, None), *branch["pending"]]
+            waiter = Future()
+            for source in sources:
+                self._judgment_observers.setdefault(source, set()).add(waiter)
+        try:
+            await asyncio.shield(asyncio.wrap_future(waiter))
+        finally:
+            with self.domain._connection_lock:
+                for source in sources:
+                    observers = self._judgment_observers.get(source)
+                    if observers:
+                        observers.discard(waiter)
+                        if not observers:
+                            del self._judgment_observers[source]
+
+    def stop_judgment_observers(self):
+        with self.domain._connection_lock:
+            self._judgment_stopping = True
+            for issue, version in list(self._judgment_observers):
+                self.judgment_changed(issue, version)
+
+    def judgment_changed(self, issue, version=None):
+        with self.domain._connection_lock:
+            for observer in self._judgment_observers.pop((issue, version), ()):
+                if not observer.done():
+                    observer.set_result(None)
+
+    def inspect(self, actor, *, owned_issues=None):
         catalog = self.installed_catalog()
         with self._transaction() as db:
             tenant = self.domain.actor_context(actor)["tenant"]
@@ -875,6 +974,7 @@ class NativeWorkflow:
                 snapshot=dict(items=items, ready=ready, sourceSnapshots=sources),
                 environment=dict(catalog=catalog, active=active, capacity=self.capacity),
                 requests=requests,
+                judgment_branches=self._judgment_branches(actor, tenant, owned_issues),
                 produced=self._produced_visible(actor, tenant, stage=False),
                 stage_checks=self._produced_visible(actor, tenant, stage=True),
             )
@@ -1421,12 +1521,14 @@ class NativeWorkflow:
         if task["source"]["definition"].get("stage_authorization") and row["state"] != "accepted":
             raise NativeStoreError("Signed task is limited to its authorized stage")
 
-    def authorize_installed(self, actor, issue, *, expected=None, _completion=None):
+    def authorize_installed(self, actor, issue, *, expected=None, _completion=None, _judgment_binding=None):
         self._allow(actor, issue, "authorize")
         if not callable(self.installed_plan):
             raise NativeStoreError("No admitted native plan installed")
         plan = self.installed_plan(actor, issue)
-        return self.authorize_task(actor, issue, expected=expected, _completion=_completion, **plan)
+        return self.authorize_task(
+            actor, issue, expected=expected, _completion=_completion, _judgment_binding=_judgment_binding, **plan
+        )
 
     def renew_stage(self, actor, key, target_revision, confirmation_revision):
         """Use the reached ticket's immutable output as the next installed plan's baseline."""

@@ -48,7 +48,7 @@ export function httpService(base, token, {executeTimeoutMs = 120000} = {}) {
   return async (operation, value) => {
     const response = await fetch(new URL(`/api/v1/native/workflow/${operation}`, url), {
       method: 'POST', headers: {'content-type': 'application/json', authorization: `Bearer ${token}`},
-      body: JSON.stringify(value), signal: AbortSignal.timeout(['await-terminal', 'integration-await'].includes(operation) ? 86500000 : operation === 'execute' ? executeTimeoutMs : 120000), redirect: 'error',
+      body: JSON.stringify(value), signal: AbortSignal.timeout(['await-terminal', 'integration-await', 'await-judgment'].includes(operation) ? 86500000 : operation === 'execute' ? executeTimeoutMs : 120000), redirect: 'error',
     });
     const chunks = []; let bytes = 0;
     for await (const chunk of response.body) {
@@ -65,7 +65,7 @@ export function httpService(base, token, {executeTimeoutMs = 120000} = {}) {
 export async function driveNative(service, initial = {type: 'user.requested', reference: 'native-cli'}) {
   const watched = new Set(), continuousEvents = new Set();
   const checked = new Set(), integrated = new Set(), groupErrors = new Set();
-  const verifiedStages = new Set();
+  const verifiedStages = new Set(), judgmentBranches = new Set();
   const attempted = new Set(), finished = new Set(), pending = new Set(), rejectedEvents = new Set();
   const result = {results: [], deliveries: [], deferred: [], errors: []};
   let coordinator = Promise.resolve();
@@ -128,6 +128,17 @@ export async function driveNative(service, initial = {type: 'user.requested', re
       } catch (error) {result.errors.push({stage: 'advance', reason: String(error.message ?? error)});}
       const board = await service('inspect', {});
       deliveryCapacity = Math.max(1, board.environment.capacity);
+      for (const branch of board.judgment_branches ?? []) {
+        const key = JSON.stringify(branch);
+        if (judgmentBranches.has(key)) continue;
+        judgmentBranches.add(key);
+        const {issue, binding} = branch;
+        track(service(branch.pending ? 'await-judgment' : 'admit-judgment', {issue, binding})
+          .then(() => {
+            if (branch.pending) judgmentBranches.delete(key);
+            return signal({type: 'dependency.changed', reference: binding});
+          }));
+      }
       for (const active of board.environment.active ?? []) {
         if (!active.terminalObservable || attempted.has(active.ticket) || watched.has(active.ticket)) continue;
         watched.add(active.ticket);
