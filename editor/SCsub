@@ -44,6 +44,7 @@ if env.editor_build:
             "docks/workbench/module_selector.gd",
             "docks/workbench/asset_picker.gd",
             "docks/workbench/saved_editor_changes.gd",
+            "docks/workbench/script_candidate.gd",
         ],
         env.Run(editor_builders.daqian_scripts_builder),
     )

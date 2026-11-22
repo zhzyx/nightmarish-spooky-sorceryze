@@ -12,6 +12,7 @@ var feedback: Label
 var content: VBoxContainer
 var issues: OptionButton
 var page: Label
+var script_candidate
 var history: TextEdit
 var continue_work := CheckBox.new()
 var preserve_note := LineEdit.new()
@@ -93,6 +94,10 @@ func _ready() -> void:
 	history.wrap_mode = TextEdit.LINE_WRAPPING_BOUNDARY
 	history.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	content.add_child(history)
+	if has_meta("script_candidate"):
+		script_candidate = get_meta("script_candidate").new()
+		script_candidate.panel = self
+		content.add_child(script_candidate)
 	var reference_host := VBoxContainer.new()
 	reference_host.name = "ModuleReferenceHost"
 	content.add_child(reference_host)
@@ -631,6 +636,8 @@ func _render() -> void:
 		if conversation.current.get(revision.stage) == revision.revision and revision.confirmed_at == null:
 			messages.append("设计草稿 · " + revision.body)
 	history.text = "\n\n".join(messages)
+	if script_candidate:
+		script_candidate.refresh()
 	var menu := document_links.get_popup()
 	menu.clear()
 	for turn in conversation.get("turns", []):
@@ -860,6 +867,11 @@ func _send() -> void:
 	if references.size() > 16:
 		_notice("每条消息最多可引用 16 个对象。")
 		return
+	if continue_work.button_pressed and references.any(func(ref): return ref.get("kind") == "editor" and ".gd#L" in str(ref.get("object_id"))):
+		body = "[脚本接续] 若建议更新引用的脚本选区，返回单个 JSON 对象，字段为 object_id、revision（均取自引用）、original（完整原选区）和 replacement（完整替换文本）。\n" + body
+		if body.length() > 8000:
+			_notice("脚本接续内容超过 8000 字符，请缩短后发送。")
+			return
 	var snapshot := {"project": project, "module_id": module_id, "issue_id": location.issue_id, "references": references}
 	if continue_work.button_pressed:
 		snapshot.continuation = {"preserve":redact_reference(preserve_note.text)}

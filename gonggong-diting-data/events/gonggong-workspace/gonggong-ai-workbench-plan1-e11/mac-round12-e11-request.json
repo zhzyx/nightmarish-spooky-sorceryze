@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round12-e11-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e11",
+  "kind": "request",
+  "occurred_at": "2026-11-22T13:18:18.748682+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1766",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue_number": 1766,
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1766#issuecomment-7079184095",
+    "verified_intake_sha256": "633f8beeb7e0fc254b61ccd91e7210ba6e36b87c446096e41694b645be3eee58",
+    "scope": "在动画候选中固定落地姿势、压缩前半段，重新打开产物后核对固定键值和实际前段时间。"
+  },
+  "evidence_refs": [],
+  "sha256": "c7f3cc265c5e7fef28041afae7255f9c35aa0ec16d2bcf18f933e4b13e0dbdd2"
+}

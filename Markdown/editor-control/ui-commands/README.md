@@ -56,3 +56,5 @@ python tools/editor_control_client.py --project D:/MyProject status open-project
 工作台在模块对话中发送原生脚本选区、场景节点或资源后，按账号、工程、模块、事项及会话保留目标。后续回合以磁盘内容判断修订，并把原生保存回执中的操作者绑定到同一摘要。工程内的依赖独立计算版本；外部写入只登记可核实的内容。[脚本选区](../../../design-docs/gonggong-ai-workbench-e03.md) · [场景和资源](../../../design-docs/gonggong-ai-workbench-e04.md)
 
 选择「继续当前工作」时，模块草稿保留本次会话已发送的目标和人工保留意见。接续输入从这些目标的起始内容比较到当前可读修订。动画按片段、轨道类型、节点属性路径和同名序号区分，键按实际时间定位；超过观察上限时回报明细不可用。[时间线修订](../../../design-docs/gonggong-ai-workbench-e05.md) · [接续输入](../../../design-docs/gonggong-ai-workbench-e06.md)
+
+脚本接续候选从原生编辑器审阅并保存。动画候选支持固定落地关键帧、压缩前段、回放两个修订并恢复时间线位置。[操作与验收](../../../design-docs/gonggong-ai-workbench-edit-candidates.md)

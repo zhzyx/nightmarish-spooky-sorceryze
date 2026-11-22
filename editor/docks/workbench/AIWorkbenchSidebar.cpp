@@ -196,6 +196,11 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 		{
 			selector->set_meta("asset_picker_script", asset_script);
 		}
+		Ref<Script> candidate_script = LoadWorkbenchControlScript(daqian_script_candidate);
+		if (candidate_script.is_valid())
+		{
+			selector->set_meta("script_candidate", candidate_script);
+		}
 		Ref<Script> changes_script = LoadWorkbenchControlScript(daqian_saved_editor_changes);
 		if (changes_script.is_valid())
 		{
