@@ -1,0 +1,500 @@
+{
+  "issue_number": 1764,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1764",
+  "request_id": "gonggong-ai-workbench-plan1-e08",
+  "source_revision": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "performed_on": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "verified_at": "2026-11-22T12:57:57.908673+00:00",
+  "acceptance": {
+    "cases": {
+      "race": [
+        {
+          "choice": 0,
+          "trace": [
+            {
+              "paragraph": 3,
+              "preview": "点亮整座桥\n持续三秒",
+              "selected": "照亮桥面\n持续两秒",
+              "version_before_accept": 1
+            },
+            {
+              "choice": 0,
+              "resolved": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n另一位作者改为持续十秒\r\n\t\r\n收尾  \n",
+              "version": 4
+            }
+          ],
+          "writes": [
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "18756cc161e00a7ae9738c6ebff77771",
+                "expected_version": 1
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "18756cc161e00a7ae9738c6ebff77771",
+                "expected_version": 1
+              },
+              200,
+              200
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+                "call_id": "f2b0d49f17bcc1acf555cb10b9c2b592",
+                "expected_version": 2
+              },
+              409,
+              409
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n另一位作者改为持续十秒\r\n\t\r\n收尾  \n",
+                "call_id": "ff74931fcfaae90a6f2f848e42183ea2",
+                "expected_version": 3
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n另一位作者改为持续十秒\r\n\t\r\n收尾  \n",
+                "call_id": "ff74931fcfaae90a6f2f848e42183ea2",
+                "expected_version": 3
+              },
+              200,
+              200
+            ]
+          ],
+          "editor_sha256": "7b3235e556b8005922a8401ebd8494ee35c1f5657cd956ca7845471d8146ada7"
+        },
+        {
+          "choice": 1,
+          "trace": [
+            {
+              "paragraph": 3,
+              "preview": "点亮整座桥\n持续三秒",
+              "selected": "照亮桥面\n持续两秒",
+              "version_before_accept": 1
+            },
+            {
+              "choice": 1,
+              "resolved": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+              "version": 4
+            }
+          ],
+          "writes": [
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "52fefad7dab97832d0ab88f7c7f709d3",
+                "expected_version": 1
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "52fefad7dab97832d0ab88f7c7f709d3",
+                "expected_version": 1
+              },
+              200,
+              200
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+                "call_id": "6399f1c79f893a248186da59a63f8bdd",
+                "expected_version": 2
+              },
+              409,
+              409
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+                "call_id": "2c977140073bf96ea441fff26ab32608",
+                "expected_version": 3
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+                "call_id": "2c977140073bf96ea441fff26ab32608",
+                "expected_version": 3
+              },
+              200,
+              200
+            ]
+          ],
+          "editor_sha256": "7b3235e556b8005922a8401ebd8494ee35c1f5657cd956ca7845471d8146ada7"
+        },
+        {
+          "choice": 2,
+          "trace": [
+            {
+              "paragraph": 3,
+              "preview": "点亮整座桥\n持续三秒",
+              "selected": "照亮桥面\n持续两秒",
+              "version_before_accept": 1
+            },
+            {
+              "choice": 2,
+              "resolved": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n人工折中为五秒\r\n\t\r\n收尾  \n",
+              "version": 4
+            }
+          ],
+          "writes": [
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "1cc40936390fe9af38e3264c2cfd3fa6",
+                "expected_version": 1
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "1cc40936390fe9af38e3264c2cfd3fa6",
+                "expected_version": 1
+              },
+              200,
+              200
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+                "call_id": "3ec279fb128eb674b1258dcc8eb4306b",
+                "expected_version": 2
+              },
+              409,
+              409
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n人工折中为五秒\r\n\t\r\n收尾  \n",
+                "call_id": "97698285742f715f24c13069260bd73e",
+                "expected_version": 3
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n人工折中为五秒\r\n\t\r\n收尾  \n",
+                "call_id": "97698285742f715f24c13069260bd73e",
+                "expected_version": 3
+              },
+              200,
+              200
+            ]
+          ],
+          "editor_sha256": "7b3235e556b8005922a8401ebd8494ee35c1f5657cd956ca7845471d8146ada7"
+        }
+      ],
+      "regular": [
+        {
+          "choice": 0,
+          "trace": [
+            {
+              "paragraph": 3,
+              "preview": "点亮整座桥\n持续三秒",
+              "selected": "照亮桥面\n持续两秒",
+              "version_before_accept": 1
+            },
+            {
+              "choice": 0,
+              "resolved": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n另一位作者改为持续十秒\r\n\t\r\n收尾  \n",
+              "version": 4
+            }
+          ],
+          "writes": [
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "e12e9ec314d75c43aa0bf71d070495ee",
+                "expected_version": 1
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "e12e9ec314d75c43aa0bf71d070495ee",
+                "expected_version": 1
+              },
+              200,
+              200
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+                "call_id": "32ff152c7fe2f8ec2e52e8f7b6e5eb73",
+                "expected_version": 2
+              },
+              409,
+              409
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n另一位作者改为持续十秒\r\n\t\r\n收尾  \n",
+                "call_id": "7f284461fe552856e59e27a2ed9e8d38",
+                "expected_version": 3
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n另一位作者改为持续十秒\r\n\t\r\n收尾  \n",
+                "call_id": "7f284461fe552856e59e27a2ed9e8d38",
+                "expected_version": 3
+              },
+              200,
+              200
+            ]
+          ],
+          "editor_sha256": "7b3235e556b8005922a8401ebd8494ee35c1f5657cd956ca7845471d8146ada7"
+        },
+        {
+          "choice": 1,
+          "trace": [
+            {
+              "paragraph": 3,
+              "preview": "点亮整座桥\n持续三秒",
+              "selected": "照亮桥面\n持续两秒",
+              "version_before_accept": 1
+            },
+            {
+              "choice": 1,
+              "resolved": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+              "version": 4
+            }
+          ],
+          "writes": [
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "1f2ec8d8a78991f7214ada980d18d8de",
+                "expected_version": 1
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "1f2ec8d8a78991f7214ada980d18d8de",
+                "expected_version": 1
+              },
+              200,
+              200
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+                "call_id": "81f5c9566819763b23d0897bb0cc340e",
+                "expected_version": 2
+              },
+              409,
+              409
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+                "call_id": "a101139802b1526ece2a73a501345be8",
+                "expected_version": 3
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+                "call_id": "a101139802b1526ece2a73a501345be8",
+                "expected_version": 3
+              },
+              200,
+              200
+            ]
+          ],
+          "editor_sha256": "7b3235e556b8005922a8401ebd8494ee35c1f5657cd956ca7845471d8146ada7"
+        },
+        {
+          "choice": 2,
+          "trace": [
+            {
+              "paragraph": 3,
+              "preview": "点亮整座桥\n持续三秒",
+              "selected": "照亮桥面\n持续两秒",
+              "version_before_accept": 1
+            },
+            {
+              "choice": 2,
+              "resolved": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n人工折中为五秒\r\n\t\r\n收尾  \n",
+              "version": 4
+            }
+          ],
+          "writes": [
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "a1ccaf94cfe4ac9bdef0f25e0b57a0c2",
+                "expected_version": 1
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+                "call_id": "a1ccaf94cfe4ac9bdef0f25e0b57a0c2",
+                "expected_version": 1
+              },
+              200,
+              200
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n桥灯保持蓝色\r\n\t\r\n收尾  \n",
+                "call_id": "eb0f4127d4fffb4a3db4ed0a975eab7a",
+                "expected_version": 2
+              },
+              409,
+              409
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n人工折中为五秒\r\n\t\r\n收尾  \n",
+                "call_id": "1c73f50b08e5019b47cbee39345d9397",
+                "expected_version": 3
+              },
+              200,
+              503
+            ],
+            [
+              {
+                "body_md": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n人工折中为五秒\r\n\t\r\n收尾  \n",
+                "call_id": "1c73f50b08e5019b47cbee39345d9397",
+                "expected_version": 3
+              },
+              200,
+              200
+            ]
+          ],
+          "editor_sha256": "7b3235e556b8005922a8401ebd8494ee35c1f5657cd956ca7845471d8146ada7"
+        }
+      ]
+    },
+    "regression": {
+      "state": "passed",
+      "host": "compiled native sidebar",
+      "display": "headless",
+      "model_transport": "fixture",
+      "trace": [
+        {
+          "paragraph": 3,
+          "preview": "点亮整座桥\n持续三秒",
+          "selected": "照亮桥面\n持续两秒",
+          "version_before_accept": 1
+        }
+      ],
+      "editor_sha256": "7b3235e556b8005922a8401ebd8494ee35c1f5657cd956ca7845471d8146ada7",
+      "previews": [
+        {
+          "paragraph": 3,
+          "revision_seen": 1,
+          "writes_seen": 0
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 1,
+          "writes_seen": 0
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 1,
+          "writes_seen": 0
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 2,
+          "writes_seen": 2
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 1,
+          "writes_seen": 3
+        },
+        {
+          "paragraph": 3,
+          "revision_seen": 3,
+          "writes_seen": 3
+        },
+        {
+          "paragraph": 2,
+          "revision_seen": 3,
+          "writes_seen": 3
+        },
+        {
+          "paragraph": 1,
+          "revision_seen": 4,
+          "writes_seen": 3
+        }
+      ],
+      "saved_v2": "# 虹桥  \r\n \t\r\n照亮桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+      "patch_statuses": [
+        [
+          200,
+          503
+        ],
+        [
+          200,
+          200
+        ],
+        [
+          409,
+          409
+        ]
+      ],
+      "same_call_id_on_retry": true,
+      "merged_version": 4,
+      "merged_markdown": "# 人工定稿的虹桥  \r\n \t\r\n再次确认的桥面\r\n持续两秒\n\n点亮整座桥\r\n持续三秒\r\n\t\r\n收尾  \n",
+      "rebased_write_statuses": [
+        [
+          409,
+          409
+        ],
+        [
+          409,
+          409
+        ],
+        [
+          409,
+          409
+        ],
+        [
+          200,
+          503
+        ],
+        [
+          200,
+          200
+        ]
+      ],
+      "conflict_preserved_external_write": true,
+      "stale_selection_document_identity_cleared": true
+    },
+    "api_checks": "5 passed, 1 warning in 0.71s"
+  }
+}

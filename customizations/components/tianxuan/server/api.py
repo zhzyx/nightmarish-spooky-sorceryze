@@ -1046,17 +1046,19 @@ def create_app(
     def preview_paragraph_merge(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:
         document, base = merge_inputs(doc_id, payload, actor)
         remote = document["body_md"]
-        merged, conflicts = merge_paragraphs(base, payload.local_md, remote)
+        sections: list[dict[str, str]] = []
+        merged, conflicts = merge_paragraphs(base, payload.local_md, remote, sections=sections)
         if conflicts:
             return JSONResponse(
                 status_code=409,
                 content={
                     "status": "conflict",
                     "remote_md": remote,
+                    "sections": sections,
                     "remote_version": document["version"],
                 },
             )
-        return {"status": "ready", "body_md": merged, "remote_version": document["version"]}
+        return {"status": "ready", "body_md": merged, "remote_version": document["version"], "remote_md": remote}
 
     @app.post("/api/v1/docs/{doc_id}/merge")
     def merge_doc(doc_id: str, payload: DocMergeRequest, actor: ActorDep) -> Any:

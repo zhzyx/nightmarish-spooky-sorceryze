@@ -143,6 +143,36 @@ func run() -> void:
 		return
 	if not require(dialog.get_ok_button().disabled, "Could accept conflicting candidate again"):
 		return
+	if fixture.has("resolution"):
+		var index := int(fixture.resolution)
+		if not require(dialog.choices.visible and dialog.baseline.text.contains(fixture.replacement) and dialog.human.text.contains("另一位作者改为持续十秒") and dialog.preview.text == "桥灯保持蓝色", "Three versions not shown"):
+			return
+		dialog.decision.select(index)
+		dialog.decision.item_selected.emit(index)
+		if index == 2:
+			dialog.custom_text.text = "人工折中为五秒"
+		dialog.get_ok_button().pressed.emit()
+		if fixture.race:
+			if index == 0:
+				if not await wait_for(func(): return "确认期间有新修订" in dialog.status.text, "Decision reverted to original AI after a newer revision"):
+					return
+			else:
+				if not await wait_for(func(): return dialog.choices.visible and not dialog.decision.disabled and dialog.decision.selected == -1, "Revised conflict not presented"):
+					return
+				dialog.decision.select(index)
+				dialog.decision.item_selected.emit(index)
+				if index == 2:
+					dialog.custom_text.text = "人工折中为五秒"
+			dialog.get_ok_button().pressed.emit()
+		if not await wait_for(func(): return "尚未收到保存回执" in dialog.status.text, "Missing resolution receipt retry"):
+			return
+		dialog.get_ok_button().pressed.emit()
+		if not await wait_for(func(): return view.reference.get("version") == (5 if fixture.race else 4), "Resolution not saved once"):
+			return
+		observations.append({"choice": index, "resolved": view.raw_body, "version": view.reference.version})
+		print("D05_CHECKS=", JSON.stringify(observations))
+		quit()
+		return
 	dialog.get_cancel_button().pressed.emit()
 	await process_frame
 	await view.open_document(fixture.other, 1, 3, true)

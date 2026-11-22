@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round12-e08-coverage-race",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e08",
+  "kind": "coverage",
+  "occurred_at": "2026-11-22T12:57:57.908673+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1764",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1764,
+    "evidence": "data-collection/gonggong-ai-workbench-plan1-e08.json",
+    "sha256": "c07988648f58394b244b6df08d3fe528371777486259b76243987968c416b7ef",
+    "verification": "已生成的 AI 段落与协作者保存的正文重叠时，原生建议窗显示基线、人的当前版和 AI 片段。选择保留人的版本、使用 AI 片段或编辑第三版后，按所见的当前修订确认保存。服务保留未冲突区域和原 Markdown 分隔符。Mac 窗口分别演练三种决定，并为每种情况丢弃首次写入响应，用原调用标识核对同一已保存修订。运行 tests/editor/run_workbench_paragraph_suggestion.py，分别传入 --resolution 0、1、2，再运行原有无参数冲突回归。"
+  },
+  "evidence_refs": [],
+  "sha256": "9b578ce71e5117e2966b8ef6e6273464764151a6078e08a741acb036663c2a01"
+}
