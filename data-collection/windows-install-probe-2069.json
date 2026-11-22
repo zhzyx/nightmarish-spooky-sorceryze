@@ -1,0 +1,47 @@
+{
+  "request_id": "kuafu-local-1739-e3962b3bbb3f1485f613fae980597cb7526946c3e6e87e22506c24a25ff473ae",
+  "issue_number": 2069,
+  "source_issue": 1739,
+  "parent_issue": 1709,
+  "baseline": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "editor_sha256": "748650bf3c4e91bfb4aab2a98b2322a40eb3a4715ef9088d31c946af283f11fc",
+  "platform": "Windows x86_64",
+  "original_failure": "Direct LineEdit ordering selected the issue field after environment controls moved. A detached startup helper also held the retired test directory.",
+  "commands": [
+    "python tests/editor/run_gonggong_install_probe.py --godot <editor from checkout bin>",
+    "python -m pytest -q tools/test_editor_provenance_process.py"
+  ],
+  "scenarios": {
+    "install-isolated": {
+      "exit_code": 1,
+      "observation": "wrong workspace"
+    },
+    "fixed-positive": {
+      "exit_code": 0,
+      "observation": "Installed editor found workspace"
+    },
+    "fixed-wrong-install": {
+      "exit_code": 1,
+      "observation": "wrong workspace"
+    },
+    "bundled-install": {
+      "exit_code": 0,
+      "observation": "Installed editor found workspace"
+    },
+    "jobs": {
+      "tests": 20,
+      "subtests": 3,
+      "passed": true
+    }
+  },
+  "positive_control": "Same editor in candidate bin, first with no bundled interpreter, then with the installed Python distribution in project/runtime/python.",
+  "negative_control": "The same executable at an installation location under a different workspace must be rejected.",
+  "python_sha256": "f8b45d63047da9d9adf09892e4cc4317b859e86a93a478cc9616bc69d3b176e5",
+  "tested_files": {
+    "tests/editor/gonggong_install_probe.gd": "f7bc75aa0026e6bc0a6ee7624c53669c81be4fc6ccf97d65a899714772866f54",
+    "tests/editor/run_gonggong_install_probe.py": "dfea68cb5263c01ee1c750de0d65639fd85cd715a6bddce9d05e4da393fa1d31",
+    "tests/editor/run_requirements_intake.py": "43db71ceefedfe2d890a8e2379d97a42dc05b11987c68d2a53b6109a4b2d5f48"
+  },
+  "original_tracker": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1739#issuecomment-7079340358",
+  "scope": "Installation probe on the Windows K03 baseline. Q06 awaits the F01 multi-platform candidate."
+}

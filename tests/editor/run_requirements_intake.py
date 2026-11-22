@@ -67,9 +67,9 @@ else: raise SystemExit('unsupported fixture command')
 """
 
 
-def run_editor(command, root, env):
+def run_editor(command, root, env, timeout=240):
     if os.name != "nt":
-        return subprocess.run(command, cwd=root, env=env, capture_output=True, timeout=240)
+        return subprocess.run(command, cwd=root, env=env, capture_output=True, timeout=timeout)
     # Reuse the existing suspended-before-assignment Job boundary. Cleanup is
     # restricted to this invocation, including children left after editor exit.
     spec = importlib.util.spec_from_file_location(
@@ -80,7 +80,7 @@ def run_editor(command, root, env):
     with processes.WindowsJob(uuid.uuid4().hex) as job:
         child = job.spawn(command, cwd=root, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         try:
-            stdout, stderr = child.communicate(timeout=240)
+            stdout, stderr = child.communicate(timeout=timeout)
         finally:
             job.quiesce()
             child.wait(timeout=5)
