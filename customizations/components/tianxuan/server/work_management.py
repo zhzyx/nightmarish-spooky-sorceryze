@@ -154,6 +154,8 @@ def snapshot(store, actor, issue_id, through_version=2**63 - 1) -> dict[str, Any
                         initiator=event.get("initiator", issue_creator),
                         responsible=event.get("responsible", issue_creator),
                     )
+                    if "supersedes" in event:
+                        judgments_by_version[event["supersedes"]]["decision"] = "superseded"
                     latest_judgments[data["kind"]] = judgment
                     judgments_by_version[event["version"]] = judgment
                     state["creative_judgments"].append(judgment)

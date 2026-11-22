@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round13-edit-coverage",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e10",
+  "kind": "coverage",
+  "occurred_at": "2026-11-22T14:04:47.979090+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1765",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "payload": {
+    "issue": 1765,
+    "evidence": "data-collection/gonggong-ai-workbench-plan1-e10.json",
+    "sha256": "d652b1c98bcc11e17fad0044bbd39fe8dbcaa6862aabef3ae4362571d47038cb",
+    "editor_sha256": "1d00ecff331c8f08a18db53b0e7c65cca1ff954cc627505ee175ecb9500772c6",
+    "verification": "macOS 图形编辑器保存 SVG 原件后回到同工单待判断的新修订；重新打开存储核对新旧 SVG 颜色与内容。个人判断、转交、比较回归通过，16 项领域测试通过。"
+  },
+  "evidence_refs": [],
+  "sha256": "fe49b6f8f92c7d97c5f338c64de847b4a93fbd50d6f75c0260c7b2bd9c96420e"
+}

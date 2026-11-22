@@ -411,3 +411,36 @@ def test_transfer_preserves_independent_judgments_and_rechecks_owner(work):
     assert result["history"][2]["note"] == handoff["note"]
     assert client.get(base + "/approved-asset", headers=auth[owner], params=ref).content == b"scene"
     assert mine(owner) == mine(delegate) == []
+
+
+def test_edit_original_preserves_responsibility_and_rejects_stale_saves(work):
+    _, store, native, client, owner, issue_id = work
+    other = store.add_member(owner, "other@example.invalid", "password", role="editor")["user_id"]
+    issue = store.get_issue(issue_id)
+    tenant = issue["tenant_id"]
+    headers = {actor: {"Authorization": "Bearer " + store.issue_session(actor)} for actor in (owner, other)}
+    old = native.submit(
+        tenant, owner, "initial-art", [dict(module="art", base=None, reads=None, edits={"art.svg": b"<svg/>"})]
+    )["revisions"]["art"]
+    binding = dict(issue_id=issue_id, kind="concept", module="art", revision=old, path="art.svg")
+    store.dispatch_tool(owner, "work.submit_asset", dict(**binding, expected_version=0), call_id="submit")
+    route = f"/api/v1/issues/by-number/{issue['number']}/artifacts/1/edit"
+    args = dict(
+        params={"project": issue["project"]},
+        json=dict(
+            content=base64.b64encode(b"<svg>blue</svg>").decode(),
+            expected_version=1,
+            revision=old,
+            call_id="edit-original",
+        ),
+    )
+    assert client.post(route, headers=headers[other], **args).status_code == 403
+    assert native.head(tenant, "art") == old
+    saved = client.post(route, headers=headers[owner], **args).raise_for_status().json()
+    assert client.post(route, headers=headers[owner], **args).raise_for_status().json() == saved
+    args["json"]["call_id"] = "late-edit"
+    assert client.post(route, headers=headers[owner], **args).status_code == 409
+    assert native.head(tenant, "art") == saved["revision"]
+    current = store.dispatch_tool(owner, "work.read", {"issue_id": issue_id})
+    assert [item["decision"] for item in current["creative_judgments"]] == ["superseded", "pending"]
+    assert current["creative_judgments"][1]["responsible"] == owner

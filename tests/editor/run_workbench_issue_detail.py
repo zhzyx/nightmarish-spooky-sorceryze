@@ -26,7 +26,21 @@ from native_store import NativeStore  # noqa: E402
 from tianxuan_core import Tianxuan  # noqa: E402
 
 
-def run_probe(base, binary, script, store, native, tenant, token, scope, variables, password, *, after_response=None):
+def run_probe(
+    base,
+    binary,
+    script,
+    store,
+    native,
+    tenant,
+    token,
+    scope,
+    variables,
+    password,
+    *,
+    after_response=None,
+    graphical=False,
+):
     with patch.dict(os.environ, {"GONGGONG_WORKSPACE": ""}):
         engine = copy_editor(binary, base / "engine")
     project = base / "project"
@@ -72,7 +86,15 @@ def run_probe(base, binary, script, store, native, tenant, token, scope, variabl
                 **variables,
             )
             result = subprocess.run(
-                [str(engine), "--headless", "--editor", "--path", str(project), "--script", "res://probe.gd"],
+                [
+                    str(engine),
+                    *(["--audio-driver", "Dummy"] if graphical else ["--headless"]),
+                    "--editor",
+                    "--path",
+                    str(project),
+                    "--script",
+                    "res://probe.gd",
+                ],
                 env=env,
                 cwd=base,
                 capture_output=True,
