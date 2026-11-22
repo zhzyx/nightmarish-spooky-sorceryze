@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-d38e1f30da8653b624be9965889278631cd4d1eedbef5be2e2c9d4bffb4eebc7",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1774",
+  "occurred_at": "2026-11-22T14:06:08.6242127Z",
+  "evidence_refs": [
+    "dispatch-76201b5f6aef431786d1ba9fecd81ff5",
+    "learn-c96e5caf0b2854594845c51ce2ae9f224eebc8e57e4e590abc830f7bf5d321ff"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 16,
+    "previous": "d6eead6a073c5feb2c4a5a3f43ef24e51ac004d3f6d2100e1abef5c658657062",
+    "action": "applied",
+    "details": {
+      "task": "#1774 对新修订登记 motion 定向检查并测试并发保存、撤销授权、重复请求",
+      "observed": "每项冲突测试先等待真实 checker 完成并停在接收前。随后从独立 HTTP 请求保存、撤权或重复复验，再释放原请求。保存和撤权均未挂接迟到结果；并发两次提交只产生一次新 motion 执行。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-v10.json",
+        "sha256": "237fd22a2a19e2fd664f3c0e47b9242704907ffee49dfef42043aad372a1f022"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-v10/dispatch-76201b5f6aef431786d1ba9fecd81ff5.json",
+      "sha256": "d205744323398e3cdcfe62e6be04479d9691183e30e3cc4cced5670fbde1b592"
+    }
+  },
+  "sha256": "fc483d7240341b2ff4662bec9381e7545616b84481f62fd31f1df741723ab0ba"
+}
