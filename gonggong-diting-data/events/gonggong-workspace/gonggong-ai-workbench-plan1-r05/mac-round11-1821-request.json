@@ -1,0 +1,25 @@
+{
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-r05",
+  "schema_version": 1,
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1821",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "event_id": "mac-round11-1821-request",
+  "kind": "request",
+  "occurred_at": "2026-11-22T09:39:05.370298+00:00",
+  "payload": {
+    "issue_number": 1821,
+    "goal": "Reopen mixed durable task states in a new process and isolate by principal, project and current authorization",
+    "predecessor_issue": 1836,
+    "predecessor_main": "003180e2d27a2abcdf915408febf398ff09c63fb",
+    "authority_ref": "mac-round11-checkpoints",
+    "source_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1821#issuecomment-7076872442"
+  },
+  "evidence_refs": [],
+  "sha256": "beb22bebd2eb26a0e4122fcad2666f0affd59ceedcd7817d49194e428da46428"
+}

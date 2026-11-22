@@ -2,6 +2,9 @@
 
 import json
 
+from native_store import NativeStoreError
+from tianxuan_core import NotFound, PermissionDenied
+
 
 def read_checkpoint(workflow, actor, key):
     # All records are already written by the owning operations in the domain DB.
@@ -9,9 +12,14 @@ def read_checkpoint(workflow, actor, key):
     with workflow._transaction() as db:
         row = workflow._row(db, key)
         workflow._read_allowed(actor, row)
-        stage = db.execute("SELECT receipt FROM native_stage_results WHERE task=?", (key,)).fetchone()
-        review = db.execute("SELECT receipt FROM native_workflow_reviews WHERE task=?", (key,)).fetchone()
-        origin = db.execute("SELECT project,module_id FROM native_edit_origins WHERE task=?", (key,)).fetchone()
+        return _checkpoint(db, row)
+
+
+def _checkpoint(db, row):
+    key = row["id"]
+    stage = db.execute("SELECT receipt FROM native_stage_results WHERE task=?", (key,)).fetchone()
+    review = db.execute("SELECT receipt FROM native_workflow_reviews WHERE task=?", (key,)).fetchone()
+    origin = db.execute("SELECT project,module_id FROM native_edit_origins WHERE task=?", (key,)).fetchone()
     task = json.loads(row["task"])
     source = task["source"]
     definition = source["definition"]
@@ -64,3 +72,51 @@ def read_checkpoint(workflow, actor, key):
         "stage_receipt": json.loads(stage["receipt"]) if stage else None,
         "pending_decision": {"kind": pending, "task": key} if pending else None,
     }
+
+
+def _recovery_class(workflow, actor, row, checkpoint):
+    state = row["state"]
+    if state == "accepted":
+        return "completed", "accepted"
+    if state == "stage-reached":
+        return "awaiting-confirmation", "authorized-stage-reached"
+    if state not in {"ready", "reserved", "produced"}:
+        return "needs-attention", state
+    pending = checkpoint["pending_decision"]
+    if pending and pending["kind"] == "review-outcome":
+        return "needs-attention", "review-outcome"
+    try:
+        task = workflow._valid(actor, row)
+    except (PermissionDenied, NativeStoreError, NotFound):
+        return "needs-attention", "authorization-unavailable"
+    if state == "produced" and checkpoint["authorization"]["stage"] and "stage_criteria" not in task:
+        return "needs-attention", "stage-check-unbound"
+    return "resumable", state
+
+
+def recovery_list(workflow, actor, project, after=""):
+    # The original project and authorizing principal are pinned at admission.
+    # Only the active contract for each issue can be considered for recovery.
+    with workflow._transaction() as db:
+        workflow.domain._validate_project(project)
+        tenant = workflow.domain.actor_context(actor)["tenant"]
+        rows = db.execute(
+            "SELECT t.id FROM native_tasks t JOIN native_active_tasks a ON a.task=t.id AND a.issue=t.issue "
+            "JOIN native_edit_origins o ON o.task=t.id JOIN issues i ON i.id=t.issue "
+            "WHERE t.tenant=? AND o.project=? AND i.project=o.project "
+            "AND json_extract(t.task,'$.actor')=? AND t.id>? ORDER BY t.id",
+            (tenant, project, actor, after),
+        )
+        items = []
+        for (key,) in rows:
+            row = workflow._row(db, key)
+            try:
+                workflow._read_allowed(actor, row)
+            except (PermissionDenied, NotFound):
+                continue
+            if len(items) == 100:
+                return {"items": items, "next_cursor": items[-1]["checkpoint"]["task"]}
+            checkpoint = _checkpoint(db, row)
+            category, reason = _recovery_class(workflow, actor, row, checkpoint)
+            items.append({"category": category, "reason": reason, "checkpoint": checkpoint})
+        return {"items": items, "next_cursor": None}
