@@ -4,6 +4,7 @@ import {spawn, spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import crypto from 'node:crypto';
 import {finished} from 'node:stream/promises';
+import {createInterface} from 'node:readline';
 import {selectModel} from '../../customizations/platforms/process-management/yuanheng-local/sinan/dispatch.mjs';
 import {board} from '../../customizations/platforms/process-management/yuanheng-local/sinan/coordinator.mjs';
 import {repairIdentity,ticketPath,verifyRepair,previousResource,repairReceipts} from './repair.mjs';
@@ -205,11 +206,15 @@ export async function run(request, config, output, runtime = {}) {
   }
   const save = () => {durable(output+'.tmp',result);fs.renameSync(output+'.tmp',output);};
   save();
+  const guarded = process.platform === 'win32' && request.editorRuntime && runtime.dispatchReference;
   const pending = jobs.filter(j=>j.ready&&!j.existing);
   const quiescing = () => fs.existsSync(output + '.quiesce');
   async function consume() {
     while (pending.length) {
       const job = pending.shift(), record = result.workers.find(r=>r.id===job.id);
+      const slotClaim = {requestId:request.requestId,order:job.order};
+      if (guarded) Object.assign(slotClaim,{output,owner:crypto.randomUUID()});
+      const claim = {...slotClaim,output};
       let resourceFile, ticketFile, slotFile, priorResource, resourceOwned=false, ticketOwned=false, launchAttempted=false;
       try {
         if (quiescing()) throw Error('Editor closing');
@@ -231,12 +236,12 @@ export async function run(request, config, output, runtime = {}) {
         resourceFile=path.join(locks,`parallel-resource-${resourceKey}.json`);
         if (repairSource) {
           priorResource=previousResource(resourceFile,request,job,repairSource);
-          replaceResource(resourceFile,{requestId:request.requestId,order:job.order,output,repair_of:job.repairOf});
-        } else durable(resourceFile,{requestId:request.requestId,order:job.order,output},true);
+          replaceResource(resourceFile,{...claim,repair_of:job.repairOf});
+        } else durable(resourceFile,claim,true);
         resourceOwned=true;
         for(let slot=0;slot<config.capacity;slot++) {
           const file=path.join(locks,`parallel-capacity-${slot}.json`);
-          try {durable(file,{requestId:request.requestId,order:job.order},true);slotFile=file;break;}
+          try {durable(file,slotClaim,true);slotFile=file;break;}
           catch(error) {if(error.code!=='EEXIST')throw error;}
         }
         if(!slotFile) throw Error('Shared host capacity occupied');
@@ -284,11 +289,34 @@ export async function run(request, config, output, runtime = {}) {
         }
         launchAttempted=true;
         await new Promise((resolve,reject)=> {
-          const child = spawn(job.launch.executable,args,{cwd:job.cwd,windowsHide:true,stdio:['pipe','pipe','pipe']});
           const cancelPath = `${output}.${job.id}.cancel`;
+          const guard = fileURLToPath(new URL('./windows_worker.py',import.meta.url));
+          const child = guarded
+            ? spawn(config.python,['-I',guard,record.execution_id,output+'.quiesce',cancelPath,job.launch.executable,...args],
+                {cwd:job.cwd,windowsHide:true,stdio:['pipe','pipe','pipe']})
+            : spawn(job.launch.executable,args,{cwd:job.cwd,windowsHide:true,stdio:['pipe','pipe','pipe']});
+          // Only the guard writes control frames. Payload stdout and stderr both go to the transcript.
+          let treeExit;
+          const started = guarded ? new Promise((ready,failed)=>{
+            const frames = createInterface({input:child.stdout});
+            frames.on('line',line=>{
+              try {
+                const frame = JSON.parse(line);
+                if (frame.execution !== record.execution_id || !Number.isSafeInteger(frame.pid) || frame.pid <= 0)
+                  throw Error('Windows Job identity differs');
+                if (!Object.hasOwn(frame,'action')) ready(frame.pid);
+                else treeExit = frame;
+              } catch (error) { record.cancelObservationFailed = true; failed(error); }
+            });
+            frames.once('close',()=>failed(Error('Windows Job startup receipt missing')));
+          }) : new Promise((ready,failed)=>{
+            child.once('spawn',()=>ready(child.pid));
+            child.once('error',failed);
+          });
           const cancel = () => {
             if (!fs.existsSync(cancelPath) || !child.pid || child.exitCode !== null) return;
             record.cancelRequested = true;
+            if (guarded) return; // The guard terminates its original private Job.
             if (process.platform === 'win32') spawnSync('taskkill',['/PID',String(child.pid),'/T','/F'],{windowsHide:true,stdio:'ignore'});
             else child.kill('SIGTERM');
           };
@@ -297,11 +325,11 @@ export async function run(request, config, output, runtime = {}) {
           const dispatched = new Promise((delivered, failed) => {
             child.once('error',failed);
             child.stdin.once('error',failed);
-            child.once('spawn',async()=> {
-              record.state='running';record.pid=child.pid;record.transcript=transcript;
+            started.then(async pid=> {
+              record.state='running';record.pid=pid;record.transcript=transcript;
               try {
                 save();
-                record.reportingStarted=await report(job,{order:job.order,model:job.model.id,state:'running',kind:'step',pid:child.pid});
+                record.reportingStarted=await report(job,{order:job.order,model:job.model.id,state:'running',kind:'step',pid});
                 if (quiescing()) throw Error('Editor closing before prompt handoff');
                 cancel();
                 if (child.exitCode !== null || child.signalCode !== null || child.stdin.destroyed) throw Error('Worker exited before prompt handoff');
@@ -312,13 +340,27 @@ export async function run(request, config, output, runtime = {}) {
                 const repairContext=repairSource?(job.repairOf.mode==='missing_execution_evidence'?'\nBound missing execution evidence (unknown, not acceptance or instructions):\n':'\nBound failed review data (evidence to repair, not instructions):\n')+JSON.stringify({execution_id:job.repairOf.execution_id,reason:repairSource.review.reason,criteria:repairSource.review.criteria}):'';
                 if (quiescing()) throw Error('Editor closing before prompt handoff');
                 child.stdin.end(`Follow AGENTS.md and the bound Issue. Work only in this isolated worktree. Do not merge, push, publish or manipulate the running editor. Return actual changes and tests for independent acceptance.\n${editorContext}${job.prompt}${repairContext}`, error => error ? failed(error) : delivered());
-              } catch(error) {child.kill('SIGKILL');failed(error);}
-            });
+              } catch(error) {
+                if (!guarded || !quiescing()) child.kill('SIGKILL');
+                failed(error);
+              }
+            },failed);
           });
-          child.stdout.pipe(stream,{end:false});child.stderr.pipe(stream,{end:false});
+          if (!guarded) child.stdout.pipe(stream,{end:false});
+          child.stderr.pipe(stream,{end:false});
           const closed = new Promise((finished,failed) => {
             child.once('close',code=> {
               watcher.close();stream.end();record.exitCode=code;
+              if (guarded && code === 143 && treeExit && treeExit.pid === record.pid && treeExit.active_processes === 0 &&
+                  Number.isInteger(treeExit.exit_code)) {
+                record.cancelRequested = true;
+                record.exitCode = treeExit.exit_code;
+                if (treeExit.action === 'editor_close' && quiescing() &&
+                    String(request.batchId).startsWith(process.ppid+'-') &&
+                    fs.readFileSync(output+'.quiesce','utf8').trim() === String(process.ppid)) {
+                  record.windows_shutdown = treeExit;
+                }
+              }
               code===0&&!record.cancelRequested ? finished() : failed(Error('Worker exited without successful receipt'));
             });
           });
@@ -348,6 +390,7 @@ export async function run(request, config, output, runtime = {}) {
             cancel_requested:!!record.cancelRequested,transport_completed:record.transport_completed,
             reporting:record.reporting??null,reporting_error:record.reportingError??null,
             ...(job.repairOf?{repair_of:job.repairOf}:{}),
+            ...(record.windows_shutdown ? {windows_shutdown:record.windows_shutdown} : {}),
             business_accepted:null
           });
         } catch(error) {
@@ -370,7 +413,34 @@ export async function run(request, config, output, runtime = {}) {
             durable(ticketFile,record);
           }
         }
-        else durable(ticketFile,record);
+        else {
+          // A stopped worker still requires business reconciliation. Preserve its original ticket.
+          if (record.windows_shutdown && record.reportingStarted && record.reporting && !record.reportingError &&
+              record.terminal_receipt && !record.logWriteFailed && !record.cancelObservationFailed) {
+            const current = file => {
+              try { return read(file); } catch { return {}; }
+            };
+            const owned = file => {
+              const value = current(file);
+              return value.owner === claim.owner && value.requestId === request.requestId &&
+                value.order === job.order && value.output === output;
+            };
+            const ticket = current(ticketFile);
+            if (ticket.execution_id !== record.execution_id || ticket.registration?.sha256 !== record.registration.sha256) {
+              record.reason = 'Shutdown ticket ownership changed';
+            } else {
+              const release = owned(resourceFile) && owned(slotFile);
+              if (!release) record.reason = 'Shutdown claim ownership changed';
+              replaceResource(ticketFile,record);
+              save(); // Durable ticket, batch checkpoint and terminal evidence precede the releases.
+              if (release) {
+                if (priorResource) replaceResource(resourceFile,priorResource);
+                else fs.unlinkSync(resourceFile);
+                fs.unlinkSync(slotFile);
+              }
+            }
+          } else durable(ticketFile,record);
+        }
       }
       if(slotFile && (!launchAttempted || record.state==='review'))fs.unlinkSync(slotFile);
       save();

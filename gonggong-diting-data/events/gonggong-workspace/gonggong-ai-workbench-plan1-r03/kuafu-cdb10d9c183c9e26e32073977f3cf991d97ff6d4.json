@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cdb10d9c183c9e26e32073977f3cf991d97ff6d4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-r03",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1775",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1bc917d87b1d0948d970057ebf471fa5d2c0295159e99a09ed5a15a9ab310cc4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1775",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2098",
+    "action": "validation",
+    "detection_head": "db5012ded3f34ec7c3f85d8aeba484b57da1dd88",
+    "context_sha256": "ceafacf9751b141419eccba2b9d816783dc279d99d4a4efdbb7c5169eae9b48a",
+    "operator": "Sail-Li",
+    "worker": "after-k03-windows",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1775",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/8b072e0db1c9ffab0990887b6dfdf48d7e982fae/tools/ainative/test_owned_process.py",
+    "diagnosis": "Both an unchanged baseline and the Windows candidate returned None while expecting 0 or 7 from a fresh Python interpreter. The test gives the same 150 ms deadline to each scenario, including ordinary success and explicit error. A test-only timing failure and a process-readback fault still need to be distinguished.",
+    "next_action": "Record the adapter failure reason and child exit under normal and short deadlines. Fix only the verified source and run both the original regression and the full owned-process test suite.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T14:13:34.375675+00:00",
+    "attempted": null,
+    "repair_owner": "Windows process verification worker",
+    "continuable": "Original editor-close and independent runner tests"
+  },
+  "occurred_at": "2026-11-22T14:16:12.809192+00:00",
+  "sha256": "ceb5a08f36da3875c4b512396dc234565286aa711cab39f9739f0b038922c2aa"
+}

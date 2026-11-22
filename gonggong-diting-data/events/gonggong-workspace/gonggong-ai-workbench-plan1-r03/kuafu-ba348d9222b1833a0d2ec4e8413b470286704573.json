@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ba348d9222b1833a0d2ec4e8413b470286704573",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-r03",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1775",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "44480e3c82bb15af468e5c171dfe158214f40d559939e6b414318ddb0e0e97fb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1775",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2098",
+    "action": "delivery",
+    "detection_head": "d36a0babad5f09d4992a31a8ca2c6880a050b1fb",
+    "context_sha256": "ceafacf9751b141419eccba2b9d816783dc279d99d4a4efdbb7c5169eae9b48a",
+    "operator": "Sail-Li",
+    "worker": "after-k03-windows",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1775",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1775",
+    "diagnosis": "The Windows and macOS implementations now meet in the same native editor shutdown callback. The Windows drain is inside WINDOWS_ENABLED, while the accepted macOS owner treatment is inside MACOS_ENABLED. Verify their composed source before release.",
+    "next_action": "Rebuild Windows and repeat the original two transports and six editor-close witnesses; compare the macOS code after excluding exactly the Windows-only block.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T14:45:47.924055+00:00",
+    "attempted": null,
+    "repair_owner": "Windows integration owner",
+    "continuable": "Independent plan-one child work"
+  },
+  "occurred_at": "2026-11-22T14:54:08.772376+00:00",
+  "sha256": "410572b6ef536d7c9c6440a993d106e3e6d8ff8c906919b1aa3dbc4650d7c2f5"
+}

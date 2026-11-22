@@ -1,0 +1,1027 @@
+{
+  "issue_number": 1775,
+  "request_id": "gonggong-ai-workbench-plan1-r03",
+  "base_commit": "8b072e0db1c9ffab0990887b6dfdf48d7e982fae",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "node": "v24.22.1",
+  "python": "3.12.14",
+  "native_sha256": "835ac2c6fd3f4ef1c67c1811ea7eb410041dc0c86fe0eabf01a8d83b5695b349",
+  "source_sha256": {
+    "tests/editor/run_windows_worker_close.py": "5bf238958e670fe6f3917f88ce5d24c920a07266a4514c9b6ba7ffb85f9d5ee8",
+    "tests/editor/windows_worker_close.gd": "47d9167f37ffdc0f3145a026cfa8b9b704a0bf6ca549c069ee8a23606dfa360f",
+    "tools/godot_parallel/runner.mjs": "455f9663798cc914bc89b53a02e9bc4464649aad95907e73f233f59717252bc5",
+    "tools/godot_parallel/windows_worker.py": "6da2c8ac17b91c6231bdb5425c06165ffbd030e900f580081ab2e034d5166357",
+    "tools/editor_provenance_process.py": "5359279c70cb8f6a1f73be485f43c9ecc765a409501371dfc73e9622227eb43c",
+    "editor/docks/ai_chat_dock.cpp": "c7574d25f5b9389de05a6afed719cf7fcd275e2038756a777c5c65a786402001"
+  },
+  "issue_transport": "live GitHub intake",
+  "tests": [
+    {
+      "mode": "normal",
+      "editor_pid": 129992,
+      "editor_exit": 0,
+      "registration_sha256": "c7a0d1240fd9af7f7c1d14eccf3670558d232e5937d228f366ba2a27de49ddff",
+      "terminal_sha256": "1f46afacc28e130bf3807d42b9fed9ebd925ea23ed33661ff980269d3dc176d4",
+      "terminal_error": null,
+      "execution_id": "0c72498f-1a17-4dbc-b8a2-fef2602c2b22",
+      "worker_id": "r03-r03-close-7pz4q7d3",
+      "windows_job_terminal": {
+        "execution": "0c72498f-1a17-4dbc-b8a2-fef2602c2b22",
+        "pid": 138300,
+        "exit_code": 143,
+        "active_processes": 0,
+        "action": "editor_close"
+      },
+      "reporting": "recorded_file",
+      "business_accepted": null,
+      "transport_completed": false,
+      "handles": {
+        "worker": {
+          "pid": 138300,
+          "probe_process_pid": 137028,
+          "handle_value": "0x328",
+          "creation_filetime": "134398297446781444"
+        },
+        "descendant": {
+          "pid": 132132,
+          "probe_process_pid": 137028,
+          "handle_value": "0x310",
+          "creation_filetime": "134398297456072404"
+        },
+        "control": {
+          "pid": 111392,
+          "probe_process_pid": 137028,
+          "handle_value": "0x32c",
+          "creation_filetime": "134398297333120426"
+        },
+        "control-child": {
+          "pid": 134808,
+          "probe_process_pid": 137028,
+          "handle_value": "0x330",
+          "creation_filetime": "134398297334246519"
+        }
+      },
+      "ready": {
+        "worker": {
+          "role": "worker",
+          "pid": 138300,
+          "ppid": 132620,
+          "probe_id": "r03-close-7pz4q7d3",
+          "execution_id": "0c72498f-1a17-4dbc-b8a2-fef2602c2b22",
+          "worker_id": "r03-r03-close-7pz4q7d3",
+          "child_pid": 132132
+        },
+        "descendant": {
+          "role": "descendant",
+          "pid": 132132,
+          "ppid": 138300,
+          "probe_id": "r03-close-7pz4q7d3",
+          "execution_id": "0c72498f-1a17-4dbc-b8a2-fef2602c2b22"
+        },
+        "control": {
+          "role": "control",
+          "pid": 111392,
+          "ppid": 137028,
+          "probe_id": "r03-close-7pz4q7d3",
+          "child_pid": 134808
+        },
+        "control-child": {
+          "role": "control-child",
+          "pid": 134808,
+          "ppid": 111392,
+          "probe_id": "r03-close-7pz4q7d3",
+          "execution_id": "control-r03-close-7pz4q7d3"
+        }
+      },
+      "before": {
+        "worker": "alive",
+        "descendant": "alive",
+        "control": "alive",
+        "control-child": "alive"
+      },
+      "after": {
+        "worker": "exited",
+        "descendant": "exited",
+        "control": "alive",
+        "control-child": "alive"
+      },
+      "control_answer": {
+        "role": "control-child",
+        "pid": 134808,
+        "ppid": 111392,
+        "probe_id": "r03-close-7pz4q7d3",
+        "execution_id": "control-r03-close-7pz4q7d3",
+        "challenge": "003fcbca-2758-4be4-8fc1-34a0076dd472",
+        "at": "2026-11-22T14:02:28.082323+00:00"
+      },
+      "reservations_before": {
+        "output_running": true,
+        "claims": {
+          "capacity": {
+            "count": 1,
+            "sha256": "bf180546d4bbb06ccc78c1fc4d08d32562172008c790ec06806ba60422bbb6d3",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "references_this_output": true
+          },
+          "resource": {
+            "count": 1,
+            "sha256": "bf180546d4bbb06ccc78c1fc4d08d32562172008c790ec06806ba60422bbb6d3",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "references_this_output": true
+          },
+          "ticket": {
+            "count": 1,
+            "sha256": "3627d242676c8927818c012c117d32b23878e96e4e8f1f14049b04ac89d3ed70",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "state": "reserved",
+            "execution_id": "0c72498f-1a17-4dbc-b8a2-fef2602c2b22",
+            "worker_id": "r03-r03-close-7pz4q7d3"
+          }
+        }
+      },
+      "reservations_after": {
+        "output_running": false,
+        "claims": {
+          "capacity": {
+            "count": 0
+          },
+          "resource": {
+            "count": 0
+          },
+          "ticket": {
+            "count": 1,
+            "sha256": "fde20a7f4e4cfa1cf7035128399958eda09af9c938a2984aff77c9738b3e3f2b",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "state": "reconcile_required",
+            "execution_id": "0c72498f-1a17-4dbc-b8a2-fef2602c2b22",
+            "worker_id": "r03-r03-close-7pz4q7d3"
+          }
+        }
+      },
+      "observed_at": "2026-11-22T14:02:28.097382+00:00",
+      "result": "passed"
+    },
+    {
+      "mode": "foreign-claim",
+      "editor_pid": 137236,
+      "editor_exit": 0,
+      "registration_sha256": "60d47d4a8b5751d35b3b5ea2aee210d2b437799d52666d32ee53a0b313ddfd49",
+      "terminal_sha256": "691a9fa557b7f01c7e15c49703c39e88b9ddf7a52c2887d0df940609120dcfb3",
+      "terminal_error": null,
+      "execution_id": "58e0e654-47bb-4ea0-a8ef-c19b040da94b",
+      "worker_id": "r03-r03-close-udm__5yr",
+      "windows_job_terminal": {
+        "execution": "58e0e654-47bb-4ea0-a8ef-c19b040da94b",
+        "pid": 131524,
+        "exit_code": 143,
+        "active_processes": 0,
+        "action": "editor_close"
+      },
+      "reporting": "recorded_file",
+      "business_accepted": null,
+      "transport_completed": false,
+      "handles": {
+        "worker": {
+          "pid": 131524,
+          "probe_process_pid": 137028,
+          "handle_value": "0x370",
+          "creation_filetime": "134398297604113375"
+        },
+        "descendant": {
+          "pid": 128044,
+          "probe_process_pid": 137028,
+          "handle_value": "0x198",
+          "creation_filetime": "134398297611083827"
+        },
+        "control": {
+          "pid": 137660,
+          "probe_process_pid": 137028,
+          "handle_value": "0x3a4",
+          "creation_filetime": "134398297494896086"
+        },
+        "control-child": {
+          "pid": 137816,
+          "probe_process_pid": 137028,
+          "handle_value": "0x3f4",
+          "creation_filetime": "134398297497128242"
+        }
+      },
+      "ready": {
+        "worker": {
+          "role": "worker",
+          "pid": 131524,
+          "ppid": 126716,
+          "probe_id": "r03-close-udm__5yr",
+          "execution_id": "58e0e654-47bb-4ea0-a8ef-c19b040da94b",
+          "worker_id": "r03-r03-close-udm__5yr",
+          "child_pid": 128044
+        },
+        "descendant": {
+          "role": "descendant",
+          "pid": 128044,
+          "ppid": 131524,
+          "probe_id": "r03-close-udm__5yr",
+          "execution_id": "58e0e654-47bb-4ea0-a8ef-c19b040da94b"
+        },
+        "control": {
+          "role": "control",
+          "pid": 137660,
+          "ppid": 137028,
+          "probe_id": "r03-close-udm__5yr",
+          "child_pid": 137816
+        },
+        "control-child": {
+          "role": "control-child",
+          "pid": 137816,
+          "ppid": 137660,
+          "probe_id": "r03-close-udm__5yr",
+          "execution_id": "control-r03-close-udm__5yr"
+        }
+      },
+      "before": {
+        "worker": "alive",
+        "descendant": "alive",
+        "control": "alive",
+        "control-child": "alive"
+      },
+      "after": {
+        "worker": "exited",
+        "descendant": "exited",
+        "control": "alive",
+        "control-child": "alive"
+      },
+      "control_answer": {
+        "role": "control-child",
+        "pid": 137816,
+        "ppid": 137660,
+        "probe_id": "r03-close-udm__5yr",
+        "execution_id": "control-r03-close-udm__5yr",
+        "challenge": "b4b12fa1-13a8-418d-8c5a-b35850048814",
+        "at": "2026-11-22T14:02:43.410061+00:00"
+      },
+      "reservations_before": {
+        "output_running": true,
+        "claims": {
+          "capacity": {
+            "count": 1,
+            "sha256": "377d86c1e5c4d32220aa6901e988f0cf1a6cc61effc733fa9a4c6b73601c113b",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "references_this_output": true
+          },
+          "resource": {
+            "count": 1,
+            "sha256": "377d86c1e5c4d32220aa6901e988f0cf1a6cc61effc733fa9a4c6b73601c113b",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "references_this_output": true
+          },
+          "ticket": {
+            "count": 1,
+            "sha256": "696eb9ad7e3d13fbebcbc606802bb54ac782fbc5a795bfe49cb5f0a5b42f1e98",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "state": "reserved",
+            "execution_id": "58e0e654-47bb-4ea0-a8ef-c19b040da94b",
+            "worker_id": "r03-r03-close-udm__5yr"
+          }
+        }
+      },
+      "reservations_after": {
+        "output_running": false,
+        "claims": {
+          "capacity": {
+            "count": 1,
+            "sha256": "30b635a49b1aae633b8b562770853649283a0f4090cc47d106be6794c169fc80",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "references_this_output": true
+          },
+          "resource": {
+            "count": 1,
+            "sha256": "377d86c1e5c4d32220aa6901e988f0cf1a6cc61effc733fa9a4c6b73601c113b",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "references_this_output": true
+          },
+          "ticket": {
+            "count": 1,
+            "sha256": "25218e958d02dbc48050a9e7308cbe7d2f6a8f5dd6992f05513b2a267c281260",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "state": "reconcile_required",
+            "execution_id": "58e0e654-47bb-4ea0-a8ef-c19b040da94b",
+            "worker_id": "r03-r03-close-udm__5yr"
+          }
+        }
+      },
+      "observed_at": "2026-11-22T14:02:43.445457+00:00",
+      "result": "passed"
+    },
+    {
+      "mode": "registration-drift",
+      "editor_pid": 134852,
+      "editor_exit": 0,
+      "registration_sha256": "d2a481372e1eca67c115bcc54e923a569b0249fc3972efea9b27cd850452d4d5",
+      "terminal_sha256": null,
+      "terminal_error": "Worker registration or branch changed",
+      "execution_id": "02326946-f055-4419-84ca-57a88abfd2ad",
+      "worker_id": "r03-r03-close-jrdqicon",
+      "windows_job_terminal": {
+        "execution": "02326946-f055-4419-84ca-57a88abfd2ad",
+        "pid": 138288,
+        "exit_code": 143,
+        "active_processes": 0,
+        "action": "editor_close"
+      },
+      "reporting": "recorded_file",
+      "business_accepted": null,
+      "transport_completed": false,
+      "handles": {
+        "worker": {
+          "pid": 138288,
+          "probe_process_pid": 137028,
+          "handle_value": "0x2a8",
+          "creation_filetime": "134398297826371557"
+        },
+        "descendant": {
+          "pid": 130208,
+          "probe_process_pid": 137028,
+          "handle_value": "0x2bc",
+          "creation_filetime": "134398297840899844"
+        },
+        "control": {
+          "pid": 138452,
+          "probe_process_pid": 137028,
+          "handle_value": "0x3fc",
+          "creation_filetime": "134398297645090302"
+        },
+        "control-child": {
+          "pid": 133568,
+          "probe_process_pid": 137028,
+          "handle_value": "0x414",
+          "creation_filetime": "134398297646716659"
+        }
+      },
+      "ready": {
+        "worker": {
+          "role": "worker",
+          "pid": 138288,
+          "ppid": 136416,
+          "probe_id": "r03-close-jrdqicon",
+          "execution_id": "02326946-f055-4419-84ca-57a88abfd2ad",
+          "worker_id": "r03-r03-close-jrdqicon",
+          "child_pid": 130208
+        },
+        "descendant": {
+          "role": "descendant",
+          "pid": 130208,
+          "ppid": 138288,
+          "probe_id": "r03-close-jrdqicon",
+          "execution_id": "02326946-f055-4419-84ca-57a88abfd2ad"
+        },
+        "control": {
+          "role": "control",
+          "pid": 138452,
+          "ppid": 137028,
+          "probe_id": "r03-close-jrdqicon",
+          "child_pid": 133568
+        },
+        "control-child": {
+          "role": "control-child",
+          "pid": 133568,
+          "ppid": 138452,
+          "probe_id": "r03-close-jrdqicon",
+          "execution_id": "control-r03-close-jrdqicon"
+        }
+      },
+      "before": {
+        "worker": "alive",
+        "descendant": "alive",
+        "control": "alive",
+        "control-child": "alive"
+      },
+      "after": {
+        "worker": "exited",
+        "descendant": "exited",
+        "control": "alive",
+        "control-child": "alive"
+      },
+      "control_answer": {
+        "role": "control-child",
+        "pid": 133568,
+        "ppid": 138452,
+        "probe_id": "r03-close-jrdqicon",
+        "execution_id": "control-r03-close-jrdqicon",
+        "challenge": "9ebe9dac-bcf0-4a6a-b431-0f4374f60a4a",
+        "at": "2026-11-22T14:03:07.241193+00:00"
+      },
+      "reservations_before": {
+        "output_running": true,
+        "claims": {
+          "capacity": {
+            "count": 1,
+            "sha256": "9d6e7bf0c9e35e32be43fc85fd85a06b4efcb62f2d64fb335d87874a36fd7d59",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "references_this_output": true
+          },
+          "resource": {
+            "count": 1,
+            "sha256": "9d6e7bf0c9e35e32be43fc85fd85a06b4efcb62f2d64fb335d87874a36fd7d59",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "references_this_output": true
+          },
+          "ticket": {
+            "count": 1,
+            "sha256": "37ee403482b5f6ca55b90e2cfd751ab690e35dccddcba307a7f9fbd2c1c9f968",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "state": "reserved",
+            "execution_id": "02326946-f055-4419-84ca-57a88abfd2ad",
+            "worker_id": "r03-r03-close-jrdqicon"
+          }
+        }
+      },
+      "reservations_after": {
+        "output_running": false,
+        "claims": {
+          "capacity": {
+            "count": 1,
+            "sha256": "9d6e7bf0c9e35e32be43fc85fd85a06b4efcb62f2d64fb335d87874a36fd7d59",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "references_this_output": true
+          },
+          "resource": {
+            "count": 1,
+            "sha256": "9d6e7bf0c9e35e32be43fc85fd85a06b4efcb62f2d64fb335d87874a36fd7d59",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "references_this_output": true
+          },
+          "ticket": {
+            "count": 1,
+            "sha256": "f4f70383695e0caa49fbc0463f745e94aa93ec678a6d01e8668406bb4691fbcc",
+            "requestId": "gonggong-ai-workbench-plan1-r03",
+            "order": 1,
+            "state": "reconcile_required",
+            "execution_id": "02326946-f055-4419-84ca-57a88abfd2ad",
+            "worker_id": "r03-r03-close-jrdqicon"
+          }
+        }
+      },
+      "observed_at": "2026-11-22T14:03:07.256147+00:00",
+      "result": "passed"
+    }
+  ],
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1775",
+  "prerequisite": {
+    "issue": 1802,
+    "state": "closed/completed",
+    "merge": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2074",
+    "editor_close_callback": "AIChatDock::NOTIFICATION_EXIT_TREE"
+  },
+  "baseline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/blob/e8b40ea7d472868629b62af109acc03e42be7fae/data-collection/plan1-windows-runner-baseline-1709.json",
+  "candidate": {
+    "base": "8b072e0db1c9ffab0990887b6dfdf48d7e982fae",
+    "source_files": "source_sha256",
+    "build": "python -m SCons --cache-readonly cache_path=<shared-object-cache> cache_limit=0 platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j6",
+    "artifact": "bin/godot.windows.editor.x86_64.exe",
+    "sha256": "835ac2c6fd3f4ef1c67c1811ea7eb410041dc0c86fe0eabf01a8d83b5695b349",
+    "job_object_native_sha256": "0f7411dbaed36fb0b353193ab92e39fd225490196dce82543631e13b16d1a586"
+  },
+  "test_command": "python -X utf8 tests/editor/run_windows_worker_close.py --godot bin/godot.windows.editor.x86_64.exe --receipt <new-file>",
+  "fixture_issue_replay": {
+    "argument": "--fixture-issue",
+    "transport": "private fixture",
+    "tests": [
+      {
+        "mode": "normal",
+        "editor_pid": 136736,
+        "editor_exit": 0,
+        "registration_sha256": "69071762f7e27624c1c8bab5e26194ed38e2d7b8ffd6deb5e80c87f82518a622",
+        "terminal_sha256": "ba055b06f560e9f868ebd70970ceb708238d20b11158b80e47e8640479416ddc",
+        "terminal_error": null,
+        "execution_id": "2cfdc465-ba96-488b-932c-945211628437",
+        "worker_id": "r03-r03-close-8teb2078",
+        "windows_job_terminal": {
+          "execution": "2cfdc465-ba96-488b-932c-945211628437",
+          "pid": 138292,
+          "exit_code": 143,
+          "active_processes": 0,
+          "action": "editor_close"
+        },
+        "reporting": "recorded_file",
+        "business_accepted": null,
+        "transport_completed": false,
+        "handles": {
+          "worker": {
+            "pid": 138292,
+            "probe_process_pid": 88988,
+            "handle_value": "0x37c",
+            "creation_filetime": "134398297441985648"
+          },
+          "descendant": {
+            "pid": 130404,
+            "probe_process_pid": 88988,
+            "handle_value": "0x254",
+            "creation_filetime": "134398297449652901"
+          },
+          "control": {
+            "pid": 130764,
+            "probe_process_pid": 88988,
+            "handle_value": "0x1a8",
+            "creation_filetime": "134398297334180265"
+          },
+          "control-child": {
+            "pid": 129164,
+            "probe_process_pid": 88988,
+            "handle_value": "0x318",
+            "creation_filetime": "134398297335295552"
+          }
+        },
+        "ready": {
+          "worker": {
+            "role": "worker",
+            "pid": 138292,
+            "ppid": 138992,
+            "probe_id": "r03-close-8teb2078",
+            "execution_id": "2cfdc465-ba96-488b-932c-945211628437",
+            "worker_id": "r03-r03-close-8teb2078",
+            "child_pid": 130404
+          },
+          "descendant": {
+            "role": "descendant",
+            "pid": 130404,
+            "ppid": 138292,
+            "probe_id": "r03-close-8teb2078",
+            "execution_id": "2cfdc465-ba96-488b-932c-945211628437"
+          },
+          "control": {
+            "role": "control",
+            "pid": 130764,
+            "ppid": 88988,
+            "probe_id": "r03-close-8teb2078",
+            "child_pid": 129164
+          },
+          "control-child": {
+            "role": "control-child",
+            "pid": 129164,
+            "ppid": 130764,
+            "probe_id": "r03-close-8teb2078",
+            "execution_id": "control-r03-close-8teb2078"
+          }
+        },
+        "before": {
+          "worker": "alive",
+          "descendant": "alive",
+          "control": "alive",
+          "control-child": "alive"
+        },
+        "after": {
+          "worker": "exited",
+          "descendant": "exited",
+          "control": "alive",
+          "control-child": "alive"
+        },
+        "control_answer": {
+          "role": "control-child",
+          "pid": 129164,
+          "ppid": 130764,
+          "probe_id": "r03-close-8teb2078",
+          "execution_id": "control-r03-close-8teb2078",
+          "challenge": "36306b8c-e115-4268-ad77-e4517ee5f9f5",
+          "at": "2026-11-22T14:02:27.958809+00:00"
+        },
+        "reservations_before": {
+          "output_running": true,
+          "claims": {
+            "capacity": {
+              "count": 1,
+              "sha256": "1921027e0a88a7dd19cbf67dc302afd2cd18ef4c45b796b930fcea849a87ca19",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "references_this_output": true
+            },
+            "resource": {
+              "count": 1,
+              "sha256": "1921027e0a88a7dd19cbf67dc302afd2cd18ef4c45b796b930fcea849a87ca19",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "references_this_output": true
+            },
+            "ticket": {
+              "count": 1,
+              "sha256": "70893577858e7444e3cbfefd65f626b02a2e55d752d2f5bc82d17e0a81f39ef4",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "state": "reserved",
+              "execution_id": "2cfdc465-ba96-488b-932c-945211628437",
+              "worker_id": "r03-r03-close-8teb2078"
+            }
+          }
+        },
+        "reservations_after": {
+          "output_running": false,
+          "claims": {
+            "capacity": {
+              "count": 0
+            },
+            "resource": {
+              "count": 0
+            },
+            "ticket": {
+              "count": 1,
+              "sha256": "672e91bee46aa880494005285a5c237fa474ab2bfef8a8a96e25c3a26ae19114",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "state": "reconcile_required",
+              "execution_id": "2cfdc465-ba96-488b-932c-945211628437",
+              "worker_id": "r03-r03-close-8teb2078"
+            }
+          }
+        },
+        "observed_at": "2026-11-22T14:02:28.000955+00:00",
+        "result": "passed"
+      },
+      {
+        "mode": "foreign-claim",
+        "editor_pid": 111360,
+        "editor_exit": 0,
+        "registration_sha256": "553c88e802b6394cff346bf1a138b14e2648986e663ef5e34de3a6125670edb8",
+        "terminal_sha256": "34ca296c028b0b775c0ba648d5b92d6df1955b504ba62b567827d86c0a11a677",
+        "terminal_error": null,
+        "execution_id": "d348016b-47d9-42a7-8fc0-16d3d3246545",
+        "worker_id": "r03-r03-close-3p0dzdv8",
+        "windows_job_terminal": {
+          "execution": "d348016b-47d9-42a7-8fc0-16d3d3246545",
+          "pid": 138152,
+          "exit_code": 143,
+          "active_processes": 0,
+          "action": "editor_close"
+        },
+        "reporting": "recorded_file",
+        "business_accepted": null,
+        "transport_completed": false,
+        "handles": {
+          "worker": {
+            "pid": 138152,
+            "probe_process_pid": 88988,
+            "handle_value": "0x3d0",
+            "creation_filetime": "134398297598420495"
+          },
+          "descendant": {
+            "pid": 123636,
+            "probe_process_pid": 88988,
+            "handle_value": "0x3f0",
+            "creation_filetime": "134398297605629599"
+          },
+          "control": {
+            "pid": 48928,
+            "probe_process_pid": 88988,
+            "handle_value": "0x3dc",
+            "creation_filetime": "134398297493565938"
+          },
+          "control-child": {
+            "pid": 138392,
+            "probe_process_pid": 88988,
+            "handle_value": "0x2a8",
+            "creation_filetime": "134398297496291998"
+          }
+        },
+        "ready": {
+          "worker": {
+            "role": "worker",
+            "pid": 138152,
+            "ppid": 124632,
+            "probe_id": "r03-close-3p0dzdv8",
+            "execution_id": "d348016b-47d9-42a7-8fc0-16d3d3246545",
+            "worker_id": "r03-r03-close-3p0dzdv8",
+            "child_pid": 123636
+          },
+          "descendant": {
+            "role": "descendant",
+            "pid": 123636,
+            "ppid": 138152,
+            "probe_id": "r03-close-3p0dzdv8",
+            "execution_id": "d348016b-47d9-42a7-8fc0-16d3d3246545"
+          },
+          "control": {
+            "role": "control",
+            "pid": 48928,
+            "ppid": 88988,
+            "probe_id": "r03-close-3p0dzdv8",
+            "child_pid": 138392
+          },
+          "control-child": {
+            "role": "control-child",
+            "pid": 138392,
+            "ppid": 48928,
+            "probe_id": "r03-close-3p0dzdv8",
+            "execution_id": "control-r03-close-3p0dzdv8"
+          }
+        },
+        "before": {
+          "worker": "alive",
+          "descendant": "alive",
+          "control": "alive",
+          "control-child": "alive"
+        },
+        "after": {
+          "worker": "exited",
+          "descendant": "exited",
+          "control": "alive",
+          "control-child": "alive"
+        },
+        "control_answer": {
+          "role": "control-child",
+          "pid": 138392,
+          "ppid": 48928,
+          "probe_id": "r03-close-3p0dzdv8",
+          "execution_id": "control-r03-close-3p0dzdv8",
+          "challenge": "6318f238-6524-4341-b31a-81f0c9b5714f",
+          "at": "2026-11-22T14:02:42.945240+00:00"
+        },
+        "reservations_before": {
+          "output_running": true,
+          "claims": {
+            "capacity": {
+              "count": 1,
+              "sha256": "86640e425fb62362bf906e872b56161a0d3f31293ee96a22407e9c028aba25bd",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "references_this_output": true
+            },
+            "resource": {
+              "count": 1,
+              "sha256": "86640e425fb62362bf906e872b56161a0d3f31293ee96a22407e9c028aba25bd",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "references_this_output": true
+            },
+            "ticket": {
+              "count": 1,
+              "sha256": "8093f5788a5466d6905e92e0888b3c800fa1c6bea62e46b8ad83946dcd1670d4",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "state": "reserved",
+              "execution_id": "d348016b-47d9-42a7-8fc0-16d3d3246545",
+              "worker_id": "r03-r03-close-3p0dzdv8"
+            }
+          }
+        },
+        "reservations_after": {
+          "output_running": false,
+          "claims": {
+            "capacity": {
+              "count": 1,
+              "sha256": "d36fa5a9325016ff9a9bae96cce3b2b1bae3f140b937d652a2b88613b4af2523",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "references_this_output": true
+            },
+            "resource": {
+              "count": 1,
+              "sha256": "86640e425fb62362bf906e872b56161a0d3f31293ee96a22407e9c028aba25bd",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "references_this_output": true
+            },
+            "ticket": {
+              "count": 1,
+              "sha256": "27a94ca0dd6052cb27ec6b9925410a706ca8e84c74afdf50dab4e960b6062ae2",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "state": "reconcile_required",
+              "execution_id": "d348016b-47d9-42a7-8fc0-16d3d3246545",
+              "worker_id": "r03-r03-close-3p0dzdv8"
+            }
+          }
+        },
+        "observed_at": "2026-11-22T14:02:42.960169+00:00",
+        "result": "passed"
+      },
+      {
+        "mode": "registration-drift",
+        "editor_pid": 135832,
+        "editor_exit": 0,
+        "registration_sha256": "eab419255331680920074740a37cb4a2d05240d9511a0abe79b1ea96b3b52b85",
+        "terminal_sha256": null,
+        "terminal_error": "Worker registration or branch changed",
+        "execution_id": "968ca71c-0819-4913-8ddd-5373f81a7650",
+        "worker_id": "r03-r03-close-v7j4rmw8",
+        "windows_job_terminal": {
+          "execution": "968ca71c-0819-4913-8ddd-5373f81a7650",
+          "pid": 138076,
+          "exit_code": 143,
+          "active_processes": 0,
+          "action": "editor_close"
+        },
+        "reporting": "recorded_file",
+        "business_accepted": null,
+        "transport_completed": false,
+        "handles": {
+          "worker": {
+            "pid": 138076,
+            "probe_process_pid": 88988,
+            "handle_value": "0x368",
+            "creation_filetime": "134398297790381492"
+          },
+          "descendant": {
+            "pid": 134472,
+            "probe_process_pid": 88988,
+            "handle_value": "0x3d4",
+            "creation_filetime": "134398297801911382"
+          },
+          "control": {
+            "pid": 128696,
+            "probe_process_pid": 88988,
+            "handle_value": "0x3d0",
+            "creation_filetime": "134398297637292887"
+          },
+          "control-child": {
+            "pid": 137404,
+            "probe_process_pid": 88988,
+            "handle_value": "0x388",
+            "creation_filetime": "134398297638888592"
+          }
+        },
+        "ready": {
+          "worker": {
+            "role": "worker",
+            "pid": 138076,
+            "ppid": 134716,
+            "probe_id": "r03-close-v7j4rmw8",
+            "execution_id": "968ca71c-0819-4913-8ddd-5373f81a7650",
+            "worker_id": "r03-r03-close-v7j4rmw8",
+            "child_pid": 134472
+          },
+          "descendant": {
+            "role": "descendant",
+            "pid": 134472,
+            "ppid": 138076,
+            "probe_id": "r03-close-v7j4rmw8",
+            "execution_id": "968ca71c-0819-4913-8ddd-5373f81a7650"
+          },
+          "control": {
+            "role": "control",
+            "pid": 128696,
+            "ppid": 88988,
+            "probe_id": "r03-close-v7j4rmw8",
+            "child_pid": 137404
+          },
+          "control-child": {
+            "role": "control-child",
+            "pid": 137404,
+            "ppid": 128696,
+            "probe_id": "r03-close-v7j4rmw8",
+            "execution_id": "control-r03-close-v7j4rmw8"
+          }
+        },
+        "before": {
+          "worker": "alive",
+          "descendant": "alive",
+          "control": "alive",
+          "control-child": "alive"
+        },
+        "after": {
+          "worker": "exited",
+          "descendant": "exited",
+          "control": "alive",
+          "control-child": "alive"
+        },
+        "control_answer": {
+          "role": "control-child",
+          "pid": 137404,
+          "ppid": 128696,
+          "probe_id": "r03-close-v7j4rmw8",
+          "execution_id": "control-r03-close-v7j4rmw8",
+          "challenge": "c04c51d0-1ef7-4657-b08f-847beaff2c47",
+          "at": "2026-11-22T14:03:04.932458+00:00"
+        },
+        "reservations_before": {
+          "output_running": true,
+          "claims": {
+            "capacity": {
+              "count": 1,
+              "sha256": "5c9b162a7d994aacba3d1162a7dffc005b154bd1d1d367dc2283387678478e78",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "references_this_output": true
+            },
+            "resource": {
+              "count": 1,
+              "sha256": "5c9b162a7d994aacba3d1162a7dffc005b154bd1d1d367dc2283387678478e78",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "references_this_output": true
+            },
+            "ticket": {
+              "count": 1,
+              "sha256": "ff19c7e4823b7d46d1ca146718200140a1b09135baf11569d1a8f96c9c4c36be",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "state": "reserved",
+              "execution_id": "968ca71c-0819-4913-8ddd-5373f81a7650",
+              "worker_id": "r03-r03-close-v7j4rmw8"
+            }
+          }
+        },
+        "reservations_after": {
+          "output_running": false,
+          "claims": {
+            "capacity": {
+              "count": 1,
+              "sha256": "5c9b162a7d994aacba3d1162a7dffc005b154bd1d1d367dc2283387678478e78",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "references_this_output": true
+            },
+            "resource": {
+              "count": 1,
+              "sha256": "5c9b162a7d994aacba3d1162a7dffc005b154bd1d1d367dc2283387678478e78",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "references_this_output": true
+            },
+            "ticket": {
+              "count": 1,
+              "sha256": "5b4579566bdf4b86dd0c74c171039c7b561ced3b4111f41c779f6317ba1436ad",
+              "requestId": "gonggong-ai-workbench-plan1-r03",
+              "order": 1,
+              "state": "reconcile_required",
+              "execution_id": "968ca71c-0819-4913-8ddd-5373f81a7650",
+              "worker_id": "r03-r03-close-v7j4rmw8"
+            }
+          }
+        },
+        "observed_at": "2026-11-22T14:03:04.986247+00:00",
+        "result": "passed"
+      }
+    ]
+  },
+  "regressions": [
+    {
+      "command": "node --test tests/editor/test_parallel_work_orders.mjs",
+      "passed": 68,
+      "failed": 0
+    },
+    {
+      "command": "python -X utf8 tools/test_editor_provenance_process.py",
+      "passed": 20,
+      "failed": 0
+    }
+  ],
+  "ancillary_adapter_regression": {
+    "scope": "Kimi adapter output observation; these adapters invoke WinAPI directly, outside WindowsJob.spawn and the editor-close entry point.",
+    "affected_files": [
+      "tools/ainative/test_owned_process.py",
+      "tools/ainative/owned_process.py",
+      "tools/ainative/kimi_provider.py",
+      "tools/ainative/kimi_work_image_provider.py"
+    ],
+    "full_command": "python -X utf8 -m unittest discover -s tools/ainative -p test_owned_process.py",
+    "full_result": {
+      "tests": 15,
+      "failed_subtests": 2,
+      "skipped": 5,
+      "observations": [
+        "provider='KimiWorkImageProvider', outcome='success'",
+        "provider='KimiNativeDirectProvider', outcome='error'"
+      ],
+      "assertions": [
+        "None != 0",
+        "None != 7"
+      ]
+    },
+    "comparison_command": "D:/GongGong-work/tx-venv/Scripts/python.exe -m unittest test_owned_process.AdapterProcessTests.test_async_launch_tree_is_cleaned_after_watch_or_parse_terminal",
+    "comparison_cwd": "tools/ainative in each checkout",
+    "comparison_inputs": "In unique system TEMP, used the tracked Python inputs in tools/ainative at the base revision and git show HEAD:tools/editor_provenance_process.py. Repeated the same command in the R03 worktree.",
+    "baseline": {
+      "observations": [
+        "provider='KimiNativeDirectProvider', outcome='success'"
+      ],
+      "assertions": [
+        "None != 0"
+      ]
+    },
+    "candidate": {
+      "observations": [
+        "provider='KimiNativeDirectProvider', outcome='success'",
+        "provider='KimiNativeDirectProvider', outcome='error'"
+      ],
+      "assertions": [
+        "None != 0",
+        "None != 7"
+      ]
+    }
+  },
+  "limitations": "Headless Windows editor with real Job Objects, local worker commands, and no model service. Cancellation is not business acceptance. Unexpected runner crashes stay with R09.",
+  "cleanup": "The six editor cases removed their own TEMP repositories, self-contained editor copies, control trees, and editor settings. Candidate binary and its lockfile-pinned native module retained in the worker checkout for independent acceptance."
+}

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-r03",
+  "event_id": "afterk03-intake-1775",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1775",
+  "occurred_at": "2026-11-22T13:21:33.964184+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1775,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T13:21:28Z",
+    "accepted_dependencies": {
+      "1802": "8b072e0db1c9ffab0990887b6dfdf48d7e982fae"
+    },
+    "source_main": "8b072e0db1c9ffab0990887b6dfdf48d7e982fae",
+    "title": "[方案一 R03] 在 Windows 停止本任务进程树"
+  },
+  "evidence_refs": [],
+  "sha256": "a003eef8182a59c103dfe1ab87ae68eea37c57b660925ee2265e727cddcf1225"
+}
