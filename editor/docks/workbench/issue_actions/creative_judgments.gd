@@ -103,6 +103,31 @@ func _open(item: Dictionary) -> void:
 	await detail.open_issue(int(item.number))
 	if detail.get_detail().get("id") != item.issue_id:
 		return
+	await _inspect(item, true)
+
+
+func open_compared(ref: Dictionary) -> void:
+	var issue: Dictionary = detail.get_detail()
+	if issue.is_empty():
+		return
+	var item := {
+		"issue_id": issue.id, "number": issue.number, "question": issue.title, "submission_version": ref.version,
+		"kind": ref.kind, "module": ref.module, "revision": ref.revision, "path": ref.path, "digest": ref.digest,
+	}
+	if issue.get("design_source") is Dictionary:
+		item.question = issue.design_source.acceptance
+	await _inspect(item, false)
+
+
+func _matches_reference(event: Dictionary, item: Dictionary) -> bool:
+	for key in ["kind", "module", "revision", "path"]:
+		if event.get(key) != item[key]:
+			return false
+	return int(event.get("submission_version", 0)) == int(item.submission_version)
+
+
+func _inspect(item: Dictionary, open_original: bool) -> void:
+	_clear_selection()
 	var attempt := generation
 	var route := "/api/v1/issues/%s/work" % str(item.issue_id).uri_encode()
 	var work: Dictionary = await session.api_request(HTTPClient.METHOD_GET, route)
@@ -116,12 +141,19 @@ func _open(item: Dictionary) -> void:
 		if int(candidate.submission_version) == int(item.submission_version):
 			judgment = candidate
 			break
-	if judgment.is_empty() or judgment.revision != item.revision or judgment.responsible != session.get_identity().id or judgment.decision != "pending":
+	if judgment.is_empty() or not _matches_reference(judgment, item) or judgment.digest != item.get("digest", judgment.digest):
 		status.text = "此事项已变化，请重新读取待判断事项"
+		return
+	var binding := "#%d · 提交 v%d · %s\n%s @ %s" % [int(item.number), int(item.submission_version), item.path, item.module, item.revision]
+	if judgment.decision != "pending":
+		status.text = "%s\n%s · 签认人 %s\n%s" % [binding, "已采纳" if judgment.decision == "approved" else "已退回", judgment.actor, judgment.get("note", "")]
+		return
+	if judgment.responsible != session.get_identity().id:
+		status.text = "%s\n待 %s 判断" % [binding, judgment.responsible]
 		return
 	selected = item.duplicate(true)
 	work_version = int(work.data.version)
-	description.text = "%s\n%s\n%s @ %s" % [item.question, item.path, item.module, item.revision]
+	description.text = "%s\n%s\n判断人　%s" % [item.question, binding, judgment.responsible]
 	for event: Dictionary in work.data.history:
 		if int(event.get("submission_version", 0)) == int(item.submission_version) and event.action == "work.transfer":
 			description.text += "\n%s → %s  %s" % [event.previous_responsible, event.responsible, event.note]
@@ -129,7 +161,8 @@ func _open(item: Dictionary) -> void:
 	approve.disabled = false
 	revise.disabled = false
 	transfer.disabled = true
-	detail.get_node("issue_revisions").open_revision(str(item.module), str(item.revision))
+	if open_original:
+		detail.get_node("issue_revisions").open_revision(str(item.module), str(item.revision))
 	var users: Dictionary = await session.api_request(HTTPClient.METHOD_GET, "/api/v1/users")
 	if attempt != generation:
 		return
@@ -166,10 +199,21 @@ func _send(operation: String) -> void:
 	if generation != attempt:
 		return
 	if reply.status == 200:
+		var receipt := ""
+		if action == "decide":
+			var history: Array = reply.data.get("history", [])
+			var event: Dictionary = {} if history.is_empty() else history.back()
+			if reply.data.get("id") != selected.issue_id or event.get("action") != "work.decide" or event.get("actor") != session.get_identity().id or not _matches_reference(event, selected) or event.get("decision") != operation or event.get("note") != payload.note:
+				status.text = "无法核对签认回执，请重新读取此版本"
+				return
+			receipt = "提交 v%d 已%s · %s @ %s\n签认人　%s\n%s" % [int(selected.submission_version), "采纳" if operation == "approved" else "退回", selected.module, event.revision, event.actor, event.note]
 		await _browse()
+		if generation == attempt + 1 and not receipt.is_empty():
+			status.text = receipt + ("\n" + status.text if not status.text.is_empty() else "")
 	elif reply.status == 409 or reply.status == 403:
+		var version := int(selected.submission_version)
 		_clear_selection()
 		_clear_rows()
-		status.text = "责任人、权限或修订已变化，请重新读取待判断事项"
+		status.text = "提交 v%d 的状态或责任人已变化，请重新读取" % version if reply.status == 409 else "当前账号无权签认或转交提交 v%d" % version
 	else:
 		status.text = "未取得操作回执，请重新读取待判断事项"

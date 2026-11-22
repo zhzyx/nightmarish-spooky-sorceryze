@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-h05",
+  "event_id": "afterk03-intake-1798",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1798",
+  "occurred_at": "2026-11-22T13:18:36.167017+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1798,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T13:18:33Z",
+    "accepted_dependencies": {
+      "1818": "f1baa8f7b7e5e139cd4be289ce3f83a48747d40e",
+      "1819": "fa80aaa29a1f4a3b63e71c3e8373e62299ea4ccd"
+    },
+    "source_main": "8b072e0db1c9ffab0990887b6dfdf48d7e982fae",
+    "title": "[方案一 H05] 把采纳或退回绑定到版本"
+  },
+  "evidence_refs": [],
+  "sha256": "860c9c18841f5487cacde065776e8e674091b879ce0386a94bc1e0d4ee9fb353"
+}

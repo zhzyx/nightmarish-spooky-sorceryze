@@ -66,7 +66,14 @@ func run() -> void:
 			if not require(FileAccess.get_sha256(output) == fixture.digests[index], "saved other original"):
 				return
 			report.comparison.append({"field": assets.fields[index].text, "original": original, "saved_sha256": FileAccess.get_sha256(output), "design": assets.design.text, "color": assets.previews[index].texture.get_image().get_pixel(0, 0).to_html(false)})
-		assets.comparison.hide()
+		assets.sides.get_child(1).get_node("ReviewCandidate").pressed.emit()
+		if not require(await wait_for(func(): return int(widget.selected.get("submission_version", 0)) == 2), "second candidate was not selected"):
+			return
+		report.switched = widget.description.text
+		assets.compare.pressed.emit()
+		assets.sides.get_child(0).get_node("ReviewCandidate").pressed.emit()
+		if not require(await wait_for(func(): return int(widget.selected.get("submission_version", 0)) == 1 and not widget.transfer.disabled), "first candidate was not restored"):
+			return
 		for i in widget.recipients.item_count:
 			if widget.recipients.get_item_metadata(i) == fixture.target:
 				widget.recipients.select(i)
@@ -76,10 +83,36 @@ func run() -> void:
 			return
 		report.after = widget.rows.get_child(0).tooltip_text
 	else:
-		report.handoff = widget.description.text
-		widget.approve.pressed.emit()
-		if not require(await wait_for(func(): return widget.rows.get_child_count() == 1 and widget.selected.is_empty()), "recipient list after decision"):
+		var assets := detail.get_node("WorkbenchIssueArtifacts")
+		if not require(await wait_for(func(): return not assets.compare.disabled), "missing comparison"):
 			return
-		report.after = widget.rows.get_child(0).tooltip_text
+		report.handoff = widget.description.text
+		var accepting := mode == "recipient"
+		var target_side := 0 if accepting else 1
+		assets.compare.pressed.emit()
+		assets.sides.get_child(1 - target_side).get_node("ReviewCandidate").pressed.emit()
+		var other_status := "待 " if accepting else "已采纳"
+		if not require(await wait_for(func(): return other_status in widget.status.text and widget.selected.is_empty()), "other signing authority"):
+			return
+		report.other = widget.status.text
+		assets.compare.pressed.emit()
+		assets.sides.get_child(target_side).get_node("ReviewCandidate").pressed.emit()
+		if not require(await wait_for(func(): return widget.selected.get("revision") == fixture.revision and widget.panel.visible), "comparison chose wrong version"):
+			return
+		report.target = widget.description.text
+		widget.note.text = "采纳原始轮廓" if accepting else "请调整对比度"
+		var button: Button = widget.approve if accepting else widget.revise
+		button.pressed.emit()
+		button.pressed.emit()
+		if not require(await wait_for(func(): return "签认人" in widget.status.text and widget.selected.is_empty()), "missing signature receipt"):
+			return
+		report.receipt = widget.status.text
+		if accepting:
+			if not require(widget.rows.get_child_count() == 1, "recipient list after decision"):
+				return
+			report.after = widget.rows.get_child(0).tooltip_text
+		else:
+			if not require(widget.rows.get_child_count() == 0, "returned candidate still pending"):
+				return
 	print("WORKBENCH_REPORT=", JSON.stringify(report))
 	quit()

@@ -1,0 +1,484 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-h05",
+  "issue_number": 1798,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1798",
+  "source_revision": "8b072e0db1c9ffab0990887b6dfdf48d7e982fae",
+  "tested_sha256": {
+    "customizations/components/tianxuan/server/test_work_management.py": "fcae08df437567152e8910ccae63db72ed75e707dccd94800a57ae75d9c72b47",
+    "customizations/components/tianxuan/server/work_management.py": "a17a1aa4a5c258dc35490d6eb5c44b02c7cd126abde0bb4a2177aba312b9e967",
+    "editor/docks/workbench/issue_actions/creative_judgments.gd": "1727cd34cfe1920aef17b64d8c371bf689ae1ff034c02996483a2dad39179f94",
+    "editor/docks/workbench/issue_artifacts.gd": "758a1757e77c331c47ba4603c2b046bbdd7e7c247004600898f85047ab418d8d",
+    "tests/editor/run_workbench_creative_judgments.py": "1ff9d72f5f18e36df9c0ba64c204357d248da1e923e1aa1819d89a257d2c1b6c",
+    "tests/editor/workbench_creative_judgments.gd": "5c37d8a227d4222ce2f7c73eed54a4355385ac3c00a9888b84ed1e7b8c686f2d",
+    "design-docs/gonggong-ai-workbench-h05.md": "0e379494bd929b9b0566b4a1e5a7265a73e760f8ade517f21e7ccfaeba3cbb53"
+  },
+  "verified_at": "2026-11-22T13:45:55.794371+00:00",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "dependencies": [
+    {
+      "issue": 1818,
+      "state": "closed",
+      "pull_request": 2047,
+      "receipt": "data-collection/gonggong-ai-workbench-plan1-h02.json"
+    },
+    {
+      "issue": 1819,
+      "state": "closed",
+      "pull_request": 2075,
+      "receipt": "data-collection/gonggong-ai-workbench-plan1-h04.json"
+    }
+  ],
+  "build": {
+    "old_editor_source": "8fed6845e89bb027af60d0497cbd9a9ad54a18b9",
+    "embedded_inputs": [
+      "editor/docks/workbench/IssueActions.gen.h",
+      "editor/docks/workbench/IssueCreation.gen.h"
+    ],
+    "consumer": "editor/docks/workbench/AIWorkbenchSidebar.cpp",
+    "command": "python -m SCons platform=windows target=editor arch=x86_64 tests=yes accesskit=no d3d12=no angle=no -j6 --cache-readonly cache_path=<existing-readonly-cache> cache_limit=0",
+    "build_exit": 0,
+    "final_incremental_exit": 0,
+    "editor": "bin/godot.windows.editor.x86_64.exe",
+    "editor_sha256": "9cff80d46f743b5aa76b50c31de96544f843348d6386f7e8b03a596ae068dda7",
+    "launcher": "bin/godot.windows.editor.x86_64.console.exe",
+    "launcher_sha256": "41672ca14d3837cafa3145756a0f24044e63e782b40deeb36f03f1d1689032b8"
+  },
+  "native_test": {
+    "rerun": "python -X utf8 tests/editor/run_workbench_creative_judgments.py --godot bin/godot.windows.editor.x86_64.console.exe --report <output.json>",
+    "mode": "Four isolated --headless --editor processes; two fixture accounts and a loopback Tianxuan accounts-mode service. Original bytes, signed responses and reopened SQLite projection verified.",
+    "exit": 0,
+    "reopened_decisions": [
+      {
+        "submission_version": 1,
+        "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+        "decision": "approved"
+      },
+      {
+        "submission_version": 2,
+        "revision": "7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81",
+        "decision": "changes_requested"
+      },
+      {
+        "submission_version": 6,
+        "revision": "eda6942677659781c74a95b022a624d724b4186a7c5b23e2249ff1fa480c9faf",
+        "decision": "pending"
+      }
+    ],
+    "receipt": {
+      "engine_sha256": "9cff80d46f743b5aa76b50c31de96544f843348d6386f7e8b03a596ae068dda7",
+      "sender": {
+        "actor": "usr_f31bd9a726194f2e91502ae469ed34dc",
+        "after": "art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81",
+        "comment": "保留剪影轮廓",
+        "comparison": [
+          {
+            "color": "ff0000",
+            "design": "来源设计　doc_2724fbd7505d4a2d8b54cba387c691fe · v1 第 1 段",
+            "field": "concept · hero.png\nart @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\nSHA-256 9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+            "original": "hero.png · 75 字节\n89504e470d0a1a0a0000000d49484452000000080000000808020000004b6d29dc0000001249444154789c63fccf801d30e1101fa41200cd41010fe841e26f00",
+            "saved_sha256": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+          },
+          {
+            "color": "0000ff",
+            "design": "来源设计　doc_2724fbd7505d4a2d8b54cba387c691fe · v1 第 1 段",
+            "field": "concept · hero.png\nart @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\nSHA-256 36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c",
+            "original": "hero.png · 77 字节\n89504e470d0a1a0a0000000d49484452000000080000000808020000004b6d29dc0000001449444154789c636460f8cf800d3061151db41200cb43010f56248c",
+            "saved_sha256": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c"
+          }
+        ],
+        "design": {
+          "acceptance": "轮廓可辨认",
+          "document_id": "doc_2724fbd7505d4a2d8b54cba387c691fe",
+          "module_id": "mod_759800eb784d47a980f43ff1134957ea",
+          "paragraph": 1.0,
+          "project": "studio/judgments",
+          "version": 1.0
+        },
+        "item": {
+          "issue_id": "iss_e4578c8583c64b52a676ecb66fe98633",
+          "kind": "concept",
+          "module": "art",
+          "number": 1.0,
+          "path": "hero.png",
+          "question": "轮廓可辨认",
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "submission_version": 1.0,
+          "title": "创意修订"
+        },
+        "list": [
+          "art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81"
+        ],
+        "revision": "模块　art\n修订　71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n父修订　无\n文件数　1\n当前项目没有可查看的关联工单",
+        "switched": "轮廓可辨认\n#1 · 提交 v2 · hero.png\nart @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n判断人　usr_f31bd9a726194f2e91502ae469ed34dc",
+        "editor_exit": 0
+      },
+      "stale": {
+        "actor": "usr_f31bd9a726194f2e91502ae469ed34dc",
+        "comment": "保留剪影轮廓",
+        "design": {
+          "acceptance": "轮廓可辨认",
+          "document_id": "doc_2724fbd7505d4a2d8b54cba387c691fe",
+          "module_id": "mod_759800eb784d47a980f43ff1134957ea",
+          "paragraph": 1.0,
+          "project": "studio/judgments",
+          "version": 1.0
+        },
+        "item": {
+          "issue_id": "iss_e4578c8583c64b52a676ecb66fe98633",
+          "kind": "concept",
+          "module": "art",
+          "number": 1.0,
+          "path": "hero.png",
+          "question": "轮廓可辨认",
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "submission_version": 1.0,
+          "title": "创意修订"
+        },
+        "list": [
+          "art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81"
+        ],
+        "rejection": "提交 v1 的状态或责任人已变化，请重新读取",
+        "revision": "模块　art\n修订　71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n父修订　无\n文件数　1\n当前项目没有可查看的关联工单",
+        "editor_exit": 0
+      },
+      "recipient": {
+        "actor": "usr_8976268ae04049cb9444dcab2e729860",
+        "after": "art @ f507131cd1c9749e9dcfda86df2b0b4df90889b0048b87507febc48b69bc40f1",
+        "comment": "保留剪影轮廓",
+        "design": {
+          "acceptance": "轮廓可辨认",
+          "document_id": "doc_2724fbd7505d4a2d8b54cba387c691fe",
+          "module_id": "mod_759800eb784d47a980f43ff1134957ea",
+          "paragraph": 1.0,
+          "project": "studio/judgments",
+          "version": 1.0
+        },
+        "handoff": "轮廓可辨认\n#1 · 提交 v1 · hero.png\nart @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n判断人　usr_8976268ae04049cb9444dcab2e729860\nusr_f31bd9a726194f2e91502ae469ed34dc → usr_8976268ae04049cb9444dcab2e729860  请检查旧修订轮廓",
+        "item": {
+          "issue_id": "iss_e4578c8583c64b52a676ecb66fe98633",
+          "kind": "concept",
+          "module": "art",
+          "number": 1.0,
+          "path": "hero.png",
+          "question": "轮廓可辨认",
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "submission_version": 1.0,
+          "title": "创意修订"
+        },
+        "list": [
+          "art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "art @ f507131cd1c9749e9dcfda86df2b0b4df90889b0048b87507febc48b69bc40f1"
+        ],
+        "other": "#1 · 提交 v2 · hero.png\nart @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n待 usr_f31bd9a726194f2e91502ae469ed34dc 判断",
+        "receipt": "提交 v1 已采纳 · art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n签认人　usr_8976268ae04049cb9444dcab2e729860\n采纳原始轮廓",
+        "revision": "模块　art\n修订　71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n父修订　无\n文件数　1\n当前项目没有可查看的关联工单",
+        "target": "轮廓可辨认\n#1 · 提交 v1 · hero.png\nart @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n判断人　usr_8976268ae04049cb9444dcab2e729860\nusr_f31bd9a726194f2e91502ae469ed34dc → usr_8976268ae04049cb9444dcab2e729860  请检查旧修订轮廓",
+        "editor_exit": 0
+      },
+      "returned": {
+        "actor": "usr_f31bd9a726194f2e91502ae469ed34dc",
+        "comment": "保留剪影轮廓",
+        "design": {
+          "acceptance": "轮廓可辨认",
+          "document_id": "doc_2724fbd7505d4a2d8b54cba387c691fe",
+          "module_id": "mod_759800eb784d47a980f43ff1134957ea",
+          "paragraph": 1.0,
+          "project": "studio/judgments",
+          "version": 1.0
+        },
+        "handoff": "轮廓可辨认\n#1 · 提交 v2 · hero.png\nart @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n判断人　usr_f31bd9a726194f2e91502ae469ed34dc",
+        "item": {
+          "issue_id": "iss_e4578c8583c64b52a676ecb66fe98633",
+          "kind": "concept",
+          "module": "art",
+          "number": 1.0,
+          "path": "hero.png",
+          "question": "轮廓可辨认",
+          "revision": "7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81",
+          "submission_version": 2.0,
+          "title": "创意修订"
+        },
+        "list": [
+          "art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81"
+        ],
+        "other": "#1 · 提交 v1 · hero.png\nart @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n已采纳 · 签认人 usr_8976268ae04049cb9444dcab2e729860\n采纳原始轮廓",
+        "receipt": "提交 v2 已退回 · art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n签认人　usr_f31bd9a726194f2e91502ae469ed34dc\n请调整对比度\n暂无待本人判断的事项",
+        "revision": "模块　art\n修订　7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n父修订　71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n文件数　1\n当前项目没有可查看的关联工单",
+        "target": "轮廓可辨认\n#1 · 提交 v2 · hero.png\nart @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n判断人　usr_f31bd9a726194f2e91502ae469ed34dc",
+        "editor_exit": 0
+      },
+      "checks": {
+        "replay_version": 4,
+        "judgments_after_first_signature": [
+          "approved",
+          "pending"
+        ],
+        "repeat_same_call_status": 200,
+        "repeat_changed_target_status": 409,
+        "wrong_responsible_status": 403,
+        "ai_tool_status": 400,
+        "ai_tool_result": {
+          "detail": "unknown tool"
+        },
+        "new_unsigned_status": 409
+      },
+      "http": [
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/modules/art/revisions/71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160/issue-context",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/modules/art/revisions/71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160/issue-context",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/transfer",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/decide",
+          409
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/modules/art/revisions/71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160/issue-context",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/decide",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/modules/art/revisions/7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81/issue-context",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/decide",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/submit_asset",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/decide",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/decide",
+          409
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/decide",
+          403
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_e4578c8583c64b52a676ecb66fe98633/work/approved-asset",
+          409
+        ]
+      ],
+      "history": [
+        {
+          "kind": "concept",
+          "path": "hero.png",
+          "module": "art",
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "initiator": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "responsible": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "digest": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+          "decision": "pending",
+          "action": "work.submit_asset",
+          "version": 1,
+          "actor": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "created_at": "2026-11-22T13:41:31.563279+00:00"
+        },
+        {
+          "kind": "concept",
+          "path": "hero.png",
+          "module": "art",
+          "revision": "7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81",
+          "initiator": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "responsible": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "digest": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c",
+          "decision": "pending",
+          "action": "work.submit_asset",
+          "version": 2,
+          "actor": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "created_at": "2026-11-22T13:41:31.582803+00:00"
+        },
+        {
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "submission_version": 1,
+          "kind": "concept",
+          "path": "hero.png",
+          "module": "art",
+          "note": "请检查旧修订轮廓",
+          "initiator": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "responsible": "usr_8976268ae04049cb9444dcab2e729860",
+          "digest": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+          "previous_responsible": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "decision": "pending",
+          "action": "work.transfer",
+          "version": 3,
+          "actor": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "created_at": "2026-11-22T13:41:47.586782+00:00"
+        },
+        {
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "submission_version": 1,
+          "decision": "approved",
+          "kind": "concept",
+          "path": "hero.png",
+          "module": "art",
+          "note": "采纳原始轮廓",
+          "initiator": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "responsible": "usr_8976268ae04049cb9444dcab2e729860",
+          "digest": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+          "action": "work.decide",
+          "version": 4,
+          "actor": "usr_8976268ae04049cb9444dcab2e729860",
+          "created_at": "2026-11-22T13:41:54.713239+00:00"
+        },
+        {
+          "revision": "7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81",
+          "submission_version": 2,
+          "decision": "changes_requested",
+          "kind": "concept",
+          "path": "hero.png",
+          "module": "art",
+          "note": "请调整对比度",
+          "initiator": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "responsible": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "digest": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c",
+          "action": "work.decide",
+          "version": 5,
+          "actor": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "created_at": "2026-11-22T13:42:01.170971+00:00"
+        },
+        {
+          "kind": "concept",
+          "path": "hero.png",
+          "module": "art",
+          "revision": "eda6942677659781c74a95b022a624d724b4186a7c5b23e2249ff1fa480c9faf",
+          "initiator": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "responsible": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "digest": "4b91e7b6d3c4a150247a653368126bd8d42e24293fbae41f4fccb003be12c6d4",
+          "decision": "pending",
+          "action": "work.submit_asset",
+          "version": 6,
+          "actor": "usr_f31bd9a726194f2e91502ae469ed34dc",
+          "created_at": "2026-11-22T13:42:02.195311+00:00"
+        }
+      ]
+    }
+  },
+  "server_tests": {
+    "rerun": "design-docs/gonggong-ai-workbench-h05.md",
+    "suites": [
+      "test_work_management.py",
+      "test_approved_asset.py",
+      "test_godot_inputs.py",
+      "test_issue_artifacts.py",
+      "test_issue_lifecycle.py"
+    ],
+    "directory": "customizations/components/tianxuan/server",
+    "godot_import_engine_sha256": "9cff80d46f743b5aa76b50c31de96544f843348d6386f7e8b03a596ae068dda7",
+    "result": "30 passed, 1 warning in 34.93s",
+    "exit": 0,
+    "warning": "StarletteDeprecationWarning from FastAPI TestClient"
+  },
+  "worker": {
+    "native_id": "/root/sinan_ddf9155798360f94",
+    "role": "afterk03_h05",
+    "start_receipt": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-h05/dispatch-354aa4d1423d464eb4f31ba735cccd76.json"
+  }
+}
