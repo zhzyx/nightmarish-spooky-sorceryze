@@ -1,6 +1,7 @@
 """Run native Mac editor acceptance for animation comparisons and script continuation."""
 
 import argparse
+import hashlib
 import json
 import os
 import secrets
@@ -45,11 +46,13 @@ def run_probe(editor, project, env, marker):
     raise RuntimeError(log[:5000])
 
 
-def exercise_script(root, editor, project):
+def exercise_script(root, editor, project, *, same_line_conflict=False):
     actor_file = project / "actor.gd"
     actor_file.write_text(
         "extends RefCounted\n\nstatic func score(points: int) -> int:\n\treturn points\nstatic func play() -> int:\n\treturn score(2)\n"
     )
+    original = hashlib.sha256(actor_file.read_bytes()).hexdigest()
+    proposed = {}
     for name, target in [
         ("workbench_document_reference.gd", "base.gd"),
         ("workbench_saved_editor_changes.gd", "changes.gd"),
@@ -66,11 +69,15 @@ def exercise_script(root, editor, project):
         answer = "已记录"
         if len(inputs) == 2:
             (ref,) = turn["context_snapshot"]["references"]
+            saved = actor_file.read_bytes()
+            before, after = b"return score(2)", b"return score(2, 7)"
+            assert saved.count(before) == 1 and hashlib.sha256(saved).hexdigest() == ref["revision"]
+            proposed.update(revision=hashlib.sha256(saved.replace(before, after)).hexdigest(), reference=ref)
             answer = json.dumps({
                 "object_id": ref["object_id"],
                 "revision": ref["revision"],
-                "original": "return score(2)",
-                "replacement": "return score(2, 7)",
+                "original": before.decode(),
+                "replacement": after.decode(),
             })
         return httpx.Response(
             200,
@@ -110,6 +117,7 @@ def exercise_script(root, editor, project):
             env = {k: v for k, v in sanitized_environment(root).items() if not k.startswith("TIANXUAN_")}
             env.update(
                 TIANXUAN_API=f"http://127.0.0.1:{sock.getsockname()[1]}",
+                WORKBENCH_SCRIPT_CASE="same_line" if same_line_conflict else "disjoint",
                 TIANXUAN_PROJECT="studio/game",
                 TIANXUAN_TOKEN=store.issue_session(user["user_id"]),
             )
@@ -117,6 +125,13 @@ def exercise_script(root, editor, project):
             assert (
                 len(inputs) == 2 and inputs[-1]["context_snapshot"]["references"][0]["revision"] == evidence["manual"]
             )
+            selected = hashlib.sha256(actor_file.read_bytes()).hexdigest()
+            assert evidence["candidate"] == selected
+            assert (selected == proposed["revision"]) == (not same_line_conflict)
+            env["WORKBENCH_SCRIPT_REOPEN"] = selected
+            reopened = json.loads(run_probe(editor, project, env, "SCRIPT_REOPEN"))
+            assert reopened["saved"] == selected and reopened["play"] == (99 if same_line_conflict else 2)
+            evidence.update(original=original, proposed=proposed, reopened=reopened)
             check = subprocess.run(
                 [editor, "--headless", "--path", project, "--check-only", "--script", "res://actor.gd"],
                 capture_output=True,
@@ -137,7 +152,7 @@ def exercise_script(root, editor, project):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--godot", type=Path, required=True)
-    parser.add_argument("feature", choices=["animation", "script"])
+    parser.add_argument("feature", choices=["animation", "script", "script-conflict"])
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix="workbench-candidate-") as tmp:
         root = Path(tmp).resolve()
@@ -147,8 +162,8 @@ def main():
         (project / "project.godot").write_text(
             'config_version=5\n[application]\nconfig/name="Workbench Candidate"\n[internationalization]\nlocale/test="en"\n'
         )
-        if args.feature == "script":
-            evidence = exercise_script(root, editor, project)
+        if args.feature != "animation":
+            evidence = exercise_script(root, editor, project, same_line_conflict=args.feature == "script-conflict")
         else:
             shutil.copyfile(Path(__file__).with_name("workbench_approach_replay.gd"), project / "probe.gd")
             env = sanitized_environment(root)
