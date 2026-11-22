@@ -3,6 +3,7 @@ extends VBoxContainer
 
 signal identity_resetting
 signal identity_changed
+signal authenticated
 
 var _origin: String
 var _token := ""
@@ -170,6 +171,7 @@ func _authenticate(email: String, secret: String, project: String) -> void:
 	_email.clear()
 	_form.hide()
 	identity_changed.emit()
+	authenticated.emit()
 	if not _identity.is_empty() and _identity.get("role") != "viewer":
 		_recover_project(attempt)
 

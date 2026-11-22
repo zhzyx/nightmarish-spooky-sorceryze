@@ -1,0 +1,952 @@
+{
+  "issue_number": 1777,
+  "request_id": "gonggong-ai-workbench-plan1-r08",
+  "status": "passed",
+  "summary": "Windows 工作台启动时把本人的待判断项显示在首屏并定位到首行。独立程序和检查进程完成后首行仍有焦点，判断保持待处理。另一账号没有待判断项，侧栏保持关闭。R07 与创意判断原生回归和 22 项关联服务测试通过。",
+  "source_tree": "44591996ebad6b1c39327cbe7f1005dc593154c1",
+  "source_base": "1ee330636c4d6a7d73b82d34d7b609dd341cbe70",
+  "editor_package": {
+    "godot.windows.editor.x86_64.exe": "743a6c25b89a8a2cd7c2852571df1147cc1d307a58ba53d37fcc703f03928576",
+    "godot.windows.editor.x86_64.console.exe": "fbf723d4f1671457ff88d2d469afde9121e5e155c4fb9cb60e2699611d2a4bef",
+    "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c"
+  },
+  "observed": "2026-11-22T15:31:14.323890+00:00",
+  "native": {
+    "startup_judgments": {
+      "passed": true,
+      "editor_sha256": "743a6c25b89a8a2cd7c2852571df1147cc1d307a58ba53d37fcc703f03928576",
+      "editors": {
+        "owner": {
+          "pid": 132288,
+          "exit": 0,
+          "result": {
+            "editor_bounds": "[P: (0.0, 0.0), S: (1440.0, 960.0)]",
+            "pid": 132288,
+            "revision": "b @ 48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+            "row": "#2 Animate · sketch.svg\nvisible",
+            "row_bounds": "[P: (1068.0, 160.0), S: (350.0, 44.0)]",
+            "scroll_bounds": "[P: (1068.0, 122.0), S: (364.0, 830.0)]",
+            "still_focused_after_recovery": true,
+            "worker_started_while_focused": true
+          },
+          "http": [
+            {
+              "method": "GET",
+              "path": "/api/v1/auth/me",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "GET",
+              "path": "/api/v1/work/my-judgments",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ]
+        },
+        "peer": {
+          "pid": 119520,
+          "exit": 0,
+          "result": {
+            "pid": 119520,
+            "rows": 0,
+            "sidebar_visible": false
+          },
+          "http": [
+            {
+              "method": "GET",
+              "path": "/api/v1/auth/me",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "GET",
+              "path": "/api/v1/work/my-judgments",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ]
+        }
+      },
+      "still_pending": {
+        "issue_id": "iss_8fffe92f65ab4cb3bd5ab9f957670c2b",
+        "number": 2,
+        "title": "Animate",
+        "question": "visible",
+        "submission_version": 1,
+        "module": "b",
+        "revision": "48a0ca56f81df48d3590cd457407604f950c9467027b1f34f9f5625e888f2c5c",
+        "path": "sketch.svg",
+        "kind": "concept"
+      },
+      "before": {
+        "task": "965aa36f1da9bed0de6ed6735b26b09b9456664aef0a7cb7437f8a98efab78cc",
+        "issue": "iss_c5c6c2000da047e3866c4505b53b27b6",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_274f48d66cd0495e8087c237382a1d1f",
+          "mandate": "installed-test-plan",
+          "source_revision": "a0121aceac79d501dc00a9f5e1f93fc1a0a507ed50c330659396f59f8dc72e74",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_274f48d66cd0495e8087c237382a1d1f",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_be93022515144a2dadb9aa42f7871b68",
+            "issue_id": "iss_c5c6c2000da047e3866c4505b53b27b6",
+            "issue_revision": "9b06e8d3fcddb0d19a6b70a9ef1b5ebbd0d4ad5cd5303bc8eebc461e4dfe71c2",
+            "responsible_user": "usr_274f48d66cd0495e8087c237382a1d1f",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "ready",
+        "completed_steps": [
+          "authorized"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {},
+        "candidate": null,
+        "calls": {
+          "worker": "native-worker:965aa36f1da9bed0de6ed6735b26b09b9456664aef0a7cb7437f8a98efab78cc",
+          "model_calls": null
+        },
+        "stage_receipt": null,
+        "pending_decision": null
+      },
+      "after": {
+        "task": "965aa36f1da9bed0de6ed6735b26b09b9456664aef0a7cb7437f8a98efab78cc",
+        "issue": "iss_c5c6c2000da047e3866c4505b53b27b6",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_274f48d66cd0495e8087c237382a1d1f",
+          "mandate": "installed-test-plan",
+          "source_revision": "a0121aceac79d501dc00a9f5e1f93fc1a0a507ed50c330659396f59f8dc72e74",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_274f48d66cd0495e8087c237382a1d1f",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_be93022515144a2dadb9aa42f7871b68",
+            "issue_id": "iss_c5c6c2000da047e3866c4505b53b27b6",
+            "issue_revision": "9b06e8d3fcddb0d19a6b70a9ef1b5ebbd0d4ad5cd5303bc8eebc461e4dfe71c2",
+            "responsible_user": "usr_274f48d66cd0495e8087c237382a1d1f",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "stage-reached",
+        "completed_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal",
+          "stage-checked"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "calls": {
+          "worker": "native-worker:965aa36f1da9bed0de6ed6735b26b09b9456664aef0a7cb7437f8a98efab78cc",
+          "model_calls": null
+        },
+        "stage_receipt": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_274f48d66cd0495e8087c237382a1d1f",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_be93022515144a2dadb9aa42f7871b68",
+            "issue_id": "iss_c5c6c2000da047e3866c4505b53b27b6",
+            "issue_revision": "9b06e8d3fcddb0d19a6b70a9ef1b5ebbd0d4ad5cd5303bc8eebc461e4dfe71c2",
+            "responsible_user": "usr_274f48d66cd0495e8087c237382a1d1f",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "7eac380cb1062b54cfcf038c8121e0ae22539ace63e584610dc59092259faf7d",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "965aa36f1da9bed0de6ed6735b26b09b9456664aef0a7cb7437f8a98efab78cc"
+        },
+        "pending_decision": {
+          "kind": "stage-confirmation",
+          "task": "965aa36f1da9bed0de6ed6735b26b09b9456664aef0a7cb7437f8a98efab78cc"
+        }
+      },
+      "processes": {
+        "workers": [
+          130560
+        ],
+        "checkers": [
+          127448
+        ]
+      },
+      "physical_closure": {
+        "exit_code": 0,
+        "reasons": [],
+        "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "checker_exit": 0,
+      "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+    },
+    "project_reopen": {
+      "passed": true,
+      "mode": "compiled headless editor / authenticated loopback / installed deterministic processes",
+      "editor_sha256": "743a6c25b89a8a2cd7c2852571df1147cc1d307a58ba53d37fcc703f03928576",
+      "initial_editor": {
+        "pid": 131616,
+        "exit": 0,
+        "result": {
+          "after": [
+            {
+              "issue": "#1 Program",
+              "label": "preview · 已确认启动\npreview.svg shows one blue circle of radius 12\n确认人：usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+              "selected": true
+            },
+            {
+              "issue": "#2 Animate",
+              "label": "preview · 待确认\npreview.svg shows one blue circle of radius 12",
+              "selected": false
+            }
+          ],
+          "before": [
+            {
+              "issue": "#1 Program",
+              "label": "preview · 待确认\npreview.svg shows one blue circle of radius 12",
+              "selected": false
+            },
+            {
+              "issue": "#2 Animate",
+              "label": "preview · 待确认\npreview.svg shows one blue circle of radius 12",
+              "selected": false
+            }
+          ],
+          "feedback": "已从天璇回读 #1 的记录。",
+          "rects": [
+            [
+              "[P: (9.0, 9.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 97.0), S: (460.0, 33.0)]"
+            ]
+          ],
+          "selected": [
+            "#1 Program"
+          ],
+          "viewport": "[P: (9.0, 9.0), S: (460.0, 320.0)]"
+        }
+      },
+      "reopened_editors": [
+        {
+          "pid": 133156,
+          "exit": 0,
+          "result": {
+            "identity": {
+              "id": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+              "name": "native",
+              "project": "studio",
+              "role": "admin"
+            },
+            "pid": 133156
+          },
+          "startup_writes": [
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ]
+        },
+        {
+          "pid": 133988,
+          "exit": 0,
+          "result": {
+            "identity": {
+              "id": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+              "name": "native",
+              "project": "studio",
+              "role": "admin"
+            },
+            "pid": 133988
+          },
+          "startup_writes": [
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-occupancy",
+              "status": 200
+            },
+            {
+              "method": "POST",
+              "path": "/api/v1/native/workflow/recover-project",
+              "status": 200
+            }
+          ]
+        }
+      ],
+      "original_confirmation": {
+        "issue_id": "iss_6bfb01bfb1c548b0924cbfb78b7c903c",
+        "document_id": "doc_3c8af6b83d5642f5bb8df0acc22592bf",
+        "version": 1,
+        "stage": "preview",
+        "target_revision": 1,
+        "issue_revision": "4443bfdad2267da9c5cec6f24255a56e9efdc3dc8a1fd0cbf17d1184991c7576",
+        "revision": 1,
+        "status": "confirmed",
+        "responsible_user": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+        "confirmed_by": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3"
+      },
+      "initial_confirmation_requests": 1,
+      "before_processes": {
+        "workers": [
+          135676
+        ],
+        "checkers": []
+      },
+      "before": {
+        "task": "008230e578d696fde65e65affdc304131f015695beef01c8ff86a9362a87638c",
+        "issue": "iss_6bfb01bfb1c548b0924cbfb78b7c903c",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+          "mandate": "installed-test-plan",
+          "source_revision": "d080aff869798f333fb775ae0592baca4682ed8ccafbfb9fbdc41099fa0ef41e",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_3c8af6b83d5642f5bb8df0acc22592bf",
+            "issue_id": "iss_6bfb01bfb1c548b0924cbfb78b7c903c",
+            "issue_revision": "4443bfdad2267da9c5cec6f24255a56e9efdc3dc8a1fd0cbf17d1184991c7576",
+            "responsible_user": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "produced",
+        "completed_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "calls": {
+          "worker": "native-worker:008230e578d696fde65e65affdc304131f015695beef01c8ff86a9362a87638c",
+          "model_calls": null
+        },
+        "stage_receipt": null,
+        "pending_decision": {
+          "kind": "stage-check",
+          "task": "008230e578d696fde65e65affdc304131f015695beef01c8ff86a9362a87638c"
+        }
+      },
+      "after": {
+        "task": "008230e578d696fde65e65affdc304131f015695beef01c8ff86a9362a87638c",
+        "issue": "iss_6bfb01bfb1c548b0924cbfb78b7c903c",
+        "project": "studio",
+        "business_module": "default",
+        "target": {
+          "title": "Program",
+          "acceptance": "visible",
+          "writes": {
+            "a": [
+              "preview.svg"
+            ]
+          }
+        },
+        "authorization": {
+          "actor": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+          "mandate": "installed-test-plan",
+          "source_revision": "d080aff869798f333fb775ae0592baca4682ed8ccafbfb9fbdc41099fa0ef41e",
+          "stage": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_3c8af6b83d5642f5bb8df0acc22592bf",
+            "issue_id": "iss_6bfb01bfb1c548b0924cbfb78b7c903c",
+            "issue_revision": "4443bfdad2267da9c5cec6f24255a56e9efdc3dc8a1fd0cbf17d1184991c7576",
+            "responsible_user": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          }
+        },
+        "state": "stage-reached",
+        "completed_steps": [
+          "authorized",
+          "reserved",
+          "worker-terminal",
+          "stage-checked"
+        ],
+        "input_revisions": {
+          "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+        },
+        "artifact_revisions": {
+          "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+        },
+        "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+        "calls": {
+          "worker": "native-worker:008230e578d696fde65e65affdc304131f015695beef01c8ff86a9362a87638c",
+          "model_calls": null
+        },
+        "stage_receipt": {
+          "authorization": {
+            "confirmation_revision": 1,
+            "confirmed_by": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+            "criteria": "preview.svg shows one blue circle of radius 12",
+            "document_id": "doc_3c8af6b83d5642f5bb8df0acc22592bf",
+            "issue_id": "iss_6bfb01bfb1c548b0924cbfb78b7c903c",
+            "issue_revision": "4443bfdad2267da9c5cec6f24255a56e9efdc3dc8a1fd0cbf17d1184991c7576",
+            "responsible_user": "usr_2e8bc7dcaa3e4afbba520fcdb203f5f3",
+            "stage": "preview",
+            "target_revision": 1,
+            "version": 1
+          },
+          "candidate": "fa430b98815bbfcfaca4fe29782004be7ffb0a5f68b71c626a61d15118d75943",
+          "checks": {
+            "check": {
+              "evidence": "0c6483b98234c842c87a1aed2f7f6909cb5f7ab888832e087a7434a8a76ca1e7",
+              "outcome": "passed"
+            }
+          },
+          "modules": {
+            "a": "43b8b2e4bb57eba7bcc58d91a82de434d2bbe23da6fb23082afc07738e30107c"
+          },
+          "reason": "authorized_stage_criteria_met",
+          "state": "stage-reached",
+          "task": "008230e578d696fde65e65affdc304131f015695beef01c8ff86a9362a87638c"
+        },
+        "pending_decision": {
+          "kind": "stage-confirmation",
+          "task": "008230e578d696fde65e65affdc304131f015695beef01c8ff86a9362a87638c"
+        }
+      },
+      "processes": {
+        "workers": [
+          135676
+        ],
+        "checkers": [
+          137948
+        ]
+      },
+      "physical_closure": {
+        "exit_code": 0,
+        "reasons": [],
+        "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "checker_exit": 0,
+      "artifact_sha256": "58ac7230adef8ec87e81e6d12dada04471947feb01fbc6f5081c231cb1734053"
+    },
+    "creative_judgments": {
+      "engine_sha256": "743a6c25b89a8a2cd7c2852571df1147cc1d307a58ba53d37fcc703f03928576",
+      "sender": {
+        "actor": "usr_f23dda3506fd4d2e90ee94131b560972",
+        "after": "art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81",
+        "comment": "保留剪影轮廓",
+        "comparison": [
+          {
+            "color": "ff0000",
+            "design": "来源设计　doc_c43c1adf88ea46e284f42be8b24d7672 · v1 第 1 段",
+            "field": "concept · hero.png\nart @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\nSHA-256 9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+            "original": "hero.png · 75 字节\n89504e470d0a1a0a0000000d49484452000000080000000808020000004b6d29dc0000001249444154789c63fccf801d30e1101fa41200cd41010fe841e26f00",
+            "saved_sha256": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162"
+          },
+          {
+            "color": "0000ff",
+            "design": "来源设计　doc_c43c1adf88ea46e284f42be8b24d7672 · v1 第 1 段",
+            "field": "concept · hero.png\nart @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\nSHA-256 36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c",
+            "original": "hero.png · 77 字节\n89504e470d0a1a0a0000000d49484452000000080000000808020000004b6d29dc0000001449444154789c636460f8cf800d3061151db41200cb43010f56248c",
+            "saved_sha256": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c"
+          }
+        ],
+        "design": {
+          "acceptance": "轮廓可辨认",
+          "document_id": "doc_c43c1adf88ea46e284f42be8b24d7672",
+          "module_id": "mod_8e50a9538c9b4af9a5c41ed4c831da7c",
+          "paragraph": 1.0,
+          "project": "studio/judgments",
+          "version": 1.0
+        },
+        "item": {
+          "issue_id": "iss_76a267d859c14214a68be6b4bc196921",
+          "kind": "concept",
+          "module": "art",
+          "number": 1.0,
+          "path": "hero.png",
+          "question": "轮廓可辨认",
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "submission_version": 1.0,
+          "title": "创意修订"
+        },
+        "list": [
+          "art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81"
+        ],
+        "revision": "模块　art\n修订　71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n父修订　无\n文件数　1\n当前项目没有可查看的关联工单",
+        "switched": "轮廓可辨认\n#1 · 提交 v2 · hero.png\nart @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n判断人　usr_f23dda3506fd4d2e90ee94131b560972",
+        "editor_exit": 0
+      },
+      "stale": {
+        "actor": "usr_f23dda3506fd4d2e90ee94131b560972",
+        "comment": "保留剪影轮廓",
+        "design": {
+          "acceptance": "轮廓可辨认",
+          "document_id": "doc_c43c1adf88ea46e284f42be8b24d7672",
+          "module_id": "mod_8e50a9538c9b4af9a5c41ed4c831da7c",
+          "paragraph": 1.0,
+          "project": "studio/judgments",
+          "version": 1.0
+        },
+        "item": {
+          "issue_id": "iss_76a267d859c14214a68be6b4bc196921",
+          "kind": "concept",
+          "module": "art",
+          "number": 1.0,
+          "path": "hero.png",
+          "question": "轮廓可辨认",
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "submission_version": 1.0,
+          "title": "创意修订"
+        },
+        "list": [
+          "art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81"
+        ],
+        "rejection": "提交 v1 的状态或责任人已变化，请重新读取",
+        "revision": "模块　art\n修订　71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n父修订　无\n文件数　1\n当前项目没有可查看的关联工单",
+        "editor_exit": 0
+      },
+      "recipient": {
+        "actor": "usr_2f56c8caa2504685a99f22786750251e",
+        "after": "art @ f507131cd1c9749e9dcfda86df2b0b4df90889b0048b87507febc48b69bc40f1",
+        "comment": "保留剪影轮廓",
+        "design": {
+          "acceptance": "轮廓可辨认",
+          "document_id": "doc_c43c1adf88ea46e284f42be8b24d7672",
+          "module_id": "mod_8e50a9538c9b4af9a5c41ed4c831da7c",
+          "paragraph": 1.0,
+          "project": "studio/judgments",
+          "version": 1.0
+        },
+        "handoff": "轮廓可辨认\n#1 · 提交 v1 · hero.png\nart @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n判断人　usr_2f56c8caa2504685a99f22786750251e\nusr_f23dda3506fd4d2e90ee94131b560972 → usr_2f56c8caa2504685a99f22786750251e  请检查旧修订轮廓",
+        "item": {
+          "issue_id": "iss_76a267d859c14214a68be6b4bc196921",
+          "kind": "concept",
+          "module": "art",
+          "number": 1.0,
+          "path": "hero.png",
+          "question": "轮廓可辨认",
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "submission_version": 1.0,
+          "title": "创意修订"
+        },
+        "list": [
+          "art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "art @ f507131cd1c9749e9dcfda86df2b0b4df90889b0048b87507febc48b69bc40f1"
+        ],
+        "other": "#1 · 提交 v2 · hero.png\nart @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n待 usr_f23dda3506fd4d2e90ee94131b560972 判断",
+        "receipt": "提交 v1 已采纳 · art @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n签认人　usr_2f56c8caa2504685a99f22786750251e\n采纳原始轮廓",
+        "revision": "模块　art\n修订　71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n父修订　无\n文件数　1\n当前项目没有可查看的关联工单",
+        "target": "轮廓可辨认\n#1 · 提交 v1 · hero.png\nart @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n判断人　usr_2f56c8caa2504685a99f22786750251e\nusr_f23dda3506fd4d2e90ee94131b560972 → usr_2f56c8caa2504685a99f22786750251e  请检查旧修订轮廓",
+        "editor_exit": 0
+      },
+      "returned": {
+        "actor": "usr_f23dda3506fd4d2e90ee94131b560972",
+        "comment": "保留剪影轮廓",
+        "design": {
+          "acceptance": "轮廓可辨认",
+          "document_id": "doc_c43c1adf88ea46e284f42be8b24d7672",
+          "module_id": "mod_8e50a9538c9b4af9a5c41ed4c831da7c",
+          "paragraph": 1.0,
+          "project": "studio/judgments",
+          "version": 1.0
+        },
+        "handoff": "轮廓可辨认\n#1 · 提交 v2 · hero.png\nart @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n判断人　usr_f23dda3506fd4d2e90ee94131b560972",
+        "item": {
+          "issue_id": "iss_76a267d859c14214a68be6b4bc196921",
+          "kind": "concept",
+          "module": "art",
+          "number": 1.0,
+          "path": "hero.png",
+          "question": "轮廓可辨认",
+          "revision": "7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81",
+          "submission_version": 2.0,
+          "title": "创意修订"
+        },
+        "list": [
+          "art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81"
+        ],
+        "other": "#1 · 提交 v1 · hero.png\nart @ 71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n已采纳 · 签认人 usr_2f56c8caa2504685a99f22786750251e\n采纳原始轮廓",
+        "receipt": "提交 v2 已退回 · art @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n签认人　usr_f23dda3506fd4d2e90ee94131b560972\n请调整对比度\n暂无待本人判断的事项",
+        "revision": "模块　art\n修订　7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n父修订　71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160\n文件数　1\n当前项目没有可查看的关联工单",
+        "target": "轮廓可辨认\n#1 · 提交 v2 · hero.png\nart @ 7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81\n判断人　usr_f23dda3506fd4d2e90ee94131b560972",
+        "editor_exit": 0
+      },
+      "checks": {
+        "replay_version": 4,
+        "judgments_after_first_signature": [
+          "approved",
+          "pending"
+        ],
+        "repeat_same_call_status": 200,
+        "repeat_changed_target_status": 409,
+        "wrong_responsible_status": 403,
+        "ai_tool_status": 400,
+        "ai_tool_result": {
+          "detail": "unknown tool"
+        },
+        "new_unsigned_status": 409
+      },
+      "http": [
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/modules/art/revisions/71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160/issue-context",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/modules/art/revisions/71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160/issue-context",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/transfer",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/decide",
+          409
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/modules/art/revisions/71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160/issue-context",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/decide",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/plan",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/flow",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/native/modules/art/revisions/7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81/issue-context",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/decide",
+          200
+        ],
+        [
+          "GET",
+          "/api/v1/work/my-judgments",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/submit_asset",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/decide",
+          200
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/decide",
+          409
+        ],
+        [
+          "POST",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/decide",
+          403
+        ],
+        [
+          "GET",
+          "/api/v1/issues/iss_76a267d859c14214a68be6b4bc196921/work/approved-asset",
+          409
+        ]
+      ],
+      "history": [
+        {
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "module": "art",
+          "kind": "concept",
+          "path": "hero.png",
+          "initiator": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "responsible": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "digest": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+          "decision": "pending",
+          "action": "work.submit_asset",
+          "version": 1,
+          "actor": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "created_at": "2026-11-22T15:30:48.281235+00:00"
+        },
+        {
+          "revision": "7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81",
+          "module": "art",
+          "kind": "concept",
+          "path": "hero.png",
+          "initiator": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "responsible": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "digest": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c",
+          "decision": "pending",
+          "action": "work.submit_asset",
+          "version": 2,
+          "actor": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "created_at": "2026-11-22T15:30:48.296797+00:00"
+        },
+        {
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "kind": "concept",
+          "module": "art",
+          "submission_version": 1,
+          "path": "hero.png",
+          "note": "请检查旧修订轮廓",
+          "initiator": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "responsible": "usr_2f56c8caa2504685a99f22786750251e",
+          "digest": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+          "previous_responsible": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "decision": "pending",
+          "action": "work.transfer",
+          "version": 3,
+          "actor": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "created_at": "2026-11-22T15:30:59.277273+00:00"
+        },
+        {
+          "decision": "approved",
+          "revision": "71aec5f088b68c7cd642c6824a4d074e8c06837314ca490687ca5d6538311160",
+          "kind": "concept",
+          "module": "art",
+          "submission_version": 1,
+          "path": "hero.png",
+          "note": "采纳原始轮廓",
+          "initiator": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "responsible": "usr_2f56c8caa2504685a99f22786750251e",
+          "digest": "9fa0f2ae2b655c877690c6ed5649dad9f248147f7e21d0f8011636c20d627162",
+          "action": "work.decide",
+          "version": 4,
+          "actor": "usr_2f56c8caa2504685a99f22786750251e",
+          "created_at": "2026-11-22T15:31:06.192158+00:00"
+        },
+        {
+          "decision": "changes_requested",
+          "revision": "7862546a8bec7fb3c246208f9b6a5163d563fd9dacfa63748696de4431152b81",
+          "kind": "concept",
+          "module": "art",
+          "submission_version": 2,
+          "path": "hero.png",
+          "note": "请调整对比度",
+          "initiator": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "responsible": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "digest": "36fe6ab71ec56fa1fc84326e4673fbf028c6ad2eb5051ce5a9e6cb0d07c85f4c",
+          "action": "work.decide",
+          "version": 5,
+          "actor": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "created_at": "2026-11-22T15:31:12.665612+00:00"
+        },
+        {
+          "revision": "eda6942677659781c74a95b022a624d724b4186a7c5b23e2249ff1fa480c9faf",
+          "module": "art",
+          "kind": "concept",
+          "path": "hero.png",
+          "initiator": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "responsible": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "digest": "4b91e7b6d3c4a150247a653368126bd8d42e24293fbae41f4fccb003be12c6d4",
+          "decision": "pending",
+          "action": "work.submit_asset",
+          "version": 6,
+          "actor": "usr_f23dda3506fd4d2e90ee94131b560972",
+          "created_at": "2026-11-22T15:31:13.537640+00:00"
+        }
+      ]
+    }
+  },
+  "service_tests": [
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_continue_from_each_confirmed_boundary[ready]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_continue_from_each_confirmed_boundary[reserved]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_continue_from_each_confirmed_boundary[produced]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_respects_current_scope_and_controls[pause]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_respects_current_scope_and_controls[cancel]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_respects_current_scope_and_controls[revoke]",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_reopen_settles_ordinary_pinned_publication",
+    "customizations.components.tianxuan.sinan-workorders.test_native_project_reopen::test_unmet_stage_stops_and_is_not_retried",
+    "customizations.components.tianxuan.server.test_work_management::test_historical_issue_plan_and_persistent_replay",
+    "customizations.components.tianxuan.server.test_work_management::test_project_field_update_preserves_plan_and_large_legacy_integer",
+    "customizations.components.tianxuan.server.test_work_management::test_plan_membership_empty_groups_partial_update_and_stale_move",
+    "customizations.components.tianxuan.server.test_work_management::test_concurrent_connections_never_double_log[False]",
+    "customizations.components.tianxuan.server.test_work_management::test_concurrent_connections_never_double_log[True]",
+    "customizations.components.tianxuan.server.test_work_management::test_revoked_ancestor_acl_covers_read_and_receipt_replay",
+    "customizations.components.tianxuan.server.test_work_management::test_human_decision_is_pinned_to_submitted_native_revision[concept-sketch.png]",
+    "customizations.components.tianxuan.server.test_work_management::test_human_decision_is_pinned_to_submitted_native_revision[model-hero.glb]",
+    "customizations.components.tianxuan.server.test_work_management::test_roadmap_orders_plans_matches_detail_and_revokes_access",
+    "customizations.components.tianxuan.server.test_work_management::test_project_roadmap_returns_only_visible_issue_and_parent_identifiers",
+    "customizations.components.tianxuan.server.test_work_management::test_creative_judgments_bind_initiator_across_delegated_revisions",
+    "customizations.components.tianxuan.server.test_work_management::test_legacy_pending_judgment_reads_original_issue_creator",
+    "customizations.components.tianxuan.server.test_work_management::test_transfer_preserves_independent_judgments_and_rechecks_owner",
+    "customizations.components.tianxuan.server.test_work_management::test_edit_original_preserves_responsibility_and_rejects_stale_saves"
+  ]
+}

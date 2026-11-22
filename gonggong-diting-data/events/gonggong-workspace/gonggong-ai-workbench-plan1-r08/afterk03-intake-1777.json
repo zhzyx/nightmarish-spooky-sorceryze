@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "kind": "request",
+  "request_id": "gonggong-ai-workbench-plan1-r08",
+  "event_id": "afterk03-intake-1777",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1777",
+  "occurred_at": "2026-11-22T14:39:14.162623+00:00",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "payload": {
+    "issue_number": 1777,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T14:39:10Z",
+    "accepted_dependencies": {
+      "1803": "8fed4d9371a678c335c73809d5901d6b616984ae",
+      "1835": "f1baa8f7b7e5e139cd4be289ce3f83a48747d40e"
+    },
+    "source_main": "8fed4d9371a678c335c73809d5901d6b616984ae",
+    "title": "[方案一 R08] 启动时优先展示待本人判断事项"
+  },
+  "evidence_refs": [],
+  "sha256": "7f6db413b2e690102b3aa878082826f34614362a175d292eba226c82b6076d9b"
+}

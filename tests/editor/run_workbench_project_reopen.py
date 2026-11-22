@@ -45,7 +45,7 @@ func observe() -> void:
 """
 
 
-def editor(engine, project, origin, token, extra):
+def editor(engine, project, origin, token, extra, result_prefixes=("A02_NATIVE=", "R07_NATIVE=")):
     env = {k: v for k, v in sanitized_environment(project).items() if not k.startswith("TIANXUAN_")}
     env.update(TIANXUAN_TOKEN=token, TIANXUAN_API=origin, TIANXUAN_PROJECT="studio", **extra)
     with subprocess.Popen(
@@ -73,7 +73,7 @@ def editor(engine, project, origin, token, extra):
             proc.communicate()
             raise
     assert token not in output
-    lines = [line.split("=", 1)[1] for line in output.splitlines() if line.startswith(("A02_NATIVE=", "R07_NATIVE="))]
+    lines = [line.split("=", 1)[1] for line in output.splitlines() if line.startswith(result_prefixes)]
     if proc.returncode or len(lines) != 1 or "SCRIPT ERROR" in output:
         raise RuntimeError(output[-6500:])
     return {"pid": proc.pid, "exit": proc.returncode, "result": json.loads(lines[0])}
