@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-a4d7fb2f70552beef8ba18b41e6e3c47e1902a36",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fbceed06d26b17a7a2de3d4b3bc8634da28b24c83706ddb526f309b6f3f7035f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2034",
+    "action": "validation",
+    "detection_head": "6433432b146394033d7c3206b92450698ed27e55",
+    "context_sha256": "a2860f9f75b986d4e9867040c1516d6bbb82e684511ab6e86b20badc2985a1c2",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2034",
+    "diagnosis": "Two service threads used the same SQLite connection while validating a completed dependency and recording the dispatch result. A lookup for the authenticated third task returned empty even though the same transaction immediately listed its ID and produced state. A deterministic observation found that the active-definition SELECT ran outside the domain connection lock.",
+    "next_action": "Serialize active-definition and dependency reads using the same reentrant connection lock as the transport status operation. Rerun the exact HTTP scenario, neighboring tests and the four editor acceptance probes.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T06:59:46.149954+00:00",
+    "attempted": "The first candidate passed 55 other tests. An isolated replay reproduced 409 with the same ticket present. The new regression failed before the fix; the regression and original HTTP operation both passed after the fix.",
+    "repair_owner": "Windows publisher for S03 and parent 1709",
+    "continuable": "Proceed with scoped service repair on the replacement candidate; retain the accepted peer changes."
+  },
+  "occurred_at": "2026-11-22T07:07:07.837271+00:00",
+  "sha256": "f9996401d0ef89ef13aff318947282471665923fcf0e65e6297d5831ce324916"
+}

@@ -133,6 +133,9 @@ def test_dispatch_stops_at_checked_preview(host, color, state, record_property):
     }
     assert not any(delivery.values())
     assert calls.count("execute") == calls.count("verify-stage") == 1
+    (launch,) = first["result"]["results"]
+    assert launch["receipt"]["workerId"] == launch["receipt"]["reference"] == key
+    assert launch["receipt"]["worker_ref"] == "native-worker:" + key
     row = h.api("status", key=key).raise_for_status().json()
     assert row["state"] == state and row["acceptance"] is None
     result = row["stage_result"]

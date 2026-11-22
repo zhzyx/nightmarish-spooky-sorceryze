@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f835c2d9772ac98dfc7b97b8f6c5c563d1e7209a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c479fd55a1961e4ddcc10fb1e20f77ac5287bc21fcc67a657a65abaea404987e",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1709",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2034",
+    "action": "delivery",
+    "detection_head": "716913e88454c91a4d0a5ee649911f8f4c30dc72",
+    "context_sha256": "a2860f9f75b986d4e9867040c1516d6bbb82e684511ab6e86b20badc2985a1c2",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2033#issuecomment-7075438047",
+    "diagnosis": "The signed delivery now shares two changed service files with accepted PR 2031. The original candidate correctly requires a new exact qualification. Both product edits coexist in the checked three-way tree.",
+    "next_action": "Rerun the native milestone, both task regressions and the combined service suites on current main, then issue a fresh signature and complete the original delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T06:48:15.278850+00:00",
+    "attempted": "Verified the old signature and current main by SHA. All 49 joint service tests passed. The editor input has also advanced, so the replacement is building the editor from updated source.",
+    "repair_owner": "Windows publisher for PR 2033",
+    "continuable": "The Windows publisher can rebuild, requalify and sign. The other published worktree is independent."
+  },
+  "occurred_at": "2026-11-22T06:51:15.473692+00:00",
+  "sha256": "4f9c28f194e835302d21a22c6f3037d914ea6977a5f8383ff3b6f53e6045f256"
+}

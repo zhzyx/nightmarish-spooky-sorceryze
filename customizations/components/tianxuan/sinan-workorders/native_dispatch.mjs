@@ -172,7 +172,8 @@ export async function driveNative(service, initial = {type: 'user.requested', re
           // The terminal frees production capacity before potentially slow review.
           await signal({type: 'execution.finished', reference: assignment.ticket});
           if (!['produced', 'accepted', 'stage-reached', 'stage-unmet'].includes(terminal.state)) throw Error('Worker not successfully terminal');
-          return {workerId: assignment.ticket, reference: assignment.ticket, model: assignment.model.id, target: assignment.target};
+          if (terminal.id !== assignment.ticket || terminal.worker_ref !== 'native-worker:' + terminal.id) throw Error('Worker receipt does not match the assigned execution');
+          return {workerId: terminal.id, reference: terminal.id, worker_ref: terminal.worker_ref, model: assignment.model.id, target: assignment.target};
         } catch (error) {
           await signal({type: 'execution.failed', reference: assignment.ticket});
           throw error;

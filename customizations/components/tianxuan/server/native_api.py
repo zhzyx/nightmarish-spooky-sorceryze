@@ -11,7 +11,6 @@ import sqlite3
 from collections.abc import Callable
 from typing import Any
 
-from access_control import COOKIE
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import Response
 from native_store import Conflict, NativeStore, NativeStoreError
@@ -135,7 +134,9 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 return board
             if operation == "advance":
                 return workflow.advance(actor, isolate=True, exclude=payload.get("exclude", []))
-            if operation in {"status", "execute", "check", "review", "reconcile", "finish"}:
+            if operation == "execute":
+                return workflow.execute_receipt(actor, payload["key"])
+            if operation in {"status", "check", "review", "reconcile", "finish"}:
                 return getattr(workflow, operation)(actor, payload["key"])
             if operation == "edit-baseline":
                 return workflow.edit_baseline(actor, **payload)
@@ -191,11 +192,8 @@ def _identity(
 ) -> tuple[str, str]:
     store = request.app.state.store
     actor = getattr(request.state, "verified_actor", None)
-    if actor and refresh:
-        scheme, _, bearer = request.headers.get("authorization", "").partition(" ")
-        token = bearer.strip() if scheme.lower() == "bearer" else request.cookies.get(COOKIE, "")
-        if store.user_for_access_key(token) != actor:
-            raise HTTPException(401, "terminal observer access key expired or revoked")
+    if actor and refresh and request.state.refresh_verified_actor() != actor:
+        raise HTTPException(401, "terminal observer credential expired or revoked")
     if not actor:
         scheme, _, token = request.headers.get("authorization", "").partition(" ")
         actor = store.user_for_token(token.strip()) if scheme.lower() == "bearer" else None

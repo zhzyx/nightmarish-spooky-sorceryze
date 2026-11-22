@@ -6,7 +6,9 @@ import json
 import os
 import sys
 import tempfile
-from contextlib import contextmanager
+import time
+from contextlib import closing, contextmanager
+from http.client import HTTPConnection
 from pathlib import Path
 from unittest.mock import patch
 
@@ -20,6 +22,68 @@ sys.path[:0] = [str(COMPONENT / name) for name in ("server", "sinan-workorders",
 # isort: split
 from test_native_stage_admission import StageHost, install_stage_probe  # noqa: E402
 from test_native_workflow import fixture  # noqa: E402
+
+
+def observe_launches(workflow, folder):
+    profile = workflow.worker.profiles["local"]
+    probe = Path(profile["argv"][1])
+    journal, release = folder / "process-starts.jsonl", folder / "release-worker"
+    profile["timeout"] = 30
+    profile["env"].update(LAUNCH_JOURNAL=str(journal), RELEASE_WORKER=str(release))
+    # The child records its own identity before waiting for both client replays.
+    # Append rather than overwrite, so a second physical launch remains visible.
+    probe.write_text(
+        "import json, os, pathlib, time\n"
+        "execution = pathlib.Path(os.environ['NATIVE_CONTEXT']).parent.name\n"
+        "with open(os.environ['LAUNCH_JOURNAL'], 'a', encoding='utf-8') as journal:\n"
+        "    print(json.dumps(dict(execution=execution, pid=os.getpid())), file=journal)\n"
+        "while not pathlib.Path(os.environ['RELEASE_WORKER']).exists():\n"
+        "    time.sleep(0.02)\n" + probe.read_text(encoding="utf-8"),
+        encoding="utf-8",
+    )
+    return journal, release
+
+
+def replay_launch(host, port, issue, key, journal, release):
+    def launches():
+        return [json.loads(line) for line in journal.read_text(encoding="utf-8").splitlines()]
+
+    def replay(client):
+        def call(operation, **payload):
+            return client.post("/api/v1/native/workflow/" + operation, json=payload).raise_for_status().json()
+
+        assert call("authorize", issue=issue["id"]) == key
+        current = call("status", key=key)
+        assignment = json.loads(current["assignment"])
+        assert call("reserve", assignment=assignment, event="replay") is False
+        row = call("execute", key=key)
+        assert row["id"] == key and row["worker_ref"] == "native-worker:" + key
+        return dict(execution=row["id"], worker_ref=row["worker_ref"], state=row["state"], starts=launches())
+
+    headers = {"Authorization": host.client.headers["Authorization"], "Content-Type": "application/json"}
+    try:
+        with closing(HTTPConnection("127.0.0.1", port, timeout=10)) as first:
+            first.request("POST", "/api/v1/native/workflow/execute", json.dumps({"key": key}), headers)
+            deadline = time.monotonic() + 10
+            while not journal.exists() or not journal.read_bytes().endswith(b"\n"):
+                if time.monotonic() >= deadline:
+                    raise TimeoutError("Worker did not record its physical start")
+                time.sleep(0.02)
+            duplicate = replay(host.client)
+            # Close the original TCP connection while its response is outstanding.
+        with httpx.Client(base_url=host.client.base_url, headers=headers, trust_env=False) as connected:
+            reconnected = replay(connected)
+            assert reconnected == duplicate and reconnected["state"] == "running"
+            release.touch()
+            settled = connected.post("/api/v1/native/workflow/await-terminal", json={"key": key})
+            assert settled.raise_for_status().json()["state"] == "produced"
+            terminal = replay(connected)
+    finally:
+        release.touch(exist_ok=True)
+    (physical,) = launches()
+    assert physical["execution"] == key and physical["pid"] > 0
+    assert duplicate["starts"] == terminal["starts"] == [physical] and terminal["state"] == "produced"
+    return dict(duplicate=duplicate, reconnected=reconnected, after_exit=terminal)
 
 
 def exercise(root, executable):
@@ -45,6 +109,7 @@ def exercise(root, executable):
         first, second = tasks
         stages = {task["id"]: stage for task, (_, stage, _) in zip(tasks, proposals, strict=True)}
         host.calls, plan = install_stage_probe(workflow, initial, folder, stage=stages[first["id"]])
+        journal, release = observe_launches(workflow, folder)
 
         def installed_plan(operator, issue):
             assert operator == actor and issue in stages
@@ -82,11 +147,11 @@ def exercise(root, executable):
                 key = host.api("authorize", issue=first["id"]).raise_for_status().json()
                 assert host.api("authorize", issue=first["id"]).raise_for_status().json() == key
                 assert host.reserve(key).raise_for_status().json() is True
-                for _ in range(2):
-                    assert host.api("execute", key=key).raise_for_status().json()["state"] == "produced"
+                replay = replay_launch(host, port, first, key, journal, release)
                 status = host.api("status", key=key).raise_for_status().json()
                 stored = json.loads(status["task"])
                 grant = stored["source"]["definition"]["stage_authorization"]
+                assert json.loads(status["terminal"])["origin"]["worker_ref"] == replay["after_exit"]["worker_ref"]
                 assert grant["issue_id"] == first["id"] and grant["stage"] == stages[first["id"]]
                 assert grant["issue_revision"] == first_confirmation["issue_revision"]
                 assert grant["confirmation_revision"] == first_confirmation["revision"]
@@ -119,6 +184,8 @@ def exercise(root, executable):
         profile=stored["profile"],
         process_exit=closure["exit_code"],
         process_count=1,
+        replay=replay,
+        process_closure=closure,
         sibling_tasks=0,
     )
 

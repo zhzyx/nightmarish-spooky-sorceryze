@@ -71,6 +71,13 @@ func run() -> void:
 	if not await wait_for(func(): return not view.signoff.disabled, "No revision"):
 		return
 	view.signoff.pressed.emit()
+	if fixture.has("signoff"):
+		if not await wait_for(func(): return signoff.criteria.editable and signoff.dialog.visible, "Unsigned revision unavailable"):
+			return
+		signoff.criteria.text = fixture.signoff
+		signoff.criteria.text_changed.emit()
+		await process_frame
+		click(signoff.dialog.get_ok_button())
 	if not await wait_for(func(): return signoff.split.is_visible_in_tree(), "No split action on signed design"):
 		return
 	click(signoff.split)
@@ -95,14 +102,15 @@ func run() -> void:
 		quit(1)
 		return
 	click(widget.dialog.get_ok_button())
-	click(widget.dialog.get_ok_button())
-	if not await wait_for(func(): return widget.status.text.contains("重试"), "Lost receipt not handled"):
-		return
-	if widget.form.visible:
-		push_error("Retry inputs can change")
-		quit(1)
-		return
-	click(widget.dialog.get_ok_button())
+	if fixture.get("retry", true):
+		click(widget.dialog.get_ok_button())
+		if not await wait_for(func(): return widget.status.text.contains("重试"), "Lost receipt not handled"):
+			return
+		if widget.form.visible:
+			push_error("Retry inputs can change")
+			quit(1)
+			return
+		click(widget.dialog.get_ok_button())
 	if not await wait_for(func(): return widget.status.text.contains("已生成"), "Split did not finish"):
 		return
 	var trace := {"status": widget.status.text, "revision": signoff.version, "items": widget.items.duplicate(true), "opened": []}

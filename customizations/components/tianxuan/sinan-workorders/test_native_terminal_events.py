@@ -100,10 +100,10 @@ def test_bounded_observer_does_not_cancel_owner(fixture):
     w._executions.pop(key)
 
 
-@pytest.mark.parametrize("credential", ["session", "key-bearer", "key-cookie"])
+@pytest.mark.parametrize("credential", ["session", "account-bearer", "account-cookie", "key-bearer", "key-cookie"])
 @pytest.mark.parametrize("revoked", [False, True])
 def test_http_terminal_refreshes_actual_credential(fixture, monkeypatch, credential, revoked):
-    from access_control import COOKIE
+    from access_control import COOKIE, SESSION_COOKIE
     from api import create_app
     from fastapi.testclient import TestClient
 
@@ -114,21 +114,22 @@ def test_http_terminal_refreshes_actual_credential(fixture, monkeypatch, credent
     headers = {}
     cookies = {}
     access = None
-    if credential == "session":
-        monkeypatch.delenv("TIANXUAN_REQUIRE_KEYS", raising=False)
-        token = w.domain.issue_session(actor)
-        headers["Authorization"] = "Bearer " + token
-    else:
+    monkeypatch.setenv("TIANXUAN_TENANT_ID", w.domain.actor_context(actor)["tenant"])
+    monkeypatch.setenv("TIANXUAN_PUBLIC_ORIGIN", "https://example.invalid")
+    if credential.startswith("key-"):
         monkeypatch.setenv("TIANXUAN_REQUIRE_KEYS", "1")
-        monkeypatch.setenv("TIANXUAN_TENANT_ID", w.domain.actor_context(actor)["tenant"])
-        monkeypatch.setenv("TIANXUAN_PUBLIC_ORIGIN", "https://example.invalid")
+        monkeypatch.setenv("TIANXUAN_AUTH_MODE", "keys")
         access = w.domain.issue_access_key(actor, actor, "observer-test")
         token = access["key"]
-        if credential == "key-bearer":
-            headers["Authorization"] = "Bearer " + token
-        else:
-            cookies[COOKIE] = token
-            headers["Origin"] = "https://example.invalid"
+    else:
+        monkeypatch.setenv("TIANXUAN_REQUIRE_KEYS", "0")
+        monkeypatch.setenv("TIANXUAN_AUTH_MODE", "accounts" if credential.startswith("account-") else "legacy")
+        token = w.domain.issue_session(actor)
+    if credential.endswith("-cookie"):
+        cookies[COOKIE if access else SESSION_COOKIE] = token
+        headers["Origin"] = "https://example.invalid"
+    else:
+        headers["Authorization"] = "Bearer " + token
     entered, release = threading.Event(), threading.Event()
     original = w.await_terminal
 
