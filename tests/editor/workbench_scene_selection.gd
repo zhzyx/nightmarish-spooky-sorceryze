@@ -34,16 +34,17 @@ func _run():
 	root.size = Vector2i(1440, 900)
 	await create_timer(1.0).timeout
 	var chat = root.find_child("AI Chat", true, false)
+	var sidebar := root.find_child("AIWorkbenchSidebar", true, false)
 	if OS.get_environment("SCENE_SELECTION_RESTORE") == "1":
-		var restored: Button = chat.find_child("WorkbenchReference", true, false)
-		var input: TextEdit = chat.find_child("ChatInput", true, false)
-		if not _check(restored.visible and "失效" in restored.text and input.text == "retain stale draft", "Lost restored multiselection draft"): return
+		var host: Node = sidebar if sidebar.is_visible_in_tree() else chat
+		var restored: Button = host.find_child("WorkbenchReference", true, false)
+		var input: TextEdit = host.find_child("ChatInput", true, false)
+		if not _check(is_instance_valid(restored) and is_instance_valid(input) and restored.visible and "失效" in restored.text and input.text == "retain stale draft", "Lost restored multiselection draft"): return
 		for path in LEAVES:
 			if not _check(path in restored.text, "Missing restored selection member"): return
 		print("SCENE_SELECTION_RESTORED")
 		quit(0)
 		return
-	var sidebar := root.find_child("AIWorkbenchSidebar", true, false)
 	var backend: OptionButton = chat.find_child("AIBackend", true, false)
 	backend.select(0)
 	backend.item_selected.emit(0)

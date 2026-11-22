@@ -126,6 +126,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 		if (pDetail)
 		{
 			pDetail->set_meta("open_workbench_sidebar", callable_mp(this, &AIChatDock::OpenWorkbenchSidebar));
+			pDetail->set_meta("open_linked_sidebar", callable_mp(this, &AIChatDock::ShowWorkbenchSidebar).bind(false));
 			for (const auto &action : workbench_issue_actions)
 			{
 				if (action.name)

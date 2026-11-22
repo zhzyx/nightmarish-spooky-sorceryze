@@ -372,7 +372,7 @@ func _restore_draft() -> void:
 	composer.text = record.get("text", "")
 	composer.clear_undo_history()
 	if not module_id.is_empty():
-		get_meta("restore_references").call(record)
+		get_meta("restore_references").call(key, record)
 	if pending.has("id") and conversation.get("turns", []).any(func(turn): return turn.id == pending.id):
 		# A committed reply may arrive after the editor closed. Preserve any later
 		# edits to either the text or the reference list.
@@ -418,7 +418,7 @@ func _switch_to(target: String) -> void:
 	_show_location(target, next_location, next_chat, next_issues, next_comments, {})
 
 
-func _open_issue_consultation(view: Node) -> void:
+func _open_issue_consultation(after_open: Callable, view: Node) -> void:
 	var detail: Dictionary = view.get_detail()
 	if not _authenticated() or detail.is_empty() or detail.project != project:
 		return
@@ -429,12 +429,12 @@ func _open_issue_consultation(view: Node) -> void:
 			return
 	_lock(true)
 	_notice("")
-	await _read_issue_consultation(view, detail)
+	await _read_issue_consultation(view, detail, after_open)
 	if generation == identity_generation:
 		_lock(false)
 
 
-func _read_issue_consultation(view: Node, detail: Dictionary) -> void:
+func _read_issue_consultation(view: Node, detail: Dictionary, after_open: Callable) -> void:
 	var generation := identity_generation
 	var target: String = detail.module_id
 	if not module_id.is_empty():
@@ -461,6 +461,8 @@ func _read_issue_consultation(view: Node, detail: Dictionary) -> void:
 		picker.set_item_metadata(picker.item_count - 1, target)
 	var selected := {"issue_id": detail.id, "conversation_id": chat.id, "position": "issue/details"}
 	_show_location(target, selected, chat, list.issues, [], detail)
+	if after_open.is_valid():
+		after_open.call(self)
 
 
 func _show_location(target: String, next_location: Dictionary, next_chat: Dictionary, next_issues: Array, next_comments: Array, detail: Dictionary) -> void:

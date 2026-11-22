@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-56fa12d217253bd8bfe64a9a350f810d272baac6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-u14",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1761",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "02901fffd2913f99e21e4e4f2feb5c107d28b1a6000d5ff145a559e42f563575",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1761",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2015",
+    "action": "validation",
+    "detection_head": "6997aa1730c8a30f0c29311ec82d0f96b9ac9059",
+    "context_sha256": "f6307493689a3836630eeebd6a5125a534699cffef49d2f1a8380be53bfa1066",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1761",
+    "evidence": "The worker reproduced ChatInput y=919..1010 in 1440x900 and 1100x900. After the scoped model-preview scroll change, ChatInput spans 727..818 within 322..850 and 759..850 within 358..850 respectively. Its real editor SHA256 is cfdea0b69560b9d394183d43fd1e305d59caac5f39168099f43663fc111809ed. The original spatial chat and persisted reopen passed in that worker build.",
+    "diagnosis": "The taller 3D preview pushed the retained chat input below the usable area of the original workspace. The worker bounded and scrolled preview content so original chat controls remain reachable at both sizes.",
+    "next_action": "Re-run both viewport sizes and the original spatial editor flow on the independently integrated Windows editor, then validate the signed candidate on main before closing.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T01:58:33.758917+00:00",
+    "attempted": null,
+    "repair_owner": "U14 native worker /root/sinan_25520d63e299b41d",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T02:03:23.922804+00:00",
+  "sha256": "9f418ce53a23dd34615d1ee9bddf8fcdbb534a05b53095e7822e9fe0c91f0de6"
+}
