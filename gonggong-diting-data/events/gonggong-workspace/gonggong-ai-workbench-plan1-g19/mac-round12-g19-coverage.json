@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round12-g19-coverage",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-g19",
+  "kind": "coverage",
+  "occurred_at": "2026-11-22T13:03:00.334305+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1742",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1742,
+    "evidence": "data-collection/gonggong-ai-workbench-plan1-g19.json",
+    "sha256": "a188a69cd5d1c4118266b92698d2b8bafac9409f25b26c7d30ce37396b1aaf85",
+    "verification": "在 Mac 的新目录运行 git_archive.py，冻结来源 Git 仓的全部分支、标签及可见 PR 引用。运行 customizations/components/tianxuan/migration/rehearse_repository.py CAPTURE NEW_DIRECTORY --tenant TENANT --actor ACTOR --project PROJECT，将全部可达提交导入隔离的多宝 NativeStore，再从已发布的目录修订恢复 bundle 并建立独立镜像。回执列出每个引用的来源与恢复值，核对对象类型、字节、提交记录关联和 git fsck。此次来源没有 LFS 对象和子模块。业务工单、评论等 GitHub 服务元数据使用独立的在线清单，Git 仓副本演练回执只统计 Git 范围。"
+  },
+  "evidence_refs": [],
+  "sha256": "b1ee0a50c8173d9655957229a7fabb9bbc2bb41c44f50e5cd49cc9ba34fa77b9"
+}
