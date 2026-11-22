@@ -358,3 +358,56 @@ def test_legacy_pending_judgment_reads_original_issue_creator(work):
     assert "initiator" not in state["history"][0]
     (judgment,) = state["creative_judgments"]
     assert (judgment["submission_version"], judgment["initiator"], judgment["responsible"]) == (1, owner, owner)
+
+
+def test_transfer_preserves_independent_judgments_and_rechecks_owner(work):
+    _, store, native, client, owner, issue = work
+    delegate = store.add_member(owner, "artist@example.invalid", "password", role="editor")["user_id"]
+    reader = store.add_member(owner, "reader@example.invalid", "password", role="viewer")["user_id"]
+    stranger = store.register("elsewhere", "other@example.invalid", "password")["user_id"]
+    auth = {actor: {"Authorization": "Bearer " + store.issue_session(actor)} for actor in (owner, delegate, stranger)}
+    version = native.submit(
+        store._tenant_of(owner),
+        owner,
+        "concept",
+        [dict(module="art", base=None, reads=None, edits={"scene.png": b"scene"})],
+    )["revisions"]["art"]
+    ref = dict(kind="concept", module="art", revision=version, path="scene.png")
+    base = f"/api/v1/issues/{issue}/work"
+
+    def post(actor, operation, key, expected, **extra):
+        return client.post(
+            base + "/" + operation,
+            headers=auth[actor],
+            json={**ref, "call_id": key, "expected_version": expected, **extra},
+        )
+
+    def mine(actor):
+        return [
+            row["submission_version"]
+            for row in client.get("/api/v1/work/my-judgments", headers=auth[actor]).raise_for_status().json()["items"]
+        ]
+
+    for i in range(2):
+        post(owner, "submit_asset", f"submit-{i}", i).raise_for_status()
+    assert mine(owner) == [1, 2] and mine(delegate) == []
+    for target in (reader, stranger):
+        assert post(owner, "transfer", target, 2, submission_version=1, target=target).status_code in (403, 404)
+    with pytest.raises(UnknownTool):
+        store.dispatch_tool(owner, "work.transfer", dict(issue_id=issue))
+    handoff = dict(submission_version=1, target=delegate, note="Check the previous silhouette")
+    first = post(owner, "transfer", "transfer", 2, **handoff).raise_for_status().json()
+    assert post(owner, "transfer", "transfer", 2, **handoff).json() == first
+    assert mine(owner) == [2] and mine(delegate) == [1] and mine(stranger) == []
+    decide = dict(submission_version=1, decision="approved")
+    assert post(owner, "decide", "stale", 2, **decide).status_code == 409
+    assert post(owner, "decide", "fresh", 3, **decide).status_code == 403
+    post(owner, "decide", "current", 3, submission_version=2, decision="approved").raise_for_status()
+    result = (
+        post(delegate, "decide", "pinned", 4, **{**decide, "decision": "changes_requested"}).raise_for_status().json()
+    )
+    assert [item["decision"] for item in result["creative_judgments"]] == ["changes_requested", "approved"]
+    assert result["assets"]["concept"]["submission_version"] == 2
+    assert result["history"][2]["note"] == handoff["note"]
+    assert client.get(base + "/approved-asset", headers=auth[owner], params=ref).content == b"scene"
+    assert mine(owner) == mine(delegate) == []

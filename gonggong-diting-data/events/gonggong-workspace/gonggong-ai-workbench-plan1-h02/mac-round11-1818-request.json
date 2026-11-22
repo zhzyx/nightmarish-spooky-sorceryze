@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round11-1818-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-h02",
+  "kind": "request",
+  "occurred_at": "2026-11-22T09:15:25.233935+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1818",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "request": "两个账号转交、旧页面拒绝决定、历史与修订继承",
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1818#issuecomment-7076854390",
+    "verified_intake_sha256": "02cce95d0e7e7386d1abe91d719feb6d05b2f563459d9ac9651f7b89da43e177",
+    "authority": "mac-round11-judgments"
+  },
+  "evidence_refs": [],
+  "sha256": "c538f688307911af2f40211f11034cdef353bb45e8f6123147383f6ce3939b5b"
+}
