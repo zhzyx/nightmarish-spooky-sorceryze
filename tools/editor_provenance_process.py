@@ -328,7 +328,7 @@ class WindowsJob:
         self.assigned = False
         self.cleanup_verified = False
 
-    def spawn(self, argv, cwd=None, stdout=None, stderr=None, env=None, stdin=None):
+    def spawn(self, argv, cwd=None, stdout=None, stderr=None, env=None, stdin=None, *, hide_window=False):
         if self.child is not None or self.handle is None:
             raise ProcessError("provenance_windows_job_spawn_invalid")
         child = subprocess.Popen(
@@ -339,7 +339,7 @@ class WindowsJob:
             stderr=stderr,
             env=env,
             close_fds=True,
-            creationflags=CREATE_SUSPENDED,
+            creationflags=CREATE_SUSPENDED | (subprocess.CREATE_NO_WINDOW if hide_window else 0),
         )
         self.child = child
         try:
