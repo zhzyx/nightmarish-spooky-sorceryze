@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "macos-startup-validation-sidecars",
+  "event_id": "resume-1709-receive-2123",
+  "kind": "request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2123",
+  "occurred_at": "2026-11-22T18:39:46.667175+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "issue_number": 2123,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-22T18:15:18Z",
+    "parent_issue": 1709,
+    "source_baseline": "6d9d2df532fb51cb24ee62344501155c75ae1488",
+    "authority": "current user requested completion of the outstanding plan items"
+  },
+  "evidence_refs": [],
+  "sha256": "4686b9a3ad3b161c451d8eca7438dd552ca20ffbf4c8f125b7ccee4f60d03eac"
+}

@@ -42,14 +42,21 @@ func _ready() -> void:
 func _verify() -> void:
 	var binary := OS.get_executable_path()
 	var probe: String = entry_validation.probe_source if entry_validation else PROBE
-	var key := ("%s|%s|%s|%s" % [binary, FileAccess.get_modified_time(binary), Engine.get_version_info().hash, probe]).sha256_text()
+	var identity := "%s|%s|%s|%s" % [binary, FileAccess.get_modified_time(binary), Engine.get_version_info().hash, probe]
+	var sources := {}
+	if entry_validation:
+		sources = entry_validation.package_sources()
+		if sources.is_empty():
+			return
+		identity += "|%s|%s" % [sources.ui.sha256, sources.board.sha256]
+	var key := identity.sha256_text()
 	var cache := EditorInterface.get_editor_paths().get_cache_dir().path_join("godot-silent-" + key + ".ok")
 	if FileAccess.file_exists(cache) and FileAccess.get_file_as_string(cache).strip_edges() == key:
 		if entry_validation:
 			print("GongGong macOS startup validation reused")
 		return
 	if entry_validation:
-		if await entry_validation.verify_entry():
+		if await entry_validation.verify_entry(sources):
 			_save_receipt(cache, key)
 		return
 	scratch = DirAccess.create_temp("godot-silent")
