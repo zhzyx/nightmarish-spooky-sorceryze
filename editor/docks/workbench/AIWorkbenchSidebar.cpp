@@ -195,6 +195,17 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 		{
 			selector->set_meta("asset_picker_script", asset_script);
 		}
+		Ref<Script> changes_script = LoadWorkbenchControlScript(daqian_saved_editor_changes);
+		if (changes_script.is_valid())
+		{
+			Node *changes = memnew(Node);
+			changes->set_name("SavedEditorChanges");
+			changes->set_script(changes_script);
+			selector->add_child(changes);
+			// The sidebar is constructed inside EditorNode; its signals become available after construction.
+			EditorNode::get_singleton()->call_deferred(SNAME("connect"), SNAME("resource_saved"), Callable(changes, "resource_saved"));
+			EditorNode::get_singleton()->call_deferred(SNAME("connect"), SNAME("scene_saved"), Callable(changes, "saved"));
+		}
 		pConversationView->add_child(selector);
 		pConversationView->move_child(selector, 0);
 	}

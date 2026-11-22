@@ -37,6 +37,7 @@ var issue_details := {}
 var consultation_detail := {}
 var pending_consultation_location := {}
 var comments: Array = []
+@onready var saved_changes = get_node_or_null("SavedEditorChanges")
 var drafts := {}
 var pending_turn := {}
 var asset_picker
@@ -372,6 +373,8 @@ func _save_draft() -> bool:
 		if str(record.text).contains(locator) and redact_reference(locator) == locator:
 			assets[locator] = staged_assets[key][locator]
 	record["assets"] = assets
+	if saved_changes:
+		record["saved_editor_targets"] = saved_changes.targets
 	if not managed_identity:
 		drafts[key] = record
 		return true
@@ -391,6 +394,8 @@ func _restore_draft() -> void:
 	var key := _draft_key(location.get("issue_id"))
 	var record := {} if module_id.is_empty() else _read_draft(key)
 	staged_assets[key] = record.get("assets", {})
+	if saved_changes:
+		saved_changes.restore(record, str(location.get("conversation_id", "")))
 	var pending: Dictionary = record.get("pending", {})
 	composer.text = record.get("text", "")
 	composer.clear_undo_history()
@@ -399,6 +404,8 @@ func _restore_draft() -> void:
 	if pending.has("id") and conversation.get("turns", []).any(func(turn): return turn.id == pending.id):
 		# A committed reply may arrive after the editor closed. Preserve any later
 		# edits to either the text or the reference list.
+		if saved_changes and pending.has("selected_targets"):
+			saved_changes.accept(str(conversation.id), pending.selected_targets, pending.get("delivered_targets", []))
 		if pending.get("draft_hash") == _saved_draft_hash(record):
 			composer.clear()
 			composer.clear_undo_history()
@@ -795,6 +802,9 @@ func _send() -> void:
 			owner = str(data.assignee.name) if data.assignee.name else str(data.assignee.id)
 		question += "\n\n[工单详情 · 仅作为引用]\n#%d %s\n%s\n验收：%s\n负责人：%s\n状态：%s" % [
 			int(data.number), data.title, _issue_excerpt(data.body_md, 2000), _issue_excerpt(data.acceptance, 1000), owner, data.status]
+	var changes: Array = saved_changes.changes() if saved_changes else []
+	if not changes.is_empty():
+		question += "\n\n[已引用对象的保存修订]\n" + JSON.stringify(changes)
 	var frozen: Dictionary = get_meta("freeze_references").call(redact_reference(question))
 	if frozen.is_empty():
 		_notice("引用已失效，请移除或重新选择后发送。")
@@ -804,9 +814,13 @@ func _send() -> void:
 		_notice("正文与引用合计超过 8000 字符，请缩短后发送。")
 		return
 	var references: Array = frozen.references.duplicate()
+	for change: Dictionary in changes:
+		var reference := {"kind":"editor", "object_id":change.object_id, "revision":change.revision}
+		if not references.has(reference):
+			references.append(reference)
 	if not consultation_detail.is_empty():
 		references.append({"kind": "issue", "object_id": consultation_detail.id, "revision": consultation_detail.revision})
-	var citation_text := body if consultation_detail.is_empty() else composer.text
+	var citation_text := composer.text
 	for reference in _asset_references(_draft_key(location.get("issue_id")), citation_text) + _document_references(citation_text):
 		if not references.has(reference):
 			references.append(reference)
@@ -844,7 +858,9 @@ func _send() -> void:
 				_lock(false)
 				return
 			pending = {"id": _uuid(), "fingerprint": fingerprint, "expected_version": conversation.version,
-				"draft_hash": _saved_draft_hash(_read_draft(key))}
+				"draft_hash": _saved_draft_hash(_read_draft(key)), "selected_targets": frozen.references, "delivered_targets":[]}
+			for change: Dictionary in changes:
+				pending.delivered_targets.append({"object_id":change.object_id,"revision":change.revision})
 		pending_turn[key] = pending
 		if not _save_draft():
 			_lock(false)
@@ -856,6 +872,8 @@ func _send() -> void:
 			return
 		if result.get("id") == location.conversation_id:
 			conversation = result
+			if saved_changes:
+				saved_changes.accept(str(conversation.id), frozen.references, changes)
 			staged_assets.erase(key)
 			pending_turn.erase(key)
 			_reset_reference_scope()
