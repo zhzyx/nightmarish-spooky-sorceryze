@@ -1,0 +1,46 @@
+{
+  "issue_number": 1771,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1771",
+  "request_id": "gonggong-ai-workbench-plan1-v06",
+  "baseline": "9793b67af36f371e151a69cf7fe4a9d98fbbfdca",
+  "tested_at": "2026-11-22T13:24:09.833408+00:00",
+  "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+  "build": "scons platform=macos target=editor arch=arm64 vulkan=no accesskit=no -j8",
+  "editor_sha256": "1459c15c5487cee455eb9cfecd6d403d05eb8221fabf7c09d705fca44a0eb54f",
+  "source_sha256": {
+    "editor/animation/animation_player_editor_plugin.h": "a1a62386ccb019fed07082d9241e19dc0a006b53290bbc9577b6c55a1556a4d1",
+    "editor/animation/animation_player_editor_plugin.cpp": "fdb9739aa58ff592fd8eb71f65e4db665db0932b8e303df120f5a21e48e03a8e",
+    "tests/editor/workbench_approach_replay.gd": "07f05f459279fb7d5ab07ed4ec66278aa120ea3c6be1186b4de47344644cefaa",
+    "tests/editor/run_workbench_edit_candidates.py": "87b4d6e115953f5d086d26e101fec427ef806d2508d0896d37a066f96c040447"
+  },
+  "command": "python tests/editor/run_workbench_edit_candidates.py --godot bin/godot.macos.editor.arm64 animation",
+  "observation": {
+    "display_driver": "macOS",
+    "landing": [
+      24.0,
+      14.0
+    ],
+    "marked_interval": "Walk | revision 1034e51f227c | 0.5-1.0 s",
+    "middle_times": [
+      0.5,
+      0.25
+    ],
+    "restored": 0.75,
+    "samples": {
+      "Landing": {
+        "revision": "Landing | revision 2a436a100b9e | 0.0-1.0 s",
+        "time": 0.249872222222222,
+        "x": 11.9938669204712
+      },
+      "Walk": {
+        "revision": "Walk | revision 1034e51f227c | 0.0-1.0 s",
+        "time": 0.249438222222222,
+        "x": 5.98651742935181
+      }
+    },
+    "saved": "7ae8b571c68ec74075c322a7b4e0e91e164d165249055bf734301bf191efd8c7"
+  },
+  "mode": "Native macOS editor windows with isolated user/project data",
+  "result": "passed",
+  "diagnostics": "Editor shutdown reported renderer RID and ObjectDB leaks after the bounded GUI test; the processes exited 0."
+}

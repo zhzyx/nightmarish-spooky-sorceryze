@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fc10bc2821eab55c88bfa44db2721114e6e77649",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-e11",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1766",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "6d9b490447bc5ca782655e946071a2624b5a60f63ed7784518d6e607e100b3bc",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1766",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2084",
+    "action": "delivery",
+    "detection_head": "387ff6d0ac6584a2a62877d7b874e225961f11df",
+    "context_sha256": "4f8effcec00097ca54ae81cf550e764b910ad4ca6385b62943094743b4e1b5d0",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "mac-round12-edit",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45027326120",
+    "diagnosis": "交付目录中本轮原生调度的 handoff 与终态 step 两条真实事件未加入索引，git-check 逐条列出未跟踪路径。已逐项核对同一 reservation 和实际工作者回执。",
+    "next_action": "将本次调度和故障回执随原候选签发，重跑原交付命令，随后核验正式 CI 与主线。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T13:24:23.191046+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": null
+  },
+  "occurred_at": "2026-11-22T13:26:29.606987+00:00",
+  "sha256": "621bfee3b98aa0045e51b19f54091ac5a4693f147b6647fa41394857ec826fe2"
+}

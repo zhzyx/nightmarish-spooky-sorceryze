@@ -83,6 +83,7 @@ void AnimationPlayerEditor::_find_player() {
 
 void AnimationPlayerEditor::_node_removed(Node *p_node) {
 	if (player && original_node == p_node) {
+		EndComparison(false);
 		if (is_dummy) {
 			plugin->_clear_dummy_player();
 		}
@@ -116,6 +117,10 @@ void AnimationPlayerEditor::_notification(int p_what) {
 				return;
 			}
 
+			if (!compare_candidate.is_empty()) {
+				AdvanceComparison(get_process_delta_time());
+				return;
+			}
 			updating = true;
 
 			if (player->is_playing()) {
@@ -426,6 +431,10 @@ void AnimationPlayerEditor::_play_bw_from_pressed() {
 }
 
 void AnimationPlayerEditor::_stop_pressed() {
+	if (!compare_candidate.is_empty()) {
+		EndComparison(true);
+		return;
+	}
 	if (!player) {
 		return;
 	}
@@ -450,6 +459,7 @@ void AnimationPlayerEditor::_animation_selected(int p_which) {
 #define ITEM_CHECK_DISABLED(m_item) tool_anim->get_popup()->set_item_disabled(tool_anim->get_popup()->get_item_index(m_item), true)
 	ITEM_CHECK_DISABLED(TOOL_RENAME_ANIM);
 	ITEM_CHECK_DISABLED(TOOL_DUPLICATE_ANIM);
+	ITEM_CHECK_DISABLED(TOOL_RETIME_APPROACH);
 	ITEM_CHECK_DISABLED(TOOL_REMOVE_ANIM);
 
 	ITEM_CHECK_DISABLED(TOOL_EDIT_TRANSITIONS);
@@ -742,11 +752,17 @@ void AnimationPlayerEditor::_animation_name_edited() {
 
 		} break;
 
+		case TOOL_RETIME_APPROACH:
 		case TOOL_DUPLICATE_ANIM: {
 			String current = animation->get_item_text(animation->get_selected());
 			Ref<Animation> anim = player->get_animation(current);
 
 			Ref<Animation> new_anim = _animation_clone(anim);
+			if (name_dialog_op == TOOL_RETIME_APPROACH && !PrepareApproach(anim, new_anim)) {
+				error_dialog->set_text(TTR("Select a landing key after at least one movable key. The keys must remain distinct and editable."));
+				error_dialog->popup_centered();
+				return;
+			}
 			new_anim->set_name(new_name);
 
 			String library_name;
@@ -1259,6 +1275,7 @@ void AnimationPlayerEditor::edit(AnimationMixer *p_node, AnimationPlayer *p_play
 		return; // Ignore, pinned.
 	}
 
+	EndComparison(true);
 	if (player) {
 		if (player->is_connected(SNAME("animation_list_changed"), callable_mp(this, &AnimationPlayerEditor::_animation_libraries_updated))) {
 			player->disconnect(SNAME("animation_list_changed"), callable_mp(this, &AnimationPlayerEditor::_animation_libraries_updated));
@@ -1373,6 +1390,106 @@ void AnimationPlayerEditor::forward_force_draw_over_viewport(Control *p_overlay)
 	}
 }
 
+// The first protected key fixes the landing time across all tracks. Work on the
+// unpublished duplicate so a failed validation cannot alter the edited clip.
+bool AnimationPlayerEditor::PrepareApproach(const Ref<Animation> &p_source, const Ref<Animation> &p_candidate) {
+	double end = INFINITY;
+	for (int track = 0; track < p_source->get_track_count(); ++track) {
+		for (int key = 0; key < p_source->track_get_key_count(track); ++key) {
+			if (track_editor->is_key_selected(track, key)) {
+				end = MIN(end, p_source->track_get_key_time(track, key));
+			}
+		}
+	}
+	if (!Math::is_finite(end) || end <= 0 || end > p_source->get_length()) {
+		return false;
+	}
+	bool moved = false;
+	for (int track = 0; track < p_source->get_track_count(); ++track) {
+		int count = p_source->track_get_key_count(track);
+		for (int key = 0; key < count; ++key) {
+			double time = p_source->track_get_key_time(track, key);
+			if (time <= 0 || time >= end) {
+				continue;
+			}
+			if (p_source->track_is_compressed(track)) {
+				return false;
+			}
+			p_candidate->track_set_key_time(track, key, time * 0.5);
+			if (p_candidate->track_get_key_count(track) != count) {
+				return false;
+			}
+			moved = true;
+		}
+	}
+	if (moved) {
+		p_candidate->set_meta("approach_source", _get_current());
+		p_candidate->set_meta("approach_end", end);
+	}
+	return moved;
+}
+
+void AnimationPlayerEditor::EndComparison(bool p_restore) {
+	if (compare_candidate.is_empty()) {
+		return;
+	}
+	String candidate = compare_candidate;
+	compare_candidate = "";
+	replay_source_clip = "";
+	compare_status->hide();
+	if (p_restore && player && player->has_animation(candidate)) {
+		_select_anim_by_name(candidate);
+		player->seek_internal(compare_cursor, true, true, false);
+		frame->set_value_no_signal(compare_cursor);
+		track_editor->set_anim_pos(compare_cursor);
+	}
+}
+
+void AnimationPlayerEditor::AdvanceComparison(double p_delta) {
+	// Keep the protected pose visible at the end of each revision.
+	const double phase_duration = compare_end - compare_start + 0.2;
+	const bool was_source = compare_elapsed < phase_duration;
+	const String expected = was_source ? compare_source : compare_candidate;
+	if (!is_visible_in_tree() || !player->has_animation(compare_source) || !player->has_animation(compare_candidate)) {
+		EndComparison(true);
+		return;
+	}
+	if (_get_current() != expected || player->is_playing()) {
+		EndComparison(false);
+		return;
+	}
+	compare_elapsed += MIN(p_delta, 0.1);
+	if (compare_elapsed >= 2 * phase_duration) {
+		EndComparison(true);
+		return;
+	}
+	const bool source = compare_elapsed < phase_duration;
+	if (was_source && !source) {
+		_select_anim_by_name(compare_candidate);
+	}
+	const String clip = source ? compare_source : compare_candidate;
+	if (p_delta == 0 || was_source != source) {
+		// Bind the displayed revision to the live track content, including edits
+		// that have not yet been serialized into the scene file.
+		Ref<Animation> anim = player->get_animation(clip);
+		Array tracks;
+		List<PropertyInfo> props;
+		anim->get_property_list(&props);
+		for (const PropertyInfo &prop : props) {
+			if (prop.usage & PROPERTY_USAGE_STORAGE) {
+				tracks.push_back(prop.name);
+				tracks.push_back(anim->get(prop.name));
+			}
+		}
+		compare_status->set_text(vformat(TTR("%s | revision %s | %s-%s s"), clip, Variant(tracks).get_construct_string().sha256_text().left(12), compare_start, compare_end));
+		compare_status->show();
+	}
+	double time = MIN(compare_start + (source ? compare_elapsed : compare_elapsed - phase_duration), compare_end);
+	player->seek_internal(time, true, true, false);
+	frame->set_value_no_signal(time);
+	track_editor->set_anim_pos(time);
+}
+
 void AnimationPlayerEditor::_animation_duplicate() {
 	if (!animation->has_selectable_items()) {
 		return;
@@ -1463,6 +1580,7 @@ void AnimationPlayerEditor::_seek_value_changed(float p_value, bool p_timeline_o
 	}
 
 	track_editor->set_anim_pos(pos);
+	updating = false;
 }
 
 void AnimationPlayerEditor::_animation_player_changed(Object *p_pl) {
@@ -1557,6 +1675,7 @@ void AnimationPlayerEditor::_current_animation_changed(const StringName &p_name)
 
 #define ITEM_CHECK_DISABLED(m_item) tool_anim->get_popup()->set_item_disabled(tool_anim->get_popup()->get_item_index(m_item), all_animation_libraries_are_readonly)
 		ITEM_CHECK_DISABLED(TOOL_DUPLICATE_ANIM);
+		ITEM_CHECK_DISABLED(TOOL_RETIME_APPROACH);
 #undef ITEM_CHECK_DISABLED
 	}
 }
@@ -1603,6 +1722,71 @@ void AnimationPlayerEditor::_animation_tool_menu(int p_option) {
 		case TOOL_ANIM_LIBRARY: {
 			library_editor->set_animation_mixer(fetch_mixer_for_library());
 			library_editor->show_dialog();
+		} break;
+		case TOOL_RETIME_APPROACH: {
+			if (anim.is_null() || !compare_candidate.is_empty()) {
+				return;
+			}
+			_animation_duplicate();
+			name_dialog_op = TOOL_RETIME_APPROACH;
+			name_dialog->set_title(TTR("Halve Approach Before Selected Keys"));
+		} break;
+		case TOOL_MARK_REPLAY_SOURCE: {
+			if (anim.is_null() || !compare_candidate.is_empty()) {
+				return;
+			}
+			double start = INFINITY;
+			double end = 0;
+			for (int track = 0; track < anim->get_track_count(); ++track) {
+				for (int key = 0; key < anim->track_get_key_count(track); ++key) {
+					if (track_editor->is_key_selected(track, key)) {
+						const double time = anim->track_get_key_time(track, key);
+						start = MIN(start, time);
+						end = MAX(end, time);
+					}
+				}
+			}
+			if (end <= 0 || end > anim->get_length()) {
+				error_dialog->set_text(TTR("Select keys to mark a comparison interval ending after zero."));
+				error_dialog->popup_centered();
+				return;
+			}
+			replay_source_player = player->get_instance_id();
+			replay_source_clip = current;
+			replay_source_start = start == end ? 0 : start;
+			replay_source_end = end;
+			compare_status->set_text(vformat(TTR("Source: %s | %s-%s s. Select the candidate and replay."), current, replay_source_start, end));
+			compare_status->show();
+		} break;
+		case TOOL_COMPARE_APPROACH: {
+			if (!compare_candidate.is_empty()) {
+				EndComparison(true);
+				return;
+			}
+			if (anim.is_null() || player->is_playing()) {
+				return;
+			}
+			String source = anim->get_meta("approach_source", "");
+			double start = 0;
+			double end = anim->get_meta("approach_end", 0.0);
+			if (replay_source_player == player->get_instance_id() && !replay_source_clip.is_empty()) {
+				source = replay_source_clip;
+				start = replay_source_start;
+				end = replay_source_end;
+			}
+			if (source == current || !player->has_animation(source) || end <= 0 || end > anim->get_length() || end > player->get_animation(source)->get_length()) {
+				error_dialog->set_text(TTR("Select an approach candidate with its source animation available, or mark source keys before selecting a second clip."));
+				error_dialog->popup_centered();
+				return;
+			}
+			compare_candidate = current;
+			compare_source = source;
+			compare_start = start;
+			compare_end = end;
+			compare_cursor = timeline_position;
+			compare_elapsed = 0;
+			_select_anim_by_name(source);
+			AdvanceComparison(0);
 		} break;
 		case TOOL_DUPLICATE_ANIM: {
 			_animation_duplicate();
@@ -2148,6 +2332,13 @@ AnimationPlayerEditor::AnimationPlayerEditor(AnimationPlayerEditorPlugin *p_plug
 	tool_anim->get_popup()->add_separator();
 	tool_anim->get_popup()->add_shortcut(ED_SHORTCUT("animation_player_editor/remove_animation", TTRC("Remove")), TOOL_REMOVE_ANIM);
 	tool_anim->set_disabled(true);
+	tool_anim->get_popup()->add_item(TTR("Halve Approach Before Selected Keys..."), TOOL_RETIME_APPROACH);
+	tool_anim->get_popup()->add_item(TTR("Mark Selected Keys as Replay Source"), TOOL_MARK_REPLAY_SOURCE);
+	tool_anim->get_popup()->add_item(TTR("Replay Source and Candidate Approach"), TOOL_COMPARE_APPROACH);
+	compare_status = memnew(Label);
+	compare_status->set_name("ApproachReplayRevision");
+	main_vbox_container->add_child(compare_status);
+	compare_status->hide();
 	tool_anim->get_popup()->connect(SceneStringName(id_pressed), callable_mp(this, &AnimationPlayerEditor::_animation_tool_menu));
 	hb->add_child(tool_anim);
 

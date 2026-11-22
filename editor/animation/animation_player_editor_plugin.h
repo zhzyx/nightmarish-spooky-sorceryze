@@ -61,7 +61,10 @@ class AnimationPlayerEditor : public EditorDock {
 		TOOL_RENAME_ANIM,
 		TOOL_EDIT_TRANSITIONS,
 		TOOL_REMOVE_ANIM,
-		TOOL_EDIT_RESOURCE
+		TOOL_EDIT_RESOURCE,
+		TOOL_RETIME_APPROACH,
+		TOOL_COMPARE_APPROACH,
+		TOOL_MARK_REPLAY_SOURCE
 	};
 
 	enum {
@@ -112,6 +115,20 @@ class AnimationPlayerEditor : public EditorDock {
 	Ref<Texture2D> reset_icon;
 	Ref<ImageTexture> autoplay_reset_icon;
 
+	ObjectID replay_source_player;
+	String replay_source_clip;
+	double replay_source_start = 0;
+	double replay_source_end = 0;
+	String compare_source;
+	double compare_start = 0;
+	String compare_candidate;
+	double compare_end = 0;
+	double compare_elapsed = 0;
+	double compare_cursor = 0;
+	Label *compare_status = nullptr;
+	void AdvanceComparison(double p_delta);
+	void EndComparison(bool p_restore);
+	bool PrepareApproach(const Ref<Animation> &p_source, const Ref<Animation> &p_candidate);
 	bool finishing = false;
 	bool last_active = false;
 	float timeline_position = 0;

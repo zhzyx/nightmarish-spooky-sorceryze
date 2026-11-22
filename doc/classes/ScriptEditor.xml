@@ -125,6 +125,12 @@
 				Saves all open scripts.
 			</description>
 		</method>
+		<method name="save_current_script">
+			<return type="void" />
+			<description>
+				Saves the active script through the script editor.
+			</description>
+		</method>
 		<method name="unregister_syntax_highlighter">
 			<return type="void" />
 			<param index="0" name="syntax_highlighter" type="EditorSyntaxHighlighter" />

@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round12-v06-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-v06",
+  "kind": "request",
+  "occurred_at": "2026-11-22T13:18:18.748682+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1771",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue_number": 1771,
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1771#issuecomment-7079182873",
+    "verified_intake_sha256": "f01114ebe969044095e8dbdfd08c6dd607bd41b062fd23b9232c116376c30a5f",
+    "scope": "在 Mac 原生动画时间线回放指定键的前后区间，核对播放范围、关键姿态、修订和恢复的编辑位置。"
+  },
+  "evidence_refs": [],
+  "sha256": "bb64da26a2e4476313ab1f17c1521ad1aca899cc34f6562572bb33b0231434c2"
+}
