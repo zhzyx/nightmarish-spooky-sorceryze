@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "event_id": "mac-round11-g18-request",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-g18",
+  "kind": "request",
+  "occurred_at": "2026-11-22T09:10:25.503828+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1783",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "origin": "external-authorized-host",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6"
+  },
+  "payload": {
+    "issue": 1783,
+    "request_id": "gonggong-ai-workbench-plan1-g18",
+    "scope_comment": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1783#issuecomment-7076855996",
+    "verified_intake_sha256": "800d96db8976228aef1b1feecae24f5665f6d841fd628c6441ab19cf03c6e60a",
+    "request": "用隔离的本机仓库演练多宝入口回退，核对切回前后新增提交、分支历史和权威路由。"
+  },
+  "evidence_refs": [],
+  "sha256": "ab1f5736f173549fe5ff06596b53705d63ad85dbfac7c2152741e3ae40245429"
+}
