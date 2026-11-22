@@ -84,6 +84,10 @@ CREATE TABLE IF NOT EXISTS design_task_targets (
   responsible_user TEXT NOT NULL REFERENCES users(id), stage TEXT NOT NULL, criteria TEXT NOT NULL,
   return_comment_id TEXT REFERENCES issue_comments(id)
 );
+CREATE TABLE IF NOT EXISTS design_task_confirmations (
+  issue_id TEXT PRIMARY KEY REFERENCES design_task_targets(issue_id), target_revision INTEGER NOT NULL,
+  revision INTEGER NOT NULL, issue_revision TEXT, status TEXT NOT NULL, actor TEXT REFERENCES users(id)
+);
 CREATE INDEX IF NOT EXISTS idx_design_tasks_revision ON design_task_sources(document_id,version,project);
 CREATE TABLE IF NOT EXISTS issues (
   id TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, parent_id TEXT, number INTEGER NOT NULL,
@@ -1504,6 +1508,79 @@ class Tianxuan:
         assert target is not None
         return target
 
+    def _task_confirmation(self, target: dict[str, Any], responsible: str, issue_revision: str) -> dict[str, Any]:
+        row = self.db.execute(
+            "SELECT * FROM design_task_confirmations WHERE issue_id=?", (target["issue_id"],)
+        ).fetchone()
+        status = "pending"
+        if row and (row["target_revision"], row["actor"], row["issue_revision"]) == (
+            target["revision"],
+            responsible,
+            issue_revision,
+        ):
+            status = row["status"]
+        return {
+            "issue_id": target["issue_id"],
+            "document_id": target["document_id"],
+            "version": target["version"],
+            "stage": target["stage"],
+            "target_revision": target["revision"],
+            "issue_revision": issue_revision,
+            "revision": row["revision"] if row else 0,
+            "status": status,
+            "responsible_user": responsible,
+            "confirmed_by": responsible if status == "confirmed" else None,
+        }
+
+    @_connection_call
+    def set_task_confirmation(
+        self,
+        actor: str,
+        issue_id: str,
+        project: str,
+        document_id: str,
+        version: int,
+        target_revision: int,
+        issue_revision: str,
+        expected_revision: int,
+        status: str,
+    ) -> dict[str, Any]:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        self._require_editor(actor)
+        issue = self._project_issue(actor, issue_id, project, write=True)
+        detail = self.read_issue_detail(actor, project, issue["number"])
+        if detail["design_source"] is None:
+            raise NotFound("signed design source unavailable")
+        target = detail["task_target"]
+        current: dict[str, Any] | None = detail["task_confirmation"]
+        if not target or target["status"] != "defined" or current is None:
+            raise VersionConflict("define the stage and its criteria first")
+        if current["responsible_user"] != actor:
+            raise PermissionDenied("only the current responsible user may confirm this task")
+        if (document_id, version, target_revision) != (target["document_id"], target["version"], target["revision"]):
+            raise VersionConflict("task source or target changed")
+        if issue_revision != detail["revision"]:
+            raise VersionConflict("issue definition changed")
+        if status not in {"confirmed", "revoked"}:
+            raise TianxuanError("unsupported confirmation status")
+        revision = current["revision"]
+        if current["status"] == status and expected_revision in (revision, revision - 1):
+            return current
+        if expected_revision != revision or (status == "revoked" and current["status"] != "confirmed"):
+            raise VersionConflict("confirmation changed; reopen the task")
+        if status == "confirmed" and issue["status"] in {"done", "cancelled"}:
+            raise VersionConflict("terminal issue cannot start")
+        self.db.execute(
+            "INSERT INTO design_task_confirmations(issue_id,target_revision,revision,status,actor,issue_revision) VALUES(?,?,?,?,?,?) "
+            "ON CONFLICT(issue_id) DO UPDATE SET target_revision=excluded.target_revision,"
+            "revision=excluded.revision,status=excluded.status,actor=excluded.actor,issue_revision=excluded.issue_revision",
+            (issue_id, target_revision, revision + 1, status, actor, issue_revision),
+        )
+        record = self._task_confirmation(target, actor, issue_revision)
+        self._event(issue["tenant_id"], "task.confirmation", actor, issue_id, record)
+        return record
+
     # ---------- 文曲：评论 ----------
 
     @_connection_call
@@ -1833,10 +1910,13 @@ class Tianxuan:
         except PermissionDenied:
             can_classify = False
         source = self._design_task_source(actor, issue["id"])
+        target = self._task_target(issue["id"]) if source else None
+        responsible = assignee["id"] if assignee else issue["created_by"]
         return issue | {
             "can_classify": can_classify,
             "design_source": source,
-            "task_target": self._task_target(issue["id"]) if source else None,
+            "task_target": target,
+            "task_confirmation": self._task_confirmation(target, responsible, snapshot["revision"]) if target else None,
             "assignee": dict(assignee) if assignee else None,
             "revision": snapshot["revision"],
             "labels": self._issue_labels(issue["id"]),
@@ -1955,6 +2035,14 @@ class Tianxuan:
                     (issue_id, assignee_id),
                 )
             self.db.execute("UPDATE issues SET updated_at=? WHERE id=?", (_now(), issue_id))
+            # Compare against the edit seen before reassignment, including an A -> B -> A round trip.
+            self.db.execute(
+                "INSERT INTO design_task_confirmations(issue_id,target_revision,revision,status,actor) "
+                "SELECT issue_id,revision,1,'pending',NULL FROM design_task_targets WHERE issue_id=? "
+                "ON CONFLICT(issue_id) DO UPDATE SET revision=design_task_confirmations.revision+1,"
+                "status='pending',actor=NULL",
+                (issue_id,),
+            )
             self._event(issue["tenant_id"], "issue.assigned", actor, issue_id, {"from": previous, "to": assignee_id})
         return self.read_issue_detail(actor, project, issue["number"])
 

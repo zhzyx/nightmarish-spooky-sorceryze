@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -254,6 +254,16 @@ class TaskTargetRequest(BaseModel):
     expected_revision: int = Field(ge=0, le=2**63 - 1, strict=True)
     stage: str = Field(min_length=1, max_length=128)
     criteria: str | None = Field(default=None, max_length=8000)
+
+
+class TaskConfirmationRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    document_id: str = Field(min_length=1, max_length=256)
+    version: int = Field(ge=1, le=2**63 - 1, strict=True)
+    issue_revision: str = Field(pattern=r"^[0-9a-f]{64}$")
+    target_revision: int = Field(ge=1, le=2**63 - 1, strict=True)
+    expected_revision: int = Field(ge=0, le=2**63 - 1, strict=True)
+    status: Literal["confirmed", "revoked"]
 
 
 class DocRestoreRequest(BaseModel):

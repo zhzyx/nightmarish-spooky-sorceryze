@@ -1,0 +1,182 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-a03",
+  "issue_number": 1855,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1855",
+  "producer": "wave22_a03",
+  "baseline": "cc476c104de48c9cc7eb807d6e7ea7d87cdaa90c",
+  "source_revision": "ca386b531fdd3d1fc2750e207f27209c8eb8db7e4849b61a741919ad9f13a976",
+  "verified_at": "2026-11-22T03:19:25.108987+00:00",
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a03/dispatch-0b68c2257a274f29bfef5310da1b2506.json",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "397446f4cc81df7eeb3548ceda78895e9ff06309",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py": "fc2bb061db4cc226e20167dfc4e017e4c07c2490",
+    "design-docs/gonggong-ai-workbench-a03.md": "459b60c283f3ccdbc1fb3dbffb053f201818a8cb"
+  },
+  "inputs": {
+    "a01_issue": 1856,
+    "a01_state": "CLOSED",
+    "a01_receipt": "data-collection/gonggong-ai-workbench-plan1-a01.json",
+    "a02_issue": 1847,
+    "a02_service_patch_sha256": "f98c3df4075e4cb46a24fe6a2d130e33a4198051b729a4974d54520145a3f53a",
+    "a02_tested_service_blobs": {
+      "customizations/components/tianxuan/server/api.py": "d04ee7fb26ec5fafbcbb4d5b13c9917f914be34b",
+      "customizations/components/tianxuan/server/schemas.py": "058144456af721a742a5c707c26b59d60ba18758",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "452b2f885106924c854b526671d5235a26166711"
+    },
+    "upstream_macos": [
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1860#issuecomment-7067023618",
+      "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1861#issuecomment-7068555775"
+    ],
+    "macos_candidate_run": null,
+    "current_issue_owner_readback": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1855#issuecomment-7073220010"
+  },
+  "receiver": {
+    "platform": "Windows x86_64",
+    "entry": "POST /api/v1/native/workflow/authorize -> inspect -> reserve -> execute -> status",
+    "auth": "Tianxuan issued bearer session, same domain and persisted issue/task store as A02",
+    "installed_plan": {
+      "profile": "local",
+      "stage": "preview",
+      "product": "fixture",
+      "checks": [
+        "check"
+      ],
+      "mandate": "installed-test-plan",
+      "writes": {
+        "a": [
+          "output"
+        ]
+      }
+    },
+    "process": "NativeWorker / fixed local Python probe. Reads NATIVE_CONTEXT and appends one JSONL record per physical invocation. Fixture content and process output stay in pytest's temporary directory.",
+    "receipt": "Execution ticket, subprocess-observed grant, exit code, native physical closure and immutable output candidate in test_signed_item_reaches_one_local_process",
+    "editor": "The confirmed record is consumed through the same service projection as the native controls. The integrated native UI run is tracked by the parent for A02/A03.",
+    "stage_boundary": "The start decision is committed with native.started; A04 owns the decision to stop at the reached criterion.",
+    "normal_plans": "NativeEntryFactory.plan continues to resolve its existing installed requirement mappings. S01/S03 consume capability mapping and dispatch."
+  },
+  "tests": [
+    {
+      "command": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py -o junit_family=legacy --junitxml=<temporary-report>",
+      "passed": 8,
+      "exit_code": 0,
+      "timestamp": "2026-11-22T11:17:08.325066+08:00",
+      "cases": [
+        {
+          "test": "test_signed_item_reaches_one_local_process",
+          "passed": true,
+          "observed": {
+            "grant": {
+              "confirmation_revision": 1,
+              "confirmed_by": "usr_1bd78fe2ea6f434d8b83d70ea9322276",
+              "criteria": "preview visible",
+              "document_id": "doc_28e05aaca5f542589132069a855a8008",
+              "issue_id": "iss_7554188c02a64a379d56eee71b9bfbf1",
+              "issue_revision": "b4fa3e98828090a37b9f33b80247506ebcd50761c9b5aea327e177912bfa7487",
+              "responsible_user": "usr_1bd78fe2ea6f434d8b83d70ea9322276",
+              "stage": "preview",
+              "target_revision": 1,
+              "version": 1
+            },
+            "execution": "d97ce09f066db5cbc56924a8f053d87e69abc3c65487145a20b08c8dd3ea9ca4",
+            "profile": "local",
+            "installation": "de99629217176654cafbafbcd3b43094fdee3d97602e25dcb9302f7848fd3062",
+            "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+            "physical_closure": {
+              "exit_code": 0,
+              "reasons": [],
+              "transcript": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+            },
+            "calls": 1,
+            "sibling_calls": 0
+          }
+        },
+        {
+          "test": "test_stale_reserved_ticket_never_launches[revoked]",
+          "passed": true,
+          "observed": {
+            "change": "revoked",
+            "execution": "c3857e9560d59becbe96eb94dc57f6427a5ed32929d8da53dea72ddfc3aba60c",
+            "status": "revoked",
+            "calls": 0,
+            "physical_closures": 0
+          }
+        },
+        {
+          "test": "test_stale_reserved_ticket_never_launches[reconfirmed]",
+          "passed": true,
+          "observed": {
+            "change": "reconfirmed",
+            "execution": "b34881e7d85b25642b8c87304858d698d1d64144c2ecea92847db7c75b354cd6",
+            "status": "confirmed",
+            "calls": 0,
+            "physical_closures": 0
+          }
+        },
+        {
+          "test": "test_stale_reserved_ticket_never_launches[target]",
+          "passed": true,
+          "observed": {
+            "change": "target",
+            "execution": "42fec9e5331b7ece42b3c42348c51336cc5354ea1e4a4e6e9f3b66bb026b3975",
+            "status": "pending",
+            "calls": 0,
+            "physical_closures": 0
+          }
+        },
+        {
+          "test": "test_stale_reserved_ticket_never_launches[definition]",
+          "passed": true,
+          "observed": {
+            "change": "definition",
+            "execution": "9b4bbe1df7839812c94652c420ce75960450499f151ea600d19f3de00da770f7",
+            "status": "pending",
+            "calls": 0,
+            "physical_closures": 0
+          }
+        },
+        {
+          "test": "test_stale_reserved_ticket_never_launches[reassigned]",
+          "passed": true,
+          "observed": {
+            "change": "reassigned",
+            "execution": "30d33218a4d30a31cd72ff23428be005564ae2f34f7d0f9be2b4ccf032c5c3e3",
+            "status": "pending",
+            "calls": 0,
+            "physical_closures": 0
+          }
+        },
+        {
+          "test": "test_private_origin_cannot_fall_back_to_ordinary_issue",
+          "passed": true
+        },
+        {
+          "test": "test_reassigned_confirmation_replaces_old_reservation_after_restart",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "command": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_workflow.py customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py customizations/components/tianxuan/server/test_task_targets.py customizations/components/tianxuan/server/test_design_tasks.py",
+      "passed": 44,
+      "exit_code": 0,
+      "timestamp": "2026-11-22T11:16:18.559557+08:00"
+    },
+    {
+      "command": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_remote.py customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py",
+      "passed": 13,
+      "exit_code": 0
+    },
+    {
+      "command": "ruff check --no-fix / ruff format --check (the two A03 Python files)",
+      "exit_code": 0
+    }
+  ],
+  "method": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 29,
+    "head": "b5a990e91bee6848d816aeb5aa0963f6881ebada3e7516b99eba3ab3353e9c9a",
+    "applied": "Verified exact A02 patch hash and worker-side observed grant against the service receipt. Release and end-to-end editor verification are tracked by the receiving coordinator."
+  },
+  "test_warning": "Starlette FastAPI TestClient deprecation warning for httpx on this test environment."
+}

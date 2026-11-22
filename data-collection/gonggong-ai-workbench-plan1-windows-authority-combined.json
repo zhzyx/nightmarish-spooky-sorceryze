@@ -1,0 +1,443 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1",
+  "issue_number": 1709,
+  "platform": "Windows x86_64",
+  "base": "cc476c104de48c9cc7eb807d6e7ea7d87cdaa90c",
+  "editor_sha256": "f7bf766e540b3b8ea62b6d82a9092bc80e7d4784a132ac3aa05a195fdfcd026f",
+  "source_git_blobs": {
+    "customizations/components/tianxuan/server/api.py": "d04ee7fb26ec5fafbcbb4d5b13c9917f914be34b",
+    "customizations/components/tianxuan/server/schemas.py": "058144456af721a742a5c707c26b59d60ba18758",
+    "customizations/components/tianxuan/server/test_task_confirmations.py": "c1ae96e54ea5b30994e04e89ec9c978acf7847ed",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "c088b4878969bf09e9ce47585689ba719082f211",
+    "customizations/components/tianxuan/sinan-workorders/native_workflow.py": "397446f4cc81df7eeb3548ceda78895e9ff06309",
+    "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py": "fc2bb061db4cc226e20167dfc4e017e4c07c2490",
+    "editor/docks/workbench/issue_actions/issue_task_confirmation.gd": "6c46900293e9fbf995f102dccf7ae84f186efcff",
+    "tests/editor/run_workbench_confirmed_native_stage.py": "513ab5611c978de8ae8084103feda2d9488601b6",
+    "tests/editor/run_workbench_task_confirmations.py": "9bb180bfeaf34e375011326b4ba4d910951a7a6f",
+    "tests/editor/workbench_task_confirmations.gd": "bbca97af94a60ee91e3bd614aa21744b81b1434b"
+  },
+  "checks": {
+    "a03": "8d1fc7ab81b1116ebbbcb9dfef6293f75eb6b36ff48cfca6f6edcf1c1ceecf84",
+    "a02": "36889ad29f269f302f598e21a636e8af1838758a58433e2710a18f63697ddfec",
+    "a01": "079d18d9929d5cccbd2aa11a58e3419738be6c7f4a2e57fd2c3bdb20ffd766c9",
+    "d10": "7552b10372f9ac1a742404036b8450f3305f4ba13787148fd1eda8748f2ffd64",
+    "i06": "fead00f9d1b2a33d11dc399be805a75fd05c8f9bb26ebc8fa7204a7f9c0f1e5d",
+    "u14": "24b35187d4abd70678373e7ba06b89e007d0b9a82310c56eecadedbc4f2ce02d"
+  },
+  "issues": {
+    "a02": 1847,
+    "a03": 1855
+  },
+  "observed": "2026-11-22T03:35:31.716083+00:00",
+  "verified_windows_build": {
+    "source_tree": "abf5f538052356d62d9c4ffc7a136d604562c8cd",
+    "runtime_files": {
+      "godot.windows.editor.x86_64.exe": "f7bf766e540b3b8ea62b6d82a9092bc80e7d4784a132ac3aa05a195fdfcd026f",
+      "godot.windows.editor.x86_64.console.exe": "d798ef93fe1cdf9452021197cf81431a5c0648276d334cb05eb54b80cafce704",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "extra_compiled": []
+  },
+  "service_regressions": {
+    "files": [
+      "customizations/components/tianxuan/server/test_task_confirmations.py",
+      "customizations/components/tianxuan/server/test_task_targets.py",
+      "customizations/components/tianxuan/server/test_design_tasks.py",
+      "customizations/components/tianxuan/server/test_issue_assignee.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_workflow_revisions.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_terminal_events.py"
+    ],
+    "passed": 59,
+    "summary": "59 passed, 1 warning in 57.88s",
+    "source_tree": "abf5f538052356d62d9c4ffc7a136d604562c8cd"
+  },
+  "shared_operation": {
+    "passed": true,
+    "editor_sha256": "f7bf766e540b3b8ea62b6d82a9092bc80e7d4784a132ac3aa05a195fdfcd026f",
+    "selected": [
+      "#1 程序",
+      "#2 动画"
+    ],
+    "confirmed": {
+      "issue_id": "iss_0b421c10cb354699ba7a55db93ab7407",
+      "document_id": "doc_519df062d08a444bb688bf45b2bf8a5e",
+      "version": 1,
+      "stage": "可运行原型",
+      "target_revision": 1,
+      "issue_revision": "fc3acf3283f62ab05bb74a59a727827645ac82853a1062f45e72c5822d8510d8",
+      "revision": 1,
+      "status": "confirmed",
+      "responsible_user": "usr_69f8c7dbc3b54e3d8a163dda2efe684d",
+      "confirmed_by": "usr_69f8c7dbc3b54e3d8a163dda2efe684d"
+    },
+    "sibling": {
+      "issue_id": "iss_0b6a5266918d4882b9a532a6c90f2820",
+      "document_id": "doc_519df062d08a444bb688bf45b2bf8a5e",
+      "version": 1,
+      "stage": "动画预览",
+      "target_revision": 1,
+      "issue_revision": "ab39a3cd85a611c34188da7258b82ba9691d62308b059edf1ae9b27e04f619e1",
+      "revision": 0,
+      "status": "pending",
+      "responsible_user": "usr_69f8c7dbc3b54e3d8a163dda2efe684d",
+      "confirmed_by": null
+    },
+    "revoked": {
+      "issue_id": "iss_0b421c10cb354699ba7a55db93ab7407",
+      "document_id": "doc_519df062d08a444bb688bf45b2bf8a5e",
+      "version": 1,
+      "stage": "可运行原型",
+      "target_revision": 1,
+      "issue_revision": "fc3acf3283f62ab05bb74a59a727827645ac82853a1062f45e72c5822d8510d8",
+      "revision": 2,
+      "status": "revoked",
+      "responsible_user": "usr_69f8c7dbc3b54e3d8a163dda2efe684d",
+      "confirmed_by": null
+    },
+    "execution": "5484133fb6596151d4a96cb355abca6c8b4bdb03ce696854e411f63fa173198d",
+    "grant": {
+      "confirmation_revision": 1,
+      "confirmed_by": "usr_69f8c7dbc3b54e3d8a163dda2efe684d",
+      "criteria": "拉杆切换一次",
+      "document_id": "doc_519df062d08a444bb688bf45b2bf8a5e",
+      "issue_id": "iss_0b421c10cb354699ba7a55db93ab7407",
+      "issue_revision": "fc3acf3283f62ab05bb74a59a727827645ac82853a1062f45e72c5822d8510d8",
+      "responsible_user": "usr_69f8c7dbc3b54e3d8a163dda2efe684d",
+      "stage": "可运行原型",
+      "target_revision": 1,
+      "version": 1
+    },
+    "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+    "profile": "local",
+    "process_exit": 0,
+    "process_count": 1,
+    "sibling_tasks": 0,
+    "source_tree": "abf5f538052356d62d9c4ffc7a136d604562c8cd",
+    "runner": "tests/editor/run_workbench_confirmed_native_stage.py",
+    "runner_sha256": "02800d1ff0dc2bf61cf315fa6de98664090543198ae74f18a51379e353a9b882"
+  },
+  "historical_method_evidence": [
+    {
+      "event": "80367d2ead864f83739618a8863317aaae0180e894440acf25f77b22daba254b",
+      "path": "data-collection/gonggong-ai-workbench-plan1-a02.json",
+      "original_sha256": "8e5f8f2d37279a1e670d6dfeeac0b1b0a2d25f41860e2ec5f5e0c8783bfd19f2",
+      "current_sha256": "16e7f8a770490d50b3ebb9ed38ca395930037afe0a6f5c8e3b853494a0f570df",
+      "change": "CRLF to LF; both original learning revisions retained"
+    }
+  ],
+  "input_probe_recheck": {
+    "issue": 2018,
+    "affected": 1847,
+    "incident": "987edcf310c97934d29671bd477a5ab569348da77684ab86f9369ed8c246e46c",
+    "editor_sha256": "25e7092f5fc912333223f806e12dc9398786b2379709868d81c6505d35cdcf6b",
+    "original_probe": "b69a1fbf617bfe592d66d42e1710483d935b5245",
+    "corrected_probe": "05e7845a49aee5f4d62a764c6d1ac2f981be8dfe",
+    "original": "Native selection failed",
+    "selected": [
+      "#1 程序",
+      "#2 动画"
+    ],
+    "record_states": {
+      "confirm": [
+        "confirmed",
+        "pending"
+      ],
+      "read": [
+        "confirmed",
+        "pending"
+      ],
+      "revoke": [
+        "revoked",
+        "pending"
+      ]
+    },
+    "report_sha256": "2ec5542dd620ad3ede4dee7c2dc8111869d822027445dda7e1323bb626f1da3b",
+    "observed": "2026-11-22T03:16:46.395913+00:00"
+  },
+  "final_input_probe_git_blob": "bbca97af94a60ee91e3bd614aa21744b81b1434b",
+  "normalized_sources": [
+    {
+      "path": "design-docs/gonggong-ai-workbench-a02.md",
+      "worker_git_blob": "d5c24658ddb1d79c1188913a2fef08a21ad9445f",
+      "integrated_git_blob": "5af397f6bde1aa421a8ee06615288e24f5ca41d8",
+      "reason": "Repository file-format hook removed one extra newline at EOF."
+    },
+    {
+      "path": "editor/docks/workbench/issue_actions/issue_task_confirmation.gd",
+      "worker_git_blob": "9c0f9e467bc05ab957bb3490d200336f901a18e7",
+      "integrated_git_blob": "6c46900293e9fbf995f102dccf7ae84f186efcff",
+      "reason": "Repository file-format hook removed one extra newline at EOF."
+    },
+    {
+      "path": "tests/editor/workbench_task_confirmations.gd",
+      "worker_git_blob": "05e7845a49aee5f4d62a764c6d1ac2f981be8dfe",
+      "integrated_git_blob": "bbca97af94a60ee91e3bd614aa21744b81b1434b",
+      "reason": "Repository file-format hook removed one extra newline at EOF."
+    }
+  ],
+  "validation_scripts": {
+    "a02": [
+      "run_workbench_task_confirmations.py"
+    ],
+    "a01": [
+      "run_workbench_task_targets.py"
+    ],
+    "d10": [
+      "run_workbench_design_tasks.py"
+    ],
+    "i06": [
+      "run_workbench_issue_assignment.py"
+    ],
+    "u14": [
+      "run_workbench_compact_model_route.py"
+    ]
+  },
+  "card_service_tests": {
+    "a03": [
+      "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py"
+    ]
+  },
+  "worker_sources": {
+    "a02": "ac3a156e2691ac13f2c0d7a598285eadf1c217e3",
+    "a03": "a671427e5e6ba5f306c923d6b1c9595fdaeebb26"
+  },
+  "source_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2017",
+  "linked_incident": {
+    "issue": 2018,
+    "incident": "987edcf310c97934d29671bd477a5ab569348da77684ab86f9369ed8c246e46c",
+    "source": 1847,
+    "event": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-a02/kuafu-1ac2fa1a2b34da0febf688e391ccd60dffee9f7d.json",
+    "event_sha256": "2b8f1422aebeab0d39326a8a56fddb764f990581f7e68c6ae4cdb354650a549f",
+    "sha256": "a3ac0c7d55f4270334324569ebfec538cacf5713336a5afd1432b6f0ea8d6c56",
+    "timeline": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1847#issuecomment-7073436617"
+  },
+  "results": {
+    "a02": {
+      "state": "passed",
+      "editor_sha256": "f7bf766e540b3b8ea62b6d82a9092bc80e7d4784a132ac3aa05a195fdfcd026f",
+      "runs": {
+        "confirm": {
+          "after": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 已确认启动\n拉动拉杆一次开桥\n确认人：usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc",
+              "selected": true
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": true
+            }
+          ],
+          "before": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 待确认\n拉动拉杆一次开桥",
+              "selected": false
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": false
+            }
+          ],
+          "feedback": "已从天璇回读 #1 的记录。",
+          "rects": [
+            [
+              "[P: (9.0, 9.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 97.0), S: (460.0, 33.0)]"
+            ],
+            [
+              "[P: (9.0, 134.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 222.0), S: (460.0, 33.0)]"
+            ]
+          ],
+          "selected": [
+            "#1 程序",
+            "#2 动画"
+          ],
+          "viewport": "[P: (9.0, 9.0), S: (460.0, 320.0)]"
+        },
+        "read": {
+          "after": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 已确认启动\n拉动拉杆一次开桥\n确认人：usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc",
+              "selected": false
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": false
+            }
+          ],
+          "before": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 已确认启动\n拉动拉杆一次开桥\n确认人：usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc",
+              "selected": false
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": false
+            }
+          ],
+          "feedback": "勾选要核对的任务，再点击该项的确认按钮。",
+          "rects": [
+            [
+              "[P: (9.0, 9.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 121.0), S: (460.0, 33.0)]"
+            ],
+            [
+              "[P: (9.0, 158.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 246.0), S: (460.0, 33.0)]"
+            ]
+          ],
+          "selected": [],
+          "viewport": "[P: (9.0, 9.0), S: (460.0, 320.0)]"
+        },
+        "revoke": {
+          "after": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 已撤销\n拉动拉杆一次开桥",
+              "selected": true
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": true
+            }
+          ],
+          "before": [
+            {
+              "issue": "#1 程序",
+              "label": "原型 · 已确认启动\n拉动拉杆一次开桥\n确认人：usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc",
+              "selected": false
+            },
+            {
+              "issue": "#2 动画",
+              "label": "预览 · 待确认\n第24帧完全展开",
+              "selected": false
+            }
+          ],
+          "feedback": "已从天璇回读 #1 的记录。",
+          "rects": [
+            [
+              "[P: (9.0, 9.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 121.0), S: (460.0, 33.0)]"
+            ],
+            [
+              "[P: (9.0, 158.0), S: (460.0, 27.0)]",
+              "[P: (9.0, 246.0), S: (460.0, 33.0)]"
+            ]
+          ],
+          "selected": [
+            "#1 程序",
+            "#2 动画"
+          ],
+          "viewport": "[P: (9.0, 9.0), S: (460.0, 320.0)]"
+        }
+      },
+      "records": {
+        "confirm": [
+          {
+            "issue_id": "iss_8509f31658af4ed99dbb39f05d5d12cb",
+            "document_id": "doc_f3114bc74c744c96b91b48bb31e51db4",
+            "version": 1,
+            "stage": "原型",
+            "target_revision": 1,
+            "issue_revision": "2f14039f6a0e14292e5dcc1db5653280350c7419a51fe64639c094a263dbb0b9",
+            "revision": 1,
+            "status": "confirmed",
+            "responsible_user": "usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc",
+            "confirmed_by": "usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc"
+          },
+          {
+            "issue_id": "iss_a1cabaea8e5b46e19f45dd58562ab9ae",
+            "document_id": "doc_f3114bc74c744c96b91b48bb31e51db4",
+            "version": 1,
+            "stage": "预览",
+            "target_revision": 1,
+            "issue_revision": "7266e402b0f0546a9f477ef9e207f80f940203b7b9c25fb2ed4564fa06af0bf6",
+            "revision": 0,
+            "status": "pending",
+            "responsible_user": "usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc",
+            "confirmed_by": null
+          }
+        ],
+        "read": [
+          {
+            "issue_id": "iss_8509f31658af4ed99dbb39f05d5d12cb",
+            "document_id": "doc_f3114bc74c744c96b91b48bb31e51db4",
+            "version": 1,
+            "stage": "原型",
+            "target_revision": 1,
+            "issue_revision": "2f14039f6a0e14292e5dcc1db5653280350c7419a51fe64639c094a263dbb0b9",
+            "revision": 1,
+            "status": "confirmed",
+            "responsible_user": "usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc",
+            "confirmed_by": "usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc"
+          },
+          {
+            "issue_id": "iss_a1cabaea8e5b46e19f45dd58562ab9ae",
+            "document_id": "doc_f3114bc74c744c96b91b48bb31e51db4",
+            "version": 1,
+            "stage": "预览",
+            "target_revision": 1,
+            "issue_revision": "7266e402b0f0546a9f477ef9e207f80f940203b7b9c25fb2ed4564fa06af0bf6",
+            "revision": 0,
+            "status": "pending",
+            "responsible_user": "usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc",
+            "confirmed_by": null
+          }
+        ],
+        "revoke": [
+          {
+            "issue_id": "iss_8509f31658af4ed99dbb39f05d5d12cb",
+            "document_id": "doc_f3114bc74c744c96b91b48bb31e51db4",
+            "version": 1,
+            "stage": "原型",
+            "target_revision": 1,
+            "issue_revision": "2f14039f6a0e14292e5dcc1db5653280350c7419a51fe64639c094a263dbb0b9",
+            "revision": 2,
+            "status": "revoked",
+            "responsible_user": "usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc",
+            "confirmed_by": null
+          },
+          {
+            "issue_id": "iss_a1cabaea8e5b46e19f45dd58562ab9ae",
+            "document_id": "doc_f3114bc74c744c96b91b48bb31e51db4",
+            "version": 1,
+            "stage": "预览",
+            "target_revision": 1,
+            "issue_revision": "7266e402b0f0546a9f477ef9e207f80f940203b7b9c25fb2ed4564fa06af0bf6",
+            "revision": 0,
+            "status": "pending",
+            "responsible_user": "usr_1ce4a5a7e0f4450e85ce2c34fc4e04bc",
+            "confirmed_by": null
+          }
+        ]
+      }
+    },
+    "a03": {
+      "state": "passed",
+      "issue": 1855,
+      "request_id": "gonggong-ai-workbench-plan1-a03",
+      "service_tests": {
+        "files": [
+          "customizations/components/tianxuan/sinan-workorders/test_native_stage_admission.py"
+        ],
+        "passed": 8,
+        "summary": "8 passed, 1 warning in 6.80s",
+        "source_tree": "abf5f538052356d62d9c4ffc7a136d604562c8cd"
+      }
+    }
+  }
+}
