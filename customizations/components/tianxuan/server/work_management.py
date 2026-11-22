@@ -492,6 +492,15 @@ def record_work_mutation(store, actor, name, payload, *, call_id, human=False):
                 or any(data[k] != asset[k] for k in ("kind", "module", "revision", "path"))
             ):
                 raise VersionConflict("pending asset binding changed")
+            # Older clients only identify the current asset by its native reference. Two
+            # open submissions can point at identical bytes, even with the same revision.
+            if version is None and any(
+                item["submission_version"] != asset["submission_version"]
+                and item["decision"] == "pending"
+                and all(item[key] == data[key] for key in ("kind", "module", "revision", "path"))
+                for item in state["creative_judgments"]
+            ):
+                raise VersionConflict("multiple pending submissions match; specify submission_version")
             if actor != asset["responsible"]:
                 raise PermissionDenied("only the responsible person may change this creative judgment")
             data.update(

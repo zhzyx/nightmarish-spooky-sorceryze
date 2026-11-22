@@ -390,6 +390,8 @@ def test_transfer_preserves_independent_judgments_and_rechecks_owner(work):
 
     for i in range(2):
         post(owner, "submit_asset", f"submit-{i}", i).raise_for_status()
+    ambiguous = post(owner, "decide", "ambiguous", 2, decision="approved")
+    assert ambiguous.status_code == 409 and "submission_version" in ambiguous.text
     assert mine(owner) == [1, 2] and mine(delegate) == []
     for target in (reader, stranger):
         assert post(owner, "transfer", target, 2, submission_version=1, target=target).status_code in (403, 404)

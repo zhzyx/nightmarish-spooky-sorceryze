@@ -110,6 +110,11 @@ func _ready() -> void:
 		label.autowrap_mode = TextServer.AUTOWRAP_ARBITRARY
 		side.add_child(label)
 		content.append(label)
+		var judge := Button.new()
+		judge.name = "ReviewCandidate"
+		judge.text = "查看或判断此版本…"
+		judge.pressed.connect(_review_compared.bind(index))
+		side.add_child(judge)
 	_refresh()
 
 
@@ -153,6 +158,15 @@ func _comparison_selected(row: int, index: int) -> void:
 	fields[index].text = "%s · %s\n%s @ %s\nSHA-256 %s" % [ref.kind, ref.path, ref.module, ref.revision, ref.digest]
 	var other: Dictionary = selectors[1 - index].get_selected_metadata()
 	difference.text = "两个候选的文件内容相同" if ref.digest == other.digest else "两个候选的文件内容不同"
+	sides.get_child(index).get_node("ReviewCandidate").visible = ref.kind in ["concept", "model"]
+
+
+func _review_compared(index: int) -> void:
+	if not comparison.visible or selectors[index].selected < 0:
+		return
+	var ref: Dictionary = selectors[index].get_selected_metadata().duplicate(true)
+	comparison.hide()
+	_detail.get_node("creative_judgments").open_compared(ref)
 
 
 func _choose_original(index: int) -> void:
