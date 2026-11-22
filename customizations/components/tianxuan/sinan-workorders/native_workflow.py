@@ -8,20 +8,31 @@ from __future__ import annotations
 
 import asyncio
 import json
+import sqlite3
 import time
 from concurrent.futures import Future
 from contextlib import contextmanager, nullcontext
 from pathlib import Path, PurePosixPath
 
+from issue_flow import dependencies as issue_dependencies
 from native_observations import model_observation
 from native_store import NativeStoreError, _digest, _json, _object_name
-from native_worker import worker_step_reporter
+from native_worker import worker_cancel_requested, worker_step_reporter
 from native_workspace import portable
-from tianxuan_core import PermissionDenied, VersionConflict
+from tianxuan_core import PermissionDenied, StorageBusy, VersionConflict, _storage_error
 
 
 class StageAuthorizationChanged(NativeStoreError):
     """A design task no longer has the stage authority used for dispatch."""
+
+
+@contextmanager
+def _worker_storage():
+    """Keep storage faults on the workflow's recoverable error path."""
+    try:
+        yield
+    except sqlite3.DatabaseError as error:
+        raise NativeStoreError("Worker storage unavailable; reconcile the existing execution") from error
 
 
 def write_resources(task, workspace):
@@ -116,6 +127,8 @@ class NativeWorkflow:
             db.execute(
                 "CREATE TABLE IF NOT EXISTS native_edit_origins (task TEXT PRIMARY KEY, project TEXT NOT NULL, module_id TEXT NOT NULL)"
             )
+            # Reinstall after the v1 table migration in this same writer transaction.
+            db.execute("DROP TRIGGER IF EXISTS native_excludes_ordinary_flow")
             indexes = db.execute("PRAGMA index_list(native_tasks)").fetchall()
             if any(
                 i["unique"] and [c["name"] for c in db.execute("PRAGMA index_info(" + i["name"] + ")")] == ["issue"]
@@ -148,6 +161,19 @@ class NativeWorkflow:
                 "CREATE TABLE IF NOT EXISTS native_outbox (id TEXT PRIMARY KEY, tenant TEXT NOT NULL, "
                 "payload TEXT NOT NULL)"
             )
+            # Older domain stores exclude all issues with ordinary dependency edges.
+            # Keep the exclusion for custom flows and legacy writers. Only this
+            # transaction's active signed contract can take over its pinned edges.
+            db.execute(
+                "CREATE TRIGGER native_excludes_ordinary_flow BEFORE INSERT ON native_managed_issues "
+                "WHEN EXISTS (SELECT 1 FROM issue_flows WHERE issue_id=NEW.issue_id AND definition IS NOT NULL) "
+                "OR (EXISTS (SELECT 1 FROM issue_dependencies WHERE issue_id=NEW.issue_id) AND NOT EXISTS ("
+                "SELECT 1 FROM native_active_tasks a JOIN native_tasks t ON t.id=a.task WHERE a.issue=NEW.issue_id "
+                "AND json_extract(t.task,'$.source.revision')=NEW.definition "
+                "AND json_type(t.task,'$.source.definition.stage_authorization')='object' "
+                "AND json_type(t.task,'$.issue_prerequisites')='array')) "
+                "BEGIN SELECT RAISE(ABORT,'ordinary workflow owns this issue'); END"
+            )
             db.execute("CREATE TABLE IF NOT EXISTS native_outbox_consumed (id TEXT PRIMARY KEY)")
             db.execute("CREATE TABLE IF NOT EXISTS native_workflow_reviews (task TEXT PRIMARY KEY, receipt TEXT)")
             db.execute(
@@ -161,6 +187,7 @@ class NativeWorkflow:
                 "details TEXT NOT NULL, receipt TEXT, recorded_at TEXT NOT NULL DEFAULT "
                 "(strftime('%Y-%m-%dT%H:%M:%fZ','now')), PRIMARY KEY(task,sequence), UNIQUE(task,receipt))"
             )
+            db.execute("CREATE TABLE IF NOT EXISTS native_run_controls (task TEXT PRIMARY KEY, intent TEXT NOT NULL)")
             # State changes can also originate in the remote adapter, stage
             # settlement or joint acceptance. Journal them in the same commit.
             for name, transition in (
@@ -218,7 +245,7 @@ class NativeWorkflow:
         return {**row, **execution_identity(row["id"])}
 
     def status(self, actor, key):
-        with self._transaction() as db:
+        with self._transaction(write=False) as db:
             row = self._row(db, key)
             self._read_allowed(actor, row)
             task = json.loads(row["task"])
@@ -236,8 +263,7 @@ class NativeWorkflow:
                     )
             return row
 
-    @staticmethod
-    def _progress(db, row, task):
+    def _progress(self, db, row, task):
         events = [
             {**event, "details": json.loads(event["details"])}
             for event in db.execute(
@@ -252,16 +278,146 @@ class NativeWorkflow:
         observed = terminal if produced else {}
         if row["state"] == "failed":
             observed = terminal.get("observation", {})
+        control = {}
+        if not callable(getattr(self.worker, "reserve", None)):
+            control["control"] = self._control_view(db, row, task, terminal, events[-1]["sequence"])
         return {
+            **control,
             **execution_identity(row["id"]),
             "issue": row["issue"],
             "source_revision": task["source"]["revision"],
             "stage": grant.get("stage"),
             "state": row["state"],
-            "candidate": terminal.get("candidate") if produced else None,
+            "candidate": terminal.get("candidate") if produced or row["state"] in {"paused", "cancelled"} else None,
             **model_observation(observed.get("provider_model"), observed.get("usage")),
             "events": events,
         }
+
+    @staticmethod
+    def _control_intent(db, key):
+        result = db.execute("SELECT intent FROM native_run_controls WHERE task=?", (key,)).fetchone()
+        return result[0] if result else None
+
+    def _control_view(self, db, row, task, terminal, sequence):
+        state = row["state"]
+        intent = self._control_intent(db, row["id"])
+        pending = state in {"running", "held", "closed-unresolved"}
+        if intent and pending:
+            state = {"pause": "pausing", "cancel": "canceling"}[intent]
+        available = {
+            "ready": ["pause", "cancel"],
+            "reserved": ["pause", "cancel"],
+            "running": ["pause", "cancel"],
+            "pausing": ["cancel"],
+            "paused": ["resume", "cancel"],
+        }
+        summaries = {
+            "ready": "等待派发",
+            "reserved": "已预约",
+            "running": "工作者运行中",
+            "pausing": "暂停已接收，等待当前工具完成",
+            "canceling": "取消已接收，等待进程关闭",
+            "paused": "已暂停",
+            "cancelled": "已取消",
+        }
+        summary = summaries.get(state, state)
+        if state == "paused":
+            summary += "；原授权 " + task["mandate"] + "，来源修订 " + task["source"]["revision"]
+            grant = task["source"]["definition"].get("stage_authorization")
+            if grant:
+                summary += (
+                    "，确认人 " + grant["confirmed_by"] + "，阶段 " + grant["stage"] + "，验收条件 " + grant["criteria"]
+                )
+            if terminal:
+                summary += "；工作者退出码 " + str(terminal.get("exit_code"))
+                summary += "，输出记录 " + str(terminal.get("transcript"))
+                if terminal.get("candidate"):
+                    summary += "，已保存候选 " + terminal["candidate"]
+            else:
+                summary += "；尚未启动工作者"
+        return dict(
+            state=state,
+            summary=summary,
+            revision=sequence,
+            actions=available.get(state, []),
+        )
+
+    def control_run(self, actor, operation, issue, key, expected, project=None):
+        row = self.status(actor, key)
+        task = json.loads(row["task"])
+        if "control" not in row["progress"] or row["issue"] != issue or task["actor"] != actor:
+            raise PermissionDenied("Current local run owner required")
+        receipt = f"control.{operation}:{expected}"
+        if operation == "resume":
+            self._dependencies_current(actor, key)
+            if row["state"] == "paused":
+                self._valid(actor, row)
+                self.worker.verify_pause_checkpoint(task, key, json.loads(row["terminal"] or "{}"))
+        reviewed_state, reviewed_terminal = row["state"], row["terminal"]
+        with self._transaction() as db:
+            row = self._row(db, key)
+            self._read_allowed(actor, row)
+            self._allow(actor, issue, "control")
+            current = db.execute("SELECT task FROM native_active_tasks WHERE issue=?", (issue,)).fetchone()
+            if (
+                not current
+                or current[0] != key
+                or (project is not None and self.domain.get_issue(issue)["project"] != project)
+            ):
+                raise NativeStoreError("Active issue run changed")
+            replay = db.execute(
+                "SELECT 1 FROM native_task_progress WHERE task=? AND receipt=?", (key, receipt)
+            ).fetchone()
+            if replay:
+                return self._progress(db, row, task)
+            progress = self._progress(db, row, task)
+            control = progress["control"]
+            if control["revision"] != expected or operation not in control["actions"]:
+                raise NativeStoreError("Run changed; review current effects and authorization")
+            state = row["state"]
+            terminal = json.loads(row["terminal"] or "{}")
+            if operation == "resume":
+                self._valid(actor, row)
+                if reviewed_state != "paused" or row["terminal"] != reviewed_terminal:
+                    raise NativeStoreError("Reviewed worker checkpoint changed")
+                if self.worker.installation(task["profile"]) != task["installation"]:
+                    raise NativeStoreError("Original worker installation changed")
+                # No process intent existed before a ready/reserved pause. A
+                # drained worker can only continue its exact persisted terminal.
+                state = terminal["state"] if terminal else "ready"
+                db.execute("DELETE FROM native_run_controls WHERE task=?", (key,))
+                if state == "produced":
+                    db.execute("UPDATE issues SET status='in-review' WHERE id=?", (issue,))
+            else:
+                db.execute("INSERT OR REPLACE INTO native_run_controls VALUES (?,?)", (key, operation))
+                if state not in {"running", "held", "closed-unresolved"}:
+                    state = "paused" if operation == "pause" else "cancelled"
+            db.execute("UPDATE native_tasks SET state=? WHERE id=?", (state, key))
+            db.execute(
+                "INSERT INTO native_task_progress(task,sequence,state,step,details,receipt) "
+                "SELECT ?,MAX(sequence)+1,?,?,?,? FROM native_task_progress WHERE task=?",
+                (
+                    key,
+                    state,
+                    "control." + operation,
+                    _json({"actor": actor, "reviewed_sequence": expected}),
+                    receipt,
+                    key,
+                ),
+            )
+            result = self._progress(db, self._row(db, key), task)
+        callback = getattr(self, "on_state_change", None)
+        if callback:
+            callback()
+        return result
+
+    def _control_settlement(self, db, key, state):
+        intent = self._control_intent(db, key)
+        if intent == "cancel" and state in {"produced", "failed"}:
+            return "cancelled"
+        if intent == "pause" and state == "produced":
+            return "paused"
+        return state
 
     def issue_detail(self, actor, project, number):
         # Resolve the issue revision, active execution and current visibility
@@ -270,6 +426,7 @@ class NativeWorkflow:
             detail = self.domain.read_issue_detail(actor, project, number)
             active = db.execute("SELECT task FROM native_active_tasks WHERE issue=?", (detail["id"],)).fetchone()
             progress = None
+            actions = []
             if active:
                 row = self._row(db, active["task"])
                 try:
@@ -277,8 +434,11 @@ class NativeWorkflow:
                 except PermissionDenied:
                     pass  # The issue can be visible while the pinned design is private.
                 else:
-                    progress = self._progress(db, row, json.loads(row["task"]))
-            return {**detail, "execution_progress": progress}
+                    task = json.loads(row["task"])
+                    progress = self._progress(db, row, task)
+                    if actor == task["actor"] and self.domain.actor_context(actor)["role"] != "viewer":
+                        actions = progress.get("control", {}).get("actions", [])
+            return {**detail, "execution_progress": progress, "execution_control_actions": actions}
 
     def _record_step(self, key, step, details, receipt=None):
         """Installed tool receiver. An already observed receipt cannot advance a run."""
@@ -343,6 +503,24 @@ class NativeWorkflow:
             self.domain.get_doc_shared(actor, authority["document_id"])
         self._inputs_allowed(actor, task["selected"])
 
+    def _issue_inputs(self, actor, issue):
+        """Read the I04 graph under the domain lock, including its native release bindings."""
+        bindings = {}
+        prerequisites = issue_dependencies(self.domain, actor, issue)
+        for prerequisite in prerequisites:
+            if not prerequisite["accepted"]:
+                raise NativeStoreError("Issue prerequisite has not been accepted")
+            row = self.domain.db.execute(
+                "SELECT t.* FROM native_active_tasks a JOIN native_tasks t ON t.id=a.task WHERE a.issue=?",
+                (prerequisite["id"],),
+            ).fetchone()
+            if row is not None:
+                self._read_allowed(actor, row)
+                if row["state"] != "accepted" or not row["acceptance"]:
+                    raise NativeStoreError("Issue prerequisite lacks exact accepted output")
+                bindings[row["id"]] = row["acceptance"]
+        return [p["id"] for p in prerequisites], bindings
+
     def authorize_task(
         self,
         actor,
@@ -362,6 +540,7 @@ class NativeWorkflow:
         stage_criteria=None,
         shared_asset_writes=False,
         _renewal=None,
+        _completion=None,
     ):
         source = self._allow(actor, issue, "authorize")
         authority = source["definition"].get("stage_authorization", {})
@@ -380,6 +559,18 @@ class NativeWorkflow:
         if not mandate or not checks or profile not in self.worker.profiles:
             raise NativeStoreError("Installed profile, checks and mandate required")
         tenant = source["definition"]["tenant_id"]
+        with self.domain._connection_lock:
+            prerequisites, issue_inputs = self._issue_inputs(actor, issue)
+        if issue_inputs:
+            selected, dependencies = dict(selected), dict(dependencies)
+            for ticket, acceptance in issue_inputs.items():
+                if dependencies.setdefault(ticket, acceptance) != acceptance:
+                    raise NativeStoreError("Issue dependency acceptance changed")
+                for module, revision in json.loads(acceptance)["modules"].items():
+                    if selected.setdefault(module, revision) != revision:
+                        raise NativeStoreError("Installed plan conflicts with accepted dependency output")
+        if _completion is not None and _completion not in dependencies:
+            return None  # A legacy resolver may enumerate other already-resolved branches.
         revisions, _ = self.worker.workspace.sources(tenant, selected)
         self._inputs_allowed(actor, revisions)
         if not isinstance(writes, dict) or not writes or set(writes) - revisions.keys():
@@ -421,6 +612,7 @@ class NativeWorkflow:
             capabilities=capabilities,
             check_contexts={check: self.runner.context(check, "0" * 64) for check in checks},
             dependencies=dependencies,
+            **({"issue_prerequisites": prerequisites} if prerequisites else {}),
             profile=profile,
             product=product,
             checks=checks,
@@ -436,12 +628,29 @@ class NativeWorkflow:
         # as stage settlement. Evidence withdrawal cannot race the new decision.
         native_lock = self.runner.store._connection(write=True) if _renewal else nullcontext()
         with native_lock as native_db, self._transaction() as db:
-            if self._allow(actor, issue, "authorize") != source:
+            if self._allow(actor, issue, "authorize") != source or self._issue_inputs(actor, issue) != (
+                prerequisites,
+                issue_inputs,
+            ):
                 raise NativeStoreError("Source changed")
+            if db.execute(
+                "SELECT 1 FROM issue_flows WHERE issue_id=? AND definition IS NOT NULL", (issue,)
+            ).fetchone() or (prerequisites and not authority):
+                raise NativeStoreError("Ordinary workflow owns this issue")
+            if (
+                _completion is not None
+                and not db.execute("SELECT 1 FROM native_active_tasks WHERE task=?", (_completion,)).fetchone()
+            ):
+                return None
             for dependency, acceptance in dependencies.items():
                 row = self._row(db, dependency)
                 self._read_allowed(actor, row)
-                if row["tenant"] != tenant or row["acceptance"] != acceptance or not acceptance:
+                if (
+                    row["tenant"] != tenant
+                    or row["state"] != "accepted"
+                    or row["acceptance"] != acceptance
+                    or not acceptance
+                ):
                     raise NativeStoreError("Dependency lacks exact accepted output")
                 accepted = json.loads(acceptance)
                 if any(revisions.get(m) != r for m, r in accepted["modules"].items()):
@@ -531,6 +740,11 @@ class NativeWorkflow:
                 raise NativeStoreError("Task definition changed")
             if self.domain.get_issue(row["issue"])["status"] in {"cancelled", "blocked"}:
                 raise NativeStoreError("Issue execution is stopped")
+            prerequisites, issue_inputs = self._issue_inputs(actor, row["issue"])
+            if prerequisites != task.get("issue_prerequisites", []) or any(
+                task["dependencies"].get(k) != v for k, v in issue_inputs.items()
+            ):
+                raise NativeStoreError("Issue dependency acceptance changed")
             for dependency, acceptance in task["dependencies"].items():
                 other = self._row(self.domain.db, dependency)
                 self._read_allowed(actor, other)
@@ -756,16 +970,80 @@ class NativeWorkflow:
             except TimeoutError:
                 raise NativeStoreError("Terminal observer deadline exceeded; physical state remains unknown") from None
         row = self.reconcile(actor, key)
-        if row["state"] in {"reserved", "running", "held", "closed-unresolved"}:
+        if row["state"] == "closed-unresolved":
+            raise NativeStoreError("Worker process closed; output receipt unresolved")
+        if row["state"] in {"reserved", "running", "held"}:
             raise NativeStoreError("Terminal event ownership unavailable; physical state remains unknown")
-        with self._transaction() as db:
+        with self._transaction(write=False) as db:
             row = self._row(db, key)
             self._valid(actor, row)
         return row
 
     def execute_receipt(self, actor, key):
-        result = self.execute(actor, key)
-        return {**result, **execution_identity(key)}
+        retry_available = True
+        while True:
+            try:
+                return {**self.execute(actor, key), **execution_identity(key)}
+            except (sqlite3.OperationalError, StorageBusy) as error:
+                if isinstance(error, sqlite3.OperationalError) and not isinstance(_storage_error(error), StorageBusy):
+                    raise
+                try:
+                    observation = self._execution_fault(actor, key, "storage-busy", retry_available, record=True)
+                except sqlite3.OperationalError as journal_error:
+                    raise _storage_error(journal_error) from journal_error
+                if observation["next_action"] != "retry-same-execution":
+                    raise StorageBusy(observation["recovery_condition"]) from error
+                retry_available = False
+
+    def execution_readback(self, actor, key, *, issues=None):
+        """An ambiguous transport response can only initiate a read of the original execution."""
+        return self._execution_fault(actor, key, "response-unknown", False, record=False, issues=issues)
+
+    def record_execution_fault(self, actor, key, *, issues=None):
+        # Only the server constructs the audit payload from authorized durable state.
+        try:
+            return self._execution_fault(actor, key, "response-unknown", False, record=True, issues=issues)
+        except sqlite3.OperationalError as error:
+            raise _storage_error(error) from error
+
+    def _execution_fault(self, actor, key, reason, allow_retry, *, record, issues=None):
+        with self._transaction(write=record) as db:
+            row = self._row(db, key)
+            self._read_allowed(actor, row)
+            if issues is not None and row["issue"] not in issues:
+                raise NativeStoreError("Execution is outside this entry")
+            self._allow(actor, row["issue"], "reconcile")
+            state = row["state"]
+            terminal = json.loads(row["terminal"] or "{}")
+            action = "read-original-receipt"
+            condition = "Observe the original worker or obtain its authoritative terminal receipt."
+            external_reservation = callable(getattr(self.worker, "reserve", None))
+            if state == "reserved" and key not in self._executions and allow_retry and not external_reservation:
+                self._valid(actor, row)
+                action = "retry-same-execution"
+                condition = "The original reservation is current and the execution intent has not started."
+            elif terminal:
+                condition = "The original execution has a recorded terminal receipt."
+            elif state == "reserved" and external_reservation:
+                condition = "Read the original worker adapter's reservation and terminal receipt."
+            elif state == "reserved" and reason == "storage-busy":
+                condition = "Confirm storage is writable and recheck the original reservation before continuing."
+            observation = {
+                **execution_identity(key),
+                "operation": "execute",
+                "reason": reason,
+                "state": state,
+                "known_effects": {
+                    "reservation_recorded": bool(row["assignment"]),
+                    "exit_code": terminal.get("exit_code"),
+                    "candidate": terminal.get("candidate"),
+                },
+                "next_action": action,
+                "recovery_condition": condition,
+            }
+            if record:
+                self.domain._event(row["tenant"], "native.execution-recovery", actor, row["issue"], observation)
+            return observation
 
     def execute(self, actor, key):
         with self.domain._connection_lock:
@@ -815,11 +1093,20 @@ class NativeWorkflow:
         if stale is not None:
             raise stale
         try:
+            # Read the exact durable run intent on the existing owned process
+            # supervision loop, including requests accepted by another coordinator.
+            def cancelled():
+                with self.domain._connection_lock:
+                    return self._control_intent(self.domain.db, key) == "cancel"
+
+            cancellation = worker_cancel_requested.set(cancelled)
             reporter = worker_step_reporter.set(self._record_step)
             try:
-                terminal = self.worker.run(task, key)
+                with _worker_storage():
+                    terminal = self.worker.run(task, key)
             finally:
                 worker_step_reporter.reset(reporter)
+                worker_cancel_requested.reset(cancellation)
             if terminal is None:
                 return self.status(actor, key)
         except BaseException:
@@ -838,8 +1125,9 @@ class NativeWorkflow:
             except (PermissionDenied, NativeStoreError):
                 state = "stopped"
             self._terminal_progress(db, key, state, terminal)
+            state = self._control_settlement(db, key, state)
             db.execute("UPDATE native_tasks SET state=?,terminal=? WHERE id=?", (state, _json(terminal), key))
-            if state != "stopped":
+            if state in {"produced", "failed"}:
                 db.execute(
                     "UPDATE issues SET status=? WHERE id=?",
                     ("in-review" if terminal["state"] == "produced" else "blocked", row["issue"]),
@@ -867,12 +1155,12 @@ class NativeWorkflow:
             accepted = json.loads(acceptance)
             if upstream["acceptance"] != acceptance or upstream["state"] != "accepted":
                 raise NativeStoreError("Dependency acceptance changed")
-            request = accepted["request"]
-            current = self.release.historical(
-                task["tenant"], actor, request["product"], request["channel"], accepted["id"]
-            )
-            if current != accepted:
-                raise NativeStoreError("Dependency historical release invalid")
+            self._accepted_release(task["tenant"], actor, accepted)
+
+    def _accepted_release(self, tenant, actor, accepted):
+        request = accepted["request"]
+        if self.release.historical(tenant, actor, request["product"], request["channel"], accepted["id"]) != accepted:
+            raise NativeStoreError("Dependency historical release invalid")
 
     def _settle_physical(self, worker, key):
         """Installed adapter only: release ownership, without reading/admitting output.
@@ -900,16 +1188,19 @@ class NativeWorkflow:
         task = json.loads(row["task"])
         failure = None
         try:
-            terminal = self.worker.reconcile(task, key)
+            with _worker_storage():
+                terminal = self.worker.reconcile(task, key)
         except NativeStoreError as error:
-            # Current producer authority can reject content after the physical
-            # process closed. The coordinator may settle capacity, never approve
-            # that content or impersonate the producer to recover it.
+            # Storage or content authorization can fail after the process exits.
+            # Only the separate physical receipt can settle its capacity then.
             terminal, failure = None, str(error)
-        if terminal is None and not self.worker.process_closed(task, key):
-            if failure is not None:
-                raise NativeStoreError(failure)
-            return row  # No expiry, PID takeover or automatic relaunch.
+        if terminal is None:
+            with _worker_storage():
+                closed = self.worker.process_closed(task, key)
+            if not closed:
+                if failure is not None:
+                    raise NativeStoreError(failure)
+                return row  # No expiry, PID takeover or automatic relaunch.
         with self._transaction() as db:
             current = self._row(db, key)
             self._read_allowed(actor, current)
@@ -921,6 +1212,8 @@ class NativeWorkflow:
                 state = "stopped"
             if current["state"] in {"running", "held", "closed-unresolved"}:
                 self._terminal_progress(db, key, state, terminal)
+                if terminal is not None:
+                    state = self._control_settlement(db, key, state)
                 db.execute(
                     "UPDATE native_tasks SET state=?,terminal=? WHERE id=?",
                     (state, _json(terminal) if terminal is not None else None, key),
@@ -940,39 +1233,81 @@ class NativeWorkflow:
                     )
         return self.status(actor, key)
 
-    def advance(self, actor, *, isolate=False, exclude=()):
+    def advance(self, actor, *, isolate=False, exclude=(), completion=None, owned_issues=None):
         """Consume actual acceptance events. Installed graph resolver supplies issues.
 
         Authorizing a dependent uses pinned accepted outputs returned by the installed
         plan. Failed consumption is replayable; no background scans or model polling.
         """
-        if not callable(self.next_issues):
+        if not callable(self.next_issues) and not callable(self.installed_plan):
             return {"authorized": [], "errors": []} if isolate else []
         with self._transaction() as db:
             tenant = self.domain.actor_context(actor)["tenant"]
             events = [
                 dict(r)
                 for r in db.execute(
-                    "SELECT * FROM native_outbox WHERE tenant=? "
-                    "AND id NOT IN (SELECT id FROM native_outbox_consumed) ORDER BY rowid",
-                    (tenant,),
+                    "SELECT o.*,t.issue FROM native_outbox o JOIN native_tasks t ON t.id=o.id WHERE o.tenant=? "
+                    "AND EXISTS (SELECT 1 FROM native_active_tasks a WHERE a.issue=t.issue AND a.task=t.id) "
+                    "AND (? IS NULL OR o.id=?) AND o.id NOT IN (SELECT id FROM native_outbox_consumed) ORDER BY o.rowid",
+                    (tenant, completion, completion),
                 ).fetchall()
             ]
         results, errors = [], []
         for event in events:
-            if event["id"] in exclude:
+            if event["id"] in exclude or (owned_issues is not None and event["issue"] not in owned_issues):
                 continue
             try:
-                self.status(actor, event["id"])
+                upstream = self.status(actor, event["id"])
             except PermissionDenied:
                 continue  # Preserve private pending events without exposing identifiers.
             try:
-                issues = self.next_issues(actor, json.loads(event["payload"]))
+                if upstream["state"] != "accepted" or not upstream["acceptance"]:
+                    raise NativeStoreError("Dependency event lacks exact acceptance")
+                issues = self.next_issues(actor, json.loads(event["payload"])) if self.next_issues else []
+                if issues is None:
+                    continue  # The installed entry owns this event in another dispatch context.
                 if not isinstance(issues, list) or len(issues) > 1024 or not all(isinstance(i, str) for i in issues):
                     raise NativeStoreError("Invalid installed dependency event response")
-                results.extend(self.authorize_installed(actor, issue) for issue in issues)
+                self._accepted_release(event["tenant"], actor, json.loads(upstream["acceptance"]))
+                # A signed I04 successor can be installed independently of an entry planner.
+                with self._transaction(write=False) as db:
+                    signed = [
+                        r[0]
+                        for r in db.execute(
+                            "SELECT d.issue_id FROM issue_dependencies d JOIN design_task_sources s "
+                            "ON s.issue_id=d.issue_id LEFT JOIN native_active_tasks a ON a.issue=d.issue_id "
+                            "LEFT JOIN issue_flows f ON f.issue_id=d.issue_id "
+                            "WHERE d.dependency=? AND a.task IS NULL AND f.definition IS NULL ORDER BY d.issue_id",
+                            (event["issue"],),
+                        )
+                    ]
+                admitted = []
+                inaccessible = False
+                for issue in dict.fromkeys([*issues, *signed]):
+                    if owned_issues is not None and issue not in owned_issues:
+                        continue
+                    if issue in signed:
+                        try:
+                            self._allow(actor, issue, "authorize")
+                            with self.domain._connection_lock:
+                                if not all(d["accepted"] for d in issue_dependencies(self.domain, actor, issue)):
+                                    continue
+                        except PermissionDenied:
+                            inaccessible = True
+                            continue
+                        except StageAuthorizationChanged:
+                            continue
+                    ticket = self.authorize_installed(actor, issue, _completion=event["id"])
+                    if ticket is not None:
+                        admitted.append(ticket)
+                if inaccessible:
+                    # The active ticket protects work already admitted. A recipient
+                    # with access can later consume the remaining private branch.
+                    results.extend(admitted)
+                    continue
                 with self._transaction() as db:
-                    db.execute("INSERT OR IGNORE INTO native_outbox_consumed VALUES (?)", (event["id"],))
+                    if db.execute("INSERT OR IGNORE INTO native_outbox_consumed VALUES (?)", (event["id"],)).rowcount:
+                        results.extend(admitted)
             except Exception as error:
                 if not isolate:
                     raise
@@ -1060,12 +1395,12 @@ class NativeWorkflow:
         if task["source"]["definition"].get("stage_authorization") and row["state"] != "accepted":
             raise NativeStoreError("Signed task is limited to its authorized stage")
 
-    def authorize_installed(self, actor, issue, *, expected=None):
+    def authorize_installed(self, actor, issue, *, expected=None, _completion=None):
         self._allow(actor, issue, "authorize")
         if not callable(self.installed_plan):
             raise NativeStoreError("No admitted native plan installed")
         plan = self.installed_plan(actor, issue)
-        return self.authorize_task(actor, issue, expected=expected, **plan)
+        return self.authorize_task(actor, issue, expected=expected, _completion=_completion, **plan)
 
     def renew_stage(self, actor, key, target_revision, confirmation_revision):
         """Use the reached ticket's immutable output as the next installed plan's baseline."""

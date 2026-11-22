@@ -21,6 +21,10 @@ worker_step_reporter: ContextVar[Callable[[str, str, dict[str, object]], None] |
 )
 
 
+# Only a coordinator running the local producer installs this per-execution probe.
+worker_cancel_requested: ContextVar[Callable[[], bool] | None] = ContextVar("worker_cancel_requested", default=None)
+
+
 def _report_step(execution, step, details):
     report = worker_step_reporter.get()
     if report is not None:
@@ -150,6 +154,7 @@ class NativeWorker:
         context.write_text(_json(task["source"]["definition"]), encoding="utf-8")
         env = {**spec["env"], "NATIVE_WORKSPACE": str(work), "NATIVE_CONTEXT": str(context)}
         reasons = []
+        requested = worker_cancel_requested.get()
         with (folder / "process.log").open("w+b") as log:
             code = self.helper.run_owned(
                 spec["argv"],
@@ -157,7 +162,7 @@ class NativeWorker:
                 env=env,
                 limit=spec["log_bytes"],
                 timeout=spec["timeout"],
-                active=lambda: cancel is None or not cancel.is_set(),
+                active=lambda: (cancel is None or not cancel.is_set()) and not (requested and requested()),
                 fail=reasons.append,
                 cwd=work,
             )
@@ -254,6 +259,36 @@ class NativeWorker:
             if row["task"] != _json(task) or row["terminal"] != _json(terminal):
                 raise NativeStoreError("Worker terminal integrity failure")
         return terminal
+
+    def verify_pause_checkpoint(self, task, execution, terminal):
+        """Read the worker's original side effects without starting a producer or redoing intake."""
+        if execution != _digest(_json(task).encode()):
+            raise NativeStoreError("Worker execution contract mismatch")
+        with self.store._connection() as db:
+            physical = db.execute(
+                "SELECT * FROM native_worker_process_closures WHERE execution=?", (execution,)
+            ).fetchone()
+            spool = db.execute("SELECT * FROM native_worker_closed WHERE execution=?", (execution,)).fetchone()
+            saved = db.execute(
+                "SELECT task,terminal FROM native_worker_terminals_v2 WHERE execution=?", (execution,)
+            ).fetchone()
+        process, output = self._history(task, physical, spool)
+        if not terminal:
+            if saved or process or output or (self.root / execution).exists():
+                raise NativeStoreError("Unresolved worker intent; cannot resume")
+        elif (
+            not saved
+            or saved["task"] != _json(task)
+            or saved["terminal"] != _json(terminal)
+            or not process
+            or not output
+            or output.get("cancelled")
+            or process["reasons"]
+            or process["exit_code"] != 0
+            or terminal.get("state") != "produced"
+            or process["transcript"] != terminal.get("transcript")
+        ):
+            raise NativeStoreError("Worker side effects differ from reviewed checkpoint")
 
     def process_closed(self, task, execution):
         """Trusted coordinator-only physical observation; grants no content access.

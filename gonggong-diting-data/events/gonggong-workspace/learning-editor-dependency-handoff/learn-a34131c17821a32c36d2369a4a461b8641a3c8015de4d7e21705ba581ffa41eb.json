@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-a34131c17821a32c36d2369a4a461b8641a3c8015de4d7e21705ba581ffa41eb",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1814",
+  "occurred_at": "2026-11-22T10:08:03.580222+00:00",
+  "evidence_refs": [
+    "dispatch-c86959ea9c7946f38be8d1ff1e922a4e",
+    "learn-89021ca463077ca6f724efb39897d29eec6853e922834465b77d89a3f804878f"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "reconstruct-worker-outcomes",
+    "revision": 5,
+    "previous": "2d73b1d388003fdaa39cc39b39d5b5e2d8514597294b90b7279919927cdf947d",
+    "action": "applied",
+    "details": {
+      "task": "S10 local run controls #1814",
+      "observed": "Three independently signed native runs started once each. After request replay, pause retained an exact worker checkpoint, resume reached the same candidate, the peer finished and the cancelled run stayed closed on editor reopen. A changed worker terminal and an unknown prior intent both prevented resume."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-s10.json",
+        "sha256": "103cda928b0bbc6c131ac56c9a4eb82506eff57bee72a0584415a0bc6c2316d5"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s10/dispatch-c86959ea9c7946f38be8d1ff1e922a4e.json",
+      "sha256": "503b79d08bf976649b2837d187cd081042a548e32eaebd9cd050858971a7651b"
+    }
+  },
+  "sha256": "7686232ad29ecdf3afa734adf5a9be2c4233d59f05eb50f37c5dd73a132c04dd"
+}

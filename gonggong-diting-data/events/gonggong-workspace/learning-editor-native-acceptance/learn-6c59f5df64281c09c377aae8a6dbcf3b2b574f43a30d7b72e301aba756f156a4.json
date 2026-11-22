@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-native-acceptance",
+  "event_id": "learn-6c59f5df64281c09c377aae8a6dbcf3b2b574f43a30d7b72e301aba756f156a4",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1833",
+  "occurred_at": "2026-11-22T10:04:56.954529+00:00",
+  "evidence_refs": [
+    "dispatch-b00286d5cab943f7a247d541e3e65984",
+    "learn-e2d661d1e9362bae904e8d9fa2668b38ff529e8f687234315dd52441e151aff4"
+  ],
+  "payload": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "revision": 12,
+    "previous": "568a636d79c804500fd51b6ff6fd6d126031453653819762916d65ee31f862df",
+    "action": "applied",
+    "details": {
+      "task": "S06 #1833: drop the execute reply following a confirmed real producer start; recover the exact durable terminal on HTTP and actor-scoped shared Node pipe.",
+      "observed": "Each deliberately lost post-launch reply was armed only after a successful execute response from the server; verified the producer log, same run ID, exit code and candidate. Before-launch exhaustion asserted zero starts."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-s06.json",
+        "sha256": "4502b6b113eb61c6997311243e555984dab44f7448f1656efe903175508907a9"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s06/dispatch-b00286d5cab943f7a247d541e3e65984.json",
+      "sha256": "85e8dbab457432a62327b42d7135567581d154ecd225e0fbd1cc3da492bd0a25"
+    }
+  },
+  "sha256": "8f4885c8598f7d4e3ef59a7b181012620a74cd52882badda7f57a7e8a3ddf20e"
+}

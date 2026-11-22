@@ -63,6 +63,8 @@ builtin = ["clear", "rare", "en-GB_to_en-US"]
 # Preserve verbatim D3D12 and Windows CLI diagnostics in immutable evidence.
 ignore-regex = "\\(labelled with 'Possibly imprecise'\\)|Windows /fo spelling false positive" # codespell:ignore labelled,fo
 skip = [
+	# Keep the original run-control receipt attached to the Windows worker's evidence.
+	"data-collection/gonggong-ai-workbench-plan1-s10.json",
 	# Preserve the exact #1434 process-test transcript and reviewed checksum.
 	"data-collection/native-host-inputs-cleanup-1434.json",
 	# Preserve exact #1414 learning and review records with their checksums.

@@ -926,7 +926,7 @@ class OrdinaryEntry:
                 )
                 if not state["acceptance"]:
                     require(
-                        state["state"] not in {"held", "stopped", "closed-unresolved"},
+                        state["state"] not in {"held", "stopped", "cancelled", "closed-unresolved"},
                         "Dependency outcome unavailable; original intent retained",
                     )
                     with self.domain._connection_lock:
@@ -944,6 +944,8 @@ class OrdinaryEntry:
     def next_issues(self, actor, event):
         result = []
         current = self.current_entry.get()
+        if event is not None and current is None:
+            return None
         for row in self.entries():
             if row["id"] != current or row["actor"] != actor or not row["receipt"]:
                 continue
@@ -958,8 +960,9 @@ class OrdinaryEntry:
                 if bound:
                     continue
                 try:
-                    self.plan(actor, issue)
-                    result.append(issue)
+                    plan = self.plan(actor, issue)
+                    if event is None or event["reference"] in plan["dependencies"]:
+                        result.append(issue)
                 except (NativeStoreError, PermissionDenied):
                     pass
         return result
@@ -1183,6 +1186,27 @@ class OrdinaryEntry:
                 or self.consumer.stopping
             ):
                 break
+            own_states = {(t["id"], t["state"]) for t in own}
+            parked = {"paused", "cancelled", "accepted", "stage-reached", "stage-unmet"}
+            if any(state == "paused" for _, state in own_states) and all(state in parked for _, state in own_states):
+                # A peer's empty driver closure also wakes dependency observers.
+                # Reopen this driver for changes to its own task set or states.
+                while not self.consumer.stopping:
+                    self.dependency_changed.clear()
+                    with self.domain._connection_lock:
+                        current_states = {
+                            tuple(r)
+                            for r in self.domain.db.execute(
+                                "SELECT id,state FROM native_tasks WHERE json_extract(task,'$.mandate')=?", (row["id"],)
+                            )
+                        }
+                    if own_states != current_states:
+                        break
+                    await self.dependency_changed.wait()
+                if self.consumer.stopping:
+                    break
+                self.entry_authority(row["id"])
+                continue
             # Another entry may have occupied the final slot between inspect and
             # reserve. A fresh driver consumes only recorded ready work after a
             # real terminal/acceptance event; unknown effects are never replayed.

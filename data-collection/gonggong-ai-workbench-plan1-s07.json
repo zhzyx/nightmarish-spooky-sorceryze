@@ -1,0 +1,263 @@
+{
+  "request_id": "gonggong-ai-workbench-plan1-s07",
+  "issue_number": 1763,
+  "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1763",
+  "source_revision": "306d4f020f7d3cd96eb9e23d77ded90a6696b5dac520b230979dbf5182df7edf",
+  "source_commit": "2c36fac9004881889da355670c80b0531e0dec07",
+  "candidate_git_blobs": {
+    "editor/docks/workbench/business_session.gd": "21adeb445de1aaf5c6f78c6cf803908b61d8f6ff",
+    "editor/docks/workbench/module_selector.gd": "f13598e03d39e5af69705a81324b639807270952",
+    "editor/docks/workbench/issue_actions/issue_task_progress.gd": "fc4943b1dd6c158b754648144537a0aaa97f0a5c",
+    "tests/editor/workbench_task_progress.gd": "3bc4bcb263915ba3e5a6cc9a8b84847f573a5b3c",
+    "tests/editor/run_workbench_task_progress.py": "dbab73e3eee3b9ea9632769f044f7fff428d8f3a",
+    "design-docs/gonggong-ai-workbench-s07.md": "6b6773add60be2f12b6043f1eb42ed3bf3820639"
+  },
+  "tested_file_sha256": {
+    "editor/docks/workbench/business_session.gd": "4fb91322680279cb6ee23d261bc6dda126eef1428d73cb8c944285c8981852cc",
+    "editor/docks/workbench/module_selector.gd": "ed9b13e57552ccb7634b3a40486dc74cf739101d960a70dd7569be8277b793fb",
+    "editor/docks/workbench/issue_actions/issue_task_progress.gd": "5a5882c4704a5497a9a32b052ed11e9ebe88a0ba9303d737eb3b8d0265369409",
+    "tests/editor/workbench_task_progress.gd": "bc558f64782c23d676478b048862b2c6be5ea069d5d0439506303398aeb28374",
+    "tests/editor/run_workbench_task_progress.py": "fbe4a39b86f6269a2f1ced77de01eee4648f49528f12d135d41e36e848cabe2d",
+    "design-docs/gonggong-ai-workbench-s07.md": "c5c0b876488e878689c7c9e4c3e8e9e718673ed71aa5f4acb1bb2007c3e31358"
+  },
+  "dispatch": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s07/dispatch-f852d96ed50e4da69ab15a4613c26801.json",
+  "intake": {
+    "passed": true,
+    "owner": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1763#issuecomment-7077044948",
+    "predecessors": [
+      {
+        "issue": 1842,
+        "state": "CLOSED",
+        "reason": "COMPLETED",
+        "pr": 2042
+      },
+      {
+        "issue": 1840,
+        "state": "CLOSED",
+        "reason": "COMPLETED",
+        "pr": 1911
+      }
+    ]
+  },
+  "build": {
+    "platform": "Windows x86_64",
+    "reference_input_tree": "1f78766f2e3bf591bde7691d29f3721ceb2d876b",
+    "prior_changes": [
+      "customizations/components/tianxuan/server/api.py",
+      "customizations/components/tianxuan/server/native_entry_context.py",
+      "customizations/components/tianxuan/server/native_entry_factory.py",
+      "customizations/components/tianxuan/server/native_execution_host.py",
+      "customizations/components/tianxuan/sinan-workorders/native_dispatch.mjs",
+      "customizations/components/tianxuan/sinan-workorders/native_worker.py",
+      "customizations/components/tianxuan/sinan-workorders/native_workflow.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_asset_reservations.py",
+      "customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py",
+      "data-collection/gonggong-ai-workbench-plan1-s04.json",
+      "data-collection/gonggong-ai-workbench-plan1-s08.json",
+      "data-collection/gonggong-ai-workbench-plan1-windows-asset-recovery-combined.json",
+      "design-docs/gonggong-ai-workbench-s04.md",
+      "design-docs/gonggong-ai-workbench-s08.md",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s04/dispatch-2cae6b3b3f294376a11dcbd0cdbc71a4.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s04/dispatch-e9184ff63be2401abc0d31706f9e01fc.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s04/wave22-windows-asset-recovery-1842.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s08/dispatch-577469a6006d42f78b2e38a58e598b1d.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s08/dispatch-6ee22e41689845a3942b98c132ff7032.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s08/wave22-windows-asset-recovery-1792.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-5479737025b8e6234cb9d1b728c4c23bf0127228.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-e3dffd8b15d4a0e44741e339f6c4d6061b205ba0.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/kuafu-f16c263a550d8acd6e1681cbc3f794d88396de74.json",
+      "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1/wave22-windows-asset-recovery-1709.json",
+      "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-9e23614ecb32b477c66f66278276f3b096febd5c1a5d63e1f69b97ff7ecb7fc7.json",
+      "gonggong-diting-data/events/gonggong-workspace/learning-editor-dependency-handoff/learn-fcb4035373a7f0182b14dec762fb5e11c642ae64904de308b2ce1b5a9c2a13f2.json",
+      "gonggong-diting-data/events/gonggong-workspace/learning-native-storage-resource-boundary/learn-11fcf07768c7b41a083dec694d410eb84e0f4d6822447520094f8119b4d1e271.json",
+      "gonggong-diting-data/events/gonggong-workspace/learning-native-storage-resource-boundary/learn-516089202e78497d327fdcbb69eed238f5276d9a54f5703972ccc3711ef34d71.json",
+      "gonggong-diting-data/events/gonggong-workspace/learning-native-storage-resource-boundary/learn-bf555836210d4c2d80d84876d8532a91a216f9030a1bf7bfeedeaabafc2be792.json",
+      "gonggong-diting-data/events/gonggong-workspace/learning-native-storage-resource-boundary/learn-e03c39329a02fd3bdadcdd4b749be6ca449e7a26f4519b6276800e9596b0827a.json",
+      "tests/editor/run_workbench_confirmed_native_stage.py"
+    ],
+    "reference_pr": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2042",
+    "reference_package_sha256": {
+      "godot.windows.editor.x86_64.exe": "bbcda76ec3b96a87c483f2d6d423a8d1761a6ada4561077733ad09d4b73dfcbc",
+      "godot.windows.editor.x86_64.console.exe": "ad5c45c692f11274d132bdb14c73bf6d3270e54621f1d97bdd9d88d52b7a374a",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    },
+    "reference_inputs": "Between PR #2042 build and this base only Tianxuan/dispatcher host service, tests, documents and receipts changed. Three S07 GDScript inputs are consumed by editor/SCsub and linked via AIWorkbenchSidebar.cpp. Packaged tianshu UI/board and WebView2 inputs are unchanged.",
+    "command": "py -m SCons platform=windows target=editor arch=x86_64 dev_build=no precision=single module_mono_enabled=no ninja=no extra_suffix= tests=yes accesskit=no d3d12=no angle=no cache_path=<shared-readonly-cache> cache_limit=0 --cache-readonly -j6",
+    "observed": [
+      "Using Visual Studio 14.5 with Windows SDK 10.0.26100.0.",
+      "Generating editor\\docks\\workbench\\IssueActions.gen.h ...",
+      "Generating editor\\docks\\workbench\\module_selector.gen.h ...",
+      "Compiling editor\\docks\\workbench\\AIWorkbenchSidebar.cpp ...",
+      "Linking Program bin\\godot.windows.editor.x86_64.exe ...",
+      "Linking Program bin\\godot.windows.editor.x86_64.console.exe ...",
+      "scons: done building targets.",
+      "INFO: Time elapsed: 00:12:01.21"
+    ],
+    "retest_rebuild": [
+      "Generating editor\\docks\\workbench\\BusinessSession.gen.h ...",
+      "Generating editor\\docks\\workbench\\IssueActions.gen.h ...",
+      "Compiling editor\\docks\\workbench\\AIWorkbenchSidebar.cpp ...",
+      "Linking Program bin\\godot.windows.editor.x86_64.exe ...",
+      "Linking Program bin\\godot.windows.editor.x86_64.console.exe ...",
+      "scons: done building targets.",
+      "INFO: Time elapsed: 00:00:24.14"
+    ],
+    "package_sha256": {
+      "godot.windows.editor.x86_64.exe": "74aa7107313f1c3d19030a245847dd04471ffdb3001264f65574a83ce7e0c947",
+      "godot.windows.editor.x86_64.console.exe": "dc159290cf8fba45a23e68b158be9c19d1e3be2cab8e355e2f13a8386da3e5e2",
+      "tianshu-ui.json": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+      "tianshu-board.json": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+      "WebView2Loader.dll": "8427b1fc58ec707813e5c0a51eb5d69397bb333250a7b891be4d3b123f1e0f1c",
+      "WebView2-LICENSE.txt": "0af8f1b807512aae39c2ac1aa4d0cae65cabecb6fd554b8439a5162a0d6eca55",
+      "WebView2-NOTICE.txt": "106423785c5b7eba0a8e61d1837f2132e9c828e20ad530f565d981c1df60dd90"
+    }
+  },
+  "receiver": {
+    "application": "Native Godot AI Workbench (headless Windows, isolated copy_editor installation), authenticated Tianxuan HTTP and a local worker process, independently reopened SQLite handle",
+    "read_endpoints": [
+      "GET /api/v1/issues/by-number/{number}/detail",
+      "POST /api/v1/native/workflow/status"
+    ],
+    "entries": [
+      "Sidebar: choose business module, choose issue, open run progress",
+      "Issue detail: look up number, open run progress, refresh after process exit",
+      "Expanded workbench: reopen the selected module task after process exit"
+    ],
+    "previous_editor_observation": "Native regression reported 'Run progress control missing' on accepted PR #2042 before S07.",
+    "command": "python tests/editor/run_workbench_task_progress.py --godot bin/godot.windows.editor.x86_64.exe --report <result.json>",
+    "s04_service_regression": "python -m pytest -q customizations/components/tianxuan/sinan-workorders/test_native_issue_progress.py: 6 passed"
+  },
+  "corrective_retest": {
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2055",
+    "kuafu": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s07/kuafu-c608b927468b496f021b4eae4b5fccc7cc9b9dcf.json",
+    "initial_editor_sha256": "363a4c1f257ecd9d4e52b58feaddea018b54a892436a4b7d6224dd8ea08ed5af",
+    "observation": "Module running receipt: 无法核对该次运行的最新回执",
+    "cause": "The native status API rejects project query parameters with 422, and full status POST rejects viewers with 403. The editor now scopes status by the exact run key already read from the project and consumes the authorized detail projection for viewers.",
+    "receipt": "Final three native scenarios below."
+  },
+  "result": {
+    "passed": true,
+    "editor_sha256": "74aa7107313f1c3d19030a245847dd04471ffdb3001264f65574a83ce7e0c947",
+    "scenarios": {
+      "produced": {
+        "issue": "iss_cf9df7a678cf43229e9fd3b2df71ddcd",
+        "reader_role": "admin",
+        "status_with_project": 422,
+        "number": 1,
+        "run": "5c4048cd73d0234870fdafeefc13b7a60ceb9c4bd779bbc121e81b76176b6ebb",
+        "running": {
+          "sequence": 4,
+          "recorded_at": "2026-11-22T09:41:08.743Z",
+          "state": "running",
+          "step": "workspace.materialize",
+          "details": {
+            "modules": {
+              "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+            }
+          }
+        },
+        "final": {
+          "sequence": 8,
+          "recorded_at": "2026-11-22T09:41:13.816Z",
+          "state": "produced",
+          "step": "state",
+          "details": {
+            "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+            "modules": {
+              "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+            }
+          }
+        },
+        "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+        "persisted_events": 8,
+        "physical_starts": 1,
+        "views": {
+          "final_issue": "运行号　5c4048cd73d0234870fdafeefc13b7a60ceb9c4bd779bbc121e81b76176b6ebb\n目标阶段　原型\n运行状态　已生成产物\n产物候选　10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\n阶段核验　stage_criteria_check_unbound\n\n运行回执（从新到旧）\n#8　2026-11-22T09:41:13.816Z　state　produced\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#7　2026-11-22T09:41:13.815Z　candidate.compose　running\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#6　2026-11-22T09:41:13.772Z　workspace.collect　running\n{\"changed_modules\":[\"a\"]}\n#5　2026-11-22T09:41:13.759Z　process.closed　running\n{\"exit_code\":0.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T09:41:08.743Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:08.719Z　state　running\n#2　2026-11-22T09:41:08.710Z　state　reserved\n#1　2026-11-22T09:41:08.699Z　state　ready",
+          "final_module": "运行号　5c4048cd73d0234870fdafeefc13b7a60ceb9c4bd779bbc121e81b76176b6ebb\n目标阶段　原型\n运行状态　已生成产物\n产物候选　10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\n阶段核验　stage_criteria_check_unbound\n\n运行回执（从新到旧）\n#8　2026-11-22T09:41:13.816Z　state　produced\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#7　2026-11-22T09:41:13.815Z　candidate.compose　running\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#6　2026-11-22T09:41:13.772Z　workspace.collect　running\n{\"changed_modules\":[\"a\"]}\n#5　2026-11-22T09:41:13.759Z　process.closed　running\n{\"exit_code\":0.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T09:41:08.743Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:08.719Z　state　running\n#2　2026-11-22T09:41:08.710Z　state　reserved\n#1　2026-11-22T09:41:08.699Z　state　ready",
+          "running_issue": "运行号　5c4048cd73d0234870fdafeefc13b7a60ceb9c4bd779bbc121e81b76176b6ebb\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T09:41:08.743Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:08.719Z　state　running\n#2　2026-11-22T09:41:08.710Z　state　reserved\n#1　2026-11-22T09:41:08.699Z　state　ready",
+          "running_module": "运行号　5c4048cd73d0234870fdafeefc13b7a60ceb9c4bd779bbc121e81b76176b6ebb\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T09:41:08.743Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:08.719Z　state　running\n#2　2026-11-22T09:41:08.710Z　state　reserved\n#1　2026-11-22T09:41:08.699Z　state　ready",
+          "sibling": "当前没有可读取的运行记录"
+        }
+      },
+      "failed": {
+        "issue": "iss_a834a537f4964e5b8c80401d69400513",
+        "reader_role": "admin",
+        "status_with_project": 422,
+        "number": 1,
+        "run": "82faec680d64cd179a7b806fc9a1189a6e634ef4317dcb426cff07c3db30e8d9",
+        "running": {
+          "sequence": 4,
+          "recorded_at": "2026-11-22T09:41:15.901Z",
+          "state": "running",
+          "step": "workspace.materialize",
+          "details": {
+            "modules": {
+              "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+            }
+          }
+        },
+        "final": {
+          "sequence": 6,
+          "recorded_at": "2026-11-22T09:41:20.238Z",
+          "state": "failed",
+          "step": "state",
+          "details": {}
+        },
+        "candidate": null,
+        "persisted_events": 6,
+        "physical_starts": 1,
+        "views": {
+          "final_issue": "运行号　82faec680d64cd179a7b806fc9a1189a6e634ef4317dcb426cff07c3db30e8d9\n目标阶段　原型\n运行状态　执行失败\n进程退出码　7\n\n运行回执（从新到旧）\n#6　2026-11-22T09:41:20.238Z　state　failed\n#5　2026-11-22T09:41:20.213Z　process.closed　running\n{\"exit_code\":7.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T09:41:15.901Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:15.873Z　state　running\n#2　2026-11-22T09:41:15.864Z　state　reserved\n#1　2026-11-22T09:41:15.851Z　state　ready",
+          "final_module": "运行号　82faec680d64cd179a7b806fc9a1189a6e634ef4317dcb426cff07c3db30e8d9\n目标阶段　原型\n运行状态　执行失败\n进程退出码　7\n\n运行回执（从新到旧）\n#6　2026-11-22T09:41:20.238Z　state　failed\n#5　2026-11-22T09:41:20.213Z　process.closed　running\n{\"exit_code\":7.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T09:41:15.901Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:15.873Z　state　running\n#2　2026-11-22T09:41:15.864Z　state　reserved\n#1　2026-11-22T09:41:15.851Z　state　ready",
+          "running_issue": "运行号　82faec680d64cd179a7b806fc9a1189a6e634ef4317dcb426cff07c3db30e8d9\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T09:41:15.901Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:15.873Z　state　running\n#2　2026-11-22T09:41:15.864Z　state　reserved\n#1　2026-11-22T09:41:15.851Z　state　ready",
+          "running_module": "运行号　82faec680d64cd179a7b806fc9a1189a6e634ef4317dcb426cff07c3db30e8d9\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T09:41:15.901Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:15.873Z　state　running\n#2　2026-11-22T09:41:15.864Z　state　reserved\n#1　2026-11-22T09:41:15.851Z　state　ready",
+          "sibling": "当前没有可读取的运行记录"
+        }
+      },
+      "viewer": {
+        "issue": "iss_5153696c698047449f2a0ee10e9867ce",
+        "reader_role": "viewer",
+        "status_with_project": 422,
+        "number": 1,
+        "run": "091f107245323c85e9d54c82fd8e61801af71a3d78176f18364ad61a38eb8cf2",
+        "running": {
+          "sequence": 4,
+          "recorded_at": "2026-11-22T09:41:22.222Z",
+          "state": "running",
+          "step": "workspace.materialize",
+          "details": {
+            "modules": {
+              "a": "1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e"
+            }
+          }
+        },
+        "final": {
+          "sequence": 8,
+          "recorded_at": "2026-11-22T09:41:26.623Z",
+          "state": "produced",
+          "step": "state",
+          "details": {
+            "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+            "modules": {
+              "a": "85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f"
+            }
+          }
+        },
+        "candidate": "10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57",
+        "persisted_events": 8,
+        "physical_starts": 1,
+        "views": {
+          "final_issue": "运行号　091f107245323c85e9d54c82fd8e61801af71a3d78176f18364ad61a38eb8cf2\n目标阶段　原型\n运行状态　已生成产物\n产物候选　10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\n\n运行回执（从新到旧）\n#8　2026-11-22T09:41:26.623Z　state　produced\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#7　2026-11-22T09:41:26.622Z　candidate.compose　running\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#6　2026-11-22T09:41:26.579Z　workspace.collect　running\n{\"changed_modules\":[\"a\"]}\n#5　2026-11-22T09:41:26.567Z　process.closed　running\n{\"exit_code\":0.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T09:41:22.222Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:22.199Z　state　running\n#2　2026-11-22T09:41:22.190Z　state　reserved\n#1　2026-11-22T09:41:22.176Z　state　ready",
+          "final_module": "运行号　091f107245323c85e9d54c82fd8e61801af71a3d78176f18364ad61a38eb8cf2\n目标阶段　原型\n运行状态　已生成产物\n产物候选　10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\n\n运行回执（从新到旧）\n#8　2026-11-22T09:41:26.623Z　state　produced\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#7　2026-11-22T09:41:26.622Z　candidate.compose　running\n{\"candidate\":\"10e2a1522724df02f6015fb8836d7c5308b37c30bcf5cdec571fa036c13a3f57\",\"modules\":{\"a\":\"85ca3dfb6a0e9d3264a45f88639e7111485d3a42acc5427d4640ca4e69e4625f\"}}\n#6　2026-11-22T09:41:26.579Z　workspace.collect　running\n{\"changed_modules\":[\"a\"]}\n#5　2026-11-22T09:41:26.567Z　process.closed　running\n{\"exit_code\":0.0,\"transcript\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"}\n#4　2026-11-22T09:41:22.222Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:22.199Z　state　running\n#2　2026-11-22T09:41:22.190Z　state　reserved\n#1　2026-11-22T09:41:22.176Z　state　ready",
+          "running_issue": "运行号　091f107245323c85e9d54c82fd8e61801af71a3d78176f18364ad61a38eb8cf2\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T09:41:22.222Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:22.199Z　state　running\n#2　2026-11-22T09:41:22.190Z　state　reserved\n#1　2026-11-22T09:41:22.176Z　state　ready",
+          "running_module": "运行号　091f107245323c85e9d54c82fd8e61801af71a3d78176f18364ad61a38eb8cf2\n目标阶段　原型\n运行状态　运行中\n\n运行回执（从新到旧）\n#4　2026-11-22T09:41:22.222Z　workspace.materialize　running\n{\"modules\":{\"a\":\"1ba08c5528ec45e4da9c185ee52171272a1c38c96c3a147e256b5eca3dfc555e\"}}\n#3　2026-11-22T09:41:22.199Z　state　running\n#2　2026-11-22T09:41:22.190Z　state　reserved\n#1　2026-11-22T09:41:22.176Z　state　ready",
+          "sibling": "当前没有可读取的运行记录"
+        }
+      }
+    }
+  }
+}

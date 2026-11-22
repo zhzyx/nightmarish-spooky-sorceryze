@@ -32,7 +32,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
 
     @router.post("/{operation}")
     async def invoke(operation: str, request: Request):
-        _, actor = _identity(request)
+        control = operation in {"pause", "resume", "cancel"}
+        _, actor = _identity(request, allow_project=control)
         payload = await _body(request)
         fields = {
             "inspect": set(),
@@ -40,6 +41,9 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "status": {"key"},
             "checkpoint": {"key"},
             "recovery": {"project"},
+            "execution-readback": {"key"},
+            "record-execution-fault": {"key"},
+            **{op: {"issue", "key", "expected"} for op in ("pause", "resume", "cancel")},
             "edit-baseline": {"key", "module", "path"},
             "reconcile": {"key"},
             "execute": {"key"},
@@ -71,7 +75,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
         if operation not in fields:
             raise HTTPException(404, "workflow operation unavailable")
         optional = {
-            "advance": {"exclude"},
+            "advance": {"exclude", "completion"},
             "recovery": {"after"},
             "integration-continue": {"event"},
             "record": {"sourceReceipt", "receipt", "ticket", "key", "stage", "reason"},
@@ -89,6 +93,12 @@ def create_native_workflow_router(workflow) -> APIRouter:
             or not all(isinstance(key, str) and len(key) == 64 for key in payload.get("exclude", []))
         ):
             raise HTTPException(422, "invalid deferred event keys")
+        if (
+            operation == "advance"
+            and "completion" in payload
+            and (not isinstance(payload["completion"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["completion"]))
+        ):
+            raise HTTPException(422, "exact completion ticket required")
         for key in {"key", "issue", "channel", "group"} & payload.keys():
             if not isinstance(payload[key], str) or not payload[key] or len(payload[key]) > 256:
                 raise HTTPException(422, "invalid workflow identifier")
@@ -98,6 +108,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
             and (not isinstance(payload["event"], str) or not payload["event"] or len(payload["event"]) > 512)
         ):
             raise HTTPException(422, "invalid publisher event")
+        if control and (type(payload["expected"]) is not int or payload["expected"] < 1):
+            raise HTTPException(422, "exact observed progress sequence required")
         if operation == "revise" and (
             not isinstance(payload["expected"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["expected"])
         ):
@@ -119,6 +131,12 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 raise HTTPException(422, "invalid assignment contract")
 
         def call():
+            if operation == "execution-readback":
+                return workflow.execution_readback(actor, payload["key"])
+            if operation == "record-execution-fault":
+                return workflow.record_execution_fault(actor, payload["key"])
+            if control:
+                return workflow.control_run(actor, operation, project=request.query_params.get("project"), **payload)
             if operation.startswith("integration-"):
                 integration = getattr(workflow, "integration", None)
                 if integration is None:
@@ -143,7 +161,9 @@ def create_native_workflow_router(workflow) -> APIRouter:
                     board["integrations"] = integration.discover(actor)
                 return board
             if operation == "advance":
-                return workflow.advance(actor, isolate=True, exclude=payload.get("exclude", []))
+                return workflow.advance(
+                    actor, isolate=True, exclude=payload.get("exclude", []), completion=payload.get("completion")
+                )
             if operation == "execute":
                 return workflow.execute_receipt(actor, payload["key"])
             if operation in {"status", "check", "review", "reconcile", "finish"}:

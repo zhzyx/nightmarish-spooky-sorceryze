@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-ec0873e7df0e4e04dd4e2b9cc358aea6bdc631c604687b3afb054606a0f1f977",
+  "kind": "analysis",
+  "agent": {
+    "version": "not-observed",
+    "id": "codex-current-operator-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "repository-instructions-at-main"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1763",
+  "occurred_at": "2026-11-22T10:44:26.752026+00:00",
+  "evidence_refs": [
+    "wave22-windows-outcome-1763",
+    "learn-69de652f864cbbdd00d2036b947abc87594ea19e3a9de9e1de51301fafffc20a"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 56,
+    "previous": "4fc89c61207e356cad28f66a5111b4e42a175223dcd381812f5bc47227b19e03",
+    "action": "applied",
+    "details": {
+      "task": "S07 #1763",
+      "observed": "已在 Windows 组合候选上运行 S07 的原生控件探针。候选源码树、实测编辑器哈希及构建来源见 data-collection/gonggong-ai-workbench-plan1-windows-outcome-combined.json。"
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-s07.json",
+        "sha256": "db3312015136f4afe8ae1d9c9e6ab48b58734809584c3418b59308b5315f4398"
+      },
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-windows-outcome-combined.json",
+        "sha256": "94a113e34c771a4d43fdbac024516c683a51b4b5b7bbeaf8ef9f50abbb418a36"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s07/wave22-windows-outcome-1763.json",
+      "sha256": "561e26ebabe44edd9e8e80f2a5489c56d9a96521065671737cb126c96c0669c4"
+    }
+  },
+  "sha256": "91f20cb1e30404fc73bb57aad8c3403ec9e27bd246ddb78e5b29d193b55fc7f9"
+}

@@ -63,7 +63,7 @@ def signed(h, issue):
     return h.api("authorize", issue=issue["id"]).raise_for_status().json()
 
 
-def drive(h):
+def drive(h, event=None):
     """Run the shipped Node dispatcher and count its actual HTTP requests."""
     with socket.socket() as listener:
         listener.bind(("127.0.0.1", 0))
@@ -79,6 +79,7 @@ def drive(h):
             assert server.started
             env = {k: v for k, v in os.environ.items() if k.upper() in {"SYSTEMROOT", "WINDIR"}}
             env.update(
+                EVENT=json.dumps(event),
                 DISPATCH=Path(__file__).with_name("native_dispatch.mjs").as_uri(),
                 URL=f"http://127.0.0.1:{port}",
                 TOKEN=h.workflow.domain.issue_session(h.actor),
@@ -90,11 +91,12 @@ def drive(h):
                     "-e",
                     """
                     const {driveNative,httpService}=await import(process.env.DISPATCH);
-                    const service=httpService(process.env.URL,process.env.TOKEN), calls=[];
+                    const service=httpService(process.env.URL,process.env.TOKEN), calls=[], advances=[];
                     const result=await driveNative((operation,payload)=>{
-                      calls.push(operation); return service(operation,payload);
-                    });
-                    console.log(JSON.stringify({result,calls}));
+                      calls.push(operation); if (operation === "advance") advances.push(payload);
+                      return service(operation,payload);
+                    }, JSON.parse(process.env.EVENT) ?? undefined);
+                    console.log(JSON.stringify({result,calls,advances}));
                 """,
                 ],
                 env=env,

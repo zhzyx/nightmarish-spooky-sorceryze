@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c608b927468b496f021b4eae4b5fccc7cc9b9dcf",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-s07",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1763",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2073d509dc4eb94892df7d5e0de9c8144c948211fd8f869340b437cac8889270",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1763",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2055",
+    "action": "validation",
+    "detection_head": "2c36fac9004881889da355670c80b0531e0dec07",
+    "context_sha256": "3a97170e21b2e6685d1c0dde14374e3d7e2ec7be38c15d6b45e0d4f51902df86",
+    "operator": "Sail-Li",
+    "worker": "codex-wave22-windows",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1709",
+    "evidence": "S07 candidate editor SHA-256 363a4c1f257ecd9d4e52b58feaddea018b54a892436a4b7d6224dd8ea08ed5af produced the module progress readback failure on main 2c36fac9004881889da355670c80b0531e0dec07. Relevant sources are business_session.gd api_request and native_api.py _identity.",
+    "diagnosis": "The editor used a generic project-appending transport for the exact workflow status route. The service rejects extra query parameters, and its privileged POST is unavailable to viewer accounts. This prevents ordinary users from reading progress through both editor entry points.",
+    "next_action": "Keep the service authorization contract and check the corrected editor through module and workbench with a viewer and an authorized operator. Re-read progress and terminal data on the signed and accepted candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-22T09:39:55.071333+00:00",
+    "attempted": null,
+    "repair_owner": "wave22_s07",
+    "continuable": "S05, S06, S09, S10"
+  },
+  "occurred_at": "2026-11-22T09:41:30.069007+00:00",
+  "sha256": "d63a9aca32c087938d6ce4fd25cbf8d5eef2db298e2923765b9ffe3536a81d5d"
+}

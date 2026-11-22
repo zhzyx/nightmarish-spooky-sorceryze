@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-89021ca463077ca6f724efb39897d29eec6853e922834465b77d89a3f804878f",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1813",
+  "occurred_at": "2026-11-22T09:31:14.905183+00:00",
+  "evidence_refs": [
+    "dispatch-798d6ae930ad4ade869a7fa2bb3ebc80",
+    "learn-cc48662713ec17979690f7923f7b3b4f6a6d761ee92ca7698e57732bae553f48"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "reconstruct-worker-outcomes",
+    "revision": 4,
+    "previous": "65e9a39353dd16edf660e35289c414c0d451fe2f10ec154f2651cb89fbe422ac",
+    "action": "applied",
+    "details": {
+      "task": "S09 #1813 signed local stage: persist process closure, candidate and terminal before stage check",
+      "observed": "Three SQLite write-failure injections saw one actual process each. Candidate intake or terminal failure recovered the immutable SVG from the closed spool. Missing spool stayed unresolved despite a changed workspace and repaired database."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-s09.json",
+        "sha256": "bf99f95be19b34a52e7cbbb60fd36d1f16339c2cae6dcab44fee5b2a7793746f"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-s09/dispatch-798d6ae930ad4ade869a7fa2bb3ebc80.json",
+      "sha256": "01b1bbc06034246f9ccd33f11b174c3bbf8eea419e2c9cc3277a72048fb81cd2"
+    }
+  },
+  "sha256": "2d73b1d388003fdaa39cc39b39d5b5e2d8514597294b90b7279919927cdf947d"
+}

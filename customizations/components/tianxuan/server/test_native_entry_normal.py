@@ -36,7 +36,15 @@ if role in ('planner', 'reviewer'):
  print(canonical(dict(input_digest=digest(canonical(r).encode()),source=r['source'],proposal=proposal,runtime_state='deterministic-test-installation')))
 elif role=='producer':
  p=pathlib.Path(os.environ['NATIVE_WORKSPACE']);
- if json.loads(pathlib.Path(os.environ['NATIVE_CONTEXT']).read_text(encoding='utf-8'))['title']=='Revoke':
+ title=json.loads(pathlib.Path(os.environ['NATIVE_CONTEXT']).read_text(encoding='utf-8'))['title']
+ if title=='Pause' and not (p.parent.parent/'pause-go').exists():
+  import time
+  (p.parent/'pause-wait').touch(exist_ok=False)
+  deadline=time.monotonic()+20
+  while not (p.parent.parent/'pause-go').exists():
+   assert time.monotonic()<deadline
+   time.sleep(.02)
+ if title=='Revoke':
   import time
   (p.parent/'revoke-wait').write_text('waiting'); time.sleep(30)
  (next(p.glob('*-text'))/'output').write_text('deterministic accepted output',encoding='utf-8')
@@ -119,7 +127,7 @@ class NormalEntryTests(unittest.TestCase):
                                 headers=headers,
                                 json=dict(
                                     request_id="normal" + str(i),
-                                    title="Normal entry",
+                                    title="Normal entry" if i else "Pause",
                                     outcome="Output",
                                     scope="Text",
                                     acceptance="output must equal deterministic accepted output",
@@ -147,6 +155,40 @@ class NormalEntryTests(unittest.TestCase):
                             self.assertEqual(recovered.json()["entry"], key)
                             self.assertEqual(recovered.json()["requested_profile"], "installed" if i else None)
                             entries.append((key, headers))
+                        # The normal installed entry must wake its paused producer
+                        # after an explicit decision, even after its Node driver closed.
+                        workers = root / "state" / "workers"
+                        deadline = time.monotonic() + 20
+                        while not list(workers.glob("*/pause-wait")):
+                            self.assertLess(time.monotonic(), deadline)
+                            time.sleep(0.02)
+                        (marker,) = workers.glob("*/pause-wait")
+                        run = marker.parent.name
+                        owner = entries[0][1]
+                        workflow_url = "/api/v1/native/workflow/"
+
+                        def current_run():
+                            response = client.post(workflow_url + "status", json={"key": run}, headers=owner)
+                            self.assertEqual(response.status_code, 200, response.text)
+                            return response.json()["progress"]
+
+                        row = current_run()
+                        pause = dict(key=run, issue=row["issue"], expected=row["control"]["revision"])
+                        decision = client.post(workflow_url + "pause", json=pause, headers=owner)
+                        (workers / "pause-go").touch()
+                        self.assertEqual(decision.status_code, 200, decision.text)
+                        deadline = time.monotonic() + 45
+                        while True:
+                            row = current_run()
+                            peer = client.get("/api/v1/native/entry/" + entries[1][0], headers=entries[1][1]).json()
+                            if row["state"] == "paused" and peer["state"] == "delivered":
+                                break
+                            self.assertLess(time.monotonic(), deadline, (row["state"], peer))
+                            time.sleep(0.05)
+                        resume = dict(pause, expected=row["control"]["revision"])
+                        decision = client.post(workflow_url + "resume", json=resume, headers=owner)
+                        self.assertEqual(decision.status_code, 200, decision.text)
+                        self.assertEqual(decision.json()["candidate"], row["candidate"])
                         deadline = time.monotonic() + 90
                         for key, headers in entries:
                             while time.monotonic() < deadline:
