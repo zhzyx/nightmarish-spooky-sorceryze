@@ -10,7 +10,8 @@ import asyncio
 import json
 import time
 from concurrent.futures import Future
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
+from pathlib import Path
 
 from native_store import NativeStoreError, _digest, _json
 from tianxuan_core import PermissionDenied, VersionConflict
@@ -45,6 +46,7 @@ class NativeWorkflow:
         installed_plan=None,
         next_issues=None,
         installed_target=None,
+        observe_catalog=None,
     ):
         if not callable(authorize) or type(capacity) is not int or not 1 <= capacity <= 1024:
             raise NativeStoreError("Trusted authority and positive capacity required")
@@ -54,6 +56,7 @@ class NativeWorkflow:
         self._executions = {}  # Exact local coordinator ownership; never inferred from a PID.
         self.next_issues = next_issues
         self.installed_target = installed_target
+        self.observe_catalog = observe_catalog
         self.catalog = json.loads(_json(catalog or []))
         self.domain.db.create_function("native_workflow_version", 0, lambda: 2)
         with self._transaction() as db:
@@ -146,6 +149,8 @@ class NativeWorkflow:
             row = self._row(db, key)
             self._read_allowed(actor, row)
             task = json.loads(row["task"])
+            if "stage_renewal" in task:
+                row["stage_renewal"] = {"task": key, **task["stage_renewal"]}
             if task["source"]["definition"].get("stage_authorization"):
                 saved = db.execute("SELECT receipt FROM native_stage_results WHERE task=?", (key,)).fetchone()
                 if saved:
@@ -186,6 +191,7 @@ class NativeWorkflow:
         delivery_mode="standalone",
         stage=None,
         stage_criteria=None,
+        _renewal=None,
     ):
         source = self._allow(actor, issue, "authorize")
         authority = source["definition"].get("stage_authorization", {})
@@ -193,6 +199,10 @@ class NativeWorkflow:
             raise NativeStoreError("Installed plan stage must match the confirmed target")
         if stage_criteria is not None and stage_criteria != authority.get("criteria"):
             raise NativeStoreError("Installed stage checks must cover the confirmed criteria")
+        if _renewal:
+            if authority != _renewal["authorization"] or stage_criteria != authority["criteria"]:
+                raise NativeStoreError("Stage renewal requires installed checks for the new signed criteria")
+            selected = {**selected, **_renewal["from"]["modules"]}
         if delivery_mode not in {"standalone", "contribution"}:
             raise NativeStoreError("Unsupported delivery mode")
         if not mandate or not checks or profile not in self.worker.profiles:
@@ -241,10 +251,14 @@ class NativeWorkflow:
             mandate=mandate,
             delivery_mode=delivery_mode,
             **({"stage_criteria": stage_criteria} if stage_criteria is not None else {}),
+            **({"stage_renewal": _renewal} if _renewal else {}),
             **({"previous": expected} if expected is not None else {}),
         )
         key = _digest(_json(task).encode())
-        with self._transaction() as db:
+        # Hold the native writer until admission commits, in the same lock order
+        # as stage settlement. Evidence withdrawal cannot race the new decision.
+        native_lock = self.runner.store._connection(write=True) if _renewal else nullcontext()
+        with native_lock as native_db, self._transaction() as db:
             if self._allow(actor, issue, "authorize") != source:
                 raise NativeStoreError("Source changed")
             for dependency, acceptance in dependencies.items():
@@ -262,8 +276,17 @@ class NativeWorkflow:
                 raise NativeStoreError("Managed definition already bound; explicit revision required (active changed)")
             stage_authority = source["definition"].get("stage_authorization")
             if expected and stage_authority:
-                previous_task = json.loads(self._row(db, expected)["task"])
-                if previous_task["source"]["definition"].get("stage_authorization") == stage_authority:
+                previous_row = self._row(db, expected)
+                previous_task = json.loads(previous_row["task"])
+                previous_grant = previous_task["source"]["definition"].get("stage_authorization")
+                if _renewal:
+                    self._check_stage_basis(native_db, previous_row, previous_task, _renewal["from"])
+                if previous_grant and previous_grant["stage"] != stage_authority["stage"]:
+                    if previous_row["state"] == "stage-reached" and not _renewal:
+                        raise NativeStoreError("Reached stage requires explicit renewal")
+                    if previous_row["state"] == "stage-unmet":
+                        raise NativeStoreError("Unmet stage cannot advance")
+                if previous_grant == stage_authority:
                     if {k: v for k, v in previous_task.items() if k != "previous"} == {
                         k: v for k, v in task.items() if k != "previous"
                     }:
@@ -338,16 +361,46 @@ class NativeWorkflow:
             if module.startswith("requirement-"):
                 self.domain.require_native_module_read(actor, module)
 
-    def _schedulable(self, task, target="agent"):
+    def installed_catalog(self):
+        if self.observe_catalog is None:
+            # Direct local workers own their fixed argv. A configured descriptor
+            # cannot make a missing executable eligible. Remote workers own their
+            # installation checks on the enrolled node.
+            catalog = []
+            for model in self.catalog:
+                profile = self.worker.profiles.get(model["id"])
+                if not profile or ("argv" in profile and not Path(profile["argv"][0]).is_file()):
+                    model = {
+                        **model,
+                        "configured": model.get("available") is True,
+                        "available": False,
+                        "localStatus": {"status": "installation_missing"},
+                    }
+                catalog.append(model)
+            return catalog
+        try:
+            observed = self.observe_catalog()
+        except (OSError, EOFError, ValueError, KeyError, NativeStoreError):
+            observed = {}
+        catalog = []
+        for model in self.catalog:
+            configured = model.get("available") is True
+            status = observed.get(model["id"], {"status": "installation_unconfirmed"})
+            available = configured and status["status"] in {"ready", "validation_probe"}
+            catalog.append({**model, "configured": configured, "available": available, "localStatus": status})
+        return catalog
+
+    def _schedulable(self, task, catalog, target="agent"):
         return target == "agent" and any(
             model.get("id") == task["profile"]
             and model.get("available") is True
             and target in model.get("targets", [])
             and all(c in model.get("capabilities", []) for c in task["capabilities"])
-            for model in self.catalog
+            for model in catalog
         )
 
     def inspect(self, actor):
+        catalog = self.installed_catalog()
         with self._transaction() as db:
             tenant = self.domain.actor_context(actor)["tenant"]
             rows = db.execute(
@@ -398,7 +451,7 @@ class NativeWorkflow:
                 )
             return dict(
                 snapshot=dict(items=items, ready=ready, sourceSnapshots=sources),
-                environment=dict(catalog=self.catalog, active=active, capacity=self.capacity),
+                environment=dict(catalog=catalog, active=active, capacity=self.capacity),
                 requests=requests,
                 produced=self._produced_visible(actor, tenant, stage=False),
                 stage_checks=self._produced_visible(actor, tenant, stage=True),
@@ -424,12 +477,13 @@ class NativeWorkflow:
 
     def reserve(self, actor, assignment):
         self._dependencies_current(actor, assignment["ticket"])
+        catalog = self.installed_catalog()
         with self._transaction() as db:
             row = self._row(db, assignment["ticket"])
             task = self._valid(actor, row)
             if row["state"] != "ready":
                 return False
-            if not self._schedulable(task, assignment.get("target", "agent")):
+            if not self._schedulable(task, catalog, assignment.get("target", "agent")):
                 return False
             held = db.execute(
                 "SELECT count(*) FROM native_tasks WHERE state IN ('reserved','running','held')"
@@ -446,7 +500,7 @@ class NativeWorkflow:
                     waiting_task = self._valid(actor, waiting)
                 except (PermissionDenied, NativeStoreError):
                     continue
-                if not self._schedulable(waiting_task):
+                if not self._schedulable(waiting_task, catalog):
                     continue
                 available_node = getattr(self.worker, "available_node", None)
                 if available_node is not None and available_node(db, waiting_task) is None:
@@ -455,6 +509,17 @@ class NativeWorkflow:
             expected = {"source": row["id"], "revision": task["source"]["revision"]}
             if assignment["sourceSnapshot"] != expected or assignment["model"]["id"] != task["profile"]:
                 raise NativeStoreError("Untrusted assignment")
+            if self.observe_catalog is not None:
+                model = next(m for m in catalog if m["id"] == task["profile"])
+                assignment = {
+                    **assignment,
+                    "model": {
+                        "id": model["id"],
+                        "capabilities": task["capabilities"],
+                        "reason": "installed_profile_and_required_capabilities",
+                        "localStatus": model["localStatus"],
+                    },
+                }
             reserve_worker = getattr(self.worker, "reserve", None)
             if reserve_worker is not None and not reserve_worker(db, task, row["id"]):
                 return False
@@ -510,6 +575,7 @@ class NativeWorkflow:
 
     def _execute_owned(self, actor, key):
         self._dependencies_current(actor, key)
+        catalog = self.installed_catalog() if self.observe_catalog is not None else None
         stale = None
         with self._transaction() as db:
             row = self._row(db, key)
@@ -525,6 +591,10 @@ class NativeWorkflow:
                 stale = error
             if row["state"] != "reserved":
                 return row  # Unknown/running never retried.
+            if stale is None and catalog is not None and not self._schedulable(task, catalog):
+                # Local reservation only. No physical execution intent has been recorded.
+                db.execute("UPDATE native_tasks SET state='ready',assignment=NULL WHERE id=?", (key,))
+                return self._row(db, key)
             if stale is None:
                 db.execute("UPDATE native_tasks SET state='running' WHERE id=?", (key,))
                 db.execute("UPDATE issues SET status='in-progress' WHERE id=?", (row["issue"],))
@@ -761,6 +831,67 @@ class NativeWorkflow:
             raise NativeStoreError("No admitted native plan installed")
         plan = self.installed_plan(actor, issue)
         return self.authorize_task(actor, issue, expected=expected, **plan)
+
+    def renew_stage(self, actor, key, target_revision, confirmation_revision):
+        """Use the reached ticket's immutable output as the next installed plan's baseline."""
+        row = self.status(actor, key)
+        result = row.get("stage_result")
+        if row["state"] != "stage-reached" or not result or result["state"] != "stage-reached":
+            raise NativeStoreError("Checked, reached predecessor required")
+        issue = row["issue"]
+        grant = self._allow(actor, issue, "authorize")["definition"].get("stage_authorization")
+        previous = result["authorization"]
+        if not grant or any(grant[k] != previous[k] for k in ("issue_id", "document_id", "version", "issue_revision")):
+            raise NativeStoreError("Renewal must continue the same signed design and issue revision")
+        if grant["confirmed_by"] != actor:
+            raise PermissionDenied("Only the current confirmed responsible user may renew this stage")
+        if (
+            grant["target_revision"] != target_revision
+            or grant["confirmation_revision"] != confirmation_revision
+            or target_revision <= previous["target_revision"]
+            or confirmation_revision <= previous["confirmation_revision"]
+            or grant["stage"] == previous["stage"]
+        ):
+            raise NativeStoreError("Current confirmation of a new target stage required")
+        renewal = {"from": result, "authorization": grant}
+        # A lost response can be recovered after restart or installation changes.
+        # Re-read the active ticket and current signature in the same transaction.
+        with self._transaction() as db:
+            self._read_allowed(actor, row)
+            if self._allow(actor, issue, "authorize")["definition"].get("stage_authorization") != grant:
+                raise NativeStoreError("Stage confirmation changed")
+            active = db.execute("SELECT task FROM native_active_tasks WHERE issue=?", (issue,)).fetchone()
+            if active and active["task"] != key:
+                successor = self._row(db, active["task"])
+                self._read_allowed(actor, successor)
+                if json.loads(successor["task"]).get("stage_renewal") == renewal:
+                    return {"task": successor["id"], **renewal}
+                raise NativeStoreError("Predecessor is no longer the active stage")
+        if not callable(self.installed_plan):
+            raise NativeStoreError("No admitted native plan installed")
+        plan = self.installed_plan(actor, issue)
+        successor_key = self.authorize_task(actor, issue, expected=key, _renewal=renewal, **plan)
+        return {"task": successor_key, **renewal}
+
+    def _check_stage_basis(self, db, row, task, result):
+        terminal = json.loads(row["terminal"])
+        if (
+            row["state"] != "stage-reached"
+            or result["task"] != row["id"]
+            or result["authorization"] != task["source"]["definition"]["stage_authorization"]
+            or result["candidate"] != terminal["candidate"]
+            or result["modules"] != terminal["modules"]
+            or set(result["checks"]) != set(task["checks"])
+        ):
+            raise NativeStoreError("Reached stage receipt no longer matches its checked output")
+        for name, check in result["checks"].items():
+            evidence = self.runner.cache._evidence(db, row["tenant"], check["evidence"])
+            withdrawn = db.execute(
+                "SELECT 1 FROM native_check_revocations WHERE tenant=? AND evidence_id=?",
+                (row["tenant"], evidence["id"]),
+            ).fetchone()
+            if withdrawn or evidence["outcome"] != "passed" or evidence["binding"]["check"] != name:
+                raise NativeStoreError("Reached stage check evidence withdrawn or invalid")
 
     def review(self, actor, key):
         self._dependencies_current(actor, key)

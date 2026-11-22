@@ -136,8 +136,13 @@ def client(settings, recover):
         raw = sys.stdin.buffer.read(100001)
         need(len(raw) <= 100000, "Role input exceeds limit")
         payload = json.loads(raw)
+    result = exchange(settings, recover, payload)
+    sys.stdout.buffer.write(canonical(result))
+
+
+def exchange(settings, recover, payload, *, inspect_catalog=False):
     request = {
-        "role": role,
+        "role": settings["role"],
         "broker_sha256": settings["broker_sha256"],
         "service_sha256": settings["service_sha256"],
         "service_identity": settings["service_identity"],
@@ -145,13 +150,15 @@ def client(settings, recover):
         "recover": recover,
         "payload": payload,
     }
+    if inspect_catalog:
+        request["operation"] = "inspect-catalog"
     ctx, address = endpoint(settings, False)
     with (
         socket.create_connection(address, timeout=10) as sock,
         ctx.wrap_socket(sock, server_hostname=settings["server_name"]) as conn,
     ):
         peer(conn, settings["peer_sha256"])
-        conn.settimeout(600)
+        conn.settimeout(15 if inspect_catalog else 600)
         send(conn, request, MAX_REQUEST)
         result = receive(conn, MAX_RESULT)
     need(
@@ -161,7 +168,7 @@ def client(settings, recover):
         and result["request_sha256"] == hashlib.sha256(canonical(request)).hexdigest(),
         "Unknown role outcome",
     )
-    sys.stdout.buffer.write(canonical(result["result"]))
+    return result["result"]
 
 
 def launch(settings, request, conn, settings_path, digest, tls_generation):
@@ -175,9 +182,13 @@ def launch(settings, request, conn, settings_path, digest, tls_generation):
     from native_workspace import absolute
 
     role = settings["role"]
+    inspect_catalog = request.get("operation") == "inspect-catalog"
     need(
         set(request)
-        == {"role", "broker_sha256", "service_sha256", "service_identity", "tree_sha256", "recover", "payload"}
+        == (
+            {"role", "broker_sha256", "service_sha256", "service_identity", "tree_sha256", "recover", "payload"}
+            | ({"operation"} if inspect_catalog else set())
+        )
         and request["tree_sha256"] == settings["tree_sha256"]
         and request["service_sha256"] == digest
         and request["service_identity"] == settings["identity"] == identity()
@@ -209,6 +220,17 @@ def launch(settings, request, conn, settings_path, digest, tls_generation):
         settings["broker_sha256"],
     ]
     env = {k: os.environ[k] for k in ("SystemRoot", "WINDIR", "SYSTEMROOT") if k in os.environ}
+    if inspect_catalog:
+        from native_local_profiles import producer_catalog
+
+        need(producer and not recover and payload == {}, "Producer inventory required")
+        # Same role identity and effective broker environment as execution.
+        # An inventory read has no execution intent, journal row or workspace.
+        return {
+            "result": producer_catalog(template, env),
+            "request_sha256": hashlib.sha256(canonical(request)).hexdigest(),
+            "identity": settings["identity"],
+        }
     if producer:
         need(
             set(payload) == {"execution", "worker_root", "registry"}

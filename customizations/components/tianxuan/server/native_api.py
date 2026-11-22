@@ -43,6 +43,7 @@ def create_native_workflow_router(workflow) -> APIRouter:
             "await-terminal": {"key"},
             "check": {"key"},
             "verify-stage": {"key"},
+            "renew-stage": {"key", "target_revision", "confirmation_revision"},
             "integration-authorize": {"group"},
             "integration-continue": {"key"},
             "integration-await": {"key", "event"},
@@ -91,6 +92,11 @@ def create_native_workflow_router(workflow) -> APIRouter:
             not isinstance(payload["expected"], str) or not re.fullmatch(r"[0-9a-f]{64}", payload["expected"])
         ):
             raise HTTPException(422, "exact previous task required")
+        if operation == "renew-stage" and any(
+            type(payload[field]) is not int or payload[field] < 1
+            for field in ("target_revision", "confirmation_revision")
+        ):
+            raise HTTPException(422, "exact positive target and confirmation revisions required")
         if "assignment" in payload:
             assignment = payload["assignment"]
             if not isinstance(assignment, dict) or not isinstance(assignment.get("ticket"), str):
@@ -132,6 +138,8 @@ def create_native_workflow_router(workflow) -> APIRouter:
                 return getattr(workflow, operation)(actor, payload["key"])
             if operation == "verify-stage":
                 return workflow.verify_stage(actor, payload["key"])
+            if operation == "renew-stage":
+                return workflow.renew_stage(actor, **payload)
             if operation == "revise":
                 return workflow.authorize_installed(actor, payload["issue"], expected=payload["expected"])
             if operation == "authorize":

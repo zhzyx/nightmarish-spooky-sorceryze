@@ -36,18 +36,17 @@ def installed_profile(catalog, plan_capabilities, issue_capabilities, requested_
     models = [
         model
         for model in catalog
-        if model.get("available") is True
+        if model.get("configured", model.get("available")) is True
+        and "agent" in model.get("targets", [])
         and set(plan_capabilities) <= set(model.get("capabilities", []))
         and (requested_model is None or model["id"] == requested_model)
     ]
     require(models, "No admitted model capability")
-    # Preserve the installed plan's fallback profile for a deferred Sinan ticket.
-    # A missing issue capability cannot expand the catalog or change a pinned model.
-    if issue_capabilities:
-        for model in models:
-            if "agent" in model.get("targets", []) and set(issue_capabilities) <= set(model.get("capabilities", [])):
-                return model["id"]
-    return models[0]["id"]
+    # Bind the capability-matching profile even when its credential is missing.
+    # Sinan can then explain the gap and retry the same authorized ticket.
+    complete = [m for m in models if set(issue_capabilities) <= set(m.get("capabilities", []))]
+    candidates = sorted(complete or models, key=lambda m: m.get("preference", float("inf")))
+    return next((m["id"] for m in candidates if m.get("available") is True), candidates[0]["id"])
 
 
 class CoordinatorOwnership:
@@ -259,6 +258,7 @@ class OrdinaryEntry:
             principals=lambda a, i, r: self.principals[r],
             review_candidate=review,
             installed_plan=self.plan,
+            observe_catalog=getattr(self, "observe_producer_catalog", None) if installed_worker is None else None,
             next_issues=self.next_issues,
             installed_target=lambda a, t: dict(channel="stable", expected=None),
         )
@@ -378,6 +378,24 @@ class OrdinaryEntry:
                 and set(bindings.values()) == evaluated,
                 "Catalog must bind each model to a distinct evaluated profile",
             )
+        # Use the same profile binding and operating-system identity as the producer.
+        # Only the installed host reads credential state. No request can supply a probe.
+        catalog_bindings = bindings if bindings is not None else {model_ids[0]: next(iter(evaluated))}
+
+        def observe_producer_catalog():
+            from native_local_profiles import producer_catalog
+            from native_role_service import exchange
+
+            self.installation.verify()
+            if "producer" in endpoints:
+                observations = exchange(endpoints["producer"], False, {}, inspect_catalog=True)
+            else:
+                observations = producer_catalog(
+                    producer_template, spec["commands"]["producer"]["env"], validation=local_validation
+                )
+            return {name: observations[profile] for name, profile in catalog_bindings.items()}
+
+        self.observe_producer_catalog = observe_producer_catalog
         if endpoints:
             require(
                 len(endpoints) == 3
@@ -593,7 +611,7 @@ class OrdinaryEntry:
             writes.setdefault(module, []).append(path)
         required = self.domain.issue_snapshot(actor, issue)["definition"].get("required_capabilities", [])
         profile = installed_profile(
-            self.installation.spec["catalog"], task["capabilities"], required, choices.get("model")
+            self.workflow.installed_catalog(), task["capabilities"], required, choices.get("model")
         )
         return dict(
             selected=selected,
