@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "event_id": "request-2150-tianxuan-native-ui-20261123",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-native-ui-20261123",
+  "kind": "request",
+  "occurred_at": "2026-11-23T12:16:11.431071+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+  "agent": {
+    "id": "codex-tianxuan-native-ui-host",
+    "version": "20261123",
+    "origin": "external-authorized-host",
+    "definition_sha256": "0da9b2de56f80ae3470e6be1dcddf0fe4e5857504cb1344134ed5c51ec972a09"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 2150,
+    "host_snapshot": "data-collection/tianxuan-native-ui-20261123-host-snapshot.json",
+    "design_path": "design-docs/tianxuan-native-ui-20261123.md",
+    "scope": "Full native Godot Tianxuan functionality, redesigned native presentation, shared backend and offline drafts, editor integrations; preserve Web functionality",
+    "execution_state": "in-progress",
+    "business_accepted": false,
+    "usage": null,
+    "usage_unknown_reason": "No measured model usage receipt is available"
+  },
+  "evidence_refs": []
+}

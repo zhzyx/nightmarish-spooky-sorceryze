@@ -5,11 +5,12 @@ signal identity_resetting
 signal identity_changed
 signal authenticated
 
-var _origin: String
-var _token := ""
-var _owned_session := false
-var _identity := {}
-var _generation := 0
+var _controller: Node:
+	get:
+		return get_meta("session_controller", null)
+var _origin: String:
+	get:
+		return _controller.origin if is_instance_valid(_controller) else ""
 var _status := Label.new()
 var _form := VBoxContainer.new()
 var _email := LineEdit.new()
@@ -19,9 +20,9 @@ var _sign_out := Button.new()
 
 
 func _ready() -> void:
-	_origin = OS.get_environment("TIANXUAN_API").strip_edges().trim_suffix("/")
-	if _origin.is_empty():
-		_origin = "http://127.0.0.1:8000"
+	if not is_instance_valid(_controller):
+		push_error("Native workbench requires the editor-owned Tianxuan session")
+		return
 	_status.name = "SessionStatus"
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(_status)
@@ -69,9 +70,13 @@ func _ready() -> void:
 	submit.pressed.connect(_submit)
 	_form.add_child(submit)
 	_form.hide()
-	_reset("尚未登录天璇")
+	_controller.identity_resetting.connect(func(): identity_resetting.emit())
+	_controller.identity_changed.connect(_identity_updated)
+	_controller.authenticated.connect(func(): authenticated.emit())
+	_controller.status_changed.connect(_update_status)
+	_identity_updated()
 	var supplied := OS.get_environment("TIANXUAN_TOKEN")
-	if not supplied.is_empty():
+	if not supplied.is_empty() and get_identity().is_empty():
 		_authenticate("", supplied, _project.text)
 
 
@@ -82,11 +87,11 @@ func install_paragraph_suggestion(script: Script) -> void:
 
 
 func redact_credentials(text: String) -> String:
-	return text if _token.is_empty() else text.replace(_token, "[REDACTED]")
+	return _controller.redact_credentials(text)
 
 
 func get_identity() -> Dictionary:
-	return _identity.duplicate()
+	return _controller.get_identity()
 
 
 func _toggle_form() -> void:
@@ -110,159 +115,37 @@ func _sign_out_pressed() -> void:
 	_form.hide()
 
 
-func _reset(message: String) -> void:
-	if not _identity.is_empty():
-		identity_resetting.emit()
-	_generation += 1
-	var old_token := _token
-	var revoke := _owned_session
-	_token = ""
-	_owned_session = false
-	_identity.clear()
-	_sign_out.hide()
-	_status.text = message
+func _update_status() -> void:
+	_status.text = _controller.status_text
+	if "重新认证" in _status.text:
+		_form.show()
+
+
+func _identity_updated() -> void:
+	_update_status()
+	var identity := get_identity()
+	_sign_out.visible = not identity.is_empty()
+	if not identity.is_empty():
+		_project.text = identity.project
+		_email.clear()
+		_form.hide()
 	identity_changed.emit()
-	if revoke:
-		_exchange(HTTPClient.METHOD_POST, "/api/v1/auth/logout", old_token, {})
 
 
-func _matches(value: String, pattern: String) -> bool:
-	var expression := RegEx.new()
-	return expression.compile(pattern) == OK and expression.search(value) != null
+func _reset(message: String) -> void:
+	_controller.reset(message)
 
 
 func _authenticate(email: String, secret: String, project: String) -> void:
-	_reset("正在验证天璇账号…")
-	var attempt := _generation
-	var secure_origin := _matches(_origin, "^https://([A-Za-z0-9.-]+|\\[[0-9A-Fa-f:]+\\])(:[0-9]{1,5})?$")
-	var loopback := _matches(_origin, "^http://(127\\.0\\.0\\.1|localhost|\\[::1\\])(:[0-9]{1,5})?$")
-	if not (secure_origin or loopback):
-		_status.text = "天璇服务需要 HTTPS 或本机回环地址"
-		return
-	if not _matches(project, "^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}(/[A-Za-z0-9][A-Za-z0-9_.-]{0,99})?$"):
-		_status.text = "请输入有效的业务项目"
-		return
-	if secret.is_empty() or (email.is_empty() and ("\r" in secret or "\n" in secret)):
-		_status.text = "请输入有效凭据以重新认证"
-		return
-	var credential := secret
-	if not email.is_empty():
-		var login := await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/session", "", {"email": email, "password": secret})
-		credential = str(login.data.get("token", ""))
-		if attempt != _generation:
-			if not credential.is_empty():
-				_exchange(HTTPClient.METHOD_POST, "/api/v1/auth/logout", credential, {})
-			return
-		if login.status != 200 or credential.is_empty():
-			_status.text = "登录失败，请重新认证" if login.status in [401, 403] else "无法登录天璇，请检查服务后重试"
-			return
-	_token = credential
-	_owned_session = not email.is_empty()
-	var me := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", credential, {})
-	if attempt != _generation:
-		return
-	if me.status != 200 or str(me.data.get("id", "")).is_empty() or str(me.data.get("role", "")).is_empty():
-		_reset("凭据失效，请重新认证" if me.status in [401, 403] else "无法核实天璇身份，请重试")
-		_form.show()
-		return
-	_identity = {"id": me.data.id, "name": me.data.get("name", ""), "role": me.data.role, "project": project}
-	_status.text = "%s · %s · %s" % [_identity.name, _identity.role, project]
-	_sign_out.show()
-	_email.clear()
-	_form.hide()
-	identity_changed.emit()
-	authenticated.emit()
-	if not _identity.is_empty() and _identity.get("role") != "viewer":
-		_recover_project(attempt)
+	await _controller.authenticate(email, secret, project)
 
 
-func _recover_project(attempt: int) -> void:
-	# Release verifiably abandoned local reservations before scheduling eligible work.
-	await api_request(HTTPClient.METHOD_POST, "/api/v1/native/workflow/recover-occupancy", {"project": _identity.project})
-	if attempt != _generation:
-		return
-	var response := await api_request(HTTPClient.METHOD_POST, "/api/v1/native/workflow/recover-project", {}, 86400.0)
-	if attempt != _generation:
-		return
-	# A deployment without the native workflow router has no native tasks.
-	if response.status == 404:
-		return
-	if response.status != 200 or int(response.data.get("errors", 0)) > 0:
-		_status.text += " · 部分任务恢复回执待核对"
-
-
-# Routes belong to the configured deployment. Each request captures its verified session.
 func api_request(method: int, route: String, payload: Dictionary = {}, timeout_seconds: float = 12.0, download_path := "") -> Dictionary:
-	if _identity.is_empty():
-		return {"status": 401, "data": {}}
-	if not route.begins_with("/api/v1/") or "#" in route or "\\" in route or "\n" in route or "\r" in route:
-		return {"status": 0, "data": {}}
-	for parameter in route.get_slice("?", 1).split("&", false):
-		if parameter.get_slice("=", 0).uri_decode() == "project":
-			return {"status": 0, "data": {}}
-	# A workflow status read is scoped by its exact run key; that endpoint rejects query parameters.
-	var scoped_route := route
-	if method != HTTPClient.METHOD_POST or route not in ["/api/v1/native/workflow/status", "/api/v1/native/workflow/recover-occupancy"]:
-		scoped_route += ("&" if "?" in route else "?") + "project=" + str(_identity.project).uri_encode()
-	var attempt := _generation
-	var reply := await _exchange(method, scoped_route, _token, payload, timeout_seconds, download_path)
-	if attempt != _generation:
-		return {"status": 0, "data": {}}
-	if reply.status == 401:
-		_reset("凭据失效，请重新认证")
-		_form.show()
-	return reply
+	return await _controller.api_request(method, route, payload, timeout_seconds, download_path)
 
 
 func join_document_room(id: String) -> WebSocketPeer:
-	if _identity.is_empty() or id.is_empty():
-		return null
-	var peer := WebSocketPeer.new()
-	peer.inbound_buffer_size = 8 * 1024 * 1024
-	peer.handshake_headers = PackedStringArray(["Authorization: Bearer " + _token])
-	var url := "ws" + _origin.trim_prefix("http") + "/api/v1/ws/docs/" + id.uri_encode()
-	url += "?project=" + str(_identity.project).uri_encode()
-	return peer if peer.connect_to_url(url) == OK else null
-
-
-func _exchange(method: int, route: String, credential: String, payload: Dictionary, timeout_seconds: float = 12.0, download_path := "") -> Dictionary:
-	var http := HTTPRequest.new()
-	http.max_redirects = 0
-	http.timeout = timeout_seconds
-	http.body_size_limit = 8 * 1024 * 1024 if download_path.is_empty() else -1
-	http.download_file = download_path
-	# Moving the sidebar between dock slots takes its children out of the tree and cancels HTTPRequest.
-	# Keep the transport with the editor until its reply has been read.
-	var generation := _generation
-	EditorInterface.get_base_control().add_child.call_deferred(http)
-	await http.ready
-	if generation != _generation and route != "/api/v1/auth/logout":
-		http.queue_free()
-		return {"status": 0, "data": {}}
-	var headers := PackedStringArray(["Accept: application/json" if download_path.is_empty() else "Accept: application/octet-stream"])
-	if not credential.is_empty():
-		headers.append("Authorization: Bearer " + credential)
-	# A loopback recovery owns only the local producer launched by this request.
-	if route.get_slice("?", 0) == "/api/v1/native/workflow/recover-project" and _matches(_origin, "^https?://(127\\.0\\.0\\.1|localhost|\\[::1\\])(:[0-9]{1,5})?$"):
-		headers.append("X-Native-Worker-Lifetime: editor-connection")
-	var body := ""
-	if method not in [HTTPClient.METHOD_GET, HTTPClient.METHOD_HEAD]:
-		headers.append("Content-Type: application/json")
-		body = JSON.stringify(payload)
-	var reply := {"status": 0, "data": {}}
-	if http.request(_origin + route, headers, method, body) == OK:
-		var response: Array = await http.request_completed
-		if response[0] in [HTTPRequest.RESULT_DOWNLOAD_FILE_CANT_OPEN, HTTPRequest.RESULT_DOWNLOAD_FILE_WRITE_ERROR]:
-			reply.write_failed = true
-		if response[0] == HTTPRequest.RESULT_SUCCESS:
-			reply.status = int(response[1])
-			var bytes: PackedByteArray = response[3]
-			if not bytes.is_empty() and download_path.is_empty():
-				var parsed: Variant = JSON.parse_string(bytes.get_string_from_utf8())
-				if parsed is Dictionary:
-					reply.data = parsed
-	http.queue_free()
-	return reply
+	return _controller.join_document_room(id)
 
 
 class DocumentView extends AcceptDialog:

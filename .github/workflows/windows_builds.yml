@@ -36,6 +36,7 @@ env:
     debug_symbols=no
   SCONS_CACHE_MSVC_CONFIG: true
   PYTHONIOENCODING: utf8
+  PYTHONUTF8: "1"
 
 jobs:
   build-windows:
@@ -235,6 +236,31 @@ jobs:
         if: matrix.compiler == 'msvc' && matrix.target == 'editor' && (inputs.validation_profile == 'editor' || inputs.validation_profile == 'full')
         timeout-minutes: 5
         run: python tests/editor/run_reasoning_sessions.py --godot ${{ matrix.bin }} --node (Get-Command node).Source --report reasoning-report/native.json
+
+      - name: Tianxuan native workspace and isolated service regression
+        if: matrix.compiler == 'msvc' && matrix.target == 'editor' && (inputs.validation_profile == 'editor' || inputs.validation_profile == 'full')
+        timeout-minutes: 15
+        run: |
+          python -m pip install -r customizations/components/tianxuan/server/requirements.txt
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/editor/run_tianxuan_controller.py --godot ${{ matrix.bin }} --native-shell --report tianxuan-native-report/controller.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/editor/run_tianxuan_controller.py --godot ${{ matrix.bin }} --races --report tianxuan-native-report/races.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/editor/run_tianxuan_controller.py --godot ${{ matrix.bin }} --layout --report tianxuan-native-report/layout.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/editor/run_tianxuan_controller.py --godot ${{ matrix.bin }} --native-shell --execution --node (Get-Command node).Source --report tianxuan-native-report/execution.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python tests/editor/run_tianxuan_controller.py --godot ${{ matrix.bin }} --controls --node (Get-Command node).Source --report tianxuan-native-report/execution-controls.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Upload Tianxuan native workspace reports
+        if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor' && (inputs.validation_profile == 'editor' || inputs.validation_profile == 'full')
+        uses: actions/upload-artifact@v7
+        with:
+          name: tianxuan-native-workspace
+          path: tianxuan-native-report/*
+          if-no-files-found: warn
 
       - name: Upload reasoning session report
         if: always() && matrix.compiler == 'msvc' && matrix.target == 'editor' && (inputs.validation_profile == 'editor' || inputs.validation_profile == 'full')

@@ -1,0 +1,153 @@
+{
+  "passed": true,
+  "evidence_level": "actual_scons_rebuild_and_private_headless_editor",
+  "checks": {
+    "native_invalidation": {
+      "passed": true,
+      "build": {
+        "log_sha256": "d8334aee8cc76742f459e000845e145275a52ffc89fe8329dc875be4b9b9fc54",
+        "recompiled_bridge": true,
+        "regenerated_scripts": false,
+        "diagnostics": [
+          "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(android_editor_gradle_runner.macos.editor.dev.arm64.o)' has no symbols",
+          "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(WebPlatformWindows.macos.editor.dev.arm64.o)' has no symbols",
+          "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(android_editor_gradle_runner.macos.editor.dev.arm64.o)' has no symbols",
+          "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(WebPlatformWindows.macos.editor.dev.arm64.o)' has no symbols"
+        ]
+      },
+      "before": {
+        "embedded": "",
+        "native": "",
+        "passed": true,
+        "binary_sha256": "c211cf1003de2c270302826dc8b9d7d489ac3e3c751f9ef1af451a8585449cd4",
+        "process_diagnostics": [
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 119 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 593 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ]
+      },
+      "after": {
+        "embedded": "",
+        "native": "invalidation-6675c2bcfe24d183",
+        "passed": true,
+        "binary_sha256": "7e98f4fcfa64d2c627decfbbef79c0d934dc7872d3b99599f4f6fcd7b162498f",
+        "process_diagnostics": [
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 119 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 593 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ]
+      },
+      "command": "python tests/editor/run_tianxuan_build_impact.py --godot bin/godot.macos.editor.dev.arm64 --report data-collection/tianxuan-native-ui-20261124-build-impact-r2.json -- platform=macos target=editor arch=arm64 use_volk=yes accesskit=no vulkan=no metal=no dev_build=yes debug_symbols=no -j6",
+      "observed": "Changing only C++ rebuilt the native bridge and linked a changed executable; its isolated editor controller exposed the new marker while the generated header stayed identical."
+    },
+    "generated_input_invalidation": {
+      "passed": true,
+      "build": {
+        "log_sha256": "89bcaf746fbbe5066b8dfb4d549666c71d06cd98e04cb8ee8ebc52cc1ff2fa16",
+        "recompiled_bridge": true,
+        "regenerated_scripts": true,
+        "diagnostics": [
+          "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(android_editor_gradle_runner.macos.editor.dev.arm64.o)' has no symbols",
+          "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(WebPlatformWindows.macos.editor.dev.arm64.o)' has no symbols",
+          "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(android_editor_gradle_runner.macos.editor.dev.arm64.o)' has no symbols",
+          "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(WebPlatformWindows.macos.editor.dev.arm64.o)' has no symbols"
+        ]
+      },
+      "before": {
+        "embedded": "",
+        "native": "",
+        "passed": true,
+        "binary_sha256": "c211cf1003de2c270302826dc8b9d7d489ac3e3c751f9ef1af451a8585449cd4",
+        "process_diagnostics": [
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 119 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 593 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ]
+      },
+      "after": {
+        "embedded": "invalidation-6675c2bcfe24d183",
+        "native": "",
+        "passed": true,
+        "binary_sha256": "e273522eff3906a8c5279fb00c1e8da95e70aa7348b84deaca5f931dfb95a4d4",
+        "process_diagnostics": [
+          "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+          "WARNING: 119 RIDs of type \"CanvasItem\" were leaked.",
+          "WARNING: 593 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+        ]
+      },
+      "header_before": "2a431cf641767f6d1f334284f43603ac0f62281dab0079cdad08a14505a6ad20",
+      "header_after": "e2adb0b94752572e2857cc91293c013861b4ce7d67e5a73ce1995413329e284d",
+      "command": "python tests/editor/run_tianxuan_build_impact.py --godot bin/godot.macos.editor.dev.arm64 --report data-collection/tianxuan-native-ui-20261124-build-impact-r2.json -- platform=macos target=editor arch=arm64 use_volk=yes accesskit=no vulkan=no metal=no dev_build=yes debug_symbols=no -j6",
+      "observed": "Changing the embedded controller regenerated its header, rebuilt the native bridge and exposed the new script method in the compiled editor. Restoration removed both markers and restored the original generated header."
+    }
+  },
+  "input_blobs": {
+    "editor/SCsub": "64599709085a9e5060130a177fff3d070aab9024",
+    "editor/docks/SCsub": "534c318f405e18b8f37029458bf6ee4a9da2a2c9",
+    "editor/docks/tianxuan/.clang-format": "980236c92a6820d2c2eaa646bed3e2fe7fbfa8e6",
+    "editor/docks/tianxuan/TianxuanWorkbench.cpp": "653148d4f811aa32aa023906b573cc82fee1900c",
+    "editor/docks/tianxuan/TianxuanWorkbench.h": "626e21f688f319f0b2d2255b961b8a73ac63e92c",
+    "editor/docks/tianxuan/accounts_controller.gd": "af96c55eadf02e53dc3f5ac5d4d8193bf288a62d",
+    "editor/docks/tianxuan/accounts_page.gd": "6dd7af00838a553c8485c8208007a1391cac7793",
+    "editor/docks/tianxuan/asset_decoder.gd": "5607985421b19e93c505f6a0fc1b463d82a4ca74",
+    "editor/docks/tianxuan/design_page.gd": "6c25d356aeac901af657bff8ff10fcf6bf8fb3b4",
+    "editor/docks/tianxuan/document_controller.gd": "5ac76f13474f0556ab6aa8e0d0d923ebc7e0e393",
+    "editor/docks/tianxuan/documents_page.gd": "ae4d8e6e440f595563d92c3a96606aa1f1bfee51",
+    "editor/docks/tianxuan/editor_controller.gd": "4a4930fe43ae506e05b6f1bc3fa334b445f52d54",
+    "editor/docks/tianxuan/execution_controller.gd": "b7f3269a6f5664558e3c754e0d42568136225c96",
+    "editor/docks/tianxuan/execution_page.gd": "e01d44b1c51375685d1c3ae900367ef89471c273",
+    "editor/docks/tianxuan/game_config_controller.gd": "ab678b5616128b70460bb7a4c4e57515babd5698",
+    "editor/docks/tianxuan/game_config_page.gd": "1f338ca06f9a318d0bf09f2a75f5d147bc308353",
+    "editor/docks/tianxuan/home_page.gd": "145cc5c7bf7dcab1324b8d2d827643562ffd336a",
+    "editor/docks/tianxuan/issue_assets.gd": "e6def82c348ad6eaf0976582c0e30f436ca73463",
+    "editor/docks/tianxuan/issue_controller.gd": "e25ef1c1c3641ed506372766c8f90b628a5445bf",
+    "editor/docks/tianxuan/issue_flow.gd": "204babe1744f8dec03f70d3c540778a328843622",
+    "editor/docks/tianxuan/issues_page.gd": "46ee887afb57d5f2af2e88c10e5ef881281de3eb",
+    "editor/docks/tianxuan/library_page.gd": "a48563e934b7cf3c9994fb8a81b37a7c3ed0c52b",
+    "editor/docks/tianxuan/locale.gd": "a18e2fc75b9c0fada396e85340c2d4f2f50e09fa",
+    "editor/docks/tianxuan/markdown_view.gd": "fbb994d5c5ed0ee2819e1eb8b108a9b26633c06e",
+    "editor/docks/tianxuan/migration_controller.gd": "91ae6a0e4a83fbf3650ab728c16aa4ce0c894be3",
+    "editor/docks/tianxuan/migration_page.gd": "f6a3b31b6c2a0675447f0e2c08802eb04ec4587e",
+    "editor/docks/tianxuan/native_theme.gd": "eded1f12b6e9cf8af960d0007dd7e3f0abcfbf07",
+    "editor/docks/tianxuan/repositories_controller.gd": "148fe3b0b77574db95d9728ae58ff95d4f42785c",
+    "editor/docks/tianxuan/repositories_page.gd": "ce8032400a032881e7c15bbdb6577e4024389f20",
+    "editor/docks/tianxuan/repository_collaboration_controller.gd": "b6e1d5c56b8eafcd7642246878ef6440d3162514",
+    "editor/docks/tianxuan/repository_collaboration_page.gd": "9aca878f2aafe430d4783af0a1bd1ef8b5875b53",
+    "editor/docks/tianxuan/session_controller.gd": "0b744312aa6bd6beabb52ab3da920a549e2ba30e",
+    "editor/docks/tianxuan/workspace_controller.gd": "91a71a5096e043e7f3e7e3fd5fea8d5a211d4bfe",
+    "editor/docks/tianxuan/workspace_view.gd": "2a179876ac4cbe151248c60b68ae99fb599adf11",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "b3d8b1f4b1d52033adbc8553bb4e11517019d0c7",
+    "editor/docks/workbench/business_session.gd": "e3b61e21b006b1ebee521e414ef616d3d058d9c1",
+    "editor/editor_builders.py": "55d3e887629fae0e3f9b8f432ca35c691ac61b1a",
+    "editor/editor_node.cpp": "aad2c3e147b869e3f5a4acf30d98632e6a3e328c",
+    "tests/editor/editor_test_isolation.py": "8e5cc499a6046554ed717393ef21e6f1c29e307c",
+    "tests/editor/run_tianxuan_build_impact.py": "12ac459e132b0be64cf626a48f7d17a4d219d5cf",
+    "tests/editor/run_unified_settings_native.py": "007cc57f0fb1802a1af8e3a26b84ad1ca96e95ff"
+  },
+  "restored": {
+    "build": {
+      "log_sha256": "75f336a3b77c339d27f1201604859cdf7ade29f4e60b5494e378cf4fb6f40edf",
+      "recompiled_bridge": true,
+      "regenerated_scripts": true,
+      "diagnostics": [
+        "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(android_editor_gradle_runner.macos.editor.dev.arm64.o)' has no symbols",
+        "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(WebPlatformWindows.macos.editor.dev.arm64.o)' has no symbols",
+        "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(android_editor_gradle_runner.macos.editor.dev.arm64.o)' has no symbols",
+        "ranlib: warning: 'libeditor.macos.editor.dev.arm64.a(WebPlatformWindows.macos.editor.dev.arm64.o)' has no symbols"
+      ]
+    },
+    "probe": {
+      "embedded": "",
+      "native": "",
+      "passed": true,
+      "binary_sha256": "2e9963ada00b4afd48df208d37fc1359cada2b3f89367d6588af1d8dba3a47c3",
+      "process_diagnostics": [
+        "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+        "WARNING: 119 RIDs of type \"CanvasItem\" were leaked.",
+        "WARNING: 593 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+      ]
+    }
+  },
+  "platform": "darwin",
+  "display_boundary": "No actual display, IME or Windows acceptance; temporary mutations were restored before writing this receipt."
+}

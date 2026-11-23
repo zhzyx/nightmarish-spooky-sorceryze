@@ -1,0 +1,5 @@
+BasedOnStyle: InheritParentConfig
+BreakBeforeBraces: Allman
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false

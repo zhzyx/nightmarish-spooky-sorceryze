@@ -1,0 +1,7 @@
+{
+  "placement": "native",
+  "reason": "TianxuanWorkbench.cpp is linked into the editor. All native UI and controller GDScript files are embedded by editor/SCsub through daqian_scripts_builder into TianxuanScripts.gen.h and consumed by that C++ bridge; none is an independently replaceable runtime package.",
+  "host_contract": "The editor owns one authenticated session and workspace controller on its main thread. Native main-screen and dockable views share that controller. Embedded scripts use the editor's current Control, EditorInterface, HTTPRequest and WebSocketPeer APIs and existing Tianxuan HTTP/WebSocket contracts. They do not load executable code from the open project or require WebView.",
+  "rollback": "Restore the previous complete editor build and its matching embedded inputs, then reopen the editor. Drafts remain in the editor's private, identity-scoped data directory; Web deployment and service data require no rollback or migration. Partial script or binary swapping is unsupported.",
+  "evidence": "data-collection/tianxuan-native-ui-20261124-build-impact-r2.json"
+}

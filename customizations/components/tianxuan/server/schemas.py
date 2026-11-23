@@ -120,6 +120,15 @@ class ReleaseCreateRequest(BaseModel):
     prerelease: bool = False
 
 
+class ReleaseBaseline(BaseModel):
+    id: int
+    tag_name: str
+    name: str
+    body: str
+    draft: bool
+    prerelease: bool
+
+
 class ReleaseUpdateRequest(BaseModel):
     """更新 Gitea 发布的可编辑字段。"""
 
@@ -127,6 +136,7 @@ class ReleaseUpdateRequest(BaseModel):
     body: str | None = None
     draft: bool | None = None
     prerelease: bool | None = None
+    expected_release: ReleaseBaseline | None = None
 
 
 class PullRequestCreateRequest(BaseModel):
@@ -142,6 +152,8 @@ class PullRequestMergeRequest(BaseModel):
     """合并 Pull Request 的方式。"""
 
     method: str = "merge"
+    expected_head_sha: str | None = Field(default=None, pattern=r"^[0-9a-f]{40,64}$")
+    expected_base: str | None = Field(default=None, min_length=1, max_length=255)
 
 
 class PullRequestReviewRequest(BaseModel):
@@ -149,6 +161,8 @@ class PullRequestReviewRequest(BaseModel):
 
     event: str
     body: str = ""
+    expected_head_sha: str | None = Field(default=None, pattern=r"^[0-9a-f]{40,64}$")
+    expected_base: str | None = Field(default=None, min_length=1, max_length=255)
 
 
 class CommitStatusRequest(BaseModel):

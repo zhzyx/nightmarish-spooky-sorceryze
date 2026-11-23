@@ -1,0 +1,31 @@
+{
+  "request_id": "tianxuan-native-ui-20261123",
+  "issue_number": 2150,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+  "observed_at": "2026-11-23T17:03:59.198432+00:00",
+  "supplements": "data-collection/tianxuan-native-ui-20261123-host-snapshot.json",
+  "thread": "01a2081e-0b99-7fa1-b5a7-4ea258f3378f",
+  "model": "gpt-6-astra",
+  "reasoning_effort": "xhigh",
+  "source": "Current chat host rollout turn_context metadata, read only model and effort fields; no inference from an agent self-report.",
+  "capability_source": "Host collaboration tool contract: child agents inherit the parent model and have equal intelligence/capability. Parent has performed coding and real validation in this task.",
+  "capacity": {
+    "total_tool_slots": 4,
+    "parent_occupied": 1,
+    "available_child_slots": 3
+  },
+  "independent_review": {
+    "worker": "/root/sinan_166ba41a04521d99",
+    "target": "agent",
+    "fork_turns": "none",
+    "model_override": null,
+    "model_evidence": "host_inheritance_not_observed",
+    "state": "launched",
+    "scope": "Read-only review of native module, integration, harnesses and Windows CI; no write or desktop authority."
+  },
+  "notes": [
+    "The earlier unknown-model observation is preserved as historical evidence.",
+    "The dispatcher initially deferred because Node was absent from its subprocess PATH. A process-local PATH to the actual installed Node restored framework verification; the existing session dispatcher then issued the native request.",
+    "Agent dispatch and later review findings are distinct from business acceptance and Git delivery."
+  ]
+}

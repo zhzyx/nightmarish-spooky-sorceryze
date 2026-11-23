@@ -1,0 +1,25 @@
+{
+  "request_id": "tianxuan-native-ui-20261123",
+  "issue_number": 2150,
+  "reviewer": "/root/sinan_166ba41a04521d99",
+  "implementer": "/root",
+  "observed_at": "2026-11-23T17:46:17.268647+00:00",
+  "state": "passed_with_limits",
+  "extends": "data-collection/tianxuan-native-ui-20261124-review-3.json",
+  "reviewed_change": {
+    "path": "customizations/components/tianxuan/server/test_api_gitea.py",
+    "sha256": "3910e82a844ee1ebd55a85c826cd83efec773c1b4f1b915e75be36411910ff88",
+    "description": "Replace three append-or-return test lambdas with named helpers; same recorded calls and return values."
+  },
+  "evidence": "Independent final response: reversing the three helper changes reproduces the prior reviewed hash; remaining 51 inputs unchanged. Final report inputs match current source and final binary. No reviewer edits or Godot execution.",
+  "binary_sha256": "b22604fbdb5487efe21c38d8fffa8e18dbf99986a4ce1652f9c8ae3f420c63a6",
+  "limits": [
+    "Windows CI build and execution have not run yet.",
+    "No native display pixels, IME or system-window acceptance; headless shutdown diagnostics retained.",
+    "Execution roles use explicit deterministic-test programs, not a production model provider.",
+    "Browser verification covers document collaboration; full browser module acceptance remains open.",
+    "Upstream HTTP 401 is fault injection, not actual Gitea token revocation.",
+    "PR target and release content preflight comparisons do not exclude direct upstream writes atomically.",
+    "No production deployment or user editor installation."
+  ]
+}
