@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-b0145a8e611285619b544456b48d5c8aa1fe34a5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-native-ui-20261123",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "d99f77deeffd1612d34b86c422730e28b866f4d66293ba71e9c33400a7b38f45",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2157",
+    "action": "delivery",
+    "detection_head": "80a726dc2a96473ce766eacd4b0cdfa4b706d919",
+    "context_sha256": "871fdb5d8ec8c94b369659864cb0935fb8555e39bfee4d10be61a7fac095c5ee",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "user-goal-and-continue:issue-2150",
+    "evidence": "local:writer_submit 80a726dc; formal gate passed; publication refused before signing due missing exact GongGong-Issue and GongGong-Request commit trailers",
+    "diagnosis": "Manual integration commit omitted required work-order trailers. This is an operator metadata error, not a code or identity failure. No signed PR was created. Existing source and test evidence remain unchanged.",
+    "next_action": "Preserve the integration commit and record, stage recovery evidence, and let the standard writer create its correctly bound commit before signing. Reuse unchanged tests and run exact new-head CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T20:54:32.543578+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T20:55:57.124005+00:00",
+  "sha256": "b9ad28dee50466b903a5b87a82635fa7b2f74ac591e2b4256ceb73f7fc37e4b9"
+}
