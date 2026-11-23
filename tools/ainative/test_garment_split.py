@@ -9,7 +9,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
-
 from extensions import canonical
 from garment_inventory import request_inventory
 from garment_split import GarmentSource, spec_from_inventory, split, validate_inventory
@@ -36,7 +35,16 @@ def accessor_bytes(document, binary, index, item_size):
     return binary[start : start + accessor["count"] * item_size]
 
 
-def make_glb(path, *, transform=False, skin=False, invalid_skin=False, external=False, embedded_image=False, normalized_weights=False):
+def make_glb(
+    path,
+    *,
+    transform=False,
+    skin=False,
+    invalid_skin=False,
+    external=False,
+    embedded_image=False,
+    normalized_weights=False,
+):
     document = dict(
         asset=dict(version="2.0"),
         scene=0,
@@ -63,7 +71,9 @@ def make_glb(path, *, transform=False, skin=False, invalid_skin=False, external=
         values = np.asarray(values)
         record = dict(
             bufferView=view(values.astype(values.dtype.newbyteorder("<")).tobytes(), target),
-            componentType={np.dtype("<f4"): 5126, np.dtype("<u4"): 5125, np.dtype("<u2"): 5123}[values.dtype.newbyteorder("<")],
+            componentType={np.dtype("<f4"): 5126, np.dtype("<u4"): 5125, np.dtype("<u2"): 5123}[
+                values.dtype.newbyteorder("<")
+            ],
             count=values.size if kind == "SCALAR" else len(values),
             type=kind,
         )
@@ -71,9 +81,7 @@ def make_glb(path, *, transform=False, skin=False, invalid_skin=False, external=
         return len(document["accessors"]) - 1
 
     def primitive(offset, joint=0):
-        points = np.asarray(
-            [[offset, 0, 0], [offset + 1, 0, 0], [offset, 1, 0]], dtype="<f4"
-        )
+        points = np.asarray([[offset, 0, 0], [offset + 1, 0, 0], [offset, 1, 0]], dtype="<f4")
         normals = np.tile(np.asarray([[0, 0, 1]], dtype="<f4"), (3, 1))
         uv = np.asarray([[0, 0], [1, 0], [0, 1]], dtype="<f4")
         indices = np.asarray([[0, 1, 2]], dtype="<u4")
@@ -143,7 +151,9 @@ def make_glb(path, *, transform=False, skin=False, invalid_skin=False, external=
     document["meshes"][1]["primitives"][0]["indices"] = start + len(attribute_keys)
     if embedded_image:
         image_view = view(png())
-        document.update(samplers=[{}], images=[dict(bufferView=image_view, mimeType="image/png")], textures=[dict(source=0)])
+        document.update(
+            samplers=[{}], images=[dict(bufferView=image_view, mimeType="image/png")], textures=[dict(source=0)]
+        )
         document["materials"][0]["pbrMetallicRoughness"]["baseColorTexture"] = dict(index=0)
     if transform:
         document["nodes"][0]["translation"] = [1, 0, 0]
@@ -292,12 +302,10 @@ class GarmentSplitTests(unittest.TestCase):
 
     def test_component_split_preserves_attributes_material_and_source(self):
         result = split(
-            self.spec(
-                [
-                    item("cape", [self.components[0]["component_id"]]),
-                    item("armor", [self.components[2]["component_id"]], behavior="rigid", category="armor"),
-                ]
-            )
+            self.spec([
+                item("cape", [self.components[0]["component_id"]]),
+                item("armor", [self.components[2]["component_id"]], behavior="rigid", category="armor"),
+            ])
         )
         self.assertEqual(result["status"], "surface_split")
         self.assertFalse(result["cloth_ready"])

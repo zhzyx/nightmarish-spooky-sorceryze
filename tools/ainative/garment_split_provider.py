@@ -169,9 +169,7 @@ class GarmentSplitProvider:
             common,
             artifact_role="garment_collection",
             garment_count=len(record["items"]),
-            collection={
-                key: copy.deepcopy(value) for key, value in record["collection"].items() if key != "path"
-            },
+            collection={key: copy.deepcopy(value) for key, value in record["collection"].items() if key != "path"},
             items=[
                 dict(
                     id=item["id"],

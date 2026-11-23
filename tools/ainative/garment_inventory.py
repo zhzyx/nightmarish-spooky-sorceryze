@@ -67,11 +67,7 @@ def inventory_schema():
 
 
 def inventory_prompt(inspection):
-    public_inspection = {
-        key: value
-        for key, value in inspection.items()
-        if key not in ("source", "limitations")
-    }
+    public_inspection = {key: value for key, value in inspection.items() if key not in ("source", "limitations")}
     return (
         "Inspect every attached image independently. Identify ALL visible wearable items on the same subject, including "
         "ordinary clothing, underwear, footwear, gloves, armor, shoulder pieces, bracers, belts, capes and mixed outfits. "
@@ -86,8 +82,7 @@ def inventory_prompt(inspection):
         "invent triangle IDs, occluded garments, internal layers, complete body geometry or topology repair. Use stable "
         "lowercase ASCII ids and preserve the exact supplied component_id strings. Return one schema-conforming JSON "
         "object with no prose outside it.\n"
-        "Source geometry inventory (paths deliberately removed):\n"
-        + canonical(public_inspection)
+        "Source geometry inventory (paths deliberately removed):\n" + canonical(public_inspection)
     )
 
 
@@ -189,8 +184,7 @@ def request_inventory(config, inspection, images, directory):
     evidence = dict(
         inspection_sha256=hashlib.sha256(canonical(inspection).encode("utf-8")).hexdigest(),
         images=[
-            dict(label=entry["label"], component_id=entry["component_id"], sha256=entry["sha256"])
-            for entry in entries
+            dict(label=entry["label"], component_id=entry["component_id"], sha256=entry["sha256"]) for entry in entries
         ],
         attached_component_ids=sorted(attached_components),
     )

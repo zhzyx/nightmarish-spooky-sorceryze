@@ -1,0 +1,367 @@
+{
+  "schema_version": 1,
+  "issue_number": 426,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/426",
+  "request_id": "daqian-direct-dfb3577984bfc0915d62",
+  "observed_at": "2026-11-23T11:16:39.428584+00:00",
+  "baseline": "b5ad3563f541875e493182f2576e3cfae0682826",
+  "initial_open_kuafu_issues": 29,
+  "local_incidents_inspected": 269,
+  "scope": "28 trackers and coordinating issue; related blocked business issues checked without claiming business acceptance",
+  "user_decisions": {
+    "paused_scope_retained": [
+      807,
+      1530,
+      1445,
+      1559
+    ],
+    "not_to_process_now": [
+      2099,
+      662,
+      1540
+    ]
+  },
+  "remaining_trackers": [
+    {
+      "issue": 662,
+      "original_issue": 659,
+      "category": "official_account_authentication",
+      "remaining": "官方CodeBuddy2.176.0 ACP initialize成功，session/new -32000明确需要认证；没有真实业务响应或时延样本。",
+      "owner": "当前官方CodeBuddy宿主账号所有者/原 #659责任者",
+      "next_action": "在官方宿主完成登录后重跑#674业务请求和基线时延；不自动重建凭据。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/662",
+      "user_decision": "2026-11-23：暂不处理。"
+    },
+    {
+      "issue": 807,
+      "original_issue": 773,
+      "category": "explicit_pause",
+      "remaining": "39个事故均已找到诊断，8失败作业均有后继对应；最后一组依赖原安装编辑器、原失败游戏权限、重启续办与接收，原责任者明确暂停。",
+      "owner": "Sail-Li 原 #773 安装/游戏生产责任者及用户",
+      "next_action": "保留暂停直至明确恢复决定；原business_accepted=null不改写为验收。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/807",
+      "user_decision": "2026-11-23：继续保留原暂停范围；不重启生产/压力验收。"
+    },
+    {
+      "issue": 833,
+      "remaining": "两次历史Actions运行仍queued且0 jobs。原业务已交付，旧队列无执行诊断；保留原运行。",
+      "owner": "原发布者及仓库Actions维护者",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/833"
+    },
+    {
+      "issue": 1349,
+      "original_issue": 1343,
+      "category": "visual_acceptance_and_receipt",
+      "remaining": "11本地事件有原责任判断，数值渲染和若干CI子项已恢复；原体积效果视觉质量、完整Windows阴影/级联/动画/画质仍未验收，部分历史签发回执未齐。",
+      "owner": "kaiyunxue 原渲染路径执行者/指定画质验收者",
+      "next_action": "按#1343原渲染路径实际画面验收体积质量，分别核对剩余签发事故，不能用CPU数值通过替代画面。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1349"
+    },
+    {
+      "issue": 1353,
+      "original_issue": 1352,
+      "category": "original_host_receipt",
+      "remaining": "原生参数表单/业务PR1358通过；8笔intake/delivery工件缺具体失败步骤，一笔e8d2677a基线不可取。",
+      "owner": "kaiyunxue 原发布宿主",
+      "next_action": "按全部8个incident回读原接单/发布命令和恢复映射。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1353"
+    },
+    {
+      "issue": 1356,
+      "original_issue": 1355,
+      "category": "original_host_receipt",
+      "remaining": "原生节点预览验收通过；8c627200a报告候选043ad62c实际修改端口类型，缺原验证命令，无法认定该事故属于预览测试。",
+      "owner": "kaiyunxue 原验证宿主",
+      "next_action": "提供8c627200a原失败测试命令及输出，再选择对应复验。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1356"
+    },
+    {
+      "issue": 1360,
+      "original_issue": 1359,
+      "category": "original_host_receipt",
+      "remaining": "多图顺序/持久化和PR1365业务已通过；三笔validation/delivery原Actions工件无失败诊断，236f87ad候选不可取。",
+      "owner": "kaiyunxue 原发布宿主",
+      "next_action": "按1b7b0b5eb、7dc114887、95b0416db取得原命令与复验；不重复业务生成。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1360"
+    },
+    {
+      "issue": 1364,
+      "original_issue": 1363,
+      "category": "explicit_host_policy_rejection",
+      "remaining": "六项部署验收已通过；仅原Windows本机临时目录/传输包删除被宿主自动审批blocked by policy拒绝。",
+      "owner": "Sail-Li 原受拒宿主有权操作者",
+      "next_action": "保持保留，不重试或绕过删除；原宿主授权允许的清理回执或明确保留决定后收尾。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1364"
+    },
+    {
+      "issue": 1374,
+      "original_issue": 1367,
+      "category": "original_host_receipt",
+      "remaining": "两次静态格式失败已由#1385同平台同步骤恢复；两笔本地delivery缺原日志，首笔0ebd16f84240在镜像不存在且GitHub422。",
+      "owner": "kaiyunxue 原发布宿主",
+      "next_action": "查原工作树/归档 bfe8b7cf 和8a6ee23e；不可将缺失候选上失败宣称已复验。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1374"
+    },
+    {
+      "issue": 1397,
+      "original_issue": 1396,
+      "category": "original_host_receipt",
+      "remaining": "三次delivery均能对应报告基线/源候选，PR1398和main已成功；原Actions工件和扩展Git镜像仍不含逐次失败命令/诊断。",
+      "owner": "kaiyunxue 原发布宿主",
+      "next_action": "按576748155、31b781a1b、7d3b5ce46取得原失败与恢复映射。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1397"
+    },
+    {
+      "issue": 1428,
+      "original_issue": 1427,
+      "category": "original_host_receipt",
+      "remaining": "保存功能和正式系统面板已验证，后继#2008已合入；6adfa8f7/5996ad27/142a4da4三次早期delivery缺原命令/候选树，不能区分失败步骤。新增7212fa67缺采集JSON已由#1990接续并后续交付。",
+      "owner": "kaiyunxue 三次早期发布宿主；Sail-Li 后继验收已记录",
+      "next_action": "仅补早期三次事故原操作/恢复映射；不重复已通过的保存面板测试。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1428"
+    },
+    {
+      "issue": 1445,
+      "original_issue": 1444,
+      "category": "unknown_worker_and_paused_acceptance",
+      "remaining": "40个本地事故需沿分簇记录；剩余stage.rename WinError5原句柄、cp936吞stderr原诊断、Linux300秒运输占时和两名held生产者终态。250 burst也仍延期；后继运行不能解释原未知执行。",
+      "owner": "Sail-Li 原 #1444/#1499 协调责任者及原 Windows/Linux 宿主",
+      "next_action": "先获取held生产者真实终态、原锁占用/失败日志；不重放unknown任务，不恢复延期250试验。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1445",
+      "user_decision": "2026-11-23：继续保留原暂停范围；不重启生产/压力验收。"
+    },
+    {
+      "issue": 1530,
+      "original_issue": 1529,
+      "category": "paused_acceptance_and_receipt",
+      "remaining": "正式运行包450文件校验通过；250压力明确延期，原 run44291364937 未同条件恢复，25f58ad67 原本地事件只有初判。",
+      "owner": "原 #1529 安装/部署责任者与压力试验决策者",
+      "next_action": "保持延期边界；获恢复决定后原条件压力和隔离服务器安装/升级/回退，补原事件诊断。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1530",
+      "user_decision": "2026-11-23：继续保留原暂停范围；不重启生产/压力验收。"
+    },
+    {
+      "issue": 1540,
+      "original_issue": 1454,
+      "category": "production_authentication",
+      "remaining": "登录页、WKWebView、合成 Key拒绝/本机有效Key的Cookie链均通过；受影响用户个人Key在正式服务端被拒的原因和恢复未知。",
+      "owner": "既有生产管理环境有权管理员与原 #1454 责任者",
+      "next_action": "在已有授权服务端核对受影响账号和Key元数据/拒绝原因；不收集用户密钥，不要求换浏览器。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1540",
+      "user_decision": "2026-11-23：暂不处理。"
+    },
+    {
+      "issue": 1555,
+      "original_issue": 1551,
+      "category": "original_host_network",
+      "remaining": "192 MiB 容器同签发头重跑成功，但首次137底层诊断未留存；后续 Git HTTPS reset 被原发布者明确保留，Git Data API交付不是HTTPS恢复。",
+      "owner": "Sail-Li 原 Windows 发布宿主",
+      "next_action": "补原 Git HTTPS 操作恢复回执；原137根因保持未知，不把后继成功伪写成内存根因已确认。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1555"
+    },
+    {
+      "issue": 1559,
+      "remaining": "原512MiB容器退出137，未留OOM/终止证据；本次用户再次确认保留250压力暂停范围。",
+      "owner": "原压力验收责任者",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1559"
+    },
+    {
+      "issue": 1586,
+      "original_issue": 1581,
+      "category": "original_host_receipt",
+      "remaining": "13 个本地事件中 5 有原诊断，8 个仅初判；10 个失败作业有 4 个后继同步骤成功。剩余事故与实际消费者尚未覆盖。",
+      "owner": "Sail-Li 原 #1581 执行/发布宿主",
+      "next_action": "逐项补原事故日志及未恢复 CI 步骤；不要用本机回环两项通过替代跨机/真实消费者验收。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1586"
+    },
+    {
+      "issue": 1627,
+      "original_issue": 1625,
+      "category": "original_host_receipt",
+      "remaining": "56263f6a 租户纠正已恢复；另 6 个 validation/delivery 事件缺原失败日志。#1663/#1667 业务交付不补足原操作。",
+      "owner": "kaiyunxue 原发布宿主",
+      "next_action": "按 a72950129、d2a8e4d04、bb0f60dc6、911277cc1、3110f7793、ce3d3316f 取得原操作及复验。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1627"
+    },
+    {
+      "issue": 1628,
+      "original_issue": 1577,
+      "category": "original_host_permission",
+      "remaining": "Windows SCM 配置服务身份被拒与 Docker 挂载/TLS顺序两事件；Mac 角色测试和 HTTPS 健康已通过，尚缺原 Windows 安装后的跨角色拒绝与服务身份验收。",
+      "owner": "Sail-Li 原部署管理员/Windows 服务安装责任者",
+      "next_action": "以原服务器实际准入身份执行服务安装和跨角色拒绝，回读挂载及 TLS 初始化顺序。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1628"
+    },
+    {
+      "issue": 1653,
+      "original_issue": 1648,
+      "category": "original_host_network",
+      "remaining": "原 Windows 发布环境在 A8 交付后仍复现 HTTPS curl 28/reset；Mac 三次 fetch/ls-remote 成功不覆盖该网络环境。",
+      "owner": "Sail-Li 原 Windows 发布宿主",
+      "next_action": "在原受影响网络读取同远端/原操作并绑定成功回执，或给出已实施传输修复证据。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1653"
+    },
+    {
+      "issue": 1680,
+      "original_issue": 1679,
+      "category": "original_host_receipt",
+      "remaining": "9 个本地事故中 a8b0c3aa 有 Apple Git 自动整合版本限制诊断；其余 8 个缺原失败步骤与同操作复验。#1694 合入和成功 CI 证明后继候选，不证明各个历史事故。",
+      "owner": "kaiyunxue 原发布宿主",
+      "next_action": "从原宿主按 8 个完整 local_incident 返回命令、候选树、诊断及重试回执；不用新发布重放旧任务。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1680"
+    },
+    {
+      "issue": 1697,
+      "original_issue": 1550,
+      "category": "original_host_receipt",
+      "remaining": "早期协调工作者真实终态及事件 9cd69a80 的原始恢复仍缺；#1704 交付与 Mac 故障恢复通过只能覆盖已映射子项。",
+      "owner": "Sail-Li 原协调宿主/原 #1550 主责",
+      "next_action": "取得原协调会话终态及 9cd69a80 失败操作/恢复映射；不释放未知工作者或重放。",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1697"
+    },
+    {
+      "issue": 2063,
+      "remaining": "原Windows S05/S06清理曾被自动审批拒绝；两份保留记录和归档已回读。其余两笔已恢复，剩原宿主有权清理或保留决定。",
+      "owner": "原Windows宿主",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2063"
+    },
+    {
+      "issue": 2099,
+      "remaining": "用户本次决定暂不处理正式导入身份及授权。",
+      "owner": "部署端负责人",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2099",
+      "user_decision": "2026-11-23：暂不处理。"
+    },
+    {
+      "issue": 2128,
+      "remaining": "原工作区 WORKTREE_UNSTAGED。原责任者已选择隔离23个文件，本地提交源a0ae2645已进入main；未找到原门禁成功及committed回执，不能只按提交存在关闭。",
+      "owner": "kimi-work-kaiyunxue",
+      "source": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2128"
+    }
+  ],
+  "related_business_414": "真实图片/网格生成及指定安装版Finder重开尚未验收，保留原主责；本次不以静态修复代替。",
+  "repairs": {
+    "2105": {
+      "failure_run": 45031684045,
+      "failure_job": 137236543477,
+      "change": "Use git clone --no-local to avoid copying mutable receive-pack quarantine directories.",
+      "regression_before": "New quarantine exclusion test fails on original implementation.",
+      "regression_after": "55 passed, 98 subtests passed",
+      "command": "GIT_EXECUTABLE=/usr/bin/git python -m pytest -q customizations/components/tianxuan/duobao/test_git_service.py customizations/components/tianxuan/duobao/test_git_service_repo_root.py customizations/components/tianxuan/duobao/test_admin_paths.py customizations/components/tianxuan/duobao/test_merge_queue.py",
+      "platform": "macOS arm64, Python 3.14, Apple Git",
+      "initial_test_environment": "First unittest run: 34 tests passed, merge_queue import failed because pytest was absent; reused existing pytest environment read-only, complete selected suite passed.",
+      "limitations": "Git transport can cost more CPU than local object copying; no shared-object alternate or reduced concurrency/retry/lease checks introduced."
+    },
+    "2131": {
+      "failure_run": 45055050903,
+      "failure_job": 137308304556,
+      "change": "Original 11 failed paths: pinned formatting, import order, and spelling only.",
+      "verification": "Ruff 0.17.1 and codespell 2.4.2 passed; 8 files compile; 7 ASTs identical and remaining AST differs only imported-name order."
+    }
+  },
+  "recovered_2112": {
+    "incidents": [
+      "af32b47dfca02efd1b3f5e5f7c56f06f0c724004908b6f7e82541c50bca9df87",
+      "8030f682ccea8c7e96142340ba36010e89c85cbb29965013360906624dddcbbe"
+    ],
+    "original_failures": [
+      "GIT_LOCK: write-tree blocked",
+      "Formal GongGong verification failed"
+    ],
+    "original_error_digests_match": true,
+    "original_index_delta_sha256": "a10c31c9d8fa895ead9d915f21c91a98b9acded803cf42cf025fd1551c5a4fd8",
+    "source_base": "41ce288119959399c66a163ea84d0c7f793312a0",
+    "source_candidate": "91ff72b5f287c7125cbab6e770080852f79b2179",
+    "source_raw_diff_matches_incident": true,
+    "pr": 2113,
+    "signed_head": "708be531615b538bf95cedb673f67a6ce4d6dd27",
+    "merge_commit": "f0044099c166ae7cac480bab308ddd3e4e2812e1",
+    "required_checks": "All required actual check runs successful; optional skipped jobs not counted.",
+    "source_acceptance": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2111#issuecomment-7081408074",
+    "boundary": "This verifies delivery incident recovery; shared production-site deployment remains separate.",
+    "closure": {
+      "issue": 2112,
+      "state": "closed",
+      "state_reason": "completed",
+      "labels": [
+        "type:bug",
+        "status:done",
+        "workspace:gonggong"
+      ],
+      "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2112#issuecomment-7099409666",
+      "observed_at": "2026-11-23T11:18:24.564003+00:00"
+    }
+  },
+  "delivery": "See issue 426 current delivery receipt for signed candidate, exact CI, main and closures; this file records candidate evidence, not a fabricated future receipt.",
+  "independent_review": {
+    "reviewer": "codex:/root/tracker_audit",
+    "reviewed_at": "2026-11-23T11:16:35.026643+00:00",
+    "independence": "Reviewer did not implement, diagnose, or decide the incident treatment of #2105/#2131/#2112 before this review; prior delegated work covered separate tracker IDs. No product-code edits were made in this review.",
+    "verdict": "scoped_pass",
+    "findings": [],
+    "baseline": "b5ad3563f541875e493182f2576e3cfae0682826",
+    "reviewed_files": [
+      {
+        "file": "customizations/components/tianxuan/duobao/git_service.py",
+        "sha256": "524ea12ce2964363cf1e914c100ba5073ca09dd97f0a1c8b51b0894e7ecbb4e6"
+      },
+      {
+        "file": "customizations/components/tianxuan/duobao/test_git_service.py",
+        "sha256": "0199b9a017d78894b5854149c88947c8031ee4780a20ea25b2f03fb324cb0182"
+      },
+      {
+        "file": "samples/ainative-workbench/parameter_form_acceptance.gd",
+        "sha256": "1a107ce31ed71d2d68d971e6b1d32a6dfe7c0f24f69db2b9cdd6bd7d0129f793"
+      },
+      {
+        "file": "tests/editor/ainative_builtin.gd",
+        "sha256": "3b7c0e0af2027ae403ae2293aceb9559970a867967e065bd21b616fc2865f190"
+      },
+      {
+        "file": "tools/ainative/README.md",
+        "sha256": "c3896817cb8c16ab1ddb45d6ad61e8bce0650ac3af95ad0d1542b0658e236ab7"
+      },
+      {
+        "file": "tools/ainative/editor_demo.py",
+        "sha256": "d4bf1b25ea4b7949ade3f91b79098279838bc6d22feb4c1d39fa66fe4e0c7ad0",
+        "ast_equal": true
+      },
+      {
+        "file": "tools/ainative/editor_host.py",
+        "sha256": "b1fed288e5622871acec0ec967cb411712b040b7fc3d71069b2a67cb06e3b19c",
+        "ast_equal": true
+      },
+      {
+        "file": "tools/ainative/garment_inventory.py",
+        "sha256": "dcbdcc0df95f667d0179c9e055cd5a375a00f857697e8dd03b04bd70bcdd7884",
+        "ast_equal": true
+      },
+      {
+        "file": "tools/ainative/garment_split.py",
+        "sha256": "446c85c96a2c538ef2da598c1999bef8a128c25650519122e3f1f1139c10ac73",
+        "ast_equal": true
+      },
+      {
+        "file": "tools/ainative/garment_split_provider.py",
+        "sha256": "cd56e3cfd3929c2fc5cd5f23cdae7c95c87c6ad85af6f20b4cc1755f1a0bf41a",
+        "ast_equal": true
+      },
+      {
+        "file": "tools/ainative/generation_service.py",
+        "sha256": "eaac25d2cf3bae316baf8beda3b0997569de41bb2be02136d8b7dcb23befab0e",
+        "ast_equal": false,
+        "ast_equal_normalized_named_import_order": true
+      },
+      {
+        "file": "tools/ainative/test_garment_split.py",
+        "sha256": "4718b922d50b50a9f9df2885c6aef7cbc5fb18223fd4a8d8b3b68401ab196b31",
+        "ast_equal": true
+      },
+      {
+        "file": "tools/ainative/test_garment_split_provider.py",
+        "sha256": "4bebad0e791ef67884c327df77545b998c64814fdd9983034039ef9cadb092b7",
+        "ast_equal": true
+      }
+    ]
+  }
+}

@@ -130,8 +130,8 @@ func run():
 	var shape = panel.nodes[-1]
 	var shape_id = str(shape.id)
 	check(shape.type == "human_shape_adjust" and not form.prompt_edit.visible and not form.landmarks_edit.visible and not form.pose_row.visible, "human shape node uses its automatic five-control pre-rig form")
-	check(form.rows.height_cm.visible and not form.rows.height_m.visible and form.rows.head_ratio.visible and form.rows.arm_length_scale.visible and form.rows.leg_length_scale.visible and form.rows.build.visible, "all five human shape controls are visible with centimetre height")
-	check(shape.parameters.height_cm == 180 and shape.parameters.height_cm is int and not shape.parameters.has("height_m"), "new human shape nodes store integer centimetres")
+	check(form.rows.height_cm.visible and not form.rows.height_m.visible and form.rows.head_ratio.visible and form.rows.arm_length_scale.visible and form.rows.leg_length_scale.visible and form.rows.build.visible, "all five human shape controls are visible with centimeter height")
+	check(shape.parameters.height_cm == 180 and shape.parameters.height_cm is int and not shape.parameters.has("height_m"), "new human shape nodes store integer centimeters")
 	check(panel.apply_fields() and not shape.parameters.has("prompt") and not shape.parameters.has("landmarks") and not shape.parameters.has("reference_pose"), "default node delegates pose and landmark fitting without manufacturing an empty prompt")
 	shape.parameters.confirmed = false
 	shape.parameters.prompt = ""
@@ -141,7 +141,7 @@ func run():
 	shape.parameters.erase("height_cm")
 	panel.select_node(shape_id)
 	check(not shape.parameters.has("confirmed") and not shape.parameters.has("prompt") and not shape.parameters.has("landmarks") and not shape.parameters.has("reference_pose"), "legacy prompt, confirmation and empty landmarks migrate to automatic AINative fitting")
-	check(form.controls.height_cm.get_line_edit().text == "190" and shape.parameters.has("height_m"), "legacy metre values migrate in the form without mutating the node before apply")
+	check(form.controls.height_cm.get_line_edit().text == "190" and shape.parameters.has("height_m"), "legacy meter values migrate in the form without mutating the node before apply")
 	form.controls.head_ratio.value = 9.0
 	form.controls.arm_length_scale.value = 1.2
 	form.controls.leg_length_scale.value = 1.1
@@ -152,7 +152,7 @@ func run():
 		var height_input = form.controls.height_cm.get_line_edit()
 		height_input.text = str(height_cm)
 		height_input.text_changed.emit(str(height_cm))
-		check(panel.apply_fields() and shape.parameters.height_cm == height_cm and shape.parameters.height_cm is int, "typed whole centimetres parse as integers: " + str(height_cm))
+		check(panel.apply_fields() and shape.parameters.height_cm == height_cm and shape.parameters.height_cm is int, "typed whole centimeters parse as integers: " + str(height_cm))
 	panel.add_generator()
 	var other_shape = panel.nodes[-1]
 	var other_shape_id = str(other_shape.id)

@@ -74,17 +74,15 @@ class GarmentSplitProviderTests(unittest.TestCase):
             artifacts = exported["manifest"]["artifacts"]
             primary = next(asset for asset in artifacts if asset["id"] == reference["id"])
             garments = [
-                asset
-                for asset in artifacts
-                if asset["payload"].get("provenance", {}).get("artifact_role") == "garment"
+                asset for asset in artifacts if asset["payload"].get("provenance", {}).get("artifact_role") == "garment"
             ]
             self.assertEqual(len(garments), 2)
             self.assertEqual(primary["payload"]["provenance"]["artifact_role"], "garment_collection")
             self.assertEqual(primary["payload"]["provenance"]["garment_count"], 2)
-            self.assertEqual(
-                [asset["payload"]["provenance"]["garment_id"] for asset in garments], ["cape", "armor"]
+            self.assertEqual([asset["payload"]["provenance"]["garment_id"] for asset in garments], ["cape", "armor"])
+            self.assertTrue(
+                all(asset["payload"]["provenance"]["iteration_of"] == reference["id"] for asset in garments)
             )
-            self.assertTrue(all(asset["payload"]["provenance"]["iteration_of"] == reference["id"] for asset in garments))
             data = base64.b64decode(primary["payload"]["content_base64"], validate=True)
             collection = self.root / "collection.glb"
             collection.write_bytes(data)

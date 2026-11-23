@@ -588,9 +588,10 @@ def check_inputs(model):
             raise ServiceError("source_invalid")
         if kind in (*LOCAL_KINDS,) and context_paths:
             raise ServiceError("source_invalid")
-        if kind in ("model_adjust", "human_shape_adjust", *LOCAL_KINDS) and len(
-            [path for path in source_paths if path]
-        ) > 1:
+        if (
+            kind in ("model_adjust", "human_shape_adjust", *LOCAL_KINDS)
+            and len([path for path in source_paths if path]) > 1
+        ):
             raise ServiceError("source_invalid")
         for field, paths in (("source", source_paths), ("image_context", context_paths)):
             for path in paths:
@@ -693,7 +694,7 @@ def prepare_provider(config, model, database, run_id):
     snapshots, provider_types = {}, {}
     storage = Path(database).resolve().parent
     if local_generated:
-        from garment_split_provider import GarmentSplitProvider, PROVIDER_ID
+        from garment_split_provider import PROVIDER_ID, GarmentSplitProvider
 
         provider_config = dict(storage=str(storage / "garment-split-state"))
         providers[PROVIDER_ID] = GarmentSplitProvider(provider_config)

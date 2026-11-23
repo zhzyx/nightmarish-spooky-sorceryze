@@ -283,7 +283,7 @@ def normalize_editor_integers(graph, registry):
             raise ValueError("parameters must be object")
         params = dict(params)
         if request["node"] == "human_shape_adjust" and "height_m" in params:
-            # Migrate legacy workflows without rounding a non-integral centimetre
+            # Migrate legacy workflows without rounding a non-integral centimeter
             # value. New requests persist only the user-facing height_cm field.
             if "height_cm" in params:
                 raise ValueError("human shape height specified in both cm and m")
@@ -291,7 +291,9 @@ def normalize_editor_integers(graph, registry):
             if type(legacy_height) in (int, float) and math.isfinite(legacy_height):
                 height_cm = legacy_height * 100.0
                 nearest = round(height_cm)
-                params["height_cm"] = int(nearest) if math.isclose(height_cm, nearest, rel_tol=0.0, abs_tol=1e-9) else height_cm
+                params["height_cm"] = (
+                    int(nearest) if math.isclose(height_cm, nearest, rel_tol=0.0, abs_tol=1e-9) else height_cm
+                )
             else:
                 params["height_cm"] = legacy_height
         for name, spec in schema.get("properties", {}).items():
