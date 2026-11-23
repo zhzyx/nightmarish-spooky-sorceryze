@@ -1,5 +1,7 @@
 @tool
 extends EditorPlugin
+## Compatibility entry for the historical main-screen dock smoke test.
+## Tianxuan now hosts native views under the retained layout identity.
 
 
 func _enter_tree() -> void:
@@ -18,30 +20,22 @@ func run() -> void:
 	var tabs: TabContainer = dock.get_parent()
 	tabs.current_tab = tabs.get_tab_idx_from_control(dock)
 	await get_tree().process_frame
-	var address: LineEdit = dock.find_child("WebPlatformAddress", true, false)
-	var connect_button: Button = dock.find_child("ConnectWebPlatform", true, false)
-	var status: Label = dock.find_child("WebPlatformStatus", true, false)
-	var surface: Control = dock.find_child("WebPlatformSurface", true, false)
-	assert(address != null and connect_button != null and status != null and surface != null)
-	address.text = "javascript:alert(1)"
-	connect_button.pressed.emit()
-	await get_tree().process_frame
-	assert(status.text.contains("HTTPS"))
-	address.text = "http://127.0.0.1:3000"
-	connect_button.pressed.emit()
-	await get_tree().process_frame
-	assert(status.text.contains("后台模式"))
-	assert(EditorInterface.get_editor_settings().get_setting("network/web_platform/url") == address.text)
+	var main := dock.find_child("TianxuanWorkspaceView", true, false)
+	var sidebar := root.find_child("TianxuanSidebarView", true, false)
+	assert(main != null and sidebar != null)
+	assert(main.get_meta("controller") == sidebar.get_meta("controller"))
+	assert(root.find_children("*", "WebPlatformDock", true, false).is_empty())
+	assert(main.find_child("AuthenticateTianxuan", true, false) != null)
 	for size in [Vector2i(1440, 900), Vector2i(1100, 760), Vector2i(900, 680)]:
 		root.size = size
 		await get_tree().process_frame
 		await get_tree().process_frame
-		assert(surface.size.x > 0 and surface.size.y > 0)
-		assert(surface.get_global_rect().end.x <= root.size.x + 1)
-		assert(surface.get_global_rect().end.y <= root.size.y + 1)
+		assert(main.size.x > 0 and main.size.y > 0)
+		assert(main.get_global_rect().end.x <= root.size.x + 1)
+		assert(main.get_global_rect().end.y <= root.size.y + 1)
 	dock.hide()
 	await get_tree().process_frame
 	dock.show()
 	await get_tree().process_frame
-	print("WEB_PLATFORM_DOCK_OK")
+	print("TIANXUAN_NATIVE_DOCK_OK")
 	get_tree().quit(0)
