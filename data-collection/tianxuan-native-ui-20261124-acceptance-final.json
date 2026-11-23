@@ -1,0 +1,83 @@
+{
+  "request_id": "tianxuan-native-ui-20261123",
+  "issue_number": 2150,
+  "observed_at": "2026-11-23T21:43:00.408593+00:00",
+  "supersedes_partial_acceptance": "data-collection/tianxuan-native-ui-20261124-delivery-1.json",
+  "main_verified": "56467f16efaf3ffd29664f5e812cacf749c48d83",
+  "code_delivery": {
+    "pr": 2174,
+    "merge_commit": "25e1e6f057b8c045c3a0d4aec8f61fc571533d6d",
+    "signed_head": "44e581845869cdff8d6e7a326de545455c70ed44",
+    "required_ci_passed": 11,
+    "windows_automated_checks_passed": 363
+  },
+  "manual_acceptance": {
+    "macos": "User opened the private native preview and accepted its presentation in this task.",
+    "windows": "On 2026-11-24 the user confirmed the Windows interface and Chinese input are normal, and requested final acceptance and cleanup.",
+    "source": "Direct human feedback in the current task.",
+    "last_offered_windows_artifact": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45264624355/artifacts/14863210733",
+    "user_reported_binary_digest": null,
+    "scope": "Acceptance covers the tested desktop experience. No claim of exhaustive coverage across all hardware, DPI, themes or input-method variants."
+  },
+  "criteria": [
+    {
+      "id": "A1",
+      "acceptance": "原生入口与共享状态",
+      "state": "passed",
+      "evidence": "User platform feedback and delivery-1, validation-r6, review-9 records; earlier detailed test receipts retain their evidence boundaries."
+    },
+    {
+      "id": "A2",
+      "acceptance": "全功能覆盖",
+      "state": "passed",
+      "evidence": "User platform feedback and delivery-1, validation-r6, review-9 records; earlier detailed test receipts retain their evidence boundaries."
+    },
+    {
+      "id": "A3",
+      "acceptance": "身份与并发",
+      "state": "passed",
+      "evidence": "User platform feedback and delivery-1, validation-r6, review-9 records; earlier detailed test receipts retain their evidence boundaries."
+    },
+    {
+      "id": "A4",
+      "acceptance": "文档与离线",
+      "state": "passed",
+      "evidence": "User platform feedback and delivery-1, validation-r6, review-9 records; earlier detailed test receipts retain their evidence boundaries."
+    },
+    {
+      "id": "A5",
+      "acceptance": "执行链",
+      "state": "passed",
+      "evidence": "User platform feedback and delivery-1, validation-r6, review-9 records; earlier detailed test receipts retain their evidence boundaries."
+    },
+    {
+      "id": "A6",
+      "acceptance": "编辑器联动",
+      "state": "passed",
+      "evidence": "User platform feedback and delivery-1, validation-r6, review-9 records; earlier detailed test receipts retain their evidence boundaries."
+    },
+    {
+      "id": "A7",
+      "acceptance": "平台与显示",
+      "state": "passed",
+      "evidence": "User platform feedback and delivery-1, validation-r6, review-9 records; earlier detailed test receipts retain their evidence boundaries."
+    },
+    {
+      "id": "A8",
+      "acceptance": "Web 回归",
+      "state": "passed",
+      "evidence": "User platform feedback and delivery-1, validation-r6, review-9 records; earlier detailed test receipts retain their evidence boundaries."
+    },
+    {
+      "id": "A9",
+      "acceptance": "交付",
+      "state": "passed",
+      "evidence": "User platform feedback and delivery-1, validation-r6, review-9 records; earlier detailed test receipts retain their evidence boundaries."
+    }
+  ],
+  "satisfied_criteria": 9,
+  "total_criteria": 9,
+  "remaining_acceptance": [],
+  "regression_reuse": "Only acceptance evidence and design status are changed. Product code is unchanged from the delivered and verified candidate; no new editor build or business test is required.",
+  "closeout": "After this record reaches main, set issue 2150 to status:done and completed, read back closure, archive private evidence outside the task worktree, then remove verified obsolete task resources. Preserve the user-opened preview and unrelated issue 2157."
+}
