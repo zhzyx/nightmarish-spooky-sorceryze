@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-bfadc1a091e32453096225ba49a60cb0ad5b8534",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-g22",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1729",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b78ddb921412c2240c3a98c190033382a112678d6d258ec73bb4361873c52ea4",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1729",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2158",
+    "action": "delivery",
+    "detection_head": "8fb43f5eb40b2dd307952f089c9971f61e1bf563",
+    "context_sha256": "3647b473f28bfac07c9e6bfe9c898f4de7595dca6606806e7deeb4520d724387",
+    "operator": "Sail-Li",
+    "worker": "codex-g22-deployment-operator",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1729",
+    "evidence": "Production API health 200; deployed API sha256 a3c71bab4d80c888e6d6cf26bbca9410bbcf8bdc765b340dbd1789bbc27368a6 versus accepted exact delivery in main. G21 production and source receipt on #1730.",
+    "diagnosis": "Current production application image does not implement the Git-backed reviewed-delivery endpoint required by the stock editor. External Gitea review is not configured. The authenticated migration entry is a new-task selector, not an editor write redirect.",
+    "next_action": "Verify exact main API package under isolated conditions, preserve source catch-up and rollback point, and establish normal author and independent reviewer sessions before activating any shared route.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T18:02:09.777420+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T18:05:10.167633+00:00",
+  "sha256": "fa0bbe26c9a9a78d1014b83246873ee6f796f71e547887c7b14d58b8d97b73f8"
+}
