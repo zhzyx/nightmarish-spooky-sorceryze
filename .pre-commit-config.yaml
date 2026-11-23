@@ -233,6 +233,10 @@ repos:
             # Patch context whitespace is syntax; checked without rewriting.
             tools/skintokens\.cpp/patches/ggml/[^/]+\.patch|
             tools/maliang_hunyuan/HUNYUAN-NOTICE|
+            # Preserve already hashed raw-byte audit receipts.
+            data-collection/duobao-dual-review-2178\.json|
+            data-collection/duobao-dual-module-build-impact-2178\.json|
+            data-collection/duobao-server-deployment-2178\.json|
             data\-collection/native\-installation\-integrity\-repair\-1499\.json|
             data\-collection/native\-production\-entry\-implementation\-1499\.json|
             data\-collection/native\-context\-consumption\-implementation\-1501\.json|

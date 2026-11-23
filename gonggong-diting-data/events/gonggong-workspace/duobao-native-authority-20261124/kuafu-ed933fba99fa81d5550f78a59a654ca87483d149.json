@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-ed933fba99fa81d5550f78a59a654ca87483d149",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "ec8b28f19d74e1fb804d535b7ffa7d3d14546f0385b46aed1bee80e095c403e2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2187",
+    "action": "delivery",
+    "detection_head": "1d1740a061ddf2be6f2a6b1f290b301b0f7c1cfe",
+    "context_sha256": "f5e5a8bd9dc76dfac839a40cbd20ddd49aabbfe2edabbd7ec309de2e798ec24b",
+    "operator": "Sail-Li",
+    "worker": "codex:root",
+    "authority_ref": "codex:01a20a6b-b56e-74c0-abbc-30a24123dd7b:user-native-submission-and-server-target-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2188",
+    "diagnosis": "Concurrent main PR2188 introduced a module input and changed conversations after earlier tests. Auto integration retained changes, and exact module gate correctly rejected stale proof. Integrated local-turn and native-repository API tests now pass:24 tests. Updated appended proof with current index blobs; original proof untouched.",
+    "next_action": "Rerun formal gate for integrated candidate and verify CI before dual final delivery.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:34:34.737971+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T23:36:30.896883+00:00",
+  "sha256": "6c7170eef956ba3e7016ea0fd90a675e7d3c23520fe96f4baebdbf6af6ddae1a"
+}

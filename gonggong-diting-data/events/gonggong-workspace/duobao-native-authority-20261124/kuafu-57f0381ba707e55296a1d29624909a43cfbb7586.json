@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-57f0381ba707e55296a1d29624909a43cfbb7586",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "698cbd73ac3c3979752e6c58a41f78077dd51166dd0b328855d03c379ef27c67",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2182",
+    "action": "validation",
+    "detection_head": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "context_sha256": "e107125ea573f5c5a09028006df6e4b1fb003217c30c94fd89b4d30c1a980767",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-2178",
+    "evidence": "native-baseline:239c47e50777c1653e26c1946b6450d4e39da39bc2b39d875568a9e17a1f185a:32321-files-reopened-and-verified",
+    "diagnosis": "git archive遵循.gitattributes将27个Windows文件导出为CRLF，与不可变blob的LF字节不一致。已用原始Git对象补正，服务器全部32321文件与每个SHA256完全一致，重开数据库后逐对象复验通过。",
+    "next_action": "归档内容迁移证据，继续双线真实提交与交付。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T22:50:28.670768+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-23T22:56:41.326587+00:00",
+  "sha256": "08bbe3aef38f3d408b546f344f5e0d5936e01247ee8ecddc5a1ed064fdfd99d1"
+}

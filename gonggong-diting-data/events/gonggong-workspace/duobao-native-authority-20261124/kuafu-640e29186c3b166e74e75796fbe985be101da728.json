@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-640e29186c3b166e74e75796fbe985be101da728",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "b91373a7b5a901cc6fa8bc784f507b6b95210246920e6a23ffea1f023efdf5f3",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2187",
+    "action": "delivery",
+    "detection_head": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "context_sha256": "5b09dc00400798d12fe17727545a1ef0ab84dbf8425663ca6c6aa84bc72c6a9e",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-2178",
+    "evidence": "receipt-index-byte-check:4-files-exact",
+    "diagnosis": "Windows证据文件的CRLF在index被Git文本规范化，导致采集源字节门禁拒绝。按现有仓库惯例为4份精确回执声明-text，保留已被真实事件引用的原字节；暂存回读全部一致。",
+    "next_action": "重新执行正式候选门禁及签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:19:00.141642+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-23T23:20:17.635447+00:00",
+  "sha256": "66b65ed4347ff9b072350d8e458a0f14ccb0c8d1e8a2d1d65eebf6d215cd10da"
+}

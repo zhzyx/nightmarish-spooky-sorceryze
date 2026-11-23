@@ -11,7 +11,7 @@ import sys
 import tempfile
 from collections.abc import Iterable, Mapping, Sequence
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import issue_gate
 import submission_audit
@@ -21,6 +21,27 @@ import work_items
 def require(ok: object, message: str) -> None:
     if not ok:
         raise ValueError(message)
+
+
+def native_dual_submission(repo: Path, commit: str, repository: str) -> dict[str, Any]:
+    """The installed adapter mirrors this exact candidate when the host opts in."""
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tianxuan" / "duobao"))
+    from git_submission import automatic
+
+    try:
+        return cast(dict[str, Any], automatic(repo, commit, repository))
+    except Exception as error:
+        # Keep the verified Git result visible when the other destination fails.
+        return {"state": "pending", "git_commit": commit, "error_type": type(error).__name__}
+
+
+def observe_submission(repo: Path, issue: int, request: str, result: dict[str, Any]) -> None:
+    from kuafu_incident import notify_failure, observe_success
+
+    if result.get("duobao_submission", {}).get("state") == "pending":
+        notify_failure(repo, issue, request, "delivery", ValueError("Git result retained; Duobao receipt pending"))
+    else:
+        observe_success(repo, issue, request, "delivery", result)
 
 
 def git(repo: Path, *args: str) -> str:
@@ -492,6 +513,7 @@ def submit(
                 report["request_id"] == request and report["candidate"] == head, "Prior submission binding mismatch"
             )
             if report["pr_state"] == "MERGED":
+                report["duobao_submission"] = native_dual_submission(repo, report["merge_commit"], repository)
                 return report
         else:
             report = handoff(repo, common, tree, base)
@@ -646,6 +668,7 @@ def submit(
     if supersede_prior:
         pruned = prune_own_superseded(repo, issue=issue, request_id=request, actor_override=actor)
         result_payload["closed_superseded_prs"] = pruned["closed_prs"]
+    result_payload["duobao_submission"] = native_dual_submission(repo, candidate, repository)
     return result_payload
 
 
@@ -1064,6 +1087,8 @@ def main() -> None:
         repository = work_items.config(repo)[0]["repository"]
         issue_gate.check_repository(repo, repository)
         report = inspect_pr(repo, repository, args.inspect_pr)
+        if report.get("pr_state") == "MERGED" and report.get("merge_commit"):
+            report["duobao_submission"] = native_dual_submission(repo, report["merge_commit"], repository)
         # A verified merge/acceptance readback is the event that advances a
         # host-owned editor's stable startup entry. No timer or PR prose grants it.
         try:
@@ -1088,9 +1113,7 @@ def main() -> None:
             reads=reads,
         )
         if result.get("rebound"):
-            from kuafu_incident import observe_success
-
-            observe_success(args.repo.resolve(), result["issue"], result["request_id"], "delivery", result)
+            observe_submission(args.repo.resolve(), result["issue"], result["request_id"], result)
         print(json.dumps(result, ensure_ascii=False))
         return
     if not (args.issue and args.request_id and args.title and args.notes_file):
@@ -1115,9 +1138,7 @@ def main() -> None:
             reads=reads,
             supersede_prior=args.supersede_prior,
         )
-        from kuafu_incident import observe_success
-
-        observe_success(args.repo.resolve(), args.issue, args.request_id, "delivery", result)
+        observe_submission(args.repo.resolve(), args.issue, args.request_id, result)
         print(json.dumps(result, ensure_ascii=False))
     except (OSError, ValueError, KeyError, subprocess.SubprocessError) as error:
         from kuafu_incident import notify_failure

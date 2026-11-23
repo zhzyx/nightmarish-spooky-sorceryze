@@ -349,6 +349,7 @@ def create_app(
     native_only: bool = False,
     native_workflow: Any | None = None,
     native_entry: Any | None = None,
+    native_repository: Any | None = None,
 ) -> FastAPI:
     """为给定领域核心实例构建 HTTP 应用；可选的模型网关与多宝合入队列挂载到同一应用。"""
     from contextlib import asynccontextmanager
@@ -366,6 +367,11 @@ def create_app(
     app = FastAPI(title="Tianxuan API", version="0.1.0", lifespan=lifespan)
     app.state.store = store
     app.state.native_only = native_only
+    if native_repository is not None:
+        from native_repository_api import create_native_repository_router
+
+        app.state.native_repository = native_repository
+        app.include_router(create_native_repository_router(native_repository))
     from work_management_api import create_work_router
 
     store.work_native_store = native_store
@@ -2418,6 +2424,7 @@ def create_app(
             "issues": True,
             "models": gateway is not None,
             "native_candidates": native_store is not None,
+            "native_repository": native_repository is not None,
             "native_execution": {
                 "enabled": installation is not None,
                 "mode": installation["mode"] if installation else "unconfigured",
