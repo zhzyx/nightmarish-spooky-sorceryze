@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-99066d0d26d355b2f5a02ced54c0e1ff25fdc10a",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-g20",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1736",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "1af1c997f349972b3d6828d93b8e88f74258fef2e71a4896d8925c6f00ab487b",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1736",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2099",
+    "action": "delivery",
+    "detection_head": "3a26c08e8a1e55077f23177184d02e4d18ccd326",
+    "context_sha256": "433b9cc81165c60a817882471653336bb3cf8634e02e528853955e3b32187535",
+    "operator": "Sail-Li",
+    "worker": "codex-g20-local-refreeze",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1736",
+    "evidence": "The formal gate detected a difference between the working and staged bytes of the new handoff JSON. The original local and independent acceptance receipts were unaffected.",
+    "diagnosis": "The Windows-generated handoff JSON ended with CRLF. Git normalized it to LF during staging.",
+    "next_action": "The coordinator normalized the handoff file and checked its raw hash against the staged blob. Repeat the formal gate and confirm the exact accepted candidate on main.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T16:07:37.664560+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T16:10:47.312552+00:00",
+  "sha256": "cd56af36370627fd660aadfb43d27bc41ddc38434444e7bd3d886fb764e3f884"
+}
