@@ -45,9 +45,9 @@ func run() -> void:
 		if phase == "reject":
 			await press(dialog, "要求修改")
 			assert("要求修改" in dialog.status.text, dialog.status.text)
-		elif phase == "denied":
+		elif phase == "requester_review":
 			await press(dialog, "批准候选")
-			assert("403" in dialog.status.text, dialog.status.text)
+			assert("已批准" in dialog.status.text and "要求修改" in dialog.status.text, dialog.status.text)
 			await press(dialog, "交付并回写工单")
 			assert("403" in dialog.status.text, dialog.status.text)
 		elif phase == "approve":

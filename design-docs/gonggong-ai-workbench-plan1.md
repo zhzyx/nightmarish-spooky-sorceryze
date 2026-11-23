@@ -1535,6 +1535,8 @@
 
 经目标负责人交接后让新分支、提交和合入走多宝。
 
+有项目写权限的发起人可审查并交付自己的精确候选。批准人数按项目配置执行，每个账号计一次。修订见[发起人交付工单 #2162](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2162)。
+
 验收：正常入口建分支、提交、审查并合入测试候选；真实目标回读且无双写。
 
 前置：[G21 #1730](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1730)、[Q04 #1731](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1731)、[Q05 #1732](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1732)、[Q10 #1733](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1733)、[Q11 #1734](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1734)、[Q12 #1735](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1735)。后继：[G24 #1725](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1725)、[Q08 #1721](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1721)。
