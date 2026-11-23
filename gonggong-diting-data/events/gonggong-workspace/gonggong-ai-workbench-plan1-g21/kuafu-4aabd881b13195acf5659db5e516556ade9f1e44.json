@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-4aabd881b13195acf5659db5e516556ade9f1e44",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-g21",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1730",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "009f35fe8d4a9c4b8d99fe09862c3de33be51773d9dc1329ffde5dd9d1cb29dd",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1730",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2153",
+    "action": "validation",
+    "detection_head": "67e00e04f48aa5562309c4e0a9e47484fccdc40c",
+    "context_sha256": "c97ccad4cac1b9e7112d752231b00b7eba12096cba538b8fb035bafed1982673",
+    "operator": "Sail-Li",
+    "worker": "codex-g21-window-operator",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1730",
+    "evidence": "At agreed source 67e00e04 the frozen source traverses 59305 objects; the original production Git repository traverses 59302 from the same tips. Exact object set subtraction identifies three missing-from-traversal commits. All 33 transferred delta objects exist. Zero G21 refs published.",
+    "diagnosis": "The existing target repository is shallow and marks two commits as boundaries. Physical object availability and ordinary project reachability differ. Preserve the old project refs and rehearse Git unshallow only against verified local objects.",
+    "next_action": "Test standard Git deepening in an isolated replica, obtain scoped approval for the live repository-wide history change, then verify both the active branch and all frozen tips via normal Git traversal.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T17:26:13.081299+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T17:30:17.323525+00:00",
+  "sha256": "a0e189875ee63e8a1289f07e27947b2736f7c8ec398cbf13b0aa37987acfe6bd"
+}
