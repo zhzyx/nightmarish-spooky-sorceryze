@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-04300fe798ddba393618ab0a6f4d86c57732837e1e447c1baf450ea7fd680a04",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "occurred_at": "2026-11-23T23:14:07.144975+00:00",
+  "evidence_refs": [
+    "dispatch-148fe5a7e0794d9285f9a4cd28136d38",
+    "learn-b024affad6e3172fd7fb2a3a78b0fa0796577623832b70aa109a6c484b847d37"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 44,
+    "previous": "649c1ddc44a400d36a8073660f35d1b7747254fe8de395865e8f177412ebab7a",
+    "action": "applied",
+    "details": {
+      "task": "#2178 server-native migration with dual automatic submission",
+      "observed": "Compared immutable Git source objects to the server full manifest and reopened every stored object. Git archive changed EOL for27 Windows files; corrected from raw source objects instead of accepting matching logical text. Independent review bound exact file bytes; changed production auth integration received a scoped re-review. Installed plain-directory client verified empty PATH and restart readback before acceptance."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/duobao-native-live-2178.json",
+        "sha256": "009f6fdff5fd31550fb8369cb45ff6e57f929edb22bbd8e4121ffe163231d85c"
+      },
+      {
+        "path": "data-collection/duobao-dual-review-2178.json",
+        "sha256": "a0b845fb2820436d1f4a5552b2dfcd0c7a06dd8ce901dfbf2b0f85801618d5ab"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/duobao-native-authority-20261124/dispatch-148fe5a7e0794d9285f9a4cd28136d38.json",
+      "sha256": "136abfb118ec67552217a722cab9f05e90c8555d8f80dbd858a45d0dc2ce9b3b"
+    }
+  },
+  "sha256": "65a589cd9b83bba94e54a3165a8be0f704703263c496c9415bc173f338539145"
+}

@@ -1,0 +1,22 @@
+{
+  "server": "https://167-172-70-41.sslip.io",
+  "issue": 2178,
+  "database": "/mnt/data/duobao/repositories/gonggong.sqlite",
+  "database_size_observed": "498MiB",
+  "data_disk_available_observed": "88GiB",
+  "api_image": "sha256:0aa0019af432bacdce5757ccf1e2a8d50bb4f0bdd1934c3282debd8f09d6fee5",
+  "storage_mode": "git",
+  "native_main": null,
+  "restart_readback": {
+    "baseline": "239c47e50777c1653e26c1946b6450d4e39da39bc2b39d875568a9e17a1f185a",
+    "ordinary_directory": "08c6f8a6d9a9e7881d451e86b01b5dd6400727c075bff691b81c6bca8456735f"
+  },
+  "backup": "Private server deployment backup includes original compose/nginx, immutable original image reference, and SQLite backup. Independent native DB is never overwritten during configuration rollback.",
+  "host_configuration": "Current ROG host configured for dual_submit with a personal90-day server key, stored outside the repository; credentials omitted. Standalone stdlib CLI installed in user-local GongGong/Duobao. Other hosts require their own authorized configuration.",
+  "archive_correction": "Git export EOL attributes changed27 Windows files. Replaced those entries with exact immutable blob bytes; all32321 final files and reopened objects verified.",
+  "rollback_image": "sha256:a7ca1c17dbcc00648aadfb277b2235297408c9a36394b61d3b3a931ccd2ebb2e",
+  "source_archive_sha256": "39843a54d6c9920b3116660b49b0e7bdf0ae4d15b0afe707293c19c65f184ba8",
+  "source_overlay": null,
+  "rollback_image_boot_verified": true,
+  "regular_deployment_compatible": "The current tianxuan-api:local image contains the verified source. No source bind mount pins or hides future normal API deployments."
+}

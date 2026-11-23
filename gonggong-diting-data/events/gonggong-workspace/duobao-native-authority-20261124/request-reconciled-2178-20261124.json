@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "event_id": "request-reconciled-2178-20261124",
+  "kind": "request",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "occurred_at": "2026-11-23T23:22:56.495086+00:00",
+  "payload": {
+    "title": "多宝：迁移到服务器原生仓库并保持 Git 双线自动提交",
+    "issue": 2178,
+    "state": "OPEN",
+    "source_body_sha256": "d195210b47c8fa3fd7ed9e3e14725a6beb6d297365026869cdbb0e140718f0e0",
+    "outcome": "先迁移到多宝服务器，当前阶段不完全接管，保持Git和多宝双线自动提交。",
+    "authority_ref": "codex:01a20a6b-b56e-74c0-abbc-30a24123dd7b:user-native-submission-and-server-target-20261124",
+    "observation": "Closeout reconciliation of the already-authorized live Issue; earlier intake-only readback did not create this request-kind event. Not a new authorization or a retrospective execution timestamp."
+  },
+  "evidence_refs": [],
+  "sha256": "d29db91feee68ab95298f367ddb953958b3c3a487859c5de91490fed38f8dd71"
+}

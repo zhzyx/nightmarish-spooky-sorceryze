@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-fa21a41db587cbffabf79785cd80e26d4c064ec6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "98db97efdba8ff5a9f2dbc3e59948718d6a36879c6362918c9e765dd790bce36",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2187",
+    "action": "validation",
+    "detection_head": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "context_sha256": "5b09dc00400798d12fe17727545a1ef0ab84dbf8425663ca6c6aa84bc72c6a9e",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-2178",
+    "evidence": "data-collection/duobao-native-live-2178.json:ordinary-native-08c6f8a6d9a9e7881d451e86b01b5dd6400727c075bff691b81c6bca8456735f",
+    "diagnosis": "新路由误拒ProductionAccess注入的已验证身份header。仅允许与verified_actor一致的header并继续刷新真实凭据；独立生产key测试通过，线上普通目录空PATH提交、27MB上传、内容回读与幂等重试均通过。",
+    "next_action": "随 #2178 精确候选交付，保留原Git服务。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:04:20.686658+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-23T23:11:45.488944+00:00",
+  "sha256": "c93f64b5911eefa3f0c23feadaffdec0825d65d8e2067186b732556972552f57"
+}

@@ -6,6 +6,8 @@
 
 ### 当前宿主的 Git 校验程序
 
+已配置多宝双线提交的宿主，在 Git 候选提交及合入回读事件中同时核对[多宝原生接收](../tianxuan/duobao/README.md#服务器原生仓库与双线提交)。任一侧失败保持待同步；恢复复用同一不可变来源与请求键。本阶段保留原 Git 审查／交付，不将多宝接收分支等同于多宝保护主线发布。
+
 以仓库根为基准，Git 交付检查入口为 `customizations/platforms/development/git/delivery/check_delivery.py`，提供 `--framework-root` 时沿用原清单的解析基准。提交后运行 `customizations/platforms/data-collection/git-files/storage/diting_files.py git-check --repo . --require-committed`。这两个入口对应原 HOST_PROTOCOL 第 5 项的检查。新宿主私有 grant 的 trusted_files 须包含两个脚本及原有可信依赖，注册表与旧 grant 的摘要变化后重新核验和签发。
 
 ## 协作者快速签发和自动提交

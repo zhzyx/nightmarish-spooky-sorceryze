@@ -9,6 +9,7 @@
 
 import os
 import shlex
+from pathlib import Path
 
 from api import create_app
 from duobao_bridge import GitService, PolicyError, parse_protected_branches
@@ -99,6 +100,20 @@ if os.environ.get("TIANXUAN_NATIVE_INSTALLATION"):
         runtime_installation=_RUNTIME_INSTALLATION,
     )
 
+_NATIVE_REPOSITORY = None
+if os.environ.get("TIANXUAN_REPOSITORY_DB"):
+    from native_repository import NativeRepository
+    from native_repository_api import domain_authority
+    from native_store import NativeStore
+
+    _REPOSITORY_PATH = Path(os.environ["TIANXUAN_REPOSITORY_DB"])
+    if _REPOSITORY_PATH.resolve() == Path(_DB_PATH).resolve() or (
+        _NATIVE_STORE is not None and _REPOSITORY_PATH.resolve() == _NATIVE_STORE.database.resolve()
+    ):
+        raise RuntimeError("Repository storage must be isolated from private native documents")
+    _REPOSITORY_STORE = NativeStore(_REPOSITORY_PATH)
+    _NATIVE_REPOSITORY = NativeRepository(_REPOSITORY_STORE, domain_authority(_STORE))
+
 app = create_app(
     _STORE,
     gateway=ModelGateway(_GATEWAY_DB),
@@ -110,6 +125,7 @@ app = create_app(
     native_only=_MODE == "native",
     native_entry=_NATIVE_ENTRY,
     native_workflow=_NATIVE_ENTRY.workflow if _NATIVE_ENTRY else None,
+    native_repository=_NATIVE_REPOSITORY,
 )
 
 if _NATIVE_ENTRY and _NATIVE_ENTRY.runtime_installation is not None:
