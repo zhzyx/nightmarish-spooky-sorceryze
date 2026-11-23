@@ -36,6 +36,7 @@
 #include "core/os/os.h"
 #include "editor/docks/editor_dock.h"
 #include "editor/docks/editor_dock_manager.h"
+#include "editor/docks/tianxuan/TianxuanModelHost.h"
 #include "editor/docks/tianxuan/TianxuanScripts.gen.h"
 #include "editor/editor_node.h"
 #include "editor/file_system/editor_paths.h"
@@ -89,7 +90,7 @@ Ref<Script> LoadScript(const char *const *pChunks)
 	return refScript;
 }
 
-Node *GetWorkspaceController()
+Node *GetWorkspaceController(AIChatDock *pModelSettings)
 {
 	Control *pRoot = EditorNode::get_singleton()->get_gui_base();
 	Node *pController = pRoot->get_node_or_null(NodePath("TianxuanWorkspaceController"));
@@ -121,8 +122,13 @@ Node *GetWorkspaceController()
 	ERR_FAIL_COND_V(refAccounts.is_null(), nullptr);
 	Ref<Script> refExecution = LoadScript(daqian_execution_controller);
 	ERR_FAIL_COND_V(refExecution.is_null(), nullptr);
+	Ref<Script> refLocalConversation = LoadScript(daqian_local_conversation_controller);
+	ERR_FAIL_COND_V(refLocalConversation.is_null(), nullptr);
 	Node *pSession = GetTianxuanSessionController();
 	ERR_FAIL_NULL_V(pSession, nullptr);
+	TianxuanModelHost *pModelHost = memnew(TianxuanModelHost(pModelSettings));
+	pModelHost->set_name("TianxuanModelHost");
+	pRoot->add_child(pModelHost);
 	pController = memnew(Node);
 	pController->set_name("TianxuanWorkspaceController");
 	pController->set_script(refScript);
@@ -138,6 +144,8 @@ Node *GetWorkspaceController()
 	pController->set_meta("migration_script", refMigration);
 	pController->set_meta("accounts_script", refAccounts);
 	pController->set_meta("execution_script", refExecution);
+	pController->set_meta("local_conversation_script", refLocalConversation);
+	pController->set_meta("model_host", pModelHost);
 	pController->set_meta("install_asset_if_absent", callable_mp_static(&InstallTianxuanAssetIfAbsent));
 	pController->set("storage_root", EditorPaths::get_singleton()->get_data_dir().path_join("tianxuan-drafts"));
 	pRoot->add_child(pController);
@@ -203,9 +211,9 @@ Node *GetTianxuanSessionController()
 	return pController;
 }
 
-EditorDock *CreateTianxuanDock()
+EditorDock *CreateTianxuanDock(AIChatDock *pModelSettings)
 {
-	Node *pController = GetWorkspaceController();
+	Node *pController = GetWorkspaceController(pModelSettings);
 	ERR_FAIL_NULL_V(pController, nullptr);
 	Control *pMainView = CreateView(pController, false);
 	ERR_FAIL_NULL_V(pMainView, nullptr);

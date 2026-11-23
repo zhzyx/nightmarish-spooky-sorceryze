@@ -71,9 +71,16 @@ class InputEvent;
 class Texture2D;
 class ShaderMaterial;
 class TextureRect;
+class TianxuanModelHost;
 
 class AIChatDock : public EditorDock {
 	GDCLASS(AIChatDock, EditorDock);
+	friend class TianxuanModelHost;
+	// A headless consultation reuses the provider loop without loading or saving AI Chat tabs.
+	bool bLocalConsultationWorker = false;
+	Dictionary mapLocalConsultationBinding;
+	Callable fnLocalConsultationFinished;
+	void FinishLocalConsultation();
 	Timer *gonggong_timer = nullptr;
 	int64_t gonggong_pid = -1;
 	uint64_t gonggong_generation = 0;

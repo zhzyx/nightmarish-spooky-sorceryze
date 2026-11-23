@@ -17,6 +17,7 @@ if env.editor_build:
         [
             "docks/tianxuan/session_controller.gd",
             "docks/tianxuan/workspace_controller.gd",
+            "docks/tianxuan/local_conversation_controller.gd",
             "docks/tianxuan/locale.gd",
             "docks/tianxuan/document_controller.gd",
             "docks/tianxuan/editor_controller.gd",

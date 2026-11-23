@@ -17,6 +17,9 @@ var retry := Button.new()
 var _rendered := ""
 var _updating := false
 var _poll := Timer.new()
+var _model_status := Label.new()
+var _sync_status := Label.new()
+var _sync := Button.new()
 var _editor_tools := MenuButton.new()
 var _modules := OptionButton.new()
 var _attachments := VBoxContainer.new()
@@ -79,6 +82,24 @@ func _ready() -> void:
 	retry.text = "核对并重试原消息"
 	retry.pressed.connect(func(): controller.retry_pending_message())
 	add_child(retry)
+	_model_status.name = "TianxuanLocalModelStatus"
+	_model_status.theme_type_variation = "TianxuanCaption"
+	_model_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	add_child(_model_status)
+	var sync_row := HBoxContainer.new()
+	add_child(sync_row)
+	_sync_status.name = "TianxuanConversationSyncStatus"
+	_sync_status.theme_type_variation = "TianxuanCaption"
+	_sync_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_sync_status.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	sync_row.add_child(_sync_status)
+	_sync.name = "SyncTianxuanLocalConversation"
+	_sync.text = "同步回复"
+	_sync.pressed.connect(func():
+		if controller.local_chat:
+			controller.local_chat.sync(controller.active_conversation)
+	)
+	sync_row.add_child(_sync)
 	_build_editor_tools()
 	composer.name = "TianxuanComposer"
 	composer.placeholder_text = "描述需求，或提出开发问题…"
@@ -190,12 +211,17 @@ func _changed(topic: String) -> void:
 	send.disabled = not composer.editable or composer.text.strip_edges().is_empty()
 	send.text = "处理中…" if busy else "发送"
 	stop.visible = pending
-	stop.disabled = busy or not controller.can_edit()
+	stop.disabled = not controller.can_edit() or (busy and not (controller.local_chat and controller.local_chat.busy()))
+	var configuration: Dictionary = controller.local_chat.configuration() if controller.local_chat else {}
+	_model_status.text = tr("本机模型 · %s · %s") % [str(configuration.get("provider", "")), str(configuration.get("id", "默认模型")) if not str(configuration.get("id", "")).is_empty() else tr("默认模型")]
+	_sync_status.text = tr(str(current.get("local_sync", "")))
+	_sync.visible = not _sync_status.text.is_empty()
+	_sync.disabled = not controller.can_edit() or (controller.local_chat and controller.local_chat.syncing.has(controller.active_conversation))
 	feedback.text = str(controller.errors.get("conversation:" + controller.active_conversation, controller.errors.get("conversations", controller.errors.get("chat", ""))))
 	if unknown and feedback.text.is_empty():
 		feedback.text = "正在核对已提交消息的回执，草稿仍保留。"
 	elif busy and feedback.text.is_empty():
-		feedback.text = "正在与工作区同步…"
+		feedback.text = "正在等待本机模型回复…" if controller.local_chat and controller.local_chat.busy() else "正在与工作区同步…"
 	elif not controller.can_edit() and feedback.text.is_empty():
 		feedback.text = "当前账号可阅读会话，发送消息需要编辑权限。"
 	var signature := JSON.stringify([controller.active_conversation, current.get("version"), current.get("turns", [])])
@@ -326,9 +352,12 @@ func _render_messages(current: Dictionary) -> void:
 		if turn.state == "answered":
 			_message(str(turn.get("model", "AI")), str(turn.answer), false)
 		elif turn.state == "pending":
-			_message("等待回复", tr("消息已保存，正在等待模型的处理结果。"), false)
+			_message("等待回复", tr("正在等待本机模型回复…") if turn.get("reply_source") == "editor-local" else tr("消息已保存，正在等待模型的处理结果。"), false)
 		else:
-			_message("消息已保存", tr("此轮未取得模型回复。请检查工作区的模型连接或可用额度。"), false)
+			var reason := str(turn.get("local_error", ""))
+			if reason.is_empty():
+				reason = "此前调用的线上模型未返回回复。新消息将使用编辑器本机 CLI 或 API。" if turn.get("error") != null else "已停止等待此回复，消息已保留。"
+			_message("消息已保存", tr(reason), false)
 	_scroll_to_end.call_deferred()
 
 

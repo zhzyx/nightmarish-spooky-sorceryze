@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-chat-repair-20261124",
+  "issue_number": 2180,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+  "recorded_at": "2026-11-23T23:01:24.559045+00:00",
+  "baseline": "8629ecf0992bd3de500478deac08b00f1d086953",
+  "build": {
+    "platform": "macOS arm64",
+    "command": "python -m SCons platform=macos target=editor arch=arm64 use_volk=yes accesskit=no vulkan=no metal=no dev_build=yes debug_symbols=no -j6",
+    "passed": true,
+    "binary_sha256": "379927aa6fecf73fd7816b8dfea65107d282351aae0449b5d320ea778d53e5d0"
+  },
+  "tests": {
+    "native-shell": {
+      "passed": true,
+      "checks": 131,
+      "binary_sha256": "379927aa6fecf73fd7816b8dfea65107d282351aae0449b5d320ea778d53e5d0",
+      "evidence_level": "compiled_native_shell_real_isolated_service_headless",
+      "local_model": {
+        "transport": "existing editor HTTP pipeline with isolated loopback JSON completion fixture",
+        "requests": 3,
+        "synchronized_turns": 2,
+        "cloud_inference_requests": 0
+      },
+      "diagnostics": [
+        "ERROR: Condition \"p_name.is_empty()\" is true.",
+        "WARNING: 20 RIDs of type \"Canvas\" were leaked.",
+        "WARNING: 5211 RIDs of type \"CanvasItem\" were leaked.",
+        "ERROR: Pages in use exist at exit in PagedAllocator: N20RasterizerSceneDummy21GeometryInstanceDummyE",
+        "WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.",
+        "WARNING: 12770 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+      ],
+      "input_sha256": {
+        "editor/docks/tianxuan/.clang-format": "80e3f12172224b4df9038dab0d861bb75d087f30578e5f4b095157943a91a8e3",
+        "editor/docks/tianxuan/TianxuanModelHost.cpp": "ffbdefa3074c98768889108cabdb77c6a4eb809b60d0c7c845771cdaac80df45",
+        "editor/docks/tianxuan/TianxuanModelHost.h": "f4841b2ccfcac62f9ef1895a653e00586c8f61e6f5023924732bce784c1da0f4",
+        "editor/docks/tianxuan/TianxuanWorkbench.cpp": "63024c3b2087ac76b2ce3e31353d09aa52f5750ed884f8153fdbf2c64e0002f1",
+        "editor/docks/tianxuan/TianxuanWorkbench.h": "f69fa6440339f2f82464b16b482712dd614d9aad0ae148ec22e580fd38d49b84",
+        "editor/docks/tianxuan/accounts_controller.gd": "13c8052c548b28316c55f5f37fe0e7da1c02011c8638816da6e3d6dc470ea332",
+        "editor/docks/tianxuan/accounts_page.gd": "b44d3954bcd26863c231d40415f7d983c0758f8341a05b13a019f784e7c5d4c7",
+        "editor/docks/tianxuan/asset_decoder.gd": "fc5eb2dfcbbfad82e5d8176212c98b9c55955a5733bb04447f0c95750bc517a3",
+        "editor/docks/tianxuan/build-impact.json": "db9fa90256bede5dadec3195d27eea61c2fccb17fdf8968db3d98fad472dfd12",
+        "editor/docks/tianxuan/design_page.gd": "f29b0f9cc6dd16fd4f834bfd7c173ccdb27c9816223aecd4b85fd278d3d04caf",
+        "editor/docks/tianxuan/document_controller.gd": "87f22a0f84502988682e625dd4c3d65ce4bbefb89f68e07c3acdb56dbc99d991",
+        "editor/docks/tianxuan/documents_page.gd": "7abab3332a19ee89f2c366642caa759aeba1e23affa232345a0dda95b0ed9035",
+        "editor/docks/tianxuan/editor_controller.gd": "86648ecb029e02371aacdcbb3162011676fb8c934ef3fb914e8b7e812598c44f",
+        "editor/docks/tianxuan/execution_controller.gd": "5a1e48c217f35e08c18867040d91f3321c852e40e75274e49c879c1d397c31ee",
+        "editor/docks/tianxuan/execution_page.gd": "7c0acfd3eb810d62b9ba1981677a6d9d61fa59f8d9ce47e5af2f038e25d7dc69",
+        "editor/docks/tianxuan/game_config_controller.gd": "b0ba8f423b6796147c105f0d83918b3ee476d3ad747e297b5148ac697f271ba0",
+        "editor/docks/tianxuan/game_config_page.gd": "585a9ac1e805ab42418079fdf69493bd813bd24f7fabeeecd543e083926f392f",
+        "editor/docks/tianxuan/home_page.gd": "e16c2aedb23015f256dcea1a5485524d2434ed174655630d8305265ca56a5be2",
+        "editor/docks/tianxuan/issue_assets.gd": "7f1184d31536675e17c5a2df3b6a6c2650d1d5a4fb4daef9f89a026ac3172655",
+        "editor/docks/tianxuan/issue_controller.gd": "0c7ac88196ce64175dcb2328629e4a442eaf4fb5086ec541591a27eb958f00f6",
+        "editor/docks/tianxuan/issue_flow.gd": "0e7b1143f87a06b52ca1eeedce4dac19220f59998d6c7b76f38cf58352df82ca",
+        "editor/docks/tianxuan/issues_page.gd": "5673477fbd4c8a400f56c9e5703106f4ecfa2fdea118da0d4c75674391120dad",
+        "editor/docks/tianxuan/library_page.gd": "144e93527615fa6d3a28eb7d3b8fed1388403fd1133899cd7a16bdd557e45c19",
+        "editor/docks/tianxuan/local_conversation_controller.gd": "0605eabd129b1196c74d46b24f9bd35a28cd0be521a40e779afe3985dcbb0ab3",
+        "editor/docks/tianxuan/locale.gd": "350eaf5082eb4032e7457304fb92d4aeba9967ea5ce4abe2439101642252797f",
+        "editor/docks/tianxuan/markdown_view.gd": "5899a31bf963bcfee93c09268d82ba274f918b917c9f94e0d33236e5db849d11",
+        "editor/docks/tianxuan/migration_controller.gd": "a602ca8cb6de4306c986155142036227e3dbb83766d0e44da55a71ef8d8c18be",
+        "editor/docks/tianxuan/migration_page.gd": "fd779004ed0065fd76fe420199c61fc7bf875a033e0a674905158053768d5b6b",
+        "editor/docks/tianxuan/native_theme.gd": "e631fdb7b8d701c823839f94a8e7fcca68f524170c38dfca4cd2e698e376c2c0",
+        "editor/docks/tianxuan/repositories_controller.gd": "aca27a4fd6f791f0b41ce2ab78cafe1be85e936426b2aa802e7cde3be0c6ae50",
+        "editor/docks/tianxuan/repositories_page.gd": "69eb6d526c49deacd1ea6893f5d1b197a770c1e8bc6508a20572daab3d6dfa57",
+        "editor/docks/tianxuan/repository_collaboration_controller.gd": "6c7de8d5c1023786395c923b143a5528d20c92b3802a51acb8e2e38d306069df",
+        "editor/docks/tianxuan/repository_collaboration_page.gd": "f98d348e894821622f9ea980b543abd3605ca028c548cf48a9ceeb3ad524566a",
+        "editor/docks/tianxuan/session_controller.gd": "1dc57f97509b79df550944c5103797fb54dfc257529543261f2f1781e9f56a60",
+        "editor/docks/tianxuan/workspace_controller.gd": "91a7509dab59fd3cc8c0b3a3f57d7bf31ca505197e4fae0aa93514098d3efa4a",
+        "editor/docks/tianxuan/workspace_view.gd": "23e058530031b13e77f37b46a12e0454887191676e0b4f5194767f53854ae485",
+        "editor/docks/workbench/business_session.gd": "bc8ff3439bb947d18b6e9c996bb7fff71b0ed4f2014ad1bfeaf0b88aede28a21",
+        "tests/editor/tianxuan_controller.gd": "ad3ac4de1f346abf3659e41f8d87afcb44925562fa8c7195f64dd339411686f9",
+        "tests/editor/tianxuan_native_shell.gd": "04ca1ccaf1dfffebf60983441370bdfea7646c060f367a1129e49781d17c4a82",
+        "tests/editor/tianxuan_local_model_fixture.gd": "c9d63642b706ddff87bc0149003fc631d16bd07c065aa28ddf6f67f9f2939aaa",
+        "tests/editor/run_tianxuan_controller.py": "4b675fb4e7012aa219d6141a0c01ef6b8a9fa35588f25baabd897ff8f23641f8",
+        "editor/SCsub": "43c30eb4d1be579ced6f728963aa784f4773271d98ce7916a5242160a9f2860f",
+        "editor/docks/SCsub": "c9d1e57065f3ee3ce66b0e401864b9973e0a26ba49fe1e78a4f0f5d733856a2b",
+        "editor/docks/ai_chat_dock.cpp": "b603423d482277878a87b433006bb6e7eced61a6f05a7db6aec78390b5e6a563",
+        "editor/docks/ai_chat_dock.h": "fc79312af2319c19c873ef53a64d7f581121429e4252b21f795e4358bf1f2403",
+        "editor/docks/AIChatController.cpp": "f801e199c1558221e5fb2e32ee9e50c9e2c065f9cb91bb4083c8d9b427f5f609",
+        "editor/docks/AIChatController.h": "888fc8abb9d89a208ea8c5b49956d40c249bd91563a7811de2991c8d35fbc143",
+        "editor/editor_node.cpp": "5da712945615560fb47c5e6a029a2965b5854d8d8bc2cd0830d3b14f81cb3e46",
+        "editor/editor_builders.py": "e1d716927d7515a5625414bdd5dbb362651585a138432643c897cfdcc7ff5fa7",
+        "editor/docks/workbench/AIWorkbenchSidebar.cpp": "06fb1b254d8bbe901c8cf6bcf1c50563199b705e6927277f1ddf6662f801d289",
+        "tests/editor/tianxuan_local_conversation.gd": "83fb311afc3ca0aa6b6839b0313e2cb156c0759c5961b00bff41f576763c542f"
+      }
+    },
+    "local-conversation": {
+      "passed": true,
+      "checks": 28,
+      "assertions": [
+        "persist user turn before starting one local request",
+        "double send cannot duplicate local inference",
+        "local reply is preserved and storage-only sync acknowledges it",
+        "provider metadata is normalized without serializing credentials",
+        "cancel closes only its request and rejects a late result",
+        "offline complete answer is durable before synchronization",
+        "recreated controller cache restores offline answer from disk",
+        "reconnect automatically synchronizes persisted answers without inference",
+        "legacy service leaves real local answer visible with explicit pending sync",
+        "no fallback to cloud inference",
+        "no fallback to cloud inference",
+        "no fallback to cloud inference",
+        "no fallback to cloud inference",
+        "no fallback to cloud inference",
+        "no fallback to cloud inference",
+        "no fallback to cloud inference",
+        "no fallback to cloud inference",
+        "answers completed during sync are drained in the next batch",
+        "cancelled local turn keeps chronological order after later replies synchronize",
+        "lost synchronization ACK retains exact submitted payload",
+        "replay uses normalized server idempotency despite trimmed content without duplicating a turn",
+        "next-stage local suggestion includes confirmed predecessor content",
+        "late design result cannot rebase itself onto a changed confirmed stage",
+        "unchanged design inputs accept completed local suggestion",
+        "suggestions append to existing authored draft without replacing its text",
+        "identity transition cancels old request and isolates persisted conversations",
+        "viewer cannot start local inference through workspace controller",
+        "failed durable storage does not start a model request or consume input"
+      ],
+      "evidence_level": "source-loaded controller, injected model and transport, real private persistence",
+      "negative_case": "An ordinary file blocks its child storage directory on every platform; expected write failure must prevent model invocation."
+    },
+    "execution-controls": {
+      "passed": true,
+      "checks": 41,
+      "binary_sha256": "379927aa6fecf73fd7816b8dfea65107d282351aae0449b5d320ea778d53e5d0",
+      "evidence_level": "compiled_native_shell_real_isolated_service_headless",
+      "local_model": {
+        "transport": "existing editor HTTP pipeline with isolated loopback JSON completion fixture",
+        "requests": 1,
+        "synchronized_turns": 1,
+        "cloud_inference_requests": 0
+      },
+      "diagnostics": [
+        "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+        "WARNING: 2197 RIDs of type \"CanvasItem\" were leaked.",
+        "WARNING: 5528 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+      ]
+    },
+    "layout": {
+      "passed": true,
+      "checks": 164,
+      "binary_sha256": "379927aa6fecf73fd7816b8dfea65107d282351aae0449b5d320ea778d53e5d0",
+      "evidence_level": "compiled_native_shell_real_isolated_service_headless",
+      "local_model": null,
+      "diagnostics": [
+        "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+        "WARNING: 241 RIDs of type \"CanvasItem\" were leaked.",
+        "WARNING: 982 ObjectDB instances were leaked at exit (run with `--verbose` for details)."
+      ]
+    }
+  },
+  "service_tests": {
+    "command": "python -m pytest customizations/components/tianxuan/server/test_workspace_conversations.py customizations/components/tianxuan/server/test_workspace_local_turns.py customizations/components/tianxuan/server/test_workspace_inventory.py -q",
+    "passed": 29,
+    "elapsed_seconds": 3.92,
+    "diagnostics": [
+      "Existing Starlette TestClient httpx deprecation warning."
+    ]
+  },
+  "real_cli": {
+    "ok": true,
+    "provider": "real installed Codex CLI; no model mock",
+    "editor_sha256": "0c94ee1fd465a917f76c5e6b6aef7c7fb93f318df8fc34afe56c979d23b27478",
+    "codex_sha256": "58a91f6ea19bea477ae3a2ec48d619f0039afe75d3476260747e11d201fa7cea",
+    "node_sha256": "25ca5c5d115554e4a69d6de4611d35bc1ff6457cd4422be036270cd2397d0439",
+    "source_revision": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "authentication": "Inherited existing HOME/CODEX_HOME/provider environment; no credentials read, copied or written by the probe",
+    "isolation": "Private self-contained editor and private empty project; actual source bridge files copied byte-for-byte; no workspace marker or business account",
+    "observed": {
+      "installed_codex_process_seen": true,
+      "read_only_sandbox": true,
+      "no_approval_or_shell_tools": true
+    },
+    "host_source_files_sha256": {
+      "SConstruct": "a256d926029a4a7d0ccc50a4e75a885d9772d76f08327311fd643e0bd344535c",
+      "tools/codex_cli/action_schema.js": "7cf1850023f2c1f2aca6a95c8c1d427936b7c5d871a40208b3e1e19fa52461c7",
+      "tools/codex_cli/godot_bridge.js": "3e841dc9d0e9975b6af7ae109679cd4888119edefe8ec44ab5591a8a2f2475ab",
+      "tools/codex_cli/subscription_session.js": "195640f7be8281e53c7fbb7c554900f160fbc63896e5f24ddfe90f0951c4d6d2",
+      "tools/codex_cli/subscription_profile.py": "869ddbf0568befe87e6d2fb076a070b02326f11ef2e4d6a22d6989019c6d282c",
+      "tools/codex_cli/content_preview.js": "160cad8dcedfddeb31b5db37108edcb90c74311af02f74bb219dab2c2794e99b",
+      "tools/codex_cli/attach_job.ps1": "a9ffeaaa6812381ba6c43a49f2cd70a089e74fdf0e3d7e66d87bf894292d7d76",
+      "tools/codebuddy_cli/godot_bridge.js": "44d3c4ccb5b13e5601419c7478f2dc9fe02d888e63df186897ab7c16f6b902bc",
+      "tools/codebuddy_cli/.gitignore": "6fbdc21a8e85979b3d30403e1776aea4d4acc4c0282dcadc20c0905cb6ab60e9",
+      "tools/codebuddy_cli/package-lock.json": "9769f24f70fec3e21aacaa5759a96982210c4c9b971007c978715eab6cd41eda",
+      "tools/codebuddy_cli/package.json": "7b7d8f86ce13d866cfd2569aba9a5b0b5abc1c2aa9647347b90eff0b035c926e",
+      "tools/codebuddy_cli/godot_terminal.js": "b80fa23e63aa01f5162372f6df02424edf1a0a01793c00669eda48e4cf7bbeac",
+      "tools/codebuddy_cli/godot_acp.js": "f6dd087414f6fb83398feae7baea8e11644d3746a4cdedf2c967c6415600c253"
+    },
+    "private_editor_sha256": "0c94ee1fd465a917f76c5e6b6aef7c7fb93f318df8fc34afe56c979d23b27478",
+    "home_preserved": true,
+    "codex_home_preserved": true,
+    "exit_code": 0,
+    "elapsed_seconds": 20.46,
+    "native": {
+      "accepted": true,
+      "checks": {
+        "auto_execute_disabled": true,
+        "auto_write_disabled": true,
+        "consultation_only": true,
+        "independent_worker": true,
+        "ordinary_session_unchanged": true,
+        "ordinary_transcript_unchanged": true,
+        "private_editor_paths": true,
+        "real_answer_received": true,
+        "tools_disabled": true
+      },
+      "model": {
+        "backend": 2,
+        "configured": true,
+        "id": "",
+        "provider": "codex",
+        "reasoning_effort": ""
+      },
+      "model_selection": "CLI default",
+      "ok": true,
+      "provider": "codex",
+      "result": {
+        "model": {
+          "backend": 2,
+          "configured": true,
+          "id": "",
+          "provider": "codex",
+          "reasoning_effort": ""
+        },
+        "ok": true,
+        "text": "本机天璇连接正常"
+      },
+      "runtime_paths": {
+        "codex": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex",
+        "node": "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
+      }
+    },
+    "editor_output_sha256": "a9f862a22072cdb861ca9b92a530005f1a3d07d48a77980c13ab20fee7cb52e1",
+    "script_error_seen": false
+  },
+  "independent_review": "data-collection/tianxuan-chat-repair-20261124-independent-review.json",
+  "boundaries": [
+    "Native HTTP results use an isolated real HTTP provider fixture, not a hosted production API.",
+    "Real CLI probe used the earlier compiled binary; C++ model host is unchanged and later GDScript corrections are covered by final native/source tests.",
+    "Headless checks do not claim new human visual or IME acceptance.",
+    "Legacy deployed business service has not been upgraded here; missing local-turns endpoint explicitly leaves answers saved locally and pending sync.",
+    "Exact PR CI, main merge, installed application and post-install real CLI are pending subsequent delivery receipts."
+  ]
+}

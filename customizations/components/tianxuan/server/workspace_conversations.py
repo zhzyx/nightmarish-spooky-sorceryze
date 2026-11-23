@@ -93,6 +93,11 @@ class Turn(Version):
     context_snapshot: MessageContext | None = None
 
 
+class LocalTurn(Turn):
+    answer: str = Field(min_length=1, max_length=16000, pattern=r"\S")
+    model: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=256)]
+
+
 # This installed adapter exposes one tool for design tasks in this signed stage.
 ISSUE_COMMENT_STAGE = "工单评论"
 
@@ -465,9 +470,8 @@ class Conversations:
 
         return edits
 
-    def turn(self, actor: str, key: str, payload: Turn, gateway: ModelGateway | None) -> dict[str, Any]:
-        owner = self.owner(actor)
-        turn_id = str(payload.id)
+    @staticmethod
+    def turn_snapshot(payload: Turn) -> dict[str, Any] | None:
         snapshot = payload.context_snapshot.model_dump() if payload.context_snapshot is not None else None
         if snapshot is not None:
             if snapshot.get("continuation") is None:
@@ -475,6 +479,102 @@ class Conversations:
             for ref in snapshot["references"]:
                 if ref.get("paragraph") is None:
                     ref.pop("paragraph", None)
+        return snapshot
+
+    @staticmethod
+    def local_request_digest(payload: LocalTurn) -> str:
+        value = payload.model_dump(mode="json", exclude_none=True)
+        return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+    def append_turn(
+        self,
+        db: sqlite3.Connection,
+        actor: str,
+        owner: tuple[str, str],
+        record: dict[str, Any],
+        payload: Turn,
+        snapshot: dict[str, Any] | None,
+    ) -> dict[str, Any]:
+        self.check(record, payload.expected_version)
+        if len(record["turns"]) >= 100:
+            raise conflict("conversation turn limit reached")
+        if any(turn["state"] == "pending" for turn in record["turns"]):
+            raise conflict("resolve the pending turn first")
+        edits = self.check_selection(actor, owner[0], payload.context_snapshot) if payload.context_snapshot else []
+        if snapshot and snapshot.get("continuation"):
+            # Historical citations stay pinned. Server-generated turns can read
+            # the live head before inference; completed local answers must retain
+            # the revision the editor actually supplied to its local model.
+            starts = {item["object_id"]: item["revision"] - 1 for item in edits}
+            for previous in reversed(record["turns"]):
+                scope = previous.get("context_snapshot") or {}
+                if any(scope.get(k) != snapshot.get(k) for k in ("project", "module_id", "issue_id")):
+                    continue
+                for ref in scope.get("references", []):
+                    if ref["kind"] in ("document", "document_edit") and ref["object_id"] in starts:
+                        start_version = ref["revision"] - int(ref["kind"] == "document_edit")
+                        starts[ref["object_id"]] = min(starts[ref["object_id"]], start_version)
+                if not scope.get("continuation"):
+                    break
+            for edit in edits:
+                key_id = edit["object_id"]
+                head = self.domain.get_doc_shared(actor, key_id)
+                start = starts[key_id]
+                old = self.domain.version(key_id, start)
+                end = edit["revision"] if isinstance(payload, LocalTurn) else head["version"]
+                latest = self.domain.version(key_id, end)
+                edit.update(
+                    start_revision=start,
+                    revision=latest["version"],
+                    author=latest["author"],
+                    changes=document_changes(old["body_md"], latest["body_md"]),
+                )
+        if len(json.dumps(edits, ensure_ascii=False)) > 32000:
+            raise HTTPException(422, "saved changes exceed turn limit; cite individual paragraphs")
+        message: dict[str, Any] = {
+            "id": str(payload.id),
+            "content": payload.content,
+            "state": "pending",
+            "answer": None,
+            "model": None,
+            "error": None,
+        }
+        if isinstance(payload, LocalTurn):
+            message.update(
+                state="answered",
+                answer=payload.answer,
+                model=payload.model,
+                reply_source="editor-local",
+                local_request_sha256=self.local_request_digest(payload),
+            )
+        if edits:
+            message["document_edits"] = edits
+        if snapshot is not None:
+            message["context_snapshot"] = snapshot
+        record["turns"].append(message)
+        if not record["title"]:
+            record["title"] = payload.content.splitlines()[0][:90]
+        self.save(db, owner, record)
+        return message
+
+    def local_turn(self, actor: str, key: str, payload: LocalTurn) -> dict[str, Any]:
+        """Store an owner-supplied completed reply without invoking any model or tool."""
+        owner = self.owner(actor)
+        digest = self.local_request_digest(payload)
+        with self.transaction() as db:
+            record = self.get(db, owner, key)
+            for previous in record["turns"]:
+                if previous["id"] == str(payload.id):
+                    if previous.get("reply_source") != "editor-local" or previous.get("local_request_sha256") != digest:
+                        raise conflict("turn ID has a different source or completed local payload")
+                    return record
+            self.append_turn(db, actor, owner, record, payload, self.turn_snapshot(payload))
+            return record
+
+    def turn(self, actor: str, key: str, payload: Turn, gateway: ModelGateway | None) -> dict[str, Any]:
+        owner = self.owner(actor)
+        turn_id = str(payload.id)
+        snapshot = self.turn_snapshot(payload)
         with self.transaction() as db:
             record = self.get(db, owner, key)
             for turn in record["turns"]:
@@ -482,57 +582,8 @@ class Conversations:
                     if turn["content"] != payload.content or turn.get("context_snapshot") != snapshot:
                         raise conflict("turn ID has different content or context")
                     return record
-            self.check(record, payload.expected_version)
-            if len(record["turns"]) >= 100:
-                raise conflict("conversation turn limit reached")
-            if any(turn["state"] == "pending" for turn in record["turns"]):
-                raise conflict("resolve the pending turn first")
-            edits = self.check_selection(actor, owner[0], payload.context_snapshot) if payload.context_snapshot else []
-            if snapshot and snapshot.get("continuation"):
-                # Historical paragraph citations stay pinned. A saved-edit target explicitly
-                # selected for continuation follows its access-checked head.
-                starts = {item["object_id"]: item["revision"] - 1 for item in edits}
-                for previous in reversed(record["turns"]):
-                    scope = previous.get("context_snapshot") or {}
-                    if any(scope.get(k) != snapshot.get(k) for k in ("project", "module_id", "issue_id")):
-                        continue
-                    for ref in scope.get("references", []):
-                        if ref["kind"] in ("document", "document_edit") and ref["object_id"] in starts:
-                            start_version = ref["revision"] - int(ref["kind"] == "document_edit")
-                            starts[ref["object_id"]] = min(starts[ref["object_id"]], start_version)
-                    if not scope.get("continuation"):
-                        break
-                for edit in edits:
-                    key_id = edit["object_id"]
-                    head = self.domain.get_doc_shared(actor, key_id)
-                    start = starts[key_id]
-                    old = self.domain.version(key_id, start)
-                    latest = self.domain.version(key_id, head["version"])
-                    edit.update(
-                        start_revision=start,
-                        revision=latest["version"],
-                        author=latest["author"],
-                        changes=document_changes(old["body_md"], latest["body_md"]),
-                    )
-            if len(json.dumps(edits, ensure_ascii=False)) > 32000:
-                raise HTTPException(422, "saved changes exceed turn limit; cite individual paragraphs")
             context = self.context(record)
-            message: dict[str, Any] = {
-                "id": turn_id,
-                "content": payload.content,
-                "state": "pending",
-                "answer": None,
-                "model": None,
-                "error": None,
-            }
-            if edits:
-                message["document_edits"] = edits
-            if snapshot is not None:
-                message["context_snapshot"] = snapshot
-            record["turns"].append(message)
-            if not record["title"]:
-                record["title"] = payload.content.splitlines()[0][:90]
-            self.save(db, owner, record)
+            message = self.append_turn(db, actor, owner, record, payload, snapshot)
 
         error: int | None = None
         result: dict[str, str] | None = None
@@ -915,6 +966,10 @@ def create_workspace_conversation_router(
     @router.post("/{key}/turns")
     def turn(request: Request, key: UUID, payload: Turn):
         return service.turn(workspace_actor(request, write=True), str(key), payload, gateway)
+
+    @router.post("/{key}/local-turns")
+    def local_turn(request: Request, key: UUID, payload: LocalTurn):
+        return service.local_turn(workspace_actor(request, write=True), str(key), payload)
 
     @router.post("/{key}/turns/{turn_id}/stop-waiting")
     def stop_waiting(request: Request, key: UUID, turn_id: UUID, payload: Version):

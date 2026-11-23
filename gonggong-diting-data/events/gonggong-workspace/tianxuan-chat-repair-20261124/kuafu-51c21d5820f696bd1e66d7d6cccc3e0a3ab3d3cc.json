@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-51c21d5820f696bd1e66d7d6cccc3e0a3ab3d3cc",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-chat-repair-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5924a585fb9e6e6f6a5c563888cce28b071b1cc3f5114e8783bde8cee05525b7",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "action": "user-report",
+    "detection_head": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "context_sha256": "831ce47e0263237bd8639e690bb40fbcfdc004e301abd424e2ffdbd1875da172",
+    "operator": "Sail-Li",
+    "worker": "codex:tianxuan-native-ui/current",
+    "authority_ref": "用户截图修复请求及明确接入本机CLI/API的更正",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "diagnosis": "原生对话和设计建议错误调用云端模型，未复用编辑器本机CLI/API；本机只读配置已确认选择Codex后端。",
+    "next_action": "复用现有本机Provider适配，独立Controller持久保存回复，业务同步接口不推理，旧服务显式待同步。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T22:35:40.148970+00:00",
+    "attempted": null,
+    "repair_owner": "当前Codex会话，#2180",
+    "continuable": "本机模型适配、会话持久化、同步API及隔离回归在独立文件并行"
+  },
+  "occurred_at": "2026-11-23T22:42:41.442895+00:00",
+  "sha256": "65f5973abee9b06fc52c220ac018e3fd8194b73d8d63aeffab7a851f3714a440"
+}

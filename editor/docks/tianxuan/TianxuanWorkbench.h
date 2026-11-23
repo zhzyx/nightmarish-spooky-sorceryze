@@ -35,8 +35,9 @@
 
 class EditorDock;
 class Node;
+class AIChatDock;
 
 // Editor main thread only. The editor owns the shared controller for its lifetime.
 Node *GetTianxuanSessionController();
-EditorDock *CreateTianxuanDock();
+EditorDock *CreateTianxuanDock(AIChatDock *pModelSettings);
 Error InstallTianxuanAssetIfAbsent(const String &strTemporary, const String &strDestination);
