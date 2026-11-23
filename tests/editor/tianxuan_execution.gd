@@ -71,11 +71,14 @@ func run() -> void:
 			return
 		entry_id = str(started.data.entry)
 		await model.select(entry_id)
-		if not await wait_until(func(): return model.settled() or not model.observation.get("failures", []).is_empty()):
+		var completed := await wait_until(func(): return not model.loading and (model.settled() or not model.observation.get("failures", []).is_empty()))
+		if not completed:
 			print(JSON.stringify({"state": model.observation, "status": model.status}))
-		if not check(model.settled() and model.observation.progress.percent == 100 and model.observation.failures.is_empty(), "actual entry coordinator, producer, checker and reviewer finish increment %d" % increment):
+		if not check(completed and not model.loading and model.settled() and model.observation.progress.percent == 100 and model.observation.failures.is_empty(), "actual entry coordinator, producer, checker and reviewer finish increment %d" % increment):
 			return
 		await model.refresh()
+		if not check(not model.loading, "execution history read completes before inspecting releases for increment %d" % increment):
+			return
 	if not check(model.releases.events.size() >= 2 and model.releases.events.filter(func(event: Dictionary): return event.accepted).size() >= 2, "execution history exposes accepted immutable releases produced by the actual workflow"):
 		return
 	var target := ""

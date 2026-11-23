@@ -266,6 +266,17 @@ def exercise(
             await asyncio.sleep(0.15)
             return {"actor": actor}
 
+        if execution and not controls:
+
+            @app.middleware("http")
+            async def delayed_release_history(request: Request, call_next):
+                response = await call_next(request)
+                if request.method == "GET" and request.url.path.endswith("/releases"):
+                    # Observation and release history are separate requests. Keep
+                    # the intermediate loading state visible on fast hosts too.
+                    await asyncio.sleep(1.0)
+                return response
+
         if races:
             armed_titles = set()
 
