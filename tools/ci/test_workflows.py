@@ -43,6 +43,7 @@ class WorkflowContractTests(unittest.TestCase):
             "Validate native WebView2 in a hidden window",
             "Tianshu workbench UI smoke",
             "Native reasoning session isolation and Codex wire regression",
+            "Tianxuan native workspace and isolated service regression",
             "Runtime deployment interruption and original request recovery",
             "Parent binding survives interrupted editor shutdown",
             "Original design reconfirmation and independent continuation",

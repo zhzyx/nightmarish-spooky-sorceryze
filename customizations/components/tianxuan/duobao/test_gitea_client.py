@@ -665,7 +665,16 @@ def test_list_reviews_normalizes_payload(make_client: ClientFactory) -> None:
 
     client, _ = make_client(handler)
     assert client.list_reviews("octo", "duobao", 7) == [
-        {"id": 1, "state": "APPROVED", "body": "LGTM", "user": "alice", "submitted_at": "2026-11-15T00:00:00Z"}
+        {
+            "id": 1,
+            "state": "APPROVED",
+            "body": "LGTM",
+            "user": "alice",
+            "submitted_at": "2026-11-15T00:00:00Z",
+            "commit_id": "",
+            "stale": False,
+            "dismissed": False,
+        }
     ]
 
 
@@ -869,3 +878,20 @@ def test_update_release_patches_fields(make_client: ClientFactory) -> None:
     release = client.update_release("owner", "demo", 9, name="Renamed", draft=True)
     assert release["name"] == "Renamed"
     assert release["draft"] is True
+
+
+def test_confirmed_commit_is_sent_to_upstream_merge_and_review(make_client: ClientFactory) -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        body = json.loads(request.content)
+        if request.url.path.endswith("/merge"):
+            assert body == {"Do": "merge", "head_commit_id": "a" * 40}
+            return httpx.Response(204)
+        assert body == {"event": "APPROVED", "body": "", "commit_id": "a" * 40}
+        return httpx.Response(
+            201, json={"id": 3, "state": "APPROVED", "commit_id": "a" * 40, "stale": True, "dismissed": True}
+        )
+
+    client, _ = make_client(handler)
+    assert client.merge_pull_request("octo", "duobao", 7, head_commit_id="a" * 40)["merged"]
+    review = client.create_review("octo", "duobao", 7, event="APPROVED", commit_id="a" * 40)
+    assert review["commit_id"] == "a" * 40 and review["stale"] and review["dismissed"]

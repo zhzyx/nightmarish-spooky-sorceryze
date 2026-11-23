@@ -445,3 +445,97 @@ def test_gitea_writes_require_linked_identity(monkeypatch) -> None:
     denied = client.post("/api/v1/repos", headers=other_headers, json={"name": "demo"})
     assert denied.status_code == 403
     assert "Gitea identity" in denied.json()["detail"]
+
+
+def test_native_revision_checks_reject_stale_head_and_forward_commit(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    writes = []
+
+    def record_review(self, *args, **kwargs):
+        writes.append(kwargs)
+        return {"id": 1}
+
+    def record_merge(self, *args, **kwargs):
+        writes.append(kwargs)
+        return {"merged": True}
+
+    monkeypatch.setattr(_FakeGitea, "create_review", record_review)
+    monkeypatch.setattr(_FakeGitea, "merge_pull_request", record_merge)
+    client, headers = _setup()
+    root = "/api/v1/repos/owner/demo/pulls/2"
+    for suffix, payload in [("/reviews", {"event": "APPROVED"}), ("/merge", {"method": "merge"})]:
+        stale = client.post(root + suffix, headers=headers, json={**payload, "expected_head_sha": "c" * 40})
+        assert stale.status_code == 409
+        retargeted = client.post(
+            root + suffix, headers=headers, json={**payload, "expected_head_sha": "a" * 40, "expected_base": "staging"}
+        )
+        assert retargeted.status_code == 409
+    assert writes == []
+    assert (
+        client.post(
+            root + "/reviews", headers=headers, json={"event": "APPROVED", "expected_head_sha": "a" * 40}
+        ).status_code
+        == 200
+    )
+    assert writes[-1]["commit_id"] == "a" * 40
+    assert client.post(root + "/merge", headers=headers, json={"expected_head_sha": "a" * 40}).status_code == 200
+    assert writes[-1]["head_commit_id"] == "a" * 40
+
+
+def test_native_merge_requires_approval_for_the_confirmed_commit(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    monkeypatch.setattr(_FakeGitea, "merge_pull_request", lambda self, *args, **kwargs: {"merged": True})
+    client, headers = _setup(required_approvals=1)
+    root = "/api/v1/repos/owner/demo/pulls/2/merge"
+    for commit, stale, dismissed in [("b" * 40, False, False), ("a" * 40, True, False), ("a" * 40, False, True)]:
+        _FakeGitea.reviews = [
+            {"user": "reviewer", "state": "APPROVED", "commit_id": commit, "stale": stale, "dismissed": dismissed}
+        ]
+        assert client.post(root, headers=headers, json={"expected_head_sha": "a" * 40}).status_code == 403
+    _FakeGitea.reviews = [{"user": "reviewer", "state": "APPROVED", "commit_id": "a" * 40}]
+    assert client.post(root, headers=headers, json={"expected_head_sha": "a" * 40}).status_code == 200
+
+
+def test_native_release_baseline_prevents_known_stale_overwrite(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    baseline = dict(id=2, tag_name="v1", name="Original", body="Original notes", draft=True, prerelease=False)
+    remote = {**baseline, "body": "Collaborator notes"}
+    monkeypatch.setattr(_FakeGitea, "get_release", lambda self, *args: remote, raising=False)
+    writes = []
+
+    def record_update(self, *args, **kwargs):
+        writes.append(kwargs)
+        return remote
+
+    monkeypatch.setattr(_FakeGitea, "update_release", record_update)
+    client, headers = _setup()
+    root = "/api/v1/repos/owner/demo/releases/2"
+    assert (
+        client.patch(root, headers=headers, json={"body": "Local notes", "expected_release": baseline}).status_code
+        == 409
+    )
+    assert writes == []
+    assert (
+        client.patch(root, headers=headers, json={"name": "Local name", "expected_release": remote}).status_code == 200
+    )
+    assert writes[-1]["name"] == "Local name"
+
+
+def test_hosting_transport_uncertainty_is_not_a_determinate_client_failure(monkeypatch) -> None:
+    monkeypatch.setenv("TIANXUAN_GITEA_URL", "http://gitea.example")
+    monkeypatch.setenv("TIANXUAN_GITEA_TOKEN", "secret")
+    monkeypatch.setattr(api_module, "GiteaClient", _FakeGitea)
+    client, headers = _setup()
+    for upstream_status, expected_status in [(0, 502), (503, 502), (401, 502), (409, 409), (403, 403)]:
+
+        def fail(self, *args):
+            raise api_module.GiteaError(upstream_status, "response unavailable")
+
+        monkeypatch.setattr(_FakeGitea, "create_repo", fail)
+        assert client.post("/api/v1/repos", headers=headers, json={"name": "demo"}).status_code == expected_status

@@ -1273,6 +1273,7 @@ def create_app(
         return {
             "configured": bool(os.environ.get("TIANXUAN_GITEA_URL") and os.environ.get("TIANXUAN_GITEA_TOKEN")),
             "owner": os.environ.get("TIANXUAN_GITEA_OWNER", ""),
+            "revision_guards": True,
         }
 
     @app.get("/api/v1/repos")
@@ -1286,7 +1287,10 @@ def create_app(
             with client:
                 return {"repos": client.list_repos(owner, limit)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos")
     def create_repo(payload: RepoCreateRequest, actor: ActorDep) -> dict[str, Any]:
@@ -1299,7 +1303,10 @@ def create_app(
                     payload.name, payload.private, payload.default_branch
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}")
     def get_repo(owner: str, name: str, actor: ActorDep) -> dict[str, Any]:
@@ -1308,7 +1315,10 @@ def create_app(
             with client:
                 return client.get_repo(owner, name)  # type: ignore[no-any-return]
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}/branches")
     def list_repo_branches(owner: str, name: str, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
@@ -1317,7 +1327,10 @@ def create_app(
             with client:
                 return {"branches": client.list_branches(owner, name)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos/{owner}/{name}/releases")
     def create_repo_release(
@@ -1334,7 +1347,10 @@ def create_app(
                     owner, name, payload.tag_name, payload.name, payload.body, payload.draft, payload.prerelease
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.patch("/api/v1/repos/{owner}/{name}/releases/{release_id}")
     def update_repo_release(
@@ -1348,6 +1364,15 @@ def create_app(
         client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
+                if payload.expected_release is not None:
+                    expected = payload.expected_release.model_dump()
+                    current = client.get_release(owner, name, release_id)
+                    if any(current.get(key) != value for key, value in expected.items()):
+                        raise HTTPException(
+                            status_code=409, detail="release changed; refresh and reconcile the retained draft"
+                        )
+                    # Gitea has no release CAS. This detects known stale drafts, not an
+                    # atomic exclusion of writers accessing Gitea directly.
                 return client.update_release(  # type: ignore[no-any-return]
                     owner,
                     name,
@@ -1358,7 +1383,10 @@ def create_app(
                     prerelease=payload.prerelease,
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}/releases")
     def list_repo_releases(
@@ -1371,7 +1399,10 @@ def create_app(
             with client:
                 return {"releases": client.list_releases(owner, name)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}/pulls")
     def list_repo_pulls(
@@ -1387,7 +1418,10 @@ def create_app(
             with client:
                 return {"pulls": client.list_pull_requests(owner, name, state, page, limit)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos/{owner}/{name}/pulls")
     def create_repo_pull(
@@ -1404,7 +1438,10 @@ def create_app(
                     owner, name, payload.title, payload.head, payload.base, payload.body
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos/{owner}/{name}/pulls/{number}/merge")
     def merge_repo_pull(
@@ -1418,11 +1455,25 @@ def create_app(
         try:
             with client:
                 pull = client.get_pull_request(owner, name, number)
+                if payload.expected_head_sha is not None and pull.get("head_sha") != payload.expected_head_sha:
+                    raise HTTPException(status_code=409, detail="pull request head changed; review the current commit")
+                if payload.expected_base is not None and pull.get("base") != payload.expected_base:
+                    raise HTTPException(
+                        status_code=409, detail="pull request target changed; confirm the current target"
+                    )
                 base = str(pull.get("base") or "")
                 if not base:
                     raise HTTPException(status_code=502, detail="pull request base branch is missing")
                 required = int(getattr(app.state, "required_approvals", 0) or 0)
                 reviews = client.list_reviews(owner, name, number) if required else []
+                if payload.expected_head_sha is not None:
+                    reviews = [
+                        review
+                        for review in reviews
+                        if review.get("commit_id") == payload.expected_head_sha
+                        and not review.get("stale")
+                        and not review.get("dismissed")
+                    ]
                 ensure_pr_merge_allowed(
                     base,
                     _policy_patterns(app),
@@ -1438,12 +1489,19 @@ def create_app(
                         raise HTTPException(status_code=502, detail="pull request head sha is missing")
                     ensure_checks_passed(client.list_commit_statuses(owner, name, head_sha), required_checks)
                 return client.merge_pull_request(  # type: ignore[no-any-return]
-                    owner, name, number, payload.method
+                    owner,
+                    name,
+                    number,
+                    payload.method,
+                    **({"head_commit_id": payload.expected_head_sha} if payload.expected_head_sha is not None else {}),
                 )
         except PolicyError as error:
             raise HTTPException(status_code=403, detail=str(error)) from error
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}/pulls/{number}/reviews")
     def list_repo_pull_reviews(owner: str, name: str, number: int, actor: ActorDep) -> dict[str, list[dict[str, Any]]]:
@@ -1452,7 +1510,10 @@ def create_app(
             with client:
                 return {"reviews": client.list_reviews(owner, name, number)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos/{owner}/{name}/pulls/{number}/reviews")
     def create_repo_pull_review(
@@ -1466,11 +1527,29 @@ def create_app(
         client = _gitea_client(_require_gitea_identity(store, actor))
         try:
             with client:
+                if payload.expected_head_sha is not None or payload.expected_base is not None:
+                    pull = client.get_pull_request(owner, name, number)
+                    if payload.expected_head_sha is not None and pull.get("head_sha") != payload.expected_head_sha:
+                        raise HTTPException(
+                            status_code=409, detail="pull request head changed; review the current commit"
+                        )
+                    if payload.expected_base is not None and pull.get("base") != payload.expected_base:
+                        raise HTTPException(
+                            status_code=409, detail="pull request target changed; confirm the current target"
+                        )
                 return client.create_review(  # type: ignore[no-any-return]
-                    owner, name, number, event=payload.event, body=payload.body
+                    owner,
+                    name,
+                    number,
+                    event=payload.event,
+                    body=payload.body,
+                    **({"commit_id": payload.expected_head_sha} if payload.expected_head_sha is not None else {}),
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.get("/api/v1/repos/{owner}/{name}/commits/{sha}/statuses")
     def list_repo_commit_statuses(
@@ -1484,7 +1563,10 @@ def create_app(
             with client:
                 return {"statuses": client.list_commit_statuses(owner, name, sha)}
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     @app.post("/api/v1/repos/{owner}/{name}/statuses/{sha}")
     def create_repo_commit_status(
@@ -1508,7 +1590,10 @@ def create_app(
                     target_url=payload.target_url,
                 )
         except GiteaError as error:
-            raise HTTPException(status_code=400, detail=str(error)) from error
+            raise HTTPException(
+                status_code=error.status if 400 <= error.status < 500 and error.status != 401 else 502,
+                detail=str(error),
+            ) from error
 
     # ---------- 多宝：仓库绑定与 webhook ----------
 

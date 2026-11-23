@@ -12,6 +12,42 @@ Import("env")
 env.editor_sources = []
 
 if env.editor_build:
+    env.CommandNoCache(
+        "docks/tianxuan/TianxuanScripts.gen.h",
+        [
+            "docks/tianxuan/session_controller.gd",
+            "docks/tianxuan/workspace_controller.gd",
+            "docks/tianxuan/locale.gd",
+            "docks/tianxuan/document_controller.gd",
+            "docks/tianxuan/editor_controller.gd",
+            "docks/tianxuan/issue_controller.gd",
+            "docks/tianxuan/issues_page.gd",
+            "docks/tianxuan/issue_assets.gd",
+            "docks/tianxuan/issue_flow.gd",
+            "docks/tianxuan/asset_decoder.gd",
+            "docks/tianxuan/repositories_controller.gd",
+            "docks/tianxuan/repositories_page.gd",
+            "docks/tianxuan/repository_collaboration_controller.gd",
+            "docks/tianxuan/repository_collaboration_page.gd",
+            "docks/tianxuan/game_config_controller.gd",
+            "docks/tianxuan/game_config_page.gd",
+            "docks/tianxuan/migration_controller.gd",
+            "docks/tianxuan/migration_page.gd",
+            "docks/tianxuan/accounts_controller.gd",
+            "docks/tianxuan/accounts_page.gd",
+            "docks/tianxuan/execution_controller.gd",
+            "docks/tianxuan/execution_page.gd",
+            "docks/tianxuan/documents_page.gd",
+            "docks/tianxuan/design_page.gd",
+            "docks/tianxuan/library_page.gd",
+            "docks/tianxuan/native_theme.gd",
+            "docks/tianxuan/markdown_view.gd",
+            "docks/tianxuan/home_page.gd",
+            "docks/tianxuan/workspace_view.gd",
+        ],
+        env.Run(editor_builders.daqian_scripts_builder),
+    )
+
     ainative_sources = [
         node for node in Glob("#samples/ainative-workbench/addons/ainative/*.gd") if node.name != "plugin.gd"
     ]

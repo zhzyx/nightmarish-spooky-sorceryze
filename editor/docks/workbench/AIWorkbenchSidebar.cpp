@@ -34,6 +34,7 @@
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/dock_tab_container.h"
 #include "editor/docks/editor_dock_manager.h"
+#include "editor/docks/tianxuan/TianxuanWorkbench.h"
 #include "editor/docks/workbench/AIWorkbenchWindow.h"
 #include "editor/docks/workbench/BusinessSession.gen.h"
 #include "editor/docks/workbench/IssueActions.gen.h"
@@ -53,36 +54,7 @@
 #include "scene/gui/text_edit.h"
 #include "scene/main/viewport.h"
 
-#ifdef WINDOWS_ENABLED
-#include <windows.h>
-#elif defined(UNIX_ENABLED)
-#include <unistd.h>
-
-#include <cerrno>
-#endif
-
 static constexpr char WORKBENCH_SHORTCUT[] = "editor/open_ai_workbench";
-
-// Install the completed download without replacing a file created during the request.
-static Error InstallAssetIfAbsent(const String &strTemporary, const String &strDestination)
-{
-#ifdef WINDOWS_ENABLED
-	if (MoveFileW((LPCWSTR)strTemporary.utf16().get_data(), (LPCWSTR)strDestination.utf16().get_data()))
-	{
-		return OK;
-	}
-	DWORD nError = GetLastError();
-	return nError == ERROR_ALREADY_EXISTS || nError == ERROR_FILE_EXISTS ? ERR_ALREADY_EXISTS : ERR_CANT_CREATE;
-#elif defined(UNIX_ENABLED)
-	if (::link(strTemporary.utf8().get_data(), strDestination.utf8().get_data()) == 0)
-	{
-		return OK;
-	}
-	return errno == EEXIST ? ERR_ALREADY_EXISTS : ERR_CANT_CREATE;
-#else
-	return ERR_UNAVAILABLE;
-#endif
-}
 
 static Ref<Resource> OpenOriginalText(const String &strPath)
 {
@@ -108,13 +80,17 @@ static Ref<Script> LoadWorkbenchControlScript(const char *const *pChunks)
 	return refScript;
 }
 
-static VBoxContainer *MountWorkbenchControl(Node *pParent, const char *pName, const char *const *pChunks)
+static VBoxContainer *MountWorkbenchControl(Node *pParent, const char *pName, const char *const *pChunks, Node *pSessionController = nullptr)
 {
 	Ref<Script> refScript = LoadWorkbenchControlScript(pChunks);
 	ERR_FAIL_COND_V(refScript.is_null(), nullptr);
 	VBoxContainer *pControl = memnew(VBoxContainer);
 	pControl->set_name(pName);
 	pControl->set_script(refScript);
+	if (pSessionController != nullptr)
+	{
+		pControl->set_meta("session_controller", pSessionController);
+	}
 	pParent->add_child(pControl);
 	return pControl;
 }
@@ -154,7 +130,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 	pExpand->connect(SNAME("pressed"), callable_mp(this, &AIChatDock::ExpandWorkbenchSidebar));
 	pSidebarLayout->add_child(pExpand);
 	// The editor owns this session for the lifetime of the sidebar.
-	VBoxContainer *pSession = MountWorkbenchControl(pSidebarLayout, "WorkbenchBusinessSession", daqian_business_session);
+	VBoxContainer *pSession = MountWorkbenchControl(pSidebarLayout, "WorkbenchBusinessSession", daqian_business_session, GetTianxuanSessionController());
 	if (pSession)
 	{
 		Ref<Script> refParagraphSuggestion = LoadWorkbenchControlScript(daqian_paragraph_suggestion);
@@ -170,7 +146,7 @@ void AIChatDock::RegisterWorkbenchSidebar(EditorCommandPalette *pPalette, Button
 			pDetail->set_meta("open_original_text", callable_mp_static(&OpenOriginalText));
 			pDetail->set_meta("close_original_text", callable_mp_static(&CloseOriginalText));
 			pDetail->set_meta("open_workbench_sidebar", callable_mp(this, &AIChatDock::OpenWorkbenchSidebar));
-			pDetail->set_meta("install_asset_if_absent", callable_mp_static(&InstallAssetIfAbsent));
+			pDetail->set_meta("install_asset_if_absent", callable_mp_static(&InstallTianxuanAssetIfAbsent));
 			pDetail->set_meta("open_linked_sidebar", callable_mp(this, &AIChatDock::ShowWorkbenchSidebar).bind(false));
 			for (const auto &action : workbench_issue_actions)
 			{

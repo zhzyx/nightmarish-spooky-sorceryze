@@ -301,6 +301,9 @@ def _normalize_review(payload: Any) -> dict[str, Any]:
         "body": _string(data, "body"),
         "user": login if isinstance(login, str) else "",
         "submitted_at": _string(data, "submitted_at"),
+        "commit_id": _string(data, "commit_id"),
+        "stale": bool(data.get("stale")),
+        "dismissed": bool(data.get("dismissed")),
     }
 
 
@@ -550,6 +553,12 @@ class GiteaClient:
         )
         return _normalize_release(payload)
 
+    def get_release(self, owner: str, repo: str, release_id: int) -> dict[str, Any]:
+        owner = _validate_segment(owner, "repository owner")
+        repo = _validate_segment(repo, "repository name")
+        release_id = _validate_number(release_id)
+        return _normalize_release(self._request("GET", f"/api/v1/repos/{owner}/{repo}/releases/{release_id}"))
+
     def update_release(
         self,
         owner: str,
@@ -646,16 +655,21 @@ class GiteaClient:
         repo: str,
         number: int,
         method: str = "merge",
+        *,
+        head_commit_id: str | None = None,
     ) -> dict[str, Any]:
         """合并 Pull Request；``method`` 对应 Gitea 的 ``Do`` 字段。"""
         owner = _validate_segment(owner, "repository owner")
         repo = _validate_segment(repo, "repository name")
         number = _validate_number(number)
         method = _validate_choice(method, _MERGE_METHODS, "merge method")
+        body = {"Do": method}
+        if head_commit_id is not None:
+            body["head_commit_id"] = _validate_commit_sha(head_commit_id)
         payload = self._request(
             "POST",
             f"/api/v1/repos/{owner}/{repo}/pulls/{number}/merge",
-            json_body={"Do": method},
+            json_body=body,
         )
         if payload is None:
             return {"merged": True, "sha": None}
@@ -684,6 +698,7 @@ class GiteaClient:
         *,
         event: str,
         body: str = "",
+        commit_id: str | None = None,
     ) -> dict[str, Any]:
         """提交一次 PR 评审；``event`` 为 APPROVED/REQUEST_CHANGES/COMMENT。"""
         owner = _validate_segment(owner, "repository owner")
@@ -691,10 +706,13 @@ class GiteaClient:
         number = _validate_number(number)
         event = _validate_choice(event, _REVIEW_EVENTS, "review event")
         body = _validate_text(body, "review body", allow_empty=True)
+        fields = {"event": event, "body": body}
+        if commit_id is not None:
+            fields["commit_id"] = _validate_commit_sha(commit_id)
         payload = self._request(
             "POST",
             f"/api/v1/repos/{owner}/{repo}/pulls/{number}/reviews",
-            json_body={"event": event, "body": body},
+            json_body=fields,
         )
         return _normalize_review(payload)
 
