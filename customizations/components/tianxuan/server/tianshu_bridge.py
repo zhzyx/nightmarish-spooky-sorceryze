@@ -17,6 +17,7 @@ import hashlib
 import json
 import os
 import re
+import subprocess
 import sys
 import tempfile
 import time
@@ -28,6 +29,10 @@ from typing import Any, cast
 
 TIMEOUT = 20
 urlopen = urllib.request.urlopen
+LOCAL_API = "http://127.0.0.1:8000"
+GONGGONG_API = "https://167-172-70-41.sslip.io"
+GONGGONG_REPO = "gonggong.git"
+GONGGONG_SOURCE = "zhzyx/nightmarish-spooky-sorceryze"
 
 
 class BridgeError(Exception):
@@ -39,6 +44,58 @@ class BridgeHTTPError(BridgeError):
         super().__init__(f"HTTP {status}: {response}")
         self.status = status
         self.detail = response.get("detail") if isinstance(response, dict) else None
+
+
+def duobao_route(args: argparse.Namespace) -> dict[str, str]:
+    """Select the host-owned route. The checkout can only identify its source repository."""
+    repository = os.environ.get("TIANXUAN_GIT_REPO", "")
+    configured = {"api": args.api or LOCAL_API, "repository": repository}
+    project = getattr(args, "project", None) or args.workspace or Path.cwd()
+    project = project.resolve()
+    for directory in (project, *project.parents):
+        if (directory / ".git").exists():
+            break
+        if (directory / ".duobao-source.json").exists():
+            return configured
+    else:
+        return configured
+    # Read the local repository identity, including linked worktrees. Checkout
+    # files, remote URL rewriting and includes cannot supply a destination.
+    try:
+        config = subprocess.run(
+            [
+                os.environ.get("GIT_EXECUTABLE") or "git",
+                "-C",
+                str(directory),
+                "config",
+                "--local",
+                "--no-includes",
+                "--null",
+                "--get-regexp",
+                r"^(remote\.origin\.url|gonggong\.releasesnapshot)$",
+            ],
+            env={k: v for k, v in os.environ.items() if not k.startswith("GIT_")},
+            capture_output=True,
+            timeout=10,
+        )
+    except subprocess.TimeoutExpired as error:
+        raise BridgeError("无法及时读取项目仓库标识") from error
+    if config.returncode not in (0, 1):
+        raise BridgeError("无法读取当前项目的 Git 仓库标识")
+    records = [record.partition(b"\n") for record in config.stdout.split(b"\0") if record]
+    origins = [value.lower() for key, _, value in records if key == b"remote.origin.url"]
+    if not origins and any(key == b"gonggong.releasesnapshot" for key, _, _ in records):
+        raise BridgeError("下载包使用独立的 Git 快照。请打开真实共工 Git 工作副本，再从多宝分支、提交或合入。")
+    if repository or (args.api and args.api.rstrip("/") != GONGGONG_API):
+        return configured
+    allowed = {
+        (prefix + GONGGONG_SOURCE + suffix).encode()
+        for prefix in ("https://github.com/", "git@github.com:", "ssh://git@github.com/")
+        for suffix in ("", ".git")
+    }
+    if len(origins) == 1 and origins[0] in allowed:
+        return {"api": GONGGONG_API, "repository": GONGGONG_REPO}
+    return configured
 
 
 def _cache_file(api: str, provider: str, subject: str) -> Path | None:
@@ -138,6 +195,16 @@ def _request(
     return parsed
 
 
+def _read_git_workcopy(args: argparse.Namespace, body: dict[str, Any]) -> dict[str, Any]:
+    import selected_commit
+
+    if body.get("mode") == "native":
+        raise BridgeError("未找到物化来源，请重新打开工程")
+    if args.command == "workcopy-diff":
+        return cast(dict[str, Any], selected_commit.diff(args.project))
+    return cast(dict[str, Any], selected_commit.preview(args.project, body["base"], body["tree"], body["path"]))
+
+
 def workcopy_operation(args: argparse.Namespace) -> dict[str, Any]:
     import selected_commit
 
@@ -171,11 +238,11 @@ def workcopy_operation(args: argparse.Namespace) -> dict[str, Any]:
         return cast(dict[str, Any], project.submit(body))
     if body.get("mode") == "native":
         raise BridgeError("未找到物化来源，请重新打开工程")
-    if args.command == "workcopy-diff":
-        return cast(dict[str, Any], selected_commit.diff(args.project))
-    if args.command == "workcopy-preview":
-        return cast(dict[str, Any], selected_commit.preview(args.project, body["base"], body["tree"], body["path"]))
-    name = body["repo"]
+    if args.command in ("workcopy-diff", "workcopy-preview"):
+        return _read_git_workcopy(args, body)
+    name = body.get("repo") or args.repo_name
+    if args.bound_repo and name != args.bound_repo:
+        raise BridgeError("项目路由绑定的多宝仓库为 " + args.bound_repo)
     if not re.fullmatch(r"[A-Za-z0-9_.-]+", name) or name in (".", ".."):
         raise BridgeError("多宝仓库名称无效")
     path = "/api/v1/git/repos/" + urllib.parse.quote(name, safe="") + "/selected-commits"
@@ -540,9 +607,10 @@ def main(argv: list[str] | None = None) -> int:
     arguments = list(sys.argv[1:] if argv is None else argv)
     arguments = _normalize_result(arguments)
     parser = argparse.ArgumentParser(description="天璇 ↔ 天枢互通桥")
-    parser.add_argument("--api", default=os.environ.get("TIANXUAN_API", "http://127.0.0.1:8000"))
+    parser.add_argument("--api", default=os.environ.get("TIANXUAN_API"))
+    parser.add_argument("--workspace", type=Path, help="当前打开的项目目录（多宝 Git 路由）")
     parser.add_argument("--actor", default=os.environ.get("TIANXUAN_ACTOR", ""))
-    parser.add_argument("--token", default=os.environ.get("TIANXUAN_TOKEN", ""))
+    parser.add_argument("--token")
     parser.add_argument("--identity-provider", default=os.environ.get("TIANXUAN_IDENTITY_PROVIDER", ""))
     parser.add_argument("--identity-subject", default=os.environ.get("TIANXUAN_IDENTITY_SUBJECT", ""))
     parser.add_argument("--identity-secret", default=os.environ.get("TIANXUAN_IDENTITY_SECRET", ""))
@@ -550,6 +618,7 @@ def main(argv: list[str] | None = None) -> int:
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("status", help="天璇健康与 Gitea 状态").set_defaults(func=status)
+    sub.add_parser("duobao-route", help="本地读取当前项目的多宝仓库").set_defaults(func=duobao_route)
 
     for command in ("workcopy-diff", "workcopy-preview", "workcopy-submit"):
         workcopy = sub.add_parser(command)
@@ -567,7 +636,7 @@ def main(argv: list[str] | None = None) -> int:
         "merge-deliver",
     ):
         merge = sub.add_parser(command)
-        merge.add_argument("--repo-name", required=True)
+        merge.add_argument("--repo-name", default="")
         if command == "merge-request":
             merge.add_argument("--source", required=True)
             merge.add_argument("--target", required=True)
@@ -583,7 +652,7 @@ def main(argv: list[str] | None = None) -> int:
 
     for command in ("branch-create", "branch-tip"):
         branch = sub.add_parser(command)
-        branch.add_argument("--repo-name", required=True)
+        branch.add_argument("--repo-name", default="")
         branch.add_argument("--branch", required=True)
         if command == "branch-create":
             branch.add_argument("--start", required=True)
@@ -652,6 +721,40 @@ def main(argv: list[str] | None = None) -> int:
 
     args = parser.parse_args(arguments)
     try:
+        if args.func in (duobao_route, branch_operation, merge_request, workcopy_operation):
+            route = duobao_route(args)
+            if args.func == duobao_route:
+                # A caller-supplied URL can contain private information.
+                location = route["api"] if route["api"] in (LOCAL_API, GONGGONG_API) else "configured"
+                _write(args, {"ok": True, "data": {"api": location, "repository": route["repository"]}})
+                return 0
+            args.bound_repo = route["repository"] if not args.api and not os.environ.get("TIANXUAN_GIT_REPO") else ""
+            args.api = route["api"]
+            args.repo_name = getattr(args, "repo_name", "") or route["repository"]
+            if args.bound_repo and args.repo_name != args.bound_repo:
+                raise BridgeError("项目路由绑定的多宝仓库为 " + args.bound_repo)
+        else:
+            args.api = args.api or LOCAL_API
+        if getattr(args, "bound_repo", "") and args.command in ("workcopy-diff", "workcopy-preview"):
+            # Automatic routing has identified a Git checkout, not a materialized
+            # native project. These reads never use the remote service or identity.
+            body = json.loads(args.request.read_text(encoding="utf-8")) if getattr(args, "request", None) else {}
+            _write(args, {"ok": True, "data": _read_git_workcopy(args, body)})
+            return 0
+        if getattr(args, "bound_repo", ""):
+            # Legacy launchers may supply credentials for the old loopback
+            # default. Only an explicit token or this origin's cache is bound.
+            if not args.token and args.identity_provider and args.identity_subject:
+                args.token = _read_cached_token(args.api, args.identity_provider, args.identity_subject)
+            if not args.token and (os.environ.get("TIANXUAN_TOKEN") or args.identity_provider or args.identity_secret):
+                raise BridgeError(
+                    "当前凭据未绑定多宝公网服务。请在可信启动器显式设置 TIANXUAN_API 并使用目标服务的身份。"
+                )
+            if not args.token:
+                args.actor = ""
+                args.token = ""
+        else:
+            args.token = args.token or os.environ.get("TIANXUAN_TOKEN", "")
         if not args.token and args.identity_provider:
             if not args.identity_subject:
                 raise BridgeError("identity subject is required")

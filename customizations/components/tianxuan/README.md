@@ -96,6 +96,19 @@ python tianshu_bridge.py --api http://127.0.0.1:8000 --actor <user_id> \
 - Tianshu 侧通过 `TIANXUAN_API`、`TIANXUAN_ACTOR` 或 `TIANXUAN_TOKEN` 指定天璇连接身份
 - 身份适配：`/api/v1/identity/links` 绑定外部身份，`/api/v1/identity/resolve` 按 provider 适配器换取会话；内置 `static`、`tianshu`/`github` 共享密钥、`oidc` JWT 适配器（HS256 用 `TIANXUAN_OIDC_SECRET`；RS256 用 `TIANXUAN_OIDC_JWKS`、`TIANXUAN_OIDC_JWKS_URL`，或 `TIANXUAN_OIDC_DISCOVERY_URL` 自动发现 jwks_uri/issuer；JWKS 5 分钟缓存，未知 kid 时 30 秒节流强制刷新；discovery/JWKS 默认要求 https（localhost 例外，`TIANXUAN_OIDC_ALLOW_INSECURE=1` 可放宽）；可选 `TIANXUAN_OIDC_ISSUER`/`TIANXUAN_OIDC_AUDIENCE`；默认要求 `exp`，`nbf`/`iat` 超前 60s 拒绝，`TIANXUAN_OIDC_ALLOW_NO_EXP=1` 可放宽）
 
+### 共工项目的多宝写入入口（G22）
+
+在已安装的天枢打开共工 Git 工作副本中的 Godot 项目。「多宝分支」「多宝提交」「多宝合入」使用该项目所属仓库，审查和交付沿同一合入请求进行。安装宿主只把共工的原仓标识 `zhzyx/nightmarish-spooky-sorceryze` 映射到 `https://167-172-70-41.sslip.io` 的 `gonggong.git`，匹配 Git 本地配置中的单一 HTTPS 或 SSH origin。普通项目保留原连接方式。测试和本地服务可显式指定 `TIANXUAN_API` 和 `TIANXUAN_GIT_REPO`。项目文件不能填写目的服务地址。
+
+以下命令从可信宿主根运行。第一条在本机读取路由，第二条以当前操作者的天璇身份回读目标分支。两条命令均可指定 Git 工作树下的项目目录。使用启动环境中的会话或身份交换密钥时，在可信启动器显式指定该凭据所属的 `TIANXUAN_API`。自动选择公网入口仅接受按该 origin 和身份绑定的会话缓存，或调用者在本次命令显式提供的令牌；仅有旧启动环境的凭据时会提示绑定服务。
+
+```sh
+python customizations/components/tianxuan/server/tianshu_bridge.py --workspace <项目目录> duobao-route
+python customizations/components/tianxuan/server/tianshu_bridge.py --workspace <项目目录> branch-tip --branch main
+```
+
+桌面交付需配套发布编入编辑器的 `editor/docks/daqian/workspace.gd` 与该版本安装宿主的 `server/tianshu_bridge.py`。Windows 主检出可从同修订成功的 Actions 运行执行 `tools/install_gonggong_editor.ps1 -ActionsRun <运行编号>`，首次安装和已有安装升级复用同一入口。完整工作区 ZIP 的使用者按发布索引校验并解压至新目录，打开自己的共工 Git 工作副本。macOS 完整构建提供 `macos-editor` 产物，裸编辑器使用同修订的宿主树及随附资源。在应用包内发布时，先放置 Mach-O 和两个天枢资源包，再签名、验证和切换现用应用。升级保留上一份可用的宿主和编辑器，回退时成对恢复。覆盖率需由各客户端回读，受控的显式本地配置可独立回退。[Windows 安装](../../../project/godot/README.md) · [完整包分发](../../../distribution/README.md) · [macOS 构建](../../../.github/workflows/macos_builds.yml)
+
 ## 环境变量
 
 | 变量 | 用途 |

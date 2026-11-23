@@ -1,0 +1,36 @@
+{
+  "issue_number": 1729,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1729",
+  "request_id": "gonggong-ai-workbench-plan1-g22",
+  "baseline": "99dbb00f18ac95148757682f38e933ff828492e2",
+  "state": "client_candidate_verified",
+  "path_base": "repository_root",
+  "source_blobs": {
+    "customizations/components/tianxuan/README.md": "f0d1a2a9ff6c1bd5510481b0a9ff20bc29040128",
+    "customizations/components/tianxuan/server/test_tianshu_bridge.py": "ee30391f4554c728a5307b33080884fcb0dc3fa9",
+    "customizations/components/tianxuan/server/tianshu_bridge.py": "d44ddd85d5bc58eacf457c5123ec79dfda2e5b79",
+    "editor/docks/daqian/workspace.gd": "7d4fce529f037bdacce396f15ee01c0b2653233d"
+  },
+  "checks": {
+    "python": "19 passed in test_tianshu_bridge.py and test_selected_commit.py, including offline identity destination checks and the real local Git receiving repository. One existing Starlette deprecation warning.",
+    "static": "ruff format, ruff check and git diff --check passed",
+    "route_receipt": {"api": "https://167-172-70-41.sslip.io", "repository": "gonggong.git"},
+    "offline_scope": "Actual linked worktree and an isolated clone identity; branch reads, selected commits, reviews and deliveries target the same service. Request-routing tests intercept transport. Explicit API/repository overrides and unrelated/materialized projects retain their own route.",
+    "identity_destination": "An automatic public route rejected unbound environment credentials and a loopback-only cache before making any HTTP call. Separate cases accepted an explicit call token, a cache bound to the public origin/provider/subject, and a trusted launcher that explicitly names the destination. Anonymous requests sent no actor identity.",
+    "release_snapshot": "Created a synthetic Git commit, bound gonggong.releaseSnapshot and removed origin. Both default and explicitly configured production connection refuse the snapshot locally and direct the operator to a real checkout.",
+    "windows_build": "MSVC x86_64 candidate rebuilt from this worktree. workspace.gd is embedded through editor/SCsub and daqian_scripts.gen.h.",
+    "editor_sha256": "1b691ada2ff0acf73e24fe969854f4a44b5043222914f845b859b8afe0084386",
+    "console_sha256": "5d087d1c687e99055e93ff6ff097fff8be59b052ffa5d7d7c9696ed2038a4dfa",
+    "tianshu_ui_sha256": "3b581a11d1e472eb698a6da997d5e0887bdf7864ea0cf802504973bf68feb462",
+    "tianshu_board_sha256": "22e1a6c2ba41163d7521cb9700e40b91e81a0a2dfffefeeb523cdfd3a0f6780b",
+    "editor_default": "An isolated --headless editor opened a nested Godot project from a Git checkout with the original GitHub origin. With neither API nor repository override, the three actual branch, commit and merge buttons opened their dialogs. Each displayed gonggong.git. The editor bridge returned the public HTTPS route without a session or HTTP request.",
+    "editor_explicit": "run_workbench_duobao_branches.py passed with local loopback service, sample.git, private authenticated editor and independent Git/file readback. Exercised creation, unsaved edits, switch and restart recovery."
+  },
+  "distribution_observed": {
+    "windows": "Primary checkout installation inventory schema 2 currently reports revision 22ba06d9543c16ca5e91c0a5c8fc2545a4f4. Source checkouts use tools/install_gonggong_editor.ps1 for first installation and upgrade at a verified main revision; the workbench reads its Python bridge from the trusted host. The latest public full workspace archive was gonggong-windows-x64-20261104-r2 at readback. A new bundle requires the exact accepted binary, host source and verified manifest.",
+    "macos": "The standard macos_builds.yml full build publishes the macos-editor universal executable and sidecars. Pair with the corresponding trusted host revision. For an app installation, stage the Mach-O and Resources, sign and verify the complete bundle, then replace the entry while keeping the prior working app. data-collection/godot-web-platforms-1454-local-install.json records the verified prior installation at bin/godot_macos_editor.app. No new macOS installation was inspected in this task.",
+    "activation": "For a currently installed candidate, open a real GongGong Git project and read all three normal dialogs plus branch-tip on the authenticated target. A workstation source update or a change to a public Web page alone cannot replace embedded editor code. Restore the prior compatible editor and host pair for rollback."
+  },
+  "production_writes_in_this_worker": 0,
+  "handoff": "The issuer owns shared distribution, production service acceptance, independent actor sessions, the authorized real candidate and no-double-write evidence. This receipt covers the isolated client candidate."
+}
