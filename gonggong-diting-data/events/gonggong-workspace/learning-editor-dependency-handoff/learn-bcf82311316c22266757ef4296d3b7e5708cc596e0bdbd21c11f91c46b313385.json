@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-bcf82311316c22266757ef4296d3b7e5708cc596e0bdbd21c11f91c46b313385",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1736",
+  "occurred_at": "2026-11-23T16:02:05.882404+00:00",
+  "evidence_refs": [
+    "resume-1709-receive-1736",
+    "learn-42b7b1f7e172f633b4c64c7cdcd9a17bafe8bd28652ac70307ef59141e24844b"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 40,
+    "previous": "74c1729a2d700f8c04838d9f0f767691297bb2fd3f140f67c65f79b9614dddc3",
+    "action": "applied",
+    "details": {
+      "task": "G20 replacement-baseline handoff to an independent native worker for G19 rehearsal acceptance",
+      "observed": "The original Mac package was unavailable. The receiver verified the replacement ZIP checksum, independently imported it into a fresh local database, recovered all 2,271 refs and 60,767 Git objects and reproduced the producer catalog revision. Production G20 remains pending deployment authority and a target receipt."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-g20-refreeze.json",
+        "sha256": "5482a6083385430316c344ae57a221d7c8aec1a84e8ba153b11e449e973bb614"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-g20/resume-1709-receive-1736.json",
+      "sha256": "5b001e21ef5e2951875b5b2bbe0f45f4373140aaacb8fd9b21f606202fdd310a"
+    }
+  },
+  "sha256": "a7d4b5bc4c3a270f4c6f254f79a2ba07170020ca8673570819e4810406949108"
+}

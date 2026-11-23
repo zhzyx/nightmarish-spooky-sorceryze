@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "issue": 1736,
+  "prerequisite": 1742,
+  "parent": 1709,
+  "scope": "Authorized replacement of the G19 frozen source and local rehearsal for the G20 deployment handoff",
+  "source": "zhzyx/nightmarish-spooky-sorceryze",
+  "source_revision": "3a26c08e8a1e55077f23177184d02e4d18ccd326",
+  "predecessor": {
+    "catalog_revision": "4aac655485a4f88e4e430534171dedc5f57e7dc12aee7b8fcc8e57882802c731",
+    "package_sha256": "d2a37831e8b6fc8d8f507cbc402a1dadfffc8a79910a504b4b1b05246aadadd8"
+  },
+  "package": {
+    "filename": "g19-refreeze-3a26c08e8a1e.zip",
+    "bytes": 166539132,
+    "sha256": "307057431a002cfbcec704179e153b54ab5e48f27cc583189cbd76d1bee28b4d",
+    "files": {
+      "attachments/attachments.json": {
+        "bytes": 37,
+        "sha256": "7e8dba8a8f33acb58349d7ec71fd2ccc349aea2c55a3d10784c93cefa1a7cfad"
+      },
+      "git/git-report.json": {
+        "bytes": 223385,
+        "sha256": "0f0ef65461bcb386bc9058702e94def16742a9f31cd3ccf5b5a2250757e4bf95"
+      },
+      "git/history.bundle": {
+        "bytes": 160048846,
+        "sha256": "e6f3627b0fcbe7eeb7507d5115952fb46f941372ad68fd2933f2ff0c5c6b6b9c"
+      },
+      "inventory/records.jsonl": {
+        "bytes": 63809338,
+        "sha256": "115de0f60e606a66993ddf4e6181bb1c23a1d05fe2a5959c2f93f16254c63b3e"
+      },
+      "inventory/report.json": {
+        "bytes": 1044,
+        "sha256": "45e8f9a88e733e290e8cb56e01cf91231cc7368809ae0b6d3296c07dff4d5ee3"
+      }
+    }
+  },
+  "collection": {
+    "advertised_refs": 1862,
+    "counts": {
+      "commit": 2399,
+      "issue": 1013,
+      "issue_comment": 5728,
+      "pull": 1137,
+      "pull_issue_projection": 1137,
+      "requirement": 556
+    },
+    "first_mirror_observed": "2026-11-23T23:31:43.0361687+08:00",
+    "historical_refs": 409,
+    "inventory_finalized_at": "2026-11-23T15:52:32.141481+00:00",
+    "ticket_high_watermark": 2150,
+    "provider_completed_through": "2026-11-23T15:52:32.141481+00:00",
+    "provider_start_of_final_pass": "2026-11-23T15:41:19.576809+00:00",
+    "consistency": "Git revision immutable; GitHub paginated reads span a live collection window",
+    "newer_tickets_outside_initial_membership": []
+  },
+  "local_environment": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "git": "git version 2.53.0.windows.3",
+    "python": "3.12.14"
+  },
+  "git_restore": {
+    "refs_count": 2271,
+    "source_object_count": 60767,
+    "restored_object_count": 60767,
+    "ref_mismatches": 0,
+    "objects_by_kind": {
+      "tree": 18598,
+      "blob": 38579,
+      "commit": 3590
+    },
+    "uncompressed_object_bytes": 952410009,
+    "bundle_sha256": "e6f3627b0fcbe7eeb7507d5115952fb46f941372ad68fd2933f2ff0c5c6b6b9c",
+    "bundle_bytes": 160048846,
+    "git_fsck": "passed",
+    "import_and_publish_seconds": 12.532,
+    "restore_and_verification_seconds": 14.453,
+    "ref_map_sha256": "98a776e5616b36fd6f0aa1aa358deab85567cd599c888c2d650d65918e7c6886",
+    "ref_digest_format": "UTF-8 sorted refname + space + OID + LF",
+    "lfs_object_count": 0,
+    "source_head_gitlinks": [],
+    "git_only_catalog_revision": "99168806174fa48ebb60d4a2b7a93ddf23a4933c2da7dbe2b0f244bfd3655bfd"
+  },
+  "provider_restore": {
+    "records": 11970,
+    "records_bytes": 63809338,
+    "records_sha256": "115de0f60e606a66993ddf4e6181bb1c23a1d05fe2a5959c2f93f16254c63b3e",
+    "attachment_ids": 0,
+    "attachment_failures": 0,
+    "import_seconds": 24.985,
+    "restore_seconds": 15.297,
+    "database_bytes": 237010944,
+    "binary_checksums": {
+      "github:zhzyx/nightmarish-spooky-sorceryze/git-report.json": "0f0ef65461bcb386bc9058702e94def16742a9f31cd3ccf5b5a2250757e4bf95",
+      "github:zhzyx/nightmarish-spooky-sorceryze/history.bundle": "e6f3627b0fcbe7eeb7507d5115952fb46f941372ad68fd2933f2ff0c5c6b6b9c"
+    },
+    "publication": {
+      "source": "zhzyx/nightmarish-spooky-sorceryze",
+      "source_revision": "3a26c08e8a1e55077f23177184d02e4d18ccd326",
+      "records_sha256": "115de0f60e606a66993ddf4e6181bb1c23a1d05fe2a5959c2f93f16254c63b3e",
+      "counts": {
+        "commit": 2399,
+        "issue": 1013,
+        "issue_comment": 5728,
+        "pull": 1137,
+        "pull_issue_projection": 1137,
+        "requirement": 556
+      },
+      "binary_count": 2,
+      "catalog_sha256": "63652e65b1e8ab118cc873340a63865d19613df46de60fe0cd339645fce00aa4",
+      "module": "migration-184a262f026ef0d4cf3e5dd6a366651af81580c6c8ee714a168ce2fff802dc7d",
+      "revision": "3ed9e211c4d8f6b9bf6cfafb104991a1c712cc2ac80c92f293236149af24776a",
+      "historical_policy": "record_only",
+      "tenant": "g20-refreeze",
+      "project": "studio/rehearsal",
+      "published_by": "Sail-Li",
+      "published_at": "2026-11-23T15:58:05.366938+00:00",
+      "imported_at": "2026-11-23T15:58:05.355671+00:00"
+    },
+    "resolved_links": 29560,
+    "checked_links": 29560,
+    "unresolved_links": 0,
+    "external_links": 0,
+    "comparison": "all records and binary members matched"
+  },
+  "deployment": {
+    "target": "部署服务器内部的共工项目",
+    "blocking_issue": 2099,
+    "import_performed": false,
+    "project_receiver_receipt": null,
+    "scope": "Local rehearsal namespace only; production project identity and authorization awaited"
+  },
+  "independent_review": {
+    "run_id": "g20-3a26c08e-review",
+    "worker": "/root/sinan_d7d2babd7f19c62b",
+    "accepted": true,
+    "started_at": "2026-11-23T15:59:05.236846+00:00",
+    "finished_at": "2026-11-23T16:00:12.667091+00:00",
+    "catalog_revision": "3ed9e211c4d8f6b9bf6cfafb104991a1c712cc2ac80c92f293236149af24776a",
+    "catalog_sha256": "63652e65b1e8ab118cc873340a63865d19613df46de60fe0cd339645fce00aa4",
+    "matching_producer_publication": true,
+    "receipt_file": "verification/g20-3a26c08e-review-receipt.json",
+    "receipt_sha256": "68f7087b7c549f030dccc5570dd2556a51fc6ce868547c0da4c585993445fa1d",
+    "object_audit_sha256": "d4cff5a737267a5aff0cbad765d4c1ec53253ed8d351eeece1727fc44bc8a00e",
+    "pinned_main_objects_matching_independent_checkout": 55477,
+    "provider_membership": {
+      "commit_parents_checked": 2399,
+      "design_document_blobs_checked": 556,
+      "pull_issue_projection_pairs": 1137,
+      "pull_commit_memberships": 2880,
+      "newer_tickets_outside_initial_membership": []
+    },
+    "sqlite_integrity": "ok",
+    "gitlink_tree_entries": 0,
+    "lfs_objects": 0,
+    "relations": {
+      "complete": true,
+      "checked": 29560,
+      "resolved": 29560,
+      "unresolved": 0,
+      "external": 0
+    }
+  }
+}

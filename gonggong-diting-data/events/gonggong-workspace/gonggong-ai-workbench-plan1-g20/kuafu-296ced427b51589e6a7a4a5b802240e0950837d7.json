@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-296ced427b51589e6a7a4a5b802240e0950837d7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "gonggong-ai-workbench-plan1-g20",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1736",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "66a92d34f4c4df92e37db9abe9e93e9c661bc73c80e1c9cf9187b9c16e1d2aad",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1736",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2099",
+    "action": "intake",
+    "detection_head": "22ba06d9543c16ca5e91c0a5c8a4c8fc2545a4f4",
+    "context_sha256": "433b9cc81165c60a817882471653336bb3cf8634e02e528853955e3b32187535",
+    "operator": "Sail-Li",
+    "worker": "codex-g20-local-refreeze",
+    "authority_ref": "github:zhzyx/nightmarish-spooky-sorceryze#1736",
+    "evidence": "G20 intake initially rejected status:blocked; assigned task is now active for the approved replacement snapshot. G17 and G19 are completed. The new isolated checkout at 3a26c08e passed intake-only.",
+    "diagnosis": "The previous source package has no delivery location and the deployment-side import identity remains unconfirmed. A fresh local capture and G19 revalidation are authorized.",
+    "next_action": "Verify the local replacement package, supply its exact checksum, and perform the formal import upon receipt of the approved deployment identity and project binding.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T15:23:44.789467+00:00",
+    "attempted": null,
+    "repair_owner": "G20 coordinator for the local package; deployment project operator for the production identity",
+    "continuable": "Create the replacement capture, import into a fresh local database, and verify an independent restore."
+  },
+  "occurred_at": "2026-11-23T15:31:20.229757+00:00",
+  "sha256": "fef47d9a77defa01c8d456f9ed817c342f54251cff01d25b0093990dbb3dcdbe"
+}
