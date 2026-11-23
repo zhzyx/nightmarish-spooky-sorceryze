@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5bbd76d3dff62f0b13b83bd435fe108b7a4d2786",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-chat-repair-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "100f70a8a5889ad8ea8f9dac79da24d12cd05fddb90b1cd9c2c8b2106c138780",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "action": "delivery",
+    "detection_head": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "context_sha256": "de8aab80704277b008bc0e0ecac079879497cbd0e40cae6edd888e025891db37",
+    "operator": "Sail-Li",
+    "worker": "codex:tianxuan-native-ui/current",
+    "authority_ref": "本次修复及仓库交付授权",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2180",
+    "diagnosis": "writer_submit要求说明文件不含GongGong关联字段，入口会自动添加；首次说明重复包含字段被拒绝，未创建提交。",
+    "next_action": "已移除说明文件内重复字段，按同一授权重新执行正式门禁和签发。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:01:52.657018+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T23:03:41.461806+00:00",
+  "sha256": "7ce7cc5aec492d6bffab14be490977a5b3fbfd2c3c2c623d01a18fa8aed33fee"
+}

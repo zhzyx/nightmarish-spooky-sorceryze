@@ -2168,6 +2168,9 @@ void AIChatDock::_set_busy(bool p_busy) {
 		mapBinding["snapshot_id"] = GetAiSession().strSnapshot;
 		mapBinding["issue"] = _work_order_binding("issue_number");
 		mapBinding["request_id"] = _work_order_binding("request_id");
+		if (bLocalConsultationWorker) {
+			mapBinding["local_consultation"] = mapLocalConsultationBinding.duplicate(true);
+		}
 		refAiController->BeginRun(GetAiSession().strConversation, GetAiSession().strSnapshot, mapModel, mapBinding);
 	} else {
 		refAiController->FinishRun(turn_completed);
@@ -2284,6 +2287,9 @@ void AIChatDock::_set_busy(bool p_busy) {
 	_refresh_sub_agents();
 	if (!IsAiBusy() && pending_model_sources) {
 		callable_mp(this, &AIChatDock::_try_pending_model_refresh).call_deferred();
+	}
+	if (was_busy && !p_busy && bLocalConsultationWorker) {
+		FinishLocalConsultation();
 	}
 }
 
@@ -2691,7 +2697,7 @@ bool AIChatDock::_start_message(const Dictionary &p_message, const Dictionary &p
 	}
 	String snapshot_error;
 	const String snapshot_path = _snapshot_path(GetAiSession().strSnapshot);
-	if (DirAccess::make_dir_recursive_absolute(snapshot_path.get_base_dir()) != OK || !AIChatTools::save_snapshot(snapshot_path, GetAiSession().mapSnapshot, snapshot_error)) {
+	if (!bLocalConsultationWorker && (DirAccess::make_dir_recursive_absolute(snapshot_path.get_base_dir()) != OK || !AIChatTools::save_snapshot(snapshot_path, GetAiSession().mapSnapshot, snapshot_error))) {
 		GetAiSession().mapSnapshot["storage_failed"] = true;
 		_append(TTR("Error"), String(U"本轮本地快照无法保存，文件写入将被阻止；仍可继续对话。") + snapshot_error);
 	}
@@ -3187,7 +3193,7 @@ void AIChatDock::_response_after_receipt(int p_result, int p_code, const PackedS
 		Dictionary final = chat_message("assistant", _redact(content));
 		const String finish_reason = choice.get("finish_reason", "");
 		const bool is_preview_turn = consultation_turn && !daqian_preview_source.is_empty() && daqian_preview_conversation == GetAiSession().strConversation;
-		const bool complete = !content.is_empty() && (is_preview_turn ? finish_reason == "stop" : finish_reason != "length");
+		const bool complete = !content.strip_edges().is_empty() && ((is_preview_turn || bLocalConsultationWorker) ? finish_reason == "stop" : finish_reason != "length");
 		if (!complete) {
 			final["incomplete"] = true;
 			if (!content.is_empty() && !GetAiSession().arrTranscript.is_empty()) {
@@ -8224,8 +8230,10 @@ void AIChatDock::_notification(int p_what) {
 	}
 	if (p_what == NOTIFICATION_READY) {
 		EditorNode::get_singleton()->connect(SNAME("scene_changed"), callable_mp(this, &AIChatDock::WorkbenchSceneChanged));
-		_load_history();
-		_load_resume();
+		if (!bLocalConsultationWorker) {
+			_load_history();
+			_load_resume();
+		}
 		if (resume_storage.directory.is_empty()) {
 			schedule_timer->start();
 			// Restore outstanding approvals and restart acknowledgments before

@@ -5,6 +5,8 @@ var checks: Array[String] = []
 var main: Control
 var controller: Node
 var session: Node
+var ai_before: Dictionary
+const LocalModelFixture = preload("res://local_model_fixture.gd")
 
 
 func _initialize() -> void:
@@ -68,6 +70,16 @@ func prepare_launch() -> bool:
 	main.find_child("TianxuanComposer", true, false).text = "生成可核验的文本，并验证暂停和恢复。"
 	main.find_child("SendTianxuanMessage", true, false).pressed.emit()
 	if not check(await wait_until(func(): return not controller.chat_busy() and not controller.conversation().get("turns", []).is_empty()), "native conversation persists the initiating user request"):
+		return false
+	var conversation: Dictionary = controller.conversation()
+	if not check(conversation.turns[0].state == "answered" and conversation.turns[0].answer == "本机 API 夹具回答：已收到原生天璇消息。", "execution preparation receives the editor's local API response"):
+		return false
+	if not check(await wait_until(func(): return controller.local_chat.syncing.is_empty()), "execution preparation waits for the completed local turn to synchronize"):
+		return false
+	var synchronized: Dictionary = await session.api_request(HTTPClient.METHOD_GET, controller.CONVERSATIONS + "/" + conversation.id)
+	if not check(synchronized.status == 200 and synchronized.data.turns[0].answer == conversation.turns[0].answer and synchronized.data.turns[0].reply_source == "editor-local", "execution design uses the shared server copy of the local reply"):
+		return false
+	if not check(LocalModelFixture.unchanged(ai_before), "execution preparation does not change the ordinary AIChat conversation"):
 		return false
 	controller.navigate("design")
 	await wait_until(func(): return not controller.chat_busy())
@@ -143,6 +155,9 @@ func run() -> void:
 		return
 	controller = main.get_meta("controller")
 	session = controller.session
+	ai_before = await LocalModelFixture.configure(self)
+	if not check(not ai_before.is_empty(), "execution controls use the existing AIChat API settings with an isolated local fixture"):
+		return
 	await session.authenticate("first@example.invalid", OS.get_environment("TX_PASSWORD"), "workspace")
 	if not await prepare_launch():
 		return

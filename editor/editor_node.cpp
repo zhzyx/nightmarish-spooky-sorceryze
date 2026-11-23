@@ -9634,7 +9634,7 @@ EditorNode::EditorNode() {
 	pWorkbenchDock->RegisterWorkbenchSidebar(command_palette, pWorkbenchButton);
 	EditorDock *daqian_dock = create_daqian_dock();
 	editor_dock_manager->add_dock(daqian_dock);
-	editor_dock_manager->add_dock(CreateTianxuanDock());
+	editor_dock_manager->add_dock(CreateTianxuanDock(pWorkbenchDock));
 #ifdef MACOS_ENABLED
 	install_gonggong_startup_validation(this, daqian_dock);
 #endif

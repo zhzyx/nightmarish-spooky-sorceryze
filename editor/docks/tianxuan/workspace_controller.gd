@@ -16,6 +16,7 @@ var game_config: Node
 var migration: Node
 var accounts: Node
 var execution: Node
+var local_chat: Node
 var editor_module := ""
 var storage_root := ""
 var cache := {}
@@ -40,6 +41,10 @@ func _ready() -> void:
 		set_language(selected, false)
 	session.identity_resetting.connect(_before_identity_change)
 	session.identity_changed.connect(_identity_changed)
+	if has_meta("local_conversation_script"):
+		local_chat = get_meta("local_conversation_script").new()
+		local_chat.set_meta("workspace", self)
+		add_child(local_chat)
 	_identity_changed()
 	if has_meta("document_script"):
 		documents = get_meta("document_script").new()
@@ -93,6 +98,8 @@ func set_language(value: String, persist := true) -> void:
 func _before_identity_change() -> void:
 	# Views save edits synchronously while the old identity is still available.
 	changed.emit("identity_resetting")
+	if local_chat:
+		local_chat.reset()
 
 
 func _identity_changed() -> void:
@@ -247,7 +254,8 @@ static func new_id() -> String:
 
 
 func conversation() -> Dictionary:
-	return cache.get("conversation:" + active_conversation, {}).duplicate(true)
+	var remote: Dictionary = cache.get("conversation:" + active_conversation, {}).duplicate(true)
+	return local_chat.overlay(active_conversation, remote) if local_chat else remote
 
 
 func chat_draft_key(id: String) -> String:
@@ -255,7 +263,7 @@ func chat_draft_key(id: String) -> String:
 
 
 func chat_busy() -> bool:
-	return busy("conversation:create") or busy("conversation:" + active_conversation)
+	return (local_chat and local_chat.busy()) or busy("conversation:create") or busy("conversation:" + active_conversation)
 
 
 func refresh_conversations(more := false) -> void:
@@ -277,11 +285,19 @@ func refresh_conversations(more := false) -> void:
 		cache.conversations.conversations = combined
 		changed.emit("conversations")
 
+	if local_chat:
+		var listing: Dictionary = cache.get("conversations", {"conversations": [], "next": null})
+		listing.conversations = local_chat.summaries(listing.get("conversations", []))
+		cache.conversations = listing
+		changed.emit("conversations")
+
 
 func select_conversation(id: String) -> void:
 	if chat_busy():
 		return
 	active_conversation = id
+	if local_chat:
+		local_chat._publish(id)
 	changed.emit("conversation_selection")
 	if not id.is_empty():
 		await refresh_conversation(id)
@@ -298,98 +314,57 @@ func refresh_conversation(id: String) -> void:
 					clear_draft(chat_draft_key(id))
 					break
 
+	if local_chat:
+		if result.status == 200:
+			local_chat.observe(id, result.data)
+		local_chat._publish(id)
+		local_chat.sync(id)
 
-func send_message(text: String, references: Dictionary = {}, source_text := "") -> void:
+
+func send_message(text: String, references: Dictionary = {}, _source_text := "") -> void:
 	if not can_edit() or chat_busy() or text.strip_edges().is_empty():
 		return
 	if text.length() > 8000:
-		errors["chat"] = "消息最多 8000 个字符，请缩短内容后发送。"
+		errors.chat = "消息最多 8000 个字符，请缩短内容后发送。"
 		changed.emit("chat")
 		return
-	var attempt := _generation
-	var displayed := text if source_text.is_empty() else source_text
-	var id := active_conversation
-	var current := conversation()
-	for turn in current.get("turns", []):
-		if turn.get("state") == "pending":
-			return
-	if id.is_empty():
-		var new_draft := load_draft(chat_draft_key(""))
-		id = str(new_draft.get("conversation_id", new_id()))
-		if not save_draft(chat_draft_key(""), {"text": displayed, "conversation_id": id}):
-			errors["chat"] = "无法保存本机草稿，请先复制内容再重试。"
-			changed.emit("chat")
-			return
-		var created := await write("conversation:create", HTTPClient.METHOD_POST, CONVERSATIONS, {"id": id})
-		if attempt != _generation:
-			return
-		if created.status < 200 or created.status >= 300:
-			created = await read("conversation:" + id, CONVERSATIONS + "/" + id.uri_encode())
-			if attempt != _generation or created.status != 200:
-				return
-		current = created.data
-		cache["conversation:" + id] = current.duplicate(true)
-		if editor_context:
-			editor_context.move_new_conversation(id)
-		active_conversation = id
-		if not save_draft(chat_draft_key(id), {"text": displayed}):
-			return
-		clear_draft(chat_draft_key(""))
-		changed.emit("conversation_selection")
-	var draft := load_draft(chat_draft_key(id))
-	if not str(draft.get("pending_id", "")).is_empty():
-		await refresh_conversation(id)
-		return
-	var turn_id := new_id()
-	var payload := {"id": turn_id, "content": text, "expected_version": int(current.version)}
-	if not references.is_empty():
-		payload.context_snapshot = references.duplicate(true)
-	if not save_draft(chat_draft_key(id), {"text": displayed, "pending_id": turn_id, "pending_payload": payload}):
-		errors["chat"] = "无法保存发送记录，请先复制内容再重试。"
+	if not local_chat:
+		errors.chat = "本机模型入口尚未准备完成。"
 		changed.emit("chat")
 		return
-	var reply := await write("conversation:" + id, HTTPClient.METHOD_POST, CONVERSATIONS + "/" + id.uri_encode() + "/turns", payload)
-	if attempt != _generation:
-		return
-	if reply.status >= 200 and reply.status < 300:
-		clear_draft(chat_draft_key(id))
-	else:
-		# Read the exact persisted turn before exposing any further send action.
-		await refresh_conversation(id)
-		if attempt == _generation and reply.status in [400, 403, 404, 409, 412, 422, 429]:
-			var retained := load_draft(chat_draft_key(id))
-			if retained.get("pending_id") == turn_id:
-				retained.erase("pending_id")
-				retained.erase("pending_payload")
-				save_draft(chat_draft_key(id), retained)
-	if attempt == _generation:
-		refresh_conversations()
+	local_chat.send(text, references)
 
 
 func retry_pending_message() -> void:
+	# Reconcile historical cloud requests; never submit them for remote inference.
 	var id := active_conversation
+	if id.is_empty() or chat_busy():
+		return
+	var epoch := _generation
+	var result := await read("conversation:" + id, CONVERSATIONS + "/" + id.uri_encode())
+	if epoch != _generation or result.status not in [200, 404]:
+		return
 	var draft := load_draft(chat_draft_key(id))
-	if id.is_empty() or chat_busy() or not can_edit() or not draft.get("pending_payload") is Dictionary:
+	var pending_id: String = draft.get("pending_id", "")
+	if pending_id.is_empty():
 		return
-	var attempt := _generation
-	await refresh_conversation(id)
-	if attempt != _generation or not load_draft(chat_draft_key(id)).has("pending_id"):
-		return
-	# Replay exactly the original turn identifier and payload, never a new message.
-	var reply := await write("conversation:" + id, HTTPClient.METHOD_POST, CONVERSATIONS + "/" + id.uri_encode() + "/turns", draft.pending_payload)
-	if attempt != _generation:
-		return
-	if reply.status == 200:
-		clear_draft(chat_draft_key(id))
-	else:
-		await refresh_conversation(id)
-		if attempt == _generation and reply.status in [400, 403, 404, 409, 412, 422, 429] and load_draft(chat_draft_key(id)).has("pending_id"):
-			draft.erase("pending_id")
-			draft.erase("pending_payload")
-			save_draft(chat_draft_key(id), draft)
+	for turn in result.data.get("turns", []):
+		if turn.id == pending_id:
+			clear_draft(chat_draft_key(id))
+			changed.emit("chat")
+			return
+	# A definitive read found no old submission. Preserve the text for an explicit
+	# local send; neither polling nor retry reissues a cloud model request.
+	draft.erase("pending_id")
+	draft.erase("pending_payload")
+	save_draft(chat_draft_key(id), draft)
+	changed.emit("chat")
 
 
 func stop_waiting() -> void:
+	if local_chat and local_chat.busy():
+		local_chat.cancel()
+		return
 	var current := conversation()
 	if current.is_empty() or chat_busy():
 		return
@@ -479,19 +454,10 @@ func change_conversation(suffix: String, fields: Dictionary) -> Dictionary:
 func suggest_design(stage: String) -> void:
 	if not design_open(stage) or chat_busy():
 		return
-	var current := conversation()
-	var key := design_key(stage)
-	var local := load_draft(key)
-	var saved := design_revision(stage)
-	var body: String = local.get("body", saved.get("body", ""))
-	var attempt := _generation
-	var result := await write("design-suggestion", HTTPClient.METHOD_POST, CONVERSATIONS + "/" + str(current.id).uri_encode() + "/design/" + stage + "/suggest", {"expected_version": current.version, "lang": language, "draft_body": body})
-	if attempt != _generation or active_conversation != current.id:
-		return
-	if result.status == 200 and result.data.get("content") is String and load_draft(key) == local:
-		update_design_draft(stage, result.data.content, str(local.get("title", saved.get("title", ""))), str(local.get("acceptance", saved.get("acceptance", ""))))
+	if local_chat:
+		local_chat.suggest(stage)
 	else:
-		errors.design = "无法生成草稿，或本机内容已更新。你可以继续直接编辑。"
+		errors.design = "本机模型入口尚未准备完成。"
 		changed.emit("design")
 
 

@@ -17,6 +17,8 @@ import sys
 import tempfile
 import threading
 import time
+from contextlib import contextmanager
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from unittest.mock import patch
 
@@ -32,6 +34,75 @@ from git_service import GitService  # noqa: E402
 from merge_queue import MergeQueue  # noqa: E402
 from native_store import NativeStore  # noqa: E402
 from tianxuan_core import Tianxuan  # noqa: E402
+
+
+@contextmanager
+def local_chat_model():
+    """Serve the existing editor HTTP pipeline, separate from the business API."""
+    key = secrets.token_urlsafe(32)
+    requests = []
+    errors = []
+
+    class Handler(BaseHTTPRequestHandler):
+        def log_message(self, *_args):
+            pass
+
+        def respond(self, status, payload, content_type="application/json"):
+            self.send_response(status)
+            self.send_header("Content-Type", content_type)
+            self.send_header("Content-Length", str(len(payload)))
+            self.end_headers()
+            self.wfile.write(payload)
+
+        def do_GET(self):
+            if self.path != "/v1/models":
+                errors.append("Unexpected model fixture GET: " + self.path)
+                self.respond(404, b"{}")
+                return
+            self.respond(200, json.dumps({"data": [{"id": "native-local-fixture"}]}).encode())
+
+        def do_POST(self):
+            if self.path != "/v1/chat/completions" or self.headers.get("Authorization") != "Bearer " + key:
+                errors.append("Model fixture path or isolated credential did not match")
+                self.respond(403, b"{}")
+                return
+            try:
+                body = json.loads(self.rfile.read(int(self.headers["Content-Length"])))
+                messages = body["messages"]
+                user = next(message for message in reversed(messages) if message["role"] == "user")
+                design = "请根据以上讨论补充设计草稿" in user["content"]
+                requests.append({"body": body, "kind": "design" if design else "chat"})
+                answer = (
+                    "本机 API 夹具设计建议：保持已有目标，补充实现与验收。"
+                    if design
+                    else "本机 API 夹具回答：已收到原生天璇消息。"
+                )
+                payload = {
+                    "model": "native-local-fixture",
+                    "choices": [
+                        {"index": 0, "message": {"role": "assistant", "content": answer}, "finish_reason": "stop"}
+                    ],
+                }
+                # AIChat's existing HTTP request explicitly uses stream=false.
+                self.respond(200, json.dumps(payload, ensure_ascii=False).encode())
+            except Exception as exc:
+                errors.append(type(exc).__name__)
+                self.respond(500, b"{}")
+
+    server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield {
+            "endpoint": f"http://127.0.0.1:{server.server_port}/v1/chat/completions",
+            "key": key,
+            "requests": requests,
+            "errors": errors,
+        }
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=10)
 
 
 def publish_archive(directory, database, store, owner, repo):
@@ -181,6 +252,48 @@ def model_fixture(directory):
     return valid
 
 
+def exercise_local_conversation(directory, binary):
+    project = directory / "project"
+    project.mkdir()
+    (project / "project.godot").write_text(
+        'config_version=5\n[application]\nconfig/name="Local conversation contract"\n'
+    )
+    (project / "probe.gd").write_bytes(Path(__file__).with_name("tianxuan_local_conversation.gd").read_bytes())
+    with patch.dict(os.environ, {"GONGGONG_WORKSPACE": ""}):
+        editor = copy_editor(binary, directory / "engine")
+    receipt = directory / "local-conversation.json"
+    env = {
+        key: value
+        for key, value in sanitized_environment(directory).items()
+        if not key.startswith(("TX_", "TIANXUAN_"))
+    }
+    env.update(TX_SOURCE=str(ROOT), TX_DRAFTS=str(directory / "drafts"), TX_REPORT=str(receipt))
+    result = subprocess.run(
+        [str(editor), "--headless", "--path", str(project), "--script", "res://probe.gd"],
+        env=env,
+        cwd=directory,
+        capture_output=True,
+        text=True,
+        encoding="utf-8",
+        timeout=90,
+    )
+    output = result.stdout + result.stderr
+    if result.returncode or "SCRIPT ERROR" in output or not receipt.is_file():
+        raise AssertionError(output[-12000:])
+    report = json.loads(receipt.read_text(encoding="utf-8"))
+    assert report.get("ok") is True and report.get("checks"), report
+    report["passed"] = report.pop("ok")
+    report["process_diagnostics"] = [
+        line for line in result.stderr.splitlines() if line.startswith(("ERROR:", "WARNING:"))
+    ]
+    report["display_boundary"] = (
+        "Source-level local persistence and failure/race contracts with an injected model; no provider or visual acceptance."
+    )
+    with editor.open("rb") as copied_binary:
+        report["binary_sha256"] = hashlib.file_digest(copied_binary, "sha256").hexdigest()
+    return report
+
+
 def exercise(
     directory, binary, native_shell=False, execution=False, node=None, layout=False, controls=False, races=False
 ):
@@ -213,6 +326,9 @@ def exercise(
         else "tianxuan_controller.gd"
     )
     (project / "probe.gd").write_bytes(Path(__file__).with_name(probe).read_bytes())
+    (project / "local_model_fixture.gd").write_bytes(
+        Path(__file__).with_name("tianxuan_local_model_fixture.gd").read_bytes()
+    )
     store = Tianxuan(str(directory / "domain.sqlite"))
     password = secrets.token_urlsafe(32)
     owner = store.register("Isolated studio", "first@example.invalid", password)
@@ -245,7 +361,7 @@ def exercise(
         TIANXUAN_REPO_ROOT=str(repo_root),
         TIANXUAN_IMPORT_ALLOW_LOCAL="1",
     )
-    with patch.dict(os.environ, modes, clear=True), socket.socket() as sock:
+    with patch.dict(os.environ, modes, clear=True), socket.socket() as sock, local_chat_model() as model:
         sock.bind(("127.0.0.1", 0))
         api = "http://127.0.0.1:" + str(sock.getsockname()[1])
         queue = MergeQueue(str(directory / "queue.sqlite"), git, role_resolver=store.role_of)
@@ -259,6 +375,15 @@ def exercise(
             native_workflow=entry.workflow if entry else None,
         )
         publish_archive(directory, directory / "native.sqlite", store, owner, fixture_repo)
+        conversation_requests = []
+
+        @app.middleware("http")
+        async def observe_conversation_routes(request: Request, call_next):
+            response = await call_next(request)
+            route = request.url.path
+            if request.method == "POST" and route.startswith("/api/v1/workspace/conversations/"):
+                conversation_requests.append({"path": route, "status": response.status_code})
+            return response
 
         @app.get("/api/v1/native-test/delayed")
         async def delayed(request: Request):
@@ -327,6 +452,8 @@ def exercise(
                 TX_IMPORT_SOURCE=str(import_source),
                 TX_MODULE=module["id"],
                 TX_NATIVE_SHELL="1" if native_shell else "0",
+                TX_LOCAL_MODEL_ENDPOINT=model["endpoint"],
+                TX_LOCAL_MODEL_KEY=model["key"],
             )
             env["TX_IMPORT_REPOSITORY"] = str(fixture_repo)
             env["TX_MODEL_SOURCE"] = str(model_source)
@@ -350,7 +477,7 @@ def exercise(
                 timeout=300 if controls else 180 if execution else 90,
             )
             output = result.stdout + result.stderr
-            for credential in (password, key):
+            for credential in (password, key, model["key"]):
                 if credential in output:
                     raise AssertionError("A fixture credential appeared in process output")
             if result.returncode or "SCRIPT ERROR" in output:
@@ -359,6 +486,25 @@ def exercise(
             report = next((value for value in reports if value.get("passed") is True), None)
             if report is None:
                 raise AssertionError("Missing native controller completion receipt:\n" + output[-12000:])
+            if native_shell and not layout and not races and (not execution or controls):
+                assert not model["errors"], model["errors"]
+                assert model["requests"], "The native conversation never reached the editor's local HTTP model"
+                for request in model["requests"]:
+                    assert request["body"]["model"] == "native-local-fixture"
+                    assert request["body"].get("stream") is False
+                    assert not request["body"].get("tools"), "A local text reply must not request tools"
+                synchronized = [entry for entry in conversation_requests if entry["path"].endswith("/local-turns")]
+                cloud = [entry for entry in conversation_requests if entry["path"].endswith(("/turns", "/suggest"))]
+                assert synchronized and all(entry["status"] == 200 for entry in synchronized), synchronized
+                assert not cloud, "Native model requests reached cloud inference routes: " + repr(cloud)
+                if not controls:
+                    assert any(request["kind"] == "design" for request in model["requests"])
+                report["local_model"] = {
+                    "transport": "existing editor HTTP pipeline with isolated loopback JSON completion fixture",
+                    "requests": len(model["requests"]),
+                    "synchronized_turns": len(synchronized),
+                    "cloud_inference_requests": len(cloud),
+                }
             report["process_diagnostics"] = [
                 line for line in result.stderr.splitlines() if line.startswith(("ERROR:", "WARNING:"))
             ]
@@ -368,7 +514,7 @@ def exercise(
             for path in directory.rglob("*"):
                 if path.is_file() and path.suffix in {".json", ".cfg", ".godot", ".gd"}:
                     content = path.read_bytes()
-                    assert password.encode() not in content and key.encode() not in content, (
+                    assert all(value.encode() not in content for value in (password, key, model["key"])), (
                         "Credential persisted in private state"
                     )
             with editor.open("rb") as copied_binary:
@@ -392,6 +538,11 @@ def main():
     parser.add_argument("--report", required=True, type=Path)
     parser.add_argument("--native-shell", action="store_true")
     parser.add_argument(
+        "--local-conversation",
+        action="store_true",
+        help="Exercise local reply persistence, unavailable sync, restart and identity races without a provider",
+    )
+    parser.add_argument(
         "--layout", action="store_true", help="Exercise compiled native views at narrow and wide viewport sizes"
     )
     parser.add_argument(
@@ -411,6 +562,8 @@ def main():
         help="Reproduce focused merge, comment acknowledgement and initial configuration races",
     )
     args = parser.parse_args()
+    if args.local_conversation and any((args.native_shell, args.layout, args.execution, args.controls, args.races)):
+        parser.error("--local-conversation selects its own source-level probe")
     if args.layout or args.races:
         args.native_shell = True
     if args.races and (args.layout or args.execution or args.controls):
@@ -430,11 +583,16 @@ def main():
         "editor/docks/workbench/business_session.gd",
         "tests/editor/tianxuan_controller.gd",
         "tests/editor/tianxuan_native_shell.gd",
+        "tests/editor/tianxuan_local_model_fixture.gd",
         "tests/editor/run_tianxuan_controller.py",
     ]
     files += [
         "editor/SCsub",
         "editor/docks/SCsub",
+        "editor/docks/ai_chat_dock.cpp",
+        "editor/docks/ai_chat_dock.h",
+        "editor/docks/AIChatController.cpp",
+        "editor/docks/AIChatController.h",
         "editor/editor_node.cpp",
         "editor/editor_builders.py",
         "editor/docks/workbench/AIWorkbenchSidebar.cpp",
@@ -450,22 +608,35 @@ def main():
         files += ["tests/editor/tianxuan_execution_controls.gd"]
     if args.races:
         files += ["tests/editor/tianxuan_races.gd"]
+    include_local_contract = args.native_shell and not any((args.layout, args.races, args.controls, args.execution))
+    if args.local_conversation or include_local_contract:
+        files += ["tests/editor/tianxuan_local_conversation.gd"]
     fingerprints = {p: hashlib.sha256((ROOT / p).read_bytes()).hexdigest() for p in files}
     with tempfile.TemporaryDirectory(prefix="tianxuan-native-controller-") as temporary:
-        report = exercise(
-            Path(temporary).resolve(),
-            args.godot.resolve(),
-            args.native_shell,
-            args.execution,
-            args.node.resolve() if args.node else None,
-            args.layout,
-            args.controls,
-            args.races,
-        )
+        if args.local_conversation:
+            report = exercise_local_conversation(Path(temporary).resolve(), args.godot.resolve())
+        else:
+            report = exercise(
+                Path(temporary).resolve(),
+                args.godot.resolve(),
+                args.native_shell,
+                args.execution,
+                args.node.resolve() if args.node else None,
+                args.layout,
+                args.controls,
+                args.races,
+            )
+            if include_local_contract:
+                with tempfile.TemporaryDirectory(prefix="local-conversation-", dir=temporary) as contract_directory:
+                    report["local_conversation_contract"] = exercise_local_conversation(
+                        Path(contract_directory).resolve(), args.godot.resolve()
+                    )
     if any(hashlib.sha256((ROOT / p).read_bytes()).hexdigest() != fingerprints[p] for p in files):
         raise AssertionError("Candidate source changed during validation; rerun the affected check")
     level = (
-        "compiled_native_shell_real_isolated_service_headless"
+        "source_loaded_local_conversation_contract"
+        if args.local_conversation
+        else "compiled_native_shell_real_isolated_service_headless"
         if args.native_shell
         else "source_loaded_controllers_real_isolated_service"
     )

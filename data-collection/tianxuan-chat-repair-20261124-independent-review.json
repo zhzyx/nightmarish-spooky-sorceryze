@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "request_id": "tianxuan-chat-repair-20261124",
+  "issue": 2180,
+  "worker": "/root/local_chat_review",
+  "role": "independent reviewer",
+  "implementation_participation": false,
+  "worktree": ".",
+  "baseline": "8629ecf0992bd3de500478deac08b00f1d086953",
+  "reviewed_at": "2026-11-23T22:59:44.036345+00:00",
+  "scope": "Native Tianxuan local CLI/API provider reuse, isolated runtime lifecycle, identity/cancellation, local persistence and storage-only synchronization, native chat/design UI integration, unchanged Web conversation route compatibility. Follow-up review includes native HTTP fixture/runner and probes, source-contract integration into default native-shell CI, and explicitly opted-in real Codex probe.",
+  "candidate_files_sha256": {
+    "editor/SCsub": "43c30eb4d1be579ced6f728963aa784f4773271d98ce7916a5242160a9f2860f",
+    "editor/docks/tianxuan/TianxuanModelHost.cpp": "ffbdefa3074c98768889108cabdb77c6a4eb809b60d0c7c845771cdaac80df45",
+    "editor/docks/tianxuan/TianxuanModelHost.h": "f4841b2ccfcac62f9ef1895a653e00586c8f61e6f5023924732bce784c1da0f4",
+    "editor/docks/ai_chat_dock.cpp": "b603423d482277878a87b433006bb6e7eced61a6f05a7db6aec78390b5e6a563",
+    "editor/docks/ai_chat_dock.h": "fc79312af2319c19c873ef53a64d7f581121429e4252b21f795e4358bf1f2403",
+    "editor/docks/tianxuan/TianxuanWorkbench.cpp": "63024c3b2087ac76b2ce3e31353d09aa52f5750ed884f8153fdbf2c64e0002f1",
+    "editor/docks/tianxuan/TianxuanWorkbench.h": "f69fa6440339f2f82464b16b482712dd614d9aad0ae148ec22e580fd38d49b84",
+    "editor/editor_node.cpp": "5da712945615560fb47c5e6a029a2965b5854d8d8bc2cd0830d3b14f81cb3e46",
+    "editor/docks/tianxuan/local_conversation_controller.gd": "0605eabd129b1196c74d46b24f9bd35a28cd0be521a40e779afe3985dcbb0ab3",
+    "editor/docks/tianxuan/workspace_controller.gd": "91a7509dab59fd3cc8c0b3a3f57d7bf31ca505197e4fae0aa93514098d3efa4a",
+    "editor/docks/tianxuan/home_page.gd": "e16c2aedb23015f256dcea1a5485524d2434ed174655630d8305265ca56a5be2",
+    "editor/docks/tianxuan/locale.gd": "350eaf5082eb4032e7457304fb92d4aeba9967ea5ce4abe2439101642252797f",
+    "customizations/components/tianxuan/server/workspace_conversations.py": "fe45a0d1ff83612db8731622aad087c85265fd24e27ec93306a86b8298cbfdb8",
+    "customizations/components/tianxuan/server/test_workspace_local_turns.py": "fc2c9bf8b9197a4cbbb19d03b6daf3a1216e8ace3cc759e13c219626cf5011ba",
+    "tests/editor/tianxuan_local_conversation.gd": "83fb311afc3ca0aa6b6839b0313e2cb156c0759c5961b00bff41f576763c542f",
+    "tests/editor/run_tianxuan_controller.py": "4b675fb4e7012aa219d6141a0c01ef6b8a9fa35588f25baabd897ff8f23641f8",
+    "tests/editor/tianxuan_local_model_fixture.gd": "c9d63642b706ddff87bc0149003fc631d16bd07c065aa28ddf6f67f9f2939aaa",
+    "tests/editor/tianxuan_native_shell.gd": "04ca1ccaf1dfffebf60983441370bdfea7646c060f367a1129e49781d17c4a82",
+    "tests/editor/tianxuan_execution_controls.gd": "634fc164d5abb7b1286b77a2047cfeec2ab4419b1ef5df4073f749e6c5d41318",
+    "tests/editor/run_tianxuan_real_cli.py": "fb4fffff516c9d153b9bb8650172e5ad027ec90fc35721e589d76ab6c781b3d8",
+    "tests/editor/tianxuan_real_cli.gd": "f1123ad91820827521bcd459d7df3082a0b0049d507136a357e2d841f381ea3a"
+  },
+  "findings": [
+    {
+      "id": "R1",
+      "status": "resolved",
+      "problem": "Lost local-turn ACK could never reconcile normalized content/context because the client compared raw fields.",
+      "resolution": "Client always replays persisted original outbox payload; server verifies normalized immutable digest and returns existing turn without another inference or version bump."
+    },
+    {
+      "id": "R2",
+      "status": "resolved",
+      "problem": "Design generation omitted confirmed predecessor content and accepted result after source revisions changed.",
+      "resolution": "Confirmed predecessor content is sent; current/revisions/requirement_id and original local draft are frozen and checked before applying completion."
+    },
+    {
+      "id": "R3",
+      "status": "resolved",
+      "problem": "Full-body model replacement could overwrite authored design paragraphs.",
+      "resolution": "Model is instructed to supplement, and the controller appends bounded returned text while preserving the original body exactly."
+    },
+    {
+      "id": "R4",
+      "status": "resolved",
+      "problem": "Optional real CLI runner recorded read-only/no-shell/ScriptError conditions without requiring them for success.",
+      "resolution": "probe_passed requires all observed process and isolation conditions; independently checked existing receipt acceptance, eight altered-condition rejection cases, and opt-in rejection before executable resolution without another provider call."
+    }
+  ],
+  "verification": [
+    {
+      "command": "python -m pytest -q customizations/components/tianxuan/server/test_workspace_local_turns.py customizations/components/tianxuan/server/test_workspace_conversations.py",
+      "result": "passed",
+      "checks": 26,
+      "elapsed_seconds": 3.64,
+      "notes": "One existing Starlette TestClient httpx deprecation warning."
+    },
+    {
+      "command": "Private self-contained copy of installed validation-engine/Godot --headless --path <temporary private project> --script tests/editor/tianxuan_local_conversation.gd; TX_SOURCE=reviewed worktree; TX_DRAFTS/TX_REPORT/private-home in TemporaryDirectory via sanitized_environment",
+      "result": "passed",
+      "checks": 28,
+      "exit_code": 0,
+      "evidence_level": "source-loaded GDScript controller, fake provider/session, real private disk",
+      "notes": "Expected directory creation error from explicit a deliberately invalid parent storage-failure test; test asserts no provider invocation and preserved input. This is not new C++ binary, actual network/provider, visual or IME evidence."
+    },
+    {
+      "command": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "command": "python tests/editor/run_tianxuan_controller.py --godot bin/godot.macos.editor.dev.arm64 --local-conversation --report <private-report>/tianxuan-independent-local-contract.json",
+      "result": "passed",
+      "checks": 28,
+      "evidence_level": "source-loaded controller with injected model/session and real private persistence",
+      "binary_sha256": "379927aa6fecf73fd7816b8dfea65107d282351aae0449b5d320ea778d53e5d0",
+      "notes": "Includes portable ordinary-file storage-blocker failure fixture. Its expected directory error is reported explicitly."
+    },
+    {
+      "command": "Imported run_tianxuan_real_cli.probe_passed; existing <private-report>/tianxuan-real-cli.json accepted; eight individually false boundary conditions rejected; process without --allow-real-provider exited 2 before executable resolution and created no output.",
+      "result": "passed",
+      "real_provider_invocations": 0
+    },
+    {
+      "command": "python3 -m py_compile tests/editor/run_tianxuan_real_cli.py tests/editor/run_tianxuan_controller.py; git diff --check",
+      "result": "passed"
+    }
+  ],
+  "conclusion": "passed",
+  "unresolved_findings": [],
+  "limitations": [
+    "Review and isolated/mock checks do not replace real-provider or final installed-app acceptance. Author native HTTP/controls/layout receipts have been read back and are separately identified, not represented as reviewer executions.",
+    "Optional real Codex receipt was read and its strengthened success predicate was independently verified offline; reviewer did not rerun provider. Its binary digest remains distinct from later rebuilt candidates.",
+    "Precise candidate CI/main delivery, final app installation, platform visual/IME acceptance and legacy service deployment status remain parent-task delivery evidence.",
+    "Old service lacking local-turns is expected to retain local answers with explicit pending-sync status; no cloud deployment is claimed."
+  ],
+  "read_back_author_validation": [
+    {
+      "path": "tianxuan-2180-final-native-shell.json",
+      "sha256": "9c2c7c421158e0a230ba79a4c2705cef54306fcdff58872ad3e15870aa087545",
+      "passed": true,
+      "checks": 131,
+      "binary_sha256": "379927aa6fecf73fd7816b8dfea65107d282351aae0449b5d320ea778d53e5d0",
+      "not_executed_by_reviewer": true,
+      "local_model": {
+        "transport": "existing editor HTTP pipeline with isolated loopback JSON completion fixture",
+        "requests": 3,
+        "synchronized_turns": 2,
+        "cloud_inference_requests": 0
+      },
+      "local_contract_checks": 28
+    },
+    {
+      "path": "tianxuan-2180-final-execution-controls.json",
+      "sha256": "ce12818b14f13ef028fc2ec4657d7e77d1f4ff210a1cebb863e84e08035399da",
+      "passed": true,
+      "checks": 41,
+      "binary_sha256": "379927aa6fecf73fd7816b8dfea65107d282351aae0449b5d320ea778d53e5d0",
+      "not_executed_by_reviewer": true,
+      "local_model": {
+        "transport": "existing editor HTTP pipeline with isolated loopback JSON completion fixture",
+        "requests": 1,
+        "synchronized_turns": 1,
+        "cloud_inference_requests": 0
+      }
+    },
+    {
+      "path": "tianxuan-2180-final-layout.json",
+      "sha256": "3f208b7542f1be83cc65eb68b0c70ee9727c1d1e3e4c31c2e36096d0c5d13862",
+      "passed": true,
+      "checks": 164,
+      "binary_sha256": "379927aa6fecf73fd7816b8dfea65107d282351aae0449b5d320ea778d53e5d0",
+      "not_executed_by_reviewer": true
+    }
+  ],
+  "path_policy": "Repository inputs use relative paths. Report references are artifact basenames or private-report placeholders; machine username, HOME, temporary directories and credential values are not retained."
+}

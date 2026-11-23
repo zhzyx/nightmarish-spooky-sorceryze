@@ -1,6 +1,7 @@
 extends SceneTree
 
 var checks: Array[String] = []
+const LocalModelFixture = preload("res://local_model_fixture.gd")
 
 
 func _initialize() -> void:
@@ -42,6 +43,9 @@ func run() -> void:
 	var legacy = base.find_child("WorkbenchBusinessSession", true, false)
 	if not check(legacy.get_meta("session_controller") == session, "existing native workbench shares the same identity"):
 		return
+	var ai_before: Dictionary = await LocalModelFixture.configure(self)
+	if not check(not ai_before.is_empty(), "existing AIChat API controls use only the isolated local model fixture"):
+		return
 	sidebar.find_child("ExpandTianxuan", true, false).pressed.emit()
 	var submit: Button = main.find_child("AuthenticateTianxuan", true, false)
 	if not check(await wait_until(func(): return main._auth_mode == "accounts" and not submit.disabled), "native login reads the real service configuration"):
@@ -64,7 +68,15 @@ func run() -> void:
 	if not check(await wait_until(func(): return not controller.chat_busy() and controller.conversation().get("turns", []).size() == 1), "native message is persisted by the existing conversation API"):
 		return
 	var conversation: Dictionary = controller.conversation()
-	if not check(conversation.turns[0].state == "unanswered", "unconfigured model remains an explicit unanswered turn, not fake success"):
+	if not check(conversation.turns[0].state == "answered" and conversation.turns[0].answer == "本机 API 夹具回答：已收到原生天璇消息。" and conversation.turns[0].reply_source == "editor-local", "native conversation displays the actual local API reply"):
+		print(JSON.stringify({"local_turn": conversation.turns[0], "model": controller.local_chat.configuration()}))
+		return
+	if not check(await wait_until(func(): return controller.local_chat.syncing.is_empty()), "completed local reply finishes business-service synchronization"):
+		return
+	var synchronized: Dictionary = await session.api_request(HTTPClient.METHOD_GET, controller.CONVERSATIONS + "/" + conversation.id)
+	if not check(synchronized.status == 200 and synchronized.data.turns[0].answer == conversation.turns[0].answer and synchronized.data.turns[0].reply_source == "editor-local", "shared conversation API returns the exact completed local reply"):
+		return
+	if not check(LocalModelFixture.unchanged(ai_before), "local Tianxuan inference leaves ordinary AIChat conversation and draft unchanged"):
 		return
 	main.find_child("OpenTianxuanSidebar", true, false).pressed.emit()
 	sidebar._page_picker.item_selected.emit(0)
@@ -125,6 +137,11 @@ func run() -> void:
 	if not check(stage != null, "compiled native requirement stages are reachable from the workspace"):
 		return
 	if not check(await wait_until(func(): return not controller.chat_busy()), "native requirement page finishes refreshing before editing"):
+		return
+	main._page_instances.design._suggest.pressed.emit()
+	if not check(await wait_until(func(): return not controller.chat_busy() and controller.load_draft(controller.design_key("direction")).get("body", "") == "本机 API 夹具设计建议：保持已有目标，补充实现与验收。"), "native requirement suggestion uses the same local API connection"):
+		return
+	if not check(LocalModelFixture.unchanged(ai_before), "local design suggestion also leaves ordinary AIChat conversation unchanged"):
 		return
 	for index in 3:
 		stage.select(index)
