@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-8749b1667a1a327645e72ef2fc7235d676c374949cd3a0f9adf4e77f4e4d2c76",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1730",
+  "occurred_at": "2026-11-23T17:45:49.981147+00:00",
+  "evidence_refs": [
+    "dispatch-58911b7e76364257b6be2b7fc219f651",
+    "learn-735b32bf63c233e131a00f8522766e72bbb0cc6d55fdf57e4f72cb209ad6b3ba"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 42,
+    "previous": "fbaa6fe4dc292457f3f33fcc3a5fb5c29bd65337ba888e1aa5a40a06527da999",
+    "action": "applied",
+    "details": {
+      "task": "G21 final source delta received by the existing production Git repository",
+      "observed": "Presence of every delta object alone missed three commits cut off by the consumer’s shallow boundaries. Rehearsing the exact unshallow operation and verifying ordinary traversal at the target exposed and corrected that gap. A second reader verified all 59,305 objects from raw bytes and compared the frozen refs."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-g21.json",
+        "sha256": "26b05bc55168a0b21b42b52106bfcd5f797c88af0009b430a20de1e92a27689f"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-g21/dispatch-58911b7e76364257b6be2b7fc219f651.json",
+      "sha256": "9db8a4f54805809747188897ac39f60f74cc030d9341ab560060ebe0c930dcb1"
+    }
+  },
+  "sha256": "2df4c467e1aa064cf6f33be14f3ec6322ef0deb232aafd569fa8142cf942cfc5"
+}
