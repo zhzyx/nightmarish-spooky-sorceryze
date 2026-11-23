@@ -28,6 +28,11 @@ tools/maliang_hunyuan/HUNYUAN-NOTICE -text -whitespace
 *.tza binary
 
 # GongGong workspace integration
+# Preserve the exact migration and independent-review receipt bytes for #2178.
+data-collection/duobao-dual-review-2178.json -text whitespace=cr-at-eol
+data-collection/duobao-native-live-2178.json -text whitespace=cr-at-eol
+data-collection/duobao-dual-module-build-impact-2178.json -text whitespace=cr-at-eol
+data-collection/duobao-server-deployment-2178.json -text whitespace=cr-at-eol
 framework/** -text whitespace=cr-at-eol
 # Preserve the reviewed upstream module's trailing blank line; the frozen snapshot hook checks exact bytes.
 framework/modules/sinan/refresh.mjs whitespace=cr-at-eol,-blank-at-eof

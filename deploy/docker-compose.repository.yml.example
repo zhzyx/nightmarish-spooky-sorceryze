@@ -1,0 +1,11 @@
+# Additive native content reception while the existing Git entry remains active.
+# Resolve DUOBAO_REPOSITORY_ROOT as an absolute path on the persistent data disk;
+# prepare it for uid/gid 10001 before starting the API. Never share the private
+# document native database. Build/install the matching API source first.
+services:
+  api:
+    environment:
+      TIANXUAN_STORAGE_MODE: git
+      TIANXUAN_REPOSITORY_DB: /native-repositories/gonggong.sqlite
+    volumes:
+      - ${DUOBAO_REPOSITORY_ROOT:?absolute persistent repository directory required}:/native-repositories

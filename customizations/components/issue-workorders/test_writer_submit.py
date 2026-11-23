@@ -16,6 +16,13 @@ import writer_submit as submission
 
 
 class WriterTests(unittest.TestCase):
+    def test_partial_dual_submission_does_not_report_delivery_recovered(self) -> None:
+        result = {"commit": "verified-git-commit", "duobao_submission": {"state": "pending"}}
+        with patch("kuafu_incident.notify_failure") as failed, patch("kuafu_incident.observe_success") as success:
+            submission.observe_submission(Path.cwd(), 2178, "request", result)
+        failed.assert_called_once()
+        success.assert_not_called()
+
     def test_permission_is_per_repository_and_not_a_personal_whitelist(self) -> None:
         for login, permission in [
             ("alice", "WRITE"),

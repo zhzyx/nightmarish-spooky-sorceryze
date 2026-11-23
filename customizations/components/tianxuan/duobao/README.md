@@ -1,5 +1,42 @@
 # 多宝（原生版本与 Git 兼容接入）
 
+## 服务器原生仓库与双线提交
+
+部署增量配置见 `deploy/docker-compose.repository.yml.example`（从仓库根解析）；使用新版 API 与原生仓库专用 nginx 路由，单进程处理有界上传。认证身份的租户写入本机工作区／接收回执，目标或租户漂移须显式建立新绑定，不能覆盖旧成功回执。同租户协作者接收同一 Git 版本时，核对完整清单和来源元数据后复用已接收版本。候选审查绑定工单定义修订；定义变更需重建候选，已完成发布的原请求只恢复历史回执及幂等回写。
+
+2026-11-24 的当前阶段为**迁移并双线自动提交**。原有 Git 交付入口保留；新仓库使用服务器独立数据盘上的 `TIANXUAN_REPOSITORY_DB`，与私有文档库隔离。`NativeRepository` 复用 `NativeStore` 的内容和修订、`EvidenceCache` 与 `NativeRelease` 的检查／独立审查／发布表，不调用 Git。代码历史的旧 Git 与迁移归档继续保留，本阶段不声明唯一权威入口已经切换。
+
+`native_repository.py`、`repository_client.py` 和认证路由是既有多宝组件的独立 Python host_tool；输入是认证用户、精确修订、对象摘要、完整清单及稳定请求键。单对象上限 32 MiB，最多 100,000 文件，清单 32 MiB；检查逐对象读取，上传限单请求并发。无需重建 Godot；停用新增路由和双线配置即可回退，保留数据库、已接收版本、原 Git 服务及回执。
+
+可信宿主配置使用绝对路径 `GONGGONG_DUOBAO_CONFIG`，默认 `%APPDATA%/GongGong/duobao.json`（非 Windows 为 `~/.config/GongGong/duobao.json`）。配置中的相对凭据文件以配置目录解析；工作副本不能指定目的地址或凭据。
+
+```json
+{
+  "api": "https://167-172-70-41.sslip.io",
+  "repository": "gonggong",
+  "source_repository": "zhzyx/nightmarish-spooky-sorceryze",
+  "dual_submit": true,
+  "token_env": "TIANXUAN_TOKEN"
+}
+```
+
+凭据由当前操作者提供，可在私有宿主配置用 `credential_file` 指向 `{"token":"…"}` 文件，不写进仓库。配置存在且 `dual_submit=true` 时，协作者 `writer_submit.py` 自动发送不可变 Git 候选，真实合入回读再发送 merge commit。传输只读取 Git 对象，不读取未提交工作文件；Git 是该兼容适配器的来源，不是原生存储实现。每个来源提交对应 `git/<完整提交>` 接收分支，服务核对内容摘要，客户端回读完整清单和分支头后才记录 received。私有恢复回执在 Git common-dir 的 `gonggong-duobao/`；文件模式摘要保留在来源说明，原 Git 历史继续承载完整模式溯源。
+
+以下命令从可信安装根执行。`--config` 必须指向宿主配置，`--workspace` 是本任务的普通目录，既不要求 `.git` 也不要求 `project.godot`。
+
+```text
+python customizations/components/tianxuan/duobao/repository_client.py --config <宿主配置> route
+python customizations/components/tianxuan/duobao/repository_client.py --config <宿主配置> bind --workspace <普通目录> --branch <已有任务分支>
+python customizations/components/tianxuan/duobao/repository_client.py --config <宿主配置> status --workspace <普通目录>
+python customizations/components/tianxuan/duobao/repository_client.py --config <宿主配置> submit --workspace <普通目录> --request-key <稳定键> --message <说明>
+```
+
+`.duobao-workspace.json` 只记录服务绑定摘要、仓库、分支和来源修订；服务重新校验版本，文件本身不是授权。`branch` 从当前固定来源创建任务分支；`submit --path` 可以仅提交所选文件，删除显式保留。未知回执重用原请求键并回读，不把稍后的磁盘变更套在旧请求上。链接、重解析点、路径越界、大小写碰撞及管理目录拒绝。
+
+完整原生合入由 `candidate → check → review → deliver` 执行，候选绑定天璇 `iss_…` 工单。实际检查由宿主安装的执行器运行；客户端不能上传 `passed`。默认 `repository-integrity` 只验证内容完整性，不替代业务测试。审查者必须独立于候选贡献者；主线推进使用精确目标和有效批准，成功后幂等回写工单，不自动宣布整体验收完成。部署配置保留 Git 模式并额外挂载原生仓库，从而允许双线共存。
+
+验证入口：`test_native_repository.py`、`server/test_native_repository_api.py`、`server/test_repository_client.py`。覆盖空 PATH 普通目录提交、固定 Git 内容双线接收、漂移拒绝、幂等恢复、跨租户与撤权、独立审查和目标回读。真实服务器迁移及重启回执另按对应工单记录，隔离测试不代替部署验收。
+
 原生方向由 [#1382](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1382) 定义：多宝自主保存版本、变更与组合，Git 仅作可选接入。以下原生入口与已有线上 Git 服务分别说明；当前服务尚未切换到原生存储。
 
 ## 原生模块修订（#1386）

@@ -1,0 +1,105 @@
+{
+  "reviewer": "agent:/root/sinan_fc12c9bffd5bcb0b",
+  "result": "passed",
+  "reviewed_inputs_sha256": "152a5e9b7e744a7352150dda967a6d374b9055a57980471a1d02793f294c79f5",
+  "files": [
+    {
+      "path": "Markdown/workflow/repository/README.md",
+      "sha256": "877ec18ab301fbf9420b06bc53e97b84a4ebccb68b2e16374a355e7317ef7cd4"
+    },
+    {
+      "path": "customizations/components/issue-workorders/test_writer_submit.py",
+      "sha256": "41fe4889df1b701a606cd9e4368467bf2b46361b11ab903c3a0774d8e89c287c"
+    },
+    {
+      "path": "customizations/components/issue-workorders/writer_submit.py",
+      "sha256": "727e895c94d1c227ef5b3ddd6dccc4744f7e8421bbd8c55b1930f96b3db3bbbb"
+    },
+    {
+      "path": "customizations/components/issue-workorders/yanluo.md",
+      "sha256": "c5a408aee14f5deedd0f47b0f7f23db352ec87f05ef62971d58b2224976cad1e"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/README.md",
+      "sha256": "6a368cb5e2891fbc4f83d61c0e2a4727043435b0d34b89b5f429e26ace4e1793"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/git_submission.py",
+      "sha256": "c09e95df65f690885732d8cad798b8f1572da5f93986cc175f23347135c8c492"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/native_repository.py",
+      "sha256": "02f9cb2be6580e843afed71a1d78b4edcadc7d5c11416609f21218065a144990"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/repository_client.py",
+      "sha256": "d211adcef1d9761f7249fdc02fcafc2d3fe717e7748101b94d890e80454b0d19"
+    },
+    {
+      "path": "customizations/components/tianxuan/duobao/test_native_repository.py",
+      "sha256": "3e1dc85ea65a4b06a28339f058054123dbee46bc9e5378001ade7c5b8e3a05c3"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/api.py",
+      "sha256": "8962a31e35760eeffcf9bb595e7f11b85dd418cc94df5b6d348cdf8a007ff836"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/main.py",
+      "sha256": "5c8449e70f1ceb2ec2b8b1b571022323ef732af709c5c9bf7e6de0649b79ae32"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/native_repository_api.py",
+      "sha256": "208cda97ea7a38ab7f72cbbd96c42a1238a4c2547d0d08ecb6c65b30b70ce037"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_native_repository_api.py",
+      "sha256": "0dc424e97abd78572d91dbc59192da12b1891672bd2b35368667abc9ab56390e"
+    },
+    {
+      "path": "customizations/components/tianxuan/server/test_repository_client.py",
+      "sha256": "1e4eb3d3398dc4e6208cc6befc24f8a714afa490c7496fca4075fb27fc77571e"
+    },
+    {
+      "path": "deploy/docker-compose.repository.yml.example",
+      "sha256": "06cce20ac5f2b545edfbc4c20ee065584e85c2ef7660a8e463803f4fedd405bd"
+    },
+    {
+      "path": "deploy/nginx.conf",
+      "sha256": "02f1841dd8c8ae551147a71dfe07274c61164e636315d69c27930de21bd8eb5a"
+    },
+    {
+      "path": "deploy/production/nginx.gate.conf.example",
+      "sha256": "3452533a3894fbbd95155f7d4f4d204fb6ce0dd261b9597941a464c8862ae268"
+    },
+    {
+      "path": "design-docs/duobao-native-authority-20261124.md",
+      "sha256": "4a80a494817b223aa22f2fdc9d17e47c390a50d2c9f9d12e1cd079038d4c6c8e"
+    },
+    {
+      "path": "tools/native_host_inputs.json",
+      "sha256": "289e68e04d8a907bfbdb7dff6beb33608d38091125b9245fe906d58aaffc55a2"
+    }
+  ],
+  "tests": {
+    "passed": 21,
+    "subtests_passed": 7
+  },
+  "findings_repaired": [
+    "destination and tenant binding",
+    "cross-actor exact receipt recovery",
+    "retained successful receipt",
+    "issue revision binding",
+    "post-publication comment recovery",
+    "test database handle cleanup"
+  ],
+  "incremental_review": {
+    "reviewer": "agent:/root/sinan_fc12c9bffd5bcb0b",
+    "result": "passed",
+    "tests_passed": 2,
+    "reason": "ProductionAccess injects verified X-Actor; preserve strict bearer identity",
+    "files": {
+      "customizations/components/tianxuan/server/native_repository_api.py": "32940cf58d2b016f2d8a7c682167883b56093474df4dfa426c1b4ad98edc3639",
+      "customizations/components/tianxuan/server/test_native_repository_api.py": "54c841a57515c3a0e5cf6fd573a5fcb3cb3b2c094684ba0e1f97aac0a6175ea2"
+    }
+  }
+}

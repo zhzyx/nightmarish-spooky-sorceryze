@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-840a7e66a190d1ded0e3e45660ab7c8d51eb5674",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "771d5c435a27b0cc1acfd5c6381caac0ed5a177963ff5d1888e7511328cd6438",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2187",
+    "action": "delivery",
+    "detection_head": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "context_sha256": "5b09dc00400798d12fe17727545a1ef0ab84dbf8425663ca6c6aa84bc72c6a9e",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex:user-2178",
+    "evidence": "request-reconciled-2178-20261124",
+    "diagnosis": "此前intake-only只回读来源，派发记录均为handoff，缺少同租户request类事件。已重新回读真实Issue并记录当下授权需求对账事件，保留真实发生时间与原授权，未伪造早期执行记录。",
+    "next_action": "携全部已验证回执重跑提交门禁。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:21:31.696679+00:00",
+    "attempted": null,
+    "repair_owner": "Sail-Li",
+    "continuable": "true"
+  },
+  "occurred_at": "2026-11-23T23:23:08.138021+00:00",
+  "sha256": "78d8386c32c0f99a29d4502951189fc5df65ad167eb6ae62e833e09984228b00"
+}
