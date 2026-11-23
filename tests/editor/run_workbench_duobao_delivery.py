@@ -74,7 +74,7 @@ def exercise(base, binary):
     )
     history = []
     # Reopen the service before delivery so checks and review receipts must survive restart.
-    for phases in (("resolve", "reject", "denied", "approve"), ("deliver",)):
+    for phases in (("resolve", "reject", "requester_review", "approve"), ("deliver",)):
         with socket.socket() as sock:
             sock.bind(("127.0.0.1", 0))
             port = sock.getsockname()[1]
