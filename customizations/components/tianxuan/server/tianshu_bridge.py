@@ -195,6 +195,16 @@ def _request(
     return parsed
 
 
+def _read_git_workcopy(args: argparse.Namespace, body: dict[str, Any]) -> dict[str, Any]:
+    import selected_commit
+
+    if body.get("mode") == "native":
+        raise BridgeError("未找到物化来源，请重新打开工程")
+    if args.command == "workcopy-diff":
+        return cast(dict[str, Any], selected_commit.diff(args.project))
+    return cast(dict[str, Any], selected_commit.preview(args.project, body["base"], body["tree"], body["path"]))
+
+
 def workcopy_operation(args: argparse.Namespace) -> dict[str, Any]:
     import selected_commit
 
@@ -228,10 +238,8 @@ def workcopy_operation(args: argparse.Namespace) -> dict[str, Any]:
         return cast(dict[str, Any], project.submit(body))
     if body.get("mode") == "native":
         raise BridgeError("未找到物化来源，请重新打开工程")
-    if args.command == "workcopy-diff":
-        return cast(dict[str, Any], selected_commit.diff(args.project))
-    if args.command == "workcopy-preview":
-        return cast(dict[str, Any], selected_commit.preview(args.project, body["base"], body["tree"], body["path"]))
+    if args.command in ("workcopy-diff", "workcopy-preview"):
+        return _read_git_workcopy(args, body)
     name = body.get("repo") or args.repo_name
     if args.bound_repo and name != args.bound_repo:
         raise BridgeError("项目路由绑定的多宝仓库为 " + args.bound_repo)
@@ -727,6 +735,12 @@ def main(argv: list[str] | None = None) -> int:
                 raise BridgeError("项目路由绑定的多宝仓库为 " + args.bound_repo)
         else:
             args.api = args.api or LOCAL_API
+        if getattr(args, "bound_repo", "") and args.command in ("workcopy-diff", "workcopy-preview"):
+            # Automatic routing has identified a Git checkout, not a materialized
+            # native project. These reads never use the remote service or identity.
+            body = json.loads(args.request.read_text(encoding="utf-8")) if getattr(args, "request", None) else {}
+            _write(args, {"ok": True, "data": _read_git_workcopy(args, body)})
+            return 0
         if getattr(args, "bound_repo", ""):
             # Legacy launchers may supply credentials for the old loopback
             # default. Only an explicit token or this origin's cache is bound.

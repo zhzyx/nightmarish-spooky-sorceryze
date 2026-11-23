@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-bd9760e2accf8cb5a51d8e479902d96a12ace1f1",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-native-ui-20261123",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "5fd6865740b71e7a6715fb936cbe7145b6ebecd1bbb0dca49211db117cf0a7c2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2157",
+    "action": "delivery",
+    "detection_head": "e16220afbb0d85a88cc5bcba24662d6adfbe7c19",
+    "context_sha256": "871fdb5d8ec8c94b369659864cb0935fb8555e39bfee4d10be61a7fac095c5ee",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "user-goal-and-continue:issue-2150",
+    "evidence": "data-collection/receipts/tianxuan-native/rebind-path-probe.json",
+    "diagnosis": "macOS 临时工作树路径保留符号链接前缀，而仓库根检查比较其 resolve 结果；隔离探针复现默认路径拒绝、规范化临时目录通过。",
+    "next_action": "本任务改用已存在的 auto-integrate 提交入口整合零交叉 main 前进；rebind 原完整动作仍未复验，不报告已修复源头。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T17:56:16.529616+00:00",
+    "attempted": "默认临时根与规范化临时根各创建实际独立 Git 工作树，调用同一 check_repository 后清理；未修改发布工具。",
+    "repair_owner": "Sail-Li / agent:/root",
+    "continuable": "当前候选可继续自动整合提交；发布工具原路径问题留在关联 bug。"
+  },
+  "occurred_at": "2026-11-23T18:09:10.724329+00:00",
+  "sha256": "27bee397dbd580056b836cd00a041610560ec09e7f6c1eaa184f30728968c26a"
+}

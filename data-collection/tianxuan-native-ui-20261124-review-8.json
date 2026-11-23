@@ -1,0 +1,20 @@
+{
+  "request_id": "tianxuan-native-ui-20261123",
+  "issue_number": 2150,
+  "reviewer": "/root/sinan_166ba41a04521d99",
+  "implementer": "/root",
+  "observed_at": "2026-11-23T19:50:43.313416+00:00",
+  "state": "passed_with_limits",
+  "extends": "data-collection/tianxuan-native-ui-20261124-review-7.json",
+  "scope": "Shared backend changes from 99dbb00f to d8a1c06c, and their native/Web consumer boundaries.",
+  "conclusion": "No native UI adaptation or compatibility blocker found. Generic /api/v1/merge-queue and Gitea pull routes do not invoke reviewed_delivery; exact /git/repos/*/merge-requests remain checked until explicit delivery. Upstream requester review and approval-count behavior belongs to that exact interface.",
+  "required_revalidation": [
+    "test_merge_queue_api.py",
+    "Existing source-controller real queue submission, cancellation, process/readback and viewer denial flow"
+  ],
+  "parent_validation_reference": "data-collection/tianxuan-native-ui-20261124-validation-r5.json",
+  "limits": [
+    "Reviewer only inspected source and call chains; did not run tests or Godot.",
+    "Old backend test results do not prove the integrated baseline."
+  ]
+}

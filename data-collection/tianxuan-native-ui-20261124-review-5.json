@@ -1,0 +1,30 @@
+{
+  "request_id": "tianxuan-native-ui-20261123",
+  "issue_number": 2150,
+  "reviewer": "/root/sinan_166ba41a04521d99",
+  "implementer": "/root",
+  "observed_at": "2026-11-23T18:13:01.831755+00:00",
+  "state": "passed_with_limits",
+  "extends": "data-collection/tianxuan-native-ui-20261124-review-4.json",
+  "reviewed_input_sha256": {
+    "editor/docks/tianxuan/TianxuanWorkbench.cpp": "adcaed979d433f491ffc5232bc5fefa35385b27fc8f51b490f50e7d00b31a8af",
+    "editor/docks/tianxuan/TianxuanWorkbench.h": "ced833027c63cc23600e13ba98a0d093fb463166bb3c03b3a925ce41136f0835",
+    "editor/docks/tianxuan/build-impact.json": "db9fa90256bede5dadec3195d27eea61c2fccb17fdf8968db3d98fad472dfd12",
+    "tests/editor/run_tianxuan_controller.py": "0cacd7a5fe5170f69ce36102f908ce6cece7a57fa77c743fe22cb907c2823cac",
+    "tests/editor/run_tianxuan_gitea.py": "022a9769f9553756bbae5e0e03d170c84ed74c79d678f54f220568a516332ceb",
+    "tests/editor/tianxuan_native_shell.gd": "587666bf110689efdf688a20befdf0f12c869cdcd8452e42130031dd45381412",
+    "data-collection/tianxuan-native-ui-20261124-build-impact-r2.json": "7a8c97de7444f4a2f42ce92aba736991a6c283050d6fbaf81d24e31c442276b1"
+  },
+  "conclusion": "No blocking findings. C++ changes are comment spacing only; build evidence path updated. CRLF original preview and normalized CodeEdit checks retain original download SHA and overwrite protection. Test SQLite connections close after service shutdown wait.",
+  "verified_evidence": {
+    "build_impact_inputs": 41,
+    "controller_native_checks": 125,
+    "controller_source_checks": 125,
+    "binary_sha256": "2e9963ada00b4afd48df208d37fc1359cada2b3f89367d6588af1d8dba3a47c3"
+  },
+  "limits": [
+    "Native receipt retains empty-name and shutdown leak diagnostics; not an error-free run.",
+    "Windows repair has not been verified remotely.",
+    "Review was read-only; reviewer did not run Godot."
+  ]
+}

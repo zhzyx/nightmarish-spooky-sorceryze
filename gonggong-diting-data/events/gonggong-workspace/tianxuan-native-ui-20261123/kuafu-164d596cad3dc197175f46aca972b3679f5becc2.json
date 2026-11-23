@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-164d596cad3dc197175f46aca972b3679f5becc2",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-native-ui-20261123",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "08891140fe24a57cb1f71abf6d582cb618f4889422e3ecdadafc0d842ecf576d",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2157",
+    "action": "validation",
+    "detection_head": "e16220afbb0d85a88cc5bcba24662d6adfbe7c19",
+    "context_sha256": "871fdb5d8ec8c94b369659864cb0935fb8555e39bfee4d10be61a7fac095c5ee",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "user-goal-and-continue:issue-2150",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45231659808/job/137892512314",
+    "diagnosis": "版权头检查仅要求 TianxuanWorkbench.cpp/h 文件名行各去掉一个填充空格；已按原检查脚本修正，原逻辑未变。",
+    "next_action": "追加新构建影响回执并沿正式提交入口更新候选；等待新 SHA 的远端同项检查。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T17:56:05.702057+00:00",
+    "attempted": "读取 CI 自动生成差异并运行同一版权头脚本；本机原生 124 项定向复验通过。",
+    "repair_owner": "Sail-Li / agent:/root",
+    "continuable": "继续原生界面交付，保留 Windows 和显示验收未完项。"
+  },
+  "occurred_at": "2026-11-23T18:08:46.266083+00:00",
+  "sha256": "38534a6965f56b714343bee03f72945b10eec2edfa6789262568917102d3e657"
+}

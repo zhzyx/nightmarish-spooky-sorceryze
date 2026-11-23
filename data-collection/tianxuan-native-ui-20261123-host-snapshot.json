@@ -1,0 +1,16 @@
+{
+  "id": "codex-tianxuan-native-ui-host",
+  "version": "20261123",
+  "origin": "external-authorized-host",
+  "authority": "Current user goal and completed scope answers in Codex chat 01a2081e-0b99-7fa1-b5a7-4ea258f3378f; visual improvement added by the same user",
+  "worker": "/root",
+  "scope": "Single current Codex worker implements Issue 2150 in its isolated worktree; no delegated workers or standing dispatcher",
+  "model": null,
+  "model_observation": "Exact inherited model identifier is not exposed in this session; no model or usage claim",
+  "constraints": [
+    "Preserve independent Web functionality",
+    "Native main workspace and dockable sidebar share identity and business state",
+    "Windows and macOS verification remain required",
+    "Do not drive the user desktop during validation"
+  ]
+}

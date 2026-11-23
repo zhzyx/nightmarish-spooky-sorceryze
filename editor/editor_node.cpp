@@ -58,7 +58,6 @@
 #include "editor/debugger/editor_debugger_node.h"
 #include "editor/debugger/script_editor_debugger.h"
 #include "editor/doc/editor_help.h"
-#include "editor/docks/WebPlatformDock.h"
 #include "editor/docks/ai_chat_dock.h"
 #include "editor/docks/daqian_dock.h"
 #include "editor/docks/editor_dock_manager.h"
@@ -69,6 +68,7 @@
 #include "editor/docks/inspector_dock.h"
 #include "editor/docks/scene_tree_dock.h"
 #include "editor/docks/signals_dock.h"
+#include "editor/docks/tianxuan/TianxuanWorkbench.h"
 #include "editor/editor_data.h"
 #include "editor/editor_interface.h"
 #include "editor/editor_log.h"
@@ -9634,7 +9634,7 @@ EditorNode::EditorNode() {
 	pWorkbenchDock->RegisterWorkbenchSidebar(command_palette, pWorkbenchButton);
 	EditorDock *daqian_dock = create_daqian_dock();
 	editor_dock_manager->add_dock(daqian_dock);
-	editor_dock_manager->add_dock(CreateWebPlatformDock());
+	editor_dock_manager->add_dock(CreateTianxuanDock());
 #ifdef MACOS_ENABLED
 	install_gonggong_startup_validation(this, daqian_dock);
 #endif

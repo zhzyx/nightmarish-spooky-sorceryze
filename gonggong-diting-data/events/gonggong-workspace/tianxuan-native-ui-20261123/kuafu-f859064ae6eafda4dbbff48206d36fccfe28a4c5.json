@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-f859064ae6eafda4dbbff48206d36fccfe28a4c5",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-native-ui-20261123",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "0f071f219be13f386971cb7c133f134323ccdbf73e14766c8bad1b497d8aa2f2",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2150",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2157",
+    "action": "validation",
+    "detection_head": "f4cbe94778f5f93d091547d80b720a30dfab050f",
+    "context_sha256": "871fdb5d8ec8c94b369659864cb0935fb8555e39bfee4d10be61a7fac095c5ee",
+    "operator": "Sail-Li",
+    "worker": "agent:/root",
+    "authority_ref": "user-goal-and-continue:issue-2150",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45241074954/job/137925717769",
+    "diagnosis": "The corrected signed candidate 947d4a56f98dc06a307d7594732a72db79c9c871 passed the full Windows editor job. Downloaded native reports passed 125 controls, 164 layout, 21 races, 17 execution and 36 workflow-controls checks; all tracked source hashes match the candidate. The original Windows execution blocker is resolved on this candidate. The separate macOS rebind-path tool defect remains outside this correction.",
+    "next_action": "Finish remaining macOS Metal CI and main delivery readback. Keep feature issue2150 open for Windows real-window and IME feedback; do not close the separate rebind-path bug without its own recovery evidence.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T18:28:46.670003+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T19:02:21.660099+00:00",
+  "sha256": "2621e0937fcae09a90b0e69e9695be59cf8d53d3814535fd3d7fa76ea4a807f3"
+}

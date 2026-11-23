@@ -185,6 +185,65 @@ def test_commit_review_and_delivery_share_project_route(gonggong_project, monkey
     assert len(paths) == 3
 
 
+@pytest.mark.parametrize("credential", ["token", "identity"])
+def test_project_local_diff_needs_no_remote_identity(gonggong_project, monkeypatch, tmp_path, capsys, credential):
+    def git(*arguments):
+        return subprocess.check_output(["git", "-C", str(gonggong_project), *arguments], text=True).strip()
+
+    (gonggong_project / "project.godot").write_text("config_version=5\n")
+    source = gonggong_project / "sample.gd"
+    source.write_text("extends Node\n# before\n")
+    git("add", ".")
+    git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "commit", "-qm", "baseline")
+    source.write_text("extends Node\n# after\n")
+    monkeypatch.delenv("TIANXUAN_TOKEN", raising=False)
+    monkeypatch.setenv("TIANXUAN_TOKEN_CACHE", str(tmp_path / "private-cache"))
+    if credential == "token":
+        monkeypatch.setenv("TIANXUAN_TOKEN", "fixture-old-loopback")
+    else:
+        monkeypatch.setenv("TIANXUAN_IDENTITY_PROVIDER", "fixture")
+        monkeypatch.setenv("TIANXUAN_IDENTITY_SUBJECT", "fixture-user")
+        monkeypatch.setenv("TIANXUAN_IDENTITY_SECRET", "fixture-local-only")
+    monkeypatch.setattr(tianshu_bridge, "urlopen", lambda *_a, **_kw: pytest.fail("unexpected network access"))
+    assert tianshu_bridge.main(["workcopy-diff", "--project", str(gonggong_project)]) == 0
+    data = json.loads(capsys.readouterr().out)["data"]
+    assert data["files"] == [{"status": "M", "path": "nested/sample.gd"}]
+    request = tmp_path / "preview.json"
+    request.write_text(json.dumps({**data, "path": "nested/sample.gd"}))
+    command = ["--project", str(gonggong_project), "--request", str(request)]
+    assert tianshu_bridge.main(["workcopy-preview", *command]) == 0
+    preview = json.loads(capsys.readouterr().out)["data"]["diff"]
+    assert "-# before" in preview and "+# after" in preview
+    assert tianshu_bridge.main(["workcopy-submit", *command]) == 1
+    assert "未绑定" in json.loads(capsys.readouterr().out)["error"]
+
+
+def test_materialized_diff_keeps_remote_identity(gonggong_project, monkeypatch, capsys):
+    (gonggong_project / ".duobao-source.json").write_text("{}")
+    monkeypatch.setenv("TIANXUAN_TOKEN", "fixture-local-service")
+    calls = []
+
+    def project(directory, marker, api, request, read):
+        assert directory == gonggong_project and marker == directory / ".duobao-source.json"
+        assert api == tianshu_bridge.LOCAL_API
+
+        class Materialized:
+            def diff(self):
+                return request("GET", "modules/fixture")
+
+        return Materialized()
+
+    def request(api, method, path, **kwargs):
+        calls.append((api, method, path, kwargs["token"]))
+        return {"mode": "native"}
+
+    monkeypatch.setattr("native_workcopy_commit.NativeProject", project)
+    monkeypatch.setattr(tianshu_bridge, "_request", request)
+    assert tianshu_bridge.main(["workcopy-diff", "--project", str(gonggong_project)]) == 0
+    assert json.loads(capsys.readouterr().out)["data"] == {"mode": "native"}
+    assert calls == [(tianshu_bridge.LOCAL_API, "GET", "/api/v1/native/modules/fixture", "fixture-local-service")]
+
+
 class _Response:
     def __init__(self, payload: object) -> None:
         self._body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
