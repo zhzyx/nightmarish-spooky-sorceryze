@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-godot-build-placement",
+  "event_id": "learn-88b068f32874ed2506592d912fd7370f8a67b0b1256ff4debfbbc46fb01da5c6",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1729",
+  "occurred_at": "2026-11-23T20:01:54.002195+00:00",
+  "evidence_refs": [
+    "dispatch-a1650277c3ba4f588c65b9aae02cd9ba",
+    "learn-df1065477d44f361a5f626f5891cb448687f07aee97e06ea63ccf3a69a58022a"
+  ],
+  "payload": {
+    "scope": "godot-build-placement",
+    "lesson": "trace-native-consumer",
+    "revision": 61,
+    "previous": "60ab4b4e0d29fb16586a0940316df88be3e16d30731fbd1bafca4c6a35610e9b",
+    "action": "applied",
+    "details": {
+      "task": "G22: distribute project-scoped Duobao routing through the installed editor and host bridge.",
+      "observed": "editor/SCsub embeds workspace.gd in daqian_scripts.gen.h. Rebuilt the Windows candidate and exercised three real dialogs in a private headless editor with the accompanying trusted Python bridge. All three selected gonggong.git. Updating a UI sidecar alone would not deliver this change."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-g22-client-route.json",
+        "sha256": "b4558edca964766dc8fcebd5bbe1cf44d21287ec5fb0f6618dee3c8ba8ed2b54"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-g22/dispatch-a1650277c3ba4f588c65b9aae02cd9ba.json",
+      "sha256": "29a49424912871609e60353a892204c1a827d15a7ef29eaa01d277ce1cf7a5c1"
+    }
+  },
+  "sha256": "44e99dafbd5fe15933b60cb7b514a263058c01d491d523e3b3865aabd8c30653"
+}

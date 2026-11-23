@@ -1459,6 +1459,7 @@ func _open_duobao_commit() -> void:
 		duobao_commit_dialog = duobao_commit_script.new()
 		duobao_commit_dialog.set("execute", _workcopy_commit_command)
 		add_child(duobao_commit_dialog)
+		_fill_duobao_repository(duobao_commit_dialog)
 	duobao_commit_dialog.popup_centered()
 	duobao_commit_dialog.call("refresh")
 
@@ -1470,17 +1471,19 @@ func _workcopy_commit_command(arguments: Array, request: Dictionary) -> Dictiona
 func _open_duobao_merge() -> void:
 	if not is_instance_valid(duobao_merge_dialog):
 		duobao_merge_dialog = duobao_merge_script.new()
-		duobao_merge_dialog.set("execute", _tianxuan_command)
+		duobao_merge_dialog.set("execute", _duobao_remote_command)
 		add_child(duobao_merge_dialog)
+		_fill_duobao_repository(duobao_merge_dialog)
 	duobao_merge_dialog.popup_centered()
 
 
 func _open_duobao_branches() -> void:
 	if not is_instance_valid(duobao_dialog):
 		duobao_dialog = duobao_branches_script.new()
-		duobao_dialog.set("remote_command", _tianxuan_command)
+		duobao_dialog.set("remote_command", _duobao_remote_command)
 		duobao_dialog.set("local_command", _duobao_workcopy_command)
 		add_child(duobao_dialog)
+		_fill_duobao_repository(duobao_dialog)
 	duobao_dialog.popup_centered()
 	duobao_dialog.call("refresh")
 
@@ -1496,18 +1499,31 @@ func _duobao_workcopy_command(arguments: Array) -> Dictionary:
 	return await _host_command(args, "--result", {})
 
 
+func _fill_duobao_repository(dialog: AcceptDialog) -> void:
+	var field: LineEdit = dialog.get("repository")
+	if field.text.is_empty():
+		var route := await _duobao_remote_command(["duobao-route"])
+		if is_instance_valid(field) and field.text.is_empty():
+			if route.get("ok", false):
+				field.text = str(route.data.repository)
+			else:
+				field.placeholder_text = str(route.get("error", "无法读取项目的多宝仓库"))
+				field.tooltip_text = field.placeholder_text
+
+
+func _duobao_remote_command(arguments: Array) -> Dictionary:
+	return await _tianxuan_command(["--workspace", ProjectSettings.globalize_path("res://")] + arguments)
+
+
 func _tianxuan_command(arguments: Array, request: Dictionary = {}) -> Dictionary:
 	var root := _host_root()
 	var bridge := root.path_join("customizations/components/tianxuan/server/tianshu_bridge.py")
 	if root.is_empty() or not FileAccess.file_exists(bridge):
 		return {"ok": false, "error": "未找到天璇桥接脚本"}
-	var api := OS.get_environment("TIANXUAN_API")
-	if api.is_empty():
-		api = "http://127.0.0.1:8000"
 	var tianxuan_actor := OS.get_environment("TIANXUAN_ACTOR")
 	if tianxuan_actor.is_empty():
 		tianxuan_actor = str(actor.get("user_id", ""))
-	var args := PackedStringArray([bridge, "--api", api, "--actor", tianxuan_actor])
+	var args := PackedStringArray([bridge, "--actor", tianxuan_actor])
 	var identity_provider := OS.get_environment("TIANXUAN_IDENTITY_PROVIDER")
 	if not identity_provider.is_empty():
 		args.append_array([
