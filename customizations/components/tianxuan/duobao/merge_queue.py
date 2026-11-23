@@ -366,7 +366,7 @@ class MergeQueue:
             item["check_state"] = item["status"] if current else "stale"
         return item
 
-    def reviewed_delivery(self, item_id, actor, *, review=None, approvals=1, required_checks=()):
+    def reviewed_delivery(self, item_id, actor, *, review=None, approvals=0, required_checks=()):
         with self._lock, self.db:
             self.db.execute("BEGIN IMMEDIATE")
             row = self.db.execute("SELECT * FROM merge_queue WHERE id=?", (item_id,)).fetchone()
@@ -382,15 +382,18 @@ class MergeQueue:
             marker = "refs/duobao/delivered/" + item_id
             applied = git(self.git.git_executable, item["repo"], "rev-parse", "--verify", marker, check=False)
             if review is not None:
-                if actor == item["created_by"] or review not in ("APPROVED", "REQUEST_CHANGES"):
-                    raise PolicyError("An independent editor must review the exact request")
+                if review not in ("APPROVED", "REQUEST_CHANGES"):
+                    raise PolicyError("Unsupported review decision")
                 if item["check_state"] != "checked" or applied.returncode == 0:
                     raise ValueError("Only a current checked request can be reviewed")
                 decisions[actor] = review
+            elif actor != item["created_by"]:
+                raise PolicyError("Only the requester can deliver this request")
+            elif applied.returncode == 0:
+                # The target and marker were written in one Git transaction.
+                evidence["merge_sha"] = applied.stdout.decode().strip()
             else:
-                if actor != item["created_by"]:
-                    raise PolicyError("Only the requester can deliver the approved request")
-                if applied.returncode and item["check_state"] != "checked":
+                if item["check_state"] != "checked":
                     raise ValueError("Checks must pass on the current source and target")
                 reviews = [
                     {"user": user, "state": state}
@@ -404,7 +407,7 @@ class MergeQueue:
                     self.protected_branches,
                     actor_role=self._resolve_role(actor),
                     approvals=approved_reviewers(reviews),
-                    required_approvals=max(1, approvals),
+                    required_approvals=approvals,
                     path="queue",
                 )
                 checks = [
@@ -413,6 +416,7 @@ class MergeQueue:
                 ]
                 ensure_checks_passed(checks, required_checks)
                 evidence["merge_sha"] = apply_checked(self.git.git_executable, item)
+            if review is None:
                 item["status"] = "merged"
             self.db.execute(
                 "UPDATE merge_queue SET evidence=?, status=?, updated_at=? WHERE id=?",
