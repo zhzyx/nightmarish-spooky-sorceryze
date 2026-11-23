@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "learning-editor-dependency-handoff",
+  "event_id": "learn-735b32bf63c233e131a00f8522766e72bbb0cc6d55fdf57e4f72cb209ad6b3ba",
+  "kind": "analysis",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "0.1.0",
+    "definition_sha256": "3d92aa9c26b6194c4a91c177e356929d5c2670012714750f13fd495ad41104e6",
+    "origin": "external-authorized-host"
+  },
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1736",
+  "occurred_at": "2026-11-23T16:54:50.192224+00:00",
+  "evidence_refs": [
+    "dispatch-04d80ea795a44691ad672440fd0636e5",
+    "learn-bcf82311316c22266757ef4296d3b7e5708cc596e0bdbd21c11f91c46b313385"
+  ],
+  "payload": {
+    "scope": "editor-dependency-handoff",
+    "lesson": "bind-consumer-release",
+    "revision": 41,
+    "previous": "a7d4b5bc4c3a270f4c6f254f79a2ba07170020ca8673570819e4810406949108",
+    "action": "applied",
+    "details": {
+      "task": "G20 production baseline import and independent project-scoped readback",
+      "observed": "An independent reader compared the accepted producer ZIP directly to the deployment repository and production-volume catalog after delivery. All 2,271 refs plus snapshot HEAD, 60,767 Git objects and 11,970 records matched. The previously missing deployment identity was supplied and authenticated; the live service stayed in Git mode."
+    },
+    "evidence": [
+      {
+        "path": "data-collection/gonggong-ai-workbench-plan1-g20-production.json",
+        "sha256": "b47405f87b33524d53ec20b34b4db54368cf8bc0f2c16fad3c360aededd7d06a"
+      }
+    ],
+    "origin": {
+      "path": "gonggong-diting-data/events/gonggong-workspace/gonggong-ai-workbench-plan1-g20/dispatch-04d80ea795a44691ad672440fd0636e5.json",
+      "sha256": "ba2daaa05292a8117bfecd3dd2efd1754f302638b9a8a05d8a2b6dff19ffa0a6"
+    }
+  },
+  "sha256": "fbaa6fe4dc292457f3f33fcc3a5fb5c29bd65337ba888e1aa5a40a06527da999"
+}

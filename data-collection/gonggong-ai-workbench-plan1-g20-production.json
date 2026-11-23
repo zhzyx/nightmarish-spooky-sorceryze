@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "request_id": "gonggong-ai-workbench-plan1-g20",
+  "issue_number": 1736,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1736",
+  "parent_issue": 1709,
+  "blocker_reverified": 2099,
+  "run_id": "G20-1736-307057431a00",
+  "source": "zhzyx/nightmarish-spooky-sorceryze",
+  "frozen_revision": "3a26c08e8a1e55077f23177184d02e4d18ccd326",
+  "receipt_scope": "Deployment server, existing GongGong production Git repository",
+  "operator": "lirui",
+  "project": "gonggong",
+  "package": {
+    "filename": "g19-refreeze-3a26c08e8a1e.zip",
+    "received_at": "2026-11-23T16:36:47.410980+00:00",
+    "bytes": 166539132,
+    "sha256": "307057431a002cfbcec704179e153b54ab5e48f27cc583189cbd76d1bee28b4d",
+    "verified_members": 5
+  },
+  "git": {
+    "namespace": "refs/migration/g20/307057431a00/",
+    "started": "2026-11-23T16:45:34.734152+00:00",
+    "finished": "2026-11-23T16:46:34.506067+00:00",
+    "seconds": 59.772,
+    "refs_excluding_head": 2271,
+    "snapshot_head_verified": true,
+    "matched_including_HEAD": 2272,
+    "mismatch": 0,
+    "ref_map_sha256": "98a776e5616b36fd6f0aa1aa358deab85567cd599c888c2d650d65918e7c6886",
+    "distinct_objects": 60767,
+    "objects_by_kind": {
+      "tree": 18598,
+      "blob": 38579,
+      "commit": 3590
+    },
+    "uncompressed_bytes": 952410009,
+    "object_inventory_sha256": "b2edca3d3a5ab6f5995e1cfa17215578d09eb9b8949fe63abef41fb120d08f60",
+    "git_fsck": "passed",
+    "preexisting_main": "a22d44c536835316b33a807426774008f4dfba02",
+    "final_main": "a22d44c536835316b33a807426774008f4dfba02"
+  },
+  "history": {
+    "scope": "project-bound deployment archive on the production volume",
+    "project": "gonggong",
+    "published_by": "lirui",
+    "published_at": "2026-11-23T16:43:05.473669+00:00",
+    "imported_at": "2026-11-23T16:43:05.442549+00:00",
+    "started": "2026-11-23T16:41:56.912945+00:00",
+    "finished": "2026-11-23T16:43:53.299113+00:00",
+    "seconds": 116.387,
+    "module": "migration-184a262f026ef0d4cf3e5dd6a366651af81580c6c8ee714a168ce2fff802dc7d",
+    "catalog_sha256": "63652e65b1e8ab118cc873340a63865d19613df46de60fe0cd339645fce00aa4",
+    "recovery_revision": "3ed9e211c4d8f6b9bf6cfafb104991a1c712cc2ac80c92f293236149af24776a",
+    "count": 11970,
+    "record_counts": {
+      "commit": 2399,
+      "issue": 1013,
+      "issue_comment": 5728,
+      "pull": 1137,
+      "pull_issue_projection": 1137,
+      "requirement": 556
+    },
+    "records_sha256": "115de0f60e606a66993ddf4e6181bb1c23a1d05fe2a5959c2f93f16254c63b3e",
+    "binaries": {
+      "github:zhzyx/nightmarish-spooky-sorceryze/history.bundle": "e6f3627b0fcbe7eeb7507d5115952fb46f941372ad68fd2933f2ff0c5c6b6b9c",
+      "github:zhzyx/nightmarish-spooky-sorceryze/git-report.json": "0f0ef65461bcb386bc9058702e94def16742a9f31cd3ccf5b5a2250757e4bf95"
+    },
+    "resolved_links": 29560,
+    "sqlite_integrity": "ok",
+    "database_bytes": 237563904
+  },
+  "live_storage_mode": "git",
+  "active_native_database": false,
+  "cutover_performed": false,
+  "machine_receipts": {
+    "target-transfer.json": "d6e8b065efc5fb53659b7654e0a8e3234876ff048a4fb0743b323f9d7ae7e353",
+    "prepare_target-receipt.json": "8434f3148a5da828857ccacce07ebb8148d8f03bd65e335e9a6d6fc7002feb2c",
+    "install_refs-receipt.json": "3d9a39acbf13ae3a4940c201f53c3c187f817144577da8c1ae4bbe132349f3df",
+    "import_records-receipt.json": "d141c63e7563845ee3d716279b5a8f4d8f12336656e98c6ffadbb8adcd9b2fe1"
+  },
+  "independent_readback": {
+    "worker": "/root/sinan_c1e656e556898e2d",
+    "verified": true,
+    "matched_including_head": 2272,
+    "catalog_revision": "3ed9e211c4d8f6b9bf6cfafb104991a1c712cc2ac80c92f293236149af24776a",
+    "verified_at": "2026-11-23T16:51:27.518639+00:00",
+    "record_bytes": 63809338,
+    "object_contents_sha256": "71e4ade19bd9cf3682a9013aa1be971eb937f7a665fac977d02cbb650fbc7d34",
+    "object_digest_format": "Sorted OID + space + type + space + decimal size + space + SHA-256 of uncompressed contents + LF, ASCII",
+    "readback": "Read deployed bare repo refs twice. From the first namespace tips, enumerated reachable objects and read their raw contents with git cat-file. Recomputed Git object SHA-1 and compared the ordered object inventory SHA-256 against the sealed rehearsal audit. In the immutable read-only project database, checked the project publication, hashed revision and blob data, replayed all record batches and both binaries and checked SQLite integrity. The SQLite WAL was empty and database snapshot attributes were stable. Compared these outputs with the local sealed ZIP and accepted baseline.",
+    "receipt_sha256": "00d28050922d7d622be6c9a026a93255492ce596831ff9299fb0044d1e093e84",
+    "verifier_sha256": "3a981a97ef3a5c54403d571eaaa9235c03c4c6c437a836f4442c0b634c18b383"
+  }
+}
