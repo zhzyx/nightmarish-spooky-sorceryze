@@ -1364,10 +1364,12 @@ class GitService:
         return [line.strip()[len(prefix) :] for line in output.splitlines() if line.strip().startswith(prefix)]
 
     def _clone(self, repo_path: Path, destination: Path) -> None:
+        # Local filesystem copying races with concurrent receive-pack quarantine
+        # cleanup. Use Git's transport to transfer only reachable objects instead.
         self._run([
             "clone",
             "--quiet",
-            "--no-hardlinks",
+            "--no-local",
             str(repo_path),
             str(destination),
         ])

@@ -96,7 +96,7 @@ func run():
 		panel.add_generator()
 		check(panel.nodes.back().type==kinds[i],'Chinese generator option preserves protocol: '+kinds[i])
 		if kinds[i]=='human_shape_adjust':
-			check(panel.parameter_form.rows.height_cm.visible and not panel.parameter_form.rows.height_m.visible and panel.parameter_form.rows.head_ratio.visible and not panel.parameter_form.landmarks_edit.visible and not panel.parameter_form.pose_row.visible and not panel.parameter_form.prompt_edit.visible,'bundled human shape node exposes five controls with centimetre height and automatic AINative pose and landmark fitting')
+			check(panel.parameter_form.rows.height_cm.visible and not panel.parameter_form.rows.height_m.visible and panel.parameter_form.rows.head_ratio.visible and not panel.parameter_form.landmarks_edit.visible and not panel.parameter_form.pose_row.visible and not panel.parameter_form.prompt_edit.visible,'bundled human shape node exposes five controls with centimeter height and automatic AINative pose and landmark fitting')
 			check(panel.apply_fields() and not panel.nodes.back().parameters.has('prompt') and not panel.nodes.back().parameters.has('landmarks') and not panel.nodes.back().parameters.has('confirmed'),'bundled human shape apply adds neither prompt, manual landmarks nor human confirmation')
 		panel.delete_node()
 	panel.generator_choice.select(2)

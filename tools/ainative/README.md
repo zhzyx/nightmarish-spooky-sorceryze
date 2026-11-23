@@ -301,7 +301,7 @@ recorded in the artifact is `reshape_humanoid`. Height is an integer from 20–4
 in 10 cm increments. The provider converts it to `height_m = height_cm / 100` only
 at the existing local deformation boundary, and records the effective `height_cm`
 in its receipt and provenance. Legacy `height_m` workflows are migrated by exact
-unit conversion without rounding fractional centimetres. The deformation is
+unit conversion without rounding fractional centimeters. The deformation is
 deterministic and local, with no Tripo API generation, Blender, image generation
 or texture adjustment.
 
@@ -360,7 +360,7 @@ python tools/ainative/garment_split.py split split-spec.json
 
 Inspection emits stable, source-SHA-bound vertex-connected `component_id`
 values, bounds and triangle counts. Connectivity alone is not a semantic
-boundary. The vision request accepts whole-model views and separately labelled
+boundary. The vision request accepts whole-model views and separately labeled
 component previews; an AI response may select only component IDs represented by
 an attached component image. Whole-model evidence without a component preview
 can produce an open-vocabulary inventory, but its geometry remains unresolved.
@@ -394,7 +394,7 @@ the selected triangles render. The cloth-preparation path currently rejects
 rigged inputs rather than silently treating them as static geometry.
 
 A confirmed `cloth` or `mixed` item may additionally declare a `cloth` object
-with `kind` (`cape` or `skirt`), six-number metre `box`, optional `columns`,
+with `kind` (`cape` or `skirt`), six-number meter `box`, optional `columns`,
 `rows` and `cloth_top`. This invokes the existing author-sampled proxy pipeline.
 The resulting item state is `cloth_prepared`, never `cloth_ready`: actual target
 rig, animation, collision, reopen and visual acceptance remain downstream.

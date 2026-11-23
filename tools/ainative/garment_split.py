@@ -16,7 +16,6 @@ import struct
 from pathlib import Path
 
 import numpy as np
-
 from extensions import canonical
 from geometry_repair import accessor_values, load_glb
 
@@ -142,9 +141,7 @@ class GarmentSource:
 
         def embedded_dependencies(value):
             if isinstance(value, dict):
-                if "uri" in value and (
-                    not isinstance(value["uri"], str) or not value["uri"].startswith("data:")
-                ):
+                if "uri" in value and (not isinstance(value["uri"], str) or not value["uri"].startswith("data:")):
                     raise ValueError("garment_split_external_dependency")
                 for child in value.values():
                     embedded_dependencies(child)
@@ -253,9 +250,7 @@ class GarmentSource:
                 raise ValueError("garment_split_skin_invalid")
             if any(type(joint) is not int or not 0 <= joint < len(nodes) for joint in skin["joints"]):
                 raise ValueError("garment_split_skin_invalid")
-            if "skeleton" in skin and (
-                type(skin["skeleton"]) is not int or not 0 <= skin["skeleton"] < len(nodes)
-            ):
+            if "skeleton" in skin and (type(skin["skeleton"]) is not int or not 0 <= skin["skeleton"] < len(nodes)):
                 raise ValueError("garment_split_skin_invalid")
             if "inverseBindMatrices" in skin:
                 accessor = self.document["accessors"][skin["inverseBindMatrices"]]
@@ -411,7 +406,17 @@ def validate_inventory(value, known_components=None):
     result = copy.deepcopy(value)
     identifiers = set()
     for item in result["items"]:
-        fields = {"id", "label", "category", "slot", "behavior", "confidence", "component_ids", "evidence", "needs_review"}
+        fields = {
+            "id",
+            "label",
+            "category",
+            "slot",
+            "behavior",
+            "confidence",
+            "component_ids",
+            "evidence",
+            "needs_review",
+        }
         if not isinstance(item, dict) or set(item) != fields:
             raise ValueError("garment_inventory_invalid")
         _identifier(item["id"])
@@ -501,9 +506,7 @@ def _validate_item(item):
             triangles = primitive["triangles"]
             if not isinstance(triangles, list) or not triangles:
                 raise ValueError("garment_split_selection_invalid")
-            primitive["triangles"] = [
-                _integer(triangle, "garment_split_selection_invalid") for triangle in triangles
-            ]
+            primitive["triangles"] = [_integer(triangle, "garment_split_selection_invalid") for triangle in triangles]
             if len(set(primitive["triangles"])) != len(primitive["triangles"]) or any(
                 triangle < 0 for triangle in primitive["triangles"]
             ):
@@ -784,9 +787,10 @@ def spec_from_inventory(source_path, output, inventory, inspection, confirmed=Fa
     """Convert only evidence-bound component candidates; keep other items unresolved."""
     known = {component["component_id"] for component in inspection.get("components", [])}
     inventory = validate_inventory(inventory, known)
-    if inspection.get("schema_version") != 1 or inspection.get("source_sha256") != hashlib.sha256(
-        Path(source_path).read_bytes()
-    ).hexdigest():
+    if (
+        inspection.get("schema_version") != 1
+        or inspection.get("source_sha256") != hashlib.sha256(Path(source_path).read_bytes()).hexdigest()
+    ):
         raise ValueError("garment_split_inspection_source_mismatch")
     items = []
     unresolved = []
