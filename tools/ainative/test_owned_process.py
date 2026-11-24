@@ -475,13 +475,21 @@ class EmbeddedBundleTests(unittest.TestCase):
         )
         statements = []
         for statement in block.body:
-            statements.append(statement)
             if (
                 isinstance(statement, ast.Expr)
                 and isinstance(statement.value, ast.Call)
                 and ast.unparse(statement.value.func) == "env.CommandNoCache"
             ):
-                break
+                # Other generated headers may be registered before the bundle.
+                # Execute the actual bundle registration, not an unrelated builder.
+                target = statement.value.args[0]
+                if isinstance(target, ast.Constant) and target.value == "ainative/bundle.gen.h":
+                    statements.append(statement)
+                    break
+                continue
+            statements.append(statement)
+        else:
+            self.fail("editor/SCsub does not register ainative/bundle.gen.h")
 
         class SourceNode:
             def __init__(self, path):
@@ -508,6 +516,7 @@ class EmbeddedBundleTests(unittest.TestCase):
                 "Glob": lambda pattern: [SourceNode(path) for path in repository.glob(pattern.removeprefix("#"))],
             },
         )
+        self.assertEqual(captured["target"], "ainative/bundle.gen.h")
         helper = repository / "tools/editor_provenance_process.py"
         self.assertIn(helper, [Path(str(source)).resolve() for source in captured["sources"]])
         files = builders.bundle_files(captured["sources"])

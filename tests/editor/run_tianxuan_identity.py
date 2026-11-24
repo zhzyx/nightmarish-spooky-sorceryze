@@ -17,6 +17,7 @@ from unittest.mock import patch
 
 from editor_test_isolation import copy_editor
 from run_tianxuan_connect import digest, fixture
+from run_tianxuan_legacy_key_identity import exercise as exercise_legacy_key
 from run_unified_settings_native import sanitized_environment
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -59,7 +60,7 @@ def exercise(base, binary, source_loaded):
 
         def do_GET(self):
             path = self.path.partition("?")[0]
-            bearer = self.headers.get("Authorization", "").removeprefix("Bearer ")
+            bearer = self.headers.get("Authorization", "").removeprefix("Bearer ").strip()
             actor = actors.get(bearer)
             status, payload = 404, {}
             if path == "/api/v1/auth/config":
@@ -88,7 +89,7 @@ def exercise(base, binary, source_loaded):
         def do_POST(self):
             path = self.path.partition("?")[0]
             request = json.loads(self.rfile.read(int(self.headers.get("Content-Length", "0"))) or "{}")
-            bearer = self.headers.get("Authorization", "").removeprefix("Bearer ")
+            bearer = self.headers.get("Authorization", "").removeprefix("Bearer ").strip()
             actor = actors.get(bearer)
             status, payload = 404, {}
             if path == "/api/v1/auth/editor-session" and state.read_text() != "legacy":
@@ -106,6 +107,12 @@ def exercise(base, binary, source_loaded):
                 if actor and state.read_text() == "deny_enrollment":
                     status = 403
                     observed.append("enrollment-denied")
+                elif actor and state.read_text() in ("echo_enrollment", "echo_cancel_enrollment"):
+                    observed.append("enrollment-echo")
+                    if state.read_text() == "echo_cancel_enrollment":
+                        enrolled.touch()
+                        time.sleep(0.5)
+                    status, payload = 200, {"token": bearer}
                 elif actor:
                     mode = state.read_text()
                     token = secrets.token_urlsafe(27)
@@ -174,11 +181,14 @@ def exercise(base, binary, source_loaded):
             "binding_id": "pre-upgrade",
         })
         competing_record = json.dumps({**json.loads(old_record), "binding_id": "other-process-login"})
+        spaced_record = json.dumps({**json.loads(old_record), "token": "  " + personal + "  "})
         migration_modes = {
             "migrate_failure": "invalid_me",
             "migrate_cancel": "cancel_enrollment",
             "migrate_cas": "cas_competition",
             "migrate_denied": "deny_enrollment",
+            "migrate_echo": "echo_enrollment",
+            "migrate_echo_cancel": "echo_cancel_enrollment",
             "migrate_logout_during_save": "online",
             "migrate": "online",
         }
@@ -212,6 +222,8 @@ def exercise(base, binary, source_loaded):
             TX_SECOND_KEY=launcher,
             TX_SOURCE_LOADED=str(int(source_loaded)),
         )
+        if sys.platform == "darwin":
+            env["TX_VAULT_HOME"] = str(Path.home())
         try:
             for phase in (
                 "login",
@@ -236,7 +248,10 @@ def exercise(base, binary, source_loaded):
                     replace_record(original)
                 state.write_text(migration_modes.get(phase, phase if phase in ("legacy", "offline") else "online"))
                 if phase in migration_modes or phase == "authenticate_migrate":
-                    assert stored("save", secret=old_record)["status"] == "saved"
+                    assert (
+                        stored("save", secret=spaced_record if phase == "migrate_echo" else old_record)["status"]
+                        == "saved"
+                    )
                     enrolled.unlink(missing_ok=True)
                     saved_marker.unlink(missing_ok=True)
                 enrollments_before = len(derived)
@@ -266,8 +281,21 @@ def exercise(base, binary, source_loaded):
                     assert grant == selected_token or launched or grant not in actors, (
                         f"{phase}: newly created but unselected device authorization survived"
                     )
-                if phase in ("migrate_failure", "migrate_cancel", "migrate_cas", "migrate_denied"):
-                    expected = competing_record if phase == "migrate_cas" else old_record
+                if phase in (
+                    "migrate_failure",
+                    "migrate_cancel",
+                    "migrate_cas",
+                    "migrate_denied",
+                    "migrate_echo",
+                    "migrate_echo_cancel",
+                ):
+                    expected = (
+                        competing_record
+                        if phase == "migrate_cas"
+                        else spaced_record
+                        if phase == "migrate_echo"
+                        else old_record
+                    )
                     assert stored_record == {"status": "loaded", "secret": expected}, phase
                 elif phase in (
                     "login",
@@ -321,6 +349,7 @@ def exercise(base, binary, source_loaded):
             assert observed.count("enrolled-bob-failed_enrollment") == 1
             assert observed.count("enrolled-bob-cas_competition") == 1
             assert observed.count("enrollment-denied") == 1
+            assert observed.count("enrollment-echo") == 2
             assert {"original-device-used", "concurrent-switch", "audit-bob"} <= set(observed) and not cross_origin
             for directory in (base / "engine/editor_data", project):
                 for path in directory.rglob("*"):
@@ -358,8 +387,27 @@ if __name__ == "__main__":
     parser.add_argument("--report", required=True, type=Path)
     parser.add_argument("--source-loaded", action="store_true")
     args = parser.parse_args()
+    candidate = args.godot.resolve(strict=True)
+    candidate_sha = digest(candidate)
+    inputs = (
+        ROOT / "editor/docks/tianxuan/session_controller.gd",
+        ROOT / "editor/docks/daqian/session_memory.gd",
+        HELPER,
+        Path(__file__),
+        Path(__file__).with_name("tianxuan_identity.gd"),
+        Path(__file__).with_name("run_tianxuan_legacy_key_identity.py"),
+        Path(__file__).with_name("tianxuan_legacy_key_identity.gd"),
+    )
+    fingerprints = {str(path.relative_to(ROOT)): digest(path) for path in inputs}
     with tempfile.TemporaryDirectory(prefix="tianxuan-identity-") as temp:
-        report = exercise(Path(temp), args.godot.resolve(strict=True), args.source_loaded)
+        report = exercise(Path(temp), candidate, args.source_loaded)
+    with tempfile.TemporaryDirectory(prefix="tianxuan-legacy-key-") as temp:
+        report["legacy_key_compatibility"] = exercise_legacy_key(Path(temp), candidate, args.source_loaded)
+    assert report["binary_sha256"] == report["legacy_key_compatibility"]["binary_sha256"] == candidate_sha
+    assert digest(candidate) == candidate_sha and all(
+        digest(ROOT / name) == sha for name, sha in fingerprints.items()
+    ), "candidate changed during identity validation"
+    report["source_sha256"] = fingerprints
     args.report.parent.mkdir(parents=True, exist_ok=True)
     args.report.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"passed": True, "mode": report["mode"], "phases": list(report["phases"])}))

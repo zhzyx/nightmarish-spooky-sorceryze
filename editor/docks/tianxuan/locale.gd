@@ -4,6 +4,12 @@ extends RefCounted
 
 const DOMAIN := &"tianxuan-native"
 const ENGLISH := {
+	"连接失败": "Connection failed",
+	"设备登录被拒绝，请检查个人密钥与权限（%s）": "Device sign-in was denied. Check your personal key and permissions (%s).",
+	"设备登录未返回独立设备凭据，个人密钥未保存（%s）": "Device sign-in did not return a separate device credential. The personal key was not saved (%s).",
+	"设备登录服务暂时不可用，请检查网络或稍后重试（%s）": "Device sign-in is temporarily unavailable. Check the connection or try again later (%s).",
+	"旧服务身份核实失败，请检查个人密钥、权限或服务状态（%s）": "Identity verification on the older service failed. Check your personal key, permissions or service status (%s).",
+	" · 当前服务不支持设备登录，仅本次登录有效；已保存登录保持不变": " · This service does not support device sign-in. This login is temporary; saved logins are retained",
 	"修订%s草稿": "Revise %s draft",
 	"此修订已退回，请修改正文或生成补充，保存新修订后再确认。": "This revision was returned. Edit or regenerate the body, then save a new revision before confirming it.",
 	"查看执行进度": "View execution progress",
