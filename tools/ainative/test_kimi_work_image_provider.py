@@ -57,6 +57,12 @@ if os.environ.get("KIMI_WORK_FIXTURE_FAILURE") == "dependency":
 if os.environ.get("KIMI_WORK_FIXTURE_FAILURE") == "service":
     print("Error generating image: synthetic service failure", file=sys.stderr)
     raise SystemExit(1)
+if os.environ.get("KIMI_WORK_FIXTURE_FAILURE") == "unavailable":
+    print("Error generating image: [HTTP 424] Media generation is temporarily unavailable", file=sys.stderr)
+    raise SystemExit(1)
+if os.environ.get("KIMI_WORK_FIXTURE_FAILURE") == "rejected":
+    print("Error generating image: [HTTP 403] Media generation rejected by copyright or moderation policy", file=sys.stderr)
+    raise SystemExit(1)
 if os.environ.get("KIMI_WORK_FIXTURE_FAILURE") == "unknown":
     raise SystemExit(3)
 time.sleep(float(os.environ.get("KIMI_WORK_FIXTURE_DELAY", "0")))
@@ -290,6 +296,8 @@ class KimiWorkImageTests(unittest.TestCase):
         for index, (failure, expected) in enumerate((
             ("dependency", "依赖"),
             ("service", "未返回成功"),
+            ("unavailable", "暂时不可用"),
+            ("rejected", "版权或内容安全策略"),
             ("unknown", "回执不明"),
         )):
             with self.subTest(failure=failure), patch.dict(os.environ, {"KIMI_WORK_FIXTURE_FAILURE": failure}):
@@ -300,7 +308,32 @@ class KimiWorkImageTests(unittest.TestCase):
                 )
                 self.assertEqual(snapshot["state"], "failed")
                 self.assertIn(expected, snapshot["error"])
-        self.assertEqual(len((self.tools / "calls.jsonl").read_text().splitlines()), 3)
+                self.assertEqual(self.provider.public_failure_message(snapshot), snapshot["error"])
+        self.assertEqual(len((self.tools / "calls.jsonl").read_text().splitlines()), 5)
+        self.assertEqual(
+            self.provider.public_failure_message({"error": "raw external response must not escape"}),
+            self.provider.MESSAGES["image_result_unknown"],
+        )
+
+    def test_batch_adapter_surfaces_safe_child_failure(self):
+        from multi_image_provider import MultiImageProvider
+
+        adapter = MultiImageProvider(self.provider, self.root / "failed-adapter")
+        request = self.request()
+        request.update(node="generate_image", version="2")
+        with patch.dict(os.environ, {"KIMI_WORK_FIXTURE_FAILURE": "unavailable"}):
+            terminal = self.wait(
+                adapter.submit(request, {"schema_version": 1, "artifacts": []}, digest(["batch-unavailable"]))[
+                    "job_id"
+                ],
+                adapter,
+            )
+        self.assertEqual(terminal["state"], "failed")
+        self.assertIn("至少一个图像子任务失败", terminal["error"])
+        self.assertEqual(
+            adapter.public_failure_message(terminal), self.provider.MESSAGES["image_generation_unavailable"]
+        )
+        self.assertNotIn("raw external response", adapter.public_failure_message(terminal))
 
     def test_local_check_does_not_execute_tool_or_read_credentials(self):
         report = check_image_tool("", "")

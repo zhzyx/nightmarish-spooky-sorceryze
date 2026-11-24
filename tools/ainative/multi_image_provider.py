@@ -479,6 +479,17 @@ class MultiImageProvider(CodexProvider):
         return result
 
     def public_failure_message(self, snapshot):
+        record = self._local(snapshot.get("job_id"))
+        if record is not None:
+            if hasattr(self.inner, "public_failure_message"):
+                for child in record.get("children", []):
+                    receipt = child.get("receipt")
+                    if receipt is not None and receipt.get("state") == "failed":
+                        message = self.inner.public_failure_message(receipt)
+                        if message:
+                            return message
+            message = snapshot.get("error")
+            return message if message in set(MESSAGES.values()) else MESSAGES["image_batch_failed"]
         if hasattr(self.inner, "public_failure_message"):
             return self.inner.public_failure_message(snapshot)
         return None
