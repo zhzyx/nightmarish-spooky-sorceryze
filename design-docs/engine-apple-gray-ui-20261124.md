@@ -2,6 +2,26 @@
 
 需求 ID：engine-apple-gray-ui-20261124。用户于当前 Codex 会话明确授权整个引擎底层 UI 重构与交付。路径以仓库根为基准。
 
+## 最新交付与验收（2026-11-25）
+
+实现已通过 [PR #2231](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2231) 合入 main，交付提交为 `1c77e72dfbe6a4b5e3cf1482651503ea0fca42aa`。操作者为 Sail-Li，签发候选 `9b13dde4ca98f86b27da347f1ca98cfdeef87e72`。以下是当前结论；后文阶段记录保留历史，不代表当前仍待实现。
+
+| 原验收 | 实际结果与证据 |
+| --- | --- |
+| 公共主题与控件覆盖 | Apple Gray / Apple Gray Dark、统一灰色层级、圆角、菜单和弹窗底板；实际编辑器浅深主题、2D 工作区及公共控件实渲染通过。 |
+| hover、选中与输入状态 | 私有 viewport 真实输入探针验证 hover、按下、激活、键盘与禁用；树和列表多选、焦点及失焦状态有实际渲染证据。 |
+| 字号与适配 | 默认字号 15；100% / 150% / 200% 缩放，中文、长文本及 320 / 480 / 960 宽度布局通过；Inspector 长标题省略显示。 |
+| 毛玻璃与回退 | 通知及 2D / 3D 信息和帧耗时浮层接入；Compatibility、Mobile、Forward+ 的真实背景和叠层回归通过；减少透明效果恢复不透明底板，自定义材质优先。 |
+| 展开收起 | FoldableContainer 和 Inspector 动效通过中途反向、裁剪恢复、零时长与减少动态效果验证。 |
+| 原生构建与回归 | 有效交付二进制 SHA-256 为 `b842accf72d5de0bd72c50280a3917408844671a46d32528f8d648dc2784aa3f`；115 项 AIChat 回归、45 项延迟响应控件检查及六类 UI 探针通过，无脚本解析错误。 |
+| 审查与 main 接收 | 原生子 Agent 独立审查及修复复审完成；正式门禁、提交后核验、静态检查、engine-core、editor、editor-native 和 Windows CI 全部通过，main 已回读。 |
+
+持久证据按追加顺序读取：`data-collection/engine-apple-gray-ui-2222-validation.json`、`data-collection/engine-apple-gray-ui-2222-ci-correction.json`、`data-collection/engine-apple-gray-ui-2222-render-coverage.json`、`data-collection/engine-apple-gray-ui-2222-native-recovery.json`。最后一份明确撤销中间受损生成头构建的有效性并绑定恢复后的二进制。15 个引擎实现文件与独立审查及三档缩放、三渲染后端证据的输入摘要一致；后续修订只涉及测试同步和错误检测。
+
+1440×900 空场景编辑器的同步 GPU 绘制测量中，2D 两个浮层开启玻璃的中位数为 0.896 ms（不透明 0.814 ms），3D 为 1.085 ms（不透明 0.991 ms）。这些数据不代表复杂项目的交互帧率。材质只模糊同一 viewport 内已绘制内容，不提供操作系统窗口背后模糊；未声称跨操作系统实机验证或真实显示器主观验收。既有显式主题和字号偏好保持不变。
+
+交付包位于当前 Windows 宿主绝对路径 `D:/GongGong-deliveries/engine-apple-gray-ui-2222`，包含编辑器、必要资源、浅深主题预览和校验清单；未替换其他任务的安装。工单结束、源码镜像与清理的最终状态以 [Issue #2222](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222) 和关联故障单 [#2223](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2223) 的最新回执为准。
+
 ## 范围与验收
 
 - 在公共编辑器主题层建立 macOS 风格中性灰色、清晰文字层级、统一圆角、间距、边框与阴影，少量参考 Codex 的克制布局；覆盖编辑器、停靠面板、菜单、弹窗、树、列表、输入与标签页。
