@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-c59af84c307f806ca3863f1139ff04a4bf87d0d4",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-multidevice-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "aee208b83bb04064a0494c24396e77663cbc10db6060b767690506d63d50da84",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2192",
+    "action": "validation",
+    "detection_head": "1d1740a061ddf2be6f2a6b1f290b301b0f7c1cfe",
+    "context_sha256": "665db8ea59976e15affbc3f0c01a95c23fd0e41cd57a88abe460eaed6c3c27de",
+    "operator": "Sail-Li",
+    "worker": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6",
+    "authority_ref": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6:user-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2192",
+    "diagnosis": "隔离工作树未安装WebView2 SDK，SCons图发现阶段失败；已经运行仓库安装器并验证SDK摘要。当前责任者承担本次环境恢复。",
+    "next_action": "使用仓库共享原生缓存复跑同一编辑器构建，再核对编译及原生会话验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:46:39.833281+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T23:48:35.260055+00:00",
+  "sha256": "7d40d1f096350d5c8cca2df4081fbb9031b68405f41685b8c6b5d09196712e3a"
+}

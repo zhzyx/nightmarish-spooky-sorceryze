@@ -40,6 +40,10 @@ CREATE TABLE IF NOT EXISTS access_keys (
   id TEXT PRIMARY KEY, token_hash TEXT UNIQUE NOT NULL, user_id TEXT NOT NULL,
   name TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL, revoked_at TEXT
 );
+CREATE TABLE IF NOT EXISTS session_devices (
+  token_hash TEXT PRIMARY KEY, device_id TEXT UNIQUE NOT NULL, credential_id TEXT UNIQUE NOT NULL,
+  parent_hash TEXT, user_id TEXT NOT NULL, created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS invites (
   token_hash TEXT PRIMARY KEY, tenant_id TEXT NOT NULL, email TEXT NOT NULL, role TEXT NOT NULL,
   created_by TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL, accepted_at TEXT
@@ -664,6 +668,23 @@ class Tianxuan:
         row = self.db.execute("SELECT user_id, expires_at FROM sessions WHERE token_hash = ?", (token_hash,)).fetchone()
         if row is None:
             return None
+        device = self.db.execute("SELECT parent_hash FROM session_devices WHERE token_hash=?", (token_hash,)).fetchone()
+        if device and device["parent_hash"]:
+            parent = self.db.execute(
+                "SELECT user_id,expires_at FROM sessions WHERE token_hash=?", (device["parent_hash"],)
+            ).fetchone()
+            if parent is None or parent["user_id"] != row["user_id"]:
+                return None
+            try:
+                if datetime.fromisoformat(parent["expires_at"]) <= datetime.now(timezone.utc):
+                    return None
+            except ValueError:
+                return None
+            key = self.db.execute(
+                "SELECT revoked_at FROM access_keys WHERE token_hash=?", (device["parent_hash"],)
+            ).fetchone()
+            if key and key["revoked_at"] is not None:
+                return None
         try:
             expires = datetime.fromisoformat(row["expires_at"])
         except ValueError:
@@ -674,7 +695,69 @@ class Tianxuan:
         return str(row["user_id"])
 
     @_connection_call
+    def device_context(self, token: str) -> dict[str, str] | None:
+        """Server-assigned session identity; never accept a device header as authority."""
+        actor = self.user_for_token(token)
+        if not actor:
+            return None
+        digest = _token_hash(token)
+        self.db.execute(
+            "INSERT OR IGNORE INTO session_devices VALUES (?,?,?,?,?,?)",
+            (digest, _id("device"), _id("credential"), None, actor, _now()),
+        )
+        row = self.db.execute(
+            "SELECT device_id,credential_id FROM session_devices WHERE token_hash=?", (digest,)
+        ).fetchone()
+        return dict(row)
+
+    @_connection_call
+    def issue_device_session(self, token: str) -> dict[str, str]:
+        """Each enrollment receives its own token, bounded by its source grant."""
+        actor = self.user_for_token(token)
+        if not actor:
+            raise PermissionDenied("valid source credential required")
+        digest = _token_hash(token)
+        source = self.db.execute("SELECT parent_hash FROM session_devices WHERE token_hash=?", (digest,)).fetchone()
+        if source and source["parent_hash"]:
+            raise PermissionDenied("device sessions cannot delegate another device")
+        parent = self.db.execute("SELECT expires_at FROM sessions WHERE token_hash=?", (digest,)).fetchone()
+        child = self.issue_session(actor)
+        self.db.execute("UPDATE sessions SET expires_at=? WHERE token_hash=?", (parent[0], _token_hash(child)))
+        context = self.device_context(child)
+        self.db.execute("UPDATE session_devices SET parent_hash=? WHERE token_hash=?", (digest, _token_hash(child)))
+        self._event(self._tenant_of(actor), "identity.device.issued", actor, context["device_id"], context)
+        return {"token": child, "user_id": actor, **context}
+
+    @_connection_call
+    def list_devices(self, actor: str) -> list[dict[str, Any]]:
+        return [
+            dict(row)
+            for row in self.db.execute(
+                "SELECT d.device_id,d.credential_id,d.created_at,s.expires_at FROM session_devices d "
+                "JOIN sessions s ON s.token_hash=d.token_hash WHERE d.user_id=? ORDER BY d.created_at,d.device_id",
+                (actor,),
+            )
+        ]
+
+    @_connection_call
+    def revoke_device(self, actor: str, device_id: str) -> bool:
+        row = self.db.execute(
+            "SELECT token_hash FROM session_devices WHERE user_id=? AND device_id=?", (actor, device_id)
+        ).fetchone()
+        if row is None:
+            raise NotFound("device not found")
+        # Root personal keys have a separate administrator revocation endpoint.
+        if self.db.execute("SELECT 1 FROM access_keys WHERE token_hash=?", (row[0],)).fetchone():
+            raise PermissionDenied("revoke personal keys through key management")
+        changed = self.db.execute("DELETE FROM sessions WHERE token_hash=?", (row[0],)).rowcount > 0
+        if changed:
+            self._event(self._tenant_of(actor), "identity.device.revoked", actor, device_id, {})
+        return changed
+
+    @_connection_call
     def revoke_session(self, token: str) -> bool:
+        if self.db.execute("SELECT 1 FROM access_keys WHERE token_hash=?", (_token_hash(token),)).fetchone():
+            return False
         cursor = self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (_token_hash(token),))
         return cursor.rowcount > 0
 
@@ -701,9 +784,12 @@ class Tianxuan:
 
     @_connection_call
     def user_for_access_key(self, token: str) -> str | None:
+        digest = _token_hash(token)
+        device = self.db.execute("SELECT parent_hash FROM session_devices WHERE token_hash=?", (digest,)).fetchone()
+        source_hash = device[0] if device and device[0] else digest
         row = self.db.execute(
             "SELECT user_id FROM access_keys WHERE token_hash = ? AND revoked_at IS NULL",
-            (_token_hash(token),),
+            (source_hash,),
         ).fetchone()
         if row is None:
             return None

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "kind": "source_index",
+  "request_id": "tianxuan-multidevice-20261124",
+  "collected_at": "2026-11-23T23:42:17.063231+00:00",
+  "collector": "gonggong-local-file-indexer",
+  "intended_reader": "diting",
+  "diting_ingestion_confirmed": false,
+  "events": [
+    {
+      "source": "gonggong-diting-data/events/gonggong-workspace/tianxuan-multidevice-20261124/dispatch-54970423078941a6afc1f339a92c38f1.json",
+      "sha256": "70509f697705a9aa22c0e8467540f2e1982f69d1f44b335a6eb4bb8a49f98d7d",
+      "tenant_id": "gonggong-workspace",
+      "event_id": "dispatch-54970423078941a6afc1f339a92c38f1",
+      "origin": "external-authorized-host"
+    }
+  ],
+  "scope": "Validated local Diting events for this request; not a remote Issue snapshot"
+}

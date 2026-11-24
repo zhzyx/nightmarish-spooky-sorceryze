@@ -119,8 +119,19 @@ func authenticate(email: String, secret: String, project: String) -> bool:
 		if login.status != 200 or credential.is_empty():
 			_set_status("登录失败，请重新认证" if login.status in [401, 403] else "无法登录天璇，请检查服务后重试")
 			return false
+	else:
+		# A shared personal key authorizes enrollment, each device uses its own session.
+		var enrollment := await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/device-session", credential, {}, 12.0, "", target)
+		credential = str(enrollment.data.get("token", ""))
+		if attempt != generation:
+			if not credential.is_empty():
+				_exchange(HTTPClient.METHOD_POST, "/api/v1/auth/logout", credential, {}, 12.0, "", target)
+			return false
+		if enrollment.status != 200 or credential.is_empty():
+			_set_status("无法登记设备登录，请检查服务与授权后重试")
+			return false
 	_token = credential
-	_owned_session = not email.is_empty()
+	_owned_session = true
 	var me := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", credential, {}, 12.0, "", target)
 	if attempt != generation:
 		return false
