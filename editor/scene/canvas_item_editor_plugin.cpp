@@ -5343,6 +5343,7 @@ CanvasItemEditorViewport::CanvasItemEditorViewport(CanvasItemEditor *p_canvas_it
 	tooltip_panel->add_theme_constant_override("paragraph_separation", 5);
 
 	info_panel = memnew(PanelContainer);
+	info_panel->set_theme_type_variation("EditorGlassPanel");
 	info_panel->set_anchor_and_offset(SIDE_LEFT, ANCHOR_END, -90 * EDSCALE);
 	info_panel->set_anchor_and_offset(SIDE_TOP, ANCHOR_END, -90 * EDSCALE);
 	info_panel->set_anchor_and_offset(SIDE_RIGHT, ANCHOR_END, -10 * EDSCALE);
@@ -5361,6 +5362,7 @@ CanvasItemEditorViewport::CanvasItemEditorViewport(CanvasItemEditor *p_canvas_it
 	// The color is set when the theme changes.
 	frame_time_gradient->add_point(0.5, Color());
 	frame_time_panel = memnew(PanelContainer);
+	frame_time_panel->set_theme_type_variation("EditorGlassPanel");
 	frame_time_panel->set_mouse_filter(MOUSE_FILTER_IGNORE);
 	canvas_item_editor->get_frame_time_panel_container()->add_child(frame_time_panel);
 	frame_time_panel->hide();

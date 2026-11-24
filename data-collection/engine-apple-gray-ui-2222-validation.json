@@ -1,0 +1,450 @@
+{
+  "request_id": "engine-apple-gray-ui-20261124",
+  "issue_number": 2222,
+  "recorded_at": "2026-11-24T17:27:28.318510+00:00",
+  "binary_sha256": "f334a362c05375722c0ef94acf7e486c960e79bf4f509154f95a9f62d0cc2e5e",
+  "scope": "Windows native candidate; hidden-window OpenGL compatibility rendering and isolated headless tests. Not full delivery acceptance.",
+  "scales": {
+    "1.0": {
+      "binary_sha256": "f334a362c05375722c0ef94acf7e486c960e79bf4f509154f95a9f62d0cc2e5e",
+      "results": [
+        {
+          "probe": "folding_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "theme_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "layout_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "material_inspector_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "interaction_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "inspector-native",
+          "exit_code": 0
+        }
+      ],
+      "temporary_settings_removed": true,
+      "metrics": {
+        "folding_probe": [
+          {
+            "failures": [],
+            "samples": [
+              {
+                "collapsed": 31.0,
+                "expanded": 199.0,
+                "middle": 75.0975646972656,
+                "reversal": 75.0975646972656
+              }
+            ]
+          }
+        ],
+        "interaction_probe": [
+          {
+            "failures": [],
+            "input_scope": "private headless viewport only; no OS input",
+            "presses": 2
+          }
+        ],
+        "layout_probe": [
+          {
+            "failures": [],
+            "samples": [
+              {
+                "actual_size": "(320.0, 420.0)",
+                "font_size": 15,
+                "requested_width": 320
+              },
+              {
+                "actual_size": "(480.0, 420.0)",
+                "font_size": 15,
+                "requested_width": 480
+              },
+              {
+                "actual_size": "(960.0, 420.0)",
+                "font_size": 15,
+                "requested_width": 960
+              }
+            ]
+          }
+        ],
+        "material_inspector_probe": [
+          {
+            "failures": []
+          }
+        ],
+        "theme_probe": [
+          {
+            "failures": [],
+            "samples": [
+              {
+                "button_radius": 6,
+                "contrast": 13.9586477627605,
+                "preset": "Apple Gray"
+              },
+              {
+                "button_radius": 6,
+                "contrast": 10.8598701637226,
+                "preset": "Apple Gray Dark"
+              },
+              {
+                "button_radius": 6,
+                "contrast": 11.5755339324883,
+                "preset": "Default"
+              },
+              {
+                "button_radius": 6,
+                "contrast": 13.6587624671239,
+                "preset": "Light"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "1.5": {
+      "binary_sha256": "f334a362c05375722c0ef94acf7e486c960e79bf4f509154f95a9f62d0cc2e5e",
+      "results": [
+        {
+          "probe": "folding_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "theme_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "layout_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "material_inspector_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "interaction_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "inspector-native",
+          "exit_code": 0
+        }
+      ],
+      "temporary_settings_removed": true,
+      "metrics": {
+        "folding_probe": [
+          {
+            "failures": [],
+            "samples": [
+              {
+                "collapsed": 31.0,
+                "expanded": 199.0,
+                "middle": 75.0964126586914,
+                "reversal": 75.0964126586914
+              }
+            ]
+          }
+        ],
+        "interaction_probe": [
+          {
+            "failures": [],
+            "input_scope": "private headless viewport only; no OS input",
+            "presses": 2
+          }
+        ],
+        "layout_probe": [
+          {
+            "failures": [],
+            "samples": [
+              {
+                "actual_size": "(480.0, 630.0)",
+                "font_size": 22,
+                "requested_width": 320
+              },
+              {
+                "actual_size": "(720.0, 630.0)",
+                "font_size": 22,
+                "requested_width": 480
+              },
+              {
+                "actual_size": "(1440.0, 630.0)",
+                "font_size": 22,
+                "requested_width": 960
+              }
+            ]
+          }
+        ],
+        "material_inspector_probe": [
+          {
+            "failures": []
+          }
+        ],
+        "theme_probe": [
+          {
+            "failures": [],
+            "samples": [
+              {
+                "button_radius": 9,
+                "contrast": 13.9586477627605,
+                "preset": "Apple Gray"
+              },
+              {
+                "button_radius": 9,
+                "contrast": 10.8598701637226,
+                "preset": "Apple Gray Dark"
+              },
+              {
+                "button_radius": 9,
+                "contrast": 11.5755339324883,
+                "preset": "Default"
+              },
+              {
+                "button_radius": 9,
+                "contrast": 13.6587624671239,
+                "preset": "Light"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "2.0": {
+      "binary_sha256": "f334a362c05375722c0ef94acf7e486c960e79bf4f509154f95a9f62d0cc2e5e",
+      "results": [
+        {
+          "probe": "folding_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "theme_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "layout_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "material_inspector_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "interaction_probe",
+          "exit_code": 0
+        },
+        {
+          "probe": "inspector-native",
+          "exit_code": 0
+        }
+      ],
+      "temporary_settings_removed": true,
+      "metrics": {
+        "folding_probe": [
+          {
+            "failures": [],
+            "samples": [
+              {
+                "collapsed": 31.0,
+                "expanded": 199.0,
+                "middle": 75.0975646972656,
+                "reversal": 75.0975646972656
+              }
+            ]
+          }
+        ],
+        "interaction_probe": [
+          {
+            "failures": [],
+            "input_scope": "private headless viewport only; no OS input",
+            "presses": 2
+          }
+        ],
+        "layout_probe": [
+          {
+            "failures": [],
+            "samples": [
+              {
+                "actual_size": "(640.0, 840.0)",
+                "font_size": 30,
+                "requested_width": 320
+              },
+              {
+                "actual_size": "(960.0, 840.0)",
+                "font_size": 30,
+                "requested_width": 480
+              },
+              {
+                "actual_size": "(1920.0, 840.0)",
+                "font_size": 30,
+                "requested_width": 960
+              }
+            ]
+          }
+        ],
+        "material_inspector_probe": [
+          {
+            "failures": []
+          }
+        ],
+        "theme_probe": [
+          {
+            "failures": [],
+            "samples": [
+              {
+                "button_radius": 12,
+                "contrast": 13.9586477627605,
+                "preset": "Apple Gray"
+              },
+              {
+                "button_radius": 12,
+                "contrast": 10.8598701637226,
+                "preset": "Apple Gray Dark"
+              },
+              {
+                "button_radius": 12,
+                "contrast": 11.5755339324883,
+                "preset": "Default"
+              },
+              {
+                "button_radius": 12,
+                "contrast": 13.6587624671239,
+                "preset": "Light"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "render": {
+    "backdrop_range": 0.0901960730552673,
+    "failures": [],
+    "opaque_difference": 0.0,
+    "overlap_color": "(0.9255, 0.7451, 0.7569, 1.0)",
+    "renderer": "gl_compatibility",
+    "scope": "one 280x160 panel in a 320x200 offscreen viewport; not a full-editor benchmark",
+    "synchronized_frame_timings": {
+      "0": {
+        "frames": 30,
+        "median_ms": 0.061,
+        "p95_ms": 0.223
+      },
+      "3": {
+        "frames": 30,
+        "median_ms": 0.071,
+        "p95_ms": 0.096
+      }
+    }
+  },
+  "editor_render": [
+    {
+      "image": "editor-light.png",
+      "preset": "Apple Gray",
+      "size": "(1440, 900)"
+    },
+    {
+      "image": "workspace-light.png",
+      "preset": "Apple Gray",
+      "size": "(1440, 900)"
+    },
+    {
+      "image": "controls-light.png",
+      "preset": "Apple Gray",
+      "scope": "inherited editor theme: multi-selection, focus, disabled, input, tabs"
+    },
+    {
+      "image": "editor-dark.png",
+      "preset": "Apple Gray Dark",
+      "size": "(1440, 900)"
+    },
+    {
+      "image": "workspace-dark.png",
+      "preset": "Apple Gray Dark",
+      "size": "(1440, 900)"
+    },
+    {
+      "image": "controls-dark.png",
+      "preset": "Apple Gray Dark",
+      "scope": "inherited editor theme: multi-selection, focus, disabled, input, tabs"
+    }
+  ],
+  "sources": {
+    "doc/classes/EditorSettings.xml": "6e398d205fe2022304675e37bea6d1472dd48c91d1916f7212a6846e78f5c8e0",
+    "doc/classes/FoldableContainer.xml": "306740fba1f6c50cbb726fc8e15c875a4618cad460242ae7e9a5616eb1152d91",
+    "doc/classes/PanelContainer.xml": "79c1d58dd3e9d96f68b8f6326e5388c941f875e236f3e75ac02b5a67b1071680",
+    "editor/docks/ai_chat_dock.cpp": "315f2200d4fabede31d22c115de75667c0a4b0d7343d10bd1fef6ce932ab4797",
+    "editor/gui/editor_toaster.cpp": "075c5b808df3a23afdbf715945c355da216330a1bb6c2b2d511ad38833efcedb",
+    "editor/inspector/editor_inspector.cpp": "60c22ba1c37e6ff5c629018b8e35dda3d9da3773a2bfea93d9cf3da7c8a5295d",
+    "editor/inspector/editor_inspector.h": "518a63012a593f821de0ff694523cacc8d5995915d205b47c77df0e9e576e9c5",
+    "editor/scene/3d/node_3d_editor_viewport.cpp": "660feeb6d3970f2d549e82c5128da50a944d2edf4e10cc863154e1df574826bd",
+    "editor/scene/canvas_item_editor_plugin.cpp": "65468c0e320d073e570adf77c02a6f9c0d5338ea2f7b863ff487fbf9466ff86f",
+    "editor/settings/editor_settings.cpp": "cc342e818d388c2511098d9f5170bad69982eb4153f0084cad7da96c5da3b1b5",
+    "editor/themes/editor_theme_manager.cpp": "85a79a21212c600e12f4283669028e8963d4292902bc6c8cbba51c1aa256c67e",
+    "editor/themes/editor_theme_manager.h": "09db6913c43b7f08f7f781fadf40ae25d5e61b8bfcb0e9593fec33c47b5d109e",
+    "editor/themes/theme_modern.cpp": "347bc110be8117a9357b3ce3eace405d3b6e5d46dcc0c2e57712006ec3130aae",
+    "scene/gui/foldable_container.cpp": "a2fbee74d90d7080e9c9e868f9359475f9293d50d9b57772f06598143011d95c",
+    "scene/gui/foldable_container.h": "18a1c8945395acc191958c0235027cd02424e30693d1169094ebeff95f8e3e04",
+    "scene/gui/panel_container.cpp": "fdf7b060888d0430062cf3d68725ccd22bf8c30de5c9d2fd1a3861987222c977",
+    "scene/gui/panel_container.h": "ae6f9db0a2bbd2aa2b6817d1d120945ff857ae4daef583634be578d02ead11b0",
+    "scene/theme/default_theme.cpp": "7b3522ca3a489733d0852a76905c74f2e918402a42a98648cc18978feb5b0c92",
+    "tests/editor/apple_gray_editor_render_probe.gd": "3e92450f5d2a0f9d5e0b7940e89180df4209da391557bbe8539d75af988de71e",
+    "tests/editor/apple_gray_folding_probe.gd": "af134fcc1300d720a13e55180e4bc5ab80ebc9d1c99b797d3984a155e63889dd",
+    "tests/editor/apple_gray_interaction_probe.gd": "ff556b6f4df6ae5fc89c98da29ccd17097f9314e1080f9d895b0d9d4ce0e33fa",
+    "tests/editor/apple_gray_layout_probe.gd": "7cb4bf797c4055c6b5e1160a06c51add473e028054d471afc466186946734ebe",
+    "tests/editor/apple_gray_material_inspector_probe.gd": "42af53eeb6c9152207d7e74cc2cf65e8ed6e08014c0dc0f006bbe5341a9ce1b3",
+    "tests/editor/apple_gray_render_probe.gd": "46d99024b8ad576040036e9ea1128dc42c615bab3b125caf24158f70f9bf9b8b",
+    "tests/editor/apple_gray_theme_probe.gd": "834749c5e2333ec8324256aa4801b8f92ce764916167b08451983f649f0a4283",
+    "tests/editor/run_apple_gray_probes.py": "1444ae1af7253ca69c9607a756780fc3cd17f344b5daf31749011e844b139183",
+    "tests/editor/run_apple_gray_render.py": "143138e0ee3f12248536fcad5749b8c97220636bc7e2e8312ef5ebafe7ddf60c",
+    "tests/editor/test_editor_visual_motion.cpp": "0250fa034564d0bde84b691d60eaa2ccc684ca1e918613d60fbfc2cc39065638"
+  },
+  "review_fixes": [
+    "Zero-duration fold reversal synchronously restores child visibility and minimum size.",
+    "Per-panel background copy includes intervening opaque content; failing red-backdrop regression now passes."
+  ],
+  "base_commit": "1c7c0e27f10c665f6dc882ec34e1b4a00a964bab",
+  "render_images": {
+    "controls-dark.png": "6dc33493a049fdbcc727d25d0f245224bbdda35649d40ac4452e1ec237c3b8be",
+    "controls-light.png": "9673e3e9caa5e9c0e349e17015566f9cbe170f6601e2f235efb41f823017dde6",
+    "editor-dark.png": "ac78d27f2e79f169649e021637fd2ce59f02be97a0ad612076d9f5012f65a631",
+    "editor-light.png": "fa04e14be7434da5cdd5eb39ea2df6b8344a919cb4837048618506101b0e5801",
+    "glass.png": "3cf8762d38f604f7825eb53465f4b91bd760c0be212623fb8c7bf9dea1c8cced",
+    "opaque.png": "4eff097f219a523922c7ae9c95bfb074f3bcb84bb3d467503a2aaf7a115c7dc4",
+    "overlapping-glass.png": "668c202c913a3a423ab8804959965e61199fdd1ac5175638044863e90d0c9bfa",
+    "workspace-dark.png": "cc7bf035a638a743c349a48d0e73f7f1282882d92af55e29ec91cece5380ca95",
+    "workspace-light.png": "c04ae652b08f639180b9d4a9d2df7531f6eac81ca59d826fd7da6b69f9fb885c"
+  },
+  "build_regression": {
+    "test_cases_passed": 115,
+    "assertions_passed": 1909,
+    "receipt_id": "0d6e90ffbc554ad890f53466f0cb2bbd",
+    "status": "passed"
+  },
+  "limitations": [
+    "Native Windows and OpenGL compatibility verified; no physical-display subjective acceptance claimed.",
+    "Timing measurements cover the small offscreen fixture, not full-editor performance.",
+    "Independent review and main delivery remain pending."
+  ],
+  "independent_review": {
+    "worker": "/root/sinan_ba0442f42f25bd7e",
+    "terminal_state": "completed",
+    "reference": "collaboration.final:/root/sinan_ba0442f42f25bd7e",
+    "scope": "All staged implementation and new probes/runners/native test; read-only",
+    "conclusion": "No new confirmed release-blocking code defect found. Prior folding and backdrop defects fixed; new actual viewport consumers and opaque fallback checked.",
+    "verified_source_hashes": {
+      "scene/gui/foldable_container.cpp": "a2fbee74d90d7080e9c9e868f9359475f9293d50d9b57772f06598143011d95c",
+      "scene/gui/panel_container.cpp": "fdf7b060888d0430062cf3d68725ccd22bf8c30de5c9d2fd1a3861987222c977",
+      "editor/themes/theme_modern.cpp": "347bc110be8117a9357b3ce3eace405d3b6e5d46dcc0c2e57712006ec3130aae",
+      "tests/editor/apple_gray_interaction_probe.gd": "ff556b6f4df6ae5fc89c98da29ccd17097f9314e1080f9d895b0d9d4ce0e33fa"
+    },
+    "limitations": "Source review does not replace whole-editor performance, other-renderer testing or physical-display judgement."
+  }
+}

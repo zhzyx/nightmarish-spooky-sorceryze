@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-15009ab44ebc2893ca1c775d47d0111eef447d28",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-apple-gray-ui-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "862e6aa8caeb413cac79ea650e379eacd661b649d9c4a30041af6b29ac319748",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2223",
+    "action": "dependency",
+    "detection_head": "dd428660cfde26f9c377a43919fad5b09a943ba2",
+    "context_sha256": "2ceda5c69ac6f76ff55fd96a0122d24875b659ae0c66f71d1b6e45bffd5ac1d4",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-goal-engine-apple-gray-ui-20261124",
+    "evidence": "thirdparty/webview2/manifest.json",
+    "diagnosis": "隔离工作树未包含忽略的SDK。下载进程已停止，复用本机SDK前逐文件核对本候选清单SHA256，verify_installed已成功。",
+    "next_action": "重跑原生构建，SDK验证成功不代替构建和UI业务验收。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T15:57:20.812427+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T16:03:49.180088+00:00",
+  "sha256": "ede945636f98ad84b4bf7e687975bf24ea35e69470ec9e9a6f7ee0aa8c4606b0"
+}
