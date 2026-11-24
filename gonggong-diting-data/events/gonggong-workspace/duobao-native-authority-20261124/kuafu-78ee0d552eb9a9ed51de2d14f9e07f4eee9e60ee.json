@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-78ee0d552eb9a9ed51de2d14f9e07f4eee9e60ee",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "8ffa7f1d3ad321f936eb30671718417a406ee8760960bb9af96e22108ba95b0f",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2187",
+    "action": "delivery",
+    "detection_head": "9691ad192c4d1d3cbf2a30e92f66585bc766ac38",
+    "context_sha256": "f5e5a8bd9dc76dfac839a40cbd20ddd49aabbfe2edabbd7ec309de2e798ec24b",
+    "operator": "Sail-Li",
+    "worker": "codex:root",
+    "authority_ref": "codex:01a20a6b-b56e-74c0-abbc-30a24123dd7b:user-native-submission-and-server-target-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2191",
+    "diagnosis": "Candidate9691ad push exceeded120 seconds; terminated only its verified orphan Git descendants after remote404 readback. Bounded HTTP1.1 transport read succeeded. Retried the same immutable candidate using process-scoped HTTP1.1/low-speed limits; signed PR2191 now exists and old PR2189 was superseded. Static CI passes. This proves push recovery, not final main delivery.",
+    "next_action": "Wait for exact candidate CI, merge and verify final dual receipts. Append this post-candidate runtime event through metadata-only follow-up delivery; no mutation of the frozen candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:41:13.466200+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T23:47:40.384072+00:00",
+  "sha256": "6a3be03cdc242986bd4d958166b9c07a7849cf03f90c721c08948062d2f25973"
+}

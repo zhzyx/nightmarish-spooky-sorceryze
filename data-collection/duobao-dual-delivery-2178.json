@@ -1,0 +1,58 @@
+{
+  "request_id": "duobao-native-authority-20261124",
+  "source_delivery": {
+    "pull_request": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2191",
+    "candidate": "9691ad192c4d1d3cbf2a30e92f66585bc766ac38",
+    "signed_commit": "2ea6b81806f2f4c44140665427ea6920dd3e8012",
+    "git_merge": "67621cf62f8159bde6ec81b92de4fd60f78def8e",
+    "git_tree": "ca3601c9fe54626e01a70857456cc3e348e0e258",
+    "delivered_paths_differ": [],
+    "duobao": {
+      "state": "received",
+      "git_repository": "zhzyx/nightmarish-spooky-sorceryze",
+      "git_commit": "67621cf62f8159bde6ec81b92de4fd60f78def8e",
+      "git_tree": "ca3601c9fe54626e01a70857456cc3e348e0e258",
+      "native_repository": "gonggong",
+      "binding": "5e11da1fcaa17cd4290ce291adb90469af7c84c02f0cfe7089f0516d22b9d9bc",
+      "tenant": "ten_5338c09d13f1456c9fafc7b7fd8d2316",
+      "native_branch": "git/67621cf62f8159bde6ec81b92de4fd60f78def8e",
+      "native_revision": "741a8ecd57526179c3bdb8af4dc693b3fd5e2facb68897fafc42f3ecf5ac0638",
+      "manifest_sha256": "61dd231186d7c7203ca4f4c4a74e0c7a4976336c149328d4a8a1a3d734b0b292",
+      "files": 32367,
+      "native_publication": "not_requested"
+    }
+  },
+  "ci": {
+    "run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45291280317",
+    "static_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45291280411",
+    "result": "All applicable checks passed, including Windows editor, Docker images and web build.",
+    "tests": {
+      "passed": 1597,
+      "subtests_passed": 260,
+      "skipped": 13,
+      "deselected": 2
+    }
+  },
+  "phase": "Dual reception only; native main remains unpublished. Git history, protections and current entry remain active.",
+  "evidence": [
+    {
+      "path": "data-collection/duobao-native-live-2178.json",
+      "sha256": "009f6fdff5fd31550fb8369cb45ff6e57f929edb22bbd8e4121ffe163231d85c"
+    },
+    {
+      "path": "data-collection/duobao-server-deployment-2178.json",
+      "sha256": "8c252bf22443dcc0de87996e5b9399e53d4d6497541f88fa807c980d58094b90"
+    },
+    {
+      "path": "data-collection/duobao-dual-review-2178.json",
+      "sha256": "a0b845fb2820436d1f4a5552b2dfcd0c7a06dd8ce901dfbf2b0f85801618d5ab"
+    },
+    {
+      "path": "data-collection/duobao-dual-module-build-impact-2178-r2.json",
+      "sha256": "37b91082f78802cabb98f673458b8f7124cb1e2007b882c7906701dd5665c081"
+    }
+  ],
+  "closeout": "This immutable record covers the implementation delivery. Final metadata merge/native receipt and cleanup are recorded on Issue2178 and in the private closeout archive; do not infer native publication or final Issue closure from this record.",
+  "issue_number": 2178,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178"
+}

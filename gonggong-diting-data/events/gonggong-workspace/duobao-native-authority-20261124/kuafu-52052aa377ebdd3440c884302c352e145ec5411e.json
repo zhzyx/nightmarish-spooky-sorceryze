@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-52052aa377ebdd3440c884302c352e145ec5411e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "duobao-native-authority-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "fc75bd0ef6808380a31c7d2615f142bb2b913509d29c3720a7a90480aee5bbac",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2178",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2187",
+    "action": "delivery",
+    "detection_head": "9691ad192c4d1d3cbf2a30e92f66585bc766ac38",
+    "context_sha256": "f5e5a8bd9dc76dfac839a40cbd20ddd49aabbfe2edabbd7ec309de2e798ec24b",
+    "operator": "Sail-Li",
+    "worker": "codex:root",
+    "authority_ref": "codex:01a20a6b-b56e-74c0-abbc-30a24123dd7b:user-native-submission-and-server-target-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2191",
+    "diagnosis": "Both external actions succeeded before stdout serialization: signed PR2191 and native revision270eb12360d1b7f654b6d109eabda6d2717af11b927fb439f6a928996ba84631 read back. Final report contained a CI emoji that Windows GBK stdout could not encode. Use the existing host UTF8 invocation convention: python -X utf8. Do not repeat publication for a display error.",
+    "next_action": "Continue the existing PR CI and use UTF8 inspect-pr for merge receipt; append runtime correction events in metadata-only closeout.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T23:48:10.097640+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T23:48:52.169403+00:00",
+  "sha256": "b8da1f09bb8a5ba9df99f6ee69f7c1300275dd6bdc5962f6335d11990dbdec69"
+}
