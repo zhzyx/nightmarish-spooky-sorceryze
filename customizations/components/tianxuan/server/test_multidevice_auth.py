@@ -148,3 +148,30 @@ def test_expiry_during_enrollment_rolls_back_child(setup, monkeypatch):
     with pytest.raises(PermissionDenied, match="expired during device enrollment"):
         domain.issue_device_session(key["key"])
     assert domain.db.execute("SELECT count(*) FROM sessions").fetchone()[0] == before
+
+
+def test_legacy_sessions_migrate_once_and_identity_reads_need_no_write_lock(tmp_path):
+    import sqlite3
+
+    database = str(tmp_path / "legacy.sqlite")
+    domain = Tianxuan(database)
+    owner = domain.register("legacy", "owner@example.invalid", "password")["user_id"]
+    tokens = [domain.issue_session(owner) for _ in range(2)]
+    domain.db.execute("DROP TABLE session_devices")
+    domain.db.commit()
+    domain.db.close()
+    domain = Tianxuan(database)
+    contexts = [domain.device_context(token) for token in tokens]
+    assert contexts[0] != contexts[1]
+    domain.db.close()
+    domain = Tianxuan(database)
+    blocker = sqlite3.connect(database)
+    try:
+        before = list(domain.db.iterdump())
+        blocker.execute("BEGIN IMMEDIATE")
+        domain.db.execute("PRAGMA busy_timeout=5")
+        assert [domain.device_context(token) for token in tokens] == contexts
+        assert list(domain.db.iterdump()) == before
+    finally:
+        blocker.close()
+        domain.db.close()

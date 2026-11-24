@@ -590,6 +590,14 @@ class Tianxuan:
                 "CREATE TABLE sessions (token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, "
                 "created_at TEXT NOT NULL, expires_at TEXT NOT NULL)"
             )
+        # Register pre-upgrade sessions at startup, never on authenticated reads.
+        self.db.execute(
+            "INSERT OR IGNORE INTO session_devices "
+            "SELECT s.token_hash,'device_'||lower(hex(randomblob(16))),"
+            "'credential_'||lower(hex(randomblob(16))),NULL,s.user_id,s.created_at "
+            "FROM sessions s LEFT JOIN session_devices d ON d.token_hash=s.token_hash "
+            "WHERE d.token_hash IS NULL"
+        )
 
     # ---------- 租户与身份 ----------
 
@@ -660,6 +668,10 @@ class Tianxuan:
                 expires.isoformat(timespec="seconds"),
             ),
         )
+        self.db.execute(
+            "INSERT INTO session_devices VALUES (?,?,?,?,?,?)",
+            (_token_hash(token), _id("device"), _id("credential"), None, user_id, now.isoformat(timespec="seconds")),
+        )
         return token
 
     @_connection_call
@@ -701,14 +713,10 @@ class Tianxuan:
         if not actor:
             return None
         digest = _token_hash(token)
-        self.db.execute(
-            "INSERT OR IGNORE INTO session_devices VALUES (?,?,?,?,?,?)",
-            (digest, _id("device"), _id("credential"), None, actor, _now()),
-        )
         row = self.db.execute(
             "SELECT device_id,credential_id FROM session_devices WHERE token_hash=?", (digest,)
         ).fetchone()
-        return dict(row)
+        return dict(row) if row else None
 
     @_connection_call
     def issue_device_session(self, token: str) -> dict[str, str]:
