@@ -40,8 +40,8 @@
 namespace EngineNext::Rendering
 {
 
-// Synchronous CPU decode with caller-owned inputs and outputs. Windows uses the
-// built-in WIC PNG/JPEG decoders. Other platforms return image_decode_platform.
+// Synchronous CPU decode with caller-owned inputs and outputs. Non-interlaced RGBA8 PNG
+// decoding is portable. Windows WIC handles other PNG layouts and JPEG.
 // The 16 MiB source and 8192-pixel dimension limits apply before pixel allocation.
 // PNG zlib completion, checksum, scanline lengths and filter bytes are validated
 // independently before the OS decoder, including Adam7 interlaced scanlines.

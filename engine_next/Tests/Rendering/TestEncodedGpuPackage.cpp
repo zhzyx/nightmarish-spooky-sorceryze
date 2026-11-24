@@ -34,7 +34,14 @@
 #include "engine_next/Rendering/Cook/GpuPagedPackage.h"
 #include "engine_next/Rendering/Cook/BlockTextureCodec.h"
 
+#include <cstdio>
+#include <cstddef>
+#include <cstdint>
+#include <filesystem>
 #include <fstream>
+#include <iterator>
+#include <string>
+#include <vector>
 
 namespace
 {
@@ -60,6 +67,19 @@ using EngineNext::Rendering::VerifyPagedScene;
 using EngineNext::Serialization::JsonValue;
 using EngineNext::Tests::Rendering::AppendLittle32;
 using EngineNext::Tests::Rendering::PackageFixture;
+
+bool RequirePackageStep(bool bSucceeded, const Diagnostics &arrDiagnostics, const char *pStep, int nLine)
+{
+	EngineNext::Tests::Check(bSucceeded, pStep, __FILE__, nLine);
+	if (!bSucceeded)
+	{
+		for (const EngineNext::Assets::Diagnostic &stDiagnostic : arrDiagnostics)
+		{
+			std::fprintf(stderr, "%s: %s %s: %s\n", pStep, stDiagnostic.strCode.c_str(), stDiagnostic.strPath.c_str(), stDiagnostic.strMessage.c_str());
+		}
+	}
+	return bSucceeded;
+}
 
 std::vector<std::uint8_t> BlockTexturedGlb()
 {
@@ -120,14 +140,29 @@ ENGINE_NEXT_TEST("Encoded v4 package reads real BC7 BC5 pages and keeps M3 ident
 	}
 	Diagnostics arrDiagnostics;
 	RenderScene stSource;
-	ENGINE_NEXT_CHECK(LoadRenderScene((stFixture.stRoot / "source.enpak").string(), stSource, arrDiagnostics));
+	if (!RequirePackageStep(LoadRenderScene((stFixture.stRoot / "source.enpak").string(), stSource, arrDiagnostics), arrDiagnostics, "LoadRenderScene", __LINE__))
+	{
+		return;
+	}
 	const std::string strTarget = (stFixture.stRoot / "encoded.engpu").string();
-	ENGINE_NEXT_CHECK(CookEncodedGpuPackage((stFixture.stRoot / "source.enpak").string(), strTarget, {}, {}, arrDiagnostics));
-	ENGINE_NEXT_CHECK(CookEncodedGpuPackage((stFixture.stRoot / "source.enpak").string(), strTarget, {}, {}, arrDiagnostics));
+	if (!RequirePackageStep(CookEncodedGpuPackage((stFixture.stRoot / "source.enpak").string(), strTarget, {}, {}, arrDiagnostics), arrDiagnostics, "CookEncodedGpuPackage", __LINE__))
+	{
+		return;
+	}
+	if (!RequirePackageStep(CookEncodedGpuPackage((stFixture.stRoot / "source.enpak").string(), strTarget, {}, {}, arrDiagnostics), arrDiagnostics, "CookEncodedGpuPackage", __LINE__))
+	{
+		return;
+	}
 	GpuPageIndex stIndex;
-	ENGINE_NEXT_CHECK(LoadGpuPageIndex(strTarget, stSource.strPackageDigest, {}, stIndex, arrDiagnostics));
+	if (!RequirePackageStep(LoadGpuPageIndex(strTarget, stSource.strPackageDigest, {}, stIndex, arrDiagnostics), arrDiagnostics, "LoadGpuPageIndex", __LINE__))
+	{
+		return;
+	}
 	ENGINE_NEXT_CHECK_EQ(stIndex.Metadata().nGpuFormatVersion, 4U);
-	ENGINE_NEXT_CHECK(VerifyPagedScene(stSource, stIndex, arrDiagnostics));
+	if (!RequirePackageStep(VerifyPagedScene(stSource, stIndex, arrDiagnostics), arrDiagnostics, "VerifyPagedScene", __LINE__))
+	{
+		return;
+	}
 	bool bBc7 = false;
 	bool bBc5 = false;
 	GpuPageReadStats stStats;
@@ -146,7 +181,10 @@ ENGINE_NEXT_TEST("Encoded v4 package reads real BC7 BC5 pages and keeps M3 ident
 	ENGINE_NEXT_CHECK(bBc7 && bBc5);
 	ENGINE_NEXT_CHECK_EQ(stStats.nVerifiedPages, 6U);
 	RenderScene stDecoded;
-	ENGINE_NEXT_CHECK(LoadVerifiedEncodedGpuPackage(strTarget, stSource, {}, stDecoded, stStats, arrDiagnostics));
+	if (!RequirePackageStep(LoadVerifiedEncodedGpuPackage(strTarget, stSource, {}, stDecoded, stStats, arrDiagnostics), arrDiagnostics, "LoadVerifiedEncodedGpuPackage", __LINE__))
+	{
+		return;
+	}
 	ENGINE_NEXT_CHECK_EQ(stDecoded.strPackageDigest, stSource.strPackageDigest);
 	ENGINE_NEXT_CHECK_EQ(stDecoded.arrAssets[0].stIdentity.strContentSha256, stSource.arrAssets[0].stIdentity.strContentSha256);
 	ENGINE_NEXT_CHECK(stDecoded.arrAssets[0].stTextureCook.arrVariants[0].arrMips.empty());
@@ -154,7 +192,10 @@ ENGINE_NEXT_TEST("Encoded v4 package reads real BC7 BC5 pages and keeps M3 ident
 	GpuPageReadStats stStreamingStats;
 	GpuPageIndex stStreamingIndex;
 	RenderScene stStreamingScene;
-	ENGINE_NEXT_CHECK(EngineNext::Rendering::LoadTextureStreamingPackage(strTarget, stSource, {}, stStreamingScene, stStreamingStats, stStreamingIndex, arrDiagnostics));
+	if (!RequirePackageStep(EngineNext::Rendering::LoadTextureStreamingPackage(strTarget, stSource, {}, stStreamingScene, stStreamingStats, stStreamingIndex, arrDiagnostics), arrDiagnostics, "LoadTextureStreamingPackage", __LINE__))
+	{
+		return;
+	}
 	ENGINE_NEXT_CHECK_EQ(stStreamingScene.strPackageDigest, stSource.strPackageDigest);
 	ENGINE_NEXT_CHECK_EQ(stStreamingIndex.Pages().size(), stIndex.Pages().size());
 	for (const EngineNext::Rendering::CookedTextureVariant &stVariant : stStreamingScene.arrAssets[0].stTextureCook.arrVariants)
@@ -174,7 +215,10 @@ ENGINE_NEXT_TEST("Encoded v4 package reads real BC7 BC5 pages and keeps M3 ident
 	}
 	GpuPageReadStats stSuffixStats;
 	std::vector<EncodedTextureMip> arrLevels;
-	ENGINE_NEXT_CHECK(EngineNext::Rendering::ReadGpuTextureSuffix(stStreamingIndex, arrMipPages, 1, arrLevels, stSuffixStats, arrDiagnostics));
+	if (!RequirePackageStep(EngineNext::Rendering::ReadGpuTextureSuffix(stStreamingIndex, arrMipPages, 1, arrLevels, stSuffixStats, arrDiagnostics), arrDiagnostics, "ReadGpuTextureSuffix", __LINE__))
+	{
+		return;
+	}
 	ENGINE_NEXT_CHECK_EQ(arrLevels.size(), 2U);
 	ENGINE_NEXT_CHECK_EQ(stSuffixStats.nReadRequests, 2U);
 	ENGINE_NEXT_CHECK_EQ(stSuffixStats.nBytesRead, 32U);
@@ -198,7 +242,10 @@ ENGINE_NEXT_TEST("Encoded reader preserves legacy v1 v2 v3 and exact tiny RGBA v
 	}
 	Diagnostics arrDiagnostics;
 	RenderScene stSource;
-	ENGINE_NEXT_CHECK(LoadRenderScene((stFixture.stRoot / "source.enpak").string(), stSource, arrDiagnostics));
+	if (!RequirePackageStep(LoadRenderScene((stFixture.stRoot / "source.enpak").string(), stSource, arrDiagnostics), arrDiagnostics, "LoadRenderScene", __LINE__))
+	{
+		return;
+	}
 	for (std::uint32_t nVersion = 1; nVersion <= 4; ++nVersion)
 	{
 		const std::string strTarget = (stFixture.stRoot / ("format" + std::to_string(nVersion))).string();
@@ -217,10 +264,16 @@ ENGINE_NEXT_TEST("Encoded reader preserves legacy v1 v2 v3 and exact tiny RGBA v
 		{
 			bCooked = CookEncodedGpuPackage((stFixture.stRoot / "source.enpak").string(), strTarget, {}, {}, arrDiagnostics);
 		}
-		ENGINE_NEXT_CHECK(bCooked);
+		if (!RequirePackageStep(bCooked, arrDiagnostics, "Cook GPU package", __LINE__))
+		{
+			return;
+		}
 		RenderScene stDecoded;
 		GpuPageReadStats stStats;
-		ENGINE_NEXT_CHECK(LoadVerifiedEncodedGpuPackage(strTarget, stSource, {}, stDecoded, stStats, arrDiagnostics));
+		if (!RequirePackageStep(LoadVerifiedEncodedGpuPackage(strTarget, stSource, {}, stDecoded, stStats, arrDiagnostics), arrDiagnostics, "LoadVerifiedEncodedGpuPackage", __LINE__))
+		{
+			return;
+		}
 		ENGINE_NEXT_CHECK_EQ(stDecoded.nGpuFormatVersion, nVersion);
 		if (nVersion == 4)
 		{
@@ -238,9 +291,15 @@ ENGINE_NEXT_TEST("Encoded recipe and payload tampering are rejected transactiona
 	}
 	Diagnostics arrDiagnostics;
 	RenderScene stSource;
-	ENGINE_NEXT_CHECK(LoadRenderScene((stFixture.stRoot / "source.enpak").string(), stSource, arrDiagnostics));
+	if (!RequirePackageStep(LoadRenderScene((stFixture.stRoot / "source.enpak").string(), stSource, arrDiagnostics), arrDiagnostics, "LoadRenderScene", __LINE__))
+	{
+		return;
+	}
 	const fs::path stTarget = stFixture.stRoot / "encoded.engpu";
-	ENGINE_NEXT_CHECK(CookEncodedGpuPackage((stFixture.stRoot / "source.enpak").string(), stTarget.string(), {}, {}, arrDiagnostics));
+	if (!RequirePackageStep(CookEncodedGpuPackage((stFixture.stRoot / "source.enpak").string(), stTarget.string(), {}, {}, arrDiagnostics), arrDiagnostics, "CookEncodedGpuPackage", __LINE__))
+	{
+		return;
+	}
 	const std::string strOriginal = Text(stTarget / "GpuManifest.json");
 	JsonValue stManifest;
 	std::string strError;
@@ -252,13 +311,22 @@ ENGINE_NEXT_TEST("Encoded recipe and payload tampering are rejected transactiona
 	GpuPageIndex stIndex;
 	ENGINE_NEXT_CHECK(!LoadGpuPageIndex(stTarget.string(), stSource.strPackageDigest, {}, stIndex, arrDiagnostics));
 	WriteText(stTarget / "GpuManifest.json", strOriginal);
-	ENGINE_NEXT_CHECK(LoadGpuPageIndex(stTarget.string(), stSource.strPackageDigest, {}, stIndex, arrDiagnostics));
-	ENGINE_NEXT_CHECK(VerifyPagedScene(stSource, stIndex, arrDiagnostics));
+	if (!RequirePackageStep(LoadGpuPageIndex(stTarget.string(), stSource.strPackageDigest, {}, stIndex, arrDiagnostics), arrDiagnostics, "LoadGpuPageIndex", __LINE__))
+	{
+		return;
+	}
+	if (!RequirePackageStep(VerifyPagedScene(stSource, stIndex, arrDiagnostics), arrDiagnostics, "VerifyPagedScene", __LINE__))
+	{
+		return;
+	}
 	RenderScene stAltered = stSource;
 	stAltered.arrAssets[0].stMesh.arrMaterials[0].fRoughness = .11F;
 	ENGINE_NEXT_CHECK(!VerifyPagedScene(stAltered, stIndex, arrDiagnostics));
 	ENGINE_NEXT_CHECK(!LoadGpuPageIndex(stTarget.string(), std::string(64, '0'), {}, stIndex, arrDiagnostics));
-	ENGINE_NEXT_CHECK(LoadGpuPageIndex(stTarget.string(), stSource.strPackageDigest, {}, stIndex, arrDiagnostics));
+	if (!RequirePackageStep(LoadGpuPageIndex(stTarget.string(), stSource.strPackageDigest, {}, stIndex, arrDiagnostics), arrDiagnostics, "LoadGpuPageIndex", __LINE__))
+	{
+		return;
+	}
 	const fs::path stBlob = stTarget / "blobs" / *stManifest.GetObject()->at("payload_sha256").GetString();
 	std::string strBlob = Text(stBlob);
 	strBlob[static_cast<std::size_t>(stIndex.Pages()[1].nOffset)] ^= 1;
@@ -281,6 +349,9 @@ ENGINE_NEXT_TEST("Encoded recipe and payload tampering are rejected transactiona
 	ENGINE_NEXT_CHECK(!stError);
 	ENGINE_NEXT_CHECK(EngineNext::Serialization::CanonicalJson(stManifest, strChanged));
 	WriteText(stTarget / "GpuManifest.json", strChanged);
-	ENGINE_NEXT_CHECK(LoadGpuPageIndex(stTarget.string(), stSource.strPackageDigest, {}, stIndex, arrDiagnostics));
+	if (!RequirePackageStep(LoadGpuPageIndex(stTarget.string(), stSource.strPackageDigest, {}, stIndex, arrDiagnostics), arrDiagnostics, "LoadGpuPageIndex", __LINE__))
+	{
+		return;
+	}
 	ENGINE_NEXT_CHECK(!VerifyPagedScene(stSource, stIndex, arrDiagnostics));
 }
