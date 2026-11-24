@@ -1179,3 +1179,29 @@ ENGINE_NEXT_TEST("Paged geometry pool declares all physical upload draw and reti
 	ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, false, 0, 0, {}, false, false, { true, true, 8 }));
 	ENGINE_NEXT_CHECK_EQ(stPipeline.nGeometryPages, EngineNext::Rendering::INVALID_RESOURCE);
 }
+
+ENGINE_NEXT_TEST("Active diagnostic fullscreen views declare the selected producer resource")
+{
+	using EngineNext::Rendering::DiagnosticView;
+	RenderPipeline stPipeline;
+	GraphDiagnostic stDiagnostic;
+	for (std::uint32_t nView = 2; nView < std::size(EngineNext::Rendering::DIAGNOSTIC_VIEW_NAMES); ++nView)
+	{
+		const DiagnosticView eView = static_cast<DiagnosticView>(nView);
+		ENGINE_NEXT_CHECK(BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 3, 3, { true, true }, true, true, { true, true, 8, true }, true, true, false, true, {}, true, 32, eView));
+		const CompiledPass *pTone = FindWork(stPipeline, PassWork::ToneMap);
+		ENGINE_NEXT_CHECK(pTone && HasAccess(*pTone, stPipeline.nDiagnostic, ResourceState::ShaderRead, false));
+	}
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 0, {}, false, false, {}, false, false, false, false, {}, false, 32, DiagnosticView::GiProbe));
+	ENGINE_NEXT_CHECK(!BuildRenderPipeline(true, stPipeline, stDiagnostic, 0, true, true, 0, 3, {}, false, false, {}, false, false, false, false, { true, 1 }, false, 32, DiagnosticView::Ssr));
+}
+
+ENGINE_NEXT_TEST("Spatial presentation keeps native and rounds odd internal extents upward")
+{
+	using EngineNext::Rendering::ScaledRenderExtent;
+	ENGINE_NEXT_CHECK_EQ(ScaledRenderExtent(3840, 100), 3840U);
+	ENGINE_NEXT_CHECK_EQ(ScaledRenderExtent(2160, 100), 2160U);
+	ENGINE_NEXT_CHECK_EQ(ScaledRenderExtent(1919, 50), 960U);
+	ENGINE_NEXT_CHECK_EQ(ScaledRenderExtent(1079, 50), 540U);
+	ENGINE_NEXT_CHECK_EQ(ScaledRenderExtent(1, 25), 1U);
+}

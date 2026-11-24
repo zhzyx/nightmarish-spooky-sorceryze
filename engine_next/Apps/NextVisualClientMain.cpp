@@ -60,6 +60,8 @@ int main(int nArgumentCount, char **ppArguments)
 {
 	EngineNext::Rendering::VisualConfig stConfig;
 	bool bExplicitClientId = false;
+	bool bScaleProvided = false;
+	std::string strUpscaleMode;
 	std::array<wchar_t, 32768> arrModulePath{};
 	const DWORD nPathLength = GetModuleFileNameW(nullptr, arrModulePath.data(), static_cast<DWORD>(arrModulePath.size()));
 	if (nPathLength == 0 || nPathLength >= arrModulePath.size())
@@ -73,7 +75,13 @@ int main(int nArgumentCount, char **ppArguments)
 		const std::string strOption = ppArguments[nIndex];
 		if (strOption == "--help")
 		{
-			std::cout << "next_visual_client [--width N] [--height N] [--frames N] [--validation] [--hidden] [--vsync] [--exercise-resize] [--exercise-projection] [--exercise-shadow-updates] [--deterministic] [--animation] [--shader-directory PATH] [--report PATH] [--capture PATH] [--asset-package PATH] [--gpu-package PATH] [--render-config PATH] [--connect --port N --client-id ID --server ADDRESS]\n";
+			std::cout << "next_visual_client [--width N] [--height N] [--diagnostic-view NAME] [--upscale-mode native|spatial] [--render-scale-percent 25..100] [--frames N] [--recording-threads 1|2|4] [--duration-seconds N] [--validation] [--hidden] [--vsync] [--exercise-resize] [--exercise-projection] [--exercise-shadow-updates] [--deterministic] [--animation] [--shader-directory PATH] [--report PATH] [--telemetry PATH] [--capture PATH] [--asset-package PATH] [--gpu-package PATH] [--render-config PATH] [--connect --port N --client-id ID --server ADDRESS]\n";
+			std::cout << "Diagnostic views:";
+			for (const char *pName : EngineNext::Rendering::DIAGNOSTIC_VIEW_NAMES)
+			{
+				std::cout << ' ' << pName;
+			}
+			std::cout << '\n';
 			std::cout << "WASD moves camera or connected player. R reconnects a connected session. Escape closes.\n";
 			return 0;
 		}
@@ -96,7 +104,43 @@ int main(int nArgumentCount, char **ppArguments)
 			return 2;
 		}
 		const char *pValue = ppArguments[++nIndex];
-		if (strOption == "--width" || strOption == "--height" || strOption == "--frames")
+		if (strOption == "--diagnostic-view")
+		{
+			std::uint32_t nView = 0;
+			for (const char *pName : EngineNext::Rendering::DIAGNOSTIC_VIEW_NAMES)
+			{
+				if (std::strcmp(pName, pValue) == 0)
+				{
+					break;
+				}
+				++nView;
+			}
+			if (nView >= std::size(EngineNext::Rendering::DIAGNOSTIC_VIEW_NAMES))
+			{
+				std::cerr << "Unknown diagnostic view: " << pValue << '\n';
+				return 2;
+			}
+			stConfig.eDiagnosticView = static_cast<EngineNext::Rendering::DiagnosticView>(nView);
+		}
+		else if (strOption == "--upscale-mode")
+		{
+			strUpscaleMode = pValue;
+			if (strUpscaleMode != "native" && strUpscaleMode != "spatial")
+			{
+				std::cerr << "Upscale mode must be native or spatial\n";
+				return 2;
+			}
+		}
+		else if (strOption == "--render-scale-percent")
+		{
+			bScaleProvided = true;
+			if (!ParseUnsigned(pValue, stConfig.nRenderScalePercent) || stConfig.nRenderScalePercent < 25 || stConfig.nRenderScalePercent > 100)
+			{
+				std::cerr << "Render scale must be 25..100 percent\n";
+				return 2;
+			}
+		}
+		else if (strOption == "--width" || strOption == "--height" || strOption == "--frames" || strOption == "--recording-threads" || strOption == "--duration-seconds")
 		{
 			std::uint32_t nValue = 0;
 			if (!ParseUnsigned(pValue, nValue))
@@ -104,7 +148,16 @@ int main(int nArgumentCount, char **ppArguments)
 				std::cerr << "Invalid unsigned integer\n";
 				return 2;
 			}
-			if (strOption == "--width")
+			if (strOption == "--recording-threads")
+			{
+				if (nValue != 1 && nValue != 2 && nValue != 4)
+				{
+					std::cerr << "Recording threads must be 1, 2 or 4\n";
+					return 2;
+				}
+				stConfig.nRecordingThreads = nValue;
+			}
+			else if (strOption == "--width")
 			{
 				stConfig.nWidth = nValue;
 			}
@@ -112,14 +165,22 @@ int main(int nArgumentCount, char **ppArguments)
 			{
 				stConfig.nHeight = nValue;
 			}
-			else
+			else if (strOption == "--frames")
 			{
 				stConfig.nFrameLimit = nValue;
+			}
+			else
+			{
+				stConfig.nDurationSeconds = nValue;
 			}
 		}
 		else if (strOption == "--shader-directory")
 		{
 			stConfig.strShaderDirectory = pValue;
+		}
+		else if (strOption == "--telemetry")
+		{
+			stConfig.strTelemetryPath = pValue;
 		}
 		else if (strOption == "--report")
 		{
@@ -165,6 +226,15 @@ int main(int nArgumentCount, char **ppArguments)
 			std::cerr << "Unknown option " << strOption << '\n';
 			return 2;
 		}
+	}
+	if (strUpscaleMode == "spatial" && !bScaleProvided)
+	{
+		stConfig.nRenderScalePercent = 50;
+	}
+	if ((strUpscaleMode == "native" && stConfig.nRenderScalePercent != 100) || (strUpscaleMode == "spatial" && stConfig.nRenderScalePercent == 100))
+	{
+		std::cerr << "Native mode requires 100 percent; spatial mode requires 25..99 percent\n";
+		return 2;
 	}
 	if (stConfig.nWidth < 64 || stConfig.nHeight < 64 || stConfig.nWidth > 8192 || stConfig.nHeight > 8192)
 	{

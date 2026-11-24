@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-dd65c6c7b13f41b7dfb30788547904a9e19404fa",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f5189fb44beb0a6be2c67b0972c6437307ad78e170138328c505ae85751a548c",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2226",
+    "action": "validation",
+    "detection_head": "851fcb28a533c2c288a9b6376020584c16c74f3c",
+    "context_sha256": "287a1bf2e4dbd2867966e22405559da2b273e5ec2a6c2849491a3dfda83ad190",
+    "operator": "kaiyunxue",
+    "worker": "agent:/root",
+    "authority_ref": "codex:user:engine-next-m4:implement-test-push-main",
+    "evidence": "R12HostClosure SHA256 334335303b69911072e08df61a0243dadb31ae84310c9aa30a5593d11de8ca48 independently verifies isolated stdlib CLI and real native bridge. Full normal/clean M2/M3/AI and47 tool tests passed. Earlier original-path incident retained; same owned worktree relocation is byte-verified.",
+    "diagnosis": "The editor aggregate factory imports an optional provider outside the standalone export. The explicit standalone wrapper and local copy factory reuse the shared Executor and copy implementation without loading optional services.",
+    "next_action": "Complete R12 GPU, CI and main readback, then close only bug2226; keep M4.6 and parent1323 open.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T20:52:14.432595+00:00",
+    "attempted": "Preserved original missing-provider failure, isolated copy and native bridge assertions; original assess long-path failure is retained. Continuation binds the verified relocated worktree and same existing bug.",
+    "repair_owner": "agent:/root",
+    "continuable": "UE image collection and M4 final acceptance continue."
+  },
+  "occurred_at": "2026-11-24T20:54:39.236441+00:00",
+  "sha256": "61e4af56b6b1e4498d499c053c8c79d2446cb31cac7b3a87331c820113755cf8"
+}

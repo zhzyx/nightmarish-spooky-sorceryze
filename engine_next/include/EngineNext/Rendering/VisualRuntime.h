@@ -36,11 +36,47 @@
 namespace EngineNext::Rendering
 {
 
+enum class DiagnosticView : std::uint32_t
+{
+	Off = 0,
+	Wireframe = 1,
+	Normal = 2,
+	Roughness = 3,
+	Metallic = 4,
+	Ao = 5,
+	Emissive = 6,
+	Motion = 7,
+	Depth = 8,
+	Gbuffer = 9,
+	Culling = 10,
+	Cluster = 11,
+	Lod = 12,
+	Streaming = 13,
+	Cascade = 14,
+	VsmPage = 15,
+	GiProbe = 16,
+	Ssr = 17,
+	VolumeFog = 18,
+	Exposure = 19
+};
+
+inline constexpr const char *DIAGNOSTIC_VIEW_NAMES[]{ "off", "wireframe", "normal", "roughness", "metallic", "ao", "emissive", "motion", "depth", "gbuffer", "culling", "cluster", "lod", "streaming", "cascade", "vsm-page", "gi-probe", "ssr", "volume-fog", "exposure" };
+
+// The presentation compositor scales this render extent to the client extent.
+[[nodiscard]] constexpr std::uint32_t ScaledRenderExtent(std::uint32_t nOutput, std::uint32_t nPercent)
+{
+	return static_cast<std::uint32_t>((static_cast<std::uint64_t>(nOutput) * nPercent + 99) / 100);
+}
+
 struct VisualConfig
 {
 	std::uint32_t nWidth = 1280;
 	std::uint32_t nHeight = 720;
+	std::uint32_t nRenderScalePercent = 100;
+	DiagnosticView eDiagnosticView = DiagnosticView::Off;
 	std::uint32_t nFrameLimit = 0;
+	std::uint32_t nRecordingThreads = 1;
+	std::uint32_t nDurationSeconds = 0;
 	bool bHidden = false;
 	bool bValidation = false;
 	bool bVsync = false;
@@ -52,6 +88,8 @@ struct VisualConfig
 	bool bAnimation = false;
 	std::string strShaderDirectory;
 	std::string strReportPath;
+	// Optional full-session JSONL; ordinary reports still retain their bounded tail.
+	std::string strTelemetryPath;
 	std::string strCapturePath;
 	std::string strAssetPackagePath;
 	std::string strGpuPackagePath;

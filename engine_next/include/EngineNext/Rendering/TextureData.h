@@ -45,12 +45,39 @@ enum class TextureAlphaPolicy : std::uint8_t
 	Ignore = 1,
 };
 
+// Serialized v4 formats. Color space remains the variant's ImageSemantic;
+// compressed payloads must never be interpreted as DecodedImage::arrRgba8.
+enum class TextureFormat : std::uint8_t
+{
+	Rgba8 = 0,
+	Bc7 = 1,
+	Bc5 = 2,
+};
+
+enum class TextureNormalEncoding : std::uint8_t
+{
+	Cartesian = 0,
+	PositiveZ = 1,
+};
+
+struct EncodedTextureMip
+{
+	std::uint32_t nWidth = 0;
+	std::uint32_t nHeight = 0;
+	TextureFormat eFormat = TextureFormat::Rgba8;
+	std::vector<std::uint8_t> arrBytes;
+};
+
 struct CookedTextureVariant
 {
 	std::uint32_t nImage = 0;
 	ImageSemantic eSemantic = ImageSemantic::Linear;
 	TextureAlphaPolicy eAlphaPolicy = TextureAlphaPolicy::Preserve;
 	std::vector<MipLevel> arrMips;
+	// v1-v3 use arrMips; v4 uses only arrEncodedMips. PositiveZ denotes BC5
+	// tangent-space XY with sqrt(max(0, 1-dot(XY, XY))) reconstruction.
+	TextureNormalEncoding eNormalEncoding = TextureNormalEncoding::Cartesian;
+	std::vector<EncodedTextureMip> arrEncodedMips;
 };
 
 struct CookedMaterialTextures

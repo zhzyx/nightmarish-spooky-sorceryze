@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "issue": 1539,
+  "parent_issue": 1323,
+  "candidate": "telemetry-r4",
+  "native_key": "5ed969319b943e7778bc417820361549eddbccdbcee29831328ea231652c08c5",
+  "source_input_count": 367,
+  "source_mismatches": [],
+  "full_msvc": {
+    "path": "build/engine_next/telemetry-integration/VisualBuildReport.json",
+    "sha256": "d80596f6b7408157e3572323c0723b8caaf7e0475e9691d3248c8c3015a64394",
+    "size_bytes": 3188585
+  },
+  "full_clang": {
+    "path": "build/engine_next/telemetry-clang-r4/Result.json",
+    "sha256": "c4248573035c9887eb41384ba993136288fc1a85c460802c77a3a6485150b92b",
+    "size_bytes": 4727757
+  },
+  "full_cpu_per_compiler": {
+    "tests": 543,
+    "checks": 1601314,
+    "failed": 0
+  },
+  "shader_count": 60,
+  "static": {
+    "path": "build/engine_next/telemetry-static/Results.json",
+    "sha256": "01e91d56c4a5b9dd7883bd83fc95bd4e39f4eaf6e87d748c1750864a4ff41f31",
+    "size_bytes": 13005
+  },
+  "independent_review": {
+    "path": "build/engine_next/telemetry-final-r4/IndependentReview.json",
+    "sha256": "2811e204c3cbe408ea655d94ab4bb45a02362122f391b5e38900eddc267a6f82",
+    "size_bytes": 1665
+  },
+  "gpu": {
+    "path": "build/engine_next/telemetry-gpu-r4/Results.json",
+    "sha256": "0fc07aa05fd1aa71b2e87138b119f297380d74798e22bec48877e74acebc61a6",
+    "size_bytes": 5287
+  },
+  "gpu_frames": 5690,
+  "gpu_validation_errors": 0,
+  "same_pixels": true,
+  "all_timestamps_ordered": true,
+  "output_preserved_on_rejection": true,
+  "writer_long_count_test": 65540,
+  "python_tests": 8,
+  "synthetic_pipeline": {
+    "path": "build/engine_next/telemetry-end-to-end-r4/Summary.json",
+    "sha256": "b0542a5a72dbc5f84d47264ce91e920ac0823389f3c0ab520d4a427b9b3532ef",
+    "size_bytes": 6511
+  },
+  "input_scope": "Synthetic PostMessage keyboard receipt revision to frame Present API; no physical input/scanout claim.",
+  "performance_scope": "Functional micro tests during concurrent compiler work; no performance conclusion.",
+  "remaining": [
+    "Real physical keyboard/mouse input validation",
+    "30 and 60 minute runs on final integrated features at native4K",
+    "Full M4.6 UE A-F comparisons, performance thresholds and delivery acceptance"
+  ],
+  "stage_complete": false,
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "issue_number": 1539,
+  "parent_issue_number": 1323,
+  "base_commit": "c3d313ee6b2134c9d88e9d1c78390c7253f6ddf1",
+  "scope": "Incremental full-session telemetry from the existing normal renderer entry, not completion of the M4.6 visual/performance targets.",
+  "source_snapshot": {
+    "design-docs/engine-next-visual-runtime-m4-6-telemetry-20261118.md": "684ed2bfe0e4a8d321105569ef0d3ddfa309b1ecb042289787aa83fadb9f4256",
+    "engine_next/Apps/NextVisualClientMain.cpp": "8958dc4008400c291397c48fdaaeeeb5a3dd1b7967f38d72ae0c8a1edb73682c",
+    "engine_next/Platform/Windows/GpuDeformation.cpp": "8067bd9200f134c2e3ea82d706d60dce6d0d24491f20bf24de7b7b02ba8ecf79",
+    "engine_next/Platform/Windows/GpuDeformation.h": "2f7ad579d3448dd6eb23acd2a3fe698e221145a0a2f60796fd0d7059cd88be81",
+    "engine_next/Platform/Windows/GpuPagedGeometry.cpp": "09018a46e5f52b398da5328a795796acea5e14dbcb5ee5786a298c695db5df36",
+    "engine_next/Platform/Windows/GpuPagedGeometry.h": "887e5354f124574a290781be0c5f963ad3644d61ee415b656d51a90c24a54074",
+    "engine_next/Platform/Windows/Window.cpp": "bddff8157e57ac6223733d36eccb9c7d32c4c5776b0384029125787cb3e63530",
+    "engine_next/Platform/Windows/Window.h": "a2e4158a24bda2c26a67ea2c31b2f61a0bd83359e795f844ef48062e9e2bc99f",
+    "engine_next/Rendering/FrameTelemetry.cpp": "aa422c6ab612e4bd4bc161ae888260192dc5ed95a2044e58f6741ea4f800009c",
+    "engine_next/Rendering/FrameTelemetry.h": "7780e26a2166bf231021a735bc856d5da809a398dc37c9dd489fcac09c5929e2",
+    "engine_next/Rendering/VisualRuntime.cpp": "4f1971776dc0fbf9ddbfa2e030bc10762c6ea07476dd8fd75802d1388b6688bb",
+    "engine_next/Tests/Rendering/TestFrameTelemetry.cpp": "8c16c749785f9585e7d60dd888024f4f4e26840e0eefa0e2115c036fa4c33872",
+    "engine_next/Tools/AnalyzeFrameTelemetry.py": "4b9c6fdb2f778e428ec00612a4200f4477e41d39cf3207464e79c53608705ca0",
+    "engine_next/Tools/BuildVisualRuntime.py": "2a6379a1cb84136ba5722b78a6c58164db32e68d8808ea75e5a53adbf851d317",
+    "engine_next/Tools/TestFrameTelemetry.py": "a1cce2f0ef375269d62c694afa7fc15a2769ef14b21a38f8b04fc8d8c1134e2a",
+    "engine_next/include/EngineNext/Rendering/VisualRuntime.h": "c662c362b556279980c660ab82648eee5d330ffa217a428d17e7a863dd78b28b",
+    "tools/engine_next_contract.json": "dfea01eb07c5b7ce83c937999cdc09058a21d9cd3175cb9d9305369d82b17a3e"
+  },
+  "intake": {
+    "path": "build/engine_next/telemetry-workitem/Intake.json",
+    "sha256": "bc3b0141bf52cee7730eeb2cf9aaf389cfb590187b7cff9ad630b6ea0d2649fd",
+    "size_bytes": 210
+  },
+  "native_parent_readback": {
+    "path": "build/engine_next/telemetry-workitem/NativeParentReadback.json",
+    "sha256": "05e4cf9ded2eb2498ea77336356919bfd418a5a1372057a69728a4a12fd39fac",
+    "size_bytes": 203
+  }
+}

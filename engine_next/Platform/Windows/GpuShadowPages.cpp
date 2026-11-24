@@ -253,6 +253,10 @@ bool GpuShadowPages::Collect(std::uint64_t nCompletedFence, std::vector<ShadowPa
 		{
 			continue;
 		}
+		if (out_arrFeedback.size() >= SHADOW_PAGE_FRAME_COUNT)
+		{
+			return Error(out_arrDiagnostics, "Retired feedback exceeds the frame-slot bound.");
+		}
 		const D3D12_RANGE stRead{ 0, static_cast<SIZE_T>(nFeedbackBytes) };
 		void *pData = nullptr;
 		if (FAILED(stFrame.stReadback->Map(0, &stRead, &pData)))
@@ -283,8 +287,7 @@ bool GpuShadowPages::Prepare(std::uint32_t nFrame, std::uint64_t nCompletedFence
 	{
 		return Error(out_arrDiagnostics, "Prepare requires a retired owner slot and bounded viewport.");
 	}
-	std::vector<ShadowPageFeedback> arrFeedback;
-	if (!Collect(nCompletedFence, arrFeedback, out_arrDiagnostics) || !stCache.Prepare(stProjection, arrCasters, arrChangedDraws, arrFeedback, out_arrDiagnostics))
+	if (!Collect(nCompletedFence, arrFeedbackInbox, out_arrDiagnostics) || !stCache.Prepare(stProjection, arrCasters, arrChangedDraws, arrFeedbackInbox, out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -373,6 +376,7 @@ bool GpuShadowPages::Submit(std::uint32_t nFrame, std::uint64_t nFence, Assets::
 	}
 	arrFrames[nFrame].nFence = nFence;
 	arrFrames[nFrame].bReadbackPending = true;
+	arrFeedbackInbox.clear();
 	nLatestFence = nFence;
 	nPendingFrame = SHADOW_PAGE_FRAME_COUNT;
 	return true;

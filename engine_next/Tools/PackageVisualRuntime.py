@@ -10,6 +10,29 @@ import time
 from pathlib import Path
 
 SHADER_FILES = {
+    *(
+        f"Diagnostic-{name}.ps.cso"
+        for name in (
+            "normal",
+            "roughness",
+            "metallic",
+            "ao",
+            "emissive",
+            "motion",
+            "depth",
+            "gbuffer",
+            "culling",
+            "cluster",
+            "lod",
+            "streaming",
+            "cascade",
+            "vsm-page",
+            "gi-probe",
+            "ssr",
+            "volume-fog",
+            "exposure",
+        )
+    ),
     "FixedMesh.vs.cso",
     "FixedMesh.ps.cso",
     "FixedMesh.cs.cso",
@@ -145,6 +168,7 @@ def create_package(repo, build_dir):
         licenses = {
             "LICENSE.txt": "LICENSE.txt",
             "ENet-LICENSE.txt": "engine_next/thirdparty/enet/LICENSE",
+            "bc7enc-LICENSE.txt": "engine_next/thirdparty/bc7enc/LICENSE",
             "zlib-LICENSE.txt": "engine_next/thirdparty/zlib/LICENSE",
             "libjpeg-turbo-LICENSE.md": "engine_next/thirdparty/libjpeg-turbo/LICENSE.md",
             "libjpeg-turbo-README.ijg": "engine_next/thirdparty/libjpeg-turbo/README.ijg",

@@ -1,0 +1,193 @@
+{
+  "schema_version": 1,
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "issue_number": 1539,
+  "parent_issue_number": 1323,
+  "candidate": "combined-r13",
+  "stage_complete": false,
+  "complete": false,
+  "native_key": "5247c6265f76639a792c73cad16a89281dabb1295208e3c19214cf62aba5b751",
+  "executable_sha256": "f7379d1c02d7e5d8d3a7eab394a21977b53afab35c21b61d5a11b42425d5afda",
+  "recorded_at_utc": "2026-11-24T22:07:16.626607+00:00",
+  "base_commit": "0a664cc4703e075205be0909e6d7f67287bc406f",
+  "source_manifest": {
+    "path": "engine-next-combined-lighting-r13-20261125/SourceManifest.json",
+    "sha256": "ef86a2608f2e46d6e3dd177cc07f780446f3940e3e798e41cb40380189175d1d",
+    "size_bytes": 60387
+  },
+  "records": [
+    {
+      "scope": "R13 source material prefix and resize path",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/R13ResizeClosure.json",
+        "sha256": "0826a6971271be5d012fff8812640a3a492f4856fd817c34b35e2043eacb4c91",
+        "size_bytes": 1243
+      }
+    },
+    {
+      "scope": "R13 actual material-prefix device regression",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/R13ResizeDeviceClosure.json",
+        "sha256": "e8e126b8be345034ccd3703c721bed0b87e32f5e0f987e6fdc47997a578a4539",
+        "size_bytes": 1685
+      }
+    },
+    {
+      "scope": "R12 offline Executor host",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/R12HostClosure.json",
+        "sha256": "334335303b69911072e08df61a0243dadb31ae84310c9aa30a5593d11de8ca48",
+        "size_bytes": 15046
+      }
+    },
+    {
+      "scope": "R12 tooling and benchmark geometry",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/R12ToolingGeometryReview.json",
+        "sha256": "1667bd84397db452c001ffadc51a93260a4298c2432d7540379fe0d0162305d9",
+        "size_bytes": 3907
+      }
+    },
+    {
+      "scope": "Main shared AI regression before fixture correction",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/SharedAiRegression.json",
+        "sha256": "457d0f3829b6faa433224efa8430ffa7075e519113820ce37340f2aa7bef5afa",
+        "size_bytes": 18856
+      }
+    },
+    {
+      "scope": "Private Windows SQLite fixture fix and 72-case rerun",
+      "evidence": {
+        "path": "engine-next-combined-lighting-r7-20261125/IndependentReview/SharedAiFixtureFix/Evidence.json",
+        "sha256": "c9e9790ebac0dcef0583ae74a538361e4c0ac836ce50498052790fa9baf5b109",
+        "size_bytes": 5180
+      }
+    }
+  ],
+  "device_regression": {
+    "status": "passed",
+    "report": {
+      "path": "engine-next-combined-lighting-r13-20261125/Regression/Result.json",
+      "sha256": "c0bcec0971a887af6180b783a8f26beec671283c36768b41cb54edd28bbd8e95",
+      "size_bytes": 3152
+    },
+    "frames": 256,
+    "cases": [
+      {
+        "invocation": {
+          "path": "engine-next-combined-lighting-r13-20261125/Regression/D/Invocation.json",
+          "sha256": "4152271026ed8583cb66ebbb0a23ea2e4d69de30c7b853e735cbe9e0c1767a6f",
+          "size_bytes": 1765
+        },
+        "case": "D",
+        "frames": 64,
+        "resizes": 0,
+        "validation_errors": 0,
+        "feature_flags": {
+          "ambient_occlusion_enabled": true,
+          "bloom_enabled": true,
+          "screen_effects_enabled": true,
+          "temporal_aa": true,
+          "dynamic_global_illumination": true,
+          "ray_reflections": true,
+          "virtual_shadows_enabled": true,
+          "volumetric_fog": true
+        },
+        "geometry_fallback": "",
+        "animated_draws": 0,
+        "runtime": {
+          "path": "engine-next-combined-lighting-r13-20261125/Regression/D/Runtime.json",
+          "sha256": "0ceb7ed425392e3b5fceeb2f7bf695cf223af71f1a3402ec15d43d777b0e4ec4",
+          "size_bytes": 527625
+        }
+      },
+      {
+        "invocation": {
+          "path": "engine-next-combined-lighting-r13-20261125/Regression/DResize/Invocation.json",
+          "sha256": "4ecb824a1b99ed8620296b1f410f39d11f95f52cc23ec43d222be6d3726f27c7",
+          "size_bytes": 1821
+        },
+        "case": "DResize",
+        "frames": 64,
+        "resizes": 2,
+        "validation_errors": 0,
+        "feature_flags": {
+          "ambient_occlusion_enabled": true,
+          "bloom_enabled": true,
+          "screen_effects_enabled": true,
+          "temporal_aa": true,
+          "dynamic_global_illumination": true,
+          "ray_reflections": true,
+          "virtual_shadows_enabled": true,
+          "volumetric_fog": true
+        },
+        "geometry_fallback": "",
+        "animated_draws": 0,
+        "runtime": {
+          "path": "engine-next-combined-lighting-r13-20261125/Regression/DResize/Runtime.json",
+          "sha256": "c0daa441e211a6f3988e478fdeed3db6fdf3c41fc29434a343c12ff7bc3deeb2",
+          "size_bytes": 527679
+        }
+      },
+      {
+        "invocation": {
+          "path": "engine-next-combined-lighting-r13-20261125/Regression/E/Invocation.json",
+          "sha256": "497f0981141ee4f54daa3b4895530bad338fde010fb73359d421739b2bf2ce72",
+          "size_bytes": 1670
+        },
+        "case": "E",
+        "frames": 64,
+        "resizes": 2,
+        "validation_errors": 0,
+        "feature_flags": {
+          "ambient_occlusion_enabled": true,
+          "bloom_enabled": true,
+          "screen_effects_enabled": true,
+          "temporal_aa": true,
+          "dynamic_global_illumination": true,
+          "ray_reflections": true,
+          "virtual_shadows_enabled": true,
+          "volumetric_fog": true
+        },
+        "geometry_fallback": "animated_vertex_layout",
+        "animated_draws": 1,
+        "runtime": {
+          "path": "engine-next-combined-lighting-r13-20261125/Regression/E/Runtime.json",
+          "sha256": "ca2cd3105e493de660f2cd59899cbf6d7e2b8608c7f1c9dd3085289bd451d113",
+          "size_bytes": 508656
+        }
+      },
+      {
+        "invocation": {
+          "path": "engine-next-combined-lighting-r13-20261125/Regression/ERayOwned/Invocation.json",
+          "sha256": "516db868ad07dca5c9b8eea4ea17140ff605dd274d885ceac15b89506028894e",
+          "size_bytes": 1712
+        },
+        "case": "ERayOwned",
+        "frames": 64,
+        "resizes": 2,
+        "validation_errors": 0,
+        "feature_flags": {
+          "ambient_occlusion_enabled": true,
+          "bloom_enabled": true,
+          "screen_effects_enabled": true,
+          "temporal_aa": true,
+          "dynamic_global_illumination": false,
+          "ray_reflections": true,
+          "virtual_shadows_enabled": true,
+          "volumetric_fog": true
+        },
+        "geometry_fallback": "animated_vertex_layout",
+        "animated_draws": 1,
+        "runtime": {
+          "path": "engine-next-combined-lighting-r13-20261125/Regression/ERayOwned/Runtime.json",
+          "sha256": "366e4cbb7b3f85718a59e01e79e50964b0a90c7d16fac3f2e5c807960dae3b7f",
+          "size_bytes": 478893
+        }
+      }
+    ]
+  },
+  "scope": "Source review and device reruns retain their own candidate identities. The shared AI test-only fix was independently exercised against the main snapshot.",
+  "candidate_receipts_ready": true
+}

@@ -223,7 +223,7 @@ bool RtIntersect(RayDesc Ray, uint Seed, out RtIntersection Hit, out bool Valid)
     Hit.Tangent = Frame.Tangent;
     float3x3 NormalizedWorld = float3x3(RtUnit(ObjectToWorld[0]), RtUnit(ObjectToWorld[1]), RtUnit(ObjectToWorld[2]));
     Hit.Handedness = Tangent.w * (determinant(NormalizedWorld) < 0 ? -1 : 1);
-    float3 Mapped = RtTexture(Draw.Material, 2, Hit.Uv).xyz * 2 - 1;
+    float3 Mapped = RayTracingDecodeNormal(RtTexture(Draw.Material, 2, Hit.Uv).xyz, Materials[Draw.Material]);
     float Scale = Materials[Draw.Material].Surface.z;
     float Maximum = max(abs(Scale), 1);
     Mapped = RtUnit(float3(Mapped.xy * (Scale / Maximum), Mapped.z / Maximum));

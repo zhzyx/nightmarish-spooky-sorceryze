@@ -48,12 +48,12 @@ def request(factory, fixture):
     graph = [
         {
             "id": "copy",
-            "provider": "local-copy" if factory == "editor_demo:factory" else "synthetic",
+            "provider": "local-copy" if factory == "LocalCopyProvider:factory" else "synthetic",
             "request": {
-                "node": "copy" if factory == "editor_demo:factory" else "echo",
+                "node": "copy" if factory == "LocalCopyProvider:factory" else "echo",
                 "version": "1",
                 "inputs": {"source": source},
-                "parameters": {"delay": 0, "fail": False} if factory == "editor_demo:factory" else {},
+                "parameters": {"delay": 0, "fail": False} if factory == "LocalCopyProvider:factory" else {},
                 "context": [],
             },
             "links": {},
@@ -83,9 +83,11 @@ def request(factory, fixture):
         "schema_version": 1,
         "request_id": "ai-" + factory.split(":")[0],
         "model": {
-            "provider": "local-copy" if factory == "editor_demo:factory" else "synthetic-m3",
+            "provider": "local-copy" if factory == "LocalCopyProvider:factory" else "synthetic-m3",
             "provider_version": "1",
-            "model": "LOCAL IMPORT / COPY - NOT AI" if factory == "editor_demo:factory" else "no-generation-fixture",
+            "model": "LOCAL IMPORT / COPY - NOT AI"
+            if factory == "LocalCopyProvider:factory"
+            else "no-generation-fixture",
             "model_version": "1",
         },
         "graph": graph,
@@ -158,7 +160,7 @@ def main():
         root = Path(temporary)
         offline_root = root / "offline"
         offline_root.mkdir()
-        result = invoke(args, offline_root, "editor_demo:factory")
+        result = invoke(args, offline_root, "LocalCopyProvider:factory")
         assert result.returncode == 0, result.stdout + result.stderr
         offline = json.loads(result.stdout)
         assert offline["valid"] and offline["snapshot"]["state"] == "succeeded"
@@ -185,7 +187,7 @@ def main():
 
         missing_root = root / "missing"
         missing_root.mkdir()
-        missing = invoke(args, missing_root, "editor_demo:factory", python=missing_root / "missing-python")
+        missing = invoke(args, missing_root, "LocalCopyProvider:factory", python=missing_root / "missing-python")
         assert missing.returncode != 0 and "python_unavailable" in missing.stdout
 
         tree_root = root / "tree"

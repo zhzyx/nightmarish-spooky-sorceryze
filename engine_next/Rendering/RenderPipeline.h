@@ -32,6 +32,8 @@
 
 #include "engine_next/include/EngineNext/Rendering/FrameGraph.h"
 
+#include "engine_next/include/EngineNext/Rendering/VisualRuntime.h"
+
 #include <array>
 #include <cstdint>
 #include <vector>
@@ -125,6 +127,7 @@ struct RayReflectionFeatures
 struct RenderPipeline
 {
 	CompiledGraph stGraph;
+	ResourceId nDiagnostic = INVALID_RESOURCE;
 	ResourceId nColorLut = INVALID_RESOURCE;
 	// Indexed by the stable PassId, independently of the compiled execution order.
 	std::vector<PassWork> arrWorkByPass;
@@ -226,6 +229,6 @@ struct RenderPipeline
 // Failure preserves the previous output and reports the graph diagnostic.
 [[nodiscard]] bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews = 0,
 									   bool bTemporal = true, bool bExposure = false, std::uint32_t nBloomMips = 0, std::uint32_t nReflectionMips = 0,
-									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false, bool bDeformation = false, bool bScreenEffects = false, RayReflectionFeatures stRayReflections = {}, bool bVirtualShadows = false, std::uint32_t nShadowPageCount = 512);
+									   ForwardEffects stForwardEffects = {}, bool bMaterialExtensions = false, bool bGlobalIllumination = false, GeometryFeatures stGeometry = {}, bool bProbePlacement = false, bool bAmbientOcclusion = false, bool bDeformation = false, bool bScreenEffects = false, RayReflectionFeatures stRayReflections = {}, bool bVirtualShadows = false, std::uint32_t nShadowPageCount = 512, DiagnosticView eView = DiagnosticView::Off);
 
 } // namespace EngineNext::Rendering

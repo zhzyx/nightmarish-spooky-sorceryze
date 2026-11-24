@@ -33,6 +33,7 @@
 #include "engine_next/Assets/AssetValidation.h"
 #include "engine_next/Rendering/Cook/GpuPackageCodec.h"
 #include "engine_next/Rendering/Cook/GpuPackage.h"
+#include "engine_next/Rendering/Cook/BlockTextureCodec.h"
 #include "engine_next/include/EngineNext/Assets/BlobValidator.h"
 #include "engine_next/include/EngineNext/Serialization/Json.h"
 #include "engine_next/include/EngineNext/Serialization/Sha256.h"
@@ -340,7 +341,7 @@ bool ParsePages(const JsonValue::List &arrValues, const GpuPageLimits &stLimits,
 		GpuPageDescription stPage;
 		std::uint32_t nKind = 0;
 		if (pPage == nullptr || !Assets::Fields(*pPage, { "kind", "asset", "item", "level", "width", "height", "offset", "bytes", "sha256", "pinned" }, "$", out_arrDiagnostics) ||
-			!Uint32(*pPage, "kind", nKind, out_arrDiagnostics) || nKind < 1 || nKind > 3 ||
+			!Uint32(*pPage, "kind", nKind, out_arrDiagnostics) || nKind < 1 || nKind > 4 ||
 			!Uint32(*pPage, "asset", stPage.nAsset, out_arrDiagnostics) || !Uint32(*pPage, "item", stPage.nItem, out_arrDiagnostics) ||
 			!Uint32(*pPage, "level", stPage.nLevel, out_arrDiagnostics) || !Uint(*pPage, "offset", nPayloadBytes, stPage.nOffset, out_arrDiagnostics) ||
 			!Uint32(*pPage, "width", stPage.nWidth, out_arrDiagnostics) || !Uint32(*pPage, "height", stPage.nHeight, out_arrDiagnostics) ||
@@ -470,7 +471,7 @@ bool ValidateTexturePages(const RenderScene &stMetadata, const std::vector<GpuPa
 		nExpected += stAsset.stMesh.arrImages.size();
 		for (const CookedTextureVariant &stVariant : stAsset.stTextureCook.arrVariants)
 		{
-			nExpected += stVariant.arrMips.size();
+			nExpected += stVariant.arrMips.size() + stVariant.arrEncodedMips.size();
 		}
 	}
 	std::size_t nActual = 0;
@@ -493,9 +494,28 @@ bool ValidateTexturePages(const RenderScene &stMetadata, const std::vector<GpuPa
 				return false;
 			}
 		}
+		else if (stPage.eKind == GpuPageKind::BlockTextureMip)
+		{
+			if (stMetadata.nGpuFormatVersion != 4 || stPage.nItem >= stAsset.stTextureCook.arrVariants.size())
+			{
+				return false;
+			}
+			const CookedTextureVariant &stVariant = stAsset.stTextureCook.arrVariants[stPage.nItem];
+			if (stPage.nLevel >= stVariant.arrEncodedMips.size())
+			{
+				return false;
+			}
+			const EncodedTextureMip &stMip = stVariant.arrEncodedMips[stPage.nLevel];
+			TextureMipLayout stLayout;
+			if (!ComputeTextureMipLayout(stMip.nWidth, stMip.nHeight, stMip.eFormat, stLayout) ||
+				stPage.nBytes != stLayout.nBytes || stPage.nWidth != stMip.nWidth || stPage.nHeight != stMip.nHeight)
+			{
+				return false;
+			}
+		}
 		else
 		{
-			if (stPage.nItem >= stAsset.stTextureCook.arrVariants.size() || stPage.nLevel >= stAsset.stTextureCook.arrVariants[stPage.nItem].arrMips.size())
+			if (stMetadata.nGpuFormatVersion != 3 || stPage.nItem >= stAsset.stTextureCook.arrVariants.size() || stPage.nLevel >= stAsset.stTextureCook.arrVariants[stPage.nItem].arrMips.size())
 			{
 				return false;
 			}
@@ -596,6 +616,14 @@ bool BuildPagedData(const RenderScene &stPrepared, const LodCookSettings &stLodS
 		for (std::uint32_t nVariant = 0; nVariant < stAsset.stTextureCook.arrVariants.size(); ++nVariant)
 		{
 			const CookedTextureVariant &stVariant = stAsset.stTextureCook.arrVariants[nVariant];
+			for (std::uint32_t nMip = 0; nMip < stVariant.arrEncodedMips.size(); ++nMip)
+			{
+				const EncodedTextureMip &stMip = stVariant.arrEncodedMips[nMip];
+				if (!fnAddPage(GpuPageKind::BlockTextureMip, nAsset, nVariant, nMip, false, stMip.arrBytes, stMip.nWidth, stMip.nHeight))
+				{
+					return Fail(out_arrDiagnostics, "Encoded texture mip page exceeds budget.");
+				}
+			}
 			for (std::uint32_t nMip = 0; nMip < stVariant.arrMips.size(); ++nMip)
 			{
 				if (!fnAddPage(GpuPageKind::TextureMip, nAsset, nVariant, nMip, false, stVariant.arrMips[nMip].arrRgba8, stVariant.arrMips[nMip].nWidth, stVariant.arrMips[nMip].nHeight))
@@ -757,7 +785,7 @@ bool LoadGpuPageIndex(const std::string &strPackage, const std::string &strExpec
 	std::vector<std::uint8_t> arrManifest;
 	if (stError || !ReadWhole(stRoot / "GpuManifest.json", stLimits.nMaximumIndexBytes, arrManifest))
 	{
-		return Fail(out_arrDiagnostics, "Cannot read the v3 manifest.");
+		return Fail(out_arrDiagnostics, "Cannot read the paged manifest.");
 	}
 	const std::string strManifest(arrManifest.begin(), arrManifest.end());
 	JsonValue stValue;
@@ -774,8 +802,13 @@ bool LoadGpuPageIndex(const std::string &strPackage, const std::string &strExpec
 	std::string strMetadataDigest;
 	std::string strPayloadDigest;
 	GpuPageIndex stCandidate;
-	if (pManifest == nullptr || !Assets::Fields(*pManifest, { "schema_version", "source_package_sha256", "metadata_sha256", "metadata_bytes", "payload_sha256", "payload_bytes", "pages", "trees", "lod_settings" }, "$", out_arrDiagnostics) ||
-		!Uint(*pManifest, "schema_version", 3, nVersion, out_arrDiagnostics) || nVersion != 3 ||
+	if (pManifest == nullptr || !Uint(*pManifest, "schema_version", 4, nVersion, out_arrDiagnostics) || (nVersion != 3 && nVersion != 4))
+	{
+		return Fail(out_arrDiagnostics, "Invalid paged format version.");
+	}
+	const bool bFieldsValid = nVersion == 4 ? Assets::Fields(*pManifest, { "schema_version", "source_package_sha256", "metadata_sha256", "metadata_bytes", "payload_sha256", "payload_bytes", "pages", "trees", "lod_settings", "texture_recipe" }, "$", out_arrDiagnostics) : Assets::Fields(*pManifest, { "schema_version", "source_package_sha256", "metadata_sha256", "metadata_bytes", "payload_sha256", "payload_bytes", "pages", "trees", "lod_settings" }, "$", out_arrDiagnostics);
+	std::string strRecipe;
+	if (!bFieldsValid || (nVersion == 4 && (!Assets::String(*pManifest, "texture_recipe", "$", strRecipe, out_arrDiagnostics) || strRecipe != BlockTextureRecipe())) ||
 		!ParseCookSettings(*pManifest, stCandidate.stCookSettings, out_arrDiagnostics) ||
 		!Assets::String(*pManifest, "source_package_sha256", "$", strSource, out_arrDiagnostics) || strSource != strExpectedSourceDigest ||
 		!Assets::String(*pManifest, "metadata_sha256", "$", strMetadataDigest, out_arrDiagnostics) || !Assets::IsSha256(strMetadataDigest) ||
@@ -783,12 +816,13 @@ bool LoadGpuPageIndex(const std::string &strPackage, const std::string &strExpec
 		!Assets::String(*pManifest, "payload_sha256", "$", strPayloadDigest, out_arrDiagnostics) || !Assets::IsSha256(strPayloadDigest) ||
 		!Uint(*pManifest, "payload_bytes", stLimits.nMaximumPayloadBytes, stCandidate.nPayloadBytes, out_arrDiagnostics) || stCandidate.nPayloadBytes == 0)
 	{
-		return Fail(out_arrDiagnostics, "Invalid v3 manifest identity or byte budget.");
+		return Fail(out_arrDiagnostics, "Invalid paged manifest identity, texture recipe or byte budget.");
 	}
 	std::vector<std::uint8_t> arrMetadata;
 	if (!ReadWhole(stRoot / "metadata" / strMetadataDigest, nMetadataBytes, arrMetadata) || arrMetadata.size() != nMetadataBytes ||
 		Serialization::Sha256Hex(arrMetadata.data(), arrMetadata.size()) != strMetadataDigest ||
-		!DecodeGpuSceneMetadata(arrMetadata, strSource, stCandidate.stMetadata, out_arrDiagnostics))
+		!DecodeGpuSceneMetadata(arrMetadata, strSource, stCandidate.stMetadata, out_arrDiagnostics) ||
+		stCandidate.stMetadata.nGpuFormatVersion != nVersion)
 	{
 		return Fail(out_arrDiagnostics, "Invalid metadata payload.");
 	}
@@ -890,7 +924,9 @@ bool ReadGpuPage(const GpuPageIndex &stIndex, std::uint32_t nPage, std::vector<s
 		}
 		for (const CookedTextureVariant &stVariant : stIndex.stMetadata.arrAssets[stPage.nAsset].stTextureCook.arrVariants)
 		{
-			if (stVariant.nImage == stPage.nItem && (stVariant.arrMips[0].nWidth != stInfo.nWidth || stVariant.arrMips[0].nHeight != stInfo.nHeight))
+			const std::uint32_t nWidth = stIndex.stMetadata.nGpuFormatVersion == 4 ? stVariant.arrEncodedMips[0].nWidth : stVariant.arrMips[0].nWidth;
+			const std::uint32_t nHeight = stIndex.stMetadata.nGpuFormatVersion == 4 ? stVariant.arrEncodedMips[0].nHeight : stVariant.arrMips[0].nHeight;
+			if (stVariant.nImage == stPage.nItem && (nWidth != stInfo.nWidth || nHeight != stInfo.nHeight))
 			{
 				return Fail(out_arrDiagnostics, "Encoded image dimensions differ from mip metadata.");
 			}
@@ -951,11 +987,12 @@ bool ReadGpuMeshPage(const GpuPageIndex &stIndex, std::uint32_t nPage, GpuMeshPa
 bool VerifyPagedScene(const RenderScene &stSource, const GpuPageIndex &stIndex, Assets::Diagnostics &out_arrDiagnostics)
 {
 	RenderScene stPrepared;
-	return PrepareGpuSceneForPaging(stSource, stPrepared, out_arrDiagnostics) && VerifyPrepared(stPrepared, stIndex, out_arrDiagnostics);
+	const bool bPrepared = stIndex.Metadata().nGpuFormatVersion == 4 ? PrepareEncodedGpuSceneForPaging(stSource, stPrepared, out_arrDiagnostics) : PrepareGpuSceneForPaging(stSource, stPrepared, out_arrDiagnostics);
+	return bPrepared && VerifyPrepared(stPrepared, stIndex, out_arrDiagnostics);
 }
 
-bool LoadVerifiedGpuPackage(const std::string &strPackage, const RenderScene &stSource, const GpuPageLimits &stLimits,
-							RenderScene &out_stScene, GpuPageReadStats &out_stStats, Assets::Diagnostics &out_arrDiagnostics)
+static bool LoadVerifiedPackage(const std::string &strPackage, const RenderScene &stSource, const GpuPageLimits &stLimits,
+								RenderScene &out_stScene, GpuPageReadStats &out_stStats, Assets::Diagnostics &out_arrDiagnostics, bool bAllowEncoded, GpuPageIndex *out_pTextureIndex = nullptr)
 {
 	if (!ValidLimits(stLimits))
 	{
@@ -970,12 +1007,17 @@ bool LoadVerifiedGpuPackage(const std::string &strPackage, const RenderScene &st
 	std::string strError;
 	std::uint64_t nVersion = 0;
 	if (!Serialization::ParseJson(std::string(arrManifest.begin(), arrManifest.end()), stManifest, strError) ||
-		stManifest.GetObject() == nullptr || !Uint(*stManifest.GetObject(), "schema_version", 3, nVersion, out_arrDiagnostics))
+		stManifest.GetObject() == nullptr || !Uint(*stManifest.GetObject(), "schema_version", 4, nVersion, out_arrDiagnostics))
 	{
 		return Fail(out_arrDiagnostics, "Invalid GPU package version.");
 	}
 	RenderScene stCandidate;
-	if (nVersion != 3)
+	if (nVersion == 4 && !bAllowEncoded)
+	{
+		Assets::AddDiagnostic(out_arrDiagnostics, "gpu_texture_unsupported", "$", "Encoded v4 textures require the encoded reader; this runtime entry has no BC upload support yet.");
+		return false;
+	}
+	if (nVersion < 3)
 	{
 		if (!LoadGpuPackage(strPackage, stSource.strPackageDigest, stCandidate, out_arrDiagnostics) ||
 			!VerifyCookedScene(stSource, stCandidate, out_arrDiagnostics))
@@ -986,8 +1028,12 @@ bool LoadVerifiedGpuPackage(const std::string &strPackage, const RenderScene &st
 		return true;
 	}
 	GpuPageIndex stIndex;
-	if (!LoadGpuPageIndex(strPackage, stSource.strPackageDigest, stLimits, stIndex, out_arrDiagnostics) ||
-		!PrepareGpuSceneForPaging(stSource, stCandidate, out_arrDiagnostics) || !VerifyPrepared(stCandidate, stIndex, out_arrDiagnostics))
+	if (!LoadGpuPageIndex(strPackage, stSource.strPackageDigest, stLimits, stIndex, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const bool bPrepared = nVersion == 4 ? PrepareEncodedGpuSceneForPaging(stSource, stCandidate, out_arrDiagnostics) : PrepareGpuSceneForPaging(stSource, stCandidate, out_arrDiagnostics);
+	if (!bPrepared || !VerifyPrepared(stCandidate, stIndex, out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -995,9 +1041,20 @@ bool LoadVerifiedGpuPackage(const std::string &strPackage, const RenderScene &st
 	// by verified page data. Unreferenced vertices retain their source values.
 	// The initial compatibility path loads all leaf geometry; streaming callers
 	// use the same verified index without materializing its complete payload.
+	if (nVersion == 4 && out_pTextureIndex != nullptr)
+	{
+		for (std::size_t nAsset = 0; nAsset < stCandidate.arrAssets.size(); ++nAsset)
+		{
+			stCandidate.arrAssets[nAsset].stTextureCook = stIndex.Metadata().arrAssets[nAsset].stTextureCook;
+		}
+	}
 	for (std::uint32_t nPage = 0; nPage < stIndex.Pages().size(); ++nPage)
 	{
 		const GpuPageDescription &stPage = stIndex.Pages()[nPage];
+		if (out_pTextureIndex != nullptr && stPage.eKind == GpuPageKind::BlockTextureMip)
+		{
+			continue;
+		}
 		const GpuLodTree *pTree = nullptr;
 		if (stPage.eKind == GpuPageKind::MeshGeometry)
 		{
@@ -1025,18 +1082,26 @@ bool LoadVerifiedGpuPackage(const std::string &strPackage, const RenderScene &st
 		{
 			stAsset.stMesh.arrImages[stPage.nItem].arrBytes = std::move(arrBytes);
 		}
+		else if (stPage.eKind == GpuPageKind::BlockTextureMip)
+		{
+			stAsset.stTextureCook.arrVariants[stPage.nItem].arrEncodedMips[stPage.nLevel].arrBytes = std::move(arrBytes);
+		}
 		else
 		{
 			stAsset.stTextureCook.arrVariants[stPage.nItem].arrMips[stPage.nLevel].arrRgba8 = std::move(arrBytes);
 		}
 	}
-	stCandidate.nGpuFormatVersion = 3;
+	stCandidate.nGpuFormatVersion = static_cast<std::uint32_t>(nVersion);
+	if (out_pTextureIndex != nullptr && nVersion == 4)
+	{
+		*out_pTextureIndex = std::move(stIndex);
+	}
 	out_stScene = std::move(stCandidate);
 	return true;
 }
 
-bool CookPagedGpuPackage(const std::string &strSourcePackage, const std::string &strTargetPackage,
-						 const LodCookSettings &stLodSettings, const GpuPageLimits &stLimits, Assets::Diagnostics &out_arrDiagnostics)
+static bool CookPagedPackage(const std::string &strSourcePackage, const std::string &strTargetPackage,
+							 const LodCookSettings &stLodSettings, const GpuPageLimits &stLimits, Assets::Diagnostics &out_arrDiagnostics, bool bEncoded)
 {
 	if (!ValidLimits(stLimits) || !ValidCookSettings(stLodSettings))
 	{
@@ -1044,7 +1109,12 @@ bool CookPagedGpuPackage(const std::string &strSourcePackage, const std::string 
 	}
 	RenderScene stSource;
 	RenderScene stPrepared;
-	if (!LoadRenderScene(strSourcePackage, stSource, out_arrDiagnostics) || !PrepareGpuSceneForPaging(stSource, stPrepared, out_arrDiagnostics))
+	if (!LoadRenderScene(strSourcePackage, stSource, out_arrDiagnostics))
+	{
+		return false;
+	}
+	const bool bPrepared = bEncoded ? PrepareEncodedGpuSceneForPaging(stSource, stPrepared, out_arrDiagnostics) : PrepareGpuSceneForPaging(stSource, stPrepared, out_arrDiagnostics);
+	if (!bPrepared)
 	{
 		return false;
 	}
@@ -1062,7 +1132,11 @@ bool CookPagedGpuPackage(const std::string &strSourcePackage, const std::string 
 	}
 	const std::string strMetadataDigest = Serialization::Sha256Hex(arrMetadata.data(), arrMetadata.size());
 	const std::string strPayloadDigest = Serialization::Sha256Hex(arrPayload.data(), arrPayload.size());
-	JsonValue stManifest(JsonValue::Object{ { "schema_version", Integer(3) }, { "lod_settings", CookSettingsJson(stLodSettings) }, { "source_package_sha256", stSource.strPackageDigest }, { "metadata_sha256", strMetadataDigest }, { "metadata_bytes", Integer(arrMetadata.size()) }, { "payload_sha256", strPayloadDigest }, { "payload_bytes", Integer(arrPayload.size()) }, { "pages", std::move(arrPages) }, { "trees", std::move(arrTrees) } });
+	JsonValue stManifest(JsonValue::Object{ { "schema_version", Integer(bEncoded ? 4 : 3) }, { "lod_settings", CookSettingsJson(stLodSettings) }, { "source_package_sha256", stSource.strPackageDigest }, { "metadata_sha256", strMetadataDigest }, { "metadata_bytes", Integer(arrMetadata.size()) }, { "payload_sha256", strPayloadDigest }, { "payload_bytes", Integer(arrPayload.size()) }, { "pages", std::move(arrPages) }, { "trees", std::move(arrTrees) } });
+	if (bEncoded)
+	{
+		stManifest.GetObject()->emplace("texture_recipe", BlockTextureRecipe());
+	}
 	std::string strManifest;
 	if (!Serialization::CanonicalJson(stManifest, strManifest) || strManifest.size() > stLimits.nMaximumIndexBytes - arrMetadata.size())
 	{
@@ -1132,4 +1206,90 @@ bool CookPagedGpuPackage(const std::string &strSourcePackage, const std::string 
 	}
 	return Fail(out_arrDiagnostics, "Package publication failed or target contains different content.");
 }
+bool LoadVerifiedGpuPackage(const std::string &strPackage, const RenderScene &stSource, const GpuPageLimits &stLimits,
+							RenderScene &out_stScene, GpuPageReadStats &out_stStats, Assets::Diagnostics &out_arrDiagnostics)
+{
+	return LoadVerifiedPackage(strPackage, stSource, stLimits, out_stScene, out_stStats, out_arrDiagnostics, false);
+}
+
+bool LoadVerifiedEncodedGpuPackage(const std::string &strPackage, const RenderScene &stSource, const GpuPageLimits &stLimits,
+								   RenderScene &out_stScene, GpuPageReadStats &out_stStats, Assets::Diagnostics &out_arrDiagnostics)
+{
+	return LoadVerifiedPackage(strPackage, stSource, stLimits, out_stScene, out_stStats, out_arrDiagnostics, true);
+}
+
+bool LoadTextureStreamingPackage(const std::string &strPackage, const RenderScene &stSource, const GpuPageLimits &stLimits,
+								 RenderScene &out_stScene, GpuPageReadStats &out_stStats, GpuPageIndex &out_stIndex, Assets::Diagnostics &out_arrDiagnostics)
+{
+	return LoadVerifiedPackage(strPackage, stSource, stLimits, out_stScene, out_stStats, out_arrDiagnostics, true, &out_stIndex);
+}
+
+bool CookPagedGpuPackage(const std::string &strSourcePackage, const std::string &strTargetPackage,
+						 const LodCookSettings &stLodSettings, const GpuPageLimits &stLimits, Assets::Diagnostics &out_arrDiagnostics)
+{
+	return CookPagedPackage(strSourcePackage, strTargetPackage, stLodSettings, stLimits, out_arrDiagnostics, false);
+}
+
+bool CookEncodedGpuPackage(const std::string &strSourcePackage, const std::string &strTargetPackage,
+						   const LodCookSettings &stLodSettings, const GpuPageLimits &stLimits, Assets::Diagnostics &out_arrDiagnostics)
+{
+	return CookPagedPackage(strSourcePackage, strTargetPackage, stLodSettings, stLimits, out_arrDiagnostics, true);
+}
+
+bool ReadGpuTextureMip(const GpuPageIndex &stIndex, std::uint32_t nPage, EncodedTextureMip &out_stMip,
+					   GpuPageReadStats &out_stStats, Assets::Diagnostics &out_arrDiagnostics)
+{
+	if (nPage >= stIndex.Pages().size() || stIndex.Pages()[nPage].eKind != GpuPageKind::BlockTextureMip)
+	{
+		return Fail(out_arrDiagnostics, "Requested page is not an encoded texture mip.");
+	}
+	const GpuPageDescription &stPage = stIndex.Pages()[nPage];
+	EncodedTextureMip stMip = stIndex.Metadata().arrAssets[stPage.nAsset].stTextureCook.arrVariants[stPage.nItem].arrEncodedMips[stPage.nLevel];
+	if (!ReadGpuPage(stIndex, nPage, stMip.arrBytes, out_stStats, out_arrDiagnostics))
+	{
+		return false;
+	}
+	out_stMip = std::move(stMip);
+	return true;
+}
+
+bool ReadGpuTextureSuffix(const GpuPageIndex &stIndex, const std::vector<std::uint32_t> &arrMipPages,
+						  std::uint32_t nFirstMip, std::vector<EncodedTextureMip> &out_arrLevels,
+						  GpuPageReadStats &out_stStats, Assets::Diagnostics &out_arrDiagnostics)
+{
+	if (nFirstMip >= arrMipPages.size() || arrMipPages.front() >= stIndex.Pages().size())
+	{
+		return Fail(out_arrDiagnostics, "Invalid texture suffix request.");
+	}
+	const GpuPageDescription &stFirst = stIndex.Pages()[arrMipPages.front()];
+	if (stFirst.eKind != GpuPageKind::BlockTextureMip || stFirst.nLevel != 0 ||
+		stIndex.Metadata().arrAssets[stFirst.nAsset].stTextureCook.arrVariants[stFirst.nItem].arrEncodedMips.size() != arrMipPages.size())
+	{
+		return Fail(out_arrDiagnostics, "Incomplete texture suffix directory.");
+	}
+	std::vector<EncodedTextureMip> arrLevels;
+	arrLevels.reserve(arrMipPages.size() - nFirstMip);
+	for (std::size_t nMip = nFirstMip; nMip < arrMipPages.size(); ++nMip)
+	{
+		const std::uint32_t nPage = arrMipPages[nMip];
+		if (nPage >= stIndex.Pages().size())
+		{
+			return Fail(out_arrDiagnostics, "Texture suffix page is outside the index.");
+		}
+		const GpuPageDescription &stPage = stIndex.Pages()[nPage];
+		if (stPage.nAsset != stFirst.nAsset || stPage.nItem != stFirst.nItem || stPage.nLevel != nMip)
+		{
+			return Fail(out_arrDiagnostics, "Texture suffix contains a different variant or level.");
+		}
+		EncodedTextureMip stLevel;
+		if (!ReadGpuTextureMip(stIndex, nPage, stLevel, out_stStats, out_arrDiagnostics))
+		{
+			return false;
+		}
+		arrLevels.push_back(std::move(stLevel));
+	}
+	out_arrLevels = std::move(arrLevels);
+	return true;
+}
+
 } // namespace EngineNext::Rendering

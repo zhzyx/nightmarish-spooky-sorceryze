@@ -370,6 +370,42 @@ ENGINE_NEXT_TEST("ShadowPageCache uncached reference rerenders the same physical
 	}
 }
 
+ENGINE_NEXT_TEST("ShadowPageCache uncached rendering retains demand across readback gaps")
+{
+	VirtualShadowSettings stSettings = SmallSettings();
+	stSettings.bCache = false;
+	ShadowPageCache stCache;
+	Diagnostics arrDiagnostics;
+	const ShadowData stProjection = Projection();
+	const ShadowPageFeedback stFeedback = Request(stProjection, 8, 4);
+	ENGINE_NEXT_CHECK(stCache.Initialize(stSettings, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, {}, {}, { stFeedback }, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Commit());
+	for (std::uint32_t nGap = 0; nGap < 4; ++nGap)
+	{
+		ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, {}, {}, {}, arrDiagnostics));
+		ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nRequested == 4);
+		ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nRendered == 4);
+		ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nResident == 4);
+		ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nInvalidated == 4);
+		ENGINE_NEXT_CHECK(stCache.Plan().nSceneRevision == 1);
+		ENGINE_NEXT_CHECK(stCache.Commit());
+	}
+	const ShadowPageFeedback stEmpty = Request(stProjection, 0, 0);
+	ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, {}, {}, { stEmpty }, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nRequested == 0);
+	stCache.Cancel();
+	ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, {}, {}, {}, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nRendered == 4);
+	ENGINE_NEXT_CHECK(stCache.Commit());
+	ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, {}, {}, { stEmpty }, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nResident == 0);
+	ENGINE_NEXT_CHECK(stCache.Commit());
+	ENGINE_NEXT_CHECK(stCache.Prepare(stProjection, {}, {}, {}, arrDiagnostics));
+	ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nRequested == 0);
+	ENGINE_NEXT_CHECK(stCache.Plan().stStatistics.nRendered == 0);
+}
+
 ENGINE_NEXT_TEST("ShadowPageCache frustum rejection retains border and cancellation uncertainty")
 {
 	using EngineNext::Rendering::IntersectsShadowPage;

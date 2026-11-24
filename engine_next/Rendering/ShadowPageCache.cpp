@@ -361,6 +361,10 @@ bool ShadowPageCache::Prepare(const ShadowData &stProjection, const std::vector<
 		}
 	}
 	State stCandidate = stCommitted;
+	if (!arrFeedback.empty())
+	{
+		stCandidate.arrFeedback = arrFeedback;
+	}
 	ShadowPagePlan stCandidatePlan;
 	stCandidatePlan.nEpoch = stCandidate.nEpoch + 1;
 	const std::uint32_t nAxis = stSettings.nResolution / SHADOW_PAGE_TEXELS;
@@ -422,7 +426,7 @@ bool ShadowPageCache::Prepare(const ShadowData &stProjection, const std::vector<
 		}
 	}
 	std::vector<std::uint64_t> arrRequests(LogicalPages(), 0);
-	for (const ShadowPageFeedback &stFeedback : arrFeedback)
+	for (const ShadowPageFeedback &stFeedback : stCandidate.arrFeedback)
 	{
 		for (std::uint32_t nCascade = 0; nCascade < 4; ++nCascade)
 		{

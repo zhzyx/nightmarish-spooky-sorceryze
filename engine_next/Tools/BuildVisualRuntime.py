@@ -17,6 +17,7 @@ import PackageVisualRuntime
 CORE_SOURCES = [
     "engine_next/Rendering/PagedGeometry.cpp",
     "engine_next/Rendering/PageResidency.cpp",
+    "engine_next/Rendering/TextureResidency.cpp",
     "engine_next/Rendering/Cook/GpuPagedPackage.cpp",
     "engine_next/Rendering/LodSelection.cpp",
     "engine_next/Rendering/Cook/GeometryLod.cpp",
@@ -32,6 +33,7 @@ CORE_SOURCES = [
     "engine_next/Rendering/TemporalState.cpp",
     "engine_next/Rendering/PostProcessSettings.cpp",
     "engine_next/Rendering/ColorLut.cpp",
+    "engine_next/Rendering/FrameTelemetry.cpp",
     "engine_next/Rendering/LightTimeline.cpp",
     "engine_next/Rendering/ReflectionSettings.cpp",
     "engine_next/Rendering/AmbientOcclusionSettings.cpp",
@@ -59,6 +61,10 @@ CORE_SOURCES = [
     "engine_next/Rendering/Cook/GpuPackage.cpp",
     "engine_next/Rendering/Cook/MeshCluster.cpp",
     "engine_next/Rendering/Cook/TextureCook.cpp",
+    "engine_next/Rendering/Cook/BlockTextureCodec.cpp",
+    "engine_next/thirdparty/bc7enc/bc7enc.cpp",
+    "engine_next/thirdparty/bc7enc/bc7decomp.cpp",
+    "engine_next/thirdparty/bc7enc/rgbcx.cpp",
     "engine_next/Rendering/RenderScene.cpp",
     "engine_next/Serialization/Json.cpp",
     "engine_next/Serialization/Sha256.cpp",
@@ -89,6 +95,7 @@ VISUAL_SOURCES = [
     "engine_next/Platform/Windows/GpuProbeGrid.cpp",
     "engine_next/Platform/Windows/GpuDeformation.cpp",
     "engine_next/Platform/Windows/GpuShadowPages.cpp",
+    "engine_next/Platform/Windows/ShadowRecording.cpp",
     "engine_next/Platform/Windows/GpuRayReflections.cpp",
     "engine_next/Platform/Windows/GpuGeometry.cpp",
     "engine_next/Platform/Windows/GpuPagedGeometry.cpp",
@@ -96,6 +103,7 @@ VISUAL_SOURCES = [
 TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestPagedGeometry.cpp",
     "engine_next/Tests/Rendering/TestPageResidency.cpp",
+    "engine_next/Tests/Rendering/TestTextureResidency.cpp",
     "engine_next/Tests/Rendering/TestGpuPagedPackage.cpp",
     "engine_next/Tests/Rendering/TestLodSelection.cpp",
     "engine_next/Tests/Rendering/TestGeometryLod.cpp",
@@ -112,6 +120,7 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestTemporalState.cpp",
     "engine_next/Tests/Rendering/TestPostProcessSettings.cpp",
     "engine_next/Tests/Rendering/TestColorLut.cpp",
+    "engine_next/Tests/Rendering/TestFrameTelemetry.cpp",
     "engine_next/Tests/Rendering/TestLightTimeline.cpp",
     "engine_next/Tests/Rendering/TestReflectionSettings.cpp",
     "engine_next/Tests/Rendering/TestAmbientOcclusionSettings.cpp",
@@ -149,12 +158,15 @@ TEST_SOURCES = [
     "engine_next/Tests/Rendering/TestGpuPackage.cpp",
     "engine_next/Tests/Rendering/TestMeshCluster.cpp",
     "engine_next/Tests/Rendering/TestTextureCook.cpp",
+    "engine_next/Tests/Rendering/TestBlockTextureCodec.cpp",
+    "engine_next/Tests/Rendering/TestEncodedGpuPackage.cpp",
 ]
 PUBLIC_HEADERS = [
     "EngineNext/Rendering/DeformationFrame.h",
     "EngineNext/Rendering/AnimationData.h",
     "EngineNext/Rendering/PagedGeometry.h",
     "EngineNext/Rendering/PageResidency.h",
+    "EngineNext/Rendering/TextureResidency.h",
     "EngineNext/Rendering/GeometryLod.h",
     "EngineNext/Rendering/FrameGraph.h",
     "EngineNext/Rendering/MeshData.h",
@@ -202,6 +214,32 @@ SHADERS = [
         "ps_6_0",
         "MaterialLighting.ps.cso",
         ["-D", "MATERIAL_EXTENSION_STAGE=1", "-D", "ENVIRONMENT_IMPORTANCE_STAGE=1"],
+    ),
+    *(
+        ("DiagnosticPS", "ps_6_0", f"Diagnostic-{name}.ps.cso", ["-D", f"VIEW={index}"])
+        for index, name in enumerate(
+            [
+                "normal",
+                "roughness",
+                "metallic",
+                "ao",
+                "emissive",
+                "motion",
+                "depth",
+                "gbuffer",
+                "culling",
+                "cluster",
+                "lod",
+                "streaming",
+                "cascade",
+                "vsm-page",
+                "gi-probe",
+                "ssr",
+                "volume-fog",
+                "exposure",
+            ],
+            start=2,
+        )
     ),
     ("ToneMapPS", "ps_6_0", "ToneMap.ps.cso", ["-D", "TONEMAP_STAGE=1"]),
     ("ToneMapPS", "ps_6_0", "ScreenEffects.ps.cso", ["-D", "TONEMAP_STAGE=1", "-D", "SCREEN_EFFECTS_STAGE=1"]),
@@ -674,6 +712,8 @@ def compile_shaders(args, commands):
                 if name.startswith("Bloom")
                 else "TemporalAA.hlsl"
                 if name.startswith("Temporal")
+                else "Diagnostic.hlsl"
+                if name.startswith("Diagnostic-")
                 else "Deferred.hlsl"
             )
         )
@@ -755,7 +795,7 @@ def build(args):
         "engine_next/Tools/BuildRuntime.py",
         *[
             path.relative_to(args.repo).as_posix()
-            for name in ("enet", "zlib", "libjpeg-turbo", "meshoptimizer")
+            for name in ("enet", "zlib", "libjpeg-turbo", "meshoptimizer", "bc7enc")
             for path in (args.repo / "engine_next/thirdparty" / name).rglob("*")
             if path.is_file()
         ],
@@ -769,6 +809,7 @@ def build(args):
             else [
                 "engine_next/Rendering/Shaders/FixedMesh.hlsl",
                 "engine_next/Rendering/Shaders/Deferred.hlsl",
+                "engine_next/Rendering/Shaders/Diagnostic.hlsl",
                 "engine_next/Rendering/Shaders/AmbientOcclusion.hlsl",
                 "engine_next/Rendering/Shaders/AmbientOcclusionMath.hlsli",
                 "engine_next/Rendering/Shaders/ScreenEffects.hlsli",

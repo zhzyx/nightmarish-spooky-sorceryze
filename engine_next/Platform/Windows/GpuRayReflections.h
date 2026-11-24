@@ -124,7 +124,7 @@ public:
 							  ID3D12GraphicsCommandList4 *pList, const RayReflectionBindings &stBindings, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool Submit(std::uint32_t nFrame, std::uint64_t nFence, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool Discard(std::uint32_t nFrame, Assets::Diagnostics &out_arrDiagnostics);
-	[[nodiscard]] bool Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
+	[[nodiscard]] bool Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, RayReflectionStatistics &out_stStatistics, Assets::Diagnostics &out_arrDiagnostics);
 	[[nodiscard]] bool Release(std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics);
 	void InvalidateHistory() noexcept;
 

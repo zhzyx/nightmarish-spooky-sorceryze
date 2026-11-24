@@ -100,6 +100,9 @@ bool IntersectsShadowPage(const WorldBounds &stBounds, const std::array<float, 1
 // until Commit or Cancel and may be uploaded only to a retired frame slot.
 // Commit follows successful queue submission. GPU pool contents are serialized
 // on that queue; a failed submission must not resume with an assumed valid pool.
+// An empty feedback batch means no readback has retired yet. Retain the last
+// committed receiver demand until a fresh batch replaces it; an explicitly
+// empty coverage map clears demand.
 class ShadowPageCache final
 {
 public:
@@ -123,6 +126,7 @@ private:
 	{
 		ShadowData stProjection;
 		std::vector<WorldBounds> arrCasters;
+		std::vector<ShadowPageFeedback> arrFeedback;
 		std::vector<ShadowPageTableEntry> arrTable;
 		std::vector<PhysicalPage> arrPhysical;
 		std::uint64_t nEpoch = 0;

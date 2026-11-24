@@ -128,6 +128,9 @@ private:
 	std::array<Frame, SHADOW_PAGE_FRAME_COUNT> arrFrames;
 	std::array<ShadowPageDescriptors, SHADOW_PAGE_FRAME_COUNT> arrDescriptors{};
 	std::array<std::uint32_t, 4> arrFeedbackStatistics{};
+	// Retired slot feedback remains available across cancelled preparations.
+	// A successful submission consumes it together with the cache transaction.
+	std::vector<ShadowPageFeedback> arrFeedbackInbox;
 	ShadowPageCache stCache;
 	VirtualShadowSettings stSettings;
 	std::uint64_t nTableBytes = 0;

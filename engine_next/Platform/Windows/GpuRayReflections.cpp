@@ -362,7 +362,8 @@ bool GpuRayReflections::PrepareFrame(std::uint32_t nFrame, const RayReflectionCo
 	{
 		return Error(out_arrDiagnostics, "Prepare requires one retired frame and matching draw identities.");
 	}
-	if (!Collect(nFrame, nCompletedFence, out_arrDiagnostics))
+	RayReflectionStatistics stRetired;
+	if (!Collect(nFrame, nCompletedFence, stRetired, out_arrDiagnostics))
 	{
 		return false;
 	}
@@ -665,13 +666,14 @@ bool GpuRayReflections::Discard(std::uint32_t nFrame, Assets::Diagnostics &out_a
 	return true;
 }
 
-bool GpuRayReflections::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, Assets::Diagnostics &out_arrDiagnostics)
+bool GpuRayReflections::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFence, RayReflectionStatistics &out_stStatistics, Assets::Diagnostics &out_arrDiagnostics)
 {
 	if (!bInitialized || !IsOwner() || nFrame >= arrFrames.size() || nCompletedFence == UINT64_MAX || arrFrames[nFrame].nFence > nCompletedFence)
 	{
 		return Error(out_arrDiagnostics, "Counter collection requires a retired owner slot.");
 	}
 	Frame &stFrame = arrFrames[nFrame];
+	out_stStatistics = {};
 	if (!stFrame.bReadbackPending)
 	{
 		return true;
@@ -686,9 +688,10 @@ bool GpuRayReflections::Collect(std::uint32_t nFrame, std::uint64_t nCompletedFe
 	std::memcpy(arrValues.data(), pMapped, sizeof(arrValues));
 	const D3D12_RANGE stNoWrite{ 0, 0 };
 	stFrame.stReadback->Unmap(0, &stNoWrite);
+	out_stStatistics = { arrValues[0], arrValues[1], arrValues[2], arrValues[3], arrValues[4], arrValues[5], arrValues[6] };
 	if (stFrame.nFence >= nCollectedFence)
 	{
-		stStatistics = { arrValues[0], arrValues[1], arrValues[2], arrValues[3], arrValues[4], arrValues[5], arrValues[6] };
+		stStatistics = out_stStatistics;
 		nCollectedFence = stFrame.nFence;
 	}
 	nPeakInvalidCount = std::max(nPeakInvalidCount, static_cast<std::uint64_t>(arrValues[4]));
@@ -708,7 +711,8 @@ bool GpuRayReflections::Release(std::uint64_t nCompletedFence, Assets::Diagnosti
 	}
 	for (std::uint32_t nFrame = 0; nFrame < arrFrames.size(); ++nFrame)
 	{
-		if (!Collect(nFrame, nCompletedFence, out_arrDiagnostics))
+		RayReflectionStatistics stRetired;
+		if (!Collect(nFrame, nCompletedFence, stRetired, out_arrDiagnostics))
 		{
 			return false;
 		}

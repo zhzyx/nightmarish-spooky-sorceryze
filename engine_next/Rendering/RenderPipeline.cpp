@@ -156,8 +156,18 @@ bool AddRayReflections(FrameGraph &stGraph, RenderPipeline &stPipeline, RayRefle
 } // namespace
 
 bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphDiagnostic &out_stDiagnostic, std::uint32_t nLocalShadowViews, bool bTemporal,
-						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bAmbientOcclusion, bool bDeformation, bool bScreenEffects, RayReflectionFeatures stRayReflections, bool bVirtualShadows, std::uint32_t nShadowPageCount)
+						 bool bExposure, std::uint32_t nBloomMips, std::uint32_t nReflectionMips, ForwardEffects stForwardEffects, bool bMaterialExtensions, bool bGlobalIllumination, GeometryFeatures stGeometry, bool bProbePlacement, bool bAmbientOcclusion, bool bDeformation, bool bScreenEffects, RayReflectionFeatures stRayReflections, bool bVirtualShadows, std::uint32_t nShadowPageCount, DiagnosticView eView)
 {
+	if (static_cast<std::size_t>(eView) >= std::size(DIAGNOSTIC_VIEW_NAMES) || (!bSceneMode && eView != DiagnosticView::Off && eView != DiagnosticView::Wireframe))
+	{
+		out_stDiagnostic = { GraphError::CapacityExceeded, INVALID_PASS, INVALID_RESOURCE, "Diagnostic view needs a deferred scene." };
+		return false;
+	}
+	if (eView == DiagnosticView::Ssr && stRayReflections.bEnabled)
+	{
+		out_stDiagnostic = { GraphError::CapacityExceeded, INVALID_PASS, INVALID_RESOURCE, "Pure SSR output is unavailable with hybrid ray tracing. Disable reflections.ray_tracing.enabled for the SSR diagnostic." };
+		return false;
+	}
 	if (bSceneMode && bVirtualShadows && (nShadowPageCount < 16 || nShadowPageCount > 2048))
 	{
 		out_stDiagnostic = { GraphError::CapacityExceeded, INVALID_PASS, INVALID_RESOURCE, "Physical shadow page count must be in [16,2048]." };
@@ -785,6 +795,17 @@ bool BuildRenderPipeline(bool bSceneMode, RenderPipeline &out_stPipeline, GraphD
 				nLower = nUp;
 			}
 			stToneMap.arrAccesses.push_back({ nLower, ResourceState::ShaderRead, false });
+		}
+		if (eView > DiagnosticView::Wireframe)
+		{
+			const ResourceId arrSources[]{ INVALID_RESOURCE, INVALID_RESOURCE, stPipeline.arrGbuffer[1], stPipeline.arrGbuffer[2], stPipeline.arrGbuffer[2], stPipeline.arrGbuffer[2], stPipeline.arrGbuffer[3], stPipeline.nMotion, stPipeline.nDepth, stPipeline.arrGbuffer[0], stPipeline.arrGeometryCounters[1], stPipeline.nGeometryClusters, stPipeline.nGeometryClusters, stPipeline.nGeometryClusters, stPipeline.nDirectionalShadow, stPipeline.nShadowPageTable, stPipeline.arrGiWrite[0], stPipeline.nReflection, stPipeline.nVolumeIntegral, stPipeline.nExposureWrite };
+			stPipeline.nDiagnostic = arrSources[static_cast<std::size_t>(eView)];
+			if (stPipeline.nDiagnostic == INVALID_RESOURCE || ((eView == DiagnosticView::Lod || eView == DiagnosticView::Streaming) && !stGeometry.bPaged))
+			{
+				out_stDiagnostic = { GraphError::CapacityExceeded, INVALID_PASS, INVALID_RESOURCE, std::string("Unavailable diagnostic source: ") + DIAGNOSTIC_VIEW_NAMES[static_cast<std::size_t>(eView)] };
+				return false;
+			}
+			stToneMap.arrAccesses = { { stPipeline.nDiagnostic, ResourceState::ShaderRead, false }, { stPipeline.nColor, ResourceState::RenderTarget, true } };
 		}
 		if (!AddPipelinePass(stGraph, stPipeline, stToneMap, PassWork::ToneMap, out_stDiagnostic))
 		{

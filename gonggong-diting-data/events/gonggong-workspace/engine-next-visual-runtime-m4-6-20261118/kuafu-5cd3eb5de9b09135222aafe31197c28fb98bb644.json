@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5cd3eb5de9b09135222aafe31197c28fb98bb644",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "c6197bc48d7d773d59fffd73bf62aa48bcf30b856c2afd229cb1d30de432fd5a",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2226",
+    "action": "validation",
+    "detection_head": "f1902c13ca75cb98fe8d106e93f901aa016d4cad",
+    "context_sha256": "287a1bf2e4dbd2867966e22405559da2b273e5ec2a6c2849491a3dfda83ad190",
+    "operator": "kaiyunxue",
+    "worker": "agent:/root",
+    "authority_ref": "codex:user:engine-next-m4:implement-test-push-main",
+    "evidence": "artifact:engine-next-combined-lighting-r13-20261125/Regression/Result.json",
+    "diagnosis": "Raster-only particle material was appended after ray-scene initialization; resize incorrectly forwarded five raster extensions to four source materials. R13 preserves the source material prefix and the strict ray-scene ordering check.",
+    "next_action": "Complete current candidate capture and module receipts, formal gates, selected CI and main readback. Keep tracker and M4 parent open until all linked incidents and business acceptance are satisfied.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T21:38:26.980153+00:00",
+    "attempted": "R12 E failed after 3 frames and first resize; R13 D, DResize, E and ERayOwned completed 64 frames each with zero GPU validation errors. Independent R13ResizeDeviceClosure.json confirms two resizes, particles, GI-borrowed and RT-owned ray scenes.",
+    "repair_owner": "agent:/root",
+    "continuable": "Functional candidate is fixed and device-retested; main delivery remains pending."
+  },
+  "occurred_at": "2026-11-24T22:04:29.106139+00:00",
+  "sha256": "97ec23c295144cbb3f187b7d2afd47be6d4496bdcc0efa1c75ef7ea716ccbdea"
+}

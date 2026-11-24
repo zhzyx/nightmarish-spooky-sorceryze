@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "occurred_at": "2026-11-18T17:15:20.580457+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-50939f91",
+    "definition_sha256": "50939f915382ee8d73acc37339c5c7b141e127d5ac11df287110c3ca5cee77a5",
+    "origin": "AGENTS.md"
+  },
+  "event_id": "m46-telemetry-request-20261118",
+  "kind": "request",
+  "evidence_refs": [],
+  "payload": {
+    "issue_number": 1539,
+    "parent_issue_number": 1323,
+    "design_document": "design-docs/engine-next-visual-runtime-m4-6-telemetry-20261118.md",
+    "scope": "Native 4K 120/90 and 30min; separate 144/120 and 60min challenge, fixed A-F UE comparison and release validation. Telemetry is this increment only."
+  },
+  "sha256": "e557afbe1127a2fd137bbae3a70b78239c78529ef43a3fa24f4f8edb79a1ecac"
+}
