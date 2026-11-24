@@ -2,6 +2,7 @@
 
 import contextlib
 import ctypes as c
+import hashlib
 import importlib.util
 import io
 import json
@@ -51,7 +52,7 @@ class FakeMac:
 
     def find(self, keychain, service_size, service, name_size, name, size, data, item):
         assert self.interaction_disabled
-        assert service == credentials.SERVICE.encode()
+        assert service in (credentials.SERVICE.encode(), credentials.TIANXUAN_SERVICE.encode())
         assert service_size == len(service) and name_size == len(name)
         self.key = service, name
         if self.key not in self.store:
@@ -98,7 +99,7 @@ class FakeWindows:
     def write(self, pointer, flags):
         credential = pointer._obj
         assert credential.type == 1 and credential.persist == 2
-        assert credential.username == credentials.SERVICE
+        assert credential.username in (credentials.SERVICE, credentials.TIANXUAN_SERVICE)
         self.store[credential.target] = c.string_at(credential.blob, credential.size)
         return 1
 
@@ -210,6 +211,31 @@ class SessionCredentialsTests(unittest.TestCase):
     def test_secret_utf8_boundary(self):
         with self.native("darwin"):
             self.assertEqual(self.request("save", secret="雪" * 800), {"status": "saved"})
+
+    def test_editor_vault_namespace_and_conditional_replacement(self):
+        for platform in ("win32", "darwin"):
+            with (
+                self.subTest(platform=platform),
+                self.native(platform),
+                mock.patch.object(credentials, "editor_write_lock", return_value=contextlib.nullcontext()),
+            ):
+
+                def editor(action, **fields):
+                    return credentials.dispatch({
+                        "action": action,
+                        "account": ACCOUNT,
+                        "service": "tianxuan-editor",
+                        **fields,
+                    })
+
+                self.assertEqual(self.request("save"), {"status": "saved"})
+                self.assertEqual(editor("load"), {"status": "missing"})
+                self.assertEqual(editor("save", secret="original", expected="missing"), {"status": "saved"})
+                previous = hashlib.sha256(b"original").hexdigest()
+                self.assertEqual(editor("save", secret="replacement", expected=previous), {"status": "saved"})
+                self.assertEqual(editor("delete", expected=previous), {"status": "changed"})
+                self.assertEqual(editor("load"), {"status": "loaded", "secret": "replacement"})
+                self.assertEqual(self.request("load"), {"status": "loaded", "secret": SECRET})
 
     def test_protocol_only_load_returns_secret(self):
         with self.native("darwin"):

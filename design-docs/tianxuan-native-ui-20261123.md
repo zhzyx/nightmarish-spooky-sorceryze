@@ -9,6 +9,14 @@
 - 用户已完成两轮澄清，授权按全部范围开始实现。来源为该会话 2026-11-23 的原始请求及两次问答，不继承其他聊天的执行授权。
 - 原生功能与视觉升级已通过 [PR #2174](https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2174) 合入 main，独立 Web 功能保留。11 项必需 CI、Windows 363 项自动化检查和主线内容回读通过。用户先前认可 macOS 预览，并于 2026-11-24 确认 Windows 界面和中文输入正常、要求继续验收与收尾。A1–A9 共 9/9 条验收通过；当前仅提交最终记录并办理工单关闭、证据归档和资源清理，远端工单为状态权威。
 
+## 首次登录与后续访问
+
+编辑器首次登录时向当前服务核实账号。Windows 凭据管理器或 macOS 钥匙串保存该服务的当前账号、项目和凭据。重启后，编辑器先向同一服务重新核实身份，再恢复工作区。临时网络故障保留本机记录以便重连。成功切换账号后，后续请求和操作记录使用新账号。[编辑器与多宝身份需求 #2183](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183)
+
+使用个人密钥登录时，原密钥的有效期和服务端撤销继续生效。管控端可以显式签发有效至撤销的个人密钥。使用账号密码登录时，支持此功能的服务签发可单独撤销的设备凭据。用户可在编辑器退出当前身份。部署管理员可在账号管理中撤销指定的个人密钥。[服务端授权 #2184](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2184)
+
+多宝命令行通过 `tianshu_bridge.py --editor-login --workspace <共工工作副本> branch-tip --branch main` 使用本机编辑器身份。每次调用先向所选服务核对当前账号，业务写入由服务端记录操作者。[生产登记与验收 #2186](https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2186)
+
 ## 原始需求与已确认目标
 
 原始需求：“当前godot编辑器内的天璇界面还是基于web的，期望能够在编辑器内搭建原生的UI进行显示和处理。web端功能保持。向我提问明确所有目标后开始”。

@@ -1,0 +1,22 @@
+{
+  "issue_number": 2183,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "request_id": "tianxuan-editor-persistent-identity-20261124",
+  "validation": {
+    "binary_sha256": "f1c039781c6e4277a0673809d536637014b0d7dfd37afd27982acda33f54cbd5",
+    "platform": "Windows x86_64",
+    "identity_sessions": {
+      "login": 7,
+      "restart": 10,
+      "precedence": 4,
+      "offline": 5,
+      "logout": 5,
+      "legacy": 5,
+      "early_logout": 3
+    },
+    "identity_checks": 39,
+    "connection_checks": 19,
+    "cli_tests_passed": 19,
+    "method": "Isolated native editor processes with a private Windows Credential Manager service, real API requests to the fixture, restart, account switch and server audit readback."
+  }
+}

@@ -18,13 +18,135 @@ var _token := ""
 var _owned_session := false
 var _identity := {}
 var _requests: Array[HTTPRequest] = []
+var credential_transport: Script
+var helper_source := ""
+var credential_python: Callable
+# Headless editors only access a helper explicitly injected by their isolated test.
+var test_helper_source := ""
+var test_python := ""
+var _process := {}
+var _store_issued := 0
+var _store_next := 0
+var _login_serial := 0
+var _origin_serial := 0
+var _stored_digest := ""
+var _restore_pending := false
+var _restore_running := false
+
+
+func _automated_launch() -> bool:
+	if DisplayServer.get_name() == "headless":
+		return true
+	for argument in OS.get_cmdline_args():
+		if argument in ["-s", "--script", "--import", "--export-release", "--export-debug", "--export-pack", "--export-patch"]:
+			return true
+	return false
+
+
+func _ready() -> void:
+	# An automated editor uses its launcher's grant. A desktop login belongs
+	# to the person who chose it, including when the launcher exports a token.
+	if _automated_launch() and test_helper_source.is_empty():
+		_login_from_launcher.call_deferred(_login_serial)
+	else:
+		_restore_pending = true
+		_restore.call_deferred(_login_serial)
+
+
+func _login_from_launcher(serial: int) -> void:
+	var supplied := OS.get_environment("TIANXUAN_TOKEN")
+	if serial == _login_serial and not supplied.is_empty():
+		var project := OS.get_environment("TIANXUAN_PROJECT").strip_edges()
+		await authenticate("", supplied, "workspace" if project.is_empty() else project)
+
+
+func _exit_tree() -> void:
+	if not _process.is_empty():
+		OS.kill(_process.pid)
+		_process.stdio.close()
+		_process.stderr.close()
+		_process.clear()
+
+
+func _store(action: String, target: String, secret := "", expected_digest := "") -> Dictionary:
+	var automated := _automated_launch()
+	var source := test_helper_source if automated else helper_source
+	if not credential_transport or source.is_empty():
+		return {"status": "disabled"}
+	var python := test_python if automated else ""
+	if not automated and credential_python.is_valid():
+		python = str(credential_python.call())
+	if python.is_empty():
+		return {"status": "unavailable"}
+	var ticket := _store_issued
+	_store_issued += 1
+	while ticket != _store_next:
+		await get_tree().process_frame
+	var request := {"service": "tianxuan-editor", "action": action, "account": target.sha256_text()}
+	if action == "save":
+		request.secret = secret
+	if not expected_digest.is_empty():
+		request.expected = expected_digest
+	var result: Dictionary = await credential_transport.exchange(self, _process, python, source, request)
+	_store_next += 1
+	return result
+
+
+func _read_record(reply: Dictionary, target: String) -> Dictionary:
+	var parser := JSON.new()
+	if reply.get("status") != "loaded" or parser.parse(str(reply.get("secret", ""))) != OK or not parser.data is Dictionary:
+		return {}
+	var record: Dictionary = parser.data
+	if record.get("version") != 1 or record.get("origin") != target or not valid_project(str(record.get("project", ""))):
+		return {}
+	if not record.get("token") is String or not _valid_token(record.token) or not record.get("owned") is bool or str(record.get("user_id", "")).is_empty():
+		return {}
+	return record
+
+
+static func _valid_token(value: String) -> bool:
+	return not value.is_empty() and not _matches(value, "[[:cntrl:]]")
+
+
+func _restore(serial: int) -> void:
+	if serial != _login_serial or not _restore_pending or _restore_running or not valid_origin(origin):
+		return
+	_restore_running = true
+	var target := origin
+	var reply := await _store("load", target)
+	if serial != _login_serial:
+		return
+	var record := _read_record(reply, target)
+	if record.is_empty():
+		_restore_running = false
+		_restore_pending = reply.get("status") == "unavailable"
+		return
+	_stored_digest = str(reply.secret).sha256_text()
+	var me := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", record.token, {}, 12.0, "", target)
+	if serial != _login_serial:
+		return
+	_restore_running = false
+	if me.status in [401, 403] or (me.status == 200 and str(me.data.get("id", "")) != str(record.user_id)):
+		reset("凭据失效，请重新认证")
+		return
+	if me.status != 200 or str(me.data.get("role", "")).is_empty():
+		_set_status("暂时无法核实保存的身份，重新连接服务后将重试")
+		return
+	_restore_pending = false
+	_activate(me.data, record.project, record.token, record.owned, _stored_digest)
+
+
+func _cancel_login() -> void:
+	_login_serial += 1
+	_restore_pending = false
+	_restore_running = false
 
 
 func _init() -> void:
 	if origin.is_empty():
 		origin = OS.get_environment("TIANXUAN_API").strip_edges().trim_suffix("/")
 	if origin.is_empty():
-		origin = "http://127.0.0.1:8000"
+		origin = "https://167-172-70-41.sslip.io"
 
 
 static func _matches(value: String, pattern: String) -> bool:
@@ -46,10 +168,15 @@ func set_origin(value: String) -> bool:
 		_set_status("请输入 HTTPS 服务地址或本机回环地址")
 		return false
 	if target != origin:
-		reset("服务已切换，请登录天璇")
+		_origin_serial += 1
+		_cancel_login()
+		_clear_active("服务已切换，请登录天璇")
 		origin = target
 		_set_online(false)
 		origin_changed.emit()
+		if is_inside_tree():
+			_restore_pending = true
+			_restore.call_deferred(_login_serial)
 	return true
 
 
@@ -79,25 +206,54 @@ func _set_online(value: bool) -> void:
 
 
 func reset(message := "已退出天璇") -> void:
+	_cancel_login()
+	var target := origin
+	var digest := _stored_digest
+	var token := _token
+	var owned := _owned_session
+	var serial := _login_serial
+	_clear_active(message)
+	# The user can sign out during cold start, before /me establishes an actor.
+	if token.is_empty() and valid_origin(target):
+		var prior := await _store("load", target)
+		if serial != _login_serial:
+			return
+		if prior.get("status") == "loaded" and (digest.is_empty() or digest == str(prior.secret).sha256_text()):
+			digest = str(prior.secret).sha256_text()
+			var record := _read_record(prior, target)
+			token = str(record.get("token", ""))
+			owned = bool(record.get("owned", false))
+		elif prior.get("status") == "unavailable":
+			_set_status("已停止使用当前身份；系统凭据库清除失败，请再次退出")
+	if not digest.is_empty():
+		var deleted := await _store("delete", target, "", digest)
+		if serial == _login_serial and deleted.get("status") not in ["deleted", "missing", "changed"]:
+			_stored_digest = digest
+			_set_status("已停止使用当前身份；系统凭据库清除失败，请再次退出")
+	if owned:
+		await _revoke(token, target)
+
+
+func _clear_active(message: String) -> void:
 	if not _identity.is_empty():
 		identity_resetting.emit()
-	var previous_origin := origin
-	var previous_token := _token
-	var revoke := _owned_session
 	generation += 1
 	_token = ""
 	_owned_session = false
+	_stored_digest = ""
 	_identity.clear()
 	_set_status(message)
 	identity_changed.emit()
-	if revoke:
-		# The captured old origin prevents logout credentials crossing deployments.
-		_exchange(HTTPClient.METHOD_POST, "/api/v1/auth/logout", previous_token, {}, 12.0, "", previous_origin)
+
+
+func _revoke(credential: String, target: String) -> void:
+	if _valid_token(credential):
+		await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/logout", credential, {}, 12.0, "", target)
 
 
 func authenticate(email: String, secret: String, project: String) -> bool:
-	reset("正在验证天璇账号…")
-	var attempt := generation
+	_cancel_login()
+	var serial := _login_serial
 	var target := origin
 	if not valid_origin(target):
 		_set_status("天璇服务需要 HTTPS 或本机回环地址")
@@ -105,44 +261,87 @@ func authenticate(email: String, secret: String, project: String) -> bool:
 	if not valid_project(project):
 		_set_status("请输入有效的业务项目")
 		return false
-	if secret.is_empty() or (email.is_empty() and ("\r" in secret or "\n" in secret)):
+	if secret.is_empty() or (email.is_empty() and not _valid_token(secret)):
 		_set_status("请输入有效凭据以重新认证")
 		return false
+	_set_status("正在验证天璇账号…")
 	var credential := secret
-	if not email.is_empty():
-		var login := await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/session", "", {"email": email, "password": secret}, 12.0, "", target)
+	var owned := not email.is_empty()
+	if owned:
+		var payload := {"email": email, "password": secret}
+		var login := await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/editor-session", "", payload, 12.0, "", target)
+		if serial == _login_serial and login.status in [404, 405]:
+			# Older deployments retain their original server-side session lifetime.
+			login = await _exchange(HTTPClient.METHOD_POST, "/api/v1/auth/session", "", payload, 12.0, "", target)
 		credential = str(login.data.get("token", ""))
-		if attempt != generation:
-			if not credential.is_empty():
-				_exchange(HTTPClient.METHOD_POST, "/api/v1/auth/logout", credential, {}, 12.0, "", target)
+		if serial != _login_serial:
+			_revoke(credential, target)
 			return false
-		if login.status != 200 or credential.is_empty():
+		if login.status != 200 or not _valid_token(credential):
 			_set_status("登录失败，请重新认证" if login.status in [401, 403] else "无法登录天璇，请检查服务后重试")
 			return false
-	_token = credential
-	_owned_session = not email.is_empty()
 	var me := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", credential, {}, 12.0, "", target)
-	if attempt != generation:
+	if serial != _login_serial or me.status != 200 or str(me.data.get("id", "")).is_empty() or str(me.data.get("role", "")).is_empty():
+		if owned:
+			_revoke(credential, target)
+		if serial == _login_serial:
+			_set_status("凭据失效，请重新认证" if me.status in [401, 403] else "无法核实天璇身份，请重试")
 		return false
-	if me.status != 200 or str(me.data.get("id", "")).is_empty() or str(me.data.get("role", "")).is_empty():
-		reset("凭据失效，请重新认证" if me.status in [401, 403] else "无法核实天璇身份，请重试")
+	var prior := await _store("load", target)
+	if serial != _login_serial:
+		if owned:
+			_revoke(credential, target)
 		return false
-	_identity = me.data.duplicate(true)
+	var previous := _read_record(prior, target)
+	var record := JSON.stringify({"version": 1, "origin": target, "project": project, "user_id": str(me.data.id), "owned": owned, "token": credential, "binding_id": Crypto.new().generate_random_bytes(16).hex_encode()})
+	var expected := str(prior.secret).sha256_text() if prior.get("status") == "loaded" else "missing"
+	var saved := await _store("save", target, record, expected)
+	var digest := record.sha256_text() if saved.get("status") == "saved" else ""
+	if serial != _login_serial:
+		if not digest.is_empty():
+			await _store("delete", target, "", digest)
+		if owned:
+			_revoke(credential, target)
+		return false
+	if digest.is_empty() and (saved.get("status") == "changed" or not previous.is_empty() or not _stored_digest.is_empty()):
+		if owned:
+			_revoke(credential, target)
+		_set_status("无法替换已保存的身份，请检查系统凭据库后重试")
+		return false
+	if _owned_session and _token != credential:
+		_revoke(_token, target)
+	if previous.get("owned") == true and previous.token != credential and previous.token != _token:
+		_revoke(previous.token, target)
+	_activate(me.data, project, credential, owned, digest)
+	if digest.is_empty() and saved.get("status") != "disabled":
+		_set_status(status_text + " · 系统凭据库不可用，仅本次登录有效")
+	return true
+
+
+func _activate(identity: Dictionary, project: String, credential: String, owned: bool, digest: String) -> void:
+	if not _identity.is_empty():
+		identity_resetting.emit()
+	generation += 1
+	_identity = identity.duplicate(true)
 	_identity.project = project
+	_token = credential
+	_owned_session = owned
+	_stored_digest = digest
 	_set_status("%s · %s · %s" % [_identity.get("name", ""), _identity.role, project])
 	identity_changed.emit()
 	authenticated.emit()
-	if attempt == generation and not _identity.is_empty() and _identity.role != "viewer":
-		_recover_project(attempt)
-	return attempt == generation and not _identity.is_empty()
+	if not _identity.is_empty() and _identity.role != "viewer":
+		_recover_project(generation)
 
 
 func auth_config() -> Dictionary:
 	if not valid_origin(origin):
 		return {"status": 0, "data": {}}
-	var attempt := generation
+	var serial := _origin_serial
 	var result := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/config", "", {})
-	return result if attempt == generation else {"status": 0, "data": {}}
+	if serial == _origin_serial and result.status == 200 and _restore_pending:
+		_restore.call_deferred(_login_serial)
+	return result if serial == _origin_serial else {"status": 0, "data": {}}
 
 
 func register_account(workspace: String, email: String, password: String) -> Dictionary:
@@ -185,6 +384,13 @@ func api_request(method: int, route: String, payload: Dictionary = {}, timeout_s
 		return {"status": 0, "data": {}, "stale": true}
 	if reply.status == 401:
 		reset("凭据失效，请重新认证")
+	elif reply.status == 403:
+		# Business authorization may fail while this identity remains valid.
+		var me := await _exchange(HTTPClient.METHOD_GET, "/api/v1/auth/me", _token, {})
+		if attempt != generation:
+			return {"status": 0, "data": {}, "stale": true}
+		if me.status in [401, 403] or (me.status == 200 and str(me.data.get("id", "")) != str(_identity.id)):
+			reset("凭据失效，请重新认证")
 	return reply
 
 
@@ -221,6 +427,14 @@ func _exchange(method: int, route: String, credential: String, payload: Dictiona
 	var target := origin if target_origin.is_empty() else target_origin
 	var attempt := generation
 	var http := HTTPRequest.new()
+	# Local workers stay on the machine even when the editor uses a proxy.
+	if Engine.is_editor_hint() and not _matches(target.to_lower(), "^https?://(localhost\\.?|127(\\.[0-9]{1,3}){3}|\\[::1\\])(:[0-9]+)?$"):
+		var settings := EditorInterface.get_editor_settings()
+		var host := str(settings.get_setting("network/http_proxy/host")).strip_edges()
+		var port := int(settings.get_setting("network/http_proxy/port"))
+		if not host.is_empty() and port > 0 and port <= 65535:
+			http.set_http_proxy(host, port)
+			http.set_https_proxy(host, port)
 	http.max_redirects = 0
 	http.timeout = timeout_seconds
 	http.body_size_limit = 8 * 1024 * 1024 if download_path.is_empty() else download_limit

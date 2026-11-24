@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from native_requirement_plan import requirement_digest
 from native_store import NativeStoreError, _digest, _json
 from native_workflow import OccupiedWrites
-from tianxuan_core import _token_hash
+from tianxuan_core import _token_hash, session_active
 
 
 def entry_key(tenant, actor, call_id):
@@ -139,8 +139,7 @@ class EntryLedger:
             ).fetchone()
             if row is None or row["user_id"] != row["actor"]:
                 raise NativeStoreError("Entry credential withdrawn")
-            expires = datetime.fromisoformat(row["expires_at"])
-            if expires.tzinfo is None or expires <= datetime.now(timezone.utc):
+            if not session_active(row["expires_at"]):
                 raise NativeStoreError("Entry credential expired")
             if (
                 row["access_key"]

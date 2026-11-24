@@ -32,6 +32,7 @@ var _navigation_scroll := ScrollContainer.new()
 var _columns := HBoxContainer.new()
 var _current_page := "home"
 var _config_serial := 0
+var _config_message := ""
 var _layout_pending := false
 
 
@@ -61,7 +62,10 @@ func _ready() -> void:
 	_build_login()
 	controller.changed.connect(_changed)
 	controller.navigation_requested.connect(_navigate)
-	session.status_changed.connect(_update_session_status)
+	session.status_changed.connect(func():
+		_config_message = ""
+		_update_session_status()
+	)
 	session.connection_changed.connect(_update_session_status)
 	session.origin_changed.connect(func():
 		_address.text = session.origin
@@ -217,20 +221,29 @@ func _build_login() -> void:
 
 
 func _connect_service() -> void:
+	var previous_origin: String = session.origin
+	_config_message = ""
 	if not session.set_origin(_address.text):
+		_config_serial += 1
+		_submit.disabled = true
+		_update_session_status()
 		return
-	_load_auth_config()
+	if previous_origin == session.origin:
+		_load_auth_config()
 
 
 func _load_auth_config() -> void:
 	_config_serial += 1
 	var serial := _config_serial
 	_submit.disabled = true
+	_config_message = "正在连接服务…"
+	_update_session_status()
 	var response: Dictionary = await session.auth_config()
 	if serial != _config_serial:
 		return
-	if response.status != 200:
-		_status.text = "无法读取服务登录配置，请检查地址后重试。"
+	if response.status != 200 or str(response.data.get("mode", "")) not in ["accounts", "keys", "legacy"]:
+		_config_message = "无法读取服务登录配置，请检查地址和编辑器代理后重试。"
+		_update_session_status()
 		return
 	_auth_mode = str(response.data.get("mode", ""))
 	EditorInterface.get_editor_settings().set_setting("network/web_platform/url", session.origin)
@@ -240,7 +253,8 @@ func _load_auth_config() -> void:
 	_mode.add_item("个人访问密钥")
 	_submit.disabled = false
 	_update_auth_fields()
-	_status.text = session.status_text
+	_config_message = "服务已连接，请登录工作区。" if session.get_identity().is_empty() else "服务已连接。"
+	_update_session_status()
 
 
 func _update_auth_fields() -> void:
@@ -255,6 +269,7 @@ func _update_auth_fields() -> void:
 func _authenticate() -> void:
 	if _submit.disabled:
 		return
+	_config_message = ""
 	var secret := _secret.text
 	_secret.clear()
 	_submit.disabled = true
@@ -274,8 +289,8 @@ func _authenticate() -> void:
 
 
 func _update_session_status() -> void:
-	_status.text = session.status_text
 	var identity: Dictionary = session.get_identity()
+	_status.text = session.status_text if _config_message.is_empty() else tr(_config_message)
 	_connection.text = tr("尚未登录") if identity.is_empty() else "%s · %s%s" % [identity.get("name", identity.id), identity.project, "" if session.online else tr(" · 离线")]
 
 

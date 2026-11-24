@@ -75,9 +75,6 @@ func _ready() -> void:
 	_controller.authenticated.connect(func(): authenticated.emit())
 	_controller.status_changed.connect(_update_status)
 	_identity_updated()
-	var supplied := OS.get_environment("TIANXUAN_TOKEN")
-	if not supplied.is_empty() and get_identity().is_empty():
-		_authenticate("", supplied, _project.text)
 
 
 func install_paragraph_suggestion(script: Script) -> void:

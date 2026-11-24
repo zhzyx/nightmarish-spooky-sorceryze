@@ -114,6 +114,35 @@ def test_project_branch_readback_uses_the_bound_repository(gonggong_project, mon
     assert len(calls) == 1 and "gonggong.git" in json.loads(capsys.readouterr().out)["error"]
 
 
+def test_editor_login_checks_subject_before_using_current_identity(gonggong_project, monkeypatch, capsys):
+    for name in ("TIANXUAN_ACTOR", "TIANXUAN_TOKEN", "TIANXUAN_IDENTITY_SECRET", "TIANXUAN_IDENTITY_SUBJECT"):
+        monkeypatch.delenv(name, raising=False)
+    stored = {"token": "fixture-device", "user_id": "first"}
+    seen = []
+
+    def response(api, method, path, **params):
+        assert api == tianshu_bridge.GONGGONG_API and params["token"] == stored["token"]
+        seen.append(path)
+        if path == "/api/v1/auth/me":
+            return {"id": "first", "role": "editor"}
+        return {"branch": "main", "sha": "a" * 40}
+
+    monkeypatch.setattr(tianshu_bridge, "_load_editor_identity", lambda origin: stored)
+    monkeypatch.setattr(tianshu_bridge, "_request", response)
+    command = ["--editor-login", "--workspace", str(gonggong_project), "branch-tip", "--branch", "main"]
+    assert tianshu_bridge.main(command) == 0
+    assert seen == ["/api/v1/auth/me", "/api/v1/git/repos/gonggong.git/branch-tip"]
+    stored.update(user_id="other", token="fixture-new-device")
+    assert tianshu_bridge.main(command) == 1
+    assert len(seen) == 3 and seen[-1] == "/api/v1/auth/me"
+    assert "fixture-" not in capsys.readouterr().out
+
+
+def test_authenticated_redirect_cannot_forward_editor_credentials():
+    req = Request("https://example.invalid/api/v1/auth/me", headers={"Authorization": "Bearer fixture"})
+    assert tianshu_bridge._ApiRedirect().redirect_request(req, None, 302, "", {}, "https://other.invalid/") is None
+
+
 def test_automatic_public_route_uses_only_origin_bound_identity(gonggong_project, monkeypatch, tmp_path, capsys):
     calls = []
 

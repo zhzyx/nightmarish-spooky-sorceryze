@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-editor-persistent-identity-20261124",
+  "event_id": "editor-identity-request-2183",
+  "kind": "request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "occurred_at": "2026-11-23T23:00:30.800315+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "issue_number": 2183,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-23T22:52:48Z",
+    "source_baseline": "2b2a8404f32d2ac9ab054903c7b3d9b4bd5a9a86",
+    "request": "Persist the active authenticated editor identity, restore it on restart and use it for Tianxuan and Duobao operations."
+  },
+  "evidence_refs": [],
+  "sha256": "ed6c252e082113403cb539e8230d80644e9cc1c897a0eec559e88dce6a3abffa"
+}
