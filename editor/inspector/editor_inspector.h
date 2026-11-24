@@ -480,6 +480,13 @@ class EditorInspectorSection : public Container {
 	String section;
 	Color bg_color;
 	bool vbox_added = false; // Optimization.
+	bool section_animating = false;
+	bool section_restore_clip = false;
+	real_t section_height = 0;
+	real_t section_from_height = 0;
+	real_t section_target_height = 0;
+	double section_elapsed = 0;
+	void _animate_section(real_t p_previous_height);
 	bool foldable = false;
 	bool checkable = false;
 	bool checked = false;

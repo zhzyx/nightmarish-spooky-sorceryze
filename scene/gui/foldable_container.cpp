@@ -38,15 +38,18 @@ Size2 FoldableContainer::get_minimum_size() const {
 	_update_title_min_size();
 
 	if (folded) {
-		return title_minimum_size;
+		return Size2(title_minimum_size.x, fold_animating ? fold_height : title_minimum_size.y);
 	}
 	Size2 ms = Container::_get_minimum_size();
 	ms += theme_cache.panel_style->get_minimum_size();
 
-	return Size2(MAX(ms.width, title_minimum_size.width), ms.height + title_minimum_size.height);
+	return Size2(MAX(ms.width, title_minimum_size.width), fold_animating ? fold_height : ms.height + title_minimum_size.height);
 }
 
 Size2 FoldableContainer::get_desired_size() const {
+	if (fold_animating) {
+		return get_minimum_size();
+	}
 	_update_title_min_size();
 
 	if (folded) {
@@ -96,7 +99,42 @@ void FoldableContainer::set_folded(bool p_folded) {
 				return;
 			}
 		}
+		const real_t previous_height = fold_animating ? fold_height : get_minimum_size().y;
 		folded = p_folded;
+		// Visibility is part of the logical state, not the deferred layout pass.
+		// This also makes a zero-duration expansion report its full minimum size.
+		for (int i = 0; i < get_child_count(false); i++) {
+			Control *child = as_sortable_control(get_child(i, false), SortableVisibilityMode::IGNORE);
+			if (child) {
+				child->set_visible(!folded);
+			}
+		}
+		if (is_visible_in_tree() && theme_cache.folding_duration > 0) {
+			if (!fold_animating) {
+				restore_clip_contents = is_clipping_contents();
+			}
+			fold_from_height = previous_height;
+			fold_height = previous_height;
+			fold_target_height = title_minimum_size.y;
+			if (!folded) {
+				real_t content_height = 0;
+				for (int i = 0; i < get_child_count(false); i++) {
+					Control *child = as_sortable_control(get_child(i, false), SortableVisibilityMode::IGNORE);
+					if (child) {
+						content_height = MAX(content_height, child->get_bound_minimum_size().y);
+					}
+				}
+				fold_target_height += content_height + theme_cache.panel_style->get_minimum_size().y;
+			}
+			fold_elapsed = 0;
+			fold_animating = true;
+			set_clip_contents(true);
+			set_process_internal(true);
+		} else if (fold_animating) {
+			fold_animating = false;
+			set_process_internal(false);
+			set_clip_contents(restore_clip_contents);
+		}
 
 		update_minimum_size();
 		queue_sort();
@@ -304,6 +342,23 @@ bool FoldableContainer::has_point(const Point2 &p_point) const {
 
 void FoldableContainer::_notification(int p_what) {
 	switch (p_what) {
+		case NOTIFICATION_INTERNAL_PROCESS: {
+			if (!fold_animating) {
+				break;
+			}
+			fold_elapsed += get_process_delta_time();
+			const double progress = theme_cache.folding_duration > 0 ? MIN(1.0, fold_elapsed * 1000.0 / theme_cache.folding_duration) : 1.0;
+			const real_t eased = 1.0 - Math::pow(1.0 - progress, 3.0);
+			fold_height = Math::lerp(fold_from_height, fold_target_height, eased);
+			if (progress >= 1.0 || !is_visible_in_tree()) {
+				fold_animating = false;
+				set_process_internal(false);
+				set_clip_contents(restore_clip_contents);
+			}
+			update_minimum_size();
+			queue_sort();
+			queue_redraw();
+		} break;
 		case NOTIFICATION_DRAW: {
 			RID ci = get_canvas_item();
 			Size2 size = get_size();
@@ -648,6 +703,7 @@ void FoldableContainer::_bind_methods() {
 
 	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, FoldableContainer, icon_max_width);
 	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, FoldableContainer, h_separation);
+	BIND_THEME_ITEM(Theme::DATA_TYPE_CONSTANT, FoldableContainer, folding_duration);
 
 	BIND_THEME_ITEM(Theme::DATA_TYPE_SOUND, FoldableContainer, focus_sound);
 	BIND_THEME_ITEM(Theme::DATA_TYPE_SOUND, FoldableContainer, expanded_sound);

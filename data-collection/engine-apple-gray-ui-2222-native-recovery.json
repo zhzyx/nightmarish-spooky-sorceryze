@@ -1,0 +1,67 @@
+{
+  "request_id": "engine-apple-gray-ui-20261124",
+  "issue_number": 2222,
+  "failed_ci": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45455958033/job/138665484991",
+  "cause": "Probe assumed capabilities and requirement-review requests completed together; delayed review caused the same disabled-launch assertion.",
+  "reproduction": {
+    "review_response_delay_seconds": 0.25,
+    "old_probe": "failed at confirmed native requirement enables explicit execution",
+    "fixed_probe": "45 checks passed; original approval and launch assertions retained"
+  },
+  "script_error_detection": "UI probe and render runners now fail on SCRIPT ERROR even with exit code 0.",
+  "review": {
+    "worker": "/root/sinan_d7e7b9a9cbf21f07",
+    "state": "completed",
+    "result": "passed for synchronization and both script-error guards",
+    "sources": {
+      "tests/editor/run_tianxuan_controller.py": "f5a4dce051e294e27aa93260e5374baa07a19ee191e46a4196aa6c63c16ce53d",
+      "tests/editor/tianxuan_execution_controls.gd": "f0605ff5759bf03f96111f6b05455c05ebefce7e64bac26ebcbd9c9cfcf7c0b0",
+      "tests/editor/run_apple_gray_probes.py": "85b70a1ec4c040feb1ccb52b989093e4ccd9b3576050dcb42bf135513bb63399",
+      "tests/editor/run_apple_gray_render.py": "33231fc22079b54d43017622c52fa3bff68f4f1ecbeaa954baaf58bb9870baaa"
+    }
+  },
+  "local_generated_recovery": {
+    "invalidated_binary_sha256": "928e58a1546e92912c429f3d8b091f07be7e5f47103b5a5479c05d89afe6e9f4",
+    "cause": "Prior overbroad lint also modified six ignored embedded-script headers, beyond the three core generated headers initially recovered.",
+    "recovery": "Quarantined all six affected editor generated headers; SCons regenerated them from tracked inputs and rebuilt the editor.",
+    "corrected_binary_sha256": "b842accf72d5de0bd72c50280a3917408844671a46d32528f8d648dc2784aa3f",
+    "build_receipt_id": "cb3baaf094a6478ea2bfbcfc3f307998",
+    "checks": [
+      "115 AIChat regressions passed",
+      "45 Tianxuan controls passed including delayed version-review response",
+      "six UI probes passed with SCRIPT ERROR detection",
+      "light/dark actual editor render passed with SCRIPT ERROR detection"
+    ],
+    "script_parse_errors": false
+  },
+  "ui_probe_receipt": {
+    "binary_sha256": "b842accf72d5de0bd72c50280a3917408844671a46d32528f8d648dc2784aa3f",
+    "results": [
+      {
+        "probe": "folding_probe",
+        "exit_code": 0
+      },
+      {
+        "probe": "theme_probe",
+        "exit_code": 0
+      },
+      {
+        "probe": "layout_probe",
+        "exit_code": 0
+      },
+      {
+        "probe": "material_inspector_probe",
+        "exit_code": 0
+      },
+      {
+        "probe": "interaction_probe",
+        "exit_code": 0
+      },
+      {
+        "probe": "inspector-native",
+        "exit_code": 0
+      }
+    ],
+    "temporary_settings_removed": true
+  }
+}

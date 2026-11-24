@@ -31,12 +31,15 @@
 #pragma once
 
 #include "scene/gui/container.h"
+#include "scene/resources/material.h"
 
 class PanelContainer : public Container {
 	GDCLASS(PanelContainer, Container);
+	Ref<ShaderMaterial> background_material;
 
 	struct ThemeCache {
 		Ref<StyleBox> panel_style;
+		int background_blur = 0;
 	} theme_cache;
 
 protected:
