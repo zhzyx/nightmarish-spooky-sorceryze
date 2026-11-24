@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-next-visual-runtime-m4-6-20261118",
+  "event_id": "m46-r16-spelling-correction-20261125",
+  "kind": "step",
+  "occurred_at": "2026-11-24T23:01:56.517377+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/1539",
+  "agent": {
+    "id": "codex-m4-implementation",
+    "version": "repository-instructions-d5957dfb",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683",
+    "origin": "AGENTS.md"
+  },
+  "evidence_refs": [
+    "m46-telemetry-request-20261118"
+  ],
+  "payload": {
+    "candidate": "combined-r16",
+    "correction": {
+      "path": "data-collection/engine-next-visual-runtime-m4-6-spelling-correction-20261125.json",
+      "sha256": "be36c6c28226801c7360e23a9afbc1d8820e15b752c69414a3893846e6f226ae",
+      "size_bytes": 1681
+    },
+    "native_key": "047aedf65c02042a3780fad73a037c2f98b7b7a4d60d3a438ce9dce7bf074377",
+    "scope": "Only the existing spelling dictionary changes; all rendering, Core and host inputs match current R16 builds. Correct PNG filter terminology is retained.",
+    "stage_complete": false,
+    "next_action": "Publish the metadata correction and require actual exact-head CI before main merge."
+  },
+  "sha256": "4a87d36eafd21c151d0278b768a2475631a8f0e812b2c785905452b8540cff11"
+}
