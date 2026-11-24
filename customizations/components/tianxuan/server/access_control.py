@@ -26,10 +26,19 @@ class KeyCreate(BaseModel):
     user_id: str
     name: str = Field(min_length=1, max_length=100)
     days: int = Field(default=90, ge=1, le=365)
+    until_revoked: bool = Field(default=False, strict=True)
 
 
 class AccessExpired(WebSocketDisconnect):
     pass
+
+
+def presented_credential(connection: HTTPConnection, accounts: bool) -> tuple[str, bool]:
+    scheme, _, bearer = connection.headers.get("authorization", "").partition(" ")
+    if scheme.lower() == "bearer":
+        return bearer.strip(), True
+    session = connection.cookies.get(SESSION_COOKIE, "") if accounts else ""
+    return session or connection.cookies.get(COOKIE, ""), False
 
 
 class ProductionAccess:
@@ -59,19 +68,13 @@ class ProductionAccess:
         path = scope["path"]
         public = {"/api/v1/health", "/api/v1/auth/config", "/api/v1/auth/key-login"}
         if self.accounts:
-            public.update({"/api/v1/auth/register", "/api/v1/auth/session"})
+            public.update({"/api/v1/auth/register", "/api/v1/auth/session", "/api/v1/auth/editor-session"})
         else:
             public.add("/api/v1/auth/key-login")
         if scope["type"] == "http" and path in public:
             await self.app(scope, receive, send)
             return
-        authorization = connection.headers.get("authorization", "")
-        scheme, _, bearer = authorization.partition(" ")
-        uses_bearer = scheme.lower() == "bearer"
-        cookie_token = connection.cookies.get(COOKIE, "")
-        if self.accounts:
-            cookie_token = connection.cookies.get(SESSION_COOKIE, "") or cookie_token
-        token = bearer.strip() if uses_bearer else cookie_token
+        token, uses_bearer = presented_credential(connection, self.accounts)
         actor = self.resolve(token) if token else None
 
         async def reject(status: int, detail: str) -> None:
@@ -96,6 +99,7 @@ class ProductionAccess:
                 "/api/v1/ws/docs",
                 "/api/v1/game-config",
                 "/api/v1/ws/game-config",
+                "/api/v1/auth/editor-devices",
             )
             document_paths = {
                 "/api/v1/auth/me",
@@ -121,12 +125,19 @@ class ProductionAccess:
             "/api/v1/auth/register",
             "/api/v1/auth/login",
             "/api/v1/auth/session",
+            "/api/v1/auth/editor-session",
             "/api/v1/identity/resolve",
             "/api/v1/invites/accept",
         }:
             return await reject(403, "account access is managed by the administrator")
         viewer_post_paths = {"/api/v1/auth/key-logout", "/api/v1/auth/logout", "/api/v1/tools"}
-        if role == "viewer" and method not in {"GET", "HEAD", "OPTIONS"} and path not in viewer_post_paths:
+        own_device_delete = method == "DELETE" and path.startswith("/api/v1/auth/editor-devices/")
+        if (
+            role == "viewer"
+            and method not in {"GET", "HEAD", "OPTIONS"}
+            and path not in viewer_post_paths
+            and not own_device_delete
+        ):
             return await reject(403, "read-only account")
         if path.startswith("/api/v1/models") and role != "admin":
             return await reject(403, "model gateway administration requires admin")
@@ -172,6 +183,7 @@ def configure_access(app: FastAPI, store: Tianxuan) -> None:
     if strict and mode == "legacy":
         raise RuntimeError("legacy mode conflicts with required key access")
     strict = strict or mode == "keys"
+    app.state.auth_mode = mode
     if mode == "accounts":
         if not os.environ.get("TIANXUAN_PUBLIC_ORIGIN", "").startswith("https://"):
             raise RuntimeError("account mode requires HTTPS public origin")
@@ -188,12 +200,13 @@ def configure_access(app: FastAPI, store: Tianxuan) -> None:
             raise RuntimeError("production key access requires tenant ID and HTTPS public origin")
         app.add_middleware(ProductionAccess, store=store)
 
-    def actor_for(request: Request) -> str:
+    def actor_for(request: Request, *, allow_session: bool = False) -> str:
         actor = getattr(request.state, "verified_actor", None)
         if actor:
             return str(actor)
         scheme, _, token = request.headers.get("authorization", "").partition(" ")
-        actor = store.user_for_access_key(token.strip()) if scheme.lower() == "bearer" else None
+        resolve = store.user_for_token if allow_session else store.user_for_access_key
+        actor = resolve(token.strip()) if scheme.lower() == "bearer" else None
         if not actor:
             raise HTTPException(401, "personal access key required")
         return str(actor)
@@ -229,26 +242,45 @@ def configure_access(app: FastAPI, store: Tianxuan) -> None:
 
     @app.get("/api/v1/auth/me")
     def me(request: Request) -> dict[str, Any]:
-        actor = actor_for(request)
+        actor = actor_for(request, allow_session=True)
         user = next(user for user in store.list_members(actor) if user["id"] == actor)
-        admitted = mode != "accounts" or store.actor_context(actor)["tenant"] == os.environ.get("TIANXUAN_TENANT_ID")
-        return {**user, "can_issue_admin_keys": user["role"] == "admin" and admitted}
+        tenant = store.actor_context(actor)["tenant"]
+        admitted = mode != "accounts" or tenant == os.environ.get("TIANXUAN_TENANT_ID")
+        return {**user, "tenant_id": tenant, "can_issue_admin_keys": user["role"] == "admin" and admitted}
+
+    @app.get("/api/v1/auth/editor-devices")
+    def list_devices(request: Request) -> dict[str, Any]:
+        return {"devices": store.list_editor_devices(actor_for(request, allow_session=True))}
+
+    @app.delete("/api/v1/auth/editor-devices/{device_id}")
+    def revoke_device(device_id: str, request: Request) -> dict[str, bool]:
+        return {"revoked": store.revoke_editor_device(actor_for(request, allow_session=True), device_id)}
 
     @app.get("/api/v1/auth/keys")
     def list_keys(request: Request) -> dict[str, Any]:
         return {"keys": store.list_access_keys(actor_for(request))}
 
+    def issue_key(payload: KeyCreate, request: Request, *, admin_only: bool = False) -> JSONResponse:
+        token, _ = presented_credential(request, mode == "accounts")
+        days = payload.days if "days" in payload.model_fields_set else None
+        result = store.issue_access_key(
+            actor_for(request),
+            payload.user_id,
+            payload.name,
+            days,
+            admin_only=admin_only,
+            until_revoked=payload.until_revoked,
+            issuer_token=token,
+        )
+        return JSONResponse(result, headers={"Cache-Control": "no-store"})
+
     @app.post("/api/v1/auth/keys")
     def create_key(payload: KeyCreate, request: Request) -> JSONResponse:
-        result = store.issue_access_key(actor_for(request), payload.user_id, payload.name, payload.days)
-        return JSONResponse(result, headers={"Cache-Control": "no-store"})
+        return issue_key(payload, request)
 
     @app.post("/api/v1/auth/keys/admin")
     def create_admin_key(payload: KeyCreate, request: Request) -> JSONResponse:
-        result = store.issue_access_key(
-            actor_for(request), payload.user_id, payload.name, payload.days, admin_only=True
-        )
-        return JSONResponse(result, headers={"Cache-Control": "no-store"})
+        return issue_key(payload, request, admin_only=True)
 
     @app.delete("/api/v1/auth/keys/{key_id}")
     def revoke_key(key_id: str, request: Request) -> dict[str, bool]:

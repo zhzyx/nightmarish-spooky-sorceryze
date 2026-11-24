@@ -1,0 +1,140 @@
+extends SceneTree
+
+var checks: Array[String] = []
+var late := {}
+var session: Node
+
+
+func _initialize() -> void:
+	run.call_deferred()
+
+
+func check(ok: bool, label: String) -> bool:
+	if not ok:
+		push_error("Identity check failed: " + label)
+		quit(1)
+		return false
+	checks.append(label)
+	return true
+
+
+func settled() -> void:
+	while session._restore_running or session._store_issued != session._store_next:
+		await process_frame
+
+
+func set_mode(mode: String) -> void:
+	var file := FileAccess.open(OS.get_environment("TX_STATE"), FileAccess.WRITE)
+	file.store_string(mode)
+	file.close()
+
+
+func slow_request() -> void:
+	late = await session.api_request(HTTPClient.METHOD_GET, "/api/v1/issues/slow")
+
+
+func run() -> void:
+	await process_frame
+	var mounted := EditorInterface.get_base_control().find_child("TianxuanSessionController", true, false)
+	if not check(mounted != null, "editor mounted its shared session"):
+		return
+	var source_loaded := OS.get_environment("TX_SOURCE_LOADED") == "1"
+	var script: Script = load("res://session_controller.gd") if source_loaded else mounted.get_script()
+	session = script.new()
+	session.credential_transport = load("res://session_memory.gd") if source_loaded else mounted.credential_transport
+	var helper: String = FileAccess.get_file_as_string("res://session_credentials.py") if source_loaded else mounted.helper_source
+	# Use the real OS backend under a fresh service name, never the production vault.
+	session.test_helper_source = helper.replace("Godot.Tianxuan.Editor", OS.get_environment("TX_TEST_SERVICE"))
+	if not check(session.test_helper_source != helper and session.credential_transport != null, "isolated native helper embedded"):
+		return
+	session.test_python = OS.get_environment("TX_PYTHON")
+	root.add_child(session)
+	var phase := OS.get_environment("TX_PHASE")
+	if phase == "early_logout":
+		await session.reset()
+	await process_frame
+	await settled()
+	var token := OS.get_environment("TX_FIXTURE_KEY")
+	var password := OS.get_environment("TX_FIXTURE_PASSWORD")
+	if phase == "login":
+		var memory := root.find_child("AIConnectionMemory", true, false)
+		if not check(memory != null, "existing AI credential consumer is mounted"):
+			return
+		memory.test_helper_source = "import json,sys\nrequest=json.loads(sys.stdin.buffer.readline())\nprint(json.dumps({'status':'loaded','secret':request['secret']}))"
+		var returned: Dictionary = await memory._request({"secret": token})
+		if not check(returned.get("secret") == token, "existing AI connection memory uses the shared bounded pipe"):
+			return
+	if phase in ["login", "legacy"]:
+		if not check(session.get_identity().is_empty(), "fresh editor is signed out"):
+			return
+		if not check(await session.authenticate("user@example.test", password, "project-a"), "ordinary password login"):
+			return
+		if not check(session.get_identity().id == "alice" and not session._stored_digest.is_empty(), "verified device grant saved"):
+			return
+	elif phase == "restart":
+		if not check(session.get_identity().id == "alice" and session.get_identity().project == "project-a", "new process restored verified actor and project"):
+			return
+		var denied: Dictionary = await session.api_request(HTTPClient.METHOD_POST, "/api/v1/issues/denied")
+		if not check(denied.status == 403 and session.get_identity().id == "alice", "business permission refusal keeps login"):
+			return
+		if not check(not await session.authenticate("", "invalid", "project-b") and session.get_identity().id == "alice", "failed account switch retains actor"):
+			return
+		var initial: String = session.origin
+		session.set_origin(OS.get_environment("TX_OTHER_ORIGIN"))
+		await process_frame
+		await settled()
+		if not check(session.get_identity().is_empty(), "different origin cannot restore first grant"):
+			return
+		session.set_origin(initial)
+		await process_frame
+		await settled()
+		if not check(session.get_identity().id == "alice", "returning to bound origin restores actor"):
+			return
+		slow_request()
+		if not check(await session.authenticate("", token, "project-b"), "verified personal key switched account"):
+			return
+		while late.is_empty():
+			await process_frame
+		if not check(late.get("stale") == true and session.get_identity().id == "bob", "late old response cannot reset new actor"):
+			return
+		var result: Dictionary = await session.api_request(HTTPClient.METHOD_POST, "/api/v1/issues/measure")
+		if not check(result.data.get("actor") == "bob", "server recorded current account on operation"):
+			return
+	elif phase == "precedence":
+		if not check(session.get_identity().get("id") == "bob", "desktop with inherited launcher credential restores the account selected by the user"):
+			return
+		if source_loaded:
+			mounted = script.new()
+			root.add_child(mounted)
+		var timeout := Time.get_ticks_msec() + 5000
+		while mounted.get_identity().is_empty() and Time.get_ticks_msec() < timeout:
+			await process_frame
+		if not check(mounted.get_identity().get("id") == "alice" and mounted._stored_digest.is_empty(), "headless launch uses its own grant without replacing desktop identity"):
+			return
+	elif phase == "offline":
+		if not check(session.get_identity().is_empty() and session._restore_pending, "unavailable server retains pending grant without asserting identity"):
+			return
+		set_mode("online")
+		await session.auth_config()
+		await process_frame
+		await settled()
+		if not check(session.get_identity().id == "bob", "reconnect restored without credential entry"):
+			return
+		set_mode("revoked")
+		var blocked: Dictionary = await session.api_request(HTTPClient.METHOD_POST, "/api/v1/issues/denied")
+		await settled()
+		if not check(blocked.status == 403 and session.get_identity().is_empty(), "authenticated endpoint confirms revoked identity"):
+			return
+	elif phase == "logout":
+		if not check(session.get_identity().is_empty(), "revoked grant absent after restart"):
+			return
+		if not check(await session.authenticate("", token, "project-b"), "user supplied reauthorized personal key"):
+			return
+		await session.reset()
+		if not check(session.get_identity().is_empty(), "logout forgets personal key locally"):
+			return
+	elif phase == "early_logout":
+		if not check(session.get_identity().is_empty() and not session._restore_pending, "cold-start logout cancels pending identity restore"):
+			return
+	print(JSON.stringify({"passed": true, "checks": checks}))
+	quit(0)

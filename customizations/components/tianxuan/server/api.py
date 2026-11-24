@@ -541,13 +541,13 @@ def create_app(
 
     # ---------- 身份 ----------
 
-    def check_account_attempt(request: Request) -> None:
-        if os.environ.get("TIANXUAN_AUTH_MODE") != "accounts":
+    def check_account_attempt(request: Request, *, editor_device: bool = False) -> None:
+        if app.state.auth_mode != "accounts" and not editor_device:
             return
-        from identity import allow_identity_attempt
-
         expected = os.environ.get("TIANXUAN_PUBLIC_ORIGIN", "").rstrip("/")
         origin = request.headers.get("origin")
+        if editor_device and origin is not None:
+            raise HTTPException(403, "native password login required")
         if origin and origin != expected:
             raise HTTPException(403, "same-origin request required")
         if not allow_identity_attempt("account-login", request.client.host if request.client else "unknown"):
@@ -584,6 +584,16 @@ def create_app(
             )
             return response
         return {**account, "token": token}
+
+    @app.post("/api/v1/auth/editor-session")
+    def create_editor_session(payload: LoginRequest, request: Request) -> JSONResponse:
+        if app.state.auth_mode == "keys":
+            raise HTTPException(403, "account access is managed by the administrator")
+        check_account_attempt(request, editor_device=True)
+        grant = store.login_editor_device(payload.email, payload.password)
+        if grant is None:
+            raise HTTPException(401, "invalid email or password")
+        return JSONResponse(grant, headers={"Cache-Control": "no-store"})
 
     @app.post("/api/v1/auth/logout")
     def logout(request: Request, authorization: str | None = Header(default=None)):

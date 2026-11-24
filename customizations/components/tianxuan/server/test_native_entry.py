@@ -90,6 +90,15 @@ class EntryTests(unittest.IsolatedAsyncioTestCase):
             self.ledger.claim(key)
         self.assertEqual(len(self.ledger.pending()), 1)
 
+    async def test_device_grant_revocation_blocks_pending_entry(self):
+        grant = self.domain.login_editor_device("one@example.test", "password")
+        self.tokens[self.actor] = grant["token"]
+        key, _ = self.enqueue()
+        self.assertTrue(self.ledger.authorize(key))
+        self.domain.revoke_editor_device(self.actor, grant["credential_id"])
+        with self.assertRaises(NativeStoreError):
+            self.ledger.claim(key)
+
     async def test_new_increment_reopens_only_aggregate_atomically(self):
         requirement = self.domain.create_requirement(self.actor, "increment", "Title", "Outcome", "Scope", "Acceptance")
         parent, child = self.domain.plan_tickets(
@@ -271,7 +280,7 @@ class EntryTests(unittest.IsolatedAsyncioTestCase):
         with patch.dict(os.environ, {"TIANXUAN_REQUIRE_KEYS": "1", "TIANXUAN_TENANT_ID": tenant}):
             with self.assertRaisesRegex(NativeStoreError, "tenant/key"):
                 entry.entry_authority(key)
-            access = self.domain.issue_access_key(self.actor, self.actor, "admitted")
+            access = self.domain.issue_access_key(self.actor, self.actor, "admitted", until_revoked=True)
             with self.ledger.transaction():
                 admitted = self.ledger.enqueue(
                     self.actor, requirement["id"], "admitted", {"scopes": ["text"]}, credential=access["key"]

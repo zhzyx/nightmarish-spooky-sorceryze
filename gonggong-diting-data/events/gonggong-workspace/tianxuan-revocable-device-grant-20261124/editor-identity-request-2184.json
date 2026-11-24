@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-revocable-device-grant-20261124",
+  "event_id": "editor-identity-request-2184",
+  "kind": "request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2184",
+  "occurred_at": "2026-11-23T23:00:34.604147+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "issue_number": 2184,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-23T22:51:49Z",
+    "source_baseline": "2b2a8404f32d2ac9ab054903c7b3d9b4bd5a9a86",
+    "request": "Allow an explicitly authorized durable device grant, auditable and revocable without extending an existing finite grant."
+  },
+  "evidence_refs": [],
+  "sha256": "01b68ea3f981138fde4a07310fc3621a0a0dab8eacfcd7188f7ceb04694de4eb"
+}

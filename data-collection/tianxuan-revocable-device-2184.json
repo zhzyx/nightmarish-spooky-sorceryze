@@ -1,0 +1,17 @@
+{
+  "issue_number": 2184,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2184",
+  "request_id": "tianxuan-revocable-device-grant-20261124",
+  "validation": {
+    "entry": "customizations/components/tianxuan/server/test_editor_credentials.py",
+    "tests_passed": 6,
+    "verified": [
+      "password device login is denied in keys-only mode",
+      "roles and tenant boundaries apply after restart",
+      "original finite keys cannot mint an indefinite grant",
+      "explicit revocation and logout remove device access",
+      "Duobao writes are attributed to the authenticated account"
+    ],
+    "scope": "Isolated service and credential lifecycle verification."
+  }
+}

@@ -36,6 +36,9 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS sessions (
   token_hash TEXT PRIMARY KEY, user_id TEXT NOT NULL, created_at TEXT NOT NULL, expires_at TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS editor_devices (
+  id TEXT PRIMARY KEY, token_hash TEXT UNIQUE NOT NULL, user_id TEXT NOT NULL, created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS access_keys (
   id TEXT PRIMARY KEY, token_hash TEXT UNIQUE NOT NULL, user_id TEXT NOT NULL,
   name TEXT NOT NULL, created_by TEXT NOT NULL, created_at TEXT NOT NULL, revoked_at TEXT
@@ -327,6 +330,21 @@ def _hash_password(password: str, salt: str) -> str:
 
 def _token_hash(token: str) -> str:
     return hashlib.sha256(token.encode("utf-8")).hexdigest()
+
+
+# Older implementations reject this non-date value on rollback. A missing or
+# malformed expiry is never interpreted as a persistent grant.
+UNTIL_REVOKED = "until-revoked"
+
+
+def session_active(expires_at: str) -> bool:
+    if expires_at == UNTIL_REVOKED:
+        return True
+    try:
+        expires = datetime.fromisoformat(expires_at)
+        return expires.tzinfo is not None and expires > datetime.now(timezone.utc)
+    except (TypeError, ValueError):
+        return False
 
 
 _REPO_PROVIDERS = frozenset({"gitea", "github"})
@@ -644,19 +662,56 @@ class Tianxuan:
     @_connection_call
     def issue_session(self, user_id: str, ttl_seconds: int = 86_400) -> str:
         self._tenant_of(user_id)
+        expires = datetime.now(timezone.utc) + timedelta(seconds=ttl_seconds)
+        return self._new_session(user_id, expires.isoformat(timespec="seconds"))
+
+    def _new_session(self, user_id: str, expires_at: str) -> str:
         token = "txs_" + uuid.uuid4().hex + uuid.uuid4().hex
-        now = datetime.now(timezone.utc)
-        expires = now + timedelta(seconds=ttl_seconds)
         self.db.execute(
             "INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)",
-            (
-                _token_hash(token),
-                user_id,
-                now.isoformat(timespec="seconds"),
-                expires.isoformat(timespec="seconds"),
-            ),
+            (_token_hash(token), user_id, _now(), expires_at),
         )
         return token
+
+    @_connection_call
+    def login_editor_device(self, email: str, password: str) -> dict[str, Any] | None:
+        account = self.authenticate(email, password)
+        if account is None:
+            return None
+        actor = account["user_id"]
+        token = self._new_session(actor, UNTIL_REVOKED)
+        device_id = _id("device")
+        self.db.execute(
+            "INSERT INTO editor_devices (id,token_hash,user_id,created_at) VALUES (?,?,?,?)",
+            (device_id, _token_hash(token), actor, _now()),
+        )
+        self._event(account["tenant_id"], "identity.editor_device.issued", actor, device_id, {})
+        return {**account, "token": token, "credential_id": device_id}
+
+    @_connection_call
+    def list_editor_devices(self, actor: str) -> list[dict[str, Any]]:
+        rows = self.db.execute(
+            "SELECT d.id,d.user_id,d.created_at FROM editor_devices d JOIN users u ON u.id=d.user_id "
+            "WHERE u.tenant_id=? AND (d.user_id=? OR ?='admin') ORDER BY d.created_at,d.id",
+            (self._tenant_of(actor), actor, self.role_of(actor)),
+        )
+        return [dict(row) for row in rows]
+
+    @_connection_call
+    def revoke_editor_device(self, actor: str, device_id: str) -> bool:
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        row = self.db.execute(
+            "SELECT d.token_hash FROM editor_devices d JOIN users u ON u.id=d.user_id "
+            "WHERE d.id=? AND u.tenant_id=? AND (d.user_id=? OR ?='admin')",
+            (device_id, self._tenant_of(actor), actor, self.role_of(actor)),
+        ).fetchone()
+        if row is None:
+            raise NotFound("editor device not found")
+        self.db.execute("DELETE FROM sessions WHERE token_hash=?", (row["token_hash"],))
+        self.db.execute("DELETE FROM editor_devices WHERE id=?", (device_id,))
+        self._event(self._tenant_of(actor), "identity.editor_device.revoked", actor, device_id, {})
+        return True
 
     @_connection_call
     def user_for_token(self, token: str) -> str | None:
@@ -664,23 +719,37 @@ class Tianxuan:
         row = self.db.execute("SELECT user_id, expires_at FROM sessions WHERE token_hash = ?", (token_hash,)).fetchone()
         if row is None:
             return None
-        try:
-            expires = datetime.fromisoformat(row["expires_at"])
-        except ValueError:
-            expires = datetime.now(timezone.utc)
-        if expires <= datetime.now(timezone.utc):
+        if not session_active(row["expires_at"]):
             self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (token_hash,))
             return None
         return str(row["user_id"])
 
     @_connection_call
     def revoke_session(self, token: str) -> bool:
-        cursor = self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (_token_hash(token),))
+        if not self.db.in_transaction:
+            self.db.execute("BEGIN IMMEDIATE")
+        digest = _token_hash(token)
+        # A personal key may be shared by the owner's other clients. It has
+        # its own explicit administrator revocation endpoint and audit event.
+        if self.db.execute("SELECT 1 FROM access_keys WHERE token_hash=?", (digest,)).fetchone():
+            return False
+        device = self.db.execute("SELECT id,user_id FROM editor_devices WHERE token_hash=?", (digest,)).fetchone()
+        if device:
+            return self.revoke_editor_device(device["user_id"], device["id"])
+        cursor = self.db.execute("DELETE FROM sessions WHERE token_hash = ?", (digest,))
         return cursor.rowcount > 0
 
     @_connection_call
     def issue_access_key(
-        self, actor: str, user_id: str, name: str, days: int = 90, *, admin_only: bool = False
+        self,
+        actor: str,
+        user_id: str,
+        name: str,
+        days: int | None = None,
+        *,
+        admin_only: bool = False,
+        until_revoked: bool = False,
+        issuer_token: str | None = None,
     ) -> dict[str, Any]:
         if not self.db.in_transaction:
             self.db.execute("BEGIN IMMEDIATE")
@@ -688,16 +757,50 @@ class Tianxuan:
             raise PermissionDenied("only a tenant administrator can issue access keys")
         if admin_only and self.role_of(user_id) != "admin":
             raise VersionConflict("recipient is not an administrator")
-        if not name.strip() or len(name) > 100 or not 1 <= days <= 365:
+        if until_revoked and days is not None:
+            raise TianxuanError("specify either days or until_revoked")
+        if not until_revoked and days is None:
+            days = 90
+        if not name.strip() or len(name) > 100 or (days is not None and not 1 <= days <= 365):
             raise TianxuanError("key name and lifetime (1–365 days) are required")
-        token = self.issue_session(user_id, days * 86400)
+        expires_at = UNTIL_REVOKED
+        if days is not None:
+            expires_at = (datetime.now(timezone.utc) + timedelta(days=days)).isoformat(timespec="seconds")
+        if issuer_token is not None:
+            expires_at = self._delegated_expiry(actor, issuer_token, expires_at)
+        token = self._new_session(user_id, expires_at)
         key_id = _id("key")
         self.db.execute(
             "INSERT INTO access_keys VALUES (?, ?, ?, ?, ?, ?, NULL)",
             (key_id, _token_hash(token), user_id, name.strip(), actor, _now()),
         )
-        self._event(self._tenant_of(actor), "access_key.issued", actor, key_id, {"user_id": user_id})
-        return {"id": key_id, "key": token, "user_id": user_id, "name": name.strip(), "days": days}
+        self._event(
+            self._tenant_of(actor), "access_key.issued", actor, key_id, {"user_id": user_id, "expiry": expires_at}
+        )
+        return {
+            "id": key_id,
+            "key": token,
+            "user_id": user_id,
+            "name": name.strip(),
+            "days": days,
+            "expires_at": expires_at,
+        }
+
+    def _delegated_expiry(self, actor: str, issuer_token: str, requested: str) -> str:
+        # Recheck the presented credential inside the same transaction as issuance.
+        row = self.db.execute(
+            "SELECT s.expires_at,k.id FROM sessions s LEFT JOIN access_keys k ON k.token_hash=s.token_hash "
+            "AND k.revoked_at IS NULL WHERE s.token_hash=? AND s.user_id=?",
+            (_token_hash(issuer_token), actor),
+        ).fetchone()
+        if not row or not session_active(row["expires_at"]):
+            raise PermissionDenied("current administrator credential required")
+        issuer_expiry = str(row["expires_at"])
+        if requested == UNTIL_REVOKED and (issuer_expiry != UNTIL_REVOKED or row["id"] is None):
+            raise PermissionDenied("persistent administrator access key required")
+        if issuer_expiry != UNTIL_REVOKED and datetime.fromisoformat(issuer_expiry) < datetime.fromisoformat(requested):
+            return issuer_expiry
+        return requested
 
     @_connection_call
     def user_for_access_key(self, token: str) -> str | None:

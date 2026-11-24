@@ -1,0 +1,52 @@
+{
+  "request_id": "tianxuan-connect-editor-proxy-20261124",
+  "issue_number": 2179,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2179",
+  "component": "Tianxuan native Godot editor",
+  "validation": {
+    "regression_entry": "tests/editor/run_tianxuan_connect.py",
+    "regression": {
+      "compiled": {
+        "mode": "compiled_native",
+        "checks": 19,
+        "scenarios": [
+          "environment_over_saved",
+          "saved_address",
+          "default_address"
+        ],
+        "loopback_modes": [
+          "accounts",
+          "keys",
+          "legacy",
+          "unavailable",
+          "unknown"
+        ]
+      },
+      "source": {
+        "mode": "source_loaded",
+        "checks": 16,
+        "scenarios": [
+          "source_button"
+        ],
+        "loopback_modes": [
+          "accounts",
+          "keys",
+          "legacy",
+          "unavailable",
+          "unknown"
+        ]
+      }
+    },
+    "production_button": {
+      "passed": true,
+      "binary_sha256": "d4f8add1e3fed5beae744abe73d24a00b27815684c86dbdcfe5f6002c71d8972",
+      "login_enabled": true,
+      "mode_label": "个人访问密钥",
+      "on_click": "正在连接服务…",
+      "origin": "https://167-172-70-41.sslip.io",
+      "status": "服务已连接，请登录工作区。"
+    },
+    "production_path": "/api/v1/auth/config",
+    "conditions": "Fresh editor profile using the configured editor HTTP proxy, with no saved URL, environment override or service credentials."
+  }
+}
