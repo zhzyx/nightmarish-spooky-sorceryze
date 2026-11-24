@@ -38,15 +38,17 @@ func _invoke_workbench() -> bool:
 	await process_frame
 	return true
 
-func _key(keycode: Key, unicode_value := 0, alt := false):
+func _key(keycode: Key, unicode_value := 0, alt := false, viewport: Viewport = null):
+	if viewport == null:
+		viewport = root
 	var key := InputEventKey.new()
 	key.keycode = keycode
 	key.unicode = unicode_value
 	key.alt_pressed = alt
 	key.pressed = true
-	root.push_input(key)
+	viewport.push_input(key)
 	key.pressed = false
-	root.push_input(key)
+	viewport.push_input(key)
 
 func _shortcut_key(keycode: Key, command := false, shift := false, alt := false) -> InputEventKey:
 	var event := InputEventKey.new()
@@ -359,7 +361,7 @@ func _check_title_button(tabs: TabContainer, dock: EditorDock, samples: Array) -
 
 func _press_workbench_button(button: Button):
 	button.grab_focus()
-	_key(KEY_SPACE, 32)
+	_key(KEY_SPACE, 32, false, button.get_viewport())
 
 func _wheel_down(control: Control):
 	var wheel := InputEventMouseButton.new()
@@ -367,9 +369,9 @@ func _wheel_down(control: Control):
 	wheel.global_position = wheel.position
 	wheel.button_index = MOUSE_BUTTON_WHEEL_DOWN
 	wheel.pressed = true
-	root.push_input(wheel, true)
+	control.get_viewport().push_input(wheel, true)
 	wheel.pressed = false
-	root.push_input(wheel, true)
+	control.get_viewport().push_input(wheel, true)
 
 func _selection_state(code: TextEdit) -> Dictionary:
 	return {
@@ -399,8 +401,7 @@ func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: 
 	if not _check(mode != null and mode.button_pressed, "Unbound workbench entry should default to consultation"):
 		return false
 	var expand := sidebar.find_child("ExpandWorkbench", true, false) as Button
-	var restore := dock.find_child("RestoreWorkbenchSidebar", true, false) as Button
-	if not _check(expand != null and restore != null and expand.is_visible_in_tree(), "Missing workbench view controls"):
+	if not _check(expand != null and expand.is_visible_in_tree(), "Missing workbench view controls"):
 		return false
 	# Deterministic transcript rows give both native layouts a nontrivial scroll range.
 	var rows: Array[Label] = []
@@ -412,7 +413,17 @@ func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: 
 	var draft := "草稿 · round trip\nsecond line"
 	composer.text = draft
 	await _settle_layout()
+	var settings := EditorInterface.get_editor_settings()
+	var single_window: bool = settings.get_setting("interface/editor/display/single_window_mode")
+	var multi_window: bool = settings.get_setting("interface/multi_window/enable")
+	settings.set_setting("interface/multi_window/enable", true)
+	var split := root.find_child("DockHSplitMain", true, false) as SplitContainer
+	var native_windows := DisplayServer.get_screen_count() > 0 and DisplayServer.has_feature(DisplayServer.FEATURE_SUBWINDOWS)
 	for attempt in 2:
+		settings.set_setting("interface/editor/display/single_window_mode", attempt == 0)
+		var old_offsets := split.get_split_offsets()
+		var old_parent := sidebar.get_parent()
+		var old_index := sidebar.get_index()
 		mode.button_pressed = (attempt == 0)
 		var offset := 193 + 127 * attempt
 		scroll.scroll_vertical = offset
@@ -427,14 +438,14 @@ func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: 
 		var expanded_selection := _selection_state(composer)
 		if not _check(expanded_selection == sidebar_selection, "Expand changed the draft selection: " + str(expanded_selection)):
 			return false
-		if not _check(tabs.get_current_tab_control() == dock and not sidebar.is_visible_in_tree() and restore.is_visible_in_tree(), "Expand did not select the full native AI workspace"):
+		if not _check(tabs.get_current_tab_control() == source_screen and sidebar.is_visible_in_tree() and sidebar.is_auxiliary_expanded(), "Expand changed the original main screen or did not expand the auxiliary chat: " + str({"attempt": attempt, "main": tabs.get_current_tab_control().name, "source": source_screen.name, "visible": sidebar.is_visible_in_tree(), "expanded": sidebar.is_auxiliary_expanded(), "offsets": split.get_split_offsets(), "columns": split.get_children().map(func(child): return [child.name, child.visible, child.size] if child is Control else [child.name])})):
 			return false
-		if not _check(dock.is_ancestor_of(composer) and composer.is_visible_in_tree() and composer.has_focus() and composer.text == draft and dock.is_ancestor_of(messages) and scroll.scroll_vertical == offset, "Full view changed conversation state: " + str(scroll.scroll_vertical)):
+		if not _check(sidebar.is_ancestor_of(composer) and composer.is_visible_in_tree() and composer.has_focus() and composer.text == draft and sidebar.is_ancestor_of(messages) and scroll.scroll_vertical == offset, "Full view changed conversation state: " + str(scroll.scroll_vertical)):
 			return false
 		composer.deselect()
 		composer.set_caret_line(1)
 		composer.set_caret_column(composer.get_line(1).length())
-		_key(KEY_Z, 122)
+		_key(KEY_Z, 122, false, composer.get_viewport())
 		draft += "z"
 		composer.select(1, 5 + attempt, 0, 1 + attempt)
 		var full_selection := _selection_state(composer)
@@ -443,11 +454,18 @@ func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: 
 		var full_offset := scroll.scroll_vertical
 		if not _check(full_offset > offset, "Full conversation did not receive wheel input: " + str(full_offset)):
 			return false
-		if attempt == 0:
-			_press_workbench_button(restore)
-		elif not await _invoke_workbench():
-			return false
+		var expanded_window_id := sidebar.get_window().get_instance_id()
+		if attempt == 0 or not native_windows:
+			if not _check(sidebar.get_window() == root and split.get_split_offsets() != old_offsets, "Single-window expansion did not widen the existing side column"):
+				return false
+			_press_workbench_button(expand)
+		else:
+			if not _check(sidebar.get_window() != root, "Floating expansion did not move the same dock to an auxiliary Window"):
+				return false
+			sidebar.get_window().close_requested.emit()
 		await _settle_layout()
+		if not _check(not sidebar.is_auxiliary_expanded() and sidebar.get_parent() == old_parent and sidebar.get_index() == old_index and split.get_split_offsets() == old_offsets, "Return did not restore the original dock slot, tab index, or split widths"):
+			return false
 		if not _check(mode.button_pressed == (attempt == 0), "Changing the workbench view reset the selected conversation mode"):
 			return false
 		if not _check(tabs.get_current_tab_control() == source_screen and sidebar.is_visible_in_tree() and sidebar.is_ancestor_of(composer) and composer.has_focus(), "Return did not restore Script and its native sidebar"):
@@ -457,7 +475,12 @@ func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: 
 		samples.append({
 			"cycle": attempt + 1,
 			"entry": "expand button",
-			"return": "button" if attempt == 0 else WORKBENCH_COMMAND,
+			"return": "button" if attempt == 0 or not native_windows else "window close request",
+			"presentation": "inline split" if attempt == 0 or not native_windows else "native auxiliary Window",
+			"native_window_supported": native_windows,
+			"native_window_validation": "not exercised: no native display" if not native_windows else "exercised",
+			"main_screen_id": source_screen.get_instance_id(),
+			"expanded_window_id": expanded_window_id,
 			"source": source_screen.name,
 			"composer_id": composer.get_instance_id(),
 			"draft": composer.text,
@@ -511,18 +534,23 @@ func _check_workbench_round_trip(tabs: TabContainer, dock: EditorDock, samples: 
 	sessions.current_tab = previous_tab
 	sessions.tab_close_pressed.emit(new_tab)
 	await _settle_layout()
+	var next_screen := root.find_child("3D", true, false) as EditorDock
+	tabs.current_tab = tabs.get_tab_idx_from_control(next_screen)
+	await _settle_layout()
 	plugin.remove_dock(temporary_screen)
 	temporary_screen.free()
 	plugin.free()
-	_press_workbench_button(restore)
+	_press_workbench_button(expand)
 	await _settle_layout()
-	if not _check(tabs.get_current_tab_control() == dock and sidebar.is_visible_in_tree() and composer.has_focus(), "Released source screen prevented return to the sidebar"):
+	if not _check(tabs.get_current_tab_control() == next_screen and sidebar.is_visible_in_tree() and composer.has_focus(), "Released source screen or old return target replaced the newly selected main screen"):
 		return false
 	sidebar.close()
 	await _settle_layout()
 	if not _check(not sidebar.is_visible_in_tree() and dock.is_ancestor_of(composer) and composer.text == draft, "Released source control prevented close"):
 		return false
-	samples.append({"released_source_screen_while_expanded": true, "script_edit_after_close": "# x draft"})
+	settings.set_setting("interface/editor/display/single_window_mode", single_window)
+	settings.set_setting("interface/multi_window/enable", multi_window)
+	samples.append({"released_source_screen_while_expanded": true, "script_edit_after_close": "# x draft", "retained_main_screen_id": next_screen.get_instance_id()})
 	return true
 
 func _run():
@@ -551,6 +579,40 @@ func _run():
 	if selected_key.is_empty(): selected_key = tabs.get_tab_title(tabs.current_tab)
 	var expected = OS.get_environment("AI_CHAT_ORDER_EXPECT_SELECTED")
 	if not _check(expected.is_empty() or selected_key==expected, "Layout migration changed the selected page: " + selected_key):
+		return
+	var phase := OS.get_environment("AI_CHAT_ORDER_PHASE")
+	if phase.begins_with("auxiliary_"):
+		var sidebar := root.find_child("AIWorkbenchSidebar", true, false) as EditorDock
+		var restart_draft := "Auxiliary restart 中文草稿"
+		var settings := EditorInterface.get_editor_settings()
+		if phase.ends_with("_seed"):
+			sidebar.set_auxiliary_expanded(false)
+			settings.set_setting("interface/editor/display/single_window_mode", "inline" in phase)
+			settings.set_setting("interface/multi_window/enable", true)
+			var script_screen := EditorInterface.get_script_editor()
+			tabs.current_tab = tabs.get_tab_idx_from_control(script_screen)
+			await _settle_layout()
+			if not await _invoke_workbench():
+				return
+			var composer := sidebar.find_child("ChatInput", true, false) as TextEdit
+			composer.text = restart_draft
+			composer.text_changed.emit()
+			sidebar.find_child("ExpandWorkbench", true, false).pressed.emit()
+			await _settle_layout()
+		else:
+			if not _check(selected_key == "Script" and sidebar.is_visible_in_tree() and sidebar.is_auxiliary_expanded(), "Restart did not retain Script and the expanded auxiliary sidebar"):
+				return
+			var composer := sidebar.find_child("ChatInput", true, false) as TextEdit
+			if not _check(composer != null and composer.text == restart_draft, "Restart lost the expanded sidebar draft"):
+				return
+		if not _check(sidebar.is_auxiliary_expanded() and tabs.get_current_tab_control() == EditorInterface.get_script_editor(), "Auxiliary layout save or restore replaced the original main screen"):
+			return
+		var native_branch := sidebar.get_window() != root
+		var native_available := DisplayServer.get_screen_count() > 0 and DisplayServer.has_feature(DisplayServer.FEATURE_SUBWINDOWS)
+		if not _check(native_branch == ("window" in phase and native_available), "Restored expansion used the wrong native or single-window presentation"):
+			return
+		print("AI_CHAT_TAB_ORDER_RESULT=" + JSON.stringify({"labels": labels, "phase": phase, "initial_selected_key": selected_key, "expanded": true, "main_screen_id": tabs.get_current_tab_control().get_instance_id(), "auxiliary_window": native_branch, "native_window_supported": native_available}))
+		root.propagate_notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)
 		return
 	for index in tabs.get_tab_count():
 		tabs.set_current_tab(index)

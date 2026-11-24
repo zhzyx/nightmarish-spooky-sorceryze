@@ -151,24 +151,46 @@ def exercise(root, binary, entry):
                     route = f"{CHATS}/{result['conversation']}"
                     chat = api.get(route).raise_for_status().json()
                     (turn,) = chat["turns"]
-                    assert turn["context_snapshot"] == {
+                    selection = result["before_selection"]
+                    start, end = sorted((selection["origin"], selection["caret"]))
+                    locator = f"{result['script']}#L{start[0] + 1}:{start[1] + 1}-L{end[0] + 1}:{end[1] + 1}"
+                    expected_references = [
+                        {
+                            "kind": "editor",
+                            "object_id": locator,
+                            "revision": hashlib.sha256((project / "character.gd").read_bytes()).hexdigest(),
+                        },
+                        {
+                            "kind": "editor",
+                            "object_id": "duobao:" + context["asset_id"],
+                            "revision": asset["revision"],
+                        },
+                    ]
+                    assert {k: v for k, v in turn["context_snapshot"].items() if k != "references"} == {
                         "project": PROJECT,
                         "module_id": modules[0],
                         "issue_id": None,
-                        "references": [
-                            {
-                                "kind": "editor",
-                                "object_id": "duobao:" + context["asset_id"],
-                                "revision": asset["revision"],
-                            }
-                        ],
                     }
+                    assert sorted(turn["context_snapshot"]["references"], key=lambda ref: ref["object_id"]) == sorted(
+                        expected_references, key=lambda ref: ref["object_id"]
+                    ), "The exact current selection and explicitly retained asset must both reach the original module"
                     assert (
-                        turn["content"] == result["sent"] and turn["answer"] == ANSWER and turn["state"] == "answered"
+                        locator in result["displayed_current_context"]
+                        and selection["text"] in result["displayed_current_context"]
+                    )
+                    assert (
+                        turn["content"].startswith(result["sent"] + "\n")
+                        and "当前编辑现场：本轮主要处理对象" in turn["content"]
+                        and locator in turn["content"]
+                        and selection["text"] in turn["content"]
+                        and "const MODEL" not in turn["content"]
+                        and "extends Node3D" not in turn["content"]
+                        and turn["answer"] == ANSWER
+                        and turn["state"] == "answered"
                     )
                     assert len(model_messages) == 1
                     model_request = json.loads(model_messages[0][-1]["content"])
-                    assert model_request == {"content": result["sent"], "context_snapshot": turn["context_snapshot"]}
+                    assert model_request == {"content": turn["content"], "context_snapshot": turn["context_snapshot"]}
                     assert [path for path, _ in writes] == [CHATS, route + "/turns"] and all(
                         200 <= status < 300 for _, status in writes
                     )

@@ -11,7 +11,7 @@ func _run():
 	var tabs := chat.get_parent() as TabContainer
 	var input := chat.find_child("ChatInput", true, false) as TextEdit
 	var send := chat.find_child("Send", true, false) as Button
-	var label := chat.find_child("WorkbenchReference", true, false) as Button
+	var label := chat.find_child("WorkbenchCurrentContext", true, false) as Label
 	var config: Control = chat.get_ai_settings_control()
 	var backend := chat.find_child("AIBackend", true, false) as OptionButton
 	backend.select(0)
@@ -37,9 +37,8 @@ func _run():
 		if not await _invoke_workbench(): return
 		await _settle_layout()
 		var module: String = "AINativeMainScreen" if title == "马良" else "res://addons/notes/plugin.gd"
-		var expected := "页面：" + title + "\n模块：" + module + "\n可读范围：页面名、模块标识"
-		if not _check(label.is_visible_in_tree() and label.text == expected and page.is_visible_in_tree() and sidebar.is_ancestor_of(input), "Incorrect preview: " + label.text): return
-		if not _check(_visible_rect(label).size.is_equal_approx(label.size) and label.size.y >= label.get_theme_font_size("font_size") * 3, "Page preview is clipped: rect=%s visible=%s sidebar=%s window=%s font=%d" % [label.get_global_rect(), _visible_rect(label), sidebar.get_global_rect(), root.size, label.get_theme_font_size("font_size")]): return
+		if not _check(label.is_visible_in_tree() and label.text.contains(title) and label.tooltip_text.contains(module) and not label.tooltip_text.contains("page_field") and page.is_visible_in_tree() and sidebar.is_ancestor_of(input), "Incorrect current-page preview: " + label.text): return
+		if not _check(_visible_rect(label).size.is_equal_approx(label.size) and label.size.y >= label.get_theme_font_size("font_size"), "Page preview is clipped: rect=%s visible=%s sidebar=%s window=%s font=%d" % [label.get_global_rect(), _visible_rect(label), sidebar.get_global_rect(), root.size, label.get_theme_font_size("font_size")]): return
 		var bounds := []
 		for width in [960, 1200, 1440]:
 			root.size = Vector2i(width, 900)
@@ -55,7 +54,7 @@ func _run():
 		deadline = Time.get_ticks_msec() + 18000
 		while not sidebar.find_child("Stop", true, false).disabled and Time.get_ticks_msec() < deadline:
 			await create_timer(0.1).timeout
-		if not _check(input.text.is_empty() and not label.visible, "Page reference not consumed: " + label.text): return
+		if not _check(input.text.is_empty() and not sidebar.find_child("WorkbenchReference", true, false).visible, "Current page became a manual attachment: " + label.text): return
 		sidebar.close()
 		await _settle_layout()
 		if note:
@@ -65,13 +64,15 @@ func _run():
 			page.title = "Renamed Notes"
 			input.text = "only the typed question"
 			send.pressed.emit()
-			if not _check(label.text.contains("失效") and input.text == "only the typed question", "Changed page was sent"): return
-			label.pressed.emit()
-			if not _check(not label.visible, "Removal failed"): return
+			if not _check(label.text.contains("已变化") and input.text == "only the typed question", "Changed page was sent"): return
+			EditorInterface.get_selection().clear()
+			EditorInterface.set_main_screen_editor("2D")
+			await create_timer(0.6).timeout
+			if not _check(label.text.contains("未选中内容"), "The current slot did not clear after leaving the page"): return
 			send.pressed.emit()
 			deadline = Time.get_ticks_msec() + 18000
 			while not sidebar.find_child("Stop", true, false).disabled and Time.get_ticks_msec() < deadline:
 				await create_timer(0.1).timeout
-			if not _check(input.text.is_empty() and not label.visible and note.text == PRIVATE_DRAFT, "Removed reference reappeared"): return
+			if not _check(input.text.is_empty() and label.text.contains("未选中内容") and note.text == PRIVATE_DRAFT, "The old page reference reappeared"): return
 	print("PAGE_RESULT=" + JSON.stringify(pages))
 	quit()

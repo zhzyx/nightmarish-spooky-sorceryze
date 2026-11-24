@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-90062107e86d49b5c99824156cabd91d85799b84",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "ai-chat-context-layout-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2211",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "e66961371c5d9a6a30a079cdcd9efb74838733a139bc3f06bca12d8871dd6bcb",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2211",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2211",
+    "action": "user-report",
+    "detection_head": "3236a62a7d786ace5905144e2d106c0637d672d1",
+    "context_sha256": "4d4677575bdcd99d8fc6c3c93391998de1f513c982ba1295456fe8db4898467c",
+    "operator": "Sail-Li",
+    "worker": "codex-root-ai-chat-context-layout",
+    "authority_ref": "issue:2211; user authorized repair of both chat sidebar expand/return and current selection context",
+    "evidence": "issue:2211; signed installation 3c2990c90; isolated stale-return probe and native UI capability readback",
+    "diagnosis": "Tianxuan sidebar expand directly navigates WebPlatform. Generic AIWorkbench stale-return hypothesis was disproved on exact installed binary, but its existing draft page reference prevents automatic replacement by newly selected node. User requires both entry points to preserve working surface and clearly follow selected content. Diagnostic explicit navigation is not product auto-navigation evidence.",
+    "next_action": "Implement auxiliary native expansion/return and a separate visible current-context snapshot, preserving manual references and drafts; independently review and validate both entry points before installing and user acceptance.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T03:35:26.895886+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T03:40:44.501262+00:00",
+  "sha256": "e295833d7c4574e3edff277e65945965ff522fc304b522c84173e68f6245e393"
+}

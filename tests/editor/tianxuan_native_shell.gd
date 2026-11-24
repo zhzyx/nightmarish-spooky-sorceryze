@@ -25,6 +25,80 @@ func wait_until(predicate: Callable) -> bool:
 	return false
 
 
+func check_auxiliary_expansion(main: Control, sidebar: Control) -> bool:
+	var dock := sidebar.get_parent() as EditorDock
+	var tabs := main.get_parent().get_parent() as TabContainer
+	var source: Control
+	for index in tabs.get_tab_count():
+		if tabs.get_tab_control(index).name == "3D":
+			source = tabs.get_tab_control(index)
+			tabs.current_tab = index
+	if not check(source != null and tabs.get_current_tab_control() == source, "auxiliary fixture starts on the actual selected 3D main-screen instance"):
+		return false
+	var composer: TextEdit = sidebar.find_child("TianxuanComposer", true, false)
+	var expand: Button = sidebar.find_child("ExpandTianxuan", true, false)
+	var history: ScrollContainer = sidebar.find_child("TianxuanConversationHistory", true, false)
+	var draft := composer.text
+	var composer_id := composer.get_instance_id()
+	var dock_parent := dock.get_parent()
+	var dock_index := dock.get_index()
+	var settings := EditorInterface.get_editor_settings()
+	var single_window: bool = settings.get_setting("interface/editor/display/single_window_mode")
+	var multi_window: bool = settings.get_setting("interface/multi_window/enable")
+	settings.set_setting("interface/multi_window/enable", true)
+	var split := root.find_child("DockHSplitMain", true, false) as SplitContainer
+	var native_windows := DisplayServer.get_screen_count() > 0 and DisplayServer.has_feature(DisplayServer.FEATURE_SUBWINDOWS)
+	for mode in ["inline", "window_button", "window_close"]:
+		if mode == "window_close" and not native_windows:
+			continue
+		var presentation: String = mode if native_windows else "inline (native display unavailable)"
+		settings.set_setting("interface/editor/display/single_window_mode", mode == "inline")
+		await create_timer(0.1).timeout
+		var offsets := split.get_split_offsets()
+		var reading_tail: bool = mode == "inline"
+		var interaction := InputEventMouseButton.new()
+		interaction.button_index = MOUSE_BUTTON_WHEEL_UP
+		interaction.pressed = true
+		history.get_v_scroll_bar().gui_input.emit(interaction)
+		if not check(history.get_v_scroll_bar().max_value - history.get_v_scroll_bar().page > 128, "Tianxuan history fixture has a meaningful range for preserving an explicit reader position"):
+			return false
+		history.scroll_vertical = int(history.get_v_scroll_bar().max_value) if reading_tail else 64
+		composer.grab_focus()
+		composer.select(0, 8, 0, 2)
+		var selected := composer.get_selected_text()
+		var scroll := history.scroll_vertical
+		var scroll_limit := history.get_v_scroll_bar().max_value - history.get_v_scroll_bar().page
+		expand.pressed.emit()
+		await create_timer(0.1).timeout
+		var expanded_limit := history.get_v_scroll_bar().max_value - history.get_v_scroll_bar().page
+		var expected_scroll := int(expanded_limit) if reading_tail else scroll
+		if not check(dock.is_auxiliary_expanded() and tabs.get_current_tab_control() == source and composer.get_instance_id() == composer_id and dock.is_ancestor_of(composer), "Tianxuan %s expansion preserves the exact main screen and composer instances" % presentation):
+			return false
+		if not check(composer.text == draft and composer.get_selected_text() == selected and composer.has_focus() and history.scroll_vertical == expected_scroll and (reading_tail or expanded_limit >= scroll), "Tianxuan %s expansion retains draft, selection, focus and the reader's tail or explicit history position: %s" % [presentation, {"same_draft": composer.text == draft, "same_selection": composer.get_selected_text() == selected, "focus": composer.has_focus(), "tail": reading_tail, "old_scroll": scroll, "new_scroll": history.scroll_vertical, "old_scroll_limit": scroll_limit, "new_scroll_limit": expanded_limit}]):
+			return false
+		if mode == "inline" or not native_windows:
+			if not check(dock.get_window() == root and split.get_split_offsets() != offsets, "single-window Tianxuan expansion widens its existing side column"):
+				return false
+		else:
+			if not check(dock.get_window() != root, "Tianxuan floating branch uses a separate auxiliary Window"):
+				return false
+		if mode == "window_close":
+			dock.get_window().close_requested.emit()
+		else:
+			expand.pressed.emit()
+		await create_timer(0.1).timeout
+		var restored_limit := history.get_v_scroll_bar().max_value - history.get_v_scroll_bar().page
+		expected_scroll = int(restored_limit) if reading_tail else scroll
+		if not check(not dock.is_auxiliary_expanded() and tabs.get_current_tab_control() == source and dock.get_parent() == dock_parent and dock.get_index() == dock_index and split.get_split_offsets() == offsets, "Tianxuan %s return restores its slot and width without navigating the main screen" % presentation):
+			return false
+		if not check(composer.text == draft and composer.get_selected_text() == selected and composer.has_focus() and history.scroll_vertical == expected_scroll and (reading_tail or restored_limit >= scroll), "Tianxuan %s return retains draft, selection, focus and the original reader position" % presentation):
+			return false
+	settings.set_setting("interface/editor/display/single_window_mode", single_window)
+	settings.set_setting("interface/multi_window/enable", multi_window)
+	sidebar.find_child("OpenTianxuanWorkspace", true, false).pressed.emit()
+	return check(tabs.get_current_tab_control() == main.get_parent(), "only the explicit full-workspace action navigates to Tianxuan")
+
+
 func run() -> void:
 	root.size = Vector2i(1600, 1000)
 	await process_frame
@@ -46,7 +120,7 @@ func run() -> void:
 	var ai_before: Dictionary = await LocalModelFixture.configure(self)
 	if not check(not ai_before.is_empty(), "existing AIChat API controls use only the isolated local model fixture"):
 		return
-	sidebar.find_child("ExpandTianxuan", true, false).pressed.emit()
+	sidebar.find_child("OpenTianxuanWorkspace", true, false).pressed.emit()
 	var submit: Button = main.find_child("AuthenticateTianxuan", true, false)
 	if not check(await wait_until(func(): return main._auth_mode == "accounts" and not submit.disabled), "native login reads the real service configuration"):
 		return
@@ -55,7 +129,7 @@ func run() -> void:
 	submit.pressed.emit()
 	if not check(await wait_until(func(): return not session.get_identity().is_empty() and main._current_page == "home"), "native controls authenticate and open the workspace"):
 		return
-	sidebar.find_child("ExpandTianxuan", true, false).pressed.emit()
+	sidebar.find_child("OpenTianxuanWorkspace", true, false).pressed.emit()
 	await process_frame
 	var composer: TextEdit = main.find_child("TianxuanComposer", true, false)
 	if not check(composer != null and composer.is_visible_in_tree(), "native conversation composer is visible in main workspace"):
@@ -85,6 +159,8 @@ func run() -> void:
 	composer.text = "保留中文草稿，不发出新消息"
 	var side_composer: TextEdit = sidebar.find_child("TianxuanComposer", true, false)
 	if not check(side_composer.text == composer.text and sidebar.get_meta("controller").active_conversation == conversation.id, "both Views share the same active conversation and unsent draft"):
+		return
+	if not await check_auxiliary_expansion(main, sidebar):
 		return
 	sidebar.get_parent().close()
 	if not check(controller.load_draft(controller.chat_draft_key(conversation.id)).text == composer.text, "closing the sidebar preserves the exact unsent draft"):
@@ -285,7 +361,7 @@ func run() -> void:
 		return
 	if not check(not controller.editor_context.safe_project_path("res://../outside.tres") and not controller.editor_context.safe_project_path("res://.godot/private"), "native file operations reject traversal and editor private state"):
 		return
-	sidebar.find_child("ExpandTianxuan", true, false).pressed.emit()
+	sidebar.find_child("OpenTianxuanWorkspace", true, false).pressed.emit()
 	main.find_child("TianxuanPage_requirements", true, false).pressed.emit()
 	if not check(await wait_until(func(): return controller.cache.has("library:requirements") and not controller.busy("library:requirements")), "native requirement library loads from the existing document service"):
 		return

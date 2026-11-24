@@ -79,6 +79,12 @@
 				Closes the dock, making its tab hidden.
 			</description>
 		</method>
+		<method name="is_auxiliary_expanded" qualifiers="const">
+			<return type="bool" />
+			<description>
+				Returns whether the dock is floating or temporarily expanded within a side column. See [method set_auxiliary_expanded].
+			</description>
+		</method>
 		<method name="make_visible">
 			<return type="void" />
 			<description>
@@ -90,6 +96,20 @@
 			<description>
 				Opens the dock. It will appear in the last used dock slot. If the dock has no default slot, it will be opened floating.
 				[b]Note:[/b] This does not focus the dock. If you want to open and focus the dock, use [method make_visible].
+			</description>
+		</method>
+		<method name="set_auxiliary_expanded">
+			<return type="void" />
+			<param index="0" name="expanded" type="bool" />
+			<description>
+				Expands a side dock into an auxiliary floating window without changing the active main workspace. When multiple windows or floating layout are unavailable, temporarily widens the original side column instead. Main-screen and bottom docks retain their own layout behavior.
+				Passing [code]false[/code] returns the same dock to its previous slot or restores the original column widths. Its controls and content remain intact. Column widths are restored only while the column arrangement still matches the saved layout.
+			</description>
+		</method>
+		<method name="toggle_auxiliary_expanded">
+			<return type="void" />
+			<description>
+				Toggles [method set_auxiliary_expanded] using the current state reported by [method is_auxiliary_expanded].
 			</description>
 		</method>
 		<method name="validate_workbench_field" qualifiers="static">
@@ -144,6 +164,12 @@
 		</member>
 	</members>
 	<signals>
+		<signal name="auxiliary_expansion_changed">
+			<param index="0" name="expanded" type="bool" />
+			<description>
+				Emitted when the dock enters or leaves an auxiliary floating or widened state. A floating-window close request returns the dock to its previous slot and also emits this signal.
+			</description>
+		</signal>
 		<signal name="closed">
 			<description>
 				Emitted when the dock is closed, before it's removed from its parent. The dock can be closed using Close button in the dock popup, using [method close], or as a result of a layout change.

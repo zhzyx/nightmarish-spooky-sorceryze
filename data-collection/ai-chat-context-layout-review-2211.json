@@ -1,0 +1,428 @@
+{
+  "schema_version": 1,
+  "request_id": "ai-chat-context-layout-20261124",
+  "issue_number": 2211,
+  "reviewed_at": "2026-11-24T04:41:05.923Z",
+  "reviewer": {
+    "worker": "/root/local_chat_review",
+    "role": "independent_code_reviewer",
+    "implementation_participation": false,
+    "product_or_test_files_modified": [],
+    "evidence_file_is_only_reviewer_write": true
+  },
+  "baseline_commit": "3236a62a7d786ace5905144e2d106c0637d672d1",
+  "final_candidate_binary_sha256": "07124fdd64ea305fb630c9d5556843ba924344609ad092a94f5f24b1f40ea7b1",
+  "decision": {
+    "status": "code_review_passed_with_validation_limits",
+    "unresolved_code_findings": [],
+    "code_delivery_review_complete": true,
+    "actual_os_window_acceptance": "pending",
+    "full_user_acceptance": "not_claimed"
+  },
+  "scope": [
+    "两个聊天入口辅助展开和原位收回，保存布局恢复，同一输入控件及会话，完整天璇独立入口。",
+    "当前编辑现场独立快照、只读来源、手动引用和草稿保留、发送复验、忙碌和排队冻结、身份与业务作用域。",
+    "已知凭据脱敏，包括设备升级后保留的启动凭据；明确支持项目参数的原生资源接口。",
+    "新增和修改的探针、测试运行器、文档及最终输入指纹；只读回看实现者执行的隔离报告。"
+  ],
+  "review_rules": [
+    "Markdown/code-style/README.md",
+    "Markdown/code-style/cpp/README.md",
+    "CPP_CODING_STANDARD.md",
+    "Markdown/editor-control/README.md",
+    "Markdown/editor-control/ui-commands/README.md",
+    "Markdown/testing/README.md",
+    "Markdown/workflow/README.md",
+    "Markdown/workflow/repository/README.md",
+    "customizations/components/issue-workorders/yanluo.md"
+  ],
+  "candidate_files_sha256": {
+    "design-docs/ai-chat-context-layout-20261124.md": "1364ed7964cf5c5c5565cf327a93b4629ff557f5ca469acbbf70587252d6d76f",
+    "doc/classes/EditorDock.xml": "271489e3f76a06cf570ad8deeeac6acfbd132db665f514a1e8224c753e96a78b",
+    "editor/docks/AIChatController.h": "4aa616d537aa087ccead052d80a6d00a5121ee477cb363069d35ce56fcc07a3d",
+    "editor/docks/ai_chat_dock.cpp": "b686243b67345ebde203aca7e7c392d51d27db8e64ab8518a479da82092ed1de",
+    "editor/docks/ai_chat_dock.h": "5b47bfc40e7e82c5f2d7b01659b9371da849e826f2bcda5c5125dfa2ac8b269a",
+    "editor/docks/editor_dock.cpp": "6627ef57e0ff7547edcb8b9ae3098615e646efe9de465b1104dfca2ea1b41c34",
+    "editor/docks/editor_dock.h": "4b200ef03ccc924de8505d69ecbaa5f51b20e7c68522dcdc9682e2847cb9c2f3",
+    "editor/docks/editor_dock_manager.cpp": "d7489c6ae631085f1955e069b68925f6a2729236bd62031dde7541f0b124b40b",
+    "editor/docks/editor_dock_manager.h": "f40d833d0706bbd3cbf1b3a1474d1fdd76d4bb30d8396664ca6a08e50adb1c25",
+    "editor/docks/tianxuan/TianxuanModelHost.cpp": "fdf8c53cdcd7e1ae7236478d1e8ef602179fe0103121bc4f1e10a13afbd204d3",
+    "editor/docks/tianxuan/TianxuanModelHost.h": "0b2fc09ce34e4ff8137edce49c657d7d7e8eb82fea4aeea744e3e0e91c1bb157",
+    "editor/docks/tianxuan/TianxuanWorkbench.cpp": "e75a02728ddb747754205d86d24d4ef0880a94da606662d3c27c0ae670403827",
+    "editor/docks/tianxuan/editor_controller.gd": "c5f8367293620fe40b0b868713f525894e73a986c1e9dc0d8c646dcc3d16c203",
+    "editor/docks/tianxuan/home_page.gd": "ccb678ea6cb9bb5b0fbe6109d99feedebdd53910566676b4cf19decae86cce5a",
+    "editor/docks/tianxuan/locale.gd": "bfe17dc2391dde0061c9bbbb2cc3f624d0ca27c2ddd6789f10a29ddd58a7fcb3",
+    "editor/docks/tianxuan/native_theme.gd": "8be4cf9673fd96197adb0a43081198ac498cb03e390c21d07baeef8a06c91044",
+    "editor/docks/tianxuan/session_controller.gd": "95b91c27ed0c63a9ecdae021643fb28e5991e26ee6f1f453c8edc340d0c13494",
+    "editor/docks/tianxuan/workspace_view.gd": "b21b4250431620851613e1aa6a77a4e974b1e811371206609f57f9758da96e60",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "71f876a5caa11e71ff4887f43d5b08232a053c37361bc010c9c1d817cc44e332",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "b657a2632ce77309944e2f04b6a5cc7b2d7b8760af06213054e61f6fd482bf1d",
+    "editor/docks/workbench/AuxiliaryDockLayout.cpp": "efa0f871db850c1e672bd6c3b331c1d93838304d56f3a0056b2da393f65eb986",
+    "editor/docks/workbench/module_selector.gd": "96e1d1f26914b0d68f425262e359b7f933a9354da652ee14a3c78300386579f8",
+    "tests/editor/ai_chat_tab_order.gd": "9b82f6e0fa7658f5ce7fe04ee1e0d700b81e3b765c6cf6b75d24e85ebc4b5c93",
+    "tests/editor/run_ai_chat_tab_order.py": "06c33740ae94b3e75e4d8cc0ffdd948456910f1bb47b850de446deb00e395ddc",
+    "tests/editor/run_tianshu_spatial.py": "50e63a5cbedf8aa9020dd138af976273b27f98ac2c2e87c859871eed6773796c",
+    "tests/editor/run_tianxuan_controller.py": "e04b2cd0b72f116577413e6215b4ddd0c1e5a0c8c1096928ff54873d395f2061",
+    "tests/editor/run_tianxuan_identity.py": "4eb7cb708271941d026cebb645a211e35acb424b9489f016ed7de90f0197a6ab",
+    "tests/editor/run_workbench_business_modules.py": "ea072af566f0c5c28f16dbc200d28e1c4092b448df9f9912901f7e1d045b3ad9",
+    "tests/editor/run_workbench_context_milestone.py": "756c4cbde8c5a14760d6879a90ab76506438bce28b6bdb95885411e65e41e4ac",
+    "tests/editor/run_workbench_page_reference.py": "f5b02eef459c586fd92ce3f39e378367a0c5293ecb427078eabd0e773505caeb",
+    "tests/editor/tianxuan_identity.gd": "2f9a56cf166cf849c2f2edc8ca2f0164402380459b5d7a5a4b8e32f6e9d48905",
+    "tests/editor/tianxuan_native_shell.gd": "5f4bb0e24874c5cb5af858a240f454e6178ecb6fb6d1abb116e305ff313ab95d",
+    "tests/editor/workbench_business_modules.gd": "2e644e1f134240c65ecf630331ef1a871a4c3ffde50d8b95c7b37698a68c3917",
+    "tests/editor/workbench_business_references.gd": "a9736c86964b1c5063b7d1a092a033f45b8a69c8002a84553dd37d8f9202f854",
+    "tests/editor/workbench_context_milestone.gd": "39d80977af9f1d89362ee0ab5a461eadaf1297b8d14adc00e9b4ee909f2ba896",
+    "tests/editor/workbench_current_context.gd": "cdfee016e02a4cc0d5df9644f922717923c9b1341039ef7084d80936a972a328",
+    "tests/editor/workbench_page_field.gd": "9d81492906d56d6729bf50b569a5933f04545d4dcae12912791f24e635fa145d",
+    "tests/editor/workbench_page_reference.gd": "b0dd6559425c08bf1e2826b2c1d8edf6b063a868452966d7be900a707b52c8e7",
+    "tests/editor/workbench_scene_selection.gd": "778668ef014004a811666c5358e1a6dbd33d067c29416934ef57abc10e56d46c",
+    "tests/editor/workbench_script_selection.gd": "e872ab167f785e2d9e5d4044d30d971d0c658448ff34e091953aee4a0ce6669a"
+  },
+  "resolved_findings": [
+    {
+      "id": "R1",
+      "priority": "P2",
+      "subject": "保存场景内同名节点替换需要使旧快照失效",
+      "location": {
+        "path": "editor/docks/workbench/AIWorkbenchReference.cpp",
+        "line": 425
+      },
+      "resolution": "快照包含场景根与选中节点的实时实例标识；重新创建同名节点不能沿用旧快照。",
+      "validation": "最终 current_editor_context_contract 的同名替换拒绝用例通过。"
+    },
+    {
+      "id": "R2",
+      "priority": "P2",
+      "subject": "首次未初始化的现场槽不能静默发送不带选区的消息",
+      "locations": [
+        {
+          "path": "editor/docks/workbench/AIWorkbenchReference.cpp",
+          "line": 435
+        },
+        {
+          "path": "editor/docks/tianxuan/editor_controller.gd",
+          "line": 227
+        }
+      ],
+      "resolution": "打开时采集；未展示的首次快照触发刷新并拒绝本次发送，保留草稿，要求核对后重试。",
+      "validation": "最终 current_editor_context_contract 的首次空槽拒绝与重试用例通过。"
+    },
+    {
+      "id": "R3",
+      "priority": "P2",
+      "subject": "重启恢复不能用显示标题查找内部 Dock 名称",
+      "location": {
+        "path": "editor/docks/editor_dock_manager.cpp",
+        "line": 671
+      },
+      "resolution": "使用 dock_map 的 AIWorkbenchSidebar 布局键恢复独立展开状态。",
+      "validation": "10 阶段窗口报告中四次正常退出与重启保留 Script 主区、草稿及展开状态；仅分栏回退路径。"
+    },
+    {
+      "id": "R4",
+      "priority": "P2",
+      "subject": "检查器内选中的 Node 需要支持与场景树相同的只读快照",
+      "location": {
+        "path": "editor/docks/workbench/AIWorkbenchReference.cpp",
+        "line": 260
+      },
+      "resolution": "Node 与 Resource 分支明确区分；检查器节点使用同一有界场景对象快照。",
+      "validation": "最终 current_editor_context_contract 的 Inspector Node 用例通过。"
+    },
+    {
+      "id": "R5",
+      "priority": "P3",
+      "subject": "现场成功复验后不应保留初始化失败提示",
+      "location": {
+        "path": "editor/docks/tianxuan/editor_controller.gd",
+        "line": 273
+      },
+      "resolution": "成功构造发送上下文后清除瞬时提示；草稿及保留引用不受影响。",
+      "validation": "最终 current_editor_context_contract 的重试后提示清除用例通过。"
+    },
+    {
+      "id": "R6",
+      "priority": "P2",
+      "subject": "浮动聊天获得焦点时不能让主窗口旧焦点覆盖最后编辑来源",
+      "location": {
+        "path": "editor/docks/workbench/AIWorkbenchReference.cpp",
+        "line": 187
+      },
+      "resolution": "主视口与已知浮动编辑表面只在各自窗口实际活动时采集；公开已知表面包括脚本、检查器、文件系统和场景树。聊天获焦保留最后可读来源。",
+      "validation": "最终源代码边界已复核；无显示器的测试不能证明原生 OS 跨窗焦点行为，该项实际交互验收待完成。"
+    },
+    {
+      "id": "R7",
+      "priority": "P1",
+      "subject": "自动现场必须覆盖业务凭据和设备升级前的启动凭据脱敏",
+      "locations": [
+        {
+          "path": "editor/docks/workbench/AIWorkbenchReference.cpp",
+          "line": 153
+        },
+        {
+          "path": "editor/docks/tianxuan/editor_controller.gd",
+          "line": 53
+        },
+        {
+          "path": "editor/docks/workbench/module_selector.gd",
+          "line": 610
+        }
+      ],
+      "resolution": "普通聊天先通用脱敏再调用业务脱敏；来源、正文和选区文本采用相同规则，敏感定位符拒绝进入引用。天璇在存储和比较前递归规范化已知凭据；业务入口在 session 脱敏后继续处理已知启动凭据。",
+      "validation": "旧候选实际失败报告保留；后续双凭据合成 fixture 的两模块真实 HTTP 发送均脱敏，最终 current contract 验证天璇自身凭据规范化及复验。"
+    }
+  ],
+  "additional_review_decisions": [
+    {
+      "subject": "格式检查持续有效",
+      "result": "新辅助布局 API 定义移至已有 Allman 规则目录内 AuxiliaryDockLayout.cpp；未增加 clang-format off，未改全局格式配置；现有核心文件保留绑定和调用。"
+    },
+    {
+      "subject": "生命周期与原位返回",
+      "result": "只复用侧边 Dock 及其输入控件；窗口返回与系统关闭请求共用归还流程；临时 WindowRouter 持有控件时不争抢。单窗口分栏保存原偏移，列拓扑变化时不把旧索引写入新布局。"
+    },
+    {
+      "subject": "上下文与发送一致性",
+      "result": "当前槽不改写旧手动引用、草稿或图片；发送验证展示过的快照，强制文件哈希复验；队列与已发消息深拷贝。引用总数超限明确拒绝，不静默丢弃。"
+    },
+    {
+      "subject": "业务与模型边界",
+      "result": "自动天璇上下文仅作为咨询数据，既有结构化手动引用仍需明确模块；不猜测业务归属，不放开本地咨询工具，不新增线上推理回退。原有业务 HTTP 通道保持，不能把其测试等同于天璇本地推理统计。"
+    },
+    {
+      "subject": "原生资源项目路由",
+      "location": {
+        "path": "editor/docks/tianxuan/session_controller.gd",
+        "line": 501
+      },
+      "result": "仅新增明确接受项目参数的三个完整资源路由族；保留四个工作流路由。相似或不完整路径不扩张，明文或编码项目覆盖参数被拒绝；19 条实际隔离 HTTP 断言已纳入身份套件。"
+    },
+    {
+      "subject": "测试修正边界",
+      "result": "工单切回断言保留恢复的精确手动引用；身份隔离在验证成功激活后断言；尾部跟随按新的滚动上限验证，固定阅读位置按原偏移验证。现有发送内容、模块归属、写入次数与脱敏检查保留。"
+    },
+    {
+      "subject": "小窗口布局",
+      "result": "来源提示复用状态/进度行；仅紧凑工作区入口使用独立主题边距。最终布局报告验证现有回复区域高度与按钮可达性门槛。"
+    }
+  ],
+  "reviewer_executed_checks": [
+    {
+      "name": "Python AST parse",
+      "files": 7,
+      "result": "passed"
+    },
+    {
+      "name": "EditorDock XML parse",
+      "path": "doc/classes/EditorDock.xml",
+      "result": "passed"
+    },
+    {
+      "name": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "name": "冻结文件 SHA-256 复核",
+      "files": 40,
+      "result": "unchanged_since_final_source_review"
+    },
+    {
+      "name": "最终报告嵌套输入指纹复核",
+      "native_shell_matched": 76,
+      "layout_matched": 58,
+      "identity_compiled_matched": 12,
+      "identity_source_matched": 12,
+      "mismatches": []
+    }
+  ],
+  "validation_readback": [
+    {
+      "artifact": "ai-chat-context-layout-native-shell.json",
+      "sha256": "ba843b840d02d0c2d52adeaaae9cb758cb43c2f7b46a5e43fb4a6d9c3982431e",
+      "binary_sha256": "07124fdd64ea305fb630c9d5556843ba924344609ad092a94f5f24b1f40ea7b1",
+      "execution_owner": "/root",
+      "reviewer_action": "read_and_verify_receipt_and_source_hashes",
+      "result": "passed",
+      "checks": {
+        "native_shell": 171,
+        "local_conversation": 43,
+        "host_progress": 16,
+        "production_handoff": 27,
+        "current_editor_context": 38
+      },
+      "native_model_fixture": {
+        "requests": 3,
+        "synchronized_turns": 2,
+        "cloud_inference_requests": 0
+      },
+      "current_model_fixture": {
+        "requests": 3,
+        "synchronized_turns": 1,
+        "cloud_inference_requests": 0
+      },
+      "handoff_provider_commands": 0,
+      "handoff_stale_sources": [],
+      "handoff_binary_changed": false,
+      "boundary": "最终编译二进制、隔离真实服务与回环 HTTP fixture、无显示器；未运行真实模型提供方或资产生产。"
+    },
+    {
+      "artifact": "ai-chat-context-layout-native-layout.json",
+      "sha256": "ee381f1ef60297af540551a81600ae4f244f04d167ccc1249b187ee72508487c",
+      "binary_sha256": "07124fdd64ea305fb630c9d5556843ba924344609ad092a94f5f24b1f40ea7b1",
+      "execution_owner": "/root",
+      "reviewer_action": "read_and_verify_receipt_and_source_hashes",
+      "result": "passed",
+      "checks": 248,
+      "conversation_geometry_samples": 27,
+      "design_geometry_samples": 18,
+      "boundary": "最终编译二进制的控件几何和交互断言；不是实际屏幕像素、原生窗口或输入法验收。"
+    },
+    {
+      "artifact": "ai-chat-context-layout-window-final.json",
+      "sha256": "d9859913439a35f4983fc2f773d1d6845184f11e5d7e848e0ddd24fa8223d857",
+      "binary_sha256": "8d1e1e558a6b7342fc80d20749a5ebb17b45ab60284b93c5b6e7573ef050fbaa",
+      "execution_owner": "/root/local_model_path",
+      "reviewer_action": "read_and_verify_receipt_and_reuse_boundary",
+      "result": "passed",
+      "phases": 10,
+      "final_matching_input_hashes": 9,
+      "later_changed_input": "editor/docks/workbench/AIWorkbenchReference.cpp",
+      "boundary": "中间候选的分栏回退、布局保存与重启证据；两种配置都没有可用原生显示器，不能声称运行了 OS 浮窗分支。窗口核心及测试指纹与最终一致；后续现场提供方变化由最终 current contract 重新覆盖。"
+    },
+    {
+      "artifact": "ai-chat-context-layout-business-references.json",
+      "sha256": "a7255e8b180ef2d044f87628eb78b5fd840639dbabd05f2304fa871699b9b7a5",
+      "binary_sha256": "d3677ac0a5fbf137fdee331a5a860390ad5d7b38e7e580e0affd7f3ad2d611ed",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_exact_sent_context",
+      "result": "passed",
+      "coverage": [
+        "自动当前选区切换与手动引用独立",
+        "保留引用只在显式移除后删除",
+        "两模块、工单、草稿及真实 HTTP 发送快照一致",
+        "合成 API 和启动凭据均脱敏",
+        "退出与第二身份隔离"
+      ],
+      "boundary": "中间候选、隔离服务及模型 fixture；报告未内嵌完整源指纹，不将其冒充最终二进制全量验收。"
+    },
+    {
+      "artifact": "ai-chat-context-layout-business.json",
+      "sha256": "87f7d28337338b95b83ff48249f60a9f01f9f074be6f9f162e8cd559eb3a6099",
+      "binary_sha256": "d3677ac0a5fbf137fdee331a5a860390ad5d7b38e7e580e0affd7f3ad2d611ed",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt",
+      "result": "passed",
+      "coverage": [
+        "普通业务状态与草稿恢复",
+        "精确模块上下文",
+        "第二测试账号真实激活后的隔离",
+        "实际 auth/editor-session 路由"
+      ],
+      "boundary": "隔离回环账号及服务；不是用户真实生产账号验收。"
+    },
+    {
+      "artifact": "ai-chat-context-layout-context-milestone-final.json",
+      "sha256": "263fba00ae9cf5f8cb955eefe63cc9fd21812dabd67c349e7eef897b8587e8d5",
+      "binary_sha256": "d3677ac0a5fbf137fdee331a5a860390ad5d7b38e7e580e0affd7f3ad2d611ed",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt_and_request_payload",
+      "result": "passed",
+      "coverage": [
+        "K01 双归属资源必须显式选择",
+        "当前脚本精确选段与手动资源同时进入原模块",
+        "相同代码控件、选区、草稿和输入焦点保持",
+        "辅助展开不切换主区",
+        "仅创建会话和发送各一次"
+      ],
+      "model_fixture_calls": 1,
+      "boundary": "隔离服务、合成资源与模型 fixture；没有调用外部模型提供方。"
+    },
+    {
+      "artifact": "ai-chat-context-layout-project-routing-compiled.json",
+      "sha256": "3e0c0d6f0d51f5a67c0f88a4074d5297ac12fbaf9bc63bfc69cf40589ec5347c",
+      "binary_sha256": "d3677ac0a5fbf137fdee331a5a860390ad5d7b38e7e580e0affd7f3ad2d611ed",
+      "execution_owner": "/root/local_model_path",
+      "reviewer_action": "read_and_verify_receipt_and_source_hashes",
+      "result": "passed",
+      "mode": "compiled_native",
+      "identity_phases": 22,
+      "identity_checks": 122,
+      "legacy_compatibility_checks": 68,
+      "private_vault_preserved": true,
+      "credential_privacy_passed": true,
+      "boundary": "会话、身份和项目路由代码与最终指纹一致；编译执行发生在中间候选。"
+    },
+    {
+      "artifact": "ai-chat-context-layout-project-routing-source.json",
+      "sha256": "b1a0e131ab1e03247dc9dad81872ddc270958d39a58d9def71bcd11d133d6f51",
+      "binary_sha256": "d3677ac0a5fbf137fdee331a5a860390ad5d7b38e7e580e0affd7f3ad2d611ed",
+      "execution_owner": "/root/local_model_path",
+      "reviewer_action": "read_and_verify_receipt_and_source_hashes",
+      "result": "passed",
+      "mode": "source_loaded",
+      "identity_phases": 22,
+      "identity_checks": 122,
+      "legacy_compatibility_checks": 68,
+      "boundary": "源码加载模式；不替代编译模式回执。"
+    },
+    {
+      "artifact": "ai-chat-context-layout-static.json",
+      "sha256": "6c91b690dcd1c8207537b9810083902bfd420f373db212d50149a65b9e952972",
+      "execution_owner": "/root",
+      "reviewer_action": "read_receipt",
+      "result": "passed",
+      "checks": [
+        "clang-format",
+        "ruff-check",
+        "ruff-format",
+        "codespell",
+        "diff-check"
+      ],
+      "exit_codes": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "historical_failure": {
+    "artifact": "ai-chat-context-layout-redaction-before.json",
+    "sha256": "2397fdbf2377811219b451894d5dbd6638c57fa7bdfbea28cb7282435e820ecc",
+    "binary_sha256": "0d3926245cf5bac317c80f1c895acf8181bd9ae16148b12a006c4945ff4ce732",
+    "observation": "旧候选当前定位符正确、旧自动定位符已消失，但两项合成凭据只脱敏一项；后续业务参考报告验证两项均脱敏。",
+    "real_credentials_used": false
+  },
+  "diagnostics_retained": {
+    "native_shell": [
+      "ERROR: Condition \"p_name.is_empty()\" is true.",
+      "WARNING: 20 RIDs of type \"Canvas\" were leaked.",
+      "WARNING: 5633 RIDs of type \"CanvasItem\" were leaked.",
+      "ERROR: Pages in use exist at exit in PagedAllocator: N20RasterizerSceneDummy21GeometryInstanceDummyE",
+      "WARNING: Leaked instance dependency: Bug - did not call instance_notify_deleted when freeing.",
+      "WARNING: 14188 ObjectDB instances were leaked at exit."
+    ],
+    "local_conversation": "故障注入预期出现 storage-blocker/not-a-directory 目录创建失败；本公开记录不包含临时绝对路径。",
+    "current_editor_context": [
+      "6 Canvas RIDs leaked",
+      "223 CanvasItem RIDs leaked",
+      "1010 ObjectDB instances leaked at exit"
+    ],
+    "layout": [
+      "303 Canvas RIDs leaked",
+      "5914 CanvasItem RIDs leaked",
+      "17788 ObjectDB instances leaked at exit"
+    ],
+    "assessment": "以上诊断未被隐藏，不能将断言通过表述为没有错误输出或没有退出泄漏。独立审查未把这些诊断的来源全部归因于既有代码。"
+  },
+  "acceptance_limits": [
+    "macOS 和 Windows 的实际原生浮窗、系统关闭按钮、跨窗口焦点以及 IME 仍需独立实际验收；无显示器环境只验证分栏回退。",
+    "本次独立审查未操控用户正在使用的窗口，未读取真实密钥，未调用真实模型提供方或执行资产生产。",
+    "中间候选窗口、业务、K01 与身份报告保留各自二进制边界；最终当前现场和布局由 07124 候选重新验证，未伪造其他套件重跑。",
+    "CI、主线合入、本机安装与用户实际满意反馈不由本审查推定。",
+    "原 #2180 猪模型生产业务验收不属于本次聊天窗口与上下文回归完成声明。"
+  ],
+  "conclusion": "最终冻结输入未发现尚未修复的代码阻断项，可用于代码交付审查。完整用户验收仍需实际 OS 窗口与选区交互证据；此记录不声称用户目标已全部完成。"
+}

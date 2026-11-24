@@ -103,6 +103,13 @@ private:
 	EditorDock *dock_tab_dragged = nullptr;
 	bool docks_visible = true;
 	bool forced_focus = false;
+	ObjectID idInlineExpandedDock;
+	PackedInt32Array arrAuxiliarySplitOffsets;
+	Vector<ObjectID> arrAuxiliaryColumns;
+	Vector<ObjectID> GetAuxiliaryColumns() const;
+	void RestoreAuxiliarySplit();
+	void ExpandAuxiliarySplit(EditorDock *pDock);
+	void RestoreDockFromWindow(EditorDock *pDock);
 
 	DockContextPopup *dock_context_popup = nullptr;
 	PopupMenu *docks_menu = nullptr;
@@ -158,6 +165,7 @@ public:
 	void focus_dock(EditorDock *p_dock);
 	void force_focus_dock(EditorDock *p_dock); // Ignore can_switch_dock().
 	void make_dock_floating(EditorDock *p_dock);
+	void SetDockAuxiliaryExpanded(EditorDock *pDock, bool bExpanded);
 
 	void set_docks_visible(bool p_show);
 	bool are_docks_visible() const;

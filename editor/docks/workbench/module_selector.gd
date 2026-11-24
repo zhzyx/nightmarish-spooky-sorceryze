@@ -607,7 +607,7 @@ func redact_reference(text: String) -> String:
 	if has_meta("redact_workbench_text"):
 		text = get_meta("redact_workbench_text").call(text)
 	if managed_identity and is_instance_valid(session) and session.has_method("redact_credentials"):
-		return session.redact_credentials(text)
+		text = session.redact_credentials(text)
 	var token := OS.get_environment("TIANXUAN_TOKEN")
 	return text if token.is_empty() else text.replace(token, "[REDACTED]")
 

@@ -501,6 +501,10 @@ func api_request(method: int, route: String, payload: Dictionary = {}, timeout_s
 	var project_scoped := not path.begins_with("/api/v1/native/") and not path.begins_with("/api/v1/workspace/runs") and not path.begins_with("/api/v1/workspace/modules")
 	if path in ["/api/v1/native/workflow/pause", "/api/v1/native/workflow/resume", "/api/v1/native/workflow/cancel", "/api/v1/native/workflow/recover-project"]:
 		project_scoped = true
+	# Business asset ownership belongs to the verified project. Other native
+	# endpoints deliberately retain their query-free protocol.
+	if _matches(path, "^/api/v1/native/asset-context/[^/]+/[^/]+/.+$") or _matches(path, "^/api/v1/native/business-modules/[^/]+/assets(/[^/]+)?$") or _matches(path, "^/api/v1/native/assets/[^/]+/business-modules$"):
+		project_scoped = true
 	if path.begins_with("/api/v1/issues/") and path.ends_with("/work/godot-inputs"):
 		project_scoped = false
 	if project_scoped:

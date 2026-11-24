@@ -15,6 +15,8 @@ func _wait(check: Callable, description: String) -> bool:
 
 
 func _pick_owner(module: String, selected_path: String) -> bool:
+	if not await _wait(func(): return not picker_panel.busy, "Asset picker waits for the authenticated module list"):
+		return false
 	assets.get_node("OpenStandaloneAsset").pressed.emit()
 	assets.source.text = fixture.asset.source_module
 	assets.revision.text = fixture.asset.revision
@@ -22,6 +24,7 @@ func _pick_owner(module: String, selected_path: String) -> bool:
 	assets.lookup.pressed.emit()
 	var choices: OptionButton = assets.choices
 	if not await _wait(func(): return choices.visible and choices.item_count == 4, "Missing both shared asset owners"):
+		print("ASSET_CONTEXT_DIAGNOSTIC ", JSON.stringify({"busy": picker_panel.busy, "notice": assets.notice.text, "count": choices.item_count, "dialog_visible": assets.dialog.visible, "project": picker_panel.project}))
 		return false
 	var ids := [choices.get_item_metadata(2), choices.get_item_metadata(3)]
 	if not _check(ids.has(fixture.modules[0]) and ids.has(fixture.modules[1]) and choices.selected == 0 and assets.dialog.get_ok_button().disabled, "Ambiguous asset was resolved without a choice"):
@@ -108,6 +111,10 @@ func _run() -> void:
 		return
 	picker_panel.composer.insert_text_at_caret("\nK01 shared model consultation")
 	var sent: String = picker_panel.composer.text
+	var current_context := sidebar.find_child("WorkbenchCurrentContext", true, false) as Label
+	if not _check(current_context != null and current_context.is_visible_in_tree() and current_context.tooltip_text.contains(before.text) and current_context.tooltip_text.contains("res://character.gd#L"), "Current script selection is not visibly staged for this turn"):
+		return
+	var displayed_context := current_context.tooltip_text
 	picker_panel.send.pressed.emit()
 	if not await _wait(func(): return not picker_panel.busy and picker_panel.composer.text.is_empty(), "Explicit module consultation"):
 		return
@@ -120,14 +127,16 @@ func _run() -> void:
 		return
 	if not await _switch_to_owner(fixture.modules[1]) or not _read_draft(locator + "\nanimation pending", 0):
 		return
-	sidebar.find_child("ExpandWorkbench", true, false).pressed.emit()
+	var main_tabs := root.find_child("AI Chat", true, false).get_parent() as TabContainer
+	var source_screen := main_tabs.get_current_tab_control()
+	var expand := sidebar.find_child("ExpandWorkbench", true, false) as Button
+	expand.pressed.emit()
 	await _settle_layout()
-	var restore := root.find_child("RestoreWorkbenchSidebar", true, false) as Button
-	if not _check(restore.is_visible_in_tree() and picker_panel.composer.has_focus(), "Module composer did not open in full view"):
+	if not _check(sidebar.is_auxiliary_expanded() and main_tabs.get_current_tab_control() == source_screen and sidebar.is_ancestor_of(picker_panel.composer) and picker_panel.composer.has_focus(), "Auxiliary module expansion replaced the main screen or composer"):
 		return
-	restore.pressed.emit()
+	expand.pressed.emit()
 	await _settle_layout()
-	if not _check(sidebar.is_visible_in_tree() and sidebar.is_ancestor_of(picker_panel.composer) and picker_panel.composer.has_focus(), "Module composer did not return to sidebar"):
+	if not _check(not sidebar.is_auxiliary_expanded() and main_tabs.get_current_tab_control() == source_screen and sidebar.is_visible_in_tree() and sidebar.is_ancestor_of(picker_panel.composer) and picker_panel.composer.has_focus(), "Module composer did not return to sidebar with the original main screen"):
 		return
 	sidebar.find_child("CloseWorkbench", true, false).pressed.emit()
 	await _settle_layout()
@@ -147,5 +156,5 @@ func _run() -> void:
 		"before_control": code.get_instance_id(), "after_control": restored.get_instance_id(),
 		"before_selection": before, "after_selection": after, "next_edit": next_edit,
 		"ctrl_m_toggled_and_restored": true, "shift_right_selected": "m", "tab_mode_after_entry": tab_mode,
-		"ownership": ownership, "drafts": drafts, "conversation": conversation, "sent": sent}))
+		"ownership": ownership, "drafts": drafts, "conversation": conversation, "sent": sent, "displayed_current_context": displayed_context}))
 	root.propagate_notification(Node.NOTIFICATION_WM_CLOSE_REQUEST)

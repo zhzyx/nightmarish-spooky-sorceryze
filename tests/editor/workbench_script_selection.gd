@@ -50,20 +50,21 @@ func run() -> void:
 		if not await _invoke_workbench():
 			return
 		var sidebar = root.find_child("AIWorkbenchSidebar", true, false)
-		var chip: Button = sidebar.find_child("WorkbenchReference", true, false)
+		var chip: Label = sidebar.find_child("WorkbenchCurrentContext", true, false)
 		if not _check(chip.visible and path in chip.text, "Wrong draft reference: " + chip.text):
 			return
 		var removed := observations.size() == 2
 		if removed:
-			chip.pressed.emit()
-			if not _check(not chip.visible, "Reference still visible after removal"):
+			code.deselect()
+			if not await _invoke_workbench(): return
+			if not _check(chip.text.contains("未选中内容"), "Cleared script selection retained the old current context"):
 				return
 		var other := "beta" if folder == "alpha" else "alpha"
-		EditorInterface.edit_script(load("res://%s/same.gd" % other))
-		await process_frame
 		var marker := "selection-test-%d" % observations.size()
 		sidebar.find_child("ChatInput", true, false).text = marker
 		sidebar.find_child("Send", true, false).pressed.emit()
+		EditorInterface.edit_script(load("res://%s/same.gd" % other))
+		await process_frame
 		var deadline := Time.get_ticks_msec() + 18000
 		while not FileAccess.file_exists("res://received-" + marker) and Time.get_ticks_msec() < deadline:
 			await create_timer(0.05).timeout

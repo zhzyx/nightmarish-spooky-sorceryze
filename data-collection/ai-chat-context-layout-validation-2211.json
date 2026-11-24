@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "issue": 2211,
+  "request_id": "ai-chat-context-layout-20261124",
+  "worker": "/root",
+  "validated_at": "2026-11-24T04:38:41.142182+00:00",
+  "baseline": "3236a62a7d786ace5905144e2d106c0637d672d1",
+  "source_sha256": {
+    "design-docs/ai-chat-context-layout-20261124.md": "1364ed7964cf5c5c5565cf327a93b4629ff557f5ca469acbbf70587252d6d76f",
+    "doc/classes/EditorDock.xml": "271489e3f76a06cf570ad8deeeac6acfbd132db665f514a1e8224c753e96a78b",
+    "editor/docks/AIChatController.h": "4aa616d537aa087ccead052d80a6d00a5121ee477cb363069d35ce56fcc07a3d",
+    "editor/docks/ai_chat_dock.cpp": "b686243b67345ebde203aca7e7c392d51d27db8e64ab8518a479da82092ed1de",
+    "editor/docks/ai_chat_dock.h": "5b47bfc40e7e82c5f2d7b01659b9371da849e826f2bcda5c5125dfa2ac8b269a",
+    "editor/docks/editor_dock.cpp": "6627ef57e0ff7547edcb8b9ae3098615e646efe9de465b1104dfca2ea1b41c34",
+    "editor/docks/editor_dock.h": "4b200ef03ccc924de8505d69ecbaa5f51b20e7c68522dcdc9682e2847cb9c2f3",
+    "editor/docks/editor_dock_manager.cpp": "d7489c6ae631085f1955e069b68925f6a2729236bd62031dde7541f0b124b40b",
+    "editor/docks/editor_dock_manager.h": "f40d833d0706bbd3cbf1b3a1474d1fdd76d4bb30d8396664ca6a08e50adb1c25",
+    "editor/docks/tianxuan/TianxuanModelHost.cpp": "fdf8c53cdcd7e1ae7236478d1e8ef602179fe0103121bc4f1e10a13afbd204d3",
+    "editor/docks/tianxuan/TianxuanModelHost.h": "0b2fc09ce34e4ff8137edce49c657d7d7e8eb82fea4aeea744e3e0e91c1bb157",
+    "editor/docks/tianxuan/TianxuanWorkbench.cpp": "e75a02728ddb747754205d86d24d4ef0880a94da606662d3c27c0ae670403827",
+    "editor/docks/tianxuan/editor_controller.gd": "c5f8367293620fe40b0b868713f525894e73a986c1e9dc0d8c646dcc3d16c203",
+    "editor/docks/tianxuan/home_page.gd": "ccb678ea6cb9bb5b0fbe6109d99feedebdd53910566676b4cf19decae86cce5a",
+    "editor/docks/tianxuan/locale.gd": "bfe17dc2391dde0061c9bbbb2cc3f624d0ca27c2ddd6789f10a29ddd58a7fcb3",
+    "editor/docks/tianxuan/native_theme.gd": "8be4cf9673fd96197adb0a43081198ac498cb03e390c21d07baeef8a06c91044",
+    "editor/docks/tianxuan/session_controller.gd": "95b91c27ed0c63a9ecdae021643fb28e5991e26ee6f1f453c8edc340d0c13494",
+    "editor/docks/tianxuan/workspace_view.gd": "b21b4250431620851613e1aa6a77a4e974b1e811371206609f57f9758da96e60",
+    "editor/docks/workbench/AIWorkbenchReference.cpp": "71f876a5caa11e71ff4887f43d5b08232a053c37361bc010c9c1d817cc44e332",
+    "editor/docks/workbench/AIWorkbenchSidebar.cpp": "b657a2632ce77309944e2f04b6a5cc7b2d7b8760af06213054e61f6fd482bf1d",
+    "editor/docks/workbench/AuxiliaryDockLayout.cpp": "efa0f871db850c1e672bd6c3b331c1d93838304d56f3a0056b2da393f65eb986",
+    "editor/docks/workbench/module_selector.gd": "96e1d1f26914b0d68f425262e359b7f933a9354da652ee14a3c78300386579f8",
+    "tests/editor/ai_chat_tab_order.gd": "9b82f6e0fa7658f5ce7fe04ee1e0d700b81e3b765c6cf6b75d24e85ebc4b5c93",
+    "tests/editor/run_ai_chat_tab_order.py": "06c33740ae94b3e75e4d8cc0ffdd948456910f1bb47b850de446deb00e395ddc",
+    "tests/editor/run_tianshu_spatial.py": "50e63a5cbedf8aa9020dd138af976273b27f98ac2c2e87c859871eed6773796c",
+    "tests/editor/run_tianxuan_controller.py": "e04b2cd0b72f116577413e6215b4ddd0c1e5a0c8c1096928ff54873d395f2061",
+    "tests/editor/run_tianxuan_identity.py": "4eb7cb708271941d026cebb645a211e35acb424b9489f016ed7de90f0197a6ab",
+    "tests/editor/run_workbench_business_modules.py": "ea072af566f0c5c28f16dbc200d28e1c4092b448df9f9912901f7e1d045b3ad9",
+    "tests/editor/run_workbench_context_milestone.py": "756c4cbde8c5a14760d6879a90ab76506438bce28b6bdb95885411e65e41e4ac",
+    "tests/editor/run_workbench_page_reference.py": "f5b02eef459c586fd92ce3f39e378367a0c5293ecb427078eabd0e773505caeb",
+    "tests/editor/tianxuan_identity.gd": "2f9a56cf166cf849c2f2edc8ca2f0164402380459b5d7a5a4b8e32f6e9d48905",
+    "tests/editor/tianxuan_native_shell.gd": "5f4bb0e24874c5cb5af858a240f454e6178ecb6fb6d1abb116e305ff313ab95d",
+    "tests/editor/workbench_business_modules.gd": "2e644e1f134240c65ecf630331ef1a871a4c3ffde50d8b95c7b37698a68c3917",
+    "tests/editor/workbench_business_references.gd": "a9736c86964b1c5063b7d1a092a033f45b8a69c8002a84553dd37d8f9202f854",
+    "tests/editor/workbench_context_milestone.gd": "39d80977af9f1d89362ee0ab5a461eadaf1297b8d14adc00e9b4ee909f2ba896",
+    "tests/editor/workbench_current_context.gd": "cdfee016e02a4cc0d5df9644f922717923c9b1341039ef7084d80936a972a328",
+    "tests/editor/workbench_page_field.gd": "9d81492906d56d6729bf50b569a5933f04545d4dcae12912791f24e635fa145d",
+    "tests/editor/workbench_page_reference.gd": "b0dd6559425c08bf1e2826b2c1d8edf6b063a868452966d7be900a707b52c8e7",
+    "tests/editor/workbench_scene_selection.gd": "778668ef014004a811666c5358e1a6dbd33d067c29416934ef57abc10e56d46c",
+    "tests/editor/workbench_script_selection.gd": "e872ab167f785e2d9e5d4044d30d971d0c658448ff34e091953aee4a0ce6669a"
+  },
+  "build": {
+    "passed": true,
+    "platform": "macOS arm64",
+    "command": "python -m SCons platform=macos target=editor arch=arm64 use_volk=yes accesskit=no vulkan=no metal=no dev_build=yes debug_symbols=no -j6",
+    "binary_sha256": "07124fdd64ea305fb630c9d5556843ba924344609ad092a94f5f24b1f40ea7b1",
+    "log_sha256": "140f166335e132fdbbb4dc1b0a1642c2c13788c79c8066d5f3717e96c92daf7c"
+  },
+  "final_native": {
+    "shell_checks": 171,
+    "layout_checks": 248,
+    "current_context_checks": 38,
+    "local_conversation_checks": 43,
+    "host_progress_passed": true,
+    "production_handoff_passed": true
+  },
+  "reports": [
+    {
+      "artifact": "ai-chat-context-layout-native-shell.json",
+      "sha256": "ba843b840d02d0c2d52adeaaae9cb758cb43c2f7b46a5e43fb4a6d9c3982431e",
+      "passed": true,
+      "binary_sha256": "07124fdd64ea305fb630c9d5556843ba924344609ad092a94f5f24b1f40ea7b1"
+    },
+    {
+      "artifact": "ai-chat-context-layout-native-layout.json",
+      "sha256": "ee381f1ef60297af540551a81600ae4f244f04d167ccc1249b187ee72508487c",
+      "passed": true,
+      "binary_sha256": "07124fdd64ea305fb630c9d5556843ba924344609ad092a94f5f24b1f40ea7b1"
+    },
+    {
+      "artifact": "ai-chat-context-layout-project-routing-compiled.json",
+      "sha256": "3e0c0d6f0d51f5a67c0f88a4074d5297ac12fbaf9bc63bfc69cf40589ec5347c",
+      "passed": true,
+      "binary_sha256": "d3677ac0a5fbf137fdee331a5a860390ad5d7b38e7e580e0affd7f3ad2d611ed"
+    },
+    {
+      "artifact": "ai-chat-context-layout-project-routing-source.json",
+      "sha256": "b1a0e131ab1e03247dc9dad81872ddc270958d39a58d9def71bcd11d133d6f51",
+      "passed": true,
+      "binary_sha256": "d3677ac0a5fbf137fdee331a5a860390ad5d7b38e7e580e0affd7f3ad2d611ed"
+    },
+    {
+      "artifact": "ai-chat-context-layout-business-references.json",
+      "sha256": "a7255e8b180ef2d044f87628eb78b5fd840639dbabd05f2304fa871699b9b7a5",
+      "passed": true,
+      "binary_sha256": "d3677ac0a5fbf137fdee331a5a860390ad5d7b38e7e580e0affd7f3ad2d611ed"
+    },
+    {
+      "artifact": "ai-chat-context-layout-business.json",
+      "sha256": "87f7d28337338b95b83ff48249f60a9f01f9f074be6f9f162e8cd559eb3a6099",
+      "passed": true,
+      "binary_sha256": "d3677ac0a5fbf137fdee331a5a860390ad5d7b38e7e580e0affd7f3ad2d611ed"
+    },
+    {
+      "artifact": "ai-chat-context-layout-context-milestone-final.json",
+      "sha256": "263fba00ae9cf5f8cb955eefe63cc9fd21812dabd67c349e7eef897b8587e8d5",
+      "passed": true,
+      "binary_sha256": "d3677ac0a5fbf137fdee331a5a860390ad5d7b38e7e580e0affd7f3ad2d611ed"
+    },
+    {
+      "artifact": "ai-chat-context-layout-window-final.json",
+      "sha256": "d9859913439a35f4983fc2f773d1d6845184f11e5d7e848e0ddd24fa8223d857",
+      "passed": true,
+      "binary_sha256": "8d1e1e558a6b7342fc80d20749a5ebb17b45ab60284b93c5b6e7573ef050fbaa"
+    },
+    {
+      "artifact": "ai-chat-scene-selection.json",
+      "sha256": "91890b0a56f2e8881ca597d40bc4c9ee9a8242b56fcb78b74b63c0c6a140cc1c",
+      "passed": true,
+      "binary_sha256": "8d1e1e558a6b7342fc80d20749a5ebb17b45ab60284b93c5b6e7573ef050fbaa"
+    },
+    {
+      "artifact": "ai-chat-script-selection.json",
+      "sha256": "efd7ec4fa2f28bbe439ca4e6c168f30f16997e05c83326a8556d531a00b2e57a",
+      "passed": true,
+      "binary_sha256": "8d1e1e558a6b7342fc80d20749a5ebb17b45ab60284b93c5b6e7573ef050fbaa"
+    }
+  ],
+  "static": {
+    "at": "2026-11-24T04:35:08.159479+00:00",
+    "checks": [
+      {
+        "name": "clang-format",
+        "exit_code": 0,
+        "output": ""
+      },
+      {
+        "name": "ruff-check",
+        "exit_code": 0,
+        "output": "All checks passed!\n"
+      },
+      {
+        "name": "ruff-format",
+        "exit_code": 0,
+        "output": "7 files already formatted\n"
+      },
+      {
+        "name": "codespell",
+        "exit_code": 0,
+        "output": ""
+      },
+      {
+        "name": "diff-check",
+        "exit_code": 0,
+        "output": ""
+      }
+    ]
+  },
+  "evidence_reuse": "Final native shell/layout and its current-context contract use the final binary. Earlier component tests retain their actual binary identity. Later changes were limited to the compact-header spacing and two explicit active-window source providers; source review and final native contracts cover the changed inputs. Identity, business project routing and window geometry algorithms were unchanged.",
+  "limits": [
+    "Headless checks do not validate macOS/Windows system floating windows, cross-window focus, native close button or IME.",
+    "Real providers, cloud deployment and pig asset production were not run by these tests; HTTP calls use isolated local fixtures.",
+    "Canvas, CanvasItem and ObjectDB cleanup diagnostics remain recorded in raw isolated editor logs; they are not reported as clean shutdown evidence.",
+    "Signed PR, required CI, main readback, installed binary and real user acceptance are separate subsequent receipts.",
+    "Issue 2180 original pig-model production entry acceptance remains open."
+  ],
+  "private_raw_archive": "/Users/oracle/Library/GongGong/editors/ai-chat-context-2211/audit"
+}

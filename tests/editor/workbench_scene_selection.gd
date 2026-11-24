@@ -37,11 +37,9 @@ func _run():
 	var sidebar := root.find_child("AIWorkbenchSidebar", true, false)
 	if OS.get_environment("SCENE_SELECTION_RESTORE") == "1":
 		var host: Node = sidebar if sidebar.is_visible_in_tree() else chat
-		var restored: Button = host.find_child("WorkbenchReference", true, false)
+		var restored: Label = host.find_child("WorkbenchCurrentContext", true, false)
 		var input: TextEdit = host.find_child("ChatInput", true, false)
-		if not _check(is_instance_valid(restored) and is_instance_valid(input) and restored.visible and "失效" in restored.text and input.text == "retain stale draft", "Lost restored multiselection draft"): return
-		for path in LEAVES:
-			if not _check(path in restored.text, "Missing restored selection member"): return
+		if not _check(is_instance_valid(restored) and is_instance_valid(input) and input.text == "retain stale draft" and not host.find_child("WorkbenchReference", true, false).visible, "Restoring current context must preserve text without turning old live selections into manual references"): return
 		print("SCENE_SELECTION_RESTORED")
 		quit(0)
 		return
@@ -69,18 +67,18 @@ func _run():
 				selection.add_node(scene_root.get_node(path))
 				expected.append({"kind":"editor", "object_id":scene + "#" + path, "revision":FileAccess.get_sha256(scene)})
 			if not await _invoke_workbench(): return
-			var label: Button = sidebar.find_child("WorkbenchReference", true, false)
+			var label: Label = sidebar.find_child("WorkbenchCurrentContext", true, false)
 			var input: TextEdit = sidebar.find_child("ChatInput", true, false)
 			var send: Button = sidebar.find_child("Send", true, false)
 			var draft := "%s selection %d" % [screen, count]
 			input.text = draft
 			if not _check(label.is_visible_in_tree(), "Missing draft reference " + draft): return
 			for ref in expected:
-				if not _check(ref.object_id in label.text and ref.revision in label.tooltip_text, "Missing path or revision in " + label.text): return
+				if not _check(ref.object_id in label.tooltip_text and ref.revision in label.tooltip_text, "Missing path or revision in " + label.tooltip_text): return
 			print("SELECTION_DRAFT ", JSON.stringify({"draft": draft, "label": label.text, "references": expected}))
+			send.pressed.emit()
 			selection.clear()
 			selection.add_node(scene_root)
-			send.pressed.emit()
 			var persisted := false
 			var deadline := Time.get_ticks_msec() + 15000
 			while not persisted and Time.get_ticks_msec() < deadline:
@@ -93,7 +91,7 @@ func _run():
 					for message in agent.transcript:
 						if message.get("editor_references") == expected:
 							persisted = true
-			if not _check(persisted and not label.visible and input.text.is_empty(), "Selection did not reach history " + draft): return
+			if not _check(persisted and input.text.is_empty(), "Selection did not reach history " + draft): return
 			sidebar.find_child("CloseWorkbench", true, false).pressed.emit()
 			await create_timer(0.15).timeout
 	# Invalidating a non-primary member must block the entire selection.
@@ -102,17 +100,26 @@ func _run():
 	selection.clear()
 	for path in LEAVES: selection.add_node(scene_root.get_node(path))
 	if not await _invoke_workbench(): return
-	var label: Button = sidebar.find_child("WorkbenchReference", true, false)
+	var label: Label = sidebar.find_child("WorkbenchCurrentContext", true, false)
 	var composer: TextEdit = sidebar.find_child("ChatInput", true, false)
 	scene_root.get_node(LEAVES.back()).name = "Moved"
 	composer.text = "retain stale draft"
 	sidebar.find_child("Send", true, false).pressed.emit()
-	if not _check(label.visible and "失效" in label.text and composer.text == "retain stale draft", "Stale group sent"): return
-	label.pressed.emit()
-	if not _check(not label.visible and composer.text == "retain stale draft", "Removing selection lost draft"): return
+	if not _check(label.visible and "已变化" in label.text and composer.text == "retain stale draft", "Stale displayed group sent"): return
+	# Let the scene tree finish rebuilding after the rename before clearing its
+	# live selection; the deferred rebuild can otherwise reselect the root.
+	await process_frame
+	await process_frame
+	selection.clear()
+	var deadline := Time.get_ticks_msec() + 5000
+	while not label.text.contains("未选中内容") and Time.get_ticks_msec() < deadline:
+		await create_timer(0.025).timeout
+	if not label.text.contains("未选中内容"): print("CLEAR_CONTEXT_DIAGNOSTIC ", label.text, " draft_retained=", composer.text == "retain stale draft")
+	if not _check(label.text.contains("未选中内容") and composer.text == "retain stale draft", "Clearing the current selection lost the draft or reused old nodes"): return
 	scene_root.get_node("Other/Moved").name = "SharedLeaf"
+	for path in LEAVES: selection.add_node(scene_root.get_node(path))
 	if not await _invoke_workbench(): return
-	if not _check(label.visible and not "失效" in label.text, "Could not capture replacement selection"): return
+	if not _check(label.visible and label.tooltip_text.contains("Other/SharedLeaf"), "Could not capture replacement selection"): return
 	await create_timer(1.2).timeout
 	print("SCENE_SELECTION_OK")
 	quit(0)

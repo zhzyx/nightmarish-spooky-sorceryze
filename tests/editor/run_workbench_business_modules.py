@@ -144,6 +144,9 @@ def exercise(editor, root, references=False):
                     shutil.copyfile(
                         Path(__file__).with_name("workbench_business_references.gd"), project / "reference_probe.gd"
                     )
+                    (project / "retained.tscn").write_text(
+                        '[gd_scene format=3]\n[node name="RetainedManualNode" type="Node3D"]\n', encoding="utf-8"
+                    )
                     for folder in ("alpha", "beta"):
                         (project / folder).mkdir()
                         (project / folder / "same.gd").write_text(
@@ -190,20 +193,26 @@ def exercise(editor, root, references=False):
                         assert len(chat["turns"]) == 2
                         turn = chat["turns"][-1]
                         turns.append({"content": turn["content"], "context_snapshot": turn["context_snapshot"]})
-                    beta = evidence["selected"][1]
+                    alpha, beta = evidence["selected"]
+                    assert evidence["automatic_latest_only"] and evidence["manual_preserved_until_explicit_removal"]
                     for i, turn in enumerate(turns):
+                        selected = beta if i == 0 else alpha
                         assert turn["context_snapshot"] == {
                             "project": PROJECT,
                             "module_id": fixtures[i]["module_id"],
                             "issue_id": fixtures[i]["issue_id"],
-                            "references": [beta] if i == 0 else [],
+                            "references": [selected],
                         }
-                    prefix, context = turns[0]["content"].split("编辑器引用：")
-                    encoded, excerpt = context.split("\n选段 · ")
-                    assert prefix.startswith("keep beta\n") and json.loads(encoded) == [beta]
-                    assert excerpt == beta["object_id"] + ':\nconst MARKER = "beta [REDACTED] [REDACTED]"'
-                    assert all(value not in turns[0]["content"] for value in ("alpha", token, "u15-business-fixture"))
-                    assert turns[1]["content"] == "module B clean"
+                        assert "当前编辑现场：本轮主要处理对象" in turn["content"]
+                        assert selected["object_id"] in turn["content"]
+                        assert selected["revision"] in turn["content"]
+                        marker = "beta" if i == 0 else "alpha"
+                        assert f'const MARKER = "{marker} [REDACTED] [REDACTED]"' in turn["content"]
+                        assert all(
+                            value not in turn["content"] for value in (token, "u15-business-fixture", "retained.tscn")
+                        )
+                    assert turns[0]["content"].startswith("keep beta\n") and "alpha" not in turns[0]["content"]
+                    assert turns[1]["content"].startswith("module B uses current alpha\n")
                     return {
                         "state": "passed",
                         "editor_exit": run.returncode,
@@ -237,7 +246,7 @@ def exercise(editor, root, references=False):
                     "references": [],
                 }
                 if "C06_REAL_ACCOUNT_SWITCH=passed" in run.stdout:
-                    assert ("POST", BASE + "/auth/session", 200) in native_calls
+                    assert ("POST", BASE + "/auth/editor-session", 200) in native_calls
                 for item in fixtures:
                     chat = success(client.get(CHATS + "/" + item["conversation_id"]))
                     assert [t["content"] for t in chat["turns"]] == [item["message"]]

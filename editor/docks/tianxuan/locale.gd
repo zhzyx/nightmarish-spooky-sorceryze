@@ -4,6 +4,17 @@ extends RefCounted
 
 const DOMAIN := &"tianxuan-native"
 const ENGLISH := {
+	"当前引用包含受保护内容，请选择其他对象。": "The current reference contains protected content. Select another object.",
+	"保留引用 · %d": "Retained references · %d",
+	"当前现场 · 请在原编辑窗口选择内容": "Current selection · Select content in the editing window",
+	"当前现场 · %s · %s": "Current selection · %s · %s",
+	"未选中内容": "No content selected",
+	"当前现场已变化或不可用，请核对更新后的引用再发送。草稿已保留。": "The current selection changed or is unavailable. Review the updated context before sending. Your draft is retained.",
+	"当前现场已更新，请核对引用后再次发送。草稿已保留。": "The current selection has been updated. Review it before sending again. Your draft is retained.",
+	"当前现场与保留引用合计超过 16 项，请缩小选区或移除保留引用。草稿已保留。": "The current selection and retained references exceed 16 items. Narrow the selection or remove retained references. Your draft is retained.",
+	"收回": "Return to sidebar",
+	"打开天璇工作区": "Open Tianxuan workspace",
+	"切换主工作区，查看完整天璇功能": "Switch the main workspace to the full Tianxuan interface",
 	"连接失败": "Connection failed",
 	"设备登录被拒绝，请检查个人密钥与权限（%s）": "Device sign-in was denied. Check your personal key and permissions (%s).",
 	"设备登录未返回独立设备凭据，个人密钥未保存（%s）": "Device sign-in did not return a separate device credential. The personal key was not saved (%s).",

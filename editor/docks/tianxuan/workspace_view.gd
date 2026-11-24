@@ -2,6 +2,7 @@
 extends PanelContainer
 
 signal companion_requested
+signal workspace_requested
 
 var controller: Node
 var session: Node
@@ -34,6 +35,9 @@ var _current_page := "home"
 var _config_serial := 0
 var _config_message := ""
 var _layout_pending := false
+var _companion := Button.new()
+var _last_content_focus: WeakRef
+var _focus_viewport: WeakRef
 
 
 func _ready() -> void:
@@ -53,6 +57,7 @@ func _ready() -> void:
 	custom_minimum_size = Vector2(280 if compact else 430, 240) * ui_scale
 	add_child(_body)
 	_build_header()
+	_watch_content_focus()
 	_body.add_child(_columns)
 	_columns.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_build_navigation()
@@ -93,11 +98,18 @@ func _build_header() -> void:
 	_language_choice.add_item("English")
 	_language_choice.item_selected.connect(func(index: int): controller.set_language("zh" if index == 0 else "en"))
 	row.add_child(_language_choice)
-	var companion := Button.new()
-	companion.name = "ExpandTianxuan" if compact else "OpenTianxuanSidebar"
-	companion.text = "展开" if compact else "打开侧栏"
-	companion.pressed.connect(func(): companion_requested.emit())
-	row.add_child(companion)
+	_companion.name = "ExpandTianxuan" if compact else "OpenTianxuanSidebar"
+	_companion.text = "展开" if compact else "打开侧栏"
+	_companion.pressed.connect(_request_companion)
+	row.add_child(_companion)
+	if compact:
+		var workspace := Button.new()
+		workspace.name = "OpenTianxuanWorkspace"
+		workspace.theme_type_variation = "TianxuanCompactHeaderButton"
+		workspace.text = "打开天璇工作区"
+		workspace.tooltip_text = "切换主工作区，查看完整天璇功能"
+		workspace.pressed.connect(func(): workspace_requested.emit())
+		_body.add_child(workspace)
 	_connection.theme_type_variation = "TianxuanCaption"
 	_connection.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	_body.add_child(_connection)
@@ -106,6 +118,43 @@ func _build_header() -> void:
 	_body.add_child(_page_picker)
 	var divider := HSeparator.new()
 	_body.add_child(divider)
+
+
+func _request_companion() -> void:
+	controller.editor_context.capture_current_context()
+	companion_requested.emit()
+
+
+func auxiliary_expansion_changed(expanded: bool) -> void:
+	_companion.text = "收回" if expanded else "展开"
+	if controller and controller.editor_context:
+		controller.editor_context.capture_current_context()
+	_restore_expansion_focus.call_deferred()
+
+
+func _watch_content_focus() -> void:
+	var previous: Viewport = _focus_viewport.get_ref() if _focus_viewport else null
+	if previous and previous.gui_focus_changed.is_connected(_remember_content_focus):
+		previous.gui_focus_changed.disconnect(_remember_content_focus)
+	var current := get_viewport()
+	_focus_viewport = weakref(current)
+	current.gui_focus_changed.connect(_remember_content_focus)
+
+
+func _remember_content_focus(control: Control) -> void:
+	if control and is_ancestor_of(control) and not control is BaseButton:
+		_last_content_focus = weakref(control)
+
+
+func _restore_expansion_focus() -> void:
+	if not is_inside_tree():
+		return
+	_watch_content_focus()
+	if controller and controller.editor_context:
+		controller.editor_context.capture_current_context()
+	var control: Control = _last_content_focus.get_ref() if _last_content_focus else null
+	if control and not control.is_queued_for_deletion() and control.is_visible_in_tree():
+		control.grab_focus()
 
 
 func _build_navigation() -> void:

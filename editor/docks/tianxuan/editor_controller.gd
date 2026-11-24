@@ -7,31 +7,117 @@ signal changed
 var workspace: Node
 var status := ""
 var _captured := {}
+var _current_contexts := {}
+var _current_error := ""
+var _context_views: Array[WeakRef] = []
+var _context_timer := Timer.new()
 
 
 func _ready() -> void:
 	workspace = get_meta("workspace")
 	workspace.session.identity_changed.connect(func():
 		_captured.clear()
+		_current_contexts.clear()
+		_current_error = ""
 		status = ""
 		changed.emit()
 	)
 	workspace.changed.connect(func(topic: String):
 		if topic == "conversation_selection" or topic.begins_with("draft:editor:"):
+			_current_error = ""
 			changed.emit()
 	)
+	_context_timer.wait_time = 0.5
+	_context_timer.timeout.connect(_poll_current_context)
+	add_child(_context_timer)
+	_context_timer.start()
+
+
+func observe_context(view: Control) -> void:
+	for reference in _context_views:
+		if reference.get_ref() == view:
+			return
+	_context_views.append(weakref(view))
+
+
+func _poll_current_context() -> void:
+	for index in range(_context_views.size() - 1, -1, -1):
+		var view: Control = _context_views[index].get_ref()
+		if not view:
+			_context_views.remove_at(index)
+		elif view.is_visible_in_tree():
+			capture_current_context()
+			return
+
+
+func _read_current_context(verify := false) -> Dictionary:
+	var host: Node = workspace.get_meta("model_host", null)
+	if not is_instance_valid(host) or not host.has_method("editor_context"):
+		return {}
+	# The provider knows editor credentials; this consumer also owns a distinct
+	# Tianxuan identity. Normalize at this boundary before storing or comparing.
+	return _redact_current_value(host.editor_context(verify))
+
+
+func _redact_current_value(value: Variant) -> Variant:
+	if value is String:
+		return workspace.session.redact_credentials(value)
+	if value is Dictionary:
+		var result := {}
+		for key in value:
+			result[key] = _redact_current_value(value[key])
+		return result
+	if value is Array:
+		var result := []
+		for item in value:
+			result.append(_redact_current_value(item))
+		return result
+	return value
+
+
+func capture_current_context() -> void:
+	if workspace.identity().is_empty() or workspace.chat_busy():
+		return
+	var current := _read_current_context()
+	if current != current_context():
+		_current_contexts[_key()] = current.duplicate(true)
+		_current_error = ""
+		changed.emit()
+
+
+func current_context() -> Dictionary:
+	return _current_contexts.get(_key(), {}).duplicate(true)
+
+
+func current_context_status() -> String:
+	if not _current_error.is_empty():
+		return tr(_current_error)
+	var current := current_context()
+	if str(current.get("source", "")).is_empty():
+		return tr("当前现场 · 请在原编辑窗口选择内容")
+	var selection := str(current.get("selection_text", ""))
+	var detail := tr(str(current.error)) if not str(current.get("error", "")).is_empty() else selection if not selection.is_empty() else tr("未选中内容")
+	return tr("当前现场 · %s · %s") % [str(current.source), detail]
 
 
 func _key() -> String:
-	return "editor:" + ProjectSettings.globalize_path("res://").sha256_text() + ":" + workspace.chat_draft_key(workspace.active_conversation)
+	return _key_for(workspace.active_conversation)
+
+
+func _key_for(conversation_id: String) -> String:
+	return "editor:" + ProjectSettings.globalize_path("res://").sha256_text() + ":" + workspace.chat_draft_key(conversation_id)
 
 
 func move_new_conversation(id: String) -> void:
-	var value: Dictionary = workspace.load_draft(_key())
+	var previous := _key_for("")
+	var target := _key_for(id)
+	if _current_contexts.has(previous):
+		_current_contexts[target] = _current_contexts[previous].duplicate(true)
+		_current_contexts.erase(previous)
+	var value: Dictionary = workspace.load_draft(previous)
 	if not value.is_empty():
-		var target: String = "editor:" + ProjectSettings.globalize_path("res://").sha256_text() + ":" + workspace.chat_draft_key(id)
 		if workspace.save_draft(target, value):
-			workspace.clear_draft(_key())
+			workspace.clear_draft(previous)
 
 
 func attachments() -> Array:
@@ -137,31 +223,57 @@ func attach_resources() -> void:
 
 func message_context(module_id: String) -> Dictionary:
 	var items := attachments()
-	if items.is_empty():
-		return {"valid": true, "references": {}, "text": ""}
-	if module_id.is_empty():
+	var current := current_context()
+	if current.is_empty() and not _read_current_context().is_empty():
+		capture_current_context()
+		_current_error = "当前现场已更新，请核对引用后再次发送。草稿已保留。"
+		changed.emit()
+		return {"valid": false}
+	if not current.is_empty() and (not str(current.get("error", "")).is_empty() or current != _read_current_context(true)):
+		_current_error = "当前现场已变化或不可用，请核对更新后的引用再发送。草稿已保留。"
+		changed.emit()
+		return {"valid": false}
+	var current_references: Array = current.get("references", [])
+	var merged := current_references.duplicate(true)
+	for item in items:
+		var reference := {"kind": "editor", "object_id": item.object_id, "revision": item.revision}
+		if not merged.has(reference):
+			merged.append(reference)
+	if merged.size() > 16:
+		_current_error = "当前现场与保留引用合计超过 16 项，请缩小选区或移除保留引用。草稿已保留。"
+		changed.emit()
+		return {"valid": false}
+	if not items.is_empty() and module_id.is_empty():
 		status = "请选择这些引用所属的业务模块。"
 		changed.emit()
 		return {"valid": false}
 	var references := []
 	var descriptions := PackedStringArray()
 	for item in items:
-		var current := {}
+		var live := {}
 		if item.source == "node":
 			var reference: WeakRef = _captured.get(item.object_id)
 			var node: Node = reference.get_ref() if reference else null
 			if node:
-				current = _node_snapshot(node)
+				live = _node_snapshot(node)
 		elif item.source == "file":
-			current = _file_snapshot(item.object_id)
-		if current.is_empty() or str(current.snapshot).sha256_text() != item.revision:
+			live = _file_snapshot(item.object_id)
+		if live.is_empty() or str(live.snapshot).sha256_text() != item.revision:
 			status = tr("引用“%s”已变化或不可用，请移除或重新选择后发送。") % item.title
 			changed.emit()
 			return {"valid": false}
 		references.append({"kind": "editor", "object_id": item.object_id, "revision": item.revision})
 		descriptions.append("### " + str(item.title) + "\n" + str(item.snapshot))
-	# The separator is a persisted conversation format shared with existing clients.
-	return {"valid": true, "references": {"project": workspace.identity().project, "module_id": module_id, "issue_id": null, "references": references}, "text": "\n\n---\nGodot 编辑器引用（本次消息的对象快照）：\n\n" + "\n\n".join(descriptions)}
+	# Automatic context is consultation data. Only explicit attachments acquire
+	# the user's chosen business-module scope; opening a view never changes it.
+	var snapshot := {} if references.is_empty() else {"project": workspace.identity().project, "module_id": module_id, "issue_id": null, "references": references}
+	var text := "" if descriptions.is_empty() else "\n\n---\nGodot 编辑器保留引用（辅助资料）：\n\n" + "\n\n".join(descriptions)
+	if not str(current.get("text", "")).is_empty():
+		text += "\n\n[当前编辑现场：本轮主要处理对象；仅为咨询数据，不改变业务模块]\n来源：" + str(current.get("source", "")) + "\n" + JSON.stringify(current_references) + "\n" + str(current.text)
+	if not _current_error.is_empty():
+		_current_error = ""
+		changed.emit()
+	return {"valid": true, "references": snapshot, "text": text}
 
 
 static func safe_project_path(path: String) -> bool:

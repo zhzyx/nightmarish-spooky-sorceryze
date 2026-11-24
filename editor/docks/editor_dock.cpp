@@ -73,6 +73,9 @@ void EditorDock::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("open"), &EditorDock::open);
 	ClassDB::bind_method(D_METHOD("make_visible"), &EditorDock::make_visible);
 	ClassDB::bind_method(D_METHOD("close"), &EditorDock::close);
+	ClassDB::bind_method(D_METHOD("set_auxiliary_expanded", "expanded"), &EditorDock::SetAuxiliaryExpanded);
+	ClassDB::bind_method(D_METHOD("toggle_auxiliary_expanded"), &EditorDock::ToggleAuxiliaryExpanded);
+	ClassDB::bind_method(D_METHOD("is_auxiliary_expanded"), &EditorDock::IsAuxiliaryExpanded);
 
 	ClassDB::bind_method(D_METHOD("set_title", "title"), &EditorDock::set_title);
 	ClassDB::bind_method(D_METHOD("get_title"), &EditorDock::get_title);
@@ -128,6 +131,7 @@ void EditorDock::_bind_methods() {
 
 	ADD_SIGNAL(MethodInfo("opened"));
 	ADD_SIGNAL(MethodInfo("closed"));
+	ADD_SIGNAL(MethodInfo("auxiliary_expansion_changed", PropertyInfo(Variant::BOOL, "expanded")));
 	ADD_SIGNAL(MethodInfo("_tab_style_changed"));
 	ADD_SIGNAL(MethodInfo("_focused"));
 

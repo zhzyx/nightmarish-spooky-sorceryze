@@ -1,0 +1,22 @@
+{
+  "id": "codex-ai-chat-context-layout-host",
+  "version": "20261124",
+  "origin": "external-authorized-host",
+  "authority": "Current user correction: both right chat sidebar expand/return paths must preserve the current working surface and use selected content",
+  "worker": "/root",
+  "scope": "Issue 2211 auxiliary chat layout and selected-context correction, isolated verification, source delivery and local installation",
+  "delegated_workers": {
+    "/root/local_model_path": "Native auxiliary dock expansion/return and window regression implementation",
+    "/root/conversation_sync_path": "Separate current-editor-context snapshot and context regression implementation",
+    "/root/local_chat_review": "Independent read-only reviewer; no implementation participation"
+  },
+  "constraints": [
+    "Preserve the user workspace, drafts, manual references and sent snapshots",
+    "Do not infer business module membership or relax model/tool permissions",
+    "No real user-window mutation during isolation tests; no provider call or asset generation",
+    "Use declared readable editor context and exclude sensitive controls",
+    "Keep the original personal-key compatibility and Web behavior"
+  ],
+  "model": null,
+  "usage": null
+}

@@ -126,7 +126,8 @@ func _exit_tree():
                 "readable_scope": ["page_name", "module_id"],
                 "references": [expected_ref],
             }, value
-            assert question == "inspect " + row["name"]
+            assert question.startswith("inspect " + row["name"] + "\n[当前编辑现场："), question
+            assert "本轮主要处理对象" in question
             frozen.append(value)
         assert user_turns[2] == "only the typed question", user_turns[2]
         history = json.loads((project / ".godot/editor/ai_chat_history.json").read_text(encoding="utf-8"))

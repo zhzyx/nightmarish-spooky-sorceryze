@@ -72,13 +72,17 @@ static func build(base: Theme, scale: float, dark: bool) -> Theme:
 	theme.set_stylebox("panel", "TianxuanSidebar", box(p.sidebar, p.line, 12, 12, scale))
 	theme.set_stylebox("panel", "TianxuanCard", box(p.surface, p.line, 12, 18, scale))
 	theme.set_stylebox("panel", "TianxuanInset", box(p.inset, p.line, 8, 12, scale))
-	for variant in ["TianxuanPrimaryButton", "TianxuanNavigationButton"]:
+	for variant in ["TianxuanPrimaryButton", "TianxuanNavigationButton", "TianxuanCompactHeaderButton"]:
 		theme.set_type_variation(variant, "Button")
 	for state in ["normal", "hover", "pressed", "disabled"]:
 		var background: Color = p.surface
 		if state in ["hover", "pressed"]:
 			background = p.hover
 		theme.set_stylebox(state, "Button", box(background, p.line, 7, 9, scale))
+		var header_style := box(background, p.line, 7, 9, scale)
+		header_style.content_margin_top = 5 * scale
+		header_style.content_margin_bottom = 5 * scale
+		theme.set_stylebox(state, "TianxuanCompactHeaderButton", header_style)
 		theme.set_stylebox(state, "OptionButton", box(background, p.line, 7, 9, scale))
 		theme.set_stylebox(state, "TianxuanPrimaryButton", box(p.hover if state == "disabled" else p.accent_fill.lightened(0.08) if state == "hover" else p.accent_fill, p.line if state == "disabled" else p.accent_fill, 7, 10, scale))
 		theme.set_color("font_" + state + "_color", "TianxuanPrimaryButton", Color.WHITE)

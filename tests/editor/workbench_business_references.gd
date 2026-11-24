@@ -54,52 +54,72 @@ static func exercise(tree, fixture: Array) -> void:
 	var key := config.find_child("APIKey", true, false) as LineEdit
 	key.text = "u15-business-fixture"
 	key.text_changed.emit(key.text)
+	var chat = tree.root.find_child("AI Chat", true, false)
+	EditorInterface.open_scene_from_path("res://retained.tscn")
+	await tree.process_frame
+	var manual_node := EditorInterface.get_edited_scene_root()
+	var manual := {"kind": "editor", "object_id": "res://retained.tscn#.",
+		"revision": FileAccess.get_sha256("res://retained.tscn")}
+	if chat.stage_workbench_reference(panel, manual_node) != "" or rows.get_child_count() != 1:
+		tree._fail("Explicit retained reference was not staged in its business scope")
+		return
+	var retained_text: String = rows.get_child(0).text
 	input.text = "keep beta"
+	var current := panel.find_child("WorkbenchCurrentContext", true, false) as Label
 	var selected := [await attach(tree, "alpha"), await attach(tree, "beta")]
-	if not rows.is_visible_in_tree() or rows.get_child_count() != 2 or not input.is_visible_in_tree():
-		tree._fail("The module composer did not display two script references")
+	if not current.is_visible_in_tree() or not rows.is_visible_in_tree() or rows.get_child_count() != 1 or not input.is_visible_in_tree():
+		tree._fail("Current selection and retained reference were not shown separately")
 		return
 	var row_bounds := rows.get_global_rect()
 	var input_bounds := input.get_global_rect()
-	if row_bounds.position.y >= input_bounds.position.y:
+	if row_bounds.position.y >= input_bounds.position.y or current.get_global_rect().position.y >= input_bounds.position.y:
 		tree._fail("References are not above the module composer")
 		return
-	var before := []
-	for i in 2:
-		var text: String = rows.get_child(i).text
-		if selected[i].object_id not in text or selected[i].revision not in text or text.count("[REDACTED]") != 2:
-			tree._fail("Incorrect selection locator, revision or redaction")
-			return
-		before.append(text)
+	var current_beta := current.tooltip_text
+	if selected[1].object_id not in current_beta or "alpha" in current_beta or current_beta.count("[REDACTED]") != 2:
+		tree._fail("Current script locator or redaction is wrong: " + JSON.stringify({
+			"current_locator_present": selected[1].object_id in current_beta,
+			"old_locator_present": "alpha" in current_beta,
+			"redaction_count": current_beta.count("[REDACTED]")}))
+		return
+	if rows.get_child(0).text != retained_text or manual.object_id not in retained_text or manual.revision not in retained_text or input.text != "keep beta":
+		tree._fail("Updating current selection changed the retained reference or draft")
+		return
 	rows.get_child(0).pressed.emit()
-	var remaining: String = rows.get_child(0).text
-	if rows.get_child_count() != 1 or remaining != before[1] or context.text != original or input.text != "keep beta" or issue.get_item_metadata(issue.selected) != issue_id:
-		tree._fail("Removing alpha changed the remaining selection, draft or work order")
+	var remaining := current.tooltip_text
+	if rows.get_child_count() != 0 or remaining != current_beta or context.text != original or input.text != "keep beta" or issue.get_item_metadata(issue.selected) != issue_id:
+		tree._fail("Removing a retained reference changed current selection, draft or work order")
 		return
 	if not await send_turn(tree, input, "keep beta"):
 		return
 	if rows.is_visible_in_tree() or context.text != original or issue.get_item_metadata(issue.selected) != issue_id:
-		tree._fail("Sending changed the issue or left the references in the composer")
+		tree._fail("Sending changed the issue or left retained references in the composer")
 		return
 	await attach(tree, "alpha")
-	if rows.get_child_count() != 1:
-		tree._fail("Missing pre-switch issue reference")
+	if chat.stage_workbench_reference(panel, manual_node) != "" or rows.get_child_count() != 1:
+		tree._fail("Missing pre-switch retained reference")
 		return
 	var prev := issue.selected
 	if not await tree._choose_work_order(issue, 0):
 		return
 	if rows.get_child_count() != 0:
-		tree._fail("Issue switch retained another issue's selection")
+		tree._fail("Issue switch retained another issue's manual selection")
 		return
 	if not await tree._choose_work_order(issue, prev):
 		return
-	await attach(tree, "alpha")
+	if rows.get_child_count() != 1 or manual.object_id not in rows.get_child(0).text or manual.revision not in rows.get_child(0).text:
+		tree._fail("Returning to the original issue did not restore its retained reference")
+		return
 	if not await tree._choose(tree._index(fixture[1].module_id)):
 		return
 	if rows.get_child_count() != 0 or not input.text.is_empty() or issue.get_item_metadata(issue.selected) != fixture[1].issue_id:
-		tree._fail("New module retained the old draft or reference")
+		tree._fail("New module retained the old draft or manual reference")
 		return
-	if not await send_turn(tree, input, "module B clean"):
+	await attach(tree, "alpha")
+	if selected[0].object_id not in current.tooltip_text:
+		tree._fail("The new module did not capture the actual current selection")
+		return
+	if not await send_turn(tree, input, "module B uses current alpha"):
 		return
 	await attach(tree, "beta")
 	var session: Node = tree.root.find_child("WorkbenchBusinessSession", true, false)
@@ -123,8 +143,9 @@ static func exercise(tree, fixture: Array) -> void:
 	if rows.get_child_count() != 0 or not panel.history.text.is_empty() or not input.text.is_empty() or issue.get_item_metadata(issue.selected) != null:
 		tree._fail("Another account/project inherited the original work order, history, draft or selections")
 		return
-	print("U15_BUSINESS=" + JSON.stringify({"selected": selected, "before": before, "after": remaining,
+	print("U15_BUSINESS=" + JSON.stringify({"selected": selected, "retained": manual, "before": retained_text, "after": remaining,
 		"module": fixture[0].module_id, "issue_id": issue_id, "context_before_and_after": original,
 		"rows_rect": str(row_bounds), "input_rect": str(input_bounds), "second_account_project": panel.project,
-		"issue_switch_cleared": true, "module_switch_cleared": true, "logout_cleared": true}))
+		"issue_switch_cleared": true, "module_switch_cleared": true, "logout_cleared": true,
+		"automatic_latest_only": true, "manual_preserved_until_explicit_removal": true}))
 	tree.quit()

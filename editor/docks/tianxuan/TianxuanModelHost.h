@@ -52,6 +52,7 @@ class TianxuanModelHost : public Node
 public:
 	explicit TianxuanModelHost(AIChatDock *pSettingsOwner);
 	Dictionary Configuration() const;
+	Dictionary EditorContext(bool bVerify = false) const;
 	Dictionary Start(const String &strScope, const String &strRequestId, const Array &arrMessages);
 	// Read-only, request-scoped status. No provider text, diagnostics or identity is exposed.
 	Dictionary Progress(const String &strRequestId) const;
