@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-8229b8466e7a3b7b138aec0fc5cbe75d077dc24e",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-apple-gray-ui-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "f747078c6eba0e63d255e45eba17ed1b13d5e8e83cdb8f0ac56693b816e06afe",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2223",
+    "action": "validation",
+    "detection_head": "83bcc9b6fb33437276815b5675b90817203ba594",
+    "context_sha256": "2ceda5c69ac6f76ff55fd96a0122d24875b659ae0c66f71d1b6e45bffd5ac1d4",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-goal-engine-apple-gray-ui-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45455958033/job/138665484991",
+    "diagnosis": "The test waited for capabilities but not the independently loaded version-review receipt. Delaying review responses by 0.25 seconds reproduced the same disabled-launch assertion. Waiting for both prerequisites preserves approval/launch assertions and passes all 45 controls checks. No production UI behavior changed. Separate local generated-header corruption from the earlier lint invocation was regenerated from tracked inputs; the corrected local binary has no script parse errors.",
+    "next_action": "Submit the independently reviewed test synchronization and script-error detection changes; rerun the required native CI on the new exact candidate.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T18:29:49.719107+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T19:01:05.057934+00:00",
+  "sha256": "df610e7f21a655af990dce1640b254eb20752a7d4980801be01e22051edfde29"
+}

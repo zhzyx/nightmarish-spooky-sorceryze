@@ -63,8 +63,9 @@ renderer/rendering_method="gl_compatibility"
         command.append("--editor")
     result = subprocess.run(command, env=env, cwd=project, capture_output=True, timeout=60, startupinfo=startup)
     (output / "process.log").write_bytes(result.stdout + result.stderr)
-    print(result.returncode)
+    exit_code = result.returncode or int(b"SCRIPT ERROR" in result.stdout + result.stderr)
+    print(exit_code)
     report = output / ("editor-render.json" if args.editor else "render.json")
     if report.exists():
         print(report.read_text())
-    raise SystemExit(result.returncode)
+    raise SystemExit(exit_code)

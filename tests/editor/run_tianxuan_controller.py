@@ -423,6 +423,17 @@ def exercise(
             await asyncio.sleep(0.15)
             return {"actor": actor}
 
+        if controls:
+
+            @app.middleware("http")
+            async def delayed_requirement_review(request: Request, call_next):
+                response = await call_next(request)
+                if request.method == "GET" and request.url.path.endswith("/requirement-review"):
+                    # Capabilities and version approval arrive independently.
+                    # Keep the unreviewed intermediate state observable.
+                    await asyncio.sleep(0.25)
+                return response
+
         if execution and not controls:
 
             @app.middleware("http")

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5edd92e98b3b5fe39a2304f37fbc6bf3d595fdc8",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "engine-apple-gray-ui-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "2d692cae9bcf2ceddf6aef287816de435c99b6336ba2d45384e16c6d62fe3517",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2223",
+    "action": "delivery",
+    "detection_head": "83bcc9b6fb33437276815b5675b90817203ba594",
+    "context_sha256": "2ceda5c69ac6f76ff55fd96a0122d24875b659ae0c66f71d1b6e45bffd5ac1d4",
+    "operator": "Sail-Li",
+    "worker": "codex-root",
+    "authority_ref": "codex-user-goal-engine-apple-gray-ui-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2230",
+    "diagnosis": "Exact candidate branch readback succeeded and showed no revision after the transport failure. Resumed with the same immutable Git commit and request keys. Native service then returned received for commit 83bcc9b6fb33437276815b5675b90817203ba594, revision a5d7e28c47cec9f54fb93dba2a546c2545e8d0057c581c6a2eb35c107fc85dfe, manifest 44f79f72bf709f97500b2340971c17d5a8a71b937d96feac2e5210b43ba322a1.",
+    "next_action": "Retain the verified dual-submission receipt; new corrected candidates must obtain their own receipt. Main delivery remains pending native CI.",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T18:14:35.648972+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T19:01:13.872299+00:00",
+  "sha256": "1854a38f25330b3ca3cface587a17fecf653aeaf386aca728ac1afe906fdd67d"
+}

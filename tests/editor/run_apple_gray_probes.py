@@ -79,7 +79,8 @@ with tempfile.TemporaryDirectory(prefix="apple-gray-probes-") as temporary:
             results.append({"probe": name, "exit_code": 124})
             continue
         (REPORTS / (name + ".log")).write_text(result.stdout + result.stderr, encoding="utf-8")
-        results.append({"probe": name, "exit_code": result.returncode})
+        script_errors = "SCRIPT ERROR" in result.stdout + result.stderr
+        results.append({"probe": name, "exit_code": result.returncode or int(script_errors)})
     # Native unit-test startup does not register the full editor resource set.
     # Do not load the settings/shortcuts serialized by the full editor probes.
     native_editor = copy_editor(source, parent / "native-editor")
