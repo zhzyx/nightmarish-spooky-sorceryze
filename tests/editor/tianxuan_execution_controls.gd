@@ -66,18 +66,34 @@ func issue_action(name: String) -> bool:
 
 
 func prepare_launch() -> bool:
+	var sidebar := EditorInterface.get_base_control().find_child("TianxuanSidebarView", true, false)
+	sidebar.find_child("OpenTianxuanWorkspace", true, false).pressed.emit()
 	controller.navigate("home")
-	main.find_child("TianxuanComposer", true, false).text = "生成可核验的文本，并验证暂停和恢复。"
-	main.find_child("SendTianxuanMessage", true, false).pressed.emit()
-	if not check(await wait_until(func(): return not controller.chat_busy() and not controller.conversation().get("turns", []).is_empty()), "native conversation persists the initiating user request"):
+	var composer := main.find_child("TianxuanComposer", true, false) as TextEdit
+	var current_label := main.find_child("TianxuanCurrentContext", true, false) as Label
+	if not check(await wait_until(func(): return composer.is_visible_in_tree() and current_label.is_visible_in_tree() and not controller.editor_context.current_context().is_empty() and current_label.tooltip_text == str(controller.editor_context.current_context().get("text", ""))), "execution preparation opens the native composer and displays its current editor context"):
+		return false
+	var context: Dictionary = controller.editor_context.message_context(controller.editor_module)
+	if not check(context.valid and not str(context.text).is_empty(), "execution preparation verifies the displayed context before sending"):
+		return false
+	var initiating_request := "生成可核验的文本，并验证暂停和恢复。"
+	var expected_content: String = initiating_request + str(context.text)
+	composer.text = initiating_request
+	var send := main.find_child("SendTianxuanMessage", true, false) as Button
+	if not check(not send.disabled, "visible execution composer enables the initiating request"):
+		return false
+	send.pressed.emit()
+	if not check(await wait_until(func(): return not controller.chat_busy() and controller.conversation().get("turns", []).size() == 1), "native conversation persists the initiating user request"):
 		return false
 	var conversation: Dictionary = controller.conversation()
+	if not check(conversation.turns[0].content == expected_content, "local conversation preserves the exact initiating request and displayed editor context"):
+		return false
 	if not check(conversation.turns[0].state == "answered" and conversation.turns[0].answer == "本机 API 夹具回答：已收到原生天璇消息。", "execution preparation receives the editor's local API response"):
 		return false
 	if not check(await wait_until(func(): return controller.local_chat.syncing.is_empty()), "execution preparation waits for the completed local turn to synchronize"):
 		return false
 	var synchronized: Dictionary = await session.api_request(HTTPClient.METHOD_GET, controller.CONVERSATIONS + "/" + conversation.id)
-	if not check(synchronized.status == 200 and synchronized.data.turns[0].answer == conversation.turns[0].answer and synchronized.data.turns[0].reply_source == "editor-local", "execution design uses the shared server copy of the local reply"):
+	if not check(synchronized.status == 200 and synchronized.data.turns.size() == 1 and synchronized.data.turns[0].content == expected_content and synchronized.data.turns[0].answer == conversation.turns[0].answer and synchronized.data.turns[0].reply_source == "editor-local", "execution design uses the exact shared server copy of the initiating request, context and local reply"):
 		return false
 	if not check(LocalModelFixture.unchanged(ai_before), "execution preparation does not change the ordinary AIChat conversation"):
 		return false

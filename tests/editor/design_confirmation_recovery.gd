@@ -1,5 +1,19 @@
 
 # Appended only to the isolated native acceptance restart fixture.
+func _recovery_control_951(pattern: String, recursive := true, owned := false):
+	var control = dock.find_child(pattern, recursive, owned)
+	if control != null:
+		return control
+	var sidebar = root.find_child("AIWorkbenchSidebar", true, false)
+	return sidebar.find_child(pattern, recursive, owned) if sidebar != null else null
+
+func _recovery_labels_951() -> Array:
+	var labels: Array = dock.find_children("*", "RichTextLabel", true, false)
+	var sidebar = root.find_child("AIWorkbenchSidebar", true, false)
+	if sidebar != null:
+		labels.append_array(sidebar.find_children("*", "RichTextLabel", true, false))
+	return labels
+
 func _recovery_press_951(button) -> bool:
 	if not _check(button != null and not button.disabled, "Recovery fixture attempted a disabled control"):
 		return false
@@ -29,19 +43,26 @@ func _restore_design_confirmation_951() -> bool:
 		return false
 	var key: String = keys[0]
 	var original: Dictionary = disk.get_value("design_confirmations", key)
-	# Exercise the shared workbench composer, including installations without a saved full layout.
-	var full = dock.find_child("RestoreWorkbenchSidebar", true, false)
-	if not full.is_visible_in_tree():
-		var expand = root.find_child("ExpandWorkbench", true, false)
-		if not expand.is_visible_in_tree():
-			if not _recovery_press_951(root.find_child("OpenAIWorkbench", true, false)):
-				return false
-		if not _recovery_press_951(expand):
+	# The same composer now expands inside its auxiliary dock, preserving the
+	# selected main screen; restored controls need not be descendants of AI Chat.
+	var sidebar = root.find_child("AIWorkbenchSidebar", true, false)
+	var main_tabs = dock.get_parent() as TabContainer
+	if not _check(sidebar != null and main_tabs != null, "Cold parent is missing its native workbench hosts"):
+		return false
+	var source_screen = main_tabs.get_current_tab_control()
+	if not sidebar.is_visible_in_tree():
+		if not _recovery_press_951(root.find_child("OpenAIWorkbench", true, false)):
 			return false
-	if not _check(full.is_visible_in_tree(), "Cold parent did not open in the full workbench"):
+		await process_frame
+	var composer = _recovery_control_951("ChatInput")
+	if not sidebar.is_auxiliary_expanded():
+		if not _recovery_press_951(sidebar.find_child("ExpandWorkbench", true, false)):
+			return false
+		await process_frame
+	if not _check(sidebar.is_auxiliary_expanded() and composer != null and composer.is_visible_in_tree() and sidebar.is_ancestor_of(composer) and main_tabs.get_current_tab_control() == source_screen, "Cold parent did not retain its composer and main screen in the expanded auxiliary workbench"):
 		return false
 	# A normal tab round-trip persists the host's startup state normalization.
-	var tabs = dock.find_child("SubAgentTabs", true, false)
+	var tabs = _recovery_control_951("SubAgentTabs", true, false)
 	tabs.current_tab = 1
 	tabs.tab_selected.emit(1)
 	tabs.current_tab = 0
@@ -58,10 +79,10 @@ func _restore_design_confirmation_951() -> bool:
 	settings.set_project_metadata("design_confirmations", key, null)
 	disk.erase_section_key("design_confirmations", key)
 	disk.save(path)
-	var spawn = dock.find_child("SpawnWorkOrderAgents", true, false)
-	var confirmation = dock.find_child("WorkOrderConfirmation", true, false)
-	var consultation = dock.find_child("ConsultationOnly", true, false)
-	var agent_tabs = dock.find_child("AgentTabs", true, false)
+	var spawn = _recovery_control_951("SpawnWorkOrderAgents", true, false)
+	var confirmation = _recovery_control_951("WorkOrderConfirmation", true, false)
+	var consultation = _recovery_control_951("ConsultationOnly", true, false)
+	var agent_tabs = _recovery_control_951("AgentTabs", true, false)
 	var parent_tab: int = agent_tabs.current_tab
 	var parent_id: int = agent_tabs.get_tab_metadata(parent_tab)
 	for child in before.values():
@@ -112,7 +133,7 @@ func _restore_design_confirmation_951() -> bool:
 	consultation.button_pressed = false
 	if not _recovery_press_951(spawn) or not _check(confirmation.visible, "Original parent lost its confirmation dialog"):
 		return false
-	if not _recovery_press_951(dock.find_child("AddAgent", true, false)):
+	if not _recovery_press_951(_recovery_control_951("AddAgent", true, false)):
 		return false
 	if not _check(agent_tabs.get_tab_metadata(agent_tabs.current_tab) != parent_id and consultation.button_pressed, "Another parent inherited the execution mode"):
 		return false
@@ -155,13 +176,13 @@ func _restore_design_confirmation_951() -> bool:
 	_check(settings.get_project_metadata("design_confirmations", key, "missing-fixture-record") == "missing-fixture-record", "Tools-off confirmation restored authorization")
 	if not _recovery_press_951(spawn):
 		return false
-	if not _check(not dock.find_child("Send", true, false).disabled, "Live probe Send is disabled"):
+	if not _check(not _recovery_control_951("Send", true, false).disabled, "Live probe Send is disabled"):
 		return false
 	_send("RECOVERY_LIVE_PROBE_951")
 	var deadline := Time.get_ticks_msec() + 60000
 	while not FileAccess.file_exists("res://recovery-live-started") and Time.get_ticks_msec() < deadline:
 		await process_frame
-	var live_started: bool = FileAccess.file_exists("res://recovery-live-started") and not dock.find_child("Stop", true, false).disabled
+	var live_started: bool = FileAccess.file_exists("res://recovery-live-started") and not _recovery_control_951("Stop", true, false).disabled
 	_check(live_started, "Live rejection test never reached an actual pending model request")
 	if not _recovery_press_951(confirmation.get_ok_button()):
 		return false

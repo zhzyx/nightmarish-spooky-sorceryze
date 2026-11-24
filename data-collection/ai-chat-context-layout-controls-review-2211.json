@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "request_id": "ai-chat-context-layout-20261124",
+  "issue_number": 2211,
+  "reviewed_at": "2026-11-24T08:15:57.208Z",
+  "reviewer": {
+    "worker": "/root/local_chat_review",
+    "role": "independent_code_reviewer",
+    "implementation_participation": false,
+    "product_or_test_files_modified": []
+  },
+  "baseline_commit": "acba804077c5aa37d541bbdf36343f8eb335d83c",
+  "scope": [
+    "tests/editor/tianxuan_execution_controls.gd"
+  ],
+  "candidate_files_sha256": {
+    "tests/editor/tianxuan_execution_controls.gd": "d7d81edf17b7801f91cc2256e6f42ba69863c58601e440a89f08587a7fd16bb9"
+  },
+  "unchanged_test_runner": {
+    "path": "tests/editor/run_tianxuan_controller.py",
+    "sha256": "e04b2cd0b72f116577413e6215b4ddd0c1e5a0c8c1096928ff54873d395f2061"
+  },
+  "prior_review": {
+    "path": "data-collection/ai-chat-context-layout-review-2211.json",
+    "sha256": "cb617883016b60e0d48c0cb3223c2504225dcbdb4c46cecb08b77fcee5ee9e1f",
+    "modified": false,
+    "all_40_reviewed_input_hashes_still_match": true
+  },
+  "reported_ci_context": {
+    "run_id": 45328436981,
+    "source": "主责提供的 CI 结果；本次独立审查未重新查询远端 CI。",
+    "failure": "controls 在隐藏输入区发送首条消息，被新增的已展示现场校验拒绝。",
+    "scope_limit": "这份记录不宣称替代候选的 Windows CI 已通过。"
+  },
+  "reviewed_change": {
+    "lines": [
+      68,
+      98
+    ],
+    "problem": "旧探针仅调用 controller.navigate 改变隐藏页面内容，没有通过明确的完整工作区入口显示输入区；首条消息没有已展示的当前现场。",
+    "resolution": "经已有 OpenTianxuanWorkspace 入口打开工作区，等待可见输入区、可见来源提示与当前快照文本一致，再独立调用消息上下文校验；验证发送按钮可用后只发送一次。",
+    "strictness": [
+      "等待条件只负责界面就绪，不直接改写身份、现场快照或校验结果。",
+      "仍以 message_context 的 valid 结果及非空上下文作为独立前置条件；未绕过身份或发送权限。",
+      "本地会话必须恰好一条消息，内容严格等于原请求加已展示且复验过的完整上下文。",
+      "服务 GET 必须恰好一条消息，完整内容、模型回答及 editor-local 来源均须匹配。",
+      "原 AIChat 会话不变检查保留。",
+      "没有自动重发、重试发送或放宽错误条件。",
+      "从设计导航开始的保存、确认、发布、启动确认、暂停、恢复、取消、目标确认与撤销代码逐字保持。"
+    ]
+  },
+  "findings": [],
+  "validation": {
+    "reviewer_executed": [
+      {
+        "check": "git diff --check",
+        "result": "passed"
+      },
+      {
+        "check": "prepare_launch 之前的帮助函数与 HEAD 比较",
+        "result": "byte_identical"
+      },
+      {
+        "check": "prepare_launch 中 design 导航起至文件尾与 HEAD 比较",
+        "result": "byte_identical"
+      },
+      {
+        "check": "原独立审查的 40 项文件指纹与旧报告本身",
+        "result": "unchanged"
+      },
+      {
+        "check": "定向通过报告的 60 项输入 SHA-256",
+        "result": "all_match"
+      }
+    ],
+    "read_back_after": {
+      "artifact": "ai-chat-context-layout-controls-after.json",
+      "sha256": "c8f11fde85c6b21660869bd26b4efbff3bcaa91200cb6e16dab1ec3dec4cadd8",
+      "binary_sha256": "07124fdd64ea305fb630c9d5556843ba924344609ad092a94f5f24b1f40ea7b1",
+      "execution_owner": "/root/local_model_path",
+      "reviewer_action": "独立读取回执、完整检查列表并核对源文件指纹；未重复执行模型或业务。",
+      "result": "passed",
+      "checks": 45,
+      "runtime_mode": "deterministic-test",
+      "local_model": {
+        "requests": 1,
+        "synchronized_turns": 1,
+        "cloud_inference_requests": 0
+      },
+      "coverage": [
+        "完整请求及现场本地持久化",
+        "完整请求及现场服务同步",
+        "原普通 AIChat 会话隔离",
+        "三阶段保存与明确确认",
+        "需求发布与启动确认",
+        "实际确定性 producer 的暂停与恢复",
+        "切换页面后完成观察",
+        "取消终态",
+        "目标确认与撤销"
+      ],
+      "boundary": "macOS 上相同已编译候选的无显示器定向探针、隔离实际服务与回环模型 fixture；确定性测试生产者，不是真实资产生产或外部模型提供方。"
+    },
+    "read_back_before": {
+      "artifact": "ai-chat-context-layout-controls-before.log",
+      "sha256": "921982442512db33ae9aa0955d3190389538bc34e226fce8c3bd12e8c762244b",
+      "probe_sha256": "634fc164d5abb7b1286b77a2047cfeec2ab4419b1ef5df4073f749e6c5d41318",
+      "failure": "Native execution controls: native conversation persists the initiating user request",
+      "binary_binding": "实现者报告采用相同 07124 候选重现；失败日志自身不含二进制 SHA-256，不把此说明冒充日志内证据。"
+    }
+  },
+  "diagnostics_retained": [
+    "WARNING: 6 RIDs of type \"Canvas\" were leaked.",
+    "WARNING: 2447 RIDs of type \"CanvasItem\" were leaked.",
+    "WARNING: 6364 ObjectDB instances were leaked at exit."
+  ],
+  "decision": {
+    "status": "passed_for_test_correction",
+    "unresolved_code_findings": [],
+    "product_behavior_changed": false,
+    "prior_os_acceptance_limits_unchanged": true
+  },
+  "conclusion": "这次修正让探针通过真实可见入口准备发送，并加强完整持久化内容断言。未发现断言放宽或产品绕过。既有独立报告保持不变；替代候选 CI、原生 OS 窗口及用户实际验收仍单独记录。"
+}
