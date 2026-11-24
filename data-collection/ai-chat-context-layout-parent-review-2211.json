@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "request_id": "ai-chat-context-layout-20261124",
+  "issue_number": 2211,
+  "reviewed_at": "2026-11-24T09:09:50.908Z",
+  "reviewer": {
+    "worker": "/root/local_chat_review",
+    "role": "independent_code_reviewer",
+    "implementation_participation": false,
+    "product_or_test_files_modified": [],
+    "only_written_artifact": "data-collection/ai-chat-context-layout-parent-review-2211.json"
+  },
+  "baseline_commit": "ebe6e6c4e3f57c1151100dbe5c18680aaf4db76b",
+  "scope": [
+    "tests/editor/run_native_acceptance.py",
+    "tests/editor/design_confirmation_recovery.gd"
+  ],
+  "candidate_files_sha256": {
+    "tests/editor/run_native_acceptance.py": "fc789a49d831546671c43f6db7f2d444462598fc9549524378b2d96dbe5ab100",
+    "tests/editor/design_confirmation_recovery.gd": "5fc2b5dee1d332b8edd9091a2ae3c5480cfa42fd73b3750fc4fcbbf96360bd8a"
+  },
+  "baseline_files_sha256": {
+    "tests/editor/run_native_acceptance.py": "6e2afbe641be74dd85d78700fe6c4c3b0b9535cf61fc9c557ffd64bf203c9a62",
+    "tests/editor/design_confirmation_recovery.gd": "dcc28d789604010d7fd5f62b36e2c2c64237a3a0ba37f629b6340f453530b5a3"
+  },
+  "prior_reviews": [
+    {
+      "path": "data-collection/ai-chat-context-layout-review-2211.json",
+      "sha256": "cb617883016b60e0d48c0cb3223c2504225dcbdb4c46cecb08b77fcee5ee9e1f",
+      "modified": false
+    },
+    {
+      "path": "data-collection/ai-chat-context-layout-controls-review-2211.json",
+      "sha256": "84559492b10e63b949b7e78714926e2cc6ec59313868c64903e87f19f19a6720",
+      "modified": false
+    }
+  ],
+  "observed_problem": {
+    "ci_run_id": 45355096308,
+    "artifact": "ai-chat-context-layout-parent-recovery-45355096308/confirmation.json",
+    "sha256": "5adb000071925d60124db57b3d7720a4a275ef414820951897cab335068af1c8",
+    "observed_error": "Invalid access to property or key 'disabled' on a base object of type 'null instance'.",
+    "generated_probe_location": "res://gate.gd:348",
+    "cause": "冷重启后的共享聊天控件位于 AIWorkbenchSidebar；旧测试限定在 AI Chat 主区寻找 Stop，空值访问阻止恢复阶段继续。",
+    "evidence_boundary": "本地回读主责下载的 Windows CI 原始 artifact；未独立重新下载远端归档，归档来源核验由实现者提供。"
+  },
+  "review_assessment": [
+    {
+      "subject": "定位范围",
+      "location": {
+        "path": "tests/editor/design_confirmation_recovery.gd",
+        "line": 3
+      },
+      "result": "先在既有 dock 查找，再在唯一具名 AIWorkbenchSidebar 内查找；正文只汇集这两个已知宿主的 RichTextLabel。没有遍历任意业务页面或伪造控件状态。"
+    },
+    {
+      "subject": "生成探针范围",
+      "location": {
+        "path": "tests/editor/run_native_acceptance.py",
+        "line": 598
+      },
+      "result": "仅 RESTORE_CONFIRMATION 分支改写生成探针的控件与正文定位，随后再追加 helper，避免 helper 自身递归替换。既有命令行约束仍要求 parallel-parent-restart；生产 UI 没有为测试重新挂载。"
+    },
+    {
+      "subject": "新的窗口合同",
+      "location": {
+        "path": "tests/editor/design_confirmation_recovery.gd",
+        "line": 46
+      },
+      "result": "原 full 主区断言替换为原生辅助 Dock 展开、展开前取得的同一 composer 仍可见且属于该 Dock、当前主屏对象保持一致；符合本轮已实现的原位展开语义。"
+    },
+    {
+      "subject": "业务断言保持",
+      "result": "32 条旧 _check 表达式中，仅要求进入 full 主区的一条移除；新增宿主存在及同控件/同主屏两条，最终 33 条。其余 31 条经单纯控件定位名称归一后逐字一致。"
+    },
+    {
+      "subject": "拒绝与持久化边界",
+      "result": "保留仅咨询拒绝、取消、磁盘/缓存冲突、切离原父任务、无关父任务、操作者与设计漂移、工具关闭、运行中请求、真实只读保存失败、存储阻挡、精确原授权回读及子任务历史不变检查。"
+    },
+    {
+      "subject": "未放宽汇总",
+      "result": "Python 文件去除本次限定分支的 5 行新增后与基线逐字相同；超时、KeyError、恢复结果检查、父子任务终态及最终 valid 计算均未修改。"
+    }
+  ],
+  "findings": [],
+  "reviewer_executed_checks": [
+    {
+      "name": "Python AST parse",
+      "path": "tests/editor/run_native_acceptance.py",
+      "result": "passed"
+    },
+    {
+      "name": "git diff --check",
+      "result": "passed"
+    },
+    {
+      "name": "Python 非新增部分逐字比较",
+      "result": "identical"
+    },
+    {
+      "name": "GDScript _check 表达式比较",
+      "baseline_count": 32,
+      "candidate_count": 33,
+      "unchanged_business_assertions": 31,
+      "removed_layout_assertions": 1,
+      "added_layout_assertions": 2,
+      "result": "no_business_assertion_removed"
+    },
+    {
+      "name": "候选文件和既有独立报告 SHA-256",
+      "result": "matched"
+    }
+  ],
+  "validation_readback": {
+    "artifact": "ai-chat-context-layout-parent-after.json",
+    "sha256": "8154b28272db511a26a080c319a886e28f158cdc204fc4771746232872429c30",
+    "log_artifact": "ai-chat-context-layout-parent-after.log",
+    "log_sha256": "270c6f2964907624787199742ee1d6af3c03a4a633c876c054b090296c337646",
+    "binary_sha256": "07124fdd64ea305fb630c9d5556843ba924344609ad092a94f5f24b1f40ea7b1",
+    "execution_owner": "/root/local_model_path",
+    "reviewer_action": "独立回读原始报告及日志、核对最终判定源码；未重复运行模型或业务。",
+    "scenario_options": [
+      "--scenario",
+      "parallel-parent-restart",
+      "--restore-confirmation"
+    ],
+    "result": {
+      "ok": true,
+      "verification_status": "native_acceptance_passed",
+      "native_scenario": "parallel-parent-restart",
+      "editor_ok": true,
+      "editor_failure": "",
+      "errors": [],
+      "verified_decisions": 3,
+      "decision_producers": [
+        1,
+        2,
+        3
+      ],
+      "cold_new_operation_state": "context_recorded",
+      "cold_waiting_sibling_state": "interrupted",
+      "script_error_seen": false
+    },
+    "confirmation_recovery": {
+      "ok": true,
+      "consultation_refused": true,
+      "unrelated_parent_refused": true,
+      "cancel": true,
+      "disk_conflict": true,
+      "cache_conflict": true,
+      "parent_switch": true,
+      "actor_drift": true,
+      "design_drift": true,
+      "tools_off": true,
+      "live_request_started": true,
+      "failed_save_no_grant": true,
+      "storage_obstruction": true,
+      "same_approval_persisted": true,
+      "children_unchanged": true,
+      "never_started_c_preserved": true
+    },
+    "transport_fixture_ok": false,
+    "transport_summary_explanation": "基础 design_batch 在日志中保留通用运输阶段的 ok=false。既有 native runner 对本场景检查实际编辑器结果、独立验收决策、父子恢复及确认回执，再输出最终 native_acceptance_passed；该分层汇总实现本次未改。此记录不将基础字段改称通过或隐藏。",
+    "boundary": "macOS 上已有精确 07124 编译候选的无显示器隔离测试；本轮只修测试。报告未内嵌测试源指纹，候选测试 SHA 单独记录并与作者冻结值核对。没有真实供应商、真实 GitHub 写入或用户资产生产。"
+  },
+  "diagnostics_retained": [
+    "ERROR: Condition \"rename_error != 0\" is true.",
+    "WARNING: 5 RIDs of type \"Canvas\" were leaked.",
+    "WARNING: 941 RIDs of type \"CanvasItem\" were leaked.",
+    "WARNING: 3619 ObjectDB instances were leaked at exit."
+  ],
+  "diagnostic_boundary": "恢复测试明确注入保存失败和存储阻挡；原始诊断仍保留，最终断言通过不代表没有错误输出或退出泄漏。",
+  "decision": {
+    "status": "passed_for_test_correction",
+    "unresolved_code_findings": [],
+    "product_behavior_changed": false,
+    "replacement_windows_ci": "not_claimed",
+    "actual_os_window_acceptance": "not_inferred"
+  },
+  "conclusion": "两处修正使恢复夹具定位真实共享聊天宿主，并按原位展开合同验收。未发现业务断言弱化或产品绕过，可用于本次测试修正交付；替代 Windows CI 及安装验收仍分别记录。"
+}
