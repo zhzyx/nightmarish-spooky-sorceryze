@@ -1,0 +1,810 @@
+{
+  "issue_number": 2190,
+  "request_id": "tianxuan-multidevice-20261124",
+  "base": "2ec392e8cf654576dbf6f77ea53eb16211efdf67",
+  "integration": "Retain verified owned device grants for the same account and tenant; migrate shared unowned keys; revoke newly enrolled but unselected grants.",
+  "inputs": {
+    "editor/docks/tianxuan/session_controller.gd": "c31aedbd47bc5f5918d61088d7b37302ee9e1c30d74d7a975c22b1936bfe119a",
+    "tests/editor/run_tianxuan_identity.py": "5ec4a30bb0edd8b276c9f8a36820cc20af3a07369eb2967a1fe681d56db22a9e",
+    "tests/editor/tianxuan_identity.gd": "f43be6ea58b5666f5469d6ada57772f49f8acfb0624cef9ee64516e4b2f9c404"
+  },
+  "independent_review": {
+    "implementer": "/root/sinan_2fff474aadb11a01",
+    "terminal": "collaboration.final:/root/sinan_2fff474aadb11a01",
+    "reviewer": "current root coordinator",
+    "result": "No blocking findings; reviewed both source revisions, owned-only retention, serial/CAS/revocation paths and all fixture stages.",
+    "source_loaded": {
+      "phases": 20,
+      "checks": 97
+    },
+    "formatter": {
+      "file": "tests/editor/run_tianxuan_identity.py",
+      "before": "51b06c116d9d39437dc513e1f7259241f8e466ecaeed0e08577c9aa1756f8f3b",
+      "after": "5ec4a30bb0edd8b276c9f8a36820cc20af3a07369eb2967a1fe681d56db22a9e",
+      "python_ast_unchanged": true
+    }
+  },
+  "build": {
+    "revision": "2ec392e8cf654576dbf6f77ea53eb16211efdf67",
+    "source_digest": "8897c64b4a5f48989ee9e214ded4da3c537a5da838f830a101bfb8083037932f",
+    "console_sha256": "23c2eb67788fe342d5de61ca3fa20dbffbdfdb6e04d8034bdff931ef65dbcabb",
+    "aichat": "passed"
+  },
+  "binary_sha256": "b939ae2d8e36e3705003e515b81136e1f6e94e4ee9f33a2067697551dacc1f3c",
+  "native_cache_key": "35cf800e8ba8026b5f58d0b4d6a8720ac00f5256164c18247be5e1159cd170fe",
+  "aichat": {
+    "passed_cases": 115,
+    "passed_assertions": 1909,
+    "diagnostics": "Existing signal-destruction and uninitialized EditorSettings diagnostics retained; doctest passed."
+  },
+  "editor": {
+    "identity-retention": {
+      "passed": true,
+      "mode": "compiled_native",
+      "platform": "win32",
+      "binary_sha256": "b939ae2d8e36e3705003e515b81136e1f6e94e4ee9f33a2067697551dacc1f3c",
+      "source_sha256": {
+        "editor/docks/tianxuan/session_controller.gd": "c31aedbd47bc5f5918d61088d7b37302ee9e1c30d74d7a975c22b1936bfe119a",
+        "editor/docks/daqian/session_memory.gd": "9ee95ace26cbe4b1dbac78f235ae4aacb42c1f74c8f9a629c4ef981e3a5cedf2",
+        "customizations/components/godot-host/session_credentials.py": "68777d992d5cb55108777159bc9b5e2947cf1c6e7b80509a96551004087bfe29",
+        "tests/editor/run_tianxuan_identity.py": "5ec4a30bb0edd8b276c9f8a36820cc20af3a07369eb2967a1fe681d56db22a9e",
+        "tests/editor/tianxuan_identity.gd": "f43be6ea58b5666f5469d6ada57772f49f8acfb0624cef9ee64516e4b2f9c404"
+      },
+      "phases": {
+        "login": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "existing AI credential consumer is mounted",
+          "existing AI connection memory uses the shared bounded pipe",
+          "fresh editor is signed out",
+          "ordinary password login",
+          "verified device grant saved"
+        ],
+        "same_account": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "same account and project retain exact original binding",
+          "saved grant verification outage preserves actor, project and original credential",
+          "same-account password confirmation retains prior device authorization",
+          "same user can update project on the retained binding",
+          "server audits original account after project change"
+        ],
+        "restart": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "new process restored verified actor and updated project",
+          "business permission refusal keeps login",
+          "failed account switch retains actor",
+          "invalid_me rejects new device session",
+          "invalid_me retains prior actor and stored grant",
+          "failed_enrollment rejects new device session",
+          "failed_enrollment retains prior actor and stored grant",
+          "new login cancels pending enrollment",
+          "late enrollment cannot replace actor or persisted grant",
+          "different origin cannot restore first grant",
+          "returning to bound origin restores actor",
+          "verified personal key switched account",
+          "personal key persists only its independently revocable device session",
+          "late old response cannot reset new actor",
+          "server recorded current account on operation"
+        ],
+        "precedence": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "desktop with inherited launcher credential restores the account selected by the user",
+          "headless launch uses its own grant without replacing desktop identity"
+        ],
+        "offline": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "unavailable server retains pending grant without asserting identity",
+          "reconnect restored without credential entry",
+          "authenticated endpoint confirms revoked identity"
+        ],
+        "logout": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "revoked grant absent after restart",
+          "user supplied reauthorized personal key",
+          "logout forgets and revokes only the device session"
+        ],
+        "legacy": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "fresh editor is signed out",
+          "ordinary password login",
+          "verified device grant saved"
+        ],
+        "early_logout": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "cold-start logout cancels pending identity restore"
+        ],
+        "rebind": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "initial finite personal key enrolls an independent device",
+          "confirmed revoked saved device is replaced by a newly verified device"
+        ],
+        "concurrent": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "concurrent account switch wins over stale saved binding"
+        ],
+        "logout_during_update": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "competing editor's saved login restored",
+          "project save is in flight before explicit logout",
+          "explicit logout supersedes unfinished project change"
+        ],
+        "authenticate_migrate": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "explicit login begins before legacy restore",
+          "explicit login upgrades same-account legacy shared record",
+          "same-account retention cannot preserve the shared root key"
+        ],
+        "migrate_failure": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "failed or superseded legacy migration never activates shared credentials"
+        ],
+        "migrate_cancel": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "failed or superseded legacy migration never activates shared credentials"
+        ],
+        "migrate_cas": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "failed or superseded legacy migration never activates shared credentials"
+        ],
+        "migrate_denied": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "failed or superseded legacy migration never activates shared credentials"
+        ],
+        "migrate_logout_during_save": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "logout during committed migration cannot restore either identity"
+        ],
+        "migrate": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "legacy personal-key identity restores with its original actor and project",
+          "legacy shared key is upgraded to a persisted owned device grant"
+        ],
+        "migration_restart": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "legacy personal-key identity restores with its original actor and project",
+          "legacy shared key is upgraded to a persisted owned device grant"
+        ],
+        "migration_logout": [
+          "editor mounted its shared session",
+          "isolated native helper embedded",
+          "upgraded device survives process restart",
+          "upgraded device logs out independently of shared key"
+        ]
+      },
+      "service_observations": [
+        "issued",
+        "enrolled-alice-online",
+        "logout-alice",
+        "enrolled-alice-saved_offline",
+        "logout-alice",
+        "issued",
+        "logout-alice",
+        "enrolled-alice-online",
+        "logout-alice",
+        "audit-alice",
+        "original-device-used",
+        "enrolled-bob-invalid_me",
+        "logout-bob",
+        "enrolled-bob-failed_enrollment",
+        "logout-bob",
+        "enrolled-bob-cancel_enrollment",
+        "logout-bob",
+        "enrolled-bob-online",
+        "logout-alice",
+        "audit-bob",
+        "enrolled-alice-online",
+        "logout-bob",
+        "enrolled-bob-online",
+        "logout-bob",
+        "legacy-issued",
+        "logout-alice",
+        "enrolled-alice-online",
+        "enrolled-alice-prior_revoked",
+        "logout-alice",
+        "enrolled-alice-replace_during_check",
+        "concurrent-switch",
+        "logout-alice",
+        "enrolled-bob-online",
+        "enrolled-bob-online",
+        "logout-bob",
+        "logout-bob",
+        "enrolled-bob-online",
+        "logout-bob",
+        "enrolled-bob-invalid_me",
+        "logout-bob",
+        "enrolled-bob-cancel_enrollment",
+        "logout-bob",
+        "enrolled-bob-cas_competition",
+        "logout-bob",
+        "enrollment-denied",
+        "enrolled-bob-online",
+        "logout-bob",
+        "enrolled-bob-online",
+        "logout-bob"
+      ]
+    },
+    "native-retention": {
+      "checks": [
+        "main-screen and dockable native Views are installed",
+        "Tianxuan entry creates no WebView container",
+        "both Views share an editor-owned controller and transport",
+        "existing native workbench shares the same identity",
+        "existing AIChat API controls use only the isolated local model fixture",
+        "native login reads the real service configuration",
+        "native controls authenticate and open the workspace",
+        "native conversation composer is visible in main workspace",
+        "editing the native composer enables sending",
+        "native message is persisted by the existing conversation API",
+        "native conversation displays the actual local API reply",
+        "completed local reply finishes business-service synchronization",
+        "shared conversation API returns the exact completed local reply",
+        "local Tianxuan inference leaves ordinary AIChat conversation and draft unchanged",
+        "normal native action opens the compact sidebar",
+        "both Views share the same active conversation and unsent draft",
+        "closing the sidebar preserves the exact unsent draft",
+        "native visual surface and typography tokens are active",
+        "document navigation mounts the compiled native page",
+        "native document form saves through the real service",
+        "native document fields match the acknowledged server revision",
+        "main workspace and compact sidebar share the document revision",
+        "native document edits immediately share the durable draft",
+        "main document editor has usable native layout geometry",
+        "native formatting preserves the selected text and updates the real preview",
+        "native formatting is one undoable edit and undo updates the shared draft",
+        "native document view supports a dedicated preview mode",
+        "compiled native requirement stages are reachable from the workspace",
+        "native requirement page finishes refreshing before editing",
+        "native requirement suggestion uses the same local API connection",
+        "local design suggestion also leaves ordinary AIChat conversation unchanged",
+        "native design saves stage direction",
+        "native design explicitly confirms stage direction",
+        "native design saves stage plan",
+        "native design explicitly confirms stage plan",
+        "native design saves stage design",
+        "native design explicitly confirms stage design",
+        "three confirmed native stages publish the real shared requirement",
+        "Web-compatible document API reads the requirement produced by native controls",
+        "editor integration opens the isolated project scene",
+        "native editor action captures the selected scene node",
+        "node reference freezes its identity, revision and readable snapshot",
+        "editor context waits for the current conversation revision",
+        "native message sends the explicitly selected editor context",
+        "service persists the exact editor reference and its readable snapshot",
+        "changed scene selection is rejected until explicitly recaptured",
+        "native file navigation opens the requested project script",
+        "native editor action attaches the selected saved resource",
+        "native import dialog installs the selected asset with exact bytes",
+        "editor scan completes after native asset installation",
+        "imported asset is usable by the native resource loader",
+        "asset import preserves an existing destination",
+        "native file operations reject traversal and editor private state",
+        "native requirement library loads from the existing document service",
+        "requirement library contains the requirement created in native design flow",
+        "native search completes its real service scopes",
+        "native search finds persisted workspace content",
+        "native run history reads actual execution availability",
+        "unconfigured execution service is shown as unavailable without simulated runs",
+        "compiled native issue page reads the real project catalog",
+        "native issue creation form exposes a usable submit action",
+        "native issue controls create and read back the same authoritative issue",
+        "native issue navigation reaches both main workspace and compact sidebar",
+        "issue classification draft is shared immediately between both native Views",
+        "native issue classification saves using the server's comparison contract",
+        "native plan form saves estimated effort in the shared work projection",
+        "native time form records a real work log",
+        "native discussion form creates a selectable acceptance evidence comment",
+        "workflow action waits for the user's explicit native confirmation: planned",
+        "native workflow confirmation reads back the new stage: planned",
+        "workflow action waits for the user's explicit native confirmation: in-progress",
+        "native workflow confirmation reads back the new stage: in-progress",
+        "workflow action waits for the user's explicit native confirmation: in-review",
+        "native workflow confirmation reads back the new stage: in-review",
+        "native acceptance requires selecting an existing evidence comment",
+        "native acceptance records the selected comment at the reviewed revision",
+        "native lifecycle controls close only the accepted issue revision",
+        "native lifecycle can explicitly reopen the issue to its recorded previous stage",
+        "native flow stage drafts remain shared between both workspace views",
+        "native flow form validates percentage, human decision and outgoing route",
+        "native flow save requires confirmation of the visible configuration",
+        "confirmed native flow saves through the actual versioned service",
+        "native file picker uploads an immutable issue attachment",
+        "artifact preview retains the exact digest-verified source text including CRLF",
+        "native CodeEdit presents CRLF text with its normal line representation",
+        "native artifact save installs exactly the selected immutable version",
+        "native artifact download preserves different local content and requests another filename",
+        "native art revision form submits a fixed module revision for human review",
+        "compiled native artifact panel displays the selected mesh in its own 3D viewport",
+        "editor GLTF preview converts import-only nodes and retains the actual surface material",
+        "native camera controls orbit the imported model's real bounds",
+        "native kanban groups the real issue list into visible status columns",
+        "native repository fixture is stored through the authenticated candidate API",
+        "native repository lookup reads its immutable revision and object tree",
+        "native repository tree opens the digest-verified object in CodeEdit",
+        "repository edit draft is shared by the workspace and sidebar",
+        "native repository controls save and verify a new revision",
+        "native local Git chooser lists only the isolated service repositories",
+        "native Git selection loads the branch, history and file tree",
+        "native Git file tree opens the selected tracked text file",
+        "native Git save creates a fresh branch and reads back its exact content",
+        "native diff control displays the real changed lines between the two branches",
+        "native import form enables only for a complete administrator request",
+        "native repository import waits for confirmation before creating a server task",
+        "confirmed native controls display a real completed Git mirror import",
+        "native import receipt opens the actual imported repository file tree",
+        "native collaboration page reads repository bindings and the real isolated queue",
+        "native repository binding waits for confirmation of the displayed repository",
+        "native repository binding is persisted by the existing service",
+        "native queue form submits the source branch and reads its durable candidate",
+        "native queue selection finishes before rebuilding its visible rows",
+        "native queue cancellation applies to the explicitly selected candidate",
+        "native configuration form creates a versioned project",
+        "native configuration adds and automatically saves a feature with its stable ID",
+        "native configuration renders the typed entry controls from the shared model",
+        "both native configuration Views share the same durable field draft",
+        "leaving a native value field saves its typed number and verifies the new version",
+        "native configuration version history exposes every acknowledged field save",
+        "native configuration restoration waits for explicit version confirmation",
+        "native configuration restoration creates and reads back a new version of the selected historical content",
+        "native migration page reads the published archive receipt and current task entry",
+        "native archive search uses the current published catalog",
+        "native archive detail renders the historical body and related comments",
+        "native archive file dialog saves the verified immutable attachment bytes",
+        "native archive code controls read the original imported file and commit history",
+        "native account page reads the verified member, key and identity records",
+        "native account creation waits for explicit confirmation before changing access",
+        "native account controls create the intended member and display the one-time initial credential",
+        "hiding a newly issued credential clears it from the shared model and native view",
+        "logout clears all native surfaces together",
+        "service changes synchronize the displayed login destination in both native Views"
+      ],
+      "passed": true,
+      "display_boundary": "Headless controls and geometry only; no display pixels, native window or IME acceptance. Renderer/ObjectDB shutdown diagnostics are retained separately.",
+      "binary_sha256": "b939ae2d8e36e3705003e515b81136e1f6e94e4ee9f33a2067697551dacc1f3c",
+      "local_conversation_contract": {
+        "checks": [
+          "persist user turn before starting one local request",
+          "double send cannot duplicate local inference",
+          "local reply is preserved and storage-only sync acknowledges it",
+          "provider metadata is normalized without serializing credentials",
+          "cancel closes only its request and rejects a late result",
+          "offline complete answer is durable before synchronization",
+          "recreated controller cache restores offline answer from disk",
+          "reconnect automatically synchronizes persisted answers without inference",
+          "legacy service leaves real local answer visible with explicit pending sync",
+          "no fallback to cloud inference",
+          "no fallback to cloud inference",
+          "no fallback to cloud inference",
+          "no fallback to cloud inference",
+          "no fallback to cloud inference",
+          "no fallback to cloud inference",
+          "no fallback to cloud inference",
+          "no fallback to cloud inference",
+          "answers completed during sync are drained in the next batch",
+          "cancelled local turn keeps chronological order after later replies synchronize",
+          "lost synchronization ACK retains exact submitted payload",
+          "replay uses normalized server idempotency despite trimmed content without duplicating a turn",
+          "next-stage local suggestion includes confirmed predecessor content",
+          "late design result cannot rebase itself onto a changed confirmed stage",
+          "unchanged design inputs accept completed local suggestion",
+          "suggestions append to existing authored draft without replacing its text",
+          "identity transition cancels old request and isolates persisted conversations",
+          "viewer cannot start local inference through workspace controller",
+          "failed durable storage does not start a model request or consume input"
+        ],
+        "passed": true,
+        "process_diagnostics": [
+          "ERROR: Could not create directory: 'C:/Users/ROG/AppData/Local/Temp/tianxuan-native-controller-_0_6tktl/local-conversation-tcpqu72_/drafts/storage-blocker/not-a-directory'."
+        ],
+        "display_boundary": "Source-level local persistence and failure/race contracts with an injected model; no provider or visual acceptance.",
+        "binary_sha256": "b939ae2d8e36e3705003e515b81136e1f6e94e4ee9f33a2067697551dacc1f3c"
+      },
+      "evidence_level": "compiled_native_shell_real_isolated_service_headless",
+      "input_sha256": {
+        "editor/docks/tianxuan/.clang-format": "80e3f12172224b4df9038dab0d861bb75d087f30578e5f4b095157943a91a8e3",
+        "editor/docks/tianxuan/accounts_controller.gd": "13c8052c548b28316c55f5f37fe0e7da1c02011c8638816da6e3d6dc470ea332",
+        "editor/docks/tianxuan/accounts_page.gd": "b44d3954bcd26863c231d40415f7d983c0758f8341a05b13a019f784e7c5d4c7",
+        "editor/docks/tianxuan/asset_decoder.gd": "fc5eb2dfcbbfad82e5d8176212c98b9c55955a5733bb04447f0c95750bc517a3",
+        "editor/docks/tianxuan/build-impact.json": "db9fa90256bede5dadec3195d27eea61c2fccb17fdf8968db3d98fad472dfd12",
+        "editor/docks/tianxuan/design_page.gd": "f29b0f9cc6dd16fd4f834bfd7c173ccdb27c9816223aecd4b85fd278d3d04caf",
+        "editor/docks/tianxuan/document_controller.gd": "87f22a0f84502988682e625dd4c3d65ce4bbefb89f68e07c3acdb56dbc99d991",
+        "editor/docks/tianxuan/documents_page.gd": "7abab3332a19ee89f2c366642caa759aeba1e23affa232345a0dda95b0ed9035",
+        "editor/docks/tianxuan/editor_controller.gd": "86648ecb029e02371aacdcbb3162011676fb8c934ef3fb914e8b7e812598c44f",
+        "editor/docks/tianxuan/execution_controller.gd": "5a1e48c217f35e08c18867040d91f3321c852e40e75274e49c879c1d397c31ee",
+        "editor/docks/tianxuan/execution_page.gd": "7c0acfd3eb810d62b9ba1981677a6d9d61fa59f8d9ce47e5af2f038e25d7dc69",
+        "editor/docks/tianxuan/game_config_controller.gd": "b0ba8f423b6796147c105f0d83918b3ee476d3ad747e297b5148ac697f271ba0",
+        "editor/docks/tianxuan/game_config_page.gd": "585a9ac1e805ab42418079fdf69493bd813bd24f7fabeeecd543e083926f392f",
+        "editor/docks/tianxuan/home_page.gd": "e16c2aedb23015f256dcea1a5485524d2434ed174655630d8305265ca56a5be2",
+        "editor/docks/tianxuan/issue_assets.gd": "7f1184d31536675e17c5a2df3b6a6c2650d1d5a4fb4daef9f89a026ac3172655",
+        "editor/docks/tianxuan/issue_controller.gd": "0c7ac88196ce64175dcb2328629e4a442eaf4fb5086ec541591a27eb958f00f6",
+        "editor/docks/tianxuan/issue_flow.gd": "0e7b1143f87a06b52ca1eeedce4dac19220f59998d6c7b76f38cf58352df82ca",
+        "editor/docks/tianxuan/issues_page.gd": "5673477fbd4c8a400f56c9e5703106f4ecfa2fdea118da0d4c75674391120dad",
+        "editor/docks/tianxuan/library_page.gd": "144e93527615fa6d3a28eb7d3b8fed1388403fd1133899cd7a16bdd557e45c19",
+        "editor/docks/tianxuan/local_conversation_controller.gd": "0605eabd129b1196c74d46b24f9bd35a28cd0be521a40e779afe3985dcbb0ab3",
+        "editor/docks/tianxuan/locale.gd": "8616ea6fc179b35ba587f13b5e890aa950f0a64acda24282cd9f3000c062b98f",
+        "editor/docks/tianxuan/markdown_view.gd": "5899a31bf963bcfee93c09268d82ba274f918b917c9f94e0d33236e5db849d11",
+        "editor/docks/tianxuan/migration_controller.gd": "a602ca8cb6de4306c986155142036227e3dbb83766d0e44da55a71ef8d8c18be",
+        "editor/docks/tianxuan/migration_page.gd": "fd779004ed0065fd76fe420199c61fc7bf875a033e0a674905158053768d5b6b",
+        "editor/docks/tianxuan/native_theme.gd": "e631fdb7b8d701c823839f94a8e7fcca68f524170c38dfca4cd2e698e376c2c0",
+        "editor/docks/tianxuan/repositories_controller.gd": "aca27a4fd6f791f0b41ce2ab78cafe1be85e936426b2aa802e7cde3be0c6ae50",
+        "editor/docks/tianxuan/repositories_page.gd": "69eb6d526c49deacd1ea6893f5d1b197a770c1e8bc6508a20572daab3d6dfa57",
+        "editor/docks/tianxuan/repository_collaboration_controller.gd": "6c7de8d5c1023786395c923b143a5528d20c92b3802a51acb8e2e38d306069df",
+        "editor/docks/tianxuan/repository_collaboration_page.gd": "f98d348e894821622f9ea980b543abd3605ca028c548cf48a9ceeb3ad524566a",
+        "editor/docks/tianxuan/session_controller.gd": "c31aedbd47bc5f5918d61088d7b37302ee9e1c30d74d7a975c22b1936bfe119a",
+        "editor/docks/tianxuan/TianxuanModelHost.cpp": "ffbdefa3074c98768889108cabdb77c6a4eb809b60d0c7c845771cdaac80df45",
+        "editor/docks/tianxuan/TianxuanModelHost.h": "f4841b2ccfcac62f9ef1895a653e00586c8f61e6f5023924732bce784c1da0f4",
+        "editor/docks/tianxuan/TianxuanWorkbench.cpp": "a06313f06611925f8a0aeec91c0c9c413177262d9acc9f5518453f83e536e152",
+        "editor/docks/tianxuan/TianxuanWorkbench.h": "f69fa6440339f2f82464b16b482712dd614d9aad0ae148ec22e580fd38d49b84",
+        "editor/docks/tianxuan/workspace_controller.gd": "91a7509dab59fd3cc8c0b3a3f57d7bf31ca505197e4fae0aa93514098d3efa4a",
+        "editor/docks/tianxuan/workspace_view.gd": "19d921c9aabd1399f428eefcd926813fd7c2d2e5d5824132817f9507f5638daf",
+        "editor/docks/workbench/business_session.gd": "32dbbb62b97a99ba558842e9fc2da2293c07b1fafe636c8db8e1d01141cfa3c7",
+        "tests/editor/tianxuan_controller.gd": "a3c0fa04a148349b2e82c921f2d250e073d8addb9df948818d1c81e0c67dc97d",
+        "tests/editor/tianxuan_native_shell.gd": "04ca1ccaf1dfffebf60983441370bdfea7646c060f367a1129e49781d17c4a82",
+        "tests/editor/tianxuan_local_model_fixture.gd": "c9d63642b706ddff87bc0149003fc631d16bd07c065aa28ddf6f67f9f2939aaa",
+        "tests/editor/run_tianxuan_controller.py": "4b675fb4e7012aa219d6141a0c01ef6b8a9fa35588f25baabd897ff8f23641f8",
+        "editor/SCsub": "43c30eb4d1be579ced6f728963aa784f4773271d98ce7916a5242160a9f2860f",
+        "editor/docks/SCsub": "c9d1e57065f3ee3ce66b0e401864b9973e0a26ba49fe1e78a4f0f5d733856a2b",
+        "editor/docks/ai_chat_dock.cpp": "b603423d482277878a87b433006bb6e7eced61a6f05a7db6aec78390b5e6a563",
+        "editor/docks/ai_chat_dock.h": "fc79312af2319c19c873ef53a64d7f581121429e4252b21f795e4358bf1f2403",
+        "editor/docks/AIChatController.cpp": "f801e199c1558221e5fb2e32ee9e50c9e2c065f9cb91bb4083c8d9b427f5f609",
+        "editor/docks/AIChatController.h": "888fc8abb9d89a208ea8c5b49956d40c249bd91563a7811de2991c8d35fbc143",
+        "editor/editor_node.cpp": "5da712945615560fb47c5e6a029a2965b5854d8d8bc2cd0830d3b14f81cb3e46",
+        "editor/editor_builders.py": "e1d716927d7515a5625414bdd5dbb362651585a138432643c897cfdcc7ff5fa7",
+        "editor/docks/workbench/AIWorkbenchSidebar.cpp": "06fb1b254d8bbe901c8cf6bcf1c50563199b705e6927277f1ddf6662f801d289",
+        "tests/editor/tianxuan_local_conversation.gd": "83fb311afc3ca0aa6b6839b0313e2cb156c0759c5961b00bff41f576763c542f"
+      }
+    },
+    "connect-retention": {
+      "passed": true,
+      "mode": "compiled_native",
+      "binary_sha256": "b939ae2d8e36e3705003e515b81136e1f6e94e4ee9f33a2067697551dacc1f3c",
+      "input_script_sha256": {},
+      "scenarios": {
+        "environment_over_saved": [
+          "native workspace mounted",
+          "initial service field reflects the selected address",
+          "ordinary connect button available",
+          "initial loopback service reached with the editor proxy configured",
+          "click immediately exposes pending status",
+          "proxy failure leaves a usable retry button",
+          "service error permits retry at the same address",
+          "retry shows progress then successful completion",
+          "keys deployment exposes only its supported login method",
+          "legacy deployment retains its existing login method",
+          "unsupported deployment configuration remains retryable",
+          "accounts deployment also offers password login",
+          "private viewer signed in",
+          "signed-in viewer sees pending and failure feedback on the same service",
+          "signed-in retry confirms connection and preserves identity"
+        ],
+        "saved_address": [
+          "native workspace mounted",
+          "initial service field reflects the selected address"
+        ],
+        "default_address": [
+          "native workspace mounted",
+          "initial service field reflects the selected address"
+        ]
+      },
+      "proxy_connect_targets": [
+        "connect-probe.invalid:443",
+        "connect-probe.invalid:443",
+        "167-172-70-41.sslip.io:443",
+        "167-172-70-41.sslip.io:443"
+      ],
+      "loopback_read_modes": [
+        "keys",
+        "keys",
+        "unavailable",
+        "unavailable",
+        "keys",
+        "legacy",
+        "unknown",
+        "accounts",
+        "unavailable",
+        "keys"
+      ]
+    }
+  },
+  "server_evidence_reuse": {
+    "source_candidate": "8d19a615b8d632cb4e553ae3e16bf90202dcf5de",
+    "signed_head": "ee80b815950285fb8423cee3519a389524c8ba56",
+    "ci_run": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255",
+    "server_result": {
+      "passed": 1645,
+      "skipped": 13,
+      "deselected": 2,
+      "subtests_passed": 260
+    },
+    "unchanged_server_inputs": {
+      "customizations/components/tianxuan/duobao/native_repository.py": "25a620479f83d83c8131f2158f5ded865f50ecf6baf2ef5a47e25fb5ca53a0ce",
+      "customizations/components/tianxuan/duobao/native_store.py": "1def53225ab48fa671b20b0380581ed661be2e98308367f696ad9c3e4e7e4632",
+      "customizations/components/tianxuan/server/access_control.py": "ab2af0f80e059e1c9ca9eaa42ef38b44fc2548ea81b6e4b8ebf4dcb69471bb10",
+      "customizations/components/tianxuan/server/api.py": "d53e1a5a1fa87c15afe453062c336a37991305080ed3394ceb32725d8b67ceb9",
+      "customizations/components/tianxuan/server/native_api.py": "9eb48d591265b704447668c803159ee3b1775e742d8fe2a583085e0f6a963380",
+      "customizations/components/tianxuan/server/native_repository_api.py": "516d420150da857aa593af315d6989591a02044c1a43415d35b414093b0544bf",
+      "customizations/components/tianxuan/server/test_multidevice_auth.py": "b85779a9d8d5b05cdf9773c74d565e8241abf8cac32355ba242408f126533041",
+      "customizations/components/tianxuan/server/test_multidevice_repository.py": "6a47d78a884dadc7867552ee0c6357f12cb492d3ee86c81a97cc96cdb9bf20a3",
+      "customizations/components/tianxuan/server/test_multidevice_submission.py": "0ab782c0c2af998530e3c2fdb380bbfc9df025dff3248b7ddf5698d999e30e25",
+      "customizations/components/tianxuan/server/test_native_api.py": "9c79bf185c2ccb1177ee05090448414a1bec721e15d51817425f37e01e039377",
+      "customizations/components/tianxuan/server/tianxuan_core.py": "27ede26f7448c590b469a7c971164e5d9bf294acb0d3d0d27a093dea7e29b011"
+    },
+    "native_revalidation": "required after main 2ec392 identity integration"
+  },
+  "prior_exact_head_ci": [
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138147861765",
+      "name": "CI / Modular tests",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148167/job/138140619890",
+      "name": "🏁 Windows / Editor (target=editor)",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148167/job/138140620788",
+      "name": "🍏 iOS",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148167/job/138140621038",
+      "name": "🌐 Web",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148167/job/138140621334",
+      "name": "Compile affected Metal targets",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148167/job/138140621520",
+      "name": "Compile affected Windows engine targets",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148167/job/138140621214",
+      "name": "🤖 Android",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148167/job/138140621342",
+      "name": "🍎 macOS",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148167/job/138140620559",
+      "name": "🐧 Linux",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140607336",
+      "name": "CI / Modular tests",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140608998",
+      "name": "web",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140608540",
+      "name": "editor-native",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140609141",
+      "name": "native-cache",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140608710",
+      "name": "build-scope",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140609086",
+      "name": "engine-next",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140608989",
+      "name": "Module / ${{ matrix.module }}",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140608433",
+      "name": "integration",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140608843",
+      "name": "tianxuan-deploy",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140608807",
+      "name": "tianxuan-tests",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140609223",
+      "name": "blender-geometry",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140608621",
+      "name": "gameplay",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140608129",
+      "name": "maliang-offline",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140513047",
+      "name": "tianxuan-tests / Module and web tests",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140512880",
+      "name": "editor-native / Editor (target=editor)",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140512516",
+      "name": "Module / editor",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140513070",
+      "name": "tianxuan-deploy / Docker images",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140513879",
+      "name": "integration",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140514944",
+      "name": "maliang-offline",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140515073",
+      "name": "native-cache",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140514144",
+      "name": "engine-next",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140514314",
+      "name": "blender-geometry",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140514340",
+      "name": "gameplay",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140515508",
+      "name": "web",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140514205",
+      "name": "build-scope",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140474674",
+      "name": "CI / Select changed modules",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303133183/job/138140476151",
+      "name": "📊 Static checks",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148045/job/138140388193",
+      "name": "issue-association",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303132989/job/138140407820",
+      "name": "🐧 Linux",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303132989/job/138140408092",
+      "name": "🤖 Android",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303132989/job/138140407401",
+      "name": "🌐 Web",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140389560",
+      "name": "CI / Select changed modules",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148167/job/138140389283",
+      "name": "📊 Static checks / Code style, file formatting, and docs",
+      "state": "SUCCESS"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303132989/job/138140397386",
+      "name": "Compile affected Windows engine targets",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303132989/job/138140396460",
+      "name": "🍎 macOS",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303148255/job/138140391668",
+      "name": "📊 Static checks",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303132989/job/138140344592",
+      "name": "🍏 iOS",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303132989/job/138140344538",
+      "name": "Compile affected Metal targets",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303132989/job/138140345452",
+      "name": "🏁 Windows",
+      "state": "SKIPPED"
+    },
+    {
+      "link": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45303132989/job/138140343347",
+      "name": "📊 Static checks",
+      "state": "SKIPPED"
+    }
+  ],
+  "static": {
+    "ruff": "13 changed Python files passed",
+    "mypy": "13 changed Python files passed in CI isolated-import environment",
+    "formatting": "Only external test runner formatting changed after the build; Python AST equality verified before rerunning compiled identity tests."
+  },
+  "method_reuse": {
+    "scope": "editor-native-acceptance",
+    "lesson": "assert-async-operation-started",
+    "condition": "Cancellation occurs only after real service, store marker or in-flight store-ticket evidence; terminal HTTP and credential state is then verified.",
+    "counterexample": "Pre-start rejection cases intentionally assert no launch; not the cancellation race cases exercised here."
+  },
+  "boundary": "New exact-candidate CI and remote main delivery still pending. No production installation or credentials changed."
+}

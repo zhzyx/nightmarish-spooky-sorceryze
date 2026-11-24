@@ -1,0 +1,16 @@
+{
+  "issue_number": 2190,
+  "request_id": "tianxuan-multidevice-20261124",
+  "source_job": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45295429122/job/138114683168",
+  "ci_result": {
+    "failed": 2,
+    "passed": 1627,
+    "subtests_passed": 260
+  },
+  "reproduction": "Two exact failing cases reproduced locally before repair",
+  "cause": "device_context INSERT OR IGNORE mutated the first identity lookup and required a write lock on every valid read",
+  "cases": [
+    "test_conversation_and_confirmations_are_private_durable_and_idempotent",
+    "test_readback_while_storage_is_busy"
+  ]
+}

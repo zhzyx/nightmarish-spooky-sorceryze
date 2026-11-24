@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-5465bd2f126bb11ac03a70dc3fad0dde50610fd7",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-multidevice-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "4421064bbce20d6846a1e0fb760835047a4fdac2104f44a5904e87f36f4a8396",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2192",
+    "action": "delivery",
+    "detection_head": "8d19a615b8d632cb4e553ae3e16bf90202dcf5de",
+    "context_sha256": "665db8ea59976e15affbc3f0c01a95c23fd0e41cd57a88abe460eaed6c3c27de",
+    "operator": "Sail-Li",
+    "worker": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6",
+    "authority_ref": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6:user-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/pull/2205",
+    "diagnosis": "旧候选#2204完整CI通过后，main已合入#2205；共享编辑器身份fixture冲突，服务端及多宝实现未变化。",
+    "next_action": "在本任务独立worktree整合留存长期设备授权与共享key升级，复验双方身份场景并重建实际编辑器，再签发新精确候选。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T01:30:34.753415+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T01:31:33.445434+00:00",
+  "sha256": "4e80f83d99a13b37e2958026e64833d6eed6aedcf16e116f5f48e45eb98ee483"
+}

@@ -2,6 +2,7 @@ extends SceneTree
 
 var checks: Array[String] = []
 var late := {}
+var login_result := {}
 var session: Node
 
 
@@ -19,7 +20,7 @@ func check(ok: bool, label: String) -> bool:
 
 
 func settled() -> void:
-	while session._restore_running or session._store_issued != session._store_next:
+	while session._restore_running or session._store_issued != session._store_next or not session._requests.is_empty():
 		await process_frame
 
 
@@ -31,6 +32,10 @@ func set_mode(mode: String) -> void:
 
 func slow_request() -> void:
 	late = await session.api_request(HTTPClient.METHOD_GET, "/api/v1/issues/slow")
+
+
+func pending_login(token: String) -> void:
+	login_result = {"passed": await session.authenticate("", token, "project-b")}
 
 
 func update_project(token: String) -> void:
@@ -47,14 +52,26 @@ func run() -> void:
 	session = script.new()
 	session.credential_transport = load("res://session_memory.gd") if source_loaded else mounted.credential_transport
 	var helper: String = FileAccess.get_file_as_string("res://session_credentials.py") if source_loaded else mounted.helper_source
+	var phase := OS.get_environment("TX_PHASE")
 	# Use the real OS backend under a fresh service name, never the production vault.
 	session.test_helper_source = helper.replace("Godot.Tianxuan.Editor", OS.get_environment("TX_TEST_SERVICE"))
+	if phase == "migrate_logout_during_save":
+		session.test_helper_source = session.test_helper_source.replace("response = dispatch(request)", "response = dispatch(request)\n            if request.get('action') == 'save' and response.get('status') == 'saved':\n                import os,time\n                open(os.environ['TX_SAVED'],'w').close()\n                time.sleep(0.5)")
 	if not check(session.test_helper_source != helper and session.credential_transport != null, "isolated native helper embedded"):
 		return
 	session.test_python = OS.get_environment("TX_PYTHON")
 	root.add_child(session)
-	var phase := OS.get_environment("TX_PHASE")
+	if phase == "authenticate_migrate":
+		session._cancel_login()
 	if phase == "early_logout":
+		await session.reset()
+	if phase == "migrate_cancel":
+		while not FileAccess.file_exists(OS.get_environment("TX_ENROLLED")):
+			await process_frame
+		session._cancel_login()
+	if phase == "migrate_logout_during_save":
+		while not FileAccess.file_exists(OS.get_environment("TX_SAVED")):
+			await process_frame
 		await session.reset()
 	await process_frame
 	await settled()
@@ -75,6 +92,16 @@ func run() -> void:
 			return
 		if not check(session.get_identity().id == "alice" and not session._stored_digest.is_empty(), "verified device grant saved"):
 			return
+	elif phase == "authenticate_migrate":
+		if not check(session.get_identity().is_empty(), "explicit login begins before legacy restore"):
+			return
+		if not check(await session.authenticate("", token, "project-b"), "explicit login upgrades same-account legacy shared record"):
+			return
+		var saved: Dictionary = await session._store("load", session.origin)
+		var record: Dictionary = JSON.parse_string(saved.get("secret", "{}"))
+		if not check(record.get("owned") == true and record.get("token") == session._token and session._token != token, "same-account retention cannot preserve the shared root key"):
+			return
+		await session.reset()
 	elif phase == "same_account":
 		var original: String = session._stored_digest
 		var personal := OS.get_environment("TX_SAME_ACCOUNT_KEY")
@@ -93,10 +120,10 @@ func run() -> void:
 			return
 	elif phase == "rebind":
 		var short_key := OS.get_environment("TX_SAME_ACCOUNT_KEY")
-		if not check(await session.authenticate("", short_key, "project-a"), "initial finite personal key accepted"):
+		if not check(await session.authenticate("", short_key, "project-a"), "initial finite personal key enrolls an independent device"):
 			return
 		set_mode("prior_revoked")
-		if not check(await session.authenticate("", OS.get_environment("TX_SECOND_KEY"), "project-a"), "confirmed revoked saved key is replaced by the newly verified key"):
+		if not check(await session.authenticate("", OS.get_environment("TX_SECOND_KEY"), "project-a"), "confirmed revoked saved device is replaced by a newly verified device"):
 			return
 	elif phase == "concurrent":
 		set_mode("replace_during_check")
@@ -128,6 +155,26 @@ func run() -> void:
 			return
 		if not check(not await session.authenticate("", "invalid", "project-b") and session.get_identity().id == "alice", "failed account switch retains actor"):
 			return
+		var original: Dictionary = await session._store("load", session.origin)
+		for failure in ["invalid_me", "failed_enrollment"]:
+			set_mode(failure)
+			if not check(not await session.authenticate("", token, "project-b"), failure + " rejects new device session"):
+				return
+			var retained: Dictionary = await session._store("load", session.origin)
+			if not check(session.get_identity().id == "alice" and retained == original, failure + " retains prior actor and stored grant"):
+				return
+		set_mode("cancel_enrollment")
+		pending_login(token)
+		while not FileAccess.file_exists(OS.get_environment("TX_ENROLLED")):
+			await process_frame
+		if not check(not await session.authenticate("", "", "project-b"), "new login cancels pending enrollment"):
+			return
+		while login_result.is_empty():
+			await process_frame
+		var retained: Dictionary = await session._store("load", session.origin)
+		if not check(not login_result.passed and session.get_identity().id == "alice" and retained == original, "late enrollment cannot replace actor or persisted grant"):
+			return
+		set_mode("online")
 		var initial: String = session.origin
 		session.set_origin(OS.get_environment("TX_OTHER_ORIGIN"))
 		await process_frame
@@ -141,6 +188,8 @@ func run() -> void:
 			return
 		slow_request()
 		if not check(await session.authenticate("", token, "project-b"), "verified personal key switched account"):
+			return
+		if not check(session._owned_session and session._token != token and not session._stored_digest.is_empty(), "personal key persists only its independently revocable device session"):
 			return
 		while late.is_empty():
 			await process_frame
@@ -180,10 +229,28 @@ func run() -> void:
 		if not check(await session.authenticate("", token, "project-b"), "user supplied reauthorized personal key"):
 			return
 		await session.reset()
-		if not check(session.get_identity().is_empty(), "logout forgets personal key locally"):
+		if not check(session.get_identity().is_empty(), "logout forgets and revokes only the device session"):
 			return
 	elif phase == "early_logout":
 		if not check(session.get_identity().is_empty() and not session._restore_pending, "cold-start logout cancels pending identity restore"):
 			return
+	elif phase in ["migrate", "migration_restart"]:
+		if not check(session.get_identity().get("id") == "bob" and session.get_identity().project == "legacy-project", "legacy personal-key identity restores with its original actor and project"):
+			return
+		if not check(session._owned_session and session._token != token and not session._stored_digest.is_empty(), "legacy shared key is upgraded to a persisted owned device grant"):
+			return
+	elif phase in ["migrate_failure", "migrate_cancel", "migrate_cas", "migrate_denied"]:
+		if not check(session.get_identity().is_empty(), "failed or superseded legacy migration never activates shared credentials"):
+			return
+	elif phase == "migrate_logout_during_save":
+		if not check(session.get_identity().is_empty(), "logout during committed migration cannot restore either identity"):
+			return
+	elif phase == "migration_logout":
+		if not check(session.get_identity().get("id") == "bob", "upgraded device survives process restart"):
+			return
+		await session.reset()
+		if not check(session.get_identity().is_empty(), "upgraded device logs out independently of shared key"):
+			return
+	await settled()
 	print(JSON.stringify({"passed": true, "checks": checks}))
 	quit(0)

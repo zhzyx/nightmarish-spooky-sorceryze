@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "event_id": "request-2190-multidevice",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-multidevice-20261124",
+  "kind": "request",
+  "occurred_at": "2026-11-23T23:46:03.834728+00:00",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "20261124",
+    "origin": "external-authorized-host",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "action": "record_authorized_issue_binding",
+    "issue_number": 2190,
+    "authority_ref": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6:user-20261124",
+    "design_path": "design-docs/tianxuan-multidevice-20261124.md",
+    "scope": "same-account independent device grants and attributable conflict-safe native submissions",
+    "business_accepted": false,
+    "usage": null
+  },
+  "evidence_refs": [],
+  "sha256": "1bfed0fbb3a54e20b7241db26b22bbb19f39a0dc181286dc26522c0c9ee577f6"
+}

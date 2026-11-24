@@ -135,6 +135,10 @@ def _require_actor(
             session_actor = request.app.state.store.user_for_token(token.strip())
             if not session_actor:
                 raise HTTPException(status_code=401, detail="invalid or expired bearer token")
+            device = request.app.state.store.device_context(token.strip())
+            if device is None:
+                raise HTTPException(401, "device credential expired or revoked")
+            request.state.verified_device = device
             return str(session_actor)
     header_actor = (x_actor or "").strip()
     if header_actor:
@@ -572,6 +576,7 @@ def create_app(
         if account is None:
             raise HTTPException(status_code=401, detail="invalid email or password")
         token = store.issue_session(account["user_id"])
+        account = {**account, **(store.device_context(token) or {})}
         if os.environ.get("TIANXUAN_AUTH_MODE") == "accounts":
             from access_control import COOKIE, SESSION_COOKIE
             from fastapi.responses import JSONResponse

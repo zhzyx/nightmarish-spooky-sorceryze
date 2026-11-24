@@ -5,6 +5,8 @@ thirdparty/* linguist-vendored
 
 # Normalize EOL for all files that Git considers text files
 * text=auto eol=lf
+# Preserve Issue #2190 evidence bytes referenced by immutable learning events.
+data-collection/tianxuan-multidevice-2190-*.json -text whitespace=cr-at-eol
 # Preserve exact #1501 source and live receipts referenced by immutable audit hashes.
 data-collection/native-context-consumption-implementation-1501.json -text whitespace=cr-at-eol
 data-collection/native-context-live-validation-1501.json -text whitespace=cr-at-eol

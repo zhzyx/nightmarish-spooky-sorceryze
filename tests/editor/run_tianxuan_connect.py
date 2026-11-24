@@ -53,6 +53,7 @@ def exercise(base, binary, source_loaded):
     mode.write_text("keys")
     proxy_targets = []
     origin_responses = []
+    device_tokens = set()
 
     class QuietHandler(BaseHTTPRequestHandler):
         def log_message(self, *_args):
@@ -64,6 +65,25 @@ def exercise(base, binary, source_loaded):
             self.send_error(502)
 
     class Service(QuietHandler):
+        def do_POST(self):
+            bearer = self.headers.get("Authorization", "").removeprefix("Bearer ")
+            if self.path == "/api/v1/auth/device-session" and bearer == "fixture-viewer-key":
+                token = f"fixture-device-{len(device_tokens) + 1}"
+                device_tokens.add(token)
+                payload = {"token": token}
+            elif self.path == "/api/v1/auth/logout" and bearer in device_tokens:
+                device_tokens.remove(bearer)
+                payload = {"ok": True}
+            else:
+                self.send_error(401)
+                return
+            body = json.dumps(payload).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
         def do_GET(self):
             if self.path == "/api/v1/auth/config":
                 state = mode.read_text()
@@ -72,7 +92,10 @@ def exercise(base, binary, source_loaded):
                     self.send_error(503)
                     return
                 payload = {"mode": state}
-            elif self.path == "/api/v1/auth/me" and self.headers.get("Authorization") == "Bearer fixture-viewer-key":
+            elif (
+                self.path == "/api/v1/auth/me"
+                and self.headers.get("Authorization", "").removeprefix("Bearer ") in device_tokens
+            ):
                 payload = {"id": "test-viewer", "role": "viewer", "name": "Fixture"}
             else:
                 self.send_error(404)

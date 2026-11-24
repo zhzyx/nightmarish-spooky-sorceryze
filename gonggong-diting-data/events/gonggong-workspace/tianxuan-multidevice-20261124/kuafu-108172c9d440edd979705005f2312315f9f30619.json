@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-108172c9d440edd979705005f2312315f9f30619",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-multidevice-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "afa444bf914a5cef0e0d2621eb8477069966d3f82482f64d0d2a8c23d3bb3348",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2192",
+    "action": "validation",
+    "detection_head": "39baf5cae0a1301b650554ad5b67fefe79a41c1b",
+    "context_sha256": "665db8ea59976e15affbc3f0c01a95c23fd0e41cd57a88abe460eaed6c3c27de",
+    "operator": "Sail-Li",
+    "worker": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6",
+    "authority_ref": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6:user-20261124",
+    "evidence": "data-collection/receipts/multidevice/connect-persistent.log",
+    "diagnosis": "连接fixture仅实现GET /me，独立设备登记POST返回默认HTML 501，导致private viewer登录断言失败；真实隔离服务控制器131/128项及身份15阶段已通过。",
+    "next_action": "补齐fixture独立设备登记与撤销契约，用同一新编译产物复验连接场景。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T01:05:14.292840+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T01:05:51.234814+00:00",
+  "sha256": "d9c7d9b065d17d7132e96c84d374ab80ea5bc4bf259ade1f76119d28f337a9ae"
+}
