@@ -516,6 +516,72 @@ class MultiImageTests(unittest.TestCase):
         self.assertEqual(second_image["payload"]["provenance"]["derived_from"], reference(primary))
         self.assertIn(reference(primary), second_image["dependencies"])
 
+    def test_t_pose_is_expanded_into_explicit_horizontal_arm_constraints(self):
+        for index, pose in enumerate(("TPose", "T pose", "t-pose", "T_pose")):
+            with self.subTest(pose=pose):
+                inner = FakeImageProvider("kimi_work_image")
+                provider = self.adapter(inner)
+                request = dict(
+                    node="generate_image",
+                    version="2",
+                    inputs={},
+                    parameters={"prompt": "同一角色，" + pose + "，正面和背面"},
+                    context=[],
+                )
+                receipt = provider.submit(request, {"schema_version": 1, "artifacts": []}, str(index + 1) * 64)
+                for _ in range(4):
+                    receipt = provider.poll(receipt["job_id"])
+                    if receipt["state"] == "succeeded":
+                        break
+                self.assertEqual(receipt["state"], "succeeded")
+                self.assertEqual(inner.submissions, 2)
+                for child in inner.requests:
+                    prompt = child["parameters"]["prompt"]
+                    self.assertIn("Strict, symmetrical T-pose", prompt)
+                    self.assertIn("both arms fully extended straight out to opposite sides", prompt)
+                    self.assertIn("perfectly horizontal at shoulder height", prompt)
+                    self.assertIn("straight elbows", prompt)
+                    self.assertIn("two unbroken horizontal lines", prompt)
+                    self.assertIn("Do not angle the arms downward", prompt)
+
+    def test_standalone_garment_has_explicit_front_and_back_surface_constraints(self):
+        cases = (
+            "单独生成一件白色法袍，只要衣服，不要人体或模特，正面和背面",
+            "Generate a standalone white robe, front view and back view",
+        )
+        for index, text in enumerate(cases):
+            with self.subTest(prompt=text):
+                inner = FakeImageProvider("kimi_work_image")
+                provider = self.adapter(inner)
+                request = dict(
+                    node="generate_image",
+                    version="2",
+                    inputs={},
+                    parameters={"prompt": text},
+                    context=[],
+                )
+                receipt = provider.submit(request, {"schema_version": 1, "artifacts": []}, str(index + 5) * 64)
+                for _ in range(4):
+                    receipt = provider.poll(receipt["job_id"])
+                    if receipt["state"] == "succeeded":
+                        break
+                self.assertEqual(receipt["state"], "succeeded")
+                self.assertEqual(inner.submissions, 2)
+                front, back = (child["parameters"]["prompt"] for child in inner.requests)
+                self.assertIn("strict FRONT view of the ISOLATED garment itself", front)
+                self.assertIn("exterior front surface", front)
+                self.assertIn("front neckline", front)
+                self.assertIn("without a person, body, face, mannequin or hanger", front)
+                self.assertIn("wearer's left/right convention", front)
+                self.assertNotIn("nose pointing toward the viewer", front)
+                self.assertIn("strict BACK view of the SAME ISOLATED garment", back)
+                self.assertIn("exactly 180 degrees around its vertical axis", back)
+                self.assertIn("exterior back surface and back neckline", back)
+                self.assertIn("must face away and must not be visible", back)
+                self.assertIn("Do not return a mirrored front", back)
+                self.assertIn("wearer's left/right convention", back)
+                self.assertNotIn("face pointing away from the viewer", back)
+
     def test_left_and_right_views_have_explicit_opposite_camera_directions(self):
         inner = FakeImageProvider("kimi_work_image")
         provider = self.adapter(inner)
