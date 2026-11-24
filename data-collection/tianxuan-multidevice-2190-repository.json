@@ -1,0 +1,63 @@
+{
+  "issue_number": 2190,
+  "request_id": "tianxuan-multidevice-20261124",
+  "base": "67621cf62f8159bde6ec81b92de4fd60f78def8e",
+  "inputs": {
+    "customizations/components/tianxuan/duobao/native_repository.py": "25a620479f83d83c8131f2158f5ded865f50ecf6baf2ef5a47e25fb5ca53a0ce",
+    "customizations/components/tianxuan/duobao/native_store.py": "1def53225ab48fa671b20b0380581ed661be2e98308367f696ad9c3e4e7e4632",
+    "customizations/components/tianxuan/server/NATIVE_API.md": "c30b8403d34b302ab3d87c0567ae2f9c77916a883ba15fb11d9afa4850bad9b6",
+    "customizations/components/tianxuan/server/access_control.py": "b92c21f72659139252bee19bdc56902fe4eb10ffe3a18b99adef42ba8f47a6ba",
+    "customizations/components/tianxuan/server/api.py": "2c9fc636fe2cde9fb0ee5b767f568d06b423082e6dfa0b4c44db9333754d1a05",
+    "customizations/components/tianxuan/server/native_api.py": "9eb48d591265b704447668c803159ee3b1775e742d8fe2a583085e0f6a963380",
+    "customizations/components/tianxuan/server/native_repository_api.py": "516d420150da857aa593af315d6989591a02044c1a43415d35b414093b0544bf",
+    "customizations/components/tianxuan/server/test_multidevice_auth.py": "3404d54468b7d83d4b69226221e470cd294937815dae977b7039dfd974dc9495",
+    "customizations/components/tianxuan/server/test_multidevice_repository.py": "6a47d78a884dadc7867552ee0c6357f12cb492d3ee86c81a97cc96cdb9bf20a3",
+    "customizations/components/tianxuan/server/test_multidevice_submission.py": "0ab782c0c2af998530e3c2fdb380bbfc9df025dff3248b7ddf5698d999e30e25",
+    "customizations/components/tianxuan/server/test_native_api.py": "9c79bf185c2ccb1177ee05090448414a1bec721e15d51817425f37e01e039377",
+    "customizations/components/tianxuan/server/tianxuan_core.py": "6b29e20d8e2ed08187e44433ebbe571d60153cbe14af38a4bcb78afc9671afa3",
+    "editor/docks/tianxuan/session_controller.gd": "05f1680f1f5256fc4ea16ef4e46299b25c81cac7df1df8542b0e70997d69983c",
+    "tests/editor/tianxuan_controller.gd": "a3c0fa04a148349b2e82c921f2d250e073d8addb9df948818d1c81e0c67dc97d"
+  },
+  "repository_validation": {
+    "worker": "/root/sinan_0e69500cbae0f674",
+    "terminal": "collaboration.final:/root/sinan_0e69500cbae0f674",
+    "tests_passed": 26,
+    "subtests_passed": 7,
+    "client_tests_passed": 5,
+    "final_concurrent_suite_passed": 10,
+    "ruff": "passed"
+  },
+  "auth_validation": {
+    "tests_passed": 6,
+    "covers": [
+      "persistent registration IDs across restart",
+      "source expiry invalidates both devices",
+      "same account multiple independent devices",
+      "logout/revoke isolation",
+      "roles and forged/stale identity sources"
+    ]
+  },
+  "native_controller": {
+    "checks_passed": 131,
+    "evidence_level": "compiled_native_shell_real_isolated_service_headless",
+    "binary_sha256": "cc0b47aa80ec1d0eed9574b547895cfd0a7c18d0a0c39e23e8d9192c07aaaa97",
+    "compiled_inputs_unchanged": true,
+    "service_base": "67621cf62f8159bde6ec81b92de4fd60f78def8e plus current input hashes",
+    "build_receipt": "data-collection/tianxuan-multidevice-2190-compiled.json"
+  },
+  "review": {
+    "reviewer": "/root",
+    "scope": [
+      "native_repository.py",
+      "native_repository_api.py",
+      "test_multidevice_repository.py"
+    ],
+    "findings": "No remaining blocking findings; context reset, parameterized namespaces, actor identity, atomic audit/CAS, historical keys and concurrent tests independently checked.",
+    "root_increment_reviewer": "/root/sinan_0e69500cbae0f674",
+    "root_increment": [
+      "persistent expiry regression",
+      "CLI device enrollment documentation"
+    ]
+  },
+  "delivery_scope": "buildable source and validated candidate; no active installation or production switch"
+}

@@ -105,6 +105,18 @@ func run() -> void:
 	var as_viewer: bool = await session.authenticate("", OS.get_environment("TX_VIEWER_KEY"), "studio/game")
 	if not check(as_viewer and session.get_identity().role == "viewer", "personal key uses verified server identity"):
 		return
+	var second_device = script.new()
+	second_device.origin = session.origin
+	root.add_child(second_device)
+	if not check(await second_device.authenticate("", OS.get_environment("TX_VIEWER_KEY"), "studio/game"), "same account key signs in on a second device"):
+		return
+	if not check(second_device.get_identity().id == session.get_identity().id and second_device.get_identity().device_id != session.get_identity().device_id and second_device.get_identity().credential_id != session.get_identity().credential_id, "server separates device and authorization identifiers for the same account"):
+		return
+	second_device.reset()
+	var still_signed_in: Dictionary = await session.api_request(HTTPClient.METHOD_GET, "/api/v1/auth/me")
+	if not check(still_signed_in.status == 200, "logging out another device preserves the first device session"):
+		return
+	second_device.queue_free()
 	await create_timer(0.3).timeout
 	if not check(delayed_result.get("stale", false) and delayed_result.data.is_empty(), "old identity response cannot cross account switch"):
 		return

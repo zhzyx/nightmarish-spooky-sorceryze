@@ -13,6 +13,7 @@ import inspect
 import json
 import re
 from contextlib import contextmanager
+from contextvars import ContextVar
 from pathlib import Path
 
 from native_evidence import EvidenceCache
@@ -40,6 +41,9 @@ CREATE TABLE IF NOT EXISTS native_repo_refs (
 CREATE TABLE IF NOT EXISTS native_repo_requests (
  tenant TEXT NOT NULL, actor TEXT NOT NULL, request_key TEXT NOT NULL,
  digest TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(tenant,actor,request_key));
+CREATE TABLE IF NOT EXISTS native_repo_device_requests (
+ tenant TEXT NOT NULL, actor TEXT NOT NULL, device_id TEXT NOT NULL, request_key TEXT NOT NULL,
+ digest TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(tenant,actor,device_id,request_key));
 CREATE TABLE IF NOT EXISTS native_repo_candidates (
  tenant TEXT NOT NULL, id TEXT NOT NULL, payload TEXT NOT NULL, PRIMARY KEY(tenant,id));
 """
@@ -93,6 +97,7 @@ class NativeRepository:
         if not callable(authorize):
             raise NativeStoreError("Trusted authority required")
         self.store, self.authorize = store, authorize
+        self._device = ContextVar("native_repository_device", default=(None, None))
         if checks and "repository-integrity" in checks:
             raise NativeStoreError("Built-in integrity check cannot be replaced")
         self.checks = {"repository-integrity": self._integrity, **(checks or {})}
@@ -169,24 +174,59 @@ class NativeRepository:
             raise NativeStoreError("Branch unavailable")
         return row[0]
 
-    @staticmethod
-    def _old(db, tenant, actor, key, request):
+    @contextmanager
+    def device_context(self, *, device_id=None, credential_id=None):
+        """Trusted host binding; account authority remains the original actor.
+
+        Bind and invoke in the same worker. ContextVar tokens restore nested
+        bindings and clear failed calls without leaking into a reused worker.
+        """
+        if device_id is not None or credential_id is not None:
+            _identifier(device_id)
+            _identifier(credential_id)
+        token = self._device.set((device_id, credential_id))
+        try:
+            yield
+        finally:
+            self._device.reset(token)
+
+    def _request_scope(self, tenant, actor, key):
         _identifier(key)
-        row = db.execute(
-            "SELECT digest,payload FROM native_repo_requests WHERE tenant=? AND actor=? AND request_key=?",
-            (tenant, actor, key),
-        ).fetchone()
+        device, _ = self._device.get()
+        if device is None:
+            return "native_repo_requests", "tenant=? AND actor=? AND request_key=?", (tenant, actor, key)
+        return (
+            "native_repo_device_requests",
+            "tenant=? AND actor=? AND device_id=? AND request_key=?",
+            (tenant, actor, device, key),
+        )
+
+    def _operation_key(self, operation, key):
+        # Preserve historical release request keys. Credentials are audit data:
+        # rotating a credential must not change the device's replay namespace.
+        device, _ = self._device.get()
+        if device is None:
+            return "repo-" + operation + "-" + _digest(key.encode())
+        return "repo-device-" + operation + "-" + _digest(_json([device, key]).encode())
+
+    def _audit(self, actor, key):
+        device, credential = self._device.get()
+        return dict(actor=actor, device_id=device, credential_id=credential, request_key=key)
+
+    def _old(self, db, tenant, actor, key, request):
+        table, predicate, scope = self._request_scope(tenant, actor, key)
+        row = db.execute(f"SELECT digest,payload FROM {table} WHERE {predicate}", scope).fetchone()
         if row:
             if row[0] != _digest(_json(request).encode()):
                 raise Conflict("Request key reused for different inputs")
             return json.loads(row[1])
         return None
 
-    @staticmethod
-    def _save(db, tenant, actor, key, request, result):
+    def _save(self, db, tenant, actor, key, request, result):
+        table, _, scope = self._request_scope(tenant, actor, key)
         db.execute(
-            "INSERT INTO native_repo_requests VALUES (?,?,?,?,?)",
-            (tenant, actor, key, _digest(_json(request).encode()), _json(result)),
+            f"INSERT INTO {table} VALUES ({','.join('?' for _ in range(len(scope) + 2))})",
+            (*scope, _digest(_json(request).encode()), _json(result)),
         )
         return result
 
@@ -351,6 +391,9 @@ class NativeRepository:
                 dependencies={},
                 repository=repo,
                 author=actor,
+                **self._audit(actor, request_key),
+                branch=branch,
+                expected=expected,
                 message=message,
             )
             payload = _json(state)
@@ -372,6 +415,9 @@ class NativeRepository:
                     branch=branch,
                     revision=revision,
                     parent=expected,
+                    expected=expected,
+                    manifest=manifest,
+                    **self._audit(actor, request_key),
                     request_digest=_digest(_json(request).encode()),
                 ),
             )
@@ -552,7 +598,10 @@ class NativeRepository:
         evidence, checks = {}, {}
         for name, check in self.checks.items():
             binding = self.cache.binding(tenant, identity, name, **self.context)
-            key = _digest(_json([actor, request_key, identity, name]).encode())
+            inputs = [actor, request_key, identity, name]
+            if self._device.get()[0] is not None:
+                inputs.append(self._device.get()[0])
+            key = _digest(_json(inputs).encode())
             with self.store._connection() as db:
                 previous = db.execute(
                     "SELECT evidence_id FROM native_check_requests WHERE tenant=? AND actor=? AND request_key=?",
@@ -601,14 +650,14 @@ class NativeRepository:
                 raise NativeStoreError("Required check not passed")
             evidence[name] = result["evidence"]["id"]
         return self.release.approve(
-            tenant, actor, "repo-review-" + _digest(request_key.encode()), MODULE, identity, evidence, note
+            tenant, actor, self._operation_key("review", request_key), MODULE, identity, evidence, note
         )
 
     def merge(self, tenant, actor, repo, identity, request_key, review, guard=None):
         self._allow(tenant, actor, "publish")
         _identifier(request_key)
         candidate = self.candidate(tenant, actor, repo, identity)
-        key = "repo-merge-" + _digest(request_key.encode())
+        key = self._operation_key("merge", request_key)
 
         @contextmanager
         def publication_guard(db):

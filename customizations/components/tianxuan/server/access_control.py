@@ -18,6 +18,10 @@ COOKIE = "__Host-tianxuan_key"
 SESSION_COOKIE = "__Host-tianxuan_session"
 
 
+def request_token(connection: HTTPConnection) -> str:
+    return presented_credential(connection, os.environ.get("TIANXUAN_AUTH_MODE") == "accounts")[0]
+
+
 class KeyLogin(BaseModel):
     key: str = Field(min_length=1, max_length=256)
 
@@ -34,11 +38,11 @@ class AccessExpired(WebSocketDisconnect):
 
 
 def presented_credential(connection: HTTPConnection, accounts: bool) -> tuple[str, bool]:
-    scheme, _, bearer = connection.headers.get("authorization", "").partition(" ")
+    scheme, _, bearer = str(connection.headers.get("authorization", "")).partition(" ")
     if scheme.lower() == "bearer":
         return bearer.strip(), True
     session = connection.cookies.get(SESSION_COOKIE, "") if accounts else ""
-    return session or connection.cookies.get(COOKIE, ""), False
+    return str(session or connection.cookies.get(COOKIE, "")), False
 
 
 class ProductionAccess:
@@ -103,6 +107,8 @@ class ProductionAccess:
             )
             document_paths = {
                 "/api/v1/auth/me",
+                "/api/v1/auth/devices",
+                "/api/v1/auth/device-session",
                 "/api/v1/auth/logout",
                 "/api/v1/auth/key-logout",
                 "/api/v1/search",
@@ -110,8 +116,10 @@ class ProductionAccess:
                 "/api/v1/capabilities",
                 "/api/v1/tools",
             }
-            allowed = path in document_paths or any(
-                path == root or path.startswith(root + "/") for root in document_roots
+            allowed = (
+                path.startswith("/api/v1/auth/devices/")
+                or path in document_paths
+                or any(path == root or path.startswith(root + "/") for root in document_roots)
             )
             if not allowed:
                 return await reject(403, "this workspace is limited to cloud document operations")
@@ -130,8 +138,16 @@ class ProductionAccess:
             "/api/v1/invites/accept",
         }:
             return await reject(403, "account access is managed by the administrator")
-        viewer_post_paths = {"/api/v1/auth/key-logout", "/api/v1/auth/logout", "/api/v1/tools"}
-        own_device_delete = method == "DELETE" and path.startswith("/api/v1/auth/editor-devices/")
+        viewer_post_paths = {
+            "/api/v1/auth/key-logout",
+            "/api/v1/auth/logout",
+            "/api/v1/auth/device-session",
+            "/api/v1/tools",
+        }
+        own_device_delete = method == "DELETE" and path.startswith((
+            "/api/v1/auth/devices/",
+            "/api/v1/auth/editor-devices/",
+        ))
         if (
             role == "viewer"
             and method not in {"GET", "HEAD", "OPTIONS"}
@@ -141,10 +157,14 @@ class ProductionAccess:
             return await reject(403, "read-only account")
         if path.startswith("/api/v1/models") and role != "admin":
             return await reject(403, "model gateway administration requires admin")
+        device = self.store.device_context(token)
+        if device is None:
+            return await reject(401, "device credential expired or revoked")
         scope = dict(scope)
         scope["state"] = {
             **scope.get("state", {}),
             "verified_actor": actor,
+            "verified_device": device,
             "refresh_verified_actor": lambda: self.resolve(token),
         }
         scope["headers"] = [(k, v) for k, v in scope["headers"] if k.lower() != b"x-actor"] + [
@@ -225,14 +245,23 @@ def configure_access(app: FastAPI, store: Tianxuan) -> None:
             and store.actor_context(actor)["tenant"] != os.environ.get("TIANXUAN_TENANT_ID")
         ):
             raise HTTPException(401, "invalid or revoked key")
-        response = JSONResponse({"user_id": actor, "role": store.role_of(actor)})
+        device = store.issue_device_session(payload.key)
+        response = JSONResponse({
+            "user_id": actor,
+            "role": store.role_of(actor),
+            "device_id": device["device_id"],
+            "credential_id": device["credential_id"],
+        })
         response.delete_cookie(SESSION_COOKIE, path="/", secure=True, httponly=True, samesite="strict")
-        response.set_cookie(COOKIE, payload.key, max_age=86400, secure=True, httponly=True, samesite="strict", path="/")
+        response.set_cookie(
+            COOKIE, device["token"], max_age=86400, secure=True, httponly=True, samesite="strict", path="/"
+        )
         response.headers["Cache-Control"] = "no-store"
         return response
 
     @app.post("/api/v1/auth/key-logout")
     def logout(request: Request) -> JSONResponse:
+        store.revoke_session(request_token(request))
         if mode == "accounts":
             store.revoke_session(request.cookies.get(SESSION_COOKIE, ""))
         response = JSONResponse({"ok": True})
@@ -245,15 +274,33 @@ def configure_access(app: FastAPI, store: Tianxuan) -> None:
         actor = actor_for(request, allow_session=True)
         user = next(user for user in store.list_members(actor) if user["id"] == actor)
         tenant = store.actor_context(actor)["tenant"]
-        admitted = mode != "accounts" or tenant == os.environ.get("TIANXUAN_TENANT_ID")
-        return {**user, "tenant_id": tenant, "can_issue_admin_keys": user["role"] == "admin" and admitted}
+        admitted = mode != "accounts" or store.actor_context(actor)["tenant"] == os.environ.get("TIANXUAN_TENANT_ID")
+        return {
+            **user,
+            "tenant_id": tenant,
+            **(store.device_context(request_token(request)) or {}),
+            "can_issue_admin_keys": user["role"] == "admin" and admitted,
+        }
+
+    @app.post("/api/v1/auth/device-session")
+    def enroll_device(request: Request) -> JSONResponse:
+        actor_for(request, allow_session=True)
+        return JSONResponse(store.issue_device_session(request_token(request)), headers={"Cache-Control": "no-store"})
+
+    @app.get("/api/v1/auth/devices")
+    def devices(request: Request) -> dict[str, Any]:
+        return {"devices": store.list_devices(actor_for(request, allow_session=True))}
+
+    @app.delete("/api/v1/auth/devices/{device_id}")
+    def revoke_device(device_id: str, request: Request) -> dict[str, bool]:
+        return {"revoked": store.revoke_device(actor_for(request, allow_session=True), device_id)}
 
     @app.get("/api/v1/auth/editor-devices")
     def list_devices(request: Request) -> dict[str, Any]:
         return {"devices": store.list_editor_devices(actor_for(request, allow_session=True))}
 
     @app.delete("/api/v1/auth/editor-devices/{device_id}")
-    def revoke_device(device_id: str, request: Request) -> dict[str, bool]:
+    def revoke_editor_device(device_id: str, request: Request) -> dict[str, bool]:
         return {"revoked": store.revoke_editor_device(actor_for(request, allow_session=True), device_id)}
 
     @app.get("/api/v1/auth/keys")

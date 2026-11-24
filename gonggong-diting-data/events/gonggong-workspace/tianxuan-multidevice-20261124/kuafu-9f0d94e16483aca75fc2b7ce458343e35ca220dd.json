@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-9f0d94e16483aca75fc2b7ce458343e35ca220dd",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-multidevice-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "9dd4b089d9d4d0b9587212fc01aa5be6ec3a01500ab28c34bd69050792e414d8",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2192",
+    "action": "validation",
+    "detection_head": "4edb94ce88429ba12788025726f1bd4fb2bf6042",
+    "context_sha256": "665db8ea59976e15affbc3f0c01a95c23fd0e41cd57a88abe460eaed6c3c27de",
+    "operator": "Sail-Li",
+    "worker": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6",
+    "authority_ref": "codex:01a20abb-6a95-7682-8063-303b77a7e4d6:user-20261124",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/actions/runs/45295429078/job/138114482469",
+    "diagnosis": "CI发现request_token的Any返回与登记context可空未收窄；已明确字符串且登记中失效时拒绝并回滚，7项auth回归通过。4份已绑定摘要的CRLF原件被格式化器改写，已沿既有精确文件排除规则保留原件。独立审查正在执行。另一次审查派发使用了不支持事件名，已在任何launch前失败并改用协议ticket.changed，真实worker已启动。",
+    "next_action": "CI隔离类型环境11文件mypy通过；核查格式器与完整候选，完成增量审查后重新签发PR及原失败CI。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T00:17:03.949969+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T00:21:05.838586+00:00",
+  "sha256": "95d1a1831e940b5671f25767f63fd062aaf987a39b5fdf4f404db2e6bfebaed2"
+}
