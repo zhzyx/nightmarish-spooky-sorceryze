@@ -141,9 +141,7 @@ class Executor:
             compact["result"] = {
                 "schema_version": result["schema_version"],
                 "storage": "run_manifest",
-                "artifacts": [
-                    {"id": asset["id"], "revision": asset["revision"]} for asset in result["artifacts"]
-                ],
+                "artifacts": [{"id": asset["id"], "revision": asset["revision"]} for asset in result["artifacts"]],
             }
             stored["nodes"][node_id] = compact
         self.db.execute("UPDATE runs SET body=? WHERE id=?", (canonical(stored), run["id"]))

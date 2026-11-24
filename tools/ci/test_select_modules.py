@@ -23,6 +23,7 @@ class SelectionTests(unittest.TestCase):
     def test_maliang_does_not_select_engine_next(self):
         self.assertSelection(["tools/ainative/test_executor.py"], ["maliang"])
         self.assertSelection(["editor/ainative/AIChat.gd"], ["maliang"])
+        self.assertSelection(["tools/vendor_agent_gw.py"], ["maliang"])
 
     def test_engine_next_network_does_not_select_maliang_or_gameplay(self):
         self.assertSelection(["engine_next/Network/Session.cpp"], ["engine-next"])
@@ -59,6 +60,7 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual([module["name"] for module in modules], ["docs"])
         selection = selection_document(self.registry, modules, ["Markdown/testing/README.md"], "a", "b", False)
         self.assertEqual(selection["generic_matrix"], [])
+        self.assertSelection(["uv.lock"], ["repository-metadata"])
 
     def test_empty_diff_selects_nothing(self):
         self.assertSelection([], [])

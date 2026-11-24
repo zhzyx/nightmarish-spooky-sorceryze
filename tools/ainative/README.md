@@ -420,7 +420,7 @@ Self-intersecting mask contours are rejected. Independent hair, exposed-skin,
 hand and footwear exclusion masks apply during both pixel voting and subpixel
 completion; hand/foot exclusions are not applied to the matching garment slot.
 A final topology pass fills only unowned faces with at least two selected edge
-neighbours, with adjacency cached once per source primitive.
+neighbors, with adjacency cached once per source primitive.
 Rigged inputs preserve the original hierarchy, skins, inverse bind matrices,
 joint indices and weights; reconstructed inner and boundary vertices inherit
 those attributes and are checked explicitly. After reconstruction, a mandatory
@@ -441,7 +441,7 @@ body and reconstructing inner thickness and boundary walls. The outer material,
 UVs and source-triangle mapping are retained. This state is not visual, target-rig
 fit, animation, collision or cloth acceptance. Partial surfaces cannot be promoted
 by solidification. Explicit developer `items` retain the older source-bound
-surface-extraction path, including exact rig preservation, and are labelled as
+surface-extraction path, including exact rig preservation, and are labeled as
 fragments rather than complete clothes.
 
 The main result is `_garments.glb`, a collection containing only accepted items;

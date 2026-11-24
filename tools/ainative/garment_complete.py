@@ -15,12 +15,9 @@ import struct
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageDraw
-
 from api_planner import perform, validate_config
 from extensions import canonical, require
 from garment_auto import RENDER_VIEWS, _render
-from geometry_repair import accessor_values
 from garment_split import (
     BEHAVIORS,
     CATEGORIES,
@@ -32,6 +29,8 @@ from garment_split import (
     _text,
     _write_new,
 )
+from geometry_repair import accessor_values
+from PIL import Image, ImageDraw
 from provider_common import validate_jpeg, validate_png
 
 SCHEMA_VERSION = 2
@@ -133,7 +132,9 @@ def segmentation_prompt(source):
 def _validate_simple_polygon(polygon):
     """Reject self-intersections that turn garment masks into diagonal holes."""
     points = [np.asarray(point, dtype=np.float64) for point in polygon]
-    if len(points) < 3 or any(np.linalg.norm(points[index] - points[(index + 1) % len(points)]) <= 1e-12 for index in range(len(points))):
+    if len(points) < 3 or any(
+        np.linalg.norm(points[index] - points[(index + 1) % len(points)]) <= 1e-12 for index in range(len(points))
+    ):
         raise ValueError("garment_segmentation_polygon_invalid")
 
     def orientation(a, b, c):
@@ -145,7 +146,11 @@ def _validate_simple_polygon(polygon):
         if ab_c * ab_d < 0.0 and cd_a * cd_b < 0.0:
             return True
         for point, start, end, cross in ((c, a, b, ab_c), (d, a, b, ab_d), (a, c, d, cd_a), (b, c, d, cd_b)):
-            if abs(cross) <= 1e-12 and (np.minimum(start, end) <= point).all() and (point <= np.maximum(start, end)).all():
+            if (
+                abs(cross) <= 1e-12
+                and (np.minimum(start, end) <= point).all()
+                and (point <= np.maximum(start, end)).all()
+            ):
                 return True
         return False
 
@@ -225,7 +230,10 @@ def validate_segmentation(value):
                     if (
                         not isinstance(point, list)
                         or len(point) != 2
-                        or any(type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1 for value in point)
+                        or any(
+                            type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1
+                            for value in point
+                        )
                     ):
                         raise ValueError("garment_segmentation_invalid")
                 _validate_simple_polygon(polygon)
@@ -313,13 +321,17 @@ def _request_quality_review(config, inventory, source_views, generated_views, di
             content.append(
                 dict(
                     type="image_url",
-                    image_url=dict(url="data:" + entry["mime"] + ";base64," + base64.b64encode(entry["data"]).decode("ascii")),
+                    image_url=dict(
+                        url="data:" + entry["mime"] + ";base64," + base64.b64encode(entry["data"]).decode("ascii")
+                    ),
                 )
             )
     body = dict(
         model=config["model"],
         messages=[dict(role="user", content=content)],
-        response_format=dict(type="json_schema", json_schema=dict(name="garment_quality_review", strict=True, schema=schema)),
+        response_format=dict(
+            type="json_schema", json_schema=dict(name="garment_quality_review", strict=True, schema=schema)
+        ),
         reasoning_effort="low",
         max_tokens=8192,
         stream=False,
@@ -379,9 +391,11 @@ def _request_quality_review(config, inventory, source_views, generated_views, di
     return document
 
 
-def _quality_gate(config, source, inventory, source_views, collection_path, evidence, godot_path, render_script, attempt=0):
+def _quality_gate(
+    config, source, inventory, source_views, collection_path, evidence, godot_path, render_script, attempt=0
+):
     evidence = Path(evidence)
-    quality = evidence / ("quality" if attempt == 0 else "quality-repair-%d" % attempt)
+    quality = evidence / ("quality" if attempt == 0 else f"quality-repair-{attempt}")
     receipt_path = quality / "quality-gate.json"
     collection_sha = hashlib.sha256(Path(collection_path).read_bytes()).hexdigest()
     if receipt_path.is_file():
@@ -396,7 +410,9 @@ def _quality_gate(config, source, inventory, source_views, collection_path, evid
     camera_bounds = dict(min=points.min(axis=0).astype(float).tolist(), max=points.max(axis=0).astype(float).tolist())
     quality.mkdir(parents=True)
     (quality / "render").mkdir()
-    generated_views = _render(collection_path, [], quality / "render", godot_path, render_script, camera_bounds=camera_bounds)
+    generated_views = _render(
+        collection_path, [], quality / "render", godot_path, render_script, camera_bounds=camera_bounds
+    )
     generated_images = [_image(entry["path"], entry["label"]) for entry in generated_views]
     review = _request_quality_review(config, inventory, source_images, generated_images, quality / "review")
     receipt = dict(
@@ -405,8 +421,12 @@ def _quality_gate(config, source, inventory, source_views, collection_path, evid
         camera_bounds=camera_bounds,
         collection_sha256=collection_sha,
         required_views=list(RENDER_VIEWS),
-        source_views=[dict(view=entry["view"], path=str(entry["path"]), sha256=entry["sha256"]) for entry in source_images],
-        generated_views=[dict(view=entry["view"], path=str(entry["path"]), sha256=entry["sha256"]) for entry in generated_images],
+        source_views=[
+            dict(view=entry["view"], path=str(entry["path"]), sha256=entry["sha256"]) for entry in source_images
+        ],
+        generated_views=[
+            dict(view=entry["view"], path=str(entry["path"]), sha256=entry["sha256"]) for entry in generated_images
+        ],
         review=review,
         visual_review_passed=review["passed"],
     )
@@ -449,7 +469,9 @@ def _request_view_masks(config, semantic, entry, directory, comparison=None, gui
     view = entry["view"]
     schema = _view_mask_schema(view)
     prompt = (
-        "The attached single MODEL VIEW is " + view + " of one character. The semantic garment inventory is supplied below. "
+        "The attached single MODEL VIEW is "
+        + view
+        + " of one character. The semantic garment inventory is supplied below. "
         "Return visible-surface polygons for these exact item ids in THIS view only. Coordinates are [x,y], origin TOP LEFT, "
         "range 0..1. Follow actual garment boundaries, exclude skin, hair and foreground overlaps, and never return a bounding "
         "box. Use multiple polygons for disconnected visible islands. For a base robe, coat or outfit, include its attached "
@@ -486,13 +508,17 @@ def _request_view_masks(config, semantic, entry, directory, comparison=None, gui
         content.append(
             dict(
                 type="image_url",
-                image_url=dict(url="data:" + comparison["mime"] + ";base64," + base64.b64encode(comparison["data"]).decode("ascii")),
+                image_url=dict(
+                    url="data:" + comparison["mime"] + ";base64," + base64.b64encode(comparison["data"]).decode("ascii")
+                ),
             )
         )
     body = dict(
         model=config["model"],
         messages=[dict(role="user", content=content)],
-        response_format=dict(type="json_schema", json_schema=dict(name="garment_view_masks", strict=True, schema=schema)),
+        response_format=dict(
+            type="json_schema", json_schema=dict(name="garment_view_masks", strict=True, schema=schema)
+        ),
         reasoning_effort="low",
         max_tokens=8192,
         stream=False,
@@ -543,7 +569,9 @@ def _request_view_masks(config, semantic, entry, directory, comparison=None, gui
                 require(
                     isinstance(point, list)
                     and len(point) == 2
-                    and all(type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 1 for value in point),
+                    and all(
+                        type(value) in (int, float) and math.isfinite(value) and 0 <= value <= 1 for value in point
+                    ),
                     "garment_segmentation_response_invalid",
                 )
             _validate_simple_polygon(polygon)
@@ -600,7 +628,7 @@ def request_segmentation(config, source, views, directory):
                 config,
                 batch,
                 entry,
-                directory / ("view-%s-batch-%d" % (view, batch_index)),
+                directory / f"view-{view}-batch-{batch_index}",
             )
             combined["items"].extend(response["items"])
         responses[view] = combined
@@ -677,7 +705,9 @@ def _request_exclusions(config, source, views, directory):
     )
     responses = []
     for entry in views:
-        response = _request_view_masks(config, semantic, _image(entry["path"], entry["label"]), directory / ("view-" + entry["label"]))
+        response = _request_view_masks(
+            config, semantic, _image(entry["path"], entry["label"]), directory / ("view-" + entry["label"])
+        )
         responses.append(response)
     result = dict(schema_version=1, source_sha256=source.sha256, views=responses)
     directory.mkdir(parents=True, exist_ok=True)
@@ -779,7 +809,9 @@ class _GlbWriter:
         if normalized:
             accessor["normalized"] = True
         if bounds:
-            accessor.update(min=values.min(axis=0).astype(float).tolist(), max=values.max(axis=0).astype(float).tolist())
+            accessor.update(
+                min=values.min(axis=0).astype(float).tolist(), max=values.max(axis=0).astype(float).tolist()
+            )
         self.document["accessors"].append(accessor)
         return len(self.document["accessors"]) - 1
 
@@ -818,7 +850,10 @@ class _RiggedGlbWriter(_GlbWriter):
         self.parts = {}
 
     def add_part(self, name, attributes, faces, material=None, normalized=None, source_node=None):
-        require(type(source_node) is int and 0 <= source_node < len(self.document.get("nodes", [])), "garment_complete_node_invalid")
+        require(
+            type(source_node) is int and 0 <= source_node < len(self.document.get("nodes", [])),
+            "garment_complete_node_invalid",
+        )
         self.parts.setdefault(source_node, []).append((name, attributes, faces, material, normalized))
 
     def finish(self, extras):
@@ -882,7 +917,7 @@ def _triangle_id_model(source, output, shift=0):
                 attributes[name] = values[faces].reshape(-1, values.shape[-1])
                 normalized[name] = source.document["accessors"][accessor_index].get("normalized") is True
         writer.add_part(
-            "triangle-ids-%d-%d" % (node, primitive),
+            f"triangle-ids-{node}-{primitive}",
             attributes,
             np.arange(len(points), dtype="<u4").reshape(-1, 3),
             normalized=normalized,
@@ -911,9 +946,7 @@ def _position_weld(points):
 
 
 def _edge_summary(welded_faces):
-    directed = np.concatenate(
-        (welded_faces[:, [0, 1]], welded_faces[:, [1, 2]], welded_faces[:, [2, 0]]), axis=0
-    )
+    directed = np.concatenate((welded_faces[:, [0, 1]], welded_faces[:, [1, 2]], welded_faces[:, [2, 0]]), axis=0)
     undirected = np.sort(directed, axis=1)
     unique, first, inverse, counts = np.unique(
         undirected, axis=0, return_index=True, return_inverse=True, return_counts=True
@@ -1090,7 +1123,9 @@ def _solidify_component(source, key, face_ids, thickness, welded_positions):
             outer_faces[outer_faces == representative_index] = outer_index
             new_index = count + len(inner_extra)
             inner_extra.append(representative_index)
-            inner_extra_positions.append(points[representative_index] - outer_normals[representative_index] * thickness + offset)
+            inner_extra_positions.append(
+                points[representative_index] - outer_normals[representative_index] * thickness + offset
+            )
             inner_extra_normals.append(-outer_normals[representative_index])
             inner_faces[inner_faces == representative_index + count] = new_index
             for edge_index in loop:
@@ -1125,9 +1160,7 @@ def _solidify_component(source, key, face_ids, thickness, welded_positions):
         elif name == "NORMAL" and extra_count:
             extra = np.asarray(inner_extra_normals, dtype=outer.dtype)
         outer_extra_values = (
-            outer[outer_extra]
-            if outer_extra_count
-            else np.empty((0,) + outer.shape[1:], dtype=outer.dtype)
+            outer[outer_extra] if outer_extra_count else np.empty((0,) + outer.shape[1:], dtype=outer.dtype)
         )
         if name == "POSITION" and outer_extra_count:
             outer_extra_values = np.asarray(outer_extra_positions, dtype=outer.dtype)
@@ -1179,18 +1212,18 @@ def _solidify_component(source, key, face_ids, thickness, welded_positions):
         welded_faces = welded_output[faces]
         samples = []
         for edge in summary["nonmanifold"][:2]:
-            incident = np.flatnonzero(
-                (welded_faces == edge[0]).any(axis=1) & (welded_faces == edge[1]).any(axis=1)
-            )
-            zones = ["outer" if index < len(outer_faces) else "inner" if index < 2 * len(outer_faces) else "side" for index in incident]
+            incident = np.flatnonzero((welded_faces == edge[0]).any(axis=1) & (welded_faces == edge[1]).any(axis=1))
+            zones = [
+                "outer" if index < len(outer_faces) else "inner" if index < 2 * len(outer_faces) else "side"
+                for index in incident
+            ]
             samples.append(dict(points=attributes["POSITION"][edge].tolist(), zones=zones))
         boundary_degrees = {}
         for a, b in edges["boundary"]:
             boundary_degrees[int(a)] = boundary_degrees.get(int(a), 0) + 1
             boundary_degrees[int(b)] = boundary_degrees.get(int(b), 0) + 1
         raise ValueError(
-            "garment_complete_shell_not_closed: source_triangles=%d boundary=%d nonmanifold=%d max_boundary_degree=%d samples=%s"
-            % (
+            "garment_complete_shell_not_closed: source_triangles={} boundary={} nonmanifold={} max_boundary_degree={} samples={}".format(
                 len(source_faces),
                 summary["boundary_count"],
                 summary["nonmanifold_count"],
@@ -1336,13 +1369,16 @@ def _mask(mask_record, size):
     for polygon in mask_record["polygons"]:
         points = [(point[0] * (width - 1), point[1] * (height - 1)) for point in polygon]
         draw.polygon(points, fill=255)
-        area += abs(
-            sum(
-                points[index][0] * points[(index + 1) % len(points)][1]
-                - points[(index + 1) % len(points)][0] * points[index][1]
-                for index in range(len(points))
+        area += (
+            abs(
+                sum(
+                    points[index][0] * points[(index + 1) % len(points)][1]
+                    - points[(index + 1) % len(points)][0] * points[index][1]
+                    for index in range(len(points))
+                )
             )
-        ) * 0.5
+            * 0.5
+        )
     return np.asarray(image) > 0, area
 
 
@@ -1405,7 +1441,9 @@ def _complete_subpixel_surfaces(source, primitive_map, inventory, selected_items
         normals.append(face_normals / lengths[:, None])
     # Global point indices are needed only to retrieve the visible triangle;
     # build them from offsets without depending on vertex connectivity.
-    points = np.concatenate([source.primitives[(entry["node"], entry["primitive"])]["points"] for entry in primitive_map]).astype(np.float64)
+    points = np.concatenate([
+        source.primitives[(entry["node"], entry["primitive"])]["points"] for entry in primitive_map
+    ]).astype(np.float64)
     faces = np.concatenate(faces)
     centroids = np.concatenate(centroids)
     normals = np.concatenate(normals)
@@ -1463,12 +1501,20 @@ def _complete_subpixel_surfaces(source, primitive_map, inventory, selected_items
         visible_x = ((visible_relative @ right) / np.maximum(visible_depth, 1e-12) / tangent + 1.0) * 0.5 * (width - 1)
         visible_y = (1.0 - (visible_relative @ up) / np.maximum(visible_depth, 1e-12) / tangent) * 0.5 * (height - 1)
         px, py = x[indices], y[indices]
-        determinant = (visible_y[:, 1] - visible_y[:, 2]) * (visible_x[:, 0] - visible_x[:, 2]) + (visible_x[:, 2] - visible_x[:, 1]) * (visible_y[:, 0] - visible_y[:, 2])
+        determinant = (visible_y[:, 1] - visible_y[:, 2]) * (visible_x[:, 0] - visible_x[:, 2]) + (
+            visible_x[:, 2] - visible_x[:, 1]
+        ) * (visible_y[:, 0] - visible_y[:, 2])
         safe = np.abs(determinant) > 1e-12
         determinant[~safe] = 1.0
         barycentric = np.empty((len(indices), 3), dtype=np.float64)
-        barycentric[:, 0] = ((visible_y[:, 1] - visible_y[:, 2]) * (px - visible_x[:, 2]) + (visible_x[:, 2] - visible_x[:, 1]) * (py - visible_y[:, 2])) / determinant
-        barycentric[:, 1] = ((visible_y[:, 2] - visible_y[:, 0]) * (px - visible_x[:, 2]) + (visible_x[:, 0] - visible_x[:, 2]) * (py - visible_y[:, 2])) / determinant
+        barycentric[:, 0] = (
+            (visible_y[:, 1] - visible_y[:, 2]) * (px - visible_x[:, 2])
+            + (visible_x[:, 2] - visible_x[:, 1]) * (py - visible_y[:, 2])
+        ) / determinant
+        barycentric[:, 1] = (
+            (visible_y[:, 2] - visible_y[:, 0]) * (px - visible_x[:, 2])
+            + (visible_x[:, 0] - visible_x[:, 2]) * (py - visible_y[:, 2])
+        ) / determinant
         barycentric[:, 2] = 1.0 - barycentric[:, 0] - barycentric[:, 1]
         plane_depth = 1.0 / np.maximum(np.sum(barycentric / np.maximum(visible_depth, 1e-12), axis=1), 1e-12)
         # Extrapolation on the evidenced plane is intentional: dozens of dense
@@ -1506,7 +1552,9 @@ def _complete_subpixel_surfaces(source, primitive_map, inventory, selected_items
         winner[expanded] = item_index
         for entry in primitive_map:
             key = (entry["node"], entry["primitive"])
-            local = expanded[(expanded >= entry["start"]) & (expanded < entry["start"] + entry["count"])] - entry["start"]
+            local = (
+                expanded[(expanded >= entry["start"]) & (expanded < entry["start"] + entry["count"])] - entry["start"]
+            )
             if len(local):
                 assignment["selected"].setdefault(key, np.asarray([], dtype=np.int64))
                 assignment["selected"][key] = np.asarray(
@@ -1517,7 +1565,7 @@ def _complete_subpixel_surfaces(source, primitive_map, inventory, selected_items
 
 
 def _fill_topology_pinholes(source, primitive_map, selected_items, winner):
-    """Fill only unowned faces bounded by at least two selected neighbours."""
+    """Fill only unowned faces bounded by at least two selected neighbors."""
     starts = {(entry["node"], entry["primitive"]): entry["start"] for entry in primitive_map}
     adjacency_cache = {}
     for item_index, assignment in enumerate(selected_items):
@@ -1567,10 +1615,17 @@ def _assign_triangles(source, inventory, primitive_map, render_report, render_ro
     raster = {}
     for view in RENDER_VIEWS:
         entry = maps[view]
+
         def decode_pass(path_key, sha_key):
             path = Path(entry[path_key]).resolve()
-            require(path.is_relative_to(Path(render_root).resolve()) and path.is_file(), "garment_complete_triangle_evidence_invalid")
-            require(hashlib.sha256(path.read_bytes()).hexdigest() == entry[sha_key], "garment_complete_triangle_evidence_invalid")
+            require(
+                path.is_relative_to(Path(render_root).resolve()) and path.is_file(),
+                "garment_complete_triangle_evidence_invalid",
+            )
+            require(
+                hashlib.sha256(path.read_bytes()).hexdigest() == entry[sha_key],
+                "garment_complete_triangle_evidence_invalid",
+            )
             pixels = np.asarray(Image.open(path).convert("RGB"), dtype=np.float64)
             channels = np.rint((pixels / 255.0 - 0.2) * 15.0 / 0.8).astype(np.int64)
             expected = 0.2 + 0.8 * channels / 15.0
@@ -1796,7 +1851,18 @@ def _repair_quality_inventory(config, inventory, quality, evidence):
     return repaired, dict(changed=canonical(repaired) != canonical(inventory), items=records)
 
 
-def complete(source_path, output, evidence, godot_path, render_script, planner=None, quality_review=True, _inventory_override=None, _quality_attempt=0, _repair_history=None):
+def complete(
+    source_path,
+    output,
+    evidence,
+    godot_path,
+    render_script,
+    planner=None,
+    quality_review=True,
+    _inventory_override=None,
+    _quality_attempt=0,
+    _repair_history=None,
+):
     source_path = Path(source_path).expanduser().resolve()
     output = Path(output).expanduser().resolve()
     evidence = Path(evidence).expanduser().resolve()
@@ -1861,11 +1927,11 @@ def complete(source_path, output, evidence, godot_path, render_script, planner=N
     else:
         inventory = request_segmentation(planner, source, views, evidence / "inventory")
     exclusions = (
-        _request_exclusions(planner, source, views, evidence / "exclusions")
-        if quality_review
-        else dict(views=[])
+        _request_exclusions(planner, source, views, evidence / "exclusions") if quality_review else dict(views=[])
     )
-    assignments = _assign_triangles(source, inventory, primitive_map, report, evidence / "render" / "renders", exclusions)
+    assignments = _assign_triangles(
+        source, inventory, primitive_map, report, evidence / "render" / "renders", exclusions
+    )
     output.mkdir(parents=True)
     records = []
     unresolved = []
@@ -1901,7 +1967,7 @@ def complete(source_path, output, evidence, godot_path, render_script, planner=N
                         part.setdefault("source_component_index", 0)
                         part.setdefault("edge_component_index", 0)
                         part.setdefault("fan_component_index", 0)
-                        part["name"] = item["id"] + "-%d-%d-c%d-e%d-f%d" % (
+                        part["name"] = item["id"] + "-{}-{}-c{}-e{}-f{}".format(
                             key[0],
                             key[1],
                             part["source_component_index"],
@@ -2044,13 +2110,14 @@ def complete(source_path, output, evidence, godot_path, render_script, planner=N
                 for item in quality["review"]["items"]:
                     for defect in item["defects"]:
                         unresolved.append(
-                            "visual quality gate: %s %s %s: %s"
-                            % (item["id"], defect["view"], defect["kind"], defect["observation"])
+                            "visual quality gate: {} {} {}: {}".format(
+                                item["id"], defect["view"], defect["kind"], defect["observation"]
+                            )
                         )
         if quality is not None and not visual_review_passed and _quality_attempt < 1:
             repaired_inventory, repair_record = _repair_quality_inventory(planner, inventory, quality, evidence)
             if repair_record["changed"]:
-                rejected = evidence / ("rejected-output-%02d" % _quality_attempt)
+                rejected = evidence / f"rejected-output-{_quality_attempt:02d}"
                 require(not rejected.exists(), "garment_quality_retry_output_exists")
                 shutil.move(str(output), str(rejected))
                 history = list(_repair_history or []) + [repair_record]

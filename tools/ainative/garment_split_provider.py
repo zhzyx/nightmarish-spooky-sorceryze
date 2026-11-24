@@ -68,9 +68,7 @@ class GarmentSplitProvider:
         ):
             path = Path(__file__).with_name(name)
             digest.update(name.encode("utf-8") + b"\0" + path.read_bytes() + b"\0")
-        identity = {
-            key: self.config.get(key) for key in ("planner", "review_godot_path", "review_script_path")
-        }
+        identity = {key: self.config.get(key) for key in ("planner", "review_godot_path", "review_script_path")}
         digest.update(canonical(identity).encode("utf-8"))
         script = Path(self.config.get("review_script_path", ""))
         if script.is_file():

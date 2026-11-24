@@ -399,7 +399,10 @@ class ExecutorTests(unittest.TestCase):
         self.executor = self.open()
         restored = self.executor.status(run)
         self.assertEqual(restored["nodes"]["first"]["result"], result(restored["nodes"]["first"]["job"]["job_id"]))
-        self.assertEqual(self.executor.export(run)["outputs"]["first"]["result"]["id"], restored["nodes"]["first"]["job"]["outputs"]["result"]["id"])
+        self.assertEqual(
+            self.executor.export(run)["outputs"]["first"]["result"]["id"],
+            restored["nodes"]["first"]["job"]["outputs"]["result"]["id"],
+        )
 
     def test_digest_metadata_can_be_published_and_cached(self):
         original = self.provider.result_manifest

@@ -1,4 +1,5 @@
 from pathlib import Path
+
 from PIL import Image, ImageDraw, ImageFont
 
 root = Path(__file__).resolve().parent / "generated" / "locomotion" / "preview"

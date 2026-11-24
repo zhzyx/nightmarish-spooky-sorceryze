@@ -672,7 +672,9 @@ class MultiImageProvider(CodexProvider):
                 if specification["label"] in _GARMENT_VIEW_INSTRUCTIONS and _STANDALONE_GARMENT_PATTERN.search(
                     source_text
                 ):
-                    request["parameters"]["prompt"] += "\n" + _view_instruction(specification["label"], source_text) + "."
+                    request["parameters"]["prompt"] += (
+                        "\n" + _view_instruction(specification["label"], source_text) + "."
+                    )
             request["parameters"]["prompt"] = _constrain_t_pose(request["parameters"]["prompt"], source_text)
             return request
         primary = self._primary_ref(plan)

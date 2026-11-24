@@ -142,7 +142,9 @@ class GarmentSplitProviderTests(unittest.TestCase):
                 fit_validated=False,
                 animation_validated=False,
             )
-            record["items"][0].update(state="wearable_shell", coverage_state="complete_visible", closed_position_welded=True)
+            record["items"][0].update(
+                state="wearable_shell", coverage_state="complete_visible", closed_position_welded=True
+            )
             return record
 
         with patch("garment_complete.complete", side_effect=fake_complete) as reconstruct:

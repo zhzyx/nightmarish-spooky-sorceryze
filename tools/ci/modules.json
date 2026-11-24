@@ -169,6 +169,7 @@
         "tools/maliang_hunyuan/",
         "tools/skintokens.cpp/",
         "tools/package_maliang_editor.py",
+        "tools/vendor_agent_gw.py",
         "tools/editor_provenance_process.py",
         "tools/test_editor_provenance_process.py",
         "tests/editor/test_ainative_bundle.py",
@@ -460,6 +461,7 @@
         ".mailmap",
         ".pre-commit-config.yaml",
         "pyproject.toml",
+        "uv.lock",
         "work-items.json"
       ],
       "runner": "ubuntu-latest",

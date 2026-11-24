@@ -6,8 +6,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 import numpy as np
-from PIL import Image
-
 from extensions import canonical
 from garment_auto import RENDER_VIEWS
 from garment_complete import (
@@ -15,18 +13,19 @@ from garment_complete import (
     _excluded_pixels,
     _fill_topology_pinholes,
     _GlbWriter,
-    _validate_simple_polygon,
+    _position_weld,
+    _repair_quality_inventory,
     _request_quality_review,
     _request_view_masks,
-    _repair_quality_inventory,
-    _position_weld,
     _solidify_primitive,
     _triangle_id_model,
+    _validate_simple_polygon,
     complete,
     validate_segmentation,
 )
 from garment_split import GarmentSource
 from geometry_repair import load_glb
+from PIL import Image
 from test_garment_split import accessor_bytes, inventory, make_glb, png
 
 
@@ -185,7 +184,9 @@ class GarmentCompleteTests(unittest.TestCase):
 
     def test_subpixel_completion_rejects_occluded_body_behind_surface(self):
         writer = _GlbWriter(self.geometry, "occluded surface fixture")
-        points = np.asarray([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0.2, 0.2, -1], [0.3, 0.2, -1], [0.2, 0.3, -1]], dtype="<f4")
+        points = np.asarray(
+            [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0.2, 0.2, -1], [0.3, 0.2, -1], [0.2, 0.3, -1]], dtype="<f4"
+        )
         normals = np.tile(np.asarray([[0, 0, 1]], dtype="<f4"), (6, 1))
         uv = np.zeros((6, 2), dtype="<f4")
         writer.add_part(
@@ -219,7 +220,15 @@ class GarmentCompleteTests(unittest.TestCase):
         self.assertEqual(assignments[0]["evidence"]["subpixel_triangles"], 0)
 
     def test_complete_publishes_only_closed_wearable_shell(self):
-        def fake_render(source, candidates, directory, godot_path, render_script, triangle_id_model=None, triangle_id_model_high=None):
+        def fake_render(
+            source,
+            candidates,
+            directory,
+            godot_path,
+            render_script,
+            triangle_id_model=None,
+            triangle_id_model_high=None,
+        ):
             renders = directory / "renders"
             renders.mkdir(parents=True)
             maps = []
@@ -269,7 +278,16 @@ class GarmentCompleteTests(unittest.TestCase):
         self.assertEqual(self.source.read_bytes(), self.raw)
 
     def test_quality_gate_runs_one_generic_repair_and_records_history(self):
-        def fake_render(source, candidates, directory, godot_path, render_script, triangle_id_model=None, triangle_id_model_high=None, camera_bounds=None):
+        def fake_render(
+            source,
+            candidates,
+            directory,
+            godot_path,
+            render_script,
+            triangle_id_model=None,
+            triangle_id_model_high=None,
+            camera_bounds=None,
+        ):
             renders = directory / "renders"
             renders.mkdir(parents=True)
             maps = []
@@ -335,7 +353,15 @@ class GarmentCompleteTests(unittest.TestCase):
         make_glb(source, skin=True, embedded_image=True)
         geometry = GarmentSource(source)
 
-        def fake_render(source_path, candidates, directory, godot_path, render_script, triangle_id_model=None, triangle_id_model_high=None):
+        def fake_render(
+            source_path,
+            candidates,
+            directory,
+            godot_path,
+            render_script,
+            triangle_id_model=None,
+            triangle_id_model_high=None,
+        ):
             renders = directory / "renders"
             renders.mkdir(parents=True)
             maps = []
@@ -366,7 +392,14 @@ class GarmentCompleteTests(unittest.TestCase):
             patch("garment_complete._render", side_effect=fake_render),
             patch("garment_complete.request_segmentation", return_value=segmentation()),
         ):
-            result = complete(source, self.root / "rigged-output", self.root / "rigged-evidence", "godot", "review", quality_review=False)
+            result = complete(
+                source,
+                self.root / "rigged-output",
+                self.root / "rigged-evidence",
+                "godot",
+                "review",
+                quality_review=False,
+            )
 
         self.assertTrue(result["rigged"])
         self.assertTrue(result["skeleton_preserved"])
@@ -386,28 +419,53 @@ class GarmentCompleteTests(unittest.TestCase):
         )
         self.assertEqual(
             accessor_bytes(document, binary, document["skins"][0]["inverseBindMatrices"], 64),
-            accessor_bytes(geometry.document, geometry.binary, geometry.document["skins"][0]["inverseBindMatrices"], 64),
+            accessor_bytes(
+                geometry.document, geometry.binary, geometry.document["skins"][0]["inverseBindMatrices"], 64
+            ),
         )
         GarmentSource(self.root / "rigged-output" / "cape.glb")
         GarmentSource(self.root / "rigged-evidence" / "triangle-ids-low.glb")
 
     def test_partial_coverage_fails_closed_without_wearable_output(self):
-        def fake_render(source, candidates, directory, godot_path, render_script, triangle_id_model=None, triangle_id_model_high=None):
+        def fake_render(
+            source,
+            candidates,
+            directory,
+            godot_path,
+            render_script,
+            triangle_id_model=None,
+            triangle_id_model_high=None,
+        ):
             renders = directory / "renders"
             renders.mkdir(parents=True)
             (renders / "views.json").write_text("{}", encoding="utf-8")
             return []
 
         with (
-            patch("garment_complete._triangle_id_model", return_value=([dict(node=0, primitive=0, start=0, count=2), dict(node=1, primitive=0, start=2, count=1)], "id")),
+            patch(
+                "garment_complete._triangle_id_model",
+                return_value=(
+                    [dict(node=0, primitive=0, start=0, count=2), dict(node=1, primitive=0, start=2, count=1)],
+                    "id",
+                ),
+            ),
             patch("garment_complete._render", side_effect=fake_render),
             patch("garment_complete._validate_id_report"),
             patch("garment_complete.request_segmentation", return_value=segmentation("partial")),
             patch("garment_complete._assign_triangles") as assign,
         ):
-            assign.return_value = [dict(item=segmentation("partial")["items"][0], selected={}, evidence=dict(conflict_ratio=0.0))]
+            assign.return_value = [
+                dict(item=segmentation("partial")["items"][0], selected={}, evidence=dict(conflict_ratio=0.0))
+            ]
             with self.assertRaisesRegex(ValueError, "no_wearable"):
-                complete(self.source, self.root / "partial-output", self.root / "partial-evidence", "godot", "review", quality_review=False)
+                complete(
+                    self.source,
+                    self.root / "partial-output",
+                    self.root / "partial-evidence",
+                    "godot",
+                    "review",
+                    quality_review=False,
+                )
         self.assertFalse((self.root / "partial-output").exists())
 
     def test_view_request_creates_evidence_directory(self):
@@ -558,7 +616,13 @@ class GarmentCompleteTests(unittest.TestCase):
         quality = dict(
             source_views=[dict(view="back", path=str(source_image))],
             generated_views=[dict(view="back", path=str(generated_image))],
-            review=dict(items=[dict(id="cape", passed=False, defects=[dict(view="back", kind="missing_surface", observation="hole")])]),
+            review=dict(
+                items=[
+                    dict(
+                        id="cape", passed=False, defects=[dict(view="back", kind="missing_surface", observation="hole")]
+                    )
+                ]
+            ),
         )
         response = dict(
             items=[

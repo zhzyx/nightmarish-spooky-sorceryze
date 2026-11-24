@@ -22,7 +22,16 @@ RENDER_VIEWS = ("front", "right", "back", "left", "top")
 COMPONENT_VIEWS = ("front", "back")
 
 
-def _render(source, candidates, directory, godot_path, render_script, triangle_id_model=None, triangle_id_model_high=None, camera_bounds=None):
+def _render(
+    source,
+    candidates,
+    directory,
+    godot_path,
+    render_script,
+    triangle_id_model=None,
+    triangle_id_model_high=None,
+    camera_bounds=None,
+):
     godot_path = Path(godot_path).expanduser().resolve()
     render_script = Path(render_script).expanduser().resolve()
     require(godot_path.is_file() and render_script.is_file(), "review_render_failed")
@@ -97,7 +106,9 @@ def _render(source, candidates, directory, godot_path, render_script, triangle_i
     require(isinstance(views, list) and len(views) == len(RENDER_VIEWS), "review_render_failed")
     images = [dict(path=image(entry, view), label=view, component_id=None) for entry, view in zip(views, RENDER_VIEWS)]
     rendered_components = report.get("components")
-    require(isinstance(rendered_components, list) and len(rendered_components) == len(candidates), "review_render_failed")
+    require(
+        isinstance(rendered_components, list) and len(rendered_components) == len(candidates), "review_render_failed"
+    )
     for candidate, rendered in zip(candidates, rendered_components):
         require(
             rendered.get("component_id") == candidate["component_id"]

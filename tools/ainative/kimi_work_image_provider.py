@@ -457,10 +457,7 @@ class KimiWorkImageProvider(CodexProvider):
             raise ValueError("image_dependency_missing")
         if code != 0:
             generation_log = log_path.read_text(encoding="utf-8", errors="replace")
-            if (
-                "[HTTP 424]" in generation_log
-                and "Media generation is temporarily unavailable" in generation_log
-            ):
+            if "[HTTP 424]" in generation_log and "Media generation is temporarily unavailable" in generation_log:
                 raise ValueError("image_generation_unavailable")
             if (
                 "[HTTP 403]" in generation_log

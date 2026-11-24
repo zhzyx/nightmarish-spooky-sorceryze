@@ -1,8 +1,8 @@
 """Vendor the official agent-gw wheel inside this repository, with hash verification."""
+
 import hashlib
 import json
 import urllib.request
-import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]

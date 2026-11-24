@@ -548,6 +548,7 @@
 /project/                                     @zhzyx
 /releases/                                    @zhzyx
 /samples/                                     @zhzyx
+/samples/ainative-workbench/locomotion_preview_sheet.py @zhzyx @godotengine/buildsystem
 /samples/ainative-workbench/test_unified_settings.py @zhzyx @godotengine/buildsystem
 /samples/gonggong-workbench/fixtures/b05/sample.py @zhzyx @godotengine/buildsystem
 /samples/game-config/tests/                    @zhzyx @godotengine/tests
