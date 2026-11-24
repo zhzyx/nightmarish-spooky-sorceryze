@@ -1,0 +1,22 @@
+{
+  "request_id": "engine-apple-gray-ui-20261124",
+  "issue_number": 2222,
+  "issue_url": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2222",
+  "bug_issue": 2223,
+  "implementation_pr": 2231,
+  "implementation_main": "1c77e72dfbe6a4b5e3cf1482651503ea0fca42aa",
+  "documentation_pr": 2232,
+  "documentation_main": "ab7d3efd47ce86c10d181bf6f1567a7980e9e78e",
+  "implementation_checks": "all applicable checks passed on signed head 9b13dde4ca98f86b27da347f1ca98cfdeef87e72",
+  "recovered_incident": "0db285966cec09853098f958369b09abd0b222d8a4374aee6212575422d06ac3",
+  "recovery": "Fixed build-input snapshots; native build and regression passed; original failed snapshots remain historical failures. Formal receipt completed during final audit.",
+  "binary_sha256": "b842accf72d5de0bd72c50280a3917408844671a46d32528f8d648dc2784aa3f",
+  "delivery_path_absolute": "D:/GongGong-deliveries/engine-apple-gray-ui-2222",
+  "implementation_native_mirror": "received",
+  "cleanup": {
+    "task_bin": "moved to Windows Recycle Bin after evidence archive and delivery binary hash verification",
+    "worktree_and_branches": "retained until final metadata delivery and mirror operations terminate",
+    "other_tasks": "untouched"
+  },
+  "remaining": "Finalize audit-event delivery and mirror receipts, close verified issues, remove task worktree and branches."
+}
