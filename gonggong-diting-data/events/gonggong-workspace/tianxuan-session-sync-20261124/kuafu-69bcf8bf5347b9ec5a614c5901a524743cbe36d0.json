@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-69bcf8bf5347b9ec5a614c5901a524743cbe36d0",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-session-sync-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2213",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "feab20f1469ca594f6fd5602171dae9e528828278be9fbb640fcf806c9a5d340",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2213",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2213",
+    "action": "user-report",
+    "detection_head": "0ad75408c2146af61a14437c1ec07600ee5d4dca",
+    "context_sha256": "3fe1b3a91df15412a76271104ab983ecc44586371e13118706ec6e3f8cae2acb",
+    "operator": "Sail-Li",
+    "worker": "codex-root-tianxuan-session-sync",
+    "authority_ref": "issue:2213; user authorized shared login synchronization and device persistence verification",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2190",
+    "diagnosis": "用户已确认安装版655d1f683左右登录同步正常，但显示本次登录不会保存。独立设备授权已由2190交付，原单明确未更新生产服务；2186最后公布部署镜像为92b9c0a7。用户提供的HTTPS login入口已只读验证为个人密钥登录页面，不能作为服务器程序部署连接。当前Mac缺少原部署私有配置；没有读取真实凭据或更改线上服务。",
+    "next_action": "继续2216完整候选CI与主线交付。持久登录沿2186原部署连接接续，先核对当前镜像/挂载/一致备份与回退，再升级含2190的完整API镜像并实测Mac重启恢复及单设备退出隔离；管理入口或实际接收交接仍待取得。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-24T08:21:26.595354+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-24T09:47:37.023342+00:00",
+  "sha256": "ef2d0e0d0914c410bb39bd926691391b5e9858c1821154bf84f33349520af7f1"
+}
