@@ -36,6 +36,8 @@
 #include "core/os/os.h"
 #include "editor/docks/editor_dock.h"
 #include "editor/docks/editor_dock_manager.h"
+#include "editor/docks/gonggong_runtime_config.h"
+#include "editor/docks/startup_checks.gen.h"
 #include "editor/docks/tianxuan/TianxuanModelHost.h"
 #include "editor/docks/tianxuan/TianxuanScripts.gen.h"
 #include "editor/editor_node.h"
@@ -76,16 +78,26 @@ Error InstallTianxuanAssetIfAbsent(const String &strTemporary, const String &str
 
 namespace
 {
-Ref<Script> LoadScript(const char *const *pChunks)
+String CredentialPython()
 {
-	Ref<Script> refScript = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
-	ERR_FAIL_COND_V(refScript.is_null(), Ref<Script>());
+	return GongGongRuntimeConfig::path(GongGongRuntimeConfig::read_effective(), "workflow_python");
+}
+
+String ScriptSource(const char *const *pChunks)
+{
 	String strSource;
 	for (int nChunk = 0; pChunks[nChunk] != nullptr; ++nChunk)
 	{
 		strSource += String::utf8(pChunks[nChunk]);
 	}
-	refScript->set_source_code(strSource);
+	return strSource;
+}
+
+Ref<Script> LoadScript(const char *const *pChunks)
+{
+	Ref<Script> refScript = Object::cast_to<Script>(ClassDB::instantiate("GDScript"));
+	ERR_FAIL_COND_V(refScript.is_null(), Ref<Script>());
+	refScript->set_source_code(ScriptSource(pChunks));
 	ERR_FAIL_COND_V(refScript->reload() != OK, Ref<Script>());
 	return refScript;
 }
@@ -203,6 +215,9 @@ Node *GetTianxuanSessionController()
 	pController->set_name("TianxuanSessionController");
 	pController->set_script(refScript);
 	const String strPreviousUrl = EDITOR_DEF("network/web_platform/url", "");
+	pController->set("credential_transport", LoadScript(daqian_session_memory));
+	pController->set("helper_source", ScriptSource(daqian_session_credentials));
+	pController->set("credential_python", callable_mp_static(&CredentialPython));
 	if (OS::get_singleton()->get_environment("TIANXUAN_API").is_empty() && !strPreviousUrl.is_empty())
 	{
 		pController->call("set_origin", strPreviousUrl);

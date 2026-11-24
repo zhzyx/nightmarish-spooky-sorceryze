@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-connect-editor-proxy-20261124",
+  "event_id": "request-native-endpoint-and-proxy-2179",
+  "kind": "request",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2179",
+  "occurred_at": "2026-11-23T22:27:53.587541+00:00",
+  "agent": {
+    "id": "codex-current-operator-host",
+    "version": "not-observed",
+    "origin": "repository-instructions-at-main",
+    "definition_sha256": "d5957dfbb4508722253fd13d198f5edf11d0f32f1be804b2ba7fe2ac85a02683"
+  },
+  "payload": {
+    "issue_number": 2179,
+    "operator": "Sail-Li",
+    "source_updated_at": "2026-11-23T22:16:22Z",
+    "source_baseline": "8629ecf0992bd3de500478deac08b00f1d086953",
+    "request": "Persist the production default, repair Connect service through the operator proxy, and publish the accepted change to the Duobao project."
+  },
+  "evidence_refs": [],
+  "sha256": "28322c07d235bf301ae3d97b8bddbf168940c53e663d704717d725cb81a13a8c"
+}

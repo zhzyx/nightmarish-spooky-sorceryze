@@ -27,8 +27,16 @@ import urllib.request
 from pathlib import Path
 from typing import Any, cast
 
+
+class _ApiRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        if req.has_header("Authorization") or req.has_header("X-actor"):
+            return None
+        return super().redirect_request(req, fp, code, msg, headers, newurl)
+
+
 TIMEOUT = 20
-urlopen = urllib.request.urlopen
+urlopen = urllib.request.build_opener(_ApiRedirect()).open
 LOCAL_API = "http://127.0.0.1:8000"
 GONGGONG_API = "https://167-172-70-41.sslip.io"
 GONGGONG_REPO = "gonggong.git"
@@ -143,6 +151,50 @@ def _endpoint(api: str, path: str, params: dict[str, str] | None = None) -> str:
     if params:
         return f"{base}{path}?{urllib.parse.urlencode(params)}"
     return f"{base}{path}"
+
+
+def _load_editor_identity(origin: str) -> dict[str, Any]:
+    helper = Path(__file__).resolve().parents[2] / "godot-host" / "session_credentials.py"
+    request = {"service": "tianxuan-editor", "action": "load", "account": hashlib.sha256(origin.encode()).hexdigest()}
+    try:
+        result = subprocess.run(
+            [sys.executable, "-I", str(helper)],
+            input=json.dumps(request) + "\n",
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            timeout=6,
+            check=True,
+        )
+        reply = json.loads(result.stdout)
+        if isinstance(reply, dict) and reply.get("status") == "loaded":
+            record = json.loads(reply["secret"])
+            if isinstance(record, dict) and record.get("version") == 1 and record.get("origin") == origin:
+                return record
+    except (KeyError, OSError, ValueError, TypeError, subprocess.SubprocessError):
+        pass
+    raise BridgeError("无法读取此服务的编辑器身份，请先在本机编辑器登录")
+
+
+def _editor_token(api: str) -> str:
+    origin = api.strip().rstrip("/")
+    if not re.fullmatch(
+        r"(?:https://(?:[a-zA-Z0-9.-]+|\[[a-fA-F0-9:]+\])|http://(?:127\.0\.0\.1|localhost|\[::1\]))"
+        r"(?::[0-9]{1,5})?",
+        origin,
+    ):
+        raise BridgeError("编辑器身份只适用于指定的 HTTPS 服务或本机回环地址")
+    record = _load_editor_identity(origin)
+    token, subject = record.get("token"), record.get("user_id")
+    if not isinstance(token, str) or not token or not token.isascii() or not token.isprintable() or not subject:
+        raise BridgeError("编辑器登录记录无效，请在编辑器中重新登录")
+    try:
+        identity = _request(origin, "GET", "/api/v1/auth/me", token=token)
+    except BridgeHTTPError as exc:
+        raise BridgeError(f"服务无法核实当前编辑器账号（HTTP {exc.status}）") from None
+    if identity.get("id") != subject or not identity.get("role"):
+        raise BridgeError("服务器身份与当前编辑器账号不一致，请重新登录")
+    return token
 
 
 def _response_bytes(request, limit=None) -> bytes:
@@ -611,6 +663,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--workspace", type=Path, help="当前打开的项目目录（多宝 Git 路由）")
     parser.add_argument("--actor", default=os.environ.get("TIANXUAN_ACTOR", ""))
     parser.add_argument("--token")
+    parser.add_argument("--editor-login", action="store_true", help="使用本机编辑器为目标服务保存并已验证的当前账号")
     parser.add_argument("--identity-provider", default=os.environ.get("TIANXUAN_IDENTITY_PROVIDER", ""))
     parser.add_argument("--identity-subject", default=os.environ.get("TIANXUAN_IDENTITY_SUBJECT", ""))
     parser.add_argument("--identity-secret", default=os.environ.get("TIANXUAN_IDENTITY_SECRET", ""))
@@ -734,14 +787,27 @@ def main(argv: list[str] | None = None) -> int:
             if args.bound_repo and args.repo_name != args.bound_repo:
                 raise BridgeError("项目路由绑定的多宝仓库为 " + args.bound_repo)
         else:
-            args.api = args.api or LOCAL_API
+            args.api = args.api or (GONGGONG_API if args.editor_login else LOCAL_API)
         if getattr(args, "bound_repo", "") and args.command in ("workcopy-diff", "workcopy-preview"):
             # Automatic routing has identified a Git checkout, not a materialized
             # native project. These reads never use the remote service or identity.
             body = json.loads(args.request.read_text(encoding="utf-8")) if getattr(args, "request", None) else {}
             _write(args, {"ok": True, "data": _read_git_workcopy(args, body)})
             return 0
-        if getattr(args, "bound_repo", ""):
+        if args.editor_login:
+            other_identity = (
+                args.token,
+                args.actor,
+                args.identity_provider,
+                args.identity_subject,
+                args.identity_secret,
+                os.environ.get("TIANXUAN_TOKEN"),
+            )
+            if any(other_identity):
+                raise BridgeError("选择编辑器身份时不能同时指定其他身份")
+            args.api = args.api.strip().rstrip("/")
+            args.token = _editor_token(args.api)
+        elif getattr(args, "bound_repo", ""):
             # Legacy launchers may supply credentials for the old loopback
             # default. Only an explicit token or this origin's cache is bound.
             if not args.token and args.identity_provider and args.identity_subject:

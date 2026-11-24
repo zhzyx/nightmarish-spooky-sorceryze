@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "event_id": "kuafu-cf48d51fa0711f0acb83a57978ec26b6347d6fe6",
+  "tenant_id": "gonggong-workspace",
+  "request_id": "tianxuan-editor-persistent-identity-20261124",
+  "kind": "quality_issue",
+  "source_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+  "agent": {
+    "id": "kuafu",
+    "origin": "authenticated_host_role",
+    "version": "0.5.1",
+    "definition_sha256": "56c55d54d40923f673ce84d2f02f53c43aa7d06605b1f5a3612cde690b2349cb"
+  },
+  "evidence_refs": [],
+  "payload": {
+    "incident": "a3f514a4a80b4d24181d0878cfc982e38c0ba01095a3ef6cda493851c01716ed",
+    "source_issue": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+    "bug": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2185",
+    "action": "dispatch",
+    "detection_head": "2b2a8404f32d2ac9ab054903c7b3d9b4bd5a9a86",
+    "context_sha256": "86d40d66962efe78a84e1a0268f3433df6ea74a16b4fb654146cf1170fff7adb",
+    "operator": "Sail-Li",
+    "worker": "codex:01a2046a-87a2-70d3-a147-ee889c245b93",
+    "authority_ref": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2183",
+    "evidence": "https://github.com/zhzyx/nightmarish-spooky-sorceryze/issues/2185",
+    "diagnosis": "两个启动事件并发竞争司南的协调锁。已回读先发事件并顺序完成两个正式认领，工作者分离读写范围，均已返回定向实测。",
+    "next_action": "按实际终态归档回执；新登录能力沿原工单完成门禁及正式部署。",
+    "original_operation_reverified": false,
+    "first_failure_at": "2026-11-23T22:52:21.797590+00:00",
+    "attempted": null,
+    "repair_owner": null,
+    "continuable": null
+  },
+  "occurred_at": "2026-11-23T23:10:49.377975+00:00",
+  "sha256": "874970692b86c0cf070910790412c95c7ee031a25d07f0d2c23ce52c650f85aa"
+}
